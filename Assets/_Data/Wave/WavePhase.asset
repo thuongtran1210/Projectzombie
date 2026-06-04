@@ -22,6 +22,6 @@ MonoBehaviour:
     pillarSetup:
       pillarPrefab: {fileID: 2941539111911462964, guid: 7ee524cdceef8a34f8ec82d31cfb3b00, type: 3}
       enemyPrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
-      totalEnemiesToSpawn: 0
-      enemySpawnInterval: 0
+      totalEnemiesToSpawn: 20
+      enemySpawnInterval: 5
       isAttackable: 0
