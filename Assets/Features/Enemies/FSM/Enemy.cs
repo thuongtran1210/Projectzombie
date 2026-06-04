@@ -43,7 +43,7 @@ namespace ProjectZombie.Features.Enemies
         {
             Rb = GetComponent<Rigidbody2D>();
             HealthSystem = GetComponent<HealthSystem>();
-            EnemyAnimator = GetComponent<EnemyAnimator>();
+            EnemyAnimator = GetComponentInChildren<EnemyAnimator>();
             Rb.freezeRotation = true;
 
             if (Config != null)

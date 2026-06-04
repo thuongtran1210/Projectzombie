@@ -16,4 +16,4 @@ MonoBehaviour:
   startTime: 1
   baseSpawnInterval: 5
   backgroundEnemyPrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
-  amountPerSpawn: 1
+  amountPerSpawn: 2

@@ -97,6 +97,19 @@ namespace ProjectZombie.Features.Enemies
         }
 
         /// <summary>
+        /// Sự kiện này sẽ được gọi từ Animation Event.
+        /// </summary>
+        public event System.Action OnAttackEvent;
+
+        /// <summary>
+        /// Gắn hàm này vào Animation Event trên frame vũ khí chạm đất/kẻ địch.
+        /// </summary>
+        public void TriggerAttackEvent()
+        {
+            OnAttackEvent?.Invoke();
+        }
+
+        /// <summary>
         /// Xoay mặt quái vật dựa trên hướng di chuyển (trái/phải)
         /// </summary>
         public void FlipToDirection(float velocityX)

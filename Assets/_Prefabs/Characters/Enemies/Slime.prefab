@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7656556746096233016}
   - component: {fileID: 251345994121506531}
   - component: {fileID: 8113508355278650185}
-  - component: {fileID: 6457803843989835984}
   - component: {fileID: 6114508220135116099}
   - component: {fileID: 8623966065373873255}
   m_Layer: 3
@@ -138,24 +137,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1
---- !u!114 &6457803843989835984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2263912384334485274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 4001337190249781723}
-  idleStateName: Idle
-  runStateName: Run
-  attackStateName: Attack
-  deadStateName: Dead
-  reviveStateName: Revive
 --- !u!114 &6114508220135116099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +172,7 @@ GameObject:
   - component: {fileID: 5272463357541611288}
   - component: {fileID: 4841418106557821283}
   - component: {fileID: 4001337190249781723}
+  - component: {fileID: 3153015628269863541}
   m_Layer: 3
   m_Name: Visual
   m_TagString: Untagged
@@ -286,3 +268,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3153015628269863541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9076705951847638495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 4001337190249781723}
+  idleStateName: Idle
+  runStateName: Run
+  attackStateName: Attack
+  deadStateName: Dead
+  reviveStateName: Revive

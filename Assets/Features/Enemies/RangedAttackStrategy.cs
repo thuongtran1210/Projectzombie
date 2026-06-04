@@ -24,9 +24,25 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private void Start()
+        {
+            if (_enemy.EnemyAnimator != null)
+            {
+                _enemy.EnemyAnimator.OnAttackEvent += Shoot;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_enemy != null && _enemy.EnemyAnimator != null)
+            {
+                _enemy.EnemyAnimator.OnAttackEvent -= Shoot;
+            }
+        }
+
         public override void Attack()
         {
-            Shoot();
+            // Chỉ trigger animation. Việc bắn đạn (Shoot) sẽ được gọi bởi Animation Event.
             if (_enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.TriggerAttack();

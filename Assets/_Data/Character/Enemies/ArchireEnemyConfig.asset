@@ -17,5 +17,5 @@ MonoBehaviour:
   minDistance: 3
   maxHealth: 10
   damageToPlayer: 10
-  attackCooldown: 3
+  attackCooldown: 4
   attackRange: 10
