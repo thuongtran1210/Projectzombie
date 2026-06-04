@@ -12,6 +12,13 @@ namespace ProjectZombie.Features.Weapons
     [RequireComponent(typeof(PlayerStats))]
     public class WeaponManager : MonoBehaviour
     {
+        [Header("Data-Driven Loadout (Hướng 2)")]
+        [Tooltip("Danh sách các vũ khí khởi điểm của nhân vật")]
+        [SerializeField] private List<WeaponData> startingLoadout = new List<WeaponData>();
+
+        [Tooltip("Transform chứa các vũ khí được sinh ra (Nếu để trống sẽ dùng transform của Player)")]
+        [SerializeField] private Transform weaponHolder;
+
         private PlayerStats _playerStats;
         private PlayerPassives _playerPassives;
         private List<WeaponBase> _activeWeapons = new List<WeaponBase>();
@@ -28,12 +35,39 @@ namespace ProjectZombie.Features.Weapons
 
         private void Start()
         {
-            // Tự động tìm tất cả các vũ khí được gắn vào nhân vật (ở các object con)
-            WeaponBase[] weapons = GetComponentsInChildren<WeaponBase>();
-            foreach (var w in weapons)
+            // 1. Sinh ra vũ khí từ Data-Driven Loadout (Hướng 2)
+            foreach (var weaponData in startingLoadout)
             {
-                AddWeapon(w);
+                EquipWeaponFromData(weaponData);
             }
+
+            // 2. Tìm vũ khí có sẵn trong hierarchy (để hỗ trợ tương thích ngược / test nhanh)
+            WeaponBase[] attachedWeapons = GetComponentsInChildren<WeaponBase>();
+            foreach (var w in attachedWeapons)
+            {
+                if (!_activeWeapons.Contains(w)) // Tránh add trùng lặp với vũ khí vừa sinh
+                {
+                    AddWeapon(w);
+                }
+            }
+        }
+
+        public void EquipWeaponFromData(WeaponData data)
+        {
+            if (data == null || data.weaponPrefab == null)
+            {
+                Debug.LogWarning("[WeaponManager] WeaponData or WeaponPrefab is null!");
+                return;
+            }
+
+            // Sinh ra Prefab
+            Transform parent = weaponHolder != null ? weaponHolder : transform;
+            WeaponBase newWeapon = Instantiate(data.weaponPrefab, parent);
+            
+            // Có thể truyền thêm baseDamage từ WeaponData vào WeaponBase nếu cần
+            // Ví dụ: newWeapon.SetBaseStats(data.baseDamage); 
+            
+            AddWeapon(newWeapon);
         }
 
         public void AddWeapon(WeaponBase weapon)
