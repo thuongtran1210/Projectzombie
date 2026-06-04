@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb91c9f74575a74e94643faa41f9195, type: 3}
+  m_Name: "UPG_Gi\xE0y_Si\xEAu_T\u1ED1c"
+  m_EditorClassIdentifier: 
+  upgradeName: "Gi\xE0y Si\xEAu T\u1ED1c"
+  description: "T\u0103ng 20% t\u1ED1c \u0111\u1ED9 ch\u1EA1y c\u01A1 b\u1EA3n c\u1EE7a
+    nh\xE2n v\u1EADt."
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 1
+  playerStatModifier:
+    maxHealthBonus: 0
+    moveSpeedBonus: 2
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0

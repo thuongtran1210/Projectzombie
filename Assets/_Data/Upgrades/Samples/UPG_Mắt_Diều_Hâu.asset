@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: "UPG_M\u1EAFt_Di\u1EC1u_H\xE2u"
+  m_EditorClassIdentifier: 
+  upgradeName: "M\u1EAFt Di\u1EC1u H\xE2u"
+  description: "T\u0103ng 30% t\u1EC9 l\u1EC7 ch\xED m\u1EA1ng v\xE0 +1.0 h\u1EC7
+    s\u1ED1 s\xE1t th\u01B0\u01A1ng b\u1EA1o k\xEDch cho v\u0169 kh\xED n\xE0y."
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 1
+  weaponId: 
+  requiredCurrentLevel: 1
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0
+    critChanceBonus: 0.3
+    critDamageBonus: 1
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: "UPG_\u0110\u1EA1n_Xuy\xEAn_Th\u1EA5u"
+  m_EditorClassIdentifier: 
+  upgradeName: "\u0110\u1EA1n Xuy\xEAn Th\u1EA5u"
+  description: "\u0110\u1EA1n c\xF3 kh\u1EA3 n\u0103ng xuy\xEAn qua th\xEAm 2 k\u1EBB
+    \u0111\u1ECBch."
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 1
+  weaponId: 
+  requiredCurrentLevel: 1
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 2
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 2
+    scaleBonus: 0
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

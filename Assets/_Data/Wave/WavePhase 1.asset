@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c82eb2232bc587d428c382770d0e3b4a, type: 3}
+  m_Name: WavePhase 1
+  m_EditorClassIdentifier: 
+  phaseName: Phase 2
+  startTime: 3
+  baseSpawnInterval: 5
+  backgroundEnemyPrefab: {fileID: 4003443056451591525, guid: bd605545aa1b95e47b982d106dd471bf, type: 3}
+  amountPerSpawn: 1
