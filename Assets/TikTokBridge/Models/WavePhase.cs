@@ -4,19 +4,8 @@ using System.Collections.Generic;
 namespace TikTokBridge.Models
 {
     [System.Serializable]
-    public struct SpawnPillarConfig
+    public struct PillarConfig
     {
-        public string configName;
-        
-        [Tooltip("Thời điểm bắt đầu rơi Trụ trong phase (tính bằng giây).")]
-        public float startPillarTime;
-        
-        [Tooltip("Thời điểm kết thúc rơi Trụ trong phase (tính bằng giây).")]
-        public float endPillarTime;
-        
-        [Tooltip("Khoảng thời gian chờ giữa mỗi lần rơi Trụ (tính bằng giây).")]
-        public float pillarSpawnInterval;
-
         [Tooltip("Prefab của Trụ sẽ được tạo ra.")]
         public GameObject pillarPrefab;
         
@@ -32,6 +21,31 @@ namespace TikTokBridge.Models
         
         [Tooltip("Người chơi có thể tấn công và phá hủy Trụ này không?")]
         public bool isAttackable;
+    }
+
+    [System.Serializable]
+    public struct SpawnPillarConfig
+    {
+        public string configName;
+        
+        [Tooltip("Thời điểm bắt đầu rơi Trụ trong phase (tính bằng giây).")]
+        public float startPillarTime;
+        
+        [Tooltip("Thời điểm kết thúc rơi Trụ trong phase (tính bằng giây).")]
+        public float endPillarTime;
+        
+        [Tooltip("Khoảng thời gian chờ giữa mỗi lần rơi Trụ (tính bằng giây).")]
+        public float pillarSpawnInterval;
+
+        [Header("Pillar Setup")]
+        public PillarConfig pillarSetup;
+    }
+
+    [System.Serializable]
+    public struct GiftPillarMapping
+    {
+        public string giftName;
+        public PillarConfig pillarSetup;
     }
 
     [CreateAssetMenu(fileName = "NewWavePhase", menuName = "ProjectZombie/Wave Phase")]

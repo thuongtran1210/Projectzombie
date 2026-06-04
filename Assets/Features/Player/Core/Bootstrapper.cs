@@ -14,10 +14,9 @@ namespace TikTokBridge
 
         [Header("--- Systems ---")]
         [SerializeField] private DebugEventOverlay debugOverlay; 
-        [SerializeField] private EnemySpawner enemySpawner;
         [SerializeField] private DebugSpawnerPanel debugSpawnerPanel;
         [SerializeField] private EnemyPoolManager enemyPoolManager;
-        [SerializeField] private WaveManager waveManager;
+        [SerializeField] private SpawnManager spawnManager;
 
         private ICommandDispatcher _commandDispatcher;
         private IWebSocketClient _webSocketClient;
@@ -39,10 +38,10 @@ namespace TikTokBridge
                 debugOverlay.Construct(_commandDispatcher); 
             }
 
-            // Inject Dispatcher vào EnemySpawner
-            if (enemySpawner != null)
+            // Inject Dispatcher vào SpawnManager
+            if (spawnManager != null)
             {
-                enemySpawner.Construct(_commandDispatcher); 
+                spawnManager.Construct(_commandDispatcher); 
             }
 
             // Inject Dispatcher vào DebugSpawnerPanel

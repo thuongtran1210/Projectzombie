@@ -10833,7 +10833,7 @@ MonoBehaviour:
   archerPrefab: {fileID: 4003443056451591525, guid: bd605545aa1b95e47b982d106dd471bf, type: 3}
   elitePrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
   giftMappings: []
-  defaultPillarPrefab: {fileID: 0}
+  defaultPillarPrefab: {fileID: 2941539111911462964, guid: 7ee524cdceef8a34f8ec82d31cfb3b00, type: 3}
   defaultEnemySpawnInterval: 1
   minSpawnRadius: 10
   maxSpawnRadius: 15

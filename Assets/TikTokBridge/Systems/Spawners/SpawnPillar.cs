@@ -7,11 +7,11 @@ namespace TikTokBridge.Systems.Spawners
 {
     public class SpawnPillar : MonoBehaviour
     {
-        private SpawnPillarConfig _config;
+        private PillarConfig _config;
         private int _spawnedCount = 0;
         private HealthSystem _healthSystem;
 
-        public void Initialize(SpawnPillarConfig config)
+        public void Initialize(PillarConfig config)
         {
             _config = config;
             _spawnedCount = 0;
