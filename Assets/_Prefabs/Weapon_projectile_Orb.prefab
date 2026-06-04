@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8834208765499109349}
   - component: {fileID: 1321711061369733010}
   m_Layer: 7
-  m_Name: Weapon_Orb
+  m_Name: Weapon_projectile_Orb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: WeaponBleadData
+  m_EditorClassIdentifier: 
+  weaponId: blead01
+  weaponName: "L\u01B0\u1EE1i ki\u1EBFm kh\xF4ng b\xE9n l\u1EAFm"
+  weaponPrefab: {fileID: 8773403774852505993, guid: 6cac50178f25bca42b99258b270b5b90, type: 3}
+  baseDamage: 10
+  baseAttackSpeed: 2

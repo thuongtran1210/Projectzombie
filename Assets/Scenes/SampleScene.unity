@@ -12164,18 +12164,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3289328877896390156, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3289328877896390156, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-      propertyPath: m_SortingLayerID
-      value: 1982589963
-      objectReference: {fileID: 0}
-    - target: {fileID: 3597317103514239079, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
       propertyPath: m_Name
       value: Player
@@ -12219,14 +12207,6 @@ PrefabInstance:
     - target: {fileID: 4757795839330492230, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7644900023807609708, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8247104429708469429, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
