@@ -23,8 +23,20 @@ namespace TikTokBridge.Systems.Spawners
         [Header("Gift Mappings")]
         [SerializeField] private List<GiftEnemyMapping> giftMappings = new List<GiftEnemyMapping>();
 
+        [Header("Spawn Settings")]
+        [SerializeField] private float minSpawnRadius = 10f;
+        [SerializeField] private float maxSpawnRadius = 15f;
+        [SerializeField] private LayerMask obstacleLayer;
+
+        [Header("Performance Settings")]
+        [SerializeField] private int maxSpawnsPerFrame = 5;
+        [SerializeField] private float spawnDelayBetweenFrames = 0.05f;
+
         private ICommandDispatcher _dispatcher;
         private Dictionary<string, GameObject> _giftToEnemyMap = new Dictionary<string, GameObject>();
+        private Transform _playerTransform;
+        private Queue<GameObject> _spawnQueue = new Queue<GameObject>();
+        private Coroutine _spawnCoroutine;
 
         private void Awake()
         {
@@ -39,6 +51,12 @@ namespace TikTokBridge.Systems.Spawners
 
         private void Start()
         {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                _playerTransform = player.transform;
+            }
+
             // Khởi tạo sẵn quái vật từ quà tặng để không bị giật lúc livestream
             if (EnemyPoolManager.Instance != null)
             {
@@ -67,13 +85,13 @@ namespace TikTokBridge.Systems.Spawners
         private void HandleLike(GameCommandPayload cmd)
         {
             Debug.Log($"[EnemySpawner] {cmd.user} liked! Spawning Slime.");
-            SpawnEnemy(slimePrefab);
+            EnqueueSpawns(slimePrefab, 1);
         }
 
         private void HandleFollow(GameCommandPayload cmd)
         {
             Debug.Log($"[EnemySpawner] {cmd.user} followed! Spawning Archer.");
-            SpawnEnemy(archerPrefab);
+            EnqueueSpawns(archerPrefab, 1);
         }
 
         private void HandleSpawnEnemy(GameCommandPayload cmd)
@@ -89,26 +107,59 @@ namespace TikTokBridge.Systems.Spawners
             if (string.IsNullOrEmpty(enemyType))
             {
                 Debug.Log($"[EnemySpawner] {cmd.user} sent Gift but enemyType is null. Spawning {amount} Elite!");
-                for (int i = 0; i < amount; i++) SpawnEnemy(elitePrefab);
+                EnqueueSpawns(elitePrefab, amount);
                 return;
             }
 
             if (_giftToEnemyMap.TryGetValue(enemyType, out GameObject prefabToSpawn))
             {
                 Debug.Log($"[EnemySpawner] {cmd.user} sent Gift! Spawning {amount} {enemyType}!");
-                for (int i = 0; i < amount; i++)
-                {
-                    SpawnEnemy(prefabToSpawn);
-                }
+                EnqueueSpawns(prefabToSpawn, amount);
             }
             else
             {
                 Debug.Log($"[EnemySpawner] Unknown gift '{enemyType}' from {cmd.user}. Spawning {amount} Elite as fallback!");
-                for (int i = 0; i < amount; i++)
+                EnqueueSpawns(elitePrefab, amount);
+            }
+        }
+
+        private void EnqueueSpawns(GameObject prefab, int amount)
+        {
+            if (prefab == null) return;
+            
+            for (int i = 0; i < amount; i++)
+            {
+                _spawnQueue.Enqueue(prefab);
+            }
+
+            if (_spawnCoroutine == null)
+            {
+                _spawnCoroutine = StartCoroutine(ProcessSpawnQueue());
+            }
+        }
+
+        private System.Collections.IEnumerator ProcessSpawnQueue()
+        {
+            while (_spawnQueue.Count > 0)
+            {
+                int spawnCount = Mathf.Min(maxSpawnsPerFrame, _spawnQueue.Count);
+                for (int i = 0; i < spawnCount; i++)
                 {
-                    SpawnEnemy(elitePrefab);
+                    GameObject prefabToSpawn = _spawnQueue.Dequeue();
+                    SpawnEnemy(prefabToSpawn);
+                }
+
+                if (spawnDelayBetweenFrames > 0)
+                {
+                    yield return new WaitForSeconds(spawnDelayBetweenFrames);
+                }
+                else
+                {
+                    yield return null;
                 }
             }
+            
+            _spawnCoroutine = null;
         }
 
         private void SpawnEnemy(GameObject prefab)
@@ -127,7 +178,34 @@ namespace TikTokBridge.Systems.Spawners
 
         private Vector3 GetSpawnPosition()
         {
-            return new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+            Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
+
+            // Thử tối đa 10 lần để tìm vị trí không bị kẹt vào tường
+            for (int i = 0; i < 10; i++)
+            {
+                // Chọn góc ngẫu nhiên từ 0 đến 360 độ
+                float angle = Random.Range(0f, 360f);
+                // Chọn khoảng cách ngẫu nhiên từ min đến max
+                float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
+
+                // Tính toán hướng theo trục X và Y
+                Vector2 randomDir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+                Vector2 spawnPos = (Vector2)center + randomDir * radius;
+
+                // Kiểm tra xem vị trí có trống không nếu có cấu hình obstacleLayer
+                if (obstacleLayer.value != 0)
+                {
+                    Collider2D hit = Physics2D.OverlapCircle(spawnPos, 0.5f, obstacleLayer);
+                    if (hit != null) continue; // Bị kẹt, thử vị trí khác
+                }
+
+                return spawnPos; // Trả về nếu vị trí hợp lệ
+            }
+
+            // Fallback: Nếu không tìm được chỗ trống, cứ spawn đại quanh rìa min
+            float fallbackAngle = Random.Range(0f, 360f);
+            Vector2 fallbackDir = new Vector2(Mathf.Cos(fallbackAngle * Mathf.Deg2Rad), Mathf.Sin(fallbackAngle * Mathf.Deg2Rad));
+            return (Vector2)center + fallbackDir * minSpawnRadius;
         }
 
         private void OnDestroy()
