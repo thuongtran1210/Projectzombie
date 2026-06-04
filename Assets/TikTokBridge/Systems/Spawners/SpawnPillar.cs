@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using ProjectZombie.Features.Shared;
 using TikTokBridge.Models;
+using DG.Tweening; // Thêm thư viện DOTween
 
 namespace TikTokBridge.Systems.Spawners
 {
@@ -15,6 +16,15 @@ namespace TikTokBridge.Systems.Spawners
         {
             _config = config;
             _spawnedCount = 0;
+
+            // --- HIỆU ỨNG XUẤT HIỆN BẰNG DOTWEEN ---
+            // Lưu lại scale đích
+            Vector3 targetScale = transform.localScale;
+            // Cho Trụ thu nhỏ về 0
+            transform.localScale = Vector3.zero;
+            // Phình to mượt mà (Tốn 0.5s, hiệu ứng nảy OutBack)
+            transform.DOScale(targetScale, 0.5f).SetEase(Ease.OutBack);
+            // ---------------------------------------
 
             // Setup HealthSystem if attackable
             _healthSystem = GetComponent<HealthSystem>();
