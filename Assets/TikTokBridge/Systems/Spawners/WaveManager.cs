@@ -23,11 +23,9 @@ namespace TikTokBridge.Systems.Spawners
         [SerializeField] private int maxSpawnsPerFrame = 5;
         [SerializeField] private float spawnDelayBetweenFrames = 0.05f;
 
-        private float _spawnTimer = 0f;
         private bool _isMatchActive = false;
         private Transform _playerTransform;
-        private Queue<GameObject> _spawnQueue = new Queue<GameObject>();
-        private Coroutine _spawnCoroutine;
+        private float[] _pillarSpawnTimers;
 
         public float MatchTime => matchTime;
         public WavePhase CurrentPhase => currentPhaseIndex >= 0 && currentPhaseIndex < phases.Count ? phases[currentPhaseIndex] : null;
@@ -48,7 +46,6 @@ namespace TikTokBridge.Systems.Spawners
         {
             matchTime = 0f;
             currentPhaseIndex = -1;
-            _spawnTimer = 0f;
             _isMatchActive = true;
             
             CheckForPhaseChange();
@@ -66,7 +63,7 @@ namespace TikTokBridge.Systems.Spawners
             matchTime += Time.deltaTime;
             
             CheckForPhaseChange();
-            HandleSpawning();
+            HandlePillarSpawning();
         }
 
         private void CheckForPhaseChange()
@@ -81,84 +78,65 @@ namespace TikTokBridge.Systems.Spawners
                     currentPhaseIndex = nextPhaseIndex;
                     Debug.Log($"[WaveManager] Entered Phase {currentPhaseIndex + 1}: {CurrentPhase.phaseName}");
                     
-                    // Khởi tạo sẵn (Prewarm) quái vật của Phase này để tránh giật lag khi Spawn
-                    if (CurrentPhase.backgroundEnemyPrefab != null && EnemyPoolManager.Instance != null)
-                    {
-                        EnemyPoolManager.Instance.PrewarmPool(CurrentPhase.backgroundEnemyPrefab, 50);
-                    }
                     
-                    // Reset spawn timer when entering a new phase to spawn immediately
-                    _spawnTimer = CurrentPhase.baseSpawnInterval; 
+                    if (CurrentPhase.pillarConfigs != null)
+                    {
+                        _pillarSpawnTimers = new float[CurrentPhase.pillarConfigs.Count];
+                        for (int i = 0; i < _pillarSpawnTimers.Length; i++)
+                        {
+                            _pillarSpawnTimers[i] = CurrentPhase.pillarConfigs[i].pillarSpawnInterval; // Spawn immediately when time reaches start
+                        }
+                    }
+                    else
+                    {
+                        _pillarSpawnTimers = new float[0];
+                    }
                 }
             }
         }
 
-        private void HandleSpawning()
+
+        private void HandlePillarSpawning()
         {
-            if (CurrentPhase == null || CurrentPhase.backgroundEnemyPrefab == null) return;
+            if (CurrentPhase == null || CurrentPhase.pillarConfigs == null || _pillarSpawnTimers == null) return;
 
-            _spawnTimer += Time.deltaTime;
+            float timeInPhase = matchTime - CurrentPhase.startTime;
 
-            if (_spawnTimer >= CurrentPhase.baseSpawnInterval)
+            for (int i = 0; i < CurrentPhase.pillarConfigs.Count; i++)
             {
-                _spawnTimer = 0f;
-                SpawnBackgroundEnemies();
+                var config = CurrentPhase.pillarConfigs[i];
+
+                if (timeInPhase >= config.startPillarTime && timeInPhase <= config.endPillarTime)
+                {
+                    _pillarSpawnTimers[i] += Time.deltaTime;
+
+                    if (_pillarSpawnTimers[i] >= config.pillarSpawnInterval)
+                    {
+                        _pillarSpawnTimers[i] = 0f;
+                        SpawnPillar(config);
+                    }
+                }
             }
         }
 
-        private void SpawnBackgroundEnemies()
+        private void SpawnPillar(SpawnPillarConfig config)
         {
-            if (EnemyPoolManager.Instance == null)
-            {
-                Debug.LogWarning("[WaveManager] EnemyPoolManager.Instance is null! Cannot spawn enemies.");
-                return;
-            }
+            if (config.pillarPrefab == null) return;
 
-            int amount = CurrentPhase.amountPerSpawn;
-            if (CurrentPhase.backgroundEnemyPrefab != null)
-            {
-                EnqueueSpawns(CurrentPhase.backgroundEnemyPrefab, amount);
-            }
-        }
-
-        private void EnqueueSpawns(GameObject prefab, int amount)
-        {
-            if (prefab == null) return;
+            Vector3 spawnPos = GetSpawnPosition();
+            GameObject pillarObj = Instantiate(config.pillarPrefab, spawnPos, Quaternion.identity);
             
-            for (int i = 0; i < amount; i++)
+            SpawnPillar pillar = pillarObj.GetComponent<SpawnPillar>();
+            if (pillar != null)
             {
-                _spawnQueue.Enqueue(prefab);
+                pillar.Initialize(config);
             }
-
-            if (_spawnCoroutine == null)
+            else
             {
-                _spawnCoroutine = StartCoroutine(ProcessSpawnQueue());
+                Debug.LogWarning($"[WaveManager] SpawnPillar component is missing on prefab {config.pillarPrefab.name}!");
             }
         }
 
-        private System.Collections.IEnumerator ProcessSpawnQueue()
-        {
-            while (_spawnQueue.Count > 0)
-            {
-                int spawnCount = Mathf.Min(maxSpawnsPerFrame, _spawnQueue.Count);
-                for (int i = 0; i < spawnCount; i++)
-                {
-                    GameObject prefabToSpawn = _spawnQueue.Dequeue();
-                    EnemyPoolManager.Instance.SpawnEnemy(prefabToSpawn, GetSpawnPosition(), Quaternion.identity);
-                }
-
-                if (spawnDelayBetweenFrames > 0)
-                {
-                    yield return new WaitForSeconds(spawnDelayBetweenFrames);
-                }
-                else
-                {
-                    yield return null;
-                }
-            }
-            
-            _spawnCoroutine = null;
-        }
 
         private Vector3 GetSpawnPosition()
         {

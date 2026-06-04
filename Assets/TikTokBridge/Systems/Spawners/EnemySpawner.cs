@@ -23,6 +23,10 @@ namespace TikTokBridge.Systems.Spawners
         [Header("Gift Mappings")]
         [SerializeField] private List<GiftEnemyMapping> giftMappings = new List<GiftEnemyMapping>();
 
+        [Header("Spawn Pillar Settings")]
+        [SerializeField] private GameObject defaultPillarPrefab;
+        [SerializeField] private float defaultEnemySpawnInterval = 1f;
+
         [Header("Spawn Settings")]
         [SerializeField] private float minSpawnRadius = 10f;
         [SerializeField] private float maxSpawnRadius = 15f;
@@ -84,14 +88,14 @@ namespace TikTokBridge.Systems.Spawners
 
         private void HandleLike(GameCommandPayload cmd)
         {
-            Debug.Log($"[EnemySpawner] {cmd.user} liked! Spawning Slime.");
-            EnqueueSpawns(slimePrefab, 1);
+            Debug.Log($"[EnemySpawner] {cmd.user} liked! Spawning Slime Pillar.");
+            SpawnPillarForEvent(slimePrefab, 1);
         }
 
         private void HandleFollow(GameCommandPayload cmd)
         {
-            Debug.Log($"[EnemySpawner] {cmd.user} followed! Spawning Archer.");
-            EnqueueSpawns(archerPrefab, 1);
+            Debug.Log($"[EnemySpawner] {cmd.user} followed! Spawning Archer Pillar.");
+            SpawnPillarForEvent(archerPrefab, 1);
         }
 
         private void HandleSpawnEnemy(GameCommandPayload cmd)
@@ -106,73 +110,52 @@ namespace TikTokBridge.Systems.Spawners
 
             if (string.IsNullOrEmpty(enemyType))
             {
-                Debug.Log($"[EnemySpawner] {cmd.user} sent Gift but enemyType is null. Spawning {amount} Elite!");
-                EnqueueSpawns(elitePrefab, amount);
+                Debug.Log($"[EnemySpawner] {cmd.user} sent Gift but enemyType is null. Spawning Elite Pillar ({amount})!");
+                SpawnPillarForEvent(elitePrefab, amount);
                 return;
             }
 
             if (_giftToEnemyMap.TryGetValue(enemyType, out GameObject prefabToSpawn))
             {
-                Debug.Log($"[EnemySpawner] {cmd.user} sent Gift! Spawning {amount} {enemyType}!");
-                EnqueueSpawns(prefabToSpawn, amount);
+                Debug.Log($"[EnemySpawner] {cmd.user} sent Gift! Spawning {enemyType} Pillar ({amount})!");
+                SpawnPillarForEvent(prefabToSpawn, amount);
             }
             else
             {
-                Debug.Log($"[EnemySpawner] Unknown gift '{enemyType}' from {cmd.user}. Spawning {amount} Elite as fallback!");
-                EnqueueSpawns(elitePrefab, amount);
+                Debug.Log($"[EnemySpawner] Unknown gift '{enemyType}' from {cmd.user}. Spawning Elite Pillar ({amount}) as fallback!");
+                SpawnPillarForEvent(elitePrefab, amount);
             }
         }
 
-        private void EnqueueSpawns(GameObject prefab, int amount)
+        private void SpawnPillarForEvent(GameObject enemyPrefab, int amount)
         {
-            if (prefab == null) return;
-            
-            for (int i = 0; i < amount; i++)
+            if (enemyPrefab == null || defaultPillarPrefab == null)
             {
-                _spawnQueue.Enqueue(prefab);
+                Debug.LogWarning("[EnemySpawner] Missing enemy prefab or defaultPillarPrefab!");
+                return;
             }
 
-            if (_spawnCoroutine == null)
-            {
-                _spawnCoroutine = StartCoroutine(ProcessSpawnQueue());
-            }
-        }
-
-        private System.Collections.IEnumerator ProcessSpawnQueue()
-        {
-            while (_spawnQueue.Count > 0)
-            {
-                int spawnCount = Mathf.Min(maxSpawnsPerFrame, _spawnQueue.Count);
-                for (int i = 0; i < spawnCount; i++)
-                {
-                    GameObject prefabToSpawn = _spawnQueue.Dequeue();
-                    SpawnEnemy(prefabToSpawn);
-                }
-
-                if (spawnDelayBetweenFrames > 0)
-                {
-                    yield return new WaitForSeconds(spawnDelayBetweenFrames);
-                }
-                else
-                {
-                    yield return null;
-                }
-            }
+            Vector3 spawnPos = GetSpawnPosition();
+            GameObject pillarObj = Instantiate(defaultPillarPrefab, spawnPos, Quaternion.identity);
             
-            _spawnCoroutine = null;
-        }
-
-        private void SpawnEnemy(GameObject prefab)
-        {
-            if (prefab == null) return;
-            
-            if (EnemyPoolManager.Instance != null)
+            SpawnPillar pillar = pillarObj.GetComponent<SpawnPillar>();
+            if (pillar != null)
             {
-                EnemyPoolManager.Instance.SpawnEnemy(prefab, GetSpawnPosition(), Quaternion.identity);
+                SpawnPillarConfig config = new SpawnPillarConfig
+                {
+                    configName = "TikTokEventPillar",
+                    pillarPrefab = defaultPillarPrefab,
+                    enemyPrefab = enemyPrefab,
+                    totalEnemiesToSpawn = amount,
+                    enemySpawnInterval = defaultEnemySpawnInterval,
+                    isAttackable = true
+                };
+                
+                pillar.Initialize(config);
             }
             else
             {
-                Debug.LogWarning("[EnemySpawner] EnemyPoolManager.Instance is null! Please add it to the scene.");
+                Debug.LogWarning("[EnemySpawner] SpawnPillar component is missing on defaultPillarPrefab!");
             }
         }
 

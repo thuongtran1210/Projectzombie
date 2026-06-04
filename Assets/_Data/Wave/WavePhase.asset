@@ -14,6 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   phaseName: Phase 1
   startTime: 1
-  baseSpawnInterval: 5
-  backgroundEnemyPrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
-  amountPerSpawn: 2
+  pillarConfigs:
+  - configName: ok1
+    startPillarTime: 1
+    endPillarTime: 20
+    pillarSpawnInterval: 5
+    pillarPrefab: {fileID: 2941539111911462964, guid: 7ee524cdceef8a34f8ec82d31cfb3b00, type: 3}
+    enemyPrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
+    totalEnemiesToSpawn: 20
+    enemySpawnInterval: 2
+    isAttackable: 0
