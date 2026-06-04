@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: WavePhase 1
   m_EditorClassIdentifier: 
   phaseName: Phase 2
-  startTime: 3
-  baseSpawnInterval: 5
-  backgroundEnemyPrefab: {fileID: 4003443056451591525, guid: bd605545aa1b95e47b982d106dd471bf, type: 3}
-  amountPerSpawn: 1
+  startTime: 20
+  pillarConfigs:
+  - configName: archire
+    startPillarTime: 20
+    endPillarTime: 30
+    pillarSpawnInterval: 5
+    pillarSetup:
+      pillarPrefab: {fileID: 2941539111911462964, guid: 41f0a904bd04ea24b947e15abd1c639a, type: 3}
+      enemyPrefab: {fileID: 4003443056451591525, guid: bd605545aa1b95e47b982d106dd471bf, type: 3}
+      totalEnemiesToSpawn: 5
+      enemySpawnInterval: 1
+      isAttackable: 1
