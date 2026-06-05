@@ -42,7 +42,7 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(float amount)
         {
-            if (_currentHealth <= 0) return; // Đã chết rồi
+            if (_currentHealth <= 0) return; 
 
             _currentHealth -= amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
