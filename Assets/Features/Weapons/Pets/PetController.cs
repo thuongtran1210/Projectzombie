@@ -8,12 +8,18 @@ namespace ProjectZombie.Features.Weapons.Pets
         [Header("Movement")]
         [Tooltip("Tốc độ bay theo người chơi")]
         public float followSpeed = 5f;
-        
-        [Tooltip("Khoảng cách tối đa pet có thể bay xa khỏi người chơi")]
+
+        [Tooltip("Khoảng cách tối đa pet có thể bay xa khỏi người chơi trước khi bắt buộc quay về (MaxChasingRadius)")]
         public float maxDistanceFromPlayer = 10f;
-        
+
         [Tooltip("Tốc độ lao vào kẻ địch khi tấn công")]
         public float attackMoveSpeed = 15f;
+
+        [Tooltip("Khoảng cách bắt đầu đuổi theo người chơi")]
+        public float followRadius = 3f;
+
+        [Tooltip("Khoảng cách tối thiểu để dừng lại (vùng tròn xung quanh người chơi)")]
+        public float stopRadius = 1.5f;
 
         [Header("Targeting")]
         [Tooltip("Bán kính tự động tìm mục tiêu (tính từ Pet)")]
@@ -24,13 +30,47 @@ namespace ProjectZombie.Features.Weapons.Pets
         [Tooltip("Lượng máu hồi phục cho người chơi mỗi khi pet cắn trúng kẻ địch")]
         public float healAmount = 1f;
 
+        [Header("Idle & Flight Animation")]
+        [Tooltip("Tốc độ thở/nhảy nhẹ tại chỗ")]
+        public float bobSpeed = 3f;
+        [Tooltip("Biên độ thở/nhảy nhẹ tại chỗ")]
+        public float bobAmplitude = 0.2f;
+        [Tooltip("Độ mượt mà khi đổi hướng (Quán tính càng cao số càng nhỏ, khuyên dùng: 0.1 - 0.3)")]
+        public float smoothTime = 0.25f;
+
+        [Header("References")]
+        [Tooltip("Animator điều khiển hoạt ảnh của Pet")]
+        [SerializeField] private Animator animator;
+
         private WeaponBase _weapon;
         private Transform _player;
         private Transform _target;
-        
+
         // Trạng thái của Pet
-        private enum PetState { Following, Attacking, Returning }
-        private PetState _currentState = PetState.Following;
+        public enum PetState { Idle, Follow, Combat, Return }
+        private PetState _currentState = PetState.Idle;
+
+        private string _currentAnimState;
+        private Vector3 _moveVelocity; // Dùng cho SmoothDamp
+        private float _playerDirectionX = -1f; // Lưu hướng để neo vị trí Pet
+
+        public PetState CurrentState => _currentState;
+
+        private void Awake()
+        {
+            if (animator == null)
+            {
+                animator = GetComponentInChildren<Animator>();
+            }
+        }
+
+        private void PlayAnimation(string stateName)
+        {
+            if (animator == null) return;
+            if (_currentAnimState == stateName) return;
+            animator.Play(stateName);
+            _currentAnimState = stateName;
+        }
 
         public void Initialize(WeaponBase weapon, Transform player)
         {
@@ -42,77 +82,140 @@ namespace ProjectZombie.Features.Weapons.Pets
         {
             if (_player == null) return;
 
-            // Luôn tìm kiếm mục tiêu nếu chưa có
-            if (_target == null || !_target.gameObject.activeInHierarchy)
+            float distToPlayer = Vector2.Distance(transform.position, _player.position);
+
+            // Cập nhật hướng di chuyển của Player để Pet né chọn vị trí đứng (Ví dụ: Luôn bay phía sau lưng Player)
+            // Bạn có thể thay đổi logic này dựa vào scale hoặc vận tốc của Player
+            if (_player.position.x - transform.position.x > 0.1f) _playerDirectionX = -1f; // Player đi bên phải, Pet đứng bên trái
+            else if (_player.position.x - transform.position.x < -0.1f) _playerDirectionX = 1f;
+
+            // Return (Quay về gấp)
+            if (_currentState != PetState.Return && distToPlayer > maxDistanceFromPlayer)
             {
-                FindTarget();
+                _currentState = PetState.Return;
+                _target = null;
+            }
+
+            if (_currentState != PetState.Return)
+            {
+                if (_target == null || !_target.gameObject.activeInHierarchy || Vector2.Distance(transform.position, _target.position) > searchRadius)
+                {
+                    FindTarget();
+                }
+
+                if (_target != null)
+                {
+                    _currentState = PetState.Combat;
+                }
             }
 
             switch (_currentState)
             {
-                case PetState.Following:
-                    FollowPlayer();
+                case PetState.Idle:
+                    PlayIdleBehavior(distToPlayer);
                     break;
-                case PetState.Attacking:
-                    MoveToTargetAndBite();
+                case PetState.Follow:
+                    FollowPlayer(distToPlayer);
                     break;
-                case PetState.Returning:
-                    ReturnToPlayer();
+                case PetState.Combat:
+                    MoveToTargetAndAttack();
+                    break;
+                case PetState.Return:
+                    ReturnToPlayer(distToPlayer);
                     break;
             }
         }
 
-        private void FollowPlayer()
+        private void PlayIdleBehavior(float distToPlayer)
         {
-            // Bay lượn quanh người chơi (có thể thêm logic bay hình sin hoặc hình số 8 nếu muốn mượt hơn)
-            // Tạm thời cho bay theo vị trí ngay trên đầu/bên cạnh player
-            Vector3 targetPos = _player.position + new Vector3(-1f, 1.5f, 0f);
-            transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed * Time.deltaTime);
-        }
-
-        private void MoveToTargetAndBite()
-        {
-            if (_target == null)
+            if (distToPlayer > followRadius)
             {
-                _currentState = PetState.Returning;
+                _currentState = PetState.Follow;
                 return;
             }
 
-            // Bay tốc độ cao về phía kẻ địch
-            transform.position = Vector3.MoveTowards(transform.position, _target.position, attackMoveSpeed * Time.deltaTime);
+            PlayAnimation("Idle");
 
-            // Kiểm tra nếu chạm vào kẻ địch thì cắn
-            if (Vector2.Distance(transform.position, _target.position) < 0.5f)
-            {
-                BiteTarget();
-                _currentState = PetState.Returning; // Cắn xong bay về
-                _target = null; // Reset mục tiêu để tìm mục tiêu mới cho lần đánh sau
-            }
+            // Hiệu ứng nhấp nhô sinh động tại chỗ
+            float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
+            Vector3 targetPos = _player.position + new Vector3(_playerDirectionX * stopRadius, 1.2f + bob, 0f);
+
+            FlipTowards(targetPos.x);
+
+            // Sử dụng SmoothDamp thay vì Lerp để triệt tiêu hoàn toàn sự giật khựng
+            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _moveVelocity, smoothTime);
         }
 
-        private void ReturnToPlayer()
+        private void FollowPlayer(float distToPlayer)
         {
-            // Bay về người chơi
+            if (distToPlayer <= stopRadius)
+            {
+                _currentState = PetState.Idle;
+                return;
+            }
+
+            PlayAnimation("Idle"); // Hoặc hoạt ảnh "Fly/Run" nếu có
+
+            // Vẫn giữ hiệu ứng nhấp nhô nhẹ khi bay để tạo cảm giác thực tế
+            float bob = Mathf.Sin(Time.time * bobSpeed * 1.2f) * (bobAmplitude * 0.5f);
+            Vector3 targetPos = _player.position + new Vector3(_playerDirectionX * stopRadius, 1.5f + bob, 0f);
+
+            FlipTowards(targetPos.x);
+
+            // Dùng SmoothDamp giúp Pet bám đuổi có độ trễ (Quán tính bay) cực kỳ tự nhiên
+            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _moveVelocity, smoothTime, followSpeed);
+        }
+
+        private void MoveToTargetAndAttack()
+        {
+            if (_target == null || !_target.gameObject.activeInHierarchy)
+            {
+                _currentState = PetState.Idle;
+                return;
+            }
+
+            // Khi chiến đấu tấn công quyết liệt, dùng MoveTowards để đạt độ chính xác cao thẳng vào quái
+            FlipTowards(_target.position.x);
+            transform.position = Vector3.MoveTowards(transform.position, _target.position, attackMoveSpeed * Time.deltaTime);
+        }
+
+        private void ReturnToPlayer(float distToPlayer)
+        {
+            FlipTowards(_player.position.x);
+            // Bay về với vận tốc cao
             transform.position = Vector3.MoveTowards(transform.position, _player.position, attackMoveSpeed * Time.deltaTime);
 
-            if (Vector2.Distance(transform.position, _player.position) < 2f)
+            if (distToPlayer <= stopRadius)
             {
-                _currentState = PetState.Following;
+                _moveVelocity = Vector3.zero; // Reset vận tốc tránh bị quán tính kéo đi tiếp
+                _currentState = PetState.Idle;
             }
         }
 
-        private void BiteTarget()
+        private void FlipTowards(float targetX)
+        {
+            if (animator == null) return;
+            Transform visualTransform = animator.transform;
+            if (targetX > transform.position.x + 0.05f)
+            {
+                visualTransform.localScale = new Vector3(1f, 1f, 1f);
+            }
+            else if (targetX < transform.position.x - 0.05f)
+            {
+                visualTransform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+        }
+
+        public void BiteTarget()
         {
             if (_target == null) return;
 
             var health = _target.GetComponent<HealthSystem>();
             if (health != null)
             {
-                // Gây sát thương dựa trên chỉ số của súng
                 DamageData damageData = DamageUtility.CalculateDamage(_weapon.GetFinalDamage(), _weapon.GetFinalCritChance(), _weapon.GetFinalCritDamage());
                 health.TakeDamage(damageData);
 
-                // Hút máu cho người chơi
                 var playerHealth = _player.GetComponent<HealthSystem>();
                 if (playerHealth != null)
                 {
@@ -125,6 +228,7 @@ namespace ProjectZombie.Features.Weapons.Pets
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, searchRadius, enemyLayer);
             float minDistance = float.MaxValue;
+            _target = null;
 
             foreach (var hit in hits)
             {
@@ -142,14 +246,17 @@ namespace ProjectZombie.Features.Weapons.Pets
 
         public bool HasTarget() => _target != null;
 
-        /// <summary>
-        /// Được gọi từ Weapon_PetSummon mỗi khi hết thời gian Cooldown
-        /// </summary>
+        public bool IsCloseToTarget() => _target != null && Vector2.Distance(transform.position, _target.position) < 0.6f;
+
         public void TriggerAttack()
         {
-            if (_currentState == PetState.Following && HasTarget())
+            if (_currentState == PetState.Idle || _currentState == PetState.Follow)
             {
-                _currentState = PetState.Attacking;
+                FindTarget();
+                if (HasTarget())
+                {
+                    _currentState = PetState.Combat;
+                }
             }
         }
     }

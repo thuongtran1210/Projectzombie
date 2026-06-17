@@ -38,16 +38,16 @@ namespace ProjectZombie.Features.Weapons
 
         protected override bool CanAttack()
         {
-            // Chỉ tấn công khi pet đang rảnh (đang đi theo) và đã thấy mục tiêu
-            return _spawnedPet != null && _spawnedPet.HasTarget();
+            // Chỉ tấn công khi pet đang trong trạng thái combat và ở gần mục tiêu
+            return _spawnedPet != null && _spawnedPet.CurrentState == PetController.PetState.Combat && _spawnedPet.IsCloseToTarget();
         }
 
         protected override void PerformAttack()
         {
-            // Báo hiệu cho Pet biết đã đến lúc cắn (dựa trên Cooldown của Weapon)
+            // Báo hiệu cho Pet thực hiện cú cắn
             if (_spawnedPet != null)
             {
-                _spawnedPet.TriggerAttack();
+                _spawnedPet.BiteTarget();
             }
         }
 

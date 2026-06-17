@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2131253151522632941}
   - component: {fileID: 6724842909356388946}
   - component: {fileID: 1059921293575291562}
+  - component: {fileID: 2210851415574223826}
   m_Layer: 6
   m_Name: VampiricBat_Pet
   m_TagString: Untagged
@@ -71,15 +72,15 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 201581293
+  m_SortingLayer: 6
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: -1986653118, guid: ab4de3082ac4c184abb75a346819630c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.28, y: 0.9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -99,9 +100,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   followSpeed: 5
   maxDistanceFromPlayer: 10
-  attackMoveSpeed: 15
-  searchRadius: 8
+  attackMoveSpeed: 2
+  followRadius: 3
+  stopRadius: 1.5
+  searchRadius: 5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
   healAmount: 1
+  bobSpeed: 3
+  bobAmplitude: 0.2
+--- !u!95 &2210851415574223826
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584198537468341491}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7ee9c78ee229a46489cc33348a4eccfb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
