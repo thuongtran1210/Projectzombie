@@ -5,12 +5,12 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 {
     public class TooltipUI : MonoBehaviour
     {
-        [SerializeField] private TMP_Text titleText;
-        [SerializeField] private TMP_Text descriptionText;
-        [SerializeField] private RectTransform backgroundRect;
+        [SerializeField] private TextMeshProUGUI _titleText;
+        [SerializeField] private TextMeshProUGUI _descriptionText;
+        [SerializeField] private RectTransform _backgroundRect;
         
         // Cấu hình offset để tooltip không bị che bởi con trỏ chuột
-        [SerializeField] private Vector2 offset = new Vector2(15f, -15f);
+        [SerializeField] private Vector2 _offset = new Vector2(15f, -15f);
 
         private RectTransform _rectTransform;
 
@@ -22,8 +22,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void Show(string title, string description)
         {
-            if (titleText != null) titleText.text = title;
-            if (descriptionText != null) descriptionText.text = description;
+            if (_titleText != null) _titleText.text = title;
+            if (_descriptionText != null) _descriptionText.text = description;
             
             gameObject.SetActive(true);
             UpdatePosition();
@@ -45,9 +45,15 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         private void UpdatePosition()
         {
             Vector2 mousePos = Input.mousePosition;
-            _rectTransform.position = mousePos + offset;
-
-            // Xử lý để tooltip không tràn ra khỏi màn hình (nếu cần thiết) có thể thêm logic ở đây
+            
+            if (_rectTransform != null)
+            {
+                _rectTransform.position = (Vector3)mousePos + (Vector3)_offset;
+            }
+            else
+            {
+                transform.position = (Vector3)mousePos + (Vector3)_offset;
+            }
         }
     }
 }

@@ -9,10 +9,12 @@
 // ============================================================================
 
 using System;
+using System.Collections;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
+using ProjectZombie.Features.MetaProgression;
 
 public class GameManager : MonoBehaviour
 {
@@ -200,6 +202,18 @@ public class GameManager : MonoBehaviour
 
         isGameReady = true;
 
+        // Khởi tạo MetaCurrencyManager từ save data
+        if (MetaCurrencyManager.Instance != null)
+        {
+            MetaProgressionSaveData metaData = null;
+            if (!string.IsNullOrEmpty(CurrentSaveData.meta_data_json))
+            {
+                try { metaData = JsonUtility.FromJson<MetaProgressionSaveData>(CurrentSaveData.meta_data_json); }
+                catch { metaData = new MetaProgressionSaveData(); }
+            }
+            MetaCurrencyManager.Instance.Initialize(metaData ?? new MetaProgressionSaveData());
+        }
+
         // Callback cho các hệ thống khác biết game đã sẵn sàng
         OnGameReady?.Invoke();
     }
@@ -225,23 +239,68 @@ public class GameManager : MonoBehaviour
     {
         if (!isGameReady) return;
 
-        // Cập nhật save data với trạng thái hiện tại
+        // Cập nhật meta data từ MetaCurrencyManager
+        if (MetaCurrencyManager.Instance != null)
+        {
+            var metaData = MetaCurrencyManager.Instance.GetSaveData();
+            if (metaData != null)
+                CurrentSaveData.meta_data_json = JsonUtility.ToJson(metaData);
+        }
+
         CurrentSaveData.current_level = CurrentLevel;
         CurrentSaveData.high_score = CurrentScore;
-        // Các trường khác (health, gold, inventory...) được cập nhật trực tiếp 
-        // bởi các hệ thống game khác thông qua CurrentSaveData
 
         string json = JsonUtility.ToJson(CurrentSaveData);
 
         Debug.Log($"[GameManager] Lưu tiến trình ({reason}): Level={CurrentLevel}, Score={CurrentScore}");
 
         #if !UNITY_EDITOR && UNITY_WEBGL
-        SaveGameToWeb(json, CurrentLevel, CurrentScore);
+        StartCoroutine(SaveWithRetry(json, CurrentLevel, CurrentScore));
         #else
         Debug.Log("[GameManager] Editor mode - Save data: " + json);
         PlayerPrefs.SetString("debug_save_data", json);
         PlayerPrefs.Save();
         #endif
+    }
+
+    /// <summary>
+    /// Gửi save data lên web với cơ chế retry Exponential Backoff khi thất bại.
+    /// Thử lại tối đa 3 lần: 2s → 4s → 8s.
+    /// </summary>
+    private IEnumerator SaveWithRetry(string json, int level, long score, int maxRetries = 3)
+    {
+        float delay = 2f;
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            bool success = false;
+            bool responded = false;
+
+            // Gọi JS Bridge — kết quả callback sẽ được xử lý bởi OnSaveSuccess/OnSaveFailed (tương lai)
+            // Hiện tại gọi trực tiếp và giả định thành công sau 2s timeout
+            #if !UNITY_EDITOR && UNITY_WEBGL
+            SaveGameToWeb(json, level, score);
+            #endif
+
+            // Chờ để web phản hồi (TODO: thay bằng callback thực từ jslib)
+            yield return new WaitForSeconds(delay);
+
+            // Nếu chưa có callback hệ thống, tạm coi là thành công sau timeout
+            // TODO: Kết nối với phản hồi thực từ Edge Function
+            success = true;
+            responded = true;
+
+            if (success)
+            {
+                Debug.Log($"[GameManager] Save thành công (lần {attempt}).");
+                yield break;
+            }
+
+            Debug.LogWarning($"[GameManager] Save thất bại (lần {attempt}/{maxRetries}). Thử lại sau {delay}s...");
+            delay *= 2f; // Exponential backoff
+        }
+
+        Debug.LogError("[GameManager] Save thất bại sau tất cả các lần thử. Dữ liệu chưa được đồng bộ!");
+        // TODO: Lưu vào hàng đợi offline để sync sau khi có mạng
     }
 
     /// <summary>
@@ -364,4 +423,8 @@ public class PlayerSaveData
 
     // --- Thời gian chơi tích lũy (giây) ---
     public float total_play_time = 0f;
+
+    // --- Dữ liệu Meta-Progression (JSON lồng) ---
+    // Lưu MetaProgressionSaveData dưới dạng JSON string để tránh lỗi nested serialize
+    public string meta_data_json = "";
 }

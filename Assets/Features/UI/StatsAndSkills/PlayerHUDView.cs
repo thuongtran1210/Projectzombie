@@ -1,68 +1,95 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
-using ProjectZombie.Features.Weapons;
+
 
 namespace ProjectZombie.Features.UI.StatsAndSkills
 {
     public class PlayerHUDView : MonoBehaviour
     {
         [Header("Health & EXP")]
-        [SerializeField] private Slider hpSlider;
-        [SerializeField] private Slider expSlider;
+        [SerializeField] private Slider _hpSlider;
+        [SerializeField] private Slider _expSlider;
 
         [Header("Skills Display")]
-        [SerializeField] private Transform skillsContainer;
-        [SerializeField] private SkillUIEntry skillEntryPrefab;
-        [SerializeField] private TooltipUI tooltipUI; // Tham chiếu đến tooltip chung
+        [SerializeField] private Transform _skillsContainer;
+        [SerializeField] private SkillUIEntry _skillEntryPrefab;
+        [SerializeField] private TooltipUI _tooltipUI;
+
+        [Header("Run Stats (Timer & Kills)")]
+        [Tooltip("Text hiển thị thời gian sống sót (MM:SS)")]
+        [SerializeField] private TextMeshProUGUI _timerText;
+        [Tooltip("Text hiển thị số Zombie đã hạ")]
+        [SerializeField] private TextMeshProUGUI _killCountText;
 
         private List<SkillUIEntry> _spawnedSkills = new List<SkillUIEntry>();
 
         public void UpdateHealth(float current, float max)
         {
-            if (hpSlider != null)
+            if (_hpSlider != null)
             {
-                hpSlider.maxValue = max;
-                hpSlider.value = current;
+                _hpSlider.maxValue = max;
+                _hpSlider.value = current;
             }
         }
 
         public void UpdateExp(float currentExp, float maxExp)
         {
-            if (expSlider != null)
+            if (_expSlider != null)
             {
-                expSlider.maxValue = maxExp;
-                expSlider.value = currentExp;
+                _expSlider.maxValue = maxExp;
+                _expSlider.value = currentExp;
             }
         }
 
-        public void UpdateSkills(IReadOnlyList<WeaponBase> weapons)
+        public struct SkillDisplayData
         {
-            // Clear old entries (hoặc có thể dùng Object Pooling)
+            public Sprite Icon;
+            public int Level;
+            public string Name;
+            public string Description;
+        }
+
+        public void UpdateSkills(IReadOnlyList<SkillDisplayData> skills)
+        {
             foreach (var entry in _spawnedSkills)
             {
-                Destroy(entry.gameObject);
+                if (entry != null)
+                {
+                    Destroy(entry.gameObject);
+                }
             }
             _spawnedSkills.Clear();
 
-            // Spawn new entries
-            foreach (var weapon in weapons)
+            if (_skillEntryPrefab == null || _skillsContainer == null)
             {
-                // Giả định WeaponBase có property GetIcon(), GetWeaponName(), GetDescription() (tuỳ thuộc vào UpgradeData hoặc config của bạn)
-                // Vì không chắc WeaponBase hiện tại có những trường nào, ta tạm giả định hoặc lấy từ Data.
-                // Ở đây dùng mock data để thiết lập nếu chưa có
-                
-                SkillUIEntry newEntry = Instantiate(skillEntryPrefab, skillsContainer);
-                
-                // MOCK UP: Sẽ cần thay thế bằng dữ liệu thực từ weapon
-                Sprite mockIcon = null; 
-                string mockName = $"Weapon {weapon.weaponId}";
-                string mockDesc = "Description for " + weapon.weaponId;
-                int level = weapon.WeaponLevel;
+                Debug.LogWarning($"[{nameof(PlayerHUDView)}] _skillEntryPrefab hoặc _skillsContainer chưa được gán trong Inspector.");
+                return;
+            }
 
-                newEntry.Setup(mockIcon, level, mockName, mockDesc, tooltipUI);
+            foreach (var skill in skills)
+            {
+                SkillUIEntry newEntry = Instantiate(_skillEntryPrefab, _skillsContainer);
+                newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
                 _spawnedSkills.Add(newEntry);
             }
+        }
+
+        // ====================================================================
+        // RUN STATS UI
+        // ====================================================================
+
+        public void SetTimer(string formattedTime)
+        {
+            if (_timerText != null)
+                _timerText.text = formattedTime;
+        }
+
+        public void SetKillCount(string formattedKillCount)
+        {
+            if (_killCountText != null)
+                _killCountText.text = formattedKillCount;
         }
     }
 }

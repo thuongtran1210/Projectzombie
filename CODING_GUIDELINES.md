@@ -164,3 +164,174 @@ Hệ thống AI của quái vật bắt buộc tuân theo thiết kế kết h�
     *   Bắt buộc kế thừa `CombatMovementStrategy` (ví dụ: `MeleeMovementStrategy`, `RangedMovementStrategy`) để định nghĩa cách di chuyển trong chiến đấu (giữ khoảng cách, lùi lại, tiến lên).
 *   **Cấu Hình Bằng ScriptableObject:** Mọi thông số (máu, sát thương, tầm đánh, `preferredDistance`, `minDistance`) phải nằm trong `EnemyConfig`. Không được hard-code các chỉ số này vào bên trong State hoặc Strategy.
 *   **Nguyên Tắc Mở Rộng (Open/Closed Principle):** Khi thêm kẻ địch mới có hành vi dị biệt, tuyệt đối KHÔNG viết câu lệnh `if (enemyType == ...)` bên trong FSM. Hãy tạo ra các `AttackStrategy` hoặc `CombatMovementStrategy` mới và gắn vào Prefab.
+
+---
+
+## 12. Kiến Trúc UI — Mô Hình MVP & TextMeshPro (UI Architecture)
+
+Tất cả màn hình UI trong dự án bắt buộc tuân theo **Mô hình MVP (Model-View-Presenter)** để tách biệt hoàn toàn giữa dữ liệu, hiển thị và logic điều phối.
+
+### 12.1. Phân Vai Trách Nhiệm (Roles)
+
+| Tầng | Trách nhiệm | Được phép làm | KHÔNG được làm |
+|---|---|---|---|
+| **Model** | Dữ liệu và logic nghiệp vụ | Tính toán, phát Event | Biết sự tồn tại của UI |
+| **View** | Hiển thị thuần túy | Cập nhật TextMeshProUGUI, Image, Slider | Đọc dữ liệu thô, gọi GameManager |
+| **Presenter** | Điều phối | Subscribe Model, gọi View | Chứa dữ liệu game, render trực tiếp |
+
+> [!IMPORTANT]
+> **Quy tắc vàng:** View chỉ được nhận **dữ liệu đã định dạng thành string** từ Presenter.
+> View không bao giờ biết `PlayerStats`, `RunStatsTracker` hay bất kỳ Model nào tồn tại.
+
+### 12.2. Quy Ước Đặt Tên (Naming)
+
+```
+{FeatureName}Model.cs          // Hiếm dùng — thường là MonoBehaviour có sẵn (PlayerStats, RunStatsTracker)
+{FeatureName}View.cs           // Pure display — KHÔNG có logic
+{FeatureName}Presenter.cs      // Kết nối Model ↔ View
+```
+
+*Ví dụ áp dụng cho HUD:*
+- `PlayerHUDView.cs` — chỉ cập nhật Slider, TextMeshProUGUI
+- `PlayerInfoUIPresenter.cs` — subscribe `PlayerStats.OnStatsUpdated`, gọi `hudView.UpdateHealth()`
+
+### 12.3. Quy Ước Khai Báo TextMeshProUGUI
+
+```csharp
+// ✅ ĐÚNG — Khai báo với SerializeField, đặt tên mô tả nội dung
+[SerializeField] private TextMeshProUGUI _timerText;
+[SerializeField] private TextMeshProUGUI _killCountText;
+[SerializeField] private TextMeshProUGUI _levelText;
+
+// ❌ SAI — Dùng Text (Legacy), đặt tên mơ hồ
+[SerializeField] private Text text1;
+[SerializeField] private UnityEngine.UI.Text descLabel;
+```
+
+**Bắt buộc:**
+- Luôn dùng `TextMeshProUGUI` (namespace `TMPro`), tuyệt đối không dùng `Text` (Legacy).
+- Mọi reference phải là `[SerializeField] private`, không public.
+- Tên biến mô tả **nội dung hiển thị**, không mô tả vị trí (ví dụ: `_killCountText`, không phải `_topRightText`).
+
+### 12.4. Cấu Trúc View (View Contract)
+
+View phải là **passive** (thụ động) — chỉ nhận dữ liệu qua method, không tự lấy dữ liệu.
+
+```csharp
+// ✅ ĐÚNG — View nhận string đã định dạng, không biết nguồn dữ liệu
+public class RunHUDView : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI _timerText;
+    [SerializeField] private TextMeshProUGUI _killCountText;
+
+    public void SetTimer(string formattedTime)          => _timerText.text = formattedTime;
+    public void SetKillCount(string formattedKillCount) => _killCountText.text = formattedKillCount;
+}
+
+// ❌ SAI — View tự truy cập singleton để lấy dữ liệu
+public class BadView : MonoBehaviour
+{
+    private void Update()
+    {
+        _timerText.text = RunStatsTracker.Instance.GetFormattedTime(); // Vi phạm MVP
+    }
+}
+```
+
+### 12.5. Cấu Trúc Presenter
+
+Presenter chịu trách nhiệm **toàn bộ vòng đời subscribe/unsubscribe** và biến đổi dữ liệu thành string trước khi truyền cho View.
+
+```csharp
+public class RunHUDPresenter : MonoBehaviour
+{
+    [Header("View")]
+    [SerializeField] private RunHUDView _view;
+
+    [Header("Model References")]
+    [SerializeField] private PlayerExperience _playerExp;
+
+    private void Start()
+    {
+        // Bắt buộc: subscribe trong Start (sau khi Awake của Models đã chạy)
+        RunStatsTracker.Instance.OnTimerTick       += OnTimerTick;
+        RunStatsTracker.Instance.OnKillCountChanged += OnKillCountChanged;
+        _playerExp.OnLevelUp                        += OnLevelUp;
+
+        // Force initial render
+        _view.SetTimer("00:00");
+        _view.SetKillCount("💀 0");
+    }
+
+    private void OnDestroy()
+    {
+        // Bắt buộc: unsubscribe để tránh memory leak
+        if (RunStatsTracker.Instance != null)
+        {
+            RunStatsTracker.Instance.OnTimerTick        -= OnTimerTick;
+            RunStatsTracker.Instance.OnKillCountChanged -= OnKillCountChanged;
+        }
+        if (_playerExp != null)
+            _playerExp.OnLevelUp -= OnLevelUp;
+    }
+
+    // Presenter định dạng dữ liệu TRƯỚC khi truyền cho View
+    private void OnTimerTick(float elapsed)
+    {
+        int m = Mathf.FloorToInt(elapsed / 60f);
+        int s = Mathf.FloorToInt(elapsed % 60f);
+        _view.SetTimer($"{m:00}:{s:00}");
+    }
+
+    private void OnKillCountChanged(int count) => _view.SetKillCount($"💀 {count}");
+    private void OnLevelUp(int level)          => _view.SetTimer($"Lv.{level}"); // ví dụ minh họa
+}
+```
+
+### 12.6. Animator & Time.timeScale
+
+> [!WARNING]
+> Màn hình Level Up và Game Over chạy khi `Time.timeScale = 0`. Nếu Animator không được cấu hình đúng, hoạt ảnh UI sẽ bị đóng băng.
+
+**Bắt buộc** trong `Awake()` của mọi View có Animator:
+
+```csharp
+private void Awake()
+{
+    var animator = GetComponent<Animator>();
+    if (animator != null)
+        animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+}
+```
+
+### 12.7. Rich Text (TMP Tags)
+
+Khi cần màu sắc hoặc format đặc biệt, dùng TMP Rich Text tags — KHÔNG dùng các cách inject màu bằng code UI khác:
+
+```csharp
+// ✅ ĐÚNG — Dùng TMP Rich Text
+_logText.text = $"<color=#FF4444>[BOSS]</color> {bossName} xuất hiện!";
+_nameText.text = $"<b>{playerName}</b>";
+_rarityText.text = $"<color=#FFD700>✦ {upgradeName}</color>";
+
+// ❌ SAI — Đặt màu qua code (tạo dependency không cần thiết)
+_logText.color = Color.red;
+_logText.text = "[BOSS] " + bossName;
+```
+
+### 12.8. Null-guard Pattern
+
+Mọi View method phải có null-guard ở đầu để tránh NullReferenceException trong lúc develop (khi designer chưa kéo reference vào Inspector):
+
+```csharp
+public void SetKillCount(string text)
+{
+    if (_killCountText == null)
+    {
+        Debug.LogWarning($"[{nameof(RunHUDView)}] _killCountText chưa được gán trong Inspector.");
+        return;
+    }
+    _killCountText.text = text;
+}
+```
+

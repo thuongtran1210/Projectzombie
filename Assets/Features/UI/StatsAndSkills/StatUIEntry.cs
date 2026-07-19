@@ -6,25 +6,25 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 {
     public class StatUIEntry : MonoBehaviour
     {
-        [SerializeField] private Image statIcon;
-        [SerializeField] private TMP_Text statNameText;
-        [SerializeField] private TMP_Text statValueText;
+        [SerializeField] private Image _statIcon;
+        [SerializeField] private TextMeshProUGUI _statNameText;
+        [SerializeField] private TextMeshProUGUI _statValueText;
 
         public void Setup(string statName, string value, Sprite icon = null)
         {
-            if (statNameText != null) statNameText.text = statName;
-            if (statValueText != null) statValueText.text = value;
+            if (_statNameText != null) _statNameText.text = statName;
+            if (_statValueText != null) _statValueText.text = value;
             
-            if (statIcon != null)
+            if (_statIcon != null)
             {
                 if (icon != null)
                 {
-                    statIcon.sprite = icon;
-                    statIcon.gameObject.SetActive(true);
+                    _statIcon.sprite = icon;
+                    _statIcon.gameObject.SetActive(true);
                 }
                 else
                 {
-                    statIcon.gameObject.SetActive(false);
+                    _statIcon.gameObject.SetActive(false);
                 }
             }
         }

@@ -40,6 +40,18 @@ namespace ProjectZombie.Features.Shared
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
         }
 
+        /// <summary>
+        /// Nhân HP tối đa với hệ số scale (dùng bởi EnemySpawner cho Difficulty Scaling).
+        /// Cũng scale HP hiện tại theo cùng tỷ lệ để giữ %.
+        /// </summary>
+        public void ScaleMaxHealth(float multiplier)
+        {
+            float ratio = _currentHealth / Mathf.Max(maxHealth, 0.001f);
+            maxHealth *= multiplier;
+            _currentHealth = maxHealth * ratio;
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+        }
+
         public void TakeDamage(float amount)
         {
             if (_currentHealth <= 0) return; 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1596046070591102501}
   - component: {fileID: 8640927817266195638}
   m_Layer: 5
-  m_Name: StatEntry_Prefab
+  m_Name: StatEntry_Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

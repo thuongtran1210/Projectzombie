@@ -19,6 +19,24 @@ namespace ProjectZombie.Features.Player
         private PlayerStats _playerStats;
         private float _lastUsedTime = -999f; // Sẵn sàng ngay từ đầu
 
+        // ====================================================================
+        // PUBLIC API — Cho phép Upgrade System buff Skill tại runtime
+        // ====================================================================
+
+        /// <summary>Giảm cooldown (giây). Truyền vào số dương để giảm.</summary>
+        public void ReduceCooldown(float amount)
+        {
+            cooldownTime = Mathf.Max(5f, cooldownTime - amount);
+            Debug.Log($"[ViralBurst] Cooldown còn lại: {cooldownTime}s");
+        }
+
+        /// <summary>Tăng sát thương Ultimate.</summary>
+        public void AddDamage(float amount)
+        {
+            damageAmount += amount;
+            Debug.Log($"[ViralBurst] Sát thương mới: {damageAmount}");
+        }
+
         private void Awake()
         {
             _healthSystem = GetComponent<HealthSystem>();
