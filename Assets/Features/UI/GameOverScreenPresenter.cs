@@ -32,6 +32,22 @@ namespace ProjectZombie.Features.UI
         private bool _animatingCurrency;
         private bool _lastIsVictory;
 
+        private bool _isConstructed = false;
+
+        public void Construct(HealthSystem health)
+        {
+            if (_isConstructed)
+            {
+                UnsubscribeEvents();
+            }
+
+            playerHealth = health;
+
+            SubscribeEvents();
+
+            _isConstructed = true;
+        }
+
         private void Start()
         {
             if (view == null)
@@ -51,9 +67,10 @@ namespace ProjectZombie.Features.UI
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
 
+            // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (playerHealth != null)
             {
-                playerHealth.OnDied += HandlePlayerDied;
+                Construct(playerHealth);
             }
         }
 
@@ -70,6 +87,19 @@ namespace ProjectZombie.Features.UI
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
             }
 
+            UnsubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            if (playerHealth != null)
+            {
+                playerHealth.OnDied += HandlePlayerDied;
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
             if (playerHealth != null)
             {
                 playerHealth.OnDied -= HandlePlayerDied;

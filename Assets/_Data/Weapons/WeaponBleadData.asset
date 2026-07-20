@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: blead01
   weaponName: "L\u01B0\u1EE1i ki\u1EBFm kh\xF4ng b\xE9n l\u1EAFm"
-  weaponPrefab: {fileID: 8773403774852505993, guid: 6cac50178f25bca42b99258b270b5b90, type: 3}
+  weaponPrefab: {fileID: 8939746030838313007, guid: 7aaff06a12d652e4b899a812de062871, type: 3}
   baseDamage: 10
   baseAttackSpeed: 2

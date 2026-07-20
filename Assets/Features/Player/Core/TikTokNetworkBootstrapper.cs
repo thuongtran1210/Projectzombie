@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace TikTokBridge
 {
-    public class Bootstrapper : MonoBehaviour
+    public class TikTokNetworkBootstrapper : MonoBehaviour
     {
         [Header("--- Cấu Hình Mạng ---")]
         [SerializeField] private string websocketUrl = "ws://localhost:8080";

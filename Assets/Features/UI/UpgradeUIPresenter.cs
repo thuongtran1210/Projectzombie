@@ -19,6 +19,23 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private PlayerExperience playerExperience;
         [SerializeField] private WeaponManager playerWeaponManager;
 
+        private bool _isConstructed = false;
+
+        public void Construct(PlayerExperience experience, WeaponManager weaponManager)
+        {
+            if (_isConstructed)
+            {
+                UnsubscribeEvents();
+            }
+
+            playerExperience = experience;
+            playerWeaponManager = weaponManager;
+
+            SubscribeEvents();
+
+            _isConstructed = true;
+        }
+
         private void Start()
         {
             if (view == null)
@@ -26,9 +43,10 @@ namespace ProjectZombie.Features.UI
                 view = GetComponent<UpgradeUIView>();
             }
 
-            if (playerExperience != null)
+            // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
+            if (playerExperience != null || playerWeaponManager != null)
             {
-                playerExperience.OnLevelUp += HandleLevelUp;
+                Construct(playerExperience, playerWeaponManager);
             }
 
             if (GameStateManager.Instance != null)
@@ -39,14 +57,27 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
-            if (playerExperience != null)
-            {
-                playerExperience.OnLevelUp -= HandleLevelUp;
-            }
+            UnsubscribeEvents();
 
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+            }
+        }
+
+        private void SubscribeEvents()
+        {
+            if (playerExperience != null)
+            {
+                playerExperience.OnLevelUp += HandleLevelUp;
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (playerExperience != null)
+            {
+                playerExperience.OnLevelUp -= HandleLevelUp;
             }
         }
 

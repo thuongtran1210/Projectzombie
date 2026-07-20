@@ -38,22 +38,35 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private PlayerStats _playerStats;
         [SerializeField] private PlayerExperience _playerExp;
 
+        private bool _isConstructed = false;
+
+        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience)
+        {
+            if (_isConstructed)
+            {
+                UnsubscribeEvents();
+            }
+
+            _playerHealth = health;
+            _playerStats = stats;
+            _playerExp = experience;
+
+            SubscribeEvents();
+            ForceRefreshAll();
+
+            _isConstructed = true;
+        }
+
         // ====================================================================
         // UNITY LIFECYCLE
         // ====================================================================
 
         private void Start()
         {
-            // ----------------------------------------------------------------
-            // Subscribe Model Events
-            // ----------------------------------------------------------------
-            if (_playerHealth != null)
-                _playerHealth.OnHealthChanged += OnHealthChanged;
-
-            if (_playerExp != null)
+            // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
+            if (_playerHealth != null || _playerStats != null || _playerExp != null)
             {
-                _playerExp.OnExpChanged += OnExpChanged;
-                _playerExp.OnLevelUp    += OnLevelUp;
+                Construct(_playerHealth, _playerStats, _playerExp);
             }
 
             // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
@@ -72,24 +85,11 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
-
-            // ----------------------------------------------------------------
-            // Force Initial Render — render ngay giá trị ban đầu
-            // ----------------------------------------------------------------
-            ForceRefreshAll();
         }
 
         private void OnDestroy()
         {
-            // Bắt buộc: Unsubscribe để tránh memory leak khi scene bị unload
-            if (_playerHealth != null)
-                _playerHealth.OnHealthChanged -= OnHealthChanged;
-
-            if (_playerExp != null)
-            {
-                _playerExp.OnExpChanged -= OnExpChanged;
-                _playerExp.OnLevelUp    -= OnLevelUp;
-            }
+            UnsubscribeEvents();
 
             if (RunStatsTracker.Instance != null)
             {
@@ -100,6 +100,30 @@ namespace ProjectZombie.Features.UI.HUD
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+            }
+        }
+
+        private void SubscribeEvents()
+        {
+            if (_playerHealth != null)
+                _playerHealth.OnHealthChanged += OnHealthChanged;
+
+            if (_playerExp != null)
+            {
+                _playerExp.OnExpChanged += OnExpChanged;
+                _playerExp.OnLevelUp    += OnLevelUp;
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (_playerHealth != null)
+                _playerHealth.OnHealthChanged -= OnHealthChanged;
+
+            if (_playerExp != null)
+            {
+                _playerExp.OnExpChanged -= OnExpChanged;
+                _playerExp.OnLevelUp    -= OnLevelUp;
             }
         }
 

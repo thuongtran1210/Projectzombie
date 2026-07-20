@@ -38,9 +38,49 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             _inputActions.UI.Disable();
         }
 
+        private bool _isConstructed = false;
+
+        public void Construct(PlayerStats stats, HealthSystem health, PlayerExperience experience, WeaponManager weaponManager)
+        {
+            if (_isConstructed)
+            {
+                UnsubscribeEvents();
+            }
+
+            _playerStats = stats;
+            _playerHealth = health;
+            _playerExperience = experience;
+            _weaponManager = weaponManager;
+
+            SubscribeEvents();
+            ForceUpdateAll();
+
+            _isConstructed = true;
+        }
+
         private void Start()
         {
-            // Subscribe to events
+            // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
+            if (_playerStats != null || _playerHealth != null || _playerExperience != null || _weaponManager != null)
+            {
+                Construct(_playerStats, _playerHealth, _playerExperience, _weaponManager);
+            }
+            
+            // Ensure menu is closed on start
+            if (_statsMenuView != null)
+            {
+                _statsMenuView.gameObject.SetActive(false);
+            }
+            _isMenuOpen = false;
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
             if (_playerStats != null)
                 _playerStats.OnStatsUpdated += HandleStatsUpdated;
 
@@ -58,21 +98,10 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
                 RunStatsTracker.Instance.OnTimerTick += HandleTimerTick;
                 RunStatsTracker.Instance.OnKillCountChanged += HandleKillCountChanged;
             }
-
-            // Initial Update
-            ForceUpdateAll();
-            
-            // Ensure menu is closed on start
-            if (_statsMenuView != null)
-            {
-                _statsMenuView.gameObject.SetActive(false);
-            }
-            _isMenuOpen = false;
         }
 
-        private void OnDestroy()
+        private void UnsubscribeEvents()
         {
-            // Unsubscribe to prevent memory leaks
             if (_playerStats != null)
                 _playerStats.OnStatsUpdated -= HandleStatsUpdated;
 
