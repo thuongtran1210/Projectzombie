@@ -13,7 +13,7 @@ namespace ProjectZombie.Features.Upgrades
         public static UpgradeManager Instance { get; private set; }
 
         [Header("Upgrade Pool")]
-        [SerializeField] private List<UpgradeData> allAvailableUpgrades = new List<UpgradeData>();
+        [SerializeField] private List<UpgradeData> _allAvailableUpgrades = new List<UpgradeData>();
 
         private void Awake()
         {
@@ -34,7 +34,7 @@ namespace ProjectZombie.Features.Upgrades
             float totalWeight = 0f;
 
             // Thay thế LINQ Where bằng vòng lặp để tránh tạo rác (Garbage Collection)
-            foreach (var u in allAvailableUpgrades)
+            foreach (var u in _allAvailableUpgrades)
             {
                 if (u.IsAvailable(player))
                 {

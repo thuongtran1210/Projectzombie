@@ -7559,10 +7559,11 @@ MonoBehaviour:
   characterSelectionData: {fileID: 11400000, guid: 95afcdd6c7589ee44a7be8ab8427c080, type: 2}
   defaultPlayerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
   spawnPoint: {fileID: 1792380789}
+  cameraFollow: {fileID: 519420033}
   runHUDPresenter: {fileID: 0}
-  playerInfoUIPresenter: {fileID: 0}
-  upgradeUIPresenter: {fileID: 0}
-  gameOverScreenPresenter: {fileID: 0}
+  playerInfoUIPresenter: {fileID: 719202293}
+  upgradeUIPresenter: {fileID: 821329376}
+  gameOverScreenPresenter: {fileID: 992385680}
 --- !u!1 &1392244813
 GameObject:
   m_ObjectHideFlags: 0

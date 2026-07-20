@@ -8,28 +8,30 @@ namespace ProjectZombie.Features.UI
     public class UpgradeUIView : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private GameObject upgradePanel;
-        [SerializeField] private UpgradeCardView[] upgradeCards; // Thường là 3 card
+        [SerializeField] private GameObject _upgradePanel;
+        [SerializeField] private UpgradeCardView[] _upgradeCards; // Thường là 3 card
 
         private void Awake()
         {
-            if (upgradePanel != null)
+            if (_upgradePanel != null)
             {
-                upgradePanel.SetActive(false);
+                _upgradePanel.SetActive(false);
             }
         }
 
         public void SetActive(bool isActive)
         {
-            if (upgradePanel != null)
+            if (_upgradePanel == null)
             {
-                upgradePanel.SetActive(isActive);
+                Debug.LogWarning($"[{nameof(UpgradeUIView)}] _upgradePanel chưa được gán trong Inspector.");
+                return;
             }
+            _upgradePanel.SetActive(isActive);
         }
 
         public int GetCardsLength()
         {
-            return upgradeCards != null ? upgradeCards.Length : 0;
+            return _upgradeCards != null ? _upgradeCards.Length : 0;
         }
 
         /// <summary>
@@ -37,11 +39,17 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public UpgradeCardView GetCardView(int index)
         {
-            if (upgradeCards == null || index < 0 || index >= upgradeCards.Length)
+            if (_upgradeCards == null)
+            {
+                Debug.LogWarning($"[{nameof(UpgradeUIView)}] _upgradeCards chưa được gán trong Inspector.");
+                return null;
+            }
+
+            if (index < 0 || index >= _upgradeCards.Length)
             {
                 return null;
             }
-            return upgradeCards[index];
+            return _upgradeCards[index];
         }
     }
 }

@@ -13,11 +13,11 @@ namespace ProjectZombie.Features.UI
     public class UpgradeUIPresenter : MonoBehaviour
     {
         [Header("View Reference")]
-        [SerializeField] private UpgradeUIView view;
+        [SerializeField] private UpgradeUIView _view;
 
         [Header("Dependencies")]
-        [SerializeField] private PlayerExperience playerExperience;
-        [SerializeField] private WeaponManager playerWeaponManager;
+        [SerializeField] private PlayerExperience _playerExperience;
+        [SerializeField] private WeaponManager _playerWeaponManager;
 
         private bool _isConstructed = false;
 
@@ -28,8 +28,8 @@ namespace ProjectZombie.Features.UI
                 UnsubscribeEvents();
             }
 
-            playerExperience = experience;
-            playerWeaponManager = weaponManager;
+            _playerExperience = experience;
+            _playerWeaponManager = weaponManager;
 
             SubscribeEvents();
 
@@ -38,15 +38,15 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
-            if (view == null)
+            if (_view == null)
             {
-                view = GetComponent<UpgradeUIView>();
+                _view = GetComponent<UpgradeUIView>();
             }
 
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
-            if (playerExperience != null || playerWeaponManager != null)
+            if (_playerExperience != null || _playerWeaponManager != null)
             {
-                Construct(playerExperience, playerWeaponManager);
+                Construct(_playerExperience, _playerWeaponManager);
             }
 
             if (GameStateManager.Instance != null)
@@ -67,17 +67,17 @@ namespace ProjectZombie.Features.UI
 
         private void SubscribeEvents()
         {
-            if (playerExperience != null)
+            if (_playerExperience != null)
             {
-                playerExperience.OnLevelUp += HandleLevelUp;
+                _playerExperience.OnLevelUp += HandleLevelUp;
             }
         }
 
         private void UnsubscribeEvents()
         {
-            if (playerExperience != null)
+            if (_playerExperience != null)
             {
-                playerExperience.OnLevelUp -= HandleLevelUp;
+                _playerExperience.OnLevelUp -= HandleLevelUp;
             }
         }
 
@@ -89,29 +89,32 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                view.SetActive(true);
+                if (_view != null)
+                {
+                    _view.SetActive(true);
+                }
                 PopulateUpgradeScreen();
             }
         }
 
         private void HandleStateChanged(GameState newState)
         {
-            if (view == null) return;
+            if (_view == null) return;
 
             if (newState == GameState.LevelUpSelection)
             {
-                view.SetActive(true);
+                _view.SetActive(true);
                 PopulateUpgradeScreen();
             }
             else
             {
-                view.SetActive(false);
+                _view.SetActive(false);
             }
         }
 
         private void PopulateUpgradeScreen()
         {
-            if (view == null) return;
+            if (_view == null) return;
 
             if (UpgradeManager.Instance == null)
             {
@@ -119,12 +122,18 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            int cardsCount = view.GetCardsLength();
-            List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(cardsCount, playerWeaponManager.gameObject);
+            if (_playerWeaponManager == null)
+            {
+                Debug.LogError("[UpgradeUIPresenter] _playerWeaponManager is null!");
+                return;
+            }
+
+            int cardsCount = _view.GetCardsLength();
+            List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(cardsCount, _playerWeaponManager.gameObject);
 
             for (int i = 0; i < cardsCount; i++)
             {
-                UpgradeCardView cardView = view.GetCardView(i);
+                UpgradeCardView cardView = _view.GetCardView(i);
                 if (cardView == null) continue;
 
                 if (i < choices.Count)
@@ -155,9 +164,9 @@ namespace ProjectZombie.Features.UI
 
         private void OnUpgradeSelected(UpgradeData selectedUpgrade)
         {
-            if (playerWeaponManager != null && selectedUpgrade != null)
+            if (_playerWeaponManager != null && selectedUpgrade != null)
             {
-                selectedUpgrade.ApplyUpgrade(playerWeaponManager.gameObject);
+                selectedUpgrade.ApplyUpgrade(_playerWeaponManager.gameObject);
             }
 
             // Chuyển lại trạng thái chơi để tiếp tục game
@@ -167,9 +176,9 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                if (view != null)
+                if (_view != null)
                 {
-                    view.SetActive(false);
+                    _view.SetActive(false);
                 }
                 Time.timeScale = 1f;
             }

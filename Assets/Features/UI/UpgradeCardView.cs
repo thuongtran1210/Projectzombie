@@ -10,20 +10,20 @@ namespace ProjectZombie.Features.UI
     /// </summary>
     public class UpgradeCardView : MonoBehaviour
     {
-        [SerializeField] private Image iconImage;
-        [SerializeField] private TextMeshProUGUI nameText;
-        [SerializeField] private TextMeshProUGUI descriptionText;
-        [SerializeField] private TextMeshProUGUI categoryText;
-        [SerializeField] private TextMeshProUGUI levelText;
-        [SerializeField] private Button selectButton;
+        [SerializeField] private Image _iconImage;
+        [SerializeField] private TextMeshProUGUI _nameText;
+        [SerializeField] private TextMeshProUGUI _descriptionText;
+        [SerializeField] private TextMeshProUGUI _categoryText;
+        [SerializeField] private TextMeshProUGUI _levelText;
+        [SerializeField] private Button _selectButton;
 
         private Action _onClicked;
 
         private void Awake()
         {
-            if (selectButton != null)
+            if (_selectButton != null)
             {
-                selectButton.onClick.AddListener(OnButtonClicked);
+                _selectButton.onClick.AddListener(OnButtonClicked);
             }
 
             // Đảm bảo Animator chạy bình thường ngay cả khi Time.timeScale = 0
@@ -41,11 +41,17 @@ namespace ProjectZombie.Features.UI
         {
             _onClicked = onClicked;
 
-            if (iconImage != null) iconImage.sprite = icon;
-            if (nameText != null) nameText.text = cardName;
-            if (descriptionText != null) descriptionText.text = description;
-            if (categoryText != null) categoryText.text = category;
-            if (levelText != null) levelText.text = level;
+            if (_iconImage == null || _nameText == null || _descriptionText == null || _categoryText == null || _levelText == null)
+            {
+                Debug.LogWarning($"[{nameof(UpgradeCardView)}] Một hoặc nhiều component UI chưa được gán trong Inspector.");
+                return;
+            }
+
+            _iconImage.sprite = icon;
+            _nameText.text = cardName;
+            _descriptionText.text = description;
+            _categoryText.text = category;
+            _levelText.text = level;
         }
 
         private void OnButtonClicked()
