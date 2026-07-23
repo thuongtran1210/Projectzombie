@@ -9,19 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c82eb2232bc587d428c382770d0e3b4a, type: 3}
-  m_Name: WavePhase
+  m_Script: {fileID: 11500000, guid: c2e604b1b56b72049815ce0f36184297, type: 3}
+  m_Name: NewWavePhase
   m_EditorClassIdentifier: 
   phaseName: Phase 1
-  startTime: 1
+  startTime: 0
   pillarConfigs:
-  - configName: slime
-    startPillarTime: 1
-    endPillarTime: 20
-    pillarSpawnInterval: 5
+  - configName: hihi
+    startPillarTime: 0
+    endPillarTime: 10
+    pillarSpawnInterval: 2
     pillarSetup:
       pillarPrefab: {fileID: 2941539111911462964, guid: 7ee524cdceef8a34f8ec82d31cfb3b00, type: 3}
       enemyPrefab: {fileID: 2263912384334485274, guid: 8346878e2b7661147a785fdb518f3b50, type: 3}
-      totalEnemiesToSpawn: 20
-      enemySpawnInterval: 5
-      isAttackable: 0
+      totalEnemiesToSpawn: 5
+      enemySpawnInterval: 1
+      isAttackable: 1

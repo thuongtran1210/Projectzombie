@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace TikTokBridge.Systems.Spawners
+namespace ProjectZombie.Features.Spawners
 {
     public class EnemyPoolManager : MonoBehaviour
     {
@@ -14,7 +14,6 @@ namespace TikTokBridge.Systems.Spawners
             if (Instance == null)
             {
                 Instance = this;
-                // Optional: DontDestroyOnLoad(gameObject); if you want it across scenes
             }
             else
             {
@@ -35,7 +34,6 @@ namespace TikTokBridge.Systems.Spawners
             pool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 createFunc: () => {
                     GameObject obj = Instantiate(prefab);
-                    // Add config if it doesn't exist
                     var config = obj.GetComponent<EnemyPoolConfig>();
                     if (config == null) config = obj.AddComponent<EnemyPoolConfig>();
                     config.Pool = pool;
@@ -76,7 +74,6 @@ namespace TikTokBridge.Systems.Spawners
             var pool = GetOrCreatePool(prefab);
             if (pool != null)
             {
-                // Ngăn chặn khởi tạo mới (Instantiate) khi Pool trống trong lúc chơi để tránh giật lag (spike).
                 if (pool.CountInactive == 0)
                 {
                     Debug.LogWarning($"[EnemyPoolManager] Pool cho {prefab.name} đã trống! Bỏ qua Spawn để tránh giật lag.");

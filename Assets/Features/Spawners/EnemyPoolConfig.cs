@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using ProjectZombie.Features.Shared;
 
-namespace TikTokBridge.Systems.Spawners
+namespace ProjectZombie.Features.Spawners
 {
     /// <summary>
     /// Component gắn vào các Enemy Prefab để tự động trả về ObjectPool khi quái vật chết (Health <= 0).

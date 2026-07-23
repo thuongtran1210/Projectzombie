@@ -1,24 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
-using TikTokBridge.Models;
-using TikTokBridge.Logic;
-using TikTokBridge.Core;
 
-namespace TikTokBridge.Systems.Spawners
+namespace ProjectZombie.Features.Spawners
 {
     public class SpawnManager : MonoBehaviour
     {
         [Header("Wave Configuration")]
         [Tooltip("List of phases, MUST be sorted by startTime in ascending order.")]
         [SerializeField] private List<WavePhase> phases = new List<WavePhase>();
-
-        [Header("TikTok Like/Follow Events")]
-        [SerializeField] private PillarConfig likePillarConfig;
-        [SerializeField] private PillarConfig followPillarConfig;
-        [SerializeField] private PillarConfig defaultGiftFallbackConfig;
-
-        [Header("TikTok Gift Mappings")]
-        [SerializeField] private List<GiftPillarMapping> giftMappings = new List<GiftPillarMapping>();
 
         [Header("Debug Info")]
         [SerializeField] private float matchTime = 0f;
@@ -36,23 +25,9 @@ namespace TikTokBridge.Systems.Spawners
         private bool _isMatchActive = false;
         private Transform _playerTransform;
         private float[] _pillarSpawnTimers;
-        
-        private ICommandDispatcher _dispatcher;
-        private Dictionary<string, PillarConfig> _giftToPillarMap = new Dictionary<string, PillarConfig>();
 
         public float MatchTime => matchTime;
         public WavePhase CurrentPhase => currentPhaseIndex >= 0 && currentPhaseIndex < phases.Count ? phases[currentPhaseIndex] : null;
-
-        private void Awake()
-        {
-            foreach (var mapping in giftMappings)
-            {
-                if (!string.IsNullOrEmpty(mapping.giftName))
-                {
-                    _giftToPillarMap[mapping.giftName] = mapping.pillarSetup;
-                }
-            }
-        }
 
         private void Start()
         {
@@ -62,29 +37,22 @@ namespace TikTokBridge.Systems.Spawners
                 _playerTransform = player.transform;
             }
             
-            // Prewarm quái vật từ TikTok Events để không bị giật
+            // Prewarm quái vật từ Wave phases
             if (EnemyPoolManager.Instance != null)
             {
-                PrewarmConfig(likePillarConfig);
-                PrewarmConfig(followPillarConfig);
-                PrewarmConfig(defaultGiftFallbackConfig);
-
-                foreach (var mapping in giftMappings)
-                {
-                    PrewarmConfig(mapping.pillarSetup);
-                }
-                
-                // Prewarm từ Wave phases
                 foreach (var phase in phases)
                 {
-                    foreach (var pillar in phase.pillarConfigs)
+                    if (phase.pillarConfigs != null)
                     {
-                        PrewarmConfig(pillar.pillarSetup);
+                        foreach (var pillar in phase.pillarConfigs)
+                        {
+                            PrewarmConfig(pillar.pillarSetup);
+                        }
                     }
                 }
             }
 
-            // Auto start the match for now
+            // Auto start the match
             StartMatch();
         }
         
@@ -92,18 +60,9 @@ namespace TikTokBridge.Systems.Spawners
         {
             if (config.enemyPrefab != null)
             {
-                // Prewarm amount based on totalEnemiesToSpawn or a default value
                 int amount = config.totalEnemiesToSpawn > 0 ? config.totalEnemiesToSpawn : 20;
                 EnemyPoolManager.Instance.PrewarmPool(config.enemyPrefab, amount);
             }
-        }
-
-        public void Construct(ICommandDispatcher dispatcher)
-        {
-            _dispatcher = dispatcher;
-            _dispatcher.OnLikeReceived += HandleLike;
-            _dispatcher.OnFollowReceived += HandleFollow;
-            _dispatcher.OnSpawnEnemy += HandleSpawnEnemy;
         }
 
         public void StartMatch()
@@ -179,52 +138,8 @@ namespace TikTokBridge.Systems.Spawners
                 }
             }
         }
-        
-        // --- TikTok Events Handling ---
-        private void HandleLike(GameCommandPayload cmd)
-        {
-            Debug.Log($"[SpawnManager] {cmd.user} liked! Spawning Like Pillar.");
-            SpawnPillar(likePillarConfig);
-        }
 
-        private void HandleFollow(GameCommandPayload cmd)
-        {
-            Debug.Log($"[SpawnManager] {cmd.user} followed! Spawning Follow Pillar.");
-            SpawnPillar(followPillarConfig);
-        }
-
-        private void HandleSpawnEnemy(GameCommandPayload cmd)
-        {
-            string enemyType = cmd.enemy; 
-            if (string.IsNullOrEmpty(enemyType) && cmd.additionalData != null)
-            {
-                enemyType = cmd.additionalData["enemy"]?.ToString();
-            }
-
-            int amount = cmd.amount > 0 ? cmd.amount : 1;
-            PillarConfig configToSpawn;
-
-            if (string.IsNullOrEmpty(enemyType))
-            {
-                configToSpawn = defaultGiftFallbackConfig;
-            }
-            else if (!_giftToPillarMap.TryGetValue(enemyType, out configToSpawn))
-            {
-                configToSpawn = defaultGiftFallbackConfig;
-                Debug.Log($"[SpawnManager] Unknown gift '{enemyType}' from {cmd.user}. Using Fallback Pillar.");
-            }
-
-            // Multiply the total enemies to spawn by the gift amount
-            // Make sure we at least spawn 'amount' if totalEnemiesToSpawn is 0 or something
-            int baseAmount = configToSpawn.totalEnemiesToSpawn > 0 ? configToSpawn.totalEnemiesToSpawn : 1;
-            configToSpawn.totalEnemiesToSpawn = baseAmount * amount;
-            
-            Debug.Log($"[SpawnManager] {cmd.user} sent Gift! Spawning Pillar (Total Enemies: {configToSpawn.totalEnemiesToSpawn})!");
-            SpawnPillar(configToSpawn);
-        }
-        // ------------------------------
-
-        private void SpawnPillar(PillarConfig config)
+        public void SpawnPillar(PillarConfig config)
         {
             if (config.pillarPrefab == null) return;
 
@@ -257,26 +172,15 @@ namespace TikTokBridge.Systems.Spawners
                 if (obstacleLayer.value != 0)
                 {
                     Collider2D hit = Physics2D.OverlapCircle(spawnPos, 0.5f, obstacleLayer);
-                    if (hit != null) continue; // Bị kẹt
+                    if (hit != null) continue;
                 }
 
                 return spawnPos;
             }
 
-            // Fallback
             float fallbackAngle = Random.Range(0f, 360f);
             Vector2 fallbackDir = new Vector2(Mathf.Cos(fallbackAngle * Mathf.Deg2Rad), Mathf.Sin(fallbackAngle * Mathf.Deg2Rad));
             return (Vector2)center + fallbackDir * minSpawnRadius;
-        }
-        
-        private void OnDestroy()
-        {
-            if (_dispatcher != null)
-            {
-                _dispatcher.OnLikeReceived -= HandleLike;
-                _dispatcher.OnFollowReceived -= HandleFollow;
-                _dispatcher.OnSpawnEnemy -= HandleSpawnEnemy;
-            }
         }
     }
 }

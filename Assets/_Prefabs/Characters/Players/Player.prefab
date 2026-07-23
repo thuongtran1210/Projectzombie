@@ -123,7 +123,6 @@ GameObject:
   - component: {fileID: 1410204538205628498}
   - component: {fileID: 3864810296907868852}
   - component: {fileID: 2198455168269986671}
-  - component: {fileID: 6640332762098786777}
   - component: {fileID: 7875035182831904833}
   - component: {fileID: 7402922671366627933}
   - component: {fileID: 1383317695757006623}
@@ -304,18 +303,6 @@ MonoBehaviour:
   ultimateAction: {fileID: -6774137212726030939, guid: dc7f196422f615f48ba64a8388a367ec, type: 3}
   cooldownTime: 120
   damageAmount: 500
---- !u!114 &6640332762098786777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4603747337966706880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d82067b5ddda794687162ca7df60421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7875035182831904833
 MonoBehaviour:
   m_ObjectHideFlags: 0

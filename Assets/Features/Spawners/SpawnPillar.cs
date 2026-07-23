@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using ProjectZombie.Features.Shared;
-using TikTokBridge.Models;
-using DG.Tweening; // Thêm thư viện DOTween
+using DG.Tweening;
 
-namespace TikTokBridge.Systems.Spawners
+namespace ProjectZombie.Features.Spawners
 {
     public class SpawnPillar : MonoBehaviour
     {
@@ -18,13 +17,9 @@ namespace TikTokBridge.Systems.Spawners
             _spawnedCount = 0;
 
             // --- HIỆU ỨNG XUẤT HIỆN BẰNG DOTWEEN ---
-            // Lưu lại scale đích
             Vector3 targetScale = transform.localScale;
-            // Cho Trụ thu nhỏ về 0
             transform.localScale = Vector3.zero;
-            // Phình to mượt mà (Tốn 0.5s, hiệu ứng nảy OutBack)
             transform.DOScale(targetScale, 0.5f).SetEase(Ease.OutBack);
-            // ---------------------------------------
 
             // Setup HealthSystem if attackable
             _healthSystem = GetComponent<HealthSystem>();
@@ -36,16 +31,12 @@ namespace TikTokBridge.Systems.Spawners
                     _healthSystem = gameObject.AddComponent<HealthSystem>();
                 }
                 
-                // Assuming a default health for the pillar, or it could be added to config later
-                // For now, let's just give it a decent amount of health (e.g., 500)
                 _healthSystem.SetMaxHealth(500f, true);
-                
-                _healthSystem.OnDied -= HandleDeath; // Prevent duplicate subscriptions
+                _healthSystem.OnDied -= HandleDeath;
                 _healthSystem.OnDied += HandleDeath;
             }
             else
             {
-                // If not attackable, disable HealthSystem if it exists
                 if (_healthSystem != null)
                 {
                     _healthSystem.enabled = false;
@@ -65,7 +56,6 @@ namespace TikTokBridge.Systems.Spawners
                 _spawnedCount++;
             }
 
-            // Finished spawning
             DestroyPillar();
         }
 
@@ -73,7 +63,6 @@ namespace TikTokBridge.Systems.Spawners
         {
             if (_config.enemyPrefab == null || EnemyPoolManager.Instance == null) return;
 
-            // Get a random position slightly offset from the pillar
             Vector2 randomOffset = Random.insideUnitCircle * 2f;
             Vector3 spawnPos = transform.position + new Vector3(randomOffset.x, randomOffset.y, 0f);
 
@@ -82,7 +71,6 @@ namespace TikTokBridge.Systems.Spawners
 
         private void HandleDeath()
         {
-            // Optional: Play death effect
             Debug.Log("[SpawnPillar] Destroyed by player!");
             DestroyPillar();
         }
@@ -95,8 +83,6 @@ namespace TikTokBridge.Systems.Spawners
             }
             
             StopAllCoroutines();
-            
-            // Destroy or return to pool (using Destroy for now as it's not a frequent object)
             Destroy(gameObject);
         }
 

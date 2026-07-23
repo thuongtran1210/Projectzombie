@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace TikTokBridge.Models
+namespace ProjectZombie.Features.Spawners
 {
     [System.Serializable]
     public struct PillarConfig
@@ -38,13 +38,6 @@ namespace TikTokBridge.Models
         public float pillarSpawnInterval;
 
         [Header("Pillar Setup")]
-        public PillarConfig pillarSetup;
-    }
-
-    [System.Serializable]
-    public struct GiftPillarMapping
-    {
-        public string giftName;
         public PillarConfig pillarSetup;
     }
 

@@ -7244,7 +7244,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1152325307}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 804703d4da37ed244ad6e12f8f5cfe0f, type: 3}
+  m_Script: {fileID: 11500000, guid: 82054b1da01db874e872f7a2bbcf42d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1217002973
@@ -7256,7 +7256,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1217002975}
-  - component: {fileID: 1217002974}
   - component: {fileID: 1217002976}
   m_Layer: 0
   m_Name: --- GAME MANAGER ---
@@ -7265,23 +7264,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1217002974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217002973}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 522c2e3c09c298145b76b8285e18b11e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  websocketUrl: wss://webgame-production-9f27.up.railway.app
-  debugOverlay: {fileID: 0}
-  debugSpawnerPanel: {fileID: 0}
-  enemyPoolManager: {fileID: 1152325309}
-  spawnManager: {fileID: 1899758235}
 --- !u!4 &1217002975
 Transform:
   m_ObjectHideFlags: 0
@@ -8443,31 +8425,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1899758233}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb210570a368df488f419de2be5c05f, type: 3}
+  m_Script: {fileID: 11500000, guid: 07d17199b6a8d9a4c9bf5e612081026f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   phases:
-  - {fileID: 11400000, guid: 62a2cd85c1c1b15449624b0a06106b72, type: 2}
-  - {fileID: 11400000, guid: 7124fcc3b6ebc4d49bbc9a184a5b4f85, type: 2}
-  likePillarConfig:
-    pillarPrefab: {fileID: 0}
-    enemyPrefab: {fileID: 0}
-    totalEnemiesToSpawn: 0
-    enemySpawnInterval: 0
-    isAttackable: 0
-  followPillarConfig:
-    pillarPrefab: {fileID: 0}
-    enemyPrefab: {fileID: 0}
-    totalEnemiesToSpawn: 0
-    enemySpawnInterval: 0
-    isAttackable: 0
-  defaultGiftFallbackConfig:
-    pillarPrefab: {fileID: 0}
-    enemyPrefab: {fileID: 0}
-    totalEnemiesToSpawn: 0
-    enemySpawnInterval: 0
-    isAttackable: 0
-  giftMappings: []
+  - {fileID: 11400000, guid: 0c0c8c219a722614e964d14938cadb7a, type: 2}
   matchTime: 0
   currentPhaseIndex: -1
   minSpawnRadius: 10

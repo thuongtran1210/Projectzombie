@@ -1,6 +1,6 @@
 # Projectzombie - Coding Guidelines & Rules
 
-Tài liệu này quy định các chuẩn mực viết code cho dự án **Projectzombie** (Phiên bản: **Unity 2022** + TikTok Live Interactive Game). Việc tuân thủ các quy tắc này đảm bảo source code luôn sạch, dễ đọc, dễ bảo trì và mở rộng trong tương lai.
+Tài liệu này quy định các chuẩn mực viết code cho dự án **Projectzombie** (Phiên bản: **Unity 2022** - Survival Roguelite Game). Việc tuân thủ các quy tắc này đảm bảo source code luôn sạch, dễ đọc, dễ bảo trì và mở rộng trong tương lai.
 
 ---
 
@@ -11,16 +11,16 @@ Thống nhất cách đặt tên giúp code có tính nhất quán cao, người
 *   **Classes, Structs, Enums, Methods:** Sử dụng `PascalCase`.
     *   *Ví dụ:* `EnemySpawner`, `CalculateDamage()`, `GameState`.
 *   **Interfaces:** Bắt đầu bằng chữ `I` và tiếp theo là `PascalCase`.
-    *   *Ví dụ:* `ICommandDispatcher`, `IDamageable`.
+    *   *Ví dụ:* `ICharacterStats`, `IDamageable`.
 *   **Biến Public, Tham số (Parameters), Biến cục bộ (Local variables):** Sử dụng `camelCase`.
-    *   *Ví dụ:* `enemySpeed`, `giftId`, `spawnCount`.
+    *   *Ví dụ:* `enemySpeed`, `spawnCount`.
 *   **Biến Private, Protected (Fields):** Bắt đầu bằng dấu gạch dưới `_` và `camelCase`.
-    *   *Ví dụ:* `_realWebSocketClient`, `_commandDispatcher`.
+    *   *Ví dụ:* `_healthSystem`, `_weaponManager`.
 *   **Hằng số (Constants), Static Readonly:** Sử dụng `UPPER_SNAKE_CASE`.
     *   *Ví dụ:* `MAX_ZOMBIE_COUNT`, `DEFAULT_SPAWN_RATE`.
 
 > [!TIP]
-> Tên Class/Script phải phản ánh đúng trách nhiệm duy nhất của nó. Tránh những tên quá chung chung như `Manager`, `Controller` nếu có thể dùng từ mô tả chính xác hơn (vd: `TikTokMessageParser`).
+> Tên Class/Script phải phản ánh đúng trách nhiệm duy nhất của nó. Tránh những tên quá chung chung như `Manager`, `Controller` nếu có thể dùng từ mô tả chính xác hơn (vd: `WeaponManager`).
 
 ---
 
@@ -32,9 +32,9 @@ Khuyến khích cấu trúc theo **Tính năng (Feature-based)** thay vì theo L
 ```text
 Assets/
 ├── Core/               # Chứa bootstrapper, logic cốt lõi chạy xuyên suốt game
-├── TikTokBridge/       # Đóng gói toàn bộ logic kết nối mạng, parse tin nhắn TikTok
 ├── Features/           # Các tính năng cụ thể trong game
-│   ├── Zombies/        # Chứa EnemySpawner.cs, Zombie.prefab, ZombieMaterial.mat
+│   ├── Spawners/       # Chứa SpawnManager.cs, EnemyPoolManager.cs, WavePhase.cs
+│   ├── Zombies/        # Chứa Zombie.prefab, ZombieMaterial.mat
 │   ├── Weapons/
 │   └── UI/
 └── ThirdParty/         # Plugins, SDKs tải từ bên ngoài
