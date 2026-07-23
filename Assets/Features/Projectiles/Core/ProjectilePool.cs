@@ -41,16 +41,28 @@ namespace ProjectZombie.Features.Projectiles.Core
                 return obj;
             }
 
-            // Tránh Instantiate khi pool trống để không gây khựng lag trên thiết bị di động.
-            // Sẽ return null, Spawner cần đảm bảo Prewarm đủ số lượng trước.
+            // Nếu pool trống nhưng chưa đạt giới hạn MaxPoolSize, cấp phát linh hoạt (Dynamic Expansion)
+            if (_activeCount < _maxPoolSize)
+            {
+                var newObj = Instantiate(_prefab, transform);
+                newObj.SetActive(true);
+                _activeCount++;
+                return newObj;
+            }
+
+            // Đạt giới hạn MaxPoolSize
+            Debug.LogWarning($"[ProjectilePool] Pool cho {_prefab.name} đã đạt giới hạn tối đa ({_maxPoolSize})!");
             return null;
         }
 
         public void Return(GameObject obj)
         {
+            if (obj == null) return;
+            
             obj.SetActive(false);
             _pool.Enqueue(obj);
             _activeCount--;
+            if (_activeCount < 0) _activeCount = 0;
         }
     }
 }

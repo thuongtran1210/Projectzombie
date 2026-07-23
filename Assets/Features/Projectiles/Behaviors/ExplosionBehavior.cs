@@ -53,9 +53,9 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             {
                 if (col.gameObject == _controller.Owner) continue;
 
-                if (col.TryGetComponent(out HealthSystem health))
+                if (col.TryGetComponent(out IDamageable target))
                 {
-                    health.TakeDamage(explosionDamage);
+                    target.TakeDamage(explosionDamage);
                 }
             }
 

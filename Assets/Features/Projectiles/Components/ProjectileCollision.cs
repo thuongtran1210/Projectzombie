@@ -53,9 +53,9 @@ namespace ProjectZombie.Features.Projectiles.Components
 
                 Core.ProjectileEventContext context = new Core.ProjectileEventContext(_controller, collision, hitPoint, hitNormal);
 
-                if (collision.TryGetComponent(out HealthSystem targetHealth))
+                if (collision.TryGetComponent(out IDamageable target))
                 {
-                    targetHealth.TakeDamage(_controller.Damage);
+                    target.TakeDamage(_controller.Damage);
                 }
 
                 _controller.HandleHit(context);

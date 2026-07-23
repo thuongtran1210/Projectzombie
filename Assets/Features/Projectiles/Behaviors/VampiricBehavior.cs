@@ -50,11 +50,10 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             {
                 if (_controller.Owner != null)
                 {
-                    // Lấy HealthSystem của người chơi (Owner) để hồi máu
-                    var healthSystem = _controller.Owner.GetComponent<HealthSystem>();
-                    if (healthSystem != null)
+                    // Lấy IHealable của người chơi (Owner) để hồi máu
+                    if (_controller.Owner.TryGetComponent(out IHealable healable))
                     {
-                        healthSystem.Heal(_data.HealAmount);
+                        healable.Heal(_data.HealAmount);
                     }
                 }
             }

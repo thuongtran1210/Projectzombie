@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Projectiles.Core
 {
-    public class ProjectileRuntimeState
+    public struct ProjectileRuntimeState
     {
         public int HitCount;
         public float DistanceTraveled;
@@ -20,11 +20,15 @@ namespace ProjectZombie.Features.Projectiles.Core
         /// </summary>
         public int Generation;
 
-        public ProjectileRuntimeState(int generation = 0)
+        public void Reset(int generation = 0, Vector2 spawnPosition = default)
         {
             Generation = generation;
+            SpawnPosition = spawnPosition;
             HitCount = 0;
             DistanceTraveled = 0f;
+            RemainingPierce = 0;
+            RemainingBounce = 0;
+            RemainingSplit = 0;
             CurrentTarget = null;
         }
     }

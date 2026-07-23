@@ -7,7 +7,7 @@ namespace ProjectZombie.Features.Shared
     /// Component quản lý máu, có thể dùng cho cả Player, Enemy và các vật thể phá hủy được.
     /// Tuân thủ nguyên tắc Single Responsibility (S).
     /// </summary>
-    public class HealthSystem : MonoBehaviour
+    public class HealthSystem : MonoBehaviour, IDamageable, IHealable
     {
         [Header("Settings")]
         [Tooltip("Giá trị này sẽ bị ghi đè nếu Object có gắn PlayerStats hoặc EnemyAI (sử dụng cấu hình từ ScriptableObject)")]

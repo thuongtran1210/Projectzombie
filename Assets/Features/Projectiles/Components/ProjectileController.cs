@@ -14,11 +14,12 @@ namespace ProjectZombie.Features.Projectiles.Components
         public ProjectileData Data { get; private set; }
         public GameObject Owner { get; private set; }
         public DamageContext Damage { get; private set; }
-        public ProjectileRuntimeState State { get; private set; }
+        public ProjectileRuntimeState State;
         public Vector2 CurrentDirection { get; set; }
 
         private ProjectilePool _pool;
         private IProjectileBehavior[] _behaviors;
+        private bool _isBehaviorsResolved;
 
         private ProjectileMovement _movement;
         private ProjectileCollision _collision;
@@ -39,19 +40,24 @@ namespace ProjectZombie.Features.Projectiles.Components
             Damage = damage;
             _pool = pool;
 
-            State = new ProjectileRuntimeState(generation);
-            State.SpawnPosition = transform.position;
+            State.Reset(generation, transform.position);
 
-            // Resolve and Sort behaviors based on data
-            ResolveBehaviors();
+            // Resolve and cache behaviors if not resolved yet
+            if (!_isBehaviorsResolved)
+            {
+                ResolveBehaviors();
+            }
 
             _movement.Initialize(this);
             _collision.Initialize(this);
             _lifetime.Initialize(this);
 
-            foreach (var behavior in _behaviors)
+            if (_behaviors != null)
             {
-                behavior.OnSpawn();
+                for (int i = 0; i < _behaviors.Length; i++)
+                {
+                    _behaviors[i].OnSpawn();
+                }
             }
 
             ProjectileSystem.Instance.EventDispatcher.RaiseSpawned(this);
@@ -61,7 +67,7 @@ namespace ProjectZombie.Features.Projectiles.Components
         {
             var behaviorsList = new System.Collections.Generic.List<IProjectileBehavior>();
 
-            if (Data.Behaviors != null && Data.Behaviors.Count > 0)
+            if (Data != null && Data.Behaviors != null && Data.Behaviors.Count > 0)
             {
                 // Sort behavior data by ExecutionOrder
                 var sortedData = new System.Collections.Generic.List<ProjectileBehaviorData>(Data.Behaviors);
@@ -84,18 +90,19 @@ namespace ProjectZombie.Features.Projectiles.Components
             }
             
             _behaviors = behaviorsList.ToArray();
+            _isBehaviorsResolved = true;
         }
 
         private void Update()
         {
-            if (State != null)
-            {
-                State.DistanceTraveled = Vector2.Distance(State.SpawnPosition, transform.position);
-            }
+            State.DistanceTraveled = Vector2.Distance(State.SpawnPosition, transform.position);
 
-            foreach (var behavior in _behaviors)
+            if (_behaviors != null)
             {
-                behavior.OnUpdate();
+                for (int i = 0; i < _behaviors.Length; i++)
+                {
+                    _behaviors[i].OnUpdate();
+                }
             }
         }
 
@@ -105,11 +112,14 @@ namespace ProjectZombie.Features.Projectiles.Components
             ProjectileSystem.Instance.EventDispatcher.RaiseHit(context);
 
             bool shouldDespawn = true;
-            foreach (var behavior in _behaviors)
+            if (_behaviors != null)
             {
-                if (!behavior.OnHit(context))
+                for (int i = 0; i < _behaviors.Length; i++)
                 {
-                    shouldDespawn = false;
+                    if (!_behaviors[i].OnHit(context))
+                    {
+                        shouldDespawn = false;
+                    }
                 }
             }
 
@@ -127,9 +137,12 @@ namespace ProjectZombie.Features.Projectiles.Components
 
         private void Despawn()
         {
-            foreach (var behavior in _behaviors)
+            if (_behaviors != null)
             {
-                behavior.OnDespawn();
+                for (int i = 0; i < _behaviors.Length; i++)
+                {
+                    _behaviors[i].OnDespawn();
+                }
             }
             
             ProjectileSystem.Instance.EventDispatcher.RaiseDespawned(this);
