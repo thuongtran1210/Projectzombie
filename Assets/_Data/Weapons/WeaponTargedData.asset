@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: tager01
   weaponName: "\u0110\u1ECBnh h\u01B0\u1EDBng m\u1EE5c ti\xEAu"
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 2389269143492382759, guid: a18ce5ebd15beac4fbf9611ccff5681e, type: 3}
   baseDamage: 5
   baseAttackSpeed: 10

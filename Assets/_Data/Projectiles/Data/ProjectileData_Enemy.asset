@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProjectileData_Enemy
   m_EditorClassIdentifier: 
   ProjectileID: fbfrt
-  LogicPrefab: {fileID: 8200557947182505032, guid: e4314e0c2767e604299e29b02a3acc5d, type: 3}
+  LogicPrefab: {fileID: 8383758033245293396, guid: 4be2fbbc55d6a1341bdc81c18bdae9ad, type: 3}
   Speed: 2
   MaxRange: 20
   Lifetime: 3

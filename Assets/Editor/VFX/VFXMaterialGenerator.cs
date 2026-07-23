@@ -6,14 +6,14 @@ namespace ProjectZombie.Editor.VFX
 {
     /// <summary>
     /// Utility Editor script tự động tạo các Material (.mat) URP chuẩn cho Particle System Renderer.
-    /// Giải quyết triệt để việc người dùng không thể kéo trực tiếp file ảnh (.png) vào ô Material của Particle System.
+    /// Hỗ trợ Vũ Khí & Đạn Projectile (FireSlash, IceBlade, DarkOrb, IceBullet).
     /// </summary>
     public static class VFXMaterialGenerator
     {
         private const string MATERIAL_FOLDER = "Assets/VFX/SkillLibrary/Materials";
         private const string TEXTURE_FOLDER = "Assets/VFX/SkillLibrary/Textures/Skills";
 
-        [MenuItem("Tools/VFX Skill Generator/Generate All VFX Materials", false, 20)]
+        [MenuItem("Tools/VFX Generator/Generate All VFX Materials", false, 20)]
         public static void GenerateAllVFXMaterials()
         {
             if (!Directory.Exists(MATERIAL_FOLDER))
@@ -22,7 +22,7 @@ namespace ProjectZombie.Editor.VFX
                 AssetDatabase.Refresh();
             }
 
-            // Tạo trọn bộ Material chuẩn cho FireSlash
+            // FireSlash Materials
             CreateParticleMaterial("MAT_FireSlash_Flash", "FireSlash_Flash.png", true);
             CreateParticleMaterial("MAT_FireSlash_Arc", "FireSlash_Arc.png", true);
             CreateParticleMaterial("MAT_FireSlash_Glow", "FireSlash_Arc.png", true);
@@ -30,7 +30,7 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_FireSlash_Impact", "FireSlash_Impact.png", true);
             CreateParticleMaterial("MAT_FireSlash_Smoke", "FireSlash_Smoke.png", false);
 
-            // Tạo trọn bộ Material chuẩn cho IceBlade
+            // IceBlade Materials
             CreateParticleMaterial("MAT_IceBlade_Flash", "IceBlade_Flash.png", true);
             CreateParticleMaterial("MAT_IceBlade_Arc", "IceBlade_Arc.png", true);
             CreateParticleMaterial("MAT_IceBlade_Glow", "IceBlade_Arc.png", true);
@@ -38,11 +38,28 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_IceBlade_Impact", "IceBlade_Impact.png", true);
             CreateParticleMaterial("MAT_IceBlade_Smoke", "IceBlade_Smoke.png", false);
 
+            // IceBullet Materials (Đạn Băng Projectile)
+            CreateParticleMaterial("MAT_IceBullet_Muzzle", "IceBullet_Core.png", true);
+            CreateParticleMaterial("MAT_IceBullet_Core", "IceBullet_Core.png", true);
+            CreateParticleMaterial("MAT_IceBullet_Trail", "IceBullet_Trail.png", true);
+            CreateParticleMaterial("MAT_IceBullet_Sparks", "IceBlade_Sparks.png", true);
+            CreateParticleMaterial("MAT_IceBullet_Impact", "IceBlade_Impact.png", true);
+            CreateParticleMaterial("MAT_IceBullet_Smoke", "IceBlade_Smoke.png", false);
+
+            // DarkOrb Materials
+            CreateParticleMaterial("MAT_DarkOrb_Flash", "DarkOrb_Flash.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Arc", "DarkOrb_Core.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Core", "DarkOrb_Core.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Glow", "DarkOrb_Core.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Sparks", "DarkOrb_Sparks.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Impact", "DarkOrb_Impact.png", true);
+            CreateParticleMaterial("MAT_DarkOrb_Smoke", "DarkOrb_Smoke.png", false);
+
             CreateParticleMaterial("MAT_Additive_Default", null, true);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo thành công trọn bộ Material (.mat) cho tất cả các layer trong Assets/VFX/SkillLibrary/Materials!");
+            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo thành công trọn bộ Material (.mat) trong Assets/VFX/SkillLibrary/Materials!");
         }
 
         public static Material CreateParticleMaterial(string materialName, string textureFileName, bool isAdditive)
@@ -52,22 +69,14 @@ namespace ProjectZombie.Editor.VFX
 
             if (mat == null)
             {
-                // Tìm shader URP Particles/Unlit hoặc Fallback Particles/Additive
                 Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-                if (particleShader == null)
-                {
-                    particleShader = Shader.Find("Particles/Additive");
-                }
-                if (particleShader == null)
-                {
-                    particleShader = Shader.Find("Sprites/Default");
-                }
+                if (particleShader == null) particleShader = Shader.Find("Particles/Additive");
+                if (particleShader == null) particleShader = Shader.Find("Sprites/Default");
 
                 mat = new Material(particleShader);
                 AssetDatabase.CreateAsset(mat, matPath);
             }
 
-            // Cấu hình Blend Mode Additive / Transparent cho URP Particles Unlit
             if (isAdditive)
             {
                 mat.SetFloat("_Surface", 1.0f); // Transparent
@@ -79,7 +88,6 @@ namespace ProjectZombie.Editor.VFX
                 mat.EnableKeyword("_ALPHABLEND_ON");
             }
 
-            // Gán Texture nếu có
             if (!string.IsNullOrEmpty(textureFileName))
             {
                 string texPath = $"{TEXTURE_FOLDER}/{textureFileName}";
