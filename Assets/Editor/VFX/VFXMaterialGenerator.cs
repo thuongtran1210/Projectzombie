@@ -22,16 +22,27 @@ namespace ProjectZombie.Editor.VFX
                 AssetDatabase.Refresh();
             }
 
-            // Tạo các Material chuẩn
+            // Tạo trọn bộ Material chuẩn cho FireSlash
+            CreateParticleMaterial("MAT_FireSlash_Flash", "FireSlash_Flash.png", true);
             CreateParticleMaterial("MAT_FireSlash_Arc", "FireSlash_Arc.png", true);
+            CreateParticleMaterial("MAT_FireSlash_Glow", "FireSlash_Arc.png", true);
+            CreateParticleMaterial("MAT_FireSlash_Sparks", "FireSlash_Sparks.png", true);
             CreateParticleMaterial("MAT_FireSlash_Impact", "FireSlash_Impact.png", true);
+            CreateParticleMaterial("MAT_FireSlash_Smoke", "FireSlash_Smoke.png", false);
+
+            // Tạo trọn bộ Material chuẩn cho IceBlade
+            CreateParticleMaterial("MAT_IceBlade_Flash", "IceBlade_Flash.png", true);
             CreateParticleMaterial("MAT_IceBlade_Arc", "IceBlade_Arc.png", true);
+            CreateParticleMaterial("MAT_IceBlade_Glow", "IceBlade_Arc.png", true);
+            CreateParticleMaterial("MAT_IceBlade_Sparks", "IceBlade_Sparks.png", true);
             CreateParticleMaterial("MAT_IceBlade_Impact", "IceBlade_Impact.png", true);
+            CreateParticleMaterial("MAT_IceBlade_Smoke", "IceBlade_Smoke.png", false);
+
             CreateParticleMaterial("MAT_Additive_Default", null, true);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo thành công toàn bộ file Material (.mat) trong Assets/VFX/SkillLibrary/Materials!");
+            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo thành công trọn bộ Material (.mat) cho tất cả các layer trong Assets/VFX/SkillLibrary/Materials!");
         }
 
         public static Material CreateParticleMaterial(string materialName, string textureFileName, bool isAdditive)

@@ -212,24 +212,22 @@ namespace ProjectZombie.Editor.VFX
             }
             psRenderer.sortingOrder = sortingOrder;
 
-            // Đảm bảo Materials tồn tại và gán tự động
+            // Đảm bảo Materials tồn tại và gán tự động chuẩn xác cho từng Layer
             VFXMaterialGenerator.GenerateAllVFXMaterials();
-            string matName = $"MAT_{_skillName}_{childName.Replace("Slash_", "").Replace("Flash_", "").Replace("Sparks_", "").Replace("Hit_", "")}";
-            string matPath = $"Assets/VFX/SkillLibrary/Materials/MAT_{_skillName}_{childName}.mat";
+            string layerTag = "Arc";
+            if (childName.Contains("Anticipation") || childName.Contains("Flash")) layerTag = "Flash";
+            else if (childName.Contains("Arc")) layerTag = "Arc";
+            else if (childName.Contains("Glow")) layerTag = "Glow";
+            else if (childName.Contains("Sparks")) layerTag = "Sparks";
+            else if (childName.Contains("Impact")) layerTag = "Impact";
+            else if (childName.Contains("Smoke")) layerTag = "Smoke";
+
+            string matPath = $"Assets/VFX/SkillLibrary/Materials/MAT_{_skillName}_{layerTag}.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
 
             if (mat == null)
             {
-                matPath = $"Assets/VFX/SkillLibrary/Materials/MAT_{_skillName}_Arc.mat";
-                if (childName.Contains("Arc")) mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-                
-                matPath = $"Assets/VFX/SkillLibrary/Materials/MAT_{_skillName}_Impact.mat";
-                if (childName.Contains("Impact")) mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-
-                if (mat == null)
-                {
-                    mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_Additive_Default.mat");
-                }
+                mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_Additive_Default.mat");
             }
 
             if (mat != null)
