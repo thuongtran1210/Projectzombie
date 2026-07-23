@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectZombie.Core.Juice;
 
 namespace ProjectZombie.Features.Arena
 {
@@ -11,6 +12,16 @@ namespace ProjectZombie.Features.Arena
 
         private Vector3 _shakeOffset = Vector3.zero;
         private Coroutine _shakeCoroutine;
+
+        private void OnEnable()
+        {
+            GameJuiceEvents.OnCameraShakeRequested += TriggerShake;
+        }
+
+        private void OnDisable()
+        {
+            GameJuiceEvents.OnCameraShakeRequested -= TriggerShake;
+        }
 
         private void LateUpdate()
         {
@@ -54,3 +65,4 @@ namespace ProjectZombie.Features.Arena
         }
     }
 }
+

@@ -1,6 +1,8 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Core.Juice;
+using ProjectZombie.Features.Shared.VFX;
 
 namespace ProjectZombie.Features.Weapons
 {
@@ -16,6 +18,9 @@ namespace ProjectZombie.Features.Weapons
         
         [Tooltip("Số lượng quái tối đa chém trúng trong 1 nhát. (Để 0 = vô hạn)")]
         [SerializeField] protected int maxTargetsHit = 0;
+
+        [Header("Hit Impact & Game Feel")]
+        [SerializeField] protected ParticleSystem hitSparkPrefab;
 
         [Header("Debug")]
         [SerializeField] protected bool showGizmos = true;
@@ -46,6 +51,8 @@ namespace ProjectZombie.Features.Weapons
         {
             int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer);
             int hitCount = 0;
+            bool hitAnyEnemy = false;
+            bool hitCrit = false;
 
             for (int i = 0; i < numHits; i++)
             {
@@ -57,6 +64,18 @@ namespace ProjectZombie.Features.Weapons
                     {
                         health.TakeDamage(damageData);
                         hitCount++;
+                        hitAnyEnemy = true;
+
+                        if (damageData.IsCritical)
+                        {
+                            hitCrit = true;
+                        }
+
+                        // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật
+                        if (hitSparkPrefab != null && GlobalVFXPoolManager.Instance != null)
+                        {
+                            GlobalVFXPoolManager.Instance.PlayEffect(hitSparkPrefab, hit.transform.position, Quaternion.identity, 0.4f);
+                        }
                         
                         // Nếu có giới hạn số lượng mục tiêu thì dừng lại
                         if (maxTargetsHit > 0 && hitCount >= maxTargetsHit)
@@ -65,6 +84,27 @@ namespace ProjectZombie.Features.Weapons
                         }
                     }
                 }
+            }
+
+            if (hitAnyEnemy)
+            {
+                TriggerHitImpact(hitCrit);
+            }
+        }
+
+        /// <summary>
+        /// Phát tín hiệu Game Feel (Rung màn hình & Hit Stop) thông qua Event Hub.
+        /// </summary>
+        protected void TriggerHitImpact(bool isCritical)
+        {
+            if (isCritical)
+            {
+                GameJuiceEvents.RequestCameraShake(0.15f, 0.15f);
+                GameJuiceEvents.RequestHitStop(0.05f);
+            }
+            else
+            {
+                GameJuiceEvents.RequestCameraShake(0.08f, 0.04f);
             }
         }
 
@@ -78,3 +118,4 @@ namespace ProjectZombie.Features.Weapons
         }
     }
 }
+

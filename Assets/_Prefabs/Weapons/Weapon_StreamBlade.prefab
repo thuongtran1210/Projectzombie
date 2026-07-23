@@ -14721,7 +14721,11 @@ MonoBehaviour:
   weaponId: streamblade_01
   slashParticles: {fileID: 753505316344932897}
   maxTargetsHit: 0
+  hitSparkPrefab: {fileID: 5530930258678081867, guid: 6c84c7f9860403549a419eb8234c8d03, type: 3}
   showGizmos: 1
   hitboxSize: {x: 3, y: 2}
   forwardOffset: 2
   slashCount: 2
+  directionalSlashPrefab: {fileID: 0}
+  groundDecalPrefab: {fileID: 0}
+  shockwavePrefab: {fileID: 0}
