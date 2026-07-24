@@ -98,3 +98,17 @@ Nên áp dụng thiết kế Component-based rỗng (Logic và Hình ảnh tách
 ### D. Setup cho đạn có Homing / Bounce (Xoay theo hướng)
 - Script `ProjectileMovement` luôn cố gắng xoay GameObject gốc hướng về phía nó đang bay (theo `CurrentDirection`).
 - Vì vậy, thiết kế Sprite của bạn trong `Visual_Root` hãy luôn hướng về bên phải (trục X dương - Góc 0 độ) làm mặc định. Hệ thống sẽ xoay đúng lại khi đạn bay đi.
+
+---
+
+## 6. Kiến Trúc Hiệu Ứng Hình Ảnh & Âm Thanh (Event-Driven VFX & SFX)
+
+Để code đạn luôn sạch, dễ đọc và dễ bảo trì, phần hiển thị/âm thanh được tách biệt 100% ra khỏi logic tính toán sát thương:
+
+1. **`VFXConfigData`**: Nằm trong `ProjectileData`. Quản lý các Prefab `SpawnVFXPrefab`, `HitImpactVFXPrefab`, `DespawnVFXPrefab` và các `AudioClip`.
+2. **`ProjectileVFXListener`**: Gắn trên Prefab đạn. Script này tự động đăng ký các sự kiện từ `ProjectileEventDispatcher`:
+   - `OnProjectileSpawned`: Tự động phát hiệu ứng Muzzle Flash / Launch VFX.
+   - `OnProjectileHit`: Tự động phát Hit Impact VFX tại vị trí `HitPoint` và hướng pháp tuyến `HitNormal` từ `GlobalVFXPoolManager`.
+   - `OnProjectileDespawned`: Tự động phát hiệu ứng nổ tan biến.
+3. **Quy tắc vàng**: Không bao giờ viết câu lệnh spawn particle hay chỉnh màu sắc trực tiếp trong logic `Behavior` hoặc `Controller`. Mọi hiệu ứng hiển thị đều chảy qua Event Listener và `GlobalVFXPoolManager`.
+

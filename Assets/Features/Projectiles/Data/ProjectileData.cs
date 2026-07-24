@@ -28,6 +28,8 @@ namespace ProjectZombie.Features.Projectiles.Data
 
         [Header("Damage")]
         public float BaseDamage;
-        // Có thể mở rộng DamageData sau
+
+        [Header("Visual & Audio Effects (VFX/SFX)")]
+        public VFXConfigData VFXConfig;
     }
 }

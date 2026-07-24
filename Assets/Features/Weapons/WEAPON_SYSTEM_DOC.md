@@ -32,32 +32,33 @@ Quản lý việc sở hữu vũ khí và logic ra đòn của nhân vật.
 
 ---
 
-## 2. Hệ Sinh Thái Đạn Lắp Ráp (Lego Projectile)
+## 2. Hệ Sinh Thái Đạn Data-Driven (Projectile System)
 
-Thay vì một file `Projectile.cs` dài ngoằng và khó quản lý, hệ thống đạn giờ được chia thành các Component nhỏ chuyên biệt. Mỗi Prefab đạn là sự kết hợp của 3 yếu tố cốt lõi:
+Hệ thống đạn được chuẩn hóa hoàn toàn theo kiến trúc **Data-Driven / GAS-Inspired** (`Assets/Features/Projectiles/`).
 
-### Phần Cốt Lõi (Core)
-- **`ProjectileCore`**: Trái tim của viên đạn. Quản lý thời gian sống (Lifetime) và lưu trữ cục bộ các chỉ số sát thương (`DamageData`) được truyền vào từ Weapon.
+### Cấu trúc chính:
+- **`ProjectileData`**: ScriptableObject định nghĩa các chỉ số cơ bản của đạn (Tốc độ, Thời gian sống, Layer va chạm) và danh sách các `ProjectileBehaviorData`.
+- **`ProjectileSystem`**: Quản lý việc Spawn đạn và tự động tái chế qua `ProjectilePool`.
+- **`ProjectileController`**: Component điều khiển cốt lõi gắn trên Prefab đạn.
 
-### Cánh Tay Va Chạm (Impact)
-- **`Hit_SingleTarget`**: Xử lý việc phát hiện chạm vào kẻ địch, trừ máu 1 lần và quản lý xuyên thấu (Piercing). (Dùng cho đạn bay).
-- **`Hit_Periodic`**: Cho phép đạn đi xuyên qua kẻ địch và gây sát thương liên tục mỗi X giây nếu kẻ địch còn đứng trong đạn. (Dùng cho vòng xoay/lửa/Aura).
-- *Yêu cầu: Prefab phải có `Collider2D` được bật **IsTrigger = true**.*
-
-### Đôi Chân Di Chuyển (Movement - Tùy chọn)
-- **`Move_Linear`**: Xử lý vật lý giúp viên đạn bay theo một hướng với tốc độ cố định. (Yêu cầu `Rigidbody2D`).
-- **`Move_Orbit`**: Giúp viên đạn xoay tròn xung quanh một tâm điểm (thường là Player) mãi mãi. (Không cần `Rigidbody2D`).
-- **Lưu ý**: Nếu bạn thiết kế các đòn đánh tại chỗ (như Nhát chém/Whip), bạn **KHÔNG CẦN** Component này. Viên đạn sẽ xuất hiện, chớp nhoáng gây sát thương rồi tự biến mất (Lifetime ngắn ~0.15s).
+### Các Behavior phổ biến:
+- **`StraightBehavior`**: Đẩy đạn bay thẳng theo hướng bắn.
+- **`HomingBehavior`**: Tự động bẻ hướng đạn đuổi theo mục tiêu gần nhất.
+- **`PierceBehavior`**: Cho phép đạn đâm xuyên qua N mục tiêu.
+- **`BounceBehavior`**: Nảy bật khi va chạm kẻ địch.
+- **`ExplosionBehavior`**: Gây sát thương AOE xung quanh điểm va chạm.
+- **`OrbitBehavior`**: Xoay tròn xung quanh nhân vật (dùng cho vũ khí Orbit/Aura).
+- **`PeriodicHitBehavior`**: Gây sát thương giật định kỳ lên kẻ địch đứng trong vùng sát thương mà không bị Despawn.
 
 ---
 
 ## Hướng Dẫn Nhanh Cách Tạo Vũ Khí Mới
 
 1. Tạo một GameObject con nằm trong `Player`.
-2. Gắn một Component Kế thừa từ `WeaponBase` (Ví dụ: `Weapon_Targeted`).
-3. Tạo Prefab hình ảnh Đạn/Vệt chém, gắn đủ `Rigidbody2D`, `BoxCollider2D` và các mảnh Lego (`ProjectileCore`, `Hit_SingleTarget`...).
-4. Kéo thả Prefab đó vào ô **Projectile Prefab** của `Weapon` tạo ở bước 2.
-5. `WeaponManager` sẽ tự động tìm thấy và vận hành nó!
+2. Gắn một Component Kế thừa từ `WeaponBase` (Ví dụ: `Weapon_Targeted` hoặc `Weapon_Orbit`).
+3. Tạo `ProjectileData` (chuột phải `Create > ProjectZombie > Projectiles > ProjectileData`) và gắn các Behavior tương ứng (như `Straight`, `Homing`, `Orbit`...).
+4. Kéo thả `ProjectileData` đó vào ô **Projectile Data** của `Weapon`.
+5. `WeaponManager` và `ProjectileSystem` sẽ tự động vận hành và tối ưu bộ nhớ qua Object Pool!
 
 ---
 

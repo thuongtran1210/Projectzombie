@@ -13,14 +13,17 @@ namespace ProjectZombie.Features.Weapons
         [Header("Projectile Settings")]
         [SerializeField] protected Projectiles.Data.ProjectileData projectileData;
         
+        private bool _isDataCloned;
+
         public override void Initialize(ProjectZombie.Features.Shared.ICharacterStats stats)
         {
             base.Initialize(stats);
             
             // Tạo bản sao (clone) của ScriptableObject để có thể ghi đè Prefab mà không ảnh hưởng file gốc
-            if (projectileData != null)
+            if (projectileData != null && !_isDataCloned)
             {
                 projectileData = Instantiate(projectileData);
+                _isDataCloned = true;
             }
         }
 
@@ -48,6 +51,15 @@ namespace ProjectZombie.Features.Weapons
                     projectileData.LogicPrefab = weaponUpgrade.overrideProjectilePrefab;
                     Debug.Log($"[{gameObject.name}] Đã thay đổi đạn thành: {weaponUpgrade.overrideProjectilePrefab.name}");
                 }
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (_isDataCloned && projectileData != null)
+            {
+                Destroy(projectileData);
+                projectileData = null;
             }
         }
     }
