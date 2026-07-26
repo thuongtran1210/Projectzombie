@@ -47,6 +47,25 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        private void Start()
+        {
+            ApplyCharacterPassives();
+        }
+
+        private void ApplyCharacterPassives()
+        {
+            if (baseStatsConfig != null && baseStatsConfig.characterPassives != null)
+            {
+                foreach (var passive in baseStatsConfig.characterPassives)
+                {
+                    if (passive != null)
+                    {
+                        passive.ApplyPassive(gameObject);
+                    }
+                }
+            }
+        }
+
         private void InitStats()
         {
             MaxHealth = baseStatsConfig.maxHealth;
@@ -132,6 +151,12 @@ namespace ProjectZombie.Features.Player
         public void AddBaseDamage(float amount)
         {
             BaseDamage += amount;
+            OnStatsUpdated?.Invoke();
+        }
+
+        public void AddAttackSpeed(float amount)
+        {
+            AttackSpeed += amount;
             OnStatsUpdated?.Invoke();
         }
     }

@@ -55,6 +55,13 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
+            // Tự động đặt Sorting Layer sang "Skill" nếu Particle đang ở "Default" (tránh bị chìm dưới TileMap)
+            var psRenderer = instance.GetComponent<ParticleSystemRenderer>();
+            if (psRenderer != null && (psRenderer.sortingLayerID == 0 || psRenderer.sortingLayerName == "Default"))
+            {
+                psRenderer.sortingLayerName = "Skill";
+            }
+
             StartCoroutine(ReleaseRoutine(pool, instance, autoReleaseDelay));
             return instance;
         }

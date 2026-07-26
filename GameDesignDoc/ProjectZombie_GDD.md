@@ -239,18 +239,29 @@ Quản lý hoàn toàn qua **ScriptableObjects**, giúp Game Designer tự do đ
 
 ---
 
-## 7. Thiết kế Map & Nhịp độ trận đấu (Level Design & Pacing) — *bổ sung*
+## 7. Thiết kế Map & Kịch bản Mục tiêu Màn chơi (Level Design, Pacing & Run Scenario)
 
 ### 7.1. Bản đồ (Maps)
-- Số lượng bản đồ ban đầu: đề xuất 1 map cho bản MVP, mở rộng dần.
-- Map dạng open-field cuộn tự do (infinite scroll) hoặc giới hạn biên (bounded arena) — cần quyết định do ảnh hưởng cách AI Reposition và spawn logic.
-- Vật cản môi trường (obstacle) ảnh hưởng di chuyển nhưng không chặn đạn, giữ nhịp game nhanh.
+- Số lượng bản đồ ban đầu: 1 map chính cho bản MVP (*Ruined City Square*), mở rộng về sau.
+- Map dạng giới hạn biên (Bounded Arena) hoặc Open-field cuộn tự do hỗ trợ di chuyển 360 độ.
+- Chứa các vật cản môi trường (Obstacles) ảnh hưởng di chuyển nhưng không chặn đạn để giữ nhịp game nhanh.
 
-### 7.2. Thời lượng trận (Run Duration)
-- Mục tiêu: 1 run kéo dài 20 phút, kết thúc bằng việc tiêu diệt Trùm Cuối (Skeleton King) hoặc đếm hết thời gian.
-- Trận đấu được chia thành các mốc mảng thời gian phát triển độ khó chuẩn xác.
+### 7.2. Kịch bản Mục tiêu Màn chơi (Run Objectives & Flow)
+- **Mục tiêu Chính (Primary Victory Condition):** Sống sót kéo dài **20 phút** và tiêu diệt Trùm Cuối **Skeleton King (Vua Xương)** xuất hiện ở mốc **20:00**.
+- **Điều kiện Thất bại (Defeat Condition):** Máu nhân vật cạn ($HP \le 0$).
+- **Mục tiêu Phụ trong Run (Sub-Objectives):**
+  - Hạ gục Boss Trung gian phút 10:00 (**Abomination**) để mở khóa **Evolution Chest** (chắc chắn nhận 1 thẻ Tiến Hóa hoặc 3 Thẻ Nâng cấp ngẫu nhiên + 500 Coin).
+  - Thu thập tối đa Exp Gem để kích hoạt Tiến hóa Vũ khí (Evolution) trước khi chạm trán Trùm Cuối.
+  - Tích lũy Coin để mua Permanent Upgrades sau khi kết thúc trận.
 
-### 7.3. Bảng Tiến Trình Spawn (Spawn Timeline Table)
+### 7.3. Thời lượng trận & Nhịp độ (Run Duration & Pacing Phase)
+Trận đấu 20 phút được chia thành 4 giai đoạn chính (Phases):
+1. **Giai đoạn 1 — Gầy dựng (00:00 - 05:00):** Tốc độ spawn $1.0\times - 1.5\times$. Quái đi chậm, giúp người chơi thu thập Exp Gem, tích lũy vũ khí khởi đầu.
+2. **Giai đoạn 2 — Thử thách tầm xa & Tự sát (05:00 - 10:00):** Tốc độ spawn $2.0\times - 2.5\times$. Xuất hiện quái Elite Tank, Spitter bắn độc và Exploder bọc lót nổ. Đỉnh điểm là trận đánh Boss 1 Abomination ở phút 10:00.
+3. **Giai đoạn 3 — Bão quái & Đột biến (10:00 - 15:00):** Tốc độ spawn $3.0\times$. Đợt quái Swarm Event 100+ zombie tràn ngập màn hình ở phút 12:00, đòi hỏi người chơi phải sở hữu ít nhất 1 vũ khí Tiến hóa (Evolution) hoặc vũ khí AoE mạnh.
+4. **Giai đoạn 4 — Hỗn chiến tổng lực & Trùm Cuối (15:00 - 20:00):** Tốc độ spawn $4.0\times$. Tất cả các loại quái dồn ép liên tục. Phút 20:00 Trùm Cuối Skeleton King xuất hiện kết thúc màn chơi.
+
+### 7.4. Bảng Tiến Trình Spawn Chi Tiết (Spawn Timeline Table)
 
 Bảng phân bổ quái vật và sự kiện theo mốc thời gian trận đấu (tài liệu gốc cho Game Designer cân bằng trận):
 
@@ -261,12 +272,12 @@ Bảng phân bổ quái vật và sự kiện theo mốc thời gian trận đ�
 | **05:00** | **Cột mốc Elite 1** | Zombie Tank (Elite) xuất hiện | Cao |
 | **05:00 - 08:00** | Đợt quái trâu & Bắn xa | Zombie Tank + Spitter Zombie | Cao (2.0x Spawn Rate) |
 | **08:00 - 10:00** | Đợt quái tự sát | Exploder Zombie + Walker Rush | Cao (2.5x Spawn Rate) |
-| **10:00** | **Boss 1 Xuất Hiện** | **Abomination (Kẻ Biến Dạng)** + Walker Swarm | Cực cao |
+| **10:00** | **Boss 1 Xuất Hiện** | **Abomination (Kẻ Biến Dạng)** + Walker Swarm | Cực cao (Rớt Evolution Chest) |
 | **10:00 - 12:00** | Giai đoạn sau Boss 1 | Spitter Zombie + Exploder Zombie | Cực cao (3.0x Spawn Rate) |
 | **12:00** | **Swarm Event (Bão Quái)** | Runner Rush + Exploder (Đàn 100+ quái) | Nguy hiểm đột biến |
 | **15:00** | **Elite Rush** | Multi-Elite Spawn (2x Tank + 2x Spitter) | Rất cao |
 | **15:00 - 20:00** | Hỗn chiến tổng lực | Tất cả các loại quái xuất hiện ồ ạt | Tối đa (4.0x Spawn Rate) |
-| **20:00** | **Trùm Cuối MVP** | **Skeleton King (Vua Xương)** | Thử thách sinh tồn cuối cùng |
+| **20:00** | **Trùm Cuối MVP** | **Skeleton King (Vua Xương)** | Thử thách sinh tồn cuối cùng (Rớt Victory Chest) |
 
 ---
 

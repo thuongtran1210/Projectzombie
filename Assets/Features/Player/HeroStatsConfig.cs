@@ -33,5 +33,9 @@ namespace ProjectZombie.Features.Player
         [Header("Utility Stats")]
         [Tooltip("Tầm nhặt vật phẩm / EXP")]
         public float pickupRange = 100f;
+
+        [Header("Character Passives (Nội Tại Riêng)")]
+        [Tooltip("Danh sách các kỹ năng nội tại riêng của nhân vật này")]
+        public System.Collections.Generic.List<CharacterPassiveData> characterPassives;
     }
 }

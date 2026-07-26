@@ -24,6 +24,7 @@ namespace ProjectZombie.Features.Shared
         public event TryDieHandler OnTryDie;
 
         public float CurrentHealth => _currentHealth;
+        public float MaxHealth => maxHealth;
 
         private void OnEnable()
         {
