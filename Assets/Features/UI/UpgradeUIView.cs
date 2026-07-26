@@ -11,11 +11,63 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private GameObject _upgradePanel;
         [SerializeField] private UpgradeCardView[] _upgradeCards; // Thường là 3 card
 
+        [Header("Optional Roguelite Controls")]
+        [SerializeField] private UnityEngine.UI.Button _rerollButton;
+        [SerializeField] private UnityEngine.UI.Button _skipButton;
+        [SerializeField] private TMPro.TextMeshProUGUI _rerollCountText;
+
+        private System.Action _onRerollClicked;
+        private System.Action _onSkipClicked;
+
         private void Awake()
         {
             if (_upgradePanel != null)
             {
                 _upgradePanel.SetActive(false);
+            }
+
+            if (_rerollButton != null)
+            {
+                _rerollButton.onClick.AddListener(() => _onRerollClicked?.Invoke());
+            }
+
+            if (_skipButton != null)
+            {
+                _skipButton.onClick.AddListener(() => _onSkipClicked?.Invoke());
+            }
+        }
+
+        public void SetRerollButtonCallback(System.Action onReroll)
+        {
+            _onRerollClicked = onReroll;
+            if (_rerollButton != null)
+            {
+                _rerollButton.gameObject.SetActive(onReroll != null);
+            }
+        }
+
+        public void SetSkipButtonCallback(System.Action onSkip)
+        {
+            _onSkipClicked = onSkip;
+            if (_skipButton != null)
+            {
+                _skipButton.gameObject.SetActive(onSkip != null);
+            }
+        }
+
+        public void SetRerollCountText(string text)
+        {
+            if (_rerollCountText != null)
+            {
+                _rerollCountText.text = text;
+            }
+        }
+
+        public void SetRerollInteractable(bool interactable)
+        {
+            if (_rerollButton != null)
+            {
+                _rerollButton.interactable = interactable;
             }
         }
 

@@ -52,6 +52,9 @@ namespace ProjectZombie.Features.Upgrades
         [Tooltip("Trọng số xuất hiện (càng cao càng dễ ra)")]
         public float spawnWeight = 1f;
 
+        [Tooltip("Cấp độ tối đa của nâng cấp này (0 = Không giới hạn cấp)")]
+        public int maxLevel = 0;
+
         /// <summary>
         /// Kiểm tra xem thẻ này có đủ điều kiện để xuất hiện trong lượt roll hiện tại không.
         /// </summary>

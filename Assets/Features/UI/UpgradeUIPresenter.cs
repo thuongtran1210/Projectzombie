@@ -19,6 +19,10 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private PlayerExperience _playerExperience;
         [SerializeField] private WeaponManager _playerWeaponManager;
 
+        [Header("Roguelite Settings")]
+        [SerializeField] private int _maxRerollsPerRun = 3;
+
+        private int _currentRerolls;
         private bool _isConstructed = false;
 
         public void Construct(PlayerExperience experience, WeaponManager weaponManager)
@@ -30,6 +34,7 @@ namespace ProjectZombie.Features.UI
 
             _playerExperience = experience;
             _playerWeaponManager = weaponManager;
+            _currentRerolls = _maxRerollsPerRun;
 
             SubscribeEvents();
 
@@ -43,10 +48,16 @@ namespace ProjectZombie.Features.UI
                 _view = GetComponent<UpgradeUIView>();
             }
 
-            // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
-            if (_playerExperience != null || _playerWeaponManager != null)
+            // Tương thích ngược: nếu chưa được Construct từ GameplayBootstrapper và đã kéo thả trong Inspector thì mới tự gọi Construct
+            if (!_isConstructed && (_playerExperience != null || _playerWeaponManager != null))
             {
                 Construct(_playerExperience, _playerWeaponManager);
+            }
+
+            if (_view != null)
+            {
+                _view.SetRerollButtonCallback(OnRerollClicked);
+                _view.SetSkipButtonCallback(OnSkipClicked);
             }
 
             if (GameStateManager.Instance != null)
@@ -128,6 +139,9 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
+            _view.SetRerollCountText($"Reroll ({_currentRerolls})");
+            _view.SetRerollInteractable(_currentRerolls > 0);
+
             int cardsCount = _view.GetCardsLength();
             List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(cardsCount, _playerWeaponManager.gameObject);
 
@@ -145,14 +159,15 @@ namespace ProjectZombie.Features.UI
                     string category = FormatCategoryName(upgradeData.upgradeType);
                     string level = FormatLevel(upgradeData);
 
-                    // Thiết lập card với dữ liệu đã định dạng và callback ẩn danh
+                    // Thiết lập card với dữ liệu đã định dạng và callback
                     cardView.Setup(
                         upgradeData.icon,
                         upgradeData.upgradeName,
                         upgradeData.description,
                         category,
                         level,
-                        () => OnUpgradeSelected(upgradeData)
+                        () => OnUpgradeSelected(upgradeData),
+                        () => OnBanSelected(upgradeData)
                     );
                 }
                 else
@@ -169,7 +184,34 @@ namespace ProjectZombie.Features.UI
                 selectedUpgrade.ApplyUpgrade(_playerWeaponManager.gameObject);
             }
 
-            // Chuyển lại trạng thái chơi để tiếp tục game
+            ResumeGameplay();
+        }
+
+        private void OnRerollClicked()
+        {
+            if (_currentRerolls > 0)
+            {
+                _currentRerolls--;
+                PopulateUpgradeScreen();
+            }
+        }
+
+        private void OnSkipClicked()
+        {
+            ResumeGameplay();
+        }
+
+        private void OnBanSelected(UpgradeData upgradeToBan)
+        {
+            if (upgradeToBan != null && UpgradeManager.Instance != null)
+            {
+                UpgradeManager.Instance.BanUpgrade(upgradeToBan);
+                PopulateUpgradeScreen();
+            }
+        }
+
+        private void ResumeGameplay()
+        {
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.Playing);
@@ -210,6 +252,17 @@ namespace ProjectZombie.Features.UI
             else if (data is EvolutionUpgradeData)
             {
                 return "EVOLUTION";
+            }
+            else if (data is CommonUpgradeData commonData && _playerWeaponManager != null)
+            {
+                var playerPassives = _playerWeaponManager.GetComponent<PlayerPassives>();
+                int count = playerPassives != null ? playerPassives.GetUpgradeCount(commonData.upgradeName) : 0;
+                int nextLevel = count + 1;
+                if (commonData.maxLevel > 0)
+                {
+                    return $"Lv.{nextLevel}/{commonData.maxLevel}";
+                }
+                return $"Lv.{nextLevel}";
             }
             return "";
         }

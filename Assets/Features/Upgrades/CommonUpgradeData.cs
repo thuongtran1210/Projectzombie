@@ -11,7 +11,18 @@ namespace ProjectZombie.Features.Upgrades
 
         public override bool IsAvailable(GameObject player)
         {
-            // Thẻ passive chung luôn có thể xuất hiện (nếu muốn có thể kiểm tra max level passive sau)
+            if (maxLevel > 0 && player != null)
+            {
+                var playerPassives = player.GetComponent<PlayerPassives>();
+                if (playerPassives != null)
+                {
+                    int currentCount = playerPassives.GetUpgradeCount(this.upgradeName);
+                    if (currentCount >= maxLevel)
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
 
@@ -32,6 +43,7 @@ namespace ProjectZombie.Features.Upgrades
             if (playerPassives != null)
             {
                 playerPassives.AddPassive(this.upgradeName); // Using upgradeName instead of file name
+                playerPassives.IncrementUpgradeCount(this.upgradeName);
             }
         }
     }

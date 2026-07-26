@@ -6002,6 +6002,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 57386240035036050, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
   m_PrefabInstance: {fileID: 580317156}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &580317158 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8390320818147313093, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
+  m_PrefabInstance: {fileID: 580317156}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa7f9028d53ac14c93b915582647f12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &591249599
 GameObject:
   m_ObjectHideFlags: 0
@@ -6796,8 +6807,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0252734bd4b028041acb4e8445561670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upgradePanel: {fileID: 0}
-  _upgradeCards: []
+  _upgradePanel: {fileID: 1789706997}
+  _upgradeCards:
+  - {fileID: 580317158}
+  - {fileID: 1108983057}
+  - {fileID: 2003062966}
+  _rerollButton: {fileID: 0}
+  _skipButton: {fileID: 0}
+  _rerollCountText: {fileID: 0}
 --- !u!114 &821329376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6810,9 +6827,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b219037a21e6a2341bfe39710e817c39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _view: {fileID: 0}
+  _view: {fileID: 821329375}
   _playerExperience: {fileID: 0}
   _playerWeaponManager: {fileID: 0}
+  _maxRerollsPerRun: 3
 --- !u!1 &901672302
 GameObject:
   m_ObjectHideFlags: 0
@@ -7203,6 +7221,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 57386240035036050, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
   m_PrefabInstance: {fileID: 1108983055}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1108983057 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8390320818147313093, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
+  m_PrefabInstance: {fileID: 1108983055}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa7f9028d53ac14c93b915582647f12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1152325307
 GameObject:
   m_ObjectHideFlags: 0
@@ -8677,6 +8706,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 57386240035036050, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
   m_PrefabInstance: {fileID: 2003062964}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2003062966 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8390320818147313093, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
+  m_PrefabInstance: {fileID: 2003062964}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa7f9028d53ac14c93b915582647f12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2026597214
 GameObject:
   m_ObjectHideFlags: 0

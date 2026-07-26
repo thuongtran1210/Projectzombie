@@ -22,8 +22,9 @@ Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
 
 ### 2.1. `CommonUpgradeData`
 *   **Mục đích**: Tăng các chỉ số bị động (Passive) cho bản thân nhân vật (Máu, Tốc độ chạy, Kinh nghiệm...).
-*   **IsAvailable**: Luôn trả về `true` (Thẻ luôn có thể xuất hiện, có thể update sau nếu muốn giới hạn max level).
-*   **ApplyUpgrade**: Lấy component `PlayerStats` từ player và gọi các hàm `AddMaxHealth()`, `AddMoveSpeed()`... Đồng thời ghi nhận vào `PlayerPassives`.
+*   **Các biến quan trọng**: `playerStatModifier`, `maxLevel` (0 = Không giới hạn cấp).
+*   **IsAvailable**: Đọc số lần nâng cấp từ `PlayerPassives.GetUpgradeCount(upgradeName)`. Trả về `false` nếu `maxLevel > 0` và `currentCount >= maxLevel`.
+*   **ApplyUpgrade**: Lấy component `PlayerStats` từ player và gọi các hàm `AddMaxHealth()`, `AddMoveSpeed()`... Đồng thời ghi nhận và tăng đếm vào `PlayerPassives`.
 
 ### 2.2. `WeaponUpgradeData`
 *   **Mục đích**: Tăng sức mạnh cho một loại vũ khí cụ thể, hoặc mở khóa vũ khí mới.
@@ -39,13 +40,17 @@ Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
 
 ---
 
-## 3. Quy Trình Vận Hành (Workflow)
+## 3. Cơ Chế Roguelite (Reroll / Skip / Ban) & Quy Trình Vận Hành (Workflow)
 
 1. **Khi Lên Cấp (Level Up):** `PlayerExperience` kích hoạt sự kiện `OnLevelUp`.
-2. **Hiển Thị UI:** `UpgradeUIManager` bắt sự kiện và gọi `UpgradeManager.Instance.GetRandomUpgrades(count, playerGameObject)`.
-3. **Lọc Thẻ (Filtering):** `UpgradeManager` dùng hàm `Where(u => u.IsAvailable(player))` để vứt bỏ các thẻ không đủ điều kiện (Ví dụ: Thẻ nâng cấp súng lục cấp 3 sẽ không hiện ra nếu súng lục đang ở cấp 1).
-4. **Bốc Thăm (Weighted Random):** Dựa vào chỉ số `spawnWeight`, hệ thống quay Gacha lấy ra `count` thẻ.
-5. **Kích Hoạt (Execution):** Khi người chơi click vào UI Card, sự kiện `OnUpgradeSelected` gọi trực tiếp vào thẻ: `selectedUpgrade.ApplyUpgrade(playerGameObject)`. 
+2. **Hiển Thị UI:** `UpgradeUIPresenter` bắt sự kiện và gọi `UpgradeManager.Instance.GetRandomUpgrades(count, playerGameObject)`.
+3. **Lọc Thẻ (Filtering):** `UpgradeManager` duyệt qua pool thẻ, tự động loại bỏ các thẻ đang bị cấm trong `_bannedUpgrades` và các thẻ `!IsAvailable(player)`.
+4. **Bốc Thăm (Weighted Random):** Dựa vào chỉ số `spawnWeight`, hệ thống quay Gacha lấy ra `count` thẻ ngẫu nhiên.
+5. **Cơ Chế Reroll / Skip / Ban:**
+   - **Reroll:** Người chơi tiêu 1 lượt Reroll (`_currentRerolls`), hệ thống bốc lại danh sách 3 thẻ mới.
+   - **Skip:** Người chơi bỏ qua lượt nâng cấp, game tiếp tục ngay lập tức (`GameState.Playing`).
+   - **Ban:** Người chơi cấm 1 thẻ cụ thể bằng `UpgradeManager.Instance.BanUpgrade(card)`. Thẻ này sẽ bị cấm xuất hiện trong toàn bộ Run đấu đó.
+6. **Kích Hoạt (Execution):** Khi người chơi chọn thẻ, `OnUpgradeSelected` gọi trực tiếp `selectedUpgrade.ApplyUpgrade(playerGameObject)` và trả lại trạng thái game (`GameState.Playing`). 
 
 ---
 

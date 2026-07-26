@@ -15,6 +15,8 @@ namespace ProjectZombie.Features.Upgrades
         [Header("Upgrade Pool")]
         [SerializeField] private List<UpgradeData> _allAvailableUpgrades = new List<UpgradeData>();
 
+        private readonly HashSet<UpgradeData> _bannedUpgrades = new HashSet<UpgradeData>();
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -23,6 +25,34 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
             Instance = this;
+        }
+
+        /// <summary>
+        /// Cấm một thẻ nâng cấp xuất hiện trong suốt Run đấu hiện tại.
+        /// </summary>
+        public void BanUpgrade(UpgradeData upgrade)
+        {
+            if (upgrade != null && !_bannedUpgrades.Contains(upgrade))
+            {
+                _bannedUpgrades.Add(upgrade);
+                Debug.Log($"[UpgradeManager] Banned upgrade: {upgrade.upgradeName}");
+            }
+        }
+
+        /// <summary>
+        /// Reset danh sách các thẻ bị cấm (khi khởi tạo Run đấu mới).
+        /// </summary>
+        public void ResetBannedUpgrades()
+        {
+            _bannedUpgrades.Clear();
+        }
+
+        /// <summary>
+        /// Kiểm tra xem thẻ nâng cấp có đang bị cấm hay không.
+        /// </summary>
+        public bool IsBanned(UpgradeData upgrade)
+        {
+            return upgrade != null && _bannedUpgrades.Contains(upgrade);
         }
 
         /// <summary>
@@ -36,7 +66,7 @@ namespace ProjectZombie.Features.Upgrades
             // Thay thế LINQ Where bằng vòng lặp để tránh tạo rác (Garbage Collection)
             foreach (var u in _allAvailableUpgrades)
             {
-                if (u.IsAvailable(player))
+                if (u != null && !_bannedUpgrades.Contains(u) && u.IsAvailable(player))
                 {
                     validUpgrades.Add(u);
                     totalWeight += u.spawnWeight;

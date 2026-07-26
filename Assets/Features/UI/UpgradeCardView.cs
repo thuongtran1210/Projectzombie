@@ -16,14 +16,20 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _categoryText;
         [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private Button _selectButton;
+        [SerializeField] private Button _banButton;
 
         private Action _onClicked;
+        private Action _onBanClicked;
 
         private void Awake()
         {
             if (_selectButton != null)
             {
                 _selectButton.onClick.AddListener(OnButtonClicked);
+            }
+            if (_banButton != null)
+            {
+                _banButton.onClick.AddListener(OnBanButtonClicked);
             }
 
             // Đảm bảo Animator chạy bình thường ngay cả khi Time.timeScale = 0
@@ -37,9 +43,15 @@ namespace ProjectZombie.Features.UI
         /// <summary>
         /// Thiết lập hiển thị của thẻ nâng cấp.
         /// </summary>
-        public void Setup(Sprite icon, string cardName, string description, string category, string level, Action onClicked)
+        public void Setup(Sprite icon, string cardName, string description, string category, string level, Action onClicked, Action onBanClicked = null)
         {
             _onClicked = onClicked;
+            _onBanClicked = onBanClicked;
+
+            if (_banButton != null)
+            {
+                _banButton.gameObject.SetActive(onBanClicked != null);
+            }
 
             if (_iconImage == null || _nameText == null || _descriptionText == null || _categoryText == null || _levelText == null)
             {
@@ -57,6 +69,11 @@ namespace ProjectZombie.Features.UI
         private void OnButtonClicked()
         {
             _onClicked?.Invoke();
+        }
+
+        private void OnBanButtonClicked()
+        {
+            _onBanClicked?.Invoke();
         }
     }
 }
