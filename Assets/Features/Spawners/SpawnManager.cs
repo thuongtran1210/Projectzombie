@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Spawners
         [Header("Performance Settings")]
         [SerializeField] private int maxSpawnsPerFrame = 5;
         [SerializeField] private float spawnDelayBetweenFrames = 0.05f;
+        public int MaxSpawnsPerFrame => maxSpawnsPerFrame;
+        public float SpawnDelayBetweenFrames => spawnDelayBetweenFrames;
 
         private bool _isMatchActive = false;
         private Transform _playerTransform;

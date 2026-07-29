@@ -38,11 +38,14 @@ namespace ProjectZombie.Features.Shared.VFX
             {
                 pool = new ObjectPool<ParticleSystem>(
                     createFunc: () => Instantiate(prefab, transform),
-                    actionOnGet: ps => { ps.gameObject.SetActive(true); ps.Play(); },
-                    actionOnRelease: ps => { ps.Stop(); ps.gameObject.SetActive(false); },
+                    actionOnGet: ps => { ps.gameObject.SetActive(true); ps.Play(true); },
+                    actionOnRelease: ps => { 
+                        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
+                        ps.gameObject.SetActive(false); 
+                    },
                     actionOnDestroy: ps => Destroy(ps.gameObject),
-                    defaultCapacity: 10,
-                    maxSize: 50
+                    defaultCapacity: 15,
+                    maxSize: 100
                 );
                 _poolDictionary.Add(key, pool);
             }

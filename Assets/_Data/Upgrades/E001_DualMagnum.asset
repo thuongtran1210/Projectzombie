@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
+  m_Name: E001_DualMagnum
+  m_EditorClassIdentifier: 
+  upgradeName: 
+  description: 
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 1
+  maxLevel: 0
+  weaponId: 'W001 '
+  requiredCurrentLevel: 6
+  requiredPassiveId: 'P001 '
+  weaponPrefab: {fileID: 0}

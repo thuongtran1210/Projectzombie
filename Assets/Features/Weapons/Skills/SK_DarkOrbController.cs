@@ -32,6 +32,11 @@ namespace ProjectZombie.Features.Weapons.Skills
             }
         }
 
+        private void OnDisable()
+        {
+            StopAllEffects();
+        }
+
         /// <summary>
         /// Kích hoạt chuỗi Particle System cho hiệu ứng Quả Cầu Hắc Ám.
         /// </summary>

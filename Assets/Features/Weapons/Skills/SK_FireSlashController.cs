@@ -31,6 +31,11 @@ namespace ProjectZombie.Features.Weapons.Skills
             }
         }
 
+        private void OnDisable()
+        {
+            StopAllEffects();
+        }
+
         /// <summary>
         /// Kích hoạt toàn bộ các Particle System layer theo chuỗi timing chuẩn 60 FPS.
         /// </summary>

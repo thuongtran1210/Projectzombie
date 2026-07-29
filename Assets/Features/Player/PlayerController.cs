@@ -17,6 +17,9 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private float dashSpeedMultiplier = 3f;
         [SerializeField] private float dashDuration = 0.2f;
 
+        [Header("Mobile Joystick Reference (Optional Override)")]
+        [SerializeField] private UI.DynamicVirtualJoystick virtualJoystick;
+
         private Rigidbody2D _rb;
         private PlayerStats _playerStats;
         
@@ -86,7 +89,11 @@ namespace ProjectZombie.Features.Player
                 return; // Khi đang lướt thì không nhận input di chuyển mới
             }
 
-            if (moveAction != null)
+            if (virtualJoystick != null && virtualJoystick.InputVector != Vector2.zero)
+            {
+                _movementInput = virtualJoystick.InputVector;
+            }
+            else if (moveAction != null)
             {
                 _movementInput = moveAction.action.ReadValue<Vector2>().normalized;
             }

@@ -31,6 +31,11 @@ namespace ProjectZombie.Features.Weapons.Skills
             }
         }
 
+        private void OnDisable()
+        {
+            StopAllEffects();
+        }
+
         /// <summary>
         /// Kích hoạt chuỗi Particle System cho hiệu ứng Viên Đạn Băng.
         /// </summary>
