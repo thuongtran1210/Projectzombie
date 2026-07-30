@@ -17,6 +17,7 @@ namespace ProjectZombie.Features.Weapons
         
         [Header("Weapon Identity")]
         public string weaponId;
+        public ElementType element = ElementType.None;
 
         public int WeaponLevel { get; private set; } = 1;
         public virtual int MaxLevel => 6;
@@ -40,6 +41,22 @@ namespace ProjectZombie.Features.Weapons
             if (firePoint == null) firePoint = transform;
         }
 
+        /// <summary>
+        /// Giảm % thời gian hồi chiêu hiện tại của vũ khí (VD: 0.2f = giảm 20%).
+        /// </summary>
+        public void ReduceCurrentCooldown(float percentage)
+        {
+            float totalAttackSpeed = CharacterStats != null ? CharacterStats.AttackSpeed + localAttackSpeedBonus : 1f;
+            float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
+            float remaining = (_lastAttackTime + attackCooldown) - Time.time;
+
+            if (remaining > 0)
+            {
+                float reduction = remaining * Mathf.Clamp01(percentage);
+                _lastAttackTime -= reduction;
+            }
+        }
+
         public void Tick()
         {
             if (CharacterStats == null) return;
@@ -58,6 +75,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
         }
+
 
         public virtual float GetDamage()
         {

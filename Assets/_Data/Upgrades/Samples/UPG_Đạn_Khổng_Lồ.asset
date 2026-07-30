@@ -18,6 +18,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   upgradeType: 0
   spawnWeight: 1
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
   weaponId: 
   requiredCurrentLevel: 1
   weaponPrefab: {fileID: 0}

@@ -14,7 +14,6 @@ namespace ProjectZombie.Features.Weapons
     {
         [Header("Orbit Settings")]
         [SerializeField] private float baseRadius = 2f;
-        [SerializeField] private float baseOrbitSpeed = 180f; // Độ / giây
         [SerializeField] private int baseOrbCount = 1;
 
         private readonly List<ProjectileController> _activeOrbs = new List<ProjectileController>();

@@ -1,39 +1,46 @@
 using UnityEngine;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Upgrades
 {
     /// <summary>
-    /// Thẻ nâng cấp Khắc Chế Hệ (Faction Counter).
-    /// Tăng sát thương khi đối đầu với phe địch cụ thể (VD: Zombie Nhiễm Độc, Zombie Giáp...).
-    /// Bonus được lưu vào PlayerPassives dưới dạng key "faction_counter_{factionId}".
-    /// Các FactionPassive_* trên Enemy sẽ đọc bonus này từ PlayerStats thông qua PlayerPassives.
+    /// Thẻ nâng cấp Tăng Sát Thương Ngũ Hành (Element Counter / Bonus).
+    /// Tăng sát thương thuộc tính Ngũ Hành cụ thể (Kim, Mộc, Thủy, Hỏa, Thổ).
+    /// Bonus được lưu vào PlayerPassives dưới dạng key "element_bonus_{element}".
     /// </summary>
-    [CreateAssetMenu(fileName = "NewFactionCounterUpgrade", menuName = "ProjectZombie/Upgrades/Faction Counter Upgrade")]
+    [CreateAssetMenu(fileName = "NewElementCounterUpgrade", menuName = "ProjectZombie/Upgrades/Element Counter Upgrade")]
     public class FactionCounterUpgradeData : UpgradeData
     {
-        [Header("Faction Counter Settings")]
-        [Tooltip("ID của phe địch bị khắc chế. Phải khớp với factionId trong Enemy (vd: 'Infected', 'Undead', 'Void').")]
-        public string factionId;
+        [Header("Element Bonus Settings")]
+        [Tooltip("Hệ Ngũ Hành được tăng sát thương.")]
+        public ElementType targetElement = ElementType.None;
 
-        [Tooltip("% tăng sát thương thêm khi đánh vào phe này (0.2 = +20%).")]
+        [Tooltip("% tăng sát thương thêm cho hệ này (0.2 = +20%).")]
         [Range(0f, 2f)]
         public float damageMultiplierBonus = 0.2f;
 
-        [Tooltip("Cho phép stack nhiều lần (mỗi lần chọn lại cộng thêm bonus). Cần tạo thẻ riêng cho mỗi cấp stack nếu false.")]
+        [Tooltip("Cho phép stack nhiều lần (mỗi lần chọn lại cộng thêm bonus).")]
         public bool isStackable = false;
 
         public override bool IsAvailable(GameObject player)
         {
-            if (string.IsNullOrEmpty(factionId))
+            if (targetElement == ElementType.None)
             {
-                Debug.LogWarning("[FactionCounterUpgradeData] factionId chưa được thiết lập!");
-                return false;
+                // Fallback nếu thẻ vẫn dùng thuộc tính element từ UpgradeData gốc
+                if (element != ElementType.None)
+                {
+                    targetElement = element;
+                }
+                else
+                {
+                    Debug.LogWarning("[FactionCounterUpgradeData] targetElement chưa được thiết lập!");
+                    return false;
+                }
             }
 
             if (!isStackable)
             {
-                // Nếu không stack, kiểm tra xem đã có passive này chưa
                 var playerPassives = player.GetComponent<PlayerPassives>();
                 if (playerPassives != null)
                 {
@@ -49,35 +56,37 @@ namespace ProjectZombie.Features.Upgrades
             var playerPassives = player.GetComponent<PlayerPassives>();
             if (playerPassives == null) return;
 
+            if (targetElement == ElementType.None && element != ElementType.None)
+            {
+                targetElement = element;
+            }
+
             string key = GetPassiveKey();
 
             if (isStackable)
             {
-                // Stack: cộng dồn bonus bằng counter
                 playerPassives.IncrementUpgradeCount(key);
                 float totalBonus = damageMultiplierBonus * playerPassives.GetUpgradeCount(key);
-                Debug.Log($"[FactionCounter] Faction '{factionId}' — Tổng bonus sát thương: +{totalBonus * 100f:F0}%");
+                Debug.Log($"[ElementBonus] Ngũ Hành '{targetElement}' — Tổng bonus sát thương: +{totalBonus * 100f:F0}%");
             }
             else
             {
-                // Non-stack: chỉ thêm passive một lần
                 playerPassives.AddPassive(key);
-                Debug.Log($"[FactionCounter] Đã mở khóa khắc chế phe '{factionId}': +{damageMultiplierBonus * 100f:F0}% sát thương.");
+                Debug.Log($"[ElementBonus] Đã mở khóa tăng sát thương hệ '{targetElement}': +{damageMultiplierBonus * 100f:F0}% sát thương.");
             }
         }
 
-        private string GetPassiveKey() => $"faction_counter_{factionId.ToLower()}";
+        private string GetPassiveKey() => $"element_bonus_{targetElement.ToString().ToLower()}";
 
         /// <summary>
-        /// Hàm tiện ích để Enemy hoặc hệ thống sát thương tra cứu bonus của một faction.
+        /// Tra cứu bonus sát thương của một hệ Ngũ Hành từ PlayerPassives.
         /// </summary>
-        public static float GetFactionBonus(PlayerPassives playerPassives, string factionId, float bonusPerStack = 0.2f)
+        public static float GetElementBonus(PlayerPassives playerPassives, ElementType elementType, float bonusPerStack = 0.2f)
         {
-            if (playerPassives == null || string.IsNullOrEmpty(factionId)) return 0f;
+            if (playerPassives == null || elementType == ElementType.None) return 0f;
 
-            string key = $"faction_counter_{factionId.ToLower()}";
+            string key = $"element_bonus_{elementType.ToString().ToLower()}";
 
-            // Kiểm tra cả dạng non-stack (HasPassive) và stack (GetUpgradeCount)
             int stackCount = playerPassives.GetUpgradeCount(key);
             if (stackCount > 0)
             {
@@ -88,3 +97,4 @@ namespace ProjectZombie.Features.Upgrades
         }
     }
 }
+

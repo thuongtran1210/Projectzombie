@@ -4,6 +4,7 @@ using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Weapons
 {
+    using ProjectZombie.Features.Shared;
     using ProjectZombie.Features.Upgrades;
 
     /// <summary>
@@ -23,9 +24,38 @@ namespace ProjectZombie.Features.Weapons
         private PlayerPassives _playerPassives;
         private List<WeaponBase> _activeWeapons = new List<WeaponBase>();
 
+        // Quản lý combo Tương Sinh Ngũ Hành (Kim -> Thủy -> Mộc -> Hỏa -> Thổ -> Kim)
+        private ElementType _lastHitElement = ElementType.None;
+        private float _lastHitTime;
+        private const float COMBO_WINDOW_SECONDS = 3.0f;
+
         public IReadOnlyList<WeaponBase> ActiveWeapons => _activeWeapons;
 
         public event System.Action OnWeaponsChanged;
+
+        /// <summary>
+        /// Ghi nhận đòn đánh trúng mục tiêu với Element tương ứng và trả về hệ số Cooldown Reduction (0.8f nếu Tương Sinh).
+        /// </summary>
+        public float RecordElementHitAndGetCooldownMultiplier(ElementType currentElement)
+        {
+            if (currentElement == ElementType.None)
+                return 1.0f;
+
+            bool isSynergy = false;
+            if (Time.time - _lastHitTime <= COMBO_WINDOW_SECONDS)
+            {
+                isSynergy = (_lastHitElement == ElementType.Kim && currentElement == ElementType.Thuy) ||
+                            (_lastHitElement == ElementType.Thuy && currentElement == ElementType.Moc) ||
+                            (_lastHitElement == ElementType.Moc && currentElement == ElementType.Hoa) ||
+                            (_lastHitElement == ElementType.Hoa && currentElement == ElementType.Tho) ||
+                            (_lastHitElement == ElementType.Tho && currentElement == ElementType.Kim);
+            }
+
+            _lastHitElement = currentElement;
+            _lastHitTime = Time.time;
+
+            return isSynergy ? 0.8f : 1.0f; // -20% cooldown khi kích hoạt Tương Sinh
+        }
 
         private void Awake()
         {

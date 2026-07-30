@@ -1,6 +1,6 @@
-# Danh Sách Nhiệm Vụ & Task Tracker — ProjectZombie
+# Danh Sách Nhiệm Vụ & Task Tracker — VONG XUYÊN
 
-Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân chia theo các hạng mục của dự án **ProjectZombie (Android Release)**.
+Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân chia theo các hạng mục của dự án **Vong Xuyên (Android Release - GDD v4.0)**.
 
 ---
 
@@ -8,36 +8,39 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| Boss Abomination Skill Logic | 7 Weapons (Vampiric Bats, Shotgun...) | Android Target Platform Refactor |
-| Boss Skeleton King Skill Logic | Spawn Timeline Wave Data Scriptable | Local Save System (`SaveSystem.cs`) |
-| Meta Upgrade Tree Shop UI | Evolution Upgrade Data Scriptables | Spawn System & Pillar Animation Fix |
-| Mobile Virtual Joystick Integration | | Object Pooling 0 GC Optimization |
-| Android AAB Build & Signing | | GDD 3.0 & Architecture Docs Update |
+| UpgradeCardView Element Badges | 12 Pháp Bảo Asset Refactoring | Android Target Platform Refactor |
+| Meta Upgrade Shop Cổ Tiền UI | 5 Yêu Ma Config Asset Refactoring | Local Save System (`SaveSystem.cs`) |
+| Character Selection UI (3 Heroes) | | Ngũ Hành Damage & Combo System |
+| Mobile Stress Test & ASTC | | Cán Cân Âm Dương (`YinYangManager`) |
+| Android AAB Build & Signing | | Boss AI Dynamic Element (`BossElementController`) |
+| | | RunHUD MVP Update (Âm Dương Slider & Boss Text) |
+| | | GDD 4.0 & Scenario Guide Single Source of Truth |
 
 ---
 
 ## 🏃 Sprint Tasks Breakdown
 
-### 🎯 Hạng Mục 1: Gameplay & Weapon Content (Ưu tiên cao)
-- [x] **[TASK-101]** Khôi phục và nâng cấp `SpawnManager` & `SpawnPillar` với animation nảy trụ DOTween.
-- [x] **[TASK-102]** Tạo 3 ScriptableObject / Class Vũ Khí Tầm Xa mới: Vampiric Bats (`W004`), Shotgun (`W005`), Grenade Launcher (`W006`).
-- [x] **[TASK-103]** Tạo 3 ScriptableObject / Class Vũ Khí Cận Chiến / AoE mới: Crossbow (`W007`), Flamethrower (`W008`), Lightning Orb (`W009`).
-- [x] **[TASK-104]** Tạo 3 ScriptableObject / Class Vũ Khí Hỗ Trợ mới: Poison Drone (`W010`), Holy Water (`W011`), Boomerang (`W012`).
-- [ ] **[TASK-105]** Tạo bộ 12 thẻ ScriptableObject `EvolutionUpgrade` tương ứng tại cấp 6.
+### ☯️ Hạng Mục 1: Lõi Cơ Chế Ngũ Hành & Âm Dương (Completed)
+- [x] **[TASK-101]** Refactor `DamageUtility.cs` và `DamageData.cs` hỗ trợ tra cứu Tương Khắc Ngũ Hành (+30% Sát thương).
+- [x] **[TASK-102]** Tích hợp Element Combo Tracker vào `WeaponManager.cs` (-20% Cooldown khi kích hoạt Tương Sinh trong 3s).
+- [x] **[TASK-103]** Xây dựng `YinYangManager.cs` theo dõi trạng thái Âm Dương (0-100) và phát sự kiện `OnYinYangStateChanged`.
+- [x] **[TASK-104]** Tích hợp lọc pool thẻ Gacha nâng cấp ngẫu nhiên trong `UpgradeManager.cs` theo `YinYangState`.
+- [x] **[TASK-105]** Tạo `BossElementController.cs` cho phép Boss (Ngưu Đầu Mã Diện & Diêm Vương) luân phiên xoay vòng thuộc tính Ngũ Hành theo chu kỳ 10s.
 
-### 🧟 Hạng Mục 2: Enemy AI & Boss Battles (Ưu tiên cao)
-- [x] **[TASK-201]** Triển khai FSM Enemy State Machine + Strategy Pattern cho 5 quái thường (Walker, Runner, Tank, Spitter, Exploder).
-- [x] **[TASK-202]** Cấu hình `SpawnTimelineData` map từng wave theo timeline 00:00 -> 20:00.
-- [x] **[TASK-203]** Tạo `AbominationBossController.cs` (Phase 1 Bull Dash/Ground Slam, Phase 2 Swarm/Toxic Cloud).
-- [x] **[TASK-204]** Tạo `SkeletonKingBossController.cs` (Phase 1 Sword Wave/Bone Cage, Phase 2 Death Zone).
+### 🗡️ Hạng Mục 2: Reskin Content & Asset Database (In Progress)
+- [x] **[TASK-201]** Thêm trường `elementType` vào ScriptableObject `WeaponData.cs` và `EnemyConfig.cs`.
+- [/] **[TASK-202]** Refactor dữ liệu `.asset` cho 12 Pháp Bảo MVP (Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng...).
+- [/] **[TASK-203]** Refactor dữ liệu `.asset` cho 5 Yêu Ma (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da, Hồ Ly Tinh Nhỏ).
+- [x] **[TASK-204]** Chuyển đổi tên gọi đơn vị tiền Meta thành **Cổ Tiền** (tiền xu cổ Việt Nam) trong `MetaCurrencyManager.cs` và `MetaProgressionSaveData.cs`.
 
-### 💳 Hạng Mục 3: Meta Economy & UI Systems (Ưu tiên trung bình)
-- [ ] **[TASK-301]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` (Chuẩn MVP UI) cho Cây nâng cấp vĩnh viễn.
-- [ ] **[TASK-302]** Gắn kết nối `MetaCurrencyManager` với nút Mua / Upgrade trên UI Shop.
-- [x] **[TASK-303]** Tích hợp Dynamic Virtual Joystick từ Unity New Input System vào `PlayerController.cs`.
-- [ ] **[TASK-304]** Xây dựng màn hình `RunSummaryView.cs` hiển thị kết quả sau run đấu và cộng Coin.
+### 📱 Hạng Mục 3: Mobile UI Canvas & MVP Systems (In Progress)
+- [x] **[TASK-301]** Cập nhật `RunHUDView.cs` và `RunHUDPresenter.cs` thêm Slider Cán cân Âm Dương & TMP Text hiển thị thuộc tính Boss.
+- [ ] **[TASK-302]** Thêm Badge màu hiển thị thuộc tính Ngũ Hành trên thẻ Gacha Nâng cấp (`UpgradeCardView.cs`).
+- [ ] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.
+- [ ] **[TASK-304]** Xây dựng UI Chọn Nhân vật theo 3 anh hùng: Thư Sinh (Kim), Đạo Sĩ (Mộc), Võ Tăng (Thổ).
+- [ ] **[TASK-305]** Xây dựng màn hình `RunSummaryView.cs` hiển thị kết quả sau run đấu và cộng Cổ Tiền tích lũy.
 
-### ⚙️ Hạng Mục 4: Performance & Build Release (Ưu tiên cuối)
+### ⚙️ Hạng Mục 4: Performance & Build Release (Planned)
 - [ ] **[TASK-401]** Chuyển đổi toàn bộ Sprite Sheets sang Texture Compression **ASTC 6x6** cho Android.
-- [ ] **[TASK-402]** Thử nghiệm Stress Test 200 Enemies + 100 Projectiles kiểm tra FPS (Target 60 FPS).
+- [ ] **[TASK-402]** Thử nghiệm Stress Test 200 Yêu ma + 100 Projectiles kiểm tra FPS (Target 60 FPS).
 - [ ] **[TASK-403]** Cấu hình Build Profile Android IL2CPP ARM64, Target API 33+, xuất file `.aab`.

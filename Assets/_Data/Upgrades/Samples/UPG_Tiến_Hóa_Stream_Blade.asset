@@ -18,6 +18,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   upgradeType: 5
   spawnWeight: 1
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
   weaponId: StreamBlade
   requiredCurrentLevel: 6
   requiredPassiveId: "Gi\xE0y Si\xEAu T\u1ED1c"

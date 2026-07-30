@@ -9,11 +9,13 @@ namespace ProjectZombie.Features.Shared
     {
         public float Amount;
         public bool IsCritical;
+        public ElementType Element;
         
-        public DamageData(float amount, bool isCritical = false)
+        public DamageData(float amount, bool isCritical = false, ElementType element = ElementType.None)
         {
             Amount = amount;
             IsCritical = isCritical;
+            Element = element;
         }
     }
 }

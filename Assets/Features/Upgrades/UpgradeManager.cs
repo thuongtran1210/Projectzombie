@@ -25,7 +25,49 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
             Instance = this;
+
+            AutoPopulateUpgradesIfEmpty();
         }
+
+        /// <summary>
+        /// Tự động load tất cả thẻ UpgradeData sẵn có nếu danh sách trống.
+        /// </summary>
+        public void AutoPopulateUpgradesIfEmpty()
+        {
+            if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0)
+            {
+                PopulateAllAvailableUpgrades();
+            }
+        }
+
+        /// <summary>
+        /// Nạp tự động toàn bộ UpgradeData trong dự án (Resources hoặc AssetDatabase khi ở Editor).
+        /// </summary>
+        [ContextMenu("Populate All Upgrades")]
+        public void PopulateAllAvailableUpgrades()
+        {
+            _allAvailableUpgrades.Clear();
+
+#if UNITY_EDITOR
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var upgrade = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
+                if (upgrade != null && !_allAvailableUpgrades.Contains(upgrade))
+                {
+                    _allAvailableUpgrades.Add(upgrade);
+                }
+            }
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"[UpgradeManager] Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ dự án.");
+#else
+            var loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+            _allAvailableUpgrades.AddRange(loadedUpgrades);
+            Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources.");
+#endif
+        }
+
 
         /// <summary>
         /// Cấm một thẻ nâng cấp xuất hiện trong suốt Run đấu hiện tại.
@@ -63,11 +105,22 @@ namespace ProjectZombie.Features.Upgrades
             var validUpgrades = new List<UpgradeData>();
             float totalWeight = 0f;
 
+            // Lấy trạng thái Âm Dương hiện tại
+            var currentYinYangState = ProjectZombie.Features.YinYang.YinYangManager.Instance != null 
+                ? ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState() 
+                : ProjectZombie.Features.YinYang.YinYangState.Balanced;
+
             // Thay thế LINQ Where bằng vòng lặp để tránh tạo rác (Garbage Collection)
             foreach (var u in _allAvailableUpgrades)
             {
                 if (u != null && !_bannedUpgrades.Contains(u) && u.IsAvailable(player))
                 {
+                    // Lọc theo cán cân Âm Dương (nếu thẻ yêu cầu)
+                    if (u.checkYinYangState && u.requiredYinYangState != currentYinYangState)
+                    {
+                        continue;
+                    }
+
                     validUpgrades.Add(u);
                     totalWeight += u.spawnWeight;
                 }

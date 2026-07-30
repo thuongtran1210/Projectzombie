@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: E001_DualMagnum
   m_EditorClassIdentifier: 
-  upgradeName: 
-  description: 
+  upgradeName: Nỏ Liên Châu
+  description: Tiến hóa tối thượng hệ Kim - Bắn liên tiếp 3 mũi tên thần xuyên táo tất cả quái vật.
   icon: {fileID: 0}
   upgradeType: 0
   spawnWeight: 1

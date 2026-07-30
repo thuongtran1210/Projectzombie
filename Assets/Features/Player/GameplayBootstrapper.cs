@@ -92,7 +92,7 @@ namespace ProjectZombie.Features.Player
             // 4. Inject các Models vào các UI Presenters qua phương thức Construct
             if (runHUDPresenter != null)
             {
-                runHUDPresenter.Construct(health, stats, experience);
+                runHUDPresenter.Construct(health, stats, experience, weaponManager);
                 Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào RunHUDPresenter.");
             }
 

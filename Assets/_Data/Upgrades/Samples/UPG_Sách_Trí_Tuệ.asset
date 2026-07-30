@@ -17,6 +17,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   upgradeType: 2
   spawnWeight: 1
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
   playerStatModifier:
     maxHealthBonus: 0
     moveSpeedBonus: 0

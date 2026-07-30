@@ -6,11 +6,25 @@ namespace ProjectZombie.Features.Weapons
     public class WeaponData : ScriptableObject
     {
         [Header("Identity")]
-        [Tooltip("ID duy nhất của vũ khí (VD: weapon_sword_01)")]
+        [Tooltip("ID duy nhất của vũ khí (VD: W001)")]
         public string weaponId;
         
         [Tooltip("Tên hiển thị trong game")]
         public string weaponName;
+
+        [TextArea(2, 4)]
+        [Tooltip("Mô tả chi tiết & hiệu ứng đặc trưng của Pháp Bảo")]
+        public string description;
+
+        [Tooltip("Độ hiếm của Pháp Bảo")]
+        public string rarity = "Common";
+
+        [Tooltip("ID Evolution / Vũ khí tối thượng liên kết")]
+        public string evolutionWeaponId;
+
+        [Header("Vong Xuyen Attributes (v4.0)")]
+        [Tooltip("Thuộc tính Ngũ Hành của Pháp Bảo")]
+        public ProjectZombie.Features.Shared.ElementType elementType = ProjectZombie.Features.Shared.ElementType.None;
 
         [Header("Prefabs")]
         [Tooltip("Prefab của vũ khí sẽ được gắn vào Player")]
@@ -20,7 +34,7 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Sát thương cơ bản khi mới nhận được")]
         public float baseDamage;
         
-        [Tooltip("Tốc độ đánh cơ bản (nếu muốn override)")]
+        [Tooltip("Tốc độ đánh cơ bản / Cooldown (nếu muốn override)")]
         public float baseAttackSpeed;
     }
 }

@@ -61,7 +61,24 @@ namespace ProjectZombie.Features.Upgrades.Editor
             AssetDatabase.Refresh();
 
             Debug.Log($"[UpgradeGeneratorTool] Đã tạo thành công các thẻ Sample tại đường dẫn: {FOLDER_PATH}");
+
+            PopulateUpgradeManagerInScene();
         }
+
+        [MenuItem("Tools/ProjectZombie/Populate UpgradeManager Pool")]
+        public static void PopulateUpgradeManagerInScene()
+        {
+            var manager = Object.FindObjectOfType<UpgradeManager>();
+            if (manager != null)
+            {
+                manager.PopulateAllAvailableUpgrades();
+            }
+            else
+            {
+                Debug.LogWarning("[UpgradeGeneratorTool] Không tìm thấy UpgradeManager trong Scene hiện tại!");
+            }
+        }
+
 
         private static UpgradeData CreateUpgrade(
             string name, 

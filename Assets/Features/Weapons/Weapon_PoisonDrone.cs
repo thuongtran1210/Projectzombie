@@ -8,9 +8,6 @@ namespace ProjectZombie.Features.Weapons
     /// </summary>
     public class Weapon_PoisonDrone : Weapon_PetSummon
     {
-        [Header("Poison Drone Settings")]
-        [SerializeField] private float poisonCloudRadius = 3f;
-
         protected override void PerformAttack()
         {
             base.PerformAttack();

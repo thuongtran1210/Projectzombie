@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace ProjectZombie.Features.UI.StatsAndSkills
 {
+    [System.Obsolete("Class này đã bị thay thế hoàn toàn bởi RunHUDView (Features/UI/HUD/RunHUDView.cs). Hãy dùng RunHUDView.")]
     public class PlayerHUDView : MonoBehaviour
     {
         [Header("Health & EXP")]

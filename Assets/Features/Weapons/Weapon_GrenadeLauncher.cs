@@ -8,9 +8,6 @@ namespace ProjectZombie.Features.Weapons
     /// </summary>
     public class Weapon_GrenadeLauncher : Weapon_RangedBase
     {
-        [Header("Grenade Launcher Settings")]
-        [SerializeField] private float explosionRadius = 2.5f;
-
         private Transform _currentTarget;
 
         protected override bool CanAttack()

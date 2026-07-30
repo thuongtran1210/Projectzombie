@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: W001_PistolData
   m_EditorClassIdentifier: 
   weaponId: W001
-  weaponName: Pistol
+  weaponName: Nỏ Thần
+  elementType: 1
   weaponPrefab: {fileID: 0}
   baseDamage: 12
   baseAttackSpeed: 0.6

@@ -5,6 +5,7 @@
 // Nhận dữ liệu ĐÃ ĐƯỢC ĐỊNH DẠNG THÀNH STRING từ Presenter.
 // ============================================================================
 
+using ProjectZombie.Features.UI.StatsAndSkills;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,17 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private TextMeshProUGUI _killCountText;  // Ví dụ: "💀 137"
 
         // ====================================================================
+        // [INSPECTOR] — Skills Display
+        // ====================================================================
+
+        [Header("Skills Display")]
+        [SerializeField] private Transform _skillsContainer;
+        [SerializeField] private SkillUIEntry _skillEntryPrefab;
+        [SerializeField] private TooltipUI _tooltipUI;
+
+        private readonly System.Collections.Generic.List<SkillUIEntry> _spawnedSkills = new System.Collections.Generic.List<SkillUIEntry>();
+
+        // ====================================================================
         // UNITY LIFECYCLE
         // ====================================================================
 
@@ -45,7 +57,14 @@ namespace ProjectZombie.Features.UI.HUD
             var animator = GetComponent<Animator>();
             if (animator != null)
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+
+            if (_yinYangSlider != null)
+            {
+                _yinYangSlider.minValue = 0f;
+                _yinYangSlider.maxValue = 100f;
+            }
         }
+
 
         // ====================================================================
         // PUBLIC API — Chỉ được gọi bởi RunHUDPresenter
@@ -105,6 +124,70 @@ namespace ProjectZombie.Features.UI.HUD
                 return;
             }
             _killCountText.text = formattedKillCount;
+        }
+
+        public struct SkillDisplayData
+        {
+            public Sprite Icon;
+            public int Level;
+            public string Name;
+            public string Description;
+        }
+
+        /// <summary>Cập nhật danh sách icon Kỹ năng/Vũ khí sở hữu.</summary>
+        public void UpdateSkills(System.Collections.Generic.IReadOnlyList<SkillDisplayData> skills)
+        {
+            foreach (var entry in _spawnedSkills)
+            {
+                if (entry != null)
+                {
+                    Destroy(entry.gameObject);
+                }
+            }
+            _spawnedSkills.Clear();
+
+            if (_skillEntryPrefab == null || _skillsContainer == null)
+            {
+                return;
+            }
+
+            foreach (var skill in skills)
+            {
+                SkillUIEntry newEntry = Instantiate(_skillEntryPrefab, _skillsContainer);
+                newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
+                _spawnedSkills.Add(newEntry);
+            }
+        }
+
+        // ====================================================================
+        // [INSPECTOR] — Vong Xuyen (v4.0) Controls
+        // ====================================================================
+
+        [Header("Vong Xuyen (v4.0)")]
+        [SerializeField] private Slider _yinYangSlider;
+        [SerializeField] private TextMeshProUGUI _yinYangStateText; // Ví dụ: "Dương Thịnh"
+        [SerializeField] private TextMeshProUGUI _bossElementText;  // Ví dụ: "<color=#FF4444>[BOSS: HỎA]</color>"
+
+        /// <summary>Cập nhật Cán cân Âm Dương. Presenter truyền giá trị float và string trạng thái.</summary>
+        public void SetYinYangBalance(float val, string formattedState)
+        {
+            if (_yinYangSlider != null)
+            {
+                _yinYangSlider.value = val;
+            }
+            if (_yinYangStateText != null)
+            {
+                _yinYangStateText.text = formattedState;
+            }
+        }
+
+        /// <summary>Cập nhật thuộc tính hiện tại của Boss. Presenter truyền string đã format TMP Rich Text.</summary>
+        public void SetBossElement(string formattedBossElement)
+        {
+            if (_bossElementText != null)
+            {
+                _bossElementText.text = formattedBossElement;
+            }
         }
     }
 }

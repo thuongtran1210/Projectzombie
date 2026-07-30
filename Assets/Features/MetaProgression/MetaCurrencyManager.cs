@@ -5,13 +5,8 @@ using ProjectZombie.Features.Shared;
 namespace ProjectZombie.Features.MetaProgression
 {
     /// <summary>
-    /// Singleton quản lý Currency Meta ("Coin Sinh Tồn") — đồng tiền vĩnh viễn không mất
-    /// giữa các run. Đồng bộ với GameManager để lưu/tải qua web bridge.
-    /// 
-    /// HƯỚNG DẪN SỬ DỤNG:
-    /// 1. Gắn script này vào GameManager GameObject hoặc một object DontDestroyOnLoad riêng.
-    /// 2. Gọi Initialize(saveData) khi GameManager nhận được save data từ ReactJS.
-    /// 3. Gọi AddCurrency(amount) sau mỗi run kết thúc.
+    /// Singleton quản lý Currency Meta ("Cổ Tiền" — tiền xu cổ Việt Nam) — đồng tiền vĩnh viễn không mất
+    /// giữa các run. Đồng bộ với GameManager để lưu/tải qua Local Save System.
     /// </summary>
     public class MetaCurrencyManager : MonoBehaviour
     {
@@ -24,7 +19,7 @@ namespace ProjectZombie.Features.MetaProgression
         // STATE
         // ====================================================================
 
-        /// <summary>Tổng số Coin Sinh Tồn hiện có.</summary>
+        /// <summary>Tổng số Cổ Tiền hiện có.</summary>
         public int TotalCurrency { get; private set; } = 0;
 
         /// <summary>Kích hoạt khi số dư thay đổi. Truyền số dư mới.</summary>
@@ -51,14 +46,14 @@ namespace ProjectZombie.Features.MetaProgression
         // ====================================================================
 
         /// <summary>
-        /// Khởi tạo từ dữ liệu save (gọi sau khi GameManager nhận được save data).
+        /// Khởi tạo từ dữ liệu save.
         /// </summary>
         public void Initialize(MetaProgressionSaveData saveData)
         {
             _saveData = saveData ?? new MetaProgressionSaveData();
             TotalCurrency = _saveData.totalCurrency;
             OnCurrencyChanged?.Invoke(TotalCurrency);
-            Debug.Log($"[MetaCurrencyManager] Khởi tạo — Coin Sinh Tồn: {TotalCurrency}");
+            Debug.Log($"[MetaCurrencyManager] Khởi tạo — Cổ Tiền: {TotalCurrency}");
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.UI.HUD;
 using UnityEngine.InputSystem;
 
 namespace ProjectZombie.Features.UI.StatsAndSkills
@@ -16,7 +17,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         [SerializeField] private WeaponManager _weaponManager;
 
         [Header("Views")]
-        [SerializeField] private PlayerHUDView _hudView;
+        [SerializeField] private RunHUDView _hudView;
         [SerializeField] private PlayerStatsMenuUIView _statsMenuView;
 
         private PlayerInputActions _inputActions;
@@ -214,37 +215,17 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void HandleHealthChanged(float currentHealth, float maxHealth)
         {
-            if (_hudView != null)
-            {
-                _hudView.UpdateHealth(currentHealth, maxHealth);
-            }
+            // HUD đã do RunHUDPresenter đảm nhận.
         }
 
         private void HandleExpChanged(float currentExp, float maxExp)
         {
-            if (_hudView != null)
-            {
-                _hudView.UpdateExp(currentExp, maxExp);
-            }
+            // HUD đã do RunHUDPresenter đảm nhận.
         }
 
         private void HandleWeaponsChanged()
         {
-            if (_hudView != null && _weaponManager != null)
-            {
-                var displaySkills = new List<PlayerHUDView.SkillDisplayData>();
-                foreach (var weapon in _weaponManager.ActiveWeapons)
-                {
-                    displaySkills.Add(new PlayerHUDView.SkillDisplayData
-                    {
-                        Icon = null, // Có thể lấy icon thực tế từ config/database của weapon nếu có
-                        Level = weapon.WeaponLevel,
-                        Name = $"Weapon {weapon.weaponId}",
-                        Description = $"Description for {weapon.weaponId}"
-                    });
-                }
-                _hudView.UpdateSkills(displaySkills);
-            }
+            // HUD đã do RunHUDPresenter đảm nhận.
         }
 
         private void HandleTimerTick(float elapsedSeconds)
@@ -261,7 +242,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         {
             if (_hudView != null)
             {
-                _hudView.SetKillCount($"💀 {count}");
+                _hudView.SetKillCount($"Kills: {count}");
             }
         }
 

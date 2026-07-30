@@ -183,7 +183,7 @@ namespace ProjectZombie.Features.UI
             if (view == null) return;
 
             // Thiết lập tiêu đề
-            string titleText = isVictory ? "🏆 CHIẾN THẮNG!" : "💀 ĐÃ NGÃ XUỐNG";
+            string titleText = isVictory ? "CHIẾN THẮNG!" : "ĐÃ NGÃ XUỐNG";
             Color titleColor = isVictory ? victoryColor : defeatColor;
             view.SetTitle(titleText, titleColor);
 
@@ -195,10 +195,10 @@ namespace ProjectZombie.Features.UI
             }
 
             // Gửi dữ liệu đã định dạng xuống View
-            view.SetTimeAlive($"⏱ Thời gian sống: {tracker.GetFormattedTime()}");
-            view.SetKillCount($"💀 Zombie đã hạ: {tracker.KillCount}");
-            view.SetMaxLevel($"⬆ Cấp độ đạt: {tracker.MaxLevelReached}");
-            view.SetDamageDealt($"⚔ Sát thương gây ra: {tracker.TotalDamageDealt:F0}");
+            view.SetTimeAlive($"Thời gian sống: {tracker.GetFormattedTime()}");
+            view.SetKillCount($"Zombie đã hạ: {tracker.KillCount}");
+            view.SetMaxLevel($"Cấp độ đạt: {tracker.MaxLevelReached}");
+            view.SetDamageDealt($"Sát thương gây ra: {tracker.TotalDamageDealt:F0}");
 
             // Tính toán Currency nhận được
             _currencyEarned = tracker.CalculateMetaCurrency();

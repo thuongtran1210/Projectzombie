@@ -31,6 +31,10 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Tooltip("Phân loại (dùng bởi Spawner để quản lý wave).")]
         public EnemyTier tier = EnemyTier.Common;
 
+        [Header("Vong Xuyen Attributes (v4.0)")]
+        [Tooltip("Thuộc tính Ngũ Hành của Yêu Ma")]
+        public ElementType elementType = ElementType.None;
+
         public float AttackSpeed => 1f / attackCooldown;
         public float CritChance => 0f;
         public float AttackRange => attackRange;

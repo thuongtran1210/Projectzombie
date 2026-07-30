@@ -37,10 +37,11 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private HealthSystem _playerHealth;
         [SerializeField] private PlayerStats _playerStats;
         [SerializeField] private PlayerExperience _playerExp;
+        [SerializeField] private ProjectZombie.Features.Weapons.WeaponManager _weaponManager;
 
         private bool _isConstructed = false;
 
-        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience)
+        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null)
         {
             if (_isConstructed)
             {
@@ -50,6 +51,7 @@ namespace ProjectZombie.Features.UI.HUD
             _playerHealth = health;
             _playerStats = stats;
             _playerExp = experience;
+            _weaponManager = weaponManager;
 
             SubscribeEvents();
             ForceRefreshAll();
@@ -85,6 +87,13 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
+
+            // Subscribe Âm Dương Manager
+            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
+            {
+                ProjectZombie.Features.YinYang.YinYangManager.Instance.OnYinYangValueChanged += OnYinYangValueChanged;
+                OnYinYangValueChanged(ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue, ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState());
+            }
         }
 
         private void OnDestroy()
@@ -101,6 +110,11 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
             }
+
+            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
+            {
+                ProjectZombie.Features.YinYang.YinYangManager.Instance.OnYinYangValueChanged -= OnYinYangValueChanged;
+            }
         }
 
         private void SubscribeEvents()
@@ -113,6 +127,11 @@ namespace ProjectZombie.Features.UI.HUD
                 _playerExp.OnExpChanged += OnExpChanged;
                 _playerExp.OnLevelUp    += OnLevelUp;
             }
+
+            if (_weaponManager != null)
+            {
+                _weaponManager.OnWeaponsChanged += OnWeaponsChanged;
+            }
         }
 
         private void UnsubscribeEvents()
@@ -124,6 +143,11 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 _playerExp.OnExpChanged -= OnExpChanged;
                 _playerExp.OnLevelUp    -= OnLevelUp;
+            }
+
+            if (_weaponManager != null)
+            {
+                _weaponManager.OnWeaponsChanged -= OnWeaponsChanged;
             }
         }
 
@@ -146,10 +170,20 @@ namespace ProjectZombie.Features.UI.HUD
                 OnLevelUp(_playerExp.CurrentLevel);
             }
 
+            if (_weaponManager != null)
+            {
+                OnWeaponsChanged();
+            }
+
             if (RunStatsTracker.Instance != null)
             {
                 OnTimerTick(RunStatsTracker.Instance.ElapsedTime);
                 OnKillCountChanged(RunStatsTracker.Instance.KillCount);
+            }
+
+            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
+            {
+                OnYinYangValueChanged(ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue, ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState());
             }
         }
 
@@ -192,7 +226,67 @@ namespace ProjectZombie.Features.UI.HUD
         private void OnKillCountChanged(int count)
         {
             // Dùng TMP Rich Text để tô màu số, không dùng _text.color = Color.red
-            _view.SetKillCount($"💀 <color=#FF8C42>{count}</color>");
+            _view.SetKillCount($"Kills: <color=#FF8C42>{count}</color>");
+        }
+
+        private void OnWeaponsChanged()
+        {
+            if (_view == null || _weaponManager == null) return;
+
+            var displaySkills = new System.Collections.Generic.List<RunHUDView.SkillDisplayData>();
+            foreach (var weapon in _weaponManager.ActiveWeapons)
+            {
+                displaySkills.Add(new RunHUDView.SkillDisplayData
+                {
+                    Icon = null,
+                    Level = weapon.WeaponLevel,
+                    Name = $"Weapon {weapon.weaponId}",
+                    Description = $"Description for {weapon.weaponId}"
+                });
+            }
+            _view.UpdateSkills(displaySkills);
+        }
+
+        // ====================================================================
+        // VONG XUYEN (v4.0) EVENT HANDLERS
+        // ====================================================================
+
+        public void OnYinYangValueChanged(float val, ProjectZombie.Features.YinYang.YinYangState state)
+        {
+            if (_view == null) return;
+
+            string stateName = state switch
+            {
+                ProjectZombie.Features.YinYang.YinYangState.YinDominant => "<color=#4A90E2>Âm Thịnh</color>",
+                ProjectZombie.Features.YinYang.YinYangState.YangDominant => "<color=#FF4444>Dương Thịnh</color>",
+                _ => "<color=#FFD700>Thái Cực Cân Bằng</color>"
+            };
+
+            _view.SetYinYangBalance(val, stateName);
+        }
+
+        public void OnYinYangStateChanged(ProjectZombie.Features.YinYang.YinYangState state)
+        {
+            float val = ProjectZombie.Features.YinYang.YinYangManager.Instance != null 
+                ? ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue 
+                : 50f;
+            OnYinYangValueChanged(val, state);
+        }
+
+        public void OnBossElementChanged(ElementType element)
+        {
+            if (_view == null) return;
+            string elemName = element switch
+            {
+                ElementType.Kim => "<color=#FFD700>[BOSS: KIM]</color>",
+                ElementType.Moc => "<color=#4CAF50>[BOSS: MỘC]</color>",
+                ElementType.Thuy => "<color=#2196F3>[BOSS: THỦY]</color>",
+                ElementType.Hoa => "<color=#FF5722>[BOSS: HỎA]</color>",
+                ElementType.Tho => "<color=#795548>[BOSS: THỔ]</color>",
+                _ => ""
+            };
+
+            _view.SetBossElement(elemName);
         }
     }
 }

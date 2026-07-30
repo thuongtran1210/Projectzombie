@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.MetaProgression
     [Serializable]
     public class MetaProgressionSaveData
     {
-        [Tooltip("Tổng số Coin Sinh Tồn tích lũy.")]
+        [Tooltip("Tổng số Cổ Tiền (tiền xu cổ Việt Nam) tích lũy.")]
         public int totalCurrency = 0;
 
         [Tooltip("Cấp độ của từng nút trong Permanent Upgrade Tree. Index khớp với PermanentUpgradeTreeData.")]
