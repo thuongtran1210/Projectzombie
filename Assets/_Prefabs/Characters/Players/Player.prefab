@@ -238,6 +238,7 @@ MonoBehaviour:
   dashAction: {fileID: -8837876224618443148, guid: dc7f196422f615f48ba64a8388a367ec, type: 3}
   dashSpeedMultiplier: 3
   dashDuration: 0.2
+  virtualJoystick: {fileID: 0}
 --- !u!114 &8848975518660136443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,7 +317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLoadout:
-  - {fileID: 11400000, guid: b232a05d1bf032b4bbed91bf5107169f, type: 2}
+  - {fileID: 11400000, guid: 46dfc6df7cf77fb46aff2e2cc60eb022, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
 --- !u!114 &7402922671366627933
 MonoBehaviour:

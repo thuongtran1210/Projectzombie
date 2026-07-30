@@ -18,6 +18,6 @@ MonoBehaviour:
   rarity: Epic
   evolutionWeaponId: E006
   elementType: 4
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 2389269143492382759, guid: 09b4e48d3ee686148a9b8e0397b2d8c1, type: 3}
   baseDamage: 45
   baseAttackSpeed: 2.5

@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 5049467918628572216}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 8657193382573645361}
   - component: {fileID: 2389269143492382759}
   m_Layer: 7
-  m_Name: Weapon_Targed
+  m_Name: Weapon_W008_DaoCuuVi
   m_TagString: Untagged
   m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -73,9 +73,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8988189085547398515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fa7058792ae4604185ebf2061eef4fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 869cd323ca539e846a58e9799b7e2b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 3794262654688064280}
-  weaponId: ramdomrange_01
-  projectileData: {fileID: 11400000, guid: 1b9774568dc7e7048b2ac170cf3a25a5, type: 2}
+  weaponId: W008
+  projectileData: {fileID: 11400000, guid: efa8ad7664d106b4fadd2d298a2042f3, type: 2}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProjectilePlayer
   m_EditorClassIdentifier: 
   ProjectileID: projectile_mic_01
-  LogicPrefab: {fileID: 0}
+  LogicPrefab: {fileID: 1125476723101868530, guid: e4314e0c2767e604299e29b02a3acc5d, type: 3}
   Speed: 10
   MaxRange: 20
   Lifetime: 3

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8473084833526443317
+--- !u!1 &297462822436431392
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8373833296130532267}
-  - component: {fileID: 8773403774852505993}
-  m_Layer: 7
-  m_Name: Weapon_Saws
+  - component: {fileID: 5801970753440099492}
+  - component: {fileID: 9098636652766733402}
+  m_Layer: 6
+  m_Name: Weapon_W010_LinhPhuMaDa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8373833296130532267
+--- !u!4 &5801970753440099492
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8473084833526443317}
+  m_GameObject: {fileID: 297462822436431392}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,21 +32,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8773403774852505993
+--- !u!114 &9098636652766733402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8473084833526443317}
+  m_GameObject: {fileID: 297462822436431392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9f1394024ce4bd4396dd0fb1748096c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0bba64f6ee56b81438aeef5f3bd75195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firePoint: {fileID: 8373833296130532267}
-  weaponId: saw_01
-  orbPrefab: {fileID: 4508934529687082995, guid: bb6197e0671de004da5b9c110cd10d08, type: 3}
-  baseRadius: 5
-  baseOrbitSpeed: 180
-  baseOrbCount: 1
+  firePoint: {fileID: 5801970753440099492}
+  weaponId: W010
+  petPrefab: {fileID: 1059921293575291562, guid: e663bbccfe7705d4ea4b507c70ddc72f, type: 3}

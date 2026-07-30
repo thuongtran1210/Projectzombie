@@ -19,3 +19,4 @@ MonoBehaviour:
   attackSpeed: 1
   critChance: 0.05
   pickupRange: 100
+  characterPassives: []

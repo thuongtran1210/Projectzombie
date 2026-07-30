@@ -18,6 +18,6 @@ MonoBehaviour:
   rarity: Rare
   evolutionWeaponId: E004
   elementType: 4
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 9098636652766733402, guid: c886942421aec064db2a865c80dee974, type: 3}
   baseDamage: 18
   baseAttackSpeed: 1.2

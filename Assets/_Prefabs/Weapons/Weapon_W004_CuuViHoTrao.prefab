@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5801970753440099492}
   - component: {fileID: 9098636652766733402}
   m_Layer: 6
-  m_Name: Weapon_VampiricBats
+  m_Name: Weapon_W004_CuuViHoTrao
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,9 +41,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 297462822436431392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bba64f6ee56b81438aeef5f3bd75195, type: 3}
+  m_Script: {fileID: 11500000, guid: bd42e36e5160a474bb25a285d3e37c9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 5801970753440099492}
-  weaponId: Vampiric_01
+  weaponId: W004
   petPrefab: {fileID: 1059921293575291562, guid: e663bbccfe7705d4ea4b507c70ddc72f, type: 3}
