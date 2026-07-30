@@ -1,92 +1,81 @@
-# Tài Liệu Hệ Thống Nâng Cấp (Upgrades System)
+# Tài Liệu Hệ Thống Nâng Cấp (Upgrades System) — VONG XUYÊN (GDD v4.0)
 
-Tài liệu này cung cấp hướng dẫn chi tiết về cách hoạt động của hệ thống Nâng Cấp (Upgrades) trong **ProjectZombie**. Nó được chia làm hai phần: Hướng dẫn cho **Game Designer** (cách thiết kế, cân bằng và tạo dữ liệu) và **Developer** (cấu trúc code, cách vận hành và mở rộng hệ thống).
+Tài liệu này cung cấp hướng dẫn chi tiết về cách hoạt động của hệ thống Nâng Cấp (Upgrades) trong **ProjectZombie: Vong Xuyên**. Nó được chia làm hai phần: Hướng dẫn cho **Game Designer** (cách thiết kế, cân bằng Ngũ Hành & Âm Dương) và **Developer** (mô hình Polymorphism, Strategy Pattern, YinYang Filtering).
 
 ---
 
 ## Phần 1: Dành Cho Game Designer (GD)
 
-Hệ thống nâng cấp trong game sử dụng **ScriptableObjects** để lưu trữ dữ liệu. Điều này cho phép GD tạo, chỉnh sửa và thử nghiệm các bản nâng cấp mới một cách dễ dàng trực tiếp từ giao diện Unity Editor mà không cần nhờ đến Dev.
+Hệ thống nâng cấp trong game sử dụng **ScriptableObjects** kế thừa từ `UpgradeData`. GD có thể tạo, chỉnh sửa và cấu hình thuộc tính Ngũ Hành / Âm Dương trực tiếp trên Unity Editor.
 
 ### 1. Phân loại Nâng cấp (UpgradeType)
 
-Mỗi thẻ nâng cấp thuộc về một `UpgradeType` nhất định. Việc phân loại này ảnh hưởng đến logic xuất hiện và sức mạnh của thẻ:
+Mỗi thẻ nâng cấp thuộc về một `UpgradeType` nhất định:
 
-*   **WeaponUpgrade**: Nâng cấp chuyên biệt cho một loại vũ khí cụ thể (VD: Tăng đạn cho Shotgun). Yêu cầu trường `WeaponId` phải được điền.
-*   **CommonUpgrade**: Nâng cấp thụ động (Passive) chung cho toàn bộ nhân vật (VD: Tăng 10% sát thương tổng, tăng tốc độ chạy).
-*   **SignatureSkillUpgrade**: Nâng cấp kỹ năng đặc trưng của nhân vật hiện tại.
-*   **FactionCounterUpgrade**: Nâng cấp tăng sức mạnh khi đối đầu với một phe phái (Faction) cụ thể.
-*   **RareUpgrade**: Nâng cấp hiếm, mang lại chỉ số lớn hơn hoặc hiệu ứng đặc biệt. Tỉ lệ xuất hiện (`SpawnWeight`) nên được set thấp.
-*   **EvolutionUpgrade**: Nâng cấp Tiến Hóa. Dùng để ghép/nâng cấp vũ khí lên cấp độ tối thượng (Ví dụ: Level 6). Yêu cầu vũ khí hiện tại đạt cấp độ tối đa và người chơi phải sở hữu một thẻ Passive cụ thể.
+*   **WeaponUpgrade**: Nâng cấp chuyên biệt cho một loại Pháp Bảo (Level 1–5). Yêu cầu trường `WeaponId` phải được điền.
+*   **CommonUpgrade**: Nâng cấp thụ động (Passive) chung cho nhân vật (VD: Tăng HP, Tốc chạy, Tầm hút kinh nghiệm).
+*   **SignatureSkillUpgrade**: Nâng cấp kỹ năng đặc trưng của nhân vật (Thư Sinh, Đạo Sĩ, Võ Tăng).
+*   **FactionCounterUpgrade**: Nâng cấp tăng sát thương đối kháng với loài Yêu ma cụ thể (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
+*   **RareUpgrade**: Nâng cấp hiếm mang lại chỉ số lớn hoặc hiệu ứng đặc biệt. `SpawnWeight` thấp.
+*   **EvolutionUpgrade**: Nâng cấp Tiến Hóa Pháp Bảo (Level 5 Max ➔ Vũ khí Tối Thượng `E001`–`E012`). Yêu cầu Pháp Bảo gốc đạt Cấp 5 và có thể yêu cầu Thẻ Passive liên kết.
 
-### 2. Cách Tạo Một Thẻ Nâng Cấp Mới
+### 2. Bộ Lọc Ngũ Hành & Cán Cân Âm Dương (GDD v4.0 Requirement)
 
-1.  Trong cửa sổ **Project**, điều hướng tới thư mục lưu trữ Data (Khuyến nghị: `Assets/_Data/Upgrades/`).
-2.  Nhấn **Chuột Phải -> Create -> ProjectZombie -> Upgrades -> Upgrade Data**.
-3.  Đặt tên cho file (VD: `Shotgun_Spread_Up`).
-4.  Điền các thông số trong cửa sổ **Inspector**:
+Mỗi thẻ `UpgradeData` tích hợp các trường cấu hình theo cơ chế Vong Xuyên:
+*   **Element (`ElementType`)**: Thuộc tính Ngũ Hành của thẻ (Kim, Mộc, Thủy, Hỏa, Thổ).
+*   **Required YinYang State (`YinYangState`)**: Thẻ chỉ xuất hiện khi cán cân Âm Dương ở đúng trạng thái chỉ định (`YinState`, `YangState`, hoặc `Balanced`).
+*   **Check YinYang State (`bool`)**: Bật cờ này để bắt buộc kiểm tra trạng thái Âm Dương khi lọc thẻ Gacha.
 
-#### Cấu hình Hiển thị (Display Info)
-*   **Upgrade Name**: Tên thẻ hiển thị cho người chơi (VD: "Đạn Chùm").
-*   **Description**: Mô tả tác dụng của thẻ (VD: "Tăng thêm 2 viên đạn mỗi lần bắn Shotgun").
-*   **Icon**: Hình ảnh hiển thị trên thẻ UI.
+### 3. Cách Tạo Một Thẻ Nâng Cấp Mới
 
-#### Cấu hình Hệ thống (Upgrade Settings)
-*   **Upgrade Type**: Loại nâng cấp (Chọn từ danh sách ở trên).
-*   **Spawn Weight**: Tỉ lệ "rơi" ra thẻ này khi lên cấp. Số càng lớn, thẻ càng dễ xuất hiện. *Lưu ý: Mặc định là 1. Để thẻ hiếm hơn, hãy để 0.5 hoặc 0.1.*
-*   **Weapon ID**: ID của vũ khí (Chỉ cần điền nếu đây là thẻ WeaponUpgrade, EvolutionUpgrade hoặc thẻ unlock vũ khí mới).
-
-#### Các Cấu hình Khác
-*   **New Weapon Setup**: Nếu thẻ này cung cấp vũ khí hoàn toàn mới cho người chơi, kéo Prefab của vũ khí đó vào `Weapon Prefab`.
-*   **Override Settings**: (Dành cho cấp 4 hoặc 6) Kéo Prefab đạn đặc biệt vào `Override Projectile Prefab` nếu muốn thay đổi hình ảnh/logic viên đạn của vũ khí hiện tại.
-*   **Stat Modifiers**: Cộng thêm các chỉ số trực tiếp (Damage, Attack Speed, Projectile Count, Pierce, Scale).
-
-#### Điều kiện Xuất hiện (Requirement Settings)
-*   **Required Current Level**: Cấp độ vũ khí hiện tại mà người chơi cần đạt để thẻ này được phép xuất hiện (Rất quan trọng cho thẻ Tiến Hóa hoặc các nâng cấp theo chuỗi).
-*   **Required Passive Id**: Áp dụng cho Tiến hóa (Evolution). Người chơi bắt buộc phải có thẻ thụ động này trong kho đồ thì vũ khí mới có thể tiến hóa.
-
-> [!TIP]
-> **Mẹo Tool tự động hóa:**
-> Để tạo nhanh các thẻ mẫu, Game Designer có thể sử dụng công cụ:
-> Bấm menu **Tools -> ProjectZombie -> Generate Sample Upgrades**. Unity sẽ tự động sinh ra một bộ Data mẫu tại `Assets/_Data/Upgrades/Samples` để bạn tham khảo.
+1. Trong cửa sổ **Project**, điều hướng tới `Assets/_Data/Upgrades/`.
+2. Nhấn **Chuột Phải ➔ Create ➔ ProjectZombie ➔ Upgrades**.
+3. Chọn loại Subclass tương ứng:
+   - `Weapon Upgrade Data` (Cho Pháp Bảo)
+   - `Common Upgrade Data` (Cho Thụ động / Passive)
+   - `Evolution Upgrade Data` (Cho Tiến Hóa Vũ Khí Tối Thượng)
+4. Điền các thông số trong Inspector:
+   - **Upgrade Name / Description / Icon**: Hiển thị trên UI 3 thẻ chọn.
+   - **Element**: Chọn hệ Ngũ Hành tương ứng với Pháp Bảo/Skill.
+   - **Required YinYang State**: Thiết lập điều kiện Âm Dương xuất hiện.
+   - **Spawn Weight**: Trọng số xuất hiện (mặc định = 1.0).
 
 ---
 
 ## Phần 2: Dành Cho Developer
 
-Phần này giải thích cách hệ thống hoạt động dưới nền tảng code để Dev dễ dàng bảo trì hoặc thêm tính năng mới.
+### 1. Kiến trúc Đa Hình (Polymorphic Architecture)
 
-### 1. Kiến trúc Dữ liệu (`UpgradeData.cs`)
+Hệ thống nâng cấp tuân thủ **Open/Closed Principle**. Lớp cơ sở `UpgradeData` định nghĩa 2 phương thức ảo bắt buộc:
 
-*   `UpgradeData` kế thừa từ `ScriptableObject`. Dữ liệu tĩnh không bao giờ thay đổi trong runtime.
-*   Cấu trúc chỉ số được tách riêng vào `struct WeaponStatModifier` để dễ dàng copy/truyền dữ liệu:
-    ```csharp
-    public struct WeaponStatModifier {
-        public float damageBonus;
-        public float attackSpeedBonus;
-        // ...
-    }
-    ```
+```csharp
+public abstract class UpgradeData : ScriptableObject
+{
+    // Kiểm tra điều kiện xuất hiện (Bao gồm YinYangState, Level vũ khí, Passive requirement)
+    public abstract bool IsAvailable(GameObject player);
 
-### 2. Luồng hoạt động cơ bản (Workflow)
+    // Thực thi hiệu ứng khi người chọn thẻ trên UI
+    public abstract void ApplyUpgrade(GameObject player);
+}
+```
 
-1.  **Level Up**: Khi người chơi đủ EXP, hệ thống báo hiệu Level Up.
-2.  **Pull Upgrades (UpgradeManager)**: `UpgradeManager` (hoặc class tương đương quản lý Pool nâng cấp) duyệt qua danh sách tất cả `UpgradeData` hiện có.
-3.  **Lọc Điều Kiện (Filtering)**: Hệ thống kiểm tra các biến `requiredCurrentLevel`, `requiredPassiveId`, và xem vũ khí (`weaponId`) đã max level chưa để loại bỏ các thẻ không hợp lệ.
-4.  **Quay Gacha (Weighted Random)**: Trong số các thẻ hợp lệ, hệ thống dùng `spawnWeight` để quay ngẫu nhiên 3 thẻ.
-5.  **Hiển thị UI (UpgradeUIManager)**: Truyền dữ liệu 3 thẻ này cho `UpgradeUIManager` -> `UpgradeCardUI` để hiển thị.
-6.  **Xử lý Khi Chọn (Apply Upgrade)**:
-    *   Nếu là **Vũ khí mới** (`weaponPrefab != null`): Gọi hệ thống Inventory/WeaponManager để Instantiate và gắn cho người chơi.
-    *   Nếu là **Tiến hóa/Thay đổi đạn** (`overrideProjectilePrefab != null`): Báo cho `Weapon_RangedBase` thay thế Prefab đạn hiện hành.
-    *   Nếu là **Buff chỉ số** (`statModifier`): Áp dụng `WeaponStatModifier` vào chỉ số gốc của Weapon hoặc vào Player Stats.
+### 2. Các Lớp Subclass Hiện Có
 
-### 3. Cách mở rộng hệ thống (Extending the system)
+| Class | Trách nhiệm | Luồng IsAvailable & ApplyUpgrade |
+|---|---|---|
+| `CommonUpgradeData` | Nâng cấp chỉ số Passive nhân vật | Read/Write qua `PlayerStats` & `PlayerPassives` |
+| `WeaponUpgradeData` | Buff chỉ số Pháp Bảo đang có | Gọi `WeaponBase.ApplyStatModifier()` hoặc thêm mới qua `WeaponManager` |
+| `EvolutionUpgradeData` | Tiến hóa Pháp Bảo Max Level | Kiểm tra `WeaponLevel >= 5`, Hủy vũ khí cũ via `WeaponManager.RemoveWeapon()`, Instantiate `weaponPrefab` mới (`E001`–`E012`) |
 
-#### Thêm một loại chỉ số mới
-Ví dụ muốn thêm tính năng "Tỉ lệ chí mạng" (Critical Chance):
-1.  Mở `UpgradeData.cs`.
-2.  Thêm biến `public float critChanceBonus;` vào trong `struct WeaponStatModifier`.
-3.  Mở file xử lý chiến đấu (ví dụ `WeaponBase` hoặc `PlayerStats`) để lấy giá trị `critChanceBonus` này ra sử dụng khi tính toán Damage.
+### 3. Luồng Xử Lý Gacha & Lọc Thẻ (`UpgradeManager.cs`)
+
+1. **Sự kiện Lên Cấp (Level Up)**: `PlayerExperience` phát sự kiện ➔ `UpgradeUIPresenter` bắt sự kiện và yêu cầu 3 thẻ từ `UpgradeManager`.
+2. **Lọc Thẻ Cấm & Điều Kiện (Filtering)**:
+   - Loại bỏ các thẻ trong `_bannedUpgrades` (Banlist).
+   - Kiểm tra `upgrade.IsAvailable(player)` (xác minh Level vũ khí, Thẻ Passive, Cán cân Âm Dương).
+3. **Quay Gacha Weighted Random**: Dựa trên `spawnWeight` để rút ngẫu nhiên 3 thẻ hợp lệ.
+4. **Hiển thị & Kích hoạt**: `UpgradeUIView` hiển thị 3 thẻ. Khi người chơi click, `UpgradeManager` gọi `selectedUpgrade.ApplyUpgrade(player)` và resuming game scale (`Time.timeScale = 1`).
+
 
 #### Thêm một hiệu ứng đặc biệt (Buff Status, Element...)
 Nếu nâng cấp không chỉ cộng chỉ số mà còn gây ra hiệu ứng (VD: Bắn ra đạn lửa, Giật sét), hạn chế nhồi nhét vào `WeaponStatModifier`.

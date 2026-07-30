@@ -12,8 +12,8 @@ namespace ProjectZombie.Features.Upgrades
         [Tooltip("ID vũ khí gốc cần để tiến hóa")]
         public string weaponId;
 
-        [Tooltip("Cấp độ vũ khí hiện tại yêu cầu để thẻ này xuất hiện (thường là cấp Max)")]
-        public int requiredCurrentLevel = 6;
+        [Tooltip("Cấp độ vũ khí hiện tại yêu cầu để thẻ này xuất hiện (mặc định Max Level = 5 trong GDD v4.0)")]
+        public int requiredCurrentLevel = 5;
 
         [Tooltip("ID của Vật phẩm Bị động (Passive) yêu cầu để tiến hóa. Bỏ trống nếu không yêu cầu.")]
         public string requiredPassiveId;

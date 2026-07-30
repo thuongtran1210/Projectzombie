@@ -1,0 +1,712 @@
+fileFormatVersion: 2
+guid: ffb6ecf7493305e4481587fbd3fe8db3
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_0
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 764
+        width: 221
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b0882e8fd57e7048bcf330202dcfc5c
+      internalID: 1383195376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_1
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 764
+        width: 220
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74d679c0c490e784bab5134a7421e979
+      internalID: 50215943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_2
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 764
+        width: 219
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e7d6b391c4c9b2419cc3c0d6134039d
+      internalID: 2177920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_3
+      rect:
+        serializedVersion: 2
+        x: 771
+        y: 764
+        width: 221
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 271a2b5c2e5753d4ab553a29a0e4a0e6
+      internalID: -19086080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_4
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 717
+        width: 82
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19cd4c542ef132d4a8ff2ac9c64050a2
+      internalID: 1531565833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_5
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 717
+        width: 87
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 133dc5ec76a556c47a1bf05a563c1c5c
+      internalID: -1681890540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_6
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 717
+        width: 87
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a46032a2d331ad41989b55a83554ada
+      internalID: -2139124980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_7
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 717
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04a27bd6865ed1f428b53c1cad003588
+      internalID: -314845224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_8
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 415
+        width: 247
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3f54fed50bc4eb47bd11787e8fd1d7e
+      internalID: 1560636561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_9
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 415
+        width: 220
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ccb0105fd066d84b9cfa20add98ccb3
+      internalID: -724295115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_10
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 415
+        width: 220
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29135aa35a6a41049a95abd933d86d97
+      internalID: -1369524335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_11
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 415
+        width: 221
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bfcdb484681eaf41a872c2fc3eb2418
+      internalID: -1663308963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_12
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 367
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adf0b351f7b0bec428b657ee331d768b
+      internalID: 749935292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_13
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 367
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96a6ecc4704e22648b0f1120d35a9ba6
+      internalID: -223721001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_14
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 367
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aee29ce4537c84b4cabfeb9f42b06962
+      internalID: 511271103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_15
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 367
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbd4f9236c467ce48b5f6e49dcb4c1a3
+      internalID: 915034146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_16
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 68
+        width: 222
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 487ca5e43ac5aca41b1c270c4d5cd65a
+      internalID: -277190010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_17
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 68
+        width: 221
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9460e3b64f2762c46bb61ab3674e96fe
+      internalID: 2143198281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_18
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 68
+        width: 222
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c2242faba83e3945956dcb5eedcb6bb
+      internalID: 1015382363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_19
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 68
+        width: 223
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f093232cf2832a44ab48b32a070221f
+      internalID: 1356788643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_20
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 21
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08511bd0e49e4a440957b07d7cf11996
+      internalID: 140225385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_21
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 21
+        width: 88
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7e57818c2aae8f43ac5c1c120ae0ccf
+      internalID: -1641978702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_22
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 21
+        width: 65
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 662adb99e634ae048b3747431527ea46
+      internalID: 1105432521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_23
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 21
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b4ab00247c20e54d9a13916e38b36c1
+      internalID: 2071865064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_24
+      rect:
+        serializedVersion: 2
+        x: 841
+        y: 21
+        width: 65
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6b76e9ae51f0674d8e3e05bfeafa644
+      internalID: -1406593054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pixel_art_16x16_12_weapons_transparent_25
+      rect:
+        serializedVersion: 2
+        x: 907
+        y: 21
+        width: 21
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0401e06b2b591c14cbd828e40298d88a
+      internalID: -132559778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      pixel_art_16x16_12_weapons_transparent_0: 1383195376
+      pixel_art_16x16_12_weapons_transparent_1: 50215943
+      pixel_art_16x16_12_weapons_transparent_10: -1369524335
+      pixel_art_16x16_12_weapons_transparent_11: -1663308963
+      pixel_art_16x16_12_weapons_transparent_12: 749935292
+      pixel_art_16x16_12_weapons_transparent_13: -223721001
+      pixel_art_16x16_12_weapons_transparent_14: 511271103
+      pixel_art_16x16_12_weapons_transparent_15: 915034146
+      pixel_art_16x16_12_weapons_transparent_16: -277190010
+      pixel_art_16x16_12_weapons_transparent_17: 2143198281
+      pixel_art_16x16_12_weapons_transparent_18: 1015382363
+      pixel_art_16x16_12_weapons_transparent_19: 1356788643
+      pixel_art_16x16_12_weapons_transparent_2: 2177920
+      pixel_art_16x16_12_weapons_transparent_20: 140225385
+      pixel_art_16x16_12_weapons_transparent_21: -1641978702
+      pixel_art_16x16_12_weapons_transparent_22: 1105432521
+      pixel_art_16x16_12_weapons_transparent_23: 2071865064
+      pixel_art_16x16_12_weapons_transparent_24: -1406593054
+      pixel_art_16x16_12_weapons_transparent_25: -132559778
+      pixel_art_16x16_12_weapons_transparent_3: -19086080
+      pixel_art_16x16_12_weapons_transparent_4: 1531565833
+      pixel_art_16x16_12_weapons_transparent_5: -1681890540
+      pixel_art_16x16_12_weapons_transparent_6: -2139124980
+      pixel_art_16x16_12_weapons_transparent_7: -314845224
+      pixel_art_16x16_12_weapons_transparent_8: 1560636561
+      pixel_art_16x16_12_weapons_transparent_9: -724295115
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

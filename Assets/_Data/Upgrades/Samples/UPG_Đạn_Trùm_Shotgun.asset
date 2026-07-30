@@ -21,7 +21,7 @@ MonoBehaviour:
   maxLevel: 0
   requiredYinYangState: 1
   checkYinYangState: 0
-  element: 0
+  element: 3
   weaponId: 
   requiredCurrentLevel: 1
   weaponPrefab: {fileID: 0}

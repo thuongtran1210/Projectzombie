@@ -21,7 +21,7 @@ MonoBehaviour:
   maxLevel: 0
   requiredYinYangState: 1
   checkYinYangState: 0
-  element: 0
+  element: 1
   playerStatModifier:
     maxHealthBonus: 0
     moveSpeedBonus: 2

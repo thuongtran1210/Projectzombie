@@ -10,8 +10,12 @@ Hệ thống Nâng cấp không còn phụ thuộc vào một "God Object" (đ�
 
 ### Lớp gốc: `UpgradeData` (Abstract Class)
 Tất cả các thẻ nâng cấp trong game đều kế thừa từ lớp này (`ScriptableObject`).
-Lớp này định nghĩa 2 phương thức ảo (abstract methods) cực kỳ quan trọng:
-1. `bool IsAvailable(GameObject player)`: Mỗi loại thẻ tự quyết định xem nó có được phép xuất hiện trong danh sách bốc thăm (Gacha) của người chơi hay không.
+Lớp này định nghĩa các thuộc tính Ngũ Hành / Âm Dương (v4.0) và 2 phương thức ảo (abstract methods) cực kỳ quan trọng:
+- **`element` (`ElementType`)**: Thuộc tính Ngũ Hành của thẻ.
+- **`requiredYinYangState` (`YinYangState`)**: Yêu cầu trạng thái Cán cân Âm Dương (`YinState`, `YangState`, `Balanced`).
+- **`checkYinYangState` (`bool`)**: Cờ cấm xuất hiện nếu cán cân Âm Dương không khớp.
+
+1. `bool IsAvailable(GameObject player)`: Mỗi loại thẻ tự quyết định xem nó có được phép xuất hiện trong danh sách bốc thăm (Gacha) của người chơi hay không (kiểm tra level vũ khí, thẻ bị động liên kết, và trạng thái Cán cân Âm Dương).
 2. `void ApplyUpgrade(GameObject player)`: Mỗi loại thẻ tự định nghĩa cách nó sẽ tác động lên người chơi (cộng máu, cộng dame, thay đổi vũ khí...) khi được chọn.
 
 ---
@@ -23,7 +27,7 @@ Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
 ### 2.1. `CommonUpgradeData`
 *   **Mục đích**: Tăng các chỉ số bị động (Passive) cho bản thân nhân vật (Máu, Tốc độ chạy, Kinh nghiệm...).
 *   **Các biến quan trọng**: `playerStatModifier`, `maxLevel` (0 = Không giới hạn cấp).
-*   **IsAvailable**: Đọc số lần nâng cấp từ `PlayerPassives.GetUpgradeCount(upgradeName)`. Trả về `false` nếu `maxLevel > 0` và `currentCount >= maxLevel`.
+*   **IsAvailable**: Đọc số lần nâng cấp từ `PlayerPassives.GetUpgradeCount(upgradeName)`. Trả về `false` nếu `maxLevel > 0` và `currentCount >= maxLevel`. Đồng thời kiểm tra YinYang Filter nếu `checkYinYangState` được bật.
 *   **ApplyUpgrade**: Lấy component `PlayerStats` từ player và gọi các hàm `AddMaxHealth()`, `AddMoveSpeed()`... Đồng thời ghi nhận và tăng đếm vào `PlayerPassives`.
 
 ### 2.2. `WeaponUpgradeData`
@@ -33,8 +37,8 @@ Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
 *   **ApplyUpgrade**: Lấy `WeaponBase` thông qua `GetWeaponById()` và gọi hàm `ApplyStatModifier()`.
 
 ### 2.3. `EvolutionUpgradeData`
-*   **Mục đích**: Tiến hóa một vũ khí lên dạng tối thượng.
-*   **Các biến quan trọng**: `weaponId`, `requiredPassiveId`, `requiredCurrentLevel` (mặc định = 6).
+*   **Mục đích**: Tiến hóa một vũ khí lên dạng tối thượng (`E001`–`E012`).
+*   **Các biến quan trọng**: `weaponId`, `requiredPassiveId`, `requiredCurrentLevel` (mặc định = 5).
 *   **IsAvailable**: Kiểm tra xem vũ khí hiện tại đã max cấp chưa và người chơi có sở hữu thẻ bị động `requiredPassiveId` hay không.
 *   **ApplyUpgrade**: Hủy vũ khí cũ bằng `WeaponManager.RemoveWeapon()`, và Instantiate `weaponPrefab` mới rồi gắn vào `WeaponManager`.
 
@@ -44,7 +48,7 @@ Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
 
 1. **Khi Lên Cấp (Level Up):** `PlayerExperience` kích hoạt sự kiện `OnLevelUp`.
 2. **Hiển Thị UI:** `UpgradeUIPresenter` bắt sự kiện và gọi `UpgradeManager.Instance.GetRandomUpgrades(count, playerGameObject)`.
-3. **Lọc Thẻ (Filtering):** `UpgradeManager` duyệt qua pool thẻ, tự động loại bỏ các thẻ đang bị cấm trong `_bannedUpgrades` và các thẻ `!IsAvailable(player)`.
+3. **Lọc Thẻ (Filtering):** `UpgradeManager` duyệt qua pool thẻ, tự động loại bỏ các thẻ đang bị cấm trong `_bannedUpgrades`, các thẻ `!IsAvailable(player)`, và các thẻ không khớp với Cán cân Âm Dương (`YinYangManager.Instance.CurrentState`).
 4. **Bốc Thăm (Weighted Random):** Dựa vào chỉ số `spawnWeight`, hệ thống quay Gacha lấy ra `count` thẻ ngẫu nhiên.
 5. **Cơ Chế Reroll / Skip / Ban:**
    - **Reroll:** Người chơi tiêu 1 lượt Reroll (`_currentRerolls`), hệ thống bốc lại danh sách 3 thẻ mới.
