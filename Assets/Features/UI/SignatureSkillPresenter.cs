@@ -105,8 +105,8 @@ namespace ProjectZombie.Features.UI
         {
             if (_skillManager == null || !_skillManager.IsReady) return;
 
-            // Nếu là Thư Sinh: Hiển thị Overlay chọn hệ 1.5s
-            if (_skillManager.CharacterType == CharacterType.ThuSinh && _elementPickerOverlayView != null)
+            // Nếu là skill của Thư Sinh: Hiển thị Overlay chọn hệ 1.5s
+            if (_skillManager.ActiveSkill is ThuSinhSignatureSkill && _elementPickerOverlayView != null)
             {
                 _elementPickerOverlayView.ShowOverlay();
             }

@@ -8513,7 +8513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonView: {fileID: 0}
-  _elementPickerOverlayView: {fileID: 0}
+  _elementPickerOverlayView: {fileID: 1628095386}
   _skillManager: {fileID: 0}
 --- !u!1 &799326420
 GameObject:
@@ -11206,7 +11206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1628095385
 RectTransform:
   m_ObjectHideFlags: 0

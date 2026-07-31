@@ -3,28 +3,19 @@ using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Player.Skills
 {
-    public enum CharacterType
-    {
-        ThuSinh,
-        DaoSi,
-        VoTang
-    }
-
     /// <summary>
     /// Manager điều khiển Kỹ năng Chủ động (Signature Skill) trên Player.
     /// Quản lý thời gian hồi chiêu, kiểm tra điều kiện thi triển và kích hoạt sự kiện cho Presenter.
+    /// Sử dụng ScriptableObject Factory Pattern (Open/Closed Principle).
     /// </summary>
     [RequireComponent(typeof(PlayerStats))]
     [RequireComponent(typeof(HealthSystem))]
     public class SignatureSkillManager : MonoBehaviour
     {
-        [Header("Character Selection")]
-        [SerializeField] private CharacterType _characterType = CharacterType.ThuSinh;
+        [Header("Skill Configuration (ScriptableObject Factory)")]
+        [SerializeField] private SignatureSkillData _skillData;
 
-        [Header("Optional Prefab Overrides")]
-        [SerializeField] private GameObject _batQuaiTranZonePrefab;
-
-        public CharacterType CharacterType => _characterType;
+        public SignatureSkillData SkillData => _skillData;
         public ISignatureSkill ActiveSkill { get; private set; }
 
         public float RemainingCooldown { get; private set; }
@@ -42,23 +33,22 @@ namespace ProjectZombie.Features.Player.Skills
         {
             _playerStats = GetComponent<PlayerStats>();
             _healthSystem = GetComponent<HealthSystem>();
-            InitializeSkill(_characterType);
+
+            if (_skillData != null)
+            {
+                InitializeSkill(_skillData);
+            }
         }
 
-        public void InitializeSkill(CharacterType type)
+        /// <summary>
+        /// Khởi tạo skill bằng ScriptableObject Factory (Chuẩn OCP - Không sử dụng switch/case).
+        /// </summary>
+        public void InitializeSkill(SignatureSkillData skillData)
         {
-            _characterType = type;
-            switch (type)
+            _skillData = skillData;
+            if (_skillData != null)
             {
-                case CharacterType.ThuSinh:
-                    ActiveSkill = new ThuSinhSignatureSkill();
-                    break;
-                case CharacterType.DaoSi:
-                    ActiveSkill = new DaoSiSignatureSkill(_batQuaiTranZonePrefab);
-                    break;
-                case CharacterType.VoTang:
-                    ActiveSkill = new VoTangSignatureSkill();
-                    break;
+                ActiveSkill = _skillData.CreateSkill();
             }
 
             RemainingCooldown = 0f;
