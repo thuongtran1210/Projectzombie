@@ -79,4 +79,4 @@ MonoBehaviour:
   firePoint: {fileID: 3794262654688064280}
   weaponId: W001
   element: 1
-  projectileData: {fileID: 11400000, guid: efa8ad7664d106b4fadd2d298a2042f3, type: 2}
+  projectileData: {fileID: 11400000, guid: b6aedf7de688d4f4e9ab8499feccbced, type: 2}

@@ -87,6 +87,19 @@ namespace ProjectZombie.Features.Weapons.Editor
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
 
+            // Tự động tìm Prefab tương ứng trong Assets/_Prefabs/Weapons/ theo ID (tránh lệch dấu tiếng Việt)
+            WeaponBase weaponPrefab = null;
+            string[] guids = AssetDatabase.FindAssets($"Weapon_{def.id}_ t:Prefab", new string[] { "Assets/_Prefabs/Weapons" });
+            if (guids.Length > 0)
+            {
+                string prefabPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                var prefabObj = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                if (prefabObj != null)
+                {
+                    weaponPrefab = prefabObj.GetComponent<WeaponBase>();
+                }
+            }
+
             SerializedObject so = new SerializedObject(asset);
             so.FindProperty("weaponId").stringValue = def.id;
             so.FindProperty("weaponName").stringValue = def.name;
@@ -96,6 +109,15 @@ namespace ProjectZombie.Features.Weapons.Editor
             so.FindProperty("elementType").enumValueIndex = (int)def.element;
             so.FindProperty("baseDamage").floatValue = def.damage;
             so.FindProperty("baseAttackSpeed").floatValue = def.cooldown;
+            if (weaponPrefab != null)
+            {
+                so.FindProperty("weaponPrefab").objectReferenceValue = weaponPrefab;
+                Debug.Log($"[WeaponDataGenerator] Đã tự động gán Prefab '{weaponPrefab.name}' vào WeaponData '{def.id}_{def.name}'");
+            }
+            else
+            {
+                Debug.LogWarning($"[WeaponDataGenerator] Không tìm thấy Prefab khớp với ID 'Weapon_{def.id}_' trong Assets/_Prefabs/Weapons/");
+            }
             so.ApplyModifiedProperties();
         }
     }

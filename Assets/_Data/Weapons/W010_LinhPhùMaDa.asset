@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W010_LinhPh\xF9MaDa"
+  m_EditorClassIdentifier: 
+  weaponId: W010
+  weaponName: "Linh Ph\xF9 Ma Da"
+  description: "Tri\u1EC7u h\u1ED3i linh th\xFA Ma Da phun \u0111\u1ED9c s\xE1t th\u01B0\u01A1ng
+    li\xEAn t\u1EE5c."
+  rarity: Rare
+  evolutionWeaponId: E010
+  elementType: 3
+  weaponPrefab: {fileID: 9098636652766733402, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}
+  baseDamage: 10
+  baseAttackSpeed: 2

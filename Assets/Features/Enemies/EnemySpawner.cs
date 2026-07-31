@@ -192,32 +192,52 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
-        /// <summary>Sinh ra một kẻ địch tại vị trí ngẫu nhiên ngoài màn hình camera.</summary>
+        /// <summary>Sinh ra một kẻ địch tại vị trí ngẫu nhiên ngoài màn hình camera (kết hợp Object Pooling 0 GC).</summary>
         private void SpawnEnemy(GameObject prefab, float hpMultiplier = 1f)
         {
             if (prefab == null) return;
 
             Vector3 spawnPos = GetSpawnPositionOffscreen();
-            GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+            GameObject enemyObj = null;
 
-            // Áp dụng HP scaling
-            if (hpMultiplier > 1f)
+            // Sử dụng Object Pooling 0 GC nếu EnemyPoolManager tồn tại
+            if (Spawners.EnemyPoolManager.Instance != null)
             {
-                var healthSystem = enemyObj.GetComponent<ProjectZombie.Features.Shared.HealthSystem>();
-                if (healthSystem != null)
+                var pool = Spawners.EnemyPoolManager.Instance.GetOrCreatePool(prefab);
+                if (pool != null)
                 {
-                    healthSystem.ScaleMaxHealth(hpMultiplier);
+                    enemyObj = pool.Get();
+                    enemyObj.transform.position = spawnPos;
+                    enemyObj.transform.rotation = Quaternion.identity;
                 }
             }
 
-            // Đăng ký event chết để giảm enemy count
-            var enemy = enemyObj.GetComponent<Enemy>();
-            if (enemy != null)
+            // Fallback Instantiate nếu chưa có Pool Manager trong scene
+            if (enemyObj == null)
             {
-                enemy.HealthSystem.OnDied += OnEnemyDied;
+                enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+            }
+
+            // Áp dụng HP scaling
+            var healthSystem = enemyObj.GetComponent<ProjectZombie.Features.Shared.HealthSystem>();
+            if (healthSystem != null)
+            {
+                if (hpMultiplier > 1f)
+                {
+                    healthSystem.ScaleMaxHealth(hpMultiplier);
+                }
+
+                // Đăng ký event chết để giảm enemy count (un-subscribe cũ trước để không duplicate)
+                healthSystem.OnDied -= HandleEnemyDied;
+                healthSystem.OnDied += HandleEnemyDied;
             }
 
             _currentEnemyCount++;
+        }
+
+        private void HandleEnemyDied()
+        {
+            OnEnemyDied();
         }
 
         /// <summary>Tính toán vị trí spawn ngẫu nhiên ngoài tầm nhìn camera.</summary>

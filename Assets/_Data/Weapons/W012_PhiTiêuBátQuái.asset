@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W012_PhiTi\xEAuB\xE1tQu\xE1i"
+  m_EditorClassIdentifier: 
+  weaponId: W012
+  weaponName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
+  description: "Phi ti\xEAu ma thu\u1EADt xoay tr\xF2n v\xE0 quay l\u1EA1i v\u1ECB
+    tr\xED ng\u01B0\u1EDDi ch\u01A1i."
+  rarity: Common
+  evolutionWeaponId: E012
+  elementType: 2
+  weaponPrefab: {fileID: 2389269143492382759, guid: 3af183ec83a5ed74e90b5e32a49d50a8, type: 3}
+  baseDamage: 22
+  baseAttackSpeed: 1.4

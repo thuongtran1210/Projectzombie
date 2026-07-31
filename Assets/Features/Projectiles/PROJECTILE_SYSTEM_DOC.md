@@ -4,6 +4,61 @@ Hệ thống Projectile được thiết kế theo kiến trúc **Data-Driven** 
 
 ---
 
+## 0. Sơ Đồ Luồng Hoạt Động Kỹ Thuật (Technical Flow Diagram)
+
+```mermaid
+graph TD
+    %% Subgraph 1: Weapon Layer
+    subgraph Layer1["1. Vũ Khí (Weapon Layer)"]
+        WM["WeaponManager.Tick()"] --> WB["WeaponBase.Tick()"]
+        WB -- "Kiểm tra Cooldown" --> AttackCheck{"Đủ Cooldown?"}
+        AttackCheck -- "Có" --> Attack["PerformAttack()"]
+        AttackCheck -- "Chưa" --> Wait["Chờ Frame Tiếp Theo"]
+    end
+
+    %% Subgraph 2: Projectile System & Pool
+    subgraph Layer2["2. Khởi Tạo & Tái Sử Dụng Đạn (Pooling)"]
+        Attack -- "Truyền ProjectileData" --> PS["ProjectileSystem.Instance.Spawn()"]
+        PS --> Pool["ProjectilePool.Get()"]
+        Pool -- "Lấy/Tạo Prefab đạn" --> PC["ProjectileController (Init State)"]
+    end
+
+    %% Subgraph 3: Behaviors Execution Order
+    subgraph Layer3["3. Xử Lý Hành Vi Đạn (Behaviors Pipeline)"]
+        PC --> ExecBehaviors["Chạy danh sách Behaviors theo ExecutionOrder"]
+        
+        ExecBehaviors --> B_Homing["Order 10: HomingBehavior<br/>(Quét quái & bẻ góc hướng bay)"]
+        ExecBehaviors --> B_Orbit["Order 10: OrbitBehavior<br/>(Xoay quỹ đạo quanh Player)"]
+        ExecBehaviors --> B_Pierce["Order 10: PierceBehavior<br/>(Trừ PierceCount khi xuyên quái)"]
+        ExecBehaviors --> B_Explosion["Order 50: ExplosionBehavior<br/>(Nổ AoE khi va chạm/hết hạn)"]
+        ExecBehaviors --> B_Periodic["Order 10: PeriodicHitBehavior<br/>(Giật sát thương theo chu kỳ)"]
+        ExecBehaviors --> B_Straight["Order 100: StraightBehavior<br/>(Đẩy đạn di chuyển về phía trước)"]
+    end
+
+    %% Subgraph 4: Collision & Combat Matrix
+    subgraph Layer4["4. Va Chạm & Sát Thương Ngũ Hành"]
+        B_Straight -- "Di chuyển / OverlapCircle" --> Hit{"Va chạm Yêu Ma?"}
+        Hit -- "Có" --> DamageCalc["DamageUtility.CalculateDamage()"]
+        DamageCalc -- "Tra cứu ElementMatchupTable" --> EMult{"Attacker vs Defender?"}
+        EMult -- "Tương Khắc (Kim -> Mộc)" --> BonusDmg["Sát thương × 1.3 (+30%)"]
+        EMult -- "Hệ Thường" --> NormalDmg["Sát thương × 1.0"]
+        
+        BonusDmg --> ApplyHP["Enemy.HealthSystem.TakeDamage()"]
+        NormalDmg --> ApplyHP
+        
+        ApplyHP -- "Proc Tương Sinh (2 Hit)" --> CycleProc["ElementCycleManager<br/>(-20% Cooldown Refund)"]
+    end
+
+    %% Subgraph 5: Despawn & Recycle
+    subgraph Layer5["5. Thu hồi về Pool (0 GC)"]
+        ApplyHP --> CheckDespawn{"Hết Pierce / Hết Lifetime?"}
+        CheckDespawn -- "Có" --> Despawn["ProjectilePool.Release()"]
+        Despawn --> Pool
+    end
+```
+
+---
+
 ## 1. Cấu Trúc Hệ Thống
 
 Hệ thống được chia làm 4 layer rõ rệt:

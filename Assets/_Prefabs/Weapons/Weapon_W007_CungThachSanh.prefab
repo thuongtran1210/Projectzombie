@@ -78,4 +78,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 3794262654688064280}
   weaponId: W007
-  projectileData: {fileID: 11400000, guid: efa8ad7664d106b4fadd2d298a2042f3, type: 2}
+  element: 1
+  projectileData: {fileID: 11400000, guid: ce6289dbc6efaf448be52276bc5c56c2, type: 2}

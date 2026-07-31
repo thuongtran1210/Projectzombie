@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W002_B\xFAtPh\xE1nQuan"
+  m_EditorClassIdentifier: 
+  weaponId: W002
+  weaponName: "B\xFAt Ph\xE1n Quan"
+  description: "Nh\xE1t ch\xE9m mang uy l\u1EF1c ph\xE1n quy\u1EBFt \xE2m ty g\xE2y
+    s\xE1t th\u01B0\u01A1ng ch\xED m\u1EA1ng 2 b\xEAn."
+  rarity: Common
+  evolutionWeaponId: E002
+  elementType: 1
+  weaponPrefab: {fileID: 2389269143492382759, guid: 21e968617e10ae4489a8919886606822, type: 3}
+  baseDamage: 20
+  baseAttackSpeed: 0.8

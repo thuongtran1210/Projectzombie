@@ -14570,8 +14570,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e5f6ddaea2df5a419f0ccf61d680218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerRect: {fileID: 0}
-  handleRect: {fileID: 0}
+  containerRect: {fileID: 1766677679}
+  handleRect: {fileID: 85172438}
   handleRange: 100
 --- !u!224 &57386239541539958
 RectTransform:

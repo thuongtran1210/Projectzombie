@@ -78,6 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 3794262654688064280}
   weaponId: W005
-  projectileData: {fileID: 11400000, guid: efa8ad7664d106b4fadd2d298a2042f3, type: 2}
-  pelletCount: 5
+  element: 5
+  projectileData: {fileID: 11400000, guid: 8983c52c2c51ebc44aa96dc4e37420f1, type: 2}
   spreadAngle: 60
+  pelletsCount: 5

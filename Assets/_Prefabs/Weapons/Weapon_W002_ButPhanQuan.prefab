@@ -78,6 +78,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 3794262654688064280}
   weaponId: W002
+  element: 1
+  slashParticles: {fileID: 0}
+  maxTargetsHit: 0
+  hitSparkPrefab: {fileID: 0}
+  showGizmos: 1
   hitboxSize: {x: 3, y: 2}
   forwardOffset: 2
   slashCount: 2
+  directionalSlashPrefab: {fileID: 0}
+  groundDecalPrefab: {fileID: 0}
+  shockwavePrefab: {fileID: 0}

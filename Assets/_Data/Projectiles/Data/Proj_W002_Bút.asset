@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd7585cf1fc5e94d888217ef40fcb82, type: 3}
+  m_Name: "Proj_W002_B\xFAt"
+  m_EditorClassIdentifier: 
+  ProjectileID: Proj_W002
+  LogicPrefab: {fileID: 5366878579835139615, guid: d8a31b71fd5efae4bab4eeb16a9946e5, type: 3}
+  Speed: 0
+  MaxRange: 20
+  Lifetime: 0.3
+  CollisionRadius: 1.8
+  HitLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  PrewarmCount: 10
+  MaxPoolSize: 50
+  Behaviors:
+  - {fileID: 11400000, guid: 623773ade9f23f44c807b2ab254337e1, type: 2}
+  BaseDamage: 20
+  VFXConfig:
+    SpawnVFXPrefab: {fileID: 0}
+    HitImpactVFXPrefab: {fileID: 0}
+    DespawnVFXPrefab: {fileID: 0}
+    LaunchSFX: {fileID: 0}
+    HitSFX: {fileID: 0}

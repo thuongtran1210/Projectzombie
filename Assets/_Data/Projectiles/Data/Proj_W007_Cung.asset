@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd7585cf1fc5e94d888217ef40fcb82, type: 3}
+  m_Name: Proj_W007_Cung
+  m_EditorClassIdentifier: 
+  ProjectileID: Proj_W007
+  LogicPrefab: {fileID: 6176384675780815713, guid: 45492216bb2d303488dd7291a950bd70, type: 3}
+  Speed: 16
+  MaxRange: 20
+  Lifetime: 3.5
+  CollisionRadius: 0.4
+  HitLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  PrewarmCount: 10
+  MaxPoolSize: 50
+  Behaviors:
+  - {fileID: 11400000, guid: 0c7503e2d71c20c45a9c86e51b598263, type: 2}
+  - {fileID: 11400000, guid: a48f79b5314d28949b2af8b2f3e4d2b0, type: 2}
+  BaseDamage: 35
+  VFXConfig:
+    SpawnVFXPrefab: {fileID: 0}
+    HitImpactVFXPrefab: {fileID: 0}
+    DespawnVFXPrefab: {fileID: 0}
+    LaunchSFX: {fileID: 0}
+    HitSFX: {fileID: 0}
