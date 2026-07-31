@@ -1,0 +1,115 @@
+using UnityEngine;
+using ProjectZombie.Features.Shared;
+
+namespace ProjectZombie.Features.Enemies.Boss
+{
+    public enum BossPhase
+    {
+        Phase1_100_50,
+        Phase2_Sub50
+    }
+
+    /// <summary>
+    /// FSM Quản lý Boss 1: Ngưu Đầu Mã Diện theo GDD 5.2.
+    /// Phase 1 (100%-50% HP): Ngưu Xung Thiên (Dash x3 speed) + Địa Chấn Âm Ty (Ground Slam AoE Slow 40%).
+    /// Phase 2 (<50% HP): Luân phiên đổi hệ Thổ/Hỏa + Triệu Hồn Âm Binh (Gọi 10 Ma Giáp).
+    /// </summary>
+    public class BossStateMachine : MonoBehaviour
+    {
+        [Header("Boss Identity")]
+        public string bossName = "Ngưu Đầu Mã Diện";
+        public ElementType currentElement = ElementType.Tho;
+
+        [Header("Skills")]
+        [SerializeField] private Skills.BullDashSkill bullDashSkill;
+        [SerializeField] private Skills.GroundSlamSkill groundSlamSkill;
+
+        [Header("Phase 2 Minion Spawn")]
+        [SerializeField] private GameObject maGiapPrefab;
+        [SerializeField] private int minionCount = 10;
+
+        private HealthSystem _healthSystem;
+        private BossPhase _currentPhase = BossPhase.Phase1_100_50;
+        private float _skillTimer = 0f;
+        private float _elementSwapTimer = 0f;
+        private Transform _playerTransform;
+
+        public BossPhase CurrentPhase => _currentPhase;
+
+        private void Awake()
+        {
+            _healthSystem = GetComponent<HealthSystem>();
+            if (bullDashSkill == null) bullDashSkill = GetComponent<Skills.BullDashSkill>();
+            if (groundSlamSkill == null) groundSlamSkill = GetComponent<Skills.GroundSlamSkill>();
+        }
+
+        private void Start()
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) _playerTransform = player.transform;
+        }
+
+        private void Update()
+        {
+            if (_healthSystem == null || _healthSystem.CurrentHealth <= 0) return;
+
+            float hpPercent = _healthSystem.CurrentHealth / Mathf.Max(1f, _healthSystem.MaxHealth);
+
+            // Transition Phase
+            if (_currentPhase == BossPhase.Phase1_100_50 && hpPercent <= 0.5f)
+            {
+                EnterPhase2();
+            }
+
+            // Skill Cooldown Loop
+            _skillTimer += Time.deltaTime;
+            if (_skillTimer >= 5f)
+            {
+                _skillTimer = 0f;
+                ExecuteRandomSkill();
+            }
+
+            // Phase 2 Element Swap (10s/lần)
+            if (_currentPhase == BossPhase.Phase2_Sub50)
+            {
+                _elementSwapTimer += Time.deltaTime;
+                if (_elementSwapTimer >= 10f)
+                {
+                    _elementSwapTimer = 0f;
+                    currentElement = currentElement == ElementType.Tho ? ElementType.Hoa : ElementType.Tho;
+                    Debug.Log($"[BossStateMachine] {bossName} đổi thuộc tính Ngũ Hành sang: {currentElement}");
+                }
+            }
+        }
+
+        private void EnterPhase2()
+        {
+            _currentPhase = BossPhase.Phase2_Sub50;
+            Debug.Log($"[BossStateMachine] ⚠️ {bossName} KÍCH HOẠT PHASE 2! HP <= 50%");
+
+            // Triệu Hồn Âm Binh (Gọi 10 Ma Giáp)
+            if (maGiapPrefab != null)
+            {
+                for (int i = 0; i < minionCount; i++)
+                {
+                    Vector3 spawnOffset = (Vector3)Random.insideUnitCircle * 3f;
+                    Instantiate(maGiapPrefab, transform.position + spawnOffset, Quaternion.identity);
+                }
+            }
+        }
+
+        private void ExecuteRandomSkill()
+        {
+            if (_playerTransform == null) return;
+
+            if (Random.value > 0.5f && bullDashSkill != null)
+            {
+                bullDashSkill.PerformDash(_playerTransform.position);
+            }
+            else if (groundSlamSkill != null)
+            {
+                groundSlamSkill.PerformGroundSlam();
+            }
+        }
+    }
+}

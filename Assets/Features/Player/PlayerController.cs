@@ -168,9 +168,28 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        private float _slowMultiplier = 1f;
+        private Coroutine _slowCoroutine;
+
+        /// <summary>
+        /// Áp dụng hiệu ứng làm chậm (% slowPercent) trong khoảng thời gian duration (giây).
+        /// </summary>
+        public void ApplySlow(float slowPercent, float duration)
+        {
+            if (_slowCoroutine != null) StopCoroutine(_slowCoroutine);
+            _slowCoroutine = StartCoroutine(SlowRoutine(slowPercent, duration));
+        }
+
+        private System.Collections.IEnumerator SlowRoutine(float slowPercent, float duration)
+        {
+            _slowMultiplier = Mathf.Clamp01(1f - slowPercent);
+            yield return new WaitForSeconds(duration);
+            _slowMultiplier = 1f;
+        }
+
         private void FixedUpdate()
         {
-            float currentSpeed = _playerStats.MoveSpeed;
+            float currentSpeed = _playerStats.MoveSpeed * _slowMultiplier;
 
             if (_isDashing)
             {

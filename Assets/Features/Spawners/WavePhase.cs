@@ -41,7 +41,7 @@ namespace ProjectZombie.Features.Spawners
         public PillarConfig pillarSetup;
     }
 
-    [CreateAssetMenu(fileName = "NewWavePhase", menuName = "ProjectZombie/Legacy/Wave Phase (Pillars)")]
+    [CreateAssetMenu(fileName = "NewWavePhase", menuName = "ProjectZombie/Wave Phase")]
     public class WavePhase : ScriptableObject
     {
         [Header("Phase Information")]
@@ -50,7 +50,18 @@ namespace ProjectZombie.Features.Spawners
         [Tooltip("Thời điểm Phase này bắt đầu tính từ lúc ván đấu bắt đầu (giây).")]
         public float startTime = 0f;
 
-        [Header("Spawn Pillar Settings")]
+        [Tooltip("Tông màu không khí (Color Grading Palette-Swap - GDD 7.0).")]
+        public Color atmosphereColor = Color.cyan;
+
+        [Header("Continuous Background Spawns")]
+        [Tooltip("Các prefab kẻ địch thường xuất hiện liên tục trong Phase này.")]
+        public List<GameObject> continuousSpawnPrefabs = new List<GameObject>();
+
+        [Header("Waves In Phase")]
+        [Tooltip("Danh sách các đợt spawn quái (SpawnWaveConfig) nằm trong Phase này.")]
+        public List<Enemies.SpawnWaveConfig> waveConfigs = new List<Enemies.SpawnWaveConfig>();
+
+        [Header("Optional Pillar Settings")]
         public List<SpawnPillarConfig> pillarConfigs = new List<SpawnPillarConfig>();
     }
 }

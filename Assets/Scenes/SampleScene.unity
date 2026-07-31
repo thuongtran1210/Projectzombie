@@ -1310,37 +1310,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bc9e605120555404baf4ebd05d24da20, type: 2}
   - {fileID: 11400000, guid: 9a29e093c726a7e4b8fa29ea3b110d05, type: 2}
   - {fileID: 11400000, guid: a993c2527cff37642a9864a4cf415eac, type: 2}
---- !u!1 &345086935
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 345086936}
-  m_Layer: 0
-  m_Name: SpawnManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &345086936
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 345086935}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1217002975}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &376222153
 GameObject:
   m_ObjectHideFlags: 0
@@ -10144,7 +10113,6 @@ Transform:
   - {fileID: 1899758234}
   - {fileID: 461733974}
   - {fileID: 341505319}
-  - {fileID: 345086936}
   - {fileID: 1373099851}
   - {fileID: 1792380789}
   - {fileID: 1267842865}
@@ -13019,15 +12987,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d17199b6a8d9a4c9bf5e612081026f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemySpawner: {fileID: 0}
   phases:
-  - {fileID: 11400000, guid: 0c0c8c219a722614e964d14938cadb7a, type: 2}
+  - {fileID: 11400000, guid: 7a487dc8ee4ea84448993352a29b71ec, type: 2}
+  - {fileID: 11400000, guid: d85c3cfc8c1759b48b1a678faa871f6e, type: 2}
+  - {fileID: 11400000, guid: ea7d3877c7aeb884cbc337179a7150db, type: 2}
   matchTime: 0
   currentPhaseIndex: -1
   minSpawnRadius: 10
   maxSpawnRadius: 15
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 16
   maxSpawnsPerFrame: 5
   spawnDelayBetweenFrames: 0.05
 --- !u!1 &1971309978

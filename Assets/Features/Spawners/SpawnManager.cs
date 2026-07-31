@@ -5,6 +5,9 @@ namespace ProjectZombie.Features.Spawners
 {
     public class SpawnManager : MonoBehaviour
     {
+        [Header("Worker References")]
+        [SerializeField] private Enemies.EnemySpawner enemySpawner;
+
         [Header("Wave Configuration")]
         [Tooltip("List of phases, MUST be sorted by startTime in ascending order.")]
         [SerializeField] private List<WavePhase> phases = new List<WavePhase>();
@@ -31,6 +34,18 @@ namespace ProjectZombie.Features.Spawners
         public float MatchTime => matchTime;
         public WavePhase CurrentPhase => currentPhaseIndex >= 0 && currentPhaseIndex < phases.Count ? phases[currentPhaseIndex] : null;
 
+        private void Awake()
+        {
+            if (enemySpawner == null)
+            {
+                enemySpawner = GetComponent<Enemies.EnemySpawner>();
+                if (enemySpawner == null)
+                {
+                    enemySpawner = FindObjectOfType<Enemies.EnemySpawner>();
+                }
+            }
+        }
+
         private void Start()
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -49,6 +64,14 @@ namespace ProjectZombie.Features.Spawners
                         foreach (var pillar in phase.pillarConfigs)
                         {
                             PrewarmConfig(pillar.pillarSetup);
+                        }
+                    }
+
+                    if (phase.continuousSpawnPrefabs != null)
+                    {
+                        foreach (var prefab in phase.continuousSpawnPrefabs)
+                        {
+                            if (prefab != null) EnemyPoolManager.Instance.PrewarmPool(prefab, 15);
                         }
                     }
                 }
@@ -72,6 +95,11 @@ namespace ProjectZombie.Features.Spawners
             matchTime = 0f;
             currentPhaseIndex = -1;
             _isMatchActive = true;
+
+            if (enemySpawner != null)
+            {
+                enemySpawner.StartSpawning();
+            }
             
             CheckForPhaseChange();
         }
@@ -79,6 +107,10 @@ namespace ProjectZombie.Features.Spawners
         public void StopMatch()
         {
             _isMatchActive = false;
+            if (enemySpawner != null)
+            {
+                enemySpawner.StopSpawning();
+            }
         }
 
         private void Update()
@@ -86,6 +118,11 @@ namespace ProjectZombie.Features.Spawners
             if (!_isMatchActive || phases.Count == 0) return;
 
             matchTime += Time.deltaTime;
+
+            if (enemySpawner != null)
+            {
+                enemySpawner.UpdateMatchTime(matchTime);
+            }
             
             CheckForPhaseChange();
             HandlePillarSpawning();
@@ -102,7 +139,12 @@ namespace ProjectZombie.Features.Spawners
                     currentPhaseIndex = nextPhaseIndex;
                     Debug.Log($"[SpawnManager] Entered Phase {currentPhaseIndex + 1}: {CurrentPhase.phaseName}");
                     
-                    if (CurrentPhase.pillarConfigs != null)
+                    if (enemySpawner != null && CurrentPhase != null)
+                    {
+                        enemySpawner.SetPhase(CurrentPhase);
+                    }
+
+                    if (CurrentPhase != null && CurrentPhase.pillarConfigs != null)
                     {
                         _pillarSpawnTimers = new float[CurrentPhase.pillarConfigs.Count];
                         for (int i = 0; i < _pillarSpawnTimers.Length; i++)

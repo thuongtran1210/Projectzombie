@@ -59,6 +59,7 @@ namespace ProjectZombie.Features.Enemies
         private bool _isSpawning = false;
         private Camera _mainCamera;
         private int _currentEnemyCount = 0;
+        private Coroutine _continuousRoutine;
 
         // ====================================================================
         // UNITY LIFECYCLE
@@ -68,20 +69,46 @@ namespace ProjectZombie.Features.Enemies
         {
             _mainCamera = Camera.main;
 
-            // Sắp xếp wave theo thời gian trigger
-            waveConfigs.Sort((a, b) => a.triggerTimeSeconds.CompareTo(b.triggerTimeSeconds));
+            if (waveConfigs != null && waveConfigs.Count > 0)
+            {
+                waveConfigs.Sort((a, b) => a.triggerTimeSeconds.CompareTo(b.triggerTimeSeconds));
+            }
         }
 
-        private void Start()
+        // ====================================================================
+        // PUBLIC API (WORKER INTERFACE)
+        // ====================================================================
+
+        /// <summary>
+        /// Được gọi bởi Master Controller (SpawnManager) khi bắt đầu trận hoặc chuyển Phase.
+        /// </summary>
+        public void SetPhase(Spawners.WavePhase phase)
         {
-            StartSpawning();
+            if (phase == null) return;
+
+            // Cập nhật danh sách Quái nền cho Phase này
+            if (phase.continuousSpawnPrefabs != null && phase.continuousSpawnPrefabs.Count > 0)
+            {
+                continuousSpawnPrefabs = new List<GameObject>(phase.continuousSpawnPrefabs);
+            }
+
+            // Cập nhật danh sách Waves cho Phase này nếu có
+            if (phase.waveConfigs != null && phase.waveConfigs.Count > 0)
+            {
+                waveConfigs = new List<SpawnWaveConfig>(phase.waveConfigs);
+                waveConfigs.Sort((a, b) => a.triggerTimeSeconds.CompareTo(b.triggerTimeSeconds));
+                _nextWaveIndex = 0;
+            }
+
+            Debug.Log($"[EnemySpawner] Cập nhật Worker cho Phase: {phase.phaseName}");
         }
 
-        private void Update()
+        /// <summary>Cập nhật thời gian trận đấu từ SpawnManager.</summary>
+        public void UpdateMatchTime(float matchTime)
         {
             if (!_isSpawning) return;
 
-            _elapsedTime += Time.deltaTime;
+            _elapsedTime = matchTime;
 
             // Kiểm tra trigger wave theo timeline
             while (_nextWaveIndex < waveConfigs.Count &&
@@ -92,10 +119,6 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
-        // ====================================================================
-        // PUBLIC API
-        // ====================================================================
-
         public void StartSpawning()
         {
             if (_isSpawning) return;
@@ -103,12 +126,10 @@ namespace ProjectZombie.Features.Enemies
             _elapsedTime = 0f;
             _nextWaveIndex = 0;
 
-            if (continuousSpawnPrefabs.Count > 0)
-            {
-                StartCoroutine(ContinuousSpawnRoutine());
-            }
+            if (_continuousRoutine != null) StopCoroutine(_continuousRoutine);
+            _continuousRoutine = StartCoroutine(ContinuousSpawnRoutine());
 
-            Debug.Log("[EnemySpawner] Bắt đầu spawn kẻ địch.");
+            Debug.Log("[EnemySpawner] Worker bắt đầu spawn kẻ địch.");
         }
 
         public void StopSpawning()
@@ -240,20 +261,44 @@ namespace ProjectZombie.Features.Enemies
             OnEnemyDied();
         }
 
-        /// <summary>Tính toán vị trí spawn ngẫu nhiên ngoài tầm nhìn camera.</summary>
+        /// <summary>Tính toán vị trí spawn ngẫu nhiên ngoài tầm nhìn camera kết hợp Anti-Cornering Safety Guard (GDD 7.0).</summary>
         private Vector3 GetSpawnPositionOffscreen()
         {
             if (_mainCamera == null) _mainCamera = Camera.main;
+            Vector3 camPos = _mainCamera != null ? _mainCamera.transform.position : Vector3.zero;
 
-            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            float minAngle = 0f;
+            float maxAngle = 360f;
+
+            // Anti-Cornering Logic (GDD 7.0): Kiểm tra khoảng cách tới biên Arena (60x60m -> [-30, 30])
+            float arenaLimit = 30f;
+            float distanceToBorderX = arenaLimit - Mathf.Abs(camPos.x);
+            float distanceToBorderY = arenaLimit - Mathf.Abs(camPos.y);
+
+            // Nếu Player đứng sát tường biên (< 5m) và 70% ngẫu nhiên trúng
+            if ((distanceToBorderX < 5f || distanceToBorderY < 5f) && Random.value < 0.7f)
+            {
+                // Hướng góc spawn ưu tiên hướng về trung tâm (Center 0,0)
+                Vector2 dirToCenter = ((Vector2)Vector3.zero - (Vector2)camPos).normalized;
+                float centerAngle = Mathf.Atan2(dirToCenter.y, dirToCenter.x) * Mathf.Rad2Deg;
+                minAngle = centerAngle - 60f;
+                maxAngle = centerAngle + 60f;
+            }
+
+            float angle = Random.Range(minAngle, maxAngle) * Mathf.Deg2Rad;
             float distance = spawnRadius + spawnRadiusBuffer;
 
-            Vector3 camPos = _mainCamera != null ? _mainCamera.transform.position : Vector3.zero;
-            return new Vector3(
+            Vector3 spawnPos = new Vector3(
                 camPos.x + Mathf.Cos(angle) * distance,
                 camPos.y + Mathf.Sin(angle) * distance,
                 0f
             );
+
+            // Clamp vị trí trong phạm vi Arena
+            spawnPos.x = Mathf.Clamp(spawnPos.x, -arenaLimit + 1f, arenaLimit - 1f);
+            spawnPos.y = Mathf.Clamp(spawnPos.y, -arenaLimit + 1f, arenaLimit - 1f);
+
+            return spawnPos;
         }
 
         private string FormatTime(float seconds)

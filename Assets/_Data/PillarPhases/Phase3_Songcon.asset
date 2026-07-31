@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2e604b1b56b72049815ce0f36184297, type: 3}
+  m_Name: Phase3_Songcon
+  m_EditorClassIdentifier: 
+  phaseName: "Phase 3: S\u1ED1ng C\xF2n"
+  startTime: 600
+  pillarConfigs:
+  - configName: "Phase 3: S\u1ED1ng C\xF2n - Pillar Alpha"
+    startPillarTime: 0
+    endPillarTime: 120
+    pillarSpawnInterval: 10
+    pillarSetup:
+      pillarPrefab: {fileID: 2941539111911462964, guid: 7ee524cdceef8a34f8ec82d31cfb3b00, type: 3}
+      enemyPrefab: {fileID: 2941539111911462964, guid: 41f0a904bd04ea24b947e15abd1c639a, type: 3}
+      totalEnemiesToSpawn: 30
+      enemySpawnInterval: 1
+      isAttackable: 1

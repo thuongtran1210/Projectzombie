@@ -33,12 +33,22 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
             _hitTargets.Add(context.TargetCollider);
 
-            if (_controller.State.RemainingPierce > 0)
+            // Cơ chế Cản Đạn (Heavy Armor Bullet Sponge) cho Quỷ Nhập Tràng (E_QUYNHAPTRANG) - GDD 5.1
+            int pierceCost = 1;
+            if (context.TargetCollider != null && 
+               (context.TargetCollider.CompareTag("HeavyArmor") || context.TargetCollider.name.Contains("E_QUYNHAPTRANG")))
             {
-                _controller.State.RemainingPierce--;
-                return false; // Prevent despawn
+                pierceCost = 2; // Trừ 2 Pierce Charge đối với Quỷ Nhập Tràng
             }
-            return true; // No pierce left, allow despawn
+
+            if (_controller.State.RemainingPierce >= pierceCost)
+            {
+                _controller.State.RemainingPierce -= pierceCost;
+                return false; // Còn Pierce charge, không tiêu hủy đạn
+            }
+
+            _controller.State.RemainingPierce = 0;
+            return true; // Hết Pierce charge, tiêu hủy đạn ngay lập tức
         }
 
         public void OnDespawn()
