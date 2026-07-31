@@ -52,6 +52,18 @@ namespace ProjectZombie.Features.Player
             _rb.freezeRotation = true;
         }
 
+        private void Start()
+        {
+            if (virtualJoystick == null)
+            {
+                virtualJoystick = FindObjectOfType<UI.DynamicVirtualJoystick>();
+                if (virtualJoystick != null)
+                {
+                    Debug.Log($"[{nameof(PlayerController)}] Tự động phát hiện và liên kết DynamicVirtualJoystick trong Scene.");
+                }
+            }
+        }
+
         private void OnEnable()
         {
             if (moveAction != null)
