@@ -8,13 +8,13 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| UpgradeCardView Element Badges | 12 Pháp Bảo Asset Refactoring | Android Target Platform Refactor |
-| Meta Upgrade Shop Cổ Tiền UI | 5 Yêu Ma Config Asset Refactoring | Local Save System (`SaveSystem.cs`) |
-| Character Selection UI (3 Heroes) | | Ngũ Hành Damage & Combo System |
-| Mobile Stress Test & ASTC | | Cán Cân Âm Dương (`YinYangManager`) |
-| Android AAB Build & Signing | | Boss AI Dynamic Element (`BossElementController`) |
-| | | RunHUD MVP Update (Âm Dương Slider & Boss Text) |
-| | | GDD 4.0 & Scenario Guide Single Source of Truth |
+| Mobile Stress Test & ASTC | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill Button)** | Android Target Platform Refactor |
+| Android AAB Build & Signing | | Local Save System (`SaveSystem.cs`) |
+| | | Ngũ Hành Damage & Combo System |
+| | | Cán Cân Âm Dương (`YinYangManager`) |
+| | | Boss AI Dynamic Element (`BossElementController`) |
+| | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| | | Upgrade Cards Badges & Meta Shop UI |
 
 ---
 
@@ -33,7 +33,8 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-203]** Tạo `EnemyDataGenerator.cs` tự động sinh/cập nhật dữ liệu `.asset` cho 5 Yêu Ma MVP (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da, Hồ Ly Tinh Nhỏ).
 - [x] **[TASK-204]** Chuyển đổi tên gọi đơn vị tiền Meta thành **Cổ Tiền** (tiền xu cổ Việt Nam) trong `MetaCurrencyManager.cs` và `MetaProgressionSaveData.cs`.
 
-### 📱 Hạng Mục 3: Mobile UI Canvas & MVP Systems (Completed)
+### 📱 Hạng Mục 3: Mobile UI Canvas & MVP Systems
+- [ ] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (Cần gạt di chuyển) & `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) kết nối với PlayerController.
 - [x] **[TASK-301]** Cập nhật `RunHUDView.cs` và `RunHUDPresenter.cs` thêm Slider Cán cân Âm Dương & TMP Text hiển thị thuộc tính Boss.
 - [x] **[TASK-302]** Thêm Badge màu hiển thị thuộc tính Ngũ Hành trên thẻ Gacha Nâng cấp (`UpgradeCardView.cs`).
 - [x] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.

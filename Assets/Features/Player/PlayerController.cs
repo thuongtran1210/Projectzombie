@@ -32,6 +32,7 @@ namespace ProjectZombie.Features.Player
         private PlayerAnimator _playerAnimator;
 
         public static PlayerController Instance { get; private set; }
+        public float LastDashTime => _lastDashTime;
 
         private void Awake()
         {
@@ -136,6 +137,16 @@ namespace ProjectZombie.Features.Player
 
         private void OnDashPerformed(InputAction.CallbackContext context)
         {
+            PerformDash();
+        }
+
+        /// <summary>
+        /// Kích hoạt kỹ năng Lướt (Dash). Có thể gọi từ Input Action hoặc UI Dash Button trên mobile.
+        /// </summary>
+        public void PerformDash()
+        {
+            if (_playerStats == null) return;
+
             if (Time.time >= _lastDashTime + _playerStats.DashCooldown && !_isDashing && _movementInput != Vector2.zero)
             {
                 _isDashing = true;
