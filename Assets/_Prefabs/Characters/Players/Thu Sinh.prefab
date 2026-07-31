@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 1383317695757006623}
   - component: {fileID: 3525274907744799209}
   m_Layer: 6
-  m_Name: Player
+  m_Name: Thu Sinh
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
