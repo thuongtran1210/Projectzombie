@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6109218327883127527}
   - component: {fileID: 3869312102271233920}
   - component: {fileID: 5930210990550478709}
-  - component: {fileID: 5705262299644241131}
   - component: {fileID: 4489279834533340287}
   - component: {fileID: 5506437238408163428}
   - component: {fileID: 2510363290329800421}
@@ -115,21 +114,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
---- !u!114 &5705262299644241131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509878819556777675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: {fileID: 0}
-  expGemPrefab: {fileID: 0}
-  isBoss: 0
 --- !u!114 &4489279834533340287
 MonoBehaviour:
   m_ObjectHideFlags: 0
