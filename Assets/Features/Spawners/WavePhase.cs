@@ -41,7 +41,7 @@ namespace ProjectZombie.Features.Spawners
         public PillarConfig pillarSetup;
     }
 
-    [CreateAssetMenu(fileName = "NewWavePhase", menuName = "ProjectZombie/Wave Phase")]
+    [CreateAssetMenu(fileName = "NewWavePhase", menuName = "ProjectZombie/Legacy/Wave Phase (Pillars)")]
     public class WavePhase : ScriptableObject
     {
         [Header("Phase Information")]
