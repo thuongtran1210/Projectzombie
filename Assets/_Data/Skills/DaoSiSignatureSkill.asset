@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e158cae909d7cb43b8bca947f6f702f, type: 3}
   m_Name: DaoSiSignatureSkill
   m_EditorClassIdentifier: 
-  _skillName: 
-  _description: 
+  _skillName: "B\xE1t Qu\xE1i Tr\u1EADn \u0110\u1ED3"
+  _description: "T\u1EA1o v\xF9ng B\xE1t Qu\xE1i b\xE1n k\xEDnh 4.5m trong 4s. Nh\u1ED1t
+    qu\xE1i th\u01B0\u1EDDng \u0111i v\xF2ng quanh vi\u1EC1n tr\u1EADn v\xE0 \xE9p
+    \xC2m D\u01B0\u01A1ng v\u1EC1 m\u1EE9c c\xE2n b\u1EB1ng 50 \u0111\u1EC3 m\u1EDF
+    c\u1EEDa s\u1ED5 ch\u1ECDn th\u1EBB Th\xE1i C\u1EF1c (Cooldown: 30s)."
   _icon: {fileID: 0}
-  _baseCooldown: 25
+  _baseCooldown: 30
   _zonePrefab: {fileID: 0}

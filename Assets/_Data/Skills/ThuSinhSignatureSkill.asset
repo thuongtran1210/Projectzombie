@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b552aa45f8fb9940840a82d0833b4a1, type: 3}
   m_Name: ThuSinhSignatureSkill
   m_EditorClassIdentifier: 
-  _skillName: 
-  _description: 
+  _skillName: "V\u0103n Kh\xED B\u1EA3o H\u1ED9"
+  _description: "M\u1EDF giao di\u1EC7n ch\u1ECDn 1 trong 5 thu\u1ED9c t\xEDnh Ng\u0169
+    H\xE0nh (trong 1.5s). Hit ti\u1EBFp theo kh\u1EDBp v\xF2ng T\u01B0\u01A1ng Sinh
+    s\u1EBD l\u1EADp t\u1EE9c gi\u1EA3m 20% H\u1ED3i Chi\xEAu cho v\u0169 kh\xED
+    \u0111\xF3 (Cooldown: 25s)."
   _icon: {fileID: 0}
   _baseCooldown: 25
