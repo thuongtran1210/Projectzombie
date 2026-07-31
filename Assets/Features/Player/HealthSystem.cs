@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.Shared
 
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => maxHealth;
+        public bool IsAlive => _currentHealth > 0;
 
         private void OnEnable()
         {

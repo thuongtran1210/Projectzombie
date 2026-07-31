@@ -73,10 +73,9 @@ namespace ProjectZombie.Features.Skills.Zones
                 // Boss miễn nhiễm Bát Quái Trận (GDD balance rule)
                 if (col.CompareTag("Boss")) continue;
 
-                var enemyFSM = col.GetComponent<EnemyStateMachine>();
-                if (enemyFSM != null && !enemyFSM.IsBoss)
+                if (col.TryGetComponent<Enemy>(out var enemy) && !enemy.IsBoss)
                 {
-                    enemyFSM.ApplyTrapCirclingState(transform.position, _radius, 0.5f);
+                    enemy.ApplyTrapCirclingState(transform.position, _radius, 0.5f);
                 }
             }
         }
