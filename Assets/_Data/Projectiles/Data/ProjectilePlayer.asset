@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProjectilePlayer
   m_EditorClassIdentifier: 
   ProjectileID: projectile_mic_01
-  LogicPrefab: {fileID: 1125476723101868530, guid: e4314e0c2767e604299e29b02a3acc5d, type: 3}
+  LogicPrefab: {fileID: 8200557947182505032, guid: 92f4db7a2a474264eb5164564ec8225a, type: 3}
   Speed: 10
   MaxRange: 20
   Lifetime: 3
@@ -26,3 +26,9 @@ MonoBehaviour:
   Behaviors:
   - {fileID: 11400000, guid: 48f132e8c0025bf42a16317489f1f8cf, type: 2}
   BaseDamage: 5
+  VFXConfig:
+    SpawnVFXPrefab: {fileID: 0}
+    HitImpactVFXPrefab: {fileID: 0}
+    DespawnVFXPrefab: {fileID: 0}
+    LaunchSFX: {fileID: 0}
+    HitSFX: {fileID: 0}
