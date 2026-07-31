@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
+  m_Name: "E005_Tr\u1ED1ngTr\u1EA5nQu\u1ED1c"
+  m_EditorClassIdentifier: 
+  upgradeName: "Tr\u1ED1ng Tr\u1EA5n Qu\u1ED1c"
+  description: "S\xF3ng \xE2m tr\u1EA3m linh n\u1ED5 8 h\u01B0\u1EDBng di\u1EC7n
+    r\u1ED9ng, g\xE2y cho\xE1ng 1.5s cho to\xE0n b\u1ED9 qu\xE1i."
+  icon: {fileID: 0}
+  upgradeType: 5
+  spawnWeight: 100
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  weaponId: W005
+  requiredCurrentLevel: 5
+  requiredPassiveId: "Th\xE1p Uy \xC1p"
+  weaponPrefab: {fileID: 0}

@@ -53,7 +53,7 @@ namespace ProjectZombie.Features.Player.Skills
 
             RemainingCooldown = 0f;
             OnSkillReady?.Invoke();
-        }
+        } 
 
         private void Update()
         {

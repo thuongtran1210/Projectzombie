@@ -50,10 +50,10 @@ namespace ProjectZombie.Features.UI
         {
             if (MetaCurrencyManager.Instance == null) return;
 
-            int currentBalance = MetaCurrencyManager.Instance.GetCurrency();
+            int currentBalance = MetaCurrencyManager.Instance.TotalCurrency;
             if (currentBalance >= _upgradeBaseCost)
             {
-                if (MetaCurrencyManager.Instance.TrySpendCurrency(_upgradeBaseCost))
+                if (MetaCurrencyManager.Instance.SpendCurrency(_upgradeBaseCost))
                 {
                     Debug.Log($"[{nameof(MetaUpgradeShopPresenter)}] Nâng cấp thành công! Đã trừ {_upgradeBaseCost} Cổ Tiền.");
                     RenderShop();
@@ -70,8 +70,8 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
-            int currentBalance = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.GetCurrency() : 0;
-            string balanceFormatted = $"🪙 <color=#FFD700>{currentBalance:N0}</color> Cổ Tiền";
+            int currentBalance = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0;
+            string balanceFormatted = $"<color=#FFD700>{currentBalance:N0}</color> Cổ Tiền";
             string costFormatted = $"Giá: <color=#FFD700>{_upgradeBaseCost}</color> Cổ Tiền";
             bool canAfford = currentBalance >= _upgradeBaseCost;
 

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: "Unlock_W003_B\xF9aTr\u1EA5nY\xEAu"
+  m_EditorClassIdentifier: 
+  upgradeName: "M\u1EDF kh\xF3a: B\xF9a Tr\u1EA5n Y\xEAu"
+  description: "Nh\u1EADn Ph\xE1p B\u1EA3o B\xF9a Tr\u1EA5n Y\xEAu v\xE0o trang b\u1ECB
+    active."
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 5
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  weaponId: W003
+  requiredCurrentLevel: 0
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

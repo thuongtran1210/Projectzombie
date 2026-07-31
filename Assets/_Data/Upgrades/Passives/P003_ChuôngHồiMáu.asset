@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb91c9f74575a74e94643faa41f9195, type: 3}
+  m_Name: "P003_Chu\xF4ngH\u1ED3iM\xE1u"
+  m_EditorClassIdentifier: 
+  upgradeName: "Chu\xF4ng H\u1ED3i M\xE1u"
+  description: "H\u1ED3i ph\u1EE5c 1% m\xE1u t\u1ED1i \u0111a m\u1ED7i kho\u1EA3ng
+    th\u1EDDi gian"
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 10
+  maxLevel: 5
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  playerStatModifier:
+    maxHealthBonus: 20
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
