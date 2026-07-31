@@ -33,6 +33,20 @@ namespace ProjectZombie.Features.Enemies
         public float MoveSpeedMultiplier { get; set; } = 1f;
         public float DamageMultiplier { get; set; } = 1f;
 
+        [Header("Boss Settings")]
+        [SerializeField] private bool isBoss = false;
+        public bool IsBoss => isBoss || CompareTag("Boss");
+
+        // Temporary Trap Circling State
+        private bool _isTrapCircling;
+        private Vector3 _trapCenter;
+        private float _trapRadius;
+        private float _trapEndTime;
+
+        public bool IsTrapCircling => _isTrapCircling && Time.time < _trapEndTime;
+        public Vector3 TrapCenter => _trapCenter;
+        public float TrapRadius => _trapRadius;
+
         public float GetTotalDamage()
         {
             if (Config == null) return 0f;
@@ -105,6 +119,18 @@ namespace ProjectZombie.Features.Enemies
         private void FixedUpdate()
         {
             StateMachine.CurrentState?.FixedUpdate();
+        }
+
+        /// <summary>
+        /// Ép trạng thái di chuyển bám quanh 8 điểm neo của Bát Quái Trận Đồ (Mục 3.1.2 GDD v4.0).
+        /// </summary>
+        public void ApplyTrapCirclingState(Vector3 center, float radius, float duration)
+        {
+            if (IsBoss) return; // Boss miễn nhiễm
+            _isTrapCircling = true;
+            _trapCenter = center;
+            _trapRadius = radius;
+            _trapEndTime = Time.time + duration;
         }
 
         private void HandleDeath()

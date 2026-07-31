@@ -42,6 +42,20 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
+        /// Thời gian hồi chiêu còn lại hiện tại của vũ khí (giây).
+        /// </summary>
+        public float RemainingCooldown
+        {
+            get
+            {
+                float totalAttackSpeed = CharacterStats != null ? CharacterStats.AttackSpeed + localAttackSpeedBonus : 1f;
+                float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
+                float remaining = (_lastAttackTime + attackCooldown) - Time.time;
+                return Mathf.Max(0f, remaining);
+            }
+        }
+
+        /// <summary>
         /// Giảm % thời gian hồi chiêu hiện tại của vũ khí (VD: 0.2f = giảm 20%).
         /// </summary>
         public void ReduceCurrentCooldown(float percentage)

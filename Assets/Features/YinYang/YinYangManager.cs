@@ -69,11 +69,42 @@ namespace ProjectZombie.Features.YinYang
             }
         }
 
+        private bool _isLockedInOverride;
+        private float _overrideEndTime;
+        private float _overrideTargetValue = 50f;
+
+        private void Update()
+        {
+            if (_isLockedInOverride)
+            {
+                if (Time.time < _overrideEndTime)
+                {
+                    _yinYangValue = Mathf.Lerp(_yinYangValue, _overrideTargetValue, Time.deltaTime * 5f);
+                    OnYinYangValueChanged?.Invoke(_yinYangValue, GetState());
+                }
+                else
+                {
+                    _isLockedInOverride = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ép và giữ giá trị Cán cân Âm Dương về Thái Cực Cân Bằng (50) trong khoảng thời gian duration (Bát Quái Trận Đồ Đạo Sĩ - GDD 3.1.2).
+        /// </summary>
+        public void SetTemporaryNeutralOverride(float duration, float targetValue = 50f)
+        {
+            _isLockedInOverride = true;
+            _overrideTargetValue = targetValue;
+            _overrideEndTime = Time.time + duration;
+        }
+
         /// <summary>
         /// Gán trực tiếp giá trị Cán cân Âm Dương.
         /// </summary>
         public void SetValue(float newValue)
         {
+            if (_isLockedInOverride) return;
             float delta = newValue - _yinYangValue;
             AdjustValue(delta);
         }
@@ -84,6 +115,8 @@ namespace ProjectZombie.Features.YinYang
         /// <param name="delta">Lượng thay đổi (+ cho Dương, - cho Âm)</param>
         public void AdjustValue(float delta)
         {
+            if (_isLockedInOverride) return;
+
             _yinYangValue = Mathf.Clamp(_yinYangValue + delta, 0f, 100f);
             
             YinYangState newState = GetState();

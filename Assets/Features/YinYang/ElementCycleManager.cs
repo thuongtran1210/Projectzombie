@@ -10,17 +10,19 @@ namespace ProjectZombie.Features.YinYang
         public ElementType element;
         public float timestamp;
         public WeaponBase weapon;
+        public bool isVirtualHit;
 
-        public ElementHitEntry(ElementType element, float timestamp, WeaponBase weapon)
+        public ElementHitEntry(ElementType element, float timestamp, WeaponBase weapon, bool isVirtualHit = false)
         {
             this.element = element;
             this.timestamp = timestamp;
             this.weapon = weapon;
+            this.isVirtualHit = isVirtualHit;
         }
     }
 
     /// <summary>
-    /// Quản lý Vòng Tương Sinh (v4.2 Revised).
+    /// Quản lý Vòng Tương Sinh (v4.2 Revised & v4.0 Signature Skill Integration).
     /// Buffer queue recentElementHits (tối đa 3s) và kích hoạt giảm 20% Cooldown cho vũ khí hit 2 khi khớp tương sinh.
     /// Vòng tương sinh: Kim -> Thủy -> Mộc -> Hỏa -> Thổ -> Kim.
     /// </summary>
@@ -48,6 +50,22 @@ namespace ProjectZombie.Features.YinYang
         }
 
         /// <summary>
+        /// Đẩy 1 phần tử ảo (Virtual Element Hit) từ Signature Skill Phán Quyết Tiền Định (Thư Sinh) vào Queue.
+        /// </summary>
+        public void PushVirtualElementHit(ElementType element)
+        {
+            if (element == ElementType.None) return;
+
+            var virtualHit = new ElementHitEntry(element, Time.time, null, isVirtualHit: true);
+
+            if (_recentElementHits.Count >= 3)
+            {
+                _recentElementHits.Dequeue();
+            }
+            _recentElementHits.Enqueue(virtualHit);
+        }
+
+        /// <summary>
         /// Ghi nhận 1 đòn đánh sát thương thuộc tính Ngũ Hành từ vũ khí.
         /// </summary>
         public void RegisterHit(ElementType hitElement, WeaponBase weapon)
@@ -62,16 +80,33 @@ namespace ProjectZombie.Features.YinYang
                 _recentElementHits.Dequeue();
             }
 
-            // Tạo hit entry mới
             var newHit = new ElementHitEntry(hitElement, now, weapon);
 
-            // Kiểm tra tương sinh với hit gần nhất trong queue trước khi push
-            if (_recentElementHits.Count > 0 && (now - _lastProcTimestamp) >= _procCooldownSeconds)
+            // Kiểm tra proc với hit ảo hoặc hit thật gần nhất
+            if (_recentElementHits.Count > 0)
             {
                 ElementHitEntry lastHit = GetLatestHit();
-                if (IsGenerationPair(lastHit.element, newHit.element))
+
+                // Nếu hit gần nhất là Hit Ảo từ Signature Skill (Thư Sinh):
+                if (lastHit.isVirtualHit)
                 {
-                    ProcElementGeneration(lastHit, newHit);
+                    if (IsGenerationPair(lastHit.element, newHit.element))
+                    {
+                        // Proc lập tức 20% CDR cho vũ khí hit thật mà không tốn cooldown 3s toàn cục
+                        if (weapon != null)
+                        {
+                            weapon.ReduceCurrentCooldown(0.20f);
+                        }
+                        // Xóa hit ảo đã proc khỏi queue
+                        _recentElementHits.Dequeue();
+                    }
+                }
+                else if ((now - _lastProcTimestamp) >= _procCooldownSeconds)
+                {
+                    if (IsGenerationPair(lastHit.element, newHit.element))
+                    {
+                        ProcElementGeneration(lastHit, newHit);
+                    }
                 }
             }
 
