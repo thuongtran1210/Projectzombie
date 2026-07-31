@@ -33,10 +33,10 @@ namespace ProjectZombie.Features.Spawners.Editor
             WavePhase phase2 = CreateOrGetPhase($"{folderPath}/Phase2_AmPhongHoangTuyen.asset", "Phase 2: Âm Phong Hoàng Tuyền", 300f, new Color(0.8f, 0.7f, 0.2f), maGiapPrefab, 20, 1.5f);
             WavePhase phase3 = CreateOrGetPhase($"{folderPath}/Phase3_BaoHacKhiHuyếtNguyet.asset", "Phase 3: Bão Hắc Khí Huyết Nguyệt", 600f, new Color(0.8f, 0.1f, 0.1f), maGiapPrefab, 30, 1f);
 
-            // Gom 15 WaveConfig SOs vào 3 Phase tương ứng
-            PopulateWavesIntoPhase(phase1, "Assets/_Data/Waves", 1, 4);  // Phút 1-4
-            PopulateWavesIntoPhase(phase2, "Assets/_Data/Waves", 5, 10); // Phút 5-10
-            PopulateWavesIntoPhase(phase3, "Assets/_Data/Waves", 11, 15); // Phút 11-15
+            // Gom 20 WaveConfig SOs vào 3 Phase tương ứng
+            PopulateWavesIntoPhase(phase1, "Assets/_Data/Waves", 1, 5);  // Phút 1-5
+            PopulateWavesIntoPhase(phase2, "Assets/_Data/Waves", 6, 10); // Phút 6-10
+            PopulateWavesIntoPhase(phase3, "Assets/_Data/Waves", 11, 20); // Phút 11-20
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

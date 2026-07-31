@@ -8,7 +8,8 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| Mobile Stress Test & ASTC | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill Button)** | Android Target Platform Refactor |
+| Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill Button)** | Master-Worker Spawner Refactoring |
+| Mobile Stress Test & ASTC | | Android Target Platform Refactor |
 | Android AAB Build & Signing | | Local Save System (`SaveSystem.cs`) |
 | | | Ngũ Hành Damage & Combo System |
 | | | Cán Cân Âm Dương (`YinYangManager`) |
@@ -41,6 +42,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-307]** Viết `SuicideExplodeBehavior.cs` cho Hồ Ly Tinh Nhỏ (`E_HOALYTINH`) áp sát nổ AoE 50 Damage.
 - [x] **[TASK-308]** Xây dựng `BossStateMachine.cs`, `BullDashSkill.cs` (Ngưu Xung Thiên), `GroundSlamSkill.cs` (Địa Chấn Âm Ty) cho Boss 1 Ngưu Đầu Mã Diện.
 - [x] **[TASK-309]** Tích hợp **Anti-Cornering Guard (GDD 7.0)** cho `EnemySpawner.cs` dồn 70% quái hướng về trung tâm khi Player sát tường $<5\text{m}$.
+- [x] **[TASK-310]** Tái cấu trúc Spawner System quy về mô hình Master-Worker chuẩn Data-Driven (`SpawnManager` & `EnemySpawner`).
 
 ### 📱 Hạng Mục 4: Mobile UI Canvas & MVP Systems
 - [ ] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (Cần gạt di chuyển) & `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) kết nối với PlayerController.
@@ -50,7 +52,23 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-304]** Xây dựng UI Chọn Nhân vật theo 3 anh hùng: Thư Sinh (Kim), Đạo Sĩ (Mộc), Võ Tăng (Thổ) qua `CharacterSelectionView/Presenter`.
 - [x] **[TASK-305]** Xây dựng màn hình `RunSummaryView.cs` & `RunSummaryPresenter.cs` hiển thị kết quả sau run đấu và tự động cộng Cổ Tiền tích lũy.
 
-### ⚙️ Hạng Mục 5: Performance & Build Release (Planned)
+### 👾 Hạng Mục 5: Enemy Prefabs, Boss Data & 20-Min Wave Completion (Completed)
+- [x] **[TASK-E01]** Tạo ScriptableObject Data cho Boss **Ngưu Đầu Mã Diện** (HP Base 5000, Speed 2.2, Hệ Thổ/Hỏa).
+- [x] **[TASK-E02]** Tạo ScriptableObject Data cho Trùm Cuối **Diêm Vương** (HP Base 15000, Speed 1.8, Luân phiên 5 hệ).
+- [x] **[TASK-E03]** Tạo 5 ScriptableObjects `Wave_Minute_16` đến `Wave_Minute_20` hoàn thiện Timeline 20 Phút.
+- [x] **[TASK-E04]** Cập nhật `WavePhaseGenerator.cs` để Phase 3 kéo dài từ Phút 10 đến Phút 20 và nạp đủ 20 Waves.
+- [x] **[TASK-E05]** Dựng Prefab `E_MAGIAP.prefab` (Ma Giáp - Kim).
+- [x] **[TASK-E06]** Dựng Prefab `E_MATROI.prefab` (Ma Trơi - Hỏa).
+- [x] **[TASK-E07]** Dựng Prefab `E_MADA.prefab` (Ma Da - Thủy).
+- [x] **[TASK-E08]** Dựng Prefab `E_HOALYTINH.prefab` (Hồ Ly Tinh Nhỏ - Hỏa AoE Nổ).
+- [x] **[TASK-E09]** Dựng Prefab `E_QUYNHAPTRANG.prefab` (Quỷ Nhập Tràng - Thổ Elite 1).
+- [x] **[TASK-E10]** Dựng Prefab `Boss_NguuDauMaDien.prefab` (Ngưu Đầu Mã Diện - Boss 10:00).
+- [x] **[TASK-E11]** Dựng Prefab `Boss_DiemVuong.prefab` (Diêm Vương - Final Boss 20:00).
+- [x] **[TASK-E12]** Dựng Prefabs Rương Phần Thưởng (`Chest_UMinh.prefab` & `Chest_DauThai.prefab`).
+- [x] **[TASK-E13]** Chạy Tool `WavePhaseGenerator` tự động nạp Prefabs chuẩn vào 3 Phase và 20 WaveConfig SOs.
+- [x] **[TASK-E14]** Kiểm thử toàn bộ trận đấu 20 phút (00:00 -> 20:00).
+
+### ⚙️ Hạng Mục 6: Performance & Build Release (Planned)
 - [ ] **[TASK-401]** Chuyển đổi toàn bộ Sprite Sheets sang Texture Compression **ASTC 6x6** cho Android.
 - [ ] **[TASK-402]** Thử nghiệm Stress Test 200 Yêu ma + 100 Projectiles kiểm tra FPS (Target 60 FPS).
 - [ ] **[TASK-403]** Cấu hình Build Profile Android IL2CPP ARM64, Target API 33+, xuất file `.aab`.

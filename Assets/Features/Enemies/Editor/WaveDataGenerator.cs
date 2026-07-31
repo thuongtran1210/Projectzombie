@@ -46,19 +46,24 @@ namespace ProjectZombie.Features.Enemies.Editor
             {
                 new WaveDef("Wave_Minute_01", 30f, 15, 0.5f),
                 new WaveDef("Wave_Minute_02", 90f, 25, 0.4f),
-                new WaveDef("Wave_Minute_03", 150f, 35, 0.3f, true), // Elite Wave 1
+                new WaveDef("Wave_Minute_03", 150f, 35, 0.3f),
                 new WaveDef("Wave_Minute_04", 210f, 45, 0.3f),
-                new WaveDef("Wave_Minute_05", 300f, 1, 0f, false, true, 5.0f), // Boss 1: Ngưu Đầu Mã Diện
+                new WaveDef("Wave_Minute_05", 300f, 1, 0f, true, false, 2.0f), // Elite 1: Quỷ Nhập Tràng (05:00)
                 new WaveDef("Wave_Minute_06", 360f, 50, 0.25f),
                 new WaveDef("Wave_Minute_07", 420f, 60, 0.25f),
-                new WaveDef("Wave_Minute_08", 480f, 100, 0.1f, true), // Horde Burst Wave
-                new WaveDef("Wave_Minute_09", 540f, 75, 0.2f),
-                new WaveDef("Wave_Minute_10", 600f, 85, 0.2f, true), // Elite Wave 2
+                new WaveDef("Wave_Minute_08", 480f, 80, 0.2f),
+                new WaveDef("Wave_Minute_09", 540f, 90, 0.2f),
+                new WaveDef("Wave_Minute_10", 600f, 1, 0f, false, true, 5.0f), // Boss 1: Ngưu Đầu Mã Diện (10:00)
                 new WaveDef("Wave_Minute_11", 660f, 100, 0.15f),
-                new WaveDef("Wave_Minute_12", 720f, 120, 0.15f),
-                new WaveDef("Wave_Minute_13", 780f, 140, 0.1f, true), // Elite Wave 3
-                new WaveDef("Wave_Minute_14", 840f, 160, 0.1f),
-                new WaveDef("Wave_Minute_15", 900f, 1, 0f, false, true, 12.0f) // Final Boss: Diêm Vương
+                new WaveDef("Wave_Minute_12", 720f, 120, 0.05f, true), // Swarm Event (Bão Yêu 100+)
+                new WaveDef("Wave_Minute_13", 780f, 130, 0.1f),
+                new WaveDef("Wave_Minute_14", 840f, 140, 0.1f),
+                new WaveDef("Wave_Minute_15", 900f, 5, 0.5f, true), // Multi-Elite Rush (15:00)
+                new WaveDef("Wave_Minute_16", 960f, 150, 0.1f),
+                new WaveDef("Wave_Minute_17", 1020f, 160, 0.1f),
+                new WaveDef("Wave_Minute_18", 1080f, 170, 0.1f),
+                new WaveDef("Wave_Minute_19", 1140f, 180, 0.08f),
+                new WaveDef("Wave_Minute_20", 1200f, 1, 0f, false, true, 15.0f) // Final Boss: Diêm Vương (20:00)
             };
 
             int successCount = 0;

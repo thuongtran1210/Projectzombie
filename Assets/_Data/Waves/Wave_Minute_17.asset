@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1eee2d3d04afdce409c28f27f84a36ad, type: 3}
-  m_Name: ArchireEnemyConfig
+  m_Script: {fileID: 11500000, guid: f5d9154fb1567fe44a19641591a6d97f, type: 3}
+  m_Name: Wave_Minute_17
   m_EditorClassIdentifier: 
-  moveSpeed: 3
-  preferredDistance: 10
-  minDistance: 3
-  maxHealth: 10
-  damageToPlayer: 10
-  attackCooldown: 4
-  attackRange: 10
+  triggerTimeSeconds: 1020
+  enemyPrefabs: []
+  baseSpawnCount: 160
+  spawnInterval: 0.1
+  isEliteWave: 0
+  isBossWave: 0
+  hpMultiplierOverride: 0

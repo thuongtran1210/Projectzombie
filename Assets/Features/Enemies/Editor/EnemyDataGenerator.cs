@@ -57,7 +57,9 @@ namespace ProjectZombie.Features.Enemies.Editor
                 new EnemyDef("E_MATROI", "Ma Trơi", ElementType.Hoa, 25f, 4.0f, 8f, 2, EnemyTier.Common),
                 new EnemyDef("E_QUYNHAPTRANG", "Quỷ Nhập Tràng", ElementType.Tho, 150f, 1.5f, 20f, 5, EnemyTier.Elite),
                 new EnemyDef("E_MADA", "Ma Da", ElementType.Thuy, 35f, 2.0f, 12f, 3, EnemyTier.Common),
-                new EnemyDef("E_HOALYTINH", "Hồ Ly Tinh Nhỏ", ElementType.Hoa, 30f, 3.5f, 50f, 4, EnemyTier.Common)
+                new EnemyDef("E_HOALYTINH", "Hồ Ly Tinh Nhỏ", ElementType.Hoa, 30f, 3.5f, 50f, 4, EnemyTier.Common),
+                new EnemyDef("E_NGUUDAUMADIEN", "Ngưu Đầu Mã Diện", ElementType.Tho, 5000f, 2.2f, 35f, 100, EnemyTier.Boss),
+                new EnemyDef("E_DIEMVUONG", "Diêm Vương", ElementType.Kim, 15000f, 1.8f, 50f, 500, EnemyTier.Boss)
             };
 
             foreach (var def in enemies)
