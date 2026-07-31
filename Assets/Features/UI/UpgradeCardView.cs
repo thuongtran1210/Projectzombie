@@ -18,6 +18,8 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Button _selectButton;
         [SerializeField] private Button _banButton;
 
+        [SerializeField] private TextMeshProUGUI _elementBadgeText;
+
         private Action _onClicked;
         private Action _onBanClicked;
 
@@ -64,6 +66,23 @@ namespace ProjectZombie.Features.UI
             _descriptionText.text = description;
             _categoryText.text = category;
             _levelText.text = level;
+        }
+
+        /// <summary>
+        /// Hiển thị thuộc tính Ngũ Hành trên thẻ nâng cấp với TMP Rich Text màu sắc.
+        /// </summary>
+        public void SetElementBadge(string badgeFormattedText)
+        {
+            if (_elementBadgeText == null) return;
+            if (string.IsNullOrEmpty(badgeFormattedText))
+            {
+                _elementBadgeText.gameObject.SetActive(false);
+            }
+            else
+            {
+                _elementBadgeText.gameObject.SetActive(true);
+                _elementBadgeText.text = badgeFormattedText;
+            }
         }
 
         private void OnButtonClicked()
