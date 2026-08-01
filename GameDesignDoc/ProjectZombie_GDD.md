@@ -211,22 +211,24 @@ Mặc dù mỗi Nhân vật sở hữu Vũ khí khởi đầu đúng theo thuộ
 
 ## 4. Hệ Thống Vũ Khí — Pháp Bảo & Ngũ Hành
 
-### 4.1. Cơ sở dữ liệu 12 Pháp Bảo MVP
+### 4.1. Cơ sở dữ liệu 12 Pháp Bảo MVP & Quy chuẩn Hiển thị Visual
 
-| ID | Tên Pháp Bảo | Hệ | Damage | Cooldown | Số mục tiêu / Phạm vi AoE | Loại Projectile | Evolution (Tối thượng) | Mô tả & Hiệu ứng đặc trưng | Độ hiếm |
+> 📜 **Phụ lục chi tiết:** Xem thêm quy chuẩn thiết kế visual, vị trí spawn và animation trigger cho 12 pháp bảo tại **[WEAPON_VISUAL_MANIFESTATION_RULES.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/WEAPON_VISUAL_MANIFESTATION_RULES.md)**.
+
+| ID | Tên Pháp Bảo | Hệ | Nhóm Visual | Damage | Cooldown | Số mục tiêu / Phạm vi AoE | Evolution (Tối thượng) | Mô tả & Hiệu ứng đặc trưng | Độ hiếm |
 |---|---|---|---|---|---|---|---|---|---|
-| `W001` | **Nỏ Thần** | Kim | 12 | 0.6s | Single Target (Xuyên 2 mục tiêu) | Straight, xuyên táo | `E001` **Nỏ Liên Châu** | Mũi tên thần An Dương Vương bắn thẳng xuyên táo kẻ địch | Common |
-| `W002` | **Bút Phán Quan** | Kim | 20 | 0.8s | Tối đa 3 mục tiêu (Quạt cận chiến) | Melee Slash | `E002` **Bút Sinh Tử** | Nhát chém mang uy lực phán quyết âm ty gây sát thương chí mạng 2 bên | Common |
-| `W003` | **Bùa Trấn Yêu** | Mộc | 8 | 0.4s | Xoay quanh người (Tối đa 5 mục tiêu/tick) | Orbit Blade | `E003` **Bùa Cửu Huyền** | Vòng lá bùa thần xoay quanh bảo vệ và đẩy lùi yêu ma | Rare |
-| `W004` | **Cửu Vĩ Hồ Trảo** | Hỏa | 18 | 1.2s | 1 mục tiêu / lần thả | Homing | `E004` **Hồ Ly Cửu Vĩ** | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí | Rare |
-| `W005` | **Trống Đồng Đông Sơn** | Thổ | 8x5 | 1.5s | 5 hướng tỏa rộng (Tối đa 15 mục tiêu) | Spread AoE | `E005` **Trống Trấn Quốc** | Sóng âm trảm linh tỏa rộng 5 hướng gây choáng diện rộng | Common |
-| `W006` | **Lựu Đạn Thần Sa** | Hỏa | 45 | 2.5s | Bán kính nổ AoE 3.5m (Vùng thiêu rụi toàn bộ quái trong bán kính) | AoE Explosive | `E006` **Bão Hỏa Diệm** | Hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng (Knockback mạnh) | Epic |
-| `W007` | **Cung Thạch Sanh** | Kim | 35 | 1.0s | Xuyên thẳng hàng (Tối đa 8 mục tiêu) | Piercing Bolt | `E007` **Cung Thần Tiễn** | Mũi tên thần lực bối cảnh Thạch Sanh xuyên qua hàng loạt yêu tinh | Rare |
-| `W008` | **Đao Cửu Vĩ** | Hỏa | 8/tick | 0.25s | Luồng lửa nón ngắn (Tối đa 5 mục tiêu/tick) | Continuous Stream | `E008` **Hỏa Long Đao** | Luồng rồng lửa thiêu đốt liên tục theo đường thẳng | Rare |
-| `W009` | **Trượng Long Vương** | Thủy | 25 | 1.8s | Chain nảy 6 mục tiêu liên tiếp | Chain Lightning-nước | `E009` **Long Vương Trượng** | Sét nước thủy cung lan truyền qua chuỗi 6 yêu quái (Choáng 0.5s/hit) | Epic |
-| `W010` | **Linh Phù Ma Da** | Thủy | 10 | 2.0s | Bán kính độc 2.5m (AoE liên tục) | Pet Summon AoE | `E010` **Thủy Cung Linh** | Triệu hồi linh thú Ma Da phun độc sát thương liên tục | Rare |
-| `W011` | **Nước Thánh Chùa Hương** | Thổ | 14/sec | 3.0s | Bãi vũng 3.0m (AoE làm chậm & sát thương theo thời gian) | Ground AoE | `E011` **Giếng Thiêng** | Tạo bãi giếng thiêng trên mặt đất làm chậm và gây sát thương liên tục | Rare |
-| `W012` | **Phi Tiêu Bát Quái** | Mộc | 22 | 1.4s | Đâm & Quay về (Tối đa 4 mục tiêu/lượt) | Returning Blade | `E012` **Phi Tiêu Cửu Cung** | Phi tiêu ma thuật xoay tròn và quay lại vị trí người chơi | Common |
+| `W001` | **Nỏ Thần** | Kim | **A** (Tự triệu hồi) | 12 | 0.6s | Single Target (Xuyên 2 mục tiêu) | `E001` **Nỏ Liên Châu** | Mũi tên thần An Dương Vương bắn thẳng xuyên táo kẻ địch | Common |
+| `W002` | **Bút Phán Quan** | Kim | **B** (Gesture) | 20 | 0.8s | Tối đa 3 mục tiêu (Quạt cận chiến) | `E002` **Bút Sinh Tử** | Nhát chém mang uy lực phán quyết âm ty gây sát thương chí mạng 2 bên | Common |
+| `W003` | **Bùa Trấn Yêu** | Mộc | **C** (Orbit) | 8 | 0.4s | Xoay quanh người (Tối đa 5 mục tiêu/tick) | `E003` **Bùa Cửu Huyền** | Vòng lá bùa thần xoay quanh bảo vệ và đẩy lùi yêu ma | Rare |
+| `W004` | **Cửu Vĩ Hồ Trảo** | Hỏa | **A** (Tự triệu hồi) | 18 | 1.2s | 1 mục tiêu / lần thả (Homing) | `E004` **Hồ Ly Cửu Vĩ** | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí | Rare |
+| `W005` | **Trống Đồng Đông Sơn** | Thổ | **D** (Ground AoE) | 8x5 | 1.5s | 5 hướng tỏa rộng (Tối đa 15 mục tiêu) | `E005` **Trống Trấn Quốc** | Sóng âm trảm linh tỏa rộng 5 hướng gây choáng diện rộng | Common |
+| `W006` | **Lựu Đạn Thần Sa** | Hỏa | **D** (Ground AoE) | 45 | 2.5s | Bán kính nổ AoE 3.5m (Đẩy lùi mạnh) | `E006` **Bão Hỏa Diệm** | Hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng (Knockback mạnh) | Epic |
+| `W007` | **Cung Thạch Sanh** | Kim | **A** (Tự triệu hồi) | 35 | 1.0s | Xuyên thẳng hàng (Tối đa 8 mục tiêu) | `E007` **Cung Thần Tiễn** | Mũi tên thần lực bối cảnh Thạch Sanh xuyên qua hàng loạt yêu tinh | Rare |
+| `W008` | **Đao Cửu Vĩ** | Hỏa | **B** (Gesture) | 8/tick | 0.25s | Luồng lửa nón ngắn (Tối đa 5 mục tiêu/tick) | `E008` **Hỏa Long Đao** | Luồng rồng lửa thiêu đốt liên tục theo đường thẳng | Rare |
+| `W009` | **Trượng Long Vương** | Thủy | **E** (Gesture/Socket) | 25 | 1.8s | Chain nảy 6 mục tiêu liên tiếp | `E009` **Long Vương Trượng** | Sét nước thủy cung lan truyền qua chuỗi 6 yêu quái (Choáng 0.5s/hit) | Epic |
+| `W010` | **Linh Phù Ma Da** | Thủy | **E** (Pet Summon) | 10 | 2.0s | Bán kính độc 2.5m (AoE liên tục) | `E010` **Thủy Cung Linh** | Triệu hồi linh thú Ma Da phun độc sát thương liên tục | Rare |
+| `W011` | **Nước Thánh Chùa Hương** | Thổ | **D** (Ground AoE) | 14/sec | 3.0s | Bãi vũng 3.0m (Làm chậm & DoT) | `E011` **Giếng Thiêng** | Tạo bãi giếng thiêng trên mặt đất làm chậm và gây sát thương liên tục | Rare |
+| `W012` | **Phi Tiêu Bát Quái** | Mộc | **C** (Orbit/Return) | 22 | 1.4s | Đâm & Quay về (Tối đa 4 mục tiêu/lượt) | `E012` **Phi Tiêu Cửu Cung** | Phi tiêu ma thuật xoay tròn và quay lại vị trí người chơi | Common |
 
 > [!IMPORTANT]
 > **Triết lý Thiết kế Độ Hiếm Pháp Bảo (Rarity Balance Philosophy):**
@@ -419,5 +421,6 @@ Khi cần tra cứu chi tiết về thiết kế game, kế hoạch làm việc,
 - 📋 **[TASKS.md](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/TASKS.md)**: Bảng quản lý nhiệm vụ dạng Kanban Task Tracker & Kế hoạch thực thi Sprint.
 - 📐 **[SYSTEM_ARCHITECTURE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md)**: Sơ đồ kiến trúc kỹ thuật 6 tầng và mô tả chi tiết các hệ thống cốt lõi.
 - 💥 **[MODULAR_VFX_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/VFX/MODULAR_VFX_SYSTEM_DOC.md)**: Hướng dẫn hệ thống Modular VFX 4 Category & GlobalVFXPoolManager.
+- 🗡️ **[WEAPON_VISUAL_MANIFESTATION_RULES.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/WEAPON_VISUAL_MANIFESTATION_RULES.md)**: Quy chuẩn Hiển thị Visual & Tối ưu Animation cho 12 Pháp Bảo Ngũ Hành.
 - 🎨 **[UI_SETUP_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_SETUP_GUIDE.md)**: Hướng dẫn chi tiết thiết lập UI Canvas, TextMeshProUGUI và các Prefabs UI.
 
