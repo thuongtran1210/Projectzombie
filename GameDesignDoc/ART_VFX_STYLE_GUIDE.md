@@ -8,21 +8,53 @@
 
 ## 1. Phong Cách Mỹ Thuật Tổng Thể (Art Direction & World Building)
 
-### 1.1. Tầm Nhìn Mỹ Thuật (Visual Concept)
+### 1.1. Tầm Nhìn Mỹ Thuật & Nguyên Tắc Tương Phản (Visual Concept & Contrast Rules)
 **Vong Xuyên** xây dựng bối cảnh Âm Ty Việt Nam — nơi truyền thuyết ma quái dân gian trỗi dậy.
 *   **Phong cách đồ họa chủ đạo:** Mỹ thuật dân gian Việt Nam (Tranh Đông Hồ / Tranh Hàng Trống cách điệu) kết hợp với đường nét Anime hiện đại và tông màu u linh, huyền bí.
-*   **Không khí (Atmosphere):** U uất, ma mị nhưng không quá kinh dị u tối mà mang tính **tương phản rực rỡ (Vibrant HDR)** giữa ánh sáng phép thuật/pháp bảo và nền đất cõi âm u tối.
+*   **Nguyên tắc tương phản Nền / Vật thể (Readability First):**
+    *   *Nền / Môi trường:* Sử dụng tông màu **Tối và Desaturated** (xám xanh u uất, nâu bùn, tím đen) để truyền tải trọn vẹn chất "u linh" cõi âm ty.
+    *   *Vật thể tương tác (Nhân vật / Yêu ma / Đạn bay / VFX):* Phải **Sáng và Saturated hơn nền rõ rệt (chênh lệch 1 – 2 bậc độ sáng / Luminance)**. Đây là quy tắc bắt buộc để mắt người chơi tự động phân biệt ngay "vật thể tương tác được" khỏi nền tĩnh trong loạn chiến đông quái (150-200 Zombie).
 
-### 1.2. Quy Chuẩn Màu Sắc Nguyên Tố Ngũ Hành (Elemental Color Palette)
-Tất cả VFX đòn đánh, pháp bảo, aura quái vật và giao diện bắt buộc tuân theo bảng mã màu HSL/HEX chuẩn hóa dưới đây:
+### 1.4. Quy Chuẩn Góc Nhìn, Tỉ Lệ & Kích Thước Sprite (Perspective & Sprite Specs)
+*   **Góc nhìn (Perspective):** **Top-down 3/4 view** (không phải góc top-down thuần 90° từ trên đỉnh đầu xuống). Góc nhìn 3/4 cho phép thấy rõ mặt trước, biểu cảm và trang phục dân gian Việt Nam (áo the, khăn đóng, áo cà sa, pháp bảo).
+*   **Tỉ lệ cơ thể (Body Ratio):** **Chibi hóa nhẹ (Tỉ lệ đầu:thân khoảng 1:3 đến 1:4)**. Giữ silhouette (bóng dáng) dễ đọc khi màn hình cực kỳ đông quái (target 200 enemy đồng thời theo GDD mục 9), đồng thời đủ chỗ vẽ chi tiết họa tiết mà không cần đẩy độ phân giải quá cao.
+*   **Kích thước Sprite (Canvas Budget):**
+    *   *Canvas Nhân vật / Quái thường:* **32×32px đến 48×48px**.
+    *   *Tilemap Môi trường:* **16×16px hoặc 32×32px**.
+    *   *Giới hạn:* Tuyệt đối không vượt quá **64px** (ngoại trừ Trùm / Boss) để giữ Sprite Atlas gọn nhẹ, bảo đảm target APK/AAB gói phát hành dưới 60MB.
+*   **Viền đen mỏng 1px (Outline Rule):** Vẽ viền đen mỏng 1px bao quanh nhân vật và quái vật để tách biệt hoàn toàn khỏi nền môi trường tối, tăng độ nhận diện (readability) mà không cần đẩy độ sáng của sprite lên quá cao.
 
-| Thuộc tính | Mã HEX | Tên Màu | Ứng Dụng Visual & VFX |
-|---|---|---|---|
-| ✦ **Kim** | `#FFD700` | Vàng Kim / Ánh Thần | Tia sáng thư pháp, nỏ thần, kim khí chói lóa, vết chém chí mạng |
-| 🌿 **Mộc** | `#32CD32` | Xanh Lá Cây / Linh Phù | Lá bùa trấn yêu, năng lượng tự nhiên, vòng xoay bùa cửu huyền |
-| 🌊 **Thủy** | `#1E90FF` | Xanh Lam / Thủy Cung | Sét nước Long Vương, vũng giếng thiêng, độc Ma Da |
-| 🔥 **Hỏa** | `#FF4500` | Đỏ Cam / Hỏa Diệm | Móng vuốt cáo lửa Cửu Vĩ, lựu đạn thần sa, lửa địa ngục |
-| 🪨 **Thổ** | `#8B4513` | Nâu Đất / Trầm Trảm | Sóng âm trống đồng Đông Sơn, chấn động đất nứt Võ Tăng |
+### 1.5. Hệ Thống Hướng Di Chuyển — Flip Trái / Phải 2 Hướng (Directional Flip System)
+
+*   **Quyết định Thiết kế:** **Chỉ dùng 2 hướng Trái / Phải** (bỏ thiết kế 4/8 hướng Lên/Xuống riêng biệt). Phù hợp với tiết tấu di chuyển liên tục của trò chơi survivor auto-battler, đồng thời giảm 60-70% khối lượng vẽ cho Art Team.
+*   **Triển khai Kỹ thuật:**
+    1. Animator chỉ vẽ **1 bộ animation gốc duy nhất theo hướng quay sang Phải (Facing Right)**.
+    2. C# Controller sử dụng `SpriteRenderer.flipX = true` (Unity) để tự động lật ngang khi nhân vật di chuyển hoặc ngắm bắn sang Trái.
+    3. Khi di chuyển theo hướng Lên/Xuống: Giữ nguyên bộ sprite ngang (Trái hoặc Phải tùy theo hướng nhìn ngang gần nhất trước đó). Chấp nhận compromise *"nhân vật trông ngang khi đi dọc"* — đây là chuẩn thiết kế phổ biến và tối ưu hàng đầu ở thể loại Top-down Roguelite.
+*   **Lưu ý Bắt Buộc khi Thiết kế Trang Phục & Pháp Bảo (Anti-Flip Glitch Rules):**
+    *   *Thiết kế đối xứng:* Ưu tiên thiết kế trang phục/phụ kiện đối xứng (không có họa tiết thêu lệch một bên hoặc biểu tượng dán cố định bên trái/phải mang ý nghĩa đặc thù) để tránh hình ảnh vô lý khi lật ngang `flipX`.
+    *   *Vũ khí/Pháp bảo cầm tay:* Chấp nhận việc tay cầm vũ khí sẽ đổi từ tay phải sang tay trái khi lật `flipX` (không vẽ version cầm tay riêng) để tối ưu thời gian sản xuất.
+
+### 1.2. Quy Chuẩn Bảng Màu Ngũ Hành & Ký Hiệu Hình Khối (Colorblind Accessibility)
+
+Để hỗ trợ khả năng truy cập (Accessibility) và tránh rủi ro nhầm lẫn cho người mù màu (đặc biệt giữa cặp Hỏa/Mộc), **MỖI HỆ NGŨ HÀNH LUÔN CÓ HÌNH KHỐI ĐỘC LẬP ĐI KÈM MÀU SẮC** — không bao giờ dùng màu làm phương tiện phân biệt duy nhất:
+
+| Hệ Ngũ Hành | Mã Màu Chính | Mã Màu Phụ / Glow | Ký Hiệu Hình Khối (Colorblind Icon) | Ứng Dụng Visual & VFX |
+|---|---|---|---|---|
+| ✦ **Kim** | `#E8C468` | `#FFF3C4` | 🔷 **Hình Thoi / Lưỡi Kiếm** | Tia sáng thư pháp, nỏ thần, kim khí chói lóa, vết chém chí mạng |
+| 🌿 **Mộc** | `#4C7A3D` | `#8FC97A` | 🔺 **Hình Lá / Tam Giác Nhọn** | Lá bùa trấn yêu, năng lượng tự nhiên, vòng xoay bùa cửu huyền |
+| 🌊 **Thủy** | `#2E6E9E` | `#7FCBEA` | 💧 **Hình Giọt Nước** | Sét nước Long Vương, vũng giếng thiêng, độc Ma Da |
+| 🔥 **Hỏa** | `#B8442C` | `#FF8A50` | 🔥 **Hình Ngọn Lửa** | Móng vuốt cáo lửa Cửu Vĩ, lựu đạn thần sa, lửa địa ngục |
+| 🪨 **Thổ** | `#8A6A3E` | `#C9A876` | 🟩 **Hình Vuông / Khối Đất** | Sóng âm trống đồng Đông Sơn, chấn động đất nứt Võ Tăng |
+
+---
+
+### 1.3. Palette Mỹ Thuật Văn Hóa Dân Gian Gợi Ý (Vietnamese Folk Art Palette)
+
+*   **Bộ màu truyền thống:** **Đỏ son, Vàng đất, Nâu gụ, Đen mực nho**.
+*   **Quy tắc phân bổ họa tiết (Detail Distribution Rule):**
+    *   Dồn các họa tiết phức tạp (mô phỏng Tranh Đông Hồ / Tranh Hàng Trống) vào **UI Canvas, Background Arena, và Trùm/Boss** (nơi kích thước Sprite đủ lớn để giữ trọn chi tiết mỹ thuật).
+    *   Giữ đơn giản cho **Nhân vật & Quái thường** (pixel size nhỏ khi di chuyển trên màn hình Survival Roguelite để tránh rối mắt và giữ nhịp nhìn snappy).
 
 ---
 

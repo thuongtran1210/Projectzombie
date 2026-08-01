@@ -12,10 +12,17 @@
 ### 1.1. Tầm nhìn sản phẩm (Vision Statement)
 **Vong Xuyên** đưa người chơi vào hành trình sinh tồn nghẹt thở giữa cõi âm ty Việt Nam — nơi hồn ma, quỷ dữ và yêu tinh dân gian trỗi dậy từ truyền thuyết. Người chơi không chỉ "cày điểm sát thương" mà phải thấu hiểu quy luật Ngũ Hành để chế ngự từng loài yêu quái, đồng thời giữ cán cân Âm Dương trong tâm để tồn tại tới khi đối mặt Diêm Vương.
 
-### 1.2. Đối tượng người chơi (Target Audience)
-- Người chơi di động casual/mid-core yêu thích thể loại survivor-like trên Android.
-- Phiên chơi ngắn (10–20 phút/run), điều khiển mượt mà bằng Cần điều khiển ảo (Dynamic Virtual Joystick).
-- Thị trường ưu tiên: Việt Nam và cộng đồng gốc Việt hải ngoại, mở rộng sang Đông Nam Á.
+### 1.2. Đối tượng người chơi & Phong cách Đồ họa (Target & Graphic Specs)
+- **Người chơi mục tiêu:** Casual/mid-core yêu thích thể loại survivor-like trên Android. Phiên chơi 10–20 phút/run.
+- **Phong cách Đồ họa Pixel Art 2D Top-down (Top-down 3/4 View):**
+  - **Góc nhìn (Perspective):** **Top-down 3/4 view** (thấy mặt trước/trang phục dân gian áo the, khăn đóng, cà sa, pháp bảo).
+  - **Tỉ lệ cơ thể (Body Ratio):** **Chibi hóa nhẹ (1:3 đến 1:4)** giúp silhouette dễ đọc khi màn hình cực kỳ đông quái (200 enemy).
+  - **Kích thước Sprite Canvas:** Nhân vật/Quái: **32×32px đến 48×48px**. Tilemap: **16×16px hoặc 32×32px**. Giới hạn tối đa **64px** (trừ Boss) để giữ AAB dưới 60MB.
+  - **Viền Outline:** Viền đen mỏng **1px** bao quanh nhân vật/quái để tách khỏi nền tối.
+- **Hệ thống Hướng Nhân Vật (Directional Flip System — 2 Hướng):**
+  - Chỉ vẽ **1 bộ animation gốc theo hướng quay Phải (Facing Right)**.
+  - Sử dụng `SpriteRenderer.flipX = true` trong C# Unity để lật sang Trái. Đi Lên/Xuống dùng sprite ngang gần nhất.
+  - **Quy tắc thiết kế:** Trang phục đối xứng, chấp nhận đổi tay cầm vũ khí khi flipX để tối ưu thời gian sản xuất.
 
 ### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
 - **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Buộc người chơi xoay chuyển build theo vòng Tương Khắc (+30% Sát thương) và Tương Sinh (-20% Cooldown).
@@ -73,13 +80,23 @@
 - **Run 2+ (Sau khi hoàn thành hoặc thất bại trận đầu):**
   - Mới kích hoạt hiển thị **Thanh Cán Cân Âm Dương** trên HUD và hệ thống Thẻ **Tiến Hóa (Evolution)** khi vũ khí đạt Level 5.
 
-#### 2.3.2. Chuẩn hóa Màu sắc & Phản hồi Thị giác (Visual-First Learning)
-- **Mã màu Thuộc tính Ngũ Hành thống nhất (Color Coding):**
-  - ✦ **Kim:** Vàng Kim (`#FFD700`)
-  - 🌿 **Mộc:** Xanh Lá Cây (`#32CD32`)
-  - 🌊 **Thủy:** Xanh Lam (`#1E90FF`)
-  - 🔥 **Hỏa:** Đỏ Cam (`#FF4500`)
-  - 🪨 **Thổ:** Nâu Đất (`#8B4513`)
+#### 2.3.2. Chuẩn hóa Màu sắc, Ký hiệu Hình khối (Colorblind Support) & Palette Dân gian
+- **Nguyên tắc Tổng thể Bảng màu & Tương phản (Visual Readability):**
+  - *Nền / Môi trường:* Tông tối, desaturated (xám xanh, nâu bùn, tím đen) — truyền tải đúng chất u linh cõi Âm Ty.
+  - *Vật thể tương tác (Nhân vật / Yêu ma / Đạn bay / VFX):* Sáng và saturated hơn nền rõ rệt (chênh 1 – 2 bậc độ sáng) — quy tắc bắt buộc để mắt người chơi phân biệt vật thể khỏi nền tĩnh trong trận chiến 150-200 quái.
+  - *Giới hạn Palette:* Giữ tối đa **4 – 6 màu chủ đạo** xuyên suốt game để giữ tinh thần palette giới hạn của tranh dân gian (Đông Hồ / Hàng Trống).
+
+- **Mã màu & Ký hiệu Hình khối Thuộc tính Ngũ Hành (Colorblind Accessibility):**  
+  Mỗi hệ Ngũ Hành luôn đi kèm **Ký hiệu hình khối riêng** — không dùng màu sắc làm phương tiện phân biệt duy nhất để tránh rủi ro cho người mù màu (đặc biệt cặp Hỏa / Mộc):
+  - ✦ **Kim:** Mã màu `#E8C468` (Glow: `#FFF3C4`) — 🔷 **Hình Thoi / Lưỡi Kiếm**
+  - 🌿 **Mộc:** Mã màu `#4C7A3D` (Glow: `#8FC97A`) — 🔺 **Hình Lá / Tam Giác Nhọn**
+  - 🌊 **Thủy:** Mã màu `#2E6E9E` (Glow: `#7FCBEA`) — 💧 **Hình Giọt Nước**
+  - 🔥 **Hỏa:** Mã màu `#B8442C` (Glow: `#FF8A50`) — 🔥 **Hình Ngọn Lửa**
+  - 🪨 **Thổ:** Mã màu `#8A6A3E` (Glow: `#C9A876`) — 🟩 **Hình Vuông / Khối Đất**
+
+- **Palette Mỹ Thuật Dân Gian & Phân Bổ Họa Tiết:**
+  - Sử dụng bộ màu dân gian truyền thống: **Đỏ son, Vàng đất, Nâu gụ, Đen mực nho**.
+  - **Quy tắc phân bổ:** Dồn họa tiết dân gian phức tạp (Tranh Đông Hồ / Hàng Trống) vào **UI Canvas, Arena Background và Boss** (kích thước lớn đủ chứa chi tiết). Giữ nhân vật và quái nhỏ đơn giản để bảo đảm nhịp nhìn snappy 60 FPS.
 - **HUD Quick Reference Wheel (Vòng Bát Quái Tra Cứu Nhanh):**
   - Trên màn hình Run HUD, bố trí 1 nút icon **Vòng Bát Quái nhỏ** ở góc màn hình. Khi ngón tay chạm giữ (Hold Touch), một bánh xe Ngũ Hành xoay tròn hiển thị ngắn gọn sơ đồ Tương Khắc (mũi tên đỏ) & Tương Sinh (mũi tên xanh) giúp người chơi tra cứu nhanh trong 1 giây mà không phải mở Pause Menu.
 
