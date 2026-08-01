@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Player
@@ -22,6 +23,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private Animator animator;
 
         private PlayerAnimationState _currentState;
+        private readonly Dictionary<PlayerAnimationState, int> _stateHashes = new Dictionary<PlayerAnimationState, int>();
 
         private void Awake()
         {
@@ -29,11 +31,17 @@ namespace ProjectZombie.Features.Player
             {
                 animator = GetComponentInChildren<Animator>();
             }
+
+            // Cache các hash của Enum State để triệt tiêu GC Allocation do ToString() khi chuyển animation state
+            _stateHashes[PlayerAnimationState.Idle] = Animator.StringToHash(nameof(PlayerAnimationState.Idle));
+            _stateHashes[PlayerAnimationState.Run] = Animator.StringToHash(nameof(PlayerAnimationState.Run));
+            _stateHashes[PlayerAnimationState.Dash] = Animator.StringToHash(nameof(PlayerAnimationState.Dash));
+            _stateHashes[PlayerAnimationState.Dead] = Animator.StringToHash(nameof(PlayerAnimationState.Dead));
         }
 
         /// <summary>
         /// Yêu cầu chuyển sang một trạng thái hoạt ảnh mới.
-        /// Sử dụng kỹ thuật animator.Play() trực tiếp bằng Hash để BỎ QUA hệ thống mũi tên rối rắm.
+        /// Sử dụng kỹ thuật animator.Play() trực tiếp bằng Hash để BỎ QUA hệ thống mũi tên rối rắm và tối ưu 0 GC.
         /// </summary>
         public void ChangeAnimationState(PlayerAnimationState newState)
         {
@@ -42,9 +50,14 @@ namespace ProjectZombie.Features.Player
             // Nếu đang ở đúng State này rồi thì bỏ qua, không play lại từ đầu để tránh giật hình
             if (_currentState == newState) return;
 
-            // Dùng tên của Enum để làm tên State trong Animator.
-            // Ví dụ Enum là "Run" thì trong Animator phải có hộp tên là "Run".
-            animator.Play(newState.ToString());
+            if (_stateHashes.TryGetValue(newState, out int stateHash))
+            {
+                animator.Play(stateHash);
+            }
+            else
+            {
+                animator.Play(newState.ToString());
+            }
 
             _currentState = newState;
         }

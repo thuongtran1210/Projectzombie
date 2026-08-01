@@ -18,10 +18,16 @@
 ### 1.4. Quy Chuẩn Góc Nhìn, Tỉ Lệ & Kích Thước Sprite (Perspective & Sprite Specs)
 *   **Góc nhìn (Perspective):** **Top-down 3/4 view** (không phải góc top-down thuần 90° từ trên đỉnh đầu xuống). Góc nhìn 3/4 cho phép thấy rõ mặt trước, biểu cảm và trang phục dân gian Việt Nam (áo the, khăn đóng, áo cà sa, pháp bảo).
 *   **Tỉ lệ cơ thể (Body Ratio):** **Chibi hóa nhẹ (Tỉ lệ đầu:thân khoảng 1:3 đến 1:4)**. Giữ silhouette (bóng dáng) dễ đọc khi màn hình cực kỳ đông quái (target 200 enemy đồng thời theo GDD mục 9), đồng thời đủ chỗ vẽ chi tiết họa tiết mà không cần đẩy độ phân giải quá cao.
-*   **Kích thước Sprite (Canvas Budget):**
+*   **Kích thước Sprite (Canvas Budget) & PPU:**
     *   *Canvas Nhân vật / Quái thường:* **32×32px đến 48×48px**.
     *   *Tilemap Môi trường:* **16×16px hoặc 32×32px**.
+    *   *Pixels Per Unit (PPU):* **`32`** (`1 Unit = 1m = 32px`). Giúp 1 Sprite 32x32px có kích thước đúng 1m x 1m trong World Space, tối ưu va chạm Physics2D và Tilemap Grid.
     *   *Giới hạn:* Tuyệt đối không vượt quá **64px** (ngoại trừ Trùm / Boss) để giữ Sprite Atlas gọn nhẹ, bảo đảm target APK/AAB gói phát hành dưới 60MB.
+*   **Cấu hình Camera (Landscape Mode):**
+    *   *Màn hình:* Màn hình ngang (Landscape).
+    *   *Projection:* **Orthographic**.
+    *   *Orthographic Size:* **`6.0`** (Tầm nhìn chiều cao `12m`, tương đương 384px Reference Vertical).
+    *   *Pixel Perfect Camera:* Reference Resolution `768 × 432` hoặc `640 × 360`, PPU `32`, Filter Mode `Point (no filter)`.
 *   **Viền đen mỏng 1px (Outline Rule):** Vẽ viền đen mỏng 1px bao quanh nhân vật và quái vật để tách biệt hoàn toàn khỏi nền môi trường tối, tăng độ nhận diện (readability) mà không cần đẩy độ sáng của sprite lên quá cao.
 
 ### 1.5. Hệ Thống Hướng Di Chuyển — Flip Trái / Phải 2 Hướng (Directional Flip System)
