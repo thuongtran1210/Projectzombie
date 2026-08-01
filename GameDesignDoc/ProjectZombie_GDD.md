@@ -87,13 +87,40 @@
 
 ## 3. Hệ Thống Nhân Vật (Player System)
 
-### 3.1. Roster Nhân Vật MVP — Bảng cập nhật
+### 3.1. Roster Nhân Vật MVP — Bảng cập nhật & Định hướng Hình ảnh
 
 | Nhân vật | Vũ khí khởi đầu | Hệ khởi điểm | Signature Skill (Kỹ năng chủ động) | Cooldown | Cơ chế lõi tương tác |
 |---|---|---|---|---|---|
 | **Thư Sinh** | Bút Phán Quan | Kim | **"Phán Quyết Tiền Định"** — Chèn 1 hit ảo hệ tùy chọn vào buffer Tương Sinh | 25s | `recentElementHits` (mục 4.2.2) |
 | **Đạo Sĩ** | Bùa Trấn Yêu | Mộc | **"Bát Quái Trận Đồ"** — Khóa pathing quái trong vùng + ép cân bằng Âm Dương | 30s | `yinYangValue` + Enemy Pathing (mục 6.1) |
 | **Võ Tăng** | Thiền Trượng | Thổ | **"Phá Giới Chấn Thế"** — Hy sinh HP đổi lấy chấn động tỉ lệ + đẩy cực Dương | 20s | `PlayerStats.HP` + `yinYangValue` (mục 6.1) |
+
+#### 3.1.0. Định hướng Hình ảnh & Archetype Nhân vật (Art & Visual Direction)
+
+*   **Thư Sinh (Hệ Kim):**
+    *   *Archetype:* Văn nhân / Scribe cổ trang — dáng gầy, thư sinh, nho nhã, tay cầm Bút Phán Quan cỡ lớn.
+    *   *Tông màu:* Vàng kim (`#E8C468`) làm điểm nhấn trên nền áo the / khăn đóng màu xám nhạt hoặc trắng ngà.
+    *   *Chi tiết Idle:* Bút Phán Quan phát sáng nhẹ ánh vàng kim ở đầu bút khi đứng yên.
+*   **Đạo Sĩ (Hệ Mộc):**
+    *   *Archetype:* Đạo sĩ / Pháp sư cổ trang — áo choàng dài, râu tóc búi đạo gia, tay cầm phất trần hoặc lá bùa.
+    *   *Tông màu:* Xanh lá mộc (`#4C7A3D`) trên áo choàng, phối thêm nâu gụ ở phụ kiện (giỏ đựng bùa, dây lưng).
+    *   *Chi tiết Idle:* Vài lá bùa giấy bay lơ lửng lừng lơ quanh người ở trạng thái idle.
+*   **Võ Tăng (Hệ Thổ):**
+    *   *Archetype:* Tăng nhân võ thuật — dáng người chắc khỏe, cơ bắp cuồn cuộn, tay cầm Thiền Trượng đồng, ngực trần hoặc áo cà sa lệch vai gọn.
+    *   *Tông màu:* Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ son (`#C0392B`) ở dây chuỗi tràng hạt / khăn quấn tay.
+    *   *Chi tiết Idle:* Tư thế idle hơi khom, thủ thế vững chãi.
+
+#### 3.1.4. Quy Chuẩn Khối Lượng Animation & Tối Ưu Sản Xuất (Animation Budget & Base Rig)
+
+*   **Bảng Ngân Sách Frame Tối Thiểu per Nhân Vật:**
+    *   `Idle`: 2 – 4 frames (Nhịp thở nhún nhẹ).
+    *   `Walk`: 4 – 6 frames (Dáng bước di chuyển).
+    *   `Attack / Signature Skill`: 3 – 5 frames (Đòn đánh bộc phát snappy).
+    *   `Hit-react`: 1 – 2 frames (Ưu tiên dùng `HitFlashShader` làm trắng sprite thay vì tạo animation riêng).
+    *   `Death`: 3 – 4 frames (Tan vỡ / ngã gục).
+*   **Chiến lược Tối ưu Sản xuất (Base Rig Sharing):**
+    *   Sử dụng chung **1 Base Rig / Tỉ lệ cơ thể chuẩn** cho cả 3 nhân vật MVP (chỉ thay đổi trang phục/phụ kiện).
+    *   Điều này giúp tái sử dụng toàn bộ Animation State Controller C# (`animator.Play()`), không dùng Animator Transitions mũi tên (tránh Animator Spaghetti theo Mục 10 Rules), giảm 60% chi phí sản xuất Sprite Sheets cho Mobile.
 
 #### 3.1.1. "Phán Quyết Tiền Định" (Thư Sinh)
 
