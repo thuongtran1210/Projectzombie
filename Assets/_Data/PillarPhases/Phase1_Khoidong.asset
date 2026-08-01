@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   phaseName: "Phase 1: Kh\u1EDFi \u0110\u1ED9ng"
   startTime: 0
+  atmosphereColor: {r: 0, g: 1, b: 1, a: 1}
+  continuousSpawnPrefabs:
+  - {fileID: 4338019940683393192, guid: 40336bbe99d02974eb09b2c9201ef4c9, type: 3}
+  waveConfigs:
+  - {fileID: 11400000, guid: 95360cec8fb37804abd96ab5ba919a57, type: 2}
+  - {fileID: 11400000, guid: fb8da4b59da15394a91e06931aeb6770, type: 2}
   pillarConfigs:
   - configName: "Phase 1: Kh\u1EDFi \u0110\u1ED9ng - Pillar Alpha"
     startPillarTime: 0

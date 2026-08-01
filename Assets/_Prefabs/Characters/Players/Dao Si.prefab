@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLoadout:
-  - {fileID: 11400000, guid: 46dfc6df7cf77fb46aff2e2cc60eb022, type: 2}
+  - {fileID: 11400000, guid: 0c361b8270ab82c4082238371c2a1f25, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
 --- !u!114 &7402922671366627933
 MonoBehaviour:
@@ -359,8 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3769ce6f7f7d9804fbfdf389c0d18e9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterType: 1
-  _batQuaiTranZonePrefab: {fileID: 7321809818315038488, guid: 7449367730fbc804a8d1aac501c86fe2, type: 3}
+  _skillData: {fileID: 11400000, guid: 108b5c99c78b93f40bb99b61f421e8c8, type: 2}
 --- !u!1 &7294256009787977137
 GameObject:
   m_ObjectHideFlags: 0

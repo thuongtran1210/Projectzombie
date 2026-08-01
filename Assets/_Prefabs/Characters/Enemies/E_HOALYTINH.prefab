@@ -156,7 +156,7 @@ MonoBehaviour:
   explosionDamage: 50
   targetLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &3162303782959716737
 MonoBehaviour:
   m_ObjectHideFlags: 0
