@@ -10,6 +10,7 @@ namespace ProjectZombie.Features.Player
         Idle,
         Run,
         Dash,
+        Attack,
         Dead
     }
 
@@ -36,6 +37,7 @@ namespace ProjectZombie.Features.Player
             _stateHashes[PlayerAnimationState.Idle] = Animator.StringToHash(nameof(PlayerAnimationState.Idle));
             _stateHashes[PlayerAnimationState.Run] = Animator.StringToHash(nameof(PlayerAnimationState.Run));
             _stateHashes[PlayerAnimationState.Dash] = Animator.StringToHash(nameof(PlayerAnimationState.Dash));
+            _stateHashes[PlayerAnimationState.Attack] = Animator.StringToHash(nameof(PlayerAnimationState.Attack));
             _stateHashes[PlayerAnimationState.Dead] = Animator.StringToHash(nameof(PlayerAnimationState.Dead));
         }
 

@@ -30,6 +30,7 @@ namespace ProjectZombie.Features.Player
         private Vector2 _dashDirection;
 
         private PlayerAnimator _playerAnimator;
+        private Skills.SignatureSkillManager _signatureSkillManager;
 
         public static PlayerController Instance { get; private set; }
         public float LastDashTime => _lastDashTime;
@@ -49,6 +50,7 @@ namespace ProjectZombie.Features.Player
             _rb = GetComponent<Rigidbody2D>();
             _playerStats = GetComponent<PlayerStats>();
             _playerAnimator = GetComponent<PlayerAnimator>();
+            _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
             
             _rb.freezeRotation = true;
         }
@@ -76,6 +78,10 @@ namespace ProjectZombie.Features.Player
                 dashAction.action.Enable();
                 dashAction.action.performed += OnDashPerformed;
             }
+            if (_signatureSkillManager != null)
+            {
+                _signatureSkillManager.OnSkillExecuted += OnSkillExecuted;
+            }
         }
 
         private void OnDisable()
@@ -88,6 +94,18 @@ namespace ProjectZombie.Features.Player
             {
                 dashAction.action.Disable();
                 dashAction.action.performed -= OnDashPerformed;
+            }
+            if (_signatureSkillManager != null)
+            {
+                _signatureSkillManager.OnSkillExecuted -= OnSkillExecuted;
+            }
+        }
+
+        private void OnSkillExecuted()
+        {
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Attack);
             }
         }
 
