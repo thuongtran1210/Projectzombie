@@ -363,3 +363,17 @@ Một biến trạng thái toàn cục `yinYangValue` (thang 0–100, mặc đ�
     - **Quy trình xác nhận (Verification Step):** Trước khi escalate lên Job System, cần xác định rõ bottleneck nằm ở đâu qua Profiler (CPU Main Thread — logic di chuyển, hay Rendering, hay GC Spike) để tránh tối ưu sai chỗ. Nếu bottleneck không nằm ở logic di chuyển, Job System sẽ không giải quyết được vấn đề và không nên áp dụng.
     - *Ghi chú:* Đây là fallback dự phòng, không phải yêu cầu bắt buộc cho milestone Prototype/MVP hiện tại của dev.
   - **Đồ họa & Asset:** ASTC Texture Compression (4x4 / 6x6), Sprite Atlas gom Draw Calls, IL2CPP ARM64-v8a Backend.
+
+---
+
+## 10. Danh Mục Tài Liệu Tham Chiếu & Quản Lý Dự Án (Project & Reference Docs)
+
+Khi cần tra cứu chi tiết về thiết kế game, kế hoạch làm việc, kiến trúc hệ thống, hướng dẫn dựng UI hoặc kỹ thuật VFX, hãy tham chiếu các tài liệu sau:
+- 🎮 **[ProjectZombie_GDD.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md)**: Game Design Document 4.0 (Official Single Source of Truth).
+- 🎨 **[ART_VFX_STYLE_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ART_VFX_STYLE_GUIDE.md)**: Hướng dẫn Mỹ thuật, Bảng màu Ngũ Hành & Kỹ thuật VFX cho 2D/VFX Artist & Technical Artist.
+- 🗺️ **[ROADMAP.md](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/ROADMAP.md)**: Lộ trình phát triển 4 giai đoạn tới Google Play Store Release.
+- 📋 **[TASKS.md](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/TASKS.md)**: Bảng quản lý nhiệm vụ dạng Kanban Task Tracker & Kế hoạch thực thi Sprint.
+- 📐 **[SYSTEM_ARCHITECTURE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md)**: Sơ đồ kiến trúc kỹ thuật 6 tầng và mô tả chi tiết các hệ thống cốt lõi.
+- 💥 **[MODULAR_VFX_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/VFX/MODULAR_VFX_SYSTEM_DOC.md)**: Hướng dẫn hệ thống Modular VFX 4 Category & GlobalVFXPoolManager.
+- 🎨 **[UI_SETUP_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_SETUP_GUIDE.md)**: Hướng dẫn chi tiết thiết lập UI Canvas, TextMeshProUGUI và các Prefabs UI.
+
