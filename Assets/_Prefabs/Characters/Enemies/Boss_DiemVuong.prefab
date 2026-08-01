@@ -317,4 +317,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config: {fileID: 11400000, guid: c66adcbdb2b9c6d46b706196f5f2aac7, type: 2}
   expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
-  isBoss: 0
+  isBoss: 1
