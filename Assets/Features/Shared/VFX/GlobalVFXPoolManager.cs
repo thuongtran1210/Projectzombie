@@ -2,18 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
+using ProjectZombie.VFX;
 
 namespace ProjectZombie.Features.Shared.VFX
 {
     /// <summary>
-    /// Manager quản lý Object Pool tập trung cho các loại Particle System trong game.
-    /// Giúp loại bỏ hoàn toàn việc tạo trùng lặp ObjectPool rải rác ở từng Vũ khí.
+    /// Manager quản lý Object Pool tập trung cho các loại Particle System và GameObject Modular VFX trong game.
+    /// Giúp loại bỏ hoàn toàn việc tạo trùng lặp ObjectPool rải rác ở từng Vũ khí và Kỹ năng.
+    /// Supports 0 GC Allocation pooling cho cả ParticleSystem đơn lẻ lẫn Prefab Modular VFX.
     /// </summary>
     public class GlobalVFXPoolManager : MonoBehaviour
     {
         public static GlobalVFXPoolManager Instance { get; private set; }
 
-        private readonly Dictionary<int, ObjectPool<ParticleSystem>> _poolDictionary = new Dictionary<int, ObjectPool<ParticleSystem>>();
+        private readonly Dictionary<int, ObjectPool<ParticleSystem>> _particlePoolDict = new Dictionary<int, ObjectPool<ParticleSystem>>();
+        private readonly Dictionary<int, ObjectPool<GameObject>> _gameObjectPoolDict = new Dictionary<int, ObjectPool<GameObject>>();
 
         private void Awake()
         {
@@ -34,11 +37,14 @@ namespace ProjectZombie.Features.Shared.VFX
 
             int key = prefab.GetInstanceID();
 
-            if (!_poolDictionary.TryGetValue(key, out var pool))
+            if (!_particlePoolDict.TryGetValue(key, out var pool))
             {
                 pool = new ObjectPool<ParticleSystem>(
                     createFunc: () => Instantiate(prefab, transform),
-                    actionOnGet: ps => { ps.gameObject.SetActive(true); ps.Play(true); },
+                    actionOnGet: ps => { 
+                        ps.gameObject.SetActive(true); 
+                        ps.Play(true); 
+                    },
                     actionOnRelease: ps => { 
                         ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
                         ps.gameObject.SetActive(false); 
@@ -47,7 +53,7 @@ namespace ProjectZombie.Features.Shared.VFX
                     defaultCapacity: 15,
                     maxSize: 100
                 );
-                _poolDictionary.Add(key, pool);
+                _particlePoolDict.Add(key, pool);
             }
 
             var instance = pool.Get();
@@ -58,21 +64,91 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
-            // Tự động đặt Sorting Layer sang "Skill" nếu Particle đang ở "Default" (tránh bị chìm dưới TileMap)
+            // Tự động đặt Sorting Layer sang "VFX_Front" hoặc "Skill" nếu đang ở "Default"
             var psRenderer = instance.GetComponent<ParticleSystemRenderer>();
             if (psRenderer != null && (psRenderer.sortingLayerID == 0 || psRenderer.sortingLayerName == "Default"))
             {
-                psRenderer.sortingLayerName = "Skill";
+                psRenderer.sortingLayerName = "VFX_Front";
             }
 
-            StartCoroutine(ReleaseRoutine(pool, instance, autoReleaseDelay));
+            if (autoReleaseDelay > 0f)
+            {
+                StartCoroutine(ReleaseParticleRoutine(pool, instance, autoReleaseDelay));
+            }
             return instance;
         }
 
-        private IEnumerator ReleaseRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
+        /// <summary>
+        /// Lấy hoặc tạo mới GameObject Modular VFX (Prefab lồng nhiều Particle + VFXPoolResetter) từ Pool.
+        /// Tự động kích hoạt toàn bộ ParticleSystem con và tự thu hồi về Pool sau `autoReleaseDelay` giây.
+        /// </summary>
+        public GameObject PlayEffect(GameObject prefab, Vector3 position, Quaternion rotation, float autoReleaseDelay = 0.5f, Vector3? scale = null)
+        {
+            if (prefab == null) return null;
+
+            int key = prefab.GetInstanceID();
+
+            if (!_gameObjectPoolDict.TryGetValue(key, out var pool))
+            {
+                pool = new ObjectPool<GameObject>(
+                    createFunc: () => Instantiate(prefab, transform),
+                    actionOnGet: go => {
+                        go.SetActive(true);
+                        var resetter = go.GetComponent<VFXPoolResetter>();
+                        if (resetter != null)
+                        {
+                            resetter.ResetVFXState();
+                        }
+                        var particles = go.GetComponentsInChildren<ParticleSystem>(true);
+                        foreach (var ps in particles)
+                        {
+                            ps.Play(true);
+                        }
+                    },
+                    actionOnRelease: go => {
+                        var resetter = go.GetComponent<VFXPoolResetter>();
+                        if (resetter != null)
+                        {
+                            resetter.ResetVFXState();
+                        }
+                        go.SetActive(false);
+                    },
+                    actionOnDestroy: go => Destroy(go),
+                    defaultCapacity: 10,
+                    maxSize: 60
+                );
+                _gameObjectPoolDict.Add(key, pool);
+            }
+
+            var instance = pool.Get();
+            instance.transform.position = position;
+            instance.transform.rotation = rotation;
+            if (scale.HasValue)
+            {
+                instance.transform.localScale = scale.Value;
+            }
+
+            if (autoReleaseDelay > 0f)
+            {
+                StartCoroutine(ReleaseGameObjectRoutine(pool, instance, autoReleaseDelay));
+            }
+
+            return instance;
+        }
+
+        private IEnumerator ReleaseParticleRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
         {
             yield return new WaitForSeconds(delay);
             if (instance != null && instance.gameObject.activeSelf)
+            {
+                pool.Release(instance);
+            }
+        }
+
+        private IEnumerator ReleaseGameObjectRoutine(ObjectPool<GameObject> pool, GameObject instance, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (instance != null && instance.activeSelf)
             {
                 pool.Release(instance);
             }
