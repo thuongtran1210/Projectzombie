@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 8420168524280310127}
   - component: {fileID: 9140239903902810505}
   - component: {fileID: 6814556627457904073}
-  - component: {fileID: 8265457272497974350}
   m_Layer: 3
   m_Name: E_MADA
   m_TagString: Enemy
@@ -33,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3641123161232061697}
@@ -99,7 +98,7 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.49}
   serializedVersion: 2
   m_Radius: 0.5
 --- !u!114 &3645888096993824735
@@ -127,8 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Config: {fileID: 0}
-  expGemPrefab: {fileID: 0}
+  Config: {fileID: 11400000, guid: 442cdc1281790754a917e4e969653bd9, type: 2}
+  expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
   isBoss: 0
 --- !u!114 &9140239903902810505
 MonoBehaviour:
@@ -154,23 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0fab4cf507b2484d8ca209c14142ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileData: {fileID: 0}
-  firePoint: {fileID: 0}
---- !u!114 &8265457272497974350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1193935233806825299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: {fileID: 11400000, guid: 442cdc1281790754a917e4e969653bd9, type: 2}
-  expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
-  isBoss: 0
+  projectileData: {fileID: 11400000, guid: ad52cd4db2542684084590c016c36b88, type: 2}
+  firePoint: {fileID: 5796922904458475432}
 --- !u!1 &8177150208391813788
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +184,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1111112, y: 1.1111112, z: 1.1111112}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5312460550355222641}
@@ -246,15 +230,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 153689330, guid: 81485617e456829459d59f1b1cc1ee94, type: 3}
   m_Color: {r: 0.2, g: 0.6, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.5625, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &1652257310458720148
@@ -267,7 +251,7 @@ Animator:
   m_GameObject: {fileID: 8177150208391813788}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: af548721bd14116428d627b5ad2ae912, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -290,7 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 1652257310458720148}
   idleStateName: Idle
   runStateName: Run
   attackStateName: Attack

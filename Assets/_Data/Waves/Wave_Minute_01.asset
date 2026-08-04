@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerTimeSeconds: 30
   enemyPrefabs:
-  - {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
+  - {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
   baseSpawnCount: 15
   spawnInterval: 0.5
   isEliteWave: 0

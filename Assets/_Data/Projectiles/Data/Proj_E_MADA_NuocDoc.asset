@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cd7585cf1fc5e94d888217ef40fcb82, type: 3}
-  m_Name: "Proj_W011_N\u01B0\u1EDBc"
+  m_Name: Proj_E_MADA_NuocDoc
   m_EditorClassIdentifier: 
-  ProjectileID: Proj_W011
+  ProjectileID: Proj_E_MADA
   LogicPrefab: {fileID: 1174430111781914806, guid: e48c1f7bcdb21df4abcfe11b9b2268f0, type: 3}
-  Speed: 0
-  MaxRange: 20
-  Lifetime: 5
-  CollisionRadius: 3
+  Speed: 5
+  MaxRange: 8
+  Lifetime: 2.5
+  CollisionRadius: 0.3
   HitLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   PrewarmCount: 10
   MaxPoolSize: 50
   Behaviors:
-  - {fileID: 11400000, guid: d95815d51ddfaee4cb8c172e57bf11b6, type: 2}
-  BaseDamage: 14
+  - {fileID: 11400000, guid: f004d5b1c8cf41e42bee4bfaf87dd160, type: 2}
+  BaseDamage: 10
   VFXConfig:
     SpawnVFXPrefab: {fileID: 0}
     HitImpactVFXPrefab: {fileID: 0}

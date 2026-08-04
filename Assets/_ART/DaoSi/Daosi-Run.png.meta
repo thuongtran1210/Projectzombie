@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 864b7d4b9ea2cf143940b558e2ab3aa8
+guid: 26963df51f0b2604e829d71b064506bd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: attack_0
+      name: Daosi-Run_0
       rect:
         serializedVersion: 2
-        x: 134
-        y: 464
-        width: 99
-        height: 190
+        x: 20
+        y: 23
+        width: 63
+        height: 61
       alignment: 9
-      pivot: {x: 0.5139174, y: 0.00005669845}
+      pivot: {x: 0.2852234, y: 0.00036940028}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2bfd1437b13ce634baf2d7af9a3d0086
-      internalID: 210311639
+      spriteID: d4b96493de3e39746bdb2e8da2615f64
+      internalID: -1774365392
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_1
+      name: Daosi-Run_2
       rect:
         serializedVersion: 2
-        x: 131
-        y: 245
-        width: 159
-        height: 188
-      alignment: 9
-      pivot: {x: 0.2959663, y: 0.000411338}
+        x: 104
+        y: 23
+        width: 55
+        height: 61
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c967050959c40934cbfa26724c54c6e2
-      internalID: -248796671
+      spriteID: 50ac2ba79ef406b45875b1664dff154d
+      internalID: 1307739773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_2
+      name: Daosi-Run_3
       rect:
         serializedVersion: 2
-        x: 134
-        y: 19
-        width: 99
-        height: 188
-      alignment: 9
-      pivot: {x: 0.514007, y: 0.00048111854}
+        x: 179
+        y: 22
+        width: 53
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 726d26f358d9eba4e83f56c526d8ebb1
-      internalID: 366592298
+      spriteID: eeb8e3e597579c749b32e0e4d2d487c1
+      internalID: -1662297601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Daosi-Run_4
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 20
+        width: 60
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d973cc60bf03524aa01645bd9af6093
+      internalID: -943261542
       vertices: []
       indices: 
       edges: []
@@ -196,9 +217,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      attack_0: 210311639
-      attack_1: -248796671
-      attack_2: 366592298
+      Daosi-Run_0: -1774365392
+      Daosi-Run_1: 22166736
+      Daosi-Run_2: 1307739773
+      Daosi-Run_3: -1662297601
+      Daosi-Run_4: -943261542
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

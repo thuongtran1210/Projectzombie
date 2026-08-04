@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4b7f64ba7cae5a24ea410df10b4d2e93
+guid: 765b5202e1c521942be155b00144f6fc
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spritesheet_1785593840018-removebg-preview_0
+      name: Mada-Attack_0
       rect:
         serializedVersion: 2
-        x: 128
-        y: 451
-        width: 157
-        height: 205
-      alignment: 9
-      pivot: {x: 0.3676131, y: 0.000055080505}
+        x: 20
+        y: 29
+        width: 64
+        height: 52
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8fd96c29bca9581439a6fb7faad1d6d7
-      internalID: 1460034942
+      spriteID: 9bd18ee9bb144a945a4d08efc3bf51f1
+      internalID: -1926569029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet_1785593840018-removebg-preview_1
+      name: Mada-Attack_1
       rect:
         serializedVersion: 2
-        x: 127
-        y: 228
-        width: 159
-        height: 213
-      alignment: 9
-      pivot: {x: 0.35395178, y: 0.00023998565}
+        x: 104
+        y: 24
+        width: 50
+        height: 57
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b18645dbc25867b4290bea0d2e46d311
-      internalID: 669942755
+      spriteID: 9174fc4c2fe46c14596de0dba8243b44
+      internalID: -1933243188
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet_1785593840018-removebg-preview_2
+      name: Mada-Attack_2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 3
-        width: 158
-        height: 211
-      alignment: 9
-      pivot: {x: 0.36280233, y: 0.000088887195}
+        x: 175
+        y: 20
+        width: 34
+        height: 61
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a318d6dfbf5f9144a30d92548b4f00c
-      internalID: -1334269750
+      spriteID: 17505e2e66199c548b101339f963dbc5
+      internalID: 1751578468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mada-Attack_3
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 22
+        width: 32
+        height: 59
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8260337dea0ecf46ac020d93f22981b
+      internalID: -1949250254
       vertices: []
       indices: 
       edges: []
@@ -196,9 +217,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      spritesheet_1785593840018-removebg-preview_0: 1460034942
-      spritesheet_1785593840018-removebg-preview_1: 669942755
-      spritesheet_1785593840018-removebg-preview_2: -1334269750
+      Mada-Attack_0: -1926569029
+      Mada-Attack_1: -1933243188
+      Mada-Attack_2: 1751578468
+      Mada-Attack_3: -1949250254
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
