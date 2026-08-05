@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5206181766055193310}
   - component: {fileID: 7556528674688940904}
   - component: {fileID: 6160404931720492238}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: E_MAGIAP
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -147,6 +147,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  attackPoint: {fileID: 0}
+  hitboxShape: 0
+  offsetY: 0.47
+  boxHeightRatio: 1
 --- !u!114 &6160404931720492238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +181,7 @@ GameObject:
   - component: {fileID: 510723491675702544}
   - component: {fileID: 8282795965770775110}
   - component: {fileID: 5920377762605613946}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}

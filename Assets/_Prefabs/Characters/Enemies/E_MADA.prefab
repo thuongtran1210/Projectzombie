@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8420168524280310127}
   - component: {fileID: 9140239903902810505}
   - component: {fileID: 6814556627457904073}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: E_MADA
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 7596326397541942615}
   - component: {fileID: 1652257310458720148}
   - component: {fileID: 5180257142761367426}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -289,7 +289,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5796922904458475432}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

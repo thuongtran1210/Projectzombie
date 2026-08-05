@@ -18,7 +18,7 @@ MonoBehaviour:
   maxHealth: 40
   damageToPlayer: 10
   attackCooldown: 1
-  attackRange: 2
+  attackRange: 1
   expReward: 1
   tier: 0
   elementType: 1

@@ -148,7 +148,9 @@ namespace ProjectZombie.Features.Enemies
         {
             if (Config == null) return;
 
-            bool isRanged = Attacker is RangedAttackStrategy || Movement is RangedMovementStrategy;
+            var attacker = Attacker != null ? Attacker : GetComponent<AttackStrategy>();
+            var movement = Movement != null ? Movement : GetComponent<CombatMovementStrategy>();
+            bool isRanged = attacker is RangedAttackStrategy || movement is RangedMovementStrategy;
 
             if (isRanged)
             {
