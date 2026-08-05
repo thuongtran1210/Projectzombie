@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
+using ProjectZombie.Features.Enemies;
 using System.Collections.Generic;
 
 namespace ProjectZombie.Features.Projectiles.Behaviors
@@ -35,10 +36,24 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
             // Cơ chế Cản Đạn (Heavy Armor Bullet Sponge) cho Quỷ Nhập Tràng (E_QUYNHAPTRANG) - GDD 5.1
             int pierceCost = 1;
-            if (context.TargetCollider != null && 
-               (context.TargetCollider.CompareTag("HeavyArmor") || context.TargetCollider.name.Contains("E_QUYNHAPTRANG")))
+            if (context.TargetCollider != null)
             {
-                pierceCost = 2; // Trừ 2 Pierce Charge đối với Quỷ Nhập Tràng
+                string targetName = context.TargetCollider.name;
+                bool isHeavyArmor = targetName.Contains("E_QUYNHAPTRANG") || targetName.Contains("QUYNHAPTRANG");
+                
+                if (!isHeavyArmor)
+                {
+                    var enemy = context.TargetCollider.GetComponentInParent<Enemy>();
+                    if (enemy != null && enemy.Config != null && enemy.Config.name.Contains("QUYNHAPTRANG"))
+                    {
+                        isHeavyArmor = true;
+                    }
+                }
+
+                if (isHeavyArmor)
+                {
+                    pierceCost = 2; // Trừ 2 Pierce Charge đối với Quỷ Nhập Tràng
+                }
             }
 
             if (_controller.State.RemainingPierce >= pierceCost)

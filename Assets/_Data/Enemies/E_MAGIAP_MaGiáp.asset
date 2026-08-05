@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: "E_MAGIAP_MaGi\xE1p"
   m_EditorClassIdentifier: 
   moveSpeed: 2.5
-  preferredDistance: 5
-  minDistance: 3
+  preferredDistance: 0
+  minDistance: 0
   maxHealth: 40
   damageToPlayer: 10
   attackCooldown: 1

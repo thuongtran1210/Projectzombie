@@ -142,5 +142,46 @@ namespace ProjectZombie.Features.Enemies
 
             StateMachine.ChangeState(DeadState);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            if (Config == null) return;
+
+            bool isRanged = Attacker is RangedAttackStrategy || Movement is RangedMovementStrategy;
+
+            if (isRanged)
+            {
+                // Tầm đánh Tầm xa (Ranged)
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, Config.attackRange);
+
+                if (Config.preferredDistance > 0f)
+                {
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawWireSphere(transform.position, Config.preferredDistance);
+                }
+                if (Config.minDistance > 0f)
+                {
+                    Gizmos.color = new Color(1f, 0.5f, 0f);
+                    Gizmos.DrawWireSphere(transform.position, Config.minDistance);
+                }
+
+                UnityEditor.Handles.Label(transform.position + Vector3.up * (Config.attackRange + 0.2f), $"🏹 Ranged Attack: {Config.attackRange}m");
+            }
+            else
+            {
+                // Tầm đánh Cận chiến (Melee) — Chỉ vẽ duy nhất 1 vòng màu đỏ rõ ràng
+                Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.9f);
+                Gizmos.DrawWireSphere(transform.position, Config.attackRange);
+                
+                // Vẽ đĩa mờ thể hiện vùng sát thương cận chiến
+                Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.15f);
+                Gizmos.DrawSphere(transform.position, Config.attackRange);
+
+                UnityEditor.Handles.Label(transform.position + Vector3.up * (Config.attackRange + 0.2f), $"⚔️ Melee Slash Range: {Config.attackRange}m");
+            }
+        }
+#endif
     }
 }
