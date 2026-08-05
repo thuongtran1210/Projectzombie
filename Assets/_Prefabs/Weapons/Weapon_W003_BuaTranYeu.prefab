@@ -80,5 +80,5 @@ MonoBehaviour:
   weaponId: W003
   element: 2
   projectileData: {fileID: 11400000, guid: 178e8339f208b474c89a0bd33e81c3c9, type: 2}
-  baseRadius: 2
-  baseOrbCount: 1
+  baseRadius: 1
+  baseOrbCount: 2

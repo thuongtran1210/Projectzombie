@@ -45,7 +45,7 @@ namespace ProjectZombie.Features.Projectiles.Editor
             {
                 new ProjDef("Proj_W001", "Nỏ Thần (Mũi Tên Xuyên Táo)", 14f, 3.0f, 0.4f, 12f),
                 new ProjDef("Proj_W002", "Bút Phán Quan (Vệt Kiếm Phán Quyết)", 0f, 0.3f, 1.8f, 20f),
-                new ProjDef("Proj_W003", "Bùa Trấn Yêu (Vòng Bùa Xoay)", 8f, 10.0f, 0.5f, 8f),
+                new ProjDef("Proj_W003", "Bùa Trấn Yêu (Vòng Bùa Xoay)", 8f, 0f, 0.5f, 8f),
                 new ProjDef("Proj_W004", "Cửu Vĩ Hồ Trảo (Móng Vuốt Tự Đuổi)", 12f, 3.0f, 0.5f, 18f),
                 new ProjDef("Proj_W005", "Trống Đồng Đông Sơn (Sóng Âm Tỏa Rộng)", 10f, 1.5f, 1.0f, 40f),
                 new ProjDef("Proj_W006", "Lựu Đạn Thần Sa (Hạt Thần Sa Bão Lửa)", 9f, 2.5f, 3.5f, 45f),
