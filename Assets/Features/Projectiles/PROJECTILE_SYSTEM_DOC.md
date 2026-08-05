@@ -94,17 +94,29 @@ Sử dụng **`ProjectileRuntimeState`**. Đây là bộ não (Blackboard) của
 👉 Ví dụ: Khi làm `PierceBehavior`, số lần xuyên thấu còn lại được lưu vào `controller.State.RemainingPierce`. Khi làm đạn dí, mục tiêu đang theo dõi được lưu vào `controller.State.CurrentTarget`.
 👉 Nếu Behavior mới cần một State hoàn toàn dị biệt, hãy bổ sung trường đó vào `ProjectileRuntimeState`.
 
-### Quy tắc 3: Tôn trọng EventContext
-Khi đạn chạm mục tiêu, hàm `OnHit(ProjectileEventContext context)` sẽ được gọi. Đừng dùng `Collider2D` thô.
-👉 Hãy tận dụng `context.HitPoint` (tọa độ va chạm thật) và `context.HitNormal` (vector pháp tuyến để nảy bật) đã được hệ thống tính toán sẵn.
-👉 Lượng sát thương gây ra phải thông qua `DamageContext` (`context.Damage`), tuyệt đối không gửi số float chay để sau này Combat System còn có thể bóc tách hiệu ứng, bạo kích.
+### Quy tắc 3: Tôn trọng EventContext & BehaviorHitResult Consensus
+Khi đạn chạm mục tiêu, hàm `OnHit(ProjectileEventContext context)` sẽ được gọi và trả về enum `BehaviorHitResult`:
+- `Neutral`: Không can thiệp (dùng cho đạn bắn thường hoặc đạn dí `Homing`).
+- `KeepAlive`: Yêu cầu giữ đạn tồn tại tiếp tục (dùng cho `OrbitBehavior`, `PeriodicHitBehavior`, `BounceBehavior` còn lượt).
+- `RequireDespawn`: Ép buộc tiêu hủy đạn ngay lập tức (dùng cho `PierceBehavior` hết lượt, `ExplosionBehavior` va chạm, `VampiricBehavior`).
 
-### Quy tắc 4: Tôn trọng Thứ tự chạy (Execution Order)
+👉 **Cơ chế quyết định Despawn trong `ProjectileController.HandleHit`**:
+- Nếu **có bất kỳ Behavior nào** trả về `RequireDespawn`, đạn sẽ bị tiêu hủy lập tức.
+- Nếu không có `RequireDespawn` nhưng có ít nhất 1 Behavior trả về `KeepAlive`, đạn sẽ giữ nguyên trạng thái bay/xoay.
+- Nếu tất cả Behavior trả về `Neutral` hoặc không có Behavior can thiệp, mặc định đạn bị tiêu hủy.
+
+### Quy tắc 4: Phân loại thuộc tính đạn (`ProjectileCategory`)
+Trường `Category` trong `ProjectileData` giúp phân định loại đạn:
+- `Transient`: Đạn bay ngắn hạn bình thường (tự hủy khi đi quá `MaxRange` điểm sinh ban đầu).
+- `Orbit`: Đạn xoay quanh người chơi (bỏ qua kiểm tra `MaxRange` theo khoảng cách điểm sinh ban đầu).
+- `PersistentAura`: Vòng hào quang cố định.
+
+### Quy tắc 5: Tôn trọng Thứ tự chạy (Execution Order)
 Các Behavior phải được set `ExecutionOrder` trong Data.
 👉 Số càng nhỏ chạy càng sớm.
 👉 **Ví dụ**: Đạn nảy (`BounceBehavior`) phải được tính góc nảy TRƯỚC KHI đạn bay tiếp (`StraightBehavior`). Homing cũng phải đổi góc TRƯỚC KHI Straight đẩy đạn lên phía trước. Hãy cẩn thận khi quy định con số này (Thường để Straight cuối cùng ~ 100).
 
-### Quy tắc 5: Ngăn chặn đệ quy vô hạn với Generation
+### Quy tắc 6: Ngăn chặn đệ quy vô hạn với Generation
 Khi làm các hiệu ứng đẻ đạn (Spawn đạn từ đạn, vd: `SplitBehavior`), luôn phải tăng `Generation` (thế hệ đạn) lên 1:
 ```csharp
 ProjectileSystem.Instance.Spawn(..., controller.State.Generation + 1);

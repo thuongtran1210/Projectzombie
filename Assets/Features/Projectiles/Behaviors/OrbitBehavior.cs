@@ -45,10 +45,10 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             _controller.transform.position = _controller.Owner.transform.position + offset;
         }
 
-        public bool OnHit(ProjectileEventContext context)
+        public BehaviorHitResult OnHit(ProjectileEventContext context)
         {
-            // Đạn xoay tròn không tự hủy khi chạm kẻ địch
-            return false;
+            // Đạn xoay tròn giữ nguyên trạng thái khi chạm kẻ địch
+            return BehaviorHitResult.KeepAlive;
         }
 
         public void OnDespawn() { }

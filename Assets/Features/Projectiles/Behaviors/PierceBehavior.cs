@@ -25,11 +25,11 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate() { }
 
-        public bool OnHit(Core.ProjectileEventContext context)
+        public BehaviorHitResult OnHit(Core.ProjectileEventContext context)
         {
             if (_hitTargets.Contains(context.TargetCollider))
             {
-                return false; // Already hit this target, do not count again, do not despawn
+                return BehaviorHitResult.KeepAlive; // Already hit this target, do not count again, do not despawn
             }
 
             _hitTargets.Add(context.TargetCollider);
@@ -59,11 +59,11 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             if (_controller.State.RemainingPierce >= pierceCost)
             {
                 _controller.State.RemainingPierce -= pierceCost;
-                return false; // Còn Pierce charge, không tiêu hủy đạn
+                return BehaviorHitResult.KeepAlive; // Còn Pierce charge, không tiêu hủy đạn
             }
 
             _controller.State.RemainingPierce = 0;
-            return true; // Hết Pierce charge, tiêu hủy đạn ngay lập tức
+            return BehaviorHitResult.RequireDespawn; // Hết Pierce charge, tiêu hủy đạn ngay lập tức
         }
 
         public void OnDespawn()

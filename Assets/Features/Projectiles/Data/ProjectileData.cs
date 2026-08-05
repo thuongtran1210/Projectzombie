@@ -8,6 +8,7 @@ namespace ProjectZombie.Features.Projectiles.Data
     {
         [Header("Identity")]
         public string ProjectileID;
+        public ProjectileCategory Category = ProjectileCategory.Transient;
         public GameObject LogicPrefab; // Prefab chứa ProjectileController và các logic, có thể chứa Visual bên trong.
 
         [Header("Movement")]

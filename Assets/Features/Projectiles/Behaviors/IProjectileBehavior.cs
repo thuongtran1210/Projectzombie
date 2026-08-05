@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Projectiles.Behaviors
 {
+    public enum BehaviorHitResult
+    {
+        Neutral = 0,
+        KeepAlive = 1,
+        RequireDespawn = 2
+    }
+
     public interface IProjectileBehavior
     {
         void OnSpawn();
@@ -9,9 +16,9 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
         
         /// <summary>
         /// Called when the projectile hits a target.
-        /// Return true to allow despawn, false to prevent despawn (e.g. for piercing).
+        /// Returns BehaviorHitResult to determine whether the projectile should be despawned, kept alive, or neutral.
         /// </summary>
-        bool OnHit(Core.ProjectileEventContext context);
+        BehaviorHitResult OnHit(Core.ProjectileEventContext context);
         
         void OnDespawn();
     }

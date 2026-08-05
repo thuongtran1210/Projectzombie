@@ -17,17 +17,26 @@ Quản lý việc sở hữu vũ khí và logic ra đòn của nhân vật.
 - Vai trò: Lớp trừu tượng (Abstract) nền móng cho MỌI loại vũ khí.
 - Tính năng: Quản lý thời gian hồi chiêu (Cooldown) dựa trên AttackSpeed và cung cấp hàm gọi `PerformAttack()`. Không hề ôm đồm logic Đạn hay Object Pool (đảm bảo Single Responsibility).
 
-### `Weapon_RangedBase` (Kế thừa WeaponBase)
-- Vai trò: Chuyên dùng cho vũ khí Bắn Xa.
-- Tính năng: Tự động thiết lập một **Object Pool** riêng để tái chế đạn, tối ưu hóa bộ nhớ. Các vũ khí con (như `Weapon_Targeted`) sẽ dùng lớp này để gọi Đạn.
-
 ### `Weapon_MeleeBase` (Kế thừa WeaponBase)
 - Vai trò: Chuyên dùng cho vũ khí Cận Chiến.
 - Tính năng: Tối ưu hóa bằng cách dùng `Physics2D.OverlapBoxNonAlloc` (Zero Allocation) để quét mục tiêu thay vì phải gọi GameObject Đạn vật lý.
 
+### `Weapon_ProjectileBase` (Kế thừa WeaponBase)
+- Vai trò: Lớp trừu tượng cơ sở cho MỌI loại vũ khí có sinh ra đạn (`ProjectileData`).
+- Tính năng: Tự động quản lý việc clone ScriptableObject `ProjectileData` độc lập cho từng vũ khí, xử lý đổi Prefab đạn khi thăng cấp (`OnLevelUp`), và dọn dẹp tài nguyên khi bị hủy (`OnDestroy`).
+
+### `Weapon_RangedBase` (Kế thừa Weapon_ProjectileBase)
+- Vai trò: Chuyên dùng cho vũ khí Bắn Xa theo hướng (Directional / Fired).
+- Tính năng: Áp dụng các chỉ số riêng cho đạn bay như tăng tốc độ bay của đạn (`projectileData.Speed += modifier.projectileSpeedBonus`). Các vũ khí đại diện: `Weapon_Targeted` (Nỏ Thần, Bút Phán Quan), `Weapon_Shotgun`, `Weapon_Crossbow`.
+
+### `Weapon_Orbit` (Kế thừa Weapon_ProjectileBase)
+- Vai trò: Chuyên dùng cho vũ khí Vòng xoay / Hào quang bảo vệ (Orbit / Aura).
+- Tính năng: Kích hoạt sinh đạn xoay quanh người chơi theo nhịp hồi chiêu (`PerformAttack()`). Độc lập hoàn toàn khỏi logic tăng tốc độ bay của đạn bắn xa (`RangedBase`). Tự động đăng ký nghe sự kiện `OnProjectileDespawned` từ `ProjectileSystem` để dọn dẹp danh sách quản lý đạn rác.
+
 ### Các loại Vũ Khí Thực Tế (Weapon Implementations)
 - `Weapon_Targeted` (Ranged): Tự động tìm kiếm kẻ địch gần nhất trong tầm với và phóng đạn vào chúng.
 - `Weapon_DualSlash` (Melee): Đánh ra 2 nhát chém ngược hướng nhau (trái/phải) cùng một lúc.
+- `Weapon_Orbit` (Orbit): Sinh các lá bùa (`W003`) xoay tròn bảo vệ nhân vật theo đợt hồi chiêu.
 - *(Có thể tạo thêm: `Weapon_Aura`, `Weapon_RandomStrike`...)*
 
 ---

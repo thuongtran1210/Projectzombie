@@ -14,7 +14,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnSpawn() { }
         public void OnUpdate() { }
-        public bool OnHit(Core.ProjectileEventContext context) => true; // Default behavior is to allow despawn
+        public BehaviorHitResult OnHit(Core.ProjectileEventContext context) => BehaviorHitResult.Neutral;
         public void OnDespawn() { }
     }
 }

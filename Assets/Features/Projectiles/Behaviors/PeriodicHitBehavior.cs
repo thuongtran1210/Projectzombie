@@ -25,9 +25,9 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate() { }
 
-        public bool OnHit(ProjectileEventContext context)
+        public BehaviorHitResult OnHit(ProjectileEventContext context)
         {
-            if (context.TargetCollider == null) return false;
+            if (context.TargetCollider == null) return BehaviorHitResult.KeepAlive;
 
             float cooldown = _data != null ? _data.hitCooldown : 0.5f;
 
@@ -35,7 +35,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             {
                 if (Time.time < lastTime + cooldown)
                 {
-                    return false; // Chưa hết cooldown, không gây sát thương thêm & không despawn
+                    return BehaviorHitResult.KeepAlive; // Chưa hết cooldown, không gây sát thương thêm & giữ đạn sống
                 }
             }
 
@@ -46,8 +46,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                 health.TakeDamage(context.Damage);
             }
 
-            // Trả về false để đạn không bị despawn
-            return false;
+            // Trả về KeepAlive để đạn không bị despawn
+            return BehaviorHitResult.KeepAlive;
         }
 
         public void OnDespawn()

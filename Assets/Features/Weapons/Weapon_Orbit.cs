@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.Weapons
     /// Khung vũ khí sinh ra các vật thể xoay tròn xung quanh người chơi.
     /// Đã được refactor sang sử dụng hệ thống Đạn Data-Driven (ProjectileSystem) kết hợp Object Pooling.
     /// </summary>
-    public class Weapon_Orbit : Weapon_RangedBase
+    public class Weapon_Orbit : Weapon_ProjectileBase
     {
         [Header("Orbit Settings")]
         [SerializeField] private float baseRadius = 2f;
@@ -22,33 +22,15 @@ namespace ProjectZombie.Features.Weapons
 
         protected override void PerformAttack()
         {
-            // Vũ khí Aura/Orbit không tấn công theo nhịp (Cooldown).
-        }
+            if (projectileData == null || ProjectileSystem.Instance == null || CharacterStats == null) return;
 
-        private void Update()
-        {
-            if (CharacterStats == null) return;
-
-            int currentExpectedOrbs = baseOrbCount + localProjectileCountBonus;
-            float currentScale = 1f + localScaleBonus;
-
-            if (currentExpectedOrbs != _lastProjectileCount || !Mathf.Approximately(currentScale, _lastScaleBonus))
-            {
-                RefreshOrbs(currentExpectedOrbs, currentScale);
-                _lastProjectileCount = currentExpectedOrbs;
-                _lastScaleBonus = currentScale;
-            }
-        }
-
-        private void RefreshOrbs(int orbCount, float scale)
-        {
-            _activeOrbs.Clear();
-
-            if (projectileData == null || ProjectileSystem.Instance == null) return;
-
-            float angleStep = 360f / Mathf.Max(1, orbCount);
-            DamageData damageData = DamageUtility.CalculateDamage(GetDamage(), CharacterStats.CritChance);
+            int orbCount = Mathf.Max(1, baseOrbCount + localProjectileCountBonus);
+            float scale = GetFinalScale();
+            float angleStep = 360f / orbCount;
+            DamageData damageData = DamageUtility.CalculateDamage(GetDamage(), GetFinalCritChance());
             Vector3 center = firePoint != null ? firePoint.position : transform.position;
+
+            _activeOrbs.Clear();
 
             for (int i = 0; i < orbCount; i++)
             {
@@ -66,10 +48,29 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        private void OnEnable()
+        {
+            if (ProjectileSystem.Instance != null && ProjectileSystem.Instance.EventDispatcher != null)
+            {
+                ProjectileSystem.Instance.EventDispatcher.OnProjectileDespawned += HandleOrbDespawned;
+            }
+        }
+
         private void OnDisable()
         {
+            if (ProjectileSystem.Instance != null && ProjectileSystem.Instance.EventDispatcher != null)
+            {
+                ProjectileSystem.Instance.EventDispatcher.OnProjectileDespawned -= HandleOrbDespawned;
+            }
             _activeOrbs.Clear();
-            _lastProjectileCount = -1;
+        }
+
+        private void HandleOrbDespawned(ProjectileController orb)
+        {
+            if (orb != null)
+            {
+                _activeOrbs.Remove(orb);
+            }
         }
 
 #if UNITY_EDITOR

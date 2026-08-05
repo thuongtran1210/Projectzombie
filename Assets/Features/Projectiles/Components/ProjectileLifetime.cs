@@ -30,14 +30,17 @@ namespace ProjectZombie.Features.Projectiles.Components
                 }
             }
 
-            // Check Max Range (MaxRange <= 0 hoặc Infinity = không giới hạn tầm)
-            float maxRange = _controller.Data.MaxRange;
-            if (maxRange > 0f && !float.IsInfinity(maxRange))
+            // Check Max Range (Chỉ áp dụng cho Transient Projectiles. Orbit / PersistentAura không bị despawn theo khoảng cách spawn)
+            if (_controller.Data.Category == Data.ProjectileCategory.Transient)
             {
-                float traveledDistance = Vector2.Distance(_spawnPosition, transform.position);
-                if (traveledDistance >= maxRange)
+                float maxRange = _controller.Data.MaxRange;
+                if (maxRange > 0f && !float.IsInfinity(maxRange))
                 {
-                    _controller.HandleExpiration();
+                    float traveledDistance = Vector2.Distance(_spawnPosition, transform.position);
+                    if (traveledDistance >= maxRange)
+                    {
+                        _controller.HandleExpiration();
+                    }
                 }
             }
         }

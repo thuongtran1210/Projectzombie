@@ -23,13 +23,13 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate() { }
 
-        public bool OnHit(Core.ProjectileEventContext context)
+        public BehaviorHitResult OnHit(Core.ProjectileEventContext context)
         {
             if (_data.TriggerOnHit && !_hasExploded)
             {
                 Explode(context.HitPoint);
             }
-            return true;
+            return BehaviorHitResult.RequireDespawn;
         }
 
         public void OnDespawn()

@@ -1,65 +1,22 @@
 using UnityEngine;
-using UnityEngine.Pool;
-using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Weapons
 {
     /// <summary>
-    /// Lớp cơ sở cho các vũ khí đánh xa (Ranged).
-    /// Quản lý Object Pool cho Đạn (Projectile).
+    /// Lớp cơ sở cho các vũ khí bắn xa theo hướng (Ranged Fired Weapons).
+    /// Áp dụng các chỉ số riêng cho đạn bắn đi như tốc độ bay (Projectile Speed).
     /// </summary>
-    public abstract class Weapon_RangedBase : WeaponBase
+    public abstract class Weapon_RangedBase : Weapon_ProjectileBase
     {
-        [Header("Projectile Settings")]
-        [SerializeField] protected Projectiles.Data.ProjectileData projectileData;
-        
-        private bool _isDataCloned;
-
-        public override void Initialize(ProjectZombie.Features.Shared.ICharacterStats stats)
-        {
-            base.Initialize(stats);
-            
-            // Tạo bản sao (clone) của ScriptableObject để có thể ghi đè Prefab mà không ảnh hưởng file gốc
-            if (projectileData != null && !_isDataCloned)
-            {
-                projectileData = Instantiate(projectileData);
-                _isDataCloned = true;
-            }
-        }
-
         public override void ApplyStatModifier(Upgrades.WeaponStatModifier modifier)
         {
             base.ApplyStatModifier(modifier);
 
             // Vì projectileData đã được clone độc lập cho vũ khí này, 
-            // ta có thể thay đổi trực tiếp Speed mà không sợ dính líu đến các vũ khí khác.
+            // tăng tốc độ bay của đạn bắn xa theo modifier.
             if (projectileData != null)
             {
                 projectileData.Speed += modifier.projectileSpeedBonus;
-            }
-        }
-
-        public override void OnLevelUp(int newLevel, Upgrades.UpgradeData appliedUpgrade)
-        {
-            base.OnLevelUp(newLevel, appliedUpgrade);
-
-            // Nếu thẻ nâng cấp có cung cấp Prefab đạn mới (ví dụ thẻ Level 4 hoặc 6)
-            if (appliedUpgrade is Upgrades.WeaponUpgradeData weaponUpgrade)
-            {
-                if (weaponUpgrade.overrideProjectilePrefab != null && projectileData != null)
-                {
-                    projectileData.LogicPrefab = weaponUpgrade.overrideProjectilePrefab;
-                    Debug.Log($"[{gameObject.name}] Đã thay đổi đạn thành: {weaponUpgrade.overrideProjectilePrefab.name}");
-                }
-            }
-        }
-
-        protected virtual void OnDestroy()
-        {
-            if (_isDataCloned && projectileData != null)
-            {
-                Destroy(projectileData);
-                projectileData = null;
             }
         }
     }

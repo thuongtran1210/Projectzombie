@@ -21,7 +21,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate() { }
 
-        public bool OnHit(Core.ProjectileEventContext context)
+        public BehaviorHitResult OnHit(Core.ProjectileEventContext context)
         {
             if (_controller.State.RemainingBounce > 0)
             {
@@ -30,10 +30,10 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                 // Reflect direction across the normal
                 _controller.CurrentDirection = Vector2.Reflect(_controller.CurrentDirection, context.HitNormal).normalized;
                 
-                return false; // Prevent despawn
+                return BehaviorHitResult.KeepAlive; // Prevent despawn
             }
             
-            return true; // No bounces left, despawn
+            return BehaviorHitResult.RequireDespawn; // No bounces left, despawn
         }
 
         public void OnDespawn() { }

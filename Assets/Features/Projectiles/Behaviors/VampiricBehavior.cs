@@ -43,7 +43,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             }
         }
 
-        public bool OnHit(Core.ProjectileEventContext context)
+        public BehaviorHitResult OnHit(Core.ProjectileEventContext context)
         {
             // Tính toán tỉ lệ hút máu
             if (Random.value <= _data.VampiricChance)
@@ -58,8 +58,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                 }
             }
 
-            // Dơi thường cắn 1 cái là biến mất, nên trả về true để projectile bị xoá
-            return true;
+            // Dơi thường cắn 1 cái là biến mất, nên yêu cầu despawn
+            return BehaviorHitResult.RequireDespawn;
         }
 
         public void OnDespawn()

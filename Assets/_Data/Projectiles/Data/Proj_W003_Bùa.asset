@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: "Proj_W003_B\xF9a"
   m_EditorClassIdentifier: 
   ProjectileID: Proj_W003
+  Category: 1
   LogicPrefab: {fileID: 2206825039086067963, guid: 3e07f73aa728abb4c81c8c0fb7419cb3, type: 3}
-  Speed: 8
-  MaxRange: 20
-  Lifetime: 0
+  Speed: 10
+  MaxRange: 0
+  Lifetime: 2.5
   CollisionRadius: 0.5
   HitLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 136
   PrewarmCount: 10
   MaxPoolSize: 50
   Behaviors:
   - {fileID: 11400000, guid: cddd9fcedca9bf14b8bcdcf41b0b7f4e, type: 2}
-  - {fileID: 11400000, guid: f15ae54359187be46953fc297e5aca52, type: 2}
   BaseDamage: 8
   VFXConfig:
     SpawnVFXPrefab: {fileID: 0}

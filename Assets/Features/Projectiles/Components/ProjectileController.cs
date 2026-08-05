@@ -111,19 +111,26 @@ namespace ProjectZombie.Features.Projectiles.Components
             State.HitCount++;
             ProjectileSystem.Instance.EventDispatcher.RaiseHit(context);
 
-            bool shouldDespawn = true;
+            bool requireDespawn = false;
+            bool keepAlive = false;
+
             if (_behaviors != null)
             {
                 for (int i = 0; i < _behaviors.Length; i++)
                 {
-                    if (!_behaviors[i].OnHit(context))
+                    BehaviorHitResult result = _behaviors[i].OnHit(context);
+                    if (result == BehaviorHitResult.RequireDespawn)
                     {
-                        shouldDespawn = false;
+                        requireDespawn = true;
+                    }
+                    else if (result == BehaviorHitResult.KeepAlive)
+                    {
+                        keepAlive = true;
                     }
                 }
             }
 
-            if (shouldDespawn)
+            if (requireDespawn || !keepAlive)
             {
                 Despawn();
             }
