@@ -36,18 +36,23 @@ namespace ProjectZombie.Features.Enemies
                 _enemy.EnemyAnimator.FlipToDirection(dirX);
             }
 
-            // Đối với Ranged, nếu người chơi quá gần hoặc quá xa (khỏi tầm an toàn), chuyển sang Reposition
-            if (_enemy.Movement is RangedMovementStrategy)
+            // Kiểm tra xem quái có cần Reposition hay đổi lại trạng thái Chase dựa trên Strategy
+            if (_enemy.Movement != null)
             {
-                if (distance < _enemy.Config.minDistance || distance > _enemy.Config.preferredDistance)
+                if (_enemy.Movement.ShouldReposition(distance))
                 {
                     _stateMachine.ChangeState(_enemy.RepositionState);
+                    return;
+                }
+                if (!_enemy.Movement.IsInAttackRange(distance))
+                {
+                    _stateMachine.ChangeState(_enemy.ChaseState);
                     return;
                 }
             }
             else
             {
-                // Đối với Melee, nếu người chơi ra khỏi tầm đánh, quay lại Chase
+                // Fallback nếu không có Movement component
                 if (distance > _enemy.Config.AttackRange)
                 {
                     _stateMachine.ChangeState(_enemy.ChaseState);

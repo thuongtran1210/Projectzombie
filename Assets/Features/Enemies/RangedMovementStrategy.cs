@@ -47,5 +47,19 @@ namespace ProjectZombie.Features.Enemies
                 }
             }
         }
+
+        public override bool IsInAttackRange(float distanceToPlayer)
+        {
+            if (_enemy == null || _enemy.Config == null) return false;
+            // Nằm trong khoảng an toàn (tối thiểu -> tối đa/preferred)
+            return distanceToPlayer >= _enemy.Config.minDistance && distanceToPlayer <= _enemy.Config.preferredDistance;
+        }
+
+        public override bool ShouldReposition(float distanceToPlayer)
+        {
+            if (_enemy == null || _enemy.Config == null) return false;
+            // Nếu người chơi quá gần (cần lùi lại) hoặc quá xa (cần đuổi theo)
+            return distanceToPlayer < _enemy.Config.minDistance || distanceToPlayer > _enemy.Config.preferredDistance;
+        }
     }
 }

@@ -24,7 +24,11 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
-            if (distance <= _enemy.Config.AttackRange)
+            if (_enemy.Movement != null && _enemy.Movement.IsInAttackRange(distance))
+            {
+                _stateMachine.ChangeState(_enemy.AttackState);
+            }
+            else if (_enemy.Movement == null && distance <= _enemy.Config.AttackRange)
             {
                 _stateMachine.ChangeState(_enemy.AttackState);
             }

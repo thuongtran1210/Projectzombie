@@ -47,5 +47,13 @@ namespace ProjectZombie.Features.Enemies
                 }
             }
         }
+
+        public override bool IsInAttackRange(float distanceToPlayer)
+        {
+            if (_enemy == null || _enemy.Config == null) return false;
+            return distanceToPlayer <= _enemy.Config.AttackRange;
+        }
+
+        public override bool ShouldReposition(float distanceToPlayer) => false;
     }
 }
