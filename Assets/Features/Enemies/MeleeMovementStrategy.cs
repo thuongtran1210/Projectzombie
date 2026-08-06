@@ -9,12 +9,25 @@ namespace ProjectZombie.Features.Enemies
         {
             if (_enemy.PlayerTransform == null || _enemy.Config == null) return;
 
+            // Nếu đang bị Stun/Freeze hoặc Knockback thì không di chuyển logic
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
+            {
+                if (_enemy.EnemyAnimator != null) _enemy.EnemyAnimator.SetRunning(false);
+                return;
+            }
+
+            float currentSpeed = _enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier;
+            if (_enemy.StatusController != null)
+            {
+                currentSpeed = _enemy.StatusController.GetModifiedMoveSpeed(currentSpeed);
+            }
+
             // Xử lý trạng thái bị nhốt trong Bát Quái Trận (TrapCircling)
             if (_enemy.IsTrapCircling)
             {
                 Vector2 fromCenter = (Vector2)_enemy.transform.position - (Vector2)_enemy.TrapCenter;
                 Vector2 tangentDir = new Vector2(-fromCenter.y, fromCenter.x).normalized; // Hướng di chuyển vòng quanh tâm
-                _enemy.Rb.velocity = tangentDir * (_enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier * 0.8f);
+                _enemy.Rb.velocity = tangentDir * (currentSpeed * 0.8f);
 
                 if (_enemy.EnemyAnimator != null)
                 {
@@ -30,7 +43,7 @@ namespace ProjectZombie.Features.Enemies
             if (distance > _enemy.Config.AttackRange)
             {
                 Vector2 direction = (_enemy.PlayerTransform.position - _enemy.transform.position).normalized;
-                _enemy.Rb.velocity = direction * (_enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier);
+                _enemy.Rb.velocity = direction * currentSpeed;
 
                 if (_enemy.EnemyAnimator != null)
                 {

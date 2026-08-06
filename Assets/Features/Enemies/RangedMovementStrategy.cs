@@ -9,6 +9,19 @@ namespace ProjectZombie.Features.Enemies
         {
             if (_enemy.PlayerTransform == null || _enemy.Config == null) return;
 
+            // Nếu đang bị Stun/Freeze hoặc Knockback thì không di chuyển logic
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
+            {
+                if (_enemy.EnemyAnimator != null) _enemy.EnemyAnimator.SetRunning(false);
+                return;
+            }
+
+            float currentSpeed = _enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier;
+            if (_enemy.StatusController != null)
+            {
+                currentSpeed = _enemy.StatusController.GetModifiedMoveSpeed(currentSpeed);
+            }
+
             float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
             Vector2 directionToPlayer = (_enemy.PlayerTransform.position - _enemy.transform.position).normalized;
 
@@ -16,7 +29,7 @@ namespace ProjectZombie.Features.Enemies
             {
                 // Người chơi quá gần -> Lùi lại
                 Vector2 retreatDir = -directionToPlayer;
-                _enemy.Rb.velocity = retreatDir * (_enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier);
+                _enemy.Rb.velocity = retreatDir * currentSpeed;
 
                 if (_enemy.EnemyAnimator != null)
                 {
@@ -28,7 +41,7 @@ namespace ProjectZombie.Features.Enemies
             else if (distance > _enemy.Config.preferredDistance)
             {
                 // Người chơi ở quá xa -> Tiến lại gần
-                _enemy.Rb.velocity = directionToPlayer * (_enemy.Config.moveSpeed * _enemy.MoveSpeedMultiplier);
+                _enemy.Rb.velocity = directionToPlayer * currentSpeed;
 
                 if (_enemy.EnemyAnimator != null)
                 {

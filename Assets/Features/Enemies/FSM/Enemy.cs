@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Enemies
         public AttackStrategy Attacker { get; private set; }
         public CombatMovementStrategy Movement { get; private set; }
         public EnemyStateMachine StateMachine { get; private set; }
+        public EnemyStatusController StatusController { get; private set; }
 
         // Các trạng thái
         public EnemyIdleState IdleState { get; private set; }
@@ -67,6 +68,8 @@ namespace ProjectZombie.Features.Enemies
 
             Attacker = GetComponent<AttackStrategy>();
             Movement = GetComponent<CombatMovementStrategy>();
+            StatusController = GetComponent<EnemyStatusController>();
+            if (StatusController == null) StatusController = gameObject.AddComponent<EnemyStatusController>();
 
             // Khởi tạo State Machine và các trạng thái
             StateMachine = new EnemyStateMachine();
@@ -75,6 +78,25 @@ namespace ProjectZombie.Features.Enemies
             AttackState = new EnemyAttackState(this, StateMachine);
             RepositionState = new EnemyRepositionState(this, StateMachine);
             DeadState = new EnemyDeadState(this, StateMachine);
+        }
+
+        public void ApplyKnockback(Vector2 direction, float force, float duration)
+        {
+            if (StatusController != null)
+            {
+                StatusController.ApplyKnockback(direction, force, duration);
+            }
+        }
+
+        public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f)
+        {
+            if (StatusController != null)
+            {
+                StatusController.ApplyStatusEffect(type, duration, value, tickInterval, (damage) =>
+                {
+                    if (HealthSystem != null) HealthSystem.TakeDamage(damage);
+                });
+            }
         }
 
         private void OnEnable()

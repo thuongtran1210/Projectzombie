@@ -24,6 +24,11 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
+            {
+                return;
+            }
+
             if (_enemy.Movement != null && _enemy.Movement.IsInAttackRange(distance))
             {
                 _stateMachine.ChangeState(_enemy.AttackState);
