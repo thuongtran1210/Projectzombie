@@ -17,8 +17,13 @@ namespace ProjectZombie.Features.Collectibles
         private bool _isHoming = false; // Trạng thái đang bay vào người chơi
 
         // Hiệu ứng "nảy" khi vừa sinh ra (tùy chọn)
-        private void Start()
+        private void OnEnable()
         {
+            // Reset trạng thái khi lấy ra từ Pool
+            _isTriggered = false;
+            _isHoming = false;
+            _targetPlayer = null;
+
             // Cho viên exp nhỏ từ 0 phình lên lúc mới rớt xuống
             transform.localScale = Vector3.zero;
             transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
@@ -96,8 +101,16 @@ namespace ProjectZombie.Features.Collectibles
             // Tắt Tween đang chạy trên object này (nếu có) để tránh lỗi bộ nhớ
             transform.DOKill();
             
-            // For now, just destroy the object. In a real game, use Object Pooling.
-            Destroy(gameObject);
+            // Trả về Object Pool thay vì Destroy
+            var poolConfig = GetComponent<ExpGemPoolConfig>();
+            if (poolConfig != null)
+            {
+                poolConfig.ReturnToPool();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
         
         // This can be used to set exp amount based on enemy type

@@ -213,6 +213,24 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private Transform _playerTransform;
+        private ProjectZombie.Features.Shared.HealthSystem _playerHealthSystem;
+
+        private void Start()
+        {
+            CachePlayer();
+        }
+
+        private void CachePlayer()
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                _playerTransform = player.transform;
+                _playerHealthSystem = player.GetComponent<ProjectZombie.Features.Shared.HealthSystem>();
+            }
+        }
+
         /// <summary>Sinh ra một kẻ địch tại vị trí ngẫu nhiên ngoài màn hình camera (kết hợp Object Pooling 0 GC).</summary>
         private void SpawnEnemy(GameObject prefab, float hpMultiplier = 1f)
         {
@@ -237,6 +255,14 @@ namespace ProjectZombie.Features.Enemies
             if (enemyObj == null)
             {
                 enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+            }
+
+            // Inject Player Transform để tránh FindGameObjectWithTag
+            var enemyComponent = enemyObj.GetComponent<Enemy>();
+            if (enemyComponent != null)
+            {
+                if (_playerTransform == null) CachePlayer();
+                enemyComponent.SetPlayer(_playerTransform, _playerHealthSystem);
             }
 
             // Áp dụng HP scaling

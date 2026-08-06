@@ -101,8 +101,23 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public void SetPlayer(Transform playerTransform, HealthSystem playerHealthSystem = null)
+        {
+            PlayerTransform = playerTransform;
+            if (playerHealthSystem != null)
+            {
+                PlayerHealthSystem = playerHealthSystem;
+            }
+            else if (playerTransform != null)
+            {
+                PlayerHealthSystem = playerTransform.GetComponent<HealthSystem>();
+            }
+        }
+
         public void FindPlayer()
         {
+            if (PlayerTransform != null) return;
+
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
@@ -137,7 +152,17 @@ namespace ProjectZombie.Features.Enemies
         {
             if (expGemPrefab != null)
             {
-                Instantiate(expGemPrefab, transform.position, Quaternion.identity);
+                float expAmount = Config != null ? Config.expReward : 10f;
+                if (Collectibles.ExpGemPoolManager.Instance != null)
+                {
+                    Collectibles.ExpGemPoolManager.Instance.SpawnGem(expGemPrefab, transform.position, expAmount);
+                }
+                else
+                {
+                    var gemObj = Instantiate(expGemPrefab, transform.position, Quaternion.identity);
+                    var gem = gemObj.GetComponent<Collectibles.ExpGem>();
+                    if (gem != null) gem.SetExpAmount(expAmount);
+                }
             }
 
             StateMachine.ChangeState(DeadState);
