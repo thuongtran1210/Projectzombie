@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.VFX.Indicators;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills
 {
@@ -15,6 +16,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         [SerializeField] private float slamDamage = 30f;
         [SerializeField] private float slowPercentage = 0.40f;
         [SerializeField] private float slowDuration = 3.0f;
+        [SerializeField] private float telegraphDuration = 1.0f; // Thời gian báo vệt đỏ phình to
         [SerializeField] private LayerMask targetLayer;
 
         public void PerformGroundSlam()
@@ -24,9 +26,32 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
         private IEnumerator SlamRoutine()
         {
-            Debug.Log("[GroundSlamSkill] Boss kích hoạt chiêu 'Địa Chấn Âm Ty'!");
-            yield return new WaitForSeconds(0.3f); // Delay gồng chiêu
+            // BƯỚC 1: BÁO HỆU VỆT ĐỎ TRÒN PHÌNH DẦN
+            bool telegraphFinished = false;
+            if (SkillIndicatorManager.Instance != null)
+            {
+                SkillIndicatorManager.Instance.ShowIndicator(new IndicatorRequest(
+                    IndicatorShape.Circle,
+                    transform.position,
+                    Vector3.zero,
+                    new Vector2(slamRadius, slamRadius),
+                    telegraphDuration,
+                    new Color(1f, 0.2f, 0.2f, 0.4f)
+                ), () => telegraphFinished = true);
+            }
+            else
+            {
+                yield return new WaitForSeconds(telegraphDuration);
+                telegraphFinished = true;
+            }
 
+            while (!telegraphFinished)
+            {
+                yield return null;
+            }
+
+            // BƯỚC 2: TUNG ĐÒN GIẬM ĐẤT AOE
+            Debug.Log("[GroundSlamSkill] Boss kích hoạt chiêu 'Địa Chấn Âm Ty'!");
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, slamRadius, targetLayer);
             foreach (var hit in hits)
             {
@@ -56,3 +81,4 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 #endif
     }
 }
+

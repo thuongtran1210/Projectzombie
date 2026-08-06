@@ -17,6 +17,7 @@ MonoBehaviour:
   atmosphereColor: {r: 0, g: 1, b: 1, a: 1}
   continuousSpawnPrefabs:
   - {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
+  - {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
   waveConfigs:
   - {fileID: 11400000, guid: 95360cec8fb37804abd96ab5ba919a57, type: 2}
   - {fileID: 11400000, guid: fb8da4b59da15394a91e06931aeb6770, type: 2}

@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using ProjectZombie.Features.VFX.Indicators;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills
 {
     /// <summary>
     /// Skill Ngưu Xung Thiên (Bull Dash x3 speed) của Boss Ngưu Đầu Mã Diện theo GDD 5.2.
-    /// Khóa vị trí Player và lao thẳng với tốc độ gấp 3 lần trong 1.5 giây.
+    /// Khóa vị trí Player, phát vệt đỏ chỉ dấu trong 1.5s và lao thẳng với tốc độ gấp 3 lần.
     /// </summary>
     public class BullDashSkill : MonoBehaviour
     {
@@ -13,6 +14,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         [SerializeField] private float dashSpeedMultiplier = 3f;
         [SerializeField] private float dashDuration = 1.5f;
         [SerializeField] private float baseMoveSpeed = 2.2f;
+        [SerializeField] private float telegraphDuration = 1.5f; // Thời gian phát vệt đỏ báo hiệu
 
         private bool _isDashing = false;
         public bool IsDashing => _isDashing;
@@ -26,11 +28,35 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         private IEnumerator DashRoutine(Vector3 targetPosition)
         {
             _isDashing = true;
-            Debug.Log($"[BullDashSkill] Boss kích hoạt chiêu 'Ngưu Xung Thiên' lao tới {targetPosition}!");
-
             Vector3 dashDirection = (targetPosition - transform.position).normalized;
-            float elapsed = 0f;
+            float dashDistance = baseMoveSpeed * dashSpeedMultiplier * dashDuration;
 
+            // BƯỚC 1: BÁO HỆU VỆT ĐỎ CHỈ DẤU
+            bool telegraphFinished = false;
+            if (SkillIndicatorManager.Instance != null)
+            {
+                SkillIndicatorManager.Instance.ShowIndicator(new IndicatorRequest(
+                    IndicatorShape.Box,
+                    transform.position,
+                    dashDirection,
+                    new Vector2(1.5f, dashDistance), // Rộng 1.5m, Dài bằng tầm đòn lao
+                    telegraphDuration,
+                    new Color(1f, 0.1f, 0.1f, 0.4f)
+                ), () => telegraphFinished = true);
+            }
+            else
+            {
+                telegraphFinished = true;
+            }
+
+            while (!telegraphFinished)
+            {
+                yield return null;
+            }
+
+            // BƯỚC 2: TUNG ĐÒN LAO TÔNG
+            Debug.Log($"[BullDashSkill] Boss kích hoạt chiêu 'Ngưu Xung Thiên' lao tới {targetPosition}!");
+            float elapsed = 0f;
             while (elapsed < dashDuration)
             {
                 elapsed += Time.deltaTime;
@@ -42,3 +68,4 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         }
     }
 }
+

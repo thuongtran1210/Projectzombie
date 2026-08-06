@@ -17,8 +17,8 @@ MonoBehaviour:
   minDistance: 3
   maxHealth: 35
   damageToPlayer: 12
-  attackCooldown: 1
-  attackRange: 3
+  attackCooldown: 2
+  attackRange: 7
   expReward: 3
   tier: 0
   elementType: 3

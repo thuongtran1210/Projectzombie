@@ -56,21 +56,25 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
-            // Chỉ trigger animation. Việc bắn đạn (Shoot) sẽ được gọi bởi Animation Event.
             if (_enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.TriggerAttack();
             }
-            else
-            {
-                // Fallback nếu không có animator -> Bắn trực tiếp
-                Shoot();
-            }
+
+            // Luôn gọi Shoot() trực tiếp (hoặc làm fallback) để đảm bảo spawn đạn đúng cooldown 
+            // mà không bị phụ thuộc hoàn toàn vào việc kéo Animation Event trên clip
+            Shoot();
         }
 
         private void Shoot()
         {
-            if (projectileData == null || _enemy.PlayerTransform == null) return;
+            if (projectileData == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] ⚠️ RangedAttackStrategy thiếu `projectileData` trong Inspector!");
+                return;
+            }
+
+            if (_enemy.PlayerTransform == null) return;
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove) return;
 
             Vector2 targetPosition = _enemy.PlayerTransform.position;
@@ -99,6 +103,10 @@ namespace ProjectZombie.Features.Enemies
                     _enemy.gameObject,
                     damageData
                 );
+            }
+            else
+            {
+                Debug.LogWarning($"[{gameObject.name}] ⚠️ ProjectileSystem.Instance chưa được khởi tạo trong Scene!");
             }
         }
     }
