@@ -96,7 +96,7 @@ Animator:
   m_GameObject: {fileID: 2899600762923076327}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2ea31a6f9af321e40ad16728ca10d14a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 2454519395323608457}
   idleStateName: Idle
   runStateName: Run
   attackStateName: Attack
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _elementCycle: 0100000002000000030000000400000005000000
   _switchIntervalSeconds: 10
-  _bossSpriteRenderer: {fileID: 0}
+  _bossSpriteRenderer: {fileID: 3758869925161363544}
 --- !u!114 &6865303409840917243
 MonoBehaviour:
   m_ObjectHideFlags: 0
