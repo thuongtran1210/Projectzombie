@@ -17,7 +17,7 @@ MonoBehaviour:
   minDistance: 3
   maxHealth: 5000
   damageToPlayer: 35
-  attackCooldown: 1
+  attackCooldown: 3
   attackRange: 2
   expReward: 100
   tier: 2

@@ -182,6 +182,8 @@ GameObject:
   - component: {fileID: -5551248611952435718}
   - component: {fileID: 1039783248637700568}
   - component: {fileID: 8291360003962393157}
+  - component: {fileID: 2461985160586516410}
+  - component: {fileID: 7366427744261740931}
   m_Layer: 7
   m_Name: Boss_NguuDauMaDien
   m_TagString: Boss
@@ -363,10 +365,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   attackDamage: 10
-  attackRange: 1.84
-  telegraphDuration: 0.3
+  attackRange: 1.75
+  telegraphDuration: 1
   hitboxShape: 0
-  offsetY: 0.72
+  offsetY: 0.7
   boxHeightRatio: 1
 --- !u!114 &8291360003962393157
 MonoBehaviour:
@@ -378,5 +380,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06fa2ba0e724ca74ea0461d359cb80bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2461985160586516410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae8c2da44e976a47a4952b2a136ae69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossName: "Ng\u01B0u \u0110\u1EA7u M\xE3 Di\u1EC7n"
+  currentElement: 5
+  bossMeleeAttack: {fileID: 1039783248637700568}
+  bullDashSkill: {fileID: -5030162863297841064}
+  groundSlamSkill: {fileID: -5551248611952435718}
+  maGiapPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
+  minionCount: 10
+  skillCooldown: 5
+--- !u!114 &7366427744261740931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e910bc29903be7f47b9ba786581ec028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

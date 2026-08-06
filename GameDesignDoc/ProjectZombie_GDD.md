@@ -315,6 +315,7 @@ $$\text{Kim} \rightarrow \text{Thủy} \rightarrow \text{Mộc} \rightarrow \tex
 * **HP Base:** 5,000 | **Tốc độ:** 2.2 | **Hệ:** Thổ (Ngưu Đầu) / Hỏa (Mã Diện, luân phiên)
 * **Phase 1 (100%-50%):** *Ngưu Xung Thiên* (Bull Dash x3 speed) + *Địa Chấn Âm Ty* (Ground Slam AoE Slow 40%).
 * **Phase 2 (<50%):** Luân phiên đổi hệ Thổ/Hỏa mỗi 10s + *Triệu Hồn Âm Binh* (Gọi 10 Ma Giáp) + *Hắc Khí Âm Ty* (Khói độc 5 dmg/sec).
+* **Kiến trúc Script:** `BossStateMachine`, `Enemy`, `BossElementController`, `BossMovementStrategy`, `BossMeleeAttackStrategy`, `BullDashSkill`, `GroundSlamSkill`, `BossAnimator`, `BossAnimationEventHandler`.
 * **Phần thưởng:** Rương U Minh (1 Thẻ Tiến Hóa / 3 Thẻ Nâng cấp + 500 Cổ Tiền).
 
 #### Boss 2: **Diêm Vương** — Xuất hiện Phút 20 (Final Boss)
