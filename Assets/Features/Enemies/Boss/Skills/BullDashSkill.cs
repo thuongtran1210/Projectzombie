@@ -31,7 +31,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         {
             _isDashing = true;
             Vector3 dashDirection = (targetPosition - transform.position).normalized;
-            float dashDistance = baseMoveSpeed * dashSpeedMultiplier * dashDuration;
+            Vector2 dashSize = IndicatorUtility.CalculateDashSize(baseMoveSpeed, dashSpeedMultiplier, dashDuration, 1.5f);
 
             // BƯỚC 1: BÁO HỆU VỆT ĐỎ CHỈ DẤU
             bool telegraphFinished = false;
@@ -41,7 +41,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                     IndicatorShape.Box,
                     transform.position,
                     dashDirection,
-                    new Vector2(1.5f, dashDistance), // Rộng 1.5m, Dài bằng tầm đòn lao
+                    dashSize, // Rộng 1.5m, Dài chuẩn quãng đường lao (9.9m)
                     telegraphDuration,
                     new Color(1f, 0.1f, 0.1f, 0.4f)
                 ), () => telegraphFinished = true);

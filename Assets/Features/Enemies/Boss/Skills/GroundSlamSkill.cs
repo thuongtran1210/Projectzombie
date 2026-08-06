@@ -105,7 +105,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                 }
             }
             tex.Apply();
-            sr.sprite = Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
+            sr.sprite = Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
 
             float elapsed = 0f;
             float duration = 0.45f;

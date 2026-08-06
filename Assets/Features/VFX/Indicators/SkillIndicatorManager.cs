@@ -87,7 +87,7 @@ namespace ProjectZombie.Features.VFX.Indicators
                 return Instantiate(prefab, transform);
             }
 
-            // Tạo Fallback Indicator tự động nếu chưa có Prefab
+            // Tạo Fallback Indicator tự động chuẩn 1x1m nếu chưa có Prefab kéo thả trong Inspector
             GameObject go = new GameObject($"Indicator_{shape}_Fallback");
             go.transform.SetParent(transform);
 
@@ -95,23 +95,37 @@ namespace ProjectZombie.Features.VFX.Indicators
             sr.color = new Color(1f, 0.1f, 0.1f, 0.4f);
             sr.sortingOrder = 10; // Đảm bảo hiển thị nổi trên mặt đất
 
-            // Tạo Texture/Sprite hình khối tự động
-            Texture2D tex = new Texture2D(32, 32);
-            Color[] colors = new Color[32 * 32];
-            for (int i = 0; i < colors.Length; i++) colors[i] = Color.white;
-            tex.SetPixels(colors);
-            tex.Apply();
-            sr.sprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
+            if (shape == IndicatorShape.Box)
+            {
+                Texture2D tex = new Texture2D(32, 32);
+                Color[] colors = new Color[32 * 32];
+                for (int i = 0; i < colors.Length; i++) colors[i] = Color.white;
+                tex.SetPixels(colors);
+                tex.Apply();
+                // PPU = 32 cho Texture 32x32 -> Kích thước World Space là đúng 1x1m
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 32f);
+            }
+            else
+            {
+                Texture2D tex = new Texture2D(64, 64);
+                for (int y = 0; y < 64; y++)
+                {
+                    for (int x = 0; x < 64; x++)
+                    {
+                        float dist = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f));
+                        if (dist <= 31.5f)
+                            tex.SetPixel(x, y, Color.white);
+                        else
+                            tex.SetPixel(x, y, Color.clear);
+                    }
+                }
+                tex.Apply();
+                // PPU = 64 cho Texture 64x64 -> Kích thước World Space là đúng 1x1m
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
+            }
 
             var indicator = go.AddComponent<SkillIndicator>();
-            
-            // Set private fields via reflection fallback
-            var field = typeof(SkillIndicator).GetField("_spriteRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (field != null) field.SetValue(indicator, sr);
-
-            var shapeField = typeof(SkillIndicator).GetField("_shape", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (shapeField != null) shapeField.SetValue(indicator, shape);
-
+            indicator.Construct(sr, shape);
             return indicator;
         }
 

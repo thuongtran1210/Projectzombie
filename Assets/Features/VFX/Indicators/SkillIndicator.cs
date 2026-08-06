@@ -24,6 +24,12 @@ namespace ProjectZombie.Features.VFX.Indicators
             }
         }
 
+        public void Construct(SpriteRenderer spriteRenderer, IndicatorShape shape)
+        {
+            _spriteRenderer = spriteRenderer;
+            _shape = shape;
+        }
+
         public void PlayTelegraph(IndicatorRequest request, Action onComplete = null)
         {
             gameObject.SetActive(true);
@@ -46,11 +52,11 @@ namespace ProjectZombie.Features.VFX.Indicators
                 transform.rotation = Quaternion.identity;
             }
 
-            // Điều chỉnh Kích thước (Scale)
+            // Điều chỉnh Kích thước (Scale) chuẩn World Meters
             if (_shape == IndicatorShape.Box)
             {
                 transform.localScale = new Vector3(request.Size.x, request.Size.y, 1f);
-                // Dịch chuyển tâm về giữa vệt
+                // Dịch chuyển tâm về giữa vệt chỉ báo
                 transform.position += request.Direction * (request.Size.y / 2f);
             }
             else if (_shape == IndicatorShape.Circle)
@@ -88,3 +94,4 @@ namespace ProjectZombie.Features.VFX.Indicators
         }
     }
 }
+
