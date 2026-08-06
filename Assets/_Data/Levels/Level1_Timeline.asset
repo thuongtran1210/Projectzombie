@@ -18,13 +18,13 @@ MonoBehaviour:
   - eventName: "Ph\xFAt 00:00 - Qu\u1EF7 X\u01B0\u01A1ng xu\u1EA5t hi\u1EC7n n\u1EC1n"
     timestampSeconds: 0
     eventType: 0
-    spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
+    spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
     spawnCount: 20
     spawnInterval: 1.5
   - eventName: "Ph\xFAt 03:00 - B\u1EA7y Qu\u1EF7 X\u01B0\u01A1ng bao v\xE2y (Burst)"
     timestampSeconds: 180
     eventType: 1
-    spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
+    spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
     spawnCount: 30
     spawnInterval: 2
   - eventName: "Ph\xFAt 10:00 - BOSS 1 NG\u01AFU \u0110\u1EA6U M\xC3 DI\u1EC6N XU\u1EA4T
