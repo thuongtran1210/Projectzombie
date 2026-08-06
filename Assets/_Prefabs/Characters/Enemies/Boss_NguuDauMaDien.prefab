@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 6866700666527073389}
   - component: {fileID: 3758869925161363544}
   - component: {fileID: 2454519395323608457}
-  - component: {fileID: 4445654165788396366}
+  - component: {fileID: 8132944698807854645}
+  - component: {fileID: 265825371031482680}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -75,12 +76,12 @@ SpriteRenderer:
   m_SortingLayerID: 1982589963
   m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: -888024555, guid: ad6f709ced5548a47947a3434f796548, type: 3}
-  m_Color: {r: 0.8, g: 0.2, b: 0.2, a: 1}
+  m_Sprite: {fileID: -294879562, guid: 68f5e207eb43c344da39887e1fe2c485, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.859375, y: 1.6875}
+  m_Size: {x: 3.21875, y: 1.875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -107,7 +108,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4445654165788396366
+--- !u!114 &8132944698807854645
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,15 +117,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 2899600762923076327}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a63553c8c300d246991157c416af129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 2454519395323608457}
-  idleStateName: Idle
-  runStateName: Run
-  attackStateName: Attack
-  deadStateName: Dead
-  reviveStateName: Revive
+  animator: {fileID: 0}
+--- !u!114 &265825371031482680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2899600762923076327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e910bc29903be7f47b9ba786581ec028, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6556722217386542342
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,12 +145,12 @@ GameObject:
   - component: {fileID: 6438671175740062666}
   - component: {fileID: 6453263957263172301}
   - component: {fileID: 6476133514299686852}
+  - component: {fileID: 302480097558015566}
   - component: {fileID: 3766310743791078532}
   - component: {fileID: 3552035158384445439}
   - component: {fileID: 2674424854191525047}
   - component: {fileID: 6865303409840917243}
-  - component: {fileID: 302480097558015566}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Boss_NguuDauMaDien
   m_TagString: Boss
   m_Icon: {fileID: 0}
@@ -240,6 +248,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+--- !u!114 &302480097558015566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 11400000, guid: b66f459df41f9e946a77fc9859cb8190, type: 2}
+  expGemPrefab: {fileID: 0}
+  isBoss: 0
 --- !u!114 &3766310743791078532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _elementCycle: 0100000002000000030000000400000005000000
   _switchIntervalSeconds: 10
-  _bossSpriteRenderer: {fileID: 3758869925161363544}
+  _bossSpriteRenderer: {fileID: 0}
 --- !u!114 &6865303409840917243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,18 +332,3 @@ MonoBehaviour:
   deathZoneCooldown: 20
   deathZoneRadius: 6
   deathZoneDamagePerSec: 15
---- !u!114 &302480097558015566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6556722217386542342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: {fileID: 11400000, guid: b66f459df41f9e946a77fc9859cb8190, type: 2}
-  expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
-  isBoss: 1

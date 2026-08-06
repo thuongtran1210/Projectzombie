@@ -31,7 +31,7 @@ MonoBehaviour:
       HI\u1EC6N"
     timestampSeconds: 600
     eventType: 3
-    spawnPrefab: {fileID: 0}
+    spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
     spawnCount: 10
     spawnInterval: 2
   - eventName: "Ph\xFAt 20:00 - FINAL BOSS DI\xCAM V\u01AF\u01A0NG XU\u1EA4T HI\u1EC6N"

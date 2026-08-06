@@ -12,11 +12,12 @@ GameObject:
   - component: {fileID: 6109218327883127527}
   - component: {fileID: 3869312102271233920}
   - component: {fileID: 5930210990550478709}
+  - component: {fileID: 3162303782959716737}
   - component: {fileID: 4489279834533340287}
   - component: {fileID: 5506437238408163428}
   - component: {fileID: 2510363290329800421}
-  - component: {fileID: 3162303782959716737}
-  m_Layer: 3
+  - component: {fileID: 5843151133437288436}
+  m_Layer: 7
   m_Name: E_HOALYTINH
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -114,6 +115,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
+--- !u!114 &3162303782959716737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 509878819556777675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 0}
+  expGemPrefab: {fileID: 0}
+  isBoss: 0
 --- !u!114 &4489279834533340287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +154,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  attackPoint: {fileID: 0}
+  hitboxShape: 0
+  offsetY: 0
+  boxHeightRatio: 1
 --- !u!114 &2510363290329800421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,8 +179,8 @@ MonoBehaviour:
   explosionDamage: 50
   targetLayer:
     serializedVersion: 2
-    m_Bits: 64
---- !u!114 &3162303782959716737
+    m_Bits: 0
+--- !u!114 &5843151133437288436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -247,15 +270,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 153689330, guid: 81485617e456829459d59f1b1cc1ee94, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 0.5, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.5625, y: 1}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2387016662183391030
@@ -268,7 +291,7 @@ Animator:
   m_GameObject: {fileID: 5730091812706305403}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: af548721bd14116428d627b5ad2ae912, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

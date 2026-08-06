@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6550428317408099286}
   - component: {fileID: 3670494739248704188}
   - component: {fileID: 4706602131182136405}
+  - component: {fileID: 3454396480111564148}
+  - component: {fileID: 3592193666236916054}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -125,6 +127,31 @@ MonoBehaviour:
   attackStateName: Attack
   deadStateName: Dead
   reviveStateName: Revive
+--- !u!114 &3454396480111564148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263759458297859032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a63553c8c300d246991157c416af129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+--- !u!114 &3592193666236916054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263759458297859032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e910bc29903be7f47b9ba786581ec028, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1348244042159176007
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,12 +164,13 @@ GameObject:
   - component: {fileID: 5629379636256325489}
   - component: {fileID: 4988794913411412360}
   - component: {fileID: 942128268220150223}
+  - component: {fileID: 4430085727952520392}
   - component: {fileID: 2762031101445714247}
   - component: {fileID: 8027569350556653980}
   - component: {fileID: 6794945580061107975}
   - component: {fileID: 3255142442196998158}
-  - component: {fileID: 4430085727952520392}
-  m_Layer: 3
+  - component: {fileID: 4291258674391806006}
+  m_Layer: 7
   m_Name: Boss_DiemVuong
   m_TagString: Boss
   m_Icon: {fileID: 0}
@@ -240,6 +268,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+--- !u!114 &4430085727952520392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1348244042159176007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: {fileID: 0}
+  expGemPrefab: {fileID: 0}
+  isBoss: 0
 --- !u!114 &2762031101445714247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +307,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  attackPoint: {fileID: 0}
+  hitboxShape: 0
+  offsetY: 0
+  boxHeightRatio: 1
 --- !u!114 &6794945580061107975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _elementCycle: 0100000002000000030000000400000005000000
   _switchIntervalSeconds: 10
-  _bossSpriteRenderer: {fileID: 6550428317408099286}
+  _bossSpriteRenderer: {fileID: 0}
 --- !u!114 &3255142442196998158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,7 +353,7 @@ MonoBehaviour:
   slamDamage: 35
   toxicCloudRadius: 4
   toxicDamagePerSec: 5
---- !u!114 &4430085727952520392
+--- !u!114 &4291258674391806006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -315,6 +365,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Config: {fileID: 11400000, guid: c66adcbdb2b9c6d46b706196f5f2aac7, type: 2}
+  Config: {fileID: 0}
   expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
-  isBoss: 1
+  isBoss: 0
