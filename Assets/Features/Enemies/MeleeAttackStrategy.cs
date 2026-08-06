@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Boss;
 
 namespace ProjectZombie.Features.Enemies
 {
@@ -115,10 +116,19 @@ namespace ProjectZombie.Features.Enemies
 
         public override void Attack()
         {
-            if (_enemy.EnemyAnimator != null)
+            var bossAnimator = GetComponentInChildren<BossAnimator>();
+            if (bossAnimator != null)
+            {
+                bossAnimator.PlayAnimation("Attack");
+            }
+            else if (_enemy != null && _enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.TriggerAttack();
             }
+
+            // Fallback tự động gây sát thương sau 0.25s nếu Animation Clip thiếu Animation Event
+            CancelInvoke(nameof(DealMeleeDamage));
+            Invoke(nameof(DealMeleeDamage), 0.25f);
         }
 
 #if UNITY_EDITOR

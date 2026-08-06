@@ -86,7 +86,7 @@ namespace ProjectZombie.Features.Enemies.Boss
 
             // Skill Cooldown Loop
             _skillTimer += Time.deltaTime;
-            if (_skillTimer >= 5f)
+            if (_skillTimer >= skillCooldown)
             {
                 _skillTimer = 0f;
                 ExecuteRandomSkill();
@@ -121,18 +121,61 @@ namespace ProjectZombie.Features.Enemies.Boss
             }
         }
 
+        [Header("Skill Cooldown Settings")]
+        [SerializeField] private float skillCooldown = 5f;
+
         private void ExecuteRandomSkill()
         {
             if (_playerTransform == null) return;
 
             if (Random.value > 0.5f && bullDashSkill != null)
             {
-                bullDashSkill.PerformDash(_playerTransform.position);
+                TriggerBullDash();
             }
             else if (groundSlamSkill != null)
             {
+                TriggerGroundSlam();
+            }
+        }
+
+        [ContextMenu("Debug/Trigger Bull Dash Skill")]
+        public void TriggerBullDash()
+        {
+            if (_playerTransform == null) Start();
+            if (bullDashSkill != null && _playerTransform != null)
+            {
+                Debug.Log($"[DEBUG BOSS] Ép kích hoạt chiêu 'Ngưu Xung Thiên' (Bull Dash)!");
+                bullDashSkill.PerformDash(_playerTransform.position);
+            }
+        }
+
+        [ContextMenu("Debug/Trigger Ground Slam Skill")]
+        public void TriggerGroundSlam()
+        {
+            if (groundSlamSkill != null)
+            {
+                Debug.Log($"[DEBUG BOSS] Ép kích hoạt chiêu 'Địa Chấn Âm Ty' (Ground Slam)!");
                 groundSlamSkill.PerformGroundSlam();
             }
         }
+
+        [ContextMenu("Debug/Force Phase 2")]
+        public void ForcePhase2()
+        {
+            EnterPhase2();
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Vector3 textPos = transform.position + Vector3.up * 2.2f;
+            float remainingCd = Mathf.Max(0f, skillCooldown - _skillTimer);
+            string debugText = $"👹 {bossName} [{_currentPhase}]\n" +
+                               $"🔥 Hệ: {currentElement}\n" +
+                               $"⏱️ Skill Cooldown: {remainingCd:F1}s";
+
+            UnityEditor.Handles.Label(textPos, debugText);
+        }
+#endif
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.VFX.Indicators;
 using ProjectZombie.Features.Boss;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills
 {
@@ -66,10 +67,31 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             }
 
             float elapsed = 0f;
+            bool hitPlayerDuringDash = false;
+
             while (elapsed < dashDuration)
             {
                 elapsed += Time.deltaTime;
                 transform.position += dashDirection * (baseMoveSpeed * dashSpeedMultiplier) * Time.deltaTime;
+
+                if (!hitPlayerDuringDash)
+                {
+                    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 1.5f);
+                    foreach (var col in hits)
+                    {
+                        if (col.CompareTag("Player"))
+                        {
+                            var health = col.GetComponent<HealthSystem>();
+                            if (health != null)
+                            {
+                                health.TakeDamage(new DamageData(35f, false, ElementType.Tho));
+                                hitPlayerDuringDash = true;
+                                Debug.Log("[BullDashSkill] Boss lao tông trúng người chơi! Gây 35 Sát thương.");
+                            }
+                        }
+                    }
+                }
+
                 yield return null;
             }
 

@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 1982589963
   m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: -294879562, guid: 68f5e207eb43c344da39887e1fe2c485, type: 3}
+  m_Sprite: {fileID: -888024555, guid: ad6f709ced5548a47947a3434f796548, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a63553c8c300d246991157c416af129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 2454519395323608457}
 --- !u!114 &265825371031482680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,7 +149,8 @@ GameObject:
   - component: {fileID: 3766310743791078532}
   - component: {fileID: 3552035158384445439}
   - component: {fileID: 2674424854191525047}
-  - component: {fileID: 6865303409840917243}
+  - component: {fileID: -5030162863297841064}
+  - component: {fileID: -5551248611952435718}
   m_Layer: 7
   m_Name: Boss_NguuDauMaDien
   m_TagString: Boss
@@ -308,8 +309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _elementCycle: 0100000002000000030000000400000005000000
   _switchIntervalSeconds: 10
-  _bossSpriteRenderer: {fileID: 0}
---- !u!114 &6865303409840917243
+  _bossSpriteRenderer: {fileID: 3758869925161363544}
+--- !u!114 &-5030162863297841064
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -318,17 +319,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 6556722217386542342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db629a6fa989c8e448f4425720eee151, type: 3}
+  m_Script: {fileID: 11500000, guid: 546716cb690b2214096123236f070387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  phase2HealthThresholdRatio: 0.4
-  victoryChestPrefab: {fileID: 0}
-  skeletonArcherPrefab: {fileID: 0}
-  swordWaveCooldown: 4
-  waveCount: 3
-  waveDamage: 25
-  boneCageCooldown: 12
-  cageDuration: 3
-  deathZoneCooldown: 20
-  deathZoneRadius: 6
-  deathZoneDamagePerSec: 15
+  dashSpeedMultiplier: 3
+  dashDuration: 1.5
+  baseMoveSpeed: 2.2
+  telegraphDuration: 1.5
+--- !u!114 &-5551248611952435718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e55a9be568e454fb87f315e75aa5a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slamRadius: 5
+  slamDamage: 30
+  slowPercentage: 0.4
+  slowDuration: 3
+  telegraphDuration: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64

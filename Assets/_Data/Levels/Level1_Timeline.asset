@@ -19,7 +19,7 @@ MonoBehaviour:
     timestampSeconds: 0
     eventType: 0
     spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
-    spawnCount: 20
+    spawnCount: 1
     spawnInterval: 1.5
   - eventName: "Ph\xFAt 03:00 - B\u1EA7y Qu\u1EF7 X\u01B0\u01A1ng bao v\xE2y (Burst)"
     timestampSeconds: 180

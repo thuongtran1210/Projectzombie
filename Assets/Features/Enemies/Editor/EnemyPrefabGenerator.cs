@@ -6,6 +6,8 @@ using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Enemies.Behaviors;
 using ProjectZombie.Features.Boss;
+using ProjectZombie.Features.Enemies.Boss;
+using ProjectZombie.Features.Enemies.Boss.Skills;
 
 namespace ProjectZombie.Features.Enemies.Editor
 {
@@ -163,7 +165,21 @@ namespace ProjectZombie.Features.Enemies.Editor
             var sr = visual.AddComponent<SpriteRenderer>();
             sr.color = tintColor;
 
+            // Load Sprite mặc định cho Boss nếu có
+            string[] spriteGuids = AssetDatabase.FindAssets("Nguudaumadien-Idle t:Sprite", new string[] { "Assets/_ART" });
+            if (spriteGuids.Length > 0)
+            {
+                sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GUIDToAssetPath(spriteGuids[0]));
+            }
+
             var animator = visual.AddComponent<Animator>();
+            // Load Animator Controller cho Boss nếu có
+            string[] controllerGuids = AssetDatabase.FindAssets("NguuDauMaDien t:RuntimeAnimatorController", new string[] { "Assets/_ART" });
+            if (controllerGuids.Length > 0)
+            {
+                animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(AssetDatabase.GUIDToAssetPath(controllerGuids[0]));
+            }
+
             visual.AddComponent<EnemyAnimator>();
             visual.AddComponent<BossAnimator>();
             visual.AddComponent<BossAnimationEventHandler>();
@@ -181,7 +197,9 @@ namespace ProjectZombie.Features.Enemies.Editor
             }
             else
             {
-                root.AddComponent<SkeletonKingBossController>();
+                root.AddComponent<BossStateMachine>();
+                root.AddComponent<BullDashSkill>();
+                GroundSlamSkill groundSlamSkill = root.AddComponent<GroundSlamSkill>();
             }
 
             // FSM Component

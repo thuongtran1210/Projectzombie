@@ -32,6 +32,7 @@ namespace ProjectZombie.Features.VFX.Indicators
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.color = request.Color;
+                _spriteRenderer.sortingOrder = 10; // Đảm bảo nổi trên Tilemap/Mặt đất
             }
 
             // Xoay hướng nếu là dạng Box/Cone
