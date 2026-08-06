@@ -60,6 +60,8 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                 bossAnimator.PlayAnimation("GroundSlam");
             }
 
+            StartCoroutine(SpawnShockwaveVFX(transform.position, slamRadius));
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, slamRadius, targetLayer);
             foreach (var hit in hits)
             {
@@ -78,6 +80,52 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                     }
                 }
             }
+        }
+
+        private IEnumerator SpawnShockwaveVFX(Vector3 pos, float maxRadius)
+        {
+            GameObject vfxObj = new GameObject("GroundSlam_ShockwaveVFX");
+            vfxObj.transform.position = pos;
+
+            var sr = vfxObj.AddComponent<SpriteRenderer>();
+            sr.color = new Color(0.9f, 0.6f, 0.2f, 0.8f);
+            sr.sortingOrder = 5;
+
+            // Tạo Sprite vòng tròn mặc định
+            Texture2D tex = new Texture2D(64, 64);
+            for (int y = 0; y < 64; y++)
+            {
+                for (int x = 0; x < 64; x++)
+                {
+                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f));
+                    if (dist >= 24f && dist <= 31.5f)
+                        tex.SetPixel(x, y, Color.white);
+                    else
+                        tex.SetPixel(x, y, Color.clear);
+                }
+            }
+            tex.Apply();
+            sr.sprite = Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
+
+            float elapsed = 0f;
+            float duration = 0.45f;
+            float maxDiameter = maxRadius * 2f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                float currentScale = Mathf.Lerp(0.5f, maxDiameter, t);
+                vfxObj.transform.localScale = new Vector3(currentScale, currentScale, 1f);
+
+                Color c = sr.color;
+                c.a = Mathf.Lerp(0.8f, 0f, t);
+                sr.color = c;
+
+                yield return null;
+            }
+
+            Destroy(vfxObj);
         }
 
 #if UNITY_EDITOR

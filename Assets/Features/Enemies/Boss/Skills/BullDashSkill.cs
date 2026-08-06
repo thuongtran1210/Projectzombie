@@ -67,12 +67,25 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             }
 
             float elapsed = 0f;
+            float ghostTimer = 0f;
             bool hitPlayerDuringDash = false;
+
+            var sr = GetComponentInChildren<SpriteRenderer>();
 
             while (elapsed < dashDuration)
             {
                 elapsed += Time.deltaTime;
+                ghostTimer += Time.deltaTime;
                 transform.position += dashDirection * (baseMoveSpeed * dashSpeedMultiplier) * Time.deltaTime;
+
+                if (ghostTimer >= 0.08f)
+                {
+                    ghostTimer = 0f;
+                    if (sr != null && sr.sprite != null)
+                    {
+                        StartCoroutine(SpawnGhostTrail(transform.position, sr.sprite, sr.transform.localScale));
+                    }
+                }
 
                 if (!hitPlayerDuringDash)
                 {
@@ -101,6 +114,31 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             }
 
             _isDashing = false;
+        }
+
+        private IEnumerator SpawnGhostTrail(Vector3 pos, Sprite sprite, Vector3 scale)
+        {
+            GameObject ghost = new GameObject("BullDash_GhostTrail");
+            ghost.transform.position = pos;
+            ghost.transform.localScale = scale * 2.2f;
+
+            var sr = ghost.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            sr.color = new Color(1f, 0.2f, 0.1f, 0.5f);
+            sr.sortingOrder = 2;
+
+            float elapsed = 0f;
+            float duration = 0.3f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float alpha = Mathf.Lerp(0.5f, 0f, elapsed / duration);
+                sr.color = new Color(1f, 0.2f, 0.1f, alpha);
+                yield return null;
+            }
+
+            Destroy(ghost);
         }
     }
 }

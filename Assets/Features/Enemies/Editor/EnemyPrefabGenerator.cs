@@ -172,6 +172,11 @@ namespace ProjectZombie.Features.Enemies.Editor
                 sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GUIDToAssetPath(spriteGuids[0]));
             }
 
+            if (sr.sprite == null)
+            {
+                sr.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            }
+
             var animator = visual.AddComponent<Animator>();
             // Load Animator Controller cho Boss nếu có
             string[] controllerGuids = AssetDatabase.FindAssets("NguuDauMaDien t:RuntimeAnimatorController", new string[] { "Assets/_ART" });
