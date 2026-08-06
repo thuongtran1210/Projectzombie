@@ -8078,7 +8078,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1899758234}
   - component: {fileID: 1899758235}
-  - component: {fileID: 1899758236}
   m_Layer: 0
   m_Name: 'SpawnManager '
   m_TagString: Untagged
@@ -8113,40 +8112,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d17199b6a8d9a4c9bf5e612081026f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemySpawner: {fileID: 1899758236}
-  phases:
-  - {fileID: 11400000, guid: 7a487dc8ee4ea84448993352a29b71ec, type: 2}
-  - {fileID: 11400000, guid: d85c3cfc8c1759b48b1a678faa871f6e, type: 2}
-  - {fileID: 11400000, guid: ea7d3877c7aeb884cbc337179a7150db, type: 2}
-  matchTime: 0
-  currentPhaseIndex: -1
+  timelineConfig: {fileID: 11400000, guid: 592ebb9e16325104291165bb0f670f02, type: 2}
+  maxEnemyCap: 200
   minSpawnRadius: 10
   maxSpawnRadius: 15
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 16
-  maxSpawnsPerFrame: 5
-  spawnDelayBetweenFrames: 0.05
---- !u!114 &1899758236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1899758233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0202e31ef41b81048808a7e6226f380c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waveConfigs: []
-  continuousSpawnPrefabs: []
-  baseSpawnInterval: 2
-  maxEnemyCount: 200
-  hpScalePerMinute: 0.05
-  spawnRateScalePerMinute: 0.08
-  spawnRadius: 15
-  spawnRadiusBuffer: 2
+  matchTime: 0
+  isMatchActive: 0
+  currentEnemyCount: 0
 --- !u!1 &1971309978
 GameObject:
   m_ObjectHideFlags: 0

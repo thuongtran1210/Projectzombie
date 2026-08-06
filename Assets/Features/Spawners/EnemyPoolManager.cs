@@ -74,19 +74,18 @@ namespace ProjectZombie.Features.Spawners
             var pool = GetOrCreatePool(prefab);
             if (pool != null)
             {
-                if (pool.CountInactive == 0)
-                {
-                    Debug.LogWarning($"[EnemyPoolManager] Pool cho {prefab.name} đã trống! Bỏ qua Spawn để tránh giật lag.");
-                    return null;
-                }
-
+                // Sử dụng cơ chế tự phình rộng của UnityEngine.Pool.ObjectPool (Tối đa maxSize = 500)
                 GameObject enemy = pool.Get();
-                enemy.transform.position = position;
-                enemy.transform.rotation = rotation;
+                if (enemy != null)
+                {
+                    enemy.transform.position = position;
+                    enemy.transform.rotation = rotation;
+                }
                 return enemy;
             }
 
             return null;
         }
+
     }
 }

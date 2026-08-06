@@ -1,230 +1,235 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Spawners
 {
+    /// <summary>
+    /// Manager tập trung duy nhất quản lý toàn bộ nhịp độ Spawn, Timeline trận đấu và kiểm soát Enemy Cap.
+    /// </summary>
     public class SpawnManager : MonoBehaviour
     {
-        [Header("Worker References")]
-        [SerializeField] private Enemies.EnemySpawner enemySpawner;
+        public static SpawnManager Instance { get; private set; }
 
-        [Header("Wave Configuration")]
-        [Tooltip("List of phases, MUST be sorted by startTime in ascending order.")]
-        [SerializeField] private List<WavePhase> phases = new List<WavePhase>();
+        [Header("Timeline Configuration")]
+        [SerializeField] private LevelTimelineConfig timelineConfig;
+
+        [Header("Spawn Settings & Limits")]
+        [SerializeField] private int maxEnemyCap = 200; // Khống chế tối đa 200 quái trên màn hình (GDD Performance)
+        [SerializeField] private float minSpawnRadius = 12f;
+        [SerializeField] private float maxSpawnRadius = 18f;
 
         [Header("Debug Info")]
         [SerializeField] private float matchTime = 0f;
-        [SerializeField] private int currentPhaseIndex = -1;
-        
-        [Header("Spawn Settings")]
-        [SerializeField] private float minSpawnRadius = 10f;
-        [SerializeField] private float maxSpawnRadius = 15f;
-        [SerializeField] private LayerMask obstacleLayer;
+        [SerializeField] private bool isMatchActive = false;
+        [SerializeField] private int currentEnemyCount = 0;
 
-        [Header("Performance Settings")]
-        [SerializeField] private int maxSpawnsPerFrame = 5;
-        [SerializeField] private float spawnDelayBetweenFrames = 0.05f;
-        public int MaxSpawnsPerFrame => maxSpawnsPerFrame;
-        public float SpawnDelayBetweenFrames => spawnDelayBetweenFrames;
-
-        private bool _isMatchActive = false;
         private Transform _playerTransform;
-        private float[] _pillarSpawnTimers;
+        private Camera _mainCamera;
+        private readonly List<TimelineEvent> _activeContinuousEvents = new List<TimelineEvent>();
+        private readonly Dictionary<TimelineEvent, float> _eventTimers = new Dictionary<TimelineEvent, float>();
+        private int _nextEventIndex = 0;
 
         public float MatchTime => matchTime;
-        public WavePhase CurrentPhase => currentPhaseIndex >= 0 && currentPhaseIndex < phases.Count ? phases[currentPhaseIndex] : null;
+        public int CurrentEnemyCount => currentEnemyCount;
 
         private void Awake()
         {
-            if (enemySpawner == null)
-            {
-                enemySpawner = GetComponent<Enemies.EnemySpawner>();
-                if (enemySpawner == null)
-                {
-                    enemySpawner = FindObjectOfType<Enemies.EnemySpawner>();
-                }
-            }
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
+            _mainCamera = Camera.main;
         }
 
         private void Start()
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                _playerTransform = player.transform;
-            }
-            
-            // Prewarm quái vật từ Wave phases
-            if (EnemyPoolManager.Instance != null)
-            {
-                foreach (var phase in phases)
-                {
-                    if (phase.pillarConfigs != null)
-                    {
-                        foreach (var pillar in phase.pillarConfigs)
-                        {
-                            PrewarmConfig(pillar.pillarSetup);
-                        }
-                    }
+            if (player != null) _playerTransform = player.transform;
 
-                    if (phase.continuousSpawnPrefabs != null)
-                    {
-                        foreach (var prefab in phase.continuousSpawnPrefabs)
-                        {
-                            if (prefab != null) EnemyPoolManager.Instance.PrewarmPool(prefab, 15);
-                        }
-                    }
-                }
-            }
-
-            // Auto start the match
             StartMatch();
-        }
-        
-        private void PrewarmConfig(PillarConfig config)
-        {
-            if (config.enemyPrefab != null)
-            {
-                int amount = config.totalEnemiesToSpawn > 0 ? config.totalEnemiesToSpawn : 20;
-                EnemyPoolManager.Instance.PrewarmPool(config.enemyPrefab, amount);
-            }
         }
 
         public void StartMatch()
         {
             matchTime = 0f;
-            currentPhaseIndex = -1;
-            _isMatchActive = true;
+            _nextEventIndex = 0;
+            _activeContinuousEvents.Clear();
+            _eventTimers.Clear();
+            isMatchActive = true;
 
-            if (enemySpawner != null)
+            // Tự động Prewarm tất cả Prefab xuất hiện trong Timeline
+            if (timelineConfig != null && EnemyPoolManager.Instance != null)
             {
-                enemySpawner.StartSpawning();
+                foreach (var evt in timelineConfig.events)
+                {
+                    if (evt.spawnPrefab != null)
+                    {
+                        int amount = evt.eventType == TimelineEventType.BurstWave ? evt.spawnCount : 15;
+                        EnemyPoolManager.Instance.PrewarmPool(evt.spawnPrefab, amount);
+                    }
+                }
             }
-            
-            CheckForPhaseChange();
         }
+
 
         public void StopMatch()
         {
-            _isMatchActive = false;
-            if (enemySpawner != null)
-            {
-                enemySpawner.StopSpawning();
-            }
+            isMatchActive = false;
         }
 
         private void Update()
         {
-            if (!_isMatchActive || phases.Count == 0) return;
+            if (!isMatchActive || timelineConfig == null) return;
 
             matchTime += Time.deltaTime;
 
-            if (enemySpawner != null)
-            {
-                enemySpawner.UpdateMatchTime(matchTime);
-            }
-            
-            CheckForPhaseChange();
-            HandlePillarSpawning();
+            // 1. Kiểm tra kích hoạt Timeline Event mới
+            CheckTimelineEvents();
+
+            // 2. Chạy các Continuous Spawn Event
+            HandleContinuousSpawns();
         }
 
-        private void CheckForPhaseChange()
+        private void CheckTimelineEvents()
         {
-            int nextPhaseIndex = currentPhaseIndex + 1;
-            
-            if (nextPhaseIndex < phases.Count)
+            var events = timelineConfig.events;
+            while (_nextEventIndex < events.Count && matchTime >= events[_nextEventIndex].timestampSeconds)
             {
-                if (matchTime >= phases[nextPhaseIndex].startTime)
-                {
-                    currentPhaseIndex = nextPhaseIndex;
-                    Debug.Log($"[SpawnManager] Entered Phase {currentPhaseIndex + 1}: {CurrentPhase.phaseName}");
-                    
-                    if (enemySpawner != null && CurrentPhase != null)
-                    {
-                        enemySpawner.SetPhase(CurrentPhase);
-                    }
-
-                    if (CurrentPhase != null && CurrentPhase.pillarConfigs != null)
-                    {
-                        _pillarSpawnTimers = new float[CurrentPhase.pillarConfigs.Count];
-                        for (int i = 0; i < _pillarSpawnTimers.Length; i++)
-                        {
-                            _pillarSpawnTimers[i] = CurrentPhase.pillarConfigs[i].pillarSpawnInterval; 
-                        }
-                    }
-                    else
-                    {
-                        _pillarSpawnTimers = new float[0];
-                    }
-                }
+                TimelineEvent evt = events[_nextEventIndex];
+                TriggerEvent(evt);
+                _nextEventIndex++;
             }
         }
 
-        private void HandlePillarSpawning()
+        private void TriggerEvent(TimelineEvent evt)
         {
-            if (CurrentPhase == null || CurrentPhase.pillarConfigs == null || _pillarSpawnTimers == null) return;
+            if (evt.spawnPrefab == null) return;
 
-            float timeInPhase = matchTime - CurrentPhase.startTime;
+            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' tại phút {(matchTime / 60f):F2}");
 
-            for (int i = 0; i < CurrentPhase.pillarConfigs.Count; i++)
+            switch (evt.eventType)
             {
-                var config = CurrentPhase.pillarConfigs[i];
-
-                if (timeInPhase >= config.startPillarTime && timeInPhase <= config.endPillarTime)
-                {
-                    _pillarSpawnTimers[i] += Time.deltaTime;
-
-                    if (_pillarSpawnTimers[i] >= config.pillarSpawnInterval)
+                case TimelineEventType.Continuous:
+                    if (!_activeContinuousEvents.Contains(evt))
                     {
-                        _pillarSpawnTimers[i] = 0f;
-                        SpawnPillar(config.pillarSetup);
+                        _activeContinuousEvents.Add(evt);
+                        _eventTimers[evt] = 0f;
                     }
-                }
+                    break;
+
+                case TimelineEventType.BurstWave:
+                    SpawnBurstWave(evt.spawnPrefab, evt.spawnCount);
+                    break;
+
+                case TimelineEventType.BossSpawn:
+                    ClearSmallEnemiesAround(20f); // Dọn sạch quái nhỏ trong bán kính 20m khi Boss xuất hiện
+                    SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                    break;
+
+                case TimelineEventType.SpawnPillar:
+                    if (evt.spawnPrefab != null)
+                    {
+                        SpawnPillar(evt.spawnPrefab);
+                    }
+                    break;
             }
         }
 
+        /// <summary>
+        /// Phương thức hỗ trợ Spawn Trụ (Debug UI hoặc Timeline Event).
+        /// </summary>
         public void SpawnPillar(PillarConfig config)
         {
             if (config.pillarPrefab == null) return;
-
-            Vector3 spawnPos = GetSpawnPosition();
+            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
             GameObject pillarObj = Instantiate(config.pillarPrefab, spawnPos, Quaternion.identity);
-            
+
             SpawnPillar pillar = pillarObj.GetComponent<SpawnPillar>();
             if (pillar != null)
             {
                 pillar.Initialize(config);
             }
-            else
+        }
+
+        public void SpawnPillar(GameObject pillarPrefab)
+        {
+            if (pillarPrefab == null) return;
+            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
+            Instantiate(pillarPrefab, spawnPos, Quaternion.identity);
+        }
+
+
+        private void HandleContinuousSpawns()
+        {
+            if (currentEnemyCount >= maxEnemyCap) return;
+
+            for (int i = 0; i < _activeContinuousEvents.Count; i++)
             {
-                Debug.LogWarning($"[SpawnManager] SpawnPillar component is missing on prefab {config.pillarPrefab.name}!");
+                var evt = _activeContinuousEvents[i];
+                _eventTimers[evt] += Time.deltaTime;
+
+                if (_eventTimers[evt] >= evt.spawnInterval)
+                {
+                    _eventTimers[evt] = 0f;
+                    if (currentEnemyCount < maxEnemyCap)
+                    {
+                        SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                    }
+                }
             }
         }
 
-        private Vector3 GetSpawnPosition()
+        public void SpawnBurstWave(GameObject prefab, int count)
         {
-            Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
-
-            for (int i = 0; i < 10; i++)
+            int actualSpawn = Mathf.Min(count, maxEnemyCap - currentEnemyCount);
+            for (int i = 0; i < actualSpawn; i++)
             {
-                float angle = Random.Range(0f, 360f);
-                float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
+                SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera());
+            }
+        }
 
-                Vector2 randomDir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-                Vector2 spawnPos = (Vector2)center + randomDir * radius;
-
-                if (obstacleLayer.value != 0)
-                {
-                    Collider2D hit = Physics2D.OverlapCircle(spawnPos, 0.5f, obstacleLayer);
-                    if (hit != null) continue;
-                }
-
-                return spawnPos;
+        private GameObject SpawnAtPosition(GameObject prefab, Vector3 position)
+        {
+            if (EnemyPoolManager.Instance != null)
+            {
+                GameObject enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
+                if (enemy != null) currentEnemyCount++;
+                return enemy;
             }
 
-            float fallbackAngle = Random.Range(0f, 360f);
-            Vector2 fallbackDir = new Vector2(Mathf.Cos(fallbackAngle * Mathf.Deg2Rad), Mathf.Sin(fallbackAngle * Mathf.Deg2Rad));
-            return (Vector2)center + fallbackDir * minSpawnRadius;
+            GameObject spawned = Instantiate(prefab, position, Quaternion.identity);
+            currentEnemyCount++;
+            return spawned;
+        }
+
+
+        public void OnEnemyDied()
+        {
+            currentEnemyCount = Mathf.Max(0, currentEnemyCount - 1);
+        }
+
+        private void ClearSmallEnemiesAround(float radius)
+        {
+            if (_playerTransform == null) return;
+            Collider2D[] hits = Physics2D.OverlapCircleAll(_playerTransform.position, radius);
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("Enemy") && !hit.name.Contains("Boss"))
+                {
+                    hit.gameObject.SetActive(false);
+                    OnEnemyDied();
+                }
+            }
+        }
+
+        public Vector3 GetSpawnPositionOutsideCamera()
+        {
+            Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
+            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            float distance = Random.Range(minSpawnRadius, maxSpawnRadius);
+
+            Vector3 spawnPos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
+            return spawnPos;
         }
     }
 }
