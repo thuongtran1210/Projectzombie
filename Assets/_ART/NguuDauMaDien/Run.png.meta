@@ -126,19 +126,19 @@ TextureImporter:
       name: Run_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 10
+        x: 56
+        y: 9
         width: 130
         height: 128
       alignment: 9
-      pivot: {x: 0.60674095, y: 0.0013189241}
+      pivot: {x: 0.61119866, y: 0.0110377}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2c17fb7941570f34ebbc17cd4fc41202
-      internalID: 1667324636
+      spriteID: 29e1297f7e54928438984d7a05ea0c26
+      internalID: 1299959154
       vertices: []
       indices: 
       edges: []
@@ -147,19 +147,19 @@ TextureImporter:
       name: Run_1
       rect:
         serializedVersion: 2
-        x: 150
-        y: 19
+        x: 274
+        y: 10
         width: 128
-        height: 119
+        height: 127
       alignment: 9
-      pivot: {x: 0.6147858, y: -0.0007281424}
+      pivot: {x: 0.59687495, y: 0.0043957103}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 459580237c94e7a4b83b5a17b39b5c59
-      internalID: -1688670841
+      spriteID: ba91a23a0818a6144a2666db4abec7c3
+      internalID: -508195009
       vertices: []
       indices: 
       edges: []
@@ -168,19 +168,19 @@ TextureImporter:
       name: Run_2
       rect:
         serializedVersion: 2
-        x: 288
-        y: 11
+        x: 492
+        y: 10
         width: 127
         height: 127
       alignment: 9
-      pivot: {x: 0.6300301, y: 0.00469418}
+      pivot: {x: 0.6362612, y: 0.0016731127}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5396c9bbd8c93904faffa450b9f60302
-      internalID: -823688996
+      spriteID: 676ba4dcaa5cf0540b04c8b5dd3f82f1
+      internalID: 495902393
       vertices: []
       indices: 
       edges: []
@@ -196,9 +196,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Run_0: 1667324636
-      Run_1: -1688670841
-      Run_2: -823688996
+      Run_0: 1299959154
+      Run_1: -508195009
+      Run_2: 495902393
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

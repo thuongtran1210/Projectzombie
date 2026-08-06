@@ -17,6 +17,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         [SerializeField] private float dashDuration = 1.5f;
         [SerializeField] private float baseMoveSpeed = 2.2f;
         [SerializeField] private float telegraphDuration = 1.5f; // Thời gian phát vệt đỏ báo hiệu
+        [SerializeField] private float dashWidth = 1.5f; // Độ rộng vệt báo & bán kính va chạm (mét)
 
         private bool _isDashing = false;
         public bool IsDashing => _isDashing;
@@ -31,7 +32,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         {
             _isDashing = true;
             Vector3 dashDirection = (targetPosition - transform.position).normalized;
-            Vector2 dashSize = IndicatorUtility.CalculateDashSize(baseMoveSpeed, dashSpeedMultiplier, dashDuration, 1.5f);
+            Vector2 dashSize = IndicatorUtility.CalculateDashSize(baseMoveSpeed, dashSpeedMultiplier, dashDuration, dashWidth);
 
             // BƯỚC 1: BÁO HỆU VỆT ĐỎ CHỈ DẤU
             bool telegraphFinished = false;
@@ -41,7 +42,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                     IndicatorShape.Box,
                     transform.position,
                     dashDirection,
-                    dashSize, // Rộng 1.5m, Dài chuẩn quãng đường lao (9.9m)
+                    dashSize, // Rộng dashWidth (m), Dài chuẩn quãng đường lao (9.9m)
                     telegraphDuration,
                     new Color(1f, 0.1f, 0.1f, 0.4f)
                 ), () => telegraphFinished = true);
@@ -89,7 +90,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
                 if (!hitPlayerDuringDash)
                 {
-                    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 1.5f);
+                    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, dashWidth);
                     foreach (var col in hits)
                     {
                         if (col.CompareTag("Player"))

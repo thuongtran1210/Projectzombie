@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 173d75bf357892f469da79281f905002
+guid: 18cfc434d87606447880401895b621a8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Atack nornal_0
+      name: Dash_0
       rect:
         serializedVersion: 2
         x: 10
-        y: 13
-        width: 198
-        height: 125
+        y: 10
+        width: 206
+        height: 120
       alignment: 9
-      pivot: {x: 0.44304588, y: 0.0066347276}
+      pivot: {x: 0.45171514, y: 0.002666243}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 32ab3c2398250784f91673d40a5d1ec5
-      internalID: -1831244555
+      spriteID: 7e12a5fdb30aaac41b36ffd7d9202284
+      internalID: 91944160
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Atack nornal_1
+      name: Dash_1
       rect:
         serializedVersion: 2
-        x: 218
+        x: 243
         y: 10
-        width: 153
+        width: 175
         height: 128
       alignment: 9
-      pivot: {x: 0.62776476, y: 0.0006335452}
+      pivot: {x: 0.55049354, y: 0.005913377}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13109c1f94fe8664ba0944eec702ac5c
-      internalID: -1447426113
+      spriteID: f2cb00425109542449b924ab874f42f1
+      internalID: -1231865702
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Atack nornal_2
+      name: Dash_2
       rect:
         serializedVersion: 2
-        x: 381
-        y: 13
-        width: 154
+        x: 454
+        y: 10
+        width: 182
         height: 125
       alignment: 9
-      pivot: {x: 0.27433738, y: -0.0014219666}
+      pivot: {x: 0.49999967, y: 0.00043409728}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d3f34394866c3742be8272ed6eeed29
-      internalID: -1223299572
+      spriteID: 1fe6df15810543b478dcefea7312de12
+      internalID: -732564455
       vertices: []
       indices: 
       edges: []
@@ -196,9 +196,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Atack nornal_0: -1831244555
-      Atack nornal_1: -1447426113
-      Atack nornal_2: -1223299572
+      Dash_0: 91944160
+      Dash_1: -1231865702
+      Dash_2: -732564455
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

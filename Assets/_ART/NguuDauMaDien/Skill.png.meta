@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ad6f709ced5548a47947a3434f796548
+guid: 4458c2c54b59bce44bbe58eda9d2212f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Nguudaumadien-Idle_0
+      name: Skill_1
       rect:
         serializedVersion: 2
-        x: 20
-        y: 40
-        width: 119
-        height: 108
+        x: 12
+        y: 10
+        width: 244
+        height: 168
       alignment: 9
-      pivot: {x: 0.61181945, y: -0.00010981383}
+      pivot: {x: 0.4371169, y: 0.26044542}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5bf7c03c5675cb4a9a360489e8ff45f
-      internalID: -888024555
+      spriteID: dd9549fbba1499144815b0691ec94b44
+      internalID: -118347145
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Nguudaumadien-Idle_1
+      name: Skill_2
       rect:
         serializedVersion: 2
-        x: 160
-        y: 20
-        width: 117
-        height: 128
-      alignment: 9
-      pivot: {x: 0.6335179, y: 0.00026367605}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 88db9de0a045fd640af18aaa3dcb83f0
-      internalID: -329304895
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nguudaumadien-Idle_2
-      rect:
-        serializedVersion: 2
-        x: 297
+        x: 314
         y: 35
-        width: 112
-        height: 113
+        width: 149
+        height: 148
       alignment: 9
-      pivot: {x: 0.63718903, y: -0.00044574568}
+      pivot: {x: 0.62173444, y: 0.004325764}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf7a5ac07788b7341ae981c3cf26c444
-      internalID: 1018174266
+      spriteID: 3a449bbb22a2232409d79f943741bac4
+      internalID: 555019790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Skill_3
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 11
+        width: 139
+        height: 155
+      alignment: 9
+      pivot: {x: 0.58931595, y: 0.0075575244}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5beebee95a6c6ce45aeac0f9c5d8f962
+      internalID: -2145934351
       vertices: []
       indices: 
       edges: []
@@ -196,9 +196,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Nguudaumadien-Idle_0: -888024555
-      Nguudaumadien-Idle_1: -329304895
-      Nguudaumadien-Idle_2: 1018174266
+      Skill_0: 1038495885
+      Skill_1: -118347145
+      Skill_2: 555019790
+      Skill_3: -2145934351
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

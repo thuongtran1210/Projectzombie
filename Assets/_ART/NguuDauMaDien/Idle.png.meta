@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: dd043c279f0fbc649a00389cf7f975e6
+guid: 610126c692062bb4281af5156bf14f8f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: skill-aoe_1
+      name: Idle_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 25
-        width: 195
-        height: 113
+        x: 62
+        y: 10
+        width: 120
+        height: 127
       alignment: 9
-      pivot: {x: 0.5, y: -0.0015997253}
+      pivot: {x: 0.59395814, y: 0.002500504}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ae2d4c402707b6468227619458925f7
-      internalID: 523235511
+      spriteID: f515b1b2dfa00dd40908ce1a42e7e953
+      internalID: 1828069802
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skill-aoe_2
+      name: Idle_1
       rect:
         serializedVersion: 2
-        x: 215
+        x: 281
         y: 10
-        width: 112
+        width: 117
         height: 128
       alignment: 9
-      pivot: {x: 0.5376772, y: 0.005485527}
+      pivot: {x: 0.6288014, y: 0.00040391833}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6be2617c5632b0d409e39b7831916473
-      internalID: 580064976
+      spriteID: de26c974d00522d42a5ada79aecc22e0
+      internalID: 1227385588
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skill-aoe_3
+      name: Idle_2
       rect:
         serializedVersion: 2
-        x: 337
-        y: 34
-        width: 129
-        height: 104
+        x: 500
+        y: 10
+        width: 112
+        height: 129
       alignment: 9
-      pivot: {x: 0.27973855, y: 0.1185898}
+      pivot: {x: 0.64490837, y: -0.0032489393}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 58ec97c2c30c3274993c27140a007e47
-      internalID: -154623520
+      spriteID: cf56f68e92a64174ea05e9873646f90b
+      internalID: -62739040
       vertices: []
       indices: 
       edges: []
@@ -196,11 +196,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      skill-aoe_0: 1053544195
-      skill-aoe_1: 523235511
-      skill-aoe_2: 580064976
-      skill-aoe_3: -154623520
-      skill-aoe_4: -166919847
+      Idle_0: 1828069802
+      Idle_1: 1227385588
+      Idle_2: -62739040
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 68f5e207eb43c344da39887e1fe2c485
+guid: 561827e2ebed41d43ad0f6c16985958a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,64 +123,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Nguudaumadien-Dash_0
+      name: Attack_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 18
-        width: 206
-        height: 120
+        x: 14
+        y: 10
+        width: 198
+        height: 125
       alignment: 9
-      pivot: {x: 0.47309446, y: 0.0045286496}
+      pivot: {x: 0.4437862, y: 0.0009907761}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a007a3e9b36100540befd66676215284
-      internalID: -294879562
+      spriteID: 7813ae9978c60c94c9c2955add0fc560
+      internalID: -116381907
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Nguudaumadien-Dash_1
+      name: Attack_1
       rect:
         serializedVersion: 2
-        x: 226
-        y: 11
-        width: 182
+        x: 259
+        y: 10
+        width: 153
         height: 128
       alignment: 9
-      pivot: {x: 0.54706496, y: 0.004128721}
+      pivot: {x: 0.62708795, y: -0.0013021156}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 410c48f7ae6a13140a980cb90dea19ea
-      internalID: -1307769874
+      spriteID: 56d3c5769ebc6344d841122a2de71f49
+      internalID: -1282508621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Nguudaumadien-Dash_2
+      name: Attack_2
       rect:
         serializedVersion: 2
-        x: 418
-        y: 11
-        width: 175
-        height: 127
+        x: 458
+        y: 10
+        width: 154
+        height: 125
       alignment: 9
-      pivot: {x: 0.55558383, y: -0.0016076997}
+      pivot: {x: 0.26281026, y: 0.0015101776}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 141e49aff66647c4f8b76c681e26b397
-      internalID: -1170746544
+      spriteID: fa6207446f6beef44a8eb188dd68be47
+      internalID: 298440812
       vertices: []
       indices: 
       edges: []
@@ -196,9 +196,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Nguudaumadien-Dash_0: -294879562
-      Nguudaumadien-Dash_1: -1307769874
-      Nguudaumadien-Dash_2: -1170746544
+      Attack_0: -116381907
+      Attack_1: -1282508621
+      Attack_2: 298440812
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
