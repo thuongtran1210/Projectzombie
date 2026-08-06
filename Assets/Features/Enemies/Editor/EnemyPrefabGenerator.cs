@@ -190,8 +190,8 @@ namespace ProjectZombie.Features.Enemies.Editor
             visual.AddComponent<BossAnimationEventHandler>();
 
             // Strategies
-            root.AddComponent<MeleeMovementStrategy>();
-            root.AddComponent<MeleeAttackStrategy>();
+            root.AddComponent<BossMovementStrategy>();
+            root.AddComponent<BossMeleeAttackStrategy>();
 
             // Boss Dynamic Elements & Controllers
             root.AddComponent<BossElementController>();

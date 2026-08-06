@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.Enemies.Boss
         public ElementType currentElement = ElementType.Tho;
 
         [Header("Skills")]
+        [SerializeField] private Skills.BossMeleeAttackStrategy bossMeleeAttack;
         [SerializeField] private Skills.BullDashSkill bullDashSkill;
         [SerializeField] private Skills.GroundSlamSkill groundSlamSkill;
 
@@ -44,6 +45,7 @@ namespace ProjectZombie.Features.Enemies.Boss
             _healthSystem = GetComponent<HealthSystem>();
             _bossAnimator = GetComponentInChildren<BossAnimator>();
             _eventHandler = GetComponentInChildren<BossAnimationEventHandler>();
+            if (bossMeleeAttack == null) bossMeleeAttack = GetComponent<Skills.BossMeleeAttackStrategy>();
             if (bullDashSkill == null) bullDashSkill = GetComponent<Skills.BullDashSkill>();
             if (groundSlamSkill == null) groundSlamSkill = GetComponent<Skills.GroundSlamSkill>();
         }
@@ -128,13 +130,28 @@ namespace ProjectZombie.Features.Enemies.Boss
         {
             if (_playerTransform == null) return;
 
-            if (Random.value > 0.5f && bullDashSkill != null)
+            float roll = Random.value;
+            if (roll < 0.4f && bullDashSkill != null)
             {
                 TriggerBullDash();
             }
-            else if (groundSlamSkill != null)
+            else if (roll < 0.7f && groundSlamSkill != null)
             {
                 TriggerGroundSlam();
+            }
+            else if (bossMeleeAttack != null)
+            {
+                TriggerMeleeAttack();
+            }
+        }
+
+        [ContextMenu("Debug/Trigger Melee Attack")]
+        public void TriggerMeleeAttack()
+        {
+            if (bossMeleeAttack != null)
+            {
+                Debug.Log($"[DEBUG BOSS] Ép kích hoạt đòn 'Tấn công Cận chiến' (Boss Melee Attack)!");
+                bossMeleeAttack.PerformAttack();
             }
         }
 

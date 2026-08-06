@@ -177,11 +177,11 @@ GameObject:
   - component: {fileID: 6453263957263172301}
   - component: {fileID: 6476133514299686852}
   - component: {fileID: 302480097558015566}
-  - component: {fileID: 3766310743791078532}
-  - component: {fileID: 3552035158384445439}
   - component: {fileID: 2674424854191525047}
   - component: {fileID: -5030162863297841064}
   - component: {fileID: -5551248611952435718}
+  - component: {fileID: 1039783248637700568}
+  - component: {fileID: 8291360003962393157}
   m_Layer: 7
   m_Name: Boss_NguuDauMaDien
   m_TagString: Boss
@@ -296,37 +296,6 @@ MonoBehaviour:
   Config: {fileID: 11400000, guid: b66f459df41f9e946a77fc9859cb8190, type: 2}
   expGemPrefab: {fileID: 0}
   isBoss: 0
---- !u!114 &3766310743791078532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6556722217386542342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73b97c3ca2979f842ba25301f8b0c04c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3552035158384445439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6556722217386542342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  attackPoint: {fileID: 8028660064662596448}
-  hitboxShape: 0
-  offsetY: 0
-  boxHeightRatio: 1
 --- !u!114 &2674424854191525047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,3 +347,36 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &1039783248637700568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb83e7837820214588b16c5f76d96ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  attackDamage: 10
+  attackRange: 1.84
+  telegraphDuration: 0.3
+  hitboxShape: 0
+  offsetY: 0.72
+  boxHeightRatio: 1
+--- !u!114 &8291360003962393157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6556722217386542342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06fa2ba0e724ca74ea0461d359cb80bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
