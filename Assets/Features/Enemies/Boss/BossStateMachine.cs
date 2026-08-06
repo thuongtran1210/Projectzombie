@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Boss;
 
 namespace ProjectZombie.Features.Enemies.Boss
 {
@@ -29,6 +30,8 @@ namespace ProjectZombie.Features.Enemies.Boss
         [SerializeField] private int minionCount = 10;
 
         private HealthSystem _healthSystem;
+        private BossAnimator _bossAnimator;
+        private BossAnimationEventHandler _eventHandler;
         private BossPhase _currentPhase = BossPhase.Phase1_100_50;
         private float _skillTimer = 0f;
         private float _elementSwapTimer = 0f;
@@ -39,6 +42,8 @@ namespace ProjectZombie.Features.Enemies.Boss
         private void Awake()
         {
             _healthSystem = GetComponent<HealthSystem>();
+            _bossAnimator = GetComponentInChildren<BossAnimator>();
+            _eventHandler = GetComponentInChildren<BossAnimationEventHandler>();
             if (bullDashSkill == null) bullDashSkill = GetComponent<Skills.BullDashSkill>();
             if (groundSlamSkill == null) groundSlamSkill = GetComponent<Skills.GroundSlamSkill>();
         }
@@ -49,9 +54,27 @@ namespace ProjectZombie.Features.Enemies.Boss
             if (player != null) _playerTransform = player.transform;
         }
 
+        private bool _isDead = false;
+
         private void Update()
         {
-            if (_healthSystem == null || _healthSystem.CurrentHealth <= 0) return;
+            if (_healthSystem == null) return;
+
+            if (_healthSystem.CurrentHealth <= 0)
+            {
+                if (!_isDead)
+                {
+                    _isDead = true;
+                    if (_bossAnimator != null) _bossAnimator.PlayAnimation("Dead");
+                }
+                return;
+            }
+
+            if (_playerTransform != null && _bossAnimator != null)
+            {
+                float dirX = _playerTransform.position.x - transform.position.x;
+                _bossAnimator.FlipToDirection(dirX);
+            }
 
             float hpPercent = _healthSystem.CurrentHealth / Mathf.Max(1f, _healthSystem.MaxHealth);
 

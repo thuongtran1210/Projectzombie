@@ -165,6 +165,8 @@ namespace ProjectZombie.Features.Enemies.Editor
 
             var animator = visual.AddComponent<Animator>();
             visual.AddComponent<EnemyAnimator>();
+            visual.AddComponent<BossAnimator>();
+            visual.AddComponent<BossAnimationEventHandler>();
 
             // Strategies
             root.AddComponent<MeleeMovementStrategy>();

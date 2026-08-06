@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.VFX.Indicators;
+using ProjectZombie.Features.Boss;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills
 {
@@ -52,6 +53,13 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
             // BƯỚC 2: TUNG ĐÒN GIẬM ĐẤT AOE
             Debug.Log("[GroundSlamSkill] Boss kích hoạt chiêu 'Địa Chấn Âm Ty'!");
+
+            var bossAnimator = GetComponentInChildren<BossAnimator>();
+            if (bossAnimator != null)
+            {
+                bossAnimator.PlayAnimation("GroundSlam");
+            }
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, slamRadius, targetLayer);
             foreach (var hit in hits)
             {

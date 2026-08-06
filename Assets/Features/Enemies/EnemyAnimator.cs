@@ -64,12 +64,12 @@ namespace ProjectZombie.Features.Enemies
                 case EnemyAnimationState.Attack:
                     animator.Play(_attackHash);
                     break;
-                //case EnemyAnimationState.Dead:
-                //    animator.Play(_deadHash);
-                //    break;
-                //case EnemyAnimationState.Revive:
-                //    animator.Play(_reviveHash);
-                    //break;
+                case EnemyAnimationState.Dead:
+                    animator.Play(_deadHash);
+                    break;
+                case EnemyAnimationState.Revive:
+                    animator.Play(_reviveHash);
+                    break;
             }
         }
 

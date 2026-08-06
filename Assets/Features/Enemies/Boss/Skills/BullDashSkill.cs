@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.VFX.Indicators;
+using ProjectZombie.Features.Boss;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills
 {
@@ -56,12 +57,25 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
             // BƯỚC 2: TUNG ĐÒN LAO TÔNG
             Debug.Log($"[BullDashSkill] Boss kích hoạt chiêu 'Ngưu Xung Thiên' lao tới {targetPosition}!");
+            
+            var bossAnimator = GetComponentInChildren<BossAnimator>();
+            if (bossAnimator != null)
+            {
+                bossAnimator.PlayAnimation("Dash");
+                bossAnimator.FlipToDirection(dashDirection.x);
+            }
+
             float elapsed = 0f;
             while (elapsed < dashDuration)
             {
                 elapsed += Time.deltaTime;
                 transform.position += dashDirection * (baseMoveSpeed * dashSpeedMultiplier) * Time.deltaTime;
                 yield return null;
+            }
+
+            if (bossAnimator != null)
+            {
+                bossAnimator.PlayAnimation("Idle");
             }
 
             _isDashing = false;
