@@ -27,9 +27,9 @@
 | **B — Gesture cận chiến / luồng** | Bút Phán Quan (`W002`), Đao Cửu Vĩ (`W008`) | 1 animation Gesture dùng chung (đưa tay ra trước). VFX (vệt chém mực / luồng lửa) overlay đúng lúc gesture xảy ra | **1 animation "Gesture" dùng chung** cho cả nhóm B | `WeaponSocket` — Empty GameObject trước ngực/tay, VFX phát từ đây |
 | **C — Orbit quanh người** | Bùa Trấn Yêu (`W003`), Phi Tiêu Bát Quái (`W012`) | Object bay lơ lửng quanh nhân vật theo quỹ đạo cố định, độc lập hoàn toàn với animation | **Không cần** — Giữ nguyên Idle / Walk | `OrbitCenter` — Empty GameObject tại tâm nhân vật, object con xoay bằng `transform.Rotate` |
 | **D — Ground AoE** | Trống Đồng Đông Sơn (`W005`), Lựu Đạn Thần Sa (`W006`), Nước Thánh Chùa Hương (`W011`) | Xuất hiện thẳng dưới đất tại vị trí kích hoạt, không liên quan tay/animation | **Không cần** — Giữ nguyên Idle / Walk | Instantiate trực tiếp tại `transform.position` của Player, Sorting Layer mặt đất |
-| **E — Chain / Pet** | Trượng Long Vương (`W009`), Linh Phù Ma Da (`W010`) | Trượng: dùng chung Gesture nhóm B. Ma Da: Pet Prefab độc lập đi bên cạnh nhân vật | Trượng: **Gesture chung**. Ma Da: **Không cần** | Trượng: `WeaponSocket`. Ma Da: Spawn cạnh player, giữ khoảng cách bám theo bằng script riêng |
+| **E — Chain / Pet** | Trượng Long Vương (`W009`), Linh Phù Ma Da (`W010`), Cờ Lệnh Triệu Âm Binh (`W013`) | Trượng: dùng chung Gesture nhóm B. Ma Da & Âm Binh: Pet Prefab độc lập đi bên cạnh / bám theo nhân vật | Trượng: **Gesture chung**. Ma Da & Âm Binh: **Không cần** | Trượng: `WeaponSocket`. Ma Da & Âm Binh: Spawn cạnh player, bám theo bằng script AI Pet riêng |
 
-> 📌 **Tóm tắt khối lượng animation thực tế cho Vũ khí:** Chỉ cần vẽ **1 animation Gesture dùng chung** cho toàn bộ 12 pháp bảo (dùng cho Nhóm B + Trượng ở Nhóm E). 9/12 pháp bảo còn lại hoàn toàn không cần animation riêng!
+> 📌 **Tóm tắt khối lượng animation thực tế cho Vũ khí:** Chỉ cần vẽ **1 animation Gesture dùng chung** cho toàn bộ 13 pháp bảo (dùng cho Nhóm B + Trượng ở Nhóm E). 10/13 pháp bảo còn lại hoàn toàn không cần animation riêng!
 
 ---
 

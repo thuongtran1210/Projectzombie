@@ -67,39 +67,38 @@
 ## 2. Quy Chuẩn Thiết Kế Nhân Vật & Signature Skill VFX
 
 ### 2.1. Thư Sinh (Vũ khí: Bút Phán Quan — Hệ Kim)
-*   **Archetype tham khảo:** Văn nhân / Scribe cổ trang Việt Nam — dáng người gầy, thư sinh, nho nhã, tay cầm Bút Phán Quan cỡ lớn.
-*   **Tông màu chủ đạo:** Vàng kim (`#E8C468`) làm điểm nhấn rực rỡ trên nền áo the / khăn đóng màu trung tính (xám nhạt, trắng ngà).
-*   **Chi tiết Idle:** Bút Phán Quan phát sáng nhẹ ánh vàng kim ở đầu bút khi đứng yên, thể hiện quyền năng "phán quyết".
-*   **Signature Skill VFX — *"Phán Quyết Tiền Định"*:**
-    *   *Nét Bút:* Vệt mực thư pháp nhòe (Ink Flow Dissolve) kết hợp ánh sáng Vàng Kim (`#FFD700` / `#E8C468`).
-    *   *Biểu Tượng:* Triện Ấn Bát Quái / Chữ Nôm bùng nổ trên đầu trong 1.5s thể hiện hit ảo Tương Sinh.
+*   **Archetype tham khảo:** Hiền sĩ / Nho sinh bản địa Việt Nam — dáng người gầy, thư sinh, tay cầm Bút Phán Quan. Được anh linh sông núi & Đức Thánh Trần điểm hóa, dùng bút lệnh phán định tà ma.
+*   **Tông màu chủ đạo:** Vàng kim (`#E8C468`) làm điểm nhấn rực rỡ trên nền áo the / khăn đóng màu xám nhạt hoặc trắng ngà.
+*   **Chi tiết Idle:** Đầu Bút Phán Quan phát ra vệt khói thiêng nhè nhẹ ánh vàng kim khi đứng yên.
+*   **Signature Skill VFX — *"Phán Quyết Tiền Định" / "Khí Thiêng Sông Núi" phát động:**
+    *   *Nét Bút:* Vệt khói thiêng cuộn tròn (Spirit Smoke Dissolve) kết hợp ký tự Nôm/Nho rực cháy màu Vàng Kim (`#FFD700` / `#E8C468`).
+    *   *Biểu Tượng:* Chữ Nôm bùng cháy thành luồng khói thiêng bay lơ lửng trên đầu trong 1.5s thể hiện hit ảo Tương Sinh.
 *   **AI Concept Prompt Mẫu:**  
-    `2D top-down game concept art, male Vietnamese scholar scribe, slim build, wearing traditional ao the and khan dong in light gray and ivory, holding a giant illuminated golden calligraphy brush glowing with yellow-gold (#E8C468) energy, mystical Vietnamese folk art style, high contrast on dark background, isolated game asset`
+    `2D top-down game concept art, male Vietnamese scholar scribe, slim build, wearing traditional ao the and khan dong in light gray and ivory, holding a giant illuminated golden calligraphy brush with spirit smoke flowing, glowing yellow-gold (#E8C468) energy, mystical Vietnamese folk art style, high contrast on dark background, isolated game asset`
 
 ---
 
-### 2.2. Đạo Sĩ (Vũ khí: Bùa Trấn Yêu — Hệ Mộc)
-*   **Archetype tham khảo:** Đạo sĩ / Pháp sư cổ trang Việt Nam — áo choàng dài, râu tóc búi đạo gia, tay cầm phất trần hoặc lá bùa thần.
-*   **Tông màu chủ đạo:** Xanh lá mộc (`#4C7A3D`) trên áo choàng, phối thêm nâu gụ ở phụ kiện (giỏ đựng bùa, dây lưng vải).
-*   **Chi tiết Idle:** Vài lá bùa giấy màu vàng dán chữ đỏ bay lửng lơ quanh người ở trạng thái idle — báo hiệu trực quan cho kỹ năng *"Bát Quái Trận Đồ"*.
-*   **Signature Skill VFX — *"Bát Quái Trận Đồ"*:**
-    *   *Mặt Đất:* Trận đồ 8 cạnh xoay tròn bán kính 4.5m màu Xanh Mộc (`#32CD32` / `#4C7A3D`).
-    *   *Linh Phù:* 8 lá bùa bay lơ lửng tại 8 đỉnh kết nối bằng vệt sáng phong ấn.
-    *   *Âm Dương:* 2 luồng khí Hắc Khí (Đen) & Bạch Khí (Trắng) xoáy từ mép cuộn vào tâm.
+### 2.2. Thanh Đồng / Cô Đồng (Vũ khí: Bùa Trấn Yêu — Hệ Mộc)
+*   **Archetype tham khảo:** Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Bùa Trấn Yêu / Chuỗi Bùa Tứ Phủ.
+*   **Tông màu chủ đạo:** Biến đổi theo cõi Tứ Phủ được thỉnh nhập: Thiên Phủ (Đỏ son `#B8442C`), Nhạc Phủ (Xanh mộc `#4C7A3D`), Thoải Phủ (Trắng/Lam `#2E6E9E`), Địa Phủ (Vàng đất `#8A6A3E`).
+*   **Chi tiết Idle:** Vài lá bùa Tứ Phủ thêu hoa văn cổ bay lơ lửng quanh người ở trạng thái idle.
+*   **Signature Skill VFX — *"Giá Đồng" (Nhập Tứ Phủ):*
+    *   *Múa Bóng:* Dáng múa bóng / múa mồi 2–3 frame đặc trưng kèm hiệu ứng dải lụa mồi lửa xoay quanh người.
+    *   *Hào Quang Tứ Phủ:* Bùng nổ hào quang bán kính 4.5m đổi màu sắc rực rỡ đại diện cho cõi Tứ Phủ thỉnh nhập (Đỏ / Xanh / Lam / Vàng).
 *   **AI Concept Prompt Mẫu:**  
-    `2D top-down game concept art, male Vietnamese Taoist sorcerer exorcist, wearing dark green (#4C7A3D) robes and brown leather accessories, glowing yellow paper talismans floating in orbit around his body, mystical Vietnamese folk art style, vibrant HDR contrast, isolated game asset`
+    `2D top-down game concept art, female Vietnamese Hau Dong ritual priestess medium, wearing vibrant traditional ceremonial silk robes with ornate headdress, glowing talismans and multicolored mystic silk ribbons floating around her body, mystical Vietnamese folk art style, vibrant HDR contrast, isolated game asset`
 
 ---
 
-### 2.3. Võ Tăng (Vũ khí: Thiền Trượng — Hệ Thổ)
-*   **Archetype tham khảo:** Tăng nhân võ thuật / Warrior Monk — dáng người chắc khỏe, cơ bắp cuồn cuộn, tay cầm Thiền Trượng đồng, ngực trần hoặc khoác áo cà sa lệch vai gọn gàng.
-*   **Tông màu chủ đạo:** Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ son (`#C0392B`) ở dây chuỗi hạt tràng và khăn quấn cổ tay.
-*   **Chi tiết Idle:** Tư thế idle hơi khom, thủ thế vững chãi — gợi ý sức mạnh vật lý càn quét, phù hợp với cơ chế hy sinh HP đổi lấy sát thương bộc phát.
-*   **Signature Skill VFX — *"Phá Giới Chấn Thế"*:**
-    *   *Mặt Đất:* Sprite vết nứt đất 8 hướng bộc phát tỏa rộng (3.0m - 7.0m tùy lượng HP hy sinh).
-    *   *Sóng Xung Kích:* Sóng ring wave màu Đỏ Cam / Nâu Đất bộc phát cực nhanh đẩy lùi quái.
+### 2.3. Ẩn Sĩ Sơn Lâm (Vũ khí: Thiền Trượng / Gậy Sơn Lâm — Hệ Thổ)
+*   **Archetype tham khảo:** Kỳ nhân ẩn dật / Đạo nhân núi — dáng người khỏe khoắn chững chạc, tay cầm Thiền Trượng đồng / Gậy Sơn Lâm bọc đồng, áo vải thô phong trần dật. Tự thiền định chốn đại ngàn, hòa hợp làm một với sinh khí đất trời.
+*   **Tông màu chủ đạo:** Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ gụ (`#C0392B`) ở quấn tay và đai lưng.
+*   **Chi tiết Idle:** Tư thế idle hơi khom, thủ thế vững chãi, gậy nạm đồng cắm nhẹ xuống đất.
+*   **Signature Skill VFX — *"Thập Phương Chấn Thế" (Sơn Lâm Bộc Phát):*
+    *   *Mặt Đất:* Sprite vết nứt đá đất núi ngàn tỏa rộng (3.0m - 7.0m tùy lượng HP hy sinh).
+    *   *Sóng Xung Kích:* Luồng địa khí sơn lâm cuồn cuộn màu Nâu Đất / Vàng Đất bộc phát cực nhanh đẩy lùi quái.
 *   **AI Concept Prompt Mẫu:**  
-    `2D top-down game concept art, muscular Vietnamese warrior monk, shirtless with earthen brown (#8A6A3E) martial trousers, large wooden prayer beads with crimson red accent ribbons, holding a heavy bronze monk spade staff, aggressive battle stance, mystical Vietnamese folk art style, isolated game asset`
+    `2D top-down game concept art, muscular Vietnamese mountain hermit sage, wearing rough earthen brown (#8A6A3E) robes with crimson red waist sash, holding a heavy copper-headed wooden mountain staff, grounded martial stance, earth energy bursting around feet, mystical Vietnamese folk art style, isolated game asset`
 
 ### 2.4. Quy Chuẩn Khối Lượng Animation Tối Thiểu per Nhân Vật (Animation Budget)
 

@@ -41,8 +41,8 @@
 
 | Hệ thống | Bản phát hành đầu (MVP) | Bản cập nhật tương lai (Update) |
 |---|---|---|
-| **Character (Nhân vật)** | 3 (Thư Sinh, Đạo Sĩ, Võ Tăng) | 8 (Bổ sung Pháp Sư, Thầy Mo, Kiếm Khách...) |
-| **Vũ khí (Pháp bảo)** | 12 Pháp Bảo, chia đều 5 hệ Ngũ Hành | 30 Pháp Bảo + biến thể |
+| **Character (Nhân vật)** | 3 (Thư Sinh, Thanh Đồng, Ẩn Sĩ Sơn Lâm) | 8 (Bổ sung Thầy Mo, Kiếm Khách, Nương Tử...) |
+| **Vũ khí (Pháp bảo)** | 13 Pháp Bảo, chia đều 5 hệ Ngũ Hành | 30 Pháp Bảo + biến thể |
 | **Passive (Kỹ năng bị động)** | 18 (Cộng chỉ số nền + Thẻ Ngũ Hành) | 40 |
 | **Boss (Trùm)** | 2 (Ngưu Đầu Mã Diện, Diêm Vương) | 6 (Bổ sung Hồ Ly Tinh, Thần Trùng, Bạch Xà...) |
 | **Map (Bản đồ)** | 1 (Bến Đò Vong Xuyên - Bounded Arena) | 5 (Rừng Ma, Đầm Lầy Ma Da, Địa Ngục Môn...) |
@@ -109,30 +109,30 @@
 | Nhân vật | Vũ khí khởi đầu | Hệ khởi điểm | Signature Skill (Kỹ năng chủ động) | Cooldown | Cơ chế lõi tương tác |
 |---|---|---|---|---|---|
 | **Thư Sinh** | Bút Phán Quan | Kim | **"Phán Quyết Tiền Định"** — Chèn 1 hit ảo hệ tùy chọn vào buffer Tương Sinh | 25s | `recentElementHits` (mục 4.2.2) |
-| **Đạo Sĩ** | Bùa Trấn Yêu | Mộc | **"Bát Quái Trận Đồ"** — Khóa pathing quái trong vùng + ép cân bằng Âm Dương | 30s | `yinYangValue` + Enemy Pathing (mục 6.1) |
-| **Võ Tăng** | Thiền Trượng | Thổ | **"Phá Giới Chấn Thế"** — Hy sinh HP đổi lấy chấn động tỉ lệ + đẩy cực Dương | 20s | `PlayerStats.HP` + `yinYangValue` (mục 6.1) |
+| **Thanh Đồng** | Bùa Trấn Yêu | Mộc | **"Giá Đồng"** — Thỉnh nhập Thánh Tứ Phủ (Đổi sắc phục/buff hệ + ép cân bằng Âm Dương) | 30s | `yinYangValue` + Dynamic Element Buff (mục 6.1) |
+| **Ẩn Sĩ Sơn Lâm** | Thiền Trượng | Thổ | **"Thập Phương Chấn Thế"** — Hy sinh HP bộc phát địa khí nứt đá + đẩy cực Dương | 20s | `PlayerStats.HP` + `yinYangValue` (mục 6.1) |
 
-#### 3.1.0. Định hướng Hình ảnh & Archetype Nhân vật (Art & Visual Direction)
+#### 3.1.0. Định hướng Hình ảnh & Archetype Nhân vật (Art & Visual Direction — Tín Ngưỡng Bản Địa)
 
 *   **Thư Sinh (Hệ Kim):**
-    *   *Archetype:* Văn nhân / Scribe cổ trang — dáng gầy, thư sinh, nho nhã, tay cầm Bút Phán Quan cỡ lớn.
-    *   *Tông màu:* Vàng kim (`#E8C468`) làm điểm nhấn trên nền áo the / khăn đóng màu xám nhạt hoặc trắng ngà.
-    *   *Chi tiết Idle:* Bút Phán Quan phát sáng nhẹ ánh vàng kim ở đầu bút khi đứng yên.
-*   **Đạo Sĩ (Hệ Mộc):**
-    *   *Archetype:* Đạo sĩ / Pháp sư cổ trang — áo choàng dài, râu tóc búi đạo gia, tay cầm phất trần hoặc lá bùa.
-    *   *Tông màu:* Xanh lá mộc (`#4C7A3D`) trên áo choàng, phối thêm nâu gụ ở phụ kiện (giỏ đựng bùa, dây lưng).
-    *   *Chi tiết Idle:* Vài lá bùa giấy bay lơ lửng lừng lơ quanh người ở trạng thái idle.
-*   **Võ Tăng (Hệ Thổ):**
-    *   *Archetype:* Tăng nhân võ thuật — dáng người chắc khỏe, cơ bắp cuồn cuộn, tay cầm Thiền Trượng đồng, ngực trần hoặc áo cà sa lệch vai gọn.
-    *   *Tông màu:* Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ son (`#C0392B`) ở dây chuỗi tràng hạt / khăn quấn tay.
-    *   *Chi tiết Idle:* Tư thế idle hơi khom, thủ thế vững chãi.
+    *   *Archetype:* Nho sinh / Hiền sĩ bản địa — dáng gầy, thư sinh, tay cầm Bút Phán Quan. Được anh linh sông núi và Đức Thánh Trần điểm hóa, dùng Bút Lệnh phán định tà ma chứ không học thuật Nho giáo từ sách vở.
+    *   *Tông màu:* Vàng kim (`#E8C468`) làm điểm nhấn trên nền áo the / khăn đóng xám nhạt hoặc trắng ngà.
+    *   *Chi tiết Skill & Idle:* Khi tung skill, chữ Nôm/Nho rực cháy thành luồng **khói thiêng anh linh màu vàng kim** bay cuộn lơ lửng thay vì hào quang kim loại cứng.
+*   **Thanh Đồng (Hệ Mộc):**
+    *   *Archetype:* Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Bùa Trấn Yêu / Chuỗi Bùa Tứ Phủ.
+    *   *Tông màu:* Phân theo Tứ Phủ: Thiên Phủ (Đỏ son `#B8442C` - Hỏa), Nhạc Phủ (Xanh mộc `#4C7A3D` - Mộc), Thoải Phủ (Trắng/Lam `#2E6E9E` - Thủy), Địa Phủ (Vàng đất `#8A6A3E` - Thổ).
+    *   *Chi tiết Skill & Idle:* Dáng múa mồi / múa bóng 2–3 frame đặc trưng khi "Giá Đồng", dải lụa sắc màu cuộn quanh người ở trạng thái nhập vai vị Thánh.
+*   **Ẩn Sĩ Sơn Lâm (Hệ Thổ):**
+    *   *Archetype:* Đạo nhân núi / Kỳ nhân ẩn dật — dáng người chững chạc, cơ bắp cuồn cuộn khỏe khoắn, tay cầm Thiền Trượng / Gậy Sơn Lâm bọc đồng, áo vải thô phong trần dật. Tự thiền định chốn thâm sơn, hòa hợp làm một với sinh khí đất trời bản địa (không mang dáng vóc Phật giáo).
+    *   *Tông màu:* Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ gụ (`#C0392B`) ở quấn tay và đai lưng.
+    *   *Chi tiết Skill & Idle:* Dậm chân xuống mặt đất bộc phát địa khí cuồn cuộn làm nứt đất đá quanh chân.
 
 #### 3.1.4. Quy Chuẩn Khối Lượng Animation & Tối Ưu Sản Xuất (Animation Budget & Base Rig)
 
 *   **Bảng Ngân Sách Frame Tối Thiểu per Nhân Vật:**
     *   `Idle`: 2 – 4 frames (Nhịp thở nhún nhẹ).
     *   `Walk`: 4 – 6 frames (Dáng bước di chuyển).
-    *   `Attack / Signature Skill`: 3 – 5 frames (Đòn đánh bộc phát snappy).
+    *   `Attack / Signature Skill`: 3 – 5 frames (Đòn đánh bộc phát snappy / dáng múa bóng 2-3 frame của Thanh Đồng).
     *   `Hit-react`: 1 – 2 frames (Ưu tiên dùng `HitFlashShader` làm trắng sprite thay vì tạo animation riêng).
     *   `Death`: 3 – 4 frames (Tan vỡ / ngã gục).
 *   **Chiến lược Tối ưu Sản xuất (Base Rig Sharing):**
@@ -141,41 +141,42 @@
 
 #### 3.1.1. "Phán Quyết Tiền Định" (Thư Sinh)
 
-* **Lore & UX Flow:** Khi kích hoạt, game hiển thị overlay nhỏ (không pause) cho phép người chơi chạm chọn 1 trong 5 icon hệ Ngũ Hành trong 1.5s (nếu không chọn, tự động chọn hệ khớp với vũ khí đang cooldown lâu nhất — Auto-Select Fallback để không làm gián đoạn nhịp chơi).
+* **Lore & UX Flow:** Thư Sinh dùng Bút Phán Quan chứa khí thiêng sông núi vẽ bút lệnh vào hư không. Game hiển thị overlay nhỏ (không pause) cho phép người chơi chạm chọn 1 trong 5 icon hệ Ngũ Hành trong 1.5s (nếu không chọn, tự động chọn hệ khớp với vũ khí đang cooldown lâu nhất — Auto-Select Fallback).
 * **Thông số kỹ thuật:**
   * **Cooldown:** 25s
   * **Cost:** Không tiêu HP/Mana, chỉ giới hạn bằng Cooldown
   * **Hiệu ứng:** Push 1 phần tử `{hệ: <lựa chọn>, timestamp: Time.time, weapon: "SIGNATURE_VIRTUAL"}` vào đầu Queue `recentElementHits`.
   * **Điều kiện kích hoạt Tương Sinh ngay sau đó:** Nếu hit thật tiếp theo của bất kỳ vũ khí nào khớp đúng thứ tự Tương Sinh với hệ vừa chọn (Kim→Thủy→Mộc→Hỏa→Thổ→Kim), proc 20% Instant Cooldown Reduction kích hoạt ngay trên vũ khí đó — không chờ đủ 2 hit thật như cơ chế thường (mục 4.2.2).
-  * **Giới hạn Balance:** Hit ảo không tính vào giới hạn "1 proc / 3 giây" của hệ thống Tương Sinh gốc — nó là 1 lần trigger cơ hội độc lập theo cooldown riêng 25s của skill, tránh việc cộng dồn 2 nguồn proc trong cùng cửa sổ.
-  * **Feedback UI:** Icon hệ được chọn nổi lên đầu nhân vật với viền vàng kim (khác biệt icon proc thường) trong 1.5s chờ hit thật khớp.
+  * **Giới hạn Balance:** Hit ảo không tính vào giới hạn "1 proc / 3 giây" của hệ thống Tương Sinh gốc — nó là 1 lần trigger cơ hội độc lập theo cooldown riêng 25s của skill.
+  * **Feedback UI:** Icon hệ được chọn nổi lên đầu nhân vật kèm vệt khói thiêng ánh vàng rực rỡ trong 1.5s chờ hit thật khớp.
 
-#### 3.1.2. "Bát Quái Trận Đồ" (Đạo Sĩ)
+#### 3.1.2. "Giá Đồng" (Thanh Đồng)
 
-* **Lore & UX Flow:** Tạo một vùng trận đồ hình bát giác cố định tại vị trí nhân vật tại thời điểm kích hoạt (không di chuyển theo người chơi), trong đó quái bị "nhốt" — AI pathing của chúng chuyển sang trạng thái đi vòng theo cạnh bát giác thay vì tìm đường thẳng tới player.
+* **Lore & UX Flow:** Thanh Đồng thỉnh nhập thần linh Tứ Phủ (Thiên Phủ, Nhạc Phủ, Thoải Phủ, Địa Phủ). Khi kích hoạt, hiển thị overlay thỉnh chọn cõi Tứ Phủ (hoặc Auto-Select cõi khớp với thuộc tính vũ khí đang cooldown lâu nhất):
+  1. **Giá Thiên Phủ (Hỏa):** Tăng +30% sát thương bộc phát trong 5s.
+  2. **Giá Nhạc Phủ (Mộc):** Tăng +40% tốc độ di chuyển & tạo vòng lá bùa đẩy lùi quái trong 5s.
+  3. **Giá Thoải Phủ (Thủy):** Giảm -25% hồi chiêu toàn bộ vũ khí & làm chậm quái xung quanh trong 5s.
+  4. **Giá Địa Phủ (Thổ):** Nhận giáp kiên cố (giảm 50% sát thương nhận vào) trong 5s.
 * **Thông số kỹ thuật:**
   * **Cooldown:** 30s
-  * **Bán kính vùng hiệu lực:** 4.5m, thời lượng 4s
-  * **Enemy Pathing Override:** Trong thời gian hiệu lực, mọi Enemy AI Agent nằm trong vùng bị set `NavAgentState = TrapCircling` (di chuyển bám theo 8 điểm neo của bát giác thay vì hướng thẳng tới Player Transform). Quái spawn mới trong lúc trận còn hiệu lực cũng bị áp trạng thái này nếu bước vào vùng.
-* **Tác động yinYangValue:** Trong 4s hiệu lực, giá trị `yinYangValue` được ép nội suy tuyến tính (Lerp) về khoảng 50 (chính giữa Thái Cực) bất kể trạng thái trước đó, disable tạm thời việc cộng/trừ từ hành vi di chuyển/damage trong lúc trận đang chạy. Sau khi hết hiệu lực, hệ thống tính điểm hoạt động lại bình thường từ giá trị 50.
-  * **Chủ đích thiết kế (Class Perk):** Việc ép `yinYangValue` về 50 mở ra cửa sổ Thái Cực Cân bằng (40–60) trong 4s cho phép Đạo Sĩ dễ dàng kích hoạt cơ hội xuất hiện thẻ Evolution **"Thái Cực"** đặc biệt khi Level Up trong thời gian trận chạy. Đây là **Đặc quyền Class riêng của Đạo Sĩ** để bù lại sát thương trực tiếp (Base DPS) thấp hơn so với Thư Sinh và Võ Tăng.
-* **Giới hạn Balance:** Không áp dụng lên Boss (Boss miễn nhiễm Trận Pathing Override, chỉ áp dụng lên Enemy thường) để tránh trivialize DPS-race của Boss fight.
-* **Feedback UI:** Vùng bát giác vẽ bằng Line Renderer/Shader giấy dó mờ, quái bị nhốt có icon xoáy nhỏ trên đầu.
+  * **Bán kính hào quang hiệu lực:** 4.5m, thời lượng buff & hào quang Tứ Phủ: 5s.
+* **Tác động yinYangValue:** Trong 5s hiệu lực Giá Đồng, giá trị `yinYangValue` được ép nội suy tuyến tính (Lerp) về khoảng 50 (chính giữa Thái Cực) bất kể trạng thái trước đó.
+  * **Chủ đích thiết kế (Class Perk):** Ép `yinYangValue` về 50 mở ra cửa sổ Thái Cực Cân bằng (40–60) trong 5s giúp Thanh Đồng dễ dàng kích hoạt cơ hội xuất hiện thẻ Evolution **"Thái Cực"** đặc biệt khi Level Up.
+* **Feedback UI:** Điệu múa bóng 2–3 frame ngắn đặc trưng, hào quang đổi màu tương ứng Tứ Phủ (Hỏa `#B8442C`, Mộc `#4C7A3D`, Thủy `#2E6E9E`, Thổ `#8A6A3E`) kèm hiệu ứng dải lụa mồi lửa xoay quanh người.
 
-#### 3.1.3. "Phá Giới Chấn Thế" (Võ Tăng)
+#### 3.1.3. "Thập Phương Chấn Thế" (Ẩn Sĩ Sơn Lâm)
 
-* **Lore & UX Flow:** Võ Tăng tự đấm vào ngực dồn lực, hy sinh máu để tạo chấn động — risk-reward: skill càng mạnh khi HP hiện tại càng cao, nhưng cũng để lại nhân vật ở mức máu nguy hiểm nếu dùng sai thời điểm.
+* **Lore & UX Flow:** Ẩn Sĩ Sơn Lâm giậm mạnh chân dồn toàn bộ khí núi ngàn vào gậy thiền trượng, hy sinh HP để giải phóng xung chấn địa chấn — risk-reward: skill càng mạnh khi HP hiện tại càng cao.
 * **Thông số kỹ thuật:**
   * **Cooldown:** 20s
-  * **Cost:** Trừ 30% HP hiện tại của nhân vật tại thời điểm kích hoạt (không phải HP tối đa — để tránh việc spam skill khi máu thấp tự sát).
-  * **Guard Condition:** Skill bị khóa (hiển thị mờ, không thể bấm) nếu HP hiện tại < 15% HP tối đa, tránh tình huống tự kết liễu do bấm nhầm.
+  * **Cost:** Trừ 30% HP hiện tại của nhân vật tại thời điểm kích hoạt.
+  * **Guard Condition:** Skill bị khóa nếu HP hiện tại < 15% HP tối đa.
   * **Công thức sát thương/bán kính chấn động:**
     * $\text{ShockwaveRadius} = 3.0\text{m} + \left(\frac{\text{HP}_{\text{hy sinh}}}{\text{HP}_{\text{Max}}}\right) \times 4.0\text{m}$
     * $\text{ShockwaveDamage} = \text{BaseDamage} \times 2.5 \times \left(\frac{\text{HP}_{\text{hy sinh}}}{\text{HP}_{\text{Max}}}\right)$
-    *(Ví dụ: hy sinh 30% của 500 HP Max = 150 HP $\rightarrow$ bán kính $\approx 5.4\text{m}$, sát thương $\approx \text{BaseDamage} \times 0.75$)*
   * **Hiệu ứng CC:** Đẩy lùi (Knockback Force 8m/s) + Choáng 1.2s trong bán kính hiệu lực.
-  * **Tác động yinYangValue:** Cộng thẳng +25 điểm tức thời vào `yinYangValue` (đẩy nhanh về cực Dương >80 nếu đang ở mức trung bình-cao), mô phỏng đúng bản chất "phá giới" mất kiểm soát của võ tăng.
-  * **Feedback UI:** Màn hình rung nhẹ (Camera Shake) + hiệu ứng nứt vỡ giấy dó lan từ tâm nhân vật.
+  * **Tác động yinYangValue:** Cộng thẳng +25 điểm tức thời vào `yinYangValue` (đẩy nhanh về cực Dương >80 nếu đang ở mức trung bình-cao).
+  * **Feedback UI:** Camera Shake + hiệu ứng đất đá vỡ nứt sơn lâm lan từ tâm nhân vật.
 
 > [!IMPORTANT]
 > **Quy định UX / Control Scheme:** 
@@ -229,6 +230,7 @@ Mặc dù mỗi Nhân vật sở hữu Vũ khí khởi đầu đúng theo thuộ
 | `W010` | **Linh Phù Ma Da** | Thủy | **E** (Pet Summon) | 10 | 2.0s | Bán kính độc 2.5m (AoE liên tục) | `E010` **Thủy Cung Linh** | Triệu hồi linh thú Ma Da phun độc sát thương liên tục | Rare |
 | `W011` | **Nước Thánh Chùa Hương** | Thổ | **D** (Ground AoE) | 14/sec | 3.0s | Bãi vũng 3.0m (Làm chậm & DoT) | `E011` **Giếng Thiêng** | Tạo bãi giếng thiêng trên mặt đất làm chậm và gây sát thương liên tục | Rare |
 | `W012` | **Phi Tiêu Bát Quái** | Mộc | **C** (Orbit/Return) | 22 | 1.4s | Đâm & Quay về (Tối đa 4 mục tiêu/lượt) | `E012` **Phi Tiêu Cửu Cung** | Phi tiêu ma thuật xoay tròn và quay lại vị trí người chơi | Common |
+| `W013` | **Cờ Lệnh Triệu Âm Binh** | Thổ | **E** (Pet Summon) | 15/hit | 2.5s | 2-3 Âm Binh đâm giáo (Bán kính 2.0m) | `E013` **Âm Binh Vạn Ngạn** | Triệu hồi 2-3 bóng âm binh cầm giáo đâm quái cận chiến bám theo người chơi | Rare |
 
 > [!IMPORTANT]
 > **Triết lý Thiết kế Độ Hiếm Pháp Bảo (Rarity Balance Philosophy):**

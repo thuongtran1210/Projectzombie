@@ -5,9 +5,8 @@ using ProjectZombie.Features.Skills.Zones;
 namespace ProjectZombie.Features.Player.Skills
 {
     /// <summary>
-    /// Kỹ năng Chủ động Đạo Sĩ: "Bát Quái Trận Đồ" (Mục 3.1.2 GDD v4.0).
-    /// Bán kính: 4.5m, Thời lượng 4s, Cooldown 30s.
-    /// Khóa pathing quái trong vùng (TrapCircling) và ép cân bằng Âm Dương về 50.
+    /// Legacy Kỹ năng Chủ động Đạo Sĩ (chuyển giao sang Thanh Đồng - "Giá Đồng" Mục 3.1.2 GDD v4.0).
+    /// Giữ lại để đảm bảo tương thích ngược code cũ.
     /// </summary>
     public class DaoSiSignatureSkill : SignatureSkillBase
     {

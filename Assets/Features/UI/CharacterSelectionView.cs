@@ -6,7 +6,7 @@ using System;
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Passive View chọn nhân vật (Thư Sinh, Đạo Sĩ, Võ Tăng) tuân thủ mô hình MVP.
+    /// Passive View chọn nhân vật (Thư Sinh, Thanh Đồng, Ẩn Sĩ Sơn Lâm) tuân thủ mô hình MVP.
     /// </summary>
     public class CharacterSelectionView : MonoBehaviour
     {

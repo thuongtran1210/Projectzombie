@@ -60,27 +60,27 @@ namespace ProjectZombie.Features.UI
                     name = "Thư Sinh",
                     element = ElementType.Kim,
                     elementHexColor = "#FFD700",
-                    description = "Phong thái nho nhã, cầm bút phán quyết sinh tử. Thiên về dồn đòn Tương Sinh liên hoàn.",
+                    description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.",
                     signatureSkillName = "Phán Quyết Tiền Định",
                     signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh."
                 },
                 new CharacterInfo
                 {
-                    name = "Đạo Sĩ",
+                    name = "Thanh Đồng",
                     element = ElementType.Moc,
-                    elementHexColor = "#32CD32",
-                    description = "Tinh thông Bát Quái âm dương. Có khả năng ép cán cân Âm Dương về Thái Cực Cân Bằng.",
-                    signatureSkillName = "Bát Quái Trận Đồ",
-                    signatureSkillDesc = "Nhốt quái trong vùng Bát Quái 4s và ép Âm Dương về 50 để mở cửa sổ chọn thẻ Thái Cực đặc biệt."
+                    elementHexColor = "#4C7A3D",
+                    description = "Thầy Pháp / Bà Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ). Ép cán cân về Thái Cực.",
+                    signatureSkillName = "Giá Đồng",
+                    signatureSkillDesc = "Thỉnh nhập Tứ Phủ ban hào quang & buff sắc phục 5s, ép Âm Dương về 50 mở cơ hội chọn thẻ Evolution Thái Cực."
                 },
                 new CharacterInfo
                 {
-                    name = "Võ Tăng",
+                    name = "Ẩn Sĩ Sơn Lâm",
                     element = ElementType.Tho,
-                    elementHexColor = "#8B4513",
-                    description = "Thân thể kim cang, dồn lực phá giới. Đổi máu lấy chấn động sát thương diện rộng.",
-                    signatureSkillName = "Phá Giới Chấn Thế",
-                    signatureSkillDesc = "Trừ 30% HP hiện tại tạo sóng chấn động gây sát thương + Choáng 1.2s, đẩy thẳng +25 vào cực Dương."
+                    elementHexColor = "#8A6A3E",
+                    description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
+                    signatureSkillName = "Thập Phương Chấn Thế",
+                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy thẳng +25 vào cực Dương."
                 }
             };
         }

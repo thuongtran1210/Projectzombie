@@ -25,7 +25,7 @@ namespace ProjectZombie.Features.Player.Skills.Editor
                 AssetDatabase.CreateFolder("Assets/_Data", "Skills");
             }
 
-            // 1. Thư Sinh - Văn Khí Bảo Hộ (Hồi chiêu: 25s)
+            // 1. Thư Sinh - Phán Quyết Tiền Định (Hồi chiêu: 25s)
             string thuSinhPath = $"{folderPath}/ThuSinhSignatureSkill.asset";
             var thuSinh = AssetDatabase.LoadAssetAtPath<ThuSinhSkillData>(thuSinhPath);
             if (thuSinh == null)
@@ -34,28 +34,28 @@ namespace ProjectZombie.Features.Player.Skills.Editor
                 AssetDatabase.CreateAsset(thuSinh, thuSinhPath);
             }
             SerializedObject soThuSinh = new SerializedObject(thuSinh);
-            soThuSinh.FindProperty("_skillName").stringValue = "Văn Khí Bảo Hộ";
-            soThuSinh.FindProperty("_description").stringValue = "Mở giao diện chọn 1 trong 5 thuộc tính Ngũ Hành (trong 1.5s). Hit tiếp theo khớp vòng Tương Sinh sẽ lập tức giảm 20% Hồi Chiêu cho vũ khí đó (Cooldown: 25s).";
+            soThuSinh.FindProperty("_skillName").stringValue = "Phán Quyết Tiền Định";
+            soThuSinh.FindProperty("_description").stringValue = "Thư Sinh vẽ bút lệnh khí thiêng sông núi điểm hóa từ Đức Thánh Trần. Mở giao diện chọn 1 thuộc tính Ngũ Hành (trong 1.5s). Hit tiếp theo khớp Tương Sinh sẽ kích hoạt ngay 20% giảm hồi chiêu (Cooldown: 25s).";
             soThuSinh.FindProperty("_baseCooldown").floatValue = 25f;
             soThuSinh.ApplyModifiedProperties();
             Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {thuSinhPath}");
 
-            // 2. Đạo Sĩ - Bát Quái Trận Đồ (Hồi chiêu: 30s)
-            string daoSiPath = $"{folderPath}/DaoSiSignatureSkill.asset";
-            var daoSi = AssetDatabase.LoadAssetAtPath<DaoSiSkillData>(daoSiPath);
-            if (daoSi == null)
+            // 2. Thanh Đồng - Giá Đồng (Hầu Đồng Tứ Phủ - Hồi chiêu: 30s)
+            string thanhDongPath = $"{folderPath}/ThanhDongSignatureSkill.asset";
+            var thanhDong = AssetDatabase.LoadAssetAtPath<ThanhDongSkillData>(thanhDongPath);
+            if (thanhDong == null)
             {
-                daoSi = ScriptableObject.CreateInstance<DaoSiSkillData>();
-                AssetDatabase.CreateAsset(daoSi, daoSiPath);
+                thanhDong = ScriptableObject.CreateInstance<ThanhDongSkillData>();
+                AssetDatabase.CreateAsset(thanhDong, thanhDongPath);
             }
-            SerializedObject soDaoSi = new SerializedObject(daoSi);
-            soDaoSi.FindProperty("_skillName").stringValue = "Bát Quái Trận Đồ";
-            soDaoSi.FindProperty("_description").stringValue = "Tạo vùng Bát Quái bán kính 4.5m trong 4s. Nhốt quái thường đi vòng quanh viền trận và ép Âm Dương về mức cân bằng 50 để mở cửa sổ chọn thẻ Thái Cực (Cooldown: 30s).";
-            soDaoSi.FindProperty("_baseCooldown").floatValue = 30f;
-            soDaoSi.ApplyModifiedProperties();
-            Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {daoSiPath}");
+            SerializedObject soThanhDong = new SerializedObject(thanhDong);
+            soThanhDong.FindProperty("_skillName").stringValue = "Giá Đồng";
+            soThanhDong.FindProperty("_description").stringValue = "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ), nhận hào quang & buff sắc phục Tứ Phủ trong 5s, đồng thời ép Cán cân Âm Dương về 50 (Thái Cực) mở cơ hội gacha thẻ Evolution (Cooldown: 30s).";
+            soThanhDong.FindProperty("_baseCooldown").floatValue = 30f;
+            soThanhDong.ApplyModifiedProperties();
+            Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {thanhDongPath}");
 
-            // 3. Võ Tăng - Phá Giới Chấn Thế (Hồi chiêu: 20s)
+            // 3. Ẩn Sĩ Sơn Lâm - Thập Phương Chấn Thế (Hồi chiêu: 20s)
             string voTangPath = $"{folderPath}/VoTangSignatureSkill.asset";
             var voTang = AssetDatabase.LoadAssetAtPath<VoTangSkillData>(voTangPath);
             if (voTang == null)
@@ -64,8 +64,8 @@ namespace ProjectZombie.Features.Player.Skills.Editor
                 AssetDatabase.CreateAsset(voTang, voTangPath);
             }
             SerializedObject soVoTang = new SerializedObject(voTang);
-            soVoTang.FindProperty("_skillName").stringValue = "Phá Giới Chấn Thế";
-            soVoTang.FindProperty("_description").stringValue = "Hy sinh 30% HP hiện tại tạo sóng chấn động gây sát thương khủng, đẩy lùi (8m/s) và làm choáng 1.2s quái xung quanh. Tăng trực tiếp +25 Âm Dương về cực Dương (Cooldown: 20s). Yêu cầu HP > 15%.";
+            soVoTang.FindProperty("_skillName").stringValue = "Thập Phương Chấn Thế";
+            soVoTang.FindProperty("_description").stringValue = "Ẩn Sĩ Sơn Lâm dậm chân giải phóng địa khí núi ngàn, hy sinh 30% HP hiện tại nứt vỡ đất đá, đẩy lùi (8m/s) và làm choáng 1.2s quái xung quanh. Tăng +25 điểm về Cực Dương (Cooldown: 20s). Yêu cầu HP > 15%.";
             soVoTang.FindProperty("_baseCooldown").floatValue = 20f;
             soVoTang.ApplyModifiedProperties();
             Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {voTangPath}");

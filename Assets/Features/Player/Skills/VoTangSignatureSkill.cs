@@ -6,8 +6,8 @@ using ProjectZombie.Features.Enemies;
 namespace ProjectZombie.Features.Player.Skills
 {
     /// <summary>
-    /// Kỹ năng Chủ động Võ Tăng: "Phá Giới Chấn Thế" (Mục 3.1.3 GDD v4.0).
-    /// Hy sinh 30% HP hiện tại (Guard condition: HP >= 15% Max HP).
+    /// Kỹ năng Chủ động Ẩn Sĩ Sơn Lâm: "Thập Phương Chấn Thế" (Mục 3.1.3 GDD v4.0).
+    /// Hy sinh 30% HP hiện tại dồn địa khí sơn lâm chấn vỡ đất đá (Guard condition: HP >= 15% Max HP).
     /// Shockwave Radius & Damage tỷ lệ theo lượng HP hy sinh.
     /// Knockback 8m/s, Choáng 1.2s, +25 điểm Dương vào YinYangManager.
     /// Cooldown: 20s.
