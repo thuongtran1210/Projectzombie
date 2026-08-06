@@ -51,7 +51,7 @@ namespace ProjectZombie.Features.Enemies
 
         public void PlayState(EnemyAnimationState state)
         {
-            if (animator == null) return;
+            if (animator == null || !animator.gameObject.activeInHierarchy) return;
 
             switch (state)
             {
@@ -114,7 +114,7 @@ namespace ProjectZombie.Features.Enemies
         /// </summary>
         public void FlipToDirection(float velocityX)
         {
-            if (animator != null)
+            if (animator != null && animator.gameObject.activeInHierarchy)
             {
                 Transform visualTransform = animator.transform;
                 if (velocityX > 0.1f)

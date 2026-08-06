@@ -17,8 +17,6 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private int baseOrbCount = 1;
 
         private readonly List<ProjectileController> _activeOrbs = new List<ProjectileController>();
-        private int _lastProjectileCount = -1;
-        private float _lastScaleBonus = -1f;
 
         protected override void PerformAttack()
         {

@@ -141,6 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8f9859c3aef114b959ad053d9bb26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowStrafe: 1
+  strafeChangeInterval: 2
 --- !u!114 &6814556627457904073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +157,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileData: {fileID: 11400000, guid: ad52cd4db2542684084590c016c36b88, type: 2}
   firePoint: {fileID: 5796922904458475432}
+  leadTarget: 1
+  estimatedProjectileSpeed: 8
 --- !u!1 &8177150208391813788
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +235,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 153689330, guid: 81485617e456829459d59f1b1cc1ee94, type: 3}
-  m_Color: {r: 0.2, g: 0.6, b: 1, a: 1}
+  m_Color: {r: 0.87358487, g: 0.93679243, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
