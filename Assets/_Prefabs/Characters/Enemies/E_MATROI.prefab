@@ -12,10 +12,9 @@ GameObject:
   - component: {fileID: 2162052978410219322}
   - component: {fileID: 3425650620972124036}
   - component: {fileID: 1443417689626126257}
-  - component: {fileID: 3661533249918043470}
   - component: {fileID: 9167728857418720096}
-  - component: {fileID: 4772042224277982957}
   - component: {fileID: 4974122498342407142}
+  - component: {fileID: 2082898373638903504}
   m_Layer: 7
   m_Name: E_MATROI
   m_TagString: Enemy
@@ -114,21 +113,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 25
---- !u!114 &3661533249918043470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4338019940683393192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: {fileID: 0}
-  expGemPrefab: {fileID: 0}
-  isBoss: 0
 --- !u!114 &9167728857418720096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,25 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b97c3ca2979f842ba25301f8b0c04c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4772042224277982957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4338019940683393192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackPoint: {fileID: 0}
-  hitboxShape: 0
-  offsetY: 0
-  boxHeightRatio: 1
 --- !u!114 &4974122498342407142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,6 +140,22 @@ MonoBehaviour:
   Config: {fileID: 11400000, guid: bcd939dac43251a42a02d55b399b48f6, type: 2}
   expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
   isBoss: 0
+--- !u!114 &2082898373638903504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4338019940683393192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3971797e48f2ea944a82b9429a8f67e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  customTouchRadius: 0
 --- !u!1 &4720196618505412995
 GameObject:
   m_ObjectHideFlags: 0

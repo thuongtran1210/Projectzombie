@@ -35,7 +35,7 @@ namespace ProjectZombie.Features.Enemies.Editor
 
             // 1. Tạo Prefabs Yêu Ma Thường & Elite với đầy đủ FSM & Strategy
             CreateEnemyPrefab(folderPath, "E_MAGIAP", "Ma Giáp", new Color(0.7f, 0.8f, 0.9f), 1.0f, isRanged: false, expGemPrefab: expGemPrefab);
-            CreateEnemyPrefab(folderPath, "E_MATROI", "Ma Trơi", new Color(1.0f, 0.3f, 0.2f), 0.8f, isRanged: false, expGemPrefab: expGemPrefab);
+            CreateEnemyPrefab(folderPath, "E_MATROI", "Ma Trơi", new Color(1.0f, 0.3f, 0.2f), 0.8f, isRanged: false, isTouch: true, expGemPrefab: expGemPrefab);
             CreateEnemyPrefab(folderPath, "E_MADA", "Ma Da", new Color(0.2f, 0.6f, 1.0f), 0.9f, isRanged: true, expGemPrefab: expGemPrefab);
             CreateEnemyPrefab(folderPath, "E_HOALYTINH", "Hồ Ly Tinh Nhỏ", new Color(1.0f, 0.5f, 0.0f), 0.7f, isRanged: false, isSuicide: true, expGemPrefab: expGemPrefab);
             CreateEnemyPrefab(folderPath, "E_QUYNHAPTRANG", "Quỷ Nhập Tràng", new Color(0.6f, 0.5f, 0.2f), 1.5f, isRanged: false, isElite: true, expGemPrefab: expGemPrefab);
@@ -53,7 +53,7 @@ namespace ProjectZombie.Features.Enemies.Editor
             Debug.Log("[EnemyPrefabGenerator] ✅ Đã cấu hình và khởi tạo đầy đủ FSM/Strategy/Behaviors cho toàn bộ Prefabs Yêu Ma & Boss!");
         }
 
-        private static void CreateEnemyPrefab(string folderPath, string enemyId, string displayName, Color tintColor, float scale, bool isRanged = false, bool isSuicide = false, bool isElite = false, GameObject expGemPrefab = null)
+        private static void CreateEnemyPrefab(string folderPath, string enemyId, string displayName, Color tintColor, float scale, bool isRanged = false, bool isSuicide = false, bool isElite = false, bool isTouch = false, GameObject expGemPrefab = null)
         {
             string prefabPath = $"{folderPath}/{enemyId}.prefab";
 
@@ -94,6 +94,16 @@ namespace ProjectZombie.Features.Enemies.Editor
             {
                 root.AddComponent<RangedMovementStrategy>();
                 root.AddComponent<RangedAttackStrategy>();
+            }
+            else if (isTouch)
+            {
+                root.AddComponent<MeleeMovementStrategy>();
+                root.AddComponent<TouchAttackStrategy>();
+            }
+            else if (isSuicide)
+            {
+                root.AddComponent<MeleeMovementStrategy>();
+                root.AddComponent<SuicideAttackStrategy>();
             }
             else
             {

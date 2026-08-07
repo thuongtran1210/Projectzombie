@@ -12,9 +12,7 @@ GameObject:
   - component: {fileID: 6109218327883127527}
   - component: {fileID: 3869312102271233920}
   - component: {fileID: 5930210990550478709}
-  - component: {fileID: 3162303782959716737}
   - component: {fileID: 4489279834533340287}
-  - component: {fileID: 5506437238408163428}
   - component: {fileID: 2510363290329800421}
   - component: {fileID: 5843151133437288436}
   m_Layer: 7
@@ -115,21 +113,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
---- !u!114 &3162303782959716737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509878819556777675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70381d3817fd8c24089e8ebf116b399c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: {fileID: 0}
-  expGemPrefab: {fileID: 0}
-  isBoss: 0
 --- !u!114 &4489279834533340287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,25 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b97c3ca2979f842ba25301f8b0c04c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5506437238408163428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509878819556777675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb06ef3dde6ca3642a0bc1c8d966a0e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackPoint: {fileID: 0}
-  hitboxShape: 0
-  offsetY: 0
-  boxHeightRatio: 1
 --- !u!114 &2510363290329800421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,7 +143,7 @@ MonoBehaviour:
   explosionDamage: 50
   targetLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &5843151133437288436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00e3b9ba6ef2ace4589d5c2a6512fbdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 2387016662183391030}
   idleStateName: Idle
   runStateName: Run
   attackStateName: Attack

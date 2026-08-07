@@ -6454,7 +6454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc367107a5733e4d85ba416a4c53d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _yinYangValue: 62
+  _yinYangValue: 50
 --- !u!1 &1523810602
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ namespace ProjectZombie.Features.Enemies
     {
         [Header("References")]
         public EnemyConfig Config;
+        // FIX TODO: Sử dụng Object Pooling cho ExpGem để tránh Instantiate/Destroy nhiều lần gây lag
         [SerializeField] private GameObject expGemPrefab;
         
         public Rigidbody2D Rb { get; private set; }
@@ -37,6 +38,7 @@ namespace ProjectZombie.Features.Enemies
         [Header("Boss Settings")]
         [SerializeField] private bool isBoss = false;
         public bool IsBoss => isBoss || CompareTag("Boss");
+        public bool IsHeavyArmor => Config != null && Config.isHeavyArmor;
 
         // Temporary Trap Circling State
         private bool _isTrapCircling;

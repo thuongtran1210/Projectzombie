@@ -22,3 +22,4 @@ MonoBehaviour:
   expReward: 5
   tier: 1
   elementType: 5
+  isHeavyArmor: 1

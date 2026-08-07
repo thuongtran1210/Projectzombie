@@ -23,8 +23,9 @@ namespace ProjectZombie.Features.Enemies.Editor
             public float damage;
             public int exp;
             public EnemyTier tier;
+            public bool isHeavyArmor;
 
-            public EnemyDef(string id, string name, ElementType element, float hp, float speed, float damage, int exp, EnemyTier tier)
+            public EnemyDef(string id, string name, ElementType element, float hp, float speed, float damage, int exp, EnemyTier tier, bool isHeavyArmor = false)
             {
                 this.id = id;
                 this.name = name;
@@ -34,6 +35,7 @@ namespace ProjectZombie.Features.Enemies.Editor
                 this.damage = damage;
                 this.exp = exp;
                 this.tier = tier;
+                this.isHeavyArmor = isHeavyArmor;
             }
         }
 
@@ -55,7 +57,7 @@ namespace ProjectZombie.Features.Enemies.Editor
             {
                 new EnemyDef("E_MAGIAP", "Ma Giáp", ElementType.Kim, 40f, 2.5f, 10f, 1, EnemyTier.Common),
                 new EnemyDef("E_MATROI", "Ma Trơi", ElementType.Hoa, 25f, 4.0f, 8f, 2, EnemyTier.Common),
-                new EnemyDef("E_QUYNHAPTRANG", "Quỷ Nhập Tràng", ElementType.Tho, 150f, 1.5f, 20f, 5, EnemyTier.Elite),
+                new EnemyDef("E_QUYNHAPTRANG", "Quỷ Nhập Tràng", ElementType.Tho, 150f, 1.5f, 20f, 5, EnemyTier.Elite, isHeavyArmor: true),
                 new EnemyDef("E_MADA", "Ma Da", ElementType.Thuy, 35f, 2.0f, 12f, 3, EnemyTier.Common),
                 new EnemyDef("E_HOALYTINH", "Hồ Ly Tinh Nhỏ", ElementType.Hoa, 30f, 3.5f, 50f, 4, EnemyTier.Common),
                 new EnemyDef("E_NGUUDAUMADIEN", "Ngưu Đầu Mã Diện", ElementType.Tho, 5000f, 2.2f, 35f, 100, EnemyTier.Boss),
@@ -89,6 +91,10 @@ namespace ProjectZombie.Features.Enemies.Editor
             so.FindProperty("expReward").intValue = def.exp;
             so.FindProperty("tier").enumValueIndex = (int)def.tier;
             so.FindProperty("elementType").enumValueIndex = (int)def.element;
+            
+            var heavyProp = so.FindProperty("isHeavyArmor");
+            if (heavyProp != null) heavyProp.boolValue = def.isHeavyArmor;
+
             so.ApplyModifiedProperties();
         }
     }

@@ -38,21 +38,22 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             int pierceCost = 1;
             if (context.TargetCollider != null)
             {
-                string targetName = context.TargetCollider.name;
-                bool isHeavyArmor = targetName.Contains("E_QUYNHAPTRANG") || targetName.Contains("QUYNHAPTRANG");
-                
-                if (!isHeavyArmor)
+                var enemy = context.TargetCollider.GetComponentInParent<Enemy>();
+                bool isHeavyArmor = false;
+
+                if (enemy != null)
                 {
-                    var enemy = context.TargetCollider.GetComponentInParent<Enemy>();
-                    if (enemy != null && enemy.Config != null && enemy.Config.name.Contains("QUYNHAPTRANG"))
-                    {
-                        isHeavyArmor = true;
-                    }
+                    isHeavyArmor = enemy.IsHeavyArmor;
+                }
+                else
+                {
+                    string targetName = context.TargetCollider.name;
+                    isHeavyArmor = targetName.Contains("E_QUYNHAPTRANG") || targetName.Contains("QUYNHAPTRANG");
                 }
 
                 if (isHeavyArmor)
                 {
-                    pierceCost = 2; // Trừ 2 Pierce Charge đối với Quỷ Nhập Tràng
+                    pierceCost = 2; // Trừ 2 Pierce Charge đối với Yêu Ma có Heavy Armor
                 }
             }
 

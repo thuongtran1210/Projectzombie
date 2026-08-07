@@ -35,6 +35,10 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Tooltip("Thuộc tính Ngũ Hành của Yêu Ma")]
         public ElementType elementType = ElementType.None;
 
+        [Header("Armor & Defense")]
+        [Tooltip("Cơ chế Cản Đạn Xuyên (Heavy Armor Bullet Sponge) - Tiêu tốn 2 Pierce Count của đạn xuyên.")]
+        public bool isHeavyArmor = false;
+
         public float AttackSpeed => 1f / attackCooldown;
         public float CritChance => 0f;
         public float AttackRange => attackRange;
