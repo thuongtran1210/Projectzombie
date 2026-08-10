@@ -23,8 +23,14 @@ namespace ProjectZombie.Features.Spawners
         [Tooltip("Loại sự kiện spawn.")]
         public TimelineEventType eventType = TimelineEventType.Continuous;
 
-        [Tooltip("Prefab quái / Boss / Trụ sẽ spawn.")]
+        [Tooltip("Prefab quái / Boss / Trụ sẽ spawn (Direct reference fallback).")]
         public GameObject spawnPrefab;
+
+        [Tooltip("Địa chỉ Addressable của Prefab quái (Ví dụ: Enemies/Zombie_Walker). Dùng để load bất đồng bộ tối ưu RAM.")]
+        public string enemyAddress;
+
+        [Tooltip("AssetReferenceGameObject của Addressable (nếu cấu hình từ Inspector).")]
+        public UnityEngine.AddressableAssets.AssetReferenceGameObject spawnPrefabRef;
 
         [Tooltip("Số lượng quái tối đa hoặc số quái spawn trong đợt burst.")]
         public int spawnCount = 10;

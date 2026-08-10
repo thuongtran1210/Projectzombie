@@ -43,6 +43,7 @@ namespace ProjectZombie.Features.Spawners
 
         private void Start()
         {
+            // TODO FIX: Tìm  Player Transform bằng cách khác, tránh phụ thuộc vào Tag "Player"
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null) _playerTransform = player.transform;
 
