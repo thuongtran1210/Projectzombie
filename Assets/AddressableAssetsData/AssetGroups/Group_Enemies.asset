@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: fec88c1bf70fa74448f78808ef6dc679
-  m_SerializeEntries:
-  - m_GUID: 193a344b7a316cd42b5e32fc47df8ba7
-    m_Address: Assets/_Prefabs/Characters/Enemies/Boss_NguuDauMaDien.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:
