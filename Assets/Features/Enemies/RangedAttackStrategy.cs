@@ -32,6 +32,8 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private bool _hasShotThisAttack = false;
+
         private void Start()
         {
             if (_enemy.EnemyAnimator != null)
@@ -56,18 +58,22 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
+            _hasShotThisAttack = false; // Reset trạng thái cho đợt bắn mới
+
             if (_enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.TriggerAttack();
             }
 
-            // Luôn gọi Shoot() trực tiếp (hoặc làm fallback) để đảm bảo spawn đạn đúng cooldown 
-            // mà không bị phụ thuộc hoàn toàn vào việc kéo Animation Event trên clip
-            Shoot();
+            // Fallback tự động bắn sau 0.25s nếu Animation Clip thiếu Animation Event
+            CancelInvoke(nameof(Shoot));
+            Invoke(nameof(Shoot), 0.25f);
         }
 
         private void Shoot()
         {
+            if (_hasShotThisAttack) return; // Khóa chống bắn đạn 2 lần trong 1 đợt tấn công
+
             if (projectileData == null)
             {
                 Debug.LogWarning($"[{gameObject.name}] ⚠️ RangedAttackStrategy thiếu `projectileData` trong Inspector!");
@@ -76,6 +82,9 @@ namespace ProjectZombie.Features.Enemies
 
             if (_enemy.PlayerTransform == null) return;
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove) return;
+
+            _hasShotThisAttack = true;
+            CancelInvoke(nameof(Shoot)); // Hủy timer fallback nếu Animation Event đã kích hoạt trước
 
             Vector2 targetPosition = _enemy.PlayerTransform.position;
 

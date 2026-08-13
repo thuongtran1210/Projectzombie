@@ -26,7 +26,7 @@ namespace ProjectZombie.Features.UI.DamageText
             {
                 _textMesh.alignment = TextAlignmentOptions.Center;
                 // Ép buộc hiển thị lên Layer WorldUI (hoặc Layer cao hơn Characters/VFX)
-                _textMesh.sortingLayerID = SortingLayer.NameToID("WorldUI");
+                _textMesh.sortingLayerID = SortingLayer.NameToID("UI_World");
                 _textMesh.sortingOrder = 1000; // Đảm bảo luôn đè lên VFX và Enemy
             }
         }

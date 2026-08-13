@@ -65,6 +65,8 @@ namespace ProjectZombie.Features.Enemies
             return new Vector2(BaseRange, BaseRange * boxHeightRatio);
         }
 
+        private bool _hasDealtDamageThisAttack = false;
+
         private void Start()
         {
             if (_enemy.EnemyAnimator != null)
@@ -84,6 +86,10 @@ namespace ProjectZombie.Features.Enemies
         private void DealMeleeDamage()
         {
             if (_enemy == null || _enemy.Config == null) return;
+            if (_hasDealtDamageThisAttack) return; // Khóa chống lặp sát thương trong 1 nhịp chém
+
+            _hasDealtDamageThisAttack = true;
+            CancelInvoke(nameof(DealMeleeDamage)); // Hủy timer fallback nếu Animation Event đã kích hoạt trước
 
             Vector2 center = GetHitboxCenter();
             int filterMask = targetLayer != 0 ? targetLayer.value : LayerMask.GetMask("Player");
@@ -101,21 +107,31 @@ namespace ProjectZombie.Features.Enemies
                 hitCount = Physics2D.OverlapBoxNonAlloc(center, boxSize, 0f, _hitBuffer, filterMask);
             }
 
+            HealthSystem targetHealth = null;
             for (int i = 0; i < hitCount; i++)
             {
                 var col = _hitBuffer[i];
                 if (col != null && col.CompareTag("Player"))
                 {
-                    if (col.TryGetComponent<HealthSystem>(out var playerHealth))
+                    if (col.TryGetComponent<HealthSystem>(out var health) ||
+                        (health = col.GetComponentInParent<HealthSystem>()) != null)
                     {
-                        playerHealth.TakeDamage(_enemy.GetTotalDamage());
+                        targetHealth = health;
+                        break; // Đã xác định được Player, ngắt vòng lặp để tránh tính lại khi Player có nhiều Collider2D
                     }
                 }
+            }
+
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(_enemy.GetTotalDamage());
             }
         }
 
         public override void Attack()
         {
+            _hasDealtDamageThisAttack = false; // Reset trạng thái cho lượt đánh mới
+
             var bossAnimator = GetComponentInChildren<BossAnimator>();
             if (bossAnimator != null)
             {
