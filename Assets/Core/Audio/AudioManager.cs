@@ -6,7 +6,7 @@ namespace Core.Audio
 {
     /// <summary>
     /// Manager quản lý tập trung toàn bộ âm thanh trong game (SFX, BGM, UI).
-    /// Hỗ trợ Object Pooling, Audio Cooldown & Control Mixer Volume.
+    /// Hỗ trợ Object Pooling, Audio Cooldown, Adaptive BGM Snapshots & Phase Stingers.
     /// </summary>
     public class AudioManager : MonoBehaviour
     {
@@ -21,11 +21,14 @@ namespace Core.Audio
         [Header("Pool Settings")]
         [SerializeField] private int _initialPoolSize = 20;
 
-        [Header("BGM Source")]
+        [Header("BGM Sources (Adaptive Layering)")]
         [SerializeField] private AudioSource _bgmAudioSource;
+        [SerializeField] private AudioSource _stingerAudioSource;
 
         private AudioSourcePool _pool;
         private AudioCooldownTracker _cooldownTracker;
+
+        public AudioMixer MasterMixer => _masterMixer;
 
         private void Awake()
         {
@@ -36,6 +39,10 @@ namespace Core.Audio
             }
 
             Instance = this;
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
             DontDestroyOnLoad(gameObject);
 
             InitializeAudioSystem();
@@ -57,6 +64,15 @@ namespace Core.Audio
                 _bgmAudioSource.loop = true;
                 _bgmAudioSource.playOnAwake = false;
             }
+
+            if (_stingerAudioSource == null)
+            {
+                var stingerObj = new GameObject("[Stinger_AudioSource]");
+                stingerObj.transform.SetParent(transform);
+                _stingerAudioSource = stingerObj.AddComponent<AudioSource>();
+                _stingerAudioSource.loop = false;
+                _stingerAudioSource.playOnAwake = false;
+            }
         }
 
         /// <summary>
@@ -70,7 +86,6 @@ namespace Core.Audio
             AudioClip clipToPlay = config.DirectClip;
             if (clipToPlay == null)
             {
-                // Nếu dùng Addressables reference, nạp và phát (có thể mở rộng nạp async qua Addressables)
                 Debug.LogWarning($"[{nameof(AudioManager)}] AudioConfig '{config.name}' không có DirectClip được gán.");
                 return;
             }
@@ -117,6 +132,29 @@ namespace Core.Audio
             _bgmAudioSource.Play();
         }
 
+        /// <summary>
+        /// Phát Phase Transition Stinger (2-3s âm thanh báo hiệu chuyển Phase đồng bộ với Palette-Swap).
+        /// </summary>
+        public void PlayPhaseStinger(AudioConfigSO stingerConfig)
+        {
+            if (stingerConfig == null || stingerConfig.DirectClip == null) return;
+
+            _stingerAudioSource.clip = stingerConfig.DirectClip;
+            _stingerAudioSource.outputAudioMixerGroup = stingerConfig.MixerGroup;
+            _stingerAudioSource.volume = stingerConfig.Volume;
+            _stingerAudioSource.pitch = stingerConfig.GetRandomPitch();
+            _stingerAudioSource.Play();
+        }
+
+        /// <summary>
+        /// Chuyển đổi giữa các AudioMixerSnapshots (dùng cho Adaptive Music Âm Dương).
+        /// </summary>
+        public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1.5f)
+        {
+            if (snapshot == null) return;
+            snapshot.TransitionTo(transitionTime);
+        }
+
         public void StopBGM()
         {
             if (_bgmAudioSource != null && _bgmAudioSource.isPlaying)
@@ -153,3 +191,4 @@ namespace Core.Audio
         #endregion
     }
 }
+

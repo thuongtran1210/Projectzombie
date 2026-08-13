@@ -54,7 +54,7 @@ namespace Core.Audio
         public void Release(AudioSource source)
         {
             if (source == null) return;
-            source.stop();
+            source.Stop();
             source.clip = null;
             source.gameObject.SetActive(false);
         }
