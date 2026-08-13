@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Group_Enemies_Stage1
+  m_EditorClassIdentifier: 
+  m_GroupName: Group_Enemies_Stage1
+  m_Data:
+    m_SerializedData: []
+  m_GUID: fec88c1bf70fa74448f78808ef6dc679
+  m_SerializeEntries:
+  - m_GUID: 40336bbe99d02974eb09b2c9201ef4c9
+    m_Address: E_MATROI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 944cc003ebcffde4a8add0899773079a
+    m_Address: E_QUYNHAPTRANG
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc60aa0652631604ea95def9ce66ecce
+    m_Address: E_MADA
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cfbcec5a64e8e8e45b9fdf7888549503
+    m_Address: E_HOALYTINH
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e78d9a5a4396d0a43b442de8fa48afc7
+    m_Address: E_MAGIAP
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 770bdc17616d6204186c3272ccc4df53, type: 2}
+    - {fileID: 11400000, guid: 0ddc414cc05a4f1408ba728094e1af4f, type: 2}

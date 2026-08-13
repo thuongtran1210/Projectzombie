@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Group_Enemies
+  m_Name: Group_Audio_BGM
   m_EditorClassIdentifier: 
-  m_GroupName: Group_Enemies
+  m_GroupName: Group_Audio_BGM
   m_Data:
     m_SerializedData: []
-  m_GUID: fec88c1bf70fa74448f78808ef6dc679
+  m_GUID: 83425651fc0f7e24298dccb9be04fa90
   m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 770bdc17616d6204186c3272ccc4df53, type: 2}
-    - {fileID: 11400000, guid: 0ddc414cc05a4f1408ba728094e1af4f, type: 2}
+    - {fileID: 11400000, guid: 09fb56adeae34f7449a8fcb9b2b6f087, type: 2}
+    - {fileID: 11400000, guid: 57d8ab67b425b4c449fcdda7baa040bb, type: 2}

@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3656528193128023131}
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config: {fileID: 11400000, guid: 3e2c651f7f1ce564c9e98a79257a8767, type: 2}
   expGemPrefab: {fileID: 5054920305206634125, guid: 3a9abe52fa65cdb44831fbe9256ada3a, type: 3}
-  isBoss: 0
+  isBoss: 1
 --- !u!1 &5783235904031324922
 GameObject:
   m_ObjectHideFlags: 0
