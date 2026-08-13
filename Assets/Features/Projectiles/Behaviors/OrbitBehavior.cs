@@ -43,11 +43,26 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             float rad = _currentAngle * Mathf.Deg2Rad;
             Vector3 offset = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * radius;
             _controller.transform.position = _controller.Owner.transform.position + offset;
+
+            // Xoay lá bùa mềm mại nảy theo tiếp tuyến đường tròn xoay
+            _controller.transform.rotation = Quaternion.Euler(0f, 0f, _currentAngle - 90f);
         }
 
         public BehaviorHitResult OnHit(ProjectileEventContext context)
         {
-            // Đạn xoay tròn giữ nguyên trạng thái khi chạm kẻ địch
+            // Đẩy lùi nhẹ yêu ma ra xa tâm người chơi khi lá Bùa Trấn Yêu chạm trúng
+            if (context.TargetCollider != null && _controller.Owner != null)
+            {
+                if (context.TargetCollider.TryGetComponent<Enemies.Enemy>(out var enemy) ||
+                    (enemy = context.TargetCollider.GetComponentInParent<Enemies.Enemy>()) != null)
+                {
+                    Vector2 pushDir = ((Vector2)enemy.transform.position - (Vector2)_controller.Owner.transform.position).normalized;
+                    if (pushDir == Vector2.zero) pushDir = Vector2.up;
+                    enemy.ApplyKnockback(pushDir, 3.5f, 0.15f);
+                }
+            }
+
+            // Đạn xoay tròn giữ nguyên trạng thái khi chạm kẻ địch (Pierce/Orbit)
             return BehaviorHitResult.KeepAlive;
         }
 

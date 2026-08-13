@@ -9,13 +9,13 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
 | Mobile Stress Test & ASTC | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | Master-Worker Spawner Refactoring |
-| Android AAB Build & Signing | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Android Target Platform Refactor |
-| | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Local Save System (`SaveSystem.cs`) |
-| | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Ngũ Hành Damage & Combo System |
-| | | Cán Cân Âm Dương (`YinYangManager`) |
-| | | Boss AI Dynamic Element (`BossElementController`) |
-| | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| Android AAB Build & Signing | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Android Target Platform Refactor |
+| | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Local Save System (`SaveSystem.cs`) |
+| | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Ngũ Hành Damage & Combo System |
+| | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
+| | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Boss AI Dynamic Element (`BossElementController`) |
+| | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
 ---
@@ -64,6 +64,12 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.
 - [x] **[TASK-304]** Xây dựng UI Chọn Nhân vật theo 3 anh hùng: Thư Sinh (Kim), Đạo Sĩ (Mộc), Võ Tăng (Thổ) qua `CharacterSelectionView/Presenter`.
 - [x] **[TASK-305]** Xây dựng màn hình `RunSummaryView.cs` & `RunSummaryPresenter.cs` hiển thị kết quả sau run đấu và tự động cộng Cổ Tiền tích lũy.
+
+### ✨ Hạng Mục 7: Modular VFX & Visual Polish (High Priority)
+- [ ] 🚨 **[TASK-VFX-01] [HIGH PRIORITY]** Tối ưu Vệt Chém Dynamic (`Bút Phán Quan` W002 & `Weapon_DualSlash`): Instantiate/Pool Crescent Slash VFX xoay theo góc chém thực tế + Thêm `Ink Splash` khi trúng quái.
+- [x] 🚨 **[TASK-VFX-02] [HIGH PRIORITY]** Tối ưu Vệt Linh Khí Orbit (`Bùa Trấn Yêu` W003): Xoay tiếp tuyến góc lá bùa mềm mại + hiệu ứng đẩy lùi (Knockback Repulsion Pulse) khi chạm yêu ma.
+- [ ] 🚨 **[TASK-VFX-03] [HIGH PRIORITY]** Tối ưu Sóng Xung Kích & Nứt Đất (`Trống Đồng` W005 & Skill Võ Tăng): Tạo URP Shader vòng sóng xung kích (Shockwave Ring) + Vết nứt đất `Ground Decal Fade` 0.5s.
+- [ ] 🚨 **[TASK-VFX-04] [HIGH PRIORITY]** Tối ưu Hit Impact & Hit Flash Shader: Tạo Prefab `HitImpact` (Sparks + Blood Burst) spawn tại tọa độ va chạm (`hitPoint`) + Shader nháy trắng (Hit Flash) 0.05s trên Zombie khi nhận sát thương.
 
 ### 👾 Hạng Mục 5: Enemy Prefabs, Boss Data & 20-Min Wave Completion (Completed)
 - [x] **[TASK-E01]** Tạo ScriptableObject Data cho Boss **Ngưu Đầu Mã Diện** (HP Base 5000, Speed 2.2, Hệ Thổ/Hỏa).
