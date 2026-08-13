@@ -41,35 +41,42 @@ namespace ProjectZombie.Features.Spawners
             _mainCamera = Camera.main;
         }
 
+        private WavePreloader _wavePreloader;
+
         private void Start()
         {
-            // TODO FIX: Tìm  Player Transform bằng cách khác, tránh phụ thuộc vào Tag "Player"
+            // TODO FIX: Tìm Player Transform bằng cách khác, tránh phụ thuộc vào Tag "Player"
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null) _playerTransform = player.transform;
 
-            StartMatch();
+            _wavePreloader = GetComponent<WavePreloader>();
+            if (_wavePreloader == null)
+            {
+                _wavePreloader = gameObject.AddComponent<WavePreloader>();
+            }
+
+            _ = StartMatchAsync();
         }
 
-        public void StartMatch()
+        public async System.Threading.Tasks.Task StartMatchAsync()
         {
             matchTime = 0f;
             _nextEventIndex = 0;
             _activeContinuousEvents.Clear();
             _eventTimers.Clear();
-            isMatchActive = true;
 
-            // Tự động Prewarm tất cả Prefab xuất hiện trong Timeline
-            if (timelineConfig != null && EnemyPoolManager.Instance != null)
+            // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader
+            if (timelineConfig != null && _wavePreloader != null)
             {
-                foreach (var evt in timelineConfig.events)
-                {
-                    if (evt.spawnPrefab != null)
-                    {
-                        int amount = evt.eventType == TimelineEventType.BurstWave ? evt.spawnCount : 15;
-                        EnemyPoolManager.Instance.PrewarmPool(evt.spawnPrefab, amount);
-                    }
-                }
+                await _wavePreloader.PreloadTimelineAssetsAsync(timelineConfig);
             }
+
+            isMatchActive = true;
+        }
+
+        public void StartMatch()
+        {
+            _ = StartMatchAsync();
         }
 
 
@@ -104,9 +111,10 @@ namespace ProjectZombie.Features.Spawners
 
         private void TriggerEvent(TimelineEvent evt)
         {
-            if (evt.spawnPrefab == null) return;
+            string poolKey = evt.GetPoolKey();
+            if (string.IsNullOrEmpty(poolKey) && evt.spawnPrefab == null) return;
 
-            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' tại phút {(matchTime / 60f):F2}");
+            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}) tại phút {(matchTime / 60f):F2}");
 
             switch (evt.eventType)
             {

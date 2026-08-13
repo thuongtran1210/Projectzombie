@@ -8,6 +8,7 @@ namespace ProjectZombie.Features.Spawners
         public static EnemyPoolManager Instance { get; private set; }
 
         private Dictionary<GameObject, UnityEngine.Pool.ObjectPool<GameObject>> _prefabToPoolMap = new Dictionary<GameObject, UnityEngine.Pool.ObjectPool<GameObject>>();
+        private Dictionary<string, UnityEngine.Pool.ObjectPool<GameObject>> _keyToPoolMap = new Dictionary<string, UnityEngine.Pool.ObjectPool<GameObject>>();
 
         private void Awake()
         {
@@ -21,12 +22,19 @@ namespace ProjectZombie.Features.Spawners
             }
         }
 
-        public UnityEngine.Pool.ObjectPool<GameObject> GetOrCreatePool(GameObject prefab)
+        public UnityEngine.Pool.ObjectPool<GameObject> GetOrCreatePool(GameObject prefab, string addressKey = null)
         {
             if (prefab == null) return null;
 
+            string key = !string.IsNullOrEmpty(addressKey) ? addressKey : prefab.name;
+            if (_keyToPoolMap.TryGetValue(key, out var existingPoolByKey))
+            {
+                return existingPoolByKey;
+            }
+
             if (_prefabToPoolMap.TryGetValue(prefab, out var existingPool))
             {
+                _keyToPoolMap[key] = existingPool;
                 return existingPool;
             }
 
@@ -48,13 +56,14 @@ namespace ProjectZombie.Features.Spawners
             );
 
             _prefabToPoolMap[prefab] = pool;
+            _keyToPoolMap[key] = pool;
             return pool;
         }
 
-        public void PrewarmPool(GameObject prefab, int count)
+        public void PrewarmPool(GameObject prefab, int count, string addressKey = null)
         {
             if (prefab == null) return;
-            var pool = GetOrCreatePool(prefab);
+            var pool = GetOrCreatePool(prefab, addressKey);
             
             var tempObjects = new List<GameObject>(count);
             for (int i = 0; i < count; i++)
@@ -74,7 +83,24 @@ namespace ProjectZombie.Features.Spawners
             var pool = GetOrCreatePool(prefab);
             if (pool != null)
             {
-                // Sử dụng cơ chế tự phình rộng của UnityEngine.Pool.ObjectPool (Tối đa maxSize = 500)
+                GameObject enemy = pool.Get();
+                if (enemy != null)
+                {
+                    enemy.transform.position = position;
+                    enemy.transform.rotation = rotation;
+                }
+                return enemy;
+            }
+
+            return null;
+        }
+
+        public GameObject SpawnEnemy(string key, Vector3 position, Quaternion rotation)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+
+            if (_keyToPoolMap.TryGetValue(key, out var pool) && pool != null)
+            {
                 GameObject enemy = pool.Get();
                 if (enemy != null)
                 {

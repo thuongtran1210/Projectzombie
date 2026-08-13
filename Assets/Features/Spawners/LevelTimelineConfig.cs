@@ -37,6 +37,16 @@ namespace ProjectZombie.Features.Spawners
 
         [Tooltip("Khoảng thời gian giữa các lần spawn (dành cho Continuous/Pillar).")]
         public float spawnInterval = 2f;
+
+        /// <summary>
+        /// Lấy Key định danh duy nhất cho Object Pool (Ưu tiên Addressable enemyAddress, fallback lấy tên spawnPrefab).
+        /// </summary>
+        public string GetPoolKey()
+        {
+            if (!string.IsNullOrEmpty(enemyAddress)) return enemyAddress;
+            if (spawnPrefab != null) return spawnPrefab.name;
+            return string.Empty;
+        }
     }
 
     [CreateAssetMenu(fileName = "NewLevelTimeline", menuName = "ProjectZombie/Level Timeline Config")]
