@@ -8,13 +8,14 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill Button)** | Master-Worker Spawner Refactoring |
-| Mobile Stress Test & ASTC | | Android Target Platform Refactor |
-| Android AAB Build & Signing | | Local Save System (`SaveSystem.cs`) |
-| | | Ngũ Hành Damage & Combo System |
+| Mobile Stress Test & ASTC | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | Master-Worker Spawner Refactoring |
+| Android AAB Build & Signing | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Android Target Platform Refactor |
+| | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Local Save System (`SaveSystem.cs`) |
+| | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Ngũ Hành Damage & Combo System |
 | | | Cán Cân Âm Dương (`YinYangManager`) |
 | | | Boss AI Dynamic Element (`BossElementController`) |
 | | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
 ---
@@ -46,7 +47,18 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-311]** Tách biệt 100% AI Boss bằng `BossMovementStrategy.cs` và `BossMeleeAttackStrategy.cs` độc lập với quái thường.
 
 ### 📱 Hạng Mục 4: Mobile UI Canvas & MVP Systems
-- [ ] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (Cần gạt di chuyển) & `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) kết nối với PlayerController.
+- [ ] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (Cần gạt di chuyển), `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) & `DashButtonView` kết nối trực tiếp với PlayerController.
+- [ ] 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals (`RunHUDView.cs` & `RunHUDPresenter.cs`)**:
+  - Nâng cấp tương phản & màu sắc cho Thanh Máu (`_hpSlider`), EXP (`_expSlider`) và Text Cấp độ `Lv.X`.
+  - Thiết kế lại Slider Cán cân Âm Dương (phân định rõ màu sắc Âm / Cân Bằng / Dương & hiệu ứng trực quan).
+  - Tối ưu hiển thị Thuộc tính Boss (`_bossElementText`) dùng Rich Text màu sắc chuẩn 5 hệ (Kim - Vàng, Mộc - Xanh Lá, Thủy - Xanh Dương, Hỏa - Đỏ, Thổ - Nâu/Vàng Kim).
+- [ ] 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (`UpgradeUIView.cs` & `UpgradeCardView.cs`)**:
+  - Tối ưu bố cục Thẻ Nâng Cấp (Card Layout): Tên pháp bảo/kỹ năng, cấp độ mới, mô tả hiệu ứng, badge màu thuộc tính Ngũ Hành.
+  - Hiển thị rõ ràng sự thay đổi chỉ số (Stat Diff) trực quan dễ đọc.
+  - Đảm bảo `Animator` đặt `updateMode = AnimatorUpdateMode.UnscaledTime` để hoạt ảnh xuất hiện mượt mà khi dừng game (`Time.timeScale = 0`).
+- [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
+  - Cấu hình chuẩn `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
+  - Tinh chỉnh Anchor Points của tất cả Element UI (HUD Top Left/Right, Controls Bottom Left/Right, Overlay Cards Center) tránh bị lệch hoặc tràn lề trên các tỉ lệ màn hình mobile (16:9, 19.5:9, 20:9).
 - [x] **[TASK-301]** Cập nhật `RunHUDView.cs` và `RunHUDPresenter.cs` thêm Slider Cán cân Âm Dương & TMP Text hiển thị thuộc tính Boss.
 - [x] **[TASK-302]** Thêm Badge màu hiển thị thuộc tính Ngũ Hành trên thẻ Gacha Nâng cấp (`UpgradeCardView.cs`).
 - [x] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.

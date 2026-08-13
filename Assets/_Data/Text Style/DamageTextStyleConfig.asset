@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13425938bfe0cb648ac1f67ea1d1bc02, type: 3}
+  m_Name: DamageTextStyleConfig
+  m_EditorClassIdentifier: 
+  NormalColor: {r: 1, g: 1, b: 1, a: 1}
+  NormalFontSize: 3.5
+  CritColor: {r: 1, g: 0.35, b: 0, a: 1}
+  CritFontSize: 5.5
+  PlayerDamageColor: {r: 1, g: 0.1, b: 0.2, a: 1}
+  PlayerDamageFontSize: 4.5
+  ElementalStyles:
+  - Element: 1
+    TextColor: {r: 1, g: 0.85, b: 0.3, a: 1}
+  - Element: 2
+    TextColor: {r: 0.3, g: 0.9, b: 0.4, a: 1}
+  - Element: 3
+    TextColor: {r: 0.2, g: 0.7, b: 1, a: 1}
+  - Element: 4
+    TextColor: {r: 1, g: 0.25, b: 0.2, a: 1}
+  - Element: 5
+    TextColor: {r: 0.85, g: 0.55, b: 0.2, a: 1}
+  Lifetime: 0.6
+  FloatSpeed: 2
+  RandomArcSpread: 0.6
+  ScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.4
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  AlphaCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.3
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

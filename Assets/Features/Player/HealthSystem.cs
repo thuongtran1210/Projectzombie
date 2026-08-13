@@ -54,6 +54,9 @@ namespace ProjectZombie.Features.Shared
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
         }
 
+        // Sự kiện tĩnh báo cáo sát thương phục vụ Floating Damage Text & Performance Tracker
+        public static event Action<DamageReport> OnDamageReported;
+
         public void TakeDamage(float amount)
         {
             if (_currentHealth <= 0) return; 
@@ -63,6 +66,9 @@ namespace ProjectZombie.Features.Shared
 
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
+            // Bắn event báo cáo sát thương cơ bản
+            OnDamageReported?.Invoke(new DamageReport(amount, false, ElementType.None, transform.position, CompareTag("Player")));
+
             if (_currentHealth <= 0)
             {
                 Die();
@@ -71,14 +77,24 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(DamageData damageData)
         {
-            // Tương lai có thể thêm logic text chí mạng (Floating Text) ở đây
-            TakeDamage(damageData.Amount);
+            if (_currentHealth <= 0) return;
+
+            _currentHealth -= damageData.Amount;
+            _currentHealth = Mathf.Max(_currentHealth, 0f);
+
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+
+            // Bắn event báo cáo sát thương đầy đủ (Crit & Element)
+            OnDamageReported?.Invoke(new DamageReport(damageData.Amount, damageData.IsCritical, damageData.Element, transform.position, CompareTag("Player")));
+
+            if (_currentHealth <= 0)
+            {
+                Die();
+            }
         }
 
         public void TakeDamage(DamageContext context)
         {
-            // Tương lai Combat System sẽ tính toán các yếu tố phức tạp ở đây:
-            // Crit, Buff, Debuff, Element...
             TakeDamage(context.BaseDamage);
         }
 

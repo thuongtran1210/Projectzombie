@@ -2139,9 +2139,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
+    x: 0.012950972
     y: 0
-    width: 1
+    width: 0.9735842
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -5292,6 +5292,7 @@ Transform:
   - {fileID: 1529856826}
   - {fileID: 1518228858}
   - {fileID: 904659671}
+  - {fileID: 1884189268}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1217002976
@@ -8042,6 +8043,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1858227886}
   m_CullTransparentMesh: 1
+--- !u!1 &1884189267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1884189268}
+  - component: {fileID: 1884189269}
+  m_Layer: 0
+  m_Name: 'DamageTextManager '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1884189268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884189267}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1217002975}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1884189269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884189267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a418190cb7288b5458c88a8e755a95ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textPrefab: {fileID: 5144114546261220839, guid: 8b42539cacaae944db720dc35591aa6b, type: 3}
+  _styleConfig: {fileID: 11400000, guid: cdc02411371b6ba4280b1616caafe5dd, type: 2}
+  _defaultPoolCapacity: 50
+  _maxPoolSize: 200
 --- !u!1 &1897979522
 GameObject:
   m_ObjectHideFlags: 0
