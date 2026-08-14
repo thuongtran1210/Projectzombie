@@ -14,9 +14,10 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Local Save System (`SaveSystem.cs`) |
 | 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Ngũ Hành Damage & Combo System |
 | 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
-| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Boss AI Dynamic Element (`BossElementController`) |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Boss AI Dynamic Element (`BossElementController`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| Android AAB Build & Signing (Google Play Release) | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
 ---
@@ -49,10 +50,19 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 ### 📱 Hạng Mục 4: Mobile UI Canvas & MVP Systems
 - [x] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (OnScreenControl), `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) & `DashButtonView` + `DashButtonPresenter` chuẩn New Input System & MVP.
-- [ ] 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals (`RunHUDView.cs` & `RunHUDPresenter.cs`)**:
-  - Nâng cấp tương phản & màu sắc cho Thanh Máu (`_hpSlider`), EXP (`_expSlider`) và Text Cấp độ `Lv.X`.
-  - Thiết kế lại Slider Cán cân Âm Dương (phân định rõ màu sắc Âm / Cân Bằng / Dương & hiệu ứng trực quan).
-  - Tối ưu hiển thị Thuộc tính Boss (`_bossElementText`) dùng Rich Text màu sắc chuẩn 5 hệ (Kim - Vàng, Mộc - Xanh Lá, Thủy - Xanh Dương, Hỏa - Đỏ, Thổ - Nâu/Vàng Kim).
+- [x] 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals (`RunHUDView.cs` & `RunHUDPresenter.cs`)**:
+  - [x] **[TASK-312.1] Visual & Contrast cho Health Bar, EXP Bar & Level Text:**
+    - Cấu hình màu sắc Đỏ Chu Sa (`#D13838`) cho `_hpSlider`, cảnh báo nháy đỏ khi HP $<25\%$.
+    - Cấu hình Xanh Ngọc Bích (`#4DEEEA`) cho `_expSlider` và Hoàng Kim (`#FFD700`) cho `_levelText` với TMP Rich Text.
+  - [x] **[TASK-312.2] Redesign Slider Cán Cân Âm Dương (`CharacterGaugeWidgetView.cs` & `TaoistYinYangTracker.cs`):**
+    - Thêm Fill Color động theo 3 trạng thái: Âm Thịnh (Tím Ma Mị `#9B51E0`), Cân Bằng (Trắng Xanh/Vàng Kim `#E0F7FA`/`#FFD700`), Dương Thịnh (Cam Thái Dương `#FF8C00`).
+    - Cập nhật chuỗi tiêu đề trạng thái có biểu tượng ☯ chuẩn Art Guide.
+  - [x] **[TASK-312.3] Hiển Thị Thuộc Tính Ngũ Hành Trên Đầu Boss (Overhead Boss Element Badge):**
+    - Thiết kế World-Space UI / Overhead Indicator gắn trực tiếp phía trên đầu Boss trong `BossElementController.cs` (thay vì đặt trên HUD/Panel Âm Dương gây rối mắt).
+    - Hiển thị TextMeshPro / Badge với biểu tượng hình khối & màu sắc 5 hệ chuẩn Art Guide: Kim 🔷 (`#E8C468`), Mộc 🌿 (`#4C7A3D`), Thủy 💧 (`#29B6F6`), Hỏa 🔥 (`#FF5722`), Thổ 🟫 (`#D7A87A`).
+  - [x] **[TASK-312.4] Tối Ưu Tinh Gọn HUD & Phân Định Rõ Ràng Trách Nhiệm UI:**
+    - Tách biệt hoàn toàn Panel Âm Dương (`CharacterGaugeWidgetView.cs`) chỉ hiển thị cơ chế Cán Cân Nhân Vật.
+    - Loại bỏ trường `_bossElementText` dư thừa khỏi `RunHUDView.cs` và `RunHUDPresenter.cs`, giữ Top HUD thanh thoát, tập trung vào HP, EXP, Timer & Kills.
 - [ ] 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (`UpgradeUIView.cs` & `UpgradeCardView.cs`)**:
   - Tối ưu bố cục Thẻ Nâng Cấp (Card Layout): Tên pháp bảo/kỹ năng, cấp độ mới, mô tả hiệu ứng, badge màu thuộc tính Ngũ Hành.
   - Hiển thị rõ ràng sự thay đổi chỉ số (Stat Diff) trực quan dễ đọc.

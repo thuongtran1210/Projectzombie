@@ -73,7 +73,7 @@ namespace ProjectZombie.Features.UI.HUD
             if (_view != null)
             {
                 _view.Setup(_currentProvider.MinValue, _currentProvider.MaxValue);
-                _view.UpdateGauge(_currentProvider.CurrentValue, _currentProvider.GaugeTitle);
+                _view.UpdateGauge(_currentProvider.CurrentValue, _currentProvider.GaugeTitle, _currentProvider.GaugeColor);
                 _view.SetVisible(true);
             }
         }
@@ -99,7 +99,8 @@ namespace ProjectZombie.Features.UI.HUD
         {
             if (_view != null)
             {
-                _view.UpdateGauge(value, title);
+                Color color = _currentProvider != null ? _currentProvider.GaugeColor : Color.white;
+                _view.UpdateGauge(value, title, color);
             }
         }
     }

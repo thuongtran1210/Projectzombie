@@ -204,7 +204,17 @@ namespace ProjectZombie.Features.Enemies.Editor
             root.AddComponent<BossMeleeAttackStrategy>();
 
             // Boss Dynamic Elements & Controllers
-            root.AddComponent<BossElementController>();
+            var bossElementController = root.AddComponent<BossElementController>();
+
+            // Overhead Badge child
+            GameObject badgeGo = new GameObject("OverheadElementBadge");
+            badgeGo.transform.SetParent(root.transform, false);
+            badgeGo.transform.localPosition = new Vector3(0f, 2.2f, 0f);
+            var tmp = badgeGo.AddComponent<TMPro.TextMeshPro>();
+            tmp.alignment = TMPro.TextAlignmentOptions.Center;
+            tmp.fontSize = 4.5f;
+            tmp.sortingLayerID = SortingLayer.NameToID("UI_World");
+            tmp.sortingOrder = 1100;
 
             if (isFinalBoss)
             {

@@ -31,6 +31,7 @@ namespace ProjectZombie.Features.YinYang
         public float CurrentValue => YinYangManager.Instance != null ? YinYangManager.Instance.CurrentValue : 50f;
         public float MinValue => 0f;
         public float MaxValue => 100f;
+        public Color GaugeColor => GetStateColor(YinYangManager.Instance != null ? YinYangManager.Instance.GetState() : YinYangState.Balanced);
 
         public event System.Action<float, string> OnGaugeValueChanged;
 
@@ -115,9 +116,19 @@ namespace ProjectZombie.Features.YinYang
         {
             return state switch
             {
-                YinYangState.YinDominant => "<color=#4A90E2>Âm Thịnh</color>",
-                YinYangState.YangDominant => "<color=#FF4444>Dương Thịnh</color>",
-                _ => "<color=#FFD700>Thái Cực Cân Bằng</color>"
+                YinYangState.YinDominant => "<color=#9B51E0><b>☯ ÂM THỊNH</b></color>",
+                YinYangState.YangDominant => "<color=#FF8C00><b>☯ DƯƠNG THỊNH</b></color>",
+                _ => "<color=#FFD700><b>☯ THÁI CỰC CÂN BẰNG</b></color>"
+            };
+        }
+
+        private Color GetStateColor(YinYangState state)
+        {
+            return state switch
+            {
+                YinYangState.YinDominant => new Color(0.61f, 0.32f, 0.88f, 1f), // #9B51E0 (Tím Ma Mị)
+                YinYangState.YangDominant => new Color(1.0f, 0.55f, 0.0f, 1f),   // #FF8C00 (Cam Thái Dương)
+                _ => new Color(1.0f, 0.84f, 0.0f, 1f)                           // #FFD700 (Hoàng Kim)
             };
         }
     }

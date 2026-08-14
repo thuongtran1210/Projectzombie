@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 
@@ -5,6 +7,7 @@ namespace ProjectZombie.Features.Boss
 {
     /// <summary>
     /// Component gắn trên Boss cho phép luân phiên xoay vòng thuộc tính Ngũ Hành theo thời gian thực (ví dụ Ngưu Đầu Mã Diện & Diêm Vương).
+    /// Tích hợp World-Space Overhead Badge hiển thị trực tiếp trên đầu Boss kèm ký hiệu 5 hệ.
     /// </summary>
     public class BossElementController : MonoBehaviour
     {
@@ -25,12 +28,16 @@ namespace ProjectZombie.Features.Boss
 
         [Header("UI & Visual Settings")]
         [SerializeField] private SpriteRenderer _bossSpriteRenderer;
+        [SerializeField] private TextMeshPro _overheadBadgeText;
+        [SerializeField] private Vector3 _overheadOffset = new Vector3(0f, 2.0f, 0f);
 
         public ElementType CurrentElement => _elementCycle != null && _elementCycle.Length > 0 
             ? _elementCycle[_currentIndex] 
             : ElementType.None;
 
         public event System.Action<ElementType> OnBossElementChanged;
+
+        private Coroutine _punchCoroutine;
 
         private void Start()
         {
@@ -39,10 +46,38 @@ namespace ProjectZombie.Features.Boss
                 _bossSpriteRenderer = GetComponent<SpriteRenderer>();
             }
 
+            EnsureOverheadBadge();
+
             if (_elementCycle != null && _elementCycle.Length > 0)
             {
                 ApplyElementVisuals(CurrentElement);
                 OnBossElementChanged?.Invoke(CurrentElement);
+            }
+        }
+
+        private void EnsureOverheadBadge()
+        {
+            if (_overheadBadgeText != null) return;
+
+            // Tìm child có sẵn
+            var existingChild = transform.Find("OverheadElementBadge");
+            if (existingChild != null)
+            {
+                _overheadBadgeText = existingChild.GetComponent<TextMeshPro>();
+            }
+
+            // Nếu chưa có, tự động sinh GameObject child và gắn TextMeshPro 3D
+            if (_overheadBadgeText == null)
+            {
+                GameObject badgeGo = new GameObject("OverheadElementBadge");
+                badgeGo.transform.SetParent(transform, false);
+                badgeGo.transform.localPosition = _overheadOffset;
+
+                _overheadBadgeText = badgeGo.AddComponent<TextMeshPro>();
+                _overheadBadgeText.alignment = TextAlignmentOptions.Center;
+                _overheadBadgeText.fontSize = 4.5f;
+                _overheadBadgeText.sortingLayerID = SortingLayer.NameToID("UI_World");
+                _overheadBadgeText.sortingOrder = 1100;
             }
         }
 
@@ -63,19 +98,73 @@ namespace ProjectZombie.Features.Boss
 
         private void ApplyElementVisuals(ElementType element)
         {
-            if (_bossSpriteRenderer == null) return;
+            Color elementColor = GetElementColor(element);
+            string formattedText = GetFormattedElementBadge(element);
 
-            Color elementColor = element switch
+            if (_bossSpriteRenderer != null)
             {
-                ElementType.Kim => new Color(1f, 0.84f, 0f),      // Vàng (Gold)
-                ElementType.Moc => new Color(0.3f, 0.85f, 0.4f),  // Xanh lá (Green)
-                ElementType.Thuy => new Color(0.13f, 0.59f, 0.95f),// Xanh dương (Blue)
-                ElementType.Hoa => new Color(1f, 0.34f, 0.13f),    // Đỏ cam (Red)
-                ElementType.Tho => new Color(0.47f, 0.33f, 0.28f), // Nâu (Brown)
+                _bossSpriteRenderer.color = elementColor;
+            }
+
+            if (_overheadBadgeText != null)
+            {
+                _overheadBadgeText.text = formattedText;
+
+                if (_punchCoroutine != null)
+                {
+                    StopCoroutine(_punchCoroutine);
+                }
+                _punchCoroutine = StartCoroutine(PunchBadgeRoutine());
+            }
+        }
+
+        private IEnumerator PunchBadgeRoutine()
+        {
+            if (_overheadBadgeText == null) yield break;
+
+            Transform badgeTransform = _overheadBadgeText.transform;
+            Vector3 baseScale = Vector3.one;
+            float duration = 0.25f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                // Punch scale từ 1.35x về 1.0x
+                float scale = Mathf.Lerp(1.35f, 1.0f, t);
+                badgeTransform.localScale = baseScale * scale;
+                yield return null;
+            }
+
+            badgeTransform.localScale = baseScale;
+            _punchCoroutine = null;
+        }
+
+        private Color GetElementColor(ElementType element)
+        {
+            return element switch
+            {
+                ElementType.Kim => new Color(0.91f, 0.77f, 0.41f),   // #E8C468
+                ElementType.Moc => new Color(0.30f, 0.48f, 0.24f),   // #4C7A3D
+                ElementType.Thuy => new Color(0.16f, 0.71f, 0.96f),  // #29B6F6
+                ElementType.Hoa => new Color(1.00f, 0.34f, 0.13f),   // #FF5722
+                ElementType.Tho => new Color(0.84f, 0.66f, 0.48f),   // #D7A87A
                 _ => Color.white
             };
+        }
 
-            _bossSpriteRenderer.color = elementColor;
+        private string GetFormattedElementBadge(ElementType element)
+        {
+            return element switch
+            {
+                ElementType.Kim => "<color=#E8C468><b>🔷 [KIM]</b></color>",
+                ElementType.Moc => "<color=#4CAF50><b>🌿 [MỘC]</b></color>",
+                ElementType.Thuy => "<color=#29B6F6><b>💧 [THỦY]</b></color>",
+                ElementType.Hoa => "<color=#FF5722><b>🔥 [HỎA]</b></color>",
+                ElementType.Tho => "<color=#D7A87A><b>🟫 [THỔ]</b></color>",
+                _ => ""
+            };
         }
 
         public void SetElementCycle(ElementType[] newCycle, float interval)
@@ -87,6 +176,5 @@ namespace ProjectZombie.Features.Boss
             ApplyElementVisuals(CurrentElement);
             OnBossElementChanged?.Invoke(CurrentElement);
         }
-
     }
 }

@@ -24,9 +24,16 @@ namespace ProjectZombie.Features.UI.HUD
 
         [Header("Health & EXP")]
         [SerializeField] private Slider _hpSlider;
+        [SerializeField] private Image _hpFillImage;              // Image ruột của thanh HP
         [SerializeField] private TextMeshProUGUI _hpText;         // Ví dụ: "75 / 100"
         [SerializeField] private Slider _expSlider;
+        [SerializeField] private Image _expFillImage;             // Image ruột của thanh EXP
         [SerializeField] private TextMeshProUGUI _levelText;      // Ví dụ: "Lv.5"
+
+        [Header("Visual Feedback Settings")]
+        [SerializeField] private Color _normalHpColor = new Color(0.82f, 0.22f, 0.22f, 1f); // #D13838 (Đỏ Chu Sa)
+        [SerializeField] private Color _lowHpColor = new Color(1f, 0.15f, 0.15f, 1f);    // #FF2626 (Đỏ rực cảnh báo)
+        [SerializeField] private float _lowHpThresholdRatio = 0.25f;
 
         // ====================================================================
         // [INSPECTOR] — Run Stats
@@ -57,6 +64,15 @@ namespace ProjectZombie.Features.UI.HUD
             var animator = GetComponent<Animator>();
             if (animator != null)
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+
+            if (_hpSlider != null && _hpFillImage == null)
+            {
+                var fillRect = _hpSlider.fillRect;
+                if (fillRect != null)
+                {
+                    _hpFillImage = fillRect.GetComponent<Image>();
+                }
+            }
         }
 
 
@@ -64,7 +80,7 @@ namespace ProjectZombie.Features.UI.HUD
         // PUBLIC API — Chỉ được gọi bởi RunHUDPresenter
         // ====================================================================
 
-        /// <summary>Cập nhật thanh máu. Presenter truyền giá trị thô (float).</summary>
+        /// <summary>Cập nhật thanh máu với cảnh báo tương phản khi HP thấp. Presenter truyền giá trị thô (float).</summary>
         public void SetHealth(float current, float max)
         {
             if (_hpSlider != null)
@@ -73,8 +89,22 @@ namespace ProjectZombie.Features.UI.HUD
                 _hpSlider.value = current;
             }
 
+            float ratio = max > 0f ? (current / max) : 0f;
+            bool isLowHp = ratio <= _lowHpThresholdRatio && current > 0f;
+
+            if (_hpFillImage != null)
+            {
+                _hpFillImage.color = isLowHp ? _lowHpColor : _normalHpColor;
+            }
+
             if (_hpText != null)
-                _hpText.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}";
+            {
+                int curInt = Mathf.CeilToInt(current);
+                int maxInt = Mathf.CeilToInt(max);
+                _hpText.text = isLowHp 
+                    ? $"<color=#FF3333><b>{curInt}</b></color> / {maxInt}" 
+                    : $"{curInt} / {maxInt}";
+            }
         }
 
         /// <summary>Cập nhật thanh EXP. Presenter truyền giá trị thô (float).</summary>
@@ -150,22 +180,6 @@ namespace ProjectZombie.Features.UI.HUD
                 SkillUIEntry newEntry = Instantiate(_skillEntryPrefab, _skillsContainer);
                 newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
                 _spawnedSkills.Add(newEntry);
-            }
-        }
-
-        // ====================================================================
-        // [INSPECTOR] — Vong Xuyen (v4.0) Controls
-        // ====================================================================
-
-        [Header("Vong Xuyen (v4.0)")]
-        [SerializeField] private TextMeshProUGUI _bossElementText;  // Ví dụ: "<color=#FF4444>[BOSS: HỎA]</color>"
-
-        /// <summary>Cập nhật thuộc tính hiện tại của Boss. Presenter truyền string đã format TMP Rich Text.</summary>
-        public void SetBossElement(string formattedBossElement)
-        {
-            if (_bossElementText != null)
-            {
-                _bossElementText.text = formattedBossElement;
             }
         }
     }

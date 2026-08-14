@@ -204,8 +204,8 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnLevelUp(int level)
         {
-            // Presenter định dạng string TRƯỚC khi truyền cho View
-            _view.SetLevel($"<b>Lv.{level}</b>");
+            // Presenter định dạng string TRƯỚC khi truyền cho View (Chuẩn Hoàng Kim #FFD700)
+            _view.SetLevel($"<color=#FFD700><b>Lv.{level}</b></color>");
         }
 
         private void OnTimerTick(float elapsedSeconds)
@@ -218,7 +218,7 @@ namespace ProjectZombie.Features.UI.HUD
         private void OnKillCountChanged(int count)
         {
             // Dùng TMP Rich Text để tô màu số, không dùng _text.color = Color.red
-            _view.SetKillCount($"Kills: <color=#FF8C42>{count}</color>");
+            _view.SetKillCount($"💀 <color=#FF8C42>{count}</color>");
         }
 
         private void OnSkillsOrPassivesChanged()
@@ -277,26 +277,6 @@ namespace ProjectZombie.Features.UI.HUD
             }
 
             _view.UpdateSkills(displaySkills);
-        }
-
-        // ====================================================================
-        // VONG XUYEN (v4.0) EVENT HANDLERS
-        // ====================================================================
-
-        public void OnBossElementChanged(ElementType element)
-        {
-            if (_view == null) return;
-            string elemName = element switch
-            {
-                ElementType.Kim => "<color=#FFD700>[BOSS: KIM]</color>",
-                ElementType.Moc => "<color=#4CAF50>[BOSS: MỘC]</color>",
-                ElementType.Thuy => "<color=#2196F3>[BOSS: THỦY]</color>",
-                ElementType.Hoa => "<color=#FF5722>[BOSS: HỎA]</color>",
-                ElementType.Tho => "<color=#795548>[BOSS: THỔ]</color>",
-                _ => ""
-            };
-
-            _view.SetBossElement(elemName);
         }
     }
 }

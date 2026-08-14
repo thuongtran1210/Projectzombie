@@ -16,6 +16,10 @@ namespace ProjectZombie.Features.UI
         [InputControl(layout = "Vector2")]
         [SerializeField] private string _controlPath = "<Gamepad>/leftStick";
 
+        [Header("Joystick Mode")]
+        [Tooltip("Nếu tích chọn: Joystick sẽ nhảy đến điểm chạm tay. Nếu bỏ tích: Joystick đứng yên tại vị trí đã đặt.")]
+        [SerializeField] private bool _isFloatingJoystick = false;
+
         [Header("Joystick RectTransform References")]
         [SerializeField] private RectTransform containerRect;
         [SerializeField] private RectTransform handleRect;
@@ -25,6 +29,8 @@ namespace ProjectZombie.Features.UI
 
         private Vector2 _inputVector = Vector2.zero;
         public Vector2 InputVector => _inputVector;
+
+        private Vector2 _defaultPosition;
 
         protected override string controlPathInternal
         {
@@ -41,6 +47,11 @@ namespace ProjectZombie.Features.UI
                 handleRect = transform.GetChild(0).GetComponent<RectTransform>();
             }
 
+            if (containerRect != null)
+            {
+                _defaultPosition = containerRect.anchoredPosition;
+            }
+
             // Kiểm tra EventSystem trong Scene
             if (EventSystem.current == null)
             {
@@ -55,21 +66,25 @@ namespace ProjectZombie.Features.UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (containerRect == null || handleRect == null)
+            if (containerRect == null || handleRect == null) return;
+
+            if (_isFloatingJoystick && containerRect.parent is RectTransform parentRect)
             {
-                Debug.LogWarning($"[{nameof(DynamicVirtualJoystick)}] Không thể nhận Touch vì containerRect hoặc handleRect bị NULL!");
-                return;
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parentRect,
+                    eventData.position,
+                    eventData.pressEventCamera,
+                    out Vector2 localPoint))
+                {
+                    // Trừ đi offset của pivot parent để tránh văng ra ngoài
+                    Vector2 pivotOffset = new Vector2(
+                        (parentRect.pivot.x - 0.5f) * parentRect.rect.width,
+                        (parentRect.pivot.y - 0.5f) * parentRect.rect.height
+                    );
+                    containerRect.localPosition = localPoint;
+                }
             }
 
-            // Di chuyển Joystick container đến vị trí ngón tay chạm màn hình
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                containerRect.parent as RectTransform,
-                eventData.position,
-                eventData.pressEventCamera,
-                out Vector2 localPoint
-            );
-
-            containerRect.anchoredPosition = localPoint;
             OnDrag(eventData);
         }
 
@@ -97,6 +112,11 @@ namespace ProjectZombie.Features.UI
         {
             _inputVector = Vector2.zero;
             if (handleRect != null) handleRect.anchoredPosition = Vector2.zero;
+
+            if (_isFloatingJoystick && containerRect != null)
+            {
+                containerRect.anchoredPosition = _defaultPosition;
+            }
 
             // Trả về Vector2.zero trong New Input System khi nhấc tay
             SendValueToControl(Vector2.zero);

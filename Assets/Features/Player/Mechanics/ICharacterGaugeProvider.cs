@@ -28,6 +28,11 @@ namespace ProjectZombie.Features.Player.Mechanics
         float MaxValue { get; }
 
         /// <summary>
+        /// Màu sắc nhận diện của thanh cơ chế theo trạng thái hiện tại.
+        /// </summary>
+        UnityEngine.Color GaugeColor { get; }
+
+        /// <summary>
         /// Sự kiện phát ra mỗi khi giá trị hoặc trạng thái thanh cơ chế thay đổi.
         /// Tham số: (float currentValue, string formattedStateTitle)
         /// </summary>

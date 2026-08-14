@@ -12,6 +12,7 @@ namespace ProjectZombie.Features.UI.HUD
     {
         [Header("UI Elements")]
         [SerializeField] private Slider _gaugeSlider;
+        [SerializeField] private Image _gaugeFillImage;
         [SerializeField] private TextMeshProUGUI _gaugeTitleText;
 
         private void Awake()
@@ -20,6 +21,15 @@ namespace ProjectZombie.Features.UI.HUD
             if (animator != null)
             {
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            }
+
+            if (_gaugeSlider != null && _gaugeFillImage == null)
+            {
+                var fillRect = _gaugeSlider.fillRect;
+                if (fillRect != null)
+                {
+                    _gaugeFillImage = fillRect.GetComponent<Image>();
+                }
             }
         }
 
@@ -36,9 +46,9 @@ namespace ProjectZombie.Features.UI.HUD
         }
 
         /// <summary>
-        /// Cập nhật giá trị thanh Slider và Text tiêu đề trạng thái.
+        /// Cập nhật giá trị thanh Slider, Text tiêu đề trạng thái và màu sắc Fill Bar.
         /// </summary>
-        public void UpdateGauge(float value, string titleText)
+        public void UpdateGauge(float value, string titleText, Color? fillColor = null)
         {
             if (_gaugeSlider != null)
             {
@@ -48,6 +58,11 @@ namespace ProjectZombie.Features.UI.HUD
             if (_gaugeTitleText != null)
             {
                 _gaugeTitleText.text = titleText;
+            }
+
+            if (_gaugeFillImage != null && fillColor.HasValue)
+            {
+                _gaugeFillImage.color = fillColor.Value;
             }
         }
 
