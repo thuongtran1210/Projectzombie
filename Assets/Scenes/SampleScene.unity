@@ -2658,6 +2658,8 @@ GameObject:
   - component: {fileID: 649348166}
   - component: {fileID: 649348165}
   - component: {fileID: 649348168}
+  - component: {fileID: 649348170}
+  - component: {fileID: 649348169}
   m_Layer: 5
   m_Name: UI_SignatureSkillButton
   m_TagString: Untagged
@@ -2782,7 +2784,34 @@ MonoBehaviour:
   _cooldownRadialFill: {fileID: 649348166}
   _cooldownText: {fileID: 1139428072}
   _skillButton: {fileID: 649348165}
-  _canvasGroup: {fileID: 0}
+  _canvasGroup: {fileID: 649348169}
+--- !u!225 &649348169
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649348163}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &649348170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649348163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164ef73564c0d6949845cf34e8437f65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buttonView: {fileID: 649348168}
+  _elementPickerOverlayView: {fileID: 1628095386}
+  _skillManager: {fileID: 0}
 --- !u!1 &649939700
 GameObject:
   m_ObjectHideFlags: 0
@@ -3367,6 +3396,7 @@ MonoBehaviour:
   _playerStats: {fileID: 0}
   _playerExp: {fileID: 0}
   _weaponManager: {fileID: 0}
+  _playerPassives: {fileID: 0}
 --- !u!1 &728756516
 GameObject:
   m_ObjectHideFlags: 0
@@ -3629,7 +3659,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 1
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -9266,7 +9296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e5f6ddaea2df5a419f0ccf61d680218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerRect: {fileID: 1766677679}
+  containerRect: {fileID: 2133250718}
   handleRect: {fileID: 85172438}
   handleRange: 100
 --- !u!224 &57386239541539958
