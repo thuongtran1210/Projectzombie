@@ -21,15 +21,15 @@ namespace ProjectZombie.Features.UI.Helpers
             switch (element)
             {
                 case ElementType.Kim:
-                    return $"<color={COLOR_KIM}>🔷 Kim</color>";
+                    return $"<color={COLOR_KIM}>✦ Kim</color>";
                 case ElementType.Moc:
-                    return $"<color={COLOR_MOC}>🌿 Mộc</color>";
+                    return $"<color={COLOR_MOC}>✦ Mộc</color>";
                 case ElementType.Thuy:
-                    return $"<color={COLOR_THUY}>💧 Thủy</color>";
+                    return $"<color={COLOR_THUY}>✦ Thủy</color>";
                 case ElementType.Hoa:
-                    return $"<color={COLOR_HOA}>🔥 Hỏa</color>";
+                    return $"<color={COLOR_HOA}>✦ Hỏa</color>";
                 case ElementType.Tho:
-                    return $"<color={COLOR_THO}>🟫 Thổ</color>";
+                    return $"<color={COLOR_THO}>✦ Thổ</color>";
                 case ElementType.None:
                 default:
                     return string.Empty;

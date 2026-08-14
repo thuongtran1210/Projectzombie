@@ -158,11 +158,11 @@ namespace ProjectZombie.Features.Boss
         {
             return element switch
             {
-                ElementType.Kim => "<color=#E8C468><b>🔷 [KIM]</b></color>",
-                ElementType.Moc => "<color=#4CAF50><b>🌿 [MỘC]</b></color>",
-                ElementType.Thuy => "<color=#29B6F6><b>💧 [THỦY]</b></color>",
-                ElementType.Hoa => "<color=#FF5722><b>🔥 [HỎA]</b></color>",
-                ElementType.Tho => "<color=#D7A87A><b>🟫 [THỔ]</b></color>",
+                ElementType.Kim => "<color=#E8C468><b>✦ [KIM]</b></color>",
+                ElementType.Moc => "<color=#4CAF50><b>✦ [MỘC]</b></color>",
+                ElementType.Thuy => "<color=#29B6F6><b>✦ [THỦY]</b></color>",
+                ElementType.Hoa => "<color=#FF5722><b>✦ [HỎA]</b></color>",
+                ElementType.Tho => "<color=#D7A87A><b>✦ [THỔ]</b></color>",
                 _ => ""
             };
         }
