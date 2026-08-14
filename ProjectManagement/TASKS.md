@@ -16,7 +16,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
 | Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Boss AI Dynamic Element (`BossElementController`) |
 | Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| Android AAB Build & Signing (Google Play Release) | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
@@ -70,6 +70,9 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
   - Cấu hình chuẩn `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
   - Tinh chỉnh Anchor Points của tất cả Element UI (HUD Top Left/Right, Controls Bottom Left/Right, Overlay Cards Center) tránh bị lệch hoặc tràn lề trên các tỉ lệ màn hình mobile (16:9, 19.5:9, 20:9).
+- [ ] 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset (Unicode Range & Fallback Font List)**:
+  - Dùng Font Asset Creator tạo font SDF hỗ trợ đầy đủ ký tự tiếng Việt (`1EA0-1EF9`) và biểu tượng `☯` (`\u262F`).
+  - Gán vào `Fallback Font Assets List` trong `TextMeshPro Settings` để tự động sửa lỗi thiếu glyph `\u1EB0` trên toàn bộ UI/HUD.
 - [x] **[TASK-301]** Cập nhật `RunHUDView.cs` và `RunHUDPresenter.cs` thêm Slider Cán cân Âm Dương & TMP Text hiển thị thuộc tính Boss.
 - [x] **[TASK-302]** Thêm Badge màu hiển thị thuộc tính Ngũ Hành trên thẻ Gacha Nâng cấp (`UpgradeCardView.cs`).
 - [x] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.

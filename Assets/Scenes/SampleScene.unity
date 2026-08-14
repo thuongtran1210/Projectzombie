@@ -720,15 +720,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hpSlider: {fileID: 50543127}
+  _hpFillImage: {fileID: 2053245962}
   _hpText: {fileID: 1144079320}
   _expSlider: {fileID: 1971309980}
+  _expFillImage: {fileID: 2026597216}
   _levelText: {fileID: 2073543140}
+  _normalHpColor: {r: 0.82, g: 0.22, b: 0.22, a: 1}
+  _lowHpColor: {r: 1, g: 0.15, b: 0.15, a: 1}
+  _lowHpThresholdRatio: 0.25
   _timerText: {fileID: 1978386437}
   _killCountText: {fileID: 926170328}
   _skillsContainer: {fileID: 1704408305}
   _skillEntryPrefab: {fileID: 3201153403393415415, guid: 8c1e8bea65456cf47aa880c19edc3ab5, type: 3}
   _tooltipUI: {fileID: 6513349618278906069, guid: 50c577fe99e2382488fe2bf7496c01b8, type: 3}
-  _bossElementText: {fileID: 0}
 --- !u!1 &234191698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1370,6 +1374,8 @@ GameObject:
   - component: {fileID: 376222156}
   - component: {fileID: 376222155}
   - component: {fileID: 376222158}
+  - component: {fileID: 376222160}
+  - component: {fileID: 376222159}
   m_Layer: 5
   m_Name: UI_DashButton
   m_TagString: Untagged
@@ -1494,6 +1500,34 @@ MonoBehaviour:
   _dashButton: {fileID: 376222155}
   _cooldownRadialFill: {fileID: 376222156}
   _cooldownText: {fileID: 1740393954}
+  _canvasGroup: {fileID: 376222159}
+--- !u!225 &376222159
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376222153}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &376222160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376222153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d72e6b45fd8a10418e86bb5ed5f2451, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _view: {fileID: 376222158}
+  _playerController: {fileID: 0}
+  _playerStats: {fileID: 0}
 --- !u!1 &393989914
 GameObject:
   m_ObjectHideFlags: 0
@@ -3159,6 +3193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gaugeSlider: {fileID: 647773661}
+  _gaugeFillImage: {fileID: 448283644}
   _gaugeTitleText: {fileID: 1808800702}
 --- !u!114 &690293253
 MonoBehaviour:
@@ -9296,6 +9331,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e5f6ddaea2df5a419f0ccf61d680218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _controlPath: <Gamepad>/leftStick
+  _isFloatingJoystick: 0
   containerRect: {fileID: 2133250718}
   handleRect: {fileID: 85172438}
   handleRange: 100
