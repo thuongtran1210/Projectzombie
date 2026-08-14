@@ -1,14 +1,15 @@
 using UnityEngine;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Player.Mechanics;
 
 namespace ProjectZombie.Features.YinYang
 {
     /// <summary>
     /// Component theo dõi di chuyển và hành vi chiến đấu của nhân vật Đạo Sĩ (Thanh Đồng)
     /// để điều chỉnh Cán Cân Âm Dương (Yin-Yang Balance).
-    /// Tách rời hoàn toàn khỏi PlayerController để đảm bảo tính module hóa và không gây ảnh hưởng tới các class khác.
+    /// Hiện thực ICharacterGaugeProvider để cung cấp dữ liệu cơ chế cho CharacterGaugeWidgetPresenter độc lập.
     /// </summary>
-    public class TaoistYinYangTracker : MonoBehaviour
+    public class TaoistYinYangTracker : MonoBehaviour, ICharacterGaugeProvider
     {
         [Header("Tốc độ tích luỹ điểm")]
         [Tooltip("Điểm Dương nạp mỗi giây khi di chuyển")]
@@ -22,6 +23,17 @@ namespace ProjectZombie.Features.YinYang
 
         private PlayerController _playerController;
 
+        // ====================================================================
+        // ICharacterGaugeProvider Implementation
+        // ====================================================================
+
+        public string GaugeTitle => GetFormattedStateTitle(YinYangManager.Instance != null ? YinYangManager.Instance.GetState() : YinYangState.Balanced);
+        public float CurrentValue => YinYangManager.Instance != null ? YinYangManager.Instance.CurrentValue : 50f;
+        public float MinValue => 0f;
+        public float MaxValue => 100f;
+
+        public event System.Action<float, string> OnGaugeValueChanged;
+
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();
@@ -34,10 +46,23 @@ namespace ProjectZombie.Features.YinYang
                 _playerController.OnDashed += HandlePlayerDashed;
             }
 
-            // Kích hoạt YinYangManager khi Đạo Sĩ xuất hiện
             if (YinYangManager.Instance != null)
             {
                 YinYangManager.Instance.SetTrackerActive(true);
+                YinYangManager.Instance.OnYinYangValueChanged += HandleYinYangValueChanged;
+            }
+        }
+
+        private void Start()
+        {
+            if (YinYangManager.Instance != null)
+            {
+                YinYangManager.Instance.SetTrackerActive(true);
+                YinYangManager.Instance.OnYinYangValueChanged -= HandleYinYangValueChanged;
+                YinYangManager.Instance.OnYinYangValueChanged += HandleYinYangValueChanged;
+                
+                // Kích hoạt cập nhật ban đầu
+                HandleYinYangValueChanged(YinYangManager.Instance.CurrentValue, YinYangManager.Instance.GetState());
             }
         }
 
@@ -50,6 +75,7 @@ namespace ProjectZombie.Features.YinYang
 
             if (YinYangManager.Instance != null)
             {
+                YinYangManager.Instance.OnYinYangValueChanged -= HandleYinYangValueChanged;
                 YinYangManager.Instance.SetTrackerActive(false);
             }
         }
@@ -77,6 +103,22 @@ namespace ProjectZombie.Features.YinYang
             {
                 YinYangManager.Instance.AdjustValue(_dashYangBonus);
             }
+        }
+
+        private void HandleYinYangValueChanged(float val, YinYangState state)
+        {
+            string stateTitle = GetFormattedStateTitle(state);
+            OnGaugeValueChanged?.Invoke(val, stateTitle);
+        }
+
+        private string GetFormattedStateTitle(YinYangState state)
+        {
+            return state switch
+            {
+                YinYangState.YinDominant => "<color=#4A90E2>Âm Thịnh</color>",
+                YinYangState.YangDominant => "<color=#FF4444>Dương Thịnh</color>",
+                _ => "<color=#FFD700>Thái Cực Cân Bằng</color>"
+            };
         }
     }
 }

@@ -33,6 +33,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private PlayerInfoUIPresenter playerInfoUIPresenter;
         [SerializeField] private UpgradeUIPresenter upgradeUIPresenter;
         [SerializeField] private GameOverScreenPresenter gameOverScreenPresenter;
+        [SerializeField] private CharacterGaugeWidgetPresenter characterGaugeWidgetPresenter;
 
         private void Awake()
         {
@@ -66,6 +67,7 @@ namespace ProjectZombie.Features.Player
             HealthSystem health = playerInstance.GetComponent<HealthSystem>();
             PlayerExperience experience = playerInstance.GetComponent<PlayerExperience>();
             WeaponManager weaponManager = playerInstance.GetComponent<WeaponManager>();
+            var gaugeProvider = playerInstance.GetComponent<ProjectZombie.Features.Player.Mechanics.ICharacterGaugeProvider>();
 
             // Cảnh báo nếu thiếu component quan trọng
             if (stats == null) Debug.LogWarning("[GameplayBootstrapper] Player instance thiếu PlayerStats!");
@@ -112,6 +114,18 @@ namespace ProjectZombie.Features.Player
             {
                 gameOverScreenPresenter.Construct(health);
                 Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào GameOverScreenPresenter.");
+            }
+
+            // 5. Tự động Bind Character Gauge nếu nhân vật có thanh cơ chế (OCP)
+            if (characterGaugeWidgetPresenter == null)
+            {
+                characterGaugeWidgetPresenter = FindObjectOfType<CharacterGaugeWidgetPresenter>(true);
+            }
+
+            if (characterGaugeWidgetPresenter != null)
+            {
+                characterGaugeWidgetPresenter.Bind(gaugeProvider);
+                Debug.Log($"[GameplayBootstrapper] CharacterGaugeWidgetPresenter đã Bind provider: {(gaugeProvider != null ? gaugeProvider.GetType().Name : "None")}");
             }
         }
     }

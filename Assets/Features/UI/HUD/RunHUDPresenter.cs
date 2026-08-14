@@ -87,20 +87,6 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
-
-            // Subscribe Âm Dương Manager
-            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
-            {
-                var yinyang = ProjectZombie.Features.YinYang.YinYangManager.Instance;
-                yinyang.OnYinYangValueChanged += OnYinYangValueChanged;
-                yinyang.OnTrackerActiveChanged += OnYinYangTrackerActiveChanged;
-                
-                if (_view != null)
-                {
-                    _view.SetYinYangActive(yinyang.IsTrackerActive);
-                }
-                OnYinYangValueChanged(yinyang.CurrentValue, yinyang.GetState());
-            }
         }
 
         private void OnDestroy()
@@ -116,21 +102,6 @@ namespace ProjectZombie.Features.UI.HUD
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
-            }
-
-            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
-            {
-                var yinyang = ProjectZombie.Features.YinYang.YinYangManager.Instance;
-                yinyang.OnYinYangValueChanged -= OnYinYangValueChanged;
-                yinyang.OnTrackerActiveChanged -= OnYinYangTrackerActiveChanged;
-            }
-        }
-
-        private void OnYinYangTrackerActiveChanged(bool isActive)
-        {
-            if (_view != null)
-            {
-                _view.SetYinYangActive(isActive);
             }
         }
 
@@ -197,11 +168,6 @@ namespace ProjectZombie.Features.UI.HUD
                 OnTimerTick(RunStatsTracker.Instance.ElapsedTime);
                 OnKillCountChanged(RunStatsTracker.Instance.KillCount);
             }
-
-            if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
-            {
-                OnYinYangValueChanged(ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue, ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState());
-            }
         }
 
         private void HandleStateChanged(GameState newState)
@@ -267,28 +233,6 @@ namespace ProjectZombie.Features.UI.HUD
         // ====================================================================
         // VONG XUYEN (v4.0) EVENT HANDLERS
         // ====================================================================
-
-        public void OnYinYangValueChanged(float val, ProjectZombie.Features.YinYang.YinYangState state)
-        {
-            if (_view == null) return;
-
-            string stateName = state switch
-            {
-                ProjectZombie.Features.YinYang.YinYangState.YinDominant => "<color=#4A90E2>Âm Thịnh</color>",
-                ProjectZombie.Features.YinYang.YinYangState.YangDominant => "<color=#FF4444>Dương Thịnh</color>",
-                _ => "<color=#FFD700>Thái Cực Cân Bằng</color>"
-            };
-
-            _view.SetYinYangBalance(val, stateName);
-        }
-
-        public void OnYinYangStateChanged(ProjectZombie.Features.YinYang.YinYangState state)
-        {
-            float val = ProjectZombie.Features.YinYang.YinYangManager.Instance != null 
-                ? ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue 
-                : 50f;
-            OnYinYangValueChanged(val, state);
-        }
 
         public void OnBossElementChanged(ElementType element)
         {

@@ -57,12 +57,6 @@ namespace ProjectZombie.Features.UI.HUD
             var animator = GetComponent<Animator>();
             if (animator != null)
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
-
-            if (_yinYangSlider != null)
-            {
-                _yinYangSlider.minValue = 0f;
-                _yinYangSlider.maxValue = 100f;
-            }
         }
 
 
@@ -164,35 +158,7 @@ namespace ProjectZombie.Features.UI.HUD
         // ====================================================================
 
         [Header("Vong Xuyen (v4.0)")]
-        [SerializeField] private Slider _yinYangSlider;
-        [SerializeField] private TextMeshProUGUI _yinYangStateText; // Ví dụ: "Dương Thịnh"
         [SerializeField] private TextMeshProUGUI _bossElementText;  // Ví dụ: "<color=#FF4444>[BOSS: HỎA]</color>"
-
-        /// <summary>Bật/Tắt hiển thị thanh Cán Cân Âm Dương trên HUD (chỉ hiển thị khi chơi Đạo Sĩ).</summary>
-        public void SetYinYangActive(bool isActive)
-        {
-            if (_yinYangSlider != null)
-            {
-                _yinYangSlider.gameObject.SetActive(isActive);
-            }
-            if (_yinYangStateText != null)
-            {
-                _yinYangStateText.gameObject.SetActive(isActive);
-            }
-        }
-
-        /// <summary>Cập nhật Cán cân Âm Dương. Presenter truyền giá trị float và string trạng thái.</summary>
-        public void SetYinYangBalance(float val, string formattedState)
-        {
-            if (_yinYangSlider != null)
-            {
-                _yinYangSlider.value = val;
-            }
-            if (_yinYangStateText != null)
-            {
-                _yinYangStateText.text = formattedState;
-            }
-        }
 
         /// <summary>Cập nhật thuộc tính hiện tại của Boss. Presenter truyền string đã format TMP Rich Text.</summary>
         public void SetBossElement(string formattedBossElement)
