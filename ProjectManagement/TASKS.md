@@ -14,12 +14,12 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Android Target Platform Refactor |
 | 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Local Save System (`SaveSystem.cs`) |
 | 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Ngũ Hành Damage & Combo System |
-| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Cán Cân Âm Dương (`YinYangManager`) |
-| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Boss AI Dynamic Element (`BossElementController`) |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Cán Cân Âm Dương (`YinYangManager`) |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | Boss AI Dynamic Element (`BossElementController`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
 | Android AAB Build & Signing (Google Play Release) | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
-| | | Upgrade Cards Badges & Meta Shop UI |
+| | | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** |
 
 ---
 
@@ -78,10 +78,18 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
   - [x] **[TASK-312.4] Tối Ưu Tinh Gọn HUD & Phân Định Rõ Ràng Trách Nhiệm UI:**
     - Tách biệt hoàn toàn Panel Âm Dương (`CharacterGaugeWidgetView.cs`) chỉ hiển thị cơ chế Cán Cân Nhân Vật.
     - Loại bỏ trường `_bossElementText` dư thừa khỏi `RunHUDView.cs` và `RunHUDPresenter.cs`, giữ Top HUD thanh thoát, tập trung vào HP, EXP, Timer & Kills.
-- [ ] 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (`UpgradeUIView.cs` & `UpgradeCardView.cs`)**:
-  - Tối ưu bố cục Thẻ Nâng Cấp (Card Layout): Tên pháp bảo/kỹ năng, cấp độ mới, mô tả hiệu ứng, badge màu thuộc tính Ngũ Hành.
-  - Hiển thị rõ ràng sự thay đổi chỉ số (Stat Diff) trực quan dễ đọc.
-  - Đảm bảo `Animator` đặt `updateMode = AnimatorUpdateMode.UnscaledTime` để hoạt ảnh xuất hiện mượt mà khi dừng game (`Time.timeScale = 0`).
+- [x] 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges - MVP & Clean Architecture)**:
+  - [x] **[TASK-313.1] Xây Dựng Bộ Định Dạng Chỉ Số Thẻ Nâng Cấp (`IUpgradeStatFormatter` & `UpgradeStatFormatter`):**
+    - Thiết kế `IUpgradeStatFormatter` độc lập để format `WeaponStatModifier` và `PlayerStatModifier` thành Rich Text trực quan (ví dụ: `<color=#4DEEEA>+15% Sát Thương</color>`, `<color=#FFD700>+1 Số Tia</color>`).
+    - Dễ bảo trì và mở rộng khi thêm các loại modifier hoặc thẻ kỹ năng mới trong tương lai.
+  - [x] **[TASK-313.2] Chuẩn Hóa Bảng Màu & Badge Ngũ Hành (`ElementVisualHelper`):**
+    - Tạo helper tập trung cung cấp format TMP Rich Text, mã màu phong thủy (Kim 🔷, Mộc 🌿, Thủy 💧, Hỏa 🔥, Thổ 🟫) dùng chung cho Card, HUD và Hệ thống.
+  - [x] **[TASK-313.3] Nâng Cấp Passive View Thẻ Nâng Cấp (`UpgradeCardView.cs`):**
+    - Bổ sung trường `_statDiffText` (hoặc `_statDiffContainer`) độc lập với `_descriptionText` để phân tách rõ Mô Tả Truyền Thuyết và Chỉ Số Thay Đổi.
+    - Bổ sung các phương thức cập nhật thụ động `SetStatDiff(string)` và cập nhật lại signature `Setup(...)` kèm null-guard.
+    - Đảm bảo `Animator.updateMode = AnimatorUpdateMode.UnscaledTime` khi hiển thị popup dừng game (`Time.timeScale = 0`).
+  - [x] **[TASK-313.4] Tích Hợp Điều Phối Presenter (`UpgradeUIPresenter.cs`):**
+    - Kết nối `UpgradeStatFormatter` và `ElementVisualHelper` vào luồng `PopulateUpgradeScreen()` để truyền dữ liệu đã format sang `UpgradeCardView`.
 - [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
   - Cấu hình chuẩn `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
   - Tinh chỉnh Anchor Points của tất cả Element UI (HUD Top Left/Right, Controls Bottom Left/Right, Overlay Cards Center) tránh bị lệch hoặc tràn lề trên các tỉ lệ màn hình mobile (16:9, 19.5:9, 20:9).

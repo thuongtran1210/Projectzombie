@@ -6,19 +6,22 @@ using System;
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// View hiển thị thụ động cho một thẻ nâng cấp (Upgrade Card).
+    /// View hiển thị thụ động cho một thẻ nâng cấp (Upgrade Card) theo mô hình MVP.
     /// </summary>
     public class UpgradeCardView : MonoBehaviour
     {
+        [Header("Display Elements")]
         [SerializeField] private Image _iconImage;
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _categoryText;
         [SerializeField] private TextMeshProUGUI _levelText;
+        [SerializeField] private TextMeshProUGUI _statDiffText;
+        [SerializeField] private TextMeshProUGUI _elementBadgeText;
+
+        [Header("Buttons")]
         [SerializeField] private Button _selectButton;
         [SerializeField] private Button _banButton;
-
-        [SerializeField] private TextMeshProUGUI _elementBadgeText;
 
         private Action _onClicked;
         private Action _onBanClicked;
@@ -34,7 +37,7 @@ namespace ProjectZombie.Features.UI
                 _banButton.onClick.AddListener(OnBanButtonClicked);
             }
 
-            // Đảm bảo Animator chạy bình thường ngay cả khi Time.timeScale = 0
+            // Đảm bảo Animator chạy bình thường ngay cả khi Time.timeScale = 0 (khi pause chọn nâng cấp)
             Animator animator = GetComponent<Animator>();
             if (animator != null)
             {
@@ -43,9 +46,17 @@ namespace ProjectZombie.Features.UI
         }
 
         /// <summary>
-        /// Thiết lập hiển thị của thẻ nâng cấp.
+        /// Thiết lập hiển thị toàn diện của thẻ nâng cấp kèm chuỗi Stat Diff thay đổi chỉ số.
         /// </summary>
-        public void Setup(Sprite icon, string cardName, string description, string category, string level, Action onClicked, Action onBanClicked = null)
+        public void Setup(
+            Sprite icon,
+            string cardName,
+            string description,
+            string category,
+            string level,
+            string statDiff,
+            Action onClicked,
+            Action onBanClicked = null)
         {
             _onClicked = onClicked;
             _onBanClicked = onBanClicked;
@@ -55,17 +66,31 @@ namespace ProjectZombie.Features.UI
                 _banButton.gameObject.SetActive(onBanClicked != null);
             }
 
-            if (_iconImage == null || _nameText == null || _descriptionText == null || _categoryText == null || _levelText == null)
-            {
-                Debug.LogWarning($"[{nameof(UpgradeCardView)}] Một hoặc nhiều component UI chưa được gán trong Inspector.");
-                return;
-            }
+            if (_iconImage != null) _iconImage.sprite = icon;
+            if (_nameText != null) _nameText.text = cardName;
+            if (_descriptionText != null) _descriptionText.text = description;
+            if (_categoryText != null) _categoryText.text = category;
+            if (_levelText != null) _levelText.text = level;
 
-            _iconImage.sprite = icon;
-            _nameText.text = cardName;
-            _descriptionText.text = description;
-            _categoryText.text = category;
-            _levelText.text = level;
+            SetStatDiff(statDiff);
+        }
+
+        /// <summary>
+        /// Thiết lập hiển thị chuỗi so sánh chỉ số (Stat Diff) với TMP Rich Text.
+        /// </summary>
+        public void SetStatDiff(string statDiffFormattedText)
+        {
+            if (_statDiffText == null) return;
+
+            if (string.IsNullOrEmpty(statDiffFormattedText))
+            {
+                _statDiffText.gameObject.SetActive(false);
+            }
+            else
+            {
+                _statDiffText.gameObject.SetActive(true);
+                _statDiffText.text = statDiffFormattedText;
+            }
         }
 
         /// <summary>
@@ -74,6 +99,7 @@ namespace ProjectZombie.Features.UI
         public void SetElementBadge(string badgeFormattedText)
         {
             if (_elementBadgeText == null) return;
+
             if (string.IsNullOrEmpty(badgeFormattedText))
             {
                 _elementBadgeText.gameObject.SetActive(false);

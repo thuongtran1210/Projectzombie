@@ -4,6 +4,8 @@ using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.UI.Formatters;
+using ProjectZombie.Features.UI.Helpers;
 
 namespace ProjectZombie.Features.UI
 {
@@ -24,6 +26,7 @@ namespace ProjectZombie.Features.UI
 
         private int _currentRerolls;
         private bool _isConstructed = false;
+        private readonly IUpgradeStatFormatter _statFormatter = new UpgradeStatFormatter();
 
         public void Construct(PlayerExperience experience, WeaponManager weaponManager)
         {
@@ -158,6 +161,8 @@ namespace ProjectZombie.Features.UI
                     // Xử lý định dạng dữ liệu (Presenter format data)
                     string category = FormatCategoryName(upgradeData.upgradeType);
                     string level = FormatLevel(upgradeData);
+                    string statDiff = _statFormatter.FormatStatDiff(upgradeData);
+                    string elementBadge = ElementVisualHelper.GetElementBadgeRichText(upgradeData.element);
 
                     // Thiết lập card với dữ liệu đã định dạng và callback
                     cardView.Setup(
@@ -166,9 +171,12 @@ namespace ProjectZombie.Features.UI
                         upgradeData.description,
                         category,
                         level,
+                        statDiff,
                         () => OnUpgradeSelected(upgradeData),
                         () => OnBanSelected(upgradeData)
                     );
+
+                    cardView.SetElementBadge(elementBadge);
                 }
                 else
                 {
