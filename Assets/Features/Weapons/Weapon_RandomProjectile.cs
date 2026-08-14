@@ -24,7 +24,7 @@ namespace ProjectZombie.Features.Weapons
         {
             if (randomProjectiles == null || randomProjectiles.Length == 0) return;
 
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
             int count = GetFinalProjectileCount();
 
             for (int i = 0; i < count; i++)

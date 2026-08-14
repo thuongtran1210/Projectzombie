@@ -213,7 +213,9 @@ namespace ProjectZombie.Features.Weapons.Pets
             var health = _target.GetComponent<HealthSystem>();
             if (health != null)
             {
-                DamageData damageData = DamageUtility.CalculateDamage(_weapon.GetFinalDamage(), _weapon.GetFinalCritChance(), _weapon.GetFinalCritDamage());
+                DamageData damageData = _weapon != null 
+                    ? _weapon.CreateDamageData() 
+                    : DamageUtility.CalculateDamage(10f, 0.05f);
                 health.TakeDamage(damageData);
 
                 var playerHealth = _player.GetComponent<HealthSystem>();

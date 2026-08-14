@@ -91,14 +91,18 @@ namespace ProjectZombie.Features.UI.DamageText
 
             // 2. Format chuỗi sát thương không sinh GC (0-GC Lookup Table)
             string formattedText = GetFastFormattedNumber(report.Amount);
+            if (report.IsCounter)
+            {
+                formattedText = $"✦ {formattedText}";
+            }
             if (report.IsCritical)
             {
                 formattedText = $"<b>{formattedText}!</b>";
             }
 
             // 3. Lấy Color & Font Size từ Config
-            Color textColor = _styleConfig.GetColor(report.IsPlayerTarget, report.IsCritical, report.Element);
-            float fontSize = _styleConfig.GetFontSize(report.IsPlayerTarget, report.IsCritical);
+            Color textColor = _styleConfig.GetColor(report.IsPlayerTarget, report.IsCritical, report.Element, report.IsCounter);
+            float fontSize = _styleConfig.GetFontSize(report.IsPlayerTarget, report.IsCritical, report.IsCounter);
 
             // 4. Lấy Item từ Pool và khởi tạo
             DamageTextItem item = _pool.Get();

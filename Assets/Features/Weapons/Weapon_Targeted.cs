@@ -24,7 +24,7 @@ namespace ProjectZombie.Features.Weapons
             Vector2 direction = (_currentTarget.position - firePoint.position).normalized;
             
             // Lấy thông số tổng (Base + Local Upgrades)
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
             
             int count = GetFinalProjectileCount();
             

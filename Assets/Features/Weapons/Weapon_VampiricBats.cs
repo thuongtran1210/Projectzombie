@@ -27,7 +27,7 @@ namespace ProjectZombie.Features.Weapons
                 ? (Vector2)(_currentTarget.position - firePoint.position).normalized 
                 : Random.insideUnitCircle.normalized;
 
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
             int count = GetFinalProjectileCount();
 
             for (int i = 0; i < count; i++)

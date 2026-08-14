@@ -84,8 +84,8 @@ namespace ProjectZombie.Features.Shared
 
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
-            // Bắn event báo cáo sát thương đầy đủ (Crit & Element)
-            OnDamageReported?.Invoke(new DamageReport(damageData.Amount, damageData.IsCritical, damageData.Element, transform.position, CompareTag("Player")));
+            // Bắn event báo cáo sát thương đầy đủ (Crit, Element & Counter)
+            OnDamageReported?.Invoke(new DamageReport(damageData.Amount, damageData.IsCritical, damageData.Element, transform.position, CompareTag("Player"), damageData.IsCounter));
 
             if (_currentHealth <= 0)
             {

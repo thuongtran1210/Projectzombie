@@ -9,14 +9,15 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | Master-Worker Spawner Refactoring |
-| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Android Target Platform Refactor |
-| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Local Save System (`SaveSystem.cs`) |
-| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Ngũ Hành Damage & Combo System |
-| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
-| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Boss AI Dynamic Element (`BossElementController`) |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
+| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Master-Worker Spawner Refactoring |
+| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Android Target Platform Refactor |
+| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Local Save System (`SaveSystem.cs`) |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Ngũ Hành Damage & Combo System |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Cán Cân Âm Dương (`YinYangManager`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Boss AI Dynamic Element (`BossElementController`) |
+| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
@@ -24,12 +25,26 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 ## 🏃 Sprint Tasks Breakdown
 
-### ☯️ Hạng Mục 1: Lõi Cơ Chế Ngũ Hành & Âm Dương (Completed)
+### ☯️ Hạng Mục 1: Lõi Cơ Chế Ngũ Hành & Âm Dương
 - [x] **[TASK-101]** Refactor `DamageUtility.cs` và `DamageData.cs` hỗ trợ tra cứu Tương Khắc Ngũ Hành (+30% Sát thương).
 - [x] **[TASK-102]** Tích hợp Element Combo Tracker vào `WeaponManager.cs` (-20% Cooldown khi kích hoạt Tương Sinh trong 3s).
 - [x] **[TASK-103]** Xây dựng `YinYangManager.cs` theo dõi trạng thái Âm Dương (0-100) và phát sự kiện `OnYinYangStateChanged`.
 - [x] **[TASK-104]** Tích hợp lọc pool thẻ Gacha nâng cấp ngẫu nhiên trong `UpgradeManager.cs` theo `YinYangState`.
 - [x] **[TASK-105]** Tạo `BossElementController.cs` cho phép Boss (Ngưu Đầu Mã Diện & Diêm Vương) luân phiên xoay vòng thuộc tính Ngũ Hành theo chu kỳ 10s.
+- [x] 🚨 **[TASK-106] Tích Hợp Toàn Diện Sát Thương Ngũ Hành & Vòng Tương Sinh (Clean Architecture & SOLID)**:
+  - [x] **[TASK-106.1] Chuẩn Hóa IDamageDealer & WeaponBase (Attacker Element Pipeline):**
+    - Cập nhật `WeaponBase` cung cấp `AttackElement = this.element` và `CreateDamageData()`.
+    - Refactor các lớp vũ khí con (`Weapon_Crossbow`, `Weapon_Boomerang`, `Weapon_DualSlash`, `Weapon_Flamethrower`, `Weapon_MeleeBase`, `PetController`,...) truyền đúng `this.element` khi tạo `DamageData` / spawn Projectile.
+  - [x] **[TASK-106.2] Chuẩn Hóa IDamageable & Hit Resolution (Defender Element & Counter Multiplier):**
+    - Cung cấp `CurrentElement` trên `Enemy` và `BossElementController`.
+    - Tại điểm va chạm (`ProjectileCollision.cs` & `Weapon_MeleeBase.DealDamageInArea`), áp dụng tính toán tương khắc 1 chiều qua `DamageUtility.CalculateHitDamage(attackerElement, defenderElement)` (nhân `×1.3` nếu khắc hệ).
+    - Đánh dấu cờ `IsCounter` trong `DamageData` và `DamageReport` để phục vụ visual feedback.
+  - [x] **[TASK-106.3] Tích Hợp Vòng Tương Sinh Theo Event-Driven Decoupled (`ElementCycleManager`):**
+    - Gọi `ElementCycleManager.Instance.RegisterHit(attackerElement, sourceWeapon)` khi đòn đánh trúng kẻ địch.
+    - Đảm bảo cơ chế cooldown refund 20% trừ trực tiếp trên `WeaponBase.ReduceCurrentCooldown()` mượt mà, zero-allocation và tôn trọng giới hạn 1 proc / 3s.
+  - [x] **[TASK-106.4] Visual & Audio Feedback Tương Khắc / Tương Sinh (Game Feel):**
+    - Kích hoạt màu Vàng Kim rực rỡ (`#FFD700`) + ký hiệu `✦` trên Floating Damage Text khi đòn đánh đạt điều kiện Tương Khắc trong `DamageTextManager` và `DamageTextStyleConfig`.
+    - Phát âm thanh *Ting!* + hiệu ứng khi proc Tương Sinh theo đúng GDD v4.0.
 
 ### 🗡️ Hạng Mục 2: Reskin Content & Asset Database (Completed)
 - [x] **[TASK-201]** Thêm trường `elementType` vào ScriptableObject `WeaponData.cs` và `EnemyConfig.cs`.

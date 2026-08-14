@@ -19,7 +19,7 @@ namespace ProjectZombie.Features.Weapons
             if (projectileData == null) return;
 
             // Lấy thông số tổng (Base + Local Upgrades)
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
             
             int count = GetFinalProjectileCount();
 

@@ -40,7 +40,7 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformAttack()
         {
             Vector2 center = firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
-            DamageData damageData = DamageUtility.CalculateDamage(CharacterStats.GetTotalDamage(), CharacterStats.CritChance);
+            DamageData damageData = CreateDamageData();
 
             // Xác định góc gốc dựa trên hướng mặt của Player
             float baseAngle = 0f;

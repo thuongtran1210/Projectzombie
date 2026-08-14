@@ -62,13 +62,33 @@ namespace ProjectZombie.Features.Weapons
                     var health = hit.GetComponent<HealthSystem>();
                     if (health != null && health.CurrentHealth > 0)
                     {
-                        health.TakeDamage(damageData);
+                        ElementType defenderElement = ElementType.None;
+                        if (hit.TryGetComponent(out Enemies.Enemy enemy))
+                        {
+                            defenderElement = enemy.CurrentElement;
+                        }
+
+                        DamageData hitDamage = DamageUtility.CalculateHitDamage(
+                            damageData.Amount,
+                            damageData.IsCritical,
+                            damageData.Element,
+                            defenderElement,
+                            this
+                        );
+
+                        health.TakeDamage(hitDamage);
                         hitCount++;
                         hitAnyEnemy = true;
 
-                        if (damageData.IsCritical)
+                        if (hitDamage.IsCritical)
                         {
                             hitCrit = true;
+                        }
+
+                        // Kích hoạt Vòng Tương Sinh (Element Generation)
+                        if (damageData.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                        {
+                            YinYang.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
                         }
 
                         // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật

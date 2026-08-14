@@ -25,6 +25,10 @@ namespace ProjectZombie.Features.UI.DamageText
         public Color PlayerDamageColor = new Color(1f, 0.1f, 0.2f, 1f); // Hồng đỏ
         public float PlayerDamageFontSize = 4.5f;
 
+        [Header("Counter Elemental Damage")]
+        public Color CounterColor = new Color(1.0f, 0.84f, 0.0f, 1f); // #FFD700 Vàng Kim Hoàng Gia
+        public float CounterFontSize = 5.0f;
+
         [Header("Elemental Colors")]
         public ElementStyle[] ElementalStyles = new ElementStyle[]
         {
@@ -42,9 +46,10 @@ namespace ProjectZombie.Features.UI.DamageText
         public AnimationCurve ScaleCurve = AnimationCurve.EaseInOut(0f, 1.4f, 0.1f, 1f);
         public AnimationCurve AlphaCurve = AnimationCurve.EaseInOut(0.3f, 1f, 1f, 0f);
 
-        public Color GetColor(bool isPlayer, bool isCrit, ElementType element)
+        public Color GetColor(bool isPlayer, bool isCrit, ElementType element, bool isCounter = false)
         {
             if (isPlayer) return PlayerDamageColor;
+            if (isCounter) return CounterColor; // Ưu tiên hiển thị Vàng Kim rực rỡ khi khắc hệ
             if (isCrit) return CritColor;
 
             if (element != ElementType.None && ElementalStyles != null)
@@ -58,9 +63,10 @@ namespace ProjectZombie.Features.UI.DamageText
             return NormalColor;
         }
 
-        public float GetFontSize(bool isPlayer, bool isCrit)
+        public float GetFontSize(bool isPlayer, bool isCrit, bool isCounter = false)
         {
             if (isPlayer) return PlayerDamageFontSize;
+            if (isCounter) return CounterFontSize;
             if (isCrit) return CritFontSize;
             return NormalFontSize;
         }

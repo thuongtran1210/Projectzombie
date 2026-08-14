@@ -6,14 +6,18 @@ namespace ProjectZombie.Features.Shared
     {
         public GameObject Source;
         public float BaseDamage;
-        // In the future, you could add:
-        // public DamageType Element;
-        // public bool IsCritical;
+        public ElementType Element;
+        public bool IsCritical;
+        public Object SourceWeapon;
         
-        public DamageContext(GameObject source, float baseDamage)
+        public DamageContext(GameObject source, float baseDamage, ElementType element = ElementType.None, bool isCritical = false, Object sourceWeapon = null)
         {
             Source = source;
             BaseDamage = baseDamage;
+            Element = element;
+            IsCritical = isCritical;
+            SourceWeapon = sourceWeapon;
         }
     }
 }
+

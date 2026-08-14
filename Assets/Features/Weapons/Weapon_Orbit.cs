@@ -25,7 +25,7 @@ namespace ProjectZombie.Features.Weapons
             int orbCount = Mathf.Max(1, baseOrbCount + localProjectileCountBonus);
             float scale = GetFinalScale();
             float angleStep = 360f / orbCount;
-            DamageData damageData = DamageUtility.CalculateDamage(GetDamage(), GetFinalCritChance());
+            DamageData damageData = CreateDamageData();
             Vector3 center = firePoint != null ? firePoint.position : transform.position;
 
             _activeOrbs.Clear();

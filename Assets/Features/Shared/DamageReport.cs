@@ -12,14 +12,17 @@ namespace ProjectZombie.Features.Shared
         public ElementType Element;
         public Vector3 Position;
         public bool IsPlayerTarget;
+        public bool IsCounter;
 
-        public DamageReport(float amount, bool isCritical, ElementType element, Vector3 position, bool isPlayerTarget = false)
+        public DamageReport(float amount, bool isCritical, ElementType element, Vector3 position, bool isPlayerTarget = false, bool isCounter = false)
         {
             Amount = amount;
             IsCritical = isCritical;
             Element = element;
             Position = position;
             IsPlayerTarget = isPlayerTarget;
+            IsCounter = isCounter;
         }
     }
 }
+

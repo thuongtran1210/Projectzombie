@@ -52,14 +52,34 @@ namespace ProjectZombie.Features.Shared
             float critChance, 
             float critDamageMultiplier = CRIT_MULTIPLIER, 
             ElementType attackerElement = ElementType.None, 
-            ElementType defenderElement = ElementType.None)
+            ElementType defenderElement = ElementType.None,
+            Object sourceWeapon = null)
         {
             bool isCrit = Random.value <= critChance;
             float elementMult = GetElementMultiplier(attackerElement, defenderElement);
+            bool isCounter = elementMult > 1.05f; // Khắc hệ (1.3x)
             float finalDamage = (isCrit ? baseDamage * critDamageMultiplier : baseDamage) * elementMult;
 
-            return new DamageData(finalDamage, isCrit, attackerElement);
+            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon);
+        }
+
+        /// <summary>
+        /// Tính toán sát thương tại điểm va chạm thực tế (khi đã biết chắc chắn defenderElement).
+        /// </summary>
+        public static DamageData CalculateHitDamage(
+            float damageAmount,
+            bool isCrit,
+            ElementType attackerElement,
+            ElementType defenderElement,
+            Object sourceWeapon = null)
+        {
+            float elementMult = GetElementMultiplier(attackerElement, defenderElement);
+            bool isCounter = elementMult > 1.05f;
+            float finalDamage = damageAmount * elementMult;
+
+            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon);
         }
     }
 }
+
 

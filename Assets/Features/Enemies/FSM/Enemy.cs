@@ -40,6 +40,20 @@ namespace ProjectZombie.Features.Enemies
         public bool IsBoss => isBoss || CompareTag("Boss");
         public bool IsHeavyArmor => Config != null && Config.isHeavyArmor;
 
+        private ProjectZombie.Features.Boss.BossElementController _bossElementController;
+
+        public ElementType CurrentElement
+        {
+            get
+            {
+                if (_bossElementController != null)
+                {
+                    return _bossElementController.CurrentElement;
+                }
+                return Config != null ? Config.elementType : ElementType.None;
+            }
+        }
+
         // Temporary Trap Circling State
         private bool _isTrapCircling;
         private Vector3 _trapCenter;
@@ -61,6 +75,7 @@ namespace ProjectZombie.Features.Enemies
             Rb = GetComponent<Rigidbody2D>();
             HealthSystem = GetComponent<HealthSystem>();
             EnemyAnimator = GetComponentInChildren<EnemyAnimator>();
+            _bossElementController = GetComponent<ProjectZombie.Features.Boss.BossElementController>();
             Rb.freezeRotation = true;
 
             if (Config != null)

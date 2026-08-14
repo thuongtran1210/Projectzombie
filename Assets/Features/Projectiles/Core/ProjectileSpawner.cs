@@ -43,7 +43,11 @@ namespace ProjectZombie.Features.Projectiles.Core
 
             // Final damage context
             float finalBaseDamage = damageOverride.Amount > 0 ? damageOverride.Amount : data.BaseDamage;
-            DamageContext context = new DamageContext(owner, finalBaseDamage);
+            ElementType finalElement = damageOverride.Element;
+            bool isCrit = damageOverride.IsCritical;
+            Object sourceWeapon = damageOverride.SourceWeapon;
+
+            DamageContext context = new DamageContext(owner, finalBaseDamage, finalElement, isCrit, sourceWeapon);
 
             controller.Initialize(data, direction, owner, context, pool, generation);
 

@@ -103,7 +103,7 @@ namespace ProjectZombie.Features.Weapons
         
         public virtual float GetFinalDamage() => GetDamage();
         
-        public virtual float GetFinalCritChance() => CharacterStats.CritChance + localCritChanceBonus;
+        public virtual float GetFinalCritChance() => CharacterStats != null ? CharacterStats.CritChance + localCritChanceBonus : localCritChanceBonus;
         
         public virtual float GetFinalCritDamage() => 2.0f + localCritDamageBonus; // Mặc định 2.0 (200%)
         
@@ -115,6 +115,20 @@ namespace ProjectZombie.Features.Weapons
         
         public virtual float GetFinalScale() => 1f + localScaleBonus; // Cơ bản scale 1
         
+        public virtual ElementType AttackElement => element;
+
+        public virtual DamageData CreateDamageData()
+        {
+            return DamageUtility.CalculateDamage(
+                GetFinalDamage(), 
+                GetFinalCritChance(), 
+                GetFinalCritDamage(), 
+                attackerElement: AttackElement,
+                defenderElement: ElementType.None,
+                sourceWeapon: this
+            );
+        }
+
         // ------------------------------------------
 
         public virtual void ApplyStatModifier(WeaponStatModifier modifier)

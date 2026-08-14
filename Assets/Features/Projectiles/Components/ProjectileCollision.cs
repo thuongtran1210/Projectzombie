@@ -55,7 +55,29 @@ namespace ProjectZombie.Features.Projectiles.Components
 
                 if (collision.TryGetComponent(out IDamageable target))
                 {
-                    target.TakeDamage(_controller.Damage);
+                    ElementType defenderElement = ElementType.None;
+                    if (collision.TryGetComponent(out Enemies.Enemy enemy))
+                    {
+                        defenderElement = enemy.CurrentElement;
+                    }
+
+                    // Tính toán sát thương tương khắc 1 chiều
+                    DamageData hitDamage = DamageUtility.CalculateHitDamage(
+                        _controller.Damage.BaseDamage,
+                        _controller.Damage.IsCritical,
+                        _controller.Damage.Element,
+                        defenderElement,
+                        _controller.Damage.SourceWeapon
+                    );
+
+                    target.TakeDamage(hitDamage);
+
+                    // Kích hoạt Vòng Tương Sinh (Element Generation)
+                    if (_controller.Damage.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                    {
+                        var weapon = _controller.Damage.SourceWeapon as Weapons.WeaponBase;
+                        YinYang.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
+                    }
                 }
 
                 _controller.HandleHit(context);

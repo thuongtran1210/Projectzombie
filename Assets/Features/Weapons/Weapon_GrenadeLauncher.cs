@@ -21,7 +21,7 @@ namespace ProjectZombie.Features.Weapons
             if (projectileData == null || _currentTarget == null) return;
 
             Vector2 direction = (_currentTarget.position - firePoint.position).normalized;
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
             int count = GetFinalProjectileCount();
 
             for (int i = 0; i < count; i++)

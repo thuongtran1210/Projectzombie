@@ -25,7 +25,7 @@ namespace ProjectZombie.Features.Weapons
             if (projectileData == null || _currentTarget == null) return;
 
             Vector2 baseDirection = (_currentTarget.position - firePoint.position).normalized;
-            DamageData damageData = DamageUtility.CalculateDamage(GetFinalDamage(), GetFinalCritChance(), GetFinalCritDamage());
+            DamageData damageData = CreateDamageData();
 
             int totalPellets = pelletsCount + (GetFinalProjectileCount() - 1);
             float startAngle = -spreadAngle / 2f;
