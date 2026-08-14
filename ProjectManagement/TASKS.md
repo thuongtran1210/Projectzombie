@@ -1,6 +1,7 @@
 # Danh Sách Nhiệm Vụ & Task Tracker — VONG XUYÊN
 
 Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân chia theo các hạng mục của dự án **Vong Xuyên (Android Release - GDD v4.0)**.
+*Tài liệu tham chiếu chi tiết:* 📖 **[GAMEPLAY_PRODUCTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md)** | 📐 **[SYSTEM_ARCHITECTURE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md)**
 
 ---
 
@@ -8,14 +9,14 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| Mobile Stress Test & ASTC | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | Master-Worker Spawner Refactoring |
-| Android AAB Build & Signing | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Android Target Platform Refactor |
-| | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Local Save System (`SaveSystem.cs`) |
-| | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Ngũ Hành Damage & Combo System |
-| | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
-| | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Boss AI Dynamic Element (`BossElementController`) |
-| | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | Master-Worker Spawner Refactoring |
+| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Android Target Platform Refactor |
+| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Local Save System (`SaveSystem.cs`) |
+| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Ngũ Hành Damage & Combo System |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Cán Cân Âm Dương (`YinYangManager`) |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** | Boss AI Dynamic Element (`BossElementController`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
 ---
@@ -87,7 +88,24 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-E13]** Chạy Tool `WavePhaseGenerator` tự động nạp Prefabs chuẩn vào 3 Phase và 20 WaveConfig SOs.
 - [x] **[TASK-E14]** Kiểm thử toàn bộ trận đấu 20 phút (00:00 -> 20:00).
 
-### ⚙️ Hạng Mục 6: Performance & Build Release (Planned)
-- [ ] **[TASK-401]** Chuyển đổi toàn bộ Sprite Sheets sang Texture Compression **ASTC 6x6** cho Android.
+### 🎮 Hạng Mục 8: Gameplay Production Readiness & Game Feel (High Priority)
+*Tài liệu tham chiếu chi tiết:* 📖 **[GAMEPLAY_PRODUCTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md)**
+- [ ] 🚨 **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback**:
+  - Tích hợp Shader URP nháy trắng (Flash White 0.05s) trên Sprite quái vật khi nhận sát thương trong `Damageable.cs` / `ZombieHealth.cs`.
+  - Bổ sung lực đẩy lùi vật lý `_knockbackForce` cho các đòn đánh nặng (Trống Đồng W005, Cọc Gỗ) tạo không gian thở khi bị quái áp sát.
+- [ ] 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback**:
+  - Tích hợp Camera Shake (`0.08s`, biên độ `0.15`) khi kích hoạt đòn đánh Chí Mạng (Critical) hoặc Nổ AoE.
+  - Nâng cấp Damage Popup: Phân biệt rõ rệt Sát thương Thường (Trắng), Tương Khắc (Vàng Kim `#FFD700` + Biểu tượng `✦`), Chí Mạng (Đỏ Cam Scale Punch).
+- [ ] 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items) & Evolution Ceremony**:
+  - Xây dựng Popup mở rương báu rơi từ Elite/Boss (Rương Gỗ: 1 món, Rương Bạc: 3 món, Rương U Minh: 5 món + Instant Evolution).
+  - Tích hợp hiệu ứng sóng xung kích linh khí quét sạch quái cận chiến (Cleanse Blast) khi hoàn thành ghép Pháp Bảo Tối Thượng (Evolution).
+- [ ] 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Tăng nhịp độ căng thẳng)**:
+  - Bổ sung Event quái bao vây 360 độ siết chặt tại các mốc: Phút 03:00 (Ma Trơi bao vây), Phút 07:00 (Đàn Ma Da xoắn ốc), Phút 12:00 (Tường chắn Quỷ Nhập Tràng).
+  - Buộc người chơi phải sử dụng cơ chế `Dash` (với i-frame 0.2s) để đục thủng vòng vây.
+- [ ] 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Âm thanh đa tầng)**:
+  - Tích hợp âm thanh phản hồi va chạm (Hit SFX), âm thanh quái tan biến (Death Pop) và chuỗi chuông ngân tăng dần khi hút hạt EXP (Gem Vacuum Chime).
+
+### ⚙️ Hạng Mục 6: Performance & Build Release (Final Polish & Release)
+- [ ] **[TASK-401]** Gom toàn bộ UI/Sprites vào Sprite Atlas 2048x2048 và chuyển đổi Texture Compression sang **ASTC 6x6** cho Android.
 - [ ] **[TASK-402]** Thử nghiệm Stress Test 200 Yêu ma + 100 Projectiles kiểm tra FPS (Target 60 FPS).
-- [ ] **[TASK-403]** Cấu hình Build Profile Android IL2CPP ARM64, Target API 33+, xuất file `.aab`.
+- [ ] **[TASK-403]** Cấu hình Build Profile Android IL2CPP ARM64, Target API 33+, xuất file `.aab` có ký số phát hành Google Play Store.
