@@ -65,13 +65,14 @@ namespace ProjectZombie.Features.Upgrades
 
             if (isStackable)
             {
+                playerPassives.AddPassive(key, this);
                 playerPassives.IncrementUpgradeCount(key);
                 float totalBonus = damageMultiplierBonus * playerPassives.GetUpgradeCount(key);
                 Debug.Log($"[ElementBonus] Ngũ Hành '{targetElement}' — Tổng bonus sát thương: +{totalBonus * 100f:F0}%");
             }
             else
             {
-                playerPassives.AddPassive(key);
+                playerPassives.AddPassive(key, this);
                 Debug.Log($"[ElementBonus] Đã mở khóa tăng sát thương hệ '{targetElement}': +{damageMultiplierBonus * 100f:F0}% sát thương.");
             }
         }

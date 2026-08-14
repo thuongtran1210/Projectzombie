@@ -44,15 +44,32 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void UpdatePosition()
         {
-            Vector2 mousePos = Input.mousePosition;
-            
+            Vector2 pos = Input.mousePosition;
+            Vector3 targetPos = (Vector3)pos + (Vector3)_offset;
+
+            // Clamp vị trí trong kích thước màn hình
+            float screenWidth = Screen.width;
+            float screenHeight = Screen.height;
+
             if (_rectTransform != null)
             {
-                _rectTransform.position = (Vector3)mousePos + (Vector3)_offset;
+                float width = _rectTransform.rect.width * _rectTransform.lossyScale.x;
+                float height = _rectTransform.rect.height * _rectTransform.lossyScale.y;
+
+                if (targetPos.x + width > screenWidth)
+                {
+                    targetPos.x = pos.x - width - Mathf.Abs(_offset.x);
+                }
+                if (targetPos.y - height < 0)
+                {
+                    targetPos.y = pos.y + height + Mathf.Abs(_offset.y);
+                }
+
+                _rectTransform.position = targetPos;
             }
             else
             {
-                transform.position = (Vector3)mousePos + (Vector3)_offset;
+                transform.position = targetPos;
             }
         }
     }

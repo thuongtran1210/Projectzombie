@@ -1,3 +1,4 @@
+using ProjectZombie.Features.Upgrades;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,17 +15,30 @@ namespace ProjectZombie.Features.Player
         /// <summary>Theo dõi số lần nâng cấp từng loại (dùng cho upgrade có giới hạn cấp).</summary>
         private Dictionary<string, int> _upgradeCounters = new Dictionary<string, int>();
 
-        public IReadOnlyList<string> ActivePassives => _activePassives;
+        /// <summary>Lưu trữ metadata của các UpgradeData đã nhận để hiển thị lên UI Panel_Skills.</summary>
+        private Dictionary<string, UpgradeData> _passiveDataMap = new Dictionary<string, UpgradeData>();
 
-        public void AddPassive(string passiveId)
+        public IReadOnlyList<string> ActivePassives => _activePassives;
+        public IReadOnlyDictionary<string, UpgradeData> PassiveDataMap => _passiveDataMap;
+
+        public event System.Action OnPassivesChanged;
+
+        public void AddPassive(string passiveId, UpgradeData data = null)
         {
             if (string.IsNullOrEmpty(passiveId)) return;
             
+            if (data != null && !_passiveDataMap.ContainsKey(passiveId))
+            {
+                _passiveDataMap[passiveId] = data;
+            }
+
             if (!_activePassives.Contains(passiveId))
             {
                 _activePassives.Add(passiveId);
                 Debug.Log($"[PlayerPassives] Added new passive: {passiveId}");
             }
+
+            OnPassivesChanged?.Invoke();
         }
 
         public bool HasPassive(string passiveId)

@@ -67,7 +67,7 @@ namespace ProjectZombie.Features.Upgrades
             if (isOneTimeOnly)
             {
                 var playerPassives = player.GetComponent<PlayerPassives>();
-                playerPassives?.AddPassive(GetOneTimeKey());
+                playerPassives?.AddPassive(GetOneTimeKey(), this);
             }
 
             Debug.Log($"[RareUpgrade] Áp dụng nâng cấp hiếm: '{upgradeName}'");

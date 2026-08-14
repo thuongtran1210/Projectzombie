@@ -6,7 +6,7 @@ using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI.StatsAndSkills
 {
-    public class SkillUIEntry : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class SkillUIEntry : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [SerializeField] private Image _skillIcon;
         [SerializeField] private TextMeshProUGUI _levelText;
@@ -17,7 +17,11 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void Setup(Sprite icon, int level, string name, string description, TooltipUI tooltip)
         {
-            if (_skillIcon != null) _skillIcon.sprite = icon;
+            if (_skillIcon != null)
+            {
+                _skillIcon.sprite = icon;
+                _skillIcon.enabled = (icon != null);
+            }
             if (_levelText != null) _levelText.text = $"Lv.{level}";
             
             _skillName = name;
@@ -38,6 +42,21 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (_tooltip != null)
             {
                 _tooltip.Hide();
+            }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (_tooltip != null)
+            {
+                if (_tooltip.gameObject.activeSelf)
+                {
+                    _tooltip.Hide();
+                }
+                else
+                {
+                    _tooltip.Show(_skillName, _skillDescription);
+                }
             }
         }
     }

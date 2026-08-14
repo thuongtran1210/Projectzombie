@@ -94,8 +94,13 @@ namespace ProjectZombie.Features.Weapons
             Transform parent = weaponHolder != null ? weaponHolder : transform;
             WeaponBase newWeapon = Instantiate(data.weaponPrefab, parent);
             
-            // Có thể truyền thêm baseDamage từ WeaponData vào WeaponBase nếu cần
-            // Ví dụ: newWeapon.SetBaseStats(data.baseDamage); 
+            if (newWeapon != null)
+            {
+                if (string.IsNullOrEmpty(newWeapon.weaponId)) newWeapon.weaponId = data.weaponId;
+                if (string.IsNullOrEmpty(newWeapon.displayName)) newWeapon.displayName = data.weaponName;
+                if (newWeapon.icon == null) newWeapon.icon = data.icon;
+                if (string.IsNullOrEmpty(newWeapon.description)) newWeapon.description = data.description;
+            }
             
             AddWeapon(newWeapon);
         }

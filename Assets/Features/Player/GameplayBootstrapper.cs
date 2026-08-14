@@ -67,6 +67,7 @@ namespace ProjectZombie.Features.Player
             HealthSystem health = playerInstance.GetComponent<HealthSystem>();
             PlayerExperience experience = playerInstance.GetComponent<PlayerExperience>();
             WeaponManager weaponManager = playerInstance.GetComponent<WeaponManager>();
+            PlayerPassives passives = playerInstance.GetComponent<PlayerPassives>();
             var gaugeProvider = playerInstance.GetComponent<ProjectZombie.Features.Player.Mechanics.ICharacterGaugeProvider>();
 
             // Cảnh báo nếu thiếu component quan trọng
@@ -94,7 +95,7 @@ namespace ProjectZombie.Features.Player
             // 4. Inject các Models vào các UI Presenters qua phương thức Construct
             if (runHUDPresenter != null)
             {
-                runHUDPresenter.Construct(health, stats, experience, weaponManager);
+                runHUDPresenter.Construct(health, stats, experience, weaponManager, passives);
                 Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào RunHUDPresenter.");
             }
 

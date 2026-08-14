@@ -38,10 +38,11 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private PlayerStats _playerStats;
         [SerializeField] private PlayerExperience _playerExp;
         [SerializeField] private ProjectZombie.Features.Weapons.WeaponManager _weaponManager;
+        [SerializeField] private PlayerPassives _playerPassives;
 
         private bool _isConstructed = false;
 
-        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null)
+        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null)
         {
             if (_isConstructed)
             {
@@ -52,6 +53,7 @@ namespace ProjectZombie.Features.UI.HUD
             _playerStats = stats;
             _playerExp = experience;
             _weaponManager = weaponManager;
+            _playerPassives = passives;
 
             SubscribeEvents();
             ForceRefreshAll();
@@ -68,7 +70,7 @@ namespace ProjectZombie.Features.UI.HUD
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (_playerHealth != null || _playerStats != null || _playerExp != null)
             {
-                Construct(_playerHealth, _playerStats, _playerExp);
+                Construct(_playerHealth, _playerStats, _playerExp, _weaponManager, _playerPassives);
             }
 
             // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
@@ -118,7 +120,12 @@ namespace ProjectZombie.Features.UI.HUD
 
             if (_weaponManager != null)
             {
-                _weaponManager.OnWeaponsChanged += OnWeaponsChanged;
+                _weaponManager.OnWeaponsChanged += OnSkillsOrPassivesChanged;
+            }
+
+            if (_playerPassives != null)
+            {
+                _playerPassives.OnPassivesChanged += OnSkillsOrPassivesChanged;
             }
         }
 
@@ -135,7 +142,12 @@ namespace ProjectZombie.Features.UI.HUD
 
             if (_weaponManager != null)
             {
-                _weaponManager.OnWeaponsChanged -= OnWeaponsChanged;
+                _weaponManager.OnWeaponsChanged -= OnSkillsOrPassivesChanged;
+            }
+
+            if (_playerPassives != null)
+            {
+                _playerPassives.OnPassivesChanged -= OnSkillsOrPassivesChanged;
             }
         }
 
@@ -158,10 +170,7 @@ namespace ProjectZombie.Features.UI.HUD
                 OnLevelUp(_playerExp.CurrentLevel);
             }
 
-            if (_weaponManager != null)
-            {
-                OnWeaponsChanged();
-            }
+            OnSkillsOrPassivesChanged();
 
             if (RunStatsTracker.Instance != null)
             {
@@ -212,21 +221,61 @@ namespace ProjectZombie.Features.UI.HUD
             _view.SetKillCount($"Kills: <color=#FF8C42>{count}</color>");
         }
 
-        private void OnWeaponsChanged()
+        private void OnSkillsOrPassivesChanged()
         {
-            if (_view == null || _weaponManager == null) return;
+            if (_view == null) return;
 
             var displaySkills = new System.Collections.Generic.List<RunHUDView.SkillDisplayData>();
-            foreach (var weapon in _weaponManager.ActiveWeapons)
+
+            // 1. Thu thập danh sách Vũ khí (Active Weapons)
+            if (_weaponManager != null)
             {
-                displaySkills.Add(new RunHUDView.SkillDisplayData
+                foreach (var weapon in _weaponManager.ActiveWeapons)
                 {
-                    Icon = null,
-                    Level = weapon.WeaponLevel,
-                    Name = $"Weapon {weapon.weaponId}",
-                    Description = $"Description for {weapon.weaponId}"
-                });
+                    if (weapon == null) continue;
+
+                    string weaponName = !string.IsNullOrEmpty(weapon.displayName) ? weapon.displayName : weapon.weaponId;
+                    string desc = !string.IsNullOrEmpty(weapon.description) ? weapon.description : $"Pháp Bảo cấp {weapon.WeaponLevel}";
+
+                    displaySkills.Add(new RunHUDView.SkillDisplayData
+                    {
+                        Icon = weapon.icon,
+                        Level = weapon.WeaponLevel,
+                        Name = weaponName,
+                        Description = desc
+                    });
+                }
             }
+
+            // 2. Thu thập danh sách Thẻ Bị Động (Passives)
+            if (_playerPassives != null)
+            {
+                foreach (var passiveId in _playerPassives.ActivePassives)
+                {
+                    int level = _playerPassives.GetUpgradeCount(passiveId);
+                    if (level <= 0) level = 1;
+
+                    Sprite icon = null;
+                    string name = passiveId;
+                    string desc = $"Bị động: {passiveId}";
+
+                    if (_playerPassives.PassiveDataMap.TryGetValue(passiveId, out var data) && data != null)
+                    {
+                        icon = data.icon;
+                        if (!string.IsNullOrEmpty(data.upgradeName)) name = data.upgradeName;
+                        if (!string.IsNullOrEmpty(data.description)) desc = data.description;
+                    }
+
+                    displaySkills.Add(new RunHUDView.SkillDisplayData
+                    {
+                        Icon = icon,
+                        Level = level,
+                        Name = name,
+                        Description = desc
+                    });
+                }
+            }
+
             _view.UpdateSkills(displaySkills);
         }
 

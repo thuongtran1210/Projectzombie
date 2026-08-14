@@ -17,6 +17,9 @@ namespace ProjectZombie.Features.Weapons
         
         [Header("Weapon Identity")]
         public string weaponId;
+        public string displayName;
+        public Sprite icon;
+        [TextArea] public string description;
         public ElementType element = ElementType.None;
 
         public int WeaponLevel { get; private set; } = 1;

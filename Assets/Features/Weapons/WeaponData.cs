@@ -12,6 +12,9 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Tên hiển thị trong game")]
         public string weaponName;
 
+        [Tooltip("Icon đại diện hiển thị trên UI HUD")]
+        public Sprite icon;
+
         [TextArea(2, 4)]
         [Tooltip("Mô tả chi tiết & hiệu ứng đặc trưng của Pháp Bảo")]
         public string description;

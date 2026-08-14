@@ -42,7 +42,7 @@ namespace ProjectZombie.Features.Upgrades
             var playerPassives = player.GetComponent<PlayerPassives>();
             if (playerPassives != null)
             {
-                playerPassives.AddPassive(this.upgradeName); // Using upgradeName instead of file name
+                playerPassives.AddPassive(this.upgradeName, this); // Using upgradeName instead of file name
                 playerPassives.IncrementUpgradeCount(this.upgradeName);
             }
         }
