@@ -15,6 +15,12 @@ namespace ProjectZombie.Core.Audio
         [SerializeField] private AudioConfigSO _playerLevelUpSFX;
         [SerializeField] private AudioConfigSO _expCollectSFX;
 
+        private int _expComboCount = 0;
+        private float _lastExpCollectTime = -1f;
+        private const float COMBO_RESET_DELAY = 0.35f;
+        private const float PITCH_STEP = 0.04f;
+        private const float MAX_PITCH = 1.5f;
+
         private void OnEnable()
         {
             GameEventBus.Subscribe<EnemyDiedEvent>(OnEnemyDied);
@@ -49,7 +55,19 @@ namespace ProjectZombie.Core.Audio
         {
             if (AudioManager.Instance != null && _expCollectSFX != null)
             {
-                AudioManager.Instance.PlaySound(_expCollectSFX, evt.Position);
+                float currentTime = Time.unscaledTime;
+                if (currentTime - _lastExpCollectTime < COMBO_RESET_DELAY)
+                {
+                    _expComboCount++;
+                }
+                else
+                {
+                    _expComboCount = 0;
+                }
+                _lastExpCollectTime = currentTime;
+
+                float calculatedPitch = Mathf.Min(1.0f + _expComboCount * PITCH_STEP, MAX_PITCH);
+                AudioManager.Instance.PlaySound(_expCollectSFX, evt.Position, calculatedPitch);
             }
         }
     }

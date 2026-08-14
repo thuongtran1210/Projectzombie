@@ -105,9 +105,9 @@ namespace Core.Audio
         }
 
         /// <summary>
-        /// Phát 1 hiệu ứng âm thanh SFX / UI dựa trên AudioConfigSO.
+        /// Phát 1 hiệu ứng âm thanh SFX / UI dựa trên AudioConfigSO (hỗ trợ custom pitch cho combo).
         /// </summary>
-        public void PlaySound(AudioConfigSO config, Vector3 position = default)
+        public void PlaySound(AudioConfigSO config, Vector3 position = default, float customPitch = 0f)
         {
             if (config == null) return;
             if (!_cooldownTracker.CanPlay(config)) return;
@@ -123,7 +123,7 @@ namespace Core.Audio
             source.clip = clipToPlay;
             source.outputAudioMixerGroup = config.MixerGroup;
             source.volume = config.Volume;
-            source.pitch = config.GetRandomPitch();
+            source.pitch = customPitch > 0f ? customPitch : config.GetRandomPitch();
 
             if (position != default)
             {

@@ -5,6 +5,7 @@ namespace ProjectZombie.Features.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(PlayerStats))]
+    [RequireComponent(typeof(PlayerMagnetTrigger))]
     public class PlayerController : MonoBehaviour
     {
         [Header("Input Actions")]

@@ -9,15 +9,16 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP & Clean Code)** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
-| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Master-Worker Spawner Refactoring |
-| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Android Target Platform Refactor |
-| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Local Save System (`SaveSystem.cs`) |
-| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Ngũ Hành Damage & Combo System |
-| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Cán Cân Âm Dương (`YinYangManager`) |
-| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | Boss AI Dynamic Element (`BossElementController`) |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| Android AAB Build & Signing (Google Play Release) | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP & Clean Code)** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-EXP-01] Tối Ưu & Nâng Cấp Hệ Thống Hạt EXP & Magnet** |
+| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
+| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Master-Worker Spawner Refactoring |
+| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Android Target Platform Refactor |
+| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Local Save System (`SaveSystem.cs`) |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Ngũ Hành Damage & Combo System |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | Cán Cân Âm Dương (`YinYangManager`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | | Boss AI Dynamic Element (`BossElementController`) |
+| Android AAB Build & Signing (Google Play Release) | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** |
 
@@ -157,6 +158,22 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
   - Buộc người chơi phải sử dụng cơ chế `Dash` (với i-frame 0.2s) để đục thủng vòng vây.
 - [ ] 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Âm thanh đa tầng)**:
   - Tích hợp âm thanh phản hồi va chạm (Hit SFX), âm thanh quái tan biến (Death Pop) và chuỗi chuông ngân tăng dần khi hút hạt EXP (Gem Vacuum Chime).
+- [x] 🚨 **[TASK-EXP-01] Tối Ưu & Nâng Cấp Toàn Diện Hệ Thống Hạt EXP & Magnet (Performance & Game Feel)**:
+  - [x] **[TASK-EXP-01.1] Kích Hoạt & Đồng Bộ Bán Kính Hút (`PickupRange` Dynamic Magnet):**
+    - Thiết lập trigger collider (`CircleCollider2D` IsTrigger) trên Player qua `PlayerMagnetTrigger.cs` chuyên trách bắt vùng Magnet, tự động cập nhật bán kính theo chỉ số `PlayerStats.PickupRange` khi người chơi nhận buff (như `P010_TúiHútHồn` +30% Bán kính nhặt).
+    - Đồng bộ sự kiện kích hoạt trạng thái hút (`StartMagnetEffect`) mượt mà, không phụ thuộc vào collider cố định nhỏ của ExpGem.
+  - [x] **[TASK-EXP-01.2] Tối Ưu Hiệu Năng Homing & Triệt Tiêu GC Alloc (Math Interpolation thay thế DOTween per Gem):**
+    - Chuyển đổi cơ chế bay gia tốc và hiệu ứng pop-up từ việc khởi tạo nhiều Tween độc lập (`DOScale`, `DOMove`, `DOTween.To`) sang tính toán nội suy toán học (`Mathf.Lerp` / `Vector2.MoveTowards` với gia tốc tốc độ cục bộ).
+    - Đảm bảo khi hàng trăm hạt Gem bay cùng lúc, hệ thống đạt Zero-Allocation (0 byte GC rác) và không làm nghẽn hàng đợi DOTween.
+  - [x] **[TASK-EXP-01.3] Cơ Chế Nén & Gộp Hạt Kinh Nghiệm Tự Động (Gem Compression / Merging):**
+    - Giới hạn ngưỡng số lượng hạt Gem active đồng thời trên sân (Threshold: 150 hạt).
+    - Khi vượt ngưỡng, `ExpGemPoolManager` tự động tìm và gộp các hạt nhỏ xa Player nhất thành hạt cấp cao hơn (Tier 2/3/4) với giá trị bằng tổng exp các hạt được gộp, giúp giữ vững 60 FPS trong các đợt quái đông.
+  - [x] **[TASK-EXP-01.4] Phân Cấp Hình Ảnh & Hiệu Ứng Âm Thanh Nhặt Liên Hoàn (Visual Tiering & Combo Pitch):**
+    - Phân cấp màu sắc / Sprite hiển thị của ExpGem theo giá trị exp:
+      - *Thường (10 - 25 EXP)*: Lam Ngọc Bích (`#4DEEEA`).
+      - *Trung (50 - 100 EXP)*: Lục Bảo Ma Mị (`#50E3C2`).
+      - *Boss / Tinh Anh (200+ EXP)*: Hoàng Kim Lấp Lánh (`#FFD700`) kèm hào quang nhẹ.
+    - Tích hợp Pitch Scaling trong `AudioManager` khi người chơi nhặt liên tục chuỗi Gem (`Pitch: 1.0f -> 1.5f`, step `+0.05f`), tự reset về `1.0f` sau `0.4s` nghỉ, tạo cảm giác âm thanh thăng hoa chuẩn Roguelite.
 
 ### ⚙️ Hạng Mục 6: Performance & Build Release (Final Polish & Release)
 - [ ] **[TASK-401]** Gom toàn bộ UI/Sprites vào Sprite Atlas 2048x2048 và chuyển đổi Texture Compression sang **ASTC 6x6** cho Android.

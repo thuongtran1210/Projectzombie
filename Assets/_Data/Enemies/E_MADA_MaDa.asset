@@ -19,6 +19,7 @@ MonoBehaviour:
   damageToPlayer: 12
   attackCooldown: 2
   attackRange: 7
-  expReward: 3
+  expReward: 50
   tier: 0
   elementType: 3
+  isHeavyArmor: 0

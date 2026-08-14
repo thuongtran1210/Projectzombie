@@ -1,123 +1,278 @@
 using UnityEngine;
 using ProjectZombie.Features.Player;
-using DG.Tweening; // Thêm thư viện DOTween
+using ProjectZombie.Core.Events;
 
 namespace ProjectZombie.Features.Collectibles
 {
     /// <summary>
-    /// An experience gem dropped by enemies. It flies towards the player when they are in range.
+    /// Trạng thái hoạt động của hạt kinh nghiệm (FSM nhẹ, 0 GC allocation).
+    /// </summary>
+    public enum GemState
+    {
+        Spawning,
+        Idle,
+        AnticipationBounce,
+        Homing,
+        Collected
+    }
+
+    /// <summary>
+    /// Hạt kinh nghiệm (ExpGem) rớt từ quái vật.
+    /// Tối ưu hóa 100% không dùng DOTween trong runtime để triệt tiêu rác bộ nhớ (Zero GC).
+    /// Hỗ trợ phân cấp màu sắc (Visual Tiering) và cơ chế gộp hạt (Gem Merging).
     /// </summary>
     public class ExpGem : MonoBehaviour
     {
+        [Header("Experience & Motion Settings")]
         [SerializeField] private float expAmount = 10f;
-        [SerializeField] private float flySpeed = 10f;
+        [SerializeField] private float initialFlySpeed = 0f;
+        [SerializeField] private float maxFlySpeed = 35f;
+        [SerializeField] private float flyAcceleration = 60f;
 
+        [Header("Visual Tier Colors")]
+        [SerializeField] private Color tier1Color = new Color(0.3f, 0.93f, 0.92f, 1f); // Cyan Lam Ngọc (< 30)
+        [SerializeField] private Color tier2Color = new Color(0.31f, 0.89f, 0.76f, 1f); // Emerald Lục Bảo (30-99)
+        [SerializeField] private Color tier3Color = new Color(0.61f, 0.32f, 0.88f, 1f); // Purple Tím U Minh (100-249)
+        [SerializeField] private Color tier4Color = new Color(1f, 0.84f, 0f, 1f); // Gold Hoàng Kim (>= 250)
+
+        private SpriteRenderer _spriteRenderer;
+        private ExpGemPoolConfig _poolConfig;
         private Transform _targetPlayer;
-        private bool _isTriggered = false;
-        private bool _isHoming = false; // Trạng thái đang bay vào người chơi
+        private GemState _state = GemState.Idle;
 
-        // Hiệu ứng "nảy" khi vừa sinh ra (tùy chọn)
+        private float _timer;
+        private float _currentFlySpeed;
+        private Vector3 _baseScale = Vector3.one;
+        private Vector3 _targetScale = Vector3.one;
+        private Vector3 _jumpStartPos;
+        private Vector3 _jumpTargetPos;
+
+        private const float SPAWN_DURATION = 0.2f;
+        private const float BOUNCE_DURATION = 0.2f;
+        private const float COLLECT_RADIUS_SQ = 0.25f; // 0.5f * 0.5f
+
+        public float ExpAmount => expAmount;
+        public bool IsIdle => _state == GemState.Idle;
+        public bool IsActiveOnGround => _state == GemState.Idle || _state == GemState.Spawning;
+
+        private void Awake()
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _poolConfig = GetComponent<ExpGemPoolConfig>();
+        }
+
         private void OnEnable()
         {
-            // Reset trạng thái khi lấy ra từ Pool
-            _isTriggered = false;
-            _isHoming = false;
+            // Reset toàn bộ trạng thái khi lấy từ Pool
+            _state = GemState.Spawning;
+            _timer = 0f;
             _targetPlayer = null;
-
-            // Cho viên exp nhỏ từ 0 phình lên lúc mới rớt xuống
+            _currentFlySpeed = initialFlySpeed;
             transform.localScale = Vector3.zero;
-            transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+
+            SetupVisualTier(expAmount);
+
+            // Đăng ký vào PoolManager active list
+            if (ExpGemPoolManager.Instance != null)
+            {
+                ExpGemPoolManager.Instance.RegisterActiveGem(this);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (ExpGemPoolManager.Instance != null)
+            {
+                ExpGemPoolManager.Instance.UnregisterActiveGem(this);
+            }
         }
 
         private void Update()
         {
-            // Chỉ bay vào người chơi khi đã hoàn thành hiệu ứng văng ra (Homing)
-            if (_isHoming && _targetPlayer != null)
+            switch (_state)
             {
-                // Fly towards the player
-                transform.position = Vector3.MoveTowards(transform.position, _targetPlayer.position, flySpeed * Time.deltaTime);
+                case GemState.Spawning:
+                    UpdateSpawning();
+                    break;
 
-                // Check distance for collection. Using Vector2 to ignore Z-axis differences in 2D.
-                if (Vector2.Distance(transform.position, _targetPlayer.position) < 0.5f)
-                {
-                    Collect();
-                }
+                case GemState.AnticipationBounce:
+                    UpdateAnticipationBounce();
+                    break;
+
+                case GemState.Homing:
+                    UpdateHoming();
+                    break;
+
+                case GemState.Idle:
+                case GemState.Collected:
+                default:
+                    break;
+            }
+        }
+
+        private void UpdateSpawning()
+        {
+            _timer += Time.deltaTime;
+            float t = Mathf.Clamp01(_timer / SPAWN_DURATION);
+
+            // OutBack easing bằng toán học: scale từ 0 lên 1 với độ nảy nhẹ
+            float s = 1.70158f;
+            float progress = 1f + (s + 1f) * Mathf.Pow(t - 1f, 3f) + s * Mathf.Pow(t - 1f, 2f);
+            transform.localScale = _targetScale * Mathf.Max(0f, progress);
+
+            if (_timer >= SPAWN_DURATION)
+            {
+                transform.localScale = _targetScale;
+                _state = GemState.Idle;
+            }
+        }
+
+        private void UpdateAnticipationBounce()
+        {
+            _timer += Time.deltaTime;
+            float t = Mathf.Clamp01(_timer / BOUNCE_DURATION);
+
+            // OutQuad easing
+            float factor = 1f - (1f - t) * (1f - t);
+            transform.position = Vector3.Lerp(_jumpStartPos, _jumpTargetPos, factor);
+
+            if (_timer >= BOUNCE_DURATION)
+            {
+                _state = GemState.Homing;
+                _currentFlySpeed = initialFlySpeed;
+            }
+        }
+
+        private void UpdateHoming()
+        {
+            if (_targetPlayer == null)
+            {
+                _state = GemState.Idle;
+                return;
+            }
+
+            // Gia tốc tốc độ bay
+            _currentFlySpeed = Mathf.Min(_currentFlySpeed + flyAcceleration * Time.deltaTime, maxFlySpeed);
+            transform.position = Vector3.MoveTowards(transform.position, _targetPlayer.position, _currentFlySpeed * Time.deltaTime);
+
+            // Kiểm tra cự ly nhặt bằng khoảng cách bình phương (tránh hàm căn bậc hai Sqrt)
+            Vector2 diff = transform.position - _targetPlayer.position;
+            if (diff.sqrMagnitude <= COLLECT_RADIUS_SQ)
+            {
+                Collect();
             }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (!_isTriggered && collision.CompareTag("Player"))
-            {
-                StartMagnetEffect(collision.transform);
-            }
-        }
-        
-        private void OnTriggerEnter(Collider collision)
-        {
-            if (!_isTriggered && collision.CompareTag("Player"))
+            // Fallback nếu người chơi chưa gắn PlayerMagnetTrigger nhưng chạm trực tiếp thân nhân vật
+            if (IsIdle && collision.CompareTag("Player"))
             {
                 StartMagnetEffect(collision.transform);
             }
         }
 
-        private void StartMagnetEffect(Transform player)
+        /// <summary>
+        /// Kích hoạt hiệu ứng hút hạt về phía người chơi.
+        /// </summary>
+        public void StartMagnetEffect(Transform player)
         {
-            _isTriggered = true;
+            if (_state == GemState.AnticipationBounce || _state == GemState.Homing || _state == GemState.Collected)
+                return;
+
             _targetPlayer = player;
+            _state = GemState.AnticipationBounce;
+            _timer = 0f;
+            _jumpStartPos = transform.position;
 
-            // --- HIỆU ỨNG HÚT CỦA DOTWEEN ---
-            
-            // 1. Tính hướng văng ra ngược với hướng người chơi (tạo đà)
-            Vector3 dirAwayFromPlayer = (transform.position - _targetPlayer.position).normalized;
-            // Nếu trùng vị trí, random hướng
-            if (dirAwayFromPlayer == Vector3.zero) dirAwayFromPlayer = Random.insideUnitCircle.normalized;
-            
-            Vector3 jumpPos = transform.position + dirAwayFromPlayer * 1.5f;
-
-            // 2. Di chuyển viên kinh nghiệm văng ra một chút trong 0.25 giây
-            transform.DOMove(jumpPos, 0.25f).SetEase(Ease.OutQuad).OnComplete(() => 
+            // Tính hướng văng lùi nhẹ ngược với người chơi (tạo đà bay thỏa mãn)
+            Vector3 dirAway = (_jumpStartPos - _targetPlayer.position).normalized;
+            if (dirAway == Vector3.zero)
             {
-                // 3. Sau khi văng ra xong, bắt đầu lao vào người chơi
-                _isHoming = true;
-                
-                // Reset tốc độ bay về 0 rồi cho tăng tốc dần (Gia tốc) bằng DOTween cho mượt
-                flySpeed = 0f;
-                DOTween.To(() => flySpeed, x => flySpeed = x, 35f, 0.5f).SetEase(Ease.InQuad);
-            });
+                Vector2 rand = Random.insideUnitCircle.normalized;
+                dirAway = new Vector3(rand.x, rand.y, 0f);
+            }
+
+            _jumpTargetPos = _jumpStartPos + dirAway * 1.2f;
         }
 
         private void Collect()
         {
+            if (_state == GemState.Collected) return;
+            _state = GemState.Collected;
+
             if (_targetPlayer != null)
             {
-                var playerExp = _targetPlayer.GetComponent<PlayerExperience>();
-                if (playerExp != null)
+                if (_targetPlayer.TryGetComponent<PlayerExperience>(out var playerExp))
                 {
                     playerExp.AddExp(expAmount);
                 }
             }
-            
-            // Tắt Tween đang chạy trên object này (nếu có) để tránh lỗi bộ nhớ
-            transform.DOKill();
-            
-            // Trả về Object Pool thay vì Destroy
-            var poolConfig = GetComponent<ExpGemPoolConfig>();
-            if (poolConfig != null)
+
+            // Phát sự kiện toàn cục để AudioEventListener và Quest/Tracker xử lý
+            GameEventBus.Publish(new ExpCollectedEvent(Mathf.RoundToInt(expAmount), transform.position));
+
+            // Trả về Pool an toàn
+            if (_poolConfig != null)
             {
-                poolConfig.ReturnToPool();
+                _poolConfig.ReturnToPool();
             }
             else
             {
                 Destroy(gameObject);
             }
         }
-        
-        // This can be used to set exp amount based on enemy type
+
+        /// <summary>
+        /// Cấu hình lượng kinh nghiệm và cập nhật Visual Tiering (Màu sắc & Kích cỡ).
+        /// </summary>
         public void SetExpAmount(float amount)
         {
             expAmount = amount;
+            SetupVisualTier(expAmount);
+        }
+
+        /// <summary>
+        /// Gộp thêm kinh nghiệm từ một viên Gem khác vào viên này (Gem Merging Mechanism).
+        /// </summary>
+        public void MergeExp(float addedExp)
+        {
+            expAmount += addedExp;
+            SetupVisualTier(expAmount);
+
+            // Hiệu ứng nảy nhẹ thông báo nâng cấp cấp độ hạt
+            _state = GemState.Spawning;
+            _timer = 0f;
+        }
+
+        private void SetupVisualTier(float amount)
+        {
+            if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
+
+            if (amount < 30f)
+            {
+                // Tier 1: Common
+                if (_spriteRenderer != null) _spriteRenderer.color = tier1Color;
+                _targetScale = _baseScale * 1.0f;
+            }
+            else if (amount < 100f)
+            {
+                // Tier 2: Rare
+                if (_spriteRenderer != null) _spriteRenderer.color = tier2Color;
+                _targetScale = _baseScale * 1.2f;
+            }
+            else if (amount < 250f)
+            {
+                // Tier 3: Epic
+                if (_spriteRenderer != null) _spriteRenderer.color = tier3Color;
+                _targetScale = _baseScale * 1.35f;
+            }
+            else
+            {
+                // Tier 4: Legendary / Boss
+                if (_spriteRenderer != null) _spriteRenderer.color = tier4Color;
+                _targetScale = _baseScale * 1.55f;
+            }
         }
     }
 }
-
