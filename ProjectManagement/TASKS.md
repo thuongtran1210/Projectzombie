@@ -9,15 +9,15 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
-| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Master-Worker Spawner Refactoring |
-| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Android Target Platform Refactor |
-| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Local Save System (`SaveSystem.cs`) |
-| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Ngũ Hành Damage & Combo System |
-| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Cán Cân Âm Dương (`YinYangManager`) |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Boss AI Dynamic Element (`BossElementController`) |
-| Android AAB Build & Signing (Google Play Release) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
-| | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
+| 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP & Clean Code)** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
+| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | Master-Worker Spawner Refactoring |
+| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | Android Target Platform Refactor |
+| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Local Save System (`SaveSystem.cs`) |
+| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Ngũ Hành Damage & Combo System |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** | Cán Cân Âm Dương (`YinYangManager`) |
+| Mobile Stress Test (200 Mobs 60 FPS) | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Boss AI Dynamic Element (`BossElementController`) |
+| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset** | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| Android AAB Build & Signing (Google Play Release) | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | Upgrade Cards Badges & Meta Shop UI |
 
@@ -88,6 +88,17 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [ ] 🚨 **[TASK-315] Bake & Setup Vietnamese TMP Font Asset (Unicode Range & Fallback Font List)**:
   - Dùng Font Asset Creator tạo font SDF hỗ trợ đầy đủ ký tự tiếng Việt (`1EA0-1EF9`) và biểu tượng `☯` (`\u262F`).
   - Gán vào `Fallback Font Assets List` trong `TextMeshPro Settings` để tự động sửa lỗi thiếu glyph `\u1EB0` trên toàn bộ UI/HUD.
+- [ ] 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP & Clean Architecture)**:
+  - [ ] **[TASK-316.1] Gợi Ý Tương Sinh (Synergy Glow & Hint) Trên Thẻ Gacha (`UpgradeCardView` & `UpgradeUIPresenter`):**
+    - `UpgradeUIPresenter` kiểm tra vũ khí người chơi đang sở hữu, nếu thẻ nâng cấp xuất hiện thuộc tính Tương Sinh với vũ khí hiện có $\rightarrow$ format chuỗi gợi ý `💡 Tương Sinh: -20% Hồi chiêu!` và kích hoạt viền sáng xanh ngọc `SynergyGlow`.
+    - Gọi `cardView.SetElementBadge()` nạp badge thuộc tính chuẩn màu sắc và hình khối Ngũ Hành.
+  - [ ] **[TASK-316.2] HUD Quick Reference Wheel - Vòng Bát Quái Tra Cứu Nhanh (`ElementWheelWidgetView/Presenter`):**
+    - Dựng Component `ElementWheelWidgetView` gắn trên Top HUD với nút icon Bát Quái.
+    - Hỗ trợ cơ chế **Hold Touch (Chạm giữ 1 giây)**: Khi ngón tay đè vào icon $\rightarrow$ phóng to vòng đồ hình Ngũ Hành thể hiện rõ mũi tên Tương Khắc (Đỏ) và Tương Sinh (Xanh); thả tay $\rightarrow$ tự động ẩn, không pause game, không cản trở di chuyển.
+  - [ ] **[TASK-316.3] Progressive Onboarding Banner Tutorial (Run 1 First-Time Feedback):**
+    - Tạo `OnboardingBannerView` hiển thị toast banner mờ 3 giây ở mép trên màn hình khi lần đầu tiên người chơi kích hoạt đòn đánh Khắc hệ hoặc proc Tương sinh trong trận đầu tiên (lưu cờ vào `PlayerPrefs` / `SaveData` để chỉ hiện đúng 1 lần).
+  - [ ] **[TASK-316.4] Tab Sơ Đồ Ngũ Hành Trong Pause Menu & Sách Yêu Ma (Codex):**
+    - Tích hợp trang đồ họa Ngũ Hành Cổ Phong vào Pause Menu cho phép người chơi tra cứu chi tiết thông số và quy luật khi tạm dừng trận đấu.
 - [x] **[TASK-301]** Cập nhật `RunHUDView.cs` và `RunHUDPresenter.cs` thêm Slider Cán cân Âm Dương & TMP Text hiển thị thuộc tính Boss.
 - [x] **[TASK-302]** Thêm Badge màu hiển thị thuộc tính Ngũ Hành trên thẻ Gacha Nâng cấp (`UpgradeCardView.cs`).
 - [x] **[TASK-303]** Xây dựng giao diện `MetaUpgradeShopView.cs` và `MetaUpgradeShopPresenter.cs` cho Cây nâng cấp vĩnh viễn dùng Cổ Tiền.

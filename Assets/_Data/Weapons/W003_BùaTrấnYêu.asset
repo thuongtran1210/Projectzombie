@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W003
   weaponName: "B\xF9a Tr\u1EA5n Y\xEAu"
+  icon: {fileID: 2177920, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
   description: "V\xF2ng l\xE1 b\xF9a th\u1EA7n xoay quanh b\u1EA3o v\u1EC7 v\xE0
     \u0111\u1EA9y l\xF9i y\xEAu ma."
   rarity: Rare
