@@ -15,8 +15,9 @@ namespace Core.Audio
         [Header("Audio Mixer")]
         [SerializeField] private AudioMixer _masterMixer;
         [SerializeField] private string _masterVolumeParam = "MasterVolume";
-        [SerializeField] private string _sfxVolumeParam = "SFXVolume";
         [SerializeField] private string _bgmVolumeParam = "BGMVolume";
+        [SerializeField] private string _sfxVolumeParam = "SFXVolume";
+        [SerializeField] private string _uiVolumeParam = "UIVolume";
 
         [Header("Pool Settings")]
         [SerializeField] private int _initialPoolSize = 20;
@@ -26,20 +27,23 @@ namespace Core.Audio
         [SerializeField] private AudioSource _stingerAudioSource;
 
         private const string PREFS_MASTER_VOL = "Setting_MasterVolume";
-        private const string PREFS_SFX_VOL = "Setting_SFXVolume";
         private const string PREFS_BGM_VOL = "Setting_BGMVolume";
+        private const string PREFS_SFX_VOL = "Setting_SFXVolume";
+        private const string PREFS_UI_VOL = "Setting_UIVolume";
 
         private const float DEFAULT_MASTER_VOLUME = 1.0f;
-        private const float DEFAULT_SFX_VOLUME = 0.9f;
         private const float DEFAULT_BGM_VOLUME = 0.4f;
+        private const float DEFAULT_SFX_VOLUME = 0.9f;
+        private const float DEFAULT_UI_VOLUME = 0.8f;
 
         private AudioSourcePool _pool;
         private AudioCooldownTracker _cooldownTracker;
 
         public AudioMixer MasterMixer => _masterMixer;
         public float MasterVolume { get; private set; } = DEFAULT_MASTER_VOLUME;
-        public float SFXVolume { get; private set; } = DEFAULT_SFX_VOLUME;
         public float BGMVolume { get; private set; } = DEFAULT_BGM_VOLUME;
+        public float SFXVolume { get; private set; } = DEFAULT_SFX_VOLUME;
+        public float UIVolume { get; private set; } = DEFAULT_UI_VOLUME;
 
         private void Awake()
         {
@@ -90,12 +94,14 @@ namespace Core.Audio
         private void LoadAndApplyVolumeSettings()
         {
             MasterVolume = PlayerPrefs.GetFloat(PREFS_MASTER_VOL, DEFAULT_MASTER_VOLUME);
-            SFXVolume = PlayerPrefs.GetFloat(PREFS_SFX_VOL, DEFAULT_SFX_VOLUME);
             BGMVolume = PlayerPrefs.GetFloat(PREFS_BGM_VOL, DEFAULT_BGM_VOLUME);
+            SFXVolume = PlayerPrefs.GetFloat(PREFS_SFX_VOL, DEFAULT_SFX_VOLUME);
+            UIVolume = PlayerPrefs.GetFloat(PREFS_UI_VOL, DEFAULT_UI_VOLUME);
 
             SetMasterVolume(MasterVolume, saveToPrefs: false);
-            SetSFXVolume(SFXVolume, saveToPrefs: false);
             SetBGMVolume(BGMVolume, saveToPrefs: false);
+            SetSFXVolume(SFXVolume, saveToPrefs: false);
+            SetUIVolume(UIVolume, saveToPrefs: false);
         }
 
         /// <summary>
@@ -169,14 +175,6 @@ namespace Core.Audio
             _stingerAudioSource.Play();
         }
 
-        /// <summary>
-        /// Chuyển đổi giữa các AudioMixerSnapshots (dùng cho Adaptive Music Âm Dương).
-        /// </summary>
-        public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1.5f)
-        {
-            if (snapshot == null) return;
-            snapshot.TransitionTo(transitionTime);
-        }
 
         public void StopBGM()
         {
@@ -199,6 +197,17 @@ namespace Core.Audio
             }
         }
 
+        public void SetBGMVolume(float linearVolume, bool saveToPrefs = true)
+        {
+            BGMVolume = Mathf.Clamp01(linearVolume);
+            SetMixerVolume(_bgmVolumeParam, BGMVolume);
+            if (saveToPrefs)
+            {
+                PlayerPrefs.SetFloat(PREFS_BGM_VOL, BGMVolume);
+                PlayerPrefs.Save();
+            }
+        }
+
         public void SetSFXVolume(float linearVolume, bool saveToPrefs = true)
         {
             SFXVolume = Mathf.Clamp01(linearVolume);
@@ -210,13 +219,13 @@ namespace Core.Audio
             }
         }
 
-        public void SetBGMVolume(float linearVolume, bool saveToPrefs = true)
+        public void SetUIVolume(float linearVolume, bool saveToPrefs = true)
         {
-            BGMVolume = Mathf.Clamp01(linearVolume);
-            SetMixerVolume(_bgmVolumeParam, BGMVolume);
+            UIVolume = Mathf.Clamp01(linearVolume);
+            SetMixerVolume(_uiVolumeParam, UIVolume);
             if (saveToPrefs)
             {
-                PlayerPrefs.SetFloat(PREFS_BGM_VOL, BGMVolume);
+                PlayerPrefs.SetFloat(PREFS_UI_VOL, UIVolume);
                 PlayerPrefs.Save();
             }
         }

@@ -2189,9 +2189,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.06762468
-    width: 1.0002749
-    height: 0.86538464
+    y: 0
+    width: 1
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -4787,8 +4787,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _masterMixer: {fileID: 24100000, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
   _masterVolumeParam: MasterVolume
-  _sfxVolumeParam: SFXVolume
   _bgmVolumeParam: BGMVolume
+  _sfxVolumeParam: SFXVolume
+  _uiVolumeParam: UIVolume
   _initialPoolSize: 20
   _bgmAudioSource: {fileID: 0}
   _stingerAudioSource: {fileID: 0}
@@ -4801,13 +4802,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1082831953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24a39efc4b0ee2a47b751496b1d8870b, type: 3}
+  m_Script: {fileID: 11500000, guid: fa9cb36f9be004d48a4a6f824fc8fe67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _neutralSnapshot: {fileID: 381639892884494851, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
-  _yangDominantSnapshot: {fileID: 24500006, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
-  _yinDominantSnapshot: {fileID: 1469543548332896807, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
-  _transitionDuration: 1.5
+  _enemyDieSFX: {fileID: 11400000, guid: d72693f86dd72d54184a1bb21c7a1aa2, type: 2}
+  _playerLevelUpSFX: {fileID: 11400000, guid: 5e5a1d1dc58d7c6449b7dc788175109a, type: 2}
+  _expCollectSFX: {fileID: 11400000, guid: b32073dacfac3f74383f31e08cf093b3, type: 2}
 --- !u!1 &1083646448
 GameObject:
   m_ObjectHideFlags: 0
@@ -6624,6 +6624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _yinYangValue: 50
+  _isTrackerActive: 0
 --- !u!1 &1523810602
 GameObject:
   m_ObjectHideFlags: 0

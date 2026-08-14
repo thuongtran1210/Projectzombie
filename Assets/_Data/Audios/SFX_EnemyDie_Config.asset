@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec609760f2a9cc4dafc2785aa4f77b8, type: 3}
+  m_Name: SFX_EnemyDie_Config
+  m_EditorClassIdentifier: 
+  _audioClipRef:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  _directClip: {fileID: 0}
+  _category: 0
+  _mixerGroup: {fileID: 0}
+  _volume: 0.2
+  _pitchRange: {x: 0.95, y: 1.05}
+  _cooldownTime: 0.15
+  _maxConcurrentVoices: 2

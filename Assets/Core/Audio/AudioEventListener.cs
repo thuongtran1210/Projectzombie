@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Core.Events;
+using Core.Audio;
 
 namespace ProjectZombie.Core.Audio
 {
@@ -9,10 +10,10 @@ namespace ProjectZombie.Core.Audio
     /// </summary>
     public class AudioEventListener : MonoBehaviour
     {
-        [Header("SFX Names (Khớp với AudioManager)")]
-        [SerializeField] private string _enemyDieSFX = "zombie_hit";
-        [SerializeField] private string _playerLevelUpSFX = "level_up";
-        [SerializeField] private string _expCollectSFX = "exp_collect";
+        [Header("Audio Configs (ScriptableObject)")]
+        [SerializeField] private AudioConfigSO _enemyDieSFX;
+        [SerializeField] private AudioConfigSO _playerLevelUpSFX;
+        [SerializeField] private AudioConfigSO _expCollectSFX;
 
         private void OnEnable()
         {
@@ -30,25 +31,25 @@ namespace ProjectZombie.Core.Audio
 
         private void OnEnemyDied(EnemyDiedEvent evt)
         {
-            if (AudioManager.Instance != null && !string.IsNullOrEmpty(_enemyDieSFX))
+            if (AudioManager.Instance != null && _enemyDieSFX != null)
             {
-                AudioManager.Instance.PlaySFX(_enemyDieSFX);
+                AudioManager.Instance.PlaySound(_enemyDieSFX, evt.Position);
             }
         }
 
         private void OnPlayerLevelUp(PlayerLevelUpEvent evt)
         {
-            if (AudioManager.Instance != null && !string.IsNullOrEmpty(_playerLevelUpSFX))
+            if (AudioManager.Instance != null && _playerLevelUpSFX != null)
             {
-                AudioManager.Instance.PlaySFX(_playerLevelUpSFX);
+                AudioManager.Instance.PlaySound(_playerLevelUpSFX);
             }
         }
 
         private void OnExpCollected(ExpCollectedEvent evt)
         {
-            if (AudioManager.Instance != null && !string.IsNullOrEmpty(_expCollectSFX))
+            if (AudioManager.Instance != null && _expCollectSFX != null)
             {
-                AudioManager.Instance.PlaySFX(_expCollectSFX);
+                AudioManager.Instance.PlaySound(_expCollectSFX, evt.Position);
             }
         }
     }

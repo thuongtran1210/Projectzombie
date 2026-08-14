@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ec609760f2a9cc4dafc2785aa4f77b8, type: 3}
-  m_Name: AudioConfig_TrongDongXungTran
+  m_Name: SFX_PlayerLevelUp_Config
   m_EditorClassIdentifier: 
   _audioClipRef:
     m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  _directClip: {fileID: 8300000, guid: f621b1b47acf26842bfb6f19cd0d8358, type: 3}
-  _category: 1
-  _mixerGroup: {fileID: -2351295275342517940, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
-  _volume: 1
-  _pitchRange: {x: 0.95, y: 1.05}
-  _cooldownTime: 0.05
-  _maxConcurrentVoices: 3
+  _directClip: {fileID: 0}
+  _category: 0
+  _mixerGroup: {fileID: -2937941829869816515, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
+  _volume: 0.3
+  _pitchRange: {x: 0.95, y: 1.2}
+  _cooldownTime: 0.06
+  _maxConcurrentVoices: 2
