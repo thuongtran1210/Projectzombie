@@ -794,9 +794,10 @@ MonoBehaviour:
   _descriptionText: {fileID: 756577819}
   _categoryText: {fileID: 1589133620}
   _levelText: {fileID: 698043983}
+  _statDiffText: {fileID: 0}
+  _elementBadgeText: {fileID: 0}
   _selectButton: {fileID: 234191701}
   _banButton: {fileID: 0}
-  _elementBadgeText: {fileID: 0}
 --- !u!114 &234191701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1195,9 +1196,10 @@ MonoBehaviour:
   _descriptionText: {fileID: 1467028336}
   _categoryText: {fileID: 396720466}
   _levelText: {fileID: 2017659144}
+  _statDiffText: {fileID: 0}
+  _elementBadgeText: {fileID: 0}
   _selectButton: {fileID: 290189980}
   _banButton: {fileID: 0}
-  _elementBadgeText: {fileID: 0}
 --- !u!114 &290189980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2221,9 +2223,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.1438127
     width: 1
-    height: 1
+    height: 0.71206105
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -4397,6 +4399,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _upgradePanel: {fileID: 1789706997}
+  _cardsContainer: {fileID: 1797668461}
+  _cardPrefab: {fileID: 8390320818147313093, guid: 711a2df28363cb54185cbf2e1a44b1a4, type: 3}
   _upgradeCards:
   - {fileID: 8390320818724973089}
   - {fileID: 234191700}
@@ -4419,6 +4423,7 @@ MonoBehaviour:
   _view: {fileID: 821329375}
   _playerExperience: {fileID: 0}
   _playerWeaponManager: {fileID: 0}
+  _defaultChoiceCount: 3
   _maxRerollsPerRun: 3
 --- !u!1 &863856632
 GameObject:
@@ -10054,9 +10059,10 @@ MonoBehaviour:
   _descriptionText: {fileID: 6226408948476906932}
   _categoryText: {fileID: 840260531550642185}
   _levelText: {fileID: 1630307395234669722}
+  _statDiffText: {fileID: 0}
+  _elementBadgeText: {fileID: 0}
   _selectButton: {fileID: 1503621698965063451}
   _banButton: {fileID: 0}
-  _elementBadgeText: {fileID: 0}
 --- !u!1 &8531402924593717445
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private WeaponManager _playerWeaponManager;
 
         [Header("Roguelite Settings")]
+        [SerializeField] private int _defaultChoiceCount = 3;
         [SerializeField] private int _maxRerollsPerRun = 3;
 
         private int _currentRerolls;
@@ -145,18 +146,18 @@ namespace ProjectZombie.Features.UI
             _view.SetRerollCountText($"Reroll ({_currentRerolls})");
             _view.SetRerollInteractable(_currentRerolls > 0);
 
-            int cardsCount = _view.GetCardsLength();
-            List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(cardsCount, _playerWeaponManager.gameObject);
+            int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
+            List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
+            IReadOnlyList<UpgradeCardView> cardViews = _view.GetOrCreateCardViews(choices.Count);
 
-            for (int i = 0; i < cardsCount; i++)
+            for (int i = 0; i < cardViews.Count; i++)
             {
-                UpgradeCardView cardView = _view.GetCardView(i);
+                UpgradeCardView cardView = cardViews[i];
                 if (cardView == null) continue;
 
                 if (i < choices.Count)
                 {
                     UpgradeData upgradeData = choices[i];
-                    cardView.gameObject.SetActive(true);
 
                     // Xử lý định dạng dữ liệu (Presenter format data)
                     string category = FormatCategoryName(upgradeData.upgradeType);
@@ -177,10 +178,6 @@ namespace ProjectZombie.Features.UI
                     );
 
                     cardView.SetElementBadge(elementBadge);
-                }
-                else
-                {
-                    cardView.gameObject.SetActive(false);
                 }
             }
         }

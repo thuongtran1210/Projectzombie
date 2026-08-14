@@ -90,6 +90,11 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
     - Đảm bảo `Animator.updateMode = AnimatorUpdateMode.UnscaledTime` khi hiển thị popup dừng game (`Time.timeScale = 0`).
   - [x] **[TASK-313.4] Tích Hợp Điều Phối Presenter (`UpgradeUIPresenter.cs`):**
     - Kết nối `UpgradeStatFormatter` và `ElementVisualHelper` vào luồng `PopulateUpgradeScreen()` để truyền dữ liệu đã format sang `UpgradeCardView`.
+  - [x] **[TASK-313.5] Dynamic Card Container & Object Pooling (`UpgradeUIView.cs` & `UpgradeUIPresenter.cs`):**
+    - Chuyển đổi cơ chế mảng cố định `_upgradeCards` sang `Transform _cardsContainer` + `UpgradeCardView _cardPrefab` kết hợp Object Pooling nội bộ.
+    - `UpgradeUIView` cung cấp API `IReadOnlyList<UpgradeCardView> GetOrCreateCardViews(int requiredCount)` tự động tái sử dụng các instance đã có hoặc instantiate thêm khi cần (Zero GC rác, không Destroy).
+    - `UpgradeUIPresenter` hỗ trợ số lượng thẻ cấu hình động `_defaultChoiceCount = 3` (dễ mở rộng khi có Meta Upgrade tăng lựa chọn hoặc Rương Báu 1-3-5 thẻ).
+    - Tương thích ngược: Tự động nhận diện các Card View đã kéo sẵn trong Scene lúc `Awake()` vào Pool.
 - [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
   - Cấu hình chuẩn `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
   - Tinh chỉnh Anchor Points của tất cả Element UI (HUD Top Left/Right, Controls Bottom Left/Right, Overlay Cards Center) tránh bị lệch hoặc tràn lề trên các tỉ lệ màn hình mobile (16:9, 19.5:9, 20:9).
