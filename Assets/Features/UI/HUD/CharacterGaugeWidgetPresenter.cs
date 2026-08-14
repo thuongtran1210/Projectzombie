@@ -29,6 +29,23 @@ namespace ProjectZombie.Features.UI.HUD
             }
         }
 
+        private void Start()
+        {
+            // Tự động fallback tìm ICharacterGaugeProvider trên Player nếu chưa được inject qua Bootstrapper
+            if (_currentProvider == null)
+            {
+                var player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null)
+                {
+                    var provider = player.GetComponent<ICharacterGaugeProvider>();
+                    if (provider != null)
+                    {
+                        Bind(provider);
+                    }
+                }
+            }
+        }
+
         private void OnDestroy()
         {
             Unbind();
