@@ -9,8 +9,13 @@
 
 ## 1. Tổng quan (Overview)
 
-### 1.1. Tầm nhìn sản phẩm (Vision Statement)
-**Vong Xuyên** đưa người chơi vào hành trình sinh tồn nghẹt thở giữa cõi âm ty Việt Nam — nơi hồn ma, quỷ dữ và yêu tinh dân gian trỗi dậy từ truyền thuyết. Người chơi không chỉ "cày điểm sát thương" mà phải thấu hiểu quy luật Ngũ Hành để chế ngự từng loài yêu quái, đồng thời giữ cán cân Âm Dương trong tâm để tồn tại tới khi đối mặt Diêm Vương.
+### 1.1. Tầm nhìn sản phẩm & Cốt truyện Tổng thể (Vision Statement & Grand Narrative)
+**Vong Xuyên** lấy bối cảnh cõi giới thần thoại và tín ngưỡng dân gian Việt Nam khi **Ma Vương Tối Thượng** (Chúa Quỷ) thức tỉnh, làm đảo lộn trật tự Âm Dương và nhấn chìm tam giới vào bóng tối yêu ma.
+
+* **Mục tiêu & Điểm kết của Toàn Bộ Câu Chuyện:** Hành trình của các Anh Hùng qua các miền đất thiêng để tìm kiếm di tích, vượt thử thách và **Thức tỉnh / Triệu hồi "TỨ BẤT TỬ"** (Tản Viên Sơn Thánh, Chử Đồng Tử, Phù Đổng Thiên Vương, Thánh Mẫu Liễu Hạnh) nhằm hợp nhất thần lực đánh bại Ma Vương, cứu vãn nhân gian.
+* **Vị trí của Map 1 — "Bến Đò Vong Xuyên" (Bản MVP):** Đây là **Chương 1 (Mở Đầu)**. Khi kiệt sức trước đợt tấn công đầu tiên của quỷ dữ, linh hồn người chơi bị giam hãm tại Bến Đò Vong Xuyên — ranh giới u linh giữa cõi sống và cõi chết.
+  * **Mục tiêu cụ thể tại Map 1:** Sống sót qua 20 phút nghẹt thở, vận dụng Ngũ Hành và Cán cân Âm Dương để tiêu diệt các Cai ngục & Sứ giả địa phủ (*Ngưu Đầu Mã Diện, Diêm Vương*), **phá vỡ phong ấn Hoàng Tuyền để mở đường Trở Về Trần Thế** và mở khóa bản đồ dẫn lối tới nơi phong ấn của vị Thánh Bất Tử đầu tiên.
+  * *(Lưu ý: Tại map Bến Đò Vong Xuyên, người chơi **CHƯA** gặp Tứ Bất Tử, đây là tiền đề mở màn cuộc viễn chinh).*
 
 ### 1.2. Đối tượng người chơi & Phong cách Đồ họa (Target & Graphic Specs)
 - **Người chơi mục tiêu:** Casual/mid-core yêu thích thể loại survivor-like trên Android. Phiên chơi 10–20 phút/run.
@@ -25,9 +30,10 @@
   - **Quy tắc thiết kế:** Trang phục đối xứng, chấp nhận đổi tay cầm vũ khí khi flipX để tối ưu thời gian sản xuất.
 
 ### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
+- **Cốt truyện Sử thi Dân gian Việt Nam:** Hành trình giải cứu tam giới, thu thập thánh tích để triệu hồi "Tứ Bất Tử" diệt Ma Vương.
 - **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Buộc người chơi xoay chuyển build theo vòng Tương Khắc (+30% Sát thương) và Tương Sinh (-20% Cooldown).
-- **Cán Cân Âm Dương:** Trạng thái lối chơi (Âm thịnh / Dương thịnh / Thái Cực Cân bằng) tự động lọc và mở khóa các thẻ nâng cấp Gacha độc quyền theo thời gian thực.
-- **Chất liệu văn hóa dân gian Việt Nam:** Pháp bảo cổ đại, Yêu ma truyền thuyết, và Boss Âm Ty (Ngưu Đầu Mã Diện, Diêm Vương).
+- **Cán Cân Âm Dương:** Cơ chế độc quyền cho nhân vật Đạo Sĩ (Thanh Đồng) luân chuyển thế đánh Âm Thịnh / Dương Thịnh / Thái Cực mở khóa thẻ Evolution đặc biệt.
+- **Chất liệu văn hóa thuần Việt:** Pháp bảo cổ đại (Nỏ Thần, Trống Đồng, Bút Phán Quan, Bùa Trấn Yêu), Yêu ma truyền thuyết (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
 - **Kiến trúc Kỹ thuật Di Động Tối Ưu:** Nền tảng Offline-first Local Save JSON, Object Pooling 0 GC Allocation, chạy mượt 60 FPS trên chip ARM64.
 
 ### 1.4. Yêu cầu kỹ thuật tối thiểu (Target Performance - Android)
@@ -39,15 +45,15 @@
 
 ### 1.5. Danh sách tính năng (MVP vs Full Release)
 
-| Hệ thống | Bản phát hành đầu (MVP) | Bản cập nhật tương lai (Update) |
+| Hệ thống | Bản phát hành đầu (MVP) | Bản cập nhật tương lai (Update - Campaign Tứ Bất Tử) |
 |---|---|---|
 | **Character (Nhân vật)** | 3 (Thư Sinh, Thanh Đồng, Ẩn Sĩ Sơn Lâm) | 8 (Bổ sung Thầy Mo, Kiếm Khách, Nương Tử...) |
-| **Vũ khí (Pháp bảo)** | 13 Pháp Bảo, chia đều 5 hệ Ngũ Hành | 30 Pháp Bảo + biến thể |
-| **Passive (Kỹ năng bị động)** | 18 (Cộng chỉ số nền + Thẻ Ngũ Hành) | 40 |
-| **Boss (Trùm)** | 2 (Ngưu Đầu Mã Diện, Diêm Vương) | 6 (Bổ sung Hồ Ly Tinh, Thần Trùng, Bạch Xà...) |
-| **Map (Bản đồ)** | 1 (Bến Đò Vong Xuyên - Bounded Arena) | 5 (Rừng Ma, Đầm Lầy Ma Da, Địa Ngục Môn...) |
+| **Vũ khí (Pháp bảo)** | 13 Pháp Bảo, chia đều 5 hệ Ngũ Hành | 30 Pháp Bảo + Bảo Vật Thần Thánh của Tứ Bất Tử |
+| **Passive (Kỹ năng bị động)** | 18 (Cộng chỉ số nền + Thẻ Ngũ Hành) | 40 + Phép Ban Phước Tứ Bất Tử (Divine Blessings) |
+| **Boss (Trùm)** | 2 (Ngưu Đầu Mã Diện, Diêm Vương) | 6+ (Bạch Xà, Thần Trùng, Hồ Ly 9 Đuôi, **Ma Vương Tối Thượng**) |
+| **Map (Bản đồ / Chương)** | 1 (Chương 1: Bến Đò Vong Xuyên — Cửa ngõ cõi Âm) | 5 Map Chiến Dịch (Núi Tản Ba Vì, Đầm Dạ Trạch, Chiến Địa Sóc Sơn, Phủ Dầy, Hỏa Ngục Ma Vương) |
 | **Cơ chế Ngũ Hành** | Có (Tương khắc + Tương sinh) | Mở rộng Combo liên hệ |
-| **Cán cân Âm Dương** | Có (Pool Âm / Pool Dương / Thẻ Thái Cực) | Mở rộng hiệu ứng bản đồ theo Âm Dương |
+| **Cán cân Âm Dương** | Có (Nội tại độc quyền Đạo Sĩ) | Mở rộng hiệu ứng bản đồ theo Âm Dương |
 | **Daily Quest** | Không | Có (Thưởng Cổ Tiền & Reroll Token) |
 | **Monetization** | Rewarded Ads (x2 Cổ Tiền / Reroll) | Rewarded Ads + IAP Skin/Character |
 
@@ -58,9 +64,9 @@
 ### 2.1. Vòng lặp trong 1 trận (Moment-to-moment Loop)
 1. **Sinh tồn & Tấn công tự động:** Di chuyển né tránh kẻ địch qua Dynamic Virtual Joystick. Pháp bảo tự động tấn công theo tầm và cooldown.
 2. **Thu thập & Lên cấp:** Tiêu diệt Yêu ma rớt Hạt Kinh Nghiệm (Exp Gem) để Lên cấp (Level Up).
-3. **Nâng cấp Gacha Ngũ Hành & Âm Dương:** Khi lên cấp, game tạm dừng hiển thị 3 thẻ nâng cấp ngẫu nhiên. Danh sách thẻ được lọc theo **Thuộc tính Ngũ Hành** và **Trạng thái Cán cân Âm Dương** hiện tại.
+3. **Nâng cấp Gacha Ngũ Hành & Âm Dương:** Khi lên cấp, game tạm dừng hiển thị 3 thẻ nâng cấp ngẫu nhiên. Danh sách thẻ được lọc qua hệ thống `IUpgradeFilter` theo thuộc tính Ngũ Hành và trạng thái Cán cân Âm Dương (khi chơi Đạo Sĩ).
 4. **Tiến hóa (Evolution):** Khi Pháp bảo đạt cấp 5 (Max Level) và người chơi sở hữu Thẻ Passive tương ứng, Pháp bảo tiến hóa thành phiên bản Tối Thượng.
-5. **Kết thúc trận:** Thắng khi diệt Boss Diêm Vương ở mốc 20:00, hoặc Thất bại khi hết HP.
+5. **Kết thúc trận:** Thắng khi diệt Boss Diêm Vương ở mốc 20:00 (Phá vỡ phong ấn Bến Đò Vong Xuyên, mở lối thoát về dương gian tìm kiếm Tứ Bất Tử), hoặc Thất bại khi hết HP.
 
 ### 2.2. Vòng lặp Meta & Save Game
 1. Kết thúc trận $\rightarrow$ Quy đổi điểm số thành **Cổ Tiền** (tiền xu cổ Việt Nam) tích lũy vĩnh viễn.
@@ -359,9 +365,25 @@ Một biến trạng thái toàn cục `yinYangValue` (thang 0–100, mặc đ�
 
 ---
 
-## 7. Thiết Kế Màn Chơi & Bản Đồ (Map Design)
+## 7. Thiết Kế Màn Chơi, Bản Đồ & Chiến Dịch (Map Design & Campaign Progression)
 
-* **Map MVP:** **Bến Đò Vong Xuyên** (Bounded Arena kích thước cố định `60m x 60m`, vật cản bia mộ/cây gạo không chặn đạn).
+### 7.1. Lộ trình Chiến Dịch 5 Chương (Campaign World Progression)
+Hành trình của người chơi được chia thành 5 Chương lớn dẫn dắt tới trận quyết chiến với Ma Vương:
+
+| Chương | Tên Bản Đồ | Bối Cảnh & Chủ Đề | Mục Tiêu Cốt Truyện | Boss Trấn Giữ |
+|---|---|---|---|---|
+| **Chương 1 (MVP)** | **Bến Đò Vong Xuyên** | Cõi Âm Ty, ranh giới sống chết, sông Vong Xuyên | Đột phá vòng vây âm ty, phá phong ấn trở về dương gian *(Chưa gặp Tứ Bất Tử)* | Ngưu Đầu Mã Diện (Phút 10)<br/>Diêm Vương (Phút 20) |
+| **Chương 2** | **Núi Tản Ba Vì** | Rừng thiêng mây phủ, thác bạc đá tảng | Thức tỉnh **Tản Viên Sơn Thánh** (Đệ Nhất Bất Tử - Thần Núi) | Yêu Tinh Bạch Xà |
+| **Chương 3** | **Đầm Dạ Trạch** | Đầm lau sậy u tịch, bãi cát hoang sơ | Thức tỉnh **Chử Đồng Tử** (Đệ Nhị Bất Tử - Thần Duyên & Pháp thuật) | Ngư Tinh Ma Da Vương |
+| **Chương 4** | **Chiến Địa Sóc Sơn** | Đồi sim, tre đằng ngà, chiến trường xưa | Thức tỉnh **Phù Đổng Thiên Vương** (Đệ Tam Bất Tử - Thánh Gióng Sức Mạnh) | Yêu Tướng Âm Binh |
+| **Chương 5 (Chung kết)** | **Quần Thể Phủ Dầy & Địa Môn** | Đền đài Tứ Phủ & Lãnh địa Ma Vương | Hợp nhất Thần lực Tứ Bất Tử (Thánh Mẫu Liễu Hạnh) diệt Ma Vương | **MA VƯƠNG TỐI THƯỢNG** |
+
+---
+
+### 7.2. Bản Đồ MVP: Chương 1 — Bến Đò Vong Xuyên
+
+* **Quy mô & Đấu trường:** **Bounded Arena** kích thước cố định `60m x 60m`, vật cản bia mộ/cây gạo cổ thụ (không chặn đạn).
+* **Mục tiêu của Map:** Sống sót 20 phút, tiêu diệt 2 Boss Cai Ngục để giải trừ phong ấn bờ sông Vong Xuyên, mở đường trở lại cõi trần thế và nhặt được tàn tích dẫn lối tới Núi Tản Ba Vì.
 * **Cơ chế Spawn Yêu Ma trong Bounded Arena (`EnemySpawner.cs`):**
   - **Quy tắc Vùng Spawn (Screen-Off-Camera Ring):** Quái luôn được spawn ở **vành ngoài màn hình Camera** (bán kính `R_min = 12m` đến `R_max = 16m` so với Vị trí người chơi hiện tại).
   - **Giới hạn Biên Arena (Boundary Safety Guard):** Nếu vành ngoài Camera nằm đè lên tường biên Arena, Spawner sẽ tự động snap vị trí spawn bám sát dọc theo bờ tường biên Arena.
@@ -369,7 +391,7 @@ Một biến trạng thái toàn cục `yinYangValue` (thang 0–100, mặc đ�
   - **Cơ chế Chống dồn góc & Kẹt cứng cuối trận (Anti-Cornering Logic):**
     - Khi người chơi đứng sát góc/tường biên (khoảng cách `< 5m` tới tường border), tốc độ spawn từ hướng góc đó giảm 70%, đồng thời 70% lượng quái mới sẽ được dồn spawn về phía đường thoát duy nhất (phía trung tâm/vùng trống).
     - **Dynamic Repositioning Strategy:** Yêu ma khi chạm tường biên sẽ tự động kích hoạt AI tìm đường di chuyển dọc theo bờ tường ôm lấy người chơi thay vì đứng chồng chất gây kẹt cứng.
-* **Pacing & Spawn Curve:**
+* **Pacing & Spawn Curve (00:00 - 20:00):**
   * `00:00 - 05:00`: Giai đoạn Khởi động (Ma Giáp & Ma Trơi xuất hiện thưa thớt, Max 50 active enemies).
   * `05:00 - 10:00`: Giai đoạn Tăng tốc (Quỷ Nhập Tràng & Ma Da xuất hiện, đợt bùng nổ phút thứ 8, Max 120 active enemies).
   * `10:00`: **Boss Ngưu Đầu Mã Diện** xuất hiện (Tự động quét sạch quái nhỏ trong bán kính 10m xung quanh Boss).

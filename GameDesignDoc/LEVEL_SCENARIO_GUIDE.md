@@ -5,11 +5,11 @@
 
 ---
 
-## 1. Mục Tiêu Màn Chơi (Run Objectives)
+## 1. Mục Tiêu Màn Chơi (Run Objectives — Chương 1: Bến Đò Vong Xuyên)
 
 ### 1.1. Mục Tiêu Chính (Primary Victory Condition)
-- **Mục tiêu:** Người chơi điều khiển nhân vật (Thư Sinh, Đạo Sĩ, Võ Tăng) sống sót qua **20 phút** nghẹt thở giữa cõi Âm Ty và tiêu diệt thành công **Final Boss (Diêm Vương)** xuất hiện ở mốc **20:00**.
-- **Điều kiện Thắng (Victory):** Hạ gục **Diêm Vương**, nhận *Rương Đầu Thai* (+2,000 Cổ Tiền & Mở khóa Nhân vật mới) và hoàn thành trận đấu.
+- **Mục tiêu:** Người chơi điều khiển nhân vật (Thư Sinh, Đạo Sĩ, Võ Tăng) sống sót qua **20 phút** nghẹt thở giữa **Bến Đò Vong Xuyên (Chương 1)** và tiêu diệt thành công **Final Boss của Map (Diêm Vương)** xuất hiện ở mốc **20:00** nhằm phá tan phong ấn cõi Hoàng Tuyền, mở lối trở về dương gian bắt đầu đại nghiệp tìm kiếm & thức tỉnh **Tứ Bất Tử** để tiêu diệt Ma Vương.
+- **Điều kiện Thắng (Victory):** Hạ gục **Diêm Vương**, nhận *Rương Đầu Thai* (+2,000 Cổ Tiền & Mở khóa Chương 2 / Nhân vật mới) và hoàn thành Chương 1.
 
 ### 1.2. Điều Kiện Thất Bại (Defeat Condition)
 - **Cạn Máu ($HP \le 0$):** Nhân vật hết máu trước khi hạ gục Diêm Vương. Game Over và chuyển sang màn hình tổng kết (Thống kê số lượng yêu ma diệt, thời gian sống sót, nhận Cổ Tiền tích lũy).
