@@ -11,78 +11,23 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class TMPVietnameseFontSetupTool
     {
-        private const string FALLBACK_FONT_PATH = "Assets/TextMesh Pro/Resources/Fonts & Materials/Arial SDF - Fallback.asset";
-        private const string SOURCE_TTF_PATH = "Assets/TextMesh Pro/Fonts/Arial.ttf";
+        private const string BAKED_FONT_PATH_1 = "Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset";
+        private const string BAKED_FONT_PATH_2 = "Assets/TextMesh Pro/Resources/Fonts & Materials/GameFont_Vietnamese_SD.asset";
 
         [MenuItem("Tools/ProjectZombie/Font/Setup Vietnamese TMP Fallbacks", priority = 100)]
         public static void SetupVietnameseFallbacks()
         {
-            // 1. Kiểm tra và xóa file hỏng nếu có
-            TMP_FontAsset fallbackFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FALLBACK_FONT_PATH);
-            if (fallbackFont != null && (fallbackFont.material == null || fallbackFont.atlasTextures == null || fallbackFont.atlasTextures.Length == 0 || fallbackFont.atlasTextures[0] == null))
+            // 1. Tải Font Asset tĩnh đã Bake full tiếng Việt
+            TMP_FontAsset vietnameseFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(BAKED_FONT_PATH_1);
+            if (vietnameseFont == null)
             {
-                AssetDatabase.DeleteAsset(FALLBACK_FONT_PATH);
-                fallbackFont = null;
+                vietnameseFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(BAKED_FONT_PATH_2);
             }
 
-            if (fallbackFont == null)
+            if (vietnameseFont == null)
             {
-                Font sourceTtf = AssetDatabase.LoadAssetAtPath<Font>(SOURCE_TTF_PATH);
-                if (sourceTtf == null)
-                {
-                    sourceTtf = Font.CreateDynamicFontFromOSFont("Arial", 16);
-                }
-
-                if (sourceTtf != null)
-                {
-                    fallbackFont = TMP_FontAsset.CreateFontAsset(sourceTtf, 90, 9, GlyphRenderMode.SDFAA, 512, 512, AtlasPopulationMode.Dynamic);
-                    fallbackFont.name = "Arial SDF - Fallback";
-
-                    string dir = System.IO.Path.GetDirectoryName(FALLBACK_FONT_PATH);
-                    if (!System.IO.Directory.Exists(dir))
-                    {
-                        System.IO.Directory.CreateDirectory(dir);
-                    }
-
-                    // Lưu main asset
-                    AssetDatabase.CreateAsset(fallbackFont, FALLBACK_FONT_PATH);
-
-                    // Đính kèm Material và Atlas Textures vào sub-asset để không bị Garbage Collected / Destroyed
-                    if (fallbackFont.material != null)
-                    {
-                        fallbackFont.material.name = fallbackFont.name + " Material";
-                        AssetDatabase.AddObjectToAsset(fallbackFont.material, fallbackFont);
-                    }
-
-                    if (fallbackFont.atlasTextures != null)
-                    {
-                        for (int i = 0; i < fallbackFont.atlasTextures.Length; i++)
-                        {
-                            var tex = fallbackFont.atlasTextures[i];
-                            if (tex != null)
-                            {
-                                tex.name = $"{fallbackFont.name} Atlas {i}";
-                                AssetDatabase.AddObjectToAsset(tex, fallbackFont);
-                            }
-                        }
-                    }
-
-                    EditorUtility.SetDirty(fallbackFont);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log($"<color=#4DEEEA>[TMPVietnameseFontSetupTool]</color> Đã tạo mới chuẩn Dynamic Font Asset từ Arial tại '{FALLBACK_FONT_PATH}'.");
-                }
-                else
-                {
-                    Debug.LogError($"[TMPVietnameseFontSetupTool] Không tìm thấy font TTF nguồn tại '{SOURCE_TTF_PATH}'!");
-                    return;
-                }
-            }
-
-            // Đảm bảo chế độ Dynamic
-            if (fallbackFont.atlasPopulationMode != AtlasPopulationMode.Dynamic)
-            {
-                fallbackFont.atlasPopulationMode = AtlasPopulationMode.Dynamic;
-                EditorUtility.SetDirty(fallbackFont);
+                Debug.LogError($"[TMPVietnameseFontSetupTool] Không tìm thấy font tĩnh '{BAKED_FONT_PATH_1}'. Vui lòng kiểm tra file!");
+                return;
             }
 
             // 2. Dọn dẹp & Gán vào Default Font Asset (LiberationSans SDF) Fallback Table
@@ -95,15 +40,14 @@ namespace ProjectZombie.EditorTools
                 }
                 else
                 {
-                    // Xóa các entry null hoặc trỏ sai
                     defaultFont.fallbackFontAssetTable.RemoveAll(f => f == null);
                 }
 
-                if (defaultFont != fallbackFont && !defaultFont.fallbackFontAssetTable.Contains(fallbackFont))
+                if (defaultFont != vietnameseFont && !defaultFont.fallbackFontAssetTable.Contains(vietnameseFont))
                 {
-                    defaultFont.fallbackFontAssetTable.Add(fallbackFont);
+                    defaultFont.fallbackFontAssetTable.Insert(0, vietnameseFont);
                     EditorUtility.SetDirty(defaultFont);
-                    Debug.Log($"[TMPVietnameseFontSetupTool] Đã thêm Dynamic Fallback vào default font '{defaultFont.name}'.");
+                    Debug.Log($"<color=#4DEEEA>[TMPVietnameseFontSetupTool]</color> Đã thêm '{vietnameseFont.name}' vào Fallback Table của default font '{defaultFont.name}'.");
                 }
             }
 
@@ -115,7 +59,7 @@ namespace ProjectZombie.EditorTools
                 var fallbackListProp = settingsSo.FindProperty("m_fallbackFontAssets");
                 if (fallbackListProp != null)
                 {
-                    // Xóa các entry null ngược từ cuối về đầu
+                    // Dọn dẹp các entry null
                     for (int i = fallbackListProp.arraySize - 1; i >= 0; i--)
                     {
                         var elem = fallbackListProp.GetArrayElementAtIndex(i);
@@ -129,7 +73,7 @@ namespace ProjectZombie.EditorTools
                     for (int i = 0; i < fallbackListProp.arraySize; i++)
                     {
                         var elem = fallbackListProp.GetArrayElementAtIndex(i);
-                        if (elem.objectReferenceValue == fallbackFont)
+                        if (elem.objectReferenceValue == vietnameseFont)
                         {
                             alreadyExists = true;
                             break;
@@ -138,10 +82,9 @@ namespace ProjectZombie.EditorTools
 
                     if (!alreadyExists)
                     {
-                        int index = fallbackListProp.arraySize;
-                        fallbackListProp.InsertArrayElementAtIndex(index);
-                        fallbackListProp.GetArrayElementAtIndex(index).objectReferenceValue = fallbackFont;
-                        Debug.Log("[TMPVietnameseFontSetupTool] Đã thêm Dynamic Fallback vào TMP Settings.");
+                        fallbackListProp.InsertArrayElementAtIndex(0);
+                        fallbackListProp.GetArrayElementAtIndex(0).objectReferenceValue = vietnameseFont;
+                        Debug.Log($"<color=#4DEEEA>[TMPVietnameseFontSetupTool]</color> Đã thêm '{vietnameseFont.name}' vào đầu danh sách TMP Settings Fallback.");
                     }
 
                     settingsSo.ApplyModifiedProperties();
@@ -152,7 +95,7 @@ namespace ProjectZombie.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#4DEEEA><b>[TMPVietnameseFontSetupTool] Cấu hình hoàn tất!</b></color> Hệ thống Fallback Font TextMesh Pro đã được thiết lập chuẩn.");
+            Debug.Log("<color=#4DEEEA><b>[TMPVietnameseFontSetupTool] Cấu hình hoàn tất!</b></color> Đã kích hoạt Font tĩnh Bake sẵn Full tiếng Việt.");
         }
     }
 }
