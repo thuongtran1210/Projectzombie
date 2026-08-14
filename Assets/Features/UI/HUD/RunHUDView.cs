@@ -168,6 +168,19 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private TextMeshProUGUI _yinYangStateText; // Ví dụ: "Dương Thịnh"
         [SerializeField] private TextMeshProUGUI _bossElementText;  // Ví dụ: "<color=#FF4444>[BOSS: HỎA]</color>"
 
+        /// <summary>Bật/Tắt hiển thị thanh Cán Cân Âm Dương trên HUD (chỉ hiển thị khi chơi Đạo Sĩ).</summary>
+        public void SetYinYangActive(bool isActive)
+        {
+            if (_yinYangSlider != null)
+            {
+                _yinYangSlider.gameObject.SetActive(isActive);
+            }
+            if (_yinYangStateText != null)
+            {
+                _yinYangStateText.gameObject.SetActive(isActive);
+            }
+        }
+
         /// <summary>Cập nhật Cán cân Âm Dương. Presenter truyền giá trị float và string trạng thái.</summary>
         public void SetYinYangBalance(float val, string formattedState)
         {

@@ -25,10 +25,21 @@ namespace Core.Audio
         [SerializeField] private AudioSource _bgmAudioSource;
         [SerializeField] private AudioSource _stingerAudioSource;
 
+        private const string PREFS_MASTER_VOL = "Setting_MasterVolume";
+        private const string PREFS_SFX_VOL = "Setting_SFXVolume";
+        private const string PREFS_BGM_VOL = "Setting_BGMVolume";
+
+        private const float DEFAULT_MASTER_VOLUME = 1.0f;
+        private const float DEFAULT_SFX_VOLUME = 0.9f;
+        private const float DEFAULT_BGM_VOLUME = 0.4f;
+
         private AudioSourcePool _pool;
         private AudioCooldownTracker _cooldownTracker;
 
         public AudioMixer MasterMixer => _masterMixer;
+        public float MasterVolume { get; private set; } = DEFAULT_MASTER_VOLUME;
+        public float SFXVolume { get; private set; } = DEFAULT_SFX_VOLUME;
+        public float BGMVolume { get; private set; } = DEFAULT_BGM_VOLUME;
 
         private void Awake()
         {
@@ -46,6 +57,7 @@ namespace Core.Audio
             DontDestroyOnLoad(gameObject);
 
             InitializeAudioSystem();
+            LoadAndApplyVolumeSettings();
         }
 
         private void InitializeAudioSystem()
@@ -73,6 +85,17 @@ namespace Core.Audio
                 _stingerAudioSource.loop = false;
                 _stingerAudioSource.playOnAwake = false;
             }
+        }
+
+        private void LoadAndApplyVolumeSettings()
+        {
+            MasterVolume = PlayerPrefs.GetFloat(PREFS_MASTER_VOL, DEFAULT_MASTER_VOLUME);
+            SFXVolume = PlayerPrefs.GetFloat(PREFS_SFX_VOL, DEFAULT_SFX_VOLUME);
+            BGMVolume = PlayerPrefs.GetFloat(PREFS_BGM_VOL, DEFAULT_BGM_VOLUME);
+
+            SetMasterVolume(MasterVolume, saveToPrefs: false);
+            SetSFXVolume(SFXVolume, saveToPrefs: false);
+            SetBGMVolume(BGMVolume, saveToPrefs: false);
         }
 
         /// <summary>
@@ -163,21 +186,39 @@ namespace Core.Audio
             }
         }
 
-        #region Mixer Control Methods
+        #region Mixer Control Methods (Settings Panel Ready)
 
-        public void SetMasterVolume(float linearVolume)
+        public void SetMasterVolume(float linearVolume, bool saveToPrefs = true)
         {
-            SetMixerVolume(_masterVolumeParam, linearVolume);
+            MasterVolume = Mathf.Clamp01(linearVolume);
+            SetMixerVolume(_masterVolumeParam, MasterVolume);
+            if (saveToPrefs)
+            {
+                PlayerPrefs.SetFloat(PREFS_MASTER_VOL, MasterVolume);
+                PlayerPrefs.Save();
+            }
         }
 
-        public void SetSFXVolume(float linearVolume)
+        public void SetSFXVolume(float linearVolume, bool saveToPrefs = true)
         {
-            SetMixerVolume(_sfxVolumeParam, linearVolume);
+            SFXVolume = Mathf.Clamp01(linearVolume);
+            SetMixerVolume(_sfxVolumeParam, SFXVolume);
+            if (saveToPrefs)
+            {
+                PlayerPrefs.SetFloat(PREFS_SFX_VOL, SFXVolume);
+                PlayerPrefs.Save();
+            }
         }
 
-        public void SetBGMVolume(float linearVolume)
+        public void SetBGMVolume(float linearVolume, bool saveToPrefs = true)
         {
-            SetMixerVolume(_bgmVolumeParam, linearVolume);
+            BGMVolume = Mathf.Clamp01(linearVolume);
+            SetMixerVolume(_bgmVolumeParam, BGMVolume);
+            if (saveToPrefs)
+            {
+                PlayerPrefs.SetFloat(PREFS_BGM_VOL, BGMVolume);
+                PlayerPrefs.Save();
+            }
         }
 
         private void SetMixerVolume(string parameterName, float linearVolume)

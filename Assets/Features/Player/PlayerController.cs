@@ -34,6 +34,13 @@ namespace ProjectZombie.Features.Player
 
         public static PlayerController Instance { get; private set; }
         public float LastDashTime => _lastDashTime;
+        public Vector2 MovementInput => _movementInput;
+        public bool IsDashing => _isDashing;
+
+        /// <summary>
+        /// Sự kiện phát ra khi nhân vật thực hiện kỹ năng Dash.
+        /// </summary>
+        public event System.Action OnDashed;
 
         private void Awake()
         {
@@ -134,23 +141,6 @@ namespace ProjectZombie.Features.Player
             {
                 _playerAnimator.FlipToDirection(_movementInput.x);
             }
-
-            // Tích hợp Cán Cân Âm Dương (v4.0):
-            // Di chuyển liên tục / Lướt -> Nghiêng Dương (+delta)
-            // Đứng yên né tránh -> Nghiêng Âm (-delta)
-            if (YinYang.YinYangManager.Instance != null)
-            {
-                if (_movementInput.sqrMagnitude > 0.01f || _isDashing)
-                {
-                    // Di chuyển/Lướt tăng Dương nhẹ (1.5 điểm mỗi giây)
-                    YinYang.YinYangManager.Instance.AdjustValue(1.5f * Time.deltaTime);
-                }
-                else
-                {
-                    // Đứng yên nghiêng Âm nhẹ (2.0 điểm mỗi giây)
-                    YinYang.YinYangManager.Instance.AdjustValue(-2.0f * Time.deltaTime);
-                }
-            }
         }
 
         private void OnDashPerformed(InputAction.CallbackContext context)
@@ -172,11 +162,8 @@ namespace ProjectZombie.Features.Player
                 _lastDashTime = Time.time;
                 _dashDirection = _movementInput; // Lướt theo hướng đang đi
                 
-                // Dash cộng thưởng Dương tức thì (+3 điểm Dương)
-                if (YinYang.YinYangManager.Instance != null)
-                {
-                    YinYang.YinYangManager.Instance.AdjustValue(3.0f);
-                }
+                // Phát event để các module quan tâm (như TaoistYinYangTracker) tự lắng nghe
+                OnDashed?.Invoke();
 
                 // Gọi hoạt ảnh Lướt
                 if (_playerAnimator != null)

@@ -20,7 +20,11 @@ namespace ProjectZombie.Features.YinYang
         [SerializeField, Range(0, 100)] 
         private float _yinYangValue = 50f;
 
+        [SerializeField]
+        private bool _isTrackerActive = false;
+
         public float CurrentValue => _yinYangValue;
+        public bool IsTrackerActive => _isTrackerActive;
 
         /// <summary>
         /// Sự kiện phát ra khi trạng thái Âm Dương thay đổi.
@@ -32,7 +36,21 @@ namespace ProjectZombie.Features.YinYang
         /// </summary>
         public event System.Action<float, YinYangState> OnYinYangValueChanged;
 
+        /// <summary>
+        /// Sự kiện phát ra khi trạng thái kích hoạt của tính năng Âm Dương thay đổi (theo nhân vật).
+        /// </summary>
+        public event System.Action<bool> OnTrackerActiveChanged;
+
         private YinYangState _currentState = YinYangState.Balanced;
+
+        public void SetTrackerActive(bool active)
+        {
+            if (_isTrackerActive != active)
+            {
+                _isTrackerActive = active;
+                OnTrackerActiveChanged?.Invoke(_isTrackerActive);
+            }
+        }
 
         private void Awake()
         {

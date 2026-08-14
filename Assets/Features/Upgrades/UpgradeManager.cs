@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using ProjectZombie.Features.Upgrades.Filters;
 
 namespace ProjectZombie.Features.Upgrades
 {
     /// <summary>
     /// Quản lý danh sách tất cả các nâng cấp có thể có trong game (Pool).
-    /// Cung cấp các lựa chọn ngẫu nhiên khi người chơi lên cấp.
+    /// Cung cấp các lựa chọn ngẫu nhiên khi người chơi lên cấp thông qua hệ thống Filter Strategy Pattern.
     /// </summary>
     public class UpgradeManager : MonoBehaviour
     {
@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Upgrades
         [SerializeField] private List<UpgradeData> _allAvailableUpgrades = new List<UpgradeData>();
 
         private readonly HashSet<UpgradeData> _bannedUpgrades = new HashSet<UpgradeData>();
+        private readonly List<IUpgradeFilter> _filters = new List<IUpgradeFilter>();
 
         private void Awake()
         {
@@ -26,7 +27,38 @@ namespace ProjectZombie.Features.Upgrades
             }
             Instance = this;
 
+            InitDefaultFilters();
             AutoPopulateUpgradesIfEmpty();
+        }
+
+        private void InitDefaultFilters()
+        {
+            _filters.Clear();
+            _filters.Add(new BannedUpgradeFilter(_bannedUpgrades));
+            _filters.Add(new AvailabilityUpgradeFilter());
+            _filters.Add(new YinYangUpgradeFilter());
+        }
+
+        /// <summary>
+        /// Đăng ký thêm một bộ lọc nâng cấp tùy biến (Custom Filter).
+        /// </summary>
+        public void RegisterFilter(IUpgradeFilter filter)
+        {
+            if (filter != null && !_filters.Contains(filter))
+            {
+                _filters.Add(filter);
+            }
+        }
+
+        /// <summary>
+        /// Hủy đăng ký một bộ lọc nâng cấp.
+        /// </summary>
+        public void RemoveFilter(IUpgradeFilter filter)
+        {
+            if (filter != null)
+            {
+                _filters.Remove(filter);
+            }
         }
 
         /// <summary>
@@ -68,7 +100,6 @@ namespace ProjectZombie.Features.Upgrades
 #endif
         }
 
-
         /// <summary>
         /// Cấm một thẻ nâng cấp xuất hiện trong suốt Run đấu hiện tại.
         /// </summary>
@@ -98,6 +129,22 @@ namespace ProjectZombie.Features.Upgrades
         }
 
         /// <summary>
+        /// Kiểm tra xem thẻ có thỏa mãn tất cả các bộ lọc đã đăng ký hay không.
+        /// </summary>
+        private bool IsUpgradeAllowed(UpgradeData upgrade, GameObject player)
+        {
+            if (upgrade == null) return false;
+            for (int i = 0; i < _filters.Count; i++)
+            {
+                if (!_filters[i].IsAllowed(upgrade, player))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Trả về một danh sách các lựa chọn nâng cấp ngẫu nhiên.
         /// </summary>
         public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
@@ -105,22 +152,12 @@ namespace ProjectZombie.Features.Upgrades
             var validUpgrades = new List<UpgradeData>();
             float totalWeight = 0f;
 
-            // Lấy trạng thái Âm Dương hiện tại
-            var currentYinYangState = ProjectZombie.Features.YinYang.YinYangManager.Instance != null 
-                ? ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState() 
-                : ProjectZombie.Features.YinYang.YinYangState.Balanced;
-
-            // Thay thế LINQ Where bằng vòng lặp để tránh tạo rác (Garbage Collection)
-            foreach (var u in _allAvailableUpgrades)
+            // Lọc danh sách thẻ hợp lệ qua Filter Strategy
+            for (int i = 0; i < _allAvailableUpgrades.Count; i++)
             {
-                if (u != null && !_bannedUpgrades.Contains(u) && u.IsAvailable(player))
+                var u = _allAvailableUpgrades[i];
+                if (IsUpgradeAllowed(u, player))
                 {
-                    // Lọc theo cán cân Âm Dương (nếu thẻ yêu cầu)
-                    if (u.checkYinYangState && u.requiredYinYangState != currentYinYangState)
-                    {
-                        continue;
-                    }
-
                     validUpgrades.Add(u);
                     totalWeight += u.spawnWeight;
                 }

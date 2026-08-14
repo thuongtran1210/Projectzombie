@@ -91,8 +91,15 @@ namespace ProjectZombie.Features.UI.HUD
             // Subscribe Âm Dương Manager
             if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
             {
-                ProjectZombie.Features.YinYang.YinYangManager.Instance.OnYinYangValueChanged += OnYinYangValueChanged;
-                OnYinYangValueChanged(ProjectZombie.Features.YinYang.YinYangManager.Instance.CurrentValue, ProjectZombie.Features.YinYang.YinYangManager.Instance.GetState());
+                var yinyang = ProjectZombie.Features.YinYang.YinYangManager.Instance;
+                yinyang.OnYinYangValueChanged += OnYinYangValueChanged;
+                yinyang.OnTrackerActiveChanged += OnYinYangTrackerActiveChanged;
+                
+                if (_view != null)
+                {
+                    _view.SetYinYangActive(yinyang.IsTrackerActive);
+                }
+                OnYinYangValueChanged(yinyang.CurrentValue, yinyang.GetState());
             }
         }
 
@@ -113,7 +120,17 @@ namespace ProjectZombie.Features.UI.HUD
 
             if (ProjectZombie.Features.YinYang.YinYangManager.Instance != null)
             {
-                ProjectZombie.Features.YinYang.YinYangManager.Instance.OnYinYangValueChanged -= OnYinYangValueChanged;
+                var yinyang = ProjectZombie.Features.YinYang.YinYangManager.Instance;
+                yinyang.OnYinYangValueChanged -= OnYinYangValueChanged;
+                yinyang.OnTrackerActiveChanged -= OnYinYangTrackerActiveChanged;
+            }
+        }
+
+        private void OnYinYangTrackerActiveChanged(bool isActive)
+        {
+            if (_view != null)
+            {
+                _view.SetYinYangActive(isActive);
             }
         }
 
