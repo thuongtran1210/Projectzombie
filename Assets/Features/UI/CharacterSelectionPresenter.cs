@@ -109,7 +109,7 @@ namespace ProjectZombie.Features.UI
             if (_view == null || _characters == null || _characters.Length == 0) return;
 
             var charInfo = _characters[_currentIndex];
-            string formattedElement = $"<color={charInfo.elementHexColor}>✦ Hệ {charInfo.element}</color>";
+            string formattedElement = $"<color={charInfo.elementHexColor}>Hệ {charInfo.element}</color>";
             string formattedSkill = $"<b>{charInfo.signatureSkillName}</b>: {charInfo.signatureSkillDesc}";
 
             _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, charInfo.avatar);

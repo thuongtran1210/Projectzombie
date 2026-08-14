@@ -16,7 +16,7 @@ MonoBehaviour:
   preferredDistance: 5
   minDistance: 3
   maxHealth: 35
-  damageToPlayer: 12
+  damageToPlayer: 5
   attackCooldown: 2
   attackRange: 7
   expReward: 50

@@ -93,7 +93,7 @@ namespace ProjectZombie.Features.UI.DamageText
             string formattedText = GetFastFormattedNumber(report.Amount);
             if (report.IsCounter)
             {
-                formattedText = $"✦ {formattedText}";
+                formattedText = $"* {formattedText}";
             }
             if (report.IsCritical)
             {

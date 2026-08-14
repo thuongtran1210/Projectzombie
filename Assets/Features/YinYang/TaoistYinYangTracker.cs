@@ -116,9 +116,9 @@ namespace ProjectZombie.Features.YinYang
         {
             return state switch
             {
-                YinYangState.YinDominant => "<color=#9B51E0><b>☯ ÂM THỊNH</b></color>",
-                YinYangState.YangDominant => "<color=#FF8C00><b>☯ DƯƠNG THỊNH</b></color>",
-                _ => "<color=#FFD700><b>☯ THÁI CỰC CÂN BẰNG</b></color>"
+                YinYangState.YinDominant => "<color=#9B51E0><b>[ÂM THỊNH]</b></color>",
+                YinYangState.YangDominant => "<color=#FF8C00><b>[DƯƠNG THỊNH]</b></color>",
+                _ => "<color=#FFD700><b>[THÁI CỰC CÂN BẰNG]</b></color>"
             };
         }
 

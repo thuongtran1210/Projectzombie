@@ -20,15 +20,15 @@ namespace ProjectZombie.Features.UI
 
             int minutes = Mathf.FloorToInt(elapsedTimeSeconds / 60f);
             int seconds = Mathf.FloorToInt(elapsedTimeSeconds % 60f);
-            string formattedTime = $"⏱️ Thời gian sống sót: <b>{minutes:00}:{seconds:00}</b>";
-            string formattedKills = $"💀 Số yêu ma diệt: <b>{killCount}</b>";
+            string formattedTime = $"Thời gian sống sót: <b>{minutes:00}:{seconds:00}</b>";
+            string formattedKills = $"Số yêu ma diệt: <b>{killCount}</b>";
 
             // Quy đổi Cổ Tiền: 1 kill = 1 Cổ Tiền + bonus thời gian sống sót
             int coTienEarned = killCount + (minutes * 10);
             if (isVictory) coTienEarned += 500; // Bonus diệt Diêm Vương
 
             string title = isVictory ? "<color=#FFD700>THẮNG RUN — BÌNH YÊN U MINH</color>" : "<color=#FF4444>THẤT BẠI — DIỆM VƯƠNG TRIỆU HỒN</color>";
-            string formattedCoTien = $"🪙 Cổ Tiền nhận được: <color=#FFD700>+{coTienEarned:N0}</color>";
+            string formattedCoTien = $"Cổ Tiền nhận được: <color=#FFD700>+{coTienEarned:N0}</color>";
 
             // Cộng Cổ Tiền & Lưu Game
             if (MetaCurrencyManager.Instance != null)
