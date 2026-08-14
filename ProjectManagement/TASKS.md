@@ -95,6 +95,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
     - `UpgradeUIView` cung cấp API `IReadOnlyList<UpgradeCardView> GetOrCreateCardViews(int requiredCount)` tự động tái sử dụng các instance đã có hoặc instantiate thêm khi cần (Zero GC rác, không Destroy).
     - `UpgradeUIPresenter` hỗ trợ số lượng thẻ cấu hình động `_defaultChoiceCount = 3` (dễ mở rộng khi có Meta Upgrade tăng lựa chọn hoặc Rương Báu 1-3-5 thẻ).
     - Tương thích ngược: Tự động nhận diện các Card View đã kéo sẵn trong Scene lúc `Awake()` vào Pool.
+    - Tạo Editor Tool `UpgradeUIHierarchyOptimizer.cs` (`Tools/ProjectZombie/UI/Optimize UpgradeUI Hierarchy`) tự động chuẩn hóa cấu trúc `Upgrade_Panel`, `Cards_Container`, `Header_Title`, `Footer_Controls` (Button Reroll/Skip) và tự động gán reference trong Inspector.
 - [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
   - Cấu hình chuẩn `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
   - Tinh chỉnh Anchor Points của tất cả Element UI (HUD Top Left/Right, Controls Bottom Left/Right, Overlay Cards Center) tránh bị lệch hoặc tràn lề trên các tỉ lệ màn hình mobile (16:9, 19.5:9, 20:9).

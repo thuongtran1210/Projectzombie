@@ -1,26 +1,30 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
     /// View quản lý hiển thị chung của Bảng lựa chọn Nâng cấp (Upgrade Panel) theo mô hình MVP.
-    /// Hỗ trợ Container động và Object Pooling nội bộ cho các Thẻ Nâng Cấp (Upgrade Cards).
+    /// Hỗ trợ Container động, Object Pooling nội bộ và các nút điều khiển Reroll/Skip.
     /// </summary>
     public class UpgradeUIView : MonoBehaviour
     {
-        [Header("References")]
+        [Header("Root Panel")]
         [SerializeField] private GameObject _upgradePanel;
+
+        [Header("Cards Dynamic Container")]
         [SerializeField] private Transform _cardsContainer;
         [SerializeField] private UpgradeCardView _cardPrefab;
 
         [Header("Legacy Compatibility (Optional Fallback)")]
         [SerializeField] private UpgradeCardView[] _upgradeCards;
 
-        [Header("Optional Roguelite Controls")]
-        [SerializeField] private UnityEngine.UI.Button _rerollButton;
-        [SerializeField] private UnityEngine.UI.Button _skipButton;
-        [SerializeField] private TMPro.TextMeshProUGUI _rerollCountText;
+        [Header("Roguelite Controls")]
+        [SerializeField] private Button _rerollButton;
+        [SerializeField] private Button _skipButton;
+        [SerializeField] private TextMeshProUGUI _rerollCountText;
 
         private readonly List<UpgradeCardView> _cardPool = new List<UpgradeCardView>();
         private System.Action _onRerollClicked;
@@ -41,6 +45,16 @@ namespace ProjectZombie.Features.UI
             if (_skipButton != null)
             {
                 _skipButton.onClick.AddListener(() => _onSkipClicked?.Invoke());
+            }
+
+            // Tự động đảm bảo Animator không bị đóng băng khi pause game (Time.timeScale = 0)
+            if (_upgradePanel != null)
+            {
+                var animator = _upgradePanel.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+                }
             }
 
             InitializeCardPool();
@@ -96,7 +110,6 @@ namespace ProjectZombie.Features.UI
         {
             if (requiredCount <= 0)
             {
-                // Tắt tất cả các card hiện có
                 for (int i = 0; i < _cardPool.Count; i++)
                 {
                     if (_cardPool[i] != null) _cardPool[i].gameObject.SetActive(false);
@@ -104,7 +117,6 @@ namespace ProjectZombie.Features.UI
                 return System.Array.Empty<UpgradeCardView>();
             }
 
-            // Sinh thêm thẻ nếu pool chưa đủ số lượng yêu cầu
             while (_cardPool.Count < requiredCount)
             {
                 if (_cardPrefab == null || _cardsContainer == null)
@@ -182,17 +194,11 @@ namespace ProjectZombie.Features.UI
             _upgradePanel.SetActive(isActive);
         }
 
-        /// <summary>
-        /// API Tương thích ngược: Trả về số lượng thẻ hiện có trong Pool/Inspector.
-        /// </summary>
         public int GetCardsLength()
         {
             return _cardPool.Count > 0 ? _cardPool.Count : (_upgradeCards != null ? _upgradeCards.Length : 0);
         }
 
-        /// <summary>
-        /// API Tương thích ngược: Lấy tham chiếu đến một Card View cụ thể theo index.
-        /// </summary>
         public UpgradeCardView GetCardView(int index)
         {
             if (index >= 0 && index < _cardPool.Count)
