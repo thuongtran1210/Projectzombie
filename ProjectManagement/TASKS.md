@@ -9,16 +9,16 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 To Do | 🟡 In Progress | 🟢 Done |
 |---|---|---|
-| 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP & Clean Code)** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-315] Setup Vietnamese TMP Dynamic Fallback Font** |
-| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-VFX-01] Dynamic Slash VFX Placement (`Bút Phán Quan` W002)** | 🚨 **[TASK-EXP-01] Tối Ưu & Nâng Cấp Hệ Thống Hạt EXP & Magnet** |
-| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` W003)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
-| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Shockwave & Ground Decals (`Trống Đồng` W005 & Võ Tăng)** | Master-Worker Spawner Refactoring |
-| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Hit Impact & Hit Flash Shader (`Hit Impact` & Zombie)** | Android Target Platform Refactor |
-| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | Local Save System (`SaveSystem.cs`) |
-| Mobile Stress Test (200 Mobs 60 FPS) | | Ngũ Hành Damage & Combo System |
-| Texture Compression ASTC & Sprite Atlas (Tối ưu cuối) | | Cán Cân Âm Dương (`YinYangManager`) |
-| Android AAB Build & Signing (Google Play Release) | | Boss AI Dynamic Element (`BossElementController`) |
-| | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
+| 🚨 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | 🚨 **[TASK-300] Setup Mobile Controls Canvas (Joystick & Skill/Dash Buttons)** | 🚨 **[TASK-315] Setup Vietnamese TMP Dynamic Fallback Font** |
+| 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới** | 🚨 **[TASK-VFX-Core] Shader Graph URP Cho 2D VFX Mobile** | 🚨 **[TASK-EXP-01] Tối Ưu & Nâng Cấp Hệ Thống Hạt EXP & Magnet** |
+| 🚨 **[TASK-GP-01] Hit Flash Shader & Knockback Physics** | 🚨 **[TASK-VFX-01] Dynamic Slash & Flame (`Bút Phán Quan` & `Đao Cửu Vĩ`)** | 🚨 **[TASK-106] Tích Hợp Sát Thương Ngũ Hành & Tương Sinh** |
+| 🚨 **[TASK-GP-02] Screen Shake & Critical Damage Feedback** | 🚨 **[TASK-VFX-02] Trail & Orbit Polish (`Bùa Trấn Yêu` & `Phi Tiêu`)** | Master-Worker Spawner Refactoring |
+| 🚨 **[TASK-GP-03] Treasure Chest Gacha Popup & Evolution Ceremony** | 🚨 **[TASK-VFX-03] Sóng Âm & Nứt Đất (`Trống Đồng`, `Lựu Đạn`, `Nước Thánh`)** | Android Target Platform Refactor |
+| 🚨 **[TASK-GP-04] Circle Swarm Spawner Events (Min 3, 7, 12)** | 🚨 **[TASK-VFX-04] Đạn Bay, Sét Dây & Summon (`Nỏ`, `Trượng`, `Linh Phù`)** | Local Save System (`SaveSystem.cs`) |
+| 🚨 **[TASK-GP-05] Polish Audio Feedback Layers (Hit/Gem/LevelUp)** | 🚨 **[TASK-VFX-05] Hit Sparks & Hit Stop Polish Cho Toàn Bộ Vũ Khí** | Ngũ Hành Damage & Combo System |
+| 🚨 **[TASK-401] Texture Compression ASTC & Sprite Atlas** | | Cán Cân Âm Dương (`YinYangManager`) |
+| 🚨 **[TASK-402] Mobile Stress Test (200 Mobs 60 FPS)** | | Boss AI Dynamic Element (`BossElementController`) |
+| 🚨 **[TASK-403] Android AAB Build & Signing (Google Play Release)** | | 12 Pháp Bảo & 5 Yêu Ma Data SOs |
 | | | Enemy Prefabs & Boss Data ([TASK-E01] -> [TASK-E14]) |
 | | | 🚨 **[TASK-312] Refactor & Refine In-Game HUD Visuals** |
 | | | 🚨 **[TASK-313] Refine Upgrade Cards Gacha UI (Stat Diff & Badges)** |
@@ -57,13 +57,27 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-206]** Tạo `ProjectilePrefabGenerator.cs` & `ProjectileBehaviorDataGenerator.cs` sinh 12 Prefabs đạn và gán Behaviors SOs.
 - [x] **[TASK-207]** Tạo `WaveDataGenerator.cs` tự động sinh 15 Wave Config ScriptableObjects bám sát Timeline 15 Phút GDD v4.0.
 
-### 🧟 Hạng Mục 3: AI Yêu Ma & Boss Mechanics (Completed)
+### 🧟 Hạng Mục 3: AI Yêu Ma, Boss Mechanics & 20-Min Wave Completion (Completed)
 - [x] **[TASK-306]** Tích hợp cơ chế **Cản Đạn (`Heavy Armor Bullet Sponge` - GDD 5.1)** cho Quỷ Nhập Tràng (`E_QUYNHAPTRANG`) trong `PierceBehavior.cs`.
 - [x] **[TASK-307]** Viết `SuicideExplodeBehavior.cs` cho Hồ Ly Tinh Nhỏ (`E_HOALYTINH`) áp sát nổ AoE 50 Damage.
 - [x] **[TASK-308]** Xây dựng `BossStateMachine.cs`, `BullDashSkill.cs` (Ngưu Xung Thiên), `GroundSlamSkill.cs` (Địa Chấn Âm Ty) cho Boss 1 Ngưu Đầu Mã Diện.
 - [x] **[TASK-309]** Tích hợp **Anti-Cornering Guard (GDD 7.0)** cho `EnemySpawner.cs` dồn 70% quái hướng về trung tâm khi Player sát tường $<5\text{m}$.
 - [x] **[TASK-310]** Tái cấu trúc Spawner System quy về mô hình Master-Worker chuẩn Data-Driven (`SpawnManager` & `EnemySpawner`).
 - [x] **[TASK-311]** Tách biệt 100% AI Boss bằng `BossMovementStrategy.cs` và `BossMeleeAttackStrategy.cs` độc lập với quái thường.
+- [x] **[TASK-E01]** Tạo ScriptableObject Data cho Boss **Ngưu Đầu Mã Diện** (HP Base 5000, Speed 2.2, Hệ Thổ/Hỏa).
+- [x] **[TASK-E02]** Tạo ScriptableObject Data cho Trùm Cuối **Diêm Vương** (HP Base 15000, Speed 1.8, Luân phiên 5 hệ).
+- [x] **[TASK-E03]** Tạo 5 ScriptableObjects `Wave_Minute_16` đến `Wave_Minute_20` hoàn thiện Timeline 20 Phút.
+- [x] **[TASK-E04]** Cập nhật `WavePhaseGenerator.cs` để Phase 3 kéo dài từ Phút 10 đến Phút 20 và nạp đủ 20 Waves.
+- [x] **[TASK-E05]** Dựng Prefab `E_MAGIAP.prefab` (Ma Giáp - Kim).
+- [x] **[TASK-E06]** Dựng Prefab `E_MATROI.prefab` (Ma Trơi - Hỏa).
+- [x] **[TASK-E07]** Dựng Prefab `E_MADA.prefab` (Ma Da - Thủy).
+- [x] **[TASK-E08]** Dựng Prefab `E_HOALYTINH.prefab` (Hồ Ly Tinh Nhỏ - Hỏa AoE Nổ).
+- [x] **[TASK-E09]** Dựng Prefab `E_QUYNHAPTRANG.prefab` (Quỷ Nhập Tràng - Thổ Elite 1).
+- [x] **[TASK-E10]** Dựng Prefab `Boss_NguuDauMaDien.prefab` (Ngưu Đầu Mã Diện - Boss 10:00).
+- [x] **[TASK-E11]** Dựng Prefab `Boss_DiemVuong.prefab` (Diêm Vương - Final Boss 20:00).
+- [x] **[TASK-E12]** Dựng Prefabs Rương Phần Thưởng (`Chest_UMinh.prefab` & `Chest_DauThai.prefab`).
+- [x] **[TASK-E13]** Chạy Tool `WavePhaseGenerator` tự động nạp Prefabs chuẩn vào 3 Phase và 20 WaveConfig SOs.
+- [x] **[TASK-E14]** Kiểm thử toàn bộ trận đấu 20 phút (00:00 -> 20:00).
 
 ### 📱 Hạng Mục 4: Mobile UI Canvas & MVP Systems
 - [x] 🚨 **[TASK-300] [HIGH PRIORITY — ƯU TIÊN HÀNG ĐẦU]** Setup Mobile Controls Canvas trong Scene Unity: Dựng `DynamicVirtualJoystick` (OnScreenControl), `SignatureSkillButtonView` + `SignatureSkillPresenter` (Nút bấm Skill chủ động) & `DashButtonView` + `DashButtonPresenter` chuẩn New Input System & MVP.
@@ -121,29 +135,48 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 - [x] **[TASK-304]** Xây dựng UI Chọn Nhân vật theo 3 anh hùng: Thư Sinh (Kim), Đạo Sĩ (Mộc), Võ Tăng (Thổ) qua `CharacterSelectionView/Presenter`.
 - [x] **[TASK-305]** Xây dựng màn hình `RunSummaryView.cs` & `RunSummaryPresenter.cs` hiển thị kết quả sau run đấu và tự động cộng Cổ Tiền tích lũy.
 
-### ✨ Hạng Mục 7: Modular VFX & Visual Polish (High Priority)
-- [ ] 🚨 **[TASK-VFX-01] [HIGH PRIORITY]** Tối ưu Vệt Chém Dynamic (`Bút Phán Quan` W002 & `Weapon_DualSlash`): Instantiate/Pool Crescent Slash VFX xoay theo góc chém thực tế + Thêm `Ink Splash` khi trúng quái.
-- [x] 🚨 **[TASK-VFX-02] [HIGH PRIORITY]** Tối ưu Vệt Linh Khí Orbit (`Bùa Trấn Yêu` W003): Xoay tiếp tuyến góc lá bùa mềm mại + hiệu ứng đẩy lùi (Knockback Repulsion Pulse) khi chạm yêu ma.
-- [ ] 🚨 **[TASK-VFX-03] [HIGH PRIORITY]** Tối ưu Sóng Xung Kích & Nứt Đất (`Trống Đồng` W005 & Skill Võ Tăng): Tạo URP Shader vòng sóng xung kích (Shockwave Ring) + Vết nứt đất `Ground Decal Fade` 0.5s.
-- [ ] 🚨 **[TASK-VFX-04] [HIGH PRIORITY]** Tối ưu Hit Impact & Hit Flash Shader: Tạo Prefab `HitImpact` (Sparks + Blood Burst) spawn tại tọa độ va chạm (`hitPoint`) + Shader nháy trắng (Hit Flash) 0.05s trên Zombie khi nhận sát thương.
+### ✨ Hạng Mục 5: Modular VFX & Visual Polish Cho Toàn Bộ Vũ Khí (High Priority)
+*Tài liệu tham chiếu chi tiết:* 🎨 **[UI_ART_DIRECTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_ART_DIRECTION_GUIDE.md)** | 🥞 **[SORTING_LAYERS_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SORTING_LAYERS_GUIDE.md)** | 💥 **[weapon_dual_slash_vfx_suggestions.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/weapon_dual_slash_vfx_suggestions.md)**
 
-### 👾 Hạng Mục 5: Enemy Prefabs, Boss Data & 20-Min Wave Completion (Completed)
-- [x] **[TASK-E01]** Tạo ScriptableObject Data cho Boss **Ngưu Đầu Mã Diện** (HP Base 5000, Speed 2.2, Hệ Thổ/Hỏa).
-- [x] **[TASK-E02]** Tạo ScriptableObject Data cho Trùm Cuối **Diêm Vương** (HP Base 15000, Speed 1.8, Luân phiên 5 hệ).
-- [x] **[TASK-E03]** Tạo 5 ScriptableObjects `Wave_Minute_16` đến `Wave_Minute_20` hoàn thiện Timeline 20 Phút.
-- [x] **[TASK-E04]** Cập nhật `WavePhaseGenerator.cs` để Phase 3 kéo dài từ Phút 10 đến Phút 20 và nạp đủ 20 Waves.
-- [x] **[TASK-E05]** Dựng Prefab `E_MAGIAP.prefab` (Ma Giáp - Kim).
-- [x] **[TASK-E06]** Dựng Prefab `E_MATROI.prefab` (Ma Trơi - Hỏa).
-- [x] **[TASK-E07]** Dựng Prefab `E_MADA.prefab` (Ma Da - Thủy).
-- [x] **[TASK-E08]** Dựng Prefab `E_HOALYTINH.prefab` (Hồ Ly Tinh Nhỏ - Hỏa AoE Nổ).
-- [x] **[TASK-E09]** Dựng Prefab `E_QUYNHAPTRANG.prefab` (Quỷ Nhập Tràng - Thổ Elite 1).
-- [x] **[TASK-E10]** Dựng Prefab `Boss_NguuDauMaDien.prefab` (Ngưu Đầu Mã Diện - Boss 10:00).
-- [x] **[TASK-E11]** Dựng Prefab `Boss_DiemVuong.prefab` (Diêm Vương - Final Boss 20:00).
-- [x] **[TASK-E12]** Dựng Prefabs Rương Phần Thưởng (`Chest_UMinh.prefab` & `Chest_DauThai.prefab`).
-- [x] **[TASK-E13]** Chạy Tool `WavePhaseGenerator` tự động nạp Prefabs chuẩn vào 3 Phase và 20 WaveConfig SOs.
-- [x] **[TASK-E14]** Kiểm thử toàn bộ trận đấu 20 phút (00:00 -> 20:00).
+- [ ] 🚨 **[TASK-VFX-Core] Xây Dựng Bộ Shader Graph URP Chuẩn Cho VFX 2D Mobile**:
+  - [ ] **[TASK-VFX-Core.1] Shader Graph Vệt Chém / Kiếm Khí (`Shader_Slash_Additive`):**
+    - Sử dụng kỹ thuật UV Scrolling + Polar Coordinates + Dissolve Mask (Noise Texture) + HDR Vertex Color.
+    - Tạo viền phát sáng sắc nét (Rim Glow), loại bỏ hiện tượng vỡ hạt sprite và cho phép đổi màu linh hoạt theo Ngũ Hành.
+  - [ ] **[TASK-VFX-Core.2] Shader Graph Sóng Xung Kích / Biến Dạng (`Shader_Distortion_Shockwave`):**
+    - Sử dụng `Scene Color` Node + Normal Map dạng vòng tròn mở rộng để tạo hiệu ứng bẻ cong khúc xạ ánh sáng (Screen Distortion) khi nổ AoE / bộc phá chiêu thức.
+  - [ ] **[TASK-VFX-Core.3] Shader Graph Vết Nứt Đất & Vết Chém Mặt Đất (`Shader_GroundDecal_Dissolve`):**
+    - Hỗ trợ Alpha Blending + Dissolve Burn Edge (viền cam/vàng cháy rực) cho các vết nứt tồn tại 0.5s trên nền đất rồi tan biến.
+  - [ ] **[TASK-VFX-Core.4] Shader Graph Hit Flash Siêu Nhẹ Cho Quái Vật (`Shader_Sprite_HitFlash`):**
+    - Tích hợp thuộc tính `_FlashAmount` và `_FlashColor` (màu Trắng hoặc Vàng Kim `#FFD700`) trực tiếp trên Sprite Shader của Yêu ma, nháy trong `0.05s` khi nhận sát thương (thay thế cho việc switch Material tốn GC).
 
-### 🎮 Hạng Mục 8: Gameplay Production Readiness & Game Feel (High Priority)
+- [ ] 🚨 **[TASK-VFX-01] [W002 & W008] Vệt Chém Đa Hướng & Luồng Lửa (`Bút Phán Quan` & `Đao Cửu Vĩ`)**:
+  - [ ] **Dynamic Slash Placement:** Tái cấu trúc `Weapon_DualSlash.cs`, instantiate/pool Crescent Slash VFX tại `hitCenter` và xoay góc Z theo hướng đánh thực tế `angle` (thay vì particle tĩnh ở tâm).
+  - [ ] **Multi-layer Slash Effect:** Tạo Prefab gồm 3 lớp: Lõi sáng trắng (`Core_White`), Vệt mực nho / Kiếm khí Kim (`Slash_Arc_Glow`), và Vệt mực bắn (`Ink_Splash_Sparks`).
+  - [ ] **Visual Progression:** Cấp 1-2 (Mực đen viền vàng kim), Cấp 3-4 (Mực ánh hỏa tỏa tàn lửa), Cấp Max / Evolution `E002` (Khí thiêng Bút Sinh Tử tỏa rộng kèm vòng xoáy Âm Dương).
+  - [ ] **Đao Cửu Vĩ (W008):** Nâng cấp luồng rồng lửa phun liên tục dạng nón ngắn với hiệu ứng xoắn ốc (Spiral Fire Mesh/Trail) + tro tàn bay tản ra ngoài.
+
+- [x] 🚨 **[TASK-VFX-02] [W003 & W012] Vệt Linh Khí Orbit & Phi Tiêu Bát Quái (`Bùa Trấn Yêu` & `Phi Tiêu Bát Quái`)**:
+  - [x] **Tangent Rotation:** Xoay tiếp tuyến góc lá bùa mượt mà theo chiều quay quanh nhân vật.
+  - [ ] **Trail & Glow Ribbon:** Gắn Trail Renderer với Shader phát sáng theo sau lá bùa (`Bùa Trấn Yêu`) và luồng gió xoáy (`Phi Tiêu Bát Quái`).
+  - [ ] **Impact Pulse:** Kích hoạt sóng đẩy lùi tí hon (Micro Repulsion Pulse) tại điểm lá bùa cọ xát với thân thể yêu ma.
+
+- [ ] 🚨 **[TASK-VFX-03] [W005, W006, W011] Sóng Âm Trấn Quốc & Vết Nứt Địa Chấn (`Trống Đồng`, `Lựu Đạn`, `Nước Thánh`)**:
+  - [ ] **Trống Đồng Đông Sơn (W005):** Tạo hiệu ứng sóng âm đồ hình hoa văn Trống Đồng dập xuống mặt đất tỏa ra 5 hướng + Vết nứt đất `GroundDecal` mờ dần sau 0.5s.
+  - [ ] **Lựu Đạn Thần Sa (W006):** Tạo hiệu ứng nổ bão lửa 3 tầng (1: Khói đen áp lực ép nén -> 2: Cột lửa bùng nổ -> 3: Tàn lửa thần sa văng xa kèm khói mờ cuộn).
+  - [ ] **Nước Thánh Chùa Hương (W011):** Tạo bãi nước thiêng lung linh bốc hơi sương trắng trên mặt đất (Sorting Layer `VFX_Bottom`), có vòng gợn sóng nhấp nhô theo thời gian.
+
+- [ ] 🚨 **[TASK-VFX-04] [W001, W004, W007, W009, W010, W013] Đạn Bay, Sét Dây & Triệu Hồi Linh Thú**:
+  - [ ] **Nỏ Thần (W001) & Cung Thạch Sanh (W007):** Mũi tên ánh sáng Kim khí có vệt đuôi dài (Long Particle Trail), khi xuyên quái tạo hiệu ứng xé gió (Wind Pierce Ring).
+  - [ ] **Cửu Vĩ Hồ Trảo (W004):** Móng vuốt cáo lửa đỏ cam cào xé mục tiêu + vệt hút sinh khí xanh ngọc bay ngược về Player.
+  - [ ] **Trượng Long Vương (W009):** Chuỗi sét nước Thủy cung nối giật giữa 6 mục tiêu (Sử dụng `LineRenderer` + Shader UV Lightning Anim) kèm hiệu ứng tóe nước điện tích tại mỗi điểm nhảy.
+  - [ ] **Linh Phù Ma Da (W010) & Cờ Âm Binh (W013):** Hiệu ứng làn khói sương đầm lầy khi Ma Da xuất hiện và làn sương đen âm ty khi bóng Âm Binh cầm giáo trồi lên từ lòng đất.
+
+- [ ] 🚨 **[TASK-VFX-05] Tích Hợp Game Feel & Hit Impact Polish Cho Toàn Bộ Vũ Khí**:
+  - [ ] **Hit Sparks & Impact VFX Pool:** Tạo Pool chứa các Particle Prefab tóe tia lửa/máu theo nguyên tố (Kim: Tia sét vàng; Hỏa: Tàn lửa đỏ; Thủy: Bọt nước xanh; Thổ: Mảnh đá vụn; Mộc: Lá cây cắt nhỏ).
+  - [ ] **Hit Stop (Frame Freeze):** Kích hoạt dừng `Time.timeScale = 0.05f` trong `0.04s` khi đòn đánh gây sát thương Chí Mạng hoặc proc Evolution.
+  - [ ] **Sorting Layer Standardization:** Đảm bảo 100% VFX vũ khí tuân thủ đúng 3 tầng phân lớp trong [SORTING_LAYERS_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SORTING_LAYERS_GUIDE.md) (`VFX_Bottom` cho Decal/Vũng nước; `VFX_Middle` cho Đạn/Slash/Orbit; `VFX_Top` cho Hit Spark/Nổ lớn).
+
+### 🎮 Hạng Mục 6: Gameplay Production Readiness & Game Feel (High Priority)
 *Tài liệu tham chiếu chi tiết:* 📖 **[GAMEPLAY_PRODUCTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md)**
 - [ ] 🚨 **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback**:
   - Tích hợp Shader URP nháy trắng (Flash White 0.05s) trên Sprite quái vật khi nhận sát thương trong `Damageable.cs` / `ZombieHealth.cs`.
@@ -176,7 +209,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
       - *Boss / Tinh Anh (200+ EXP)*: Hoàng Kim Lấp Lánh (`#FFD700`) kèm hào quang nhẹ.
     - Tích hợp Pitch Scaling trong `AudioManager` khi người chơi nhặt liên tục chuỗi Gem (`Pitch: 1.0f -> 1.5f`, step `+0.05f`), tự reset về `1.0f` sau `0.4s` nghỉ, tạo cảm giác âm thanh thăng hoa chuẩn Roguelite.
 
-### ⚙️ Hạng Mục 6: Performance & Build Release (Final Polish & Release)
+### ⚙️ Hạng Mục 7: Performance Optimization & Mobile Build Release (Final Polish & Release)
 - [ ] **[TASK-401]** Gom toàn bộ UI/Sprites vào Sprite Atlas 2048x2048 và chuyển đổi Texture Compression sang **ASTC 6x6** cho Android.
 - [ ] **[TASK-402]** Thử nghiệm Stress Test 200 Yêu ma + 100 Projectiles kiểm tra FPS (Target 60 FPS).
 - [ ] **[TASK-403]** Cấu hình Build Profile Android IL2CPP ARM64, Target API 33+, xuất file `.aab` có ký số phát hành Google Play Store.
