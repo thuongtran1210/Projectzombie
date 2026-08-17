@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W009
   weaponName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
+  icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
   description: "S\xE9t n\u01B0\u1EDBc th\u1EE7y cung lan truy\u1EC1n qua chu\u1ED7i
     6 y\xEAu qu\xE1i (Cho\xE1ng 0.5s)."
   rarity: Epic

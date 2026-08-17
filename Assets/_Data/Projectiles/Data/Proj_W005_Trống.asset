@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Proj_W005_Tr\u1ED1ng"
   m_EditorClassIdentifier: 
   ProjectileID: Proj_W005
+  Category: 0
   LogicPrefab: {fileID: 7860460156060922033, guid: 93b1f7e36d03907449e3e8e623b1fe03, type: 3}
   Speed: 10
   MaxRange: 20
@@ -20,7 +21,7 @@ MonoBehaviour:
   CollisionRadius: 1
   HitLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   PrewarmCount: 10
   MaxPoolSize: 50
   Behaviors:

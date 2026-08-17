@@ -55,6 +55,8 @@ namespace ProjectZombie.Features.Upgrades
         [Tooltip("Cấp độ tối đa của nâng cấp này (0 = Không giới hạn cấp)")]
         public int maxLevel = 0;
 
+
+        // TODO FIX: Trạng thái âm dương chỉ phụ thuộc vào nhân vật Đạo sĩ các nhân vật khác không cần                                                                                                             
         [Header("Vong Xuyen Requirements (v4.0)")]
         [Tooltip("Yêu cầu trạng thái Âm Dương để thẻ xuất hiện")]
         public ProjectZombie.Features.YinYang.YinYangState requiredYinYangState = ProjectZombie.Features.YinYang.YinYangState.Balanced;

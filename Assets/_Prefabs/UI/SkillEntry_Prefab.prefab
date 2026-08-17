@@ -223,5 +223,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9f7403b81119049aad45bb644585ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillIcon: {fileID: 5066871911613747715}
-  levelText: {fileID: 590530749604399717}
+  _skillIcon: {fileID: 5066871911613747715}
+  _levelText: {fileID: 590530749604399717}

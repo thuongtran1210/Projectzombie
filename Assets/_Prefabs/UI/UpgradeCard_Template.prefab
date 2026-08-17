@@ -675,11 +675,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa7f9028d53ac14c93b915582647f12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _iconImage: {fileID: 0}
-  _nameText: {fileID: 0}
-  _descriptionText: {fileID: 0}
-  _categoryText: {fileID: 0}
-  _levelText: {fileID: 0}
+  _iconImage: {fileID: 1000405720902709470}
+  _nameText: {fileID: 2767053838490774384}
+  _descriptionText: {fileID: 6226408947982623312}
+  _categoryText: {fileID: 840260531038031853}
+  _levelText: {fileID: 1630307394656488318}
   _statDiffText: {fileID: 0}
   _elementBadgeText: {fileID: 0}
   _selectButton: {fileID: 0}

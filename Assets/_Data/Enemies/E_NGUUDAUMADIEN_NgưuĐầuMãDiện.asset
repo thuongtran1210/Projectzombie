@@ -15,10 +15,11 @@ MonoBehaviour:
   moveSpeed: 2.2
   preferredDistance: 5
   minDistance: 3
-  maxHealth: 5000
+  maxHealth: 200
   damageToPlayer: 35
   attackCooldown: 3
   attackRange: 2
   expReward: 100
   tier: 2
   elementType: 5
+  isHeavyArmor: 0

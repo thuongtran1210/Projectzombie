@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W011
   weaponName: "N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
+  icon: {fileID: 1015382363, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
   description: "T\u1EA1o b\xE3i gi\u1EBFng thi\xEAng tr\xEAn m\u1EB7t \u0111\u1EA5t
     l\xE0m ch\u1EADm v\xE0 g\xE2y s\xE1t th\u01B0\u01A1ng li\xEAn t\u1EE5c."
   rarity: Rare

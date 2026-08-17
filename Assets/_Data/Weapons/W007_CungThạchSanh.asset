@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W007
   weaponName: "Cung Th\u1EA1ch Sanh"
+  icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
   description: "M\u0169i t\xEAn th\u1EA7n l\u1EF1c b\u1ED1i c\u1EA3nh Th\u1EA1ch
     Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t y\xEAu tinh."
   rarity: Rare
