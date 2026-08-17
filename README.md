@@ -28,7 +28,7 @@
 - ☯️ **Cơ Chế Ngũ Hành Tương Sinh - Tương Khắc:** 
   - **Tương Khắc:** Tăng **+30% Sát thương** khi dùng vũ khí khắc hệ kẻ địch (`Kim khắc Mộc`, `Mộc khắc Thổ`, `Thổ khắc Thủy`, `Thủy khắc Hỏa`, `Hỏa khắc Kim`).
   - **Tương Sinh:** Giảm **-20% Cooldown** cho vũ khí khi kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
-- ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance):** Trục nội tại luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp và mở khóa dạng Tiến Hóa (Evolution) tối thượng.
+- ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Đạo Sĩ):** Trục nội tại riêng biệt cho nhân vật Đạo Sĩ (Thanh Đồng) luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
 - 🗡️ **Kho Pháp Bảo & Yêu Ma Đậm Chất Thần Thoại:** Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng, Đao Cửu Vĩ đối đầu Ma Giáp, Quỷ Nhập Tràng, Ma Da, Ma Trơi, Ngưu Đầu Mã Diện, Diêm Vương.
 - 🚀 **Hiệu Năng Cực Hạn Cho Android:** Tải mượt mà **200+ Yêu ma và 100+ Đạn bay/VFX** đồng thời mà không bị drop khung hình (Zero GC Heap Allocation trong combat loop).
 
@@ -40,7 +40,7 @@
 graph TD
     A[Bắt Đầu Trận Đấu] --> B[Di chuyển & Tự Động Tấn Công]
     B --> C[Thu Thập Hạt Kinh Nghiệm / Cổ Tiền]
-    C --> D[Lên Cấp: Gacha 3 Thẻ Nâng Cấp Ngũ Hành / Âm Dương]
+    C --> D[Lên Cấp: Gacha 3 Thẻ Nâng Cấp Ngũ Hành / Âm Dương cho Đạo Sĩ]
     D --> E{Đạt Level 5 + Thẻ Phù Hợp?}
     E -- Có --> F[Tiến Hóa Pháp Bảo Tối Thượng - Evolution]
     E -- Chưa --> B
@@ -55,7 +55,7 @@ graph TD
 
 ## ☯️ Hệ Thống Cơ Chế Cốt Lõi (Core Mechanics)
 
-### 1. Vòng Tròn Ngũ Hành (Five Elements)
+### 1. Vòng Tròn Ngũ Hành (Five Elements - Cơ chế chung)
 
 | Hệ | Màu Sắc / Ký Hiệu | Hệ Khắc (+30% DMG) | Hệ Sinh (-20% CDR) | Pháp Bảo Tiêu Biểu |
 |:---:|:---:|:---:|:---:|:---|
@@ -65,10 +65,11 @@ graph TD
 | 🔥 **Hỏa** | Hỏa Long (`#B8442C`) | 🔷 Kim | 🪨 Thổ | Đao Cửu Vĩ, Bình Lửa Tam Muội |
 | 🪨 **Thổ** | Nâu Đất (`#9C7A48`) | 🌊 Thủy | 🔷 Kim | Trống Đồng Đông Sơn, Bùa Trấn Yêu |
 
-### 2. Cán Cân Âm Dương (Yin-Yang System)
+### 2. Cán Cân Âm Dương (Cơ chế Độc Quyền — Nhân vật Đạo Sĩ / Thanh Đồng)
+- **Thiết kế chuyên biệt:** Chỉ kích hoạt và hiển thị trên HUD khi người chơi chọn **Đạo Sĩ**.
 - Điểm Âm Dương dao động từ **0 (Cực Âm) đến 100 (Cực Dương)**, khởi đầu ở mức cân bằng **50 (Thái Cực)**.
 - Đòn đánh từ các pháp bảo Âm (hút máu, làm chậm, debuff) làm lệch về phía Âm; pháp bảo Dương (sát thương diện rộng, bộc phá, ánh sáng) kéo về phía Dương.
-- Trạng thái cân bằng mở ra các buff thuộc tính và định hướng chọn thẻ nâng cấp phù hợp khi Level Up.
+- Trạng thái Cán cân (Âm Thịnh / Dương Thịnh / Thái Cực) lọc trực tiếp danh sách thẻ Gacha trong `UpgradeManager` thông qua `IUpgradeFilter` và mở khóa dạng Tiến Hóa riêng biệt.
 
 ---
 
