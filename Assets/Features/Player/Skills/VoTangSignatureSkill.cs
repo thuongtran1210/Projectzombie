@@ -55,21 +55,20 @@ namespace ProjectZombie.Features.Player.Skills
 
             // Quét mục tiêu và áp dụng Knockback + Stun
             Vector3 center = playerObj.transform.position;
-            int count = Physics2D.OverlapCircleNonAlloc(center, shockwaveRadius, _hitBuffer);
+            int mask = Shared.TargetingUtility.EnemyLayerMask;
+            int count = Physics2D.OverlapCircleNonAlloc(center, shockwaveRadius, _hitBuffer, mask);
 
             for (int i = 0; i < count; i++)
             {
                 Collider2D col = _hitBuffer[i];
                 if (col == null || col.gameObject == playerObj) continue;
 
-                var enemyHealth = col.GetComponent<HealthSystem>();
-                if (enemyHealth != null)
+                if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
                 {
                     enemyHealth.TakeDamage(shockwaveDamage);
                 }
 
-                var enemyRb = col.GetComponent<Rigidbody2D>();
-                if (enemyRb != null)
+                if (col.TryGetComponent<Rigidbody2D>(out var enemyRb))
                 {
                     Vector2 knockbackDir = ((Vector2)col.transform.position - (Vector2)center).normalized;
                     enemyRb.AddForce(knockbackDir * 8.0f, ForceMode2D.Impulse);

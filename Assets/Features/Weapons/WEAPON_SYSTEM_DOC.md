@@ -19,7 +19,14 @@ Quản lý việc sở hữu vũ khí và logic ra đòn của nhân vật.
 
 ### `Weapon_MeleeBase` (Kế thừa WeaponBase)
 - Vai trò: Chuyên dùng cho vũ khí Cận Chiến.
-- Tính năng: Tối ưu hóa bằng cách dùng `Physics2D.OverlapBoxNonAlloc` (Zero Allocation) để quét mục tiêu thay vì phải gọi GameObject Đạn vật lý.
+- Tính năng: Tối ưu hóa bằng cách dùng `Physics2D.OverlapBoxNonAlloc` kết hợp `TargetingUtility.EnemyLayerMask` (Zero Allocation & Bitwise C++ filtering) để quét mục tiêu thay vì phải gọi GameObject Đạn vật lý.
+
+### `TargetingUtility` (Static Utility)
+- Vai trò: Bộ xử lý quét và nhắm mục tiêu quái vật dùng chung toàn bộ game (Zero GC Allocation).
+- Tính năng:
+  - Cache `TargetingUtility.EnemyLayerMask` ở tầng C++ Physics.
+  - Hỗ trợ các chế độ: `Nearest`, `LowestHealth`, `HighestHealth`, `ElementalAdvantage` (khắc chế hệ), `RandomInRange` (Reservoir Sampling 0-Alloc).
+  - Loại bỏ hoàn toàn code lặp lại `FindNearestEnemy()` trên các vũ khí tầm xa.
 
 ### `Weapon_ProjectileBase` (Kế thừa WeaponBase)
 - Vai trò: Lớp trừu tượng cơ sở cho MỌI loại vũ khí có sinh ra đạn (`ProjectileData`).
@@ -34,8 +41,8 @@ Quản lý việc sở hữu vũ khí và logic ra đòn của nhân vật.
 - Tính năng: Kích hoạt sinh đạn xoay quanh người chơi theo nhịp hồi chiêu (`PerformAttack()`). Độc lập hoàn toàn khỏi logic tăng tốc độ bay của đạn bắn xa (`RangedBase`). Tự động đăng ký nghe sự kiện `OnProjectileDespawned` từ `ProjectileSystem` để dọn dẹp danh sách quản lý đạn rác.
 
 ### Các loại Vũ Khí Thực Tế (Weapon Implementations)
-- `Weapon_Targeted` (Ranged): Tự động tìm kiếm kẻ địch gần nhất trong tầm với và phóng đạn vào chúng.
-- `Weapon_DualSlash` (Melee): Đánh ra 2 nhát chém ngược hướng nhau (trái/phải) cùng một lúc.
+- `Weapon_Targeted` (Ranged): Tự động tìm kiếm kẻ địch gần nhất trong tầm với qua `TargetingUtility` và phóng đạn vào chúng.
+- `Weapon_DualSlash` (Melee): Đánh ra 2 nhát chém ngược hướng nhau (trái/phải) kết hợp dynamic directional VFX từ `GlobalVFXPoolManager`.
 - `Weapon_Orbit` (Orbit): Sinh các lá bùa (`W003`) xoay tròn bảo vệ nhân vật theo đợt hồi chiêu.
 - *(Có thể tạo thêm: `Weapon_Aura`, `Weapon_RandomStrike`...)*
 

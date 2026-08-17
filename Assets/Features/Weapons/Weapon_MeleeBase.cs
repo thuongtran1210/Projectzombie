@@ -46,10 +46,12 @@ namespace ProjectZombie.Features.Weapons
 
         /// <summary>
         /// Quét vùng hình chữ nhật để gây sát thương. Không cần Spawn đạn.
+        /// Tối ưu 0 GC Allocation và lọc bằng LayerMask ở tầng C++ Physics.
         /// </summary>
         protected void DealDamageInArea(Vector2 center, Vector2 boxSize, float angle, DamageData damageData)
         {
-            int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer);
+            int mask = TargetingUtility.EnemyLayerMask;
+            int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer, mask);
             int hitCount = 0;
             bool hitAnyEnemy = false;
             bool hitCrit = false;
@@ -57,51 +59,49 @@ namespace ProjectZombie.Features.Weapons
             for (int i = 0; i < numHits; i++)
             {
                 var hit = _hitBuffer[i];
-                if (hit.CompareTag("Enemy"))
+                if (hit == null) continue;
+
+                if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth > 0)
                 {
-                    var health = hit.GetComponent<HealthSystem>();
-                    if (health != null && health.CurrentHealth > 0)
+                    ElementType defenderElement = ElementType.None;
+                    if (hit.TryGetComponent<Enemies.Enemy>(out var enemy))
                     {
-                        ElementType defenderElement = ElementType.None;
-                        if (hit.TryGetComponent(out Enemies.Enemy enemy))
-                        {
-                            defenderElement = enemy.CurrentElement;
-                        }
+                        defenderElement = enemy.CurrentElement;
+                    }
 
-                        DamageData hitDamage = DamageUtility.CalculateHitDamage(
-                            damageData.Amount,
-                            damageData.IsCritical,
-                            damageData.Element,
-                            defenderElement,
-                            this
-                        );
+                    DamageData hitDamage = DamageUtility.CalculateHitDamage(
+                        damageData.Amount,
+                        damageData.IsCritical,
+                        damageData.Element,
+                        defenderElement,
+                        this
+                    );
 
-                        health.TakeDamage(hitDamage);
-                        hitCount++;
-                        hitAnyEnemy = true;
+                    health.TakeDamage(hitDamage);
+                    hitCount++;
+                    hitAnyEnemy = true;
 
-                        if (hitDamage.IsCritical)
-                        {
-                            hitCrit = true;
-                        }
+                    if (hitDamage.IsCritical)
+                    {
+                        hitCrit = true;
+                    }
 
-                        // Kích hoạt Vòng Tương Sinh (Element Generation)
-                        if (damageData.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
-                        {
-                            YinYang.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
-                        }
+                    // Kích hoạt Vòng Tương Sinh (Element Generation)
+                    if (damageData.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                    {
+                        YinYang.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
+                    }
 
-                        // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật
-                        if (hitSparkPrefab != null && GlobalVFXPoolManager.Instance != null)
-                        {
-                            GlobalVFXPoolManager.Instance.PlayEffect(hitSparkPrefab, hit.transform.position, Quaternion.identity, 0.4f);
-                        }
-                        
-                        // Nếu có giới hạn số lượng mục tiêu thì dừng lại
-                        if (maxTargetsHit > 0 && hitCount >= maxTargetsHit)
-                        {
-                            break;
-                        }
+                    // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật
+                    if (hitSparkPrefab != null && GlobalVFXPoolManager.Instance != null)
+                    {
+                        GlobalVFXPoolManager.Instance.PlayEffect(hitSparkPrefab, hit.transform.position, Quaternion.identity, 0.4f);
+                    }
+                    
+                    // Nếu có giới hạn số lượng mục tiêu thì dừng lại
+                    if (maxTargetsHit > 0 && hitCount >= maxTargetsHit)
+                    {
+                        break;
                     }
                 }
             }

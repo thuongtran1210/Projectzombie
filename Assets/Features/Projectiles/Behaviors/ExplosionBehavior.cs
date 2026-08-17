@@ -40,18 +40,26 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             }
         }
 
+        private static readonly Collider2D[] _explosionBuffer = new Collider2D[60];
+
         private void Explode(Vector2 center)
         {
             _hasExploded = true;
 
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(center, _data.ExplosionRadius, _controller.Data.HitLayer);
-            
+            int mask = _controller.Data != null && _controller.Data.HitLayer != 0 
+                ? (int)_controller.Data.HitLayer 
+                : TargetingUtility.EnemyLayerMask;
+
+            int numHits = Physics2D.OverlapCircleNonAlloc(center, _data.ExplosionRadius, _explosionBuffer, mask);
+            if (numHits <= 0) return;
+
             float damageAmount = _controller.Damage.BaseDamage * _data.ExplosionDamageMultiplier;
             DamageContext explosionDamage = new DamageContext(_controller.Owner, damageAmount);
 
-            foreach (var col in hitColliders)
+            for (int i = 0; i < numHits; i++)
             {
-                if (col.gameObject == _controller.Owner) continue;
+                var col = _explosionBuffer[i];
+                if (col == null || col.gameObject == _controller.Owner) continue;
 
                 if (col.TryGetComponent(out IDamageable target))
                 {

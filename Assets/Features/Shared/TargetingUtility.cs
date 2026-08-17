@@ -18,34 +18,54 @@ namespace ProjectZombie.Features.Shared
 
     /// <summary>
     /// Lớp tiện ích tĩnh hỗ trợ quét và tìm kiếm quái vật mục tiêu trong tầm đánh.
-    /// Đảm bảo 0 GC Allocation thông qua buffer tĩnh tái sử dụng.
+    /// Tối ưu tuyệt đối cho Mobile: 0 GC Allocation, LayerMask filtering ở tầng C++ Physics.
     /// </summary>
     public static class TargetingUtility
     {
         private const int BUFFER_SIZE = 100;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[BUFFER_SIZE];
 
+        // Cache LayerMask tầng C++ Physics Engine (Bitwise O(1))
+        private static int _enemyLayerMask = -1;
+        public static int EnemyLayerMask
+        {
+            get
+            {
+                if (_enemyLayerMask == -1)
+                {
+                    int mask = LayerMask.GetMask("Enemy");
+                    _enemyLayerMask = mask != 0 ? mask : LayerMask.GetMask("Default", "Enemy");
+                }
+                return _enemyLayerMask;
+            }
+        }
+
         /// <summary>
-        /// Tìm 1 mục tiêu quái vật tối ưu nhất theo chiến lược lựa chọn.
+        /// Tìm 1 mục tiêu quái vật tối ưu nhất theo chiến lược lựa chọn (0 GC Allocation).
         /// </summary>
         public static Transform FindTarget(
             Vector3 origin, 
             float range, 
             TargetPriority priority = TargetPriority.Nearest, 
-            ElementType attackerElement = ElementType.None)
+            ElementType attackerElement = ElementType.None,
+            int customLayerMask = 0)
         {
-            int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer);
+            int mask = customLayerMask != 0 ? customLayerMask : EnemyLayerMask;
+            int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer, mask);
             if (numHits <= 0) return null;
 
             Transform bestTarget = null;
             float minMetric = float.MaxValue;
             float maxMetric = float.MinValue;
-            List<Transform> candidatePool = null;
+            int validCandidateCount = 0;
 
             for (int i = 0; i < numHits; i++)
             {
                 var hit = _hitBuffer[i];
-                if (hit == null || !hit.CompareTag("Enemy")) continue;
+                if (hit == null) continue;
+
+                // Kiểm tra nhanh tag hoặc component nếu mask rộng
+                if (!hit.CompareTag("Enemy") && customLayerMask == 0 && mask == ~0) continue;
 
                 if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0)
                 {
@@ -84,7 +104,6 @@ namespace ProjectZombie.Features.Shared
                         break;
 
                     case TargetPriority.ElementalAdvantage:
-                        // Ưu tiên quái có hệ bị khắc chế
                         ElementType defElement = ElementType.None;
                         if (hit.TryGetComponent<Enemy>(out var enemy))
                         {
@@ -101,22 +120,19 @@ namespace ProjectZombie.Features.Shared
                         }
                         else if (bestTarget == null)
                         {
-                            // Fallback nếu chưa tìm thấy quái khắc chế
                             bestTarget = hit.transform;
                         }
                         break;
 
                     case TargetPriority.RandomInRange:
-                        if (candidatePool == null) candidatePool = new List<Transform>();
-                        candidatePool.Add(hit.transform);
+                        // Reservoir Sampling: 0 GC Alloc chọn ngẫu nhiên 1 mục tiêu
+                        validCandidateCount++;
+                        if (Random.Range(0, validCandidateCount) == 0)
+                        {
+                            bestTarget = hit.transform;
+                        }
                         break;
                 }
-            }
-
-            if (priority == TargetPriority.RandomInRange && candidatePool != null && candidatePool.Count > 0)
-            {
-                int randomIndex = Random.Range(0, candidatePool.Count);
-                return candidatePool[randomIndex];
             }
 
             return bestTarget;
@@ -125,26 +141,27 @@ namespace ProjectZombie.Features.Shared
         /// <summary>
         /// Tìm quái vật gần nhất trong bán kính cho trước (Overload tiện dụng).
         /// </summary>
-        public static Transform FindNearestEnemy(Vector3 origin, float range)
+        public static Transform FindNearestEnemy(Vector3 origin, float range, int customLayerMask = 0)
         {
-            return FindTarget(origin, range, TargetPriority.Nearest);
+            return FindTarget(origin, range, TargetPriority.Nearest, ElementType.None, customLayerMask);
         }
 
         /// <summary>
         /// Tìm danh sách N quái vật gần nhất trong tầm (Zero-Alloc nếu truyền sẵn results list).
         /// </summary>
-        public static void FindNearestEnemiesNonAlloc(Vector3 origin, float range, int maxTargets, List<Transform> results)
+        public static void FindNearestEnemiesNonAlloc(Vector3 origin, float range, int maxTargets, List<Transform> results, int customLayerMask = 0)
         {
             if (results == null) return;
             results.Clear();
 
-            int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer);
+            int mask = customLayerMask != 0 ? customLayerMask : EnemyLayerMask;
+            int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer, mask);
             if (numHits <= 0) return;
 
             for (int i = 0; i < numHits; i++)
             {
                 var hit = _hitBuffer[i];
-                if (hit == null || !hit.CompareTag("Enemy")) continue;
+                if (hit == null) continue;
 
                 if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0) continue;
 

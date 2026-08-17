@@ -64,7 +64,8 @@ namespace ProjectZombie.Features.Skills.Zones
             }
 
             // Quét các enemy trong vùng 4.5m liên tục per-frame / intervals
-            int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, _radius, _hitBuffer);
+            int mask = Shared.TargetingUtility.EnemyLayerMask;
+            int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, _radius, _hitBuffer, mask);
             for (int i = 0; i < hitCount; i++)
             {
                 Collider2D col = _hitBuffer[i];

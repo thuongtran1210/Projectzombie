@@ -41,12 +41,18 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
     - Cung cấp `CurrentElement` trên `Enemy` và `BossElementController`.
     - Tại điểm va chạm (`ProjectileCollision.cs` & `Weapon_MeleeBase.DealDamageInArea`), áp dụng tính toán tương khắc 1 chiều qua `DamageUtility.CalculateHitDamage(attackerElement, defenderElement)` (nhân `×1.3` nếu khắc hệ).
     - Đánh dấu cờ `IsCounter` trong `DamageData` và `DamageReport` để phục vụ visual feedback.
-  - [x] **[TASK-106.3] Tích Hợp Vòng Tương Sinh Theo Event-Driven Decoupled (`ElementCycleManager`):**
+  - [x] **[TASK-106.3] Tích Hợp Single Source of Truth Vòng Tương Sinh (`ElementCycleManager`):**
+    - Dọn dẹp logic combo thủ công trong `WeaponManager.cs`, quy tụ về `ElementCycleManager`.
     - Gọi `ElementCycleManager.Instance.RegisterHit(attackerElement, sourceWeapon)` khi đòn đánh trúng kẻ địch.
     - Đảm bảo cơ chế cooldown refund 20% trừ trực tiếp trên `WeaponBase.ReduceCurrentCooldown()` mượt mà, zero-allocation và tôn trọng giới hạn 1 proc / 3s.
+    - Bổ sung sự kiện `OnElementSynergyTriggered` kích hoạt -20% Cooldown cho vũ khí trúng đòn và phát tín hiệu cho UI/VFX/Audio.
   - [x] **[TASK-106.4] Visual & Audio Feedback Tương Khắc / Tương Sinh (Game Feel):**
     - Kích hoạt màu Vàng Kim rực rỡ (`#FFD700`) + ký hiệu `✦` trên Floating Damage Text khi đòn đánh đạt điều kiện Tương Khắc trong `DamageTextManager` và `DamageTextStyleConfig`.
     - Phát âm thanh *Ting!* + hiệu ứng khi proc Tương Sinh theo đúng GDD v4.0.
+  - [x] 🚨 **[TASK-OPT-01] Tối Ưu Hóa Toàn Diện Physics & Combat Hot-path (Zero-Alloc & LayerMask Filtering):**
+    - Xây dựng `TargetingUtility.cs` với cache `EnemyLayerMask` (Bitwise O(1)) và Reservoir Sampling 0-Alloc.
+    - Refactor 8 vũ khí tầm xa, `Weapon_MeleeBase`, `ExplosionBehavior`, `HomingBehavior`, `VampiricBehavior`, `PetController`, `SuicideExplodeBehavior`, `BatQuaiTranZone`, `VoTangSignatureSkill`.
+    - Triệt tiêu 100% việc gọi `Physics2D.OverlapCircleAll` tạo mảng rác trên Heap và bỏ qua `CompareTag` dư thừa khi đã lọc LayerMask.
 
 ### 🗡️ Hạng Mục 2: Reskin Content & Asset Database (Completed)
 - [x] **[TASK-201]** Thêm trường `elementType` vào ScriptableObject `WeaponData.cs` và `EnemyConfig.cs`.

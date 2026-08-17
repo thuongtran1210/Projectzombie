@@ -46,23 +46,25 @@ namespace ProjectZombie.Features.Enemies.Behaviors
             }
         }
 
+        private static readonly Collider2D[] _suicideBuffer = new Collider2D[20];
+
         private System.Collections.IEnumerator ExplodeRoutine()
         {
             _isExploding = true;
             yield return new WaitForSeconds(explodeDelay);
 
             // Gây sát thương nổ AoE
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explodeRadius, targetLayer);
-            foreach (var hit in hits)
+            int mask = targetLayer != 0 ? (int)targetLayer : LayerMask.GetMask("Player");
+            int numHits = Physics2D.OverlapCircleNonAlloc(transform.position, explodeRadius, _suicideBuffer, mask);
+            for (int i = 0; i < numHits; i++)
             {
-                if (hit.CompareTag("Player"))
+                var hit = _suicideBuffer[i];
+                if (hit == null) continue;
+
+                if (hit.TryGetComponent<HealthSystem>(out var playerHealth))
                 {
-                    var playerHealth = hit.GetComponent<HealthSystem>();
-                    if (playerHealth != null)
-                    {
-                        DamageData damageData = new DamageData(explosionDamage, false, ElementType.Hoa);
-                        playerHealth.TakeDamage(damageData);
-                    }
+                    DamageData damageData = new DamageData(explosionDamage, false, ElementType.Hoa);
+                    playerHealth.TakeDamage(damageData);
                 }
             }
 

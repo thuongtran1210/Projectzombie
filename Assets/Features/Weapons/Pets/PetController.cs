@@ -228,22 +228,8 @@ namespace ProjectZombie.Features.Weapons.Pets
 
         private void FindTarget()
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, searchRadius, enemyLayer);
-            float minDistance = float.MaxValue;
-            _target = null;
-
-            foreach (var hit in hits)
-            {
-                var health = hit.GetComponent<HealthSystem>();
-                if (health != null && health.CurrentHealth <= 0) continue;
-
-                float dist = Vector2.Distance(transform.position, hit.transform.position);
-                if (dist < minDistance)
-                {
-                    minDistance = dist;
-                    _target = hit.transform;
-                }
-            }
+            int mask = enemyLayer != 0 ? (int)enemyLayer : TargetingUtility.EnemyLayerMask;
+            _target = TargetingUtility.FindNearestEnemy(transform.position, searchRadius, mask);
         }
 
         public bool HasTarget() => _target != null;

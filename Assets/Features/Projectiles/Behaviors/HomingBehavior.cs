@@ -50,24 +50,15 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         private void FindTarget()
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(_controller.transform.position, _data.HomingRadius, _controller.Data.HitLayer);
-            
-            float closestDistance = float.MaxValue;
-            Transform closestTarget = null;
+            int mask = _controller.Data != null && _controller.Data.HitLayer != 0 
+                ? (int)_controller.Data.HitLayer 
+                : Shared.TargetingUtility.EnemyLayerMask;
 
-            foreach (var col in colliders)
-            {
-                if (col.gameObject == _controller.Owner) continue;
-
-                float distance = Vector2.Distance(_controller.transform.position, col.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestTarget = col.transform;
-                }
-            }
-
-            _controller.State.CurrentTarget = closestTarget;
+            _controller.State.CurrentTarget = Shared.TargetingUtility.FindNearestEnemy(
+                _controller.transform.position, 
+                _data.HomingRadius, 
+                mask
+            );
         }
     }
 }

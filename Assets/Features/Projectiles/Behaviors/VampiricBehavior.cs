@@ -69,26 +69,15 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         private void FindNewTarget()
         {
-            // Tìm quái vật gần nhất trong bán kính
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(_controller.transform.position, _data.SearchRadius, _data.EnemyLayer);
-            float closestDistance = float.MaxValue;
-            Transform closestEnemy = null;
+            int mask = _data != null && _data.EnemyLayer != 0 
+                ? (int)_data.EnemyLayer 
+                : TargetingUtility.EnemyLayerMask;
 
-            foreach (var hitCollider in hitColliders)
-            {
-                // Kiểm tra xem kẻ địch có còn sống không
-                var enemyHealth = hitCollider.GetComponent<HealthSystem>();
-                if (enemyHealth != null && enemyHealth.CurrentHealth <= 0) continue;
-
-                float distance = Vector2.Distance(_controller.transform.position, hitCollider.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = hitCollider.transform;
-                }
-            }
-
-            _target = closestEnemy;
+            _target = TargetingUtility.FindNearestEnemy(
+                _controller.transform.position, 
+                _data.SearchRadius, 
+                mask
+            );
         }
     }
 }

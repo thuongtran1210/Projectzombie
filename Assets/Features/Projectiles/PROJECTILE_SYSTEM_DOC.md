@@ -118,6 +118,11 @@ Các Behavior phải được set `ExecutionOrder` trong Data.
 
 ### Quy tắc 6: Ngăn chặn đệ quy vô hạn với Generation
 Khi làm các hiệu ứng đẻ đạn (Spawn đạn từ đạn, vd: `SplitBehavior`), luôn phải tăng `Generation` (thế hệ đạn) lên 1:
+
+### Quy tắc 7: Tuyệt đối Zero GC Allocation trong Physics & Targeting (Mobile Standard)
+- **Cấm gọi `Physics2D.OverlapCircleAll`:** Thay bằng `Physics2D.OverlapCircleNonAlloc` kết hợp buffer mảng tĩnh tái sử dụng (`_hitBuffer = new Collider2D[60]`).
+- **Luôn truyền `LayerMask` vào tầng Vật lý:** Sử dụng `TargetingUtility.EnemyLayerMask` hoặc `_controller.Data.HitLayer` để lọc va chạm ngay tại tầng C++ Physics Engine (Bitwise O(1)).
+- **Dùng `TargetingUtility.FindNearestEnemy`:** Khi đạn cần tự tìm mục tiêu (như `HomingBehavior`, `VampiricBehavior`), luôn gọi qua `TargetingUtility` để đảm bảo 0 GC Allocation.
 ```csharp
 ProjectileSystem.Instance.Spawn(..., controller.State.Generation + 1);
 ```
