@@ -43,6 +43,11 @@ namespace ProjectZombie.Features.YinYang
         private readonly Queue<ElementHitEntry> _recentElementHits = new Queue<ElementHitEntry>();
         private float _lastProcTimestamp = -999f;
 
+        /// <summary>
+        /// Sự kiện phát ra khi kích hoạt thành công Vòng Tương Sinh (Element 1 -> Element 2 -> Weapon được giảm Cooldown).
+        /// </summary>
+        public event System.Action<ElementType, ElementType, WeaponBase> OnElementSynergyTriggered;
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
@@ -97,6 +102,7 @@ namespace ProjectZombie.Features.YinYang
                         {
                             weapon.ReduceCurrentCooldown(0.20f);
                         }
+                        OnElementSynergyTriggered?.Invoke(lastHit.element, newHit.element, weapon);
                         // Xóa hit ảo đã proc khỏi queue
                         _recentElementHits.Dequeue();
                     }
@@ -156,7 +162,10 @@ namespace ProjectZombie.Features.YinYang
                 AudioSource.PlayClipAtPoint(_procSFX, transform.position);
             }
 
-            // 3. Log & Visual UI feedback
+            // 3. Event Notification cho UI HUD / VFX
+            OnElementSynergyTriggered?.Invoke(hit1.element, hit2.element, hit2.weapon);
+
+            // 4. Log & Visual UI feedback
             Debug.Log($"<color=#00FFCC>[VÒNG TƯƠNG SINH PROC]</color> {hit1.element} sinh {hit2.element}! Vũ khí '{hit2.weapon?.weaponId}' được giảm 20% Cooldown!");
         }
     }

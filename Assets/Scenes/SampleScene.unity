@@ -2680,9 +2680,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.14557485
-    width: 1.0003282
-    height: 0.7090571
+    y: 0.14545454
+    width: 1
+    height: 0.70847106
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -55878,6 +55878,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1518228858}
   - component: {fileID: 1518228859}
+  - component: {fileID: 1518228860}
   m_Layer: 0
   m_Name: YinYangManager
   m_TagString: Untagged
@@ -55914,6 +55915,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _yinYangValue: 50
   _isTrackerActive: 0
+--- !u!114 &1518228860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518228857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb6b4574548cb4a42ad9aad77acead40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _windowTimeSeconds: 3
+  _procCooldownSeconds: 3
+  _procSFX: {fileID: 0}
 --- !u!1 &1523810602
 GameObject:
   m_ObjectHideFlags: 0
