@@ -71,8 +71,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1982589963
-  m_SortingLayer: 5
+  m_SortingLayerID: -1520767021
+  m_SortingLayer: 6
   m_SortingOrder: 100
   m_Sprite: {fileID: 1711785160, guid: 9b4b3970e7d337b41b4fc3ac2647f44e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 1383317695757006623}
   - component: {fileID: 3525274907744799209}
   - component: {fileID: 4297362168769072215}
+  - component: {fileID: 922402464292840618}
   m_Layer: 6
   m_Name: Dao Si
   m_TagString: Player
@@ -240,7 +241,6 @@ MonoBehaviour:
   dashAction: {fileID: -8837876224618443148, guid: dc7f196422f615f48ba64a8388a367ec, type: 3}
   dashSpeedMultiplier: 3
   dashDuration: 0.2
-  virtualJoystick: {fileID: 0}
 --- !u!114 &8848975518660136443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,6 +376,19 @@ MonoBehaviour:
   _yangMoveRate: 1.5
   _yinIdleRate: -2
   _dashYangBonus: 3
+--- !u!114 &922402464292840618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb2a1733ff626741901b9f198ee3eb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseMagnetRadius: 2.5
 --- !u!1 &7294256009787977137
 GameObject:
   m_ObjectHideFlags: 0

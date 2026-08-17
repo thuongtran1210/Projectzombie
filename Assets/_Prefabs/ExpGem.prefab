@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 5054920305206634125}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.3026, y: -0.1828, z: 0}
+  m_LocalScale: {x: 0.39467922, y: 0.36700404, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -72,8 +72,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1982589963
-  m_SortingLayer: 2
+  m_SortingLayerID: -1509185123
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 0, g: 0.23087478, b: 1, a: 1}
@@ -99,7 +99,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expAmount: 50
-  flySpeed: 5
+  initialFlySpeed: 0
+  maxFlySpeed: 35
+  flyAcceleration: 60
+  tier1Color: {r: 0.3, g: 0.93, b: 0.92, a: 1}
+  tier2Color: {r: 0.31, g: 0.89, b: 0.76, a: 1}
+  tier3Color: {r: 0.61, g: 0.32, b: 0.88, a: 1}
+  tier4Color: {r: 1, g: 0.84, b: 0, a: 1}
 --- !u!61 &2805986588405342622
 BoxCollider2D:
   m_ObjectHideFlags: 0

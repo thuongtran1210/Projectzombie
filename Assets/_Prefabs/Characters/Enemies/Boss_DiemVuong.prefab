@@ -74,8 +74,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1520767021
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 0.4, g: 0.1, b: 0.6, a: 1}
@@ -329,6 +329,8 @@ MonoBehaviour:
   _elementCycle: 0100000002000000030000000400000005000000
   _switchIntervalSeconds: 10
   _bossSpriteRenderer: {fileID: 0}
+  _overheadBadgeText: {fileID: 0}
+  _overheadOffset: {x: 0, y: 2, z: 0}
 --- !u!114 &3255142442196998158
 MonoBehaviour:
   m_ObjectHideFlags: 0
