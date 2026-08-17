@@ -43,26 +43,32 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
+  - name: Tilemap_Ground
     uniqueID: 310574312
     locked: 0
-  - name: TileMap
-    uniqueID: 2430039097
-    locked: 0
-  - name: Ground_Decals
+  - name: Tilemap_Decals
     uniqueID: 1845192131
     locked: 0
   - name: Tilemap_Obstacles
-    uniqueID: 914519124
+    uniqueID: 2430039097
     locked: 0
-  - name: Character
-    uniqueID: 1982589963
+  - name: Shadows
+    uniqueID: 3650224403
+    locked: 0
+  - name: Collectibles
+    uniqueID: 2785782173
+    locked: 0
+  - name: Entities
+    uniqueID: 2774200275
     locked: 0
   - name: Projectiles
     uniqueID: 201581293
     locked: 0
   - name: Skill
     uniqueID: 1207572677
+    locked: 0
+  - name: Tilemap_Overhead
+    uniqueID: 914519124
     locked: 0
   - name: UI_World
     uniqueID: 419231923
