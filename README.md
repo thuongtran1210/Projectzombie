@@ -164,6 +164,7 @@ Nhằm đảm bảo trải nghiệm 60 FPS ổn định trên thiết bị Andro
 Các tài liệu kỹ thuật, thiết kế và hướng dẫn sản xuất nằm trong thư mục dự án:
 - 📖 [Game Design Document (GDD v4.0)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md) — Chi tiết thiết kế toàn bộ hệ thống trò chơi.
 - 📐 [Sơ Đồ Kiến Trúc Hệ Thống (SYSTEM_ARCHITECTURE.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md) — Kiến trúc 6 tầng và Data Flow.
+- 📊 [Sơ Đồ Luồng Hoạt Động Trực Quan (SYSTEM_FLOWCHART.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_FLOWCHART.md) — Sơ đồ khối ASCII trực quan hóa chi tiết các luồng (Combat, Spawner, Upgrade, MVP).
 - 🎨 [Hướng Dẫn Art Direction UI (UI_ART_DIRECTION_GUIDE.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_ART_DIRECTION_GUIDE.md) — Bảng màu Ngũ Hành, UI Panels & Buttons.
 - ⚔️ [Hướng Dẫn Tối Ưu Gameplay & Game Feel](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md) — Hit Flash, Screen Shake, Knockback.
 - 🥞 [Chuẩn Hóa Sorting Layers & Y-Sorting](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SORTING_LAYERS_GUIDE.md) — Thiết lập Rendering 2D.

@@ -96,14 +96,43 @@ namespace ProjectZombie.Features.Boss
             }
         }
 
+        private static readonly int OutlineColorProp = Shader.PropertyToID("_OutlineColor");
+        private static readonly int OutlineThicknessProp = Shader.PropertyToID("_OutlineThickness");
+        private static readonly int OutlineGlowProp = Shader.PropertyToID("_OutlineGlow");
+
+        private MaterialPropertyBlock _propBlock;
+        private Coroutine _outlinePulseCoroutine;
+
+        private void Awake()
+        {
+            _propBlock = new MaterialPropertyBlock();
+        }
+
         private void ApplyElementVisuals(ElementType element)
         {
             Color elementColor = GetElementColor(element);
             string formattedText = GetFormattedElementBadge(element);
 
+            // Giữ nguyên Sprite color gốc màu trắng (không làm bệt màu nghệ thuật)
             if (_bossSpriteRenderer != null)
             {
-                _bossSpriteRenderer.color = elementColor;
+                _bossSpriteRenderer.color = Color.white;
+
+                if (_propBlock == null)
+                {
+                    _propBlock = new MaterialPropertyBlock();
+                }
+
+                _bossSpriteRenderer.GetPropertyBlock(_propBlock);
+                _propBlock.SetColor(OutlineColorProp, elementColor);
+                _propBlock.SetFloat(OutlineGlowProp, 1.35f);
+                _bossSpriteRenderer.SetPropertyBlock(_propBlock);
+
+                if (_outlinePulseCoroutine != null)
+                {
+                    StopCoroutine(_outlinePulseCoroutine);
+                }
+                _outlinePulseCoroutine = StartCoroutine(OutlinePulseRoutine());
             }
 
             if (_overheadBadgeText != null)
@@ -116,6 +145,34 @@ namespace ProjectZombie.Features.Boss
                 }
                 _punchCoroutine = StartCoroutine(PunchBadgeRoutine());
             }
+        }
+
+        private IEnumerator OutlinePulseRoutine()
+        {
+            if (_bossSpriteRenderer == null) yield break;
+
+            float duration = 0.35f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                // Bùng sáng độ dày viền từ 4.5px về 2.0px
+                float thickness = Mathf.Lerp(4.5f, 2.0f, t);
+
+                _bossSpriteRenderer.GetPropertyBlock(_propBlock);
+                _propBlock.SetFloat(OutlineThicknessProp, thickness);
+                _bossSpriteRenderer.SetPropertyBlock(_propBlock);
+
+                yield return null;
+            }
+
+            _bossSpriteRenderer.GetPropertyBlock(_propBlock);
+            _propBlock.SetFloat(OutlineThicknessProp, 2.0f);
+            _bossSpriteRenderer.SetPropertyBlock(_propBlock);
+
+            _outlinePulseCoroutine = null;
         }
 
         private IEnumerator PunchBadgeRoutine()
