@@ -9,14 +9,15 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 Backlog (Sắp Tới) | 🟡 In Progress (Đang Triển Khai) | 🟢 Done (Đã Hoàn Thành) |
 |---|---|---|
-| 📱 **[TASK-314] Mobile Resolution & Anchor Layout Adaptation** | 🎨 **[TASK-VFX-Core] Bộ 4 Shader Graph URP Cho 2D Mobile** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
-| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | ⚔️ **[TASK-VFX-01] Vệt Chém Bút Phán Quan & Luồng Lửa Đao Cửu Vĩ** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
-| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🌀 **[TASK-VFX-02] Orbit Trail Bùa Trấn Yêu & Phi Tiêu Bát Quái** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
-| 🌊 **[TASK-GP-04] Circle Swarm Spawner Events (Phút 3, 7, 12)** | 🔔 **[TASK-VFX-03] Sóng Âm Trống Đồng & Địa Chấn Lựu Đạn** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
-| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | ⚡ **[TASK-VFX-04] Đạn Bay Nỏ Thần, Sét Long Vương & Khói Ma Da** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
-| 🧪 **[TASK-402] Mobile Stress Test (200 Mobs 60 FPS)** | ✨ **[TASK-VFX-05] Hit Sparks, Hit Stop & Sorting Layer Polish** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc, Magnet & Audio Pitch** |
-| 🚀 **[TASK-403] Android AAB Build & Signing Release** | ⚡ **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback** | 🇻🇳 **[TASK-315] Vietnamese TMP Dynamic Fallback Font** |
-| | 📳 **[TASK-GP-02] Screen Shake & Damage Popup Scale Polish** | 🏛️ **[TASK-303, 304, 305] Meta Shop, Hero Select & Run Summary** |
+| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | 📱 **[TASK-314] Mobile UI Responsive & Safe Area Adaptation** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
+| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🎨 **[TASK-VFX-Core] Bộ 4 Shader Graph URP Cho 2D Mobile** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
+| 🌊 **[TASK-GP-04] Circle Swarm Spawner Events (Phút 3, 7, 12)** | ⚔️ **[TASK-VFX-01] Vệt Chém Bút Phán Quan & Luồng Lửa Đao Cửu Vĩ** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
+| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | 🌀 **[TASK-VFX-02] Orbit Trail Bùa Trấn Yêu & Phi Tiêu Bát Quái** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
+| 🧪 **[TASK-402] Mobile Stress Test (200 Mobs 60 FPS)** | 🔔 **[TASK-VFX-03] Sóng Âm Trống Đồng & Địa Chấn Lựu Đạn** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
+| 🚀 **[TASK-403] Android AAB Build & Signing Release** | ⚡ **[TASK-VFX-04] Đạn Bay Nỏ Thần, Sét Long Vương & Khói Ma Da** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc, Magnet & Audio Pitch** |
+| | ✨ **[TASK-VFX-05] Hit Sparks, Hit Stop & Sorting Layer Polish** | 🇻🇳 **[TASK-315] Vietnamese TMP Dynamic Fallback Font** |
+| | ⚡ **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback** | 🏛️ **[TASK-303, 304, 305] Meta Shop, Hero Select & Run Summary** |
+| | 📳 **[TASK-GP-02] Screen Shake & Damage Popup Scale Polish** | |
 | | 🎵 **[TASK-GP-05] Audio Feedback Layers (Hit/Death/Chime)** | |
 
 ---
@@ -111,6 +112,21 @@ graph TD
   - [x] Cơ chế tự động gộp hạt (Gem Compression/Merging) khi vượt ngưỡng 150 hạt trên sân.
   - [x] Phân cấp màu sắc Gem (Lam Ngọc, Lục Bảo, Hoàng Kim) và Pitch Scaling Audio (`1.0f -> 1.5f`).
 
+- [ ] 🚨 **[TASK-314] Tối Ưu Hóa Toàn Diện Mobile UI Responsive, Safe Area & Multi-Resolution Adaptation (Ưu Tiên Cao)**:
+  - [ ] **[TASK-314.1] Safe Area Fitter Zero-Alloc (`SafeAreaFitter.cs`):**
+    - Tự động bắt `Screen.safeArea` áp dụng vào `RectTransform.anchorMin` và `anchorMax` (tránh Notch camera, Dynamic Island, Home Bar trên iPhone/Android).
+    - Hỗ trợ các chế độ: `Apply Left`, `Apply Right`, `Apply Top`, `Apply Bottom` và giả lập Safe Area trong Unity Editor.
+  - [ ] **[TASK-314.2] Adaptive Canvas Scaler (`AdaptiveCanvasScaler.cs`):**
+    - Nội suy linh hoạt `matchWidthOrHeight` theo tỉ lệ màn hình thực tế (Aspect >= 1.77 Match Height 1.0; Aspect < 1.77 Match Width 0.0).
+    - Đảm bảo UI trên màn hình dài (20:9, 21:9) không bị co nhỏ và màn hình vuông (4:3, 16:10) không bị tràn mép.
+  - [ ] **[TASK-314.3] Mobile Controls Left Touch Zone & Responsive Bounds:**
+    - Cải tiến `DynamicVirtualJoystick.cs` hỗ trợ `LeftHalfScreenTouchZone` (chạm bất kỳ đâu bên nửa trái màn hình để xuất hiện Joystick).
+    - Căn chỉnh Anchors/Margin cụm Nút Dash & Skill Button bám theo Safe Area góc phải dưới đảm bảo tầm ngón tay cái thoải mái.
+  - [ ] **[TASK-314.4] Adaptive Card Container Auto-Scaler (`UpgradeUIView.cs` & Modals):**
+    - Bổ sung cơ chế auto-scale thẻ Gacha khi hiển thị 3 hoặc 5 thẻ trên các tỉ lệ màn hình hẹp ngang mà không tràn viền hay đè nút Reroll/Skip.
+  - [ ] **[TASK-314.5] Editor Tool Chuẩn Hóa 1-Click (`MobileResponsiveOptimizer.cs`):**
+    - Quét toàn bộ Canvas/Panels trong Scene, tự động gắn `SafeAreaFitter`, chuẩn hóa Anchor/Pivot và báo cáo lỗi layout.
+
 ---
 
 ### 🟡 Phase 3: Shaders, Modular VFX & Vũ Khí Polish (CURRENT FOCUS)
@@ -173,9 +189,6 @@ graph TD
 
 ### 🔴 Phase 5: Onboarding UI, Performance & Đóng Gói Phát Hành (FINAL PHASE)
 
-- [ ] 🚨 **[TASK-314] Mobile Screen Resolution & Anchor Layout Adaptation**:
-  - Cấu hình `CanvasScaler`: `Scale With Screen Size` (1920x1080, `Match Width Or Height` = 0.5).
-  - Tinh chỉnh Anchor Points tránh tràn viền trên các tỉ lệ màn hình dài (16:9, 19.5:9, 20:9).
 - [ ] 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP)**:
   - [ ] **[TASK-316.1] Gợi Ý Tương Sinh (Synergy Glow & Hint) Trên Thẻ Gacha:** Viền sáng xanh ngọc + tooltip gợi ý khi xuất hiện thẻ tương sinh.
   - [ ] **[TASK-316.2] HUD Quick Reference Wheel (Vòng Bát Quái Tra Cứu Nhanh):** Hold touch 1s để soi sơ đồ tương sinh tương khắc.
