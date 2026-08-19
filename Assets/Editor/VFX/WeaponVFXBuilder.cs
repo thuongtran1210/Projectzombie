@@ -686,35 +686,35 @@ namespace ProjectZombie.Editor.VFX
             return root;
         }
 
-        private static GameObject CreateFoxFlameStreamPrefab()
+        public static GameObject CreateFoxFlameStreamPrefab()
         {
             GameObject root = new GameObject("VFX_W008_FoxFlameStream");
             root.AddComponent<VFXPoolResetter>();
 
             ParticleSystem flamePS = root.AddComponent<ParticleSystem>();
             var main = flamePS.main;
-            main.duration = 0.4f;
+            main.duration = 0.35f;
             main.loop = true;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(0.25f, 0.4f);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(10f, 18f);
-            main.startSize = new ParticleSystem.MinMaxCurve(0.8f, 1.8f);
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.35f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(4.0f, 7.5f); // Tốc độ phun lửa vừa vặn tầm cận chiến
+            main.startSize = new ParticleSystem.MinMaxCurve(0.3f, 0.65f); // Kích thước ngọn lửa thanh thoát
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = flamePS.emission;
-            emission.rateOverTime = 30f;
+            emission.rateOverTime = 20f;
 
             var shape = flamePS.shape;
             shape.enabled = true;
             shape.shapeType = ParticleSystemShapeType.Cone;
-            shape.angle = 25f;
-            shape.radius = 0.2f;
+            shape.angle = 15f;
+            shape.radius = 0.1f;
 
             var sizeOverLife = flamePS.sizeOverLifetime;
             sizeOverLife.enabled = true;
             AnimationCurve sizeCurve = new AnimationCurve();
-            sizeCurve.AddKey(0.0f, 0.4f);
-            sizeCurve.AddKey(0.4f, 1.2f);
-            sizeCurve.AddKey(1.0f, 1.8f);
+            sizeCurve.AddKey(0.0f, 0.35f);
+            sizeCurve.AddKey(0.4f, 0.9f);
+            sizeCurve.AddKey(1.0f, 1.2f);
             sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, sizeCurve);
 
             var colorOverLife = flamePS.colorOverLifetime;
@@ -723,13 +723,13 @@ namespace ProjectZombie.Editor.VFX
             grad.SetKeys(
                 new GradientColorKey[] { 
                     new GradientColorKey(Color.white, 0.0f), 
-                    new GradientColorKey(new Color(1f, 0.6f, 0.1f), 0.3f), 
-                    new GradientColorKey(new Color(0.9f, 0.15f, 0.05f), 0.7f),
+                    new GradientColorKey(new Color(1f, 0.65f, 0.1f), 0.3f), 
+                    new GradientColorKey(new Color(0.95f, 0.2f, 0.05f), 0.7f),
                     new GradientColorKey(new Color(0.2f, 0.05f, 0.1f), 1.0f)
                 },
                 new GradientAlphaKey[] { 
                     new GradientAlphaKey(1.0f, 0.0f), 
-                    new GradientAlphaKey(0.9f, 0.6f), 
+                    new GradientAlphaKey(0.85f, 0.55f), 
                     new GradientAlphaKey(0.0f, 1.0f) 
                 }
             );
@@ -748,25 +748,25 @@ namespace ProjectZombie.Editor.VFX
 
             ParticleSystem emberPS = emberObj.AddComponent<ParticleSystem>();
             var emberMain = emberPS.main;
-            emberMain.duration = 0.4f;
+            emberMain.duration = 0.35f;
             emberMain.loop = true;
-            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.3f, 0.6f);
-            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(6f, 14f);
-            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.08f, 0.18f);
+            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.4f);
+            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(3.0f, 6.5f);
+            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.08f); // Đốm tàn lửa nhỏ li ti lung linh
             emberMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emberEmission = emberPS.emission;
-            emberEmission.rateOverTime = 20f;
+            emberEmission.rateOverTime = 12f;
 
             var emberShape = emberPS.shape;
             emberShape.enabled = true;
             emberShape.shapeType = ParticleSystemShapeType.Cone;
-            emberShape.angle = 35f;
-            emberShape.radius = 0.2f;
+            emberShape.angle = 20f;
+            emberShape.radius = 0.1f;
 
             var noise = emberPS.noise;
             noise.enabled = true;
-            noise.strength = 0.4f;
+            noise.strength = 0.3f;
             noise.frequency = 0.8f;
 
             var emberRenderer = emberObj.GetComponent<ParticleSystemRenderer>();

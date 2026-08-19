@@ -133,8 +133,112 @@ def generate_dongson_wave_sprite(output_path):
     img.save(output_path, "PNG")
     print(f"Generated Dong Son Soundwave Sprite: {output_path}")
 
+def generate_cinnabar_grenade_sprite(output_path):
+    """Tạo Sprite Hạt Chu Sa Hỏa Lựu (128x128, 100% Transparent)."""
+    size = 128
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+
+    # 1. Hào quang lửa bên ngoài
+    for r in range(54, 32, -2):
+        t = (r - 32) / 22.0
+        alpha = int(180 * (1.0 - t))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, int(100 * (1 - t)), 20, alpha))
+
+    # 2. Thân viên ngọc chu sa đỏ thẫm
+    for r in range(32, 10, -2):
+        t = (r - 10) / 22.0
+        r_col = int(220 * (1 - t * 0.3))
+        g_col = int(30 * (1 - t))
+        b_col = int(20 * (1 - t))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(r_col, g_col, b_col, 255))
+
+    # 3. Lõi lửa thần sa hoàng kim rực sáng
+    for r in range(16, 2, -2):
+        t = (r - 2) / 14.0
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, int(220 + 35 * (1 - t)), int(140 * (1 - t)), 255))
+    draw.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=(255, 255, 255, 255))
+
+    # 4. Tia lửa xoáy quanh viên chu sa
+    for i in range(4):
+        ang = i * (math.pi / 2) + 0.3
+        tip_x = cx + int(42 * math.cos(ang))
+        tip_y = cy + int(42 * math.sin(ang))
+        draw.ellipse([tip_x - 3, tip_y - 3, tip_x + 3, tip_y + 3], fill=(255, 240, 150, 230))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.6))
+    img.save(output_path, "PNG")
+    print(f"Generated Cinnabar Grenade Sprite: {output_path}")
+
+def generate_mada_talisman_sprite(output_path):
+    """Tạo Sprite Lá Bùa Thủy Quỷ Ma Da (64x128, 100% Transparent)."""
+    w, h = 64, 128
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # 1. Giấy bùa xanh chàm thủy mặc
+    margin_x, margin_y = 8, 12
+    draw.rectangle([margin_x, margin_y, w - margin_x, h - margin_y], fill=(25, 45, 65, 250), outline=(0, 200, 220, 255), width=2)
+
+    # 2. Đầu bùa hình mái vòm cổ
+    draw.polygon([(margin_x, margin_y), (w // 2, 4), (w - margin_x, margin_y)], fill=(35, 60, 85, 250), outline=(0, 200, 220, 255), width=2)
+
+    # 3. Ấn chú thủy quỷ màu xanh ngọc phát quang
+    cx = w // 2
+    draw.ellipse([cx - 12, 28, cx + 12, 52], outline=(0, 240, 255, 255), width=2)
+    draw.line([(cx, 34), (cx, 46)], fill=(0, 255, 255, 255), width=2)
+    draw.line([(cx - 7, 40), (cx + 7, 40)], fill=(0, 255, 255, 255), width=2)
+
+    # Chữ triện nguyền rủa sóng nước bên dưới
+    for y_offset in [62, 78, 94]:
+        draw.line([(cx - 14, y_offset), (cx + 14, y_offset)], fill=(0, 230, 255, 240), width=2)
+        draw.line([(cx, y_offset - 4), (cx, y_offset + 8)], fill=(0, 230, 255, 240), width=2)
+
+    draw.line([(cx - 8, 106), (cx + 8, 106)], fill=(0, 255, 255, 255), width=3)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.5))
+    img.save(output_path, "PNG")
+    print(f"Generated Ma Da Talisman Sprite: {output_path}")
+
+def generate_mada_water_orb_sprite(output_path):
+    """Tạo Sprite Cầu Bọt Nước Thủy Quỷ (128x128, 100% Transparent)."""
+    size = 128
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+
+    # 1. Hào quang nước tỏa ra ngoài
+    for r in range(56, 36, -2):
+        t = (r - 36) / 20.0
+        alpha = int(160 * (1.0 - t))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 180, 240, alpha))
+
+    # 2. Khối cầu nước xanh lam ngọc
+    for r in range(36, 10, -2):
+        t = (r - 10) / 26.0
+        g_val = int(140 + 100 * (1 - t))
+        b_val = int(200 + 55 * (1 - t))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, g_val, b_val, 240))
+
+    # 3. Vân xoáy nước và bọt khí ma mị
+    draw.arc([cx - 24, cy - 24, cx + 24, cy + 24], start=30, end=240, fill=(255, 255, 255, 220), width=3)
+    draw.arc([cx - 16, cy - 16, cx + 16, cy + 16], start=120, end=330, fill=(220, 255, 255, 240), width=3)
+
+    # 4. Lõi sáng tâm cầu nước
+    draw.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=(240, 255, 255, 255))
+    draw.ellipse([cx - 3, cy - 3, cx + 3, cy + 3], fill=(255, 255, 255, 255))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.7))
+    img.save(output_path, "PNG")
+    print(f"Generated Ma Da Water Orb Sprite: {output_path}")
+
 if __name__ == "__main__":
     generate_arrow_thach_sanh(os.path.join(PROJ_DIR, "Arrow_ThachSanh.png"))
     generate_arrow_no_than(os.path.join(PROJ_DIR, "Arrow_NoThan.png"))
     generate_phitieu_batquai_sprite(os.path.join(PROJ_DIR, "PhiTieu_BatQuai.png"))
     generate_dongson_wave_sprite(os.path.join(PROJ_DIR, "DongSon_Wave_Bullet.png"))
+    generate_cinnabar_grenade_sprite(os.path.join(PROJ_DIR, "Cinnabar_Grenade.png"))
+    generate_mada_talisman_sprite(os.path.join(PROJ_DIR, "Talisman_MaDa.png"))
+    generate_mada_water_orb_sprite(os.path.join(PROJ_DIR, "Mada_Water_Orb.png"))
+

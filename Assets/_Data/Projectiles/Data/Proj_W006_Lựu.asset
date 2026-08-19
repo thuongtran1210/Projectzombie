@@ -17,7 +17,7 @@ MonoBehaviour:
   Speed: 9
   MaxRange: 20
   Lifetime: 2.5
-  CollisionRadius: 3.5
+  CollisionRadius: 0.25
   HitLayer:
     serializedVersion: 2
     m_Bits: 4294967295

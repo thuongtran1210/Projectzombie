@@ -9,13 +9,13 @@ namespace ProjectZombie.Features.Weapons
     public class Weapon_Flamethrower : Weapon_RangedBase
     {
         [Header("Flamethrower Settings")]
-        [SerializeField] private float coneAngle = 45f;
+        [SerializeField] private float coneAngle = 20f;
 
         private Transform _currentTarget;
 
         protected override bool CanAttack()
         {
-            float range = CharacterStats != null ? CharacterStats.AttackRange : 6f;
+            float range = CharacterStats != null ? CharacterStats.AttackRange : 4.5f;
             _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
             return _currentTarget != null;
         }

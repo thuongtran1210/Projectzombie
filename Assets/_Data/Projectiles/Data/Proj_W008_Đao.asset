@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProjectileID: Proj_W008
   LogicPrefab: {fileID: 959183443120495735, guid: 210f2aac78a358f468c32337cb9e42e5, type: 3}
-  Speed: 10
-  MaxRange: 20
-  Lifetime: 0.8
-  CollisionRadius: 0.8
+  Speed: 6.5
+  MaxRange: 5
+  Lifetime: 0.45
+  CollisionRadius: 0.35
   HitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
