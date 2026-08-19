@@ -40,16 +40,28 @@ namespace ProjectZombie.Features.Shared.VFX
             if (!_particlePoolDict.TryGetValue(key, out var pool))
             {
                 pool = new ObjectPool<ParticleSystem>(
-                    createFunc: () => Instantiate(prefab, transform),
+                    createFunc: () => {
+                        Object spawned = Object.Instantiate((Object)prefab, transform);
+                        if (spawned is ParticleSystem ps) return ps;
+                        if (spawned is GameObject go) return go.GetComponentInChildren<ParticleSystem>(true);
+                        if (spawned is Component comp) return comp.GetComponentInChildren<ParticleSystem>(true);
+                        return null;
+                    },
                     actionOnGet: ps => { 
-                        ps.gameObject.SetActive(true); 
-                        ps.Play(true); 
+                        if (ps != null)
+                        {
+                            ps.gameObject.SetActive(true); 
+                            ps.Play(true); 
+                        }
                     },
                     actionOnRelease: ps => { 
-                        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
-                        ps.gameObject.SetActive(false); 
+                        if (ps != null)
+                        {
+                            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); 
+                            ps.gameObject.SetActive(false); 
+                        }
                     },
-                    actionOnDestroy: ps => Destroy(ps.gameObject),
+                    actionOnDestroy: ps => { if (ps != null) Destroy(ps.gameObject); },
                     defaultCapacity: 15,
                     maxSize: 100
                 );
@@ -57,6 +69,8 @@ namespace ProjectZombie.Features.Shared.VFX
             }
 
             var instance = pool.Get();
+            if (instance == null) return null;
+
             instance.transform.position = position;
             instance.transform.rotation = rotation;
             if (scale.HasValue)
@@ -101,24 +115,35 @@ namespace ProjectZombie.Features.Shared.VFX
             if (!_gameObjectPoolDict.TryGetValue(key, out var pool))
             {
                 pool = new ObjectPool<GameObject>(
-                    createFunc: () => Instantiate(prefab, transform),
+                    createFunc: () => {
+                        Object spawned = Object.Instantiate((Object)prefab, transform);
+                        if (spawned is GameObject go) return go;
+                        if (spawned is Component comp) return comp.gameObject;
+                        return spawned as GameObject;
+                    },
                     actionOnGet: go => {
-                        go.SetActive(true);
-                        var resetter = go.GetComponent<VFXPoolResetter>();
-                        if (resetter != null)
+                        if (go != null)
                         {
-                            resetter.ResetVFXState();
+                            go.SetActive(true);
+                            var resetter = go.GetComponent<VFXPoolResetter>();
+                            if (resetter != null)
+                            {
+                                resetter.ResetVFXState();
+                            }
                         }
                     },
                     actionOnRelease: go => {
-                        var resetter = go.GetComponent<VFXPoolResetter>();
-                        if (resetter != null)
+                        if (go != null)
                         {
-                            resetter.ResetVFXState();
+                            var resetter = go.GetComponent<VFXPoolResetter>();
+                            if (resetter != null)
+                            {
+                                resetter.ResetVFXState();
+                            }
+                            go.SetActive(false);
                         }
-                        go.SetActive(false);
                     },
-                    actionOnDestroy: go => Destroy(go),
+                    actionOnDestroy: go => { if (go != null) Destroy(go); },
                     defaultCapacity: 10,
                     maxSize: 60
                 );

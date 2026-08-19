@@ -42,7 +42,8 @@ namespace ProjectZombie.Features.Projectiles.Components
 
         private void HandleSpawnVFX(ProjectileController projectile)
         {
-            if (projectile != _controller || _controller.Data == null) return;
+            if (_controller == null) _controller = GetComponent<ProjectileController>();
+            if (projectile != _controller || _controller == null || _controller.Data == null) return;
 
             ref readonly var vfx = ref _controller.Data.VFXConfig;
             if (vfx.SpawnVFXPrefab != null && GlobalVFXPoolManager.Instance != null)
@@ -53,7 +54,8 @@ namespace ProjectZombie.Features.Projectiles.Components
 
         private void HandleHitVFX(ProjectileEventContext context)
         {
-            if (context.Projectile != _controller || _controller.Data == null) return;
+            if (_controller == null) _controller = GetComponent<ProjectileController>();
+            if (_controller == null || context.Projectile != _controller || _controller.Data == null) return;
 
             ref readonly var vfx = ref _controller.Data.VFXConfig;
             if (vfx.HitImpactVFXPrefab != null && GlobalVFXPoolManager.Instance != null)
@@ -66,19 +68,20 @@ namespace ProjectZombie.Features.Projectiles.Components
                     vfx.HitImpactVFXPrefab, 
                     context.HitPoint != Vector2.zero ? (Vector3)context.HitPoint : transform.position, 
                     rotation, 
-                    0.5f
+                    0.85f
                 );
             }
         }
 
         private void HandleDespawnVFX(ProjectileController projectile)
         {
-            if (projectile != _controller || _controller.Data == null) return;
+            if (_controller == null) _controller = GetComponent<ProjectileController>();
+            if (projectile != _controller || _controller == null || _controller.Data == null) return;
 
             ref readonly var vfx = ref _controller.Data.VFXConfig;
             if (vfx.DespawnVFXPrefab != null && GlobalVFXPoolManager.Instance != null)
             {
-                GlobalVFXPoolManager.Instance.PlayEffect(vfx.DespawnVFXPrefab, transform.position, transform.rotation, 0.5f);
+                GlobalVFXPoolManager.Instance.PlayEffect(vfx.DespawnVFXPrefab, transform.position, transform.rotation, 0.85f);
             }
         }
     }

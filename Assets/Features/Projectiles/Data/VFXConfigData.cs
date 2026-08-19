@@ -11,15 +11,15 @@ namespace ProjectZombie.Features.Projectiles.Data
     {
         [Header("Spawn / Launch VFX")]
         [Tooltip("Hiệu ứng khi đạn vừa xuất hiện (VD: Muzzle Flash)")]
-        public ParticleSystem SpawnVFXPrefab;
+        public GameObject SpawnVFXPrefab;
 
         [Header("Hit Impact VFX")]
         [Tooltip("Hiệu ứng khi đạn chạm mục tiêu (VD: Hit Spark, Blood, Explosion)")]
-        public ParticleSystem HitImpactVFXPrefab;
+        public GameObject HitImpactVFXPrefab;
 
         [Header("Despawn / Expiration VFX")]
         [Tooltip("Hiệu ứng khi đạn tự hủy hoặc hết thời gian sống")]
-        public ParticleSystem DespawnVFXPrefab;
+        public GameObject DespawnVFXPrefab;
 
         [Header("Audio SFX")]
         [Tooltip("Âm thanh khi đạn bắn ra")]

@@ -9,6 +9,7 @@ namespace ProjectZombie.Features.Projectiles.Components
     [RequireComponent(typeof(ProjectileMovement))]
     [RequireComponent(typeof(ProjectileCollision))]
     [RequireComponent(typeof(ProjectileLifetime))]
+    [RequireComponent(typeof(ProjectileVFXListener))]
     public class ProjectileController : MonoBehaviour
     {
         public ProjectileData Data { get; private set; }

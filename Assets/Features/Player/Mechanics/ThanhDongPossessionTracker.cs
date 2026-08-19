@@ -46,10 +46,11 @@ namespace ProjectZombie.Features.Player.Mechanics
         private float _currentLinhCan = 0f;
         private bool _isPossessed = false;
         private float _possessionTimer = 0f;
+        private float _appliedSpeedBonus = 0f;
         private GameObject _activeAuraObj;
 
         private PlayerExperience _playerExperience;
-        private PlayerController _playerController;
+        private PlayerStats _playerStats;
 
         // ====================================================================
         // ICharacterGaugeProvider Implementation
@@ -77,7 +78,7 @@ namespace ProjectZombie.Features.Player.Mechanics
         private void Awake()
         {
             _playerExperience = GetComponent<PlayerExperience>();
-            _playerController = GetComponent<PlayerController>();
+            _playerStats = GetComponent<PlayerStats>();
         }
 
         private float _lastExp = 0f;
@@ -101,6 +102,12 @@ namespace ProjectZombie.Features.Player.Mechanics
             if (_activeAuraObj != null)
             {
                 Destroy(_activeAuraObj);
+            }
+
+            if (_playerStats != null && _appliedSpeedBonus != 0f)
+            {
+                _playerStats.AddMoveSpeed(-_appliedSpeedBonus);
+                _appliedSpeedBonus = 0f;
             }
         }
 
@@ -188,6 +195,13 @@ namespace ProjectZombie.Features.Player.Mechanics
             // 3. Spawn Hào Quang Thánh Nhập
             SpawnPossessionAura();
 
+            // 4. Tăng tốc độ di chuyển trong lúc Thánh giáng ngự
+            if (_playerStats != null && _appliedSpeedBonus == 0f && _speedMultiplier > 1f)
+            {
+                _appliedSpeedBonus = _playerStats.MoveSpeed * (_speedMultiplier - 1f);
+                _playerStats.AddMoveSpeed(_appliedSpeedBonus);
+            }
+
             OnGaugeValueChanged?.Invoke(100f, GaugeTitle);
         }
 
@@ -200,6 +214,12 @@ namespace ProjectZombie.Features.Player.Mechanics
             if (_activeAuraObj != null)
             {
                 Destroy(_activeAuraObj);
+            }
+
+            if (_playerStats != null && _appliedSpeedBonus != 0f)
+            {
+                _playerStats.AddMoveSpeed(-_appliedSpeedBonus);
+                _appliedSpeedBonus = 0f;
             }
 
             OnGaugeValueChanged?.Invoke(0f, GaugeTitle);
