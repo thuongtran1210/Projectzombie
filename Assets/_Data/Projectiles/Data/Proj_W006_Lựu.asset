@@ -20,7 +20,7 @@ MonoBehaviour:
   CollisionRadius: 3.5
   HitLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   PrewarmCount: 10
   MaxPoolSize: 50
   Behaviors:
