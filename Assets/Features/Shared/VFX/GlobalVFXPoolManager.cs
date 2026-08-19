@@ -64,11 +64,11 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
-            // Tự động đặt Sorting Layer sang "VFX_Front" hoặc "Skill" nếu đang ở "Default"
+            // Tự động đặt Sorting Layer sang "Skill" nếu đang ở "Default"
             var psRenderer = instance.GetComponent<ParticleSystemRenderer>();
             if (psRenderer != null && (psRenderer.sortingLayerID == 0 || psRenderer.sortingLayerName == "Default"))
             {
-                psRenderer.sortingLayerName = "VFX_Front";
+                psRenderer.sortingLayerName = "Skill";
             }
 
             if (autoReleaseDelay > 0f)

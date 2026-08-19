@@ -176,9 +176,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1575077843309769867, guid: 39f228149b7c1bf4db1b46243cf7f99c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1575077843309769867, guid: 39f228149b7c1bf4db1b46243cf7f99c, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 201581293
+      objectReference: {fileID: 0}
     - target: {fileID: 3210479029178942662, guid: 39f228149b7c1bf4db1b46243cf7f99c, type: 3}
       propertyPath: m_Name
       value: Explosion_VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235354324122779094, guid: 39f228149b7c1bf4db1b46243cf7f99c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235354324122779094, guid: 39f228149b7c1bf4db1b46243cf7f99c, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 201581293
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -176,6 +176,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6041692260498236032, guid: d8560a3fe77d8e54da3676d349ecb702, type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041692260498236032, guid: d8560a3fe77d8e54da3676d349ecb702, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 201581293
+      objectReference: {fileID: 0}
     - target: {fileID: 8646138993609719753, guid: d8560a3fe77d8e54da3676d349ecb702, type: 3}
       propertyPath: m_Name
       value: Lightning_VFX

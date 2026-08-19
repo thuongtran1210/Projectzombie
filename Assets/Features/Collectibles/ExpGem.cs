@@ -35,6 +35,9 @@ namespace ProjectZombie.Features.Collectibles
         [SerializeField] private Color tier3Color = new Color(0.61f, 0.32f, 0.88f, 1f); // Purple Tím U Minh (100-249)
         [SerializeField] private Color tier4Color = new Color(1f, 0.84f, 0f, 1f); // Gold Hoàng Kim (>= 250)
 
+        [Header("Scale Settings")]
+        [SerializeField] private float baseScaleMultiplier = 0.35f;
+
         private SpriteRenderer _spriteRenderer;
         private ExpGemPoolConfig _poolConfig;
         private Transform _targetPlayer;
@@ -42,8 +45,8 @@ namespace ProjectZombie.Features.Collectibles
 
         private float _timer;
         private float _currentFlySpeed;
-        private Vector3 _baseScale = Vector3.one;
-        private Vector3 _targetScale = Vector3.one;
+        private Vector3 _baseScale = new Vector3(0.35f, 0.35f, 1f);
+        private Vector3 _targetScale = new Vector3(0.35f, 0.35f, 1f);
         private Vector3 _jumpStartPos;
         private Vector3 _jumpTargetPos;
 
@@ -59,6 +62,7 @@ namespace ProjectZombie.Features.Collectibles
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
             _poolConfig = GetComponent<ExpGemPoolConfig>();
+            _baseScale = new Vector3(baseScaleMultiplier, baseScaleMultiplier, 1f);
         }
 
         private void OnEnable()
@@ -251,7 +255,7 @@ namespace ProjectZombie.Features.Collectibles
 
             if (amount < 30f)
             {
-                // Tier 1: Common
+                // Tier 1: Common (Nhỏ gọn, vừa vặn bàn chân nhân vật)
                 if (_spriteRenderer != null) _spriteRenderer.color = tier1Color;
                 _targetScale = _baseScale * 1.0f;
             }
@@ -259,19 +263,19 @@ namespace ProjectZombie.Features.Collectibles
             {
                 // Tier 2: Rare
                 if (_spriteRenderer != null) _spriteRenderer.color = tier2Color;
-                _targetScale = _baseScale * 1.2f;
+                _targetScale = _baseScale * 1.12f;
             }
             else if (amount < 250f)
             {
                 // Tier 3: Epic
                 if (_spriteRenderer != null) _spriteRenderer.color = tier3Color;
-                _targetScale = _baseScale * 1.35f;
+                _targetScale = _baseScale * 1.22f;
             }
             else
             {
-                // Tier 4: Legendary / Boss
+                // Tier 4: Legendary / Boss / Merged Gems
                 if (_spriteRenderer != null) _spriteRenderer.color = tier4Color;
-                _targetScale = _baseScale * 1.55f;
+                _targetScale = _baseScale * 1.35f;
             }
         }
     }
