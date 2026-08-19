@@ -15,13 +15,13 @@ MonoBehaviour:
   upgradeName: "M\u1EDF kh\xF3a: Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng
     S\u01A1n v\xE0o trang b\u1ECB active."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
   upgradeType: 0
   spawnWeight: 5
   maxLevel: 0
   requiredYinYangState: 1
   checkYinYangState: 0
-  element: 0
+  element: 5
   weaponId: W005
   requiredCurrentLevel: 0
   weaponPrefab: {fileID: 8988189085547398515, guid: fc61047bf4b0f7e49bc987091988e04b, type: 3}

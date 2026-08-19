@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLoadout:
-  - {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
+  - {fileID: 11400000, guid: f4c1d3812932b5746966a44b11e0608a, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
 --- !u!114 &7402922671366627933
 MonoBehaviour:
@@ -414,7 +414,7 @@ Transform:
   m_GameObject: {fileID: 7294256009787977137}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.16, z: 0}
+  m_LocalPosition: {x: 0, y: 0.36, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

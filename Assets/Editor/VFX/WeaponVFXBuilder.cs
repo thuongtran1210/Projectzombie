@@ -143,6 +143,7 @@ namespace ProjectZombie.Editor.VFX
             ConfigureVisualRootSprite("Proj_W001_NoThan", "Arrow_NoThan.png", new Vector3(0.8f, 0.8f, 1f));
             ConfigureVisualRootSprite("Proj_W012_PhiTieuBatQuai", "PhiTieu_BatQuai.png", new Vector3(0.9f, 0.9f, 1f));
             ConfigureVisualRootSprite("Proj_W003_BuaTranYeu", "buatruyeu.png", new Vector3(1f, 1f, 1f));
+            ConfigureVisualRootSprite("Proj_W005_TrongDongDongSon", "DongSon_Wave_Bullet.png", new Vector3(1.2f, 1.2f, 1f));
         }
 
         private static void ConfigureVisualRootSprite(string projPrefabName, string spriteFileName, Vector3 localScale)
@@ -295,17 +296,59 @@ namespace ProjectZombie.Editor.VFX
             GameObject weaponPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(weaponPath);
             if (weaponPrefab == null || shockwaveAsset == null) return;
 
+            Sprite weaponIcon = LoadSpriteAsset("Icon_W005_TrongDong.png");
+
             using (var scope = new PrefabUtility.EditPrefabContentsScope(weaponPath))
             {
                 GameObject root = scope.prefabContentsRoot;
+                
+                // Xóa instance VFX tĩnh nếu có để tránh phát 1 lần lúc spawn
                 Transform existingVFX = root.transform.Find("Shockwave_VFX");
-                if (existingVFX == null)
+                if (existingVFX != null)
                 {
-                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(shockwaveAsset, root.transform);
-                    vfxInstance.name = "Shockwave_VFX";
-                    vfxInstance.transform.localPosition = Vector3.zero;
+                    GameObject.DestroyImmediate(existingVFX.gameObject);
+                }
+
+                Weapon_Shotgun shotgunComp = root.GetComponent<Weapon_Shotgun>();
+                if (shotgunComp != null)
+                {
+                    SerializedObject so = new SerializedObject(shotgunComp);
+                    var shockwaveProp = so.FindProperty("shockwavePrefab");
+                    if (shockwaveProp != null)
+                    {
+                        shockwaveProp.objectReferenceValue = shockwaveAsset;
+                    }
+                    if (weaponIcon != null)
+                    {
+                        var iconProp = so.FindProperty("icon");
+                        if (iconProp != null)
+                        {
+                            iconProp.objectReferenceValue = weaponIcon;
+                        }
+                    }
+                    so.ApplyModifiedProperties();
                 }
             }
+
+            // Gán SpawnVFXPrefab vào ProjectileData của Trống Đồng
+            string projDataPath = "Assets/_Data/Projectiles/Data/Proj_W005_Trống.asset";
+            var projData = AssetDatabase.LoadAssetAtPath<Features.Projectiles.Data.ProjectileData>(projDataPath);
+            if (projData != null)
+            {
+                SerializedObject pSo = new SerializedObject(projData);
+                var vfxConfigProp = pSo.FindProperty("VFXConfig");
+                if (vfxConfigProp != null)
+                {
+                    var spawnVfxProp = vfxConfigProp.FindPropertyRelative("SpawnVFXPrefab");
+                    if (spawnVfxProp != null)
+                    {
+                        spawnVfxProp.objectReferenceValue = shockwaveAsset;
+                    }
+                }
+                pSo.ApplyModifiedProperties();
+            }
+
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Shockwave VFX & Icon vào Weapon_W005_TrongDongDongSon và Proj_W005_Trống.asset!");
         }
 
         private static void WireW006ProjectilePrefab(GameObject cinnabarExpAsset)
@@ -523,25 +566,26 @@ namespace ProjectZombie.Editor.VFX
             var sparksMain = sparksPS.main;
             sparksMain.duration = 0.2f;
             sparksMain.loop = false;
-            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.1f, 0.2f);
-            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(8f, 16f);
-            sparksMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
+            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.12f, 0.22f);
+            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(10f, 20f);
+            sparksMain.startSize = new ParticleSystem.MinMaxCurve(0.04f, 0.09f);
             sparksMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var sparksEmission = sparksPS.emission;
             sparksEmission.rateOverTime = 0;
-            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 16) });
+            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 18) });
 
             var sparksShape = sparksPS.shape;
             sparksShape.enabled = true;
             sparksShape.shapeType = ParticleSystemShapeType.Cone;
-            sparksShape.angle = 40f;
+            sparksShape.rotation = new Vector3(0, 90f, 0);
+            sparksShape.angle = 20f;
             sparksShape.radius = 0.3f;
 
             var sparksRenderer = sparksObj.GetComponent<ParticleSystemRenderer>();
             sparksRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            sparksRenderer.velocityScale = 0.03f;
-            sparksRenderer.lengthScale = 1.2f;
+            sparksRenderer.velocityScale = 0.08f;
+            sparksRenderer.lengthScale = 3.5f;
             sparksRenderer.sortingLayerName = "VFX_Front";
             sparksRenderer.sortingOrder = 13;
 

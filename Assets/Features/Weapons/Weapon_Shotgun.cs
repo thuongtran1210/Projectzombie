@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared.VFX;
 
 namespace ProjectZombie.Features.Weapons
 {
@@ -11,6 +12,9 @@ namespace ProjectZombie.Features.Weapons
         [Header("Shotgun Custom Settings")]
         [SerializeField] private float spreadAngle = 30f;
         [SerializeField] private int pelletsCount = 5;
+
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject shockwavePrefab;
 
         private Transform _currentTarget;
 
@@ -27,6 +31,12 @@ namespace ProjectZombie.Features.Weapons
 
             Vector2 baseDirection = (_currentTarget.position - firePoint.position).normalized;
             DamageData damageData = CreateDamageData();
+
+            // Phát hiệu ứng sóng âm xung kích Trống Đồng tại tâm / firePoint khi đánh
+            if (shockwavePrefab != null && GlobalVFXPoolManager.Instance != null)
+            {
+                GlobalVFXPoolManager.Instance.PlayEffect(shockwavePrefab, firePoint.position, Quaternion.identity, 0.45f, Vector3.one * GetFinalScale());
+            }
 
             int totalPellets = pelletsCount + (GetFinalProjectileCount() - 1);
             float startAngle = -spreadAngle / 2f;
@@ -46,3 +56,4 @@ namespace ProjectZombie.Features.Weapons
         }
     }
 }
+

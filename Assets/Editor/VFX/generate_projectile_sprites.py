@@ -102,11 +102,39 @@ def generate_phitieu_batquai_sprite(output_path):
     draw.ellipse([cx - 20, cy - 20, cx + 20, cy + 20], fill=(20, 40, 80, 255), outline=(255, 215, 0, 255), width=2)
     draw.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=(255, 255, 255, 255))
     
-    img = img.filter(ImageFilter.GaussianBlur(radius=0.5))
+def generate_dongson_wave_sprite(output_path):
+    """Tạo Sprite Sóng Âm Trống Đồng Đông Sơn (Hình cánh cung / lưỡi sóng âm hoàng kim hướng +X, 100% Transparent)."""
+    w, h = 256, 160
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = 60, h // 2
+    
+    # 1. Vẽ các dải sóng âm hình vòng cung hoàng kim tỏa về bên phải (+X)
+    for r in range(120, 40, -10):
+        t = (r - 40) / 80.0
+        alpha = int(220 * math.sin(t * math.pi))
+        bbox = [cx - r, cy - r, cx + r, cy + r]
+        draw.arc(bbox, start=-65, end=65, fill=(212, 175, 55, alpha), width=10)
+        draw.arc(bbox, start=-65, end=65, fill=(255, 235, 150, alpha), width=4)
+        
+    # 2. Lưỡi sóng âm chính cực sáng ở mũi
+    main_r = 115
+    main_bbox = [cx - main_r, cy - main_r, cx + main_r, cy + main_r]
+    draw.arc(main_bbox, start=-60, end=60, fill=(255, 255, 255, 255), width=5)
+    
+    # 3. Hoa văn tia sáng năng lượng hình thoi cổ phong
+    for angle_deg in [-45, -20, 0, 20, 45]:
+        rad = math.radians(angle_deg)
+        px = cx + (main_r - 10) * math.cos(rad)
+        py = cy + (main_r - 10) * math.sin(rad)
+        draw.ellipse([px - 6, py - 6, px + 6, py + 6], fill=(255, 240, 180, 255), outline=(255, 255, 255, 255), width=2)
+    
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.8))
     img.save(output_path, "PNG")
-    print(f"Generated Phi Tieu Bat Quai Sprite: {output_path}")
+    print(f"Generated Dong Son Soundwave Sprite: {output_path}")
 
 if __name__ == "__main__":
     generate_arrow_thach_sanh(os.path.join(PROJ_DIR, "Arrow_ThachSanh.png"))
     generate_arrow_no_than(os.path.join(PROJ_DIR, "Arrow_NoThan.png"))
     generate_phitieu_batquai_sprite(os.path.join(PROJ_DIR, "PhiTieu_BatQuai.png"))
+    generate_dongson_wave_sprite(os.path.join(PROJ_DIR, "DongSon_Wave_Bullet.png"))

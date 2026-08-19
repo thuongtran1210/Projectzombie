@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.YinYang;
+using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.Upgrades.Editor
 {
@@ -204,6 +205,27 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 if (weaponPrefab != null)
                 {
                     so.FindProperty("weaponPrefab").objectReferenceValue = weaponPrefab;
+                    
+                    // Tìm icon tương ứng từ WeaponBase hoặc icon file
+                    var weaponComp = weaponPrefab.GetComponent<WeaponBase>();
+                    if (weaponComp != null && weaponComp.icon != null)
+                    {
+                        so.FindProperty("icon").objectReferenceValue = weaponComp.icon;
+                    }
+                    else
+                    {
+                        // Thử tìm từ file icon độc lập trong Assets/Art/Weapons/
+                        string[] iconGuids = AssetDatabase.FindAssets($"Icon_{wId}_ t:Sprite", new string[] { "Assets/Art/Weapons" });
+                        if (iconGuids.Length > 0)
+                        {
+                            string iconPath = AssetDatabase.GUIDToAssetPath(iconGuids[0]);
+                            Sprite iconSprite = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
+                            if (iconSprite != null)
+                            {
+                                so.FindProperty("icon").objectReferenceValue = iconSprite;
+                            }
+                        }
+                    }
                 }
                 so.ApplyModifiedProperties();
             }

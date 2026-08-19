@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W005
   weaponName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
-  icon: {fileID: 1560636561, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
   description: "S\xF3ng \xE2m tr\u1EA3m linh t\u1ECFa r\u1ED9ng 5 h\u01B0\u1EDBng
     g\xE2y cho\xE1ng di\u1EC7n r\u1ED9ng."
   rarity: Common
