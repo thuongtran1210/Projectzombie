@@ -23,6 +23,9 @@ namespace ProjectZombie.Editor.VFX
             }
 
             // 1. Slash Materials (Bút Phán Quan W002, Đao Cửu Vĩ W008, Hồ Trảo W004)
+            // Lớp Mực Tàu Đen (AlphaBlend) + Lớp Dạ Quang Neon (Additive)
+            CreateAlphaBlendInkMaterial("MAT_Ink_Black_Stroke", "Ink_Black_Brush_Arc.png", new Color(0.04f, 0.04f, 0.06f, 1.0f));
+            CreateSlashMaterial("MAT_Ink_Neon_Glow", "Neon_Blade_Glow_Arc.png", null, new Color(2.5f, 2.5f, 2.5f, 1f), new Color(0.1f, 0.9f, 0.8f, 1f), false);
             CreateSlashMaterial("MAT_InkSlash_Arc", "Pro_InkSlash_Arc.png", null, new Color(2.5f, 2.2f, 1.2f, 1f), new Color(0.9f, 0.65f, 0.15f, 1f), false);
             CreateSlashMaterial("MAT_FireSlash_Arc", "FoxFlame_Stream.png", null, new Color(2f, 2f, 2f, 1f), new Color(1f, 0.35f, 0.05f, 1f), false);
             CreateSlashMaterial("MAT_Fox_Claws_Slash", "Fox_Claws_Slash.png", null, new Color(2.5f, 0.4f, 0.2f, 1f), new Color(1f, 0.1f, 0.05f, 1f), false);
@@ -60,25 +63,36 @@ namespace ProjectZombie.Editor.VFX
         {
             if (string.IsNullOrEmpty(fileName)) return null;
 
-            string[] candidatePaths = new string[]
+            string[] candidateDirs = new string[]
             {
-                $"Assets/Art/Skills/{fileName}",
-                $"Assets/Art/Weapons/{fileName}",
-                $"{TEXTURE_FOLDER}/{fileName}",
-                $"Assets/Art/Projectiles/{fileName}",
-                $"Assets/VFX/SkillLibrary/Textures/Skills/{fileName}"
+                TEXTURE_FOLDER,
+                "Assets/Art/Skills",
+                "Assets/Art/Weapons",
+                "Assets/Art/Projectiles",
+                "Assets/Art/DaoSi"
             };
 
-            foreach (var path in candidatePaths)
+            foreach (var dir in candidateDirs)
             {
-                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-                if (tex != null) return tex;
+                string fullPath = $"{dir}/{fileName}";
+                if (File.Exists(fullPath))
+                {
+                    var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(fullPath);
+                    if (tex != null) return tex;
+                }
+            }
+
+            string[] guids = AssetDatabase.FindAssets($"{Path.GetFileNameWithoutExtension(fileName)} t:Texture2D");
+            if (guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             }
 
             return null;
         }
 
-        public static Material CreateSlashMaterial(string materialName, string mainTexName, string noiseTexName, Color coreColor, Color edgeColor, bool usePolar)
+        public static Material CreateSlashMaterial(string materialName, string mainTexName, string noiseTexName, Color tintColor, Color edgeColor, bool dissolve)
         {
             string matPath = $"{MATERIAL_FOLDER}/{materialName}.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
@@ -96,23 +110,57 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = shader;
             }
 
-            mat.SetColor("_CoreColor", coreColor);
+            mat.SetColor("_TintColor", tintColor);
             mat.SetColor("_EdgeColor", edgeColor);
-            mat.SetFloat("_UsePolar", usePolar ? 1.0f : 0.0f);
-            if (usePolar) mat.EnableKeyword("_USE_POLAR_COORDS");
-            else mat.DisableKeyword("_USE_POLAR_COORDS");
+            mat.SetFloat("_DissolveAmount", dissolve ? 0.3f : 0.0f);
 
-            Texture2D tex = FindTexture(mainTexName);
-            if (tex != null) mat.SetTexture("_MainTex", tex);
+            Texture2D mainTex = FindTexture(mainTexName);
+            if (mainTex != null) mat.SetTexture("_MainTex", mainTex);
 
-            Texture2D noise = FindTexture(noiseTexName);
-            if (noise != null) mat.SetTexture("_NoiseTex", noise);
+            if (!string.IsNullOrEmpty(noiseTexName))
+            {
+                Texture2D noiseTex = FindTexture(noiseTexName);
+                if (noiseTex != null) mat.SetTexture("_NoiseTex", noiseTex);
+            }
 
             EditorUtility.SetDirty(mat);
             return mat;
         }
 
-        public static Material CreateShockwaveMaterial(string materialName, string maskTexName, Color tintColor, float distortionStrength)
+        public static Material CreateAlphaBlendInkMaterial(string materialName, string textureFileName, Color tintColor)
+        {
+            string matPath = $"{MATERIAL_FOLDER}/{materialName}.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+            Shader inkShader = Shader.Find("ProjectZombie/VFX/URP_VFX_Ink_AlphaBlend");
+            if (inkShader == null) inkShader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+            if (inkShader == null) inkShader = Shader.Find("Sprites/Default");
+
+            if (mat == null)
+            {
+                mat = new Material(inkShader);
+                AssetDatabase.CreateAsset(mat, matPath);
+            }
+            else
+            {
+                mat.shader = inkShader;
+            }
+
+            mat.SetColor("_BaseColor", tintColor);
+
+            Texture2D tex = FindTexture(textureFileName);
+            if (tex != null)
+            {
+                mat.mainTexture = tex;
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+            }
+
+            EditorUtility.SetDirty(mat);
+            return mat;
+        }
+
+        public static Material CreateShockwaveMaterial(string materialName, string normalMapName, Color ringColor, float bumpStrength)
         {
             string matPath = $"{MATERIAL_FOLDER}/{materialName}.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
@@ -130,11 +178,11 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = shader;
             }
 
-            mat.SetColor("_TintColor", tintColor);
-            mat.SetFloat("_DistortionStrength", distortionStrength);
+            mat.SetColor("_RingColor", ringColor);
+            mat.SetFloat("_BumpStrength", bumpStrength);
 
-            Texture2D tex = FindTexture(maskTexName);
-            if (tex != null) mat.SetTexture("_MainTex", tex);
+            Texture2D normTex = FindTexture(normalMapName);
+            if (normTex != null) mat.SetTexture("_NormalMap", normTex);
 
             EditorUtility.SetDirty(mat);
             return mat;

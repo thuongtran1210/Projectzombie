@@ -437,14 +437,15 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W002_PenSlash");
             root.AddComponent<VFXPoolResetter>();
 
+            // Layer 1: Vệt Cọ Mực Tàu Đen Tuyền (Black Ink Stroke - AlphaBlend)
             ParticleSystem mainPS = root.AddComponent<ParticleSystem>();
             var main = mainPS.main;
-            main.duration = 0.2f;
+            main.duration = 0.22f;
             main.loop = false;
-            main.startLifetime = 0.18f;
+            main.startLifetime = 0.2f;
             main.startSpeed = 0f;
-            main.startSize = 3.2f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.startSize = 3.4f;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
             main.playOnAwake = true;
 
             var emission = mainPS.emission;
@@ -457,28 +458,64 @@ namespace ProjectZombie.Editor.VFX
             var sizeOverLife = mainPS.sizeOverLifetime;
             sizeOverLife.enabled = true;
             AnimationCurve sizeCurve = new AnimationCurve();
-            sizeCurve.AddKey(0.0f, 0.7f);
-            sizeCurve.AddKey(0.3f, 1.1f);
-            sizeCurve.AddKey(1.0f, 0.9f);
+            sizeCurve.AddKey(0.0f, 0.8f);
+            sizeCurve.AddKey(0.3f, 1.05f);
+            sizeCurve.AddKey(1.0f, 0.95f);
             sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, sizeCurve);
 
             var colorOverLife = mainPS.colorOverLifetime;
             colorOverLife.enabled = true;
-            Gradient grad = new Gradient();
-            grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.85f, 0.4f), 1.0f) },
+            Gradient inkGrad = new Gradient();
+            inkGrad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(Color.white, 1.0f) },
                 new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 0.7f), new GradientAlphaKey(0.0f, 1.0f) }
             );
-            colorOverLife.color = grad;
+            colorOverLife.color = inkGrad;
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.alignment = ParticleSystemRenderSpace.Local;
             renderer.sortingLayerName = "VFX_Front";
-            renderer.sortingOrder = 10;
+            renderer.sortingOrder = 9;
 
-            Material slashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_InkSlash_Arc.mat");
-            if (slashMat != null) renderer.sharedMaterial = slashMat;
+            Material inkBlackMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Ink_Black_Stroke.mat");
+            if (inkBlackMat != null) renderer.sharedMaterial = inkBlackMat;
 
+            // Layer 2: Lưỡi Kiếm Quang Năng Dạ Quang Neon (Neon Laser Edge - Additive)
+            GameObject neonObj = new GameObject("Neon_Laser_Edge");
+            neonObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem neonPS = neonObj.AddComponent<ParticleSystem>();
+            var neonMain = neonPS.main;
+            neonMain.duration = 0.22f;
+            neonMain.loop = false;
+            neonMain.startLifetime = 0.18f;
+            neonMain.startSpeed = 0f;
+            neonMain.startSize = 3.2f;
+            neonMain.simulationSpace = ParticleSystemSimulationSpace.Local;
+
+            var neonEmission = neonPS.emission;
+            neonEmission.rateOverTime = 0;
+            neonEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var neonShape = neonPS.shape;
+            neonShape.enabled = false;
+
+            var neonSizeOverLife = neonPS.sizeOverLifetime;
+            neonSizeOverLife.enabled = true;
+            neonSizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, sizeCurve);
+
+            var neonRenderer = neonObj.GetComponent<ParticleSystemRenderer>();
+            neonRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            neonRenderer.alignment = ParticleSystemRenderSpace.Local;
+            neonRenderer.sortingLayerName = "VFX_Front";
+            neonRenderer.sortingOrder = 11;
+
+            Material neonMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Ink_Neon_Glow.mat");
+            if (neonMat == null) neonMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_InkSlash_Arc.mat");
+            if (neonMat != null) neonRenderer.sharedMaterial = neonMat;
+
+            // Layer 3: Hạt Mực Bắn & Tia Lửa (Ink Splatters & Sparks)
             GameObject sparksObj = new GameObject("Ink_Splash_Sparks");
             sparksObj.transform.SetParent(root.transform, false);
 
@@ -486,27 +523,27 @@ namespace ProjectZombie.Editor.VFX
             var sparksMain = sparksPS.main;
             sparksMain.duration = 0.2f;
             sparksMain.loop = false;
-            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.1f, 0.18f);
-            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(10f, 18f);
+            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.1f, 0.2f);
+            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(8f, 16f);
             sparksMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
             sparksMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var sparksEmission = sparksPS.emission;
             sparksEmission.rateOverTime = 0;
-            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 14) });
+            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 16) });
 
             var sparksShape = sparksPS.shape;
             sparksShape.enabled = true;
             sparksShape.shapeType = ParticleSystemShapeType.Cone;
-            sparksShape.angle = 35f;
-            sparksShape.radius = 0.2f;
+            sparksShape.angle = 40f;
+            sparksShape.radius = 0.3f;
 
             var sparksRenderer = sparksObj.GetComponent<ParticleSystemRenderer>();
             sparksRenderer.renderMode = ParticleSystemRenderMode.Stretch;
             sparksRenderer.velocityScale = 0.03f;
             sparksRenderer.lengthScale = 1.2f;
             sparksRenderer.sortingLayerName = "VFX_Front";
-            sparksRenderer.sortingOrder = 12;
+            sparksRenderer.sortingOrder = 13;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
             if (sparksMat != null) sparksRenderer.sharedMaterial = sparksMat;
@@ -1088,7 +1125,7 @@ namespace ProjectZombie.Editor.VFX
             main.startLifetime = 0.22f;
             main.startSpeed = 0f;
             main.startSize = 2.8f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
             main.playOnAwake = true;
 
             var emission = ps.emission;
@@ -1100,6 +1137,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.alignment = ParticleSystemRenderSpace.Local;
             renderer.sortingLayerName = "VFX_Front";
             renderer.sortingOrder = 12;
 

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MAT_Shockwave_DongSon
-  m_Shader: {fileID: 4800000, guid: b88265044df74e5498f71483a1a5af2b, type: 3}
+  m_Name: MAT_Ink_Neon_Glow
+  m_Shader: {fileID: 4800000, guid: a7cfdeff91f081c4f8ca50e9aa8727f1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,18 +24,23 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: d2264080b5e243e459084792af3e4822, type: 3}
+        m_Texture: {fileID: 2800000, guid: f07467904b74ce54ca2d25a3457bc185, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: d2264080b5e243e459084792af3e4822, type: 3}
+    - _NoiseTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DistortionStrength: 0.08
-    - _Falloff: 1
-    - _WaveWidth: 0.2
+    - _CoreThreshold: 0.7
+    - _DissolveAmount: 0
+    - _DissolveSoftness: 0.1
+    - _DstBlend: 1
+    - _SrcBlend: 5
+    - _UsePolar: 0
     m_Colors:
-    - _TintColor: {r: 1, g: 0.85, b: 0.4, a: 0.8}
+    - _CoreColor: {r: 2, g: 2, b: 2, a: 1}
+    - _EdgeColor: {r: 0.1, g: 0.9, b: 0.8, a: 1}
+    - _Speed: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -1,16 +1,18 @@
 using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
+using ProjectZombie.Features.Projectiles.Data;
+using ProjectZombie.Features.Projectiles.Core;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Projectiles.Behaviors
 {
     public class ExplosionBehavior : IProjectileBehavior
     {
-        private ProjectileController _controller;
-        private Data.ExplosionBehaviorData _data;
-        private bool _hasExploded = false;
+        private readonly ProjectileController _controller;
+        private readonly ExplosionBehaviorData _data;
+        private bool _hasExploded;
 
-        public ExplosionBehavior(ProjectileController controller, Data.ExplosionBehaviorData data)
+        public ExplosionBehavior(ProjectileController controller, ExplosionBehaviorData data)
         {
             _controller = controller;
             _data = data;
@@ -23,13 +25,14 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate() { }
 
-        public BehaviorHitResult OnHit(Core.ProjectileEventContext context)
+        public BehaviorHitResult OnHit(ProjectileEventContext context)
         {
             if (_data.TriggerOnHit && !_hasExploded)
             {
                 Explode(context.HitPoint);
             }
-            return BehaviorHitResult.RequireDespawn;
+
+            return BehaviorHitResult.Neutral;
         }
 
         public void OnDespawn()
@@ -53,13 +56,37 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             int numHits = Physics2D.OverlapCircleNonAlloc(center, _data.ExplosionRadius, _explosionBuffer, mask);
             if (numHits <= 0) return;
 
+            bool isPlayerSource = true;
+            if (_controller.Owner != null)
+            {
+                if (_controller.Owner.CompareTag("Enemy") || _controller.Owner.GetComponent<Enemies.Enemy>() != null)
+                {
+                    isPlayerSource = false;
+                }
+            }
+
             float damageAmount = _controller.Damage.BaseDamage * _data.ExplosionDamageMultiplier;
             DamageContext explosionDamage = new DamageContext(_controller.Owner, damageAmount);
 
             for (int i = 0; i < numHits; i++)
             {
                 var col = _explosionBuffer[i];
-                if (col == null || col.gameObject == _controller.Owner) continue;
+                if (col == null) continue;
+
+                // Tránh tự nổ trúng bản thân hoặc đồng minh
+                if (_controller.Owner != null)
+                {
+                    if (col.gameObject == _controller.Owner || col.transform.root == _controller.Owner.transform.root) continue;
+                }
+
+                if (isPlayerSource)
+                {
+                    if (col.CompareTag("Player") || col.transform.root.CompareTag("Player")) continue;
+                }
+                else
+                {
+                    if (col.CompareTag("Enemy") || col.transform.root.CompareTag("Enemy")) continue;
+                }
 
                 if (col.TryGetComponent(out IDamageable target))
                 {
@@ -74,8 +101,6 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                     }
                 }
             }
-
-            // Có thể spawn VFX nổ ở đây thông qua Event/Visual System sau này.
         }
     }
 }
