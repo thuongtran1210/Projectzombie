@@ -58,7 +58,8 @@ namespace ProjectZombie.Features.Enemies
             if (_enemy == null || _enemy.Config == null) return;
             if (Time.time < _lastDamageTime + _enemy.Config.attackCooldown) return;
 
-            Vector2 center = transform.position;
+            // Tâm quét được nâng nhẹ 0.5m để khớp vùng bụng/ngực nhân vật
+            Vector2 center = (Vector2)transform.position + new Vector2(0f, 0.5f);
             float radius = TouchRadius;
             int filterMask = targetLayer != 0 ? targetLayer.value : LayerMask.GetMask("Player");
             if (filterMask == 0) filterMask = ~0;
@@ -67,7 +68,7 @@ namespace ProjectZombie.Features.Enemies
             for (int i = 0; i < hitCount; i++)
             {
                 var col = _hitBuffer[i];
-                if (col != null && col.CompareTag("Player"))
+                if (col != null && (col.CompareTag("Player") || (targetLayer != 0 && ((1 << col.gameObject.layer) & targetLayer.value) != 0)))
                 {
                     if (CheckAndApplyDamage(col.gameObject))
                     {
@@ -79,12 +80,13 @@ namespace ProjectZombie.Features.Enemies
 
         private bool CheckAndApplyDamage(GameObject targetObj)
         {
-            if (_enemy == null || _enemy.Config == null) return false;
+            if (_enemy == null || _enemy.Config == null || targetObj == null) return false;
             if (Time.time < _lastDamageTime + _enemy.Config.attackCooldown) return false;
 
-            if (targetObj.TryGetComponent<HealthSystem>(out var playerHealth))
+            if (targetObj.TryGetComponent<IDamageable>(out var damageable) ||
+                (damageable = targetObj.GetComponentInParent<IDamageable>()) != null)
             {
-                playerHealth.TakeDamage(_enemy.GetTotalDamage());
+                damageable.TakeDamage(_enemy.GetTotalDamage());
                 _lastDamageTime = Time.time;
                 return true;
             }

@@ -1,4 +1,5 @@
 using ProjectZombie.Core.ScriptableObjects;
+using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace ProjectZombie.Features.Enemies
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(HealthSystem))]
-    public class Enemy : MonoBehaviour
+    public class Enemy : MonoBehaviour, IStatusReceiver
     {
         [Header("References")]
         public EnemyConfig Config;
@@ -23,6 +24,11 @@ namespace ProjectZombie.Features.Enemies
         public CombatMovementStrategy Movement { get; private set; }
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemyStatusController StatusController { get; private set; }
+
+        // IStatusReceiver Properties
+        public float Tenacity => IsBoss ? 0.7f : (Config != null && Config.tier == EnemyTier.Elite ? 0.3f : 0f);
+        public bool CanMove => StatusController != null ? StatusController.CanMove : true;
+        public bool CanAttack => StatusController != null ? StatusController.CanAttack : true;
 
         // Các trạng thái
         public EnemyIdleState IdleState { get; private set; }
@@ -111,19 +117,32 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
-        public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f)
+        public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f, System.Action<float> onTickDamage = null)
         {
             if (StatusController != null)
             {
-                StatusController.ApplyStatusEffect(type, duration, value, tickInterval, (damage) =>
+                StatusController.ApplyStatusEffect(type, duration, value, tickInterval, onTickDamage ?? ((damage) =>
                 {
                     if (HealthSystem != null) HealthSystem.TakeDamage(damage);
-                });
+                }));
             }
+        }
+
+        public bool HasStatus(StatusEffectType type)
+        {
+            return StatusController != null && StatusController.HasStatus(type);
+        }
+
+        public void RemoveStatus(StatusEffectType type)
+        {
+            StatusController?.RemoveStatus(type);
         }
 
         private void OnEnable()
         {
+            PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
+            PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
+
             FindPlayer();
 
             // Đặt lại State thành Chase mỗi khi được lấy ra từ Pool
@@ -140,10 +159,29 @@ namespace ProjectZombie.Features.Enemies
 
         private void OnDisable()
         {
+            PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
+            PlayerProvider.OnPlayerDespawned -= HandlePlayerDespawned;
+
             if (HealthSystem != null)
             {
                 HealthSystem.OnDied -= HandleDeath;
             }
+        }
+
+        private void HandlePlayerSpawned(Transform playerTf, HealthSystem playerHp)
+        {
+            PlayerTransform = playerTf;
+            PlayerHealthSystem = playerHp;
+            if (StateMachine != null && StateMachine.CurrentState == IdleState && ChaseState != null)
+            {
+                StateMachine.ChangeState(ChaseState);
+            }
+        }
+
+        private void HandlePlayerDespawned()
+        {
+            PlayerTransform = null;
+            PlayerHealthSystem = null;
         }
 
         public void SetPlayer(Transform playerTransform, HealthSystem playerHealthSystem = null)
@@ -162,6 +200,13 @@ namespace ProjectZombie.Features.Enemies
         public void FindPlayer()
         {
             if (PlayerTransform != null) return;
+
+            if (PlayerProvider.HasPlayer)
+            {
+                PlayerTransform = PlayerProvider.PlayerTransform;
+                PlayerHealthSystem = PlayerProvider.PlayerHealth;
+                return;
+            }
 
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)

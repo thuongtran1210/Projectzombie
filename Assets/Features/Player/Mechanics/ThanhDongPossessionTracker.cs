@@ -2,6 +2,7 @@ using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Collectibles;
 using ProjectZombie.Features.Player.Mechanics;
+using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Player.Mechanics
 {
@@ -212,21 +213,17 @@ namespace ProjectZombie.Features.Player.Mechanics
                 Instantiate(_oracleShockwavePrefab, transform.position, Quaternion.identity);
             }
 
-            // Quét và làm choáng quái vật xung quanh
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _oracleStunRadius);
-            for (int i = 0; i < hits.Length; i++)
-            {
-                var col = hits[i];
-                if (col.CompareTag("Enemy") || col.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-                {
-                    // Đẩy lùi nhẹ quái
-                    if (col.attachedRigidbody != null)
-                    {
-                        Vector2 pushDir = (col.transform.position - transform.position).normalized;
-                        col.attachedRigidbody.AddForce(pushDir * 5f, ForceMode2D.Impulse);
-                    }
-                }
-            }
+            // Quét và áp dụng Choáng (Stun 2.0s) + Đẩy lùi (6.0) qua AreaEffectCaster tập trung (Decoupled & Zero GC)
+            ProjectZombie.Features.Shared.AreaEffectCaster.CastStatusAoE(
+                center: transform.position,
+                radius: _oracleStunRadius,
+                layerMask: LayerMask.GetMask("Enemy"),
+                statusType: StatusEffectType.Stun,
+                duration: _oracleStunDuration,
+                statusValue: 0f,
+                knockbackForce: 6.0f,
+                knockbackDuration: 0.25f
+            );
         }
 
         private void SpawnPossessionAura()

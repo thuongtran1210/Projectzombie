@@ -43,11 +43,39 @@ namespace ProjectZombie.Features.Spawners
 
         private WavePreloader _wavePreloader;
 
+        private void OnEnable()
+        {
+            Player.PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
+            Player.PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
+        }
+
+        private void OnDisable()
+        {
+            Player.PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
+            Player.PlayerProvider.OnPlayerDespawned -= HandlePlayerDespawned;
+        }
+
+        private void HandlePlayerSpawned(Transform playerTf, Shared.HealthSystem playerHp)
+        {
+            _playerTransform = playerTf;
+        }
+
+        private void HandlePlayerDespawned()
+        {
+            _playerTransform = null;
+        }
+
         private void Start()
         {
-            // TODO FIX: Tìm Player Transform bằng cách khác, tránh phụ thuộc vào Tag "Player"
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) _playerTransform = player.transform;
+            if (Player.PlayerProvider.HasPlayer)
+            {
+                _playerTransform = Player.PlayerProvider.PlayerTransform;
+            }
+            else
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null) _playerTransform = player.transform;
+            }
 
             _wavePreloader = GetComponent<WavePreloader>();
             if (_wavePreloader == null)

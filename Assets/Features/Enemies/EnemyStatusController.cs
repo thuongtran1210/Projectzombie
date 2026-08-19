@@ -33,9 +33,10 @@ namespace ProjectZombie.Features.Enemies
 
     /// <summary>
     /// Component quản lý Knockback và các Trạng thái bất lợi (Slow, Freeze, Stun, Burn) trên Enemy.
+    /// Hiện thực IStatusReceiver theo kiến trúc Event-Driven & Decoupling.
     /// </summary>
     [RequireComponent(typeof(Enemy))]
-    public class EnemyStatusController : MonoBehaviour
+    public class EnemyStatusController : MonoBehaviour, ProjectZombie.Features.Shared.IStatusReceiver
     {
         private Enemy _enemy;
         private List<ActiveStatusEffect> _activeEffects = new List<ActiveStatusEffect>();
@@ -52,6 +53,17 @@ namespace ProjectZombie.Features.Enemies
         public bool IsFrozen { get; private set; } = false;
 
         public bool CanMove => !IsStunned && !IsFrozen && !_isKnockbackActive;
+        public bool CanAttack => !IsStunned && !IsFrozen;
+
+        /// <summary>
+        /// Chỉ số kháng khống chế lấy trực tiếp từ Enemy (Common: 0%, Elite: 30%, Boss: 70%).
+        /// </summary>
+        public float Tenacity => _enemy != null ? _enemy.Tenacity : 0f;
+
+        /// <summary>
+        /// Sự kiện phát ra khi trạng thái bất lợi thay đổi (phục vụ VFX/UI icons trên đầu quái).
+        /// </summary>
+        public event Action<StatusEffectType, bool> OnStatusChanged;
 
         private void Awake()
         {
@@ -69,10 +81,11 @@ namespace ProjectZombie.Features.Enemies
 
         /// <summary>
         /// Gây hiệu ứng Đẩy lùi (Knockback) lên kẻ địch.
+        /// Tự động kiểm tra miễn nhiễm của Boss hoặc Tenacity >= 90%.
         /// </summary>
         public void ApplyKnockback(Vector2 direction, float force, float duration)
         {
-            if (_enemy == null || _enemy.IsBoss) return; // Boss có thể miễn nhiễm Knockback
+            if (_enemy == null || _enemy.IsBoss || Tenacity >= 0.9f) return; // Boss miễn nhiễm Knockback
 
             _isKnockbackActive = true;
             _knockbackVelocity = direction.normalized * force;
@@ -82,14 +95,19 @@ namespace ProjectZombie.Features.Enemies
 
         /// <summary>
         /// Áp dụng hoặc làm mới một Status Effect (Slow, Freeze, Stun, Burn).
+        /// Tự động scale thời lượng theo chỉ số Tenacity (Kháng CC).
         /// </summary>
         public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f, Action<float> onTickDamage = null)
         {
+            // Tính toán thời lượng thực tế sau khi đã giảm trừ bởi Tenacity
+            float effectiveDuration = duration * Mathf.Clamp01(1f - Tenacity);
+            if (effectiveDuration <= 0.05f) return; // Kháng hoàn toàn nếu thời gian hiệu lực quá nhỏ
+
             // Kiểm tra xem đã có effect cùng loại chưa để reset duration hoặc chồng stack
             var existing = _activeEffects.Find(e => e.Type == type);
             if (existing != null)
             {
-                existing.Duration = Mathf.Max(existing.Duration, duration);
+                existing.Duration = Mathf.Max(existing.Duration, effectiveDuration);
                 existing.ElapsedTime = 0f;
                 existing.Value = Mathf.Max(existing.Value, value);
                 if (onTickDamage != null) existing.OnTickDamage = onTickDamage;
@@ -99,16 +117,32 @@ namespace ProjectZombie.Features.Enemies
                 _activeEffects.Add(new ActiveStatusEffect
                 {
                     Type = type,
-                    Duration = duration,
+                    Duration = effectiveDuration,
                     ElapsedTime = 0f,
                     Value = value,
                     TickInterval = tickInterval,
                     NextTickTime = Time.time + tickInterval,
                     OnTickDamage = onTickDamage
                 });
+                OnStatusChanged?.Invoke(type, true);
             }
 
             RecalculateStatus();
+        }
+
+        public bool HasStatus(StatusEffectType type)
+        {
+            return _activeEffects.Exists(e => e.Type == type && !e.IsExpired);
+        }
+
+        public void RemoveStatus(StatusEffectType type)
+        {
+            int removed = _activeEffects.RemoveAll(e => e.Type == type);
+            if (removed > 0)
+            {
+                OnStatusChanged?.Invoke(type, false);
+                RecalculateStatus();
+            }
         }
 
         private void Update()

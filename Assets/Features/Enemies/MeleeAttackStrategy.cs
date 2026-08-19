@@ -48,28 +48,30 @@ namespace ProjectZombie.Features.Enemies
                 facingSign = (_enemy.PlayerTransform.position.x < transform.position.x) ? -1f : 1f;
             }
 
-            // Tâm X luôn được đẩy ra đúng 1/2 attackRange để tầm chém phủ trọn từ 0m -> attackRange
+            // Tâm X được đẩy ra 1/2 attackRange, Tâm Y tự động bù 0.6m để khớp thân người chơi 2.5D
+            float effectiveOffsetY = (offsetY != 0f) ? offsetY : 0.6f;
             float offsetX = (BaseRange * 0.5f) * facingSign;
-            return (Vector2)transform.position + new Vector2(offsetX, offsetY);
+            return (Vector2)transform.position + new Vector2(offsetX, effectiveOffsetY);
         }
 
         public float GetHitboxRadius()
         {
-            // Bán kính = 1/2 attackRange (mặt quái 0m -> tầm chém R)
-            return BaseRange * 0.5f;
+            // Bán kính tối thiểu 0.8m để đảm bảo bao trọn thân người chơi từ chân tới đầu
+            return Mathf.Max(BaseRange * 0.5f, 0.8f);
         }
 
         public Vector2 GetHitboxBoxSize()
         {
-            // Chiều rộng = attackRange, Chiều cao = attackRange * boxHeightRatio
-            return new Vector2(BaseRange, BaseRange * boxHeightRatio);
+            // Chiều rộng = attackRange, Chiều cao tối thiểu 1.6m để bao trọn mọi chiều cao tướng
+            float effectiveHeight = Mathf.Max(BaseRange * boxHeightRatio, 1.6f);
+            return new Vector2(BaseRange, effectiveHeight);
         }
 
         private bool _hasDealtDamageThisAttack = false;
 
         private void Start()
         {
-            if (_enemy.EnemyAnimator != null)
+            if (_enemy != null && _enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.OnAttackEvent += DealMeleeDamage;
             }
@@ -107,24 +109,24 @@ namespace ProjectZombie.Features.Enemies
                 hitCount = Physics2D.OverlapBoxNonAlloc(center, boxSize, 0f, _hitBuffer, filterMask);
             }
 
-            HealthSystem targetHealth = null;
+            IDamageable targetDamageable = null;
             for (int i = 0; i < hitCount; i++)
             {
                 var col = _hitBuffer[i];
-                if (col != null && col.CompareTag("Player"))
+                if (col != null && (col.CompareTag("Player") || (targetLayer != 0 && ((1 << col.gameObject.layer) & targetLayer.value) != 0)))
                 {
-                    if (col.TryGetComponent<HealthSystem>(out var health) ||
-                        (health = col.GetComponentInParent<HealthSystem>()) != null)
+                    if (col.TryGetComponent<IDamageable>(out var damageable) ||
+                        (damageable = col.GetComponentInParent<IDamageable>()) != null)
                     {
-                        targetHealth = health;
+                        targetDamageable = damageable;
                         break; // Đã xác định được Player, ngắt vòng lặp để tránh tính lại khi Player có nhiều Collider2D
                     }
                 }
             }
 
-            if (targetHealth != null)
+            if (targetDamageable != null)
             {
-                targetHealth.TakeDamage(_enemy.GetTotalDamage());
+                targetDamageable.TakeDamage(_enemy.GetTotalDamage());
             }
         }
 
@@ -142,9 +144,9 @@ namespace ProjectZombie.Features.Enemies
                 _enemy.EnemyAnimator.TriggerAttack();
             }
 
-            // Fallback tự động gây sát thương sau 0.25s nếu Animation Clip thiếu Animation Event
+            // Fallback tự động gây sát thương sau 0.15s nếu Animation Clip thiếu Animation Event (giảm độ trễ tránh người chơi lùi né)
             CancelInvoke(nameof(DealMeleeDamage));
-            Invoke(nameof(DealMeleeDamage), 0.25f);
+            Invoke(nameof(DealMeleeDamage), 0.15f);
         }
 
 #if UNITY_EDITOR

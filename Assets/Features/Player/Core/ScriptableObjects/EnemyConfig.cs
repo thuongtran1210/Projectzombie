@@ -43,5 +43,15 @@ namespace ProjectZombie.Core.ScriptableObjects
         public float CritChance => 0f;
         public float AttackRange => attackRange;
         public float GetTotalDamage() => damageToPlayer;
+
+        private void OnValidate()
+        {
+            // Với quái cận chiến (tầm đánh <= 2.5m), minDistance và preferredDistance không được vượt quá attackRange
+            if (attackRange <= 2.5f && preferredDistance > attackRange)
+            {
+                preferredDistance = 0f;
+                minDistance = 0f;
+            }
+        }
     }
 }

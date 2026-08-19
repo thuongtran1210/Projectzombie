@@ -381,7 +381,7 @@ MonoBehaviour:
   _oracleStunRadius: 12
   _oracleStunDuration: 2
   _speedMultiplier: 1.25
-  _possessionAuraPrefab: {fileID: 7321809818315038488, guid: 9918f720ba2b67c40b16d5d1d8ca56e6, type: 3}
+  _possessionAuraPrefab: {fileID: 8069695370795212956, guid: 9918f720ba2b67c40b16d5d1d8ca56e6, type: 3}
   _oracleShockwavePrefab: {fileID: 4876445369016505830, guid: 031b8e57e27c1b443ad3f3fb9c93495c, type: 3}
 --- !u!114 &922402464292840618
 MonoBehaviour:

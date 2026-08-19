@@ -101,6 +101,9 @@ namespace ProjectZombie.Features.Player
             _activePlayerInstance = Instantiate(playerPrefab, position, rotation);
             GameObject playerInstance = _activePlayerInstance;
             
+            // Đăng ký Player vào PlayerProvider tập trung (Event-Driven)
+            PlayerProvider.RegisterPlayer(_activePlayerInstance);
+            
             Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật: {playerInstance.name}");
 
             // 3. Thu thập các components (Models) từ Player Instance

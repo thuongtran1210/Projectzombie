@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: "E_QUYNHAPTRANG_Qu\u1EF7Nh\u1EADpTr\xE0ng"
   m_EditorClassIdentifier: 
   moveSpeed: 1.5
-  preferredDistance: 5
-  minDistance: 3
+  preferredDistance: 0
+  minDistance: 0
   maxHealth: 150
   damageToPlayer: 20
   attackCooldown: 1
