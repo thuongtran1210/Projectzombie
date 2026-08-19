@@ -28,13 +28,15 @@ namespace ProjectZombie.Editor.VFX
             CreateSlashMaterial("MAT_FireSlash_PolarGlow", "FoxFlame_Stream.png", null, new Color(2f, 1.8f, 1.2f, 1f), new Color(1f, 0.2f, 0.0f, 1f), true);
             CreateSlashMaterial("MAT_IceBlade_Arc", "IceBlade_Arc.png", null, new Color(1.8f, 2f, 2f, 1f), new Color(0.2f, 0.7f, 1f, 1f), false);
 
-            // 2. Shockwave Materials (Trống Đồng W005 & Lựu Đạn W006)
+            // 2. Shockwave & AoE Materials (Trống Đồng W005 & Lựu Đạn W006 & Nước Thánh W011)
             CreateShockwaveMaterial("MAT_Shockwave_Explosion", null, new Color(1f, 0.6f, 0.2f, 0.6f), 0.06f);
-            CreateShockwaveMaterial("MAT_Shockwave_DongSon", null, new Color(1f, 0.85f, 0.4f, 0.8f), 0.08f);
+            CreateShockwaveMaterial("MAT_Shockwave_DongSon", "DongSon_Shockwave_Pattern.png", new Color(1f, 0.85f, 0.4f, 0.8f), 0.08f);
+            CreateParticleMaterial("MAT_Fire_Pillar", "Fire_Pillar_Tornado.png", true);
 
-            // 3. Ground Decal Materials (Vết Nứt Đất Tròn Mờ Dần)
+            // 3. Ground Decal Materials (Vết Nứt Đất Tròn Mờ Dần & Bãi Nước Thánh)
             CreateGroundDecalMaterial("MAT_Decal_CrackedEarth", "Decal_Cracked_Circle.png", null, new Color(0.9f, 0.7f, 0.3f, 0.9f), new Color(2f, 1.2f, 0.3f, 1f));
-            CreateGroundDecalMaterial("MAT_Decal_HolyWaterPuddle", null, null, new Color(0.3f, 0.8f, 1f, 0.7f), new Color(1f, 1.5f, 2f, 1f));
+            CreateGroundDecalMaterial("MAT_Decal_HolyWaterPuddle", "Holy_Puddle_Mist.png", null, new Color(0.3f, 0.85f, 1f, 0.8f), new Color(1.5f, 2.2f, 2.5f, 1f));
+            CreateParticleMaterial("MAT_Holy_Bubble", "Holy_Bubble_Particle.png", true);
 
             // 4. Trail & Vortex Materials (Bùa Trấn Yêu W003 & Phi Tiêu Bát Quái W012)
             CreateParticleMaterial("MAT_Talisman_Ribbon_Trail", "Talisman_Ribbon_Trail.png", true);
@@ -70,9 +72,9 @@ namespace ProjectZombie.Editor.VFX
             string[] candidatePaths = new string[]
             {
                 $"Assets/Art/Skills/{fileName}",
+                $"Assets/Art/Weapons/{fileName}",
                 $"{TEXTURE_FOLDER}/{fileName}",
                 $"Assets/Art/Projectiles/{fileName}",
-                $"Assets/Art/Weapons/{fileName}",
                 $"Assets/VFX/SkillLibrary/Textures/Skills/{fileName}"
             };
 

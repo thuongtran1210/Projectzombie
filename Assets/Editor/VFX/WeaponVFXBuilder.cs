@@ -8,10 +8,13 @@ namespace ProjectZombie.Editor.VFX
 {
     /// <summary>
     /// Editor Tool chuyên dụng tự động tạo và cấu hình các Prefab VFX chuẩn Anime 2D URP cho:
-    /// - W002 Bút Phán Quan (Vệt chém thư họa mực đen lõi trắng + tàn mực)
-    /// - W008 Đao Cửu Vĩ (Luồng rồng lửa nón xoắn + tàn than hồng)
-    /// - W003 Bùa Trấn Yêu (Dải lụa Ribbon Trail phát sáng + Sóng đẩy lùi linh khí)
-    /// - W012 Phi Tiêu Bát Quái (Vệt gió xoáy lốc Wind Vortex + Tia sáng xé gió)
+    /// - W002 Bút Phán Quan
+    /// - W008 Đao Cửu Vĩ
+    /// - W003 Bùa Trấn Yêu
+    /// - W012 Phi Tiêu Bát Quái
+    /// - W005 Trống Đồng Đông Sơn
+    /// - W006 Lựu Đạn Thần Sa
+    /// - W011 Nước Thánh Chùa Hương
     /// </summary>
     public static class WeaponVFXBuilder
     {
@@ -50,7 +53,7 @@ namespace ProjectZombie.Editor.VFX
 
             WireW002WeaponPrefab(penSlashAsset, groundDecalAsset, hitSparksAsset);
 
-            // --- 2. VŨ KHÍ W008 ĐAO CỬU VĨ ---
+            // --- 2. VŨ KHÍ W008 ĐAO CỬU Vĩ ---
             GameObject foxFlame = CreateFoxFlameStreamPrefab();
             string foxFlamePath = $"{PREFAB_FOLDER}/VFX_W008_FoxFlameStream.prefab";
             GameObject foxFlameAsset = PrefabUtility.SaveAsPrefabAsset(foxFlame, foxFlamePath);
@@ -74,10 +77,34 @@ namespace ProjectZombie.Editor.VFX
 
             WireW012ProjectilePrefab(windVortexAsset);
 
+            // --- 5. VŨ KHÍ W005 TRỐNG ĐỒNG ĐÔNG SƠN ---
+            GameObject dongSon = CreateDongSonShockwavePrefab();
+            string dongSonPath = $"{PREFAB_FOLDER}/VFX_W005_DongSonShockwave.prefab";
+            GameObject dongSonAsset = PrefabUtility.SaveAsPrefabAsset(dongSon, dongSonPath);
+            GameObject.DestroyImmediate(dongSon);
+
+            WireW005WeaponPrefab(dongSonAsset);
+
+            // --- 6. VŨ KHÍ W006 LỰU ĐẠN THẦN SA ---
+            GameObject cinnabarExp = CreateCinnabarExplosionPrefab();
+            string cinnabarPath = $"{PREFAB_FOLDER}/VFX_W006_CinnabarExplosion.prefab";
+            GameObject cinnabarAsset = PrefabUtility.SaveAsPrefabAsset(cinnabarExp, cinnabarPath);
+            GameObject.DestroyImmediate(cinnabarExp);
+
+            WireW006ProjectilePrefab(cinnabarAsset);
+
+            // --- 7. VŨ KHÍ W011 NƯỚC THÁNH CHÙA HƯƠNG ---
+            GameObject holyWater = CreateHolyWaterAoEPrefab();
+            string holyPath = $"{PREFAB_FOLDER}/VFX_W011_HolyWaterAoE.prefab";
+            GameObject holyAsset = PrefabUtility.SaveAsPrefabAsset(holyWater, holyPath);
+            GameObject.DestroyImmediate(holyWater);
+
+            WireW011ProjectilePrefab(holyAsset);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX cho W002, W008, W003 và W012!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX cho 7 Pháp Bảo (W002, W008, W003, W012, W005, W006, W011)!");
         }
 
         private static void WireW002WeaponPrefab(GameObject slashAsset, GameObject decalAsset, GameObject sparkAsset)
@@ -90,18 +117,9 @@ namespace ProjectZombie.Editor.VFX
             if (dualSlash != null)
             {
                 var so = new SerializedObject(dualSlash);
-                if (slashAsset != null)
-                {
-                    so.FindProperty("directionalSlashPrefab").objectReferenceValue = slashAsset.GetComponent<ParticleSystem>();
-                }
-                if (decalAsset != null)
-                {
-                    so.FindProperty("groundDecalPrefab").objectReferenceValue = decalAsset.GetComponent<ParticleSystem>();
-                }
-                if (sparkAsset != null)
-                {
-                    so.FindProperty("hitSparkPrefab").objectReferenceValue = sparkAsset;
-                }
+                if (slashAsset != null) so.FindProperty("directionalSlashPrefab").objectReferenceValue = slashAsset.GetComponent<ParticleSystem>();
+                if (decalAsset != null) so.FindProperty("groundDecalPrefab").objectReferenceValue = decalAsset.GetComponent<ParticleSystem>();
+                if (sparkAsset != null) so.FindProperty("hitSparkPrefab").objectReferenceValue = sparkAsset;
                 so.ApplyModifiedProperties();
                 EditorUtility.SetDirty(weaponPrefab);
             }
@@ -139,7 +157,6 @@ namespace ProjectZombie.Editor.VFX
             using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
             {
                 GameObject root = scope.prefabContentsRoot;
-
                 Transform existingVFX = root.transform.Find("Talisman_Trail_VFX");
                 if (existingVFX == null)
                 {
@@ -160,7 +177,6 @@ namespace ProjectZombie.Editor.VFX
             using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
             {
                 GameObject root = scope.prefabContentsRoot;
-
                 Transform existingVFX = root.transform.Find("Wind_Vortex_VFX");
                 if (existingVFX == null)
                 {
@@ -168,6 +184,63 @@ namespace ProjectZombie.Editor.VFX
                     vfxInstance.name = "Wind_Vortex_VFX";
                     vfxInstance.transform.localPosition = Vector3.zero;
                     vfxInstance.transform.localRotation = Quaternion.identity;
+                }
+            }
+        }
+
+        private static void WireW005WeaponPrefab(GameObject shockwaveAsset)
+        {
+            string weaponPath = $"{WEAPONS_PREFAB_FOLDER}/Weapon_W005_TrongDongDongSon.prefab";
+            GameObject weaponPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(weaponPath);
+            if (weaponPrefab == null || shockwaveAsset == null) return;
+
+            using (var scope = new PrefabUtility.EditPrefabContentsScope(weaponPath))
+            {
+                GameObject root = scope.prefabContentsRoot;
+                Transform existingVFX = root.transform.Find("Shockwave_VFX");
+                if (existingVFX == null)
+                {
+                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(shockwaveAsset, root.transform);
+                    vfxInstance.name = "Shockwave_VFX";
+                    vfxInstance.transform.localPosition = Vector3.zero;
+                }
+            }
+        }
+
+        private static void WireW006ProjectilePrefab(GameObject cinnabarExpAsset)
+        {
+            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W006_LuuDanThanSa.prefab";
+            GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            if (projPrefab == null || cinnabarExpAsset == null) return;
+
+            using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
+            {
+                GameObject root = scope.prefabContentsRoot;
+                Transform existingVFX = root.transform.Find("Explosion_VFX");
+                if (existingVFX == null)
+                {
+                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(cinnabarExpAsset, root.transform);
+                    vfxInstance.name = "Explosion_VFX";
+                    vfxInstance.transform.localPosition = Vector3.zero;
+                }
+            }
+        }
+
+        private static void WireW011ProjectilePrefab(GameObject holyAoEAsset)
+        {
+            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W011_NuocThanhChuaHuong.prefab";
+            GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            if (projPrefab == null || holyAoEAsset == null) return;
+
+            using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
+            {
+                GameObject root = scope.prefabContentsRoot;
+                Transform existingVFX = root.transform.Find("HolyPuddle_VFX");
+                if (existingVFX == null)
+                {
+                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(holyAoEAsset, root.transform);
+                    vfxInstance.name = "HolyPuddle_VFX";
+                    vfxInstance.transform.localPosition = Vector3.zero;
                 }
             }
         }
@@ -432,7 +505,6 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W003_TalismanTrail");
             root.AddComponent<VFXPoolResetter>();
 
-            // 1. Trail Renderer (Dải lụa phát sáng vàng kim)
             TrailRenderer trail = root.AddComponent<TrailRenderer>();
             trail.time = 0.25f;
             trail.startWidth = 0.6f;
@@ -459,7 +531,6 @@ namespace ProjectZombie.Editor.VFX
             Material trailMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Talisman_Ribbon_Trail.mat");
             if (trailMat != null) trail.sharedMaterial = trailMat;
 
-            // 2. Hào quang lấp lánh (Sparkle Aura)
             GameObject sparkleObj = new GameObject("Sparkle_Aura");
             sparkleObj.transform.SetParent(root.transform, false);
 
@@ -523,6 +594,242 @@ namespace ProjectZombie.Editor.VFX
 
             Material vortexMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_BatQuai_Wind_Vortex.mat");
             if (vortexMat != null) renderer.sharedMaterial = vortexMat;
+
+            return root;
+        }
+
+        // --- 5. W005 TRỐNG ĐỒNG ĐÔNG SƠN ---
+        private static GameObject CreateDongSonShockwavePrefab()
+        {
+            GameObject root = new GameObject("VFX_W005_DongSonShockwave");
+            root.AddComponent<VFXPoolResetter>();
+
+            // Layer 1: Shockwave Hoa Văn Trống Đồng
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 0.4f;
+            main.loop = false;
+            main.startLifetime = 0.35f;
+            main.startSpeed = 0f;
+            main.startSize = 1.0f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var shape = ps.shape;
+            shape.enabled = false;
+
+            var sizeOverLife = ps.sizeOverLifetime;
+            sizeOverLife.enabled = true;
+            AnimationCurve curve = new AnimationCurve();
+            curve.AddKey(0.0f, 1.0f);
+            curve.AddKey(1.0f, 6.0f); // Nở rộng bán kính dập sóng âm
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, curve);
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.84f, 0.3f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.8f, 0.4f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingOrder = 8;
+
+            Material shockMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Shockwave_DongSon.mat");
+            if (shockMat != null) renderer.sharedMaterial = shockMat;
+
+            // Layer 2: Mảnh Đá Vỡ & Bụi Đất
+            GameObject dustObj = new GameObject("Earth_Debris");
+            dustObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem dustPS = dustObj.AddComponent<ParticleSystem>();
+            var dustMain = dustPS.main;
+            dustMain.duration = 0.4f;
+            dustMain.loop = false;
+            dustMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.35f);
+            dustMain.startSpeed = new ParticleSystem.MinMaxCurve(6f, 12f);
+            dustMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.3f);
+            dustMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var dustEmission = dustPS.emission;
+            dustEmission.rateOverTime = 0;
+            dustEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 16) });
+
+            var dustShape = dustPS.shape;
+            dustShape.enabled = true;
+            dustShape.shapeType = ParticleSystemShapeType.Circle;
+            dustShape.radius = 0.5f;
+
+            var dustRenderer = dustObj.GetComponent<ParticleSystemRenderer>();
+            dustRenderer.renderMode = ParticleSystemRenderMode.Stretch;
+            dustRenderer.velocityScale = 0.02f;
+            dustRenderer.lengthScale = 1.0f;
+            dustRenderer.sortingLayerName = "VFX_Front";
+            dustRenderer.sortingOrder = 9;
+
+            Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+            if (sparksMat != null) dustRenderer.sharedMaterial = sparksMat;
+
+            return root;
+        }
+
+        // --- 6. W006 LỰU ĐẠN THẦN SA ---
+        private static GameObject CreateCinnabarExplosionPrefab()
+        {
+            GameObject root = new GameObject("VFX_W006_CinnabarExplosion");
+            root.AddComponent<VFXPoolResetter>();
+
+            // Layer 1: Cột Lửa Cuộn Xoáy
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 0.5f;
+            main.loop = false;
+            main.startLifetime = 0.45f;
+            main.startSpeed = 0f;
+            main.startSize = 3.5f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.rateOverTime = 0;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var shape = ps.shape;
+            shape.enabled = false;
+
+            var sizeOverLife = ps.sizeOverLifetime;
+            sizeOverLife.enabled = true;
+            AnimationCurve curve = new AnimationCurve();
+            curve.AddKey(0.0f, 0.5f);
+            curve.AddKey(0.2f, 1.2f);
+            curve.AddKey(1.0f, 1.5f);
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, curve);
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.3f, 0.0f), 0.5f), new GradientColorKey(new Color(0.3f, 0.05f, 0.05f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.9f, 0.6f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingOrder = 10;
+
+            Material pillarMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Fire_Pillar.mat");
+            if (pillarMat != null) renderer.sharedMaterial = pillarMat;
+
+            // Layer 2: Than Hồng Bắn Tóe
+            GameObject embersObj = new GameObject("Cinnabar_Embers");
+            embersObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem emberPS = embersObj.AddComponent<ParticleSystem>();
+            var emberMain = emberPS.main;
+            emberMain.duration = 0.5f;
+            emberMain.loop = false;
+            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.4f);
+            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(8f, 16f);
+            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.25f);
+            emberMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emberEmission = emberPS.emission;
+            emberEmission.rateOverTime = 0;
+            emberEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 20) });
+
+            var emberShape = emberPS.shape;
+            emberShape.enabled = true;
+            emberShape.shapeType = ParticleSystemShapeType.Sphere;
+            emberShape.radius = 0.4f;
+
+            var emberRenderer = embersObj.GetComponent<ParticleSystemRenderer>();
+            emberRenderer.renderMode = ParticleSystemRenderMode.Stretch;
+            emberRenderer.velocityScale = 0.03f;
+            emberRenderer.lengthScale = 1.2f;
+            emberRenderer.sortingLayerName = "VFX_Front";
+            emberRenderer.sortingOrder = 12;
+
+            Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+            if (sparksMat != null) emberRenderer.sharedMaterial = sparksMat;
+
+            return root;
+        }
+
+        // --- 7. W011 NƯỚC THÁNH CHÙA HƯƠNG ---
+        private static GameObject CreateHolyWaterAoEPrefab()
+        {
+            GameObject root = new GameObject("VFX_W011_HolyWaterAoE");
+            root.AddComponent<VFXPoolResetter>();
+
+            // Layer 1: Bãi Sương Mù Dưới Đất
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 2.0f;
+            main.loop = true;
+            main.startLifetime = 1.0f;
+            main.startSpeed = 0f;
+            main.startSize = 3.8f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.rateOverTime = 2f;
+
+            var shape = ps.shape;
+            shape.enabled = false;
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(0.4f, 0.9f, 1f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.0f, 0.0f), new GradientAlphaKey(0.8f, 0.3f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Back";
+            renderer.sortingOrder = -40;
+
+            Material puddleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_HolyWaterPuddle.mat");
+            if (puddleMat != null) renderer.sharedMaterial = puddleMat;
+
+            // Layer 2: Bọt Khí Linh Thiêng Bay Lên
+            GameObject bubblesObj = new GameObject("Holy_Bubbles");
+            bubblesObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem bubblePS = bubblesObj.AddComponent<ParticleSystem>();
+            var bubbleMain = bubblePS.main;
+            bubbleMain.duration = 2.0f;
+            bubbleMain.loop = true;
+            bubbleMain.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1.2f);
+            bubbleMain.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.5f);
+            bubbleMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.28f);
+            bubbleMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var bubbleEmission = bubblePS.emission;
+            bubbleEmission.rateOverTime = 12f;
+
+            var bubbleShape = bubblePS.shape;
+            bubbleShape.enabled = true;
+            bubbleShape.shapeType = ParticleSystemShapeType.Circle;
+            bubbleShape.radius = 1.6f;
+
+            var bubbleRenderer = bubblesObj.GetComponent<ParticleSystemRenderer>();
+            bubbleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            bubbleRenderer.sortingLayerName = "VFX_Front";
+            bubbleRenderer.sortingOrder = 10;
+
+            Material bubbleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Holy_Bubble.mat");
+            if (bubbleMat != null) bubbleRenderer.sharedMaterial = bubbleMat;
 
             return root;
         }

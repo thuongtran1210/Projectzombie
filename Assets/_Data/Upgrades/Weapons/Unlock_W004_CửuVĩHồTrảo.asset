@@ -24,7 +24,7 @@ MonoBehaviour:
   element: 0
   weaponId: W004
   requiredCurrentLevel: 0
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 297462822436431392, guid: c886942421aec064db2a865c80dee974, type: 3}
   statModifier:
     damageBonus: 0
     attackSpeedBonus: 0

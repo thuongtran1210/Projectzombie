@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
+  m_Name: "E010_MaDaV\u1EA1n\u0110\u1ED9cTr\u1EADn"
+  m_EditorClassIdentifier: 
+  upgradeName: "Ma Da V\u1EA1n \u0110\u1ED9c Tr\u1EADn"
+  description: "\u0110\u1EA7m l\u1EA7y h\u1EAFc \xE1m lan r\u1ED9ng l\xE0m tan ch\u1EA3y
+    qu\xE1i v\u1EADt ch\u1EA1m ph\u1EA3i."
+  icon: {fileID: 0}
+  upgradeType: 5
+  spawnWeight: 100
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  weaponId: W010
+  requiredCurrentLevel: 5
+  requiredPassiveId: P010
+  weaponPrefab: {fileID: 0}

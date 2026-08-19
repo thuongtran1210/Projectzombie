@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
+  m_Name: "E002_B\xFAtPh\xE1nQuan\xC2mD\u01B0\u01A1ng"
+  m_EditorClassIdentifier: 
+  upgradeName: "B\xFAt Ph\xE1n Quan \xC2m D\u01B0\u01A1ng"
+  description: "Nh\xE1t ch\xE9m th\u01B0 h\u1ECDa bi\u1EBFn th\xE0nh v\xF2ng xo\xE1y
+    \xC2m D\u01B0\u01A1ng c\xE0n qu\xE9t chi\u1EBFn tr\u01B0\u1EDDng."
+  icon: {fileID: 0}
+  upgradeType: 5
+  spawnWeight: 100
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  weaponId: W002
+  requiredCurrentLevel: 5
+  requiredPassiveId: P002
+  weaponPrefab: {fileID: 0}

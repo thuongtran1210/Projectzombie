@@ -51,14 +51,33 @@ namespace ProjectZombie.Features.Upgrades
 
             if (requiredCurrentLevel == 0) // Thẻ Mở khóa vũ khí mới
             {
-                if (weaponPrefab != null)
+                GameObject prefabToSpawn = weaponPrefab;
+
+                // Cơ chế tự động Fallback: Tìm kiếm trong Resources nếu chưa gán trực tiếp trên Inspector
+                if (prefabToSpawn == null)
                 {
-                    GameObject weaponObj = Instantiate(weaponPrefab, weaponManager.transform);
+                    var allWeaponData = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
+                    var matchedData = allWeaponData.FirstOrDefault(wd => wd.weaponId == weaponId);
+                    if (matchedData != null && matchedData.weaponPrefab != null)
+                    {
+                        prefabToSpawn = matchedData.weaponPrefab.gameObject;
+                    }
+                }
+
+                if (prefabToSpawn != null)
+                {
+                    GameObject weaponObj = Instantiate(prefabToSpawn, weaponManager.transform);
                     WeaponBase weapon = weaponObj.GetComponent<WeaponBase>();
                     if (weapon != null)
                     {
+                        if (string.IsNullOrEmpty(weapon.weaponId)) weapon.weaponId = weaponId;
                         weaponManager.AddWeapon(weapon);
+                        Debug.Log($"<color=#00FF00>[WeaponUpgradeData]</color> Đã mở khóa & trang bị thành công Pháp Bảo: {weaponId}");
                     }
+                }
+                else
+                {
+                    Debug.LogWarning($"[WeaponUpgradeData] Không thể spawn vũ khí {weaponId}: weaponPrefab là null và không tìm thấy trong Resources/ScriptableObjects/Weapons");
                 }
             }
             else
@@ -68,9 +87,8 @@ namespace ProjectZombie.Features.Upgrades
                 if (targetWeapon != null)
                 {
                     targetWeapon.ApplyStatModifier(statModifier);
-                    // Có thể thêm logic thay overrideProjectilePrefab vào targetWeapon tại đây nếu WeaponBase hỗ trợ
                     targetWeapon.OnLevelUp(targetWeapon.WeaponLevel, this);
-                    weaponManager.NotifyWeaponsChanged(); // Thay cho OnWeaponsChanged?.Invoke()
+                    weaponManager.NotifyWeaponsChanged();
                 }
                 else
                 {

@@ -133,10 +133,10 @@ graph TD
   - [x] Trail & Glow Ribbon: Gắn Trail Renderer Shader phát sáng mềm mại theo sau lá bùa (`VFX_W003_TalismanTrail`) và luồng gió xoáy phi tiêu (`VFX_W012_WindVortex`).
   - [x] Impact Pulse: Sóng đẩy lùi tí hon (Micro Repulsion Pulse) tại điểm va chạm quái.
 
-- [ ] 🚨 **[TASK-VFX-03] [W005, W006, W011] Sóng Âm Trấn Quốc & Địa Chấn (`Trống Đồng`, `Lựu Đạn`, `Nước Thánh`)**:
-  - [ ] **Trống Đồng Đông Sơn (W005):** Sóng âm hoa văn Trống Đồng dập xuống mặt đất + Vết nứt đất `GroundDecal`.
-  - [ ] **Lựu Đạn Thần Sa (W006):** Hiệu ứng nổ bão lửa 3 tầng (Khói nén -> Cột lửa -> Tàn lửa).
-  - [ ] **Nước Thánh Chùa Hương (W011):** Bãi nước thiêng bốc sương trắng gợn sóng (Sorting Layer `VFX_Bottom`).
+- [x] 🚨 **[TASK-VFX-03] [W005, W006, W011] Sóng Âm Trấn Quốc & Địa Chấn (`Trống Đồng`, `Lựu Đạn`, `Nước Thánh`)**:
+  - [x] **Trống Đồng Đông Sơn (W005):** Sóng âm hoa văn Trống Đồng dập xuống mặt đất + Vết nứt đất `GroundDecal` (`VFX_W005_DongSonShockwave`).
+  - [x] **Lựu Đạn Thần Sa (W006):** Cột bão lửa cuộn xoáy 3 tầng bốc lên + Tàn than hồng bay phân tán (`VFX_W006_CinnabarExplosion`).
+  - [x] **Nước Thánh Chùa Hương (W011):** Bình vỡ tóe nước thánh + Bãi sương mù gợn sóng dưới mặt đất + Bọt khí bay lên (`VFX_W011_HolyWaterAoE`).
 
 - [ ] 🚨 **[TASK-VFX-04] [W001, W004, W007, W009, W010, W013] Đạn Bay, Sét Dây & Triệu Hồi Linh Thú**:
   - [ ] **Nỏ Thần (W001) & Cung Thạch Sanh (W007):** Mũi tên ánh sáng vệt đuôi dài + vòng xé gió (Wind Pierce Ring).
