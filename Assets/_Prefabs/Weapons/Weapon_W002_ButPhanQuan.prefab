@@ -88,7 +88,7 @@ MonoBehaviour:
   showGizmos: 1
   hitboxSize: {x: 3, y: 2}
   forwardOffset: 2
-  slashCount: 2
+  slashCount: 1
   directionalSlashPrefab: {fileID: 4001019077493272797, guid: 12709c22ec6f3564aa0e512b4c31d648, type: 3}
   groundDecalPrefab: {fileID: 5244422193148137277, guid: c192b114fd663824f8097b73da958b06, type: 3}
   shockwavePrefab: {fileID: 0}

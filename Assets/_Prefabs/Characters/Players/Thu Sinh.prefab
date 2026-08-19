@@ -70,19 +70,18 @@ SpriteRenderer:
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1982589963
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 1012015404, guid: 320278d557efecc4581abdd179f1d748, type: 3}
+  m_SortingLayerID: -1520767021
+  m_SortingLayer: 6
+  m_SortingOrder: 100
+  m_Sprite: {fileID: 7255401321100413456, guid: fed65ac3b5bf4c04f859efbf6aa4835b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.12, y: 2.55}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8425905768194309312
@@ -95,7 +94,7 @@ Animator:
   m_GameObject: {fileID: 4365980681615984455}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 47656a29fe1ec844180fbdcf870eeb07, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1cbcb85123bec1b890a3c4f21298b696, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -320,7 +319,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingLoadout:
   - {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
-  - {fileID: 11400000, guid: 38d878be87fef1741bc0a7e70e0c2f89, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
 --- !u!114 &7402922671366627933
 MonoBehaviour:

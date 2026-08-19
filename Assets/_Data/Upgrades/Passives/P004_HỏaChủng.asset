@@ -26,6 +26,6 @@ MonoBehaviour:
     maxHealthBonus: 0
     moveSpeedBonus: 0
     critChanceBonus: 0
-    baseDamageBonus: 5
+    baseDamageBonus: 0
     pickupRangeBonus: 0
     expMultiplierBonus: 0

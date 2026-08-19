@@ -17,7 +17,7 @@ namespace ProjectZombie.Features.Weapons
 
         [Range(1, 12)]
         [Tooltip("Số lượng hướng chém. Tăng cấp vũ khí sẽ tăng số này lên.")]
-        [SerializeField] public int slashCount = 2; // Public để hệ thống nâng cấp dễ dàng can thiệp
+        [SerializeField] public int slashCount = 1; // Public để hệ thống nâng cấp dễ dàng can thiệp
 
         [Header("VFX Prefabs")]
         [SerializeField] private ParticleSystem directionalSlashPrefab;
@@ -128,6 +128,27 @@ namespace ProjectZombie.Features.Weapons
 
             main.startColor = targetColor;
             ps.transform.localScale = Vector3.one * sizeMultiplier;
+        }
+
+        public override void ApplyStatModifier(Upgrades.WeaponStatModifier modifier)
+        {
+            base.ApplyStatModifier(modifier);
+
+            // Level 1-2: 1 nhát chém (hướng trước mặt)
+            // Level 3-4: 2 nhát chém (trước & sau)
+            // Level 5-6: 4 nhát chém (tỏa 4 hướng chữ thập)
+            if (WeaponLevel >= 5)
+            {
+                slashCount = 4;
+            }
+            else if (WeaponLevel >= 3)
+            {
+                slashCount = 2;
+            }
+            else
+            {
+                slashCount = 1;
+            }
         }
 
         private void OnDrawGizmosSelected()

@@ -2609,9 +2609,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.15041323
-    width: 0.99999994
-    height: 0.69917357
+    y: 0.08656906
+    width: 1.0002162
+    height: 0.82781667
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -7005,7 +7005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSelectionData: {fileID: 11400000, guid: 95afcdd6c7589ee44a7be8ab8427c080, type: 2}
-  defaultPlayerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}
+  defaultPlayerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
   spawnPoint: {fileID: 1792380789}
   cameraFollow: {fileID: 519420033}
   runHUDPresenter: {fileID: 719202294}

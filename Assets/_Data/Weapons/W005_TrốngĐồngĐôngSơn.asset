@@ -21,5 +21,5 @@ MonoBehaviour:
   evolutionWeaponId: E005
   elementType: 5
   weaponPrefab: {fileID: 2389269143492382759, guid: fc61047bf4b0f7e49bc987091988e04b, type: 3}
-  baseDamage: 40
+  baseDamage: 25
   baseAttackSpeed: 1.5
