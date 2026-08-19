@@ -18,6 +18,9 @@ namespace ProjectZombie.Features.Player
         [Tooltip("Dữ liệu cấu hình nhân vật chọn từ Menu")]
         [SerializeField] private CharacterSelectionData characterSelectionData;
         
+        [Tooltip("Prefab UI Chọn Nhân Vật để tự động mở khi bắt đầu")]
+        [SerializeField] private GameObject characterSelectionUIPrefab;
+
         [Tooltip("Prefab mặc định nếu không tìm thấy dữ liệu chọn nhân vật")]
         [SerializeField] private GameObject defaultPlayerPrefab;
         
@@ -35,16 +38,44 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private GameOverScreenPresenter gameOverScreenPresenter;
         [SerializeField] private CharacterGaugeWidgetPresenter characterGaugeWidgetPresenter;
 
-        private void Awake()
+        private GameObject _activePlayerInstance;
+
+        private void Start()
         {
-            InitializeLevel();
+            // Kiểm tra nếu có CharacterSelectionUI trong scene hoặc prefab
+            var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
+            if (existingUI != null)
+            {
+                existingUI.gameObject.SetActive(true);
+                existingUI.OnCharacterSelected += HandleCharacterSelected;
+                return;
+            }
+
+            if (characterSelectionUIPrefab != null)
+            {
+                GameObject uiObj = Instantiate(characterSelectionUIPrefab);
+                var presenter = uiObj.GetComponent<CharacterSelectionPresenter>();
+                if (presenter != null)
+                {
+                    presenter.OnCharacterSelected += HandleCharacterSelected;
+                    return;
+                }
+            }
+
+            // Nếu không có UI Chọn Tướng, tự động spawn theo cấu hình sẵn có
+            InitializeLevel(null);
         }
 
-        private void InitializeLevel()
+        private void HandleCharacterSelected(GameObject selectedPrefab)
+        {
+            InitializeLevel(selectedPrefab);
+        }
+
+        private void InitializeLevel(GameObject overridePrefab)
         {
             // 1. Xác định prefab của Player cần spawn
-            GameObject playerPrefab = defaultPlayerPrefab;
-            if (characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
+            GameObject playerPrefab = overridePrefab != null ? overridePrefab : defaultPlayerPrefab;
+            if (playerPrefab == null && characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
             {
                 playerPrefab = characterSelectionData.SelectedPlayerPrefab;
             }
@@ -55,10 +86,17 @@ namespace ProjectZombie.Features.Player
                 return;
             }
 
+            // Hủy player cũ nếu đã tồn tại
+            if (_activePlayerInstance != null)
+            {
+                Destroy(_activePlayerInstance);
+            }
+
             // 2. Spawn Player
             Vector3 position = spawnPoint != null ? spawnPoint.position : Vector3.zero;
             Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
-            GameObject playerInstance = Instantiate(playerPrefab, position, rotation);
+            _activePlayerInstance = Instantiate(playerPrefab, position, rotation);
+            GameObject playerInstance = _activePlayerInstance;
             
             Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật: {playerInstance.name}");
 

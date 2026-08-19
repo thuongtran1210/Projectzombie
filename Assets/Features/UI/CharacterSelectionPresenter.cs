@@ -20,6 +20,10 @@ namespace ProjectZombie.Features.UI
     public class CharacterSelectionPresenter : MonoBehaviour
     {
         [SerializeField] private CharacterSelectionView _view;
+        [SerializeField] private ProjectZombie.Features.Player.CharacterSelectionData _selectionData;
+        [SerializeField] private GameObject[] _characterPrefabs; // [0]: Thu Sinh, [1]: Dao Si, [2]: Thanh Dong, [3]: An Si
+
+        public event System.Action<GameObject> OnCharacterSelected;
 
         private CharacterInfo[] _characters;
         private int _currentIndex = 0;
@@ -53,6 +57,27 @@ namespace ProjectZombie.Features.UI
 
         private void InitCharacterData()
         {
+            if (_selectionData != null && _selectionData.Characters != null && _selectionData.Characters.Count > 0)
+            {
+                var list = _selectionData.Characters;
+                _characters = new CharacterInfo[list.Count];
+                for (int i = 0; i < list.Count; i++)
+                {
+                    _characters[i] = new CharacterInfo
+                    {
+                        name = list[i].characterName,
+                        element = list[i].element,
+                        elementHexColor = string.IsNullOrEmpty(list[i].elementHexColor) ? "#FFD700" : list[i].elementHexColor,
+                        description = list[i].description,
+                        signatureSkillName = list[i].signatureSkillName,
+                        signatureSkillDesc = list[i].signatureSkillDesc,
+                        avatar = list[i].avatar
+                    };
+                }
+                return;
+            }
+
+            // Fallback nếu chưa cấu hình ScriptableObject
             _characters = new CharacterInfo[]
             {
                 new CharacterInfo
@@ -66,12 +91,21 @@ namespace ProjectZombie.Features.UI
                 },
                 new CharacterInfo
                 {
+                    name = "Đạo Sĩ",
+                    element = ElementType.Moc,
+                    elementHexColor = "#9B51E0",
+                    description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).",
+                    signatureSkillName = "Bát Quái Trận Đồ",
+                    signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s."
+                },
+                new CharacterInfo
+                {
                     name = "Thanh Đồng",
                     element = ElementType.Moc,
                     elementHexColor = "#4C7A3D",
-                    description = "Thầy Pháp / Bà Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ). Ép cán cân về Thái Cực.",
-                    signatureSkillName = "Giá Đồng",
-                    signatureSkillDesc = "Thỉnh nhập Tứ Phủ ban hào quang & buff sắc phục 5s, ép Âm Dương về 50 mở cơ hội chọn thẻ Evolution Thái Cực."
+                    description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tích lũy Linh Lực Tứ Phủ để thỉnh Thánh giáng thế.",
+                    signatureSkillName = "Giá Đồng Tứ Phủ",
+                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Hộ thân) trong 5s."
                 },
                 new CharacterInfo
                 {
@@ -80,28 +114,54 @@ namespace ProjectZombie.Features.UI
                     elementHexColor = "#8A6A3E",
                     description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
                     signatureSkillName = "Thập Phương Chấn Thế",
-                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy thẳng +25 vào cực Dương."
+                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s."
                 }
             };
         }
 
         private void OnNextCharacter()
         {
+            if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex + 1) % _characters.Length;
             RenderCurrentCharacter();
         }
 
         private void OnPrevCharacter()
         {
+            if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex - 1 + _characters.Length) % _characters.Length;
             RenderCurrentCharacter();
         }
 
         private void OnSelectCharacter()
         {
+            if (_characters == null || _characters.Length == 0) return;
             var selected = _characters[_currentIndex];
             Debug.Log($"[{nameof(CharacterSelectionPresenter)}] Đã chọn Anh Hùng: {selected.name} (Hệ {selected.element})");
-            // Có thể load Scene Gameplay hoặc lưu thông tin nhân vật vào GameManager tại đây
+
+            GameObject chosenPrefab = null;
+
+            if (_selectionData != null && _selectionData.Characters != null && _currentIndex < _selectionData.Characters.Count)
+            {
+                chosenPrefab = _selectionData.Characters[_currentIndex].playerPrefab;
+                _selectionData.SelectCharacter(_currentIndex);
+            }
+            else if (_characterPrefabs != null && _currentIndex < _characterPrefabs.Length)
+            {
+                chosenPrefab = _characterPrefabs[_currentIndex];
+                if (_selectionData != null)
+                {
+                    _selectionData.SelectedPlayerPrefab = chosenPrefab;
+                }
+            }
+
+            OnCharacterSelected?.Invoke(chosenPrefab);
+
+            // Tự động đóng Popup Chọn Nhân Vật để vào trận
+            if (gameObject != null)
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         private void RenderCurrentCharacter()

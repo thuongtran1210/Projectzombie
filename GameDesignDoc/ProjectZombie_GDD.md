@@ -32,7 +32,7 @@
 ### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
 - **Cốt truyện Sử thi Dân gian Việt Nam:** Hành trình giải cứu tam giới, thu thập thánh tích để triệu hồi "Tứ Bất Tử" diệt Ma Vương.
 - **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Buộc người chơi xoay chuyển build theo vòng Tương Khắc (+30% Sát thương) và Tương Sinh (-20% Cooldown).
-- **Cán Cân Âm Dương:** Cơ chế độc quyền cho nhân vật Đạo Sĩ (Thanh Đồng) luân chuyển thế đánh Âm Thịnh / Dương Thịnh / Thái Cực mở khóa thẻ Evolution đặc biệt.
+- **Cán Cân Âm Dương:** Cơ chế độc quyền cho nhân vật Thanh Đồng luân chuyển thế đánh Âm Thịnh / Dương Thịnh / Thái Cực mở khóa thẻ Evolution đặc biệt.
 - **Chất liệu văn hóa thuần Việt:** Pháp bảo cổ đại (Nỏ Thần, Trống Đồng, Bút Phán Quan, Bùa Trấn Yêu), Yêu ma truyền thuyết (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
 - **Kiến trúc Kỹ thuật Di Động Tối Ưu:** Nền tảng Offline-first Local Save JSON, Object Pooling 0 GC Allocation, chạy mượt 60 FPS trên chip ARM64.
 
@@ -53,7 +53,7 @@
 | **Boss (Trùm)** | 2 (Ngưu Đầu Mã Diện, Diêm Vương) | 6+ (Bạch Xà, Thần Trùng, Hồ Ly 9 Đuôi, **Ma Vương Tối Thượng**) |
 | **Map (Bản đồ / Chương)** | 1 (Chương 1: Bến Đò Vong Xuyên — Cửa ngõ cõi Âm) | 5 Map Chiến Dịch (Núi Tản Ba Vì, Đầm Dạ Trạch, Chiến Địa Sóc Sơn, Phủ Dầy, Hỏa Ngục Ma Vương) |
 | **Cơ chế Ngũ Hành** | Có (Tương khắc + Tương sinh) | Mở rộng Combo liên hệ |
-| **Cán cân Âm Dương** | Có (Nội tại độc quyền Đạo Sĩ) | Mở rộng hiệu ứng bản đồ theo Âm Dương |
+| **Cán cân Âm Dương** | Có (Nội tại độc quyền Thanh Đồng) | Mở rộng hiệu ứng bản đồ theo Âm Dương |
 | **Daily Quest** | Không | Có (Thưởng Cổ Tiền & Reroll Token) |
 | **Monetization** | Rewarded Ads (x2 Cổ Tiền / Reroll) | Rewarded Ads + IAP Skin/Character |
 
@@ -64,7 +64,7 @@
 ### 2.1. Vòng lặp trong 1 trận (Moment-to-moment Loop)
 1. **Sinh tồn & Tấn công tự động:** Di chuyển né tránh kẻ địch qua Dynamic Virtual Joystick. Pháp bảo tự động tấn công theo tầm và cooldown.
 2. **Thu thập & Lên cấp:** Tiêu diệt Yêu ma rớt Hạt Kinh Nghiệm (Exp Gem) để Lên cấp (Level Up).
-3. **Nâng cấp Gacha Ngũ Hành & Âm Dương:** Khi lên cấp, game tạm dừng hiển thị 3 thẻ nâng cấp ngẫu nhiên. Danh sách thẻ được lọc qua hệ thống `IUpgradeFilter` theo thuộc tính Ngũ Hành và trạng thái Cán cân Âm Dương (khi chơi Đạo Sĩ).
+3. **Nâng cấp Gacha Ngũ Hành & Âm Dương:** Khi lên cấp, game tạm dừng hiển thị 3 thẻ nâng cấp ngẫu nhiên. Danh sách thẻ được lọc qua hệ thống `IUpgradeFilter` theo thuộc tính Ngũ Hành và trạng thái Cán cân Âm Dương (khi chơi Thanh Đồng).
 4. **Tiến hóa (Evolution):** Khi Pháp bảo đạt cấp 5 (Max Level) và người chơi sở hữu Thẻ Passive tương ứng, Pháp bảo tiến hóa thành phiên bản Tối Thượng.
 5. **Kết thúc trận:** Thắng khi diệt Boss Diêm Vương ở mốc 20:00 (Phá vỡ phong ấn Bến Đò Vong Xuyên, mở lối thoát về dương gian tìm kiếm Tứ Bất Tử), hoặc Thất bại khi hết HP.
 
@@ -115,17 +115,20 @@
 | Nhân vật | Vũ khí khởi đầu | Hệ khởi điểm | Signature Skill (Kỹ năng chủ động) | Cooldown | Cơ chế lõi tương tác |
 |---|---|---|---|---|---|
 | **Thư Sinh** | Bút Phán Quan | Kim | **"Phán Quyết Tiền Định"** — Chèn 1 hit ảo hệ tùy chọn vào buffer Tương Sinh | 25s | `recentElementHits` (mục 4.2.2) |
-| **Thanh Đồng** | Bùa Trấn Yêu | Mộc | **"Giá Đồng"** — Thỉnh nhập Thánh Tứ Phủ (Đổi sắc phục/buff hệ + ép cân bằng Âm Dương) | 30s | `yinYangValue` + Dynamic Element Buff (mục 6.1) |
-| **Ẩn Sĩ Sơn Lâm** | Thiền Trượng | Thổ | **"Thập Phương Chấn Thế"** — Hy sinh HP bộc phát địa khí nứt đá + đẩy cực Dương | 20s | `PlayerStats.HP` + `yinYangValue` (mục 6.1) |
+| **Đạo Sĩ** | Bát Quái Trận | Mộc | **"Bát Quái Trận Đồ"** — Dậm trận đồ Bát Quái làm chậm + ép Cán Cân Âm Dương về 50 | 30s | `yinYangValue` (mục 6.1) |
+| **Thanh Đồng** | Chuỗi Linh Phù Tứ Phủ / Bùa Trấn Yêu | Mộc | **"Giá Đồng Tứ Phủ"** — Thỉnh nhập Thánh Tứ Phủ (Đổi sắc phục & buff hào quang 4 cõi) | 30s | Dynamic 4-Realm Element Buffs (mục 3.1.2) |
+| **Ẩn Sĩ Sơn Lâm** | Thiền Trượng | Thổ | **"Thập Phương Chấn Thế"** — Hy sinh HP bộc phát địa khí nứt đá + đẩy lùi diện rộng | 20s | `PlayerStats.HP` + Knockback (mục 3.1.3) |
 
 #### 3.1.0. Định hướng Hình ảnh & Archetype Nhân vật (Art & Visual Direction — Tín Ngưỡng Bản Địa)
 
 *   **Thư Sinh (Hệ Kim):**
     *   *Archetype:* Nho sinh / Hiền sĩ bản địa — dáng gầy, thư sinh, tay cầm Bút Phán Quan. Được anh linh sông núi và Đức Thánh Trần điểm hóa, dùng Bút Lệnh phán định tà ma chứ không học thuật Nho giáo từ sách vở.
     *   *Tông màu:* Vàng kim (`#E8C468`) làm điểm nhấn trên nền áo the / khăn đóng xám nhạt hoặc trắng ngà.
-    *   *Chi tiết Skill & Idle:* Khi tung skill, chữ Nôm/Nho rực cháy thành luồng **khói thiêng anh linh màu vàng kim** bay cuộn lơ lửng thay vì hào quang kim loại cứng.
+*   **Đạo Sĩ (Hệ Mộc):**
+    *   *Archetype:* Đạo nhân Tiên Đạo cổ truyền — đạo phục xám/tím ma mị, tinh thông Bát Quái Tiên Thiên và Cán Cân Âm Dương.
+    *   *Tông màu:* Tím ma mị (`#9B51E0`) & Vàng hoàng kim Bát Quái (`#FFD700`).
 *   **Thanh Đồng (Hệ Mộc):**
-    *   *Archetype:* Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Bùa Trấn Yêu / Chuỗi Bùa Tứ Phủ.
+    *   *Archetype:* Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Chuỗi Linh Phù Tứ Phủ / Quạt Loan Phượng.
     *   *Tông màu:* Phân theo Tứ Phủ: Thiên Phủ (Đỏ son `#B8442C` - Hỏa), Nhạc Phủ (Xanh mộc `#4C7A3D` - Mộc), Thoải Phủ (Trắng/Lam `#2E6E9E` - Thủy), Địa Phủ (Vàng đất `#8A6A3E` - Thổ).
     *   *Chi tiết Skill & Idle:* Dáng múa mồi / múa bóng 2–3 frame đặc trưng khi "Giá Đồng", dải lụa sắc màu cuộn quanh người ở trạng thái nhập vai vị Thánh.
 *   **Ẩn Sĩ Sơn Lâm (Hệ Thổ):**
@@ -202,7 +205,7 @@
 
 ### 3.3. Định Hướng Cân Bằng Đa Dạng Build (Build Diversity & Anti Mono-Element Stacking)
 
-Mặc dù mỗi Nhân vật sở hữu Vũ khí khởi đầu đúng theo thuộc tính bổn mệnh (Thư Sinh — Kim, Đạo Sĩ — Mộc, Võ Tăng — Thổ) để chuẩn hóa Lore, hệ thống cân bằng game được thiết kế triệt để nhằm **ngăn chặn bẫy "Mono-Element Stacking"** (chỉ nhặt vũ khí cùng 1 hệ bổn mệnh), đảm bảo tính đa dạng chiến thuật Roguelite:
+Mặc dù mỗi Nhân vật sở hữu Vũ khí khởi đầu đúng theo thuộc tính bổn mệnh (Thư Sinh — Kim, Thanh Đồng — Mộc, Ẩn Sĩ Sơn Lâm — Thổ) để chuẩn hóa Lore, hệ thống cân bằng game được thiết kế triệt để nhằm **ngăn chặn bẫy "Mono-Element Stacking"** (chỉ nhặt vũ khí cùng 1 hệ bổn mệnh), đảm bảo tính đa dạng chiến thuật Roguelite:
 
 1. **Rào Cản Từ Vòng Tương Sinh (Kim $\rightarrow$ Thủy $\rightarrow$ Mộc $\rightarrow$ Hỏa $\rightarrow$ Thổ $\rightarrow$ Kim):**
    - Vòng Tương Sinh bắt buộc phải có **2 đòn đánh thuộc 2 hệ KHÁC NHAU theo đúng thứ tự sinh** để kích hoạt giảm 20% Cooldown (VD: Kim sinh Thủy).
@@ -357,7 +360,7 @@ Một biến trạng thái toàn cục `yinYangValue` (thang 0–100, mặc đ�
 - Tích hợp 1 biến global vào `UpgradeManager`, filter pool `UpgradeData` theo ngưỡng trước khi hiển thị 3 thẻ. Hệ Gacha không đổi, chỉ bổ sung điều kiện lọc theo `yinYangValue` hiện tại.
 - **Xác nhận Chủ đích Thiết kế (Intended Design for Ranged Kiting & Class Perks):**
   - Người chơi build thiên về kiting/tầm xa (Nỏ Thần, Cung Thạch Sanh...) di chuyển né đòn liên tục ở khoảng cách xa sẽ giữ chỉ số `yinYangValue` ổn định trong vùng **Thái Cực Cân bằng (40 – 60)**. Đây là chủ đích thiết kế nhằm giúp người chơi lối đánh an toàn dễ dàng tiếp cận thẻ Evolution **"Thái Cực"** đặc biệt.
-  - **Đặc quyền Class Đạo Sĩ (Đạo Sĩ Specific Perk):** Kỹ năng chủ động *"Bát Quái Trận Đồ"* có khả năng ép `yinYangValue` về 50 trong 4s, cho phép Đạo Sĩ chủ động tái tạo "cửa sổ Thái Cực" theo chu kỳ 30s để gacha thẻ Evolution dễ dàng hơn các class khác, bù lại lượng sát thương gây ra trực tiếp (Base DPS) của Đạo Sĩ thấp hơn.
+  - **Đặc quyền Class Thanh Đồng (Thanh Đồng Specific Perk):** Kỹ năng chủ động *"Giá Đồng"* có khả năng ép `yinYangValue` về 50 trong 5s, cho phép Thanh Đồng chủ động tái tạo "cửa sổ Thái Cực" theo chu kỳ 30s để gacha thẻ Evolution dễ dàng hơn các class khác, bù lại lượng sát thương gây ra trực tiếp (Base DPS) của Thanh Đồng thấp hơn.
   - Ngược lại, để tích **Dương thịnh (>80)**, người chơi tầm xa bắt buộc phải áp sát liều lĩnh (Risk-Reward Playstyle). Để tích **Âm thịnh (<20)**, người chơi phải chủ động dừng lại / di chuyển cực ngắn (Turret Playstyle).
 - **Yêu cầu Playtest theo nhóm Vũ khí (Weapon-Class Playtesting):**
   - Cần playtest và tinh chỉnh ngưỡng (threshold) vận tốc & khoảng cách riêng biệt cho 2 nhóm: **Cận chiến / Tầm ngắn** (Bút Phán Quan, Bùa Trấn Yêu, Đao Cửu Vĩ) vs **Tầm xa / AoE rộng** (Nỏ Thần, Cung Thạch Sanh, Trượng Long Vương) thay vì dùng chung 1 baseline tĩnh, tránh việc vũ khí cận chiến tích Dương quá nhanh hoặc vũ khí tầm xa hoàn toàn không thể chạm mốc 80.

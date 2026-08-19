@@ -24,15 +24,9 @@ namespace ProjectZombie.Features.Player.Skills
         {
             if (playerObj == null) return;
 
-            // Thỉnh nhập cõi Tứ Phủ: Nếu không chọn, mặc định thỉnh nhập Nhạc Phủ (Mộc) hoặc Hỏa
+            // Thỉnh nhập cõi Tứ Phủ (Thiên Phủ - Hỏa / Nhạc Phủ - Mộc / Thoải Phủ - Thủy / Địa Phủ - Thổ)
             ElementType selectedTuPhuRealm = ElementType.Moc;
             onElementSelectedCallback?.Invoke(selectedTuPhuRealm);
-
-            // Ép cân bằng Cán cân Âm Dương về 50 (Thái Cực) trong 5s thời gian Giá Đồng
-            if (YinYangManager.Instance != null)
-            {
-                YinYangManager.Instance.SetTemporaryNeutralOverride(5.0f, 50.0f);
-            }
 
             Vector3 spawnPos = playerObj.transform.position;
 

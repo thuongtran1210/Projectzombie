@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 922402464292840618}
   - component: {fileID: -59334050579850593}
   m_Layer: 6
-  m_Name: Dao Si
+  m_Name: Thanh Dong
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -28,8 +28,29 @@
 - ☯️ **Cơ Chế Ngũ Hành Tương Sinh - Tương Khắc:** 
   - **Tương Khắc:** Tăng **+30% Sát thương** khi dùng vũ khí khắc hệ kẻ địch (`Kim khắc Mộc`, `Mộc khắc Thổ`, `Thổ khắc Thủy`, `Thủy khắc Hỏa`, `Hỏa khắc Kim`).
   - **Tương Sinh:** Giảm **-20% Cooldown** cho vũ khí khi kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
-- ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Đạo Sĩ):** Trục nội tại riêng biệt cho nhân vật Đạo Sĩ (Thanh Đồng) luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
+- ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Thanh Đồng):** Trục nội tại riêng biệt cho nhân vật Thanh Đồng luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
 - 🗡️ **Kho Pháp Bảo & Yêu Ma Đậm Chất Thần Thoại:** Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng, Đao Cửu Vĩ đối đầu Ma Giáp, Quỷ Nhập Tràng, Ma Da, Ma Trơi, Ngưu Đầu Mã Diện, Diêm Vương.
+- 🚀 **Zero Garbage Collection (0 GC) & Object Pooling:** Triệt tiêu hoàn toàn hiện tượng sụt FPS/giật lag trên Android khi spawn hàng trăm quái vật và đạn cùng lúc.
+
+---
+
+## 🎮 Cơ Chế Gameplay Nổi Bật
+
+### 1. Luồng Trận Đấu & Tiến Trình Nâng Cấp
+```mermaid
+graph TD
+    A[Bắt Đầu Trận: Chọn Nhân Vật Thư Sinh / Thanh Đồng / Ẩn Sĩ Sơn Lâm] --> B[Tiêu Diệt Yêu Ma & Thu Thập Hạt Linh Khí / ExpGem]
+    B --> C{Đủ Exp Tích Lũy?}
+    C -- Có --> D[Lên Cấp: Gacha 3 Thẻ Nâng Cấp Ngũ Hành / Âm Dương cho Thanh Đồng]
+    D --> E[Lắp / Cường Hóa Pháp Bảo & Bổ Trợ Passive]
+    E --> F{Pháp Bảo Lv5 + Passive Tương Ứng?}
+    F -- Có --> G[🔥 Mở Khóa TIẾN HÓA / EVOLUTION Vũ Khí Tối Thượng]
+    F -- Chưa --> B
+    G --> H[Đột Phá Sát Thương & Tiêu Diệt Boss Diêm Vương Phút 20]
+```
+
+### 2. Cán Cân Âm Dương (Cơ chế Độc Quyền — Nhân vật Thanh Đồng)
+- **Thiết kế chuyên biệt:** Chỉ kích hoạt và hiển thị trên HUD khi người chơi chọn **Thanh Đồng**.
 - 🚀 **Hiệu Năng Cực Hạn Cho Android:** Tải mượt mà **200+ Yêu ma và 100+ Đạn bay/VFX** đồng thời mà không bị drop khung hình (Zero GC Heap Allocation trong combat loop).
 
 ---
