@@ -15,10 +15,10 @@ MonoBehaviour:
   ProjectileID: Proj_W005
   Category: 0
   LogicPrefab: {fileID: 7860460156060922033, guid: 93b1f7e36d03907449e3e8e623b1fe03, type: 3}
-  Speed: 10
-  MaxRange: 20
-  Lifetime: 1.5
-  CollisionRadius: 1
+  Speed: 7.5
+  MaxRange: 6
+  Lifetime: 0.7
+  CollisionRadius: 0.45
   HitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -26,7 +26,7 @@ MonoBehaviour:
   MaxPoolSize: 50
   Behaviors:
   - {fileID: 11400000, guid: 32886d44c19fa134f9e67a1926407277, type: 2}
-  BaseDamage: 40
+  BaseDamage: 9
   VFXConfig:
     SpawnVFXPrefab: {fileID: 6777955328510600286, guid: 77e56ae23f3d0464c9eef74322d557e0, type: 3}
     HitImpactVFXPrefab: {fileID: 5040182604245648589, guid: 835b3baf7ddc40a43a4da4802413d0c4, type: 3}

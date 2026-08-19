@@ -157,7 +157,7 @@ namespace ProjectZombie.Editor.VFX
             ConfigureVisualRootSprite("Proj_W001_NoThan", "Arrow_NoThan.png", new Vector3(0.8f, 0.8f, 1f));
             ConfigureVisualRootSprite("Proj_W012_PhiTieuBatQuai", "PhiTieu_BatQuai.png", new Vector3(0.9f, 0.9f, 1f));
             ConfigureVisualRootSprite("Proj_W003_BuaTranYeu", "buatruyeu.png", new Vector3(1f, 1f, 1f));
-            ConfigureVisualRootSprite("Proj_W005_TrongDongDongSon", "DongSon_Wave_Bullet.png", new Vector3(1.2f, 1.2f, 1f));
+            ConfigureVisualRootSprite("Proj_W005_TrongDongDongSon", "DongSon_Wave_Bullet.png", new Vector3(0.65f, 0.65f, 1f));
         }
 
         private static void ConfigureVisualRootSprite(string projPrefabName, string spriteFileName, Vector3 localScale)

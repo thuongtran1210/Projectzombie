@@ -83,6 +83,6 @@ MonoBehaviour:
   description: 
   element: 5
   projectileData: {fileID: 11400000, guid: 8983c52c2c51ebc44aa96dc4e37420f1, type: 2}
-  spreadAngle: 60
-  pelletsCount: 5
+  spreadAngle: 35
+  pelletsCount: 3
   shockwavePrefab: {fileID: 3751918047475630789, guid: 77e56ae23f3d0464c9eef74322d557e0, type: 3}

@@ -41,7 +41,7 @@ namespace ProjectZombie.Features.Projectiles.Editor
                 new ProjInfo("Proj_W002", "Proj_W002_ButPhanQuan", 1.8f),
                 new ProjInfo("Proj_W003", "Proj_W003_BuaTranYeu", 0.5f),
                 new ProjInfo("Proj_W004", "Proj_W004_CuuViHoTrao", 0.5f),
-                new ProjInfo("Proj_W005", "Proj_W005_TrongDongDongSon", 1.0f),
+                new ProjInfo("Proj_W005", "Proj_W005_TrongDongDongSon", 0.45f),
                 new ProjInfo("Proj_W006", "Proj_W006_LuuDanThanSa", 0.25f),
                 new ProjInfo("Proj_W007", "Proj_W007_CungThachSanh", 0.4f),
                 new ProjInfo("Proj_W008", "Proj_W008_DaoCuuVi", 0.35f),

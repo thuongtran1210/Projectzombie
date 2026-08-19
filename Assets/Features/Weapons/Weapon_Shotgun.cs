@@ -10,8 +10,8 @@ namespace ProjectZombie.Features.Weapons
     public class Weapon_Shotgun : Weapon_RangedBase
     {
         [Header("Shotgun Custom Settings")]
-        [SerializeField] private float spreadAngle = 30f;
-        [SerializeField] private int pelletsCount = 5;
+        [SerializeField] private float spreadAngle = 35f;
+        [SerializeField] private int pelletsCount = 3;
 
         [Header("VFX Settings")]
         [SerializeField] private GameObject shockwavePrefab;
