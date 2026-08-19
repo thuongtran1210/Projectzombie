@@ -128,10 +128,10 @@ graph TD
   - [x] **Visual Progression:** Nâng cấp visual theo Level 1 -> 4 -> Tiến Hóa `E002` (Vòng xoáy Âm Dương) trong `Weapon_DualSlash.cs`.
   - [x] **Đao Cửu Vĩ (W008):** Luồng rồng lửa phun liên tục dạng nón xoắn ốc kèm tàn lửa than hồng (`VFX_W008_FoxFlameStream`).
 
-- [ ] 🚨 **[TASK-VFX-02] [W003 & W012] Vệt Linh Khí Orbit & Phi Tiêu Bát Quái (`Bùa Trấn Yêu` & `Phi Tiêu Bát Quái`)**:
+- [x] 🚨 **[TASK-VFX-02] [W003 & W012] Vệt Linh Khí Orbit & Phi Tiêu Bát Quái (`Bùa Trấn Yêu` & `Phi Tiêu Bát Quái`)**:
   - [x] Tangent Rotation: Xoay tiếp tuyến lá bùa theo chiều quay.
-  - [ ] Trail & Glow Ribbon: Gắn Trail Renderer Shader phát sáng theo sau lá bùa và luồng gió xoáy phi tiêu.
-  - [ ] Impact Pulse: Sóng đẩy lùi tí hon (Micro Repulsion Pulse) tại điểm va chạm quái.
+  - [x] Trail & Glow Ribbon: Gắn Trail Renderer Shader phát sáng mềm mại theo sau lá bùa (`VFX_W003_TalismanTrail`) và luồng gió xoáy phi tiêu (`VFX_W012_WindVortex`).
+  - [x] Impact Pulse: Sóng đẩy lùi tí hon (Micro Repulsion Pulse) tại điểm va chạm quái.
 
 - [ ] 🚨 **[TASK-VFX-03] [W005, W006, W011] Sóng Âm Trấn Quốc & Địa Chấn (`Trống Đồng`, `Lựu Đạn`, `Nước Thánh`)**:
   - [ ] **Trống Đồng Đông Sơn (W005):** Sóng âm hoa văn Trống Đồng dập xuống mặt đất + Vết nứt đất `GroundDecal`.

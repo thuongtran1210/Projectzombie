@@ -5,8 +5,8 @@ using System.IO;
 namespace ProjectZombie.Editor.VFX
 {
     /// <summary>
-    /// Utility Editor script tự động tạo các Material (.mat) URP chuẩn cho Particle System Renderer và Decals.
-    /// Tích hợp trực tiếp bộ 4 Shader HLSL URP mới với Texture RGBA đã tách nền 100%.
+    /// Utility Editor script tự động tạo các Material (.mat) URP chuẩn cho Particle System Renderer, TrailRenderer và Decals.
+    /// Tích hợp đầy đủ Texture RGBA 100% trong suốt cho toàn bộ kho vũ khí.
     /// </summary>
     public static class VFXMaterialGenerator
     {
@@ -36,7 +36,12 @@ namespace ProjectZombie.Editor.VFX
             CreateGroundDecalMaterial("MAT_Decal_CrackedEarth", "Decal_Cracked_Circle.png", null, new Color(0.9f, 0.7f, 0.3f, 0.9f), new Color(2f, 1.2f, 0.3f, 1f));
             CreateGroundDecalMaterial("MAT_Decal_HolyWaterPuddle", null, null, new Color(0.3f, 0.8f, 1f, 0.7f), new Color(1f, 1.5f, 2f, 1f));
 
-            // 4. Particle Additive Materials (Tia Sáng Vuốt Nhọn Tách Nền)
+            // 4. Trail & Vortex Materials (Bùa Trấn Yêu W003 & Phi Tiêu Bát Quái W012)
+            CreateParticleMaterial("MAT_Talisman_Ribbon_Trail", "Talisman_Ribbon_Trail.png", true);
+            CreateParticleMaterial("MAT_BatQuai_Wind_Vortex", "BatQuai_Wind_Vortex.png", true);
+            CreateParticleMaterial("MAT_Repulsion_Pulse", "Repulsion_Pulse_Ring.png", true);
+
+            // 5. Particle Additive Materials (Tia Sáng Vuốt Nhọn Tách Nền)
             CreateParticleMaterial("MAT_InkSplash_Drops", "Spark_Streak.png", true);
             CreateParticleMaterial("MAT_FireSlash_Sparks", "Spark_Streak.png", true);
             CreateParticleMaterial("MAT_FireSlash_Flash", "Spark_Streak.png", true);
@@ -50,7 +55,7 @@ namespace ProjectZombie.Editor.VFX
 
             CreateParticleMaterial("MAT_Additive_Default", null, true);
 
-            // 5. Enemy Sprite Hit Flash Material Mẫu
+            // 6. Enemy Sprite Hit Flash Material Mẫu
             CreateEnemyHitFlashMaterial("MAT_Enemy_HitFlash_Default");
 
             AssetDatabase.SaveAssets();

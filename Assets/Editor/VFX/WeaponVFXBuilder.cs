@@ -10,7 +10,8 @@ namespace ProjectZombie.Editor.VFX
     /// Editor Tool chuyên dụng tự động tạo và cấu hình các Prefab VFX chuẩn Anime 2D URP cho:
     /// - W002 Bút Phán Quan (Vệt chém thư họa mực đen lõi trắng + tàn mực)
     /// - W008 Đao Cửu Vĩ (Luồng rồng lửa nón xoắn + tàn than hồng)
-    /// Sử dụng sharedMaterial và Sprite RGBA 100% trong suốt.
+    /// - W003 Bùa Trấn Yêu (Dải lụa Ribbon Trail phát sáng + Sóng đẩy lùi linh khí)
+    /// - W012 Phi Tiêu Bát Quái (Vệt gió xoáy lốc Wind Vortex + Tia sáng xé gió)
     /// </summary>
     public static class WeaponVFXBuilder
     {
@@ -19,8 +20,8 @@ namespace ProjectZombie.Editor.VFX
         private const string WEAPONS_PREFAB_FOLDER = "Assets/_Prefabs/Weapons";
         private const string PROJECTILES_PREFAB_FOLDER = "Assets/_Prefabs/Projectiles";
 
-        [MenuItem("Tools/VFX Generator/Build W002 & W008 Weapon VFX Prefabs", false, 15)]
-        public static void BuildSlashAndFlameVFX()
+        [MenuItem("Tools/VFX Generator/Build All Weapon VFX Prefabs", false, 10)]
+        public static void BuildAllWeaponVFX()
         {
             // 0. Đảm bảo toàn bộ Materials URP và Texture đã được sinh đầy đủ
             VFXMaterialGenerator.GenerateAllVFXMaterials();
@@ -31,43 +32,52 @@ namespace ProjectZombie.Editor.VFX
                 AssetDatabase.Refresh();
             }
 
-            // 1. Tạo Prefab VFX W002 Bút Phán Quan
+            // --- 1. VŨ KHÍ W002 BÚT PHÁN QUAN ---
             GameObject penSlash = CreatePenSlashPrefab();
             string penSlashPath = $"{PREFAB_FOLDER}/VFX_W002_PenSlash.prefab";
             GameObject penSlashAsset = PrefabUtility.SaveAsPrefabAsset(penSlash, penSlashPath);
             GameObject.DestroyImmediate(penSlash);
 
-            // 2. Tạo Prefab Vết Xém Đất W002
             GameObject groundDecal = CreateGroundDecalPrefab();
             string decalPath = $"{PREFAB_FOLDER}/VFX_W002_GroundDecal.prefab";
             GameObject groundDecalAsset = PrefabUtility.SaveAsPrefabAsset(groundDecal, decalPath);
             GameObject.DestroyImmediate(groundDecal);
 
-            // 3. Tạo Prefab Hit Sparks
             GameObject hitSparks = CreateHitSparksPrefab();
             string sparksPath = $"{PREFAB_FOLDER}/VFX_HitSparks_General.prefab";
             GameObject hitSparksAsset = PrefabUtility.SaveAsPrefabAsset(hitSparks, sparksPath);
             GameObject.DestroyImmediate(hitSparks);
 
-            // 4. Tạo Prefab VFX Luồng Lửa W008 Đao Cửu Vĩ
+            WireW002WeaponPrefab(penSlashAsset, groundDecalAsset, hitSparksAsset);
+
+            // --- 2. VŨ KHÍ W008 ĐAO CỬU VĨ ---
             GameObject foxFlame = CreateFoxFlameStreamPrefab();
             string foxFlamePath = $"{PREFAB_FOLDER}/VFX_W008_FoxFlameStream.prefab";
             GameObject foxFlameAsset = PrefabUtility.SaveAsPrefabAsset(foxFlame, foxFlamePath);
             GameObject.DestroyImmediate(foxFlame);
 
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            // 5. Tự động Wire vào Weapon_W002_ButPhanQuan.prefab
-            WireW002WeaponPrefab(penSlashAsset, groundDecalAsset, hitSparksAsset);
-
-            // 6. Tự động Wire vào Proj_W008_DaoCuuVi.prefab
             WireW008ProjectilePrefab(foxFlameAsset);
 
+            // --- 3. VŨ KHÍ W003 BÙA TRẤN YÊU ---
+            GameObject talismanTrail = CreateTalismanTrailPrefab();
+            string talismanTrailPath = $"{PREFAB_FOLDER}/VFX_W003_TalismanTrail.prefab";
+            GameObject talismanTrailAsset = PrefabUtility.SaveAsPrefabAsset(talismanTrail, talismanTrailPath);
+            GameObject.DestroyImmediate(talismanTrail);
+
+            WireW003ProjectilePrefab(talismanTrailAsset);
+
+            // --- 4. VŨ KHÍ W012 PHI TIÊU BÁT QUÁI ---
+            GameObject windVortex = CreateWindVortexPrefab();
+            string windVortexPath = $"{PREFAB_FOLDER}/VFX_W012_WindVortex.prefab";
+            GameObject windVortexAsset = PrefabUtility.SaveAsPrefabAsset(windVortex, windVortexPath);
+            GameObject.DestroyImmediate(windVortex);
+
+            WireW012ProjectilePrefab(windVortexAsset);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX (100% Transparent Sprites)!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX cho W002, W008, W003 và W012!");
         }
 
         private static void WireW002WeaponPrefab(GameObject slashAsset, GameObject decalAsset, GameObject sparkAsset)
@@ -94,7 +104,6 @@ namespace ProjectZombie.Editor.VFX
                 }
                 so.ApplyModifiedProperties();
                 EditorUtility.SetDirty(weaponPrefab);
-                Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã Auto-Wire VFX vào Weapon_W002_ButPhanQuan.prefab!");
             }
         }
 
@@ -107,7 +116,6 @@ namespace ProjectZombie.Editor.VFX
             using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
             {
                 GameObject root = scope.prefabContentsRoot;
-
                 var sr = root.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.enabled = false;
 
@@ -118,11 +126,50 @@ namespace ProjectZombie.Editor.VFX
                     vfxInstance.name = "Flame_VFX";
                     vfxInstance.transform.localPosition = Vector3.zero;
                     vfxInstance.transform.localRotation = Quaternion.identity;
-                    vfxInstance.transform.localScale = Vector3.one;
                 }
             }
+        }
 
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã Auto-Wire Luồng Lửa vào Proj_W008_DaoCuuVi.prefab!");
+        private static void WireW003ProjectilePrefab(GameObject trailVfxAsset)
+        {
+            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W003_BuaTranYeu.prefab";
+            GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            if (projPrefab == null || trailVfxAsset == null) return;
+
+            using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
+            {
+                GameObject root = scope.prefabContentsRoot;
+
+                Transform existingVFX = root.transform.Find("Talisman_Trail_VFX");
+                if (existingVFX == null)
+                {
+                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(trailVfxAsset, root.transform);
+                    vfxInstance.name = "Talisman_Trail_VFX";
+                    vfxInstance.transform.localPosition = Vector3.zero;
+                    vfxInstance.transform.localRotation = Quaternion.identity;
+                }
+            }
+        }
+
+        private static void WireW012ProjectilePrefab(GameObject vortexVfxAsset)
+        {
+            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W012_PhiTieuBatQuai.prefab";
+            GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            if (projPrefab == null || vortexVfxAsset == null) return;
+
+            using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
+            {
+                GameObject root = scope.prefabContentsRoot;
+
+                Transform existingVFX = root.transform.Find("Wind_Vortex_VFX");
+                if (existingVFX == null)
+                {
+                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(vortexVfxAsset, root.transform);
+                    vfxInstance.name = "Wind_Vortex_VFX";
+                    vfxInstance.transform.localPosition = Vector3.zero;
+                    vfxInstance.transform.localRotation = Quaternion.identity;
+                }
+            }
         }
 
         private static GameObject CreatePenSlashPrefab()
@@ -130,7 +177,6 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W002_PenSlash");
             root.AddComponent<VFXPoolResetter>();
 
-            // 1. Layer Main Slash Arc (Vệt Chém Chính)
             ParticleSystem mainPS = root.AddComponent<ParticleSystem>();
             var main = mainPS.main;
             main.duration = 0.2f;
@@ -138,7 +184,6 @@ namespace ProjectZombie.Editor.VFX
             main.startLifetime = 0.18f;
             main.startSpeed = 0f;
             main.startSize = 3.2f;
-            main.startRotation = 0f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.playOnAwake = true;
 
@@ -174,7 +219,7 @@ namespace ProjectZombie.Editor.VFX
             Material slashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_InkSlash_Arc.mat");
             if (slashMat != null) renderer.sharedMaterial = slashMat;
 
-            // 2. Layer Ink Splash / Sparks (Tia Sáng Vuốt Nhọn Tách Nền)
+            // Layer Sparks
             GameObject sparksObj = new GameObject("Ink_Splash_Sparks");
             sparksObj.transform.SetParent(root.transform, false);
 
@@ -292,7 +337,6 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W008_FoxFlameStream");
             root.AddComponent<VFXPoolResetter>();
 
-            // 1. Layer Lửa Nón Chính (Main Flame Stream)
             ParticleSystem flamePS = root.AddComponent<ParticleSystem>();
             var main = flamePS.main;
             main.duration = 0.4f;
@@ -345,7 +389,7 @@ namespace ProjectZombie.Editor.VFX
             Material flameMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Arc.mat");
             if (flameMat != null) renderer.sharedMaterial = flameMat;
 
-            // 2. Layer Tàn Than Hồng (Ember Sparks)
+            // Layer Ember Sparks
             GameObject emberObj = new GameObject("Ember_Sparks");
             emberObj.transform.SetParent(root.transform, false);
 
@@ -379,6 +423,106 @@ namespace ProjectZombie.Editor.VFX
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
             if (sparksMat != null) emberRenderer.sharedMaterial = sparksMat;
+
+            return root;
+        }
+
+        private static GameObject CreateTalismanTrailPrefab()
+        {
+            GameObject root = new GameObject("VFX_W003_TalismanTrail");
+            root.AddComponent<VFXPoolResetter>();
+
+            // 1. Trail Renderer (Dải lụa phát sáng vàng kim)
+            TrailRenderer trail = root.AddComponent<TrailRenderer>();
+            trail.time = 0.25f;
+            trail.startWidth = 0.6f;
+            trail.endWidth = 0.05f;
+            trail.minVertexDistance = 0.05f;
+            trail.autodestruct = false;
+            trail.emitting = true;
+            trail.sortingLayerName = "VFX_Front";
+            trail.sortingOrder = 8;
+
+            AnimationCurve widthCurve = new AnimationCurve();
+            widthCurve.AddKey(0.0f, 1.0f);
+            widthCurve.AddKey(0.7f, 0.5f);
+            widthCurve.AddKey(1.0f, 0.0f);
+            trail.widthCurve = widthCurve;
+
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.84f, 0f), 0.5f), new GradientColorKey(new Color(1f, 0.4f, 0f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0.0f), new GradientAlphaKey(0.6f, 0.6f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            trail.colorGradient = grad;
+
+            Material trailMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Talisman_Ribbon_Trail.mat");
+            if (trailMat != null) trail.sharedMaterial = trailMat;
+
+            // 2. Hào quang lấp lánh (Sparkle Aura)
+            GameObject sparkleObj = new GameObject("Sparkle_Aura");
+            sparkleObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem ps = sparkleObj.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 0.5f;
+            main.loop = true;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.15f, 0.3f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 2f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.08f, 0.18f);
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.rateOverTime = 15f;
+
+            var shape = ps.shape;
+            shape.enabled = true;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.25f;
+
+            var psRenderer = sparkleObj.GetComponent<ParticleSystemRenderer>();
+            psRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            psRenderer.sortingLayerName = "VFX_Front";
+            psRenderer.sortingOrder = 9;
+
+            Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+            if (sparksMat != null) psRenderer.sharedMaterial = sparksMat;
+
+            return root;
+        }
+
+        private static GameObject CreateWindVortexPrefab()
+        {
+            GameObject root = new GameObject("VFX_W012_WindVortex");
+            root.AddComponent<VFXPoolResetter>();
+
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 0.3f;
+            main.loop = true;
+            main.startLifetime = 0.2f;
+            main.startSpeed = 0f;
+            main.startSize = 1.6f;
+            main.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+
+            var rotOverLife = ps.rotationOverLifetime;
+            rotOverLife.enabled = true;
+            rotOverLife.z = new ParticleSystem.MinMaxCurve(720f * Mathf.Deg2Rad);
+
+            var emission = ps.emission;
+            emission.rateOverTime = 8f;
+
+            var shape = ps.shape;
+            shape.enabled = false;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingOrder = 9;
+
+            Material vortexMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_BatQuai_Wind_Vortex.mat");
+            if (vortexMat != null) renderer.sharedMaterial = vortexMat;
 
             return root;
         }
