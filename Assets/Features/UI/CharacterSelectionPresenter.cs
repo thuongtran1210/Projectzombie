@@ -11,6 +11,8 @@ namespace ProjectZombie.Features.UI
         public string description;
         public string signatureSkillName;
         public string signatureSkillDesc;
+        public string passiveTraitName;
+        public string passiveTraitDesc;
         public Sprite avatar;
     }
 
@@ -71,6 +73,8 @@ namespace ProjectZombie.Features.UI
                         description = list[i].description,
                         signatureSkillName = list[i].signatureSkillName,
                         signatureSkillDesc = list[i].signatureSkillDesc,
+                        passiveTraitName = list[i].passiveTraitName,
+                        passiveTraitDesc = list[i].passiveTraitDesc,
                         avatar = list[i].avatar
                     };
                 }
@@ -87,7 +91,9 @@ namespace ProjectZombie.Features.UI
                     elementHexColor = "#FFD700",
                     description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.",
                     signatureSkillName = "Phán Quyết Tiền Định",
-                    signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh."
+                    signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.",
+                    passiveTraitName = "Văn Khí Hộ Thể",
+                    passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa."
                 },
                 new CharacterInfo
                 {
@@ -96,7 +102,9 @@ namespace ProjectZombie.Features.UI
                     elementHexColor = "#9B51E0",
                     description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).",
                     signatureSkillName = "Bát Quái Trận Đồ",
-                    signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s."
+                    signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s.",
+                    passiveTraitName = "Cán Cân Âm Dương",
+                    passiveTraitDesc = "Trạng thái Thái Cực (Cân bằng) tăng 25% Sát thương toàn thể và giảm 20% Sát thương nhận vào."
                 },
                 new CharacterInfo
                 {
@@ -105,7 +113,9 @@ namespace ProjectZombie.Features.UI
                     elementHexColor = "#4C7A3D",
                     description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tích lũy Linh Lực Tứ Phủ để thỉnh Thánh giáng thế.",
                     signatureSkillName = "Giá Đồng Tứ Phủ",
-                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Hộ thân) trong 5s."
+                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Hộ thân) trong 5s.",
+                    passiveTraitName = "Linh Lực Tứ Phủ",
+                    passiveTraitDesc = "Mỗi đòn đánh tích lũy Linh Lực. Khi đạt 100 điểm, tự động giải trừ mọi hiệu ứng khống chế bất lợi."
                 },
                 new CharacterInfo
                 {
@@ -114,7 +124,9 @@ namespace ProjectZombie.Features.UI
                     elementHexColor = "#8A6A3E",
                     description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
                     signatureSkillName = "Thập Phương Chấn Thế",
-                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s."
+                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.",
+                    passiveTraitName = "Bàn Thạch Chi Khu",
+                    passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi."
                 }
             };
         }
@@ -171,8 +183,9 @@ namespace ProjectZombie.Features.UI
             var charInfo = _characters[_currentIndex];
             string formattedElement = $"<color={charInfo.elementHexColor}>Hệ {charInfo.element}</color>";
             string formattedSkill = $"<b>{charInfo.signatureSkillName}</b>: {charInfo.signatureSkillDesc}";
+            string formattedPassive = $"<b>{charInfo.passiveTraitName}</b>: {charInfo.passiveTraitDesc}";
 
-            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, charInfo.avatar);
+            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar);
         }
     }
 }

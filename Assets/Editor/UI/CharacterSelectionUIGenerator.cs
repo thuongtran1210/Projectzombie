@@ -157,8 +157,8 @@ namespace ProjectZombie.Editor.UI
             skillRT.anchorMin = new Vector2(0, 1);
             skillRT.anchorMax = new Vector2(1, 1);
             skillRT.pivot = new Vector2(0, 1);
-            skillRT.anchoredPosition = new Vector2(0, -220);
-            skillRT.sizeDelta = new Vector2(0, 130);
+            skillRT.anchoredPosition = new Vector2(0, -210);
+            skillRT.sizeDelta = new Vector2(0, 95);
             var skillBg = skillCard.AddComponent<Image>();
             skillBg.color = new Color(0.08f, 0.08f, 0.12f, 0.8f);
 
@@ -167,32 +167,68 @@ namespace ProjectZombie.Editor.UI
             shRT.anchorMin = new Vector2(0, 1);
             shRT.anchorMax = new Vector2(1, 1);
             shRT.pivot = new Vector2(0, 1);
-            shRT.anchoredPosition = new Vector2(12, -8);
-            shRT.sizeDelta = new Vector2(0, 30);
+            shRT.anchoredPosition = new Vector2(10, -6);
+            shRT.sizeDelta = new Vector2(0, 24);
             var shTMP = skillHeader.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) shTMP.font = vietFont;
-            shTMP.text = "<color=#FFD700>KY NANG TRAN PHAI (SIGNATURE SKILL):</color>";
-            shTMP.fontSize = 18;
+            shTMP.text = "<color=#FFD700>KY NANG CHU DONG (SIGNATURE SKILL):</color>";
+            shTMP.fontSize = 16;
             shTMP.fontStyle = FontStyles.Bold;
 
             GameObject skillTextObj = CreateUIElement("Text_SignatureSkill", skillCard.transform);
             RectTransform stRT = skillTextObj.GetComponent<RectTransform>();
             stRT.anchorMin = new Vector2(0, 0);
             stRT.anchorMax = new Vector2(1, 1);
-            stRT.offsetMin = new Vector2(12, 8);
-            stRT.offsetMax = new Vector2(-12, -35);
+            stRT.offsetMin = new Vector2(10, 6);
+            stRT.offsetMax = new Vector2(-10, -28);
             var stTMP = skillTextObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) stTMP.font = vietFont;
-            stTMP.fontSize = 18;
+            stTMP.fontSize = 16;
             stTMP.color = new Color(0.9f, 0.9f, 0.9f);
             stTMP.enableWordWrapping = true;
 
+            // Passive Trait Block
+            GameObject passiveCard = CreateUIElement("Card_PassiveTrait", rightCol.transform);
+            RectTransform passiveRT = passiveCard.GetComponent<RectTransform>();
+            passiveRT.anchorMin = new Vector2(0, 1);
+            passiveRT.anchorMax = new Vector2(1, 1);
+            passiveRT.pivot = new Vector2(0, 1);
+            passiveRT.anchoredPosition = new Vector2(0, -315);
+            passiveRT.sizeDelta = new Vector2(0, 85);
+            var passiveBg = passiveCard.AddComponent<Image>();
+            passiveBg.color = new Color(0.08f, 0.10f, 0.12f, 0.8f);
+
+            GameObject passiveHeader = CreateUIElement("Text_PassiveHeader", passiveCard.transform);
+            RectTransform phRT = passiveHeader.GetComponent<RectTransform>();
+            phRT.anchorMin = new Vector2(0, 1);
+            phRT.anchorMax = new Vector2(1, 1);
+            phRT.pivot = new Vector2(0, 1);
+            phRT.anchoredPosition = new Vector2(10, -6);
+            phRT.sizeDelta = new Vector2(0, 24);
+            var phTMP = passiveHeader.AddComponent<TextMeshProUGUI>();
+            if (vietFont != null) phTMP.font = vietFont;
+            phTMP.text = "<color=#4DEEEA>NOI TAI DOC QUYEN (PASSIVE TRAIT):</color>";
+            phTMP.fontSize = 16;
+            phTMP.fontStyle = FontStyles.Bold;
+
+            GameObject passiveTextObj = CreateUIElement("Text_PassiveTrait", passiveCard.transform);
+            RectTransform ptRT = passiveTextObj.GetComponent<RectTransform>();
+            ptRT.anchorMin = new Vector2(0, 0);
+            ptRT.anchorMax = new Vector2(1, 1);
+            ptRT.offsetMin = new Vector2(10, 6);
+            ptRT.offsetMax = new Vector2(-10, -28);
+            var ptTMP = passiveTextObj.AddComponent<TextMeshProUGUI>();
+            if (vietFont != null) ptTMP.font = vietFont;
+            ptTMP.fontSize = 16;
+            ptTMP.color = new Color(0.9f, 0.9f, 0.9f);
+            ptTMP.enableWordWrapping = true;
+
             // 7. Select & Start Button: "XUẤT TRẬN"
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -410), new Vector2(560, 65), "XAC NHAN XUAT TRAN", vietFont);
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -415), new Vector2(560, 60), "XAC NHAN XUAT TRAN", vietFont);
             var btnImg = selectBtnObj.GetComponent<Image>();
             btnImg.color = new Color(0.85f, 0.25f, 0.15f); // Đỏ Chu Sa rực sáng
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();
-            btnTxt.fontSize = 26;
+            btnTxt.fontSize = 24;
             btnTxt.fontStyle = FontStyles.Bold;
             btnTxt.color = Color.white;
 
@@ -202,6 +238,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_elementText").objectReferenceValue = elemTMP;
             soView.FindProperty("_descriptionText").objectReferenceValue = descTMP;
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
+            soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
             soView.FindProperty("_characterAvatarImage").objectReferenceValue = avatarImg;
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();
@@ -221,7 +258,7 @@ namespace ProjectZombie.Editor.UI
             var pDaoSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Dao Si.prefab");
             var pThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thanh Dong.prefab");
 
-            // Khởi tạo Database nhân vật mẫu nếu danh sách đang rỗng
+            // Khởi tạo Database nhân vật mẫu
             var charList = new System.Collections.Generic.List<ProjectZombie.Features.Player.CharacterEntry>
             {
                 new ProjectZombie.Features.Player.CharacterEntry
@@ -233,6 +270,8 @@ namespace ProjectZombie.Editor.UI
                     description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.",
                     signatureSkillName = "Phán Quyết Tiền Định",
                     signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.",
+                    passiveTraitName = "Văn Khí Hộ Thể",
+                    passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.",
                     playerPrefab = pThuSinh,
                     isUnlocked = true
                 },
@@ -245,6 +284,8 @@ namespace ProjectZombie.Editor.UI
                     description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).",
                     signatureSkillName = "Bát Quái Trận Đồ",
                     signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s.",
+                    passiveTraitName = "Cán Cân Âm Dương",
+                    passiveTraitDesc = "Trạng thái Thái Cực (Cân bằng) tăng 25% Sát thương toàn thể và giảm 20% Sát thương nhận vào.",
                     playerPrefab = pDaoSi,
                     isUnlocked = true
                 },
@@ -257,6 +298,8 @@ namespace ProjectZombie.Editor.UI
                     description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tích lũy Linh Lực Tứ Phủ để thỉnh Thánh giáng thế.",
                     signatureSkillName = "Giá Đồng Tứ Phủ",
                     signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Hộ thân) trong 5s.",
+                    passiveTraitName = "Linh Lực Tứ Phủ",
+                    passiveTraitDesc = "Mỗi đòn đánh tích lũy Linh Lực. Khi đạt 100 điểm, tự động giải trừ mọi hiệu ứng khống chế bất lợi.",
                     playerPrefab = pThanhDong,
                     isUnlocked = true
                 },
@@ -269,6 +312,8 @@ namespace ProjectZombie.Editor.UI
                     description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
                     signatureSkillName = "Thập Phương Chấn Thế",
                     signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.",
+                    passiveTraitName = "Bàn Thạch Chi Khu",
+                    passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi.",
                     playerPrefab = pThuSinh, // Fallback
                     isUnlocked = true
                 }

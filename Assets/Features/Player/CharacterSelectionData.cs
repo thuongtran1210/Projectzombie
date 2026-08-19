@@ -13,8 +13,15 @@ namespace ProjectZombie.Features.Player
         public ElementType element;
         public string elementHexColor = "#FFD700";
         [TextArea(2, 4)] public string description;
+        
+        [Header("Kỹ Năng Chủ Động (Active Signature Skill)")]
         public string signatureSkillName;
         [TextArea(2, 4)] public string signatureSkillDesc;
+
+        [Header("Nội Tại Độc Quyền (Passive Trait)")]
+        public string passiveTraitName;
+        [TextArea(2, 4)] public string passiveTraitDesc;
+
         public Sprite avatar;
         public GameObject playerPrefab;
         public bool isUnlocked = true;

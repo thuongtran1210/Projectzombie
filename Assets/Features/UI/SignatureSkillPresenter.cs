@@ -17,6 +17,27 @@ namespace ProjectZombie.Features.UI
         [Header("Model References")]
         [SerializeField] private SignatureSkillManager _skillManager;
 
+        public void Bind(SignatureSkillManager manager)
+        {
+            if (_skillManager != null)
+            {
+                _skillManager.OnCooldownUpdated -= OnCooldownUpdated;
+                _skillManager.OnSkillReady -= OnSkillReady;
+                _skillManager.OnSkillExecuted -= OnSkillExecuted;
+            }
+
+            _skillManager = manager;
+
+            if (_skillManager != null)
+            {
+                _skillManager.OnCooldownUpdated += OnCooldownUpdated;
+                _skillManager.OnSkillReady += OnSkillReady;
+                _skillManager.OnSkillExecuted += OnSkillExecuted;
+            }
+
+            RefreshUIState();
+        }
+
         private void Start()
         {
             if (_skillManager == null)
@@ -24,15 +45,8 @@ namespace ProjectZombie.Features.UI
                 var player = GameObject.FindGameObjectWithTag("Player");
                 if (player != null)
                 {
-                    _skillManager = player.GetComponent<SignatureSkillManager>();
+                    Bind(player.GetComponent<SignatureSkillManager>());
                 }
-            }
-
-            if (_skillManager != null)
-            {
-                _skillManager.OnCooldownUpdated += OnCooldownUpdated;
-                _skillManager.OnSkillReady += OnSkillReady;
-                _skillManager.OnSkillExecuted += OnSkillExecuted;
             }
 
             if (_buttonView != null)
@@ -105,14 +119,14 @@ namespace ProjectZombie.Features.UI
         {
             if (_skillManager == null || !_skillManager.IsReady) return;
 
-            // Nếu là skill của Thư Sinh: Hiển thị Overlay chọn hệ 1.5s
+            // Nếu có Overlay View thì mở Overlay chọn hệ, đồng thời thi triển skill
             if (_skillManager.ActiveSkill is ThuSinhSignatureSkill && _elementPickerOverlayView != null)
             {
                 _elementPickerOverlayView.ShowOverlay();
             }
             else
             {
-                // Đạo Sĩ hoặc Võ Tăng thi triển trực tiếp
+                // Thi triển trực tiếp
                 _skillManager.TryExecuteSkill();
             }
         }
@@ -131,14 +145,13 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            _skillManager.TryExecuteSkill((picked) =>
+            var activeThuSinhSkill = _skillManager.ActiveSkill as ThuSinhSignatureSkill;
+            if (activeThuSinhSkill != null)
             {
-                var thuSinhSkill = _skillManager.ActiveSkill as ThuSinhSignatureSkill;
-                if (thuSinhSkill != null)
-                {
-                    thuSinhSkill.ApplyVirtualElementHit(selectedElement);
-                }
-            });
+                activeThuSinhSkill.ApplyVirtualElementHit(selectedElement);
+            }
+
+            _skillManager.TryExecuteSkill();
         }
     }
 }

@@ -166,6 +166,15 @@ namespace ProjectZombie.Features.Player
                 characterGaugeWidgetPresenter.Bind(gaugeProvider);
                 Debug.Log($"[GameplayBootstrapper] CharacterGaugeWidgetPresenter đã Bind provider: {(gaugeProvider != null ? gaugeProvider.GetType().Name : "None")}");
             }
+
+            // 6. Bind Signature Skill Presenter với nhân vật mới spawn
+            var skillManager = playerInstance.GetComponent<ProjectZombie.Features.Player.Skills.SignatureSkillManager>();
+            var signatureSkillPresenter = FindObjectOfType<ProjectZombie.Features.UI.SignatureSkillPresenter>(true);
+            if (signatureSkillPresenter != null)
+            {
+                signatureSkillPresenter.Bind(skillManager);
+                Debug.Log($"[GameplayBootstrapper] SignatureSkillPresenter đã Bind SignatureSkillManager.");
+            }
         }
     }
 }

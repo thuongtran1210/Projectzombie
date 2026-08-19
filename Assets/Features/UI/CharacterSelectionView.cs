@@ -14,6 +14,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _elementText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _signatureSkillText;
+        [SerializeField] private TextMeshProUGUI _passiveTraitText;
         [SerializeField] private Image _characterAvatarImage;
         [SerializeField] private Button _selectButton;
         [SerializeField] private Button _nextButton;
@@ -30,12 +31,13 @@ namespace ProjectZombie.Features.UI
             if (_prevButton != null) _prevButton.onClick.AddListener(() => OnPrevClicked?.Invoke());
         }
 
-        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, Sprite avatar)
+        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar)
         {
             if (_characterNameText != null) _characterNameText.text = charName;
             if (_elementText != null) _elementText.text = formattedElement;
             if (_descriptionText != null) _descriptionText.text = description;
             if (_signatureSkillText != null) _signatureSkillText.text = formattedSkill;
+            if (_passiveTraitText != null) _passiveTraitText.text = formattedPassive;
             if (_characterAvatarImage != null && avatar != null) _characterAvatarImage.sprite = avatar;
         }
     }
