@@ -6,7 +6,7 @@ namespace ProjectZombie.Editor.VFX
 {
     /// <summary>
     /// Utility Editor script tự động tạo các Material (.mat) URP chuẩn cho Particle System Renderer, TrailRenderer và Decals.
-    /// Tích hợp đầy đủ Texture RGBA 100% trong suốt cho toàn bộ kho vũ khí.
+    /// Tích hợp đầy đủ Texture RGBA 100% trong suốt cho toàn bộ 12 Pháp Bảo.
     /// </summary>
     public static class VFXMaterialGenerator
     {
@@ -22,47 +22,38 @@ namespace ProjectZombie.Editor.VFX
                 AssetDatabase.Refresh();
             }
 
-            // 1. Slash Materials (Bút Phán Quan W002 & Đao Cửu Vĩ W008)
+            // 1. Slash Materials (Bút Phán Quan W002, Đao Cửu Vĩ W008, Hồ Trảo W004)
             CreateSlashMaterial("MAT_InkSlash_Arc", "Pro_InkSlash_Arc.png", null, new Color(2.5f, 2.2f, 1.2f, 1f), new Color(0.9f, 0.65f, 0.15f, 1f), false);
             CreateSlashMaterial("MAT_FireSlash_Arc", "FoxFlame_Stream.png", null, new Color(2f, 2f, 2f, 1f), new Color(1f, 0.35f, 0.05f, 1f), false);
-            CreateSlashMaterial("MAT_FireSlash_PolarGlow", "FoxFlame_Stream.png", null, new Color(2f, 1.8f, 1.2f, 1f), new Color(1f, 0.2f, 0.0f, 1f), true);
-            CreateSlashMaterial("MAT_IceBlade_Arc", "IceBlade_Arc.png", null, new Color(1.8f, 2f, 2f, 1f), new Color(0.2f, 0.7f, 1f, 1f), false);
+            CreateSlashMaterial("MAT_Fox_Claws_Slash", "Fox_Claws_Slash.png", null, new Color(2.5f, 0.4f, 0.2f, 1f), new Color(1f, 0.1f, 0.05f, 1f), false);
+            CreateParticleMaterial("MAT_Soul_Drain_Orb", "Soul_Drain_Orb.png", true);
 
-            // 2. Shockwave & AoE Materials (Trống Đồng W005 & Lựu Đạn W006 & Nước Thánh W011)
-            CreateShockwaveMaterial("MAT_Shockwave_Explosion", null, new Color(1f, 0.6f, 0.2f, 0.6f), 0.06f);
+            // 2. Shockwave & AoE Materials (Trống Đồng W005, Lựu Đạn W006, Nước Thánh W011, Linh Phù Ma Da W010)
             CreateShockwaveMaterial("MAT_Shockwave_DongSon", "DongSon_Shockwave_Pattern.png", new Color(1f, 0.85f, 0.4f, 0.8f), 0.08f);
             CreateParticleMaterial("MAT_Fire_Pillar", "Fire_Pillar_Tornado.png", true);
-
-            // 3. Ground Decal Materials (Vết Nứt Đất Tròn Mờ Dần & Bãi Nước Thánh)
             CreateGroundDecalMaterial("MAT_Decal_CrackedEarth", "Decal_Cracked_Circle.png", null, new Color(0.9f, 0.7f, 0.3f, 0.9f), new Color(2f, 1.2f, 0.3f, 1f));
             CreateGroundDecalMaterial("MAT_Decal_HolyWaterPuddle", "Holy_Puddle_Mist.png", null, new Color(0.3f, 0.85f, 1f, 0.8f), new Color(1.5f, 2.2f, 2.5f, 1f));
+            CreateGroundDecalMaterial("MAT_Decal_PoisonSwamp", "Poison_Swamp_Mist.png", null, new Color(0.6f, 0.2f, 0.9f, 0.8f), new Color(0.2f, 1.5f, 0.8f, 1f));
             CreateParticleMaterial("MAT_Holy_Bubble", "Holy_Bubble_Particle.png", true);
+
+            // 3. Projectile & Beam Materials (Nỏ Thần W001, Cung Thạch Sanh W007, Trượng Long Vương W009)
+            CreateParticleMaterial("MAT_ThachSanh_SonicArrow", "VFX_ThachSanh_SonicArrow.png", true);
+            CreateParticleMaterial("MAT_Arrow_Golden_Beam", "Arrow_Golden_Beam.png", true);
+            CreateParticleMaterial("MAT_Wind_Pierce_Ring", "Wind_Pierce_Ring.png", true);
+            CreateParticleMaterial("MAT_Lightning_Bolt", "Lightning_Bolt_Segment.png", true);
 
             // 4. Trail & Vortex Materials (Bùa Trấn Yêu W003 & Phi Tiêu Bát Quái W012)
             CreateParticleMaterial("MAT_Talisman_Ribbon_Trail", "Talisman_Ribbon_Trail.png", true);
             CreateParticleMaterial("MAT_BatQuai_Wind_Vortex", "BatQuai_Wind_Vortex.png", true);
             CreateParticleMaterial("MAT_Repulsion_Pulse", "Repulsion_Pulse_Ring.png", true);
 
-            // 5. Particle Additive Materials (Tia Sáng Vuốt Nhọn Tách Nền)
-            CreateParticleMaterial("MAT_InkSplash_Drops", "Spark_Streak.png", true);
+            // 5. General Sparks & Hit Flash
             CreateParticleMaterial("MAT_FireSlash_Sparks", "Spark_Streak.png", true);
-            CreateParticleMaterial("MAT_FireSlash_Flash", "Spark_Streak.png", true);
-            CreateParticleMaterial("MAT_FireSlash_Impact", "Decal_Cracked_Circle.png", true);
-            CreateParticleMaterial("MAT_FireSlash_Smoke", "FireSlash_Smoke.png", false);
-
-            CreateParticleMaterial("MAT_IceBlade_Flash", "IceBlade_Flash.png", true);
-            CreateParticleMaterial("MAT_IceBlade_Sparks", "Spark_Streak.png", true);
-            CreateParticleMaterial("MAT_IceBlade_Impact", "Decal_Cracked_Circle.png", true);
-            CreateParticleMaterial("MAT_IceBlade_Smoke", "IceBlade_Smoke.png", false);
-
-            CreateParticleMaterial("MAT_Additive_Default", null, true);
-
-            // 6. Enemy Sprite Hit Flash Material Mẫu
             CreateEnemyHitFlashMaterial("MAT_Enemy_HitFlash_Default");
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo & nạp toàn bộ Texture RGBA 100% trong suốt vào Material URP!");
+            Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo & nạp toàn bộ Materials URP cho trọn bộ 12 Pháp Bảo!");
         }
 
         public static Texture2D FindTexture(string fileName)
@@ -112,16 +103,10 @@ namespace ProjectZombie.Editor.VFX
             else mat.DisableKeyword("_USE_POLAR_COORDS");
 
             Texture2D tex = FindTexture(mainTexName);
-            if (tex != null)
-            {
-                mat.SetTexture("_MainTex", tex);
-            }
+            if (tex != null) mat.SetTexture("_MainTex", tex);
 
             Texture2D noise = FindTexture(noiseTexName);
-            if (noise != null)
-            {
-                mat.SetTexture("_NoiseTex", noise);
-            }
+            if (noise != null) mat.SetTexture("_NoiseTex", noise);
 
             EditorUtility.SetDirty(mat);
             return mat;
@@ -149,10 +134,7 @@ namespace ProjectZombie.Editor.VFX
             mat.SetFloat("_DistortionStrength", distortionStrength);
 
             Texture2D tex = FindTexture(maskTexName);
-            if (tex != null)
-            {
-                mat.SetTexture("_MainTex", tex);
-            }
+            if (tex != null) mat.SetTexture("_MainTex", tex);
 
             EditorUtility.SetDirty(mat);
             return mat;
@@ -180,10 +162,7 @@ namespace ProjectZombie.Editor.VFX
             mat.SetColor("_BurnColor", burnColor);
 
             Texture2D tex = FindTexture(decalTexName);
-            if (tex != null)
-            {
-                mat.SetTexture("_MainTex", tex);
-            }
+            if (tex != null) mat.SetTexture("_MainTex", tex);
 
             EditorUtility.SetDirty(mat);
             return mat;

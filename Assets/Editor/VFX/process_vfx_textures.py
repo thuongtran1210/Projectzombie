@@ -9,206 +9,266 @@ os.makedirs(SKILLS_DIR, exist_ok=True)
 os.makedirs(ICONS_DIR, exist_ok=True)
 
 # -------------------------------------------------------------
-# 1. BỘ SINH VẬT PHẨM ICON CỔ PHONG 512x512
+# 1. BỘ SINH VẬT PHẨM ICON CỔ PHONG 512x512 CHO ĐỢT 3
 # -------------------------------------------------------------
-def generate_icon_trong_dong(output_path):
-    """Icon Trống Đồng Đông Sơn Cổ Phong (Vàng Đồng & Viền Ngọc)."""
+def generate_icon_no_than(output_path):
+    """Icon Nỏ Thần An Dương Vương (Kim Quy Hoàng Kim)."""
     size = 512
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
     
-    # Viền ngoài tròn vàng đồng cổ
-    draw.ellipse([cx - 230, cy - 230, cx + 230, cy + 230], fill=(45, 30, 15, 255), outline=(212, 175, 55, 255), width=12)
-    draw.ellipse([cx - 200, cy - 200, cx + 200, cy + 200], fill=(70, 50, 25, 255), outline=(255, 215, 0, 255), width=6)
+    # Hào quang kim quang
+    for r in range(220, 120, -5):
+        alpha = int(120 * (1.0 - (r - 120) / 100.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 215, 0, alpha))
+        
+    # Cánh nỏ đồng mạ vàng
+    draw.arc([cx - 180, cy - 80, cx + 180, cy + 180], start=190, end=350, fill=(212, 175, 55, 255), width=22)
+    # Thân nỏ
+    draw.rectangle([cx - 16, cy - 140, cx + 16, cy + 140], fill=(139, 69, 19, 255), outline=(255, 215, 0, 255), width=4)
+    # Mũi tên ánh sáng trên rãnh nỏ
+    draw.polygon([(cx, cy - 180), (cx - 18, cy - 120), (cx + 18, cy - 120)], fill=(255, 255, 255, 255))
+    draw.line([(cx, cy - 120), (cx, cy + 80)], fill=(255, 240, 150, 255), width=8)
     
-    # Mặt trời 14 cánh ở giữa
-    num_rays = 14
-    for i in range(num_rays):
-        angle = i * (2 * math.pi / num_rays)
-        r_outer = 110
-        r_inner = 30
-        
-        x_tip = cx + r_outer * math.cos(angle)
-        y_tip = cy + r_outer * math.sin(angle)
-        
-        a_left = angle - math.pi / num_rays
-        a_right = angle + math.pi / num_rays
-        x_l = cx + r_inner * math.cos(a_left)
-        y_l = cy + r_inner * math.sin(a_left)
-        x_r = cx + r_inner * math.cos(a_right)
-        y_r = cy + r_inner * math.sin(a_right)
-        
-        draw.polygon([(x_tip, y_tip), (x_l, y_l), (x_r, y_r)], fill=(255, 220, 80, 255))
-        
-    draw.ellipse([cx - 30, cy - 30, cx + 30, cy + 30], fill=(255, 245, 180, 255))
-    
-    # Vòng tròn chim Lạc bay ngược chiều kim đồng hồ
-    for bird in range(6):
-        b_angle = bird * (2 * math.pi / 6)
-        r_bird = 155
-        bx = cx + r_bird * math.cos(b_angle)
-        by = cy + r_bird * math.sin(b_angle)
-        draw.ellipse([bx - 12, by - 6, bx + 12, by + 6], fill=(255, 200, 50, 240))
-        
     img.save(output_path, "PNG")
-    print(f"Generated Icon Trong Dong: {output_path}")
+    print(f"Generated Icon No Than: {output_path}")
 
-def generate_icon_luu_dan(output_path):
-    """Icon Lựu Đạn Thần Sa (Bình Gốm Chu Sa Lửa Rực)."""
+def generate_icon_ho_trao(output_path):
+    """Icon Cửu Vĩ Hồ Trảo (Vuốt Cáo Lửa Đỏ Rực)."""
     size = 512
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
     
-    # Hào quang lửa đỏ phía sau
-    for r in range(220, 100, -5):
-        alpha = int(120 * (1.0 - (r - 100) / 120.0))
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 60, 0, alpha))
+    # Hào quang lửa hồ ly
+    for r in range(220, 110, -5):
+        alpha = int(130 * (1.0 - (r - 110) / 110.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 30, 20, alpha))
         
-    # Bình gốm đỏ chu sa
-    draw.ellipse([cx - 120, cy - 80, cx + 120, cy + 160], fill=(180, 25, 20, 255), outline=(255, 180, 50, 255), width=8)
-    
-    # Cổ bình và nắp phong ấn
-    draw.rectangle([cx - 50, cy - 140, cx + 50, cy - 70], fill=(90, 20, 15, 255), outline=(255, 215, 0, 255), width=6)
-    draw.polygon([(cx - 70, cy - 140), (cx + 70, cy - 140), (cx, cy - 190)], fill=(220, 40, 20, 255), outline=(255, 220, 80, 255), width=4)
-    
-    # Dây cháy phát sáng
-    draw.line([(cx, cy - 190), (cx + 30, cy - 220)], fill=(255, 240, 100, 255), width=8)
-    draw.ellipse([cx + 20, cy - 235, cx + 45, cy - 210], fill=(255, 255, 255, 255))
-    
+    # 3 Vệt vuốt cáo sắc bén
+    offsets = [-60, 0, 60]
+    for dx in offsets:
+        draw.polygon([
+            (cx + dx - 12, cy + 120),
+            (cx + dx + 12, cy + 120),
+            (cx + dx * 1.3 + 20, cy - 140)
+        ], fill=(255, 240, 200, 255))
+        # Lõi đỏ rực
+        draw.polygon([
+            (cx + dx - 6, cy + 110),
+            (cx + dx + 6, cy + 110),
+            (cx + dx * 1.3 + 16, cy - 120)
+        ], fill=(255, 50, 0, 255))
+        
     img.save(output_path, "PNG")
-    print(f"Generated Icon Luu Dan: {output_path}")
+    print(f"Generated Icon Ho Trao: {output_path}")
 
-def generate_icon_nuoc_thanh(output_path):
-    """Icon Nước Thánh Chùa Hương (Hồ Lô Ngọc Bích Linh Thủy)."""
+def generate_icon_cung_thach_sanh(output_path):
+    """Icon Cung Thạch Sanh (Cánh Cung Gỗ Thần Ngọc Bích)."""
     size = 512
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
     
-    # Hào quang xanh ngọc lam
-    for r in range(220, 100, -5):
-        alpha = int(140 * (1.0 - (r - 100) / 120.0))
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 200, 255, alpha))
+    # Hào quang xanh ngọc bích
+    for r in range(220, 120, -5):
+        alpha = int(120 * (1.0 - (r - 120) / 100.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 255, 180, alpha))
         
-    # Thân dưới hồ lô
-    draw.ellipse([cx - 130, cy - 40, cx + 130, cy + 180], fill=(15, 140, 170, 255), outline=(200, 255, 255, 255), width=8)
-    # Thân trên hồ lô
-    draw.ellipse([cx - 90, cy - 160, cx + 90, cy - 20], fill=(20, 170, 200, 255), outline=(200, 255, 255, 255), width=6)
-    
-    # Nơ đỏ thắt eo hồ lô
-    draw.ellipse([cx - 60, cy - 45, cx + 60, cy - 15], fill=(220, 40, 50, 255), outline=(255, 220, 80, 255), width=4)
-    
-    # Giọt nước thánh phát sáng trên miệng bình
-    draw.ellipse([cx - 25, cy - 210, cx + 25, cy - 160], fill=(240, 255, 255, 255))
+    # Cánh cung cong
+    draw.arc([cx - 160, cy - 180, cx + 160, cy + 180], start=100, end=260, fill=(34, 139, 34, 255), width=20)
+    # Dây cung phát sáng
+    draw.line([(cx - 40, cy - 170), (cx - 40, cy + 170)], fill=(200, 255, 240, 255), width=4)
+    # Mũi tên ngọc
+    draw.line([(cx - 80, cy), (cx + 140, cy)], fill=(0, 255, 200, 255), width=8)
+    draw.polygon([(cx + 170, cy), (cx + 130, cy - 16), (cx + 130, cy + 16)], fill=(255, 255, 255, 255))
     
     img.save(output_path, "PNG")
-    print(f"Generated Icon Nuoc Thanh: {output_path}")
+    print(f"Generated Icon Cung Thach Sanh: {output_path}")
+
+def generate_icon_truong_long_vuong(output_path):
+    """Icon Trượng Long Vương (Đầu Rồng Lôi Thủy)."""
+    size = 512
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+    
+    # Hào quang lôi điện tím xanh
+    for r in range(220, 110, -5):
+        alpha = int(130 * (1.0 - (r - 110) / 110.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 150, 255, alpha))
+        
+    # Thân trượng ngọc rồng
+    draw.line([(cx, cy - 140), (cx, cy + 190)], fill=(20, 80, 160, 255), width=18)
+    # Ngọc rồng phát sáng trên đỉnh trượng
+    draw.ellipse([cx - 55, cy - 185, cx + 55, cy - 75], fill=(0, 230, 255, 255), outline=(255, 255, 255, 255), width=6)
+    draw.ellipse([cx - 30, cy - 160, cx + 30, cy - 100], fill=(255, 255, 255, 255))
+    
+    img.save(output_path, "PNG")
+    print(f"Generated Icon Truong Long Vuong: {output_path}")
+
+def generate_icon_linh_phu_ma_da(output_path):
+    """Icon Linh Phù Ma Da (Lá Bùa Âm Ty Xanh Tím)."""
+    size = 512
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+    
+    # Hào quang ma quái xanh tím
+    for r in range(220, 110, -5):
+        alpha = int(130 * (1.0 - (r - 110) / 110.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(138, 43, 226, alpha))
+        
+    # Lá bùa chữ nhật
+    draw.rectangle([cx - 85, cy - 160, cx + 85, cy + 160], fill=(40, 20, 60, 255), outline=(186, 85, 211, 255), width=8)
+    # Chu sa phong ấn phát sáng
+    draw.line([(cx, cy - 120), (cx, cy + 120)], fill=(0, 255, 200, 255), width=10)
+    draw.ellipse([cx - 35, cy - 60, cx + 35, cy + 10], outline=(0, 255, 200, 255), width=6)
+    
+    img.save(output_path, "PNG")
+    print(f"Generated Icon Linh Phu Ma Da: {output_path}")
 
 # -------------------------------------------------------------
-# 2. BỘ SINH SPRITE/TEXTURE VFX RGBA 100% TRONG SUỐT
+# 2. BỘ SINH SPRITE/TEXTURE VFX RGBA 100% TRONG SUỐT CHO ĐỢT 3
 # -------------------------------------------------------------
-def generate_dongson_shockwave_pattern(output_path):
-    """Tạo Hoa Văn Trống Đồng Dập Sóng Âm (Shockwave Radial Mask)."""
-    size = 512
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    cx, cy = size // 2, size // 2
-    
-    # Các vòng hoa văn đồng tâm
-    radii = [60, 100, 140, 180, 220]
-    for r in radii:
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(255, 220, 80, 220), width=4)
-        
-    # Mặt trời trung tâm
-    for i in range(14):
-        angle = i * (2 * math.pi / 14)
-        x_tip = cx + 80 * math.cos(angle)
-        y_tip = cy + 80 * math.sin(angle)
-        draw.line([(cx, cy), (x_tip, y_tip)], fill=(255, 240, 150, 240), width=3)
-        
-    img = img.filter(ImageFilter.GaussianBlur(radius=1.5))
-    img.save(output_path, "PNG")
-    print(f"Generated DongSon Shockwave Pattern: {output_path}")
-
-def generate_fire_pillar_tornado(output_path):
-    """Tạo Cột Lửa Cuộn Xoáy (Fire Pillar Tornado) cho Lựu Đạn Thần Sa."""
-    w, h = 256, 512
+def generate_arrow_golden_beam(output_path):
+    """Tia Sáng Mũi Tên Vuốt Nhọn (Arrow Golden Beam) cho W001 & W007."""
+    w, h = 512, 64
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
+    cy = h // 2
     
-    cx = w // 2
-    for y in range(h):
-        t_y = y / float(h) # 0 (đỉnh) đến 1 (đáy)
-        width_factor = math.sin(t_y * math.pi * 0.8 + 0.2)
-        half_w = (w // 2 - 10) * width_factor
+    for x in range(w):
+        t = x / float(w) # 0 (đuôi) đến 1 (đầu)
+        thickness = (t ** 1.5)
+        half_h = (h // 2 - 2) * thickness
+        alpha = int(255 * (t ** 0.5))
         
-        # Cuộn xoáy sin
-        offset_x = math.sin(t_y * 12.0) * 15.0
+        # Thân tia sáng vàng kim
+        draw.line([(x, cy - half_h), (x, cy + half_h)], fill=(255, 215, 0, alpha), width=1)
+        # Lõi trắng cực sáng
+        core_h = half_h * 0.4
+        draw.line([(x, cy - core_h), (x, cy + core_h)], fill=(255, 255, 255, alpha), width=1)
         
-        alpha = int(255 * width_factor * (1.0 - (1.0 - t_y) ** 2))
-        r_c = 255
-        g_c = int(180 * (1.0 - t_y) + 40)
-        b_c = int(40 * (1.0 - t_y))
-        
-        draw.line([(cx + offset_x - half_w, y), (cx + offset_x + half_w, y)], fill=(r_c, g_c, b_c, alpha), width=1)
-        
-        # Lõi trắng nóng
-        core_w = half_w * 0.3
-        draw.line([(cx + offset_x - core_w, y), (cx + offset_x + core_w, y)], fill=(255, 255, 220, alpha), width=1)
+    img = img.filter(ImageFilter.GaussianBlur(radius=1.0))
+    img.save(output_path, "PNG")
+    print(f"Generated Arrow Golden Beam: {output_path}")
+
+def generate_wind_pierce_ring(output_path):
+    """Vòng Xé Gió Bung Đầu Mũi Tên (Wind Pierce Ring)."""
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+    
+    r_outer = 110
+    r_inner = 70
+    for r in range(r_inner, r_outer):
+        t = (r - r_inner) / float(r_outer - r_inner)
+        alpha = int(255 * math.sin(t * math.pi))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(255, 255, 255, alpha), width=2)
         
     img = img.filter(ImageFilter.GaussianBlur(radius=1.5))
     img.save(output_path, "PNG")
-    print(f"Generated Fire Pillar Tornado: {output_path}")
+    print(f"Generated Wind Pierce Ring: {output_path}")
 
-def generate_holy_puddle_mist(output_path):
-    """Tạo Bãi Sương Mù Nước Thánh (Gợn Sóng Tròn Mờ Dần)."""
+def generate_fox_claws_slash(output_path):
+    """3 Vệt Vuốt Cáo Cào Xé Bán Nguyệt (Fox Claws Slash)."""
     size = 512
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
     
-    # Các gợn sóng lan tỏa mờ dần
-    for r in range(220, 20, -4):
-        t = r / 220.0
-        alpha = int(90 * math.sin(t * math.pi))
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 220, 255, alpha))
-        
-    # Tâm phát sáng ngọc bích
-    for r in range(80, 0, -2):
-        alpha = int(140 * (1.0 - r / 80.0))
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(180, 255, 255, alpha))
-        
-    img = img.filter(ImageFilter.GaussianBlur(radius=3.0))
+    radii = [130, 170, 210]
+    for r in radii:
+        for angle_deg in range(30, 150):
+            rad = math.radians(angle_deg)
+            t = (angle_deg - 30) / 120.0
+            thick = math.sin(t * math.pi) * 12.0
+            
+            x = cx + r * math.cos(rad)
+            y = cy + r * math.sin(rad)
+            
+            alpha = int(255 * math.sin(t * math.pi))
+            draw.ellipse([x - thick/2, y - thick/2, x + thick/2, y + thick/2], fill=(255, 40, 20, alpha))
+            draw.ellipse([x - thick/4, y - thick/4, x + thick/4, y + thick/4], fill=(255, 255, 200, alpha))
+            
+    img = img.filter(ImageFilter.GaussianBlur(radius=1.5))
     img.save(output_path, "PNG")
-    print(f"Generated Holy Puddle Mist: {output_path}")
+    print(f"Generated Fox Claws Slash: {output_path}")
 
-def generate_holy_bubble_particle(output_path):
-    """Tạo Hạt Bọt Khí Nước Thánh Linh Thiêng."""
+def generate_soul_drain_orb(output_path):
+    """Hạt Sinh Khí Xanh Ngọc Hút Máu (Soul Drain Orb)."""
     size = 128
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
     
-    r = 50
-    # Viền bọt khí sáng
-    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 180, 255, 60), outline=(200, 255, 255, 230), width=4)
-    # Đốm sáng phản chiếu
-    draw.ellipse([cx - 25, cy - 25, cx - 10, cy - 10], fill=(255, 255, 255, 240))
-    
-    img = img.filter(ImageFilter.GaussianBlur(radius=1.0))
+    for r in range(55, 0, -2):
+        alpha = int(255 * (1.0 - r / 55.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 255, 180, alpha))
+        
+    draw.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], fill=(240, 255, 255, 255))
+    img = img.filter(ImageFilter.GaussianBlur(radius=1.5))
     img.save(output_path, "PNG")
-    print(f"Generated Holy Bubble: {output_path}")
+    print(f"Generated Soul Drain Orb: {output_path}")
+
+def generate_lightning_bolt_segment(output_path):
+    """Vệt Sét Nước Lôi Thủy (Lightning Bolt Segment) cho W009."""
+    w, h = 512, 64
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cy = h // 2
+    
+    # Tia sét gãy khúc
+    np.random.seed(99)
+    curr_x, curr_y = 0, cy
+    while curr_x < w:
+        step_x = np.random.randint(20, 50)
+        next_x = min(w, curr_x + step_x)
+        next_y = cy + np.random.randint(-22, 22)
+        
+        draw.line([(curr_x, curr_y), (next_x, next_y)], fill=(0, 180, 255, 200), width=10)
+        draw.line([(curr_x, curr_y), (next_x, next_y)], fill=(220, 255, 255, 255), width=4)
+        curr_x, curr_y = next_x, next_y
+        
+    img = img.filter(ImageFilter.GaussianBlur(radius=1.2))
+    img.save(output_path, "PNG")
+    print(f"Generated Lightning Bolt Segment: {output_path}")
+
+def generate_poison_swamp_mist(output_path):
+    """Đầm Lầy Khói Độc Âm Ty Xanh Tím (Poison Swamp Mist) cho W010."""
+    size = 512
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = size // 2, size // 2
+    
+    for r in range(220, 20, -5):
+        t = r / 220.0
+        alpha = int(100 * math.sin(t * math.pi))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(120, 30, 200, alpha))
+        
+    for r in range(120, 0, -3):
+        alpha = int(140 * (1.0 - r / 120.0))
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(0, 230, 160, alpha))
+        
+    img = img.filter(ImageFilter.GaussianBlur(radius=3.5))
+    img.save(output_path, "PNG")
+    print(f"Generated Poison Swamp Mist: {output_path}")
 
 if __name__ == "__main__":
-    # Sinh 3 Icons Vũ Khí Cổ Phong
-    generate_icon_trong_dong(os.path.join(ICONS_DIR, "Icon_W005_TrongDong.png"))
-    generate_icon_luu_dan(os.path.join(ICONS_DIR, "Icon_W006_LuuDan.png"))
-    generate_icon_nuoc_thanh(os.path.join(ICONS_DIR, "Icon_W011_NuocThanh.png"))
+    # Sinh 5 Icons Cổ Phong Đợt 3
+    generate_icon_no_than(os.path.join(ICONS_DIR, "Icon_W001_NoThan.png"))
+    generate_icon_ho_trao(os.path.join(ICONS_DIR, "Icon_W004_HoTrao.png"))
+    generate_icon_cung_thach_sanh(os.path.join(ICONS_DIR, "Icon_W007_CungThachSanh.png"))
+    generate_icon_truong_long_vuong(os.path.join(ICONS_DIR, "Icon_W009_TruongLongVuong.png"))
+    generate_icon_linh_phu_ma_da(os.path.join(ICONS_DIR, "Icon_W010_LinhPhuMaDa.png"))
     
-    # Sinh 4 VFX Textures RGBA trong suốt
-    generate_dongson_shockwave_pattern(os.path.join(SKILLS_DIR, "DongSon_Shockwave_Pattern.png"))
-    generate_fire_pillar_tornado(os.path.join(SKILLS_DIR, "Fire_Pillar_Tornado.png"))
-    generate_holy_puddle_mist(os.path.join(SKILLS_DIR, "Holy_Puddle_Mist.png"))
-    generate_holy_bubble_particle(os.path.join(SKILLS_DIR, "Holy_Bubble_Particle.png"))
+    # Sinh 6 VFX Textures RGBA trong suốt Đợt 3
+    generate_arrow_golden_beam(os.path.join(SKILLS_DIR, "Arrow_Golden_Beam.png"))
+    generate_wind_pierce_ring(os.path.join(SKILLS_DIR, "Wind_Pierce_Ring.png"))
+    generate_fox_claws_slash(os.path.join(SKILLS_DIR, "Fox_Claws_Slash.png"))
+    generate_soul_drain_orb(os.path.join(SKILLS_DIR, "Soul_Drain_Orb.png"))
+    generate_lightning_bolt_segment(os.path.join(SKILLS_DIR, "Lightning_Bolt_Segment.png"))
+    generate_poison_swamp_mist(os.path.join(SKILLS_DIR, "Poison_Swamp_Mist.png"))

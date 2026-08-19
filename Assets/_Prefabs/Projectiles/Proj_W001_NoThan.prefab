@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7884938548827403900}
+  - {fileID: 276513983128472119}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3997780666051316532
@@ -123,7 +124,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3550121759292926715}
@@ -168,8 +169,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: -774919545, guid: b23e40b8117f6d9448cc47275eb91b5c, type: 3}
+  m_SortingOrder: 10
+  m_Sprite: {fileID: 21300000, guid: 58c3c545b28c4f04a918fb3c5c98be26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -180,3 +181,65 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &2579029474659273638
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3550121759292926715}
+    m_Modifications:
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5419414987116521343, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+      propertyPath: m_Name
+      value: GoldenArrow_VFX
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+--- !u!4 &276513983128472119 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2313985598225449361, guid: 8f713ba2477c64e4fa0eb06ccb83929a, type: 3}
+  m_PrefabInstance: {fileID: 2579029474659273638}
+  m_PrefabAsset: {fileID: 0}

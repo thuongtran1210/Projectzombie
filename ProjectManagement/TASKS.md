@@ -138,11 +138,11 @@ graph TD
   - [x] **Lựu Đạn Thần Sa (W006):** Cột bão lửa cuộn xoáy 3 tầng bốc lên + Tàn than hồng bay phân tán (`VFX_W006_CinnabarExplosion`).
   - [x] **Nước Thánh Chùa Hương (W011):** Bình vỡ tóe nước thánh + Bãi sương mù gợn sóng dưới mặt đất + Bọt khí bay lên (`VFX_W011_HolyWaterAoE`).
 
-- [ ] 🚨 **[TASK-VFX-04] [W001, W004, W007, W009, W010, W013] Đạn Bay, Sét Dây & Triệu Hồi Linh Thú**:
-  - [ ] **Nỏ Thần (W001) & Cung Thạch Sanh (W007):** Mũi tên ánh sáng vệt đuôi dài + vòng xé gió (Wind Pierce Ring).
-  - [ ] **Cửu Vĩ Hồ Trảo (W004):** Móng vuốt cáo lửa cào xé + vệt sinh khí xanh ngọc bay ngược về Player.
-  - [ ] **Trượng Long Vương (W009):** Chuỗi sét nước `LineRenderer` giật nối 6 mục tiêu kèm tóe nước điện tích.
-  - [ ] **Linh Phù Ma Da (W010) & Cờ Âm Binh (W013):** Hiệu ứng khói sương đầm lầy và làn sương đen âm ty triệu hồi.
+- [x] 🚨 **[TASK-VFX-04] [W001, W004, W007, W009, W010, W013] Đạn Bay, Sét Dây & Triệu Hồi Linh Thú**:
+  - [x] **Nỏ Thần (W001) & Cung Thạch Sanh (W007):** Mũi tên ánh sáng vệt đuôi dài + Vòng xé gió `Wind_Pierce_Ring` (`VFX_W001_GoldenArrow`).
+  - [x] **Cửu Vĩ Hồ Trảo (W004):** Móng vuốt cáo lửa cào xé + Vệt sinh khí xanh ngọc bay ngược về Player (`VFX_W004_FoxClaws`).
+  - [x] **Trượng Long Vương (W009):** Chuỗi sét nước `LineRenderer` giật nối 6 mục tiêu kèm tóe nước điện tích (`VFX_W009_LightningChain`).
+  - [x] **Linh Phù Ma Da (W010) & Cờ Âm Binh (W013):** Hiệu ứng khói sương đầm lầy và làn sương đen âm ty triệu hồi (`VFX_W010_PoisonSwamp`).
 
 - [ ] 🚨 **[TASK-VFX-05] Tích Hợp Game Feel & Hit Impact Polish Cho Toàn Bộ Vũ Khí**:
   - [ ] **Hit Sparks Pool:** Pool Particle Prefab tóe tia sáng/mảnh vụn theo 5 nguyên tố.

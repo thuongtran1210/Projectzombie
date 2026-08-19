@@ -27,33 +27,40 @@ namespace ProjectZombie.Features.Projectiles.Components
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized || _controller == null) return;
 
-            // Check if collision is in HitLayer
-            if (((1 << collision.gameObject.layer) & _controller.Data.HitLayer) != 0)
+            // Verify we are not hitting the owner (Người chơi bắn ra không tự bắn trúng mình)
+            if (collision.gameObject == _controller.Owner) return;
+
+            int hitLayerMask = _controller.Data != null ? _controller.Data.HitLayer.value : 0;
+            bool isLayerMatch = hitLayerMask != 0 && (((1 << collision.gameObject.layer) & hitLayerMask) != 0);
+            bool isTargetDamageable = collision.TryGetComponent(out IDamageable target) || collision.CompareTag("Enemy");
+
+            // Tự động nhận diện va chạm hợp lệ: hoặc khớp LayerMask, hoặc đối tượng có IDamageable / Tag Enemy
+            if (isLayerMatch || isTargetDamageable)
             {
-                // Verify we are not hitting the owner
-                if (collision.gameObject == _controller.Owner) return;
-
                 // Calculate HitPoint and HitNormal using a short Raycast
                 Vector2 currentPos = transform.position;
                 Vector2 dir = (currentPos - _lastPosition).normalized;
-                float dist = Vector2.Distance(_lastPosition, currentPos) + 0.1f; // Add a small buffer
+                float dist = Vector2.Distance(_lastPosition, currentPos) + 0.1f;
 
                 // Fallback values
                 Vector2 hitPoint = currentPos;
                 Vector2 hitNormal = -dir;
 
-                RaycastHit2D hit = Physics2D.Raycast(_lastPosition, dir, dist, _controller.Data.HitLayer);
-                if (hit.collider != null && hit.collider == collision)
+                if (hitLayerMask != 0)
                 {
-                    hitPoint = hit.point;
-                    hitNormal = hit.normal;
+                    RaycastHit2D hit = Physics2D.Raycast(_lastPosition, dir, dist, hitLayerMask);
+                    if (hit.collider != null && hit.collider == collision)
+                    {
+                        hitPoint = hit.point;
+                        hitNormal = hit.normal;
+                    }
                 }
 
                 Core.ProjectileEventContext context = new Core.ProjectileEventContext(_controller, collision, hitPoint, hitNormal);
 
-                if (collision.TryGetComponent(out IDamageable target))
+                if (collision.TryGetComponent(out IDamageable damageableTarget))
                 {
                     ElementType defenderElement = ElementType.None;
                     if (collision.TryGetComponent(out Enemies.Enemy enemy))
@@ -70,7 +77,7 @@ namespace ProjectZombie.Features.Projectiles.Components
                         _controller.Damage.SourceWeapon
                     );
 
-                    target.TakeDamage(hitDamage);
+                    damageableTarget.TakeDamage(hitDamage);
 
                     // Áp dụng lực đẩy lùi theo hướng bay của đạn (trừ quái Heavy Armor)
                     if (enemy != null && !enemy.IsHeavyArmor)

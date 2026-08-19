@@ -2,13 +2,14 @@
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Projectiles.Data;
+using System.IO;
 
 namespace ProjectZombie.Features.Projectiles.Editor
 {
     /// <summary>
-    /// Editor Tool giúp tự động khởi tạo hệ thống ProjectileData SOs cho 12 Pháp Bảo MVP theo GDD v4.0.
+    /// Editor Script giúp tự động tạo 12 ScriptableObjects ProjectileData chuẩn cho 12 vũ khí MVP.
     /// Lưu vào: Assets/_Data/Projectiles/Data/
-    /// Menu: ProjectZombie > Projectiles > Generate 12 MVP Projectile Data SOs
+    /// Menu: ProjectZombie > Projectiles > Generate 12 ProjectileData SOs
     /// </summary>
     public static class ProjectileDataGenerator
     {
@@ -32,21 +33,22 @@ namespace ProjectZombie.Features.Projectiles.Editor
             }
         }
 
-        [MenuItem("ProjectZombie/Projectiles/Generate 12 MVP Projectile Data SOs")]
-        public static void GenerateAllProjectileData()
+        [MenuItem("ProjectZombie/Projectiles/Generate 12 ProjectileData SOs")]
+        public static void GenerateAllProjectiles()
         {
             string folderPath = "Assets/_Data/Projectiles/Data";
-
-            if (!AssetDatabase.IsValidFolder("Assets/_Data")) AssetDatabase.CreateFolder("Assets", "_Data");
-            if (!AssetDatabase.IsValidFolder("Assets/_Data/Projectiles")) AssetDatabase.CreateFolder("Assets/_Data", "Projectiles");
-            if (!AssetDatabase.IsValidFolder(folderPath)) AssetDatabase.CreateFolder("Assets/_Data/Projectiles", "Data");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+                AssetDatabase.Refresh();
+            }
 
             ProjDef[] projectiles = new ProjDef[]
             {
-                new ProjDef("Proj_W001", "Nỏ Thần (Mũi Tên Xuyên Táo)", 14f, 3.0f, 0.4f, 12f),
-                new ProjDef("Proj_W002", "Bút Phán Quan (Vệt Kiếm Phán Quyết)", 0f, 0.3f, 1.8f, 20f),
-                new ProjDef("Proj_W003", "Bùa Trấn Yêu (Vòng Bùa Xoay)", 8f, 2.5f, 0.5f, 8f),
-                new ProjDef("Proj_W004", "Cửu Vĩ Hồ Trảo (Móng Vuốt Tự Đuổi)", 12f, 3.0f, 0.5f, 18f),
+                new ProjDef("Proj_W001", "Nỏ Thần An Dương Vương (Mũi Tên Đồng)", 18f, 2.5f, 0.4f, 25f),
+                new ProjDef("Proj_W002", "Bút Phán Quan (Vệt Mực Thư Pháp)", 0f, 0.2f, 1.8f, 30f),
+                new ProjDef("Proj_W003", "Bùa Trấn Yêu (Bùa Bay Quanh)", 12f, 10.0f, 0.5f, 15f),
+                new ProjDef("Proj_W004", "Cửu Vĩ Hồ Trảo (Huyết Trảo Cào Xé)", 14f, 0.35f, 0.5f, 18f),
                 new ProjDef("Proj_W005", "Trống Đồng Đông Sơn (Sóng Âm Tỏa Rộng)", 10f, 1.5f, 1.0f, 40f),
                 new ProjDef("Proj_W006", "Lựu Đạn Thần Sa (Hạt Thần Sa Bão Lửa)", 9f, 2.5f, 3.5f, 45f),
                 new ProjDef("Proj_W007", "Cung Thạch Sanh (Mũi Tên Thần Lực)", 16f, 3.5f, 0.4f, 35f),
@@ -77,12 +79,16 @@ namespace ProjectZombie.Features.Projectiles.Editor
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
 
+            int enemyMask = LayerMask.GetMask("Enemy");
+            if (enemyMask == 0) enemyMask = LayerMask.GetMask("Default", "Enemy");
+
             SerializedObject so = new SerializedObject(asset);
             so.FindProperty("ProjectileID").stringValue = def.id;
             so.FindProperty("Speed").floatValue = def.speed;
             so.FindProperty("Lifetime").floatValue = def.lifetime;
             so.FindProperty("CollisionRadius").floatValue = def.radius;
             so.FindProperty("BaseDamage").floatValue = def.damage;
+            so.FindProperty("HitLayer").intValue = enemyMask;
             so.FindProperty("PrewarmCount").intValue = 10;
             so.FindProperty("MaxPoolSize").intValue = 50;
             so.ApplyModifiedProperties();
