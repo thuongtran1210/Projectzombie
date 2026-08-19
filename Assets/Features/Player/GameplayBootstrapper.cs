@@ -69,9 +69,19 @@ namespace ProjectZombie.Features.Player
             InitializeLevel(null);
         }
 
+        public void SpawnPlayerFromSelection(GameObject selectedPrefab)
+        {
+            if (_activePlayerInstance != null)
+            {
+                Debug.Log("[GameplayBootstrapper] Player instance đã tồn tại, không spawn lại.");
+                return;
+            }
+            InitializeLevel(selectedPrefab);
+        }
+
         private void HandleCharacterSelected(GameObject selectedPrefab)
         {
-            InitializeLevel(selectedPrefab);
+            SpawnPlayerFromSelection(selectedPrefab);
         }
 
         private void InitializeLevel(GameObject overridePrefab)
@@ -81,6 +91,13 @@ namespace ProjectZombie.Features.Player
             if (playerPrefab == null && characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
             {
                 playerPrefab = characterSelectionData.SelectedPlayerPrefab;
+            }
+
+            if (playerPrefab == null)
+            {
+                #if UNITY_EDITOR
+                playerPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thu Sinh.prefab");
+                #endif
             }
 
             if (playerPrefab == null)
@@ -97,14 +114,17 @@ namespace ProjectZombie.Features.Player
 
             // 2. Spawn Player
             Vector3 position = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+            position.z = 0f;
             Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
             _activePlayerInstance = Instantiate(playerPrefab, position, rotation);
+            _activePlayerInstance.name = playerPrefab.name;
+            _activePlayerInstance.SetActive(true);
             GameObject playerInstance = _activePlayerInstance;
             
             // Đăng ký Player vào PlayerProvider tập trung (Event-Driven)
             PlayerProvider.RegisterPlayer(_activePlayerInstance);
             
-            Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật: {playerInstance.name}");
+            Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật thành công: {playerInstance.name} tại {position}");
 
             // 3. Thu thập các components (Models) từ Player Instance
             PlayerStats stats = playerInstance.GetComponent<PlayerStats>();

@@ -226,8 +226,8 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnKillCountChanged(int count)
         {
-            // Dùng TMP Rich Text & Sprite để hiển thị icon không phụ thuộc font glyph
-            _view.SetKillCount($"<sprite name=\"skull\"> <color=#FF8C42>{count}</color>");
+            // Hiển thị icon skull và số lượng quái hạ với màu cam lửa (#FF8C42)
+            _view.SetKillCount($"💀 <color=#FF8C42>{count}</color>");
         }
 
         private void OnSkillsOrPassivesChanged()

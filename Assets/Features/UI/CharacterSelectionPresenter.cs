@@ -167,6 +167,13 @@ namespace ProjectZombie.Features.UI
 
             OnCharacterSelected?.Invoke(chosenPrefab);
 
+            // Đảm bảo Bootstrapper luôn nhận được lệnh spawn ngay lập tức
+            var bootstrapper = FindObjectOfType<ProjectZombie.Features.Player.GameplayBootstrapper>();
+            if (bootstrapper != null)
+            {
+                bootstrapper.SpawnPlayerFromSelection(chosenPrefab);
+            }
+
             // Tự động đóng Popup Chọn Nhân Vật để vào trận
             if (gameObject != null)
             {

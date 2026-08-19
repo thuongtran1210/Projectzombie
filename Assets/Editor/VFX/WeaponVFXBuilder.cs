@@ -966,9 +966,10 @@ namespace ProjectZombie.Editor.VFX
             var main = ps.main;
             main.duration = 0.5f;
             main.loop = false;
-            main.startLifetime = 0.45f;
+            main.startLifetime = 0.35f;
             main.startSpeed = 0f;
-            main.startSize = 3.5f;
+            main.startSize = 3.2f;
+            main.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = ps.emission;
@@ -981,17 +982,17 @@ namespace ProjectZombie.Editor.VFX
             var sizeOverLife = ps.sizeOverLifetime;
             sizeOverLife.enabled = true;
             AnimationCurve curve = new AnimationCurve();
-            curve.AddKey(0.0f, 0.5f);
-            curve.AddKey(0.2f, 1.2f);
-            curve.AddKey(1.0f, 1.5f);
+            curve.AddKey(0.0f, 0.4f);
+            curve.AddKey(0.15f, 1.15f);
+            curve.AddKey(1.0f, 1.4f);
             sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, curve);
 
             var colorOverLife = ps.colorOverLifetime;
             colorOverLife.enabled = true;
             Gradient grad = new Gradient();
             grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.3f, 0.0f), 0.5f), new GradientColorKey(new Color(0.3f, 0.05f, 0.05f), 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.9f, 0.6f), new GradientAlphaKey(0.0f, 1.0f) }
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.45f, 0.1f), 0.35f), new GradientColorKey(new Color(0.9f, 0.12f, 0.05f), 0.7f), new GradientColorKey(new Color(0.25f, 0.05f, 0.02f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.95f, 0.4f), new GradientAlphaKey(0.0f, 1.0f) }
             );
             colorOverLife.color = grad;
 
@@ -1003,6 +1004,28 @@ namespace ProjectZombie.Editor.VFX
             Material pillarMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Fire_Pillar.mat");
             if (pillarMat != null) renderer.sharedMaterial = pillarMat;
 
+            // Layer 2: White-Hot Core Flash
+            GameObject coreFlash = new GameObject("Core_Flash");
+            coreFlash.transform.SetParent(root.transform, false);
+            ParticleSystem flashPS = coreFlash.AddComponent<ParticleSystem>();
+            var flashMain = flashPS.main;
+            flashMain.duration = 0.3f;
+            flashMain.loop = false;
+            flashMain.startLifetime = 0.12f;
+            flashMain.startSpeed = 0f;
+            flashMain.startSize = 2.2f;
+            flashMain.simulationSpace = ParticleSystemSimulationSpace.World;
+            var flashEmission = flashPS.emission;
+            flashEmission.rateOverTime = 0;
+            flashEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+            var flashRenderer = coreFlash.GetComponent<ParticleSystemRenderer>();
+            flashRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            flashRenderer.sortingLayerName = "Skill";
+            flashRenderer.sortingOrder = 11;
+            Material flashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Flash.mat");
+            if (flashMat != null) flashRenderer.sharedMaterial = flashMat;
+
+            // Layer 3: Cinnabar Embers & Sparks
             GameObject embersObj = new GameObject("Cinnabar_Embers");
             embersObj.transform.SetParent(root.transform, false);
 
@@ -1010,24 +1033,24 @@ namespace ProjectZombie.Editor.VFX
             var emberMain = emberPS.main;
             emberMain.duration = 0.5f;
             emberMain.loop = false;
-            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.4f);
-            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(8f, 16f);
-            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.25f);
+            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.45f);
+            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(6f, 14f);
+            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.28f);
             emberMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emberEmission = emberPS.emission;
             emberEmission.rateOverTime = 0;
-            emberEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 20) });
+            emberEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 25) });
 
             var emberShape = emberPS.shape;
             emberShape.enabled = true;
             emberShape.shapeType = ParticleSystemShapeType.Sphere;
-            emberShape.radius = 0.4f;
+            emberShape.radius = 0.3f;
 
             var emberRenderer = embersObj.GetComponent<ParticleSystemRenderer>();
             emberRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            emberRenderer.velocityScale = 0.03f;
-            emberRenderer.lengthScale = 1.2f;
+            emberRenderer.velocityScale = 0.035f;
+            emberRenderer.lengthScale = 1.3f;
             emberRenderer.sortingLayerName = "Skill";
             emberRenderer.sortingOrder = 12;
 
@@ -1042,38 +1065,82 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W011_HolyWaterAoE");
             root.AddComponent<VFXPoolResetter>();
 
+            // Layer 1: Sacred Water Puddle Base
             ParticleSystem ps = root.AddComponent<ParticleSystem>();
             var main = ps.main;
             main.duration = 2.0f;
             main.loop = true;
-            main.startLifetime = 1.0f;
+            main.startLifetime = 1.8f;
             main.startSpeed = 0f;
-            main.startSize = 3.8f;
+            main.startSize = 5.5f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = ps.emission;
-            emission.rateOverTime = 2f;
+            emission.rateOverTime = 1.5f;
 
             var shape = ps.shape;
             shape.enabled = false;
+
+            var sizeOverLife = ps.sizeOverLifetime;
+            sizeOverLife.enabled = true;
+            AnimationCurve poolCurve = new AnimationCurve();
+            poolCurve.AddKey(0.0f, 0.85f);
+            poolCurve.AddKey(0.2f, 1.0f);
+            poolCurve.AddKey(0.8f, 1.0f);
+            poolCurve.AddKey(1.0f, 0.95f);
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, poolCurve);
 
             var colorOverLife = ps.colorOverLifetime;
             colorOverLife.enabled = true;
             Gradient grad = new Gradient();
             grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(0.4f, 0.9f, 1f), 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(0.0f, 0.0f), new GradientAlphaKey(0.8f, 0.3f), new GradientAlphaKey(0.0f, 1.0f) }
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(0.45f, 0.95f, 1f), 0.5f), new GradientColorKey(new Color(0.2f, 0.75f, 0.9f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.0f, 0.0f), new GradientAlphaKey(0.85f, 0.25f), new GradientAlphaKey(0.85f, 0.75f), new GradientAlphaKey(0.0f, 1.0f) }
             );
             colorOverLife.color = grad;
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "Tilemap_Decals";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 2;
 
             Material puddleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_HolyWaterPuddle.mat");
             if (puddleMat != null) renderer.sharedMaterial = puddleMat;
 
+            // Layer 2: Holy Water Ripples
+            GameObject ripplesObj = new GameObject("Holy_Ripples");
+            ripplesObj.transform.SetParent(root.transform, false);
+            ParticleSystem ripplePS = ripplesObj.AddComponent<ParticleSystem>();
+            var rippleMain = ripplePS.main;
+            rippleMain.duration = 1.5f;
+            rippleMain.loop = true;
+            rippleMain.startLifetime = 1.2f;
+            rippleMain.startSpeed = 0f;
+            rippleMain.startSize = 1.5f;
+            rippleMain.simulationSpace = ParticleSystemSimulationSpace.World;
+            var rippleEmission = ripplePS.emission;
+            rippleEmission.rateOverTime = 2.0f;
+            var rippleSize = ripplePS.sizeOverLifetime;
+            rippleSize.enabled = true;
+            AnimationCurve ripCurve = new AnimationCurve();
+            ripCurve.AddKey(0.0f, 0.3f);
+            ripCurve.AddKey(1.0f, 3.6f);
+            rippleSize.size = new ParticleSystem.MinMaxCurve(1.0f, ripCurve);
+            var rippleColor = ripplePS.colorOverLifetime;
+            rippleColor.enabled = true;
+            Gradient ripGrad = new Gradient();
+            ripGrad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(new Color(0.7f, 1f, 1f), 0.0f), new GradientColorKey(new Color(0.2f, 0.8f, 1f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.0f, 0.0f), new GradientAlphaKey(0.7f, 0.3f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            rippleColor.color = ripGrad;
+            var rippleRenderer = ripplesObj.GetComponent<ParticleSystemRenderer>();
+            rippleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            rippleRenderer.sortingLayerName = "Skill";
+            rippleRenderer.sortingOrder = 3;
+            if (puddleMat != null) rippleRenderer.sharedMaterial = puddleMat;
+
+            // Layer 3: Holy Qi Bubbles
             GameObject bubblesObj = new GameObject("Holy_Bubbles");
             bubblesObj.transform.SetParent(root.transform, false);
 
@@ -1081,18 +1148,18 @@ namespace ProjectZombie.Editor.VFX
             var bubbleMain = bubblePS.main;
             bubbleMain.duration = 2.0f;
             bubbleMain.loop = true;
-            bubbleMain.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1.2f);
-            bubbleMain.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.5f);
-            bubbleMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.28f);
+            bubbleMain.startLifetime = new ParticleSystem.MinMaxCurve(0.7f, 1.4f);
+            bubbleMain.startSpeed = new ParticleSystem.MinMaxCurve(0.4f, 1.2f);
+            bubbleMain.startSize = new ParticleSystem.MinMaxCurve(0.15f, 0.32f);
             bubbleMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var bubbleEmission = bubblePS.emission;
-            bubbleEmission.rateOverTime = 12f;
+            bubbleEmission.rateOverTime = 16f;
 
             var bubbleShape = bubblePS.shape;
             bubbleShape.enabled = true;
             bubbleShape.shapeType = ParticleSystemShapeType.Circle;
-            bubbleShape.radius = 1.6f;
+            bubbleShape.radius = 2.2f;
 
             var bubbleRenderer = bubblesObj.GetComponent<ParticleSystemRenderer>();
             bubbleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
@@ -1101,6 +1168,32 @@ namespace ProjectZombie.Editor.VFX
 
             Material bubbleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Holy_Bubble.mat");
             if (bubbleMat != null) bubbleRenderer.sharedMaterial = bubbleMat;
+
+            // Layer 4: Holy Radiance Sparkles
+            GameObject sparklesObj = new GameObject("Holy_Sparkles");
+            sparklesObj.transform.SetParent(root.transform, false);
+            ParticleSystem sparkPS = sparklesObj.AddComponent<ParticleSystem>();
+            var sparkMain = sparkPS.main;
+            sparkMain.duration = 2.0f;
+            sparkMain.loop = true;
+            sparkMain.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1.1f);
+            sparkMain.startSpeed = new ParticleSystem.MinMaxCurve(0.6f, 1.8f);
+            sparkMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.22f);
+            sparkMain.simulationSpace = ParticleSystemSimulationSpace.World;
+            var sparkEmission = sparkPS.emission;
+            sparkEmission.rateOverTime = 12f;
+            var sparkShape = sparkPS.shape;
+            sparkShape.enabled = true;
+            sparkShape.shapeType = ParticleSystemShapeType.Circle;
+            sparkShape.radius = 2.0f;
+            var sparkRenderer = sparklesObj.GetComponent<ParticleSystemRenderer>();
+            sparkRenderer.renderMode = ParticleSystemRenderMode.Stretch;
+            sparkRenderer.velocityScale = 0.025f;
+            sparkRenderer.lengthScale = 1.2f;
+            sparkRenderer.sortingLayerName = "Skill";
+            sparkRenderer.sortingOrder = 11;
+            Material sparkMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+            if (sparkMat != null) sparkRenderer.sharedMaterial = sparkMat;
 
             return root;
         }

@@ -244,6 +244,12 @@ namespace ProjectZombie.Features.Enemies
 
         private void HandleDeath()
         {
+            // Ghi nhận kill count vào bộ đếm trận đấu
+            if (RunStatsTracker.Instance != null)
+            {
+                RunStatsTracker.Instance.RegisterKill();
+            }
+
             if (expGemPrefab != null)
             {
                 float expAmount = Config != null ? Config.expReward : 10f;
