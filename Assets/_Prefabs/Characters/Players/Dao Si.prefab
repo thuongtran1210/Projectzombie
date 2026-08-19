@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLoadout:
-  - {fileID: 11400000, guid: f4c1d3812932b5746966a44b11e0608a, type: 2}
+  - {fileID: 11400000, guid: 38d878be87fef1741bc0a7e70e0c2f89, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
 --- !u!114 &7402922671366627933
 MonoBehaviour:

@@ -15,16 +15,16 @@ MonoBehaviour:
   upgradeName: "M\u1EDF kh\xF3a: Linh Ph\xF9 Ma Da"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o Linh Ph\xF9 Ma Da v\xE0o trang b\u1ECB
     active."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
   upgradeType: 0
   spawnWeight: 5
   maxLevel: 0
   requiredYinYangState: 1
   checkYinYangState: 0
-  element: 0
+  element: 3
   weaponId: W010
   requiredCurrentLevel: 0
-  weaponPrefab: {fileID: 297462822436431392, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}
+  weaponPrefab: {fileID: 8988189085547398515, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}
   statModifier:
     damageBonus: 0
     attackSpeedBonus: 0

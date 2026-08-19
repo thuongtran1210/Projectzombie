@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: W010
   weaponName: "Linh Ph\xF9 Ma Da"
-  icon: {fileID: 2143198281, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
   description: "Tri\u1EC7u h\u1ED3i linh th\xFA Ma Da phun \u0111\u1ED9c s\xE1t th\u01B0\u01A1ng
     li\xEAn t\u1EE5c."
   rarity: Rare
   evolutionWeaponId: E010
   elementType: 3
-  weaponPrefab: {fileID: 9098636652766733402, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}
+  weaponPrefab: {fileID: 2389269143492382759, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}
   baseDamage: 10
   baseAttackSpeed: 2

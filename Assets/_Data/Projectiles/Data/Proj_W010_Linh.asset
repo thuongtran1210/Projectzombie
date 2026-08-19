@@ -17,7 +17,7 @@ MonoBehaviour:
   Speed: 6
   MaxRange: 20
   Lifetime: 4
-  CollisionRadius: 2.5
+  CollisionRadius: 1.3
   HitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 57cec94bec1473b4c8d2013c53c430bd, type: 2}
   BaseDamage: 10
   VFXConfig:
-    SpawnVFXPrefab: {fileID: 0}
+    SpawnVFXPrefab: {fileID: 5318508955040507244, guid: a89285ff35d19434c9dd98f081cf8e26, type: 3}
     HitImpactVFXPrefab: {fileID: 0}
     DespawnVFXPrefab: {fileID: 0}
     LaunchSFX: {fileID: 0}
