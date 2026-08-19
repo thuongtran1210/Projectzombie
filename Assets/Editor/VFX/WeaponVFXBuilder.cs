@@ -10,7 +10,7 @@ namespace ProjectZombie.Editor.VFX
     /// Editor Tool chuyên dụng tự động tạo và cấu hình các Prefab VFX chuẩn Anime 2D URP cho:
     /// - W002 Bút Phán Quan (Vệt chém thư họa mực đen lõi trắng + tàn mực)
     /// - W008 Đao Cửu Vĩ (Luồng rồng lửa nón xoắn + tàn than hồng)
-    /// Và tự động wire vào các Prefab vũ khí tương ứng.
+    /// Sử dụng sharedMaterial và Sprite RGBA 100% trong suốt.
     /// </summary>
     public static class WeaponVFXBuilder
     {
@@ -22,6 +22,9 @@ namespace ProjectZombie.Editor.VFX
         [MenuItem("Tools/VFX Generator/Build W002 & W008 Weapon VFX Prefabs", false, 15)]
         public static void BuildSlashAndFlameVFX()
         {
+            // 0. Đảm bảo toàn bộ Materials URP và Texture đã được sinh đầy đủ
+            VFXMaterialGenerator.GenerateAllVFXMaterials();
+
             if (!Directory.Exists(PREFAB_FOLDER))
             {
                 Directory.CreateDirectory(PREFAB_FOLDER);
@@ -64,7 +67,7 @@ namespace ProjectZombie.Editor.VFX
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX cho Bút Phán Quan (W002) và Đao Cửu Vĩ (W008)!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã tạo & Auto-Wire thành công toàn bộ VFX (100% Transparent Sprites)!");
         }
 
         private static void WireW002WeaponPrefab(GameObject slashAsset, GameObject decalAsset, GameObject sparkAsset)
@@ -101,16 +104,13 @@ namespace ProjectZombie.Editor.VFX
             GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
             if (projPrefab == null || flameVfxAsset == null) return;
 
-            // Mở prefab để chỉnh sửa cấu trúc
             using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
             {
                 GameObject root = scope.prefabContentsRoot;
 
-                // Xóa hoặc ẩn SpriteRenderer mặc định của đạn nếu có
                 var sr = root.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.enabled = false;
 
-                // Kiểm tra xem đã có VFX con chưa
                 Transform existingVFX = root.transform.Find("Flame_VFX");
                 if (existingVFX == null)
                 {
@@ -161,7 +161,7 @@ namespace ProjectZombie.Editor.VFX
             colorOverLife.enabled = true;
             Gradient grad = new Gradient();
             grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(0.9f, 0.8f, 0.5f), 1.0f) },
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.85f, 0.4f), 1.0f) },
                 new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 0.7f), new GradientAlphaKey(0.0f, 1.0f) }
             );
             colorOverLife.color = grad;
@@ -171,10 +171,10 @@ namespace ProjectZombie.Editor.VFX
             renderer.sortingLayerName = "VFX_Front";
             renderer.sortingOrder = 10;
 
-            Material slashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Arc.mat");
-            if (slashMat != null) renderer.material = slashMat;
+            Material slashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_InkSlash_Arc.mat");
+            if (slashMat != null) renderer.sharedMaterial = slashMat;
 
-            // 2. Layer Ink Splash / Sparks (Giọt mực & Tia sáng văng)
+            // 2. Layer Ink Splash / Sparks (Tia Sáng Vuốt Nhọn Tách Nền)
             GameObject sparksObj = new GameObject("Ink_Splash_Sparks");
             sparksObj.transform.SetParent(root.transform, false);
 
@@ -182,30 +182,30 @@ namespace ProjectZombie.Editor.VFX
             var sparksMain = sparksPS.main;
             sparksMain.duration = 0.2f;
             sparksMain.loop = false;
-            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.12f, 0.22f);
-            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(12f, 22f);
-            sparksMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.25f);
+            sparksMain.startLifetime = new ParticleSystem.MinMaxCurve(0.1f, 0.18f);
+            sparksMain.startSpeed = new ParticleSystem.MinMaxCurve(10f, 18f);
+            sparksMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
             sparksMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var sparksEmission = sparksPS.emission;
             sparksEmission.rateOverTime = 0;
-            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 16) });
+            sparksEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 14) });
 
             var sparksShape = sparksPS.shape;
             sparksShape.enabled = true;
             sparksShape.shapeType = ParticleSystemShapeType.Cone;
-            sparksShape.angle = 45f;
-            sparksShape.radius = 0.3f;
+            sparksShape.angle = 35f;
+            sparksShape.radius = 0.2f;
 
             var sparksRenderer = sparksObj.GetComponent<ParticleSystemRenderer>();
             sparksRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            sparksRenderer.velocityScale = 0.08f;
-            sparksRenderer.lengthScale = 2.0f;
+            sparksRenderer.velocityScale = 0.03f;
+            sparksRenderer.lengthScale = 1.2f;
             sparksRenderer.sortingLayerName = "VFX_Front";
             sparksRenderer.sortingOrder = 12;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
-            if (sparksMat != null) sparksRenderer.material = sparksMat;
+            if (sparksMat != null) sparksRenderer.sharedMaterial = sparksMat;
 
             return root;
         }
@@ -219,9 +219,9 @@ namespace ProjectZombie.Editor.VFX
             var main = ps.main;
             main.duration = 0.5f;
             main.loop = false;
-            main.startLifetime = 0.45f;
+            main.startLifetime = 0.4f;
             main.startSpeed = 0f;
-            main.startSize = 2.8f;
+            main.startSize = 2.4f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = ps.emission;
@@ -246,7 +246,7 @@ namespace ProjectZombie.Editor.VFX
             renderer.sortingOrder = -50;
 
             Material decalMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_CrackedEarth.mat");
-            if (decalMat != null) renderer.material = decalMat;
+            if (decalMat != null) renderer.sharedMaterial = decalMat;
 
             return root;
         }
@@ -260,14 +260,14 @@ namespace ProjectZombie.Editor.VFX
             var main = ps.main;
             main.duration = 0.25f;
             main.loop = false;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(0.1f, 0.2f);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(8f, 16f);
-            main.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.08f, 0.16f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(6f, 14f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.25f);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = ps.emission;
             emission.rateOverTime = 0;
-            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 12) });
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 10) });
 
             var shape = ps.shape;
             shape.enabled = true;
@@ -276,13 +276,13 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Stretch;
-            renderer.velocityScale = 0.06f;
-            renderer.lengthScale = 1.5f;
+            renderer.velocityScale = 0.03f;
+            renderer.lengthScale = 1.0f;
             renderer.sortingLayerName = "VFX_Front";
             renderer.sortingOrder = 15;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
-            if (sparksMat != null) renderer.material = sparksMat;
+            if (sparksMat != null) renderer.sharedMaterial = sparksMat;
 
             return root;
         }
@@ -343,7 +343,7 @@ namespace ProjectZombie.Editor.VFX
             renderer.sortingOrder = 10;
 
             Material flameMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Arc.mat");
-            if (flameMat != null) renderer.material = flameMat;
+            if (flameMat != null) renderer.sharedMaterial = flameMat;
 
             // 2. Layer Tàn Than Hồng (Ember Sparks)
             GameObject emberObj = new GameObject("Ember_Sparks");
@@ -378,7 +378,7 @@ namespace ProjectZombie.Editor.VFX
             emberRenderer.sortingOrder = 12;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
-            if (sparksMat != null) emberRenderer.material = sparksMat;
+            if (sparksMat != null) emberRenderer.sharedMaterial = sparksMat;
 
             return root;
         }

@@ -96,8 +96,11 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            // Phát hiệu ứng tĩnh phụ (nếu có)
-            PlaySlashVFX();
+            // Phát hiệu ứng tĩnh phụ nếu không có prefab vệt chém đa hướng
+            if (directionalSlashPrefab == null)
+            {
+                PlaySlashVFX();
+            }
         }
 
         private void ConfigureSlashVFX(ParticleSystem ps, int level)
