@@ -19,4 +19,4 @@ MonoBehaviour:
     c\u1EEDa s\u1ED5 ch\u1ECDn th\u1EBB Th\xE1i C\u1EF1c (Cooldown: 30s)."
   _icon: {fileID: 0}
   _baseCooldown: 30
-  _zonePrefab: {fileID: 988338522942837525, guid: e7be6de112b99e7499552c786b4e7a10, type: 3}
+  _zonePrefab: {fileID: 7321809818315038488, guid: 7449367730fbc804a8d1aac501c86fe2, type: 3}
