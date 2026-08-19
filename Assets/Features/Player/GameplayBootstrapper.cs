@@ -47,7 +47,9 @@ namespace ProjectZombie.Features.Player
             if (existingUI != null)
             {
                 existingUI.gameObject.SetActive(true);
+                existingUI.OnCharacterSelected -= HandleCharacterSelected;
                 existingUI.OnCharacterSelected += HandleCharacterSelected;
+                Debug.Log("[GameplayBootstrapper] Đã đăng ký lắng nghe sự kiện OnCharacterSelected từ CharacterSelectionPresenter có sẵn trong scene.");
                 return;
             }
 
@@ -58,6 +60,7 @@ namespace ProjectZombie.Features.Player
                 if (presenter != null)
                 {
                     presenter.OnCharacterSelected += HandleCharacterSelected;
+                    Debug.Log("[GameplayBootstrapper] Đã spawn CharacterSelectionUI Prefab và đăng ký sự kiện.");
                     return;
                 }
             }

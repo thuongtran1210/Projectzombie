@@ -39,6 +39,9 @@ namespace ProjectZombie.Features.Player.Mechanics
         [Tooltip("Prefab hào quang Thánh Giáng Ngự (nếu có)")]
         [SerializeField] private GameObject _possessionAuraPrefab;
 
+        [Tooltip("Prefab sóng xung kích Phán Truyền khi Thánh bộc phát")]
+        [SerializeField] private GameObject _oracleShockwavePrefab;
+
         private float _currentLinhCan = 0f;
         private bool _isPossessed = false;
         private float _possessionTimer = 0f;
@@ -203,6 +206,12 @@ namespace ProjectZombie.Features.Player.Mechanics
 
         private void ExecuteOracleStun()
         {
+            // Spawn hiệu ứng sóng xung kích Phán Truyền bộc phát
+            if (_oracleShockwavePrefab != null)
+            {
+                Instantiate(_oracleShockwavePrefab, transform.position, Quaternion.identity);
+            }
+
             // Quét và làm choáng quái vật xung quanh
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _oracleStunRadius);
             for (int i = 0; i < hits.Length; i++)

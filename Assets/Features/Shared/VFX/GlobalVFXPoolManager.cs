@@ -64,12 +64,22 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
-            // Tự động đặt Sorting Layer sang "Skill" nếu đang ở "Default"
-            var psRenderer = instance.GetComponent<ParticleSystemRenderer>();
-            if (psRenderer != null && (psRenderer.sortingLayerID == 0 || psRenderer.sortingLayerName == "Default"))
+            // Tự động kiểm tra và nâng cấp Sorting Layer cho toàn bộ renderers trong hierarchy
+            var renderers = instance.GetComponentsInChildren<Renderer>(true);
+            foreach (var r in renderers)
             {
-                psRenderer.sortingLayerName = "Skill";
+                if (r != null && (r.sortingLayerID == 0 || r.sortingLayerName == "Default" || r.sortingLayerName == "VFX_Front"))
+                {
+                    r.sortingLayerName = "Skill";
+                }
+                else if (r != null && r.sortingLayerName == "VFX_Back")
+                {
+                    r.sortingLayerName = "Tilemap_Decals";
+                }
             }
+
+            // Đảm bảo toàn bộ Particle System con phát ngay lập tức
+            instance.Play(true);
 
             if (autoReleaseDelay > 0f)
             {
@@ -99,11 +109,6 @@ namespace ProjectZombie.Features.Shared.VFX
                         {
                             resetter.ResetVFXState();
                         }
-                        var particles = go.GetComponentsInChildren<ParticleSystem>(true);
-                        foreach (var ps in particles)
-                        {
-                            ps.Play(true);
-                        }
                     },
                     actionOnRelease: go => {
                         var resetter = go.GetComponent<VFXPoolResetter>();
@@ -126,6 +131,26 @@ namespace ProjectZombie.Features.Shared.VFX
             if (scale.HasValue)
             {
                 instance.transform.localScale = scale.Value;
+            }
+
+            // Đảm bảo các Particle Systems con được Play và gán Layer chuẩn
+            var renderers = instance.GetComponentsInChildren<Renderer>(true);
+            foreach (var r in renderers)
+            {
+                if (r != null && (r.sortingLayerID == 0 || r.sortingLayerName == "Default" || r.sortingLayerName == "VFX_Front"))
+                {
+                    r.sortingLayerName = "Skill";
+                }
+                else if (r != null && r.sortingLayerName == "VFX_Back")
+                {
+                    r.sortingLayerName = "Tilemap_Decals";
+                }
+            }
+
+            var pss = instance.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (var ps in pss)
+            {
+                if (ps != null) ps.Play(true);
             }
 
             if (autoReleaseDelay > 0f)

@@ -50,8 +50,8 @@ namespace ProjectZombie.Editor.VFX
         private bool _attachPoolResetter = true;
 
         // Sorting Layers
-        private string _frontSortingLayer = "VFX_Front";
-        private string _backSortingLayer = "VFX_Back";
+        private string _frontSortingLayer = "Skill";
+        private string _backSortingLayer = "Tilemap_Decals";
 
         [MenuItem("Tools/VFX Generator/Create Modular VFX Hierarchy", false, 10)]
         [MenuItem("GameObject/2D Object/VFX/Modular VFX Generator", false, 10)]

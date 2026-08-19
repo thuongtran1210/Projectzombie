@@ -54,17 +54,17 @@ MonoBehaviour:
     element: 2
     elementHexColor: '#4C7A3D'
     description: "C\xF4 \u0110\u1ED3ng / Th\u1EA7y Ph\xE1p \u0110\u1EA1o M\u1EABu
-      T\u1EE9 Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). T\xEDch
-      l\u0169y Linh L\u1EF1c T\u1EE9 Ph\u1EE7 \u0111\u1EC3 th\u1EC9nh Th\xE1nh gi\xE1ng
-      th\u1EBF."
+      T\u1EE9 Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). Tay mang
+      Chu\u1ED7i Linh Ph\xF9 T\u1EE9 Ph\u1EE7 h\u1ED9 th\xE2n tr\u1EEB t\xE0."
     signatureSkillName: "Gi\xE1 \u0110\u1ED3ng T\u1EE9 Ph\u1EE7"
     signatureSkillDesc: "Th\u1EC9nh nh\u1EADp Th\xE1nh th\u1EA7n T\u1EE9 Ph\u1EE7
       ban h\xE0o quang 4 c\xF5i (T\u0103ng c\xF4ng / T\u0103ng t\u1ED1c / Gi\u1EA3m
-      h\u1ED3i chi\xEAu / H\u1ED9 th\xE2n) trong 5s."
+      h\u1ED3i chi\xEAu / Gi\xE1p h\u1ED9 th\xE2n) trong 5s."
     passiveTraitName: "Linh L\u1EF1c T\u1EE9 Ph\u1EE7"
-    passiveTraitDesc: "M\u1ED7i \u0111\xF2n \u0111\xE1nh t\xEDch l\u0169y Linh L\u1EF1c.
-      Khi \u0111\u1EA1t 100 \u0111i\u1EC3m, t\u1EF1 \u0111\u1ED9ng gi\u1EA3i tr\u1EEB
-      m\u1ECDi hi\u1EC7u \u1EE9ng kh\u1ED1ng ch\u1EBF b\u1EA5t l\u1EE3i."
+    passiveTraitDesc: "Thu th\u1EADp Linh Kh\xED t\xEDch l\u0169y thanh Linh L\u1EF1c
+      T\u1EE9 Ph\u1EE7. Khi k\xEDch ho\u1EA1t Gi\xE1 \u0110\u1ED3ng, nh\u1EADn \u0111\u1ED3ng
+      th\u1EDDi hi\u1EC7u \u1EE9ng h\u1ED9 tr\xEC c\u1EE7a c\u1EA3 4 c\xF5i th\u1EA7n
+      linh."
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
     isUnlocked: 1

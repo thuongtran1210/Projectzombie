@@ -189,7 +189,7 @@ namespace ProjectZombie.Editor.VFX
                 if (sr == null) sr = visualRoot.gameObject.AddComponent<SpriteRenderer>();
 
                 sr.sprite = targetSprite;
-                sr.sortingLayerName = "VFX_Front";
+                sr.sortingLayerName = "Skill";
                 sr.sortingOrder = 10;
             }
 
@@ -532,7 +532,7 @@ namespace ProjectZombie.Editor.VFX
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.alignment = ParticleSystemRenderSpace.Local;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 9;
 
             Material inkBlackMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Ink_Black_Stroke.mat");
@@ -565,7 +565,7 @@ namespace ProjectZombie.Editor.VFX
             var neonRenderer = neonObj.GetComponent<ParticleSystemRenderer>();
             neonRenderer.renderMode = ParticleSystemRenderMode.Billboard;
             neonRenderer.alignment = ParticleSystemRenderSpace.Local;
-            neonRenderer.sortingLayerName = "VFX_Front";
+            neonRenderer.sortingLayerName = "Skill";
             neonRenderer.sortingOrder = 11;
 
             Material neonMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Ink_Neon_Glow.mat");
@@ -600,7 +600,7 @@ namespace ProjectZombie.Editor.VFX
             sparksRenderer.renderMode = ParticleSystemRenderMode.Stretch;
             sparksRenderer.velocityScale = 0.08f;
             sparksRenderer.lengthScale = 3.5f;
-            sparksRenderer.sortingLayerName = "VFX_Front";
+            sparksRenderer.sortingLayerName = "Skill";
             sparksRenderer.sortingOrder = 13;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -641,8 +641,8 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Back";
-            renderer.sortingOrder = -50;
+            renderer.sortingLayerName = "Tilemap_Decals";
+            renderer.sortingOrder = 1;
 
             Material decalMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_CrackedEarth.mat");
             if (decalMat != null) renderer.sharedMaterial = decalMat;
@@ -677,7 +677,7 @@ namespace ProjectZombie.Editor.VFX
             renderer.renderMode = ParticleSystemRenderMode.Stretch;
             renderer.velocityScale = 0.03f;
             renderer.lengthScale = 1.0f;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 15;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -737,7 +737,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 10;
 
             Material flameMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Arc.mat");
@@ -771,7 +771,7 @@ namespace ProjectZombie.Editor.VFX
 
             var emberRenderer = emberObj.GetComponent<ParticleSystemRenderer>();
             emberRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-            emberRenderer.sortingLayerName = "VFX_Front";
+            emberRenderer.sortingLayerName = "Skill";
             emberRenderer.sortingOrder = 12;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -792,7 +792,7 @@ namespace ProjectZombie.Editor.VFX
             trail.minVertexDistance = 0.05f;
             trail.autodestruct = false;
             trail.emitting = true;
-            trail.sortingLayerName = "VFX_Front";
+            trail.sortingLayerName = "Skill";
             trail.sortingOrder = 8;
 
             AnimationCurve widthCurve = new AnimationCurve();
@@ -833,7 +833,7 @@ namespace ProjectZombie.Editor.VFX
 
             var psRenderer = sparkleObj.GetComponent<ParticleSystemRenderer>();
             psRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-            psRenderer.sortingLayerName = "VFX_Front";
+            psRenderer.sortingLayerName = "Skill";
             psRenderer.sortingOrder = 9;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -869,7 +869,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 9;
 
             Material vortexMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_BatQuai_Wind_Vortex.mat");
@@ -917,7 +917,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 8;
 
             Material shockMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Shockwave_DongSon.mat");
@@ -948,7 +948,7 @@ namespace ProjectZombie.Editor.VFX
             dustRenderer.renderMode = ParticleSystemRenderMode.Stretch;
             dustRenderer.velocityScale = 0.02f;
             dustRenderer.lengthScale = 1.0f;
-            dustRenderer.sortingLayerName = "VFX_Front";
+            dustRenderer.sortingLayerName = "Skill";
             dustRenderer.sortingOrder = 9;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -997,7 +997,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 10;
 
             Material pillarMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Fire_Pillar.mat");
@@ -1028,7 +1028,7 @@ namespace ProjectZombie.Editor.VFX
             emberRenderer.renderMode = ParticleSystemRenderMode.Stretch;
             emberRenderer.velocityScale = 0.03f;
             emberRenderer.lengthScale = 1.2f;
-            emberRenderer.sortingLayerName = "VFX_Front";
+            emberRenderer.sortingLayerName = "Skill";
             emberRenderer.sortingOrder = 12;
 
             Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
@@ -1068,8 +1068,8 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Back";
-            renderer.sortingOrder = -40;
+            renderer.sortingLayerName = "Tilemap_Decals";
+            renderer.sortingOrder = 2;
 
             Material puddleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_HolyWaterPuddle.mat");
             if (puddleMat != null) renderer.sharedMaterial = puddleMat;
@@ -1096,7 +1096,7 @@ namespace ProjectZombie.Editor.VFX
 
             var bubbleRenderer = bubblesObj.GetComponent<ParticleSystemRenderer>();
             bubbleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-            bubbleRenderer.sortingLayerName = "VFX_Front";
+            bubbleRenderer.sortingLayerName = "Skill";
             bubbleRenderer.sortingOrder = 10;
 
             Material bubbleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Holy_Bubble.mat");
@@ -1128,7 +1128,7 @@ namespace ProjectZombie.Editor.VFX
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.alignment = ParticleSystemRenderSpace.Local;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 11;
 
             Material arrowMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_ThachSanh_SonicArrow.mat");
@@ -1162,7 +1162,7 @@ namespace ProjectZombie.Editor.VFX
 
             var ringRenderer = ringObj.GetComponent<ParticleSystemRenderer>();
             ringRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-            ringRenderer.sortingLayerName = "VFX_Front";
+            ringRenderer.sortingLayerName = "Skill";
             ringRenderer.sortingOrder = 10;
 
             Material ringMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Wind_Pierce_Ring.mat");
@@ -1196,7 +1196,7 @@ namespace ProjectZombie.Editor.VFX
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.alignment = ParticleSystemRenderSpace.Local;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 12;
 
             Material clawsMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Fox_Claws_Slash.mat");
@@ -1225,7 +1225,7 @@ namespace ProjectZombie.Editor.VFX
 
             var orbRenderer = orbObj.GetComponent<ParticleSystemRenderer>();
             orbRenderer.renderMode = ParticleSystemRenderMode.Billboard;
-            orbRenderer.sortingLayerName = "VFX_Front";
+            orbRenderer.sortingLayerName = "Skill";
             orbRenderer.sortingOrder = 14;
 
             Material orbMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Soul_Drain_Orb.mat");
@@ -1258,7 +1258,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 12;
 
             Material lightningMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Lightning_Bolt.mat");
@@ -1298,8 +1298,8 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Back";
-            renderer.sortingOrder = -45;
+            renderer.sortingLayerName = "Tilemap_Decals";
+            renderer.sortingOrder = 1;
 
             Material swampMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_PoisonSwamp.mat");
             if (swampMat != null) renderer.sharedMaterial = swampMat;
@@ -1347,7 +1347,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 10;
 
             Material flameMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_TorchFlame_Bullet.mat");
@@ -1389,8 +1389,8 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Back";
-            renderer.sortingOrder = -40;
+            renderer.sortingLayerName = "Tilemap_Decals";
+            renderer.sortingOrder = 3;
 
             Material circleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_TuPhu_PossessionCircle.mat");
             if (circleMat != null) renderer.sharedMaterial = circleMat;
@@ -1433,7 +1433,7 @@ namespace ProjectZombie.Editor.VFX
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 20;
 
             Material waveMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Oracle_Shockwave.mat");
