@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "H\u1ED3 Ly C\u1EEDu V\u0129"
   description: "Tri\u1EC7u h\u1ED3i 9 m\xF3ng vu\u1ED1t l\u1EEDa t\u1EF1 t\xECm di\u1EC7t
     qu\xE1i v\xE0 \u0111\u1EC3 l\u1EA1i v\u1EC7t l\u1EEDa thi\xEAu \u0111\u1ED1t."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

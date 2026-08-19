@@ -318,16 +318,20 @@ namespace ProjectZombie.Editor.Tools
             joyRect.anchorMax = new Vector2(0f, 0f);
             joyRect.pivot = new Vector2(0.5f, 0.5f);
             joyRect.anchoredPosition = new Vector2(250, 250);
-            joyRect.sizeDelta = new Vector2(200, 200);
+            joyRect.sizeDelta = new Vector2(240, 240);
             Image joyBg = joyObj.GetComponent<Image>();
-            joyBg.color = new Color(1f, 1f, 1f, 0.25f);
+            joyBg.color = Color.white;
+            Sprite joyBaseSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
+            if (joyBaseSprite != null) joyBg.sprite = joyBaseSprite;
 
             GameObject handleObj = new GameObject("JoystickHandle", typeof(RectTransform), typeof(Image));
             handleObj.transform.SetParent(joyObj.transform, false);
             RectTransform handleRect = handleObj.GetComponent<RectTransform>();
-            handleRect.sizeDelta = new Vector2(80, 80);
+            handleRect.sizeDelta = new Vector2(100, 100);
             Image handleImg = handleObj.GetComponent<Image>();
-            handleImg.color = new Color(1f, 0.85f, 0.4f, 0.8f);
+            handleImg.color = Color.white;
+            Sprite joyKnobSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
+            if (joyKnobSprite != null) handleImg.sprite = joyKnobSprite;
 
             // 2. Skill Button
             GameObject skillObj = new GameObject("Btn_SignatureSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(SignatureSkillButtonView), typeof(SignatureSkillPresenter));

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: "Ng\u1ECDc H\u1ED3i Chi\xEAu"
   description: "-10% Th\u1EDDi gian h\u1ED3i chi\xEAu t\u1EA5t c\u1EA3 chi\xEAu th\u1EE9c"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9ce44fc85685445f93c4a75d2211216d, type: 3}
   upgradeType: 2
   spawnWeight: 10
   maxLevel: 5

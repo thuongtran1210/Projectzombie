@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Gi\u1EBFng Thi\xEAng"
   description: "T\u1EA1o v\u0169ng gi\u1EBFng thi\xEAng 5m l\xE0m ch\u1EADm qu\xE1i
     50% + H\u1ED3i HP cho Player."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

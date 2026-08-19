@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Long V\u01B0\u01A1ng Tr\u01B0\u1EE3ng"
   description: "S\xE9t n\u01B0\u1EDBc n\u1EA3y qua 12 qu\xE1i li\xEAn ti\u1EBFp +
     \u0110\xF3ng b\u0103ng qu\xE1i 1.0s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

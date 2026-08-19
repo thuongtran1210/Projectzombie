@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Th\xE1p Uy \xC1p"
   description: "+15% Ph\u1EA1m vi \u1EA3nh h\u01B0\u1EDFng \u0111\xF2n \u0111\xE1nh
     (AoE)"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3ae1c8887bb145129656fc335c0997a0, type: 3}
   upgradeType: 2
   spawnWeight: 10
   maxLevel: 5

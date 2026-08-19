@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "B\xE1t Qu\xE1i Tru Ti\xEAn Ti\xEAu"
   description: "Ma tr\u1EADn phi ti\xEAu b\xE1t qu\xE1i ch\xE9m n\xE1t m\u1ECDi r\xE0o
     c\u1EA3n."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Th\xE1nh Th\u1EE7y C\u1EE9u Kh\u1ED5"
   description: "M\u01B0a n\u01B0\u1EDBc th\xE1nh g\u1ED9t r\u1EEDa v\xE0 ban ph\u01B0\u1EDBc
     l\xE0nh b\u1EA5t t\u1EED."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

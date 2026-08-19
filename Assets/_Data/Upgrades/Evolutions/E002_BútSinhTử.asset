@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "B\xFAt Sinh T\u1EED"
   description: "Nh\xE1t ch\xE9m 360 \u0111\u1ED9 ch\xED m\u1EA1ng 100%, t\u1EF1 \u0111\u1ED9ng
     k\u1EBFt li\u1EC5u ngay qu\xE1i d\u01B0\u1EDBi 15% HP."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

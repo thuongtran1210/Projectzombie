@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: "B\xF9a S\xE1t Th\u01B0\u01A1ng"
   description: "+10% S\xE1t th\u01B0\u01A1ng c\u01A1 b\u1EA3n cho nh\xE2n v\u1EADt"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
   upgradeType: 2
   spawnWeight: 10
   maxLevel: 5

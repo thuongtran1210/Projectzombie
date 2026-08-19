@@ -166,7 +166,10 @@ namespace ProjectZombie.EditorTools
                 bRect.sizeDelta = new Vector2(180, 50);
 
                 Image bImg = btnObj.GetComponent<Image>();
-                bImg.color = new Color(0.18f, 0.45f, 0.75f, 0.9f); // Xanh lam phong thủy
+                bImg.color = Color.white;
+                bImg.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Primary_Normal.png");
+                if (btnSprite != null) bImg.sprite = btnSprite;
 
                 rerollBtn = btnObj.GetComponent<Button>();
 
@@ -183,7 +186,7 @@ namespace ProjectZombie.EditorTools
                 rerollText.text = "Đổi Thẻ (3)";
                 rerollText.fontSize = 22;
                 rerollText.alignment = TextAlignmentOptions.Center;
-                rerollText.color = Color.white;
+                rerollText.color = new Color(1f, 0.9f, 0.6f, 1f); // Màu chữ vàng đồng sáng
             }
             else
             {
@@ -204,7 +207,10 @@ namespace ProjectZombie.EditorTools
                 bRect.sizeDelta = new Vector2(140, 50);
 
                 Image bImg = btnObj.GetComponent<Image>();
-                bImg.color = new Color(0.4f, 0.2f, 0.2f, 0.85f); // Đỏ sẫm cổ phong
+                bImg.color = Color.white;
+                bImg.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Primary_Normal.png");
+                if (btnSprite != null) bImg.sprite = btnSprite;
 
                 skipBtn = btnObj.GetComponent<Button>();
 
@@ -220,7 +226,7 @@ namespace ProjectZombie.EditorTools
                 skipText.text = "Bỏ Qua";
                 skipText.fontSize = 22;
                 skipText.alignment = TextAlignmentOptions.Center;
-                skipText.color = Color.white;
+                skipText.color = new Color(0.9f, 0.8f, 0.8f, 1f);
             }
             else
             {

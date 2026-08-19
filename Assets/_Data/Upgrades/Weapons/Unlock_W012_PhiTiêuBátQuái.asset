@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "M\u1EDF kh\xF3a: Phi Ti\xEAu B\xE1t Qu\xE1i"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o Phi Ti\xEAu B\xE1t Qu\xE1i v\xE0o trang
     b\u1ECB active."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e8d62d9569a4479eb8f65bf50d5cf121, type: 3}
   upgradeType: 0
   spawnWeight: 5
   maxLevel: 0

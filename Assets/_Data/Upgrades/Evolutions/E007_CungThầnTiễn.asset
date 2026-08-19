@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Cung Th\u1EA7n Ti\u1EC5n"
   description: "B\u1EAFn 3 m\u0169i t\xEAn th\u1EA7n l\u1EF1c xuy\xEAn v\xF4 h\u1EA1n
     k\xE8m hi\u1EC7u \u1EE9ng \u0111\u1EA9y l\xF9i d\u1ED3n qu\xE1i v\xE0o g\xF3c."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

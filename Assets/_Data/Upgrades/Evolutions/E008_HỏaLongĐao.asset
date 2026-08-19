@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "H\u1ECFa Long \u0110ao"
   description: "Phun lu\u1ED3ng r\u1ED3ng l\u1EEDa 360 \u0111\u1ED9 xoay quanh nh\xE2n
     v\u1EADt li\xEAn t\u1EE5c kh\xF4ng ng\u1EEBng."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

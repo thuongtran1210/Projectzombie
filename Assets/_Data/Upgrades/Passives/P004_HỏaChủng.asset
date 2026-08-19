@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "H\u1ECFa Ch\u1EE7ng"
   description: "+10% T\u1ED1c \u0111\u1ED9 \u0111\xE1nh cho to\xE0n b\u1ED9 v\u0169
     kh\xED"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
   upgradeType: 2
   spawnWeight: 10
   maxLevel: 5

@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Thi\xEAn C\u01B0\u01A1ng Tr\u1EADn"
   description: "Tri\u1EC7u h\u1ED3i 12 l\xE1 b\xF9a h\u1ED9 m\u1EC7nh bao quanh b\u1EA3o
     v\u1EC7 tuy\u1EC7t \u0111\u1ED1i."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

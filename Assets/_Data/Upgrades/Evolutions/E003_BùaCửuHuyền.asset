@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "B\xF9a C\u1EEDu Huy\u1EC1n"
   description: "M\u1EDF r\u1ED9ng b\xE1n k\xEDnh v\xF2ng b\xF9a xoay + H\u1ED3i 1%
     HP t\u1ED1i \u0111a m\u1ED7i 50 \u0111\xF2n tr\xFAng."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

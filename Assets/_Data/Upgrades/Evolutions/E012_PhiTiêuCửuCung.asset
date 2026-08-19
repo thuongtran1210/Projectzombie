@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "Phi Ti\xEAu C\u1EEDu Cung"
   description: "Tri\u1EC7u h\u1ED3i 9 phi ti\xEAu xoay theo qu\u1EF9 \u0111\u1EA1o
     hoa sen m\u1EDF r\u1ED9ng r\u1ED3i thu v\u1EC1 player."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0

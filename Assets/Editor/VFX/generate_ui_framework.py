@@ -15,6 +15,11 @@ JOYSTICK_DIR = os.path.join(ASSETS_ROOT, "Joystick")
 HUD_DIR = os.path.join(ASSETS_ROOT, "HUD")
 BADGES_DIR = os.path.join(ASSETS_ROOT, "Badges")
 BUTTONS_DIR = os.path.join(ASSETS_ROOT, "Buttons")
+SKILLS_DIR = os.path.join(ASSETS_ROOT, "Skills")
+UPGRADE_ICONS_DIR = os.path.join(ASSETS_ROOT, "UpgradeIcons")
+
+os.makedirs(SKILLS_DIR, exist_ok=True)
+os.makedirs(UPGRADE_ICONS_DIR, exist_ok=True)
 
 def write_unity_meta(filepath, border=(0, 0, 0, 0), pivot=(0.5, 0.5)):
     meta_path = filepath + ".meta"
@@ -296,6 +301,49 @@ def generate_hud_bar_fill(output_path, color_top, color_bot, glow_line):
     write_unity_meta(output_path, border=(4, 4, 4, 4))
     print(f"Generated HUD Bar Fill: {output_path}")
 
+def generate_yinyang_fill(output_path):
+    """Ruột thanh Âm Dương Thái Cực: Gradient chuyển tiếp giữa Lam Ngọc (Dương) và Mực Nho Tím (Âm)."""
+    w, h = 64, 32
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    for x in range(w):
+        t = x / float(w)
+        # Chuyển sắc từ Xanh Lam Ngọc sang Tím Huyền Bí
+        r = int(60 * (1 - t) + 160 * t)
+        g = int(220 * (1 - t) + 60 * t)
+        b = int(240 * (1 - t) + 220 * t)
+        draw.line([(x, 0), (x, h)], fill=(r, g, b, 255))
+        
+    draw.line([(0, 3), (w, 3)], fill=(255, 255, 255, 220), width=2)
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(4, 4, 4, 4))
+    print(f"Generated YinYang Fill: {output_path}")
+
+def generate_slider_handle(output_path):
+    """Nút con trỏ trượt hình Hạt Linh Châu Đồng Vàng (64x64)."""
+    size = 64
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    center = size / 2.0
+    r = 24.0
+    
+    # 1. Glow
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    g_draw = ImageDraw.Draw(glow_img)
+    g_draw.ellipse([center - r - 4, center - r - 4, center + r + 4, center + r + 4], fill=(255, 215, 0, 160))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=4))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Thân hạt linh châu đồng thau
+    draw.ellipse([center - r, center - r, center + r, center + r], fill=(240, 200, 100, 255), outline=(120, 90, 40, 255), width=3)
+    # 3. Điểm sáng ngọc tâm
+    draw.ellipse([center - 10, center - 14, center + 4, center], fill=(255, 255, 255, 230))
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Slider Handle: {output_path}")
+
 # -------------------------------------------------------------
 # 4. TẠO NÚT BẤM LỆNH BÀI (BUTTONS)
 # -------------------------------------------------------------
@@ -322,6 +370,467 @@ def generate_primary_button(output_path, normal=True):
     print(f"Generated Primary Button: {output_path}")
 
 # -------------------------------------------------------------
+# 5. LINH CHÂU & HUY HIỆU NGŨ HÀNH (ELEMENT BADGES)
+# -------------------------------------------------------------
+def generate_element_badge(output_path, element_type="Kim", main_color=(232, 196, 104), glow_color=(255, 243, 196)):
+    """
+    Sinh Linh Châu Ngũ Hành 256x256 viền kim loại Đông Sơn phát quang:
+    - Kim: Lưỡi Kiếm / Hình Thoi
+    - Mộc: Chiếc Lá / Mầm Cây
+    - Thủy: Giọt Nước
+    - Hỏa: Ngọn Lửa
+    - Thổ: Khối Núi Đá / Vuông Vát
+    """
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    center = size / 2.0
+    r = 110.0
+    
+    # 1. Glow viền ngoài
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.ellipse([center - r - 6, center - r - 6, center + r + 6, center + r + 6], 
+                      fill=(*glow_color, 120))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=8))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Vành kim loại đồng thau cổ bên ngoài
+    draw.ellipse([center - r, center - r, center + r, center + r], 
+                 fill=(25, 22, 28, 240), outline=(201, 168, 106, 255), width=6)
+    
+    # 3. Vòng tròn rãnh hoa văn phụ
+    draw.ellipse([center - r + 14, center - r + 14, center + r - 14, center + r - 14], 
+                 outline=(*main_color, 180), width=3)
+    
+    # 4. Nền ngọc linh khí bên trong
+    inner_r = r - 22
+    for ring in range(int(inner_r), 0, -2):
+        factor = ring / inner_r
+        cr = int(main_color[0] * 0.3 + main_color[0] * 0.7 * (1.0 - factor * 0.5))
+        cg = int(main_color[1] * 0.3 + main_color[1] * 0.7 * (1.0 - factor * 0.5))
+        cb = int(main_color[2] * 0.3 + main_color[2] * 0.7 * (1.0 - factor * 0.5))
+        draw.ellipse([center - ring, center - ring, center + ring, center + ring], 
+                     fill=(cr, cg, cb, 255))
+    
+    # 5. Biểu tượng hình học đặc trưng Ngũ Hành ở tâm
+    shape_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    s_draw = ImageDraw.Draw(shape_img)
+    
+    if element_type == "Kim":
+        # Hình Thoi / Lưỡi Kiếm
+        points = [(center, center - 60), (center + 45, center), (center, center + 60), (center - 45, center)]
+        s_draw.polygon(points, fill=(255, 255, 255, 230), outline=(255, 243, 196, 255))
+        # Rãnh kiếm ở giữa
+        s_draw.line([(center, center - 45), (center, center + 45)], fill=(180, 150, 60, 255), width=4)
+        
+    elif element_type == "Moc":
+        # Chiếc Lá
+        leaf_pts = [
+            (center, center - 55),
+            (center + 40, center - 15),
+            (center + 30, center + 35),
+            (center, center + 55),
+            (center - 30, center + 35),
+            (center - 40, center - 15)
+        ]
+        s_draw.polygon(leaf_pts, fill=(255, 255, 255, 230), outline=(143, 201, 122, 255))
+        # Gân lá
+        s_draw.line([(center, center - 40), (center, center + 45)], fill=(40, 100, 30, 255), width=3)
+        s_draw.line([(center, center - 10), (center + 20, center - 25)], fill=(40, 100, 30, 255), width=3)
+        s_draw.line([(center, center + 15), (center - 20, center)], fill=(40, 100, 30, 255), width=3)
+        
+    elif element_type == "Thuy":
+        # Giọt Nước
+        water_pts = [
+            (center, center - 55),
+            (center + 42, center + 10),
+            (center + 30, center + 45),
+            (center, center + 55),
+            (center - 30, center + 45),
+            (center - 42, center + 10)
+        ]
+        s_draw.polygon(water_pts, fill=(255, 255, 255, 230), outline=(127, 203, 234, 255))
+        # Vệt sóng gợn
+        s_draw.arc([center - 25, center - 5, center + 25, center + 35], start=30, end=150, fill=(30, 90, 140, 255), width=4)
+        
+    elif element_type == "Hoa":
+        # Ngọn Lửa
+        flame_pts = [
+            (center, center - 60),
+            (center + 25, center - 25),
+            (center + 45, center + 15),
+            (center + 25, center + 55),
+            (center - 25, center + 55),
+            (center - 45, center + 15),
+            (center - 20, center - 15),
+            (center - 5, center - 30)
+        ]
+        s_draw.polygon(flame_pts, fill=(255, 255, 255, 230), outline=(255, 138, 80, 255))
+        # Tâm lửa rực rỡ
+        s_draw.polygon([(center, center - 30), (center + 20, center + 35), (center - 20, center + 35)], fill=(255, 220, 100, 255))
+        
+    elif element_type == "Tho":
+        # Khối Núi Đá Vuông Vát
+        rock_pts = [
+            (center - 35, center - 45),
+            (center + 35, center - 45),
+            (center + 50, center + 15),
+            (center + 35, center + 50),
+            (center - 35, center + 50),
+            (center - 50, center + 15)
+        ]
+        s_draw.polygon(rock_pts, fill=(255, 255, 255, 230), outline=(215, 168, 122, 255))
+        # Vân rạn nứt đá cổ
+        s_draw.line([(center - 20, center - 30), (center, center), (center + 25, center + 30)], fill=(100, 70, 40, 255), width=4)
+        s_draw.line([(center, center), (center - 25, center + 25)], fill=(100, 70, 40, 255), width=3)
+    
+    img = Image.alpha_composite(img, shape_img)
+    
+    # 6. Highlight điểm sáng trên đỉnh ngọc (Specular Rim)
+    draw = ImageDraw.Draw(img)
+    draw.arc([center - inner_r + 6, center - inner_r + 6, center + inner_r - 6, center + inner_r - 6], 
+             start=200, end=340, fill=(255, 255, 255, 180), width=4)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Element Badge ({element_type}): {output_path}")
+
+# -------------------------------------------------------------
+# 6. BẢNG ÂM DƯƠNG THÁI CỰC & SLOT TRANG BỊ HUD
+# -------------------------------------------------------------
+def generate_yinyang_board_frame(output_path):
+    """
+    Sinh Bảng Gỗ Mun Cổ Phong 9-Slice (512x160) cho Thanh Trạng Thái Âm Dương Thái Cực:
+    - Viền kim loại đồng thau chạm khắc
+    - 2 đầu nẹp hoa văn Đông Sơn
+    - Nền giấy dó mực khói
+    """
+    w, h = 512, 160
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    # 1. Glow viền ngoài
+    glow_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.rounded_rectangle([6, 6, w - 6, h - 6], radius=24, outline=(255, 215, 0, 90), width=6)
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=6))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Thân nền gỗ mun trầm sẫm
+    draw.rounded_rectangle([12, 12, w - 12, h - 12], radius=18, fill=(21, 19, 26, 235), outline=(201, 168, 106, 255), width=4)
+    
+    # 3. Viền trang trí rãnh chỉ vàng bên trong
+    draw.rounded_rectangle([20, 20, w - 20, h - 20], radius=14, outline=(90, 77, 65, 200), width=2)
+    
+    # 4. Nẹp hoa văn triện đồng ở 2 bên mép trái & phải
+    # Mép trái
+    draw.line([(32, 28), (32, h - 28)], fill=(201, 168, 106, 255), width=3)
+    draw.polygon([(26, h/2 - 15), (38, h/2), (26, h/2 + 15)], fill=(255, 215, 0, 255))
+    
+    # Mép phải
+    draw.line([(w - 32, 28), (w - 32, h - 28)], fill=(201, 168, 106, 255), width=3)
+    draw.polygon([(w - 26, h/2 - 15), (w - 38, h/2), (w - 26, h/2 + 15)], fill=(255, 215, 0, 255))
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(45, 25, 45, 25), pivot=(0.5, 0.5))
+    print(f"Generated YinYang Board Frame: {output_path}")
+
+def generate_weapon_slot_frame(output_path):
+    """
+    Sinh Khung Slot Vũ Khí HUD (128x128) 9-Slice:
+    - Dạng hình thoi vát ngọc bích / đồng thau cổ
+    - 4 góc hoa văn triện
+    """
+    size = 128
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    # 1. Outer Glow
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.rounded_rectangle([4, 4, size - 4, size - 4], radius=16, outline=(77, 238, 234, 110), width=4)
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=4))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Thân nền
+    draw.rounded_rectangle([8, 8, size - 8, size - 8], radius=14, fill=(18, 16, 24, 220), outline=(201, 168, 106, 255), width=3)
+    
+    # 3. Viền ngọc bên trong
+    draw.rounded_rectangle([14, 14, size - 14, size - 14], radius=10, outline=(77, 238, 234, 180), width=2)
+    
+    # 4. Góc kim loại
+    c_len = 12
+    draw.line([(8, 8), (8 + c_len, 8)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(8, 8), (8, 8 + c_len)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(size - 8, 8), (size - 8 - c_len, 8)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(size - 8, 8), (size - 8, 8 + c_len)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(8, size - 8), (8 + c_len, size - 8)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(8, size - 8), (8, size - 8 - c_len)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(size - 8, size - 8), (size - 8 - c_len, size - 8)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(size - 8, size - 8), (size - 8, size - 8 - c_len)], fill=(255, 215, 0, 255), width=3)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(24, 24, 24, 24), pivot=(0.5, 0.5))
+    print(f"Generated Weapon Slot Frame: {output_path}")
+
+# -------------------------------------------------------------
+# 7. NÚT KỸ NĂNG TRẤN PHÁI (SIGNATURE SKILL) & NÚT LƯỚT (DASH)
+# -------------------------------------------------------------
+def generate_signature_skill_button(output_path):
+    """
+    Sinh Nút Kỹ Năng Trấn Phái Bát Giác Cổ Phong 256x256:
+    - Viền ngoài Bát Giác kim loại đồng vàng Đông Sơn chạm khắc phù chú
+    - Nền giấy dó mực nho huyền bí
+    - Biểu tượng Bút Phán Quan phát quang ở tâm
+    """
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    center = size / 2.0
+    r = 112.0
+    
+    # 1. Tọa độ hình bát giác
+    oct_pts = []
+    for i in range(8):
+        angle = math.radians(i * 45 + 22.5)
+        oct_pts.append((center + r * math.cos(angle), center + r * math.sin(angle)))
+    
+    # 2. Outer Glow
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.polygon(oct_pts, outline=(255, 215, 0, 160), fill=(255, 215, 0, 40))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=8))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 3. Thân bát giác kim loại
+    draw.polygon(oct_pts, fill=(24, 20, 28, 245), outline=(201, 168, 106, 255))
+    
+    # 4. Rãnh chỉ vàng bên trong
+    inner_oct_pts = []
+    for i in range(8):
+        angle = math.radians(i * 45 + 22.5)
+        inner_oct_pts.append((center + (r - 12) * math.cos(angle), center + (r - 12) * math.sin(angle)))
+    draw.polygon(inner_oct_pts, outline=(255, 215, 0, 220))
+    
+    # 5. Phù chú 8 cung bát quái ở 8 cạnh
+    for i in range(8):
+        angle = math.radians(i * 45)
+        px = center + (r - 6) * math.cos(angle)
+        py = center + (r - 6) * math.sin(angle)
+        draw.ellipse([px - 4, py - 4, px + 4, py + 4], fill=(255, 215, 0, 255))
+    
+    # 6. Biểu tượng Bút Phán Quan phát quang ở tâm
+    brush_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    b_draw = ImageDraw.Draw(brush_img)
+    
+    # Thân bút lông
+    b_draw.polygon([(center - 8, center + 45), (center + 8, center + 45), (center + 12, center - 10), (center - 12, center - 10)], 
+                   fill=(180, 140, 70, 255), outline=(255, 215, 0, 255))
+    # Đầu ngòi bút lông phát quang
+    b_draw.polygon([(center - 12, center - 10), (center + 12, center - 10), (center, center - 55)], 
+                   fill=(77, 238, 234, 255), outline=(255, 255, 255, 255))
+    # Vệt mực năng lượng
+    b_draw.ellipse([center - 6, center - 58, center + 6, center - 46], fill=(255, 255, 255, 255))
+    
+    img = Image.alpha_composite(img, brush_img)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Signature Skill Button: {output_path}")
+
+def generate_dash_button(output_path):
+    """
+    Sinh Nút Lướt Phi Vân Hài 256x256:
+    - Vòng tròn đồng thau mây lướt
+    - Nền ngọc xanh u linh
+    - Biểu tượng tàn ảnh bước chân mây cuộn
+    """
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    center = size / 2.0
+    r = 108.0
+    
+    # 1. Glow
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.ellipse([center - r - 4, center - r - 4, center + r + 4, center + r + 4], 
+                      fill=(77, 238, 234, 130))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=8))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Vành kim loại
+    draw.ellipse([center - r, center - r, center + r, center + r], 
+                 fill=(20, 24, 32, 240), outline=(201, 168, 106, 255), width=5)
+    
+    # 3. Vòng tròn phụ
+    draw.ellipse([center - r + 10, center - r + 10, center + r - 10, center + r - 10], 
+                 outline=(77, 238, 234, 180), width=2)
+    
+    # 4. Biểu tượng Phi Vân Lướt (Cloud Dash)
+    dash_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d_draw = ImageDraw.Draw(dash_img)
+    
+    # 3 vệt gió tốc độ
+    d_draw.line([(center - 45, center + 30), (center + 15, center - 30)], fill=(77, 238, 234, 220), width=6)
+    d_draw.line([(center - 25, center + 45), (center + 35, center - 15)], fill=(255, 255, 255, 255), width=8)
+    d_draw.line([(center - 5, center + 55), (center + 50, center)], fill=(77, 238, 234, 180), width=4)
+    
+    # Đám mây cuộn tàn ảnh
+    d_draw.arc([center - 40, center - 20, center + 10, center + 30], start=120, end=330, fill=(255, 215, 0, 255), width=4)
+    d_draw.arc([center + 5, center - 40, center + 45, center], start=180, end=360, fill=(255, 255, 255, 255), width=5)
+    
+    img = Image.alpha_composite(img, dash_img)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Dash Button: {output_path}")
+
+# -------------------------------------------------------------
+# 8. KHUNG NỀN BANNER GÓC TRÊN (TOP LEFT & TOP RIGHT PANELS)
+# -------------------------------------------------------------
+def generate_top_scroll_frame(output_path):
+    """
+    Sinh Khung Cuộn Gỗ Mun Thau Cổ 9-Slice (512x256) cho Panel_TopLeft và Panel_TopRight:
+    - Nền giấy dó nhuộm khói bán trong suốt (Alpha 65%)
+    - Viền kim loại đồng thau chạm rãnh mây cuộn
+    - Bo góc mềm mại, không che khuất tầm nhìn góc trên
+    """
+    w, h = 512, 256
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    # 1. Glow viền ngoài nhẹ
+    glow_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.rounded_rectangle([6, 6, w - 6, h - 6], radius=20, outline=(201, 168, 106, 80), width=4)
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=6))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Thân nền giấy dó khói tối bán trong suốt (Readability First)
+    draw.rounded_rectangle([10, 10, w - 10, h - 10], radius=16, fill=(18, 16, 22, 175), outline=(201, 168, 106, 230), width=3)
+    
+    # 3. Viền trang trí rãnh chỉ vàng bên trong
+    draw.rounded_rectangle([18, 18, w - 18, h - 18], radius=12, outline=(90, 77, 65, 140), width=2)
+    
+    # 4. Hoa văn góc triện đồng Đông Sơn 4 góc
+    c_len = 20
+    # Góc trên trái
+    draw.line([(10, 10), (10 + c_len, 10)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(10, 10), (10, 10 + c_len)], fill=(255, 215, 0, 255), width=3)
+    # Góc trên phải
+    draw.line([(w - 10, 10), (w - 10 - c_len, 10)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(w - 10, 10), (w - 10, 10 + c_len)], fill=(255, 215, 0, 255), width=3)
+    # Góc dưới trái
+    draw.line([(10, h - 10), (10 + c_len, h - 10)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(10, h - 10), (10, h - 10 - c_len)], fill=(255, 215, 0, 255), width=3)
+    # Góc dưới phải
+    draw.line([(w - 10, h - 10), (w - 10 - c_len, h - 10)], fill=(255, 215, 0, 255), width=3)
+    draw.line([(w - 10, h - 10), (w - 10, h - 10 - c_len)], fill=(255, 215, 0, 255), width=3)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(32, 32, 32, 32), pivot=(0.5, 0.5))
+    print(f"Generated Top Scroll Frame: {output_path}")
+
+# -------------------------------------------------------------
+# 9. ICON THẺ NÂNG CẤP (VŨ KHÍ, NỘI CÔNG PASSIVES, TIẾN HÓA)
+# -------------------------------------------------------------
+def make_base_upgrade_icon(bg_color, rim_color):
+    size = 128
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    center = size / 2.0
+    r = 54.0
+    
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    g_draw = ImageDraw.Draw(glow_img)
+    g_draw.ellipse([center - r - 4, center - r - 4, center + r + 4, center + r + 4], fill=rim_color + (130,))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=4))
+    img = Image.alpha_composite(img, glow_img)
+    
+    draw = ImageDraw.Draw(img)
+    draw.ellipse([center - r, center - r, center + r, center + r], fill=bg_color + (240,), outline=rim_color + (255,), width=4)
+    draw.ellipse([center - r + 8, center - r + 8, center + r - 8, center + r - 8], outline=(255, 255, 255, 120), width=2)
+    return img, center
+
+def generate_weapon_upgrade_icon(output_path, w_type):
+    img, c = make_base_upgrade_icon((20, 24, 35), (77, 238, 234))
+    draw = ImageDraw.Draw(img)
+    
+    if w_type == "crossbow": # Nỏ Thần
+        draw.line([(c - 30, c + 10), (c + 30, c + 10)], fill=(255, 215, 0, 255), width=4)
+        draw.arc([c - 30, c - 20, c + 30, c + 20], start=180, end=360, fill=(201, 168, 106, 255), width=5)
+        draw.line([(c, c - 30), (c, c + 35)], fill=(77, 238, 234, 255), width=4)
+        draw.polygon([(c, c - 35), (c + 8, c - 20), (c - 8, c - 20)], fill=(255, 255, 255, 255))
+    elif w_type == "brush": # Bút Phán Quan
+        draw.polygon([(c - 6, c + 35), (c + 6, c + 35), (c + 8, c - 10), (c - 8, c - 10)], fill=(180, 140, 70, 255))
+        draw.polygon([(c - 8, c - 10), (c + 8, c - 10), (c, c - 35)], fill=(77, 238, 234, 255))
+        draw.ellipse([c - 4, c - 38, c + 4, c - 30], fill=(255, 255, 255, 255))
+    elif w_type == "talisman": # Bùa Trấn Yêu
+        draw.rectangle([c - 20, c - 30, c + 20, c + 30], fill=(232, 196, 104, 255), outline=(184, 68, 44, 255), width=2)
+        draw.line([(c, c - 20), (c, c + 20)], fill=(184, 68, 44, 255), width=3)
+        draw.line([(c - 12, c - 10), (c + 12, c - 10)], fill=(184, 68, 44, 255), width=3)
+    elif w_type == "drum": # Trống Đồng
+        draw.ellipse([c - 28, c - 28, c + 28, c + 28], fill=(201, 168, 106, 255), outline=(255, 215, 0, 255), width=3)
+        draw.ellipse([c - 18, c - 18, c + 18, c + 18], outline=(100, 70, 30, 255), width=2)
+        draw.polygon([(c, c - 10), (c + 10, c), (c, c + 10), (c - 10, c)], fill=(255, 215, 0, 255))
+    elif w_type == "sword": # Đao / Kiếm
+        draw.line([(c - 25, c + 25), (c + 25, c - 25)], fill=(255, 255, 255, 255), width=6)
+        draw.line([(c - 30, c + 30), (c - 20, c + 20)], fill=(201, 168, 106, 255), width=8)
+        draw.polygon([(c + 25, c - 25), (c + 32, c - 32), (c + 18, c - 25)], fill=(255, 215, 0, 255))
+    else: # Phi Tiêu / Pháp Bảo khác
+        draw.polygon([(c, c - 30), (c + 30, c), (c, c + 30), (c - 30, c)], fill=(77, 238, 234, 255), outline=(255, 215, 0, 255), width=3)
+        draw.ellipse([c - 8, c - 8, c + 8, c + 8], fill=(255, 255, 255, 255))
+        
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Upgrade Icon: {output_path}")
+
+def generate_passive_upgrade_icon(output_path, p_type):
+    img, c = make_base_upgrade_icon((25, 20, 30), (255, 215, 0))
+    draw = ImageDraw.Draw(img)
+    
+    if p_type == "damage": # Sát thương
+        draw.polygon([(c, c - 35), (c + 25, c + 25), (c, c + 10), (c - 25, c + 25)], fill=(235, 60, 60, 255), outline=(255, 215, 0, 255), width=2)
+    elif p_type == "health": # Hồi máu / Chuông
+        draw.polygon([(c - 20, c + 15), (c + 20, c + 15), (c + 12, c - 20), (c - 12, c - 20)], fill=(76, 122, 61, 255), outline=(255, 215, 0, 255), width=3)
+        draw.ellipse([c - 6, c + 18, c + 6, c + 26], fill=(255, 215, 0, 255))
+    elif p_type == "speed": # Tốc độ
+        draw.arc([c - 25, c - 25, c + 25, c + 25], start=120, end=330, fill=(77, 238, 234, 255), width=5)
+        draw.line([(c - 20, c + 10), (c + 25, c - 15)], fill=(255, 255, 255, 255), width=6)
+    elif p_type == "armor": # Giáp
+        draw.polygon([(c, c - 30), (c + 25, c - 15), (c + 20, c + 20), (c, c + 35), (c - 20, c + 20), (c - 25, c - 15)], fill=(140, 98, 57, 255), outline=(255, 215, 0, 255), width=3)
+    elif p_type == "magnet": # Túi hút hồn
+        draw.ellipse([c - 20, c - 25, c + 20, c + 25], fill=(46, 110, 158, 255), outline=(77, 238, 234, 255), width=3)
+        draw.line([(c - 15, c - 5), (c + 15, c - 5)], fill=(255, 255, 255, 255), width=4)
+    else: # May mắn / Ngọc
+        draw.polygon([(c, c - 28), (c + 20, c - 10), (c + 20, c + 15), (c, c + 28), (c - 20, c + 15), (c - 20, c - 10)], fill=(76, 122, 61, 255), outline=(255, 255, 255, 255), width=3)
+        
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Passive Icon: {output_path}")
+
+def generate_evolution_upgrade_icon(output_path):
+    img, c = make_base_upgrade_icon((35, 25, 15), (255, 215, 0))
+    draw = ImageDraw.Draw(img)
+    # Hào quang Bát Quái / Kim Long Thần Thoại
+    for i in range(8):
+        ang = math.radians(i * 45)
+        p1 = (c + 25 * math.cos(ang), c + 25 * math.sin(ang))
+        p2 = (c + 42 * math.cos(ang), c + 42 * math.sin(ang))
+        draw.line([p1, p2], fill=(255, 215, 0, 255), width=4)
+    draw.ellipse([c - 22, c - 22, c + 22, c + 22], fill=(255, 245, 150, 255), outline=(201, 168, 106, 255), width=3)
+    draw.polygon([(c, c - 14), (c + 14, c), (c, c + 14), (c - 14, c)], fill=(184, 68, 44, 255))
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Evolution Icon: {output_path}")
+
+# -------------------------------------------------------------
 # MAIN GENERATOR PIPELINE
 # -------------------------------------------------------------
 if __name__ == "__main__":
@@ -339,15 +848,53 @@ if __name__ == "__main__":
     generate_joystick_base(os.path.join(JOYSTICK_DIR, "Joystick_Base_DongSon.png"))
     generate_joystick_knob(os.path.join(JOYSTICK_DIR, "Joystick_Knob_Taiji.png"))
     
-    # 3. HUD Bars
+    # 3. HUD Bars & YinYang Board & Weapon Slots & Handles
     generate_hud_bar_frame(os.path.join(HUD_DIR, "Frame_HUD_Bar.png"))
     generate_hud_bar_fill(os.path.join(HUD_DIR, "Fill_HP_ChuSa.png"), 
                           color_top=(235, 60, 60), color_bot=(140, 20, 20), glow_line=(255, 160, 160))
     generate_hud_bar_fill(os.path.join(HUD_DIR, "Fill_EXP_LamNgoc.png"), 
                           color_top=(60, 240, 230), color_bot=(15, 110, 120), glow_line=(180, 255, 250))
+    generate_yinyang_fill(os.path.join(HUD_DIR, "Fill_YinYang_Taiji.png"))
+    generate_slider_handle(os.path.join(HUD_DIR, "Handle_LinhChau_DongThau.png"))
+    generate_yinyang_board_frame(os.path.join(HUD_DIR, "Frame_YinYang_Taiji.png"))
+    generate_weapon_slot_frame(os.path.join(HUD_DIR, "Slot_Weapon_Equipped.png"))
+    generate_top_scroll_frame(os.path.join(HUD_DIR, "Frame_Panel_Top_Scroll.png"))
     
     # 4. Buttons
     generate_primary_button(os.path.join(BUTTONS_DIR, "Btn_Primary_Normal.png"), normal=True)
     generate_primary_button(os.path.join(BUTTONS_DIR, "Btn_Primary_Pressed.png"), normal=False)
+    
+    # 5. Bộ 5 Linh Châu Ngũ Hành
+    generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Kim.png"), 
+                           element_type="Kim", main_color=(232, 196, 104), glow_color=(255, 243, 196))
+    generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Moc.png"), 
+                           element_type="Moc", main_color=(76, 122, 61), glow_color=(143, 201, 122))
+    generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Thuy.png"), 
+                           element_type="Thuy", main_color=(46, 110, 158), glow_color=(127, 203, 234))
+    generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Hoa.png"), 
+                           element_type="Hoa", main_color=(184, 68, 44), glow_color=(255, 138, 80))
+    generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Tho.png"), 
+                           element_type="Tho", main_color=(140, 98, 57), glow_color=(215, 168, 122))
+    
+    # 6. Nút Kỹ Năng Trấn Phái & Nút Lướt
+    generate_signature_skill_button(os.path.join(SKILLS_DIR, "Btn_Signature_Skill_PhanQuan.png"))
+    generate_dash_button(os.path.join(SKILLS_DIR, "Btn_Dash_PhiVan.png"))
+    
+    # 7. Bộ Icon Thẻ Nâng Cấp (Upgrades)
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W001_NoThan.png"), "crossbow")
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W002_ButPhanQuan.png"), "brush")
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W003_BuaTranYeu.png"), "talisman")
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W005_TrongDong.png"), "drum")
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W008_DaoCuuVi.png"), "sword")
+    generate_weapon_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_W012_PhiTieuBatQuai.png"), "dart")
+    
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P001_Damage.png"), "damage")
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P003_Health.png"), "health")
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P006_Speed.png"), "speed")
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P007_Armor.png"), "armor")
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P010_Magnet.png"), "magnet")
+    generate_passive_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_P012_Luck.png"), "luck")
+    
+    generate_evolution_upgrade_icon(os.path.join(UPGRADE_ICONS_DIR, "Icon_Evolutions_General.png"))
     
     print("=== UI ASSETS & 9-SLICE METAS GENERATED SUCCESSFULLY ===")

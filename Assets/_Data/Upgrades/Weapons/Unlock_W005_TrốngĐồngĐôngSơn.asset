@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "M\u1EDF kh\xF3a: Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng
     S\u01A1n v\xE0o trang b\u1ECB active."
-  icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
+  icon: {fileID: 21300000, guid: 98e10884571143c8abee7e07871e8c7e, type: 3}
   upgradeType: 0
   spawnWeight: 5
   maxLevel: 0

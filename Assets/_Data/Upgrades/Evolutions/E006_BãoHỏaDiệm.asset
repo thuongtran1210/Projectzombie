@@ -15,7 +15,7 @@ MonoBehaviour:
   upgradeName: "B\xE3o H\u1ECFa Di\u1EC7m"
   description: "N\u1ED5 b\xE1n k\xEDnh 5.0m \u0111\u1EC3 l\u1EA1i v\xF9ng l\u1EEDa
     thi\xEAu r\u1EE5i 3s + Knockback c\u1EF1c m\u1EA1nh."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
   upgradeType: 5
   spawnWeight: 100
   maxLevel: 0
