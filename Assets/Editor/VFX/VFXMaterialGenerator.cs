@@ -54,6 +54,11 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_FireSlash_Sparks", "Spark_Streak.png", true);
             CreateEnemyHitFlashMaterial("MAT_Enemy_HitFlash_Default");
 
+            // 6. Thanh Đồng Specific Materials (Mồi Lửa Định Hướng, Vòng Trận Tứ Phủ, Sóng Phán Truyền)
+            CreateParticleMaterial("MAT_TorchFlame_Bullet", "Tex_VFX_TorchFlame_Bullet.png", true);
+            CreateParticleMaterial("MAT_TuPhu_PossessionCircle", "Tex_VFX_TuPhu_PossessionCircle.png", true);
+            CreateParticleMaterial("MAT_Oracle_Shockwave", "Tex_VFX_Oracle_Shockwave.png", true);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("<color=#00FF00>[VFX Material Generator]</color> Đã tạo & nạp toàn bộ Materials URP cho trọn bộ 12 Pháp Bảo!");

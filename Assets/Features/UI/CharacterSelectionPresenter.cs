@@ -111,11 +111,11 @@ namespace ProjectZombie.Features.UI
                     name = "Thanh Đồng",
                     element = ElementType.Moc,
                     elementHexColor = "#4C7A3D",
-                    description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tích lũy Linh Lực Tứ Phủ để thỉnh Thánh giáng thế.",
+                    description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tay mang Chuỗi Linh Phù Tứ Phủ hộ thân trừ tà.",
                     signatureSkillName = "Giá Đồng Tứ Phủ",
-                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Hộ thân) trong 5s.",
+                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Giáp hộ thân) trong 5s.",
                     passiveTraitName = "Linh Lực Tứ Phủ",
-                    passiveTraitDesc = "Mỗi đòn đánh tích lũy Linh Lực. Khi đạt 100 điểm, tự động giải trừ mọi hiệu ứng khống chế bất lợi."
+                    passiveTraitDesc = "Thu thập Linh Khí tích lũy thanh Linh Lực Tứ Phủ. Khi kích hoạt Giá Đồng, nhận đồng thời hiệu ứng hộ trì của cả 4 cõi thần linh."
                 },
                 new CharacterInfo
                 {

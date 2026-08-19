@@ -40,7 +40,7 @@ namespace ProjectZombie.Features.Player.Skills.Editor
             soThuSinh.ApplyModifiedProperties();
             Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {thuSinhPath}");
 
-            // 2. Thanh Đồng - Giá Đồng (Hầu Đồng Tứ Phủ - Hồi chiêu: 30s)
+            // 2. Thanh Đồng - Giá Đồng Tứ Phủ (Hầu Đồng Tứ Phủ - Hồi chiêu: 30s)
             string thanhDongPath = $"{folderPath}/ThanhDongSignatureSkill.asset";
             var thanhDong = AssetDatabase.LoadAssetAtPath<ThanhDongSkillData>(thanhDongPath);
             if (thanhDong == null)
@@ -49,8 +49,8 @@ namespace ProjectZombie.Features.Player.Skills.Editor
                 AssetDatabase.CreateAsset(thanhDong, thanhDongPath);
             }
             SerializedObject soThanhDong = new SerializedObject(thanhDong);
-            soThanhDong.FindProperty("_skillName").stringValue = "Giá Đồng";
-            soThanhDong.FindProperty("_description").stringValue = "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ), nhận hào quang & buff sắc phục Tứ Phủ trong 5s, đồng thời ép Cán cân Âm Dương về 50 (Thái Cực) mở cơ hội gacha thẻ Evolution (Cooldown: 30s).";
+            soThanhDong.FindProperty("_skillName").stringValue = "Giá Đồng Tứ Phủ";
+            soThanhDong.FindProperty("_description").stringValue = "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ), nhận hào quang & buff sắc phục 4 cõi trong 5s (Cooldown: 30s).";
             soThanhDong.FindProperty("_baseCooldown").floatValue = 30f;
             soThanhDong.ApplyModifiedProperties();
             Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {thanhDongPath}");

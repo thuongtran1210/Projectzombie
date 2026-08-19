@@ -5,9 +5,13 @@ using ProjectZombie.Features.YinYang;
 namespace ProjectZombie.Features.Player.Skills
 {
     /// <summary>
-    /// Kỹ năng Chủ động Thanh Đồng: "Giá Đồng" (Hầu Đồng Tứ Phủ — Mục 3.1.2 GDD v4.0).
+    /// Kỹ năng Chủ động Thanh Đồng: "Giá Đồng Tứ Phủ" (Mục 3.1.2 GDD 3.0).
     /// Bán kính hiệu lực: 4.5m, Thời lượng 5s, Cooldown 30s.
-    /// Thỉnh nhập Thánh Tứ Phủ (Thiên, Nhạc, Thoải, Địa), ban buff hào quang thuộc tính & ép cân bằng Âm Dương về 50.
+    /// Thỉnh nhập Thánh Tứ Phủ (Thiên, Nhạc, Thoải, Địa), ban buff hào quang 4 cõi:
+    /// - Thiên Phủ (Hỏa): +30% Sát thương bộc phát
+    /// - Nhạc Phủ (Mộc): +40% Tốc độ di chuyển & đẩy lùi quái
+    /// - Thoải Phủ (Thủy): -25% Hồi chiêu toàn bộ vũ khí & làm chậm quái
+    /// - Địa Phủ (Thổ): Giảm 50% sát thương nhận vào
     /// </summary>
     public class ThanhDongSignatureSkill : SignatureSkillBase
     {
@@ -24,7 +28,13 @@ namespace ProjectZombie.Features.Player.Skills
         {
             if (playerObj == null) return;
 
-            // Thỉnh nhập cõi Tứ Phủ (Thiên Phủ - Hỏa / Nhạc Phủ - Mộc / Thoải Phủ - Thủy / Địa Phủ - Thổ)
+            // Kích hoạt trạng thái Thánh Giáng Ngự trên tracker nếu có
+            if (playerObj.TryGetComponent<Mechanics.ThanhDongPossessionTracker>(out var possessionTracker))
+            {
+                possessionTracker.TriggerPossession();
+            }
+
+            // Callback chọn cõi Tứ Phủ đại diện (Nhạc Phủ - Mộc Bổn Mệnh)
             ElementType selectedTuPhuRealm = ElementType.Moc;
             onElementSelectedCallback?.Invoke(selectedTuPhuRealm);
 
@@ -33,36 +43,6 @@ namespace ProjectZombie.Features.Player.Skills
             if (_auraPrefab != null)
             {
                 Object.Instantiate(_auraPrefab, spawnPos, Quaternion.identity, playerObj.transform);
-            }
-            else
-            {
-                // Fallback tạo hiệu ứng hào quang Giá Đồng Tứ Phủ
-                GameObject auraObj = new GameObject("GiaDongTuPhuAura_Dynamic");
-                auraObj.transform.SetParent(playerObj.transform);
-                auraObj.transform.localPosition = Vector3.zero;
-
-                var lineRenderer = auraObj.AddComponent<LineRenderer>();
-                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-
-                // Phối màu Tứ Phủ đại diện (Nhạc Phủ - Xanh Mộc #4C7A3D)
-                Color tuPhuColor = new Color(0.3f, 0.48f, 0.24f, 0.8f);
-                lineRenderer.startColor = tuPhuColor;
-                lineRenderer.endColor = tuPhuColor;
-                lineRenderer.startWidth = 0.1f;
-                lineRenderer.endWidth = 0.1f;
-                lineRenderer.useWorldSpace = false;
-
-                // Vẽ vòng tròn Hào Quang Tứ Phủ
-                int steps = 24;
-                lineRenderer.positionCount = steps + 1;
-                float radius = 4.5f;
-                for (int i = 0; i <= steps; i++)
-                {
-                    float angle = i * (Mathf.PI * 2.0f / steps);
-                    lineRenderer.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0));
-                }
-
-                Object.Destroy(auraObj, 5.0f);
             }
         }
     }

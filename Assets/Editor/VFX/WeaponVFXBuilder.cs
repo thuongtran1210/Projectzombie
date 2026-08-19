@@ -125,15 +125,29 @@ namespace ProjectZombie.Editor.VFX
             GameObject swampAsset = PrefabUtility.SaveAsPrefabAsset(poisonSwamp, swampPath);
             GameObject.DestroyImmediate(poisonSwamp);
 
-            WireW010ProjectilePrefab(swampAsset);
+            // --- 12. THANH ĐỒNG: VÒNG TRẬN TỨ PHỦ, MỒI LỬA & SÓNG PHÁN TRUYỀN ---
+            GameObject torchFlame = CreateTorchFlameStreamPrefab();
+            string torchFlamePath = $"{PREFAB_FOLDER}/VFX_ThanhDong_TorchFlame.prefab";
+            PrefabUtility.SaveAsPrefabAsset(torchFlame, torchFlamePath);
+            GameObject.DestroyImmediate(torchFlame);
 
-            // --- 12. GÁN SPRITE 2D VÀO VISUAL_ROOT CHO TOÀN BỘ ĐẠN ---
+            GameObject tuPhuAura = CreateTuPhuPossessionCirclePrefab();
+            string tuPhuAuraPath = $"{PREFAB_FOLDER}/VFX_ThanhDong_TuPhuPossessionAura.prefab";
+            PrefabUtility.SaveAsPrefabAsset(tuPhuAura, tuPhuAuraPath);
+            GameObject.DestroyImmediate(tuPhuAura);
+
+            GameObject oracleWave = CreateOracleShockwavePrefab();
+            string oracleWavePath = $"{PREFAB_FOLDER}/VFX_ThanhDong_OracleShockwave.prefab";
+            PrefabUtility.SaveAsPrefabAsset(oracleWave, oracleWavePath);
+            GameObject.DestroyImmediate(oracleWave);
+
+            // --- 13. GÁN SPRITE 2D VÀO VISUAL_ROOT CHO TOÀN BỘ ĐẠN ---
             SetupProjectileVisualRoots();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> ĐÃ HOÀN TẤT SETUP SPRITE VISUAL_ROOT VÀ AUTO-WIRE TRỌN BỘ 12/12 PHÁP BẢO!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> ĐÃ HOÀN TẤT SETUP SPRITE VISUAL_ROOT VÀ AUTO-WIRE TRỌN BỘ PHÁP BẢO & KỸ NĂNG THANH ĐỒNG!");
         }
 
         private static void SetupProjectileVisualRoots()
@@ -1289,6 +1303,141 @@ namespace ProjectZombie.Editor.VFX
 
             Material swampMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Decal_PoisonSwamp.mat");
             if (swampMat != null) renderer.sharedMaterial = swampMat;
+
+            return root;
+        }
+
+        public static GameObject CreateTorchFlameStreamPrefab()
+        {
+            GameObject root = new GameObject("VFX_ThanhDong_TorchFlame");
+            root.AddComponent<VFXPoolResetter>();
+
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 1.0f;
+            main.loop = false;
+            main.startLifetime = 0.45f;
+            main.startSpeed = 8f;
+            main.startSize = 1.2f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.rateOverTime = 25f;
+
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 25f;
+            shape.radius = 0.2f;
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.4f, 0.1f), 0.6f), new GradientColorKey(new Color(0.8f, 0.1f, 0.05f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0.0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var sizeOverLife = ps.sizeOverLifetime;
+            sizeOverLife.enabled = true;
+            AnimationCurve sizeCurve = new AnimationCurve();
+            sizeCurve.AddKey(0f, 0.4f);
+            sizeCurve.AddKey(1f, 1.4f);
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingOrder = 10;
+
+            Material flameMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_TorchFlame_Bullet.mat");
+            if (flameMat != null) renderer.sharedMaterial = flameMat;
+
+            return root;
+        }
+
+        public static GameObject CreateTuPhuPossessionCirclePrefab()
+        {
+            GameObject root = new GameObject("VFX_ThanhDong_TuPhuPossessionAura");
+            root.AddComponent<VFXPoolResetter>();
+
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 8.0f;
+            main.loop = false;
+            main.startLifetime = 8.0f;
+            main.startSpeed = 0f;
+            main.startSize = 5.0f;
+            main.startRotation = 0f;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+
+            var emission = ps.emission;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 1) });
+
+            var rotOverLife = ps.rotationOverLifetime;
+            rotOverLife.enabled = true;
+            rotOverLife.z = new ParticleSystem.MinMaxCurve(1.5f); // Xoay vòng tròn linh lực
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.85f, 0.3f), 0.5f), new GradientColorKey(new Color(1f, 0.5f, 0.2f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.0f, 0.0f), new GradientAlphaKey(0.9f, 0.15f), new GradientAlphaKey(0.9f, 0.85f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Back";
+            renderer.sortingOrder = -40;
+
+            Material circleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_TuPhu_PossessionCircle.mat");
+            if (circleMat != null) renderer.sharedMaterial = circleMat;
+
+            return root;
+        }
+
+        public static GameObject CreateOracleShockwavePrefab()
+        {
+            GameObject root = new GameObject("VFX_ThanhDong_OracleShockwave");
+            root.AddComponent<VFXPoolResetter>();
+
+            ParticleSystem ps = root.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 0.6f;
+            main.loop = false;
+            main.startLifetime = 0.5f;
+            main.startSpeed = 0f;
+            main.startSize = 1.0f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = ps.emission;
+            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 1) });
+
+            var sizeOverLife = ps.sizeOverLifetime;
+            sizeOverLife.enabled = true;
+            AnimationCurve sizeCurve = new AnimationCurve();
+            sizeCurve.AddKey(0f, 1f);
+            sizeCurve.AddKey(1f, 15f); // Sóng lan tỏa toàn map
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+
+            var colorOverLife = ps.colorOverLifetime;
+            colorOverLife.enabled = true;
+            Gradient grad = new Gradient();
+            grad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.9f, 0.4f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            colorOverLife.color = grad;
+
+            var renderer = root.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.sortingLayerName = "VFX_Front";
+            renderer.sortingOrder = 20;
+
+            Material waveMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Oracle_Shockwave.mat");
+            if (waveMat != null) renderer.sharedMaterial = waveMat;
 
             return root;
         }
