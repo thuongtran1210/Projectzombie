@@ -73,7 +73,9 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                 var col = _explosionBuffer[i];
                 if (col == null) continue;
 
-                // Tránh tự nổ trúng bản thân hoặc đồng minh
+                // Tránh tự nổ trúng bản thân, MagnetArea hoặc đồng minh
+                if (col.gameObject.name == "[MagnetArea]" || col.GetComponent<Player.MagnetTriggerProxy>() != null) continue;
+
                 if (_controller.Owner != null)
                 {
                     if (col.gameObject == _controller.Owner || col.transform.root == _controller.Owner.transform.root) continue;
@@ -81,7 +83,10 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
                 if (isPlayerSource)
                 {
-                    if (col.CompareTag("Player") || col.transform.root.CompareTag("Player")) continue;
+                    if (col.CompareTag("Player") || 
+                        col.transform.root.CompareTag("Player") ||
+                        col.GetComponentInParent<Player.PlayerController>() != null ||
+                        col.GetComponentInParent<Player.PlayerStats>() != null) continue;
                 }
                 else
                 {

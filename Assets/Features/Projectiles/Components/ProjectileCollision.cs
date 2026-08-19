@@ -39,11 +39,19 @@ namespace ProjectZombie.Features.Projectiles.Components
                 }
             }
 
+            // 1.1. Bỏ qua riêng biệt đối tượng child [MagnetArea] (chỉ để hút gem)
+            if (collision.gameObject.name == "[MagnetArea]" || collision.GetComponent<Player.MagnetTriggerProxy>() != null)
+            {
+                return;
+            }
+
             // 2. Xác định phe phát đạn (Player hay Enemy)
             bool isPlayerSource = true;
             if (_controller.Owner != null)
             {
-                if (_controller.Owner.CompareTag("Enemy") || _controller.Owner.GetComponent<Enemies.Enemy>() != null)
+                if (_controller.Owner.CompareTag("Enemy") || 
+                    _controller.Owner.GetComponent<Enemies.Enemy>() != null ||
+                    _controller.Owner.GetComponentInParent<Enemies.Enemy>() != null)
                 {
                     isPlayerSource = false;
                 }
@@ -52,8 +60,11 @@ namespace ProjectZombie.Features.Projectiles.Components
             // 3. Phân luồng lọc va chạm theo phe để triệt tiêu việc tự gây sát thương
             if (isPlayerSource)
             {
-                // Đạn của Pháp Bảo (Player) -> TUYỆT ĐỐI KHÔNG GÂY SÁT THƯƠNG CHO PLAYER
-                if (collision.CompareTag("Player") || collision.transform.root.CompareTag("Player"))
+                // Đạn của Pháp Bảo (Player) -> TUYỆT ĐỐI KHÔNG GÂY SÁT THƯƠNG HOẶC VA CHẠM VỚI PLAYER
+                if (collision.CompareTag("Player") || 
+                    collision.transform.root.CompareTag("Player") ||
+                    collision.GetComponentInParent<Player.PlayerController>() != null ||
+                    collision.GetComponentInParent<Player.PlayerStats>() != null)
                 {
                     return;
                 }
@@ -61,9 +72,10 @@ namespace ProjectZombie.Features.Projectiles.Components
                 // Chỉ nhận va chạm nếu là Enemy hoặc có IDamageable (khác Player)
                 bool isEnemy = collision.CompareTag("Enemy") || 
                                collision.GetComponent<Enemies.Enemy>() != null ||
+                               collision.GetComponentInParent<Enemies.Enemy>() != null ||
                                collision.gameObject.layer == LayerMask.NameToLayer("Enemy");
 
-                if (!isEnemy && !collision.TryGetComponent(out IDamageable _))
+                if (!isEnemy && collision.GetComponent<IDamageable>() == null && collision.GetComponentInParent<IDamageable>() == null)
                 {
                     return;
                 }
@@ -71,13 +83,20 @@ namespace ProjectZombie.Features.Projectiles.Components
             else
             {
                 // Đạn của Quái vật -> TUYỆT ĐỐI KHÔNG GÂY SÁT THƯƠNG CHO QUÁI VẬT KHÁC
-                if (collision.CompareTag("Enemy") || collision.transform.root.CompareTag("Enemy"))
+                if (collision.CompareTag("Enemy") || 
+                    collision.transform.root.CompareTag("Enemy") ||
+                    collision.GetComponentInParent<Enemies.Enemy>() != null)
                 {
                     return;
                 }
 
                 // Chỉ nhận va chạm nếu là Player
-                if (!collision.CompareTag("Player") && !collision.transform.root.CompareTag("Player"))
+                bool isPlayer = collision.CompareTag("Player") || 
+                                collision.transform.root.CompareTag("Player") ||
+                                collision.GetComponentInParent<Player.PlayerController>() != null ||
+                                collision.GetComponentInParent<Player.PlayerStats>() != null;
+
+                if (!isPlayer)
                 {
                     return;
                 }
@@ -105,10 +124,19 @@ namespace ProjectZombie.Features.Projectiles.Components
             Core.ProjectileEventContext context = new Core.ProjectileEventContext(_controller, collision, hitPoint, hitNormal);
 
             // 5. Gây sát thương lên mục tiêu
-            if (collision.TryGetComponent(out IDamageable damageableTarget))
+            IDamageable damageableTarget = collision.GetComponent<IDamageable>();
+            if (damageableTarget == null)
+            {
+                damageableTarget = collision.GetComponentInParent<IDamageable>();
+            }
+
+            if (damageableTarget != null)
             {
                 ElementType defenderElement = ElementType.None;
-                if (collision.TryGetComponent(out Enemies.Enemy enemy))
+                Enemies.Enemy enemy = collision.GetComponent<Enemies.Enemy>();
+                if (enemy == null) enemy = collision.GetComponentInParent<Enemies.Enemy>();
+
+                if (enemy != null)
                 {
                     defenderElement = enemy.CurrentElement;
                 }

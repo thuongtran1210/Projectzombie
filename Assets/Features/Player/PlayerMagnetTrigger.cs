@@ -48,7 +48,20 @@ namespace ProjectZombie.Features.Player
             {
                 var childObj = new GameObject("[MagnetArea]");
                 childObj.transform.SetParent(transform, false);
+                childObj.tag = "Player";
+
+                int pickupLayer = LayerMask.NameToLayer("Pickup");
+                if (pickupLayer < 0) pickupLayer = LayerMask.NameToLayer("Ignore Raycast");
+                if (pickupLayer >= 0) childObj.layer = pickupLayer;
+
                 magnetChild = childObj.transform;
+            }
+            else
+            {
+                magnetChild.tag = "Player";
+                int pickupLayer = LayerMask.NameToLayer("Pickup");
+                if (pickupLayer < 0) pickupLayer = LayerMask.NameToLayer("Ignore Raycast");
+                if (pickupLayer >= 0) magnetChild.gameObject.layer = pickupLayer;
             }
 
             _magnetCollider = magnetChild.GetComponent<CircleCollider2D>();
