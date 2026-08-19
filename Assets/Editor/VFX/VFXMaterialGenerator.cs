@@ -54,10 +54,11 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_FireSlash_Sparks", "Spark_Streak.png", true);
             CreateEnemyHitFlashMaterial("MAT_Enemy_HitFlash_Default");
 
-            // 6. Thanh Đồng Specific Materials (Mồi Lửa Định Hướng, Vòng Trận Tứ Phủ, Sóng Phán Truyền)
+            // 6. Thanh Đồng Specific Materials (Mồi Lửa Định Hướng, Vòng Trận Tứ Phủ, Sóng Phán Truyền, Khói Xung Kích)
             CreateParticleMaterial("MAT_TorchFlame_Bullet", "Tex_VFX_TorchFlame_Bullet.png", true);
             CreateParticleMaterial("MAT_TuPhu_PossessionCircle", "Tex_VFX_TuPhu_PossessionCircle.png", true);
             CreateParticleMaterial("MAT_Oracle_Shockwave", "Tex_VFX_Oracle_Shockwave.png", true);
+            CreateParticleMaterial("MAT_Oracle_ShockwaveSmoke", "Tex_VFX_Shockwave_SmokePuff.png", false);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -71,6 +72,7 @@ namespace ProjectZombie.Editor.VFX
             string[] candidateDirs = new string[]
             {
                 TEXTURE_FOLDER,
+                "Assets/Art/VFX",
                 "Assets/Art/Skills",
                 "Assets/Art/Weapons",
                 "Assets/Art/Projectiles",

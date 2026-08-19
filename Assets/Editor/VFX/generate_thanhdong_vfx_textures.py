@@ -104,25 +104,97 @@ def generate_tu_phu_possession_circle():
     print(f"Generated: {out_path}")
 
 def generate_oracle_shockwave():
-    """Tạo Sóng Chấn Động Phán Truyền Trừ Tà (Shockwave Ring)."""
-    size = 256
+    """
+    Tạo Texture Sóng Xung Kích Khí Ba (High-Energy Anime Shockwave) 512x512.
+    - Mép ngoài sắc nét, nén khí siêu cao (Sharp Pure White Rim).
+    - Thân sóng chuyển sắc vàng kim linh lực (Golden Energy Falloff).
+    - Các đường vân sóng phụ đồng tâm (Layered Sonic Ripples).
+    """
+    size = 512
+    arr = np.zeros((size, size, 4), dtype=np.float32)
+    cx, cy = size / 2.0, size / 2.0
+    
+    y_coords, x_coords = np.ogrid[:size, :size]
+    dist_from_center = np.sqrt((x_coords - cx) ** 2 + (y_coords - cy) ** 2)
+    
+    r_max = 240.0
+    r_thickness = 55.0
+    inward_dist = r_max - dist_from_center
+    
+    mask_main = (dist_from_center <= r_max) & (inward_dist >= 0) & (inward_dist <= r_thickness)
+    decay = np.exp(-inward_dist / 14.0)
+    sub1 = np.exp(-((inward_dist - 18.0) ** 2) / (2.0 * (3.5 ** 2))) * 0.75
+    sub2 = np.exp(-((inward_dist - 34.0) ** 2) / (2.0 * (4.5 ** 2))) * 0.45
+    
+    total_intensity = np.clip(decay + sub1 + sub2, 0.0, 1.0)
+    
+    for y in range(size):
+        for x in range(size):
+            if mask_main[y, x]:
+                val = total_intensity[y, x]
+                d = inward_dist[y, x]
+                if d <= 4.0:
+                    edge_factor = d / 4.0
+                    r = 255
+                    g = 255
+                    b = int(255 * (1.0 - edge_factor) + 220 * edge_factor)
+                    a = int(255 * val)
+                elif d <= 22.0:
+                    t = (d - 4.0) / 18.0
+                    r = 255
+                    g = int(220 * (1.0 - t) + 160 * t)
+                    b = int(80 * (1.0 - t) + 30 * t)
+                    a = int(255 * val)
+                else:
+                    t = (d - 22.0) / (r_thickness - 22.0)
+                    r = 255
+                    g = int(160 * (1.0 - t) + 80 * t)
+                    b = int(30 * (1.0 - t) + 10 * t)
+                    a = int(255 * val * (1.0 - t))
+                arr[y, x] = [r, g, b, a]
+
+    out_img = Image.fromarray(arr.astype(np.uint8), "RGBA").filter(ImageFilter.GaussianBlur(radius=0.4))
+    out_path = os.path.join(ART_DIR, "Tex_VFX_Oracle_Shockwave.png")
+    out_img.save(out_path, "PNG")
+    print(f"Generated Masterpiece Shockwave: {out_path}")
+
+def generate_shockwave_smoke_puff():
+    """Tạo Texture Khói Bụi Xung Kích / Vòng Khói Tỏa 512x512."""
+    size = 512
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     cx, cy = size // 2, size // 2
-    
-    # Sóng kích dày viền ngoài, mỏng dần vào trong
-    for r in range(115, 90, -1):
-        alpha = int(255 * (1.0 - abs(r - 105) / 15.0))
-        draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)], outline=(255, 230, 80, alpha), width=2)
-        
-    draw.ellipse([(cx - 105, cy - 105), (cx + 105, cy + 105)], outline=(255, 255, 255, 255), width=3)
-    
-    img = img.filter(ImageFilter.GaussianBlur(radius=0.6))
-    out_path = os.path.join(ART_DIR, "Tex_VFX_Oracle_Shockwave.png")
+
+    lobes = [
+        (cx, cy, 140, 255),
+        (cx - 55, cy - 40, 105, 230),
+        (cx + 60, cy - 35, 110, 230),
+        (cx - 70, cy + 30, 95, 210),
+        (cx + 65, cy + 40, 100, 220),
+        (cx, cy - 80, 85, 200),
+        (cx, cy + 75, 90, 200),
+    ]
+
+    for lx, ly, lr, alpha_peak in lobes:
+        for r in range(lr, 10, -3):
+            factor = (1.0 - (r / float(lr))) ** 1.3
+            alpha = int(alpha_peak * factor * 0.4)
+            draw.ellipse([(lx - r, ly - r), (lx + r, ly + r)], fill=(255, 245, 210, alpha))
+
+    for lx, ly, lr, alpha_peak in lobes:
+        r_core = int(lr * 0.55)
+        for r in range(r_core, 5, -2):
+            factor = (1.0 - (r / float(r_core))) ** 1.5
+            alpha = int(alpha_peak * factor * 0.6)
+            draw.ellipse([(lx - r, ly - r), (lx + r, ly + r)], fill=(255, 255, 240, alpha))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=8))
+    out_path = os.path.join(ART_DIR, "Tex_VFX_Shockwave_SmokePuff.png")
     img.save(out_path, "PNG")
-    print(f"Generated: {out_path}")
+    print(f"Generated Shockwave Smoke Puff: {out_path}")
 
 if __name__ == "__main__":
     generate_torch_flame_bullet()
     generate_tu_phu_possession_circle()
     generate_oracle_shockwave()
+    generate_shockwave_smoke_puff()

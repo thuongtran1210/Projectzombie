@@ -1371,8 +1371,14 @@ namespace ProjectZombie.Editor.VFX
             main.startRotation = 0f;
             main.simulationSpace = ParticleSystemSimulationSpace.Local;
 
+            // Khóa rateOverTime về 0 để tránh sinh 80 vòng tròn đè nhau; chỉ phát sinh 1 vòng duy nhất
             var emission = ps.emission;
+            emission.rateOverTime = 0f;
             emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 1) });
+
+            // Tắt Shape scattering để tâm vòng tròn nằm chính xác tại (0,0,0) dưới chân nhân vật
+            var shape = ps.shape;
+            shape.enabled = false;
 
             var rotOverLife = ps.rotationOverLifetime;
             rotOverLife.enabled = true;
@@ -1390,7 +1396,7 @@ namespace ProjectZombie.Editor.VFX
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.sortingLayerName = "Tilemap_Decals";
-            renderer.sortingOrder = 3;
+            renderer.sortingOrder = 5;
 
             Material circleMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_TuPhu_PossessionCircle.mat");
             if (circleMat != null) renderer.sharedMaterial = circleMat;
@@ -1405,29 +1411,53 @@ namespace ProjectZombie.Editor.VFX
 
             ParticleSystem ps = root.AddComponent<ParticleSystem>();
             var main = ps.main;
-            main.duration = 0.6f;
+            main.duration = 0.4f;
             main.loop = false;
-            main.startLifetime = 0.5f;
+            main.startLifetime = 0.35f;
             main.startSpeed = 0f;
-            main.startSize = 1.0f;
+            main.startSize = 0.8f;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
+            // Khóa rateOverTime về 0 để chỉ phát 1 đợt sóng xung kích bùng nổ duy nhất
             var emission = ps.emission;
+            emission.rateOverTime = 0f;
             emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 1) });
 
+            // Tắt Shape scattering để sóng tỏa tròn đồng tâm từ tâm vụ nổ
+            var shape = ps.shape;
+            shape.enabled = false;
+
+            // Đường cong bùng nổ phi tuyến tính Out-Cubic (Tốc độ nén khí cực đại ban đầu rồi giảm tốc mượt mà)
             var sizeOverLife = ps.sizeOverLifetime;
             sizeOverLife.enabled = true;
-            AnimationCurve sizeCurve = new AnimationCurve();
-            sizeCurve.AddKey(0f, 1f);
-            sizeCurve.AddKey(1f, 15f); // Sóng lan tỏa toàn map
-            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+            Keyframe[] sizeKeys = new Keyframe[]
+            {
+                new Keyframe(0.0f, 0.5f, 0f, 25f),
+                new Keyframe(0.2f, 7.5f, 18f, 10f),
+                new Keyframe(0.6f, 12.0f, 6f, 3f),
+                new Keyframe(1.0f, 14.0f, 1f, 0f)
+            };
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(sizeKeys));
 
+            // Gradient màu sắc: Trắng chói -> Vàng Hoàng Kim -> Cam Thần Khí -> Biến mất hoàn toàn
             var colorOverLife = ps.colorOverLifetime;
             colorOverLife.enabled = true;
             Gradient grad = new Gradient();
             grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.9f, 0.4f), 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) }
+                new GradientColorKey[]
+                {
+                    new GradientColorKey(Color.white, 0.0f),
+                    new GradientColorKey(new Color(1f, 0.92f, 0.45f), 0.35f),
+                    new GradientColorKey(new Color(1f, 0.55f, 0.15f), 0.85f),
+                    new GradientColorKey(new Color(0.9f, 0.3f, 0.05f), 1.0f)
+                },
+                new GradientAlphaKey[]
+                {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(0.9f, 0.25f),
+                    new GradientAlphaKey(0.45f, 0.65f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
             );
             colorOverLife.color = grad;
 
@@ -1438,6 +1468,72 @@ namespace ProjectZombie.Editor.VFX
 
             Material waveMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Oracle_Shockwave.mat");
             if (waveMat != null) renderer.sharedMaterial = waveMat;
+
+            // 2. Child Particle System: Vòng khói bụi xung kích bùng nổ (PS_ShockwaveSmoke)
+            GameObject smokeChild = new GameObject("PS_ShockwaveSmoke");
+            smokeChild.transform.SetParent(root.transform);
+            smokeChild.transform.localPosition = Vector3.zero;
+
+            ParticleSystem smokePs = smokeChild.AddComponent<ParticleSystem>();
+            var smokeMain = smokePs.main;
+            smokeMain.duration = 0.5f;
+            smokeMain.loop = false;
+            smokeMain.startLifetime = new ParticleSystem.MinMaxCurve(0.35f, 0.45f);
+            smokeMain.startSpeed = new ParticleSystem.MinMaxCurve(9.0f, 13.0f); // Tốc độ bắn khói tỏa tròn ra ngoài
+            smokeMain.startSize = new ParticleSystem.MinMaxCurve(0.9f, 1.4f);
+            smokeMain.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            smokeMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var smokeEmission = smokePs.emission;
+            smokeEmission.rateOverTime = 0f;
+            smokeEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 18) });
+
+            var smokeShape = smokePs.shape;
+            smokeShape.enabled = true;
+            smokeShape.shapeType = ParticleSystemShapeType.Circle;
+            smokeShape.radius = 0.4f;
+            smokeShape.radiusThickness = 0.2f;
+            smokeShape.arc = 360f;
+
+            var smokeSizeOverLife = smokePs.sizeOverLifetime;
+            smokeSizeOverLife.enabled = true;
+            AnimationCurve smokeSizeCurve = new AnimationCurve();
+            smokeSizeCurve.AddKey(0f, 0.6f);
+            smokeSizeCurve.AddKey(0.4f, 1.8f);
+            smokeSizeCurve.AddKey(1f, 2.4f);
+            smokeSizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, smokeSizeCurve);
+
+            var smokeColorOverLife = smokePs.colorOverLifetime;
+            smokeColorOverLife.enabled = true;
+            Gradient smokeGrad = new Gradient();
+            smokeGrad.SetKeys(
+                new GradientColorKey[]
+                {
+                    new GradientColorKey(new Color(1f, 0.95f, 0.75f), 0.0f), // Vàng hoàng thổ / khói sáng
+                    new GradientColorKey(new Color(0.95f, 0.85f, 0.65f), 0.6f),
+                    new GradientColorKey(new Color(0.85f, 0.75f, 0.6f), 1.0f)
+                },
+                new GradientAlphaKey[]
+                {
+                    new GradientAlphaKey(0.0f, 0.0f),
+                    new GradientAlphaKey(0.8f, 0.15f),
+                    new GradientAlphaKey(0.5f, 0.5f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
+            );
+            smokeColorOverLife.color = smokeGrad;
+
+            var smokeRotOverLife = smokePs.rotationOverLifetime;
+            smokeRotOverLife.enabled = true;
+            smokeRotOverLife.z = new ParticleSystem.MinMaxCurve(-1.5f, 1.5f);
+
+            var smokeRenderer = smokeChild.GetComponent<ParticleSystemRenderer>();
+            smokeRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            smokeRenderer.sortingLayerName = "Tilemap_Decals";
+            smokeRenderer.sortingOrder = 10;
+
+            Material smokeMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Oracle_ShockwaveSmoke.mat");
+            if (smokeMat != null) smokeRenderer.sharedMaterial = smokeMat;
 
             return root;
         }
