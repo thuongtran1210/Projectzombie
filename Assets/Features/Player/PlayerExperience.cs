@@ -11,8 +11,8 @@ namespace ProjectZombie.Features.Player
     public class PlayerExperience : MonoBehaviour
     {
         [Header("Experience Settings")]
-        [SerializeField] private float baseExpRequired = 100f;
-        [SerializeField] private float expGrowthFactor = 1.2f;
+        [SerializeField] private float baseExpRequired = 5f;
+        [SerializeField] private float expGrowthFactor = 1.25f;
 
         public int CurrentLevel { get; private set; } = 1;
         public float CurrentExp { get; private set; } = 0f;

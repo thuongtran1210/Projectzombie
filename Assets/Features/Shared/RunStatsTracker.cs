@@ -56,7 +56,7 @@ namespace ProjectZombie.Features.Shared
         }
 
         private float _timerTickAccumulator = 0f;
-        private bool _isTracking = true;
+        private bool _isTracking = false;
 
         private void Update()
         {
@@ -76,6 +76,29 @@ namespace ProjectZombie.Features.Shared
         // ====================================================================
         // PUBLIC API — Được gọi bởi các hệ thống khác
         // ====================================================================
+
+        /// <summary>
+        /// Bắt đầu đếm thời gian và ghi nhận chỉ số khi trận đấu chính thức bắt đầu.
+        /// </summary>
+        public void StartTracking()
+        {
+            ResetStats();
+            _isTracking = true;
+        }
+
+        /// <summary>
+        /// Reset toàn bộ chỉ số về 0.
+        /// </summary>
+        public void ResetStats()
+        {
+            ElapsedTime = 0f;
+            KillCount = 0;
+            TotalDamageDealt = 0f;
+            MaxLevelReached = 1;
+            _timerTickAccumulator = 0f;
+            OnTimerTick?.Invoke(0f);
+            OnKillCountChanged?.Invoke(0);
+        }
 
         /// <summary>
         /// Gọi bởi Enemy khi chết để cộng dồn kill count.

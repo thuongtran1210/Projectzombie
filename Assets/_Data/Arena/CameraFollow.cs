@@ -35,6 +35,10 @@ namespace ProjectZombie.Features.Arena
         public void SetTarget(Transform newTarget)
         {
             target = newTarget;
+            if (target != null)
+            {
+                transform.position = target.position + offset;
+            }
         }
 
         /// <summary>

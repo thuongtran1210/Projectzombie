@@ -332,8 +332,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7684539256a020741b94d41bfde6015a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseExpRequired: 100
-  expGrowthFactor: 1.2
+  baseExpRequired: 5
+  expGrowthFactor: 1.25
 --- !u!114 &1383317695757006623
 MonoBehaviour:
   m_ObjectHideFlags: 0

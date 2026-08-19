@@ -3344,9 +3344,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.14695947
+    y: 0
     width: 1
-    height: 0.7069257
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -3376,7 +3376,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.756305, y: 69.36397, z: -163.66501}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3655,8 +3655,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 207, y: -300.3}
-  m_SizeDelta: {x: 414, y: 150}
+  m_AnchoredPosition: {x: 210, y: -280}
+  m_SizeDelta: {x: 420, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &574824598
 MonoBehaviour:
@@ -3671,14 +3671,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 0.1, g: 0.08, b: 0.12, a: 0.45}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ca503e411bbe44308af1223887686d6f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 66795ed7512d4a26b5baa485e905bd07, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6594,42 +6594,6 @@ PrefabInstance:
       propertyPath: _characterPrefabs.Array.data[3]
       value: 
       objectReference: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _nextButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _prevButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _elementText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _selectButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _descriptionText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _passiveTraitText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _characterNameText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _signatureSkillText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
-      propertyPath: _characterAvatarImage
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 1712999569256208141, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
@@ -16611,10 +16575,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 574824597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.0000009536743}
-  m_SizeDelta: {x: 414.16003, y: 114.6251}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1704408306
 MonoBehaviour:
@@ -16629,14 +16593,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+    m_Left: 6
+    m_Right: 6
+    m_Top: 5
+    m_Bottom: 5
+  m_ChildAlignment: 3
+  m_Spacing: 8
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0

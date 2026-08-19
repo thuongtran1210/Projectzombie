@@ -181,6 +181,24 @@ namespace ProjectZombie.Features.Player
                 signatureSkillPresenter.Bind(skillManager);
                 Debug.Log($"[GameplayBootstrapper] SignatureSkillPresenter đã Bind SignatureSkillManager.");
             }
+
+            // 7. Bắt đầu đếm thời gian trận đấu và khởi chạy Spawner
+            if (RunStatsTracker.Instance != null)
+            {
+                RunStatsTracker.Instance.StartTracking();
+                Debug.Log("[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00.");
+            }
+
+            if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null)
+            {
+                ProjectZombie.Features.Spawners.SpawnManager.Instance.StartMatch();
+                Debug.Log("[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu.");
+            }
+
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.ChangeState(GameState.Playing);
+            }
         }
     }
 }

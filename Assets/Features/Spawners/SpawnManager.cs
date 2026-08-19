@@ -67,23 +67,17 @@ namespace ProjectZombie.Features.Spawners
 
         private void Start()
         {
-            if (Player.PlayerProvider.HasPlayer)
-            {
-                _playerTransform = Player.PlayerProvider.PlayerTransform;
-            }
-            else
-            {
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null) _playerTransform = player.transform;
-            }
-
             _wavePreloader = GetComponent<WavePreloader>();
             if (_wavePreloader == null)
             {
                 _wavePreloader = gameObject.AddComponent<WavePreloader>();
             }
 
-            _ = StartMatchAsync();
+            if (Player.PlayerProvider.HasPlayer)
+            {
+                _playerTransform = Player.PlayerProvider.PlayerTransform;
+                _ = StartMatchAsync();
+            }
         }
 
         public async System.Threading.Tasks.Task StartMatchAsync()

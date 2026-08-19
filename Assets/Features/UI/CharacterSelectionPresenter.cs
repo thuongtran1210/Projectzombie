@@ -32,6 +32,12 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            if (_view == null)
+            {
+                _view = GetComponent<CharacterSelectionView>();
+                if (_view == null) _view = GetComponentInChildren<CharacterSelectionView>(true);
+            }
+
             InitCharacterData();
 
             if (_view != null)
@@ -59,6 +65,13 @@ namespace ProjectZombie.Features.UI
 
         private void InitCharacterData()
         {
+            if (_selectionData == null)
+            {
+                #if UNITY_EDITOR
+                _selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                #endif
+            }
+
             if (_selectionData != null && _selectionData.Characters != null && _selectionData.Characters.Count > 0)
             {
                 var list = _selectionData.Characters;
@@ -121,6 +134,27 @@ namespace ProjectZombie.Features.UI
                     _selectionData.SelectedPlayerPrefab = chosenPrefab;
                 }
             }
+
+            if (chosenPrefab == null && _characterPrefabs != null && _currentIndex < _characterPrefabs.Length)
+            {
+                chosenPrefab = _characterPrefabs[_currentIndex];
+            }
+
+            #if UNITY_EDITOR
+            if (chosenPrefab == null)
+            {
+                string[] paths = new string[] {
+                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab",
+                    "Assets/_Prefabs/Characters/Players/Dao Si.prefab",
+                    "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab",
+                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab"
+                };
+                if (_currentIndex >= 0 && _currentIndex < paths.Length)
+                {
+                    chosenPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(paths[_currentIndex]);
+                }
+            }
+            #endif
 
             if (chosenPrefab == null)
             {

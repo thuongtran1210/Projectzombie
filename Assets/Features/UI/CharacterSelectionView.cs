@@ -26,9 +26,55 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            AutoWireComponentsIfMissing();
+
             if (_selectButton != null) _selectButton.onClick.AddListener(() => OnSelectClicked?.Invoke());
             if (_nextButton != null) _nextButton.onClick.AddListener(() => OnNextClicked?.Invoke());
             if (_prevButton != null) _prevButton.onClick.AddListener(() => OnPrevClicked?.Invoke());
+        }
+
+        private void AutoWireComponentsIfMissing()
+        {
+            var buttons = GetComponentsInChildren<Button>(true);
+            foreach (var btn in buttons)
+            {
+                string btnName = btn.gameObject.name.ToLower();
+                if (_selectButton == null && (btnName.Contains("select") || btnName.Contains("chon") || btnName.Contains("start")))
+                    _selectButton = btn;
+                else if (_nextButton == null && (btnName.Contains("next") || btnName.Contains("phai") || btnName.Contains("right")))
+                    _nextButton = btn;
+                else if (_prevButton == null && (btnName.Contains("prev") || btnName.Contains("trai") || btnName.Contains("left")))
+                    _prevButton = btn;
+            }
+
+            var texts = GetComponentsInChildren<TextMeshProUGUI>(true);
+            foreach (var t in texts)
+            {
+                string tName = t.gameObject.name.ToLower();
+                if (_characterNameText == null && (tName.Contains("name") || tName.Contains("ten")))
+                    _characterNameText = t;
+                else if (_elementText == null && (tName.Contains("element") || tName.Contains("he")))
+                    _elementText = t;
+                else if (_descriptionText == null && (tName.Contains("desc") || tName.Contains("mota")))
+                    _descriptionText = t;
+                else if (_signatureSkillText == null && (tName.Contains("skill") || tName.Contains("kynang")))
+                    _signatureSkillText = t;
+                else if (_passiveTraitText == null && (tName.Contains("passive") || tName.Contains("bidong") || tName.Contains("trait")))
+                    _passiveTraitText = t;
+            }
+
+            if (_characterAvatarImage == null)
+            {
+                var images = GetComponentsInChildren<Image>(true);
+                foreach (var img in images)
+                {
+                    if (img.gameObject.name.ToLower().Contains("avatar"))
+                    {
+                        _characterAvatarImage = img;
+                        break;
+                    }
+                }
+            }
         }
 
         public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar)

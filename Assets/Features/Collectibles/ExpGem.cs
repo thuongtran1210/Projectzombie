@@ -207,7 +207,9 @@ namespace ProjectZombie.Features.Collectibles
 
             if (_targetPlayer != null)
             {
-                if (_targetPlayer.TryGetComponent<PlayerExperience>(out var playerExp))
+                PlayerExperience playerExp = _targetPlayer.GetComponent<PlayerExperience>();
+                if (playerExp == null) playerExp = _targetPlayer.GetComponentInParent<PlayerExperience>();
+                if (playerExp != null)
                 {
                     playerExp.AddExp(expAmount);
                 }

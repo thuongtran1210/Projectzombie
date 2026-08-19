@@ -59,6 +59,11 @@ namespace ProjectZombie.Features.UI.HUD
             ForceRefreshAll();
 
             _isConstructed = true;
+
+            if (_view != null)
+            {
+                _view.gameObject.SetActive(true);
+            }
         }
 
         // ====================================================================
@@ -71,6 +76,10 @@ namespace ProjectZombie.Features.UI.HUD
             if (_playerHealth != null || _playerStats != null || _playerExp != null)
             {
                 Construct(_playerHealth, _playerStats, _playerExp, _weaponManager, _playerPassives);
+            }
+            else if (!_isConstructed && _view != null)
+            {
+                _view.gameObject.SetActive(false);
             }
 
             // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
