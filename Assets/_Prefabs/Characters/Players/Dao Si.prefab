@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 3525274907744799209}
   - component: {fileID: 4297362168769072215}
   - component: {fileID: 922402464292840618}
+  - component: {fileID: -59334050579850593}
   m_Layer: 6
   m_Name: Dao Si
   m_TagString: Player
@@ -389,6 +390,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseMagnetRadius: 2.5
+--- !u!114 &-59334050579850593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09074a0272cc5574e9363bbdb15657dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ghostColor: {r: 0.3, g: 0.9, b: 1, a: 0.65}
+  _ghostDuration: 0.25
+  _ghostSpawnInterval: 0.04
+  _poolSize: 8
+  _dashDustPrefab: {fileID: 3203817794752175492, guid: f67a98adf572bb64ba9fd315b6f97f48, type: 3}
 --- !u!1 &7294256009787977137
 GameObject:
   m_ObjectHideFlags: 0

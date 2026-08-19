@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -6,7 +5,7 @@ namespace ProjectZombie.Features.VFX.Editor
 {
     public static class SkillIndicatorPrefabGenerator
     {
-        [MenuItem("Tools/ProjectZombie/VFX/Generate Skill Indicator Prefabs")]
+        [MenuItem("ProjectZombie/VFX/Rebuild Boss Skill Indicators (Circle & Box)")]
         public static void GeneratePrefabs()
         {
             string folderPath = "Assets/Features/VFX/Prefabs";
@@ -15,64 +14,84 @@ namespace ProjectZombie.Features.VFX.Editor
                 AssetDatabase.CreateFolder("Assets/Features/VFX", "Prefabs");
             }
 
-            // 1. Tạo Box Indicator Prefab (32x32 px, PPU = 32 -> Kích thước World = 1x1m)
-            GameObject boxObj = new GameObject("Indicator_Box");
-            var boxRenderer = boxObj.AddComponent<SpriteRenderer>();
+            // 1. Configure Textures Meta
+            ConfigureTexture("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png", 512);
+            ConfigureTexture("Assets/Art/VFX/Indicators/TEX_Indicator_Box.png", 256);
+            ConfigureTexture("Assets/Art/VFX/Indicators/TEX_Indicator_Fill.png", 256);
 
-            Texture2D boxTex = new Texture2D(32, 32);
-            Color[] boxColors = new Color[32 * 32];
-            for (int i = 0; i < boxColors.Length; i++) boxColors[i] = Color.white;
-            boxTex.SetPixels(boxColors);
-            boxTex.Apply();
-            boxRenderer.sprite = Sprite.Create(boxTex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 32f);
-            boxRenderer.color = new Color(1f, 0f, 0f, 0.4f);
-            boxRenderer.sortingLayerName = "Default";
-            boxRenderer.sortingOrder = 10;
+            Sprite circleBorder = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png");
+            Sprite boxBorder = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Box.png");
+            Sprite fillDisc = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Fill.png");
 
-            var boxScript = boxObj.AddComponent<Indicators.SkillIndicator>();
-            var serializedBox = new SerializedObject(boxScript);
-            serializedBox.FindProperty("_spriteRenderer").objectReferenceValue = boxRenderer;
-            serializedBox.FindProperty("_shape").enumValueIndex = (int)Indicators.IndicatorShape.Box;
-            serializedBox.ApplyModifiedProperties();
-
-            PrefabUtility.SaveAsPrefabAsset(boxObj, $"{folderPath}/Indicator_Box.prefab");
-            Object.DestroyImmediate(boxObj);
-
-            // 2. Tạo Circle Indicator Prefab (64x64 px, PPU = 64 -> Kích thước World = 1x1m)
+            // 2. Build Circle Indicator Prefab (Ground Slam AOE)
             GameObject circleObj = new GameObject("Indicator_Circle");
-            var circleRenderer = circleObj.AddComponent<SpriteRenderer>();
+            var circleBorderRenderer = circleObj.AddComponent<SpriteRenderer>();
+            circleBorderRenderer.sprite = circleBorder;
+            circleBorderRenderer.sortingLayerName = "Shadows";
+            circleBorderRenderer.sortingOrder = 7;
+            circleBorderRenderer.color = Color.white;
 
-            Texture2D circleTex = new Texture2D(64, 64);
-            for (int y = 0; y < 64; y++)
-            {
-                for (int x = 0; x < 64; x++)
-                {
-                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2(31.5f, 31.5f));
-                    if (dist <= 31.5f)
-                        circleTex.SetPixel(x, y, Color.white);
-                    else
-                        circleTex.SetPixel(x, y, Color.clear);
-                }
-            }
-            circleTex.Apply();
-            circleRenderer.sprite = Sprite.Create(circleTex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
-            circleRenderer.color = new Color(1f, 0f, 0f, 0.4f);
-            circleRenderer.sortingLayerName = "Default";
-            circleRenderer.sortingOrder = 10;
+            // Child Fill
+            GameObject circleFillObj = new GameObject("FillVisual");
+            circleFillObj.transform.SetParent(circleObj.transform);
+            circleFillObj.transform.localPosition = Vector3.zero;
+            var circleFillRenderer = circleFillObj.AddComponent<SpriteRenderer>();
+            circleFillRenderer.sprite = fillDisc;
+            circleFillRenderer.sortingLayerName = "Shadows";
+            circleFillRenderer.sortingOrder = 8;
+            circleFillRenderer.color = new Color(1f, 0.25f, 0.25f, 0.65f);
 
             var circleScript = circleObj.AddComponent<Indicators.SkillIndicator>();
-            var serializedCircle = new SerializedObject(circleScript);
-            serializedCircle.FindProperty("_spriteRenderer").objectReferenceValue = circleRenderer;
-            serializedCircle.FindProperty("_shape").enumValueIndex = (int)Indicators.IndicatorShape.Circle;
-            serializedCircle.ApplyModifiedProperties();
+            circleScript.Construct(circleBorderRenderer, circleFillRenderer, Indicators.IndicatorShape.Circle);
 
-            PrefabUtility.SaveAsPrefabAsset(circleObj, $"{folderPath}/Indicator_Circle.prefab");
+            string circlePrefabPath = $"{folderPath}/Indicator_Circle.prefab";
+            PrefabUtility.SaveAsPrefabAsset(circleObj, circlePrefabPath);
             Object.DestroyImmediate(circleObj);
 
+            // 3. Build Box Indicator Prefab (Bull Dash / Slash)
+            GameObject boxObj = new GameObject("Indicator_Box");
+            var boxBorderRenderer = boxObj.AddComponent<SpriteRenderer>();
+            boxBorderRenderer.sprite = boxBorder;
+            boxBorderRenderer.sortingLayerName = "Shadows";
+            boxBorderRenderer.sortingOrder = 7;
+            boxBorderRenderer.color = Color.white;
+
+            // Child Fill
+            GameObject boxFillObj = new GameObject("FillVisual");
+            boxFillObj.transform.SetParent(boxObj.transform);
+            boxFillObj.transform.localPosition = Vector3.zero;
+            var boxFillRenderer = boxFillObj.AddComponent<SpriteRenderer>();
+            boxFillRenderer.sprite = boxBorder;
+            boxFillRenderer.sortingLayerName = "Shadows";
+            boxFillRenderer.sortingOrder = 8;
+            boxFillRenderer.color = new Color(1f, 0.25f, 0.25f, 0.5f);
+
+            var boxScript = boxObj.AddComponent<Indicators.SkillIndicator>();
+            boxScript.Construct(boxBorderRenderer, boxFillRenderer, Indicators.IndicatorShape.Box);
+
+            string boxPrefabPath = $"{folderPath}/Indicator_Box.prefab";
+            PrefabUtility.SaveAsPrefabAsset(boxObj, boxPrefabPath);
+            Object.DestroyImmediate(boxObj);
+
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"[SkillIndicatorPrefabGenerator] Đã tạo thành công Prefabs Indicator chuẩn 1x1m tại {folderPath}!");
+            Debug.Log($"[SkillIndicatorPrefabGenerator] ĐÃ NÂNG CẤP VÀ XUẤT THÀNH CÔNG PREFABS CHỈ BÁO BOSS TẠI {folderPath}!");
+        }
+
+        private static void ConfigureTexture(string path, int ppu)
+        {
+            TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer != null)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spritePixelsPerUnit = ppu;
+                importer.filterMode = FilterMode.Bilinear;
+                importer.alphaIsTransparency = true;
+                importer.sRGBTexture = true;
+                EditorUtility.SetDirty(importer);
+                importer.SaveAndReimport();
+            }
         }
     }
 }
-#endif
-

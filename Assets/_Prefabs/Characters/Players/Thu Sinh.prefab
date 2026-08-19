@@ -72,7 +72,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1982589963
-  m_SortingLayer: 5
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 1012015404, guid: 320278d557efecc4581abdd179f1d748, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_Size: {x: 2.12, y: 2.55}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8425905768194309312
@@ -127,6 +127,8 @@ GameObject:
   - component: {fileID: 7402922671366627933}
   - component: {fileID: 1383317695757006623}
   - component: {fileID: 3525274907744799209}
+  - component: {fileID: 922402464292840618}
+  - component: {fileID: -732064676863382246}
   m_Layer: 6
   m_Name: Thu Sinh
   m_TagString: Player
@@ -239,7 +241,6 @@ MonoBehaviour:
   dashAction: {fileID: -8837876224618443148, guid: dc7f196422f615f48ba64a8388a367ec, type: 3}
   dashSpeedMultiplier: 3
   dashDuration: 0.2
-  virtualJoystick: {fileID: 0}
 --- !u!114 &8848975518660136443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,6 +362,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _skillData: {fileID: 11400000, guid: dc12786aab8856a41a22bd999e3abb65, type: 2}
+--- !u!114 &922402464292840618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb2a1733ff626741901b9f198ee3eb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseMagnetRadius: 2.5
+--- !u!114 &-732064676863382246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09074a0272cc5574e9363bbdb15657dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ghostColor: {r: 0.3, g: 0.9, b: 1, a: 0.65}
+  _ghostDuration: 0.25
+  _ghostSpawnInterval: 0.04
+  _poolSize: 8
+  _dashDustPrefab: {fileID: 3203817794752175492, guid: f67a98adf572bb64ba9fd315b6f97f48, type: 3}
 --- !u!1 &7294256009787977137
 GameObject:
   m_ObjectHideFlags: 0
