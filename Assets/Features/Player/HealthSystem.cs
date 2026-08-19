@@ -57,6 +57,9 @@ namespace ProjectZombie.Features.Shared
         // Sự kiện tĩnh báo cáo sát thương phục vụ Floating Damage Text & Performance Tracker
         public static event Action<DamageReport> OnDamageReported;
 
+        // Sự kiện cục bộ thông báo nhận sát thương (phục vụ Hit Flash, Blood VFX, Hit SFX)
+        public event Action<DamageData> OnDamageTaken;
+
         public void TakeDamage(float amount)
         {
             if (_currentHealth <= 0) return; 
@@ -64,7 +67,9 @@ namespace ProjectZombie.Features.Shared
             _currentHealth -= amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
 
+            DamageData data = new DamageData(amount);
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+            OnDamageTaken?.Invoke(data);
 
             // Bắn event báo cáo sát thương cơ bản
             OnDamageReported?.Invoke(new DamageReport(amount, false, ElementType.None, transform.position, CompareTag("Player")));
@@ -83,6 +88,7 @@ namespace ProjectZombie.Features.Shared
             _currentHealth = Mathf.Max(_currentHealth, 0f);
 
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+            OnDamageTaken?.Invoke(damageData);
 
             // Bắn event báo cáo sát thương đầy đủ (Crit, Element & Counter)
             OnDamageReported?.Invoke(new DamageReport(damageData.Amount, damageData.IsCritical, damageData.Element, transform.position, CompareTag("Player"), damageData.IsCounter));

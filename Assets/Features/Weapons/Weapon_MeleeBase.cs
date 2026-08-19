@@ -81,6 +81,14 @@ namespace ProjectZombie.Features.Weapons
                     hitCount++;
                     hitAnyEnemy = true;
 
+                    // Áp dụng lực đẩy lùi ra xa người chơi (trừ quái Heavy Armor)
+                    if (enemy != null && !enemy.IsHeavyArmor)
+                    {
+                        Vector2 pushDir = ((Vector2)(hit.transform.position - transform.position)).normalized;
+                        if (pushDir.sqrMagnitude < 0.001f) pushDir = Vector2.right;
+                        enemy.ApplyKnockback(pushDir, 4.0f, 0.15f);
+                    }
+
                     if (hitDamage.IsCritical)
                     {
                         hitCrit = true;

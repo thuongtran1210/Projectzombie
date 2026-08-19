@@ -88,6 +88,12 @@ namespace ProjectZombie.Features.Enemies
             StatusController = GetComponent<EnemyStatusController>();
             if (StatusController == null) StatusController = gameObject.AddComponent<EnemyStatusController>();
 
+            // Tự động đảm bảo có HitFlashFeedback
+            if (GetComponent<Visuals.HitFlashFeedback>() == null)
+            {
+                gameObject.AddComponent<Visuals.HitFlashFeedback>();
+            }
+
             // Khởi tạo State Machine và các trạng thái
             StateMachine = new EnemyStateMachine();
             IdleState = new EnemyIdleState(this, StateMachine);

@@ -7,17 +7,16 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 ## 📋 Kanban Board Summary
 
-| 🔴 Backlog (Sắp Tới) | 🟡 In Progress (Đang Triển Khai) | 🟢 Done (Đã Hoàn Thành) |
+| 🔴 Backlog (Sắp Tới / Xử Lý Sau) | 🟡 In Progress (Đang Triển Khai - Gameplay Focus) | 🟢 Done (Đã Hoàn Thành) |
 |---|---|---|
-| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | 📱 **[TASK-314] Mobile UI Responsive & Safe Area Adaptation** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
-| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🎨 **[TASK-VFX-Core] Bộ 4 Shader Graph URP Cho 2D Mobile** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
-| 🌊 **[TASK-GP-04] Circle Swarm Spawner Events (Phút 3, 7, 12)** | ⚔️ **[TASK-VFX-01] Vệt Chém Bút Phán Quan & Luồng Lửa Đao Cửu Vĩ** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
-| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | 🌀 **[TASK-VFX-02] Orbit Trail Bùa Trấn Yêu & Phi Tiêu Bát Quái** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
-| 🧪 **[TASK-402] Mobile Stress Test (200 Mobs 60 FPS)** | 🔔 **[TASK-VFX-03] Sóng Âm Trống Đồng & Địa Chấn Lựu Đạn** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
-| 🚀 **[TASK-403] Android AAB Build & Signing Release** | ⚡ **[TASK-VFX-04] Đạn Bay Nỏ Thần, Sét Long Vương & Khói Ma Da** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc, Magnet & Audio Pitch** |
-| | ✨ **[TASK-VFX-05] Hit Sparks, Hit Stop & Sorting Layer Polish** | 🇻🇳 **[TASK-315] Vietnamese TMP Dynamic Fallback Font** |
-| | ⚡ **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback** | 🏛️ **[TASK-303, 304, 305] Meta Shop, Hero Select & Run Summary** |
-| | 📳 **[TASK-GP-02] Screen Shake & Damage Popup Scale Polish** | |
+| 📱 **[TASK-314] Mobile UI Responsive & Safe Area** | 🎨 **[TASK-VFX-Core] Bộ 4 Shader Graph URP Cho 2D Mobile** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
+| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | ⚔️ **[TASK-VFX-01] Vệt Chém Bút Phán Quan & Luồng Lửa Đao Cửu Vĩ** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
+| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🌀 **[TASK-VFX-02] Orbit Trail Bùa Trấn Yêu & Phi Tiêu Bát Quái** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
+| 🌊 **[TASK-GP-04] Circle Swarm Spawner Events (Phút 3, 7, 12)** | 🔔 **[TASK-VFX-03] Sóng Âm Trống Đồng & Địa Chấn Lựu Đạn** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
+| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | ⚡ **[TASK-VFX-04] Đạn Bay Nỏ Thần, Sét Long Vương & Khói Ma Da** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
+| 🧪 **[TASK-402] Mobile Stress Test (200 Mobs 60 FPS)** | ✨ **[TASK-VFX-05] Hit Sparks, Hit Stop & Sorting Layer Polish** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc, Magnet & Audio Pitch** |
+| 🚀 **[TASK-403] Android AAB Build & Signing Release** | ⚡ **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback** | 🇻🇳 **[TASK-315] Vietnamese TMP Dynamic Fallback Font** |
+| | 📳 **[TASK-GP-02] Screen Shake & Damage Popup Scale Polish** | 🏛️ **[TASK-303, 304, 305] Meta Shop, Hero Select & Run Summary** |
 | | 🎵 **[TASK-GP-05] Audio Feedback Layers (Hit/Death/Chime)** | |
 
 ---
@@ -112,37 +111,22 @@ graph TD
   - [x] Cơ chế tự động gộp hạt (Gem Compression/Merging) khi vượt ngưỡng 150 hạt trên sân.
   - [x] Phân cấp màu sắc Gem (Lam Ngọc, Lục Bảo, Hoàng Kim) và Pitch Scaling Audio (`1.0f -> 1.5f`).
 
-- [ ] 🚨 **[TASK-314] Tối Ưu Hóa Toàn Diện Mobile UI Responsive, Safe Area & Multi-Resolution Adaptation (Ưu Tiên Cao)**:
-  - [ ] **[TASK-314.1] Safe Area Fitter Zero-Alloc (`SafeAreaFitter.cs`):**
-    - Tự động bắt `Screen.safeArea` áp dụng vào `RectTransform.anchorMin` và `anchorMax` (tránh Notch camera, Dynamic Island, Home Bar trên iPhone/Android).
-    - Hỗ trợ các chế độ: `Apply Left`, `Apply Right`, `Apply Top`, `Apply Bottom` và giả lập Safe Area trong Unity Editor.
-  - [ ] **[TASK-314.2] Adaptive Canvas Scaler (`AdaptiveCanvasScaler.cs`):**
-    - Nội suy linh hoạt `matchWidthOrHeight` theo tỉ lệ màn hình thực tế (Aspect >= 1.77 Match Height 1.0; Aspect < 1.77 Match Width 0.0).
-    - Đảm bảo UI trên màn hình dài (20:9, 21:9) không bị co nhỏ và màn hình vuông (4:3, 16:10) không bị tràn mép.
-  - [ ] **[TASK-314.3] Mobile Controls Left Touch Zone & Responsive Bounds:**
-    - Cải tiến `DynamicVirtualJoystick.cs` hỗ trợ `LeftHalfScreenTouchZone` (chạm bất kỳ đâu bên nửa trái màn hình để xuất hiện Joystick).
-    - Căn chỉnh Anchors/Margin cụm Nút Dash & Skill Button bám theo Safe Area góc phải dưới đảm bảo tầm ngón tay cái thoải mái.
-  - [ ] **[TASK-314.4] Adaptive Card Container Auto-Scaler (`UpgradeUIView.cs` & Modals):**
-    - Bổ sung cơ chế auto-scale thẻ Gacha khi hiển thị 3 hoặc 5 thẻ trên các tỉ lệ màn hình hẹp ngang mà không tràn viền hay đè nút Reroll/Skip.
-  - [ ] **[TASK-314.5] Editor Tool Chuẩn Hóa 1-Click (`MobileResponsiveOptimizer.cs`):**
-    - Quét toàn bộ Canvas/Panels trong Scene, tự động gắn `SafeAreaFitter`, chuẩn hóa Anchor/Pivot và báo cáo lỗi layout.
-
 ---
 
-### 🟡 Phase 3: Shaders, Modular VFX & Vũ Khí Polish (CURRENT FOCUS)
+### 🟡 Phase 3: Shaders, Modular VFX & Vũ Khí Polish (CURRENT FOCUS - GAMEPLAY)
 *Tài liệu tham chiếu chi tiết:* 🎨 **[UI_ART_DIRECTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_ART_DIRECTION_GUIDE.md)** | 🥞 **[SORTING_LAYERS_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SORTING_LAYERS_GUIDE.md)** | 💥 **[weapon_dual_slash_vfx_suggestions.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/weapon_dual_slash_vfx_suggestions.md)**
 
-- [ ] 🚨 **[TASK-VFX-Core] Xây Dựng Bộ Shader Graph URP Chuẩn Cho VFX 2D Mobile**:
-  - [ ] **[TASK-VFX-Core.1] Shader Graph Vệt Chém / Kiếm Khí (`Shader_Slash_Additive`):** Polar UV Scrolling + Dissolve Noise + Rim Glow.
-  - [ ] **[TASK-VFX-Core.2] Shader Graph Sóng Xung Kích / Biến Dạng (`Shader_Distortion_Shockwave`):** Scene Color + Normal Wave cho đòn nổ/AoE.
-  - [ ] **[TASK-VFX-Core.3] Shader Graph Vết Nứt Đất (`Shader_GroundDecal_Dissolve`):** Dissolve Burn Edge trên nền đất 0.5s.
-  - [ ] **[TASK-VFX-Core.4] Shader Graph Hit Flash Siêu Nhẹ Cho Quái Vật (`Shader_Sprite_HitFlash`):** Nháy trắng/vàng kim 0.05s trực tiếp trên Sprite Shader (0 GC).
+- [x] 🚨 **[TASK-VFX-Core] Xây Dựng Bộ Shader HLSL URP Chuẩn Cho VFX 2D Mobile**:
+  - [x] **[TASK-VFX-Core.1] Shader Vệt Chém / Kiếm Khí (`URP_VFX_Slash_Additive.shader`):** Polar UV Scrolling + Dissolve Noise + Dual HDR Core/Edge Tint.
+  - [x] **[TASK-VFX-Core.2] Shader Sóng Xung Kích / Biến Dạng (`URP_VFX_Distortion_Shockwave.shader`):** Opaque Scene Color + Normal Wave + Fallback Bloom Ring cho đòn nổ/AoE.
+  - [x] **[TASK-VFX-Core.3] Shader Vết Nứt Đất (`URP_VFX_GroundDecal_Dissolve.shader`):** Dissolve Burn Edge trên nền đất layer `VFX_Bottom`.
+  - [x] **[TASK-VFX-Core.4] Shader Hit Flash Siêu Nhẹ Cho Quái Vật (`URP_Sprite_HitFlash.shader`):** Nháy trắng/vàng kim 0.05s trực tiếp trên Sprite Shader qua `MaterialPropertyBlock` & GPU Instancing Buffer (0 GC).
 
-- [ ] 🚨 **[TASK-VFX-01] [W002 & W008] Vệt Chém Đa Hướng & Luồng Lửa (`Bút Phán Quan` & `Đao Cửu Vĩ`)**:
-  - [ ] **Dynamic Slash Placement:** Spawn Crescent Slash VFX tại `hitCenter` xoay góc Z theo hướng đánh thực tế.
-  - [ ] **Multi-layer Slash Effect:** Tạo Prefab 3 lớp (`Core_White`, `Slash_Arc_Glow`, `Ink_Splash_Sparks`).
-  - [ ] **Visual Progression:** Nâng cấp visual theo Level 1 -> 4 -> Tiến Hóa `E002` (Vòng xoáy Âm Dương).
-  - [ ] **Đao Cửu Vĩ (W008):** Luồng rồng lửa phun liên tục dạng nón xoắn ốc kèm tàn lửa.
+- [x] 🚨 **[TASK-VFX-01] [W002 & W008] Vệt Chém Đa Hướng & Luồng Lửa (`Bút Phán Quan` & `Đao Cửu Vĩ`)**:
+  - [x] **Dynamic Slash Placement:** Spawn Crescent Slash VFX tại `hitCenter` xoay góc Z theo hướng đánh thực tế.
+  - [x] **Multi-layer Slash Effect:** Tạo Prefab 3 lớp (`Core_White`, `Slash_Arc_Glow`, `Ink_Splash_Sparks` qua `WeaponVFXBuilder.cs`).
+  - [x] **Visual Progression:** Nâng cấp visual theo Level 1 -> 4 -> Tiến Hóa `E002` (Vòng xoáy Âm Dương) trong `Weapon_DualSlash.cs`.
+  - [x] **Đao Cửu Vĩ (W008):** Luồng rồng lửa phun liên tục dạng nón xoắn ốc kèm tàn lửa than hồng (`VFX_W008_FoxFlameStream`).
 
 - [ ] 🚨 **[TASK-VFX-02] [W003 & W012] Vệt Linh Khí Orbit & Phi Tiêu Bát Quái (`Bùa Trấn Yêu` & `Phi Tiêu Bát Quái`)**:
   - [x] Tangent Rotation: Xoay tiếp tuyến lá bùa theo chiều quay.
@@ -167,12 +151,12 @@ graph TD
 
 ---
 
-### 🟡 Phase 4: Gameplay Production Feel & Dynamic Audio (NEXT PHASE)
+### 🟡 Phase 4: Gameplay Production Feel & Dynamic Audio (GAMEPLAY FOCUS)
 *Tài liệu tham chiếu chi tiết:* 📖 **[GAMEPLAY_PRODUCTION_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md)** | 🔊 **[AUDIO_SYSTEM_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/AUDIO_SYSTEM_GUIDE.md)**
 
-- [ ] 🚨 **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback**:
-  - Nháy trắng (`Flash White 0.05s`) trên Sprite quái vật khi nhận damage trong `ZombieHealth.cs`.
-  - Lực đẩy lùi vật lý `_knockbackForce` cho các đòn đánh nặng (Trống Đồng W005, Cọc Gỗ) tạo khoảng thở.
+- [x] 🚨 **[TASK-GP-01] Hit Flash URP Shader & Knockback Feedback**:
+  - [x] Nháy trắng (`Flash White 0.05s`) và Nháy Vàng Kim (`#FFD700`) tương khắc trên Sprite quái vật qua `HitFlashFeedback.cs` (0 GC).
+  - [x] Lực đẩy lùi vật lý `Knockback` tích hợp vào đạn bay (`ProjectileCollision`), vụ nổ AoE (`ExplosionBehavior`) và chém cận chiến (`Weapon_MeleeBase`).
 - [ ] 🚨 **[TASK-GP-02] Screen Shake & Damage Popup Feedback**:
   - Tích hợp Camera Shake (`0.08s`, biên độ `0.15`) khi đòn đánh Chí Mạng hoặc Nổ AoE.
   - Nâng cấp Damage Popup: Phân biệt rõ Sát thương Thường (Trắng), Tương Khắc (Vàng Kim `#FFD700` + `✦`), Chí Mạng (Đỏ Cam Scale Punch).
@@ -187,8 +171,14 @@ graph TD
 
 ---
 
-### 🔴 Phase 5: Onboarding UI, Performance & Đóng Gói Phát Hành (FINAL PHASE)
+### 🔴 Phase 5: UI Polish, Performance & Đóng Gói Phát Hành (FINAL PHASE - XỬ LÝ SAU)
 
+- [ ] 🚨 **[TASK-314] Tối Ưu Hóa Toàn Diện Mobile UI Responsive, Safe Area & Multi-Resolution Adaptation**:
+  - [ ] **[TASK-314.1] Safe Area Fitter Zero-Alloc (`SafeAreaFitter.cs`):** Tự động bắt `Screen.safeArea` áp dụng vào `anchorMin`/`anchorMax` (tránh Notch camera, Dynamic Island, Home Bar).
+  - [ ] **[TASK-314.2] Adaptive Canvas Scaler (`AdaptiveCanvasScaler.cs`):** Match Height 1.0 cho màn dài (20:9) và Match Width 0.0 cho màn vuông (4:3).
+  - [ ] **[TASK-314.3] Mobile Controls Left Touch Zone:** Cải tiến `DynamicVirtualJoystick.cs` hỗ trợ chạm nửa trái màn hình và căn lề cụm nút Dash/Skill.
+  - [ ] **[TASK-314.4] Adaptive Card Container Auto-Scaler (`UpgradeUIView.cs`):** Tự động co giãn scale khi mở 3 hoặc 5 thẻ Gacha.
+  - [ ] **[TASK-314.5] Editor Tool Chuẩn Hóa 1-Click (`MobileResponsiveOptimizer.cs`):** Tự động quét và chuẩn hóa toàn bộ Scene/Prefabs.
 - [ ] 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP)**:
   - [ ] **[TASK-316.1] Gợi Ý Tương Sinh (Synergy Glow & Hint) Trên Thẻ Gacha:** Viền sáng xanh ngọc + tooltip gợi ý khi xuất hiện thẻ tương sinh.
   - [ ] **[TASK-316.2] HUD Quick Reference Wheel (Vòng Bát Quái Tra Cứu Nhanh):** Hold touch 1s để soi sơ đồ tương sinh tương khắc.

@@ -72,6 +72,15 @@ namespace ProjectZombie.Features.Projectiles.Components
 
                     target.TakeDamage(hitDamage);
 
+                    // Áp dụng lực đẩy lùi theo hướng bay của đạn (trừ quái Heavy Armor)
+                    if (enemy != null && !enemy.IsHeavyArmor)
+                    {
+                        Vector2 pushDir = _controller.CurrentDirection.sqrMagnitude > 0.01f 
+                            ? _controller.CurrentDirection 
+                            : ((Vector2)(collision.transform.position - transform.position)).normalized;
+                        enemy.ApplyKnockback(pushDir, 2.5f, 0.12f);
+                    }
+
                     // Kích hoạt Vòng Tương Sinh (Element Generation)
                     if (_controller.Damage.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
                     {

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MAT_IceBlade_Arc
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: a7cfdeff91f081c4f8ca50e9aa8727f1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -33,12 +33,25 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
+    - _CoreThreshold: 0.7
+    - _DissolveAmount: 0
+    - _DissolveSoftness: 0.1
+    - _DstBlend: 1
     - _EnableExternalAlpha: 0
+    - _SrcBlend: 5
+    - _UsePolar: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CoreColor: {r: 1.8, g: 2, b: 2, a: 1}
+    - _EdgeColor: {r: 0.2, g: 0.7, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Speed: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

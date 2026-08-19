@@ -64,6 +64,14 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                 if (col.TryGetComponent(out IDamageable target))
                 {
                     target.TakeDamage(explosionDamage);
+
+                    // Lực đẩy lùi lan tỏa từ tâm vụ nổ (Radial Knockback)
+                    if (col.TryGetComponent(out Enemies.Enemy enemy) && !enemy.IsHeavyArmor)
+                    {
+                        Vector2 pushDir = ((Vector2)col.transform.position - (Vector2)center).normalized;
+                        if (pushDir.sqrMagnitude < 0.001f) pushDir = Vector2.up;
+                        enemy.ApplyKnockback(pushDir, 5.0f, 0.18f);
+                    }
                 }
             }
 
