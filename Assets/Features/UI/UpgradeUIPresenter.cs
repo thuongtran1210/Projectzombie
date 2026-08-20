@@ -280,6 +280,10 @@ namespace ProjectZombie.Features.UI
             {
                 return "EVOLUTION";
             }
+            else if (data is FallbackRewardUpgradeData)
+            {
+                return "THƯỞNG";
+            }
             else if (data is CommonUpgradeData commonData && _playerWeaponManager != null)
             {
                 var playerPassives = _playerWeaponManager.GetComponent<PlayerPassives>();

@@ -97,19 +97,18 @@ graph TD
   - [x] Chuẩn hóa Badge Ngũ Hành qua `ElementVisualHelper.cs`.
   - [x] View thụ động `UpgradeCardView.cs` hỗ trợ `_statDiffText` và `UnscaledTime`.
   - [x] Dynamic Card Container & Object Pooling trong `UpgradeUIView.cs` (Zero-Alloc, tái sử dụng thẻ linh hoạt 1-3-5 cards).
-  - [x] Tool tự động hóa `UpgradeUIHierarchyOptimizer.cs`.
-- [x] 🚨 **[TASK-315] Setup Vietnamese TMP Dynamic Fallback Font Asset**:
-  - Cấu hình Dynamic Font Fallback `LiberationSans SDF - Fallback.asset` hỗ trợ full dải ký tự tiếng Việt (`0x1EA0-0x1EF9`) và biểu tượng `☯` (`\u262F`).
-  - Tool Editor `TMPVietnameseFontSetupTool.cs`.
-- [x] **[TASK-301] - [TASK-305] Các Màn Hình UI Phụ Trợ (MVP Pattern):**
-  - [x] `MetaUpgradeShopView/Presenter.cs`: Giao diện Cây nâng cấp vĩnh viễn dùng Cổ Tiền.
-  - [x] `CharacterSelectionView/Presenter.cs`: Giao diện Chọn Tướng (Thư Sinh, Đạo Sĩ, Võ Tăng).
-  - [x] `RunSummaryView/Presenter.cs`: Giao diện Tổng kết trận đấu và cộng Cổ Tiền tích lũy.
-- [x] 🚨 **[TASK-EXP-01] Hệ Thống Hạt EXP & Magnet Tối Ưu (Performance & Game Feel)**:
-  - [x] `PlayerMagnetTrigger.cs`: Bắt vùng hút động theo chỉ số `PickupRange`.
-  - [x] Tối ưu homing toán học Zero-Alloc (`ExpGemPoolManager`), không dùng DOTween per gem.
-  - [x] Cơ chế tự động gộp hạt (Gem Compression/Merging) khi vượt ngưỡng 150 hạt trên sân.
-  - [x] Phân cấp màu sắc Gem (Lam Ngọc, Lục Bảo, Hoàng Kim) và Pitch Scaling Audio (`1.0f -> 1.5f`).
+- [x] 🚨 **[TASK-UPG-02] Hệ Thống Nâng Cấp Vũ Khí 48 Thẻ & Bộ Lọc Thông Minh (Smart Filter Pipeline)**:
+  - [x] Sinh trọn bộ 48 Thẻ Nâng Cấp Level 2 $\rightarrow$ 5 (`W001_Lv2` đến `W012_Lv5`) qua `UpgradeDatabaseStandardizer.cs`.
+  - [x] Cầu nối chỉ số đạn (`BonusPierce`, `SpeedMultiplier`, `ScaleMultiplier`) vào `ProjectileRuntimeState` và `ProjectileSpawner`.
+  - [x] Thuật toán trọng số động `CalculateEffectiveWeight`: Ưu tiên vũ khí sở hữu ($2.5\times$), Passive ($2.0\times$), Tiến hóa ($4.0\times$), Tương sinh Ngũ Hành ($+35\%$).
+  - [x] Giới hạn tối đa 1 thẻ Mở Khóa Mới / 1 lần Roll và giới hạn cứng 6 Vũ khí / 6 Bị động (`MAX_WEAPONS = 6`, `MAX_PASSIVES = 6`).
+  - [x] Hệ thống Thẻ Dự Phòng Vĩnh Cửu `FallbackRewardUpgradeData.cs` (+150 Vàng / Hồi 40% Máu) chống treo game khi cạn pool.
+  - [x] Nút Bỏ Qua (Skip) hồi phục 20% Máu tối đa.
+- [x] 🚨 **[TASK-W011-01] Nâng Cấp Nước Thánh Chùa Hương (W011 - Holy Water AoE Zone)**:
+  - [x] Khắc phục 100% lỗi mất sát thương DoT qua `PeriodicHitBehavior.cs` (0 GC Allocation `Physics2D.OverlapCircleNonAlloc`).
+  - [x] Tích hợp hiệu ứng Làm Chậm $30\%$ tốc độ di chuyển quái vật trong $1.0\text{s}$.
+  - [x] Sinh texture và Prefab riêng `Proj_W011_NuocThanhChuaHuong.prefab` màu Lam Ngọc Sáng & Ánh Kim Phật Giáo.
+  - [x] Cân bằng cơ chế rơi ngẫu nhiên vùng tròn quanh người chơi ($1.2\text{m} - 5.5\text{m}$), phục vụ lối chơi lùa quái (Kite).
 
 ---
 

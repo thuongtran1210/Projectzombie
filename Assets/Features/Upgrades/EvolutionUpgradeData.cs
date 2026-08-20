@@ -28,7 +28,7 @@ namespace ProjectZombie.Features.Upgrades
 
             if (weaponManager == null) return false;
 
-            var baseWeapon = weaponManager.ActiveWeapons.FirstOrDefault(w => w.weaponId == weaponId);
+            var baseWeapon = weaponManager.ActiveWeapons.FirstOrDefault(w => string.Equals(w.weaponId, weaponId, System.StringComparison.OrdinalIgnoreCase));
             bool hasWeapon = baseWeapon != null;
 
             if (hasWeapon && baseWeapon.WeaponLevel >= requiredCurrentLevel)
