@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Proj_W011_WellHit
   m_EditorClassIdentifier: 
   ExecutionOrder: 10
-  hitCooldown: 1
+  hitCooldown: 0.6
+  slowPercentage: 0.3
+  slowDuration: 1.0

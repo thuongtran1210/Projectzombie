@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: "Proj_W011_N\u01B0\u1EDBc"
   m_EditorClassIdentifier: 
   ProjectileID: Proj_W011
-  LogicPrefab: {fileID: 1174430111781914806, guid: e48c1f7bcdb21df4abcfe11b9b2268f0, type: 3}
+  LogicPrefab: {fileID: 1174430111781914806, guid: e11a2b3c4d5e6f7a8b9c0d1e2f3a4b5c, type: 3}
   Speed: 0
   MaxRange: 20
   Lifetime: 5
-  CollisionRadius: 3
+  CollisionRadius: 1.15
   HitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
