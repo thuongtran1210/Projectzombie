@@ -56,24 +56,20 @@ namespace Projectzombie.Editor.Rigging
             // Head
             CreateBone(chest.transform, "Head", new Vector3(0, 0.15f, 0), spriteDir + "/char_head.png", 102);
 
-            // Left Arm (Upper -> Lower)
-            GameObject armUpperL = CreateBone(chest.transform, "Arm_Upper_L", new Vector3(-0.25f, 0.05f, 0), spriteDir + "/char_arm_upper_l.png", 95);
-            CreateBone(armUpperL.transform, "Arm_Lower_L", new Vector3(-0.2f, 0, 0), spriteDir + "/char_arm_lower_l.png", 94);
+            // Left Arm (Single Part)
+            GameObject armL = CreateBone(chest.transform, "Arm_L", new Vector3(-0.25f, 0.05f, 0), spriteDir + "/char_arm_l.png", 95);
 
-            // Right Arm (Upper -> Lower -> WeaponSocket & Staff)
-            GameObject armUpperR = CreateBone(chest.transform, "Arm_Upper_R", new Vector3(0.25f, 0.05f, 0), spriteDir + "/char_arm_upper_r.png", 105);
-            GameObject armLowerR = CreateBone(armUpperR.transform, "Arm_Lower_R", new Vector3(0.2f, 0, 0), spriteDir + "/char_arm_lower_r.png", 106);
+            // Right Arm (Single Part with WeaponSocket)
+            GameObject armR = CreateBone(chest.transform, "Arm_R", new Vector3(0.25f, 0.05f, 0), spriteDir + "/char_arm_r.png", 105);
 
             // WeaponSocket with Staff Prop
-            GameObject weaponSocket = CreateBone(armLowerR.transform, "WeaponSocket", new Vector3(0.1f, -0.05f, 0), spriteDir + "/char_prop_staff.png", 110);
+            GameObject weaponSocket = CreateBone(armR.transform, "WeaponSocket", new Vector3(0.1f, -0.2f, 0), spriteDir + "/char_prop_staff.png", 110);
 
-            // Left Leg (Thigh -> Shin)
-            GameObject legThighL = CreateBone(hips.transform, "Leg_Thigh_L", new Vector3(-0.12f, -0.1f, 0), spriteDir + "/char_leg_thigh_l.png", 98);
-            CreateBone(legThighL.transform, "Leg_Shin_L", new Vector3(0, -0.2f, 0), spriteDir + "/char_leg_shin_l.png", 97);
+            // Left Leg (Single Part)
+            CreateBone(hips.transform, "Leg_L", new Vector3(-0.12f, -0.1f, 0), spriteDir + "/char_leg_l.png", 98);
 
-            // Right Leg (Thigh -> Shin)
-            GameObject legThighR = CreateBone(hips.transform, "Leg_Thigh_R", new Vector3(0.12f, -0.1f, 0), spriteDir + "/char_leg_thigh_r.png", 101);
-            CreateBone(legThighR.transform, "Leg_Shin_R", new Vector3(0, -0.2f, 0), spriteDir + "/char_leg_shin_r.png", 102);
+            // Right Leg (Single Part)
+            CreateBone(hips.transform, "Leg_R", new Vector3(0.12f, -0.1f, 0), spriteDir + "/char_leg_r.png", 101);
 
             // Sockets
             GameObject firePoint = new GameObject("FirePoint");

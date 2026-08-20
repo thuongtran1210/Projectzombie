@@ -90,7 +90,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Bone_Root/Hips/Chest/Arm_Upper_R
+    path: Bone_Root/Hips/Chest/Arm_R
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -124,7 +124,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Bone_Root/Hips/Chest/Arm_Upper_L
+    path: Bone_Root/Hips/Chest/Arm_L
   - curve:
       serializedVersion: 2
       m_Curve:

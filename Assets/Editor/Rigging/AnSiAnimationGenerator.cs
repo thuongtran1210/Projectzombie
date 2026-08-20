@@ -46,12 +46,12 @@ namespace Projectzombie.Editor.Rigging
             clip.SetCurve("Bone_Root/Hips/Chest/Head", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -1.8f), (1.2f, 0f) }));
 
-            // Path 4: Arm_Upper_R (Tay chống gậy dập dềnh nhẹ)
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            // Path 4: Arm_R (Tay chống gậy dập dềnh nhẹ)
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, 2.5f), (1.2f, 0f) }));
 
-            // Path 5: Arm_Upper_L (Tay trái đung đưa)
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_L", typeof(Transform), "localEulerAnglesRaw.z", 
+            // Path 5: Arm_L (Tay trái đung đưa)
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_L", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -2.0f), (1.2f, 0f) }));
 
             // Path 6: Gourd (Hồ lô lắc nhẹ)
@@ -80,24 +80,20 @@ namespace Projectzombie.Editor.Rigging
             clip.SetCurve("Bone_Root/Hips/Chest/Head", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 5f), (0.15f, 2f), (0.3f, 5f), (0.45f, 2f), (0.6f, 5f) }));
 
-            // Chân phải (Leg_Thigh_R & Shin_R)
-            clip.SetCurve("Bone_Root/Hips/Leg_Thigh_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            // Chân phải (Leg_R)
+            clip.SetCurve("Bone_Root/Hips/Leg_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 28f), (0.3f, -32f), (0.6f, 28f) }));
-            clip.SetCurve("Bone_Root/Hips/Leg_Thigh_R/Leg_Shin_R", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, -10f), (0.15f, -35f), (0.3f, 5f), (0.45f, -15f), (0.6f, -10f) }));
 
-            // Chân trái (Leg_Thigh_L & Shin_L) - Pha đối xứng lệch 0.3s
-            clip.SetCurve("Bone_Root/Hips/Leg_Thigh_L", typeof(Transform), "localEulerAnglesRaw.z", 
+            // Chân trái (Leg_L) - Pha đối xứng lệch 0.3s
+            clip.SetCurve("Bone_Root/Hips/Leg_L", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, -32f), (0.3f, 28f), (0.6f, -32f) }));
-            clip.SetCurve("Bone_Root/Hips/Leg_Thigh_L/Leg_Shin_L", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 5f), (0.15f, -15f), (0.3f, -10f), (0.45f, -35f), (0.6f, 5f) }));
 
             // Tay phải vung gậy
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, -20f), (0.3f, 25f), (0.6f, -20f) }));
 
             // Tay trái đánh nhịp
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_L", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_L", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 25f), (0.3f, -20f), (0.6f, 25f) }));
 
             // Hồ lô & Nón lắc mạnh khi chạy
@@ -118,10 +114,6 @@ namespace Projectzombie.Editor.Rigging
             settings.loopTime = false;
             AnimationUtility.SetAnimationClipSettings(clip, settings);
 
-            // 0.0s - 0.12s: Lùi lấy đà (Windup)
-            // 0.12s - 0.20s: Bổ đập dứt khoát cực mạnh (Impact)
-            // 0.20s - 0.45s: Hồi phục thế (Recovery)
-
             // Thân rướn
             clip.SetCurve("Bone_Root/Hips", typeof(Transform), "localPosition.x", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, -0.06f), (0.18f, 0.12f), (0.45f, 0f) }));
@@ -129,13 +121,11 @@ namespace Projectzombie.Editor.Rigging
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, -12f), (0.18f, 20f), (0.45f, 0f) }));
 
             // Tay phải giương gậy cao qua đầu rồi bổ xuống
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, 75f), (0.18f, -45f), (0.28f, -30f), (0.45f, 0f) }));
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R/Arm_Lower_R", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, 35f), (0.18f, -25f), (0.45f, 0f) }));
 
             // Gậy trúc quét xoay
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R/Arm_Lower_R/WeaponSocket", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R/WeaponSocket", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, 40f), (0.18f, -50f), (0.45f, 0f) }));
 
             // Đầu ngửa nhẹ rồi chúi nhìn theo đòn đánh
@@ -143,7 +133,7 @@ namespace Projectzombie.Editor.Rigging
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, -8f), (0.18f, 15f), (0.45f, 0f) }));
 
             // Tay trái giương ra sau giữ thăng bằng
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_L", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_L", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.12f, -35f), (0.18f, 30f), (0.45f, 0f) }));
 
             SaveOrReplaceClip(clip, $"{AnimationDir}/Attack_Rig.anim");
@@ -165,9 +155,9 @@ namespace Projectzombie.Editor.Rigging
                 CreateSmoothCurve(new (float, float)[] { (0f, 0.4f), (0.1f, 0.33f), (0.3f, 0.4f) }));
 
             // Tay cầm gậy chĩa xuôi theo gió
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.1f, -40f), (0.3f, 0f) }));
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_L", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_L", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.1f, -45f), (0.3f, 0f) }));
 
             // Nón lá bay ngược ra sau
@@ -193,7 +183,7 @@ namespace Projectzombie.Editor.Rigging
                 CreateSmoothCurve(new (float, float)[] { (0f, 0.4f), (0.2f, 0.5f), (0.5f, 0.15f), (0.8f, 0.1f) }));
 
             // Buông rơi gậy trúc
-            clip.SetCurve("Bone_Root/Hips/Chest/Arm_Upper_R", typeof(Transform), "localEulerAnglesRaw.z", 
+            clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
                 CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.2f, 60f), (0.5f, 110f), (0.8f, 120f) }));
 
             // Đầu gục

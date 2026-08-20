@@ -35,27 +35,15 @@ namespace Projectzombie.Editor.Rigging
                 settings.spriteAlignment = (int)SpriteAlignment.Custom;
                 settings.spritePivot = new Vector2(0.5f, 0.15f);
             }
-            else if (fileName.Contains("arm_upper"))
+            else if (fileName.Contains("arm"))
             {
-                // Khớp vai (đỉnh bắp tay)
+                // Khớp vai (đỉnh tay)
                 settings.spriteAlignment = (int)SpriteAlignment.Custom;
                 settings.spritePivot = new Vector2(0.5f, 0.85f);
             }
-            else if (fileName.Contains("arm_lower"))
+            else if (fileName.Contains("leg"))
             {
-                // Khớp khuỷu tay (đỉnh cẳng tay)
-                settings.spriteAlignment = (int)SpriteAlignment.Custom;
-                settings.spritePivot = new Vector2(0.5f, 0.85f);
-            }
-            else if (fileName.Contains("leg_thigh"))
-            {
-                // Khớp hông (đỉnh đùi)
-                settings.spriteAlignment = (int)SpriteAlignment.Custom;
-                settings.spritePivot = new Vector2(0.5f, 0.85f);
-            }
-            else if (fileName.Contains("leg_shin"))
-            {
-                // Khớp đầu gối (đỉnh cẳng chân)
+                // Khớp hông (đỉnh chân)
                 settings.spriteAlignment = (int)SpriteAlignment.Custom;
                 settings.spritePivot = new Vector2(0.5f, 0.85f);
             }
