@@ -28,7 +28,7 @@ MonoBehaviour:
     passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
       t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
       \u0111a."
-    avatar: {fileID: 0}
+    avatar: {fileID: 21300000, guid: 8e5f29d29bca4ba488fbca25687cfef1, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
     isUnlocked: 1
   - characterId: C002_DaoSi

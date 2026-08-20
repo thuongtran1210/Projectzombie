@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B\u1ECB \u0111\u1ED9ng: \u1EA4n Ch\xED M\u1EA1ng"
+  m_text: "+25% T\u1EA7m h\xFAt v\u1EADt ph\u1EA9m & ng\u1ECDc kinh nghi\u1EC7m"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u1EA4n Ch\xED M\u1EA1ng"
+  m_text: "T\xFAi H\xFAt H\u1ED3n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -305,7 +305,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 335.10284, y: 510.74536}
+  m_AnchoredPosition: {x: 482.9417, y: 390.70166}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412
