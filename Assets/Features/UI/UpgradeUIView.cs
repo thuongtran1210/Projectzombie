@@ -39,12 +39,22 @@ namespace ProjectZombie.Features.UI
 
             if (_rerollButton != null)
             {
+                _rerollButton.gameObject.layer = LayerMask.NameToLayer("UI");
+                _rerollButton.onClick.RemoveAllListeners();
                 _rerollButton.onClick.AddListener(() => _onRerollClicked?.Invoke());
             }
 
             if (_skipButton != null)
             {
+                _skipButton.gameObject.layer = LayerMask.NameToLayer("UI");
+                _skipButton.onClick.RemoveAllListeners();
                 _skipButton.onClick.AddListener(() => _onSkipClicked?.Invoke());
+            }
+
+            if (_rerollCountText != null)
+            {
+                _rerollCountText.gameObject.layer = LayerMask.NameToLayer("UI");
+                _rerollCountText.raycastTarget = false;
             }
 
             // Tự động đảm bảo Animator không bị đóng băng khi pause game (Time.timeScale = 0)
@@ -156,6 +166,10 @@ namespace ProjectZombie.Features.UI
             if (_rerollButton != null)
             {
                 _rerollButton.gameObject.SetActive(onReroll != null);
+            }
+            if (_rerollCountText != null)
+            {
+                _rerollCountText.raycastTarget = false;
             }
         }
 

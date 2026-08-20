@@ -36,9 +36,20 @@ namespace ProjectZombie.Features.UI
                 UnsubscribeEvents();
             }
 
+            if (_view == null)
+            {
+                _view = GetComponent<UpgradeUIView>();
+            }
+
             _playerExperience = experience;
             _playerWeaponManager = weaponManager;
             _currentRerolls = _maxRerollsPerRun;
+
+            if (_view != null)
+            {
+                _view.SetRerollButtonCallback(OnRerollClicked);
+                _view.SetSkipButtonCallback(OnSkipClicked);
+            }
 
             SubscribeEvents();
 

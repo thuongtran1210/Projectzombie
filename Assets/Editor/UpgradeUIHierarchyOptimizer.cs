@@ -159,6 +159,7 @@ namespace ProjectZombie.EditorTools
             if (rerollBtnTrans == null)
             {
                 GameObject btnObj = new GameObject("Button_Reroll", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                btnObj.layer = LayerMask.NameToLayer("UI");
                 btnObj.transform.SetParent(footerTrans, false);
                 rerollBtnTrans = btnObj.transform;
 
@@ -175,6 +176,7 @@ namespace ProjectZombie.EditorTools
 
                 // Text bên trong nút Reroll
                 GameObject textObj = new GameObject("Txt_RerollCount", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+                textObj.layer = LayerMask.NameToLayer("UI");
                 textObj.transform.SetParent(btnObj.transform, false);
 
                 RectTransform tRect = textObj.GetComponent<RectTransform>();
@@ -187,11 +189,18 @@ namespace ProjectZombie.EditorTools
                 rerollText.fontSize = 22;
                 rerollText.alignment = TextAlignmentOptions.Center;
                 rerollText.color = new Color(1f, 0.9f, 0.6f, 1f); // Màu chữ vàng đồng sáng
+                rerollText.raycastTarget = false;
             }
             else
             {
+                rerollBtnTrans.gameObject.layer = LayerMask.NameToLayer("UI");
                 rerollBtn = rerollBtnTrans.GetComponent<Button>();
                 rerollText = rerollBtnTrans.GetComponentInChildren<TextMeshProUGUI>();
+                if (rerollText != null)
+                {
+                    rerollText.gameObject.layer = LayerMask.NameToLayer("UI");
+                    rerollText.raycastTarget = false;
+                }
             }
 
             // 7. Tạo/Tìm Button_Skip
