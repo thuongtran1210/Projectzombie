@@ -4,12 +4,12 @@ using UnityEngine;
 namespace ProjectZombie.Features.Enemies.Visuals
 {
     /// <summary>
-    /// Component quản lý hiển thị trực quan các Trạng thái Bất lợi (Stun, Slow, Freeze, Burn) trên quái vật.
+    /// Component quản lý hiển thị trực quan các Trạng thái Bất lợi (Stun, Slow, Freeze, Burn) trên quái vật:
     /// - Choáng (Stun): Ngôi sao vàng kim xoay tròn quanh đỉnh đầu + dừng hoạt ảnh.
     /// - Đóng băng (Freeze): Phủ sắc xanh băng tuyết + đóng băng hoạt ảnh.
-    /// - Làm chậm (Slow): Ám sắc xanh bùn / giảm tốc hoạt ảnh.
+    /// - Làm chậm (Slow): Ám sắc lam ngọc sương tuyết + giảm tốc hoạt ảnh + Vòng sương băng dưới chân.
     /// - Thiêu đốt (Burn): Ám sắc đỏ cam rực lửa DoT.
-    /// Đảm bảo Zero GC Allocation và tự động thích ứng với chiều cao của từng loại quái/Boss.
+    /// Tương thích 100% với SpriteRenderer tiêu chuẩn và đảm bảo Zero GC Allocation.
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(EnemyStatusController))]
@@ -23,19 +23,22 @@ namespace ProjectZombie.Features.Enemies.Visuals
         private EnemyStatusController _statusController;
         private Animator _animator;
         private SpriteRenderer[] _spriteRenderers;
+        private Color[] _originalColors;
         private MaterialPropertyBlock _propBlock;
 
         // Dizzy Stars Indicator
         private GameObject _dizzyRoot;
         private Transform[] _starTransforms;
         private float _currentOrbitAngle = 0f;
+
+        // Slow Foot Indicator
+        private GameObject _footSlowIndicator;
+        private SpriteRenderer _footIndicatorRenderer;
+
         private bool _isStunned = false;
         private bool _isFrozen = false;
         private bool _isSlowed = false;
         private bool _isBurning = false;
-
-        private static readonly int _FlashColorId = Shader.PropertyToID("_FlashColor");
-        private static readonly int _FlashAmountId = Shader.PropertyToID("_FlashAmount");
 
         private void Awake()
         {
@@ -44,13 +47,22 @@ namespace ProjectZombie.Features.Enemies.Visuals
             _spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
             _propBlock = new MaterialPropertyBlock();
 
+            if (_spriteRenderers != null && _spriteRenderers.Length > 0)
+            {
+                _originalColors = new Color[_spriteRenderers.Length];
+                for (int i = 0; i < _spriteRenderers.Length; i++)
+                {
+                    _originalColors[i] = _spriteRenderers[i] != null ? _spriteRenderers[i].color : Color.white;
+                }
+            }
+
             CalculateHeadOffset();
             CreateDizzyStarsIndicator();
+            CreateFootSlowIndicator();
         }
 
         private void CalculateHeadOffset()
         {
-            // Tự động đo chiều cao dựa trên Collider hoặc Sprite
             if (TryGetComponent<Collider2D>(out var col))
             {
                 _headOffset = Mathf.Max(_headOffset, col.bounds.extents.y * 2f + 0.2f);
@@ -79,20 +91,33 @@ namespace ProjectZombie.Features.Enemies.Visuals
                 starObj.transform.localScale = new Vector3(0.18f, 0.18f, 1f);
 
                 var sr = starObj.AddComponent<SpriteRenderer>();
-                int skillLayerId = SortingLayer.NameToID("Skill");
-                int vfxLayerId = SortingLayer.NameToID("VFX");
-                if (skillLayerId != 0) sr.sortingLayerName = "Skill";
-                else if (vfxLayerId != 0) sr.sortingLayerName = "VFX";
+                sr.sortingLayerName = "Skill";
                 sr.sortingOrder = 500;
-                sr.color = new Color(1f, 0.88f, 0.2f, 0.95f); // Vàng Hoàng Kim
-
-                // Tạo icon ngôi sao 4 cánh bằng procedurally generated texture
+                sr.color = new Color(1f, 0.88f, 0.2f, 0.95f);
                 sr.sprite = CreateStarSprite();
 
                 _starTransforms[i] = starObj.transform;
             }
 
             _dizzyRoot.SetActive(false);
+        }
+
+        private void CreateFootSlowIndicator()
+        {
+            if (_footSlowIndicator != null) return;
+
+            _footSlowIndicator = new GameObject("Slow_FootFrostRing");
+            _footSlowIndicator.transform.SetParent(transform);
+            _footSlowIndicator.transform.localPosition = new Vector3(0f, -0.1f, 0f);
+            _footSlowIndicator.transform.localScale = new Vector3(0.7f, 0.35f, 1f);
+
+            _footIndicatorRenderer = _footSlowIndicator.AddComponent<SpriteRenderer>();
+            _footIndicatorRenderer.sortingLayerName = "Tilemap_Decals";
+            _footIndicatorRenderer.sortingOrder = 5;
+            _footIndicatorRenderer.color = new Color(0.35f, 0.85f, 1f, 0.85f);
+            _footIndicatorRenderer.sprite = CreateFrostRingSprite();
+
+            _footSlowIndicator.SetActive(false);
         }
 
         private static Sprite _cachedStarSprite;
@@ -114,7 +139,6 @@ namespace ProjectZombie.Features.Enemies.Visuals
                     float ny = (y - size * 0.5f) / (size * 0.5f);
                     float distCenter = Mathf.Sqrt(nx * nx + ny * ny);
 
-                    // Hình dáng ngôi sao 4 cánh kim cương nhấp nháy
                     float starShape = Mathf.Pow(Mathf.Abs(nx * ny), 0.35f);
                     if (distCenter < 0.9f && starShape < 0.15f)
                     {
@@ -133,13 +157,49 @@ namespace ProjectZombie.Features.Enemies.Visuals
             return _cachedStarSprite;
         }
 
+        private static Sprite _cachedFrostRingSprite;
+        private static Sprite CreateFrostRingSprite()
+        {
+            if (_cachedFrostRingSprite != null) return _cachedFrostRingSprite;
+
+            int size = 64;
+            Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            Color clear = new Color(0, 0, 0, 0);
+            Color cyan = new Color(0.4f, 0.88f, 1f, 1f);
+
+            float center = size * 0.5f;
+            float outerR = size * 0.46f;
+            float innerR = size * 0.28f;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
+                    if (dist >= innerR && dist <= outerR)
+                    {
+                        float ringAlpha = Mathf.Sin((dist - innerR) / (outerR - innerR) * Mathf.PI);
+                        tex.SetPixel(x, y, new Color(cyan.r, cyan.g, cyan.b, ringAlpha * 0.9f));
+                    }
+                    else
+                    {
+                        tex.SetPixel(x, y, clear);
+                    }
+                }
+            }
+            tex.Apply();
+
+            _cachedFrostRingSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 64);
+            return _cachedFrostRingSprite;
+        }
+
         private void OnEnable()
         {
             if (_statusController != null)
             {
                 _statusController.OnStatusChanged += HandleStatusChanged;
             }
-
             ResetAllVisuals();
         }
 
@@ -149,7 +209,6 @@ namespace ProjectZombie.Features.Enemies.Visuals
             {
                 _statusController.OnStatusChanged -= HandleStatusChanged;
             }
-
             ResetAllVisuals();
         }
 
@@ -166,7 +225,7 @@ namespace ProjectZombie.Features.Enemies.Visuals
                 case StatusEffectType.Freeze:
                     _isFrozen = isActive;
                     if (_animator != null) _animator.speed = isActive ? 0f : 1f;
-                    ApplyTint(isActive ? new Color(0.4f, 0.8f, 1f, 1f) : Color.white, isActive ? 0.6f : 0f);
+                    ApplyDirectColor(isActive ? new Color(0.3f, 0.7f, 1f, 1f) : Color.white);
                     break;
 
                 case StatusEffectType.Slow:
@@ -175,11 +234,20 @@ namespace ProjectZombie.Features.Enemies.Visuals
                     {
                         _animator.speed = isActive ? _statusController.CurrentSlowMultiplier : 1f;
                     }
+                    if (_footSlowIndicator != null)
+                    {
+                        _footSlowIndicator.SetActive(isActive);
+                    }
+                    if (!_isFrozen && !_isBurning)
+                    {
+                        // Sắc xanh lam ngọc sương tuyết rõ rệt khi bị làm chậm
+                        ApplyDirectColor(isActive ? new Color(0.45f, 0.85f, 1f, 1f) : Color.white, isActive ? 0.85f : 0f);
+                    }
                     break;
 
                 case StatusEffectType.Burn:
                     _isBurning = isActive;
-                    ApplyTint(isActive ? new Color(1f, 0.35f, 0.1f, 1f) : Color.white, isActive ? 0.4f : 0f);
+                    ApplyDirectColor(isActive ? new Color(1f, 0.45f, 0.15f, 1f) : Color.white, 0f);
                     break;
             }
         }
@@ -197,32 +265,44 @@ namespace ProjectZombie.Features.Enemies.Visuals
                     if (_starTransforms[i] == null) continue;
 
                     float rad = (_currentOrbitAngle + i * angleStep) * Mathf.Deg2Rad;
-                    // Elip 2.5D: Chiều ngang rộng hơn chiều sâu Y
                     float x = Mathf.Cos(rad) * _orbitRadius;
                     float y = Mathf.Sin(rad) * (_orbitRadius * 0.4f);
 
                     _starTransforms[i].localPosition = new Vector3(x, y, 0f);
 
-                    // Tỉ lệ scale nhấp nháy nhẹ theo vị trí trước/sau
                     float depthScale = Mathf.Lerp(0.85f, 1.2f, (Mathf.Sin(rad) + 1f) * 0.5f);
                     _starTransforms[i].localScale = new Vector3(0.18f * depthScale, 0.18f * depthScale, 1f);
                 }
             }
         }
 
-        private void ApplyTint(Color color, float amount)
+        private void ApplyDirectColor(Color tint, float slowIntensity = 0f)
         {
             if (_spriteRenderers == null) return;
 
             for (int i = 0; i < _spriteRenderers.Length; i++)
             {
                 var sr = _spriteRenderers[i];
-                if (sr == null) continue;
+                if (sr == null || (sr.transform.parent == _dizzyRoot?.transform) || sr == _footIndicatorRenderer) continue;
 
-                sr.GetPropertyBlock(_propBlock);
-                _propBlock.SetColor(_FlashColorId, color);
-                _propBlock.SetFloat(_FlashAmountId, amount);
-                sr.SetPropertyBlock(_propBlock);
+                // 1. Direct Sprite color
+                if (tint == Color.white && _originalColors != null && i < _originalColors.Length)
+                {
+                    sr.color = _originalColors[i];
+                }
+                else
+                {
+                    sr.color = tint;
+                }
+
+                // 2. Shader MaterialPropertyBlock support (URP_Sprite_StatusEffect)
+                if (_propBlock != null)
+                {
+                    sr.GetPropertyBlock(_propBlock);
+                    _propBlock.SetFloat(Shader.PropertyToID("_SlowAmount"), slowIntensity);
+                    _propBlock.SetColor(Shader.PropertyToID("_SlowFrostColor"), new Color(0.35f, 0.85f, 1f, 1f));
+                    sr.SetPropertyBlock(_propBlock);
+                }
             }
         }
 
@@ -233,17 +313,12 @@ namespace ProjectZombie.Features.Enemies.Visuals
             _isSlowed = false;
             _isBurning = false;
 
-            if (_dizzyRoot != null)
-            {
-                _dizzyRoot.SetActive(false);
-            }
+            if (_dizzyRoot != null) _dizzyRoot.SetActive(false);
+            if (_footSlowIndicator != null) _footSlowIndicator.SetActive(false);
 
-            if (_animator != null)
-            {
-                _animator.speed = 1f;
-            }
+            if (_animator != null) _animator.speed = 1f;
 
-            ApplyTint(Color.white, 0f);
+            ApplyDirectColor(Color.white, 0f);
         }
     }
 }

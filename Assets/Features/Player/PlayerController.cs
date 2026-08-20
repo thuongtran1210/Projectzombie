@@ -56,6 +56,11 @@ namespace ProjectZombie.Features.Player
             _playerStats = GetComponent<PlayerStats>();
             _playerAnimator = GetComponent<PlayerAnimator>();
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
+
+            if (GetComponent<Visuals.PlayerStatusVisuals>() == null)
+            {
+                gameObject.AddComponent<Visuals.PlayerStatusVisuals>();
+            }
             
             _rb.freezeRotation = true;
         }
@@ -158,6 +163,9 @@ namespace ProjectZombie.Features.Player
         private float _slowMultiplier = 1f;
         private Coroutine _slowCoroutine;
 
+        public float CurrentSlowMultiplier => _slowMultiplier;
+        public event System.Action<bool, float> OnSlowStatusChanged;
+
         /// <summary>
         /// Áp dụng hiệu ứng làm chậm (% slowPercent) trong khoảng thời gian duration (giây).
         /// </summary>
@@ -170,8 +178,13 @@ namespace ProjectZombie.Features.Player
         private System.Collections.IEnumerator SlowRoutine(float slowPercent, float duration)
         {
             _slowMultiplier = Mathf.Clamp01(1f - slowPercent);
+            OnSlowStatusChanged?.Invoke(true, _slowMultiplier);
+
             yield return new WaitForSeconds(duration);
+
             _slowMultiplier = 1f;
+            OnSlowStatusChanged?.Invoke(false, 1f);
+            _slowCoroutine = null;
         }
 
         private void FixedUpdate()
