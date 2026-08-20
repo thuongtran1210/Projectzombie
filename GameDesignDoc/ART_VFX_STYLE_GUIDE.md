@@ -6,37 +6,31 @@
 
 ---
 
-## 1. Phong Cách Mỹ Thuật Tổng Thể (Art Direction & World Building)
-
-### 1.1. Tầm Nhìn Mỹ Thuật & Nguyên Tắc Tương Phản (Visual Concept & Contrast Rules)
+## 1. Phong Cách Mỹ### 1.1. Tầm Nhìn Mỹ Thuật & Art Master DNA (Visual Concept & Art DNA)
 **Vong Xuyên** xây dựng bối cảnh Âm Ty Việt Nam — nơi truyền thuyết ma quái dân gian trỗi dậy.
-*   **Phong cách đồ họa chủ đạo:** Mỹ thuật dân gian Việt Nam (Tranh Đông Hồ / Tranh Hàng Trống cách điệu) kết hợp với đường nét Anime hiện đại và tông màu u linh, huyền bí.
+*   **Art Master DNA chủ đạo:** **2D Stylized Vector Cartoon / Cutout Chibi** (Lấy cảm hứng từ phong cách kinh điển của *Kingdom Rush*, *Castle Crashers*) kết hợp họa tiết & văn hóa dân gian Việt Nam (Đông Hồ, Hàng Trống, Cổ Phong).
+*   **Nguyên tắc viền đen đậm (Thick Solid Black Outlines):** Đường viền ngoài dày $2\text{px} - 3\text{px}$ bao trọn toàn bộ silhouette nhân vật và quái vật để tách bạch $100\%$ khỏi nền cõi âm, triệt tiêu hoàn toàn hiện tượng chìm hình khi đông quái.
+*   **Đổ bóng 2-Tone Cell-Shading:** 1 màu gốc (Base Color) + 1 lớp bóng tối (Shadow Tone) dạng mảng phẳng dứt khoát, không dùng gradient mờ.
 *   **Nguyên tắc tương phản Nền / Vật thể (Readability First):**
-    *   *Nền / Môi trường:* Sử dụng tông màu **Tối và Desaturated** (xám xanh u uất, nâu bùn, tím đen) để truyền tải trọn vẹn chất "u linh" cõi âm ty.
-    *   *Vật thể tương tác (Nhân vật / Yêu ma / Đạn bay / VFX):* Phải **Sáng và Saturated hơn nền rõ rệt (chênh lệch 1 – 2 bậc độ sáng / Luminance)**. Đây là quy tắc bắt buộc để mắt người chơi tự động phân biệt ngay "vật thể tương tác được" khỏi nền tĩnh trong loạn chiến đông quái (150-200 Zombie).
+    *   *Nền / Môi trường:* Tông màu **Tối và Desaturated** (xám xanh u uất, nâu bùn, tím đen).
+    *   *Nhân vật / Yêu ma / VFX:* **Sáng, tương phản cao, saturated rõ rệt** với viền đen bao quanh.
 
-### 1.4. Quy Chuẩn Góc Nhìn, Tỉ Lệ & Kích Thước Sprite (Perspective & Sprite Specs)
-*   **Góc nhìn (Perspective):** **Top-down 3/4 view** (không phải góc top-down thuần 90° từ trên đỉnh đầu xuống). Góc nhìn 3/4 cho phép thấy rõ mặt trước, biểu cảm và trang phục dân gian Việt Nam (áo the, khăn đóng, áo cà sa, pháp bảo).
-*   **Tỉ lệ cơ thể (Body Ratio):** **Chibi hóa nhẹ (Tỉ lệ đầu:thân khoảng 1:3 đến 1:4)**. Giữ silhouette (bóng dáng) dễ đọc khi màn hình cực kỳ đông quái (target 200 enemy đồng thời theo GDD mục 9), đồng thời đủ chỗ vẽ chi tiết họa tiết mà không cần đẩy độ phân giải quá cao.
+### 1.4. Quy Chuẩn Tỉ Lệ Cơ Thể, Góc Nhìn & Cấu Trúc Khối (Anatomy & Perspective)
+*   **Tỉ lệ cơ thể (Body Ratio):** **Chibi $1:2$ đến $1:2.2$ (Head-Dominant)**:
+    *   *Đầu (Head):* Chiếm **$45\% - 50\%$** tổng chiều cao nhân vật. Tập trung nhận diện đặc trưng (mắt to, biểu cảm cá tính, khăn đóng, tóc búi, mũ chầu, râu).
+    *   *Thân (Torso):* Chiếm **$30\%$**, hình khối trụ / hình thang bo tròn đơn giản.
+    *   *Tay & Chân (Limbs):* Ngắn, dạng ống bo tròn ở các khớp nối (**Ball-joint Modular Structure**), bàn chân phẳng tiếp đất vững chãi.
+*   **Góc nhìn (Perspective):** **Frontal 3/4 Flat View (Chính diện chếch 3/4 phẳng)**:
+    *   Thấy rõ toàn bộ mặt trước, biểu cảm, trang phục và hai chân đứng trên cùng một đường nằm ngang (**Ground Baseline**).
+    *   Hai tay tách rời sang hai bên thân ở trạng thái trung tính, tối ưu hóa $100\%$ cho hệ thống 2D Sprite Rigging / Cutout Animation.
 *   **Kích thước Sprite (Canvas Budget) & PPU:**
-    *   *Canvas Nhân vật / Quái thường:* **32×32px đến 48×48px**.
-    *   *Tilemap Môi trường:* **16×16px hoặc 32×32px**.
-    *   *Pixels Per Unit (PPU):* **`32`** (`1 Unit = 1m = 32px`). Giúp 1 Sprite 32x32px có kích thước đúng 1m x 1m trong World Space, tối ưu va chạm Physics2D và Tilemap Grid.
-    *   *Giới hạn:* Tuyệt đối không vượt quá **64px** (ngoại trừ Trùm / Boss) để giữ Sprite Atlas gọn nhẹ, bảo đảm target APK/AAB gói phát hành dưới 60MB.
-*   **Cấu hình Camera (Landscape Mode):**
-    *   *Màn hình:* Màn hình ngang (Landscape).
-    *   *Projection:* **Orthographic**.
-    *   *Orthographic Size:* **`6.0`** (Tầm nhìn chiều cao `12m`, tương đương 384px Reference Vertical).
-    *   *Pixel Perfect Camera:* Reference Resolution `768 × 432` hoặc `640 × 360`, PPU `32`, Filter Mode `Point (no filter)`.
-*   **Viền đen mỏng 1px (Outline Rule):** Vẽ viền đen mỏng 1px bao quanh nhân vật và quái vật để tách biệt hoàn toàn khỏi nền môi trường tối, tăng độ nhận diện (readability) mà không cần đẩy độ sáng của sprite lên quá cao.
+    *   *Pixels Per Unit (PPU):* **`64`** (hoặc `32`), Filter Mode: `Point (no filter)`.
+    *   *Camera Orthographic Size:* **`6.0`**, Resolution Reference: `768 × 432` / `640 × 360`.
 
 ### 1.5. Hệ Thống Hướng Di Chuyển — Flip Trái / Phải 2 Hướng (Directional Flip System)
-
-*   **Quyết định Thiết kế:** **Chỉ dùng 2 hướng Trái / Phải** (bỏ thiết kế 4/8 hướng Lên/Xuống riêng biệt). Phù hợp với tiết tấu di chuyển liên tục của trò chơi survivor auto-battler, đồng thời giảm 60-70% khối lượng vẽ cho Art Team.
-*   **Triển khai Kỹ thuật:**
-    1. Animator chỉ vẽ **1 bộ animation gốc duy nhất theo hướng quay sang Phải (Facing Right)**.
-    2. C# Controller sử dụng `SpriteRenderer.flipX = true` (Unity) để tự động lật ngang khi nhân vật di chuyển hoặc ngắm bắn sang Trái.
-    3. Khi di chuyển theo hướng Lên/Xuống: Giữ nguyên bộ sprite ngang (Trái hoặc Phải tùy theo hướng nhìn ngang gần nhất trước đó). Chấp nhận compromise *"nhân vật trông ngang khi đi dọc"* — đây là chuẩn thiết kế phổ biến và tối ưu hàng đầu ở thể loại Top-down Roguelite.
+*   **Quy chuẩn vẽ:** Chỉ vẽ duy nhất **1 hướng gốc quay sang Phải (Facing Right)**.
+*   **Lật hướng Runtime:** C# Controller lật toàn bộ `transform.localScale = new Vector3(-1, 1, 1)` trên Root Bone (hoặc `SpriteRenderer.flipX`) khi di chuyển sang Trái.
+*   **Thiết kế đối xứng (Anti-Flip Glitch):** Trang phục và phụ kiện ưu tiên đối xứng để không bị ngược hình khi lật trái/phải.�ng: Giữ nguyên bộ sprite ngang (Trái hoặc Phải tùy theo hướng nhìn ngang gần nhất trước đó). Chấp nhận compromise *"nhân vật trông ngang khi đi dọc"* — đây là chuẩn thiết kế phổ biến và tối ưu hàng đầu ở thể loại Top-down Roguelite.
 *   **Lưu ý Bắt Buộc khi Thiết kế Trang Phục & Pháp Bảo (Anti-Flip Glitch Rules):**
     *   *Thiết kế đối xứng:* Ưu tiên thiết kế trang phục/phụ kiện đối xứng (không có họa tiết thêu lệch một bên hoặc biểu tượng dán cố định bên trái/phải mang ý nghĩa đặc thù) để tránh hình ảnh vô lý khi lật ngang `flipX`.
     *   *Vũ khí/Pháp bảo cầm tay:* Chấp nhận việc tay cầm vũ khí sẽ đổi từ tay phải sang tay trái khi lật `flipX` (không vẽ version cầm tay riêng) để tối ưu thời gian sản xuất.
