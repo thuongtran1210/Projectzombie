@@ -128,9 +128,9 @@
     *   *Archetype:* Đạo nhân Tiên Đạo cổ truyền — đạo phục xám/tím ma mị, tinh thông Bát Quái Tiên Thiên và Cán Cân Âm Dương.
     *   *Tông màu:* Tím ma mị (`#9B51E0`) & Vàng hoàng kim Bát Quái (`#FFD700`).
 *   **Thanh Đồng (Hệ Mộc):**
-    *   *Archetype:* Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Chuỗi Linh Phù Tứ Phủ / Quạt Loan Phượng.
-    *   *Tông màu:* Phân theo Tứ Phủ: Thiên Phủ (Đỏ son `#B8442C` - Hỏa), Nhạc Phủ (Xanh mộc `#4C7A3D` - Mộc), Thoải Phủ (Trắng/Lam `#2E6E9E` - Thủy), Địa Phủ (Vàng đất `#8A6A3E` - Thổ).
-    *   *Chi tiết Skill & Idle:* Dáng múa mồi / múa bóng 2–3 frame đặc trưng khi "Giá Đồng", dải lụa sắc màu cuộn quanh người ở trạng thái nhập vai vị Thánh.
+    *   *Archetype:* Thanh Đồng / Cô Đồng hầu đồng Tứ Phủ — sắc phục đỏ thêu kim tuyến rực rỡ, đầu đội khăn chầu/mũ Tứ Phủ điểm xuyết trâm ngọc tua rua xanh lá, tay phải cầm Quạt Loan Phượng xòe rộng, tay trái tung dải Khăn Lụa Tứ Phủ xanh ngọc bích.
+    *   *Tông màu:* Đỏ son hoàng tộc (`#B8442C`), Vàng kim thêu hoa (`#F1C40F`), Xanh ngọc lục bảo (`#4C7A3D` - Hệ Mộc).
+    *   *Chi tiết Skill & Idle:* Dáng múa bóng / múa mồi 2–3 frame đặc trưng khi "Giá Đồng", dải lụa xanh và quạt loan phượng xoay tròn phóng ra luồng linh khí hộ thân và hồi phục.
 *   **Ẩn Sĩ / Ẩn Tăng Ẩn Tu (Hệ Thổ):**
     *   *Archetype:* Thiền sư / Tăng sĩ ẩn tu khổ hạnh chốn rừng sâu núi thẳm — đầu cạo tròn trịa, mắt nhắm tĩnh tại nhập định, khoác áo cà sa màu vàng nghệ / cam đất hở vai truyền thống, tay phải nâng Bình Bát đồng/đá, tay trái lần Chuỗi Tràng Hạt bồ đề. Tu tập thiền định hòa hợp với thổ khí đất trời.
     *   *Tông màu:* Vàng nghệ / Cam đất (`#E67E22` / `#D35400`) trên nền áo cà sa, kết hợp màu da ngăm nâu ấm và bình bát xám đen kim loại trầm (`#2C3E50`).

@@ -87,15 +87,17 @@ Dựa trên kho 72 nhân vật thực tế đã chuẩn hóa tại `Assets/Art/E
 
 ---
 
-### 2.2. Thanh Đồng / Cô Đồng (Vũ khí: Bùa Trấn Yêu — Hệ Mộc)
-*   **Archetype tham khảo:** Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Bùa Trấn Yêu / Chuỗi Bùa Tứ Phủ.
-*   **Tông màu chủ đạo:** Biến đổi theo cõi Tứ Phủ được thỉnh nhập: Thiên Phủ (Đỏ son `#B8442C`), Nhạc Phủ (Xanh mộc `#4C7A3D`), Thoải Phủ (Trắng/Lam `#2E6E9E`), Địa Phủ (Vàng đất `#8A6A3E`).
-*   **Chi tiết Idle:** Vài lá bùa Tứ Phủ thêu hoa văn cổ bay lơ lửng quanh người ở trạng thái idle.
-*   **Signature Skill VFX — *"Giá Đồng" (Nhập Tứ Phủ):*
-    *   *Múa Bóng:* Dáng múa bóng / múa mồi 2–3 frame đặc trưng kèm hiệu ứng dải lụa mồi lửa xoay quanh người.
-    *   *Hào Quang Tứ Phủ:* Bùng nổ hào quang bán kính 4.5m đổi màu sắc rực rỡ đại diện cho cõi Tứ Phủ thỉnh nhập (Đỏ / Xanh / Lam / Vàng).
+### 2.2. Thanh Đồng / Cô Đồng (Vũ khí / Pháp Bảo: Quạt Loan Phượng & Khăn Lụa Tứ Phủ — Hệ Mộc)
+*   **Archetype tham khảo:** Thanh Đồng / Cô Đồng hầu đồng Tứ Phủ — nét mặt thanh tú, mắt phượng kẻ đuôi kiêu sa, đầu đội **Khăn Chầu / Mũ Tứ Phủ** màu đỏ thêu họa tiết vàng kim kèm trâm cài tua rua xanh ngọc hai bên; khoác **Áo Ngự / Áo Dài Thêu Hoa Văn Cung Đình** màu đỏ son lộng lẫy có đai ngọc thắt nơ xanh lục (`#4C7A3D`).
+*   **Pháp Bảo cầm tay:**
+    *   **Tay phải:** Cầm **Quạt Loan Phượng** (màu hồng phấn/đỏ nan tre xòe rộng).
+    *   **Tay trái:** Tung **Dải Lụa / Khăn Mồi Tứ Phủ** màu xanh ngọc bích (`#2ECC71` / `#4C7A3D`) uyển chuyển.
+*   **Tông màu chủ đạo:** Đỏ son hoàng tộc (`#B8442C` / `#C0392B`), Vàng kim thêu hoa văn (`#F1C40F`), Xanh ngọc lục bảo tua rua & đai áo (`#27AE60` / `#4C7A3D`).
+*   **Chi tiết Idle:** Đứng thủ thế múa bóng mềm mại, quạt nan khẽ phẩy nhẹ, dải lụa xanh đung đưa theo làn gió tâm linh huyền ảo.
+*   **Signature Skill VFX — *"Giá Đồng Tứ Phủ" / "Loan Phượng Trảm Tà":*
+    *   *Múa Quạt & Tung Lụa:* Xoay người múa bóng 360 độ, quạt loan phượng phóng ra luồng gió linh lực hình cánh phượng rực lửa, dải lụa cuộn thành vòng xoáy kết giới Tứ Phủ đẩy lùi tà ma và ban phước hồi phục.
 *   **AI Concept Prompt Mẫu:**  
-    `2D top-down game concept art, female Vietnamese Hau Dong ritual priestess medium, wearing vibrant traditional ceremonial silk robes with ornate headdress, glowing talismans and multicolored mystic silk ribbons floating around her body, mystical Vietnamese folk art style, vibrant HDR contrast, isolated game asset`
+    `2D top-down game concept art, cute chibi Vietnamese Hau Dong ritual priestess medium, wearing ornate red ceremonial silk robe with golden floral embroidery (#B8442C), traditional red headdress with emerald green tassels, holding an open pink bamboo folding fan in right hand and a flowing green silk ribbon in left hand, mystical Vietnamese folk art style, thick dark outline, 2-tone cell shading, facing right, isolated game asset`
 
 ---
 

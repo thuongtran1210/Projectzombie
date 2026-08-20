@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 26b1f2ca22cdc58c7c47123ffe70038f
+guid: 7f728271c9d44aac9ac2f0e04f6bee3b
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,8 +98,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a15ed38f36ae7661532c5137d6e1ddf5
-      internalID: 2000000000
+      spriteID: 3d4343fa8c0c8c511bc85f4decdc4eb1
+      internalID: 2100000000
       vertices: []
       indices: 
       edges: []
@@ -119,8 +119,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f278dd24b3536565e45aee50283e7361
-      internalID: 2000012345
+      spriteID: 304ad6cd06a33773c1e3c9396420a683
+      internalID: 2100012345
       vertices: []
       indices: 
       edges: []
@@ -140,8 +140,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 925341bb41f909a943d9e2197bc8e84f
-      internalID: 2000024690
+      spriteID: a68d21fec99640a76213e39e7782db75
+      internalID: 2100024690
       vertices: []
       indices: 
       edges: []
@@ -161,50 +161,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fc318a15022915ba1ec229a9b99595ca
-      internalID: 2000037035
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ThanhDong-Run_4
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 860c32de2d5d710ed74ec61b649e6751
-      internalID: 2000049380
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ThanhDong-Run_5
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cbd1c9c6457ac24820c8de37f76a6ba6
-      internalID: 2000061725
+      spriteID: e0a0789a53f078f80ed99ffc8bb34756
+      internalID: 2100037035
       vertices: []
       indices: 
       edges: []
@@ -212,7 +170,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 5e97eb03825dee720800000000000001
     internalID: 0
     vertices: []
     indices: 
@@ -220,12 +178,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThanhDong-Run_0: 2000000000
-      ThanhDong-Run_1: 2000012345
-      ThanhDong-Run_2: 2000024690
-      ThanhDong-Run_3: 2000037035
-      ThanhDong-Run_4: 2000049380
-      ThanhDong-Run_5: 2000061725
+      ThanhDong-Run_0: 2100000000
+      ThanhDong-Run_1: 2100012345
+      ThanhDong-Run_2: 2100024690
+      ThanhDong-Run_3: 2100037035
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

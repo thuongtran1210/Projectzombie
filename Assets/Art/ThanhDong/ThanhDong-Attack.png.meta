@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: df0c944d189c407dbd661ed01ba94788
+guid: 26e8add9fc5f4a2291ca4e0e6f9ae6ed
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -84,7 +84,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ThanhDong-Idle_0
+      name: ThanhDong-Attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -98,14 +98,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d4343fa8c0c8c511bc85f4decdc4ea1
-      internalID: 2000000000
+      spriteID: 1a111111111111111111111111111111
+      internalID: 2200000000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Idle_1
+      name: ThanhDong-Attack_1
       rect:
         serializedVersion: 2
         x: 128
@@ -119,14 +119,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 304ad6cd06a33773c1e3c9396420a682
-      internalID: 2000012345
+      spriteID: 1a111111111111111111111111111112
+      internalID: 2200012345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Idle_2
+      name: ThanhDong-Attack_2
       rect:
         serializedVersion: 2
         x: 256
@@ -140,14 +140,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a68d21fec99640a76213e39e7782db73
-      internalID: 2000024690
+      spriteID: 1a111111111111111111111111111113
+      internalID: 2200024690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Idle_3
+      name: ThanhDong-Attack_3
       rect:
         serializedVersion: 2
         x: 384
@@ -161,8 +161,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e0a0789a53f078f80ed99ffc8bb34754
-      internalID: 2000037035
+      spriteID: 1a111111111111111111111111111114
+      internalID: 2200037035
       vertices: []
       indices: 
       edges: []
@@ -178,10 +178,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThanhDong-Idle_0: 2000000000
-      ThanhDong-Idle_1: 2000012345
-      ThanhDong-Idle_2: 2000024690
-      ThanhDong-Idle_3: 2000037035
+      ThanhDong-Attack_0: 2200000000
+      ThanhDong-Attack_1: 2200012345
+      ThanhDong-Attack_2: 2200024690
+      ThanhDong-Attack_3: 2200037035
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
