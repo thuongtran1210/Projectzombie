@@ -6,36 +6,32 @@
 
 ---
 
-## 1. Phong Cách Mỹ### 1.1. Tầm Nhìn Mỹ Thuật & Art Master DNA (Visual Concept & Art DNA)
+## 1. Phong Cách Mỹ Thuật Tổng Quan & Visual DNA
+
+### 1.1. Tầm Nhìn Mỹ Thuật & Art Master DNA (Visual Concept & Art DNA)
 **Vong Xuyên** xây dựng bối cảnh Âm Ty Việt Nam — nơi truyền thuyết ma quái dân gian trỗi dậy.
-*   **Art Master DNA chủ đạo:** **2D Stylized Vector Cartoon / Cutout Chibi** (Lấy cảm hứng từ phong cách kinh điển của *Kingdom Rush*, *Castle Crashers*) kết hợp họa tiết & văn hóa dân gian Việt Nam (Đông Hồ, Hàng Trống, Cổ Phong).
-*   **Nguyên tắc viền đen đậm (Thick Solid Black Outlines):** Đường viền ngoài dày $2\text{px} - 3\text{px}$ bao trọn toàn bộ silhouette nhân vật và quái vật để tách bạch $100\%$ khỏi nền cõi âm, triệt tiêu hoàn toàn hiện tượng chìm hình khi đông quái.
-*   **Đổ bóng 2-Tone Cell-Shading:** 1 màu gốc (Base Color) + 1 lớp bóng tối (Shadow Tone) dạng mảng phẳng dứt khoát, không dùng gradient mờ.
+*   **Art Master DNA chủ đạo:** **2D Stylized Vector Cartoon / Cutout Chibi** (Lấy cảm hứng từ phong cách kinh điển của *Kingdom Rush*, *Castle Crashers*, *Brawl Stars*) kết hợp họa tiết & bản sắc văn hóa dân gian Việt Nam (Đông Hồ, Hàng Trống, Cổ Phong Đông Sơn).
+*   **Nguyên tắc viền đen đậm (Thick Solid Dark Outlines):** Đường viền ngoài dày $3\text{px} - 6\text{px}$ màu nâu đen ấm/than củi bao trọn toàn bộ silhouette nhân vật và quái vật để tách bạch $100\%$ khỏi nền cõi âm, triệt tiêu hoàn toàn hiện tượng chìm hình khi đông quái.
+*   **Đổ bóng 2-Tone Cell-Shading:** 1 màu gốc (Base Color) + 1 lớp bóng tối (Shadow Tone) dạng mảng phẳng dứt khoát, kết hợp điểm xuyết vệt sáng Highlight tròn, không dùng gradient mờ.
 *   **Nguyên tắc tương phản Nền / Vật thể (Readability First):**
     *   *Nền / Môi trường:* Tông màu **Tối và Desaturated** (xám xanh u uất, nâu bùn, tím đen).
     *   *Nhân vật / Yêu ma / VFX:* **Sáng, tương phản cao, saturated rõ rệt** với viền đen bao quanh.
 
-### 1.4. Quy Chuẩn Tỉ Lệ Cơ Thể, Góc Nhìn & Cấu Trúc Khối (Anatomy & Perspective)
-*   **Tỉ lệ cơ thể (Body Ratio):** **Chibi $1:2$ đến $1:2.2$ (Head-Dominant)**:
-    *   *Đầu (Head):* Chiếm **$45\% - 50\%$** tổng chiều cao nhân vật. Tập trung nhận diện đặc trưng (mắt to, biểu cảm cá tính, khăn đóng, tóc búi, mũ chầu, râu).
-    *   *Thân (Torso):* Chiếm **$30\%$**, hình khối trụ / hình thang bo tròn đơn giản.
-    *   *Tay & Chân (Limbs):* Ngắn, dạng ống bo tròn ở các khớp nối (**Ball-joint Modular Structure**), bàn chân phẳng tiếp đất vững chãi.
-*   **Góc nhìn (Perspective):** **Frontal 3/4 Flat View (Chính diện chếch 3/4 phẳng)**:
-    *   Thấy rõ toàn bộ mặt trước, biểu cảm, trang phục và hai chân đứng trên cùng một đường nằm ngang (**Ground Baseline**).
-    *   Hai tay tách rời sang hai bên thân ở trạng thái trung tính, tối ưu hóa $100\%$ cho hệ thống 2D Sprite Rigging / Cutout Animation.
-*   **Kích thước Sprite (Canvas Budget) & PPU:**
-    *   *Pixels Per Unit (PPU):* **`64`** (hoặc `32`), Filter Mode: `Point (no filter)`.
-    *   *Camera Orthographic Size:* **`6.0`**, Resolution Reference: `768 × 432` / `640 × 360`.
+### 1.2. Phân Tích Chi Tiết Art Style Bộ Nhân Vật Thực Tế (Character Art Style Breakdown)
+Dựa trên kho 72 nhân vật thực tế đã chuẩn hóa tại `Assets/Art/Extracted_Characters/`:
+1.  **Tỉ lệ cơ thể & Khối hình (Anatomy & Proportions):**
+    *   *Tỉ lệ Chibi 1:1.5 đến 1:2 (Head-Dominant):* Đầu chiếm ~50% chiều cao tổng thể, có dạng hình hộp chữ nhật bo tròn mềm mại ("Squircle").
+    *   *Thân & Tay Chân:* Thân hình trụ/thang nhỏ gọn. Tay chân dạng ống ngắn thon (Nub limbs), không vẽ ngón chân giúp tối ưu visual và giảm độ phức tạp cho animation.
+2.  **Đặc trưng khuôn mặt & Biểu cảm (Facial Features):**
+    *   *Nhân vật người / Dân gian / Anh hùng:* Mắt hạt tiêu (Dot/Bead eyes) tối giản, mang nét ngây ngô, bình dị nhưng kiên nghị.
+    *   *Yêu ma / Quái vật:* Mắt xếch góc cạnh, tròng trắng phát sáng, miệng rộng lộ răng nhọn hung dữ tạo sự tương phản rõ nét với phe người.
+3.  **Bản sắc văn hóa & Archetypes phân tầng:**
+    *   *Dân gian & Lao động:* Áo bà ba, nón lá, khăn rằn Nam Bộ, đòn gánh gạo/lúa, mái chèo sông nước, đàn nguyệt.
+    *   *Nghệ thuật truyền thống:* Mặt nạ Hát Bội / Tuồng cổ, Đầu Lân Sư Rồng, trống cơm, cành trúc.
+    *   *Thần thoại & Tâm linh:* Ma Lai rút ruột, Ngưu Đầu Mã Diện, Thủy quỷ ma da tóc rêu, Cương thi quấn vải liệm, Thần đất, Hỏa ma.
+    *   *Cung đình & Quân binh:* Mũ cánh chuồn quan lại, áo giao lĩnh/nhật bình hoàng tộc, giáp trụ lính vệ binh thời phong kiến.
 
-### 1.5. Hệ Thống Hướng Di Chuyển — Flip Trái / Phải 2 Hướng (Directional Flip System)
-*   **Quy chuẩn vẽ:** Chỉ vẽ duy nhất **1 hướng gốc quay sang Phải (Facing Right)**.
-*   **Lật hướng Runtime:** C# Controller lật toàn bộ `transform.localScale = new Vector3(-1, 1, 1)` trên Root Bone (hoặc `SpriteRenderer.flipX`) khi di chuyển sang Trái.
-*   **Thiết kế đối xứng (Anti-Flip Glitch):** Trang phục và phụ kiện ưu tiên đối xứng để không bị ngược hình khi lật trái/phải.�ng: Giữ nguyên bộ sprite ngang (Trái hoặc Phải tùy theo hướng nhìn ngang gần nhất trước đó). Chấp nhận compromise *"nhân vật trông ngang khi đi dọc"* — đây là chuẩn thiết kế phổ biến và tối ưu hàng đầu ở thể loại Top-down Roguelite.
-*   **Lưu ý Bắt Buộc khi Thiết kế Trang Phục & Pháp Bảo (Anti-Flip Glitch Rules):**
-    *   *Thiết kế đối xứng:* Ưu tiên thiết kế trang phục/phụ kiện đối xứng (không có họa tiết thêu lệch một bên hoặc biểu tượng dán cố định bên trái/phải mang ý nghĩa đặc thù) để tránh hình ảnh vô lý khi lật ngang `flipX`.
-    *   *Vũ khí/Pháp bảo cầm tay:* Chấp nhận việc tay cầm vũ khí sẽ đổi từ tay phải sang tay trái khi lật `flipX` (không vẽ version cầm tay riêng) để tối ưu thời gian sản xuất.
-
-### 1.2. Quy Chuẩn Bảng Màu Ngũ Hành & Ký Hiệu Hình Khối (Colorblind Accessibility)
+### 1.3. Quy Chuẩn Bảng Màu Ngũ Hành & Ký Hiệu Hình Khối (Colorblind Accessibility)
 
 Để hỗ trợ khả năng truy cập (Accessibility) và tránh rủi ro nhầm lẫn cho người mù màu (đặc biệt giữa cặp Hỏa/Mộc), **MỖI HỆ NGŨ HÀNH LUÔN CÓ HÌNH KHỐI ĐỘC LẬP ĐI KÈM MÀU SẮC** — không bao giờ dùng màu làm phương tiện phân biệt duy nhất:
 
@@ -49,12 +45,31 @@
 
 ---
 
-### 1.3. Palette Mỹ Thuật Văn Hóa Dân Gian Gợi Ý (Vietnamese Folk Art Palette)
+### 1.4. Palette Mỹ Thuật Văn Hóa Dân Gian & Nguyên Tắc Phân Bổ (Vietnamese Folk Art Palette)
 
-*   **Bộ màu truyền thống:** **Đỏ son, Vàng đất, Nâu gụ, Đen mực nho**.
+*   **Bộ màu truyền thống:** **Đỏ son, Vàng đất, Nâu gụ, Đen mực nho, Xanh chàm**.
 *   **Quy tắc phân bổ họa tiết (Detail Distribution Rule):**
     *   Dồn các họa tiết phức tạp (mô phỏng Tranh Đông Hồ / Tranh Hàng Trống) vào **UI Canvas, Background Arena, và Trùm/Boss** (nơi kích thước Sprite đủ lớn để giữ trọn chi tiết mỹ thuật).
     *   Giữ đơn giản cho **Nhân vật & Quái thường** (pixel size nhỏ khi di chuyển trên màn hình Survival Roguelite để tránh rối mắt và giữ nhịp nhìn snappy).
+
+### 1.5. Quy Chuẩn Tỉ Lệ Cơ Thể, Góc Nhìn & Cấu Trúc Khối (Anatomy & Perspective)
+*   **Tỉ lệ cơ thể (Body Ratio):** **Chibi $1:1.5$ đến $1:2$ (Head-Dominant)**:
+    *   *Đầu (Head):* Chiếm **$45\% - 50\%$** tổng chiều cao nhân vật. Tập trung nhận diện đặc trưng (mắt to/hạt tiêu, biểu cảm cá tính, khăn đóng, tóc búi, mũ chầu, râu).
+    *   *Thân (Torso):* Chiếm **$30\%$**, hình khối trụ / hình thang bo tròn đơn giản.
+    *   *Tay & Chân (Limbs):* Ngắn, dạng ống bo tròn ở các khớp nối (**Ball-joint Modular Structure**), bàn chân phẳng tiếp đất vững chãi.
+*   **Góc nhìn (Perspective):** **Frontal 3/4 Flat View (Chính diện chếch 3/4 phẳng)**:
+    *   Thấy rõ toàn bộ mặt trước, biểu cảm, trang phục và hai chân đứng trên cùng một đường nằm ngang (**Ground Baseline**).
+    *   Hai tay tách rời sang hai bên thân ở trạng thái trung tính, tối ưu hóa $100\%$ cho hệ thống 2D Sprite Rigging / Cutout Animation.
+*   **Kích thước Sprite (Canvas Budget) & PPU:**
+    *   *Pixels Per Unit (PPU):* **`64`** (hoặc `32`), Filter Mode: `Point (no filter)`.
+    *   *Camera Orthographic Size:* **`6.0`**, Resolution Reference: `768 × 432` / `640 × 360`.
+
+### 1.6. Hệ Thống Hướng Di Chuyển — Flip Trái / Phải 2 Hướng (Directional Flip System)
+*   **Quy chuẩn vẽ gốc & Asset Export:** Toàn bộ sprite nhân vật đã bóc tách được xuất ở chuẩn **Facing Right (Quay mặt sang Phải)**.
+*   **Lật hướng Runtime:** C# Controller lật toàn bộ `transform.localScale = new Vector3(-1, 1, 1)` trên Root Bone (hoặc `SpriteRenderer.flipX`) khi di chuyển sang Trái.
+*   **Lưu ý Bắt Buộc khi Thiết kế Trang Phục & Pháp Bảo (Anti-Flip Glitch Rules):**
+    *   *Thiết kế đối xứng:* Ưu tiên thiết kế trang phục/phụ kiện đối xứng để tránh hình ảnh vô lý khi lật ngang `flipX`.
+    *   *Vũ khí/Pháp bảo cầm tay:* Chấp nhận việc tay cầm vũ khí sẽ đổi từ tay phải sang tay trái khi lật `flipX` để tối ưu thời gian sản xuất.
 
 ---
 
