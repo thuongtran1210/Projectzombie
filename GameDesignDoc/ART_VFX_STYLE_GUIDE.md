@@ -109,9 +109,14 @@ Dựa trên kho 72 nhân vật thực tế đã chuẩn hóa tại `Assets/Art/E
 *   **AI Concept Prompt Mẫu:**  
     `2D top-down game concept art, chibi Vietnamese buddhist hermit monk sage, bald head, peaceful closed eyes meditation expression, wearing vibrant saffron orange and earthen amber kasaya robe (#E67E22), holding a sacred black alms bowl in one hand and wooden prayer beads in the other, serene earthen spiritual aura, mystical Vietnamese folk art style, thick dark outline, 2-tone cell shading, isolated game asset`
 
-### 2.4. Quy Chuẩn Khối Lượng Animation Tối Thiểu per Nhân Vật (Animation Budget)
+### 2.4. Quy Chuẩn Khối Lượng Animation & Quy Trình Duyệt Sprite Sheet (Animation Budget & Approval Workflow)
 
-Để đảm bảo hiệu năng 60 FPS Mobile và tối ưu hóa thời gian sản xuất cho Animator, mọi nhân vật chính MVP được thiết lập số lượng frame tối thiểu cho từng trạng thái:
+Để đảm bảo hiệu năng 60 FPS Mobile, tối ưu hóa thời gian sản xuất và bảo toàn $100\%$ tính đồng bộ nghệ thuật (Art Style Consistency), quy trình tạo Frame-by-Frame Animation bắt buộc tuân theo:
+
+> [!IMPORTANT]
+> **Quy Tắc Bắt Buộc: Hỏi Ý Kiến & Duyệt Ảnh Tham Chiếu Trước (User Confirmation & Approval First)**
+> 1. Khi nhận ảnh concept/master art từ người dùng, **Agent/Artist bắt buộc phải hỏi ý kiến và xác nhận phương án tạo hình** (Dùng AI Image-to-Image sinh tư thế mới hay cắt ghép chuyển động trực tiếp từ ảnh gốc) trước khi thực hiện.
+> 2. Mọi animation sinh ra bằng AI phải đối chiếu $1:1$ với ảnh mẫu ban đầu: **Giữ nguyên $100\%$ tỷ lệ, khuôn mặt, trang phục, màu sắc và hướng quay sang Phải (Facing Right)**.
 
 | Animation State | Số Frame Gợi Ý | Ghi Chú Kỹ Thuật & Tối Ưu |
 |---|---|---|
@@ -123,7 +128,7 @@ Dựa trên kho 72 nhân vật thực tế đã chuẩn hóa tại `Assets/Art/E
 
 > [!TIP]
 > **Khuyến nghị sản xuất (Production Best Practice):** 
-> Sử dụng chung **1 Base Rig / Tỉ lệ cơ thể chuẩn (Base Humanoid Skeleton/Ratio)** cho cả 3 nhân vật MVP (chỉ thay đổi trang phục, phụ kiện và palette màu). Việc này cho phép tái sử dụng toàn bộ Animation Logic C# (`animator.Play()`), loại bỏ Animator Transitions rối rắm và giảm tải 60% khối lượng công việc cho Animator.
+> Chuẩn hóa mọi Frame trên Canvas đồng nhất `128×128px`, gót chân đặt cố định tại `offset y = 14px` tính từ đáy với Pivot `Bottom-Center` (`alignment: 7`, `{x: 0.5, y: 0.0}`). Việc này cho phép Animator Controller C# gọi trực tiếp `animator.Play()`, loại bỏ Animator Transitions rối rắm và chống giật frame khi chuyển động.
 
 ---
 
