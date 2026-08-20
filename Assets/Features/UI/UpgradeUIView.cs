@@ -37,25 +37,8 @@ namespace ProjectZombie.Features.UI
                 _upgradePanel.SetActive(false);
             }
 
-            if (_rerollButton != null)
-            {
-                _rerollButton.gameObject.layer = LayerMask.NameToLayer("UI");
-                _rerollButton.onClick.RemoveAllListeners();
-                _rerollButton.onClick.AddListener(() => _onRerollClicked?.Invoke());
-            }
-
-            if (_skipButton != null)
-            {
-                _skipButton.gameObject.layer = LayerMask.NameToLayer("UI");
-                _skipButton.onClick.RemoveAllListeners();
-                _skipButton.onClick.AddListener(() => _onSkipClicked?.Invoke());
-            }
-
-            if (_rerollCountText != null)
-            {
-                _rerollCountText.gameObject.layer = LayerMask.NameToLayer("UI");
-                _rerollCountText.raycastTarget = false;
-            }
+            EnsureControlsFound();
+            SetupButtonListeners();
 
             // Tự động đảm bảo Animator không bị đóng băng khi pause game (Time.timeScale = 0)
             if (_upgradePanel != null)
@@ -68,6 +51,69 @@ namespace ProjectZombie.Features.UI
             }
 
             InitializeCardPool();
+        }
+
+        private void EnsureControlsFound()
+        {
+            if (_rerollButton == null)
+            {
+                _rerollButton = transform.Find("Footer_Controls/Button_Reroll")?.GetComponent<Button>()
+                             ?? transform.Find("UpgradePanel/Footer_Controls/Button_Reroll")?.GetComponent<Button>()
+                             ?? transform.Find("Panel_Upgrade/Footer_Controls/Button_Reroll")?.GetComponent<Button>();
+            }
+
+            if (_skipButton == null)
+            {
+                _skipButton = transform.Find("Footer_Controls/Button_Skip")?.GetComponent<Button>()
+                           ?? transform.Find("UpgradePanel/Footer_Controls/Button_Skip")?.GetComponent<Button>()
+                           ?? transform.Find("Panel_Upgrade/Footer_Controls/Button_Skip")?.GetComponent<Button>();
+            }
+
+            if (_rerollCountText == null && _rerollButton != null)
+            {
+                _rerollCountText = _rerollButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            }
+        }
+
+        private void SetupButtonListeners()
+        {
+            if (_rerollButton != null)
+            {
+                _rerollButton.gameObject.layer = LayerMask.NameToLayer("UI");
+                _rerollButton.onClick.RemoveAllListeners();
+                _rerollButton.onClick.AddListener(() => {
+                    Debug.Log("<color=#00FF88>[UpgradeUIView]</color> Reroll Button Clicked!");
+                    _onRerollClicked?.Invoke();
+                });
+
+                var textComp = _rerollButton.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (textComp != null)
+                {
+                    textComp.raycastTarget = false;
+                }
+            }
+
+            if (_skipButton != null)
+            {
+                _skipButton.gameObject.layer = LayerMask.NameToLayer("UI");
+                _skipButton.onClick.RemoveAllListeners();
+                _skipButton.onClick.AddListener(() => {
+                    Debug.Log("<color=#00FF88>[UpgradeUIView]</color> Skip Button Clicked!");
+                    _onSkipClicked?.Invoke();
+                });
+
+                var textComp = _skipButton.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (textComp != null)
+                {
+                    textComp.raycastTarget = false;
+                }
+            }
+
+            if (_rerollCountText != null)
+            {
+                _rerollCountText.gameObject.layer = LayerMask.NameToLayer("UI");
+                _rerollCountText.raycastTarget = false;
+            }
         }
 
         /// <summary>
@@ -163,10 +209,27 @@ namespace ProjectZombie.Features.UI
         public void SetRerollButtonCallback(System.Action onReroll)
         {
             _onRerollClicked = onReroll;
+            EnsureControlsFound();
+
             if (_rerollButton != null)
             {
                 _rerollButton.gameObject.SetActive(onReroll != null);
+                _rerollButton.onClick.RemoveAllListeners();
+                if (onReroll != null)
+                {
+                    _rerollButton.onClick.AddListener(() => {
+                        Debug.Log("<color=#00FF88>[UpgradeUIView]</color> Reroll Button Clicked!");
+                        _onRerollClicked?.Invoke();
+                    });
+                }
+
+                var textComp = _rerollButton.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (textComp != null)
+                {
+                    textComp.raycastTarget = false;
+                }
             }
+
             if (_rerollCountText != null)
             {
                 _rerollCountText.raycastTarget = false;
@@ -176,9 +239,25 @@ namespace ProjectZombie.Features.UI
         public void SetSkipButtonCallback(System.Action onSkip)
         {
             _onSkipClicked = onSkip;
+            EnsureControlsFound();
+
             if (_skipButton != null)
             {
                 _skipButton.gameObject.SetActive(onSkip != null);
+                _skipButton.onClick.RemoveAllListeners();
+                if (onSkip != null)
+                {
+                    _skipButton.onClick.AddListener(() => {
+                        Debug.Log("<color=#00FF88>[UpgradeUIView]</color> Skip Button Clicked!");
+                        _onSkipClicked?.Invoke();
+                    });
+                }
+
+                var textComp = _skipButton.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (textComp != null)
+                {
+                    textComp.raycastTarget = false;
+                }
             }
         }
 

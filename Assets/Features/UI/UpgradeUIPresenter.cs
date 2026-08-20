@@ -29,6 +29,15 @@ namespace ProjectZombie.Features.UI
         private bool _isConstructed = false;
         private readonly IUpgradeStatFormatter _statFormatter = new UpgradeStatFormatter();
 
+        private void Awake()
+        {
+            _currentRerolls = _maxRerollsPerRun;
+            if (_view == null)
+            {
+                _view = GetComponent<UpgradeUIView>();
+            }
+        }
+
         public void Construct(PlayerExperience experience, WeaponManager weaponManager)
         {
             if (_isConstructed)
@@ -61,6 +70,11 @@ namespace ProjectZombie.Features.UI
             if (_view == null)
             {
                 _view = GetComponent<UpgradeUIView>();
+            }
+
+            if (_currentRerolls <= 0)
+            {
+                _currentRerolls = _maxRerollsPerRun;
             }
 
             // Tương thích ngược: nếu chưa được Construct từ GameplayBootstrapper và đã kéo thả trong Inspector thì mới tự gọi Construct
@@ -205,10 +219,15 @@ namespace ProjectZombie.Features.UI
 
         private void OnRerollClicked()
         {
+            Debug.Log($"<color=#00FF88>[UpgradeUIPresenter]</color> OnRerollClicked! Lượt còn lại: {_currentRerolls}");
             if (_currentRerolls > 0)
             {
                 _currentRerolls--;
                 PopulateUpgradeScreen();
+            }
+            else
+            {
+                Debug.LogWarning("[UpgradeUIPresenter] Đã hết số lần Reroll trong lượt chạy!");
             }
         }
 

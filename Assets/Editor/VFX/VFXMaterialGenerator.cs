@@ -32,7 +32,7 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_Soul_Drain_Orb", "Soul_Drain_Orb.png", true);
 
             // 2. Shockwave & AoE Materials (Trống Đồng W005, Lựu Đạn W006, Nước Thánh W011, Linh Phù Ma Da W010)
-            CreateShockwaveMaterial("MAT_Shockwave_DongSon", "DongSon_Shockwave_Pattern.png", new Color(1f, 0.85f, 0.4f, 0.8f), 0.08f);
+            CreateSonicWaveMaterial("MAT_Shockwave_DongSon", "DongSon_Shockwave_Pattern.png", new Color(1.8f, 1.4f, 0.5f, 1.0f), 1.5f);
             CreateParticleMaterial("MAT_Fire_Pillar", "Fire_Pillar_Tornado.png", true);
             CreateGroundDecalMaterial("MAT_Decal_CrackedEarth", "Decal_Cracked_Circle.png", null, new Color(0.9f, 0.7f, 0.3f, 0.9f), new Color(2f, 1.2f, 0.3f, 1f));
             CreateGroundDecalMaterial("MAT_Decal_HolyWaterPuddle", "Holy_Puddle_Mist.png", null, new Color(0.3f, 0.85f, 1f, 0.8f), new Color(1.5f, 2.2f, 2.5f, 1f));
@@ -40,15 +40,15 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_Holy_Bubble", "Holy_Bubble_Particle.png", true);
 
             // W006 Lựu Đạn Thần Sa Materials (Cinnabar Explosion Suite)
-            CreateParticleMaterial("MAT_Cinnabar_Fireball", "Tex_VFX_Cinnabar_Fireball_Burst.png", true);
-            CreateParticleMaterial("MAT_Cinnabar_Shockwave", "Tex_VFX_Cinnabar_Shockwave_Ring.png", true);
-            CreateParticleMaterial("MAT_Cinnabar_MagicArray", "Tex_VFX_Cinnabar_Magic_Array.png", true);
-            CreateParticleMaterial("MAT_Cinnabar_Smoke", "Tex_VFX_Cinnabar_Smoke_Puff.png", false);
+            CreateSlashMaterial("MAT_Cinnabar_Fireball", "Tex_VFX_Cinnabar_Fireball_Burst.png", null, new Color(2.5f, 1.2f, 0.3f, 1f), new Color(1.0f, 0.2f, 0.05f, 1f), false);
+            CreateSlashMaterial("MAT_Cinnabar_Shockwave", "Tex_VFX_Cinnabar_Shockwave_Ring.png", null, new Color(2.2f, 0.8f, 0.2f, 1f), new Color(1.0f, 0.15f, 0.05f, 1f), false);
+            CreateGroundDecalMaterial("MAT_Cinnabar_MagicArray", "Tex_VFX_Cinnabar_Magic_Array.png", null, new Color(1.0f, 0.25f, 0.1f, 0.9f), new Color(2.5f, 0.8f, 0.2f, 1f));
+            CreateAlphaBlendInkMaterial("MAT_Cinnabar_Smoke", "Tex_VFX_Cinnabar_Smoke_Puff.png", new Color(0.45f, 0.08f, 0.05f, 0.75f));
             CreateParticleMaterial("MAT_Cinnabar_Sparks", "Spark_Streak.png", true);
             CreateParticleMaterial("MAT_Cinnabar_Flash", "FireSlash_Impact.png", true);
 
             // 3. Projectile & Beam Materials (Nỏ Thần W001, Cung Thạch Sanh W007, Trượng Long Vương W009)
-            CreateParticleMaterial("MAT_ThachSanh_SonicArrow", "VFX_ThachSanh_SonicArrow.png", true);
+            CreateSonicWaveMaterial("MAT_ThachSanh_SonicArrow", "VFX_ThachSanh_SonicArrow.png", new Color(1.8f, 1.5f, 0.4f, 1.0f), 1.4f);
             CreateParticleMaterial("MAT_Arrow_Golden_Beam", "Arrow_Golden_Beam.png", true);
             CreateParticleMaterial("MAT_Wind_Pierce_Ring", "Wind_Pierce_Ring.png", true);
             CreateParticleMaterial("MAT_Lightning_Bolt", "Lightning_Bolt_Segment.png", true);
@@ -66,7 +66,7 @@ namespace ProjectZombie.Editor.VFX
             CreateParticleMaterial("MAT_TorchFlame_Bullet", "Tex_VFX_TorchFlame_Bullet.png", true);
             CreateParticleMaterial("MAT_TuPhu_PossessionCircle", "Tex_VFX_TuPhu_PossessionCircle.png", true);
             CreateParticleMaterial("MAT_Oracle_Shockwave", "Tex_VFX_Oracle_Shockwave.png", true);
-            CreateParticleMaterial("MAT_Oracle_ShockwaveSmoke", "Tex_VFX_Shockwave_SmokePuff.png", false);
+            CreateAlphaBlendInkMaterial("MAT_Oracle_ShockwaveSmoke", "Tex_VFX_Shockwave_SmokePuff.png", new Color(0.3f, 0.25f, 0.2f, 0.7f));
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -107,7 +107,7 @@ namespace ProjectZombie.Editor.VFX
             return null;
         }
 
-        public static Material CreateSlashMaterial(string materialName, string mainTexName, string noiseTexName, Color tintColor, Color edgeColor, bool dissolve)
+        public static Material CreateSlashMaterial(string materialName, string mainTexName, string noiseTexName, Color coreColor, Color edgeColor, bool dissolve)
         {
             string matPath = $"{MATERIAL_FOLDER}/{materialName}.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
@@ -125,17 +125,56 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = shader;
             }
 
-            mat.SetColor("_TintColor", tintColor);
-            mat.SetColor("_EdgeColor", edgeColor);
-            mat.SetFloat("_DissolveAmount", dissolve ? 0.3f : 0.0f);
+            if (mat.HasProperty("_CoreColor")) mat.SetColor("_CoreColor", coreColor);
+            if (mat.HasProperty("_TintColor")) mat.SetColor("_TintColor", coreColor);
+            if (mat.HasProperty("_EdgeColor")) mat.SetColor("_EdgeColor", edgeColor);
+            if (mat.HasProperty("_DissolveAmount")) mat.SetFloat("_DissolveAmount", dissolve ? 0.3f : 0.0f);
 
             Texture2D mainTex = FindTexture(mainTexName);
-            if (mainTex != null) mat.SetTexture("_MainTex", mainTex);
+            if (mainTex != null)
+            {
+                mat.mainTexture = mainTex;
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", mainTex);
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", mainTex);
+            }
 
             if (!string.IsNullOrEmpty(noiseTexName))
             {
                 Texture2D noiseTex = FindTexture(noiseTexName);
-                if (noiseTex != null) mat.SetTexture("_NoiseTex", noiseTex);
+                if (noiseTex != null && mat.HasProperty("_NoiseTex")) mat.SetTexture("_NoiseTex", noiseTex);
+            }
+
+            EditorUtility.SetDirty(mat);
+            return mat;
+        }
+
+        public static Material CreateSonicWaveMaterial(string materialName, string textureFileName, Color tintColor, float brightness = 1.2f)
+        {
+            string matPath = $"{MATERIAL_FOLDER}/{materialName}.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+            Shader shader = Shader.Find("ProjectZombie/VFX/SonicWave_Additive");
+            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+
+            if (mat == null)
+            {
+                mat = new Material(shader);
+                AssetDatabase.CreateAsset(mat, matPath);
+            }
+            else
+            {
+                mat.shader = shader;
+            }
+
+            if (mat.HasProperty("_TintColor")) mat.SetColor("_TintColor", tintColor);
+            if (mat.HasProperty("_Brightness")) mat.SetFloat("_Brightness", brightness);
+
+            Texture2D tex = FindTexture(textureFileName);
+            if (tex != null)
+            {
+                mat.mainTexture = tex;
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
             }
 
             EditorUtility.SetDirty(mat);
@@ -161,7 +200,8 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = inkShader;
             }
 
-            mat.SetColor("_BaseColor", tintColor);
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tintColor);
+            if (mat.HasProperty("_Color")) mat.SetColor("_Color", tintColor);
 
             Texture2D tex = FindTexture(textureFileName);
             if (tex != null)
@@ -193,11 +233,18 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = shader;
             }
 
-            mat.SetColor("_RingColor", ringColor);
-            mat.SetFloat("_BumpStrength", bumpStrength);
+            if (mat.HasProperty("_TintColor")) mat.SetColor("_TintColor", ringColor);
+            if (mat.HasProperty("_RingColor")) mat.SetColor("_RingColor", ringColor);
+            if (mat.HasProperty("_DistortionStrength")) mat.SetFloat("_DistortionStrength", bumpStrength);
+            if (mat.HasProperty("_BumpStrength")) mat.SetFloat("_BumpStrength", bumpStrength);
 
             Texture2D normTex = FindTexture(normalMapName);
-            if (normTex != null) mat.SetTexture("_NormalMap", normTex);
+            if (normTex != null)
+            {
+                mat.mainTexture = normTex;
+                if (mat.HasProperty("_NormalMap")) mat.SetTexture("_NormalMap", normTex);
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", normTex);
+            }
 
             EditorUtility.SetDirty(mat);
             return mat;
@@ -221,11 +268,22 @@ namespace ProjectZombie.Editor.VFX
                 mat.shader = shader;
             }
 
-            mat.SetColor("_Color", baseColor);
-            mat.SetColor("_BurnColor", burnColor);
+            if (mat.HasProperty("_Color")) mat.SetColor("_Color", baseColor);
+            if (mat.HasProperty("_BurnColor")) mat.SetColor("_BurnColor", burnColor);
 
             Texture2D tex = FindTexture(decalTexName);
-            if (tex != null) mat.SetTexture("_MainTex", tex);
+            if (tex != null)
+            {
+                mat.mainTexture = tex;
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+            }
+
+            if (!string.IsNullOrEmpty(noiseTexName))
+            {
+                Texture2D noiseTex = FindTexture(noiseTexName);
+                if (noiseTex != null && mat.HasProperty("_NoiseTex")) mat.SetTexture("_NoiseTex", noiseTex);
+            }
 
             EditorUtility.SetDirty(mat);
             return mat;
