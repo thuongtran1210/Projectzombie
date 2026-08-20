@@ -186,11 +186,49 @@ namespace ProjectZombie.Features.Shared.VFX
             return instance;
         }
 
+        /// <summary>
+        /// Lấy hoặc tạo mới GameObject Modular VFX gắn bám theo một Transform (ví dụ: Player) trong suốt thời gian phát.
+        /// Tự động di chuyển theo mục tiêu và reparent về Pool Manager khi thu hồi.
+        /// </summary>
+        public GameObject PlayEffectAttached(GameObject prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null)
+        {
+            if (prefab == null) return null;
+            if (parent == null) return PlayEffect(prefab, Vector3.zero, Quaternion.identity, autoReleaseDelay, scale);
+
+            var instance = PlayEffect(prefab, parent.position, parent.rotation, autoReleaseDelay, scale);
+            if (instance != null)
+            {
+                instance.transform.SetParent(parent, false);
+                instance.transform.localPosition = Vector3.zero;
+                instance.transform.localRotation = Quaternion.identity;
+            }
+            return instance;
+        }
+
+        /// <summary>
+        /// Lấy hoặc tạo mới ParticleSystem gắn bám theo một Transform (ví dụ: Player) trong suốt thời gian phát.
+        /// </summary>
+        public ParticleSystem PlayEffectAttached(ParticleSystem prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null)
+        {
+            if (prefab == null) return null;
+            if (parent == null) return PlayEffect(prefab, Vector3.zero, Quaternion.identity, autoReleaseDelay, scale);
+
+            var instance = PlayEffect(prefab, parent.position, parent.rotation, autoReleaseDelay, scale);
+            if (instance != null)
+            {
+                instance.transform.SetParent(parent, false);
+                instance.transform.localPosition = Vector3.zero;
+                instance.transform.localRotation = Quaternion.identity;
+            }
+            return instance;
+        }
+
         private IEnumerator ReleaseParticleRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
         {
             yield return new WaitForSeconds(delay);
             if (instance != null && instance.gameObject.activeSelf)
             {
+                instance.transform.SetParent(transform, false);
                 pool.Release(instance);
             }
         }
@@ -200,6 +238,7 @@ namespace ProjectZombie.Features.Shared.VFX
             yield return new WaitForSeconds(delay);
             if (instance != null && instance.activeSelf)
             {
+                instance.transform.SetParent(transform, false);
                 pool.Release(instance);
             }
         }

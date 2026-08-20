@@ -32,10 +32,11 @@ namespace ProjectZombie.Features.Weapons
             Vector2 baseDirection = (_currentTarget.position - firePoint.position).normalized;
             DamageData damageData = CreateDamageData();
 
-            // Phát hiệu ứng sóng âm xung kích Trống Đồng tại tâm / firePoint khi đánh
+            // Phát hiệu ứng sóng âm xung kích Trống Đồng gắn bám theo nhân vật khi đánh (chống lệch pha khi di chuyển)
             if (shockwavePrefab != null && GlobalVFXPoolManager.Instance != null)
             {
-                GlobalVFXPoolManager.Instance.PlayEffect(shockwavePrefab, firePoint.position, Quaternion.identity, 0.45f, Vector3.one * GetFinalScale());
+                Transform attachTarget = firePoint != null ? firePoint : transform;
+                GlobalVFXPoolManager.Instance.PlayEffectAttached(shockwavePrefab, attachTarget, 0.45f, Vector3.one * GetFinalScale());
             }
 
             int totalPellets = pelletsCount + (GetFinalProjectileCount() - 1);

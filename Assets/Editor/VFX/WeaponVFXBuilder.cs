@@ -885,12 +885,12 @@ namespace ProjectZombie.Editor.VFX
 
             ParticleSystem ps = root.AddComponent<ParticleSystem>();
             var main = ps.main;
-            main.duration = 0.4f;
+            main.duration = 0.45f;
             main.loop = false;
-            main.startLifetime = 0.35f;
+            main.startLifetime = 0.4f;
             main.startSpeed = 0f;
             main.startSize = 1.0f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
 
             var emission = ps.emission;
             emission.rateOverTime = 0;
@@ -902,16 +902,25 @@ namespace ProjectZombie.Editor.VFX
             var sizeOverLife = ps.sizeOverLifetime;
             sizeOverLife.enabled = true;
             AnimationCurve curve = new AnimationCurve();
-            curve.AddKey(0.0f, 1.0f);
-            curve.AddKey(1.0f, 6.0f);
+            curve.AddKey(0.0f, 0.8f);
+            curve.AddKey(0.25f, 3.5f);
+            curve.AddKey(1.0f, 5.2f);
             sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, curve);
 
             var colorOverLife = ps.colorOverLifetime;
             colorOverLife.enabled = true;
             Gradient grad = new Gradient();
             grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.84f, 0.3f), 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.8f, 0.4f), new GradientAlphaKey(0.0f, 1.0f) }
+                new GradientColorKey[] { 
+                    new GradientColorKey(new Color(1f, 0.95f, 0.65f), 0.0f), 
+                    new GradientColorKey(new Color(1f, 0.82f, 0.28f), 0.5f),
+                    new GradientColorKey(new Color(0.85f, 0.55f, 0.15f), 1.0f) 
+                },
+                new GradientAlphaKey[] { 
+                    new GradientAlphaKey(0.95f, 0.0f), 
+                    new GradientAlphaKey(0.85f, 0.35f), 
+                    new GradientAlphaKey(0.0f, 1.0f) 
+                }
             );
             colorOverLife.color = grad;
 
@@ -923,31 +932,31 @@ namespace ProjectZombie.Editor.VFX
             Material shockMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Shockwave_DongSon.mat");
             if (shockMat != null) renderer.sharedMaterial = shockMat;
 
-            GameObject dustObj = new GameObject("Earth_Debris");
+            GameObject dustObj = new GameObject("Sonic_Resonance_Sparks");
             dustObj.transform.SetParent(root.transform, false);
 
             ParticleSystem dustPS = dustObj.AddComponent<ParticleSystem>();
             var dustMain = dustPS.main;
-            dustMain.duration = 0.4f;
+            dustMain.duration = 0.45f;
             dustMain.loop = false;
             dustMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.35f);
-            dustMain.startSpeed = new ParticleSystem.MinMaxCurve(6f, 12f);
-            dustMain.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.3f);
-            dustMain.simulationSpace = ParticleSystemSimulationSpace.World;
+            dustMain.startSpeed = new ParticleSystem.MinMaxCurve(7f, 14f);
+            dustMain.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.16f);
+            dustMain.simulationSpace = ParticleSystemSimulationSpace.Local;
 
             var dustEmission = dustPS.emission;
             dustEmission.rateOverTime = 0;
-            dustEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 16) });
+            dustEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 20) });
 
             var dustShape = dustPS.shape;
             dustShape.enabled = true;
             dustShape.shapeType = ParticleSystemShapeType.Circle;
-            dustShape.radius = 0.5f;
+            dustShape.radius = 0.3f;
 
             var dustRenderer = dustObj.GetComponent<ParticleSystemRenderer>();
             dustRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            dustRenderer.velocityScale = 0.02f;
-            dustRenderer.lengthScale = 1.0f;
+            dustRenderer.velocityScale = 0.015f;
+            dustRenderer.lengthScale = 1.2f;
             dustRenderer.sortingLayerName = "Skill";
             dustRenderer.sortingOrder = 9;
 

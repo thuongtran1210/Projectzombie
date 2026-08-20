@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MAT_Shockwave_DongSon
-  m_Shader: {fileID: 4800000, guid: b88265044df74e5498f71483a1a5af2b, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9f8e7d6c5b4a3a2a1f0e9d8c7b6a5001, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,18 +24,14 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: d2264080b5e243e459084792af3e4822, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: d2264080b5e243e459084792af3e4822, type: 3}
+        m_Texture: {fileID: 2800000, guid: d7a5b30e4cc541244918f9fb54609999, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DistortionStrength: 0.08
-    - _Falloff: 1
-    - _WaveWidth: 0.2
+    - _Brightness: 1.25
+    - _DstBlend: 1
+    - _SrcBlend: 5
     m_Colors:
-    - _TintColor: {r: 1, g: 0.85, b: 0.4, a: 0.8}
+    - _TintColor: {r: 1.6, g: 1.25, b: 0.45, a: 1}
   m_BuildTextureStacks: []
