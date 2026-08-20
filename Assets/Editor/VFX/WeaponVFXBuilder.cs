@@ -369,19 +369,94 @@ namespace ProjectZombie.Editor.VFX
         {
             string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W006_LuuDanThanSa.prefab";
             GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
-            if (projPrefab == null || cinnabarExpAsset == null) return;
-
-            using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
+            if (projPrefab != null)
             {
-                GameObject root = scope.prefabContentsRoot;
-                Transform existingVFX = root.transform.Find("Explosion_VFX");
-                if (existingVFX == null)
+                using (var scope = new PrefabUtility.EditPrefabContentsScope(projPath))
                 {
-                    GameObject vfxInstance = (GameObject)PrefabUtility.InstantiatePrefab(cinnabarExpAsset, root.transform);
-                    vfxInstance.name = "Explosion_VFX";
-                    vfxInstance.transform.localPosition = Vector3.zero;
+                    GameObject root = scope.prefabContentsRoot;
+                    
+                    // Xóa instance Explosion_VFX tĩnh nếu có để không tự nổ ngay khi vừa bắn
+                    Transform existingVFX = root.transform.Find("Explosion_VFX");
+                    if (existingVFX != null)
+                    {
+                        GameObject.DestroyImmediate(existingVFX.gameObject);
+                    }
+
+                    // Thêm/cập nhật vệt lửa ngòi nổ Fuse Trail khi đạn bay
+                    Transform existingTrail = root.transform.Find("Fuse_Trail_VFX");
+                    if (existingTrail == null)
+                    {
+                        GameObject trailObj = new GameObject("Fuse_Trail_VFX");
+                        trailObj.transform.SetParent(root.transform, false);
+                        trailObj.transform.localPosition = Vector3.zero;
+
+                        ParticleSystem trailPS = trailObj.AddComponent<ParticleSystem>();
+                        var main = trailPS.main;
+                        main.duration = 1.0f;
+                        main.loop = true;
+                        main.startLifetime = new ParticleSystem.MinMaxCurve(0.12f, 0.22f);
+                        main.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 2.0f);
+                        main.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.25f);
+                        main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+                        var emission = trailPS.emission;
+                        emission.rateOverTime = 22;
+
+                        var shape = trailPS.shape;
+                        shape.enabled = true;
+                        shape.shapeType = ParticleSystemShapeType.Sphere;
+                        shape.radius = 0.12f;
+
+                        var colorLife = trailPS.colorOverLifetime;
+                        colorLife.enabled = true;
+                        Gradient grad = new Gradient();
+                        grad.SetKeys(
+                            new GradientColorKey[] {
+                                new GradientColorKey(Color.white, 0.0f),
+                                new GradientColorKey(new Color(1f, 0.4f, 0.05f), 0.4f),
+                                new GradientColorKey(new Color(0.85f, 0.05f, 0.02f), 1.0f)
+                            },
+                            new GradientAlphaKey[] {
+                                new GradientAlphaKey(1.0f, 0.0f),
+                                new GradientAlphaKey(0.8f, 0.5f),
+                                new GradientAlphaKey(0.0f, 1.0f)
+                            }
+                        );
+                        colorLife.color = grad;
+
+                        var renderer = trailObj.GetComponent<ParticleSystemRenderer>();
+                        renderer.renderMode = ParticleSystemRenderMode.Stretch;
+                        renderer.velocityScale = 0.025f;
+                        renderer.lengthScale = 1.2f;
+                        renderer.sortingLayerName = "Skill";
+                        renderer.sortingOrder = 10;
+
+                        Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Sparks.mat");
+                        if (sparksMat == null) sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+                        if (sparksMat != null) renderer.sharedMaterial = sparksMat;
+                    }
                 }
             }
+
+            // Gán HitImpactVFXPrefab & DespawnVFXPrefab vào Proj_W006_Lựu.asset
+            string projDataPath = "Assets/_Data/Projectiles/Data/Proj_W006_Lựu.asset";
+            var projData = AssetDatabase.LoadAssetAtPath<Features.Projectiles.Data.ProjectileData>(projDataPath);
+            if (projData != null && cinnabarExpAsset != null)
+            {
+                SerializedObject pSo = new SerializedObject(projData);
+                var vfxConfigProp = pSo.FindProperty("VFXConfig");
+                if (vfxConfigProp != null)
+                {
+                    var hitVfxProp = vfxConfigProp.FindPropertyRelative("HitImpactVFXPrefab");
+                    if (hitVfxProp != null) hitVfxProp.objectReferenceValue = cinnabarExpAsset;
+
+                    var despawnVfxProp = vfxConfigProp.FindPropertyRelative("DespawnVFXPrefab");
+                    if (despawnVfxProp != null) despawnVfxProp.objectReferenceValue = cinnabarExpAsset;
+                }
+                pSo.ApplyModifiedProperties();
+            }
+
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Cinnabar Explosion VFX vào Proj_W006_Lựu.asset và Proj_W006_LuuDanThanSa.prefab!");
         }
 
         private static void WireW011ProjectilePrefab(GameObject holyAoEAsset)
@@ -971,13 +1046,16 @@ namespace ProjectZombie.Editor.VFX
             GameObject root = new GameObject("VFX_W006_CinnabarExplosion");
             root.AddComponent<VFXPoolResetter>();
 
+            // =========================================================================
+            // TẦNG 1 (Root): Vành Sóng Xung Kích Thần Sa Định Hình Hitbox 3.5m (Đường kính 7.0m)
+            // =========================================================================
             ParticleSystem ps = root.AddComponent<ParticleSystem>();
             var main = ps.main;
             main.duration = 0.5f;
             main.loop = false;
-            main.startLifetime = 0.35f;
+            main.startLifetime = 0.28f;
             main.startSpeed = 0f;
-            main.startSize = 3.2f;
+            main.startSize = 7.0f; // Chuẩn xác 100% bán kính 3.5m của Proj_W006_Explosion.asset
             main.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
@@ -990,51 +1068,186 @@ namespace ProjectZombie.Editor.VFX
 
             var sizeOverLife = ps.sizeOverLifetime;
             sizeOverLife.enabled = true;
-            AnimationCurve curve = new AnimationCurve();
-            curve.AddKey(0.0f, 0.4f);
-            curve.AddKey(0.15f, 1.15f);
-            curve.AddKey(1.0f, 1.4f);
-            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, curve);
+            AnimationCurve shockCurve = new AnimationCurve();
+            shockCurve.AddKey(0.0f, 0.15f);
+            shockCurve.AddKey(0.20f, 0.98f);
+            shockCurve.AddKey(1.0f, 1.02f);
+            sizeOverLife.size = new ParticleSystem.MinMaxCurve(1.0f, shockCurve);
 
             var colorOverLife = ps.colorOverLifetime;
             colorOverLife.enabled = true;
-            Gradient grad = new Gradient();
-            grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.45f, 0.1f), 0.35f), new GradientColorKey(new Color(0.9f, 0.12f, 0.05f), 0.7f), new GradientColorKey(new Color(0.25f, 0.05f, 0.02f), 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.95f, 0.4f), new GradientAlphaKey(0.0f, 1.0f) }
+            Gradient shockGrad = new Gradient();
+            shockGrad.SetKeys(
+                new GradientColorKey[] {
+                    new GradientColorKey(Color.white, 0.0f),
+                    new GradientColorKey(new Color(1f, 0.35f, 0.05f), 0.35f),
+                    new GradientColorKey(new Color(0.9f, 0.08f, 0.02f), 0.75f),
+                    new GradientColorKey(new Color(0.3f, 0.02f, 0.02f), 1.0f)
+                },
+                new GradientAlphaKey[] {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(0.9f, 0.4f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
             );
-            colorOverLife.color = grad;
+            colorOverLife.color = shockGrad;
 
             var renderer = root.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.sortingLayerName = "Skill";
             renderer.sortingOrder = 10;
 
-            Material pillarMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Fire_Pillar.mat");
-            if (pillarMat != null) renderer.sharedMaterial = pillarMat;
+            Material shockMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Shockwave.mat");
+            if (shockMat != null) renderer.sharedMaterial = shockMat;
 
-            // Layer 2: White-Hot Core Flash
+            // =========================================================================
+            // TẦNG 2: Trận Đồ Chu Sa Khắc Đất (Ground Alchemical Array)
+            // =========================================================================
+            GameObject magicArrayObj = new GameObject("Cinnabar_MagicArray");
+            magicArrayObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem arrayPS = magicArrayObj.AddComponent<ParticleSystem>();
+            var arrayMain = arrayPS.main;
+            arrayMain.duration = 0.5f;
+            arrayMain.loop = false;
+            arrayMain.startLifetime = 0.42f;
+            arrayMain.startSpeed = 0f;
+            arrayMain.startSize = 5.5f;
+            arrayMain.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            arrayMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var arrayEmission = arrayPS.emission;
+            arrayEmission.rateOverTime = 0;
+            arrayEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var arraySizeLife = arrayPS.sizeOverLifetime;
+            arraySizeLife.enabled = true;
+            AnimationCurve arrayCurve = new AnimationCurve();
+            arrayCurve.AddKey(0.0f, 0.65f);
+            arrayCurve.AddKey(0.12f, 1.0f);
+            arrayCurve.AddKey(1.0f, 1.05f);
+            arraySizeLife.size = new ParticleSystem.MinMaxCurve(1.0f, arrayCurve);
+
+            var arrayColorLife = arrayPS.colorOverLifetime;
+            arrayColorLife.enabled = true;
+            Gradient arrayGrad = new Gradient();
+            arrayGrad.SetKeys(
+                new GradientColorKey[] {
+                    new GradientColorKey(new Color(1f, 0.9f, 0.5f), 0.0f),
+                    new GradientColorKey(new Color(1f, 0.25f, 0.05f), 0.4f),
+                    new GradientColorKey(new Color(0.8f, 0.05f, 0.05f), 1.0f)
+                },
+                new GradientAlphaKey[] {
+                    new GradientAlphaKey(0.0f, 0.0f),
+                    new GradientAlphaKey(1.0f, 0.1f),
+                    new GradientAlphaKey(0.85f, 0.45f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
+            );
+            arrayColorLife.color = arrayGrad;
+
+            var arrayRenderer = magicArrayObj.GetComponent<ParticleSystemRenderer>();
+            arrayRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            arrayRenderer.sortingLayerName = "Skill";
+            arrayRenderer.sortingOrder = 9;
+
+            Material arrayMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_MagicArray.mat");
+            if (arrayMat != null) arrayRenderer.sharedMaterial = arrayMat;
+
+            // =========================================================================
+            // TẦNG 3: Bão Lửa Thần Sa Cuồn Cuộn (Main Fireball Explosion Core)
+            // =========================================================================
+            GameObject fireballObj = new GameObject("Fireball_Burst");
+            fireballObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem firePS = fireballObj.AddComponent<ParticleSystem>();
+            var fireMain = firePS.main;
+            fireMain.duration = 0.5f;
+            fireMain.loop = false;
+            fireMain.startLifetime = 0.38f;
+            fireMain.startSpeed = 0f;
+            fireMain.startSize = 6.2f;
+            fireMain.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            fireMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var fireEmission = firePS.emission;
+            fireEmission.rateOverTime = 0;
+            fireEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var fireSizeLife = firePS.sizeOverLifetime;
+            fireSizeLife.enabled = true;
+            AnimationCurve fireCurve = new AnimationCurve();
+            fireCurve.AddKey(0.0f, 0.35f);
+            fireCurve.AddKey(0.22f, 1.0f);
+            fireCurve.AddKey(1.0f, 1.15f);
+            fireSizeLife.size = new ParticleSystem.MinMaxCurve(1.0f, fireCurve);
+
+            var fireColorLife = firePS.colorOverLifetime;
+            fireColorLife.enabled = true;
+            Gradient fireGrad = new Gradient();
+            fireGrad.SetKeys(
+                new GradientColorKey[] {
+                    new GradientColorKey(Color.white, 0.0f),
+                    new GradientColorKey(new Color(1f, 0.75f, 0.15f), 0.2f),
+                    new GradientColorKey(new Color(1f, 0.2f, 0.02f), 0.55f),
+                    new GradientColorKey(new Color(0.35f, 0.05f, 0.05f), 1.0f)
+                },
+                new GradientAlphaKey[] {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(0.95f, 0.45f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
+            );
+            fireColorLife.color = fireGrad;
+
+            var fireRenderer = fireballObj.GetComponent<ParticleSystemRenderer>();
+            fireRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            fireRenderer.sortingLayerName = "Skill";
+            fireRenderer.sortingOrder = 12;
+
+            Material fireMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Fireball.mat");
+            if (fireMat != null) fireRenderer.sharedMaterial = fireMat;
+
+            // =========================================================================
+            // TẦNG 4: Lõi Lóe Sáng Bạch Kim Cực Đại (Super Flash Core 0.10s)
+            // =========================================================================
             GameObject coreFlash = new GameObject("Core_Flash");
             coreFlash.transform.SetParent(root.transform, false);
+
             ParticleSystem flashPS = coreFlash.AddComponent<ParticleSystem>();
             var flashMain = flashPS.main;
-            flashMain.duration = 0.3f;
+            flashMain.duration = 0.2f;
             flashMain.loop = false;
-            flashMain.startLifetime = 0.12f;
+            flashMain.startLifetime = 0.10f;
             flashMain.startSpeed = 0f;
-            flashMain.startSize = 2.2f;
+            flashMain.startSize = 3.5f;
             flashMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
             var flashEmission = flashPS.emission;
             flashEmission.rateOverTime = 0;
             flashEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
+
+            var flashColorLife = flashPS.colorOverLifetime;
+            flashColorLife.enabled = true;
+            Gradient flashGrad = new Gradient();
+            flashGrad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(new Color(1f, 0.9f, 0.6f), 1.0f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) }
+            );
+            flashColorLife.color = flashGrad;
+
             var flashRenderer = coreFlash.GetComponent<ParticleSystemRenderer>();
             flashRenderer.renderMode = ParticleSystemRenderMode.Billboard;
             flashRenderer.sortingLayerName = "Skill";
-            flashRenderer.sortingOrder = 11;
-            Material flashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Flash.mat");
+            flashRenderer.sortingOrder = 14;
+
+            Material flashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Flash.mat");
+            if (flashMat == null) flashMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Flash.mat");
             if (flashMat != null) flashRenderer.sharedMaterial = flashMat;
 
-            // Layer 3: Cinnabar Embers & Sparks
+            // =========================================================================
+            // TẦNG 5: Mưa Cát Thần Sa & Hạt Nổ Văng Xa (Cinnabar Embers & Debris)
+            // =========================================================================
             GameObject embersObj = new GameObject("Cinnabar_Embers");
             embersObj.transform.SetParent(root.transform, false);
 
@@ -1042,29 +1255,112 @@ namespace ProjectZombie.Editor.VFX
             var emberMain = emberPS.main;
             emberMain.duration = 0.5f;
             emberMain.loop = false;
-            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.2f, 0.45f);
-            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(6f, 14f);
-            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.28f);
+            emberMain.startLifetime = new ParticleSystem.MinMaxCurve(0.25f, 0.55f);
+            emberMain.startSpeed = new ParticleSystem.MinMaxCurve(7.0f, 16.0f);
+            emberMain.startSize = new ParticleSystem.MinMaxCurve(0.15f, 0.35f);
             emberMain.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emberEmission = emberPS.emission;
             emberEmission.rateOverTime = 0;
-            emberEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 25) });
+            emberEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 40) });
 
             var emberShape = emberPS.shape;
             emberShape.enabled = true;
             emberShape.shapeType = ParticleSystemShapeType.Sphere;
-            emberShape.radius = 0.3f;
+            emberShape.radius = 0.35f;
+
+            var emberVelocityOverLife = emberPS.limitVelocityOverLifetime;
+            emberVelocityOverLife.enabled = true;
+            emberVelocityOverLife.dampen = 0.35f;
+            emberVelocityOverLife.drag = 1.8f;
+
+            var emberColorLife = emberPS.colorOverLifetime;
+            emberColorLife.enabled = true;
+            Gradient emberGrad = new Gradient();
+            emberGrad.SetKeys(
+                new GradientColorKey[] {
+                    new GradientColorKey(Color.white, 0.0f),
+                    new GradientColorKey(new Color(1f, 0.8f, 0.2f), 0.2f),
+                    new GradientColorKey(new Color(1f, 0.2f, 0.02f), 0.6f),
+                    new GradientColorKey(new Color(0.6f, 0.05f, 0.02f), 1.0f)
+                },
+                new GradientAlphaKey[] {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(0.9f, 0.6f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
+            );
+            emberColorLife.color = emberGrad;
 
             var emberRenderer = embersObj.GetComponent<ParticleSystemRenderer>();
             emberRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            emberRenderer.velocityScale = 0.035f;
-            emberRenderer.lengthScale = 1.3f;
+            emberRenderer.velocityScale = 0.04f;
+            emberRenderer.lengthScale = 1.5f;
             emberRenderer.sortingLayerName = "Skill";
-            emberRenderer.sortingOrder = 12;
+            emberRenderer.sortingOrder = 13;
 
-            Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
+            Material sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Sparks.mat");
+            if (sparksMat == null) sparksMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_FireSlash_Sparks.mat");
             if (sparksMat != null) emberRenderer.sharedMaterial = sparksMat;
+
+            // =========================================================================
+            // TẦNG 6: Khói Khoáng Thần Sa Đỏ Thẫm Bốc Lên (Lingering Cinnabar Smoke)
+            // =========================================================================
+            GameObject smokeObj = new GameObject("Cinnabar_Smoke");
+            smokeObj.transform.SetParent(root.transform, false);
+
+            ParticleSystem smokePS = smokeObj.AddComponent<ParticleSystem>();
+            var smokeMain = smokePS.main;
+            smokeMain.duration = 0.6f;
+            smokeMain.loop = false;
+            smokeMain.startLifetime = new ParticleSystem.MinMaxCurve(0.45f, 0.70f);
+            smokeMain.startSpeed = new ParticleSystem.MinMaxCurve(0.6f, 2.0f);
+            smokeMain.startSize = new ParticleSystem.MinMaxCurve(2.2f, 3.5f);
+            smokeMain.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            smokeMain.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var smokeEmission = smokePS.emission;
+            smokeEmission.rateOverTime = 0;
+            smokeEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.04f, 5) });
+
+            var smokeShape = smokePS.shape;
+            smokeShape.enabled = true;
+            smokeShape.shapeType = ParticleSystemShapeType.Sphere;
+            smokeShape.radius = 0.75f;
+
+            var smokeSizeLife = smokePS.sizeOverLifetime;
+            smokeSizeLife.enabled = true;
+            AnimationCurve smokeCurve = new AnimationCurve();
+            smokeCurve.AddKey(0.0f, 0.55f);
+            smokeCurve.AddKey(0.4f, 1.0f);
+            smokeCurve.AddKey(1.0f, 1.4f);
+            smokeSizeLife.size = new ParticleSystem.MinMaxCurve(1.0f, smokeCurve);
+
+            var smokeColorLife = smokePS.colorOverLifetime;
+            smokeColorLife.enabled = true;
+            Gradient smokeGrad = new Gradient();
+            smokeGrad.SetKeys(
+                new GradientColorKey[] {
+                    new GradientColorKey(new Color(1f, 0.3f, 0.15f), 0.0f),
+                    new GradientColorKey(new Color(0.65f, 0.12f, 0.15f), 0.4f),
+                    new GradientColorKey(new Color(0.22f, 0.05f, 0.08f), 1.0f)
+                },
+                new GradientAlphaKey[] {
+                    new GradientAlphaKey(0.0f, 0.0f),
+                    new GradientAlphaKey(0.65f, 0.15f),
+                    new GradientAlphaKey(0.45f, 0.5f),
+                    new GradientAlphaKey(0.0f, 1.0f)
+                }
+            );
+            smokeColorLife.color = smokeGrad;
+
+            var smokeRenderer = smokeObj.GetComponent<ParticleSystemRenderer>();
+            smokeRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            smokeRenderer.sortingLayerName = "Skill";
+            smokeRenderer.sortingOrder = 11;
+
+            Material smokeMat = AssetDatabase.LoadAssetAtPath<Material>($"{MATERIAL_FOLDER}/MAT_Cinnabar_Smoke.mat");
+            if (smokeMat != null) smokeRenderer.sharedMaterial = smokeMat;
 
             return root;
         }

@@ -28,7 +28,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32886d44c19fa134f9e67a1926407277, type: 2}
   BaseDamage: 9
   VFXConfig:
-    SpawnVFXPrefab: {fileID: 6777955328510600286, guid: 77e56ae23f3d0464c9eef74322d557e0, type: 3}
+    SpawnVFXPrefab: {fileID: 3751918047475630789, guid: 77e56ae23f3d0464c9eef74322d557e0, type: 3}
     HitImpactVFXPrefab: {fileID: 5040182604245648589, guid: 835b3baf7ddc40a43a4da4802413d0c4, type: 3}
     DespawnVFXPrefab: {fileID: 0}
     LaunchSFX: {fileID: 0}

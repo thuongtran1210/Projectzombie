@@ -39,6 +39,14 @@ namespace ProjectZombie.Editor.VFX
             CreateGroundDecalMaterial("MAT_Decal_PoisonSwamp", "Poison_Swamp_Mist.png", null, new Color(0.6f, 0.2f, 0.9f, 0.8f), new Color(0.2f, 1.5f, 0.8f, 1f));
             CreateParticleMaterial("MAT_Holy_Bubble", "Holy_Bubble_Particle.png", true);
 
+            // W006 Lựu Đạn Thần Sa Materials (Cinnabar Explosion Suite)
+            CreateParticleMaterial("MAT_Cinnabar_Fireball", "Tex_VFX_Cinnabar_Fireball_Burst.png", true);
+            CreateParticleMaterial("MAT_Cinnabar_Shockwave", "Tex_VFX_Cinnabar_Shockwave_Ring.png", true);
+            CreateParticleMaterial("MAT_Cinnabar_MagicArray", "Tex_VFX_Cinnabar_Magic_Array.png", true);
+            CreateParticleMaterial("MAT_Cinnabar_Smoke", "Tex_VFX_Cinnabar_Smoke_Puff.png", false);
+            CreateParticleMaterial("MAT_Cinnabar_Sparks", "Spark_Streak.png", true);
+            CreateParticleMaterial("MAT_Cinnabar_Flash", "FireSlash_Impact.png", true);
+
             // 3. Projectile & Beam Materials (Nỏ Thần W001, Cung Thạch Sanh W007, Trượng Long Vương W009)
             CreateParticleMaterial("MAT_ThachSanh_SonicArrow", "VFX_ThachSanh_SonicArrow.png", true);
             CreateParticleMaterial("MAT_Arrow_Golden_Beam", "Arrow_Golden_Beam.png", true);
@@ -268,6 +276,16 @@ namespace ProjectZombie.Editor.VFX
                 mat.SetFloat("_Blend", 1.0f);
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                 mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                mat.SetInt("_ZWrite", 0);
+                mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                mat.EnableKeyword("_ALPHABLEND_ON");
+            }
+            else
+            {
+                mat.SetFloat("_Surface", 1.0f);
+                mat.SetFloat("_Blend", 0.0f);
+                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 mat.SetInt("_ZWrite", 0);
                 mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
                 mat.EnableKeyword("_ALPHABLEND_ON");
