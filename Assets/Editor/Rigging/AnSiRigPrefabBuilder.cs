@@ -41,8 +41,14 @@ namespace Projectzombie.Editor.Rigging
             GameObject boneRoot = new GameObject("Bone_Root");
             boneRoot.transform.SetParent(visual.transform, false);
 
+            // Hat (Nón lá đeo sau lưng - Sorting 92)
+            CreateBone(boneRoot.transform, "Hat", new Vector3(-0.05f, 0.35f, 0), spriteDir + "/char_hat.png", 92);
+
             // Hips / Torso
             GameObject hips = CreateBone(boneRoot.transform, "Hips", new Vector3(0, 0.4f, 0), spriteDir + "/char_torso.png", 100);
+
+            // Gourd (Hồ lô đeo bên hông phải - Sorting 104)
+            CreateBone(hips.transform, "Gourd", new Vector3(0.2f, -0.05f, 0), spriteDir + "/char_gourd.png", 104);
 
             // Chest
             GameObject chest = CreateBone(hips.transform, "Chest", new Vector3(0, 0.25f, 0), null, 0);
