@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
   m_Name: "Unlock_W011_N\u01B0\u1EDBcTh\xE1nhCh\xF9aH\u01B0\u01A1ng"
   m_EditorClassIdentifier: 
+  id: Unlock_W011
   upgradeName: "M\u1EDF kh\xF3a: N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng
     v\xE0o trang b\u1ECB active."

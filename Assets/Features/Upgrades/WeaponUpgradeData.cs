@@ -34,8 +34,8 @@ namespace ProjectZombie.Features.Upgrades
 
             if (!hasWeapon)
             {
-                // Nếu chưa sở hữu, chỉ cho phép thẻ Mở Khóa (yêu cầu cấp 0)
-                return requiredCurrentLevel == 0;
+                // Nếu chưa sở hữu, chỉ cho phép thẻ Mở Khóa (yêu cầu cấp 0) và chưa đầy 6 slot vũ khí
+                return requiredCurrentLevel == 0 && !weaponManager.IsFull();
             }
             else
             {

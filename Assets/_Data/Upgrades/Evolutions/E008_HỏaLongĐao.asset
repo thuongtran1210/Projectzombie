@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E008_H\u1ECFaLong\u0110ao"
   m_EditorClassIdentifier: 
+  id: E008
   upgradeName: "H\u1ECFa Long \u0110ao"
   description: "Phun lu\u1ED3ng r\u1ED3ng l\u1EEDa 360 \u0111\u1ED9 xoay quanh nh\xE2n
     v\u1EADt li\xEAn t\u1EE5c kh\xF4ng ng\u1EEBng."
@@ -24,5 +25,5 @@ MonoBehaviour:
   element: 0
   weaponId: W008
   requiredCurrentLevel: 5
-  requiredPassiveId: "H\u1EA1t T\u1ED1c \u0110\xE1nh"
-  weaponPrefab: {fileID: 0}
+  requiredPassiveId: P008
+  weaponPrefab: {fileID: 8988189085547398515, guid: c4e20858a963ae341b688874c521a84e, type: 3}

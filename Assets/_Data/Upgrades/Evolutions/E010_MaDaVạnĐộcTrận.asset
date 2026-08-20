@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E010_MaDaV\u1EA1n\u0110\u1ED9cTr\u1EADn"
   m_EditorClassIdentifier: 
+  id: E010
   upgradeName: "Ma Da V\u1EA1n \u0110\u1ED9c Tr\u1EADn"
   description: "\u0110\u1EA7m l\u1EA7y h\u1EAFc \xE1m lan r\u1ED9ng l\xE0m tan ch\u1EA3y
     qu\xE1i v\u1EADt ch\u1EA1m ph\u1EA3i."
@@ -25,4 +26,4 @@ MonoBehaviour:
   weaponId: W010
   requiredCurrentLevel: 5
   requiredPassiveId: P010
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 8988189085547398515, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}

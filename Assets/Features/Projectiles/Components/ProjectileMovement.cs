@@ -29,8 +29,9 @@ namespace ProjectZombie.Features.Projectiles.Components
             float angle = Mathf.Atan2(_controller.CurrentDirection.y, _controller.CurrentDirection.x) * Mathf.Rad2Deg;
             _rb.MoveRotation(angle);
 
-            // Move
-            Vector2 movement = _controller.CurrentDirection * (_controller.Data.Speed * Time.fixedDeltaTime);
+            // Move with speed multiplier
+            float finalSpeed = _controller.Data.Speed * _controller.State.SpeedMultiplier;
+            Vector2 movement = _controller.CurrentDirection * (finalSpeed * Time.fixedDeltaTime);
             _rb.MovePosition(_rb.position + movement);
         }
     }

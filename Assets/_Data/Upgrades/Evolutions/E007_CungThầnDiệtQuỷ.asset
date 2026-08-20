@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E007_CungTh\u1EA7nDi\u1EC7tQu\u1EF7"
   m_EditorClassIdentifier: 
+  id: E007
   upgradeName: "Cung Th\u1EA7n Di\u1EC7t Qu\u1EF7"
   description: "M\u0169i t\xEAn th\u1EA7n kh\xED ph\xE2n t\xE1ch th\xE0nh 8 m\u0169i
     t\xEAn bay lu\xE2n h\u1ED3i."
@@ -24,5 +25,5 @@ MonoBehaviour:
   element: 0
   weaponId: W007
   requiredCurrentLevel: 5
-  requiredPassiveId: P004
-  weaponPrefab: {fileID: 0}
+  requiredPassiveId: P007
+  weaponPrefab: {fileID: 8988189085547398515, guid: 38ba898b9ee477448be4157bf577c022, type: 3}

@@ -19,7 +19,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnSpawn()
         {
-            _controller.State.RemainingPierce = _data.PierceCount;
+            int basePierce = _data != null ? _data.PierceCount : 0;
+            _controller.State.RemainingPierce = basePierce + _controller.State.BonusPierce;
             _hitTargets.Clear();
         }
 

@@ -51,6 +51,19 @@ namespace ProjectZombie.Features.Projectiles.Core
 
             controller.Initialize(data, direction, owner, context, pool, generation);
 
+            // Tự động đồng bộ các chỉ số bổ trợ từ WeaponBase (Pierce, Speed, Scale)
+            if (sourceWeapon is Weapons.WeaponBase wb)
+            {
+                controller.State.BonusPierce = wb.GetFinalPierce();
+                controller.State.SpeedMultiplier = 1f + (wb.GetFinalProjectileSpeed() > 0 ? wb.GetFinalProjectileSpeed() * 0.08f : 0f);
+                controller.State.ScaleMultiplier = wb.GetFinalScale();
+
+                if (wb.GetFinalScale() != 1f)
+                {
+                    obj.transform.localScale = Vector3.one * wb.GetFinalScale();
+                }
+            }
+
             return controller;
         }
 

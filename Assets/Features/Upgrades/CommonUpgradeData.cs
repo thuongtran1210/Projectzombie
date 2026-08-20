@@ -11,18 +11,35 @@ namespace ProjectZombie.Features.Upgrades
 
         public override bool IsAvailable(GameObject player)
         {
-            if (maxLevel > 0 && player != null)
+            if (player == null) return false;
+
+            var playerPassives = player.GetComponent<PlayerPassives>();
+            if (playerPassives == null) return false;
+
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            bool alreadyOwned = playerPassives.HasPassive(key) || playerPassives.HasPassive(upgradeName);
+
+            if (!alreadyOwned)
             {
-                var playerPassives = player.GetComponent<PlayerPassives>();
-                if (playerPassives != null)
+                // Nếu chưa sở hữu, kiểm tra xem đã đầy 6 slot Bị động chưa
+                if (playerPassives.IsFull())
                 {
-                    int currentCount = playerPassives.GetUpgradeCount(this.upgradeName);
+                    return false;
+                }
+            }
+            else
+            {
+                // Nếu đã sở hữu, kiểm tra cấp độ tối đa
+                if (maxLevel > 0)
+                {
+                    int currentCount = playerPassives.GetUpgradeCount(upgradeName);
                     if (currentCount >= maxLevel)
                     {
                         return false;
                     }
                 }
             }
+
             return true;
         }
 
@@ -42,8 +59,9 @@ namespace ProjectZombie.Features.Upgrades
             var playerPassives = player.GetComponent<PlayerPassives>();
             if (playerPassives != null)
             {
-                playerPassives.AddPassive(this.upgradeName, this); // Using upgradeName instead of file name
-                playerPassives.IncrementUpgradeCount(this.upgradeName);
+                string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+                playerPassives.AddPassive(key, this);
+                playerPassives.IncrementUpgradeCount(upgradeName);
             }
         }
     }

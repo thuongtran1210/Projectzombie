@@ -24,8 +24,7 @@ MonoBehaviour:
   PrewarmCount: 10
   MaxPoolSize: 50
   Behaviors:
-  - {fileID: 11400000, guid: 68fe00f4d45340a41b8f4fcb38f2ef7b, type: 2}
-  - {fileID: 11400000, guid: c5e61174bf4513c4885e4c6d31179a74, type: 2}
+  - {fileID: 11400000, guid: 9c0d1e2f3a4b5c6d7e8f9a0b12030303, type: 2}
   BaseDamage: 22
   VFXConfig:
     SpawnVFXPrefab: {fileID: 0}

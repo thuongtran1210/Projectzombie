@@ -12,6 +12,10 @@ namespace ProjectZombie.Features.Projectiles.Core
         public int RemainingBounce;
         public int RemainingSplit;
         
+        public int BonusPierce;
+        public float SpeedMultiplier;
+        public float ScaleMultiplier;
+        
         public Transform CurrentTarget;
         
         /// <summary>
@@ -29,6 +33,9 @@ namespace ProjectZombie.Features.Projectiles.Core
             RemainingPierce = 0;
             RemainingBounce = 0;
             RemainingSplit = 0;
+            BonusPierce = 0;
+            SpeedMultiplier = 1f;
+            ScaleMultiplier = 1f;
             CurrentTarget = null;
         }
     }

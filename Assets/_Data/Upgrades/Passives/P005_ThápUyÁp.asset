@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb91c9f74575a74e94643faa41f9195, type: 3}
   m_Name: "P005_Th\xE1pUy\xC1p"
   m_EditorClassIdentifier: 
+  id: P005
   upgradeName: "Th\xE1p Uy \xC1p"
-  description: "+15% Ph\u1EA1m vi \u1EA3nh h\u01B0\u1EDFng \u0111\xF2n \u0111\xE1nh
-    (AoE)"
+  description: "+15% Ph\u1EA1m vi \u1EA3nh h\u01B0\u1EDFng c\u1EE7a k\u1EF9 n\u0103ng"
   icon: {fileID: 21300000, guid: 3ae1c8887bb145129656fc335c0997a0, type: 3}
   upgradeType: 2
   spawnWeight: 10
@@ -27,5 +27,5 @@ MonoBehaviour:
     moveSpeedBonus: 0
     critChanceBonus: 0
     baseDamageBonus: 0
-    pickupRangeBonus: 0
+    pickupRangeBonus: 1
     expMultiplierBonus: 0

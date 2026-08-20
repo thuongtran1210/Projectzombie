@@ -96,10 +96,10 @@ namespace ProjectZombie.Features.Projectiles.Editor
                 CreateOrGetPeriodicHitBehavior(behaviorFolder, "Proj_W011_WellHit", 1.0f, 10)
             });
 
-            // 12. W012: Phi Tiêu Bát Quái (Mộc) -> Straight + Pierce Boomerang
+            // 12. W012: Phi Tiêu Bát Quái (Mộc) -> Dual Curved Crescent Boomerang + Pierce
             SetupProjectileBehaviors("Proj_W012", dataFolder, behaviorFolder, new List<ProjectileBehaviorData>
             {
-                CreateOrGetStraightBehavior(behaviorFolder, "Proj_W012_Straight", 100),
+                CreateOrGetCurvedBoomerangBehavior(behaviorFolder, "Proj_W012_CurvedBoomerang", 240f, 0.5f, 100),
                 CreateOrGetPierceBehavior(behaviorFolder, "Proj_W012_Pierce", 4, 10)
             });
 
@@ -235,6 +235,24 @@ namespace ProjectZombie.Features.Projectiles.Editor
                 AssetDatabase.CreateAsset(asset, path);
             }
             asset.hitCooldown = interval;
+            asset.ExecutionOrder = order;
+            EditorUtility.SetDirty(asset);
+            return asset;
+        }
+        private static CurvedBoomerangBehaviorData CreateOrGetCurvedBoomerangBehavior(string folder, string name, float turnRate, float forwardDuration, int order)
+        {
+            string path = $"{folder}/{name}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<CurvedBoomerangBehaviorData>(path);
+            if (asset == null)
+            {
+                asset = ScriptableObject.CreateInstance<CurvedBoomerangBehaviorData>();
+                AssetDatabase.CreateAsset(asset, path);
+            }
+            asset.curveTurnRate = turnRate;
+            asset.forwardDuration = forwardDuration;
+            asset.spinSpeed = 1080f;
+            asset.returnTurnRate = 420f;
+            asset.returnSpeedMultiplier = 1.3f;
             asset.ExecutionOrder = order;
             EditorUtility.SetDirty(asset);
             return asset;

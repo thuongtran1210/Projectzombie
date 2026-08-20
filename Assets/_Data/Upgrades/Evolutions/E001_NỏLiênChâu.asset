@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E001_N\u1ECFLi\xEAnCh\xE2u"
   m_EditorClassIdentifier: 
+  id: E001
   upgradeName: "N\u1ECF Li\xEAn Ch\xE2u"
   description: "B\u1EAFn li\xEAn ho\xE0n 3 m\u0169i t\xEAn th\u1EA7n xuy\xEAn qua
     t\u1EA5t c\u1EA3 k\u1EBB \u0111\u1ECBch tr\xEAn \u0111\u01B0\u1EDDng bay."
@@ -24,5 +25,5 @@ MonoBehaviour:
   element: 0
   weaponId: W001
   requiredCurrentLevel: 5
-  requiredPassiveId: "B\xF9a S\xE1t Th\u01B0\u01A1ng"
-  weaponPrefab: {fileID: 0}
+  requiredPassiveId: P001
+  weaponPrefab: {fileID: 8988189085547398515, guid: ee182c7e5cd949446942f9b7968c120d, type: 3}

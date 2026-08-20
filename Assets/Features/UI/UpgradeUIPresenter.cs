@@ -214,6 +214,17 @@ namespace ProjectZombie.Features.UI
 
         private void OnSkipClicked()
         {
+            if (_playerWeaponManager != null)
+            {
+                var healthSystem = _playerWeaponManager.GetComponent<HealthSystem>();
+                if (healthSystem != null)
+                {
+                    float healAmount = healthSystem.MaxHealth * 0.2f;
+                    healthSystem.Heal(healAmount);
+                    Debug.Log($"<color=#00FF88>[UpgradeUIPresenter]</color> Bỏ qua lựa chọn nâng cấp, hồi phục {healAmount:F0} Máu (20% Max HP)!");
+                }
+            }
+
             ResumeGameplay();
         }
 

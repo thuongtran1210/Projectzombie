@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb91c9f74575a74e94643faa41f9195, type: 3}
   m_Name: "P001_B\xF9aS\xE1tTh\u01B0\u01A1ng"
   m_EditorClassIdentifier: 
+  id: P001
   upgradeName: "B\xF9a S\xE1t Th\u01B0\u01A1ng"
-  description: "+10% S\xE1t th\u01B0\u01A1ng c\u01A1 b\u1EA3n cho nh\xE2n v\u1EADt"
+  description: "+10% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 cho nh\xE2n v\u1EADt"
   icon: {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
   upgradeType: 2
   spawnWeight: 10
@@ -25,6 +26,6 @@ MonoBehaviour:
     maxHealthBonus: 0
     moveSpeedBonus: 0
     critChanceBonus: 0
-    baseDamageBonus: 10
+    baseDamageBonus: 5
     pickupRangeBonus: 0
     expMultiplierBonus: 0

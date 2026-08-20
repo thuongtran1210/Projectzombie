@@ -21,8 +21,7 @@ namespace ProjectZombie.Features.Player
         public float CritChance { get; private set; }
         public float PickupRange { get; private set; }
         public float ExpMultiplier { get; private set; } = 1f;
-
-        public float AttackRange => PickupRange; // Tái sử dụng PickupRange làm tầm đánh (hoặc cấu hình riêng)
+        public float AttackRange { get; private set; } = 9.5f;
 
         private float _damageMultiplier = 1f;
 
@@ -75,8 +74,15 @@ namespace ProjectZombie.Features.Player
             AttackSpeed = baseStatsConfig.attackSpeed;
             CritChance = baseStatsConfig.critChance;
             PickupRange = baseStatsConfig.pickupRange;
+            AttackRange = 9.5f;
             
             _damageMultiplier = 1f;
+        }
+
+        public void AddAttackRange(float amount)
+        {
+            AttackRange += amount;
+            OnStatsUpdated?.Invoke();
         }
 
         /// <summary>

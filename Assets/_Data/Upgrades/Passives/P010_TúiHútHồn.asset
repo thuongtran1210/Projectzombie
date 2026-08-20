@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb91c9f74575a74e94643faa41f9195, type: 3}
   m_Name: "P010_T\xFAiH\xFAtH\u1ED3n"
   m_EditorClassIdentifier: 
+  id: P010
   upgradeName: "T\xFAi H\xFAt H\u1ED3n"
-  description: "+30% B\xE1n k\xEDnh nh\u1EB7t H\u1EA1t Kinh Nghi\u1EC7m"
+  description: "+25% T\u1EA7m h\xFAt v\u1EADt ph\u1EA9m & ng\u1ECDc kinh nghi\u1EC7m"
   icon: {fileID: 21300000, guid: 1b09bd9ed2674a859b7ce033fb5a7e3a, type: 3}
   upgradeType: 2
   spawnWeight: 10

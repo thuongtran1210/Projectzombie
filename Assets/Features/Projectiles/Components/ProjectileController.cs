@@ -3,6 +3,7 @@ using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Projectiles.Core;
 using ProjectZombie.Features.Projectiles.Behaviors;
+using System.Collections.Generic;
 
 namespace ProjectZombie.Features.Projectiles.Components
 {
@@ -33,6 +34,8 @@ namespace ProjectZombie.Features.Projectiles.Components
             _lifetime = GetComponent<ProjectileLifetime>();
         }
 
+        private ProjectileData _cachedData;
+
         public void Initialize(ProjectileData data, Vector2 direction, GameObject owner, DamageContext damage, ProjectilePool pool, int generation = 0)
         {
             Data = data;
@@ -43,9 +46,10 @@ namespace ProjectZombie.Features.Projectiles.Components
 
             State.Reset(generation, transform.position);
 
-            // Resolve and cache behaviors if not resolved yet
-            if (!_isBehaviorsResolved)
+            // Resolve and cache behaviors if not resolved yet or if data changed
+            if (!_isBehaviorsResolved || _cachedData != data)
             {
+                _cachedData = data;
                 ResolveBehaviors();
             }
 
@@ -92,6 +96,18 @@ namespace ProjectZombie.Features.Projectiles.Components
             
             _behaviors = behaviorsList.ToArray();
             _isBehaviorsResolved = true;
+        }
+
+        public IReadOnlyList<IProjectileBehavior> Behaviors => _behaviors;
+
+        public T GetBehavior<T>() where T : class, IProjectileBehavior
+        {
+            if (_behaviors == null) return null;
+            for (int i = 0; i < _behaviors.Length; i++)
+            {
+                if (_behaviors[i] is T match) return match;
+            }
+            return null;
         }
 
         private void Update()
@@ -143,7 +159,7 @@ namespace ProjectZombie.Features.Projectiles.Components
             Despawn();
         }
 
-        private void Despawn()
+        public void Despawn()
         {
             if (_behaviors != null)
             {

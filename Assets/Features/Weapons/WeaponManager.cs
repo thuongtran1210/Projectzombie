@@ -20,11 +20,14 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Transform chứa các vũ khí được sinh ra (Nếu để trống sẽ dùng transform của Player)")]
         [SerializeField] private Transform weaponHolder;
 
+        public const int MAX_WEAPONS = 6;
+
         private PlayerStats _playerStats;
         private PlayerPassives _playerPassives;
         private List<WeaponBase> _activeWeapons = new List<WeaponBase>();
 
         public IReadOnlyList<WeaponBase> ActiveWeapons => _activeWeapons;
+        public bool IsFull() => _activeWeapons.Count >= MAX_WEAPONS;
 
         public event System.Action OnWeaponsChanged;
 

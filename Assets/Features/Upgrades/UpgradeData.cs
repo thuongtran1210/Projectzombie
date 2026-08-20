@@ -42,6 +42,8 @@ namespace ProjectZombie.Features.Upgrades
     public abstract class UpgradeData : ScriptableObject
     {
         [Header("Display Info")]
+        [Tooltip("Mã định danh duy nhất (VD: P001, W001_Lv2, E001)")]
+        public string id;
         public string upgradeName;
         [TextArea] public string description;
         public Sprite icon;

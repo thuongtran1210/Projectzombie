@@ -54,18 +54,31 @@ namespace ProjectZombie.Features.Upgrades
             WeaponBase oldWeapon = weaponManager.GetWeaponById(weaponId);
             if (oldWeapon != null)
             {
-                // Gọi hàm xóa vũ khí an toàn
-                weaponManager.RemoveWeapon(oldWeapon);
-
-                // Tạo vũ khí tiến hóa mới
+                // Tạo vũ khí tiến hóa mới nếu có Prefab riêng
                 if (weaponPrefab != null)
                 {
+                    weaponManager.RemoveWeapon(oldWeapon);
                     GameObject weaponObj = Instantiate(weaponPrefab, weaponManager.transform);
                     WeaponBase newWeapon = weaponObj.GetComponent<WeaponBase>();
                     if (newWeapon != null)
                     {
                         weaponManager.AddWeapon(newWeapon);
                     }
+                }
+                else
+                {
+                    // Fallback an toàn: Nếu chưa gắn Prefab Tiến Hóa riêng, nâng cấp vũ khí hiện tại lên trạng thái Siêu Cường
+                    Debug.Log($"<color=#FFD700>[EvolutionUpgradeData]</color> Kích hoạt Tiến Hóa Siêu Cường cho vũ khí: {weaponId} ({oldWeapon.displayName})");
+                    var superMod = new WeaponStatModifier
+                    {
+                        damageBonus = 25f,
+                        projectileCountBonus = 2,
+                        scaleBonus = 0.3f,
+                        attackSpeedBonus = 0.25f
+                    };
+                    oldWeapon.ApplyStatModifier(superMod);
+                    oldWeapon.OnLevelUp(6, this);
+                    weaponManager.NotifyWeaponsChanged();
                 }
             }
             else

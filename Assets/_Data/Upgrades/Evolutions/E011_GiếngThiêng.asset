@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E011_Gi\u1EBFngThi\xEAng"
   m_EditorClassIdentifier: 
+  id: E011
   upgradeName: "Gi\u1EBFng Thi\xEAng"
   description: "T\u1EA1o v\u0169ng gi\u1EBFng thi\xEAng 5m l\xE0m ch\u1EADm qu\xE1i
     50% + H\u1ED3i HP cho Player."
@@ -24,5 +25,5 @@ MonoBehaviour:
   element: 0
   weaponId: W011
   requiredCurrentLevel: 5
-  requiredPassiveId: "B\xE1nh Xe T\u1ED1c \u0110\u1ED9"
-  weaponPrefab: {fileID: 0}
+  requiredPassiveId: P011
+  weaponPrefab: {fileID: 8988189085547398515, guid: 19cdee20c89f3014ba5714a4d76dde7a, type: 3}

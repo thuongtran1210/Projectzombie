@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
   m_Name: "Unlock_W012_PhiTi\xEAuB\xE1tQu\xE1i"
   m_EditorClassIdentifier: 
+  id: Unlock_W012
   upgradeName: "M\u1EDF kh\xF3a: Phi Ti\xEAu B\xE1t Qu\xE1i"
   description: "Nh\u1EADn Ph\xE1p B\u1EA3o Phi Ti\xEAu B\xE1t Qu\xE1i v\xE0o trang
     b\u1ECB active."
