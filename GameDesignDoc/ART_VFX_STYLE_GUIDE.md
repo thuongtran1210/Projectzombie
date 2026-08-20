@@ -99,15 +99,15 @@ Dựa trên kho 72 nhân vật thực tế đã chuẩn hóa tại `Assets/Art/E
 
 ---
 
-### 2.3. Ẩn Sĩ Sơn Lâm (Vũ khí: Thiền Trượng / Gậy Sơn Lâm — Hệ Thổ)
-*   **Archetype tham khảo:** Kỳ nhân ẩn dật / Đạo nhân núi — dáng người khỏe khoắn chững chạc, tay cầm Thiền Trượng đồng / Gậy Sơn Lâm bọc đồng, áo vải thô phong trần dật. Tự thiền định chốn đại ngàn, hòa hợp làm một với sinh khí đất trời.
-*   **Tông màu chủ đạo:** Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ gụ (`#C0392B`) ở quấn tay và đai lưng.
-*   **Chi tiết Idle:** Tư thế idle hơi khom, thủ thế vững chãi, gậy nạm đồng cắm nhẹ xuống đất.
-*   **Signature Skill VFX — *"Thập Phương Chấn Thế" (Sơn Lâm Bộc Phát):*
-    *   *Mặt Đất:* Sprite vết nứt đá đất núi ngàn tỏa rộng (3.0m - 7.0m tùy lượng HP hy sinh).
-    *   *Sóng Xung Kích:* Luồng địa khí sơn lâm cuồn cuộn màu Nâu Đất / Vàng Đất bộc phát cực nhanh đẩy lùi quái.
+### 2.3. Ẩn Sĩ / Ẩn Tăng Ẩn Tu (Vũ khí / Pháp Bảo: Bình Bát & Tràng Hạt Thiền Định — Hệ Thổ)
+*   **Archetype tham khảo:** Thiền sư / Tăng sĩ ẩn tu khổ hạnh chốn rừng sâu núi thẳm — đầu cạo tròn trịa, mắt nhắm tĩnh tại nhập định, khoác áo cà sa màu vàng nghệ / cam đất hở vai truyền thống, tay phải nâng **Bình Bát** đồng/đá, tay trái lần **Chuỗi Tràng Hạt** gỗ bồ đề.
+*   **Tông màu chủ đạo:** Màu vàng nghệ / cam đất (`#E67E22` / `#D35400`) trên nền áo cà sa, kết hợp màu da ngăm nâu ấm và bình bát xám đen kim loại trầm (`#2C3E50`).
+*   **Chi tiết Idle:** Đứng tĩnh tại, mắt khép hờ tĩnh tâm, ngực hơi phập phồng theo hơi thở thiền, các hạt tràng hạt phát ra ánh sáng tâm linh vi tế.
+*   **Signature Skill VFX — *"Kim Cương Bát Nhã" / "Thập Phương Chấn Thế" (Thiền Định Hộ Thể & Địa Chấn):*
+    *   *Bình Bát & Tràng Hạt:* Bình bát phát sáng hào quang màu Vàng Đất / Nâu Đất (`#C9A876` / `#8A6A3E`) xoay tròn tỏa ra sóng sóng chân ngôn Phật tự/văn tự Phạn cổ.
+    *   *Mặt Đất:* Sprite vòng tròn thiền định (Mạn-đà-la / Vết nứt chấn động đất) bộc phát diện rộng đẩy lùi tà ma và tạo giáp hộ thân bền vững.
 *   **AI Concept Prompt Mẫu:**  
-    `2D top-down game concept art, muscular Vietnamese mountain hermit sage, wearing rough earthen brown (#8A6A3E) robes with crimson red waist sash, holding a heavy copper-headed wooden mountain staff, grounded martial stance, earth energy bursting around feet, mystical Vietnamese folk art style, isolated game asset`
+    `2D top-down game concept art, chibi Vietnamese buddhist hermit monk sage, bald head, peaceful closed eyes meditation expression, wearing vibrant saffron orange and earthen amber kasaya robe (#E67E22), holding a sacred black alms bowl in one hand and wooden prayer beads in the other, serene earthen spiritual aura, mystical Vietnamese folk art style, thick dark outline, 2-tone cell shading, isolated game asset`
 
 ### 2.4. Quy Chuẩn Khối Lượng Animation Tối Thiểu per Nhân Vật (Animation Budget)
 

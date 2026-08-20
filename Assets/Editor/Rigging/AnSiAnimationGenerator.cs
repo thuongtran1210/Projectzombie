@@ -34,29 +34,25 @@ namespace Projectzombie.Editor.Rigging
             settings.loopTime = true;
             AnimationUtility.SetAnimationClipSettings(clip, settings);
 
-            // Path 1: Hips (Thở nhún bụng/thân)
+            // Path 1: Hips (Thở nhún bụng/thân theo nhịp thiền định)
             clip.SetCurve("Bone_Root/Hips", typeof(Transform), "localPosition.y", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0.4f), (0.6f, 0.43f), (1.2f, 0.4f) }));
+                CreateSmoothCurve(new (float, float)[] { (0f, 0.4f), (0.6f, 0.42f), (1.2f, 0.4f) }));
 
-            // Path 2: Chest (Thở lồng ngực)
+            // Path 2: Chest (Thở phập phồng lồng ngực)
             clip.SetCurve("Bone_Root/Hips/Chest", typeof(Transform), "localPosition.y", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0.25f), (0.6f, 0.27f), (1.2f, 0.25f) }));
+                CreateSmoothCurve(new (float, float)[] { (0f, 0.2f), (0.6f, 0.22f), (1.2f, 0.2f) }));
 
-            // Path 3: Head (Gật nhẹ)
+            // Path 3: Head (Đầu tĩnh tại, gật nhẹ theo hơi thở)
             clip.SetCurve("Bone_Root/Hips/Chest/Head", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -1.8f), (1.2f, 0f) }));
+                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -1.2f), (1.2f, 0f) }));
 
-            // Path 4: Arm_R (Tay chống gậy dập dềnh nhẹ)
+            // Path 4: Arm_R (Tay phải nâng bình bát nhấp nhô nhẹ)
             clip.SetCurve("Bone_Root/Hips/Chest/Arm_R", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, 2.5f), (1.2f, 0f) }));
+                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, 2.0f), (1.2f, 0f) }));
 
-            // Path 5: Arm_L (Tay trái đung đưa)
+            // Path 5: Arm_L (Tay trái lần chuỗi tràng hạt đung đưa nhẹ)
             clip.SetCurve("Bone_Root/Hips/Chest/Arm_L", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -2.0f), (1.2f, 0f) }));
-
-            // Path 6: Gourd (Hồ lô lắc nhẹ)
-            clip.SetCurve("Bone_Root/Hips/Gourd", typeof(Transform), "localEulerAnglesRaw.z", 
-                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.3f, 3f), (0.9f, -3f), (1.2f, 0f) }));
+                CreateSmoothCurve(new (float, float)[] { (0f, 0f), (0.6f, -3.0f), (1.2f, 0f) }));
 
             SaveOrReplaceClip(clip, $"{AnimationDir}/Idle_Rig.anim");
         }

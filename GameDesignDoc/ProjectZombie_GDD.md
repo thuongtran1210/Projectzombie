@@ -131,10 +131,10 @@
     *   *Archetype:* Thầy Pháp / Bà Đồng hầu đồng Tứ Phủ — sắc phục rực rỡ, khăn chầu áo ngự, tay cầm Chuỗi Linh Phù Tứ Phủ / Quạt Loan Phượng.
     *   *Tông màu:* Phân theo Tứ Phủ: Thiên Phủ (Đỏ son `#B8442C` - Hỏa), Nhạc Phủ (Xanh mộc `#4C7A3D` - Mộc), Thoải Phủ (Trắng/Lam `#2E6E9E` - Thủy), Địa Phủ (Vàng đất `#8A6A3E` - Thổ).
     *   *Chi tiết Skill & Idle:* Dáng múa mồi / múa bóng 2–3 frame đặc trưng khi "Giá Đồng", dải lụa sắc màu cuộn quanh người ở trạng thái nhập vai vị Thánh.
-*   **Ẩn Sĩ Sơn Lâm (Hệ Thổ):**
-    *   *Archetype:* Đạo nhân núi / Kỳ nhân ẩn dật — dáng người chững chạc, cơ bắp cuồn cuộn khỏe khoắn, tay cầm Thiền Trượng / Gậy Sơn Lâm bọc đồng, áo vải thô phong trần dật. Tự thiền định chốn thâm sơn, hòa hợp làm một với sinh khí đất trời bản địa (không mang dáng vóc Phật giáo).
-    *   *Tông màu:* Nâu đất (`#8A6A3E`) chủ đạo, điểm nhấn đỏ gụ (`#C0392B`) ở quấn tay và đai lưng.
-    *   *Chi tiết Skill & Idle:* Dậm chân xuống mặt đất bộc phát địa khí cuồn cuộn làm nứt đất đá quanh chân.
+*   **Ẩn Sĩ / Ẩn Tăng Ẩn Tu (Hệ Thổ):**
+    *   *Archetype:* Thiền sư / Tăng sĩ ẩn tu khổ hạnh chốn rừng sâu núi thẳm — đầu cạo tròn trịa, mắt nhắm tĩnh tại nhập định, khoác áo cà sa màu vàng nghệ / cam đất hở vai truyền thống, tay phải nâng Bình Bát đồng/đá, tay trái lần Chuỗi Tràng Hạt bồ đề. Tu tập thiền định hòa hợp với thổ khí đất trời.
+    *   *Tông màu:* Vàng nghệ / Cam đất (`#E67E22` / `#D35400`) trên nền áo cà sa, kết hợp màu da ngăm nâu ấm và bình bát xám đen kim loại trầm (`#2C3E50`).
+    *   *Chi tiết Skill & Idle:* Đứng tĩnh tại, mắt khép hờ tĩnh tâm, ngực hơi phập phồng theo hơi thở thiền; khi bộc phát chiêu thức, bình bát và tràng hạt phát sáng xoay tròn tạo vòng tròn thiền định (Mạn-đà-la) cùng địa chấn đẩy lùi quái.
 
 #### 3.1.4. Quy Chuẩn Khối Lượng Animation & Tối Ưu Sản Xuất (Animation Budget & Base Rig)
 

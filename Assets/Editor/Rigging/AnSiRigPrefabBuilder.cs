@@ -41,35 +41,26 @@ namespace Projectzombie.Editor.Rigging
             GameObject boneRoot = new GameObject("Bone_Root");
             boneRoot.transform.SetParent(visual.transform, false);
 
-            // Hat (Nón lá đeo sau lưng - Sorting 92)
-            CreateBone(boneRoot.transform, "Hat", new Vector3(-0.05f, 0.35f, 0), spriteDir + "/char_hat.png", 92);
-
-            // Hips / Torso
+            // Hips / Torso (Áo Cà Sa - Sorting 100)
             GameObject hips = CreateBone(boneRoot.transform, "Hips", new Vector3(0, 0.4f, 0), spriteDir + "/char_torso.png", 100);
 
-            // Gourd (Hồ lô đeo bên hông phải - Sorting 104)
-            CreateBone(hips.transform, "Gourd", new Vector3(0.2f, -0.05f, 0), spriteDir + "/char_gourd.png", 104);
-
             // Chest
-            GameObject chest = CreateBone(hips.transform, "Chest", new Vector3(0, 0.25f, 0), null, 0);
+            GameObject chest = CreateBone(hips.transform, "Chest", new Vector3(0, 0.2f, 0), null, 0);
 
-            // Head
+            // Head (Đầu cạo trọc, mắt nhắm thiền định - Sorting 102)
             CreateBone(chest.transform, "Head", new Vector3(0, 0.15f, 0), spriteDir + "/char_head.png", 102);
 
-            // Left Arm (Single Part)
-            GameObject armL = CreateBone(chest.transform, "Arm_L", new Vector3(-0.25f, 0.05f, 0), spriteDir + "/char_arm_l.png", 95);
+            // Left Arm (Tay lần chuỗi tràng hạt - Sorting 104)
+            GameObject armL = CreateBone(chest.transform, "Arm_L", new Vector3(0.2f, -0.05f, 0), spriteDir + "/char_arm_l.png", 104);
 
-            // Right Arm (Single Part with WeaponSocket)
-            GameObject armR = CreateBone(chest.transform, "Arm_R", new Vector3(0.25f, 0.05f, 0), spriteDir + "/char_arm_r.png", 105);
+            // Right Arm (Tay nâng bình bát - Sorting 105)
+            GameObject armR = CreateBone(chest.transform, "Arm_R", new Vector3(-0.2f, -0.05f, 0), spriteDir + "/char_arm_r.png", 105);
 
-            // WeaponSocket with Staff Prop
-            GameObject weaponSocket = CreateBone(armR.transform, "WeaponSocket", new Vector3(0.1f, -0.2f, 0), spriteDir + "/char_prop_staff.png", 110);
+            // Left Leg (Single Part - Sorting 98)
+            CreateBone(hips.transform, "Leg_L", new Vector3(-0.1f, -0.2f, 0), spriteDir + "/char_leg_l.png", 98);
 
-            // Left Leg (Single Part)
-            CreateBone(hips.transform, "Leg_L", new Vector3(-0.12f, -0.1f, 0), spriteDir + "/char_leg_l.png", 98);
-
-            // Right Leg (Single Part)
-            CreateBone(hips.transform, "Leg_R", new Vector3(0.12f, -0.1f, 0), spriteDir + "/char_leg_r.png", 101);
+            // Right Leg (Single Part - Sorting 99)
+            CreateBone(hips.transform, "Leg_R", new Vector3(0.1f, -0.2f, 0), spriteDir + "/char_leg_r.png", 99);
 
             // Sockets
             GameObject firePoint = new GameObject("FirePoint");
