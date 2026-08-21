@@ -57,14 +57,13 @@ namespace ProjectZombie.Features.UI
             _isConstructed = true;
         }
 
-        private void Start()
+        private void Awake()
         {
             if (view == null)
             {
                 view = GetComponent<GameOverScreenView>();
             }
 
-            // Tạo hoặc lấy AudioSource có ignoreListenerPause để phát được khi Time.timeScale = 0
             _uiAudioSource = GetComponent<AudioSource>();
             if (_uiAudioSource == null)
             {
@@ -73,6 +72,12 @@ namespace ProjectZombie.Features.UI
             _uiAudioSource.playOnAwake = false;
             _uiAudioSource.ignoreListenerPause = true;
 
+            PlayerLogic.OnPlayerDeathSequenceCompleted -= HandleDeathSequenceCompleted;
+            PlayerLogic.OnPlayerDeathSequenceCompleted += HandleDeathSequenceCompleted;
+        }
+
+        private void Start()
+        {
             if (view != null)
             {
                 view.SetActive(false);
@@ -84,9 +89,6 @@ namespace ProjectZombie.Features.UI
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
-
-            // Lắng nghe sự kiện hoàn tất Death Sequence toàn cục
-            PlayerLogic.OnPlayerDeathSequenceCompleted += HandleDeathSequenceCompleted;
 
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (playerHealth != null)

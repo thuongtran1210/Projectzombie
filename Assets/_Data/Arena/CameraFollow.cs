@@ -15,6 +15,7 @@ namespace ProjectZombie.Features.Arena
 
         [Header("Camera Zoom Settings")]
         [SerializeField] private Camera targetCamera;
+        [SerializeField] private UnityEngine.U2D.PixelPerfectCamera _pixelPerfectCamera;
 
         private Vector3 _shakeOffset = Vector3.zero;
         private Coroutine _shakeCoroutine;
@@ -33,9 +34,13 @@ namespace ProjectZombie.Features.Arena
                 if (targetCamera == null) targetCamera = Camera.main;
             }
 
-            if (targetCamera != null && targetCamera.orthographic)
+            if (targetCamera != null)
             {
-                _defaultOrthoSize = targetCamera.orthographicSize;
+                if (targetCamera.orthographic)
+                {
+                    _defaultOrthoSize = targetCamera.orthographicSize;
+                }
+                _pixelPerfectCamera = targetCamera.GetComponent<UnityEngine.U2D.PixelPerfectCamera>();
             }
         }
 
@@ -71,10 +76,27 @@ namespace ProjectZombie.Features.Arena
 
         /// <summary>
         /// Kích hoạt hiệu ứng zoom cận cảnh mượt mà vào nhân vật (chạy trên unscaledDeltaTime).
+        /// Tự động tạm tắt PixelPerfectCamera để tránh bị override orthographicSize mỗi frame.
         /// </summary>
         public void ZoomTo(float targetOrthoSize, float duration)
         {
+            if (targetCamera == null)
+            {
+                targetCamera = GetComponent<Camera>() ?? Camera.main;
+            }
+
             if (targetCamera == null || !targetCamera.orthographic) return;
+
+            if (_pixelPerfectCamera == null && targetCamera != null)
+            {
+                _pixelPerfectCamera = targetCamera.GetComponent<UnityEngine.U2D.PixelPerfectCamera>();
+            }
+
+            // Vô hiệu hóa PixelPerfectCamera trong quá trình zoom
+            if (_pixelPerfectCamera != null)
+            {
+                _pixelPerfectCamera.enabled = false;
+            }
 
             if (_zoomCoroutine != null)
             {
@@ -88,6 +110,10 @@ namespace ProjectZombie.Features.Arena
         /// </summary>
         public void ResetZoom(float duration = 0.5f)
         {
+            if (_pixelPerfectCamera != null)
+            {
+                _pixelPerfectCamera.enabled = true;
+            }
             ZoomTo(_defaultOrthoSize, duration);
         }
 

@@ -42,16 +42,31 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
-            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
-            if (canvasGroup == null && panel != null) canvasGroup = panel.GetComponent<CanvasGroup>();
+            EnsureReferences();
 
-            if (panel != null) panel.SetActive(false);
+            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
+            if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+            // Ẩn tất cả visual ban đầu
+            SetAllChildrenActive(false);
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
+            }
 
             if (playAgainButton != null)
+            {
+                playAgainButton.onClick.RemoveAllListeners();
                 playAgainButton.onClick.AddListener(() => OnPlayAgainClicked?.Invoke());
+            }
             
             if (mainMenuButton != null)
+            {
+                mainMenuButton.onClick.RemoveAllListeners();
                 mainMenuButton.onClick.AddListener(() => OnMainMenuClicked?.Invoke());
+            }
 
             // Đảm bảo Animator hoạt động khi Time.timeScale = 0 (Game Over pause)
             Animator animator = GetComponent<Animator>();
@@ -61,14 +76,70 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private void EnsureReferences()
+        {
+            if (panel == null || panel == gameObject)
+            {
+                Transform bg = transform.Find("Background_Panel") ?? transform.Find("Panel");
+                if (bg != null) panel = bg.gameObject;
+            }
+
+            if (playAgainButton == null)
+            {
+                playAgainButton = transform.Find("PlayAgain_Button")?.GetComponent<Button>()
+                               ?? GetComponentInChildren<Button>(true);
+            }
+
+            if (mainMenuButton == null)
+            {
+                Transform mm = transform.Find("MainMenu_Button");
+                if (mm != null) mainMenuButton = mm.GetComponent<Button>();
+            }
+
+            if (titleText == null)
+            {
+                titleText = transform.Find("Title_Text")?.GetComponent<TMP_Text>()
+                         ?? transform.Find("Background_Panel/Title_Text")?.GetComponent<TMP_Text>();
+            }
+        }
+
+        private void SetAllChildrenActive(bool isActive)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(isActive);
+            }
+        }
+
         public void SetActive(bool isActive)
         {
-            if (panel != null) panel.SetActive(isActive);
+            EnsureReferences();
 
-            if (isActive && canvasGroup != null)
+            // Bật toàn bộ các thành phần con trong Hierarchy (Background_Panel, Buttons...)
+            SetAllChildrenActive(isActive);
+
+            if (panel != null && panel != gameObject)
             {
-                if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
-                _fadeCoroutine = StartCoroutine(FadeInCoroutine());
+                panel.SetActive(isActive);
+            }
+
+            if (playAgainButton != null) playAgainButton.gameObject.SetActive(isActive);
+            if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(isActive);
+
+            if (canvasGroup != null)
+            {
+                canvasGroup.interactable = isActive;
+                canvasGroup.blocksRaycasts = isActive;
+
+                if (isActive)
+                {
+                    if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
+                    _fadeCoroutine = StartCoroutine(FadeInCoroutine());
+                }
+                else
+                {
+                    canvasGroup.alpha = 0f;
+                }
             }
         }
 

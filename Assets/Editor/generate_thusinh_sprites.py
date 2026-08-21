@@ -68,7 +68,60 @@ def generate_perfect_6frame_thusinh():
     attack_strip.paste(f3, (384, 0), f3)
     attack_strip.save('Assets/Art/ThuSinh/ThuSinh-Attack.png')
     
-    print("Exported 6-frame Run strip (768x128), 4-frame Idle strip (512x128), and 4-frame Attack strip (512x128)!")
+    # 4. DEAD (6 frames) - 768x128 (Stagger, Collapse, Flat, Soul Rising & Ascending)
+    dead_strip = Image.new('RGBA', (768, 128), (0, 0, 0, 0))
+    ghost_img = char_resized.copy()
+    r, g, b, a = ghost_img.split()
+    ghost_r = r.point(lambda p: int(p * 0.4))
+    ghost_g = g.point(lambda p: int(min(255, p * 1.3 + 50)))
+    ghost_b = b.point(lambda p: int(min(255, p * 1.5 + 80)))
+    ghost_a = a.point(lambda p: int(p * 0.75))
+    ghost_tinted = Image.merge('RGBA', (ghost_r, ghost_g, ghost_b, ghost_a))
+
+    # Frame 0: Stagger back (-12 deg)
+    f0 = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
+    c0 = char_resized.rotate(-12, resample=Image.Resampling.BICUBIC, expand=True)
+    f0.paste(c0, ((128 - c0.width) // 2 - 8, 128 - c0.height - 18), c0)
+    dead_strip.paste(f0, (0, 0), f0)
+
+    # Frame 1: Falling down (-45 deg)
+    f1 = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
+    c1 = char_resized.rotate(-45, resample=Image.Resampling.BICUBIC, expand=True)
+    f1.paste(c1, ((128 - c1.width) // 2 - 14, 128 - c1.height - 10), c1)
+    dead_strip.paste(f1, (128, 0), f1)
+
+    # Frame 2: Hitting ground (-80 deg)
+    f2 = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
+    c2 = char_resized.rotate(-80, resample=Image.Resampling.BICUBIC, expand=True)
+    f2.paste(c2, ((128 - c2.width) // 2 - 8, 128 - c2.height - 4), c2)
+    dead_strip.paste(f2, (256, 0), f2)
+
+    # Frame 3: Flat on ground (-90 deg)
+    f3 = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
+    c3 = char_resized.rotate(-90, resample=Image.Resampling.BICUBIC, expand=True)
+    f3.paste(c3, ((128 - c3.width) // 2, 128 - c3.height - 4), c3)
+    dead_strip.paste(f3, (384, 0), f3)
+
+    # Frame 4: Flat body + Ghost rising
+    f4 = f3.copy()
+    f4.paste(ghost_tinted, ((128 - ghost_tinted.width) // 2, 128 - ghost_tinted.height - 36), ghost_tinted)
+    dead_strip.paste(f4, (512, 0), f4)
+
+    # Frame 5: Fading body + Ghost ascending high
+    f5 = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
+    body_dim = c3.copy()
+    br, bg, bb, ba = body_dim.split()
+    body_dim = Image.merge('RGBA', (br, bg, bb, ba.point(lambda p: int(p * 0.6))))
+    f5.paste(body_dim, ((128 - body_dim.width) // 2, 128 - body_dim.height - 4), body_dim)
+
+    ghost_high = ghost_tinted.resize((int(ghost_tinted.width * 1.05), int(ghost_tinted.height * 1.05)), Image.Resampling.BILINEAR)
+    gr, gg, gb, ga = ghost_high.split()
+    ghost_high = Image.merge('RGBA', (gr, gg, gb, ga.point(lambda p: int(p * 0.9))))
+    f5.paste(ghost_high, ((128 - ghost_high.width) // 2, 128 - ghost_high.height - 62), ghost_high)
+    dead_strip.paste(f5, (640, 0), f5)
+    dead_strip.save('Assets/Art/ThuSinh/ThuSinh-Dead.png')
+
+    print("Exported 6-frame Run strip (768x128), 4-frame Idle strip (512x128), 4-frame Attack strip (512x128), and 6-frame Dead strip (768x128)!")
 
 if __name__ == '__main__':
     generate_perfect_6frame_thusinh()
