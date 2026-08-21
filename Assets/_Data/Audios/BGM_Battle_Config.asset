@@ -20,7 +20,7 @@ MonoBehaviour:
   _directClip: {fileID: 8300000, guid: f621b1b47acf26842bfb6f19cd0d8358, type: 3}
   _category: 1
   _mixerGroup: {fileID: -2351295275342517940, guid: 5a580a7f7139ae04fb23e43538d0dd67, type: 2}
-  _volume: 0.4
+  _volume: 0.1
   _pitchRange: {x: 1, y: 1}
   _cooldownTime: 0
   _maxConcurrentVoices: 3

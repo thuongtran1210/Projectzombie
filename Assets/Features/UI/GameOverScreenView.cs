@@ -34,8 +34,17 @@ namespace ProjectZombie.Features.UI
         public event Action OnPlayAgainClicked;
         public event Action OnMainMenuClicked;
 
+        [Header("Transition")]
+        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private float fadeInDuration = 0.5f;
+
+        private Coroutine _fadeCoroutine;
+
         private void Awake()
         {
+            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
+            if (canvasGroup == null && panel != null) canvasGroup = panel.GetComponent<CanvasGroup>();
+
             if (panel != null) panel.SetActive(false);
 
             if (playAgainButton != null)
@@ -55,6 +64,26 @@ namespace ProjectZombie.Features.UI
         public void SetActive(bool isActive)
         {
             if (panel != null) panel.SetActive(isActive);
+
+            if (isActive && canvasGroup != null)
+            {
+                if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
+                _fadeCoroutine = StartCoroutine(FadeInCoroutine());
+            }
+        }
+
+        private System.Collections.IEnumerator FadeInCoroutine()
+        {
+            canvasGroup.alpha = 0f;
+            float elapsed = 0f;
+            while (elapsed < fadeInDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                canvasGroup.alpha = Mathf.Clamp01(elapsed / fadeInDuration);
+                yield return null;
+            }
+            canvasGroup.alpha = 1f;
+            _fadeCoroutine = null;
         }
 
         public void SetTitle(string text, Color color)

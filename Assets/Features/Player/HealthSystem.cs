@@ -12,6 +12,14 @@ namespace ProjectZombie.Features.Shared
         [Header("Settings")]
         [Tooltip("Giá trị này sẽ bị ghi đè nếu Object có gắn PlayerStats hoặc EnemyAI (sử dụng cấu hình từ ScriptableObject)")]
         [SerializeField] private float maxHealth = 100f;
+        [Tooltip("Tự động disable GameObject khi chết. Tắt đi nếu entity có chuỗi xử lý hoạt ảnh chết tùy biến.")]
+        [SerializeField] private bool disableGameObjectOnDeath = true;
+
+        public bool DisableGameObjectOnDeath
+        {
+            get => disableGameObjectOnDeath;
+            set => disableGameObjectOnDeath = value;
+        }
 
         private float _currentHealth;
 
@@ -128,8 +136,12 @@ namespace ProjectZombie.Features.Shared
             }
 
             OnDied?.Invoke();
-            // Tạm thời disable object, có thể gọi Object Pooling sau
-            gameObject.SetActive(false);
+            
+            if (disableGameObjectOnDeath)
+            {
+                // Tạm thời disable object, có thể gọi Object Pooling sau
+                gameObject.SetActive(false);
+            }
         }
     }
 }

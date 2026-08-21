@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI
 {
@@ -24,13 +25,21 @@ namespace ProjectZombie.Features.UI
         [Header("Animation Settings")]
         [SerializeField] private bool animateCurrencyCount = true;
 
+        [Header("Audio Settings")]
+        [Tooltip("Âm thanh báo hiệu kết thúc trận")]
+        [SerializeField] private AudioClip gameOverStingerClip;
+        [Tooltip("Âm thanh nhảy số Cổ Tiền")]
+        [SerializeField] private AudioClip coinTickClip;
+
         [Header("Player Model Reference")]
         [SerializeField] private HealthSystem playerHealth;
 
         private int _currencyEarned;
         private float _currencyDisplayTimer;
+        private int _lastPlayedCoinTick = -1;
         private bool _animatingCurrency;
         private bool _lastIsVictory;
+        private AudioSource _uiAudioSource;
 
         private bool _isConstructed = false;
 
@@ -55,6 +64,15 @@ namespace ProjectZombie.Features.UI
                 view = GetComponent<GameOverScreenView>();
             }
 
+            // Tạo hoặc lấy AudioSource có ignoreListenerPause để phát được khi Time.timeScale = 0
+            _uiAudioSource = GetComponent<AudioSource>();
+            if (_uiAudioSource == null)
+            {
+                _uiAudioSource = gameObject.AddComponent<AudioSource>();
+            }
+            _uiAudioSource.playOnAwake = false;
+            _uiAudioSource.ignoreListenerPause = true;
+
             if (view != null)
             {
                 view.SetActive(false);
@@ -66,6 +84,9 @@ namespace ProjectZombie.Features.UI
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
+
+            // Lắng nghe sự kiện hoàn tất Death Sequence toàn cục
+            PlayerLogic.OnPlayerDeathSequenceCompleted += HandleDeathSequenceCompleted;
 
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (playerHealth != null)
@@ -87,6 +108,8 @@ namespace ProjectZombie.Features.UI
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
             }
 
+            PlayerLogic.OnPlayerDeathSequenceCompleted -= HandleDeathSequenceCompleted;
+
             UnsubscribeEvents();
         }
 
@@ -107,6 +130,18 @@ namespace ProjectZombie.Features.UI
         }
 
         private void HandlePlayerDied()
+        {
+            // Nếu Player có PlayerLogic điều phối Death Sequence thì chờ sự kiện OnPlayerDeathSequenceCompleted
+            if (playerHealth != null && playerHealth.GetComponent<PlayerLogic>() != null)
+            {
+                return;
+            }
+
+            // Fallback khi không có PlayerLogic trong entity
+            Show(isVictory: false);
+        }
+
+        private void HandleDeathSequenceCompleted()
         {
             Show(isVictory: false);
         }
@@ -140,6 +175,14 @@ namespace ProjectZombie.Features.UI
             int displayed = Mathf.Min(Mathf.FloorToInt(_currencyDisplayTimer), _currencyEarned);
             
             view.SetCurrency($"+{displayed} 🪙");
+
+            // Phát âm thanh cheng cheng mỗi khi số coin tăng lên
+            if (displayed != _lastPlayedCoinTick && coinTickClip != null && _uiAudioSource != null)
+            {
+                _lastPlayedCoinTick = displayed;
+                _uiAudioSource.pitch = Random.Range(0.95f, 1.05f);
+                _uiAudioSource.PlayOneShot(coinTickClip, 0.7f);
+            }
 
             if (displayed >= _currencyEarned)
             {
@@ -181,6 +224,13 @@ namespace ProjectZombie.Features.UI
         private void PopulateStats(bool isVictory)
         {
             if (view == null) return;
+
+            // Phát âm thanh Stinger kết thúc trận
+            if (gameOverStingerClip != null && _uiAudioSource != null)
+            {
+                _uiAudioSource.pitch = 1.0f;
+                _uiAudioSource.PlayOneShot(gameOverStingerClip, 0.85f);
+            }
 
             // Thiết lập tiêu đề
             string titleText = isVictory ? "CHIẾN THẮNG!" : "ĐÃ NGÃ XUỐNG";
