@@ -2,15 +2,15 @@ using UnityEngine;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.HUD;
 using ProjectZombie.Features.UI.StatsAndSkills;
-using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Arena;
 
 namespace ProjectZombie.Features.Player
 {
     /// <summary>
-    /// Chịu trách nhiệm khởi tạo gameplay scene.
-    /// Sinh ra (spawn) nhân vật dựa trên CharacterSelectionData hoặc fallback và inject các dependencies.
+    /// Chịu trách nhiệm điều phối khởi tạo gameplay scene (Composition Root).
+    /// Tuân thủ Single Responsibility: Chỉ điều phối luồng vòng đời, các nhiệm vụ chi tiết
+    /// được ủy thác cho PlayerContext, GameplayUIBinder, PlayerProvider, GameStateManager.
     /// </summary>
     public class GameplayBootstrapper : MonoBehaviour
     {
@@ -39,33 +39,28 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private CharacterGaugeWidgetPresenter characterGaugeWidgetPresenter;
 
         private GameObject _activePlayerInstance;
+        private GameplayUIBinder _uiBinder;
+
+        private void Awake()
+        {
+            _uiBinder = new GameplayUIBinder(
+                runHUDPresenter,
+                playerInfoUIPresenter,
+                upgradeUIPresenter,
+                gameOverScreenPresenter,
+                characterGaugeWidgetPresenter
+            );
+        }
 
         private void Start()
         {
-            // Kiểm tra nếu có CharacterSelectionUI trong scene hoặc prefab
-            var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
-            if (existingUI != null)
+            // 1. Kiểm tra nếu có CharacterSelectionUI sẵn trong Scene hoặc Prefab để điều hướng
+            if (TryInitializeCharacterSelectionUI())
             {
-                existingUI.gameObject.SetActive(true);
-                existingUI.OnCharacterSelected -= HandleCharacterSelected;
-                existingUI.OnCharacterSelected += HandleCharacterSelected;
-                Debug.Log("[GameplayBootstrapper] Đã đăng ký lắng nghe sự kiện OnCharacterSelected từ CharacterSelectionPresenter có sẵn trong scene.");
                 return;
             }
 
-            if (characterSelectionUIPrefab != null)
-            {
-                GameObject uiObj = Instantiate(characterSelectionUIPrefab);
-                var presenter = uiObj.GetComponent<CharacterSelectionPresenter>();
-                if (presenter != null)
-                {
-                    presenter.OnCharacterSelected += HandleCharacterSelected;
-                    Debug.Log("[GameplayBootstrapper] Đã spawn CharacterSelectionUI Prefab và đăng ký sự kiện.");
-                    return;
-                }
-            }
-
-            // Nếu không có UI Chọn Tướng, tự động spawn theo cấu hình sẵn có
+            // 2. Nếu không có UI Chọn Tướng, tự động spawn theo cấu hình mặc định
             InitializeLevel(null);
         }
 
@@ -84,63 +79,90 @@ namespace ProjectZombie.Features.Player
             SpawnPlayerFromSelection(selectedPrefab);
         }
 
+        private bool TryInitializeCharacterSelectionUI()
+        {
+            var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
+            if (existingUI != null)
+            {
+                existingUI.gameObject.SetActive(true);
+                existingUI.OnCharacterSelected -= HandleCharacterSelected;
+                existingUI.OnCharacterSelected += HandleCharacterSelected;
+                Debug.Log("[GameplayBootstrapper] Đã đăng ký lắng nghe sự kiện OnCharacterSelected từ CharacterSelectionPresenter có sẵn trong scene.");
+                return true;
+            }
+
+            if (characterSelectionUIPrefab != null)
+            {
+                GameObject uiObj = Instantiate(characterSelectionUIPrefab);
+                var presenter = uiObj.GetComponent<CharacterSelectionPresenter>();
+                if (presenter != null)
+                {
+                    presenter.OnCharacterSelected += HandleCharacterSelected;
+                    Debug.Log("[GameplayBootstrapper] Đã spawn CharacterSelectionUI Prefab và đăng ký sự kiện.");
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void InitializeLevel(GameObject overridePrefab)
         {
-            // 1. Xác định prefab của Player cần spawn
-            GameObject playerPrefab = overridePrefab != null ? overridePrefab : defaultPlayerPrefab;
-            if (playerPrefab == null && characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
-            {
-                playerPrefab = characterSelectionData.SelectedPlayerPrefab;
-            }
-
-            if (playerPrefab == null)
-            {
-                #if UNITY_EDITOR
-                playerPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thu Sinh.prefab");
-                #endif
-            }
-
+            // 1. Resolve Prefab hợp lệ
+            GameObject playerPrefab = ResolvePlayerPrefab(overridePrefab);
             if (playerPrefab == null)
             {
                 Debug.LogError("[GameplayBootstrapper] Player Prefab chưa được gán! Không thể khởi tạo gameplay.");
                 return;
             }
 
-            // Hủy player cũ nếu đã tồn tại
+            // 2. Spawn Thực thể Player
+            SpawnPlayer(playerPrefab);
+
+            // 3. Đóng gói Model qua PlayerContext & Đăng ký PlayerProvider
+            PlayerContext context = PlayerContext.Create(_activePlayerInstance);
+            PlayerProvider.RegisterPlayer(_activePlayerInstance);
+
+            // 4. Kết nối Camera Target
+            SetupCameraFollow(context.Transform);
+
+            // 5. Inject Dependencies vào toàn bộ UI Presenters thông qua GameplayUIBinder
+            _uiBinder.BindAll(context);
+
+            // 6. Bắt đầu Vòng lặp trận đấu (Match Flow)
+            StartMatchFlow();
+        }
+
+        private GameObject ResolvePlayerPrefab(GameObject overridePrefab)
+        {
+            if (overridePrefab != null) return overridePrefab;
+            if (characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
+            {
+                return characterSelectionData.SelectedPlayerPrefab;
+            }
+            return defaultPlayerPrefab;
+        }
+
+        private void SpawnPlayer(GameObject playerPrefab)
+        {
             if (_activePlayerInstance != null)
             {
                 Destroy(_activePlayerInstance);
             }
 
-            // 2. Spawn Player
             Vector3 position = spawnPoint != null ? spawnPoint.position : Vector3.zero;
             position.z = 0f;
             Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
+
             _activePlayerInstance = Instantiate(playerPrefab, position, rotation);
             _activePlayerInstance.name = playerPrefab.name;
             _activePlayerInstance.SetActive(true);
-            GameObject playerInstance = _activePlayerInstance;
-            
-            // Đăng ký Player vào PlayerProvider tập trung (Event-Driven)
-            PlayerProvider.RegisterPlayer(_activePlayerInstance);
-            
-            Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật thành công: {playerInstance.name} tại {position}");
 
-            // 3. Thu thập các components (Models) từ Player Instance
-            PlayerStats stats = playerInstance.GetComponent<PlayerStats>();
-            HealthSystem health = playerInstance.GetComponent<HealthSystem>();
-            PlayerExperience experience = playerInstance.GetComponent<PlayerExperience>();
-            WeaponManager weaponManager = playerInstance.GetComponent<WeaponManager>();
-            PlayerPassives passives = playerInstance.GetComponent<PlayerPassives>();
-            var gaugeProvider = playerInstance.GetComponent<ProjectZombie.Features.Player.Mechanics.ICharacterGaugeProvider>();
+            Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
+        }
 
-            // Cảnh báo nếu thiếu component quan trọng
-            if (stats == null) Debug.LogWarning("[GameplayBootstrapper] Player instance thiếu PlayerStats!");
-            if (health == null) Debug.LogWarning("[GameplayBootstrapper] Player instance thiếu HealthSystem!");
-            if (experience == null) Debug.LogWarning("[GameplayBootstrapper] Player instance thiếu PlayerExperience!");
-            if (weaponManager == null) Debug.LogWarning("[GameplayBootstrapper] Player instance thiếu WeaponManager!");
-
-            // 3.5. Thiết lập camera đi theo nhân vật mới sinh ra
+        private void SetupCameraFollow(Transform target)
+        {
             if (cameraFollow == null)
             {
                 cameraFollow = FindObjectOfType<CameraFollow>();
@@ -148,61 +170,17 @@ namespace ProjectZombie.Features.Player
 
             if (cameraFollow != null)
             {
-                cameraFollow.SetTarget(playerInstance.transform);
+                cameraFollow.SetTarget(target);
                 Debug.Log("[GameplayBootstrapper] Đã thiết lập target cho CameraFollow.");
             }
             else
             {
                 Debug.LogWarning("[GameplayBootstrapper] Không tìm thấy CameraFollow trong scene để đi theo Player.");
             }
+        }
 
-            // 4. Inject các Models vào các UI Presenters qua phương thức Construct
-            if (runHUDPresenter != null)
-            {
-                runHUDPresenter.Construct(health, stats, experience, weaponManager, passives);
-                Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào RunHUDPresenter.");
-            }
-
-            if (playerInfoUIPresenter != null)
-            {
-                playerInfoUIPresenter.Construct(stats, health, experience, weaponManager);
-                Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào PlayerInfoUIPresenter.");
-            }
-
-            if (upgradeUIPresenter != null)
-            {
-                upgradeUIPresenter.Construct(experience, weaponManager);
-                Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào UpgradeUIPresenter.");
-            }
-
-            if (gameOverScreenPresenter != null)
-            {
-                gameOverScreenPresenter.Construct(health);
-                Debug.Log("[GameplayBootstrapper] Đã inject dependencies vào GameOverScreenPresenter.");
-            }
-
-            // 5. Tự động Bind Character Gauge nếu nhân vật có thanh cơ chế (OCP)
-            if (characterGaugeWidgetPresenter == null)
-            {
-                characterGaugeWidgetPresenter = FindObjectOfType<CharacterGaugeWidgetPresenter>(true);
-            }
-
-            if (characterGaugeWidgetPresenter != null)
-            {
-                characterGaugeWidgetPresenter.Bind(gaugeProvider);
-                Debug.Log($"[GameplayBootstrapper] CharacterGaugeWidgetPresenter đã Bind provider: {(gaugeProvider != null ? gaugeProvider.GetType().Name : "None")}");
-            }
-
-            // 6. Bind Signature Skill Presenter với nhân vật mới spawn
-            var skillManager = playerInstance.GetComponent<ProjectZombie.Features.Player.Skills.SignatureSkillManager>();
-            var signatureSkillPresenter = FindObjectOfType<ProjectZombie.Features.UI.SignatureSkillPresenter>(true);
-            if (signatureSkillPresenter != null)
-            {
-                signatureSkillPresenter.Bind(skillManager);
-                Debug.Log($"[GameplayBootstrapper] SignatureSkillPresenter đã Bind SignatureSkillManager.");
-            }
-
-            // 7. Bắt đầu đếm thời gian trận đấu và khởi chạy Spawner
+        private void StartMatchFlow()
+        {
             if (RunStatsTracker.Instance != null)
             {
                 RunStatsTracker.Instance.StartTracking();
