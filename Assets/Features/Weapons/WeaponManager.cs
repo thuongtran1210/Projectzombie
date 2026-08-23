@@ -29,6 +29,20 @@ namespace ProjectZombie.Features.Weapons
         public IReadOnlyList<WeaponBase> ActiveWeapons => _activeWeapons;
         public bool IsFull() => _activeWeapons.Count >= MAX_WEAPONS;
 
+        /// <summary>
+        /// Vũ khí chính dùng để đánh chủ động qua nút Tấn Công.
+        /// Mặc định là vũ khí đầu tiên trong danh sách hoặc vũ khí có cờ isPrimaryActiveWeapon = true.
+        /// </summary>
+        public WeaponBase PrimaryWeapon
+        {
+            get
+            {
+                if (_activeWeapons.Count == 0) return null;
+                var found = _activeWeapons.Find(w => w.isPrimaryActiveWeapon);
+                return found != null ? found : _activeWeapons[0];
+            }
+        }
+
         public event System.Action OnWeaponsChanged;
 
         private void Awake()
@@ -53,6 +67,12 @@ namespace ProjectZombie.Features.Weapons
                 {
                     AddWeapon(w);
                 }
+            }
+
+            // Nếu có ít nhất 1 vũ khí và chưa có vũ khí nào được đánh dấu là primary, đặt vũ khí đầu tiên làm primary
+            if (_activeWeapons.Count > 0 && !_activeWeapons.Exists(w => w.isPrimaryActiveWeapon))
+            {
+                _activeWeapons[0].isPrimaryActiveWeapon = true;
             }
         }
 
@@ -85,6 +105,13 @@ namespace ProjectZombie.Features.Weapons
             {
                 weapon.Initialize(_playerStats);
                 _activeWeapons.Add(weapon);
+
+                // Nếu đây là vũ khí đầu tiên, mặc định gán làm vũ khí chính
+                if (_activeWeapons.Count == 1)
+                {
+                    weapon.isPrimaryActiveWeapon = true;
+                }
+
                 OnWeaponsChanged?.Invoke();
             }
         }
@@ -105,13 +132,33 @@ namespace ProjectZombie.Features.Weapons
             {
                 _activeWeapons.Remove(weapon);
                 Destroy(weapon.gameObject);
+
+                // Nếu vừa xóa vũ khí chính, chuyển vũ khí tiếp theo làm chính
+                if (_activeWeapons.Count > 0 && !_activeWeapons.Exists(w => w.isPrimaryActiveWeapon))
+                {
+                    _activeWeapons[0].isPrimaryActiveWeapon = true;
+                }
+
                 NotifyWeaponsChanged();
             }
         }
 
+        /// <summary>
+        /// Kích hoạt đòn tấn công chủ động của Vũ Khí Chính khi người chơi nhấn Nút Đánh.
+        /// </summary>
+        public bool TriggerPrimaryAttack()
+        {
+            WeaponBase primary = PrimaryWeapon;
+            if (primary != null)
+            {
+                return primary.TriggerActiveAttack();
+            }
+            return false;
+        }
+
         private void Update()
         {
-            // Cho phép tất cả vũ khí hoạt động
+            // Cho phép tất cả vũ khí hoạt động (Vũ khí chủ động sẽ tự bỏ qua trong Tick)
             foreach (var weapon in _activeWeapons)
             {
                 weapon.Tick();

@@ -8,8 +8,10 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Passive View chọn nhân vật (Thư Sinh, Thanh Đồng, Ẩn Sĩ Sơn Lâm) tuân thủ mô hình MVP.
     /// </summary>
-    public class CharacterSelectionView : MonoBehaviour
+    public class CharacterSelectionView : BaseMetaScreenView
     {
+        public override MetaScreenType ScreenType => MetaScreenType.CharacterSelect;
+
         [SerializeField] private TextMeshProUGUI _characterNameText;
         [SerializeField] private TextMeshProUGUI _elementText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -19,18 +21,25 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Button _selectButton;
         [SerializeField] private Button _nextButton;
         [SerializeField] private Button _prevButton;
+        [SerializeField] private Button _backButton;
 
         public event Action OnSelectClicked;
         public event Action OnNextClicked;
         public event Action OnPrevClicked;
+        public event Action OnBackClicked;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             AutoWireComponentsIfMissing();
 
             if (_selectButton != null) _selectButton.onClick.AddListener(() => OnSelectClicked?.Invoke());
             if (_nextButton != null) _nextButton.onClick.AddListener(() => OnNextClicked?.Invoke());
             if (_prevButton != null) _prevButton.onClick.AddListener(() => OnPrevClicked?.Invoke());
+            if (_backButton != null) _backButton.onClick.AddListener(() => {
+                OnBackClicked?.Invoke();
+                OnBackPressed();
+            });
         }
 
         private void AutoWireComponentsIfMissing()

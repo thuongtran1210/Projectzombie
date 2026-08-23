@@ -20,6 +20,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private GameOverScreenPresenter _gameOverScreenPresenter;
         [SerializeField] private CharacterGaugeWidgetPresenter _characterGaugeWidgetPresenter;
         [SerializeField] private SignatureSkillPresenter _signatureSkillPresenter;
+        [SerializeField] private AttackButtonPresenter _attackButtonPresenter;
 
         public GameplayUIBinder(
             RunHUDPresenter runHUD,
@@ -49,6 +50,7 @@ namespace ProjectZombie.Features.Player
             BindGameOverScreen(context);
             BindCharacterGauge(context);
             BindSignatureSkill(context);
+            BindAttackButton(context);
         }
 
         private void BindRunHUD(PlayerContext context)
@@ -121,6 +123,20 @@ namespace ProjectZombie.Features.Player
             {
                 _signatureSkillPresenter.Bind(context.SignatureSkillManager);
                 Debug.Log("[GameplayUIBinder] SignatureSkillPresenter đã Bind SignatureSkillManager.");
+            }
+        }
+
+        private void BindAttackButton(PlayerContext context)
+        {
+            if (_attackButtonPresenter == null)
+            {
+                _attackButtonPresenter = UnityEngine.Object.FindObjectOfType<AttackButtonPresenter>(true);
+            }
+
+            if (_attackButtonPresenter != null)
+            {
+                _attackButtonPresenter.Bind(context.WeaponManager);
+                Debug.Log("[GameplayUIBinder] AttackButtonPresenter đã Bind WeaponManager.");
             }
         }
     }

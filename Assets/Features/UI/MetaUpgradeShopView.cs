@@ -8,8 +8,10 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Passive View giao diện Cây Nâng Cấp Vĩnh Viễn tiêu Cổ Tiền (Meta Upgrade Shop).
     /// </summary>
-    public class MetaUpgradeShopView : MonoBehaviour
+    public class MetaUpgradeShopView : BaseMetaScreenView
     {
+        public override MetaScreenType ScreenType => MetaScreenType.SanctuaryTree;
+
         [SerializeField] private TextMeshProUGUI _coTienBalanceText;
         [SerializeField] private TextMeshProUGUI _upgradeTitleText;
         [SerializeField] private TextMeshProUGUI _upgradeCostText;
@@ -20,10 +22,14 @@ namespace ProjectZombie.Features.UI
         public event Action OnBuyUpgradeClicked;
         public event Action OnCloseClicked;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_buyUpgradeButton != null) _buyUpgradeButton.onClick.AddListener(() => OnBuyUpgradeClicked?.Invoke());
-            if (_closeButton != null) _closeButton.onClick.AddListener(() => OnCloseClicked?.Invoke());
+            if (_closeButton != null) _closeButton.onClick.AddListener(() => {
+                OnCloseClicked?.Invoke();
+                OnBackPressed();
+            });
         }
 
         public void SetCoTienBalance(string formattedBalance)

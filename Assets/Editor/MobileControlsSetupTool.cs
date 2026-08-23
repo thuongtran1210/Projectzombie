@@ -147,6 +147,19 @@ namespace ProjectZombie.Editor.Tools
                 wiredCount++;
             }
 
+            // 6. Chuẩn hóa & Wire AttackButtonView & AttackButtonPresenter
+            AttackButtonView attackView = mobilePanel.GetComponentInChildren<AttackButtonView>(true);
+            Transform attackTransform = attackView != null ? attackView.transform : FindChildRecursive(mobilePanel.transform, "Attack");
+            if (attackTransform != null)
+            {
+                if (attackView == null) attackView = attackTransform.gameObject.AddComponent<AttackButtonView>();
+                var attackPresenter = attackTransform.GetComponent<AttackButtonPresenter>();
+                if (attackPresenter == null) attackPresenter = attackTransform.gameObject.AddComponent<AttackButtonPresenter>();
+
+                WireAttackButton(attackView, attackPresenter);
+                wiredCount++;
+            }
+
             EditorUtility.SetDirty(mobilePanel);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mobilePanel.scene);
 
@@ -289,6 +302,60 @@ namespace ProjectZombie.Editor.Tools
             Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire DashButton: {view.name}");
         }
 
+        private static void WireAttackButton(AttackButtonView view, AttackButtonPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_attackButton").objectReferenceValue = btn;
+
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            Image fillImage = null;
+            Image iconImage = null;
+
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                }
+                else if (img.name.ToLower().Contains("icon") || img.name.ToLower().Contains("weapon") || img.name.ToLower().Contains("art"))
+                {
+                    iconImage = img;
+                }
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            if (iconImage != null)
+            {
+                soView.FindProperty("_iconImage").objectReferenceValue = iconImage;
+            }
+
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_view").objectReferenceValue = view;
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire AttackButton: {view.name}");
+        }
+
         private static void CreateDefaultMobileControlsHierarchy()
         {
             Canvas canvas = FindObjectOfType<Canvas>();
@@ -333,15 +400,45 @@ namespace ProjectZombie.Editor.Tools
             Sprite joyKnobSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
             if (joyKnobSprite != null) handleImg.sprite = joyKnobSprite;
 
-            // 2. Skill Button
+            // 2. Attack Button (Nút Đánh Chính - Kích thước lớn nhất)
+            GameObject attackObj = new GameObject("Btn_Attack", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(AttackButtonView), typeof(AttackButtonPresenter));
+            attackObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform attackRect = attackObj.GetComponent<RectTransform>();
+            attackRect.anchorMin = new Vector2(1f, 0f);
+            attackRect.anchorMax = new Vector2(1f, 0f);
+            attackRect.pivot = new Vector2(0.5f, 0.5f);
+            attackRect.anchoredPosition = new Vector2(-150, 150);
+            attackRect.sizeDelta = new Vector2(140, 140);
+            Image attackBg = attackObj.GetComponent<Image>();
+            attackBg.color = new Color(0.85f, 0.25f, 0.2f, 0.95f);
+
+            GameObject attackIconObj = new GameObject("Icon_Weapon", typeof(RectTransform), typeof(Image));
+            attackIconObj.transform.SetParent(attackObj.transform, false);
+            RectTransform attackIconRect = attackIconObj.GetComponent<RectTransform>();
+            attackIconRect.anchorMin = new Vector2(0.15f, 0.15f);
+            attackIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+            attackIconRect.sizeDelta = Vector2.zero;
+
+            GameObject attackFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            attackFillObj.transform.SetParent(attackObj.transform, false);
+            RectTransform attackFillRect = attackFillObj.GetComponent<RectTransform>();
+            attackFillRect.anchorMin = Vector2.zero;
+            attackFillRect.anchorMax = Vector2.one;
+            attackFillRect.sizeDelta = Vector2.zero;
+            Image attackFillImg = attackFillObj.GetComponent<Image>();
+            attackFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            attackFillImg.type = Image.Type.Filled;
+            attackFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            // 3. Skill Button (Nút Tuyệt Kỹ)
             GameObject skillObj = new GameObject("Btn_SignatureSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(SignatureSkillButtonView), typeof(SignatureSkillPresenter));
             skillObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform skillRect = skillObj.GetComponent<RectTransform>();
             skillRect.anchorMin = new Vector2(1f, 0f);
             skillRect.anchorMax = new Vector2(1f, 0f);
             skillRect.pivot = new Vector2(0.5f, 0.5f);
-            skillRect.anchoredPosition = new Vector2(-150, 150);
-            skillRect.sizeDelta = new Vector2(130, 130);
+            skillRect.anchoredPosition = new Vector2(-150, 310);
+            skillRect.sizeDelta = new Vector2(100, 100);
             Image skillBg = skillObj.GetComponent<Image>();
             skillBg.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
 
@@ -364,17 +461,17 @@ namespace ProjectZombie.Editor.Tools
             skillTextRect.sizeDelta = Vector2.zero;
             TextMeshProUGUI skillText = skillTextObj.GetComponent<TextMeshProUGUI>();
             skillText.alignment = TextAlignmentOptions.Center;
-            skillText.fontSize = 32;
+            skillText.fontSize = 28;
 
-            // 3. Dash Button
-            GameObject dashObj = new GameObject("Btn_Dash", typeof(RectTransform), typeof(Image), typeof(Button), typeof(DashButtonView));
+            // 4. Dash Button (Nút Lướt)
+            GameObject dashObj = new GameObject("Btn_Dash", typeof(RectTransform), typeof(Image), typeof(Button), typeof(DashButtonView), typeof(DashButtonPresenter));
             dashObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform dashRect = dashObj.GetComponent<RectTransform>();
             dashRect.anchorMin = new Vector2(1f, 0f);
             dashRect.anchorMax = new Vector2(1f, 0f);
             dashRect.pivot = new Vector2(0.5f, 0.5f);
-            dashRect.anchoredPosition = new Vector2(-280, 110);
-            dashRect.sizeDelta = new Vector2(90, 90);
+            dashRect.anchoredPosition = new Vector2(-310, 150);
+            dashRect.sizeDelta = new Vector2(100, 100);
             Image dashBg = dashObj.GetComponent<Image>();
             dashBg.color = new Color(0.25f, 0.3f, 0.4f, 0.9f);
 

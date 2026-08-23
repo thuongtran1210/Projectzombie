@@ -74,12 +74,24 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        [Header("Active / Passive Mode (Action RPG)")]
+        [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân tự động kích hoạt.")]
+        public bool isPrimaryActiveWeapon = false;
+
+        public float GetTotalAttackSpeed()
+        {
+            return CharacterStats != null ? CharacterStats.AttackSpeed + localAttackSpeedBonus : 1f;
+        }
+
         public void Tick()
         {
             if (CharacterStats == null) return;
 
+            // Nếu là vũ khí chính chủ động, không tự động kích hoạt trong Tick
+            if (isPrimaryActiveWeapon) return;
+
             // Attack Speed calculation includes local bonus
-            float totalAttackSpeed = CharacterStats.AttackSpeed + localAttackSpeedBonus;
+            float totalAttackSpeed = GetTotalAttackSpeed();
             // Cooldown = 1 / AttackSpeed
             float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
 
@@ -91,6 +103,28 @@ namespace ProjectZombie.Features.Weapons
                     _lastAttackTime = Time.time;
                 }
             }
+        }
+
+        /// <summary>
+        /// Kích hoạt đòn đánh chủ động từ Nút Tấn Công.
+        /// </summary>
+        public bool TriggerActiveAttack()
+        {
+            if (CharacterStats == null) return false;
+
+            float totalAttackSpeed = GetTotalAttackSpeed();
+            float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
+
+            if (Time.time >= _lastAttackTime + attackCooldown)
+            {
+                if (CanAttack())
+                {
+                    PerformAttack();
+                    _lastAttackTime = Time.time;
+                    return true;
+                }
+            }
+            return false;
         }
 
 
