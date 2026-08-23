@@ -167,15 +167,19 @@ namespace ProjectZombie.Features.UI
 
             OnCharacterSelected?.Invoke(chosenPrefab);
 
-            // Đảm bảo Bootstrapper luôn nhận được lệnh spawn ngay lập tức
-            var bootstrapper = FindObjectOfType<ProjectZombie.Features.Player.GameplayBootstrapper>();
-            if (bootstrapper != null)
+            // Cập nhật thông tin tướng đã chọn ra ngoài Sảnh Hoàng Tuyền
+            var mainHubView = FindObjectOfType<MainHubView>(true);
+            if (mainHubView != null)
             {
-                bootstrapper.SpawnPlayerFromSelection(chosenPrefab);
+                mainHubView.SetSelectedHeroPreview(selected.name, selected.avatar);
             }
 
-            // Tự động đóng Popup Chọn Nhân Vật để vào trận
-            if (gameObject != null)
+            // Đóng màn hình chọn nhân vật, quay trở về Sảnh Chính
+            if (MetaUIManager.Instance != null)
+            {
+                MetaUIManager.Instance.PopScreen();
+            }
+            else if (gameObject != null)
             {
                 gameObject.SetActive(false);
             }

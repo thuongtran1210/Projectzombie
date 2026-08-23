@@ -11,7 +11,7 @@ namespace ProjectZombie.Features.Shared
     {
         public static GameStateManager Instance { get; private set; }
 
-        public GameState CurrentState { get; private set; } = GameState.Playing; // Mặc định là Playing khi bắt đầu game scene
+        public GameState CurrentState { get; private set; } = GameState.MainMenu; // Mặc định là MainMenu khi mở game (Hướng A)
 
         /// <summary>
         /// Kích hoạt khi trạng thái trò chơi thay đổi.

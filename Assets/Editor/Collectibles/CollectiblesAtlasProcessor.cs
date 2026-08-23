@@ -81,7 +81,9 @@ namespace Projectzombie.Editor.CollectiblesTools
                 }
             };
 
+#pragma warning disable CS0618
             importer.spritesheet = metaData;
+#pragma warning restore CS0618
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
             AssetDatabase.Refresh();

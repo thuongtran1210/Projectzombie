@@ -41,11 +41,8 @@ namespace ProjectZombie.Features.UI
             {
                 _metaCanvasGroup = GetComponent<CanvasGroup>();
             }
-        }
 
-        private void Start()
-        {
-            // Mặc định ẩn tất cả màn hình phụ
+            // Mặc định ẩn tất cả màn hình phụ ngay trong Awake
             if (_characterSelectScreen != null) _characterSelectScreen.Hide();
             if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.Hide();
             if (_codexScreen != null) _codexScreen.Hide();
@@ -53,6 +50,14 @@ namespace ProjectZombie.Features.UI
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
             if (_mainHubScreen != null)
+            {
+                PushScreen(_mainHubScreen);
+            }
+        }
+
+        private void Start()
+        {
+            if (_mainHubScreen != null && (_screenStack.Count == 0 || _screenStack.Peek() != _mainHubScreen))
             {
                 PushScreen(_mainHubScreen);
             }

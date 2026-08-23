@@ -54,13 +54,27 @@ namespace ProjectZombie.Features.Player
 
         private void Start()
         {
-            // 1. Kiểm tra nếu có CharacterSelectionUI sẵn trong Scene hoặc Prefab để điều hướng
+            // 1. Đăng ký lắng nghe sự kiện chọn tướng nếu có UI trong Scene
+            var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
+            if (existingUI != null)
+            {
+                existingUI.OnCharacterSelected -= HandleCharacterSelected;
+                existingUI.OnCharacterSelected += HandleCharacterSelected;
+            }
+
+            // 2. Nếu có MetaUIManager quản lý Sảnh Menu (Hướng A), nhường quyền điều phối cho MetaUIManager & MetaSceneTransitionController
+            if (MetaUIManager.Instance != null || FindObjectOfType<MetaUIManager>(true) != null)
+            {
+                Debug.Log("[GameplayBootstrapper] Phát hiện MetaUIManager: Nhường quyền khởi động cho Sảnh Hoàng Tuyền (Main Hub).");
+                return;
+            }
+
+            // 3. Fallback cho Test Scene độc lập (nếu không có Meta Menu)
             if (TryInitializeCharacterSelectionUI())
             {
                 return;
             }
 
-            // 2. Nếu không có UI Chọn Tướng, tự động spawn theo cấu hình mặc định
             InitializeLevel(null);
         }
 

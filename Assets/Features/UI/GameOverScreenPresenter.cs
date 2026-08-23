@@ -175,8 +175,8 @@ namespace ProjectZombie.Features.UI
 
             _currencyDisplayTimer += Time.unscaledDeltaTime * 50f;
             int displayed = Mathf.Min(Mathf.FloorToInt(_currencyDisplayTimer), _currencyEarned);
-            
-            view.SetCurrency($"+{displayed} 🪙");
+
+            view.SetCurrency($"+{displayed} Cổ Tiền");
 
             // Phát âm thanh cheng cheng mỗi khi số coin tăng lên
             if (displayed != _lastPlayedCoinTick && coinTickClip != null && _uiAudioSource != null)
@@ -263,20 +263,38 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                view.SetCurrency($"+{_currencyEarned} 🪙");
+                view.SetCurrency($"+{_currencyEarned} Cổ Tiền");
             }
         }
 
         private void HandlePlayAgain()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(gameSceneName);
+            if (view != null) view.SetActive(false);
+
+            if (MetaSceneTransitionController.Instance != null)
+            {
+                MetaSceneTransitionController.Instance.StartRun();
+            }
+            else
+            {
+                SceneManager.LoadScene(gameSceneName);
+            }
         }
 
         private void HandleMainMenu()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(mainMenuSceneName);
+            if (view != null) view.SetActive(false);
+
+            if (MetaSceneTransitionController.Instance != null)
+            {
+                MetaSceneTransitionController.Instance.ReturnToMetaHub();
+            }
+            else
+            {
+                SceneManager.LoadScene(mainMenuSceneName);
+            }
         }
     }
 }

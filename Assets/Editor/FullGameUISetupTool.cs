@@ -97,6 +97,7 @@ namespace ProjectZombie.EditorTools
                 heroTrans = heroObj.transform;
             }
             StretchRect(heroTrans.GetComponent<RectTransform>());
+            BuildCharacterSelectHierarchy(heroTrans);
 
             // 2.3. Panel_SanctuaryTree
             Transform sanctuaryTrans = metaRoot.Find("Panel_SanctuaryTree");
@@ -107,6 +108,7 @@ namespace ProjectZombie.EditorTools
                 sanctuaryTrans = sanctuaryObj.transform;
             }
             StretchRect(sanctuaryTrans.GetComponent<RectTransform>());
+            BuildSanctuaryHierarchy(sanctuaryTrans);
 
             // Wire MetaUIManager
             var soMeta = new SerializedObject(metaManager);
@@ -143,7 +145,32 @@ namespace ProjectZombie.EditorTools
             fadeGroup.alpha = 0f;
             fadeObjOrTrans(fadeTrans, false);
 
-            // 5. MetaSceneTransitionController
+            // 5. Tìm và di chuyển UI_RunHUDRoot & Panel_MobileControls vào Canvas_Gameplay
+            Transform hudTrans = gameRoot.Find("UI_RunHUDRoot");
+            if (hudTrans == null) hudTrans = gameRoot.Find("RunHUD_Root");
+            if (hudTrans == null)
+            {
+                var existingHUD = GameObject.Find("UI_RunHUDRoot");
+                if (existingHUD == null) existingHUD = GameObject.Find("RunHUD_Root");
+                if (existingHUD != null)
+                {
+                    existingHUD.transform.SetParent(gameRoot, false);
+                    hudTrans = existingHUD.transform;
+                }
+            }
+
+            Transform mobileTrans = gameRoot.Find("Panel_MobileControls");
+            if (mobileTrans == null)
+            {
+                var existingMobile = GameObject.Find("Panel_MobileControls");
+                if (existingMobile != null)
+                {
+                    existingMobile.transform.SetParent(gameRoot, false);
+                    mobileTrans = existingMobile.transform;
+                }
+            }
+
+            // 6. MetaSceneTransitionController
             var transitionController = FindObjectOfType<MetaSceneTransitionController>();
             if (transitionController == null)
             {
@@ -154,12 +181,33 @@ namespace ProjectZombie.EditorTools
             var soTC = new SerializedObject(transitionController);
             soTC.FindProperty("_metaMenuCanvasGroup").objectReferenceValue = metaGroup;
             soTC.FindProperty("_gameplayCanvasGroup").objectReferenceValue = gameGroup;
+            if (mobileTrans != null)
+            {
+                soTC.FindProperty("_mobileControlsPanel").objectReferenceValue = mobileTrans.gameObject;
+            }
+            if (hudTrans != null)
+            {
+                soTC.FindProperty("_runHUDPanel").objectReferenceValue = hudTrans.gameObject;
+            }
             soTC.FindProperty("_fadeOverlayCanvasGroup").objectReferenceValue = fadeGroup;
             soTC.FindProperty("_mainHubPresenter").objectReferenceValue = hubTrans.GetComponent<MainHubPresenter>();
             soTC.ApplyModifiedProperties();
 
             // Tự động gọi MobileControlsSetupTool để dựng cụm Joystick & Attack Button
             EditorApplication.ExecuteMenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire");
+
+            // Đảm bảo Panel_MobileControls được gán lại nếu vừa mới tạo
+            if (mobileTrans == null)
+            {
+                var createdMobile = GameObject.Find("Panel_MobileControls");
+                if (createdMobile != null)
+                {
+                    createdMobile.transform.SetParent(gameRoot, false);
+                    soTC.Update();
+                    soTC.FindProperty("_mobileControlsPanel").objectReferenceValue = createdMobile;
+                    soTC.ApplyModifiedProperties();
+                }
+            }
 
             EditorUtility.SetDirty(mainCanvas);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainCanvas.gameObject.scene);
@@ -189,7 +237,12 @@ namespace ProjectZombie.EditorTools
 
                 var tmp = coTienObj.GetComponent<TextMeshProUGUI>();
                 tmp.fontSize = 32;
-                tmp.text = "🪙 0";
+                tmp.text = "0 Cổ Tiền";
+            }
+            else
+            {
+                var tmp = coTienTrans.GetComponent<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = "0 Cổ Tiền";
             }
             soHub.FindProperty("_coTienText").objectReferenceValue = coTienTrans.GetComponent<TextMeshProUGUI>();
 
@@ -216,11 +269,16 @@ namespace ProjectZombie.EditorTools
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "⚔️ XUẤT TRẬN";
-                tmp.fontSize = 36;
+                tmp.text = "XUẤT TRẬN";
+                tmp.fontSize = 34;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.color = Color.white;
+            }
+            else
+            {
+                var tmp = startBtnTrans.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (tmp != null) tmp.text = "XUẤT TRẬN";
             }
             soHub.FindProperty("_startRunButton").objectReferenceValue = startBtnTrans.GetComponent<Button>();
 
@@ -247,9 +305,14 @@ namespace ProjectZombie.EditorTools
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "🧑";
-                tmp.fontSize = 32;
+                tmp.text = "TƯỚNG";
+                tmp.fontSize = 20;
                 tmp.alignment = TextAlignmentOptions.Center;
+            }
+            else
+            {
+                var tmp = heroBtnTrans.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (tmp != null) tmp.text = "TƯỚNG";
             }
             soHub.FindProperty("_heroSelectButton").objectReferenceValue = heroBtnTrans.GetComponent<Button>();
 
@@ -276,14 +339,287 @@ namespace ProjectZombie.EditorTools
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "⛩️";
-                tmp.fontSize = 32;
+                tmp.text = "MIẾU";
+                tmp.fontSize = 20;
                 tmp.alignment = TextAlignmentOptions.Center;
+            }
+            else
+            {
+                var tmp = sanctuaryBtnTrans.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (tmp != null) tmp.text = "MIẾU";
             }
             soHub.FindProperty("_sanctuaryTreeButton").objectReferenceValue = sanctuaryBtnTrans.GetComponent<Button>();
 
             soHub.ApplyModifiedProperties();
             EditorUtility.SetDirty(hubView);
+        }
+
+        private static void BuildCharacterSelectHierarchy(Transform root)
+        {
+            var view = root.GetComponent<CharacterSelectionView>();
+            var presenter = root.GetComponent<CharacterSelectionPresenter>();
+            var so = new SerializedObject(view);
+
+            // Nền tối
+            Image bg = root.GetComponent<Image>();
+            if (bg == null) bg = root.gameObject.AddComponent<Image>();
+            bg.color = new Color(0.08f, 0.08f, 0.12f, 0.95f);
+
+            // 1. Tên nhân vật
+            Transform nameTrans = root.Find("Txt_HeroName");
+            if (nameTrans == null)
+            {
+                var obj = new GameObject("Txt_HeroName", typeof(RectTransform), typeof(TextMeshProUGUI));
+                obj.transform.SetParent(root, false);
+                nameTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 1f);
+                rect.anchorMax = new Vector2(0.5f, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(0, -60);
+                rect.sizeDelta = new Vector2(500, 70);
+                var tmp = obj.GetComponent<TextMeshProUGUI>();
+                tmp.fontSize = 42;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.text = "THƯ SINH";
+            }
+            so.FindProperty("_characterNameText").objectReferenceValue = nameTrans.GetComponent<TextMeshProUGUI>();
+
+            // 2. Avatar
+            Transform avatarTrans = root.Find("Img_Avatar");
+            if (avatarTrans == null)
+            {
+                var obj = new GameObject("Img_Avatar", typeof(RectTransform), typeof(Image));
+                obj.transform.SetParent(root, false);
+                avatarTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0, 50);
+                rect.sizeDelta = new Vector2(260, 260);
+            }
+            so.FindProperty("_characterAvatarImage").objectReferenceValue = avatarTrans.GetComponent<Image>();
+
+            // 3. Hệ Ngũ Hành
+            Transform elemTrans = root.Find("Txt_Element");
+            if (elemTrans == null)
+            {
+                var obj = new GameObject("Txt_Element", typeof(RectTransform), typeof(TextMeshProUGUI));
+                obj.transform.SetParent(root, false);
+                elemTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0, -110);
+                rect.sizeDelta = new Vector2(400, 50);
+                var tmp = obj.GetComponent<TextMeshProUGUI>();
+                tmp.fontSize = 28;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.text = "<color=#E8C468>HỆ KIM</color>";
+            }
+            else
+            {
+                var tmp = elemTrans.GetComponent<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = "<color=#E8C468>HỆ KIM</color>";
+            }
+            so.FindProperty("_elementText").objectReferenceValue = elemTrans.GetComponent<TextMeshProUGUI>();
+
+            // 4. Nút Chọn
+            Transform selectBtnTrans = root.Find("Btn_SelectHero");
+            if (selectBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_SelectHero", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                selectBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0, 100);
+                rect.sizeDelta = new Vector2(280, 75);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.85f, 0.25f, 0.2f, 1f);
+
+                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                txtObj.transform.SetParent(obj.transform, false);
+                StretchRect(txtObj.GetComponent<RectTransform>());
+                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
+                tmp.text = "CHỌN ANH HÙNG";
+                tmp.fontSize = 28;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+            }
+            so.FindProperty("_selectButton").objectReferenceValue = selectBtnTrans.GetComponent<Button>();
+
+            // 5. Nút Prev & Next
+            Transform prevBtnTrans = root.Find("Btn_Prev");
+            if (prevBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_Prev", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                prevBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(-220, 50);
+                rect.sizeDelta = new Vector2(70, 90);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.3f, 0.3f, 0.4f, 0.9f);
+            }
+            so.FindProperty("_prevButton").objectReferenceValue = prevBtnTrans.GetComponent<Button>();
+
+            Transform nextBtnTrans = root.Find("Btn_Next");
+            if (nextBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_Next", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                nextBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(220, 50);
+                rect.sizeDelta = new Vector2(70, 90);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.3f, 0.3f, 0.4f, 0.9f);
+            }
+            so.FindProperty("_nextButton").objectReferenceValue = nextBtnTrans.GetComponent<Button>();
+
+            // 6. Nút Back
+            Transform backBtnTrans = root.Find("Btn_Back");
+            if (backBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_Back", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                backBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0f, 1f);
+                rect.anchorMax = new Vector2(0f, 1f);
+                rect.pivot = new Vector2(0f, 1f);
+                rect.anchoredPosition = new Vector2(50, -40);
+                rect.sizeDelta = new Vector2(100, 60);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.4f, 0.2f, 0.2f, 0.9f);
+            }
+            so.FindProperty("_backButton").objectReferenceValue = backBtnTrans.GetComponent<Button>();
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+        }
+
+        private static void BuildSanctuaryHierarchy(Transform root)
+        {
+            var view = root.GetComponent<MetaUpgradeShopView>();
+            var presenter = root.GetComponent<MetaUpgradeShopPresenter>();
+            var so = new SerializedObject(view);
+
+            // Nền tối
+            Image bg = root.GetComponent<Image>();
+            if (bg == null) bg = root.gameObject.AddComponent<Image>();
+            bg.color = new Color(0.06f, 0.1f, 0.08f, 0.95f);
+
+            // 1. Tiêu đề
+            Transform titleTrans = root.Find("Txt_Title");
+            if (titleTrans == null)
+            {
+                var obj = new GameObject("Txt_Title", typeof(RectTransform), typeof(TextMeshProUGUI));
+                obj.transform.SetParent(root, false);
+                titleTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 1f);
+                rect.anchorMax = new Vector2(0.5f, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(0, -50);
+                rect.sizeDelta = new Vector2(600, 70);
+                var tmp = obj.GetComponent<TextMeshProUGUI>();
+                tmp.fontSize = 38;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.text = "MIẾU TỨ BẤT TỬ";
+            }
+            else
+            {
+                var tmp = titleTrans.GetComponent<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = "MIẾU TỨ BẤT TỬ";
+            }
+            so.FindProperty("_upgradeTitleText").objectReferenceValue = titleTrans.GetComponent<TextMeshProUGUI>();
+
+            // 2. Số dư Cổ Tiền
+            Transform balanceTrans = root.Find("Txt_Balance");
+            if (balanceTrans == null)
+            {
+                var obj = new GameObject("Txt_Balance", typeof(RectTransform), typeof(TextMeshProUGUI));
+                obj.transform.SetParent(root, false);
+                balanceTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(1f, 1f);
+                rect.anchorMax = new Vector2(1f, 1f);
+                rect.pivot = new Vector2(1f, 1f);
+                rect.anchoredPosition = new Vector2(-50, -50);
+                rect.sizeDelta = new Vector2(250, 60);
+                var tmp = obj.GetComponent<TextMeshProUGUI>();
+                tmp.fontSize = 28;
+                tmp.alignment = TextAlignmentOptions.Right;
+                tmp.text = "0 Cổ Tiền";
+            }
+            else
+            {
+                var tmp = balanceTrans.GetComponent<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = "0 Cổ Tiền";
+            }
+            so.FindProperty("_coTienBalanceText").objectReferenceValue = balanceTrans.GetComponent<TextMeshProUGUI>();
+
+            // 3. Nút Mua Nâng Cấp
+            Transform buyBtnTrans = root.Find("Btn_BuyUpgrade");
+            if (buyBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_BuyUpgrade", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                buyBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0, 100);
+                rect.sizeDelta = new Vector2(280, 75);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.2f, 0.6f, 0.3f, 1f);
+
+                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                txtObj.transform.SetParent(obj.transform, false);
+                StretchRect(txtObj.GetComponent<RectTransform>());
+                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
+                tmp.text = "NÂNG CẤP";
+                tmp.fontSize = 28;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+            }
+            so.FindProperty("_buyUpgradeButton").objectReferenceValue = buyBtnTrans.GetComponent<Button>();
+
+            // 4. Nút Đóng / Back
+            Transform closeBtnTrans = root.Find("Btn_Close");
+            if (closeBtnTrans == null)
+            {
+                var obj = new GameObject("Btn_Close", typeof(RectTransform), typeof(Image), typeof(Button));
+                obj.transform.SetParent(root, false);
+                closeBtnTrans = obj.transform;
+                var rect = obj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0f, 1f);
+                rect.anchorMax = new Vector2(0f, 1f);
+                rect.pivot = new Vector2(0f, 1f);
+                rect.anchoredPosition = new Vector2(50, -40);
+                rect.sizeDelta = new Vector2(100, 60);
+                var img = obj.GetComponent<Image>();
+                img.color = new Color(0.4f, 0.2f, 0.2f, 0.9f);
+            }
+            so.FindProperty("_closeButton").objectReferenceValue = closeBtnTrans.GetComponent<Button>();
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
         }
 
         private static void StretchRect(RectTransform rect)

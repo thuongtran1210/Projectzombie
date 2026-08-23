@@ -18,11 +18,14 @@ namespace ProjectZombie.Features.UI
         [Header("Canvas Roots")]
         [SerializeField] private CanvasGroup _metaMenuCanvasGroup;
         [SerializeField] private CanvasGroup _gameplayCanvasGroup;
+        [SerializeField] private GameObject _mobileControlsPanel;
+        [SerializeField] private GameObject _runHUDPanel;
         [SerializeField] private CanvasGroup _fadeOverlayCanvasGroup;
 
         [Header("Systems")]
         [SerializeField] private MainHubPresenter _mainHubPresenter;
         [SerializeField] private SpawnManager _spawnManager;
+        [SerializeField] private GameplayBootstrapper _gameplayBootstrapper;
 
         private void Awake()
         {
@@ -38,24 +41,55 @@ namespace ProjectZombie.Features.UI
 
             if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
             if (_spawnManager == null) _spawnManager = FindObjectOfType<SpawnManager>(true);
+            if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
+
+            if (_mobileControlsPanel == null)
+            {
+                var panel = GameObject.Find("Panel_MobileControls");
+                if (panel != null) _mobileControlsPanel = panel;
+            }
+
+            if (_runHUDPanel == null)
+            {
+                var hud = GameObject.Find("UI_RunHUDRoot");
+                if (hud == null) hud = GameObject.Find("RunHUD_Root");
+                if (hud != null) _runHUDPanel = hud;
+            }
+
+            // Đăng ký lắng nghe sự kiện Xuất Trận
+            if (_mainHubPresenter != null)
+            {
+                _mainHubPresenter.OnStartRunRequested -= StartRun;
+                _mainHubPresenter.OnStartRunRequested += StartRun;
+            }
+
+            // Fallback: Tìm nút Btn_StartRun trong Scene nếu chưa được wire qua Presenter
+            var startBtn = GameObject.Find("Btn_StartRun");
+            if (startBtn != null)
+            {
+                var btn = startBtn.GetComponent<UnityEngine.UI.Button>();
+                if (btn != null)
+                {
+                    btn.onClick.RemoveListener(StartRun);
+                    btn.onClick.AddListener(StartRun);
+                }
+            }
+
+            // Mặc định luôn bật Sảnh Meta Menu và ẩn Gameplay Canvas + Mobile Controls ngay từ Awake
+            ApplyStateVisuals(true);
         }
 
         private void Start()
         {
             if (_mainHubPresenter != null)
             {
+                _mainHubPresenter.OnStartRunRequested -= StartRun;
                 _mainHubPresenter.OnStartRunRequested += StartRun;
             }
 
-            // Đồng bộ trạng thái khởi đầu
-            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.MainMenu)
-            {
-                ApplyStateVisuals(true);
-            }
-            else
-            {
-                ApplyStateVisuals(false);
-            }
+            // Đồng bộ lại trạng thái từ GameStateManager
+            bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
+            ApplyStateVisuals(isMainMenu);
         }
 
         private void OnDestroy()
@@ -84,12 +118,18 @@ namespace ProjectZombie.Features.UI
             // 2. Chuyển UI
             ApplyStateVisuals(false);
 
+            // 3. Khởi tạo Nhân vật trong màn chơi
+            if (_gameplayBootstrapper != null)
+            {
+                _gameplayBootstrapper.SpawnPlayerFromSelection(null);
+            }
+
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.Playing);
             }
 
-            // 3. Fade In sáng lại
+            // 4. Fade In sáng lại
             yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
         }
 
@@ -152,6 +192,35 @@ namespace ProjectZombie.Features.UI
                 _gameplayCanvasGroup.alpha = !isMeta ? 1f : 0f;
                 _gameplayCanvasGroup.blocksRaycasts = !isMeta;
                 _gameplayCanvasGroup.interactable = !isMeta;
+            }
+
+            if (_mobileControlsPanel != null)
+            {
+                _mobileControlsPanel.SetActive(!isMeta);
+            }
+            else
+            {
+                var panel = GameObject.Find("Panel_MobileControls");
+                if (panel != null)
+                {
+                    _mobileControlsPanel = panel;
+                    _mobileControlsPanel.SetActive(!isMeta);
+                }
+            }
+
+            if (_runHUDPanel != null)
+            {
+                _runHUDPanel.SetActive(!isMeta);
+            }
+            else
+            {
+                var hud = GameObject.Find("UI_RunHUDRoot");
+                if (hud == null) hud = GameObject.Find("RunHUD_Root");
+                if (hud != null)
+                {
+                    _runHUDPanel = hud;
+                    _runHUDPanel.SetActive(!isMeta);
+                }
             }
 
             if (_spawnManager != null)

@@ -26,6 +26,12 @@ namespace ProjectZombie.Features.UI
             {
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
+
+            // Nếu không phải là MainHub, mặc định ẩn màn hình khi khởi động Scene
+            if (ScreenType != MetaScreenType.MainHub)
+            {
+                Hide();
+            }
         }
 
         public virtual void Show()

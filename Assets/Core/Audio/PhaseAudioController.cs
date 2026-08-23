@@ -24,6 +24,12 @@ namespace Core.Audio
 
         private void Start()
         {
+            if (ProjectZombie.Features.Shared.GameStateManager.Instance != null && 
+                ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState != ProjectZombie.Features.Shared.GameState.Playing)
+            {
+                return; // Đang ở Sảnh Main Menu ngoài game, không phát BGM trận đấu
+            }
+
             if (SpawnManager.Instance != null && _phaseAudioList != null && _phaseAudioList.Length > 0)
             {
                 CheckPhaseTransition(SpawnManager.Instance.MatchTime);
@@ -32,6 +38,12 @@ namespace Core.Audio
 
         private void Update()
         {
+            if (ProjectZombie.Features.Shared.GameStateManager.Instance != null && 
+                ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState != ProjectZombie.Features.Shared.GameState.Playing)
+            {
+                return;
+            }
+
             if (SpawnManager.Instance == null || _phaseAudioList == null) return;
 
             float currentMatchTime = SpawnManager.Instance.MatchTime;

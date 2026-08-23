@@ -20,6 +20,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
         private float _curveSign = 1f; // +1: Uốn sang phải (Clockwise), -1: Uốn sang trái (Counter-Clockwise), 0: Thẳng
         private bool _isCurveSignExplicitlySet = false;
         private bool _isReturning = false;
+        public bool IsReturning => _isReturning;
         private Transform _visualRoot;
         private static int _globalSpawnCounter = 0;
 

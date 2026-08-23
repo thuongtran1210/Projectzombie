@@ -40,6 +40,25 @@ namespace ProjectZombie.Features.UI
             }
 
             UpdateCurrencyDisplay();
+            InitSelectedHeroPreview();
+        }
+
+        private void InitSelectedHeroPreview()
+        {
+            if (_view != null)
+            {
+                var selectionData = Resources.Load<ProjectZombie.Features.Player.CharacterSelectionData>("CharacterSelectionData");
+                if (selectionData != null && selectionData.Characters != null && 
+                    selectionData.SelectedCharacterIndex >= 0 && selectionData.SelectedCharacterIndex < selectionData.Characters.Count)
+                {
+                    var selected = selectionData.Characters[selectionData.SelectedCharacterIndex];
+                    _view.SetSelectedHeroPreview(selected.characterName, selected.avatar);
+                }
+                else
+                {
+                    _view.SetSelectedHeroPreview("THƯ SINH (HỆ KIM)", null);
+                }
+            }
         }
 
         private void OnDestroy()
@@ -64,7 +83,7 @@ namespace ProjectZombie.Features.UI
             if (_view != null)
             {
                 int balance = amount >= 0 ? amount : (_currencyManager != null ? _currencyManager.TotalCurrency : 0);
-                _view.SetCoTienBalance($"<color=#FFD700>🪙 {balance:N0}</color>");
+                _view.SetCoTienBalance($"<color=#FFD700>{balance:N0}</color> Cổ Tiền");
             }
         }
 
