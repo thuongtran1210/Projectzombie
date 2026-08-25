@@ -31,12 +31,18 @@ namespace ProjectZombie.Features.Shared
         /// <summary>Cấp độ cao nhất đạt được trong run này.</summary>
         public int MaxLevelReached { get; private set; } = 1;
 
+        /// <summary>Tổng Cổ Tiền đã thu thập trực tiếp trong trận.</summary>
+        public int CoinsCollected { get; private set; } = 0;
+
         // ====================================================================
         // EVENTS
         // ====================================================================
 
         /// <summary>Kích hoạt khi Kill Count thay đổi. Truyền tổng kill count mới.</summary>
         public event Action<int> OnKillCountChanged;
+
+        /// <summary>Kích hoạt khi số Cổ Tiền nhặt trong trận thay đổi.</summary>
+        public event Action<int> OnCoinsChanged;
 
         /// <summary>Kích hoạt mỗi giây để HUD cập nhật Timer.</summary>
         public event Action<float> OnTimerTick;
@@ -95,9 +101,11 @@ namespace ProjectZombie.Features.Shared
             KillCount = 0;
             TotalDamageDealt = 0f;
             MaxLevelReached = 1;
+            CoinsCollected = 0;
             _timerTickAccumulator = 0f;
             OnTimerTick?.Invoke(0f);
             OnKillCountChanged?.Invoke(0);
+            OnCoinsChanged?.Invoke(0);
         }
 
         /// <summary>
@@ -107,6 +115,16 @@ namespace ProjectZombie.Features.Shared
         {
             KillCount++;
             OnKillCountChanged?.Invoke(KillCount);
+        }
+
+        /// <summary>
+        /// Gọi bởi CoinDrop khi Player thu thập tiền trên sàn.
+        /// </summary>
+        public void RegisterCoinCollected(int amount)
+        {
+            if (amount <= 0) return;
+            CoinsCollected += amount;
+            OnCoinsChanged?.Invoke(CoinsCollected);
         }
 
         /// <summary>
@@ -140,15 +158,14 @@ namespace ProjectZombie.Features.Shared
 
         /// <summary>
         /// Tính toán lượng Currency Meta nhận được sau run này.
-        /// Công thức: (Kill * 1) + (Minute sống sót * 10) + (MaxLevel * 5).
-        /// Có thể điều chỉnh theo GDD sau playtest.
+        /// Công thức: CoinsCollected + (Kill * 1) + (Minute sống sót * 10) + (MaxLevel * 5).
         /// </summary>
         public int CalculateMetaCurrency()
         {
             int fromKills    = KillCount * 1;
             int fromTime     = Mathf.FloorToInt(ElapsedTime / 60f) * 10;
             int fromLevel    = MaxLevelReached * 5;
-            return fromKills + fromTime + fromLevel;
+            return CoinsCollected + fromKills + fromTime + fromLevel;
         }
 
         /// <summary>Định dạng ElapsedTime thành chuỗi MM:SS.</summary>

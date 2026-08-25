@@ -21,7 +21,7 @@ namespace ProjectZombie.Features.Collectibles
     /// Tối ưu hóa 100% không dùng DOTween trong runtime để triệt tiêu rác bộ nhớ (Zero GC).
     /// Hỗ trợ phân cấp màu sắc (Visual Tiering) và cơ chế gộp hạt (Gem Merging).
     /// </summary>
-    public class ExpGem : MonoBehaviour
+    public class ExpGem : MonoBehaviour, ICollectible
     {
         [Header("Experience & Motion Settings")]
         [SerializeField] private float expAmount = 10f;
@@ -200,7 +200,7 @@ namespace ProjectZombie.Features.Collectibles
             _jumpTargetPos = _jumpStartPos + dirAway * 1.2f;
         }
 
-        private void Collect()
+        public void Collect()
         {
             if (_state == GemState.Collected) return;
             _state = GemState.Collected;

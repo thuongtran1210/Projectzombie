@@ -90,14 +90,20 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
-        /// Xử lý khi có ExpGem đi vào vùng hút từ trường.
+        /// Xử lý khi có ICollectible (ExpGem, CoinDrop, Potion...) đi vào vùng hút từ trường.
         /// </summary>
+        public void OnCollectibleDetected(ICollectible collectible)
+        {
+            if (collectible != null && collectible.IsActiveOnGround)
+            {
+                collectible.StartMagnetEffect(transform);
+            }
+        }
+
+        // Backward compatibility
         public void OnGemDetected(ExpGem gem)
         {
-            if (gem != null)
-            {
-                gem.StartMagnetEffect(transform);
-            }
+            OnCollectibleDetected(gem);
         }
 
 #if UNITY_EDITOR
@@ -130,9 +136,9 @@ namespace ProjectZombie.Features.Player
         {
             if (_parentMagnet == null) return;
 
-            if (collision.TryGetComponent<ExpGem>(out var gem))
+            if (collision.TryGetComponent<ICollectible>(out var collectible))
             {
-                _parentMagnet.OnGemDetected(gem);
+                _parentMagnet.OnCollectibleDetected(collectible);
             }
         }
     }

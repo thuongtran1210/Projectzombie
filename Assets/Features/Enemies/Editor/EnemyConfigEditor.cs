@@ -17,6 +17,10 @@ namespace ProjectZombie.Features.Enemies.Editor
         private SerializedProperty expRewardProp;
         private SerializedProperty tierProp;
         private SerializedProperty elementTypeProp;
+        private SerializedProperty isHeavyArmorProp;
+        private SerializedProperty coinDropRateProp;
+        private SerializedProperty minCoinDropProp;
+        private SerializedProperty maxCoinDropProp;
 
         private void OnEnable()
         {
@@ -30,6 +34,10 @@ namespace ProjectZombie.Features.Enemies.Editor
             expRewardProp = serializedObject.FindProperty("expReward");
             tierProp = serializedObject.FindProperty("tier");
             elementTypeProp = serializedObject.FindProperty("elementType");
+            isHeavyArmorProp = serializedObject.FindProperty("isHeavyArmor");
+            coinDropRateProp = serializedObject.FindProperty("coinDropRate");
+            minCoinDropProp = serializedObject.FindProperty("minCoinDrop");
+            maxCoinDropProp = serializedObject.FindProperty("maxCoinDrop");
         }
 
         public override void OnInspectorGUI()
@@ -44,7 +52,14 @@ namespace ProjectZombie.Features.Enemies.Editor
             EditorGUILayout.PropertyField(elementTypeProp);
             EditorGUILayout.PropertyField(maxHealthProp);
             EditorGUILayout.PropertyField(damageToPlayerProp);
-            EditorGUILayout.PropertyField(expRewardProp);
+            EditorGUILayout.PropertyField(isHeavyArmorProp);
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Loot & Drops (Exp & Coin)", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(expRewardProp, new GUIContent("EXP Reward (ExpGem)"));
+            EditorGUILayout.PropertyField(coinDropRateProp, new GUIContent("Coin Drop Rate (0-1)"));
+            EditorGUILayout.PropertyField(minCoinDropProp, new GUIContent("Min Coin Drop"));
+            EditorGUILayout.PropertyField(maxCoinDropProp, new GUIContent("Max Coin Drop"));
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Movement & Range Settings", EditorStyles.boldLabel);

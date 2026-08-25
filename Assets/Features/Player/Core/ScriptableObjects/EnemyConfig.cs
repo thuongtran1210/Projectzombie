@@ -31,6 +31,16 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Tooltip("Phân loại (dùng bởi Spawner để quản lý wave).")]
         public EnemyTier tier = EnemyTier.Common;
 
+        [Header("Coin Loot Drop Settings")]
+        [Tooltip("Tỉ lệ rơi Cổ Tiền khi quái chết (0.0 = 0%, 1.0 = 100%).")]
+        [Range(0f, 1f)] public float coinDropRate = 0.25f;
+
+        [Tooltip("Lượng Cổ Tiền tối thiểu khi rơi.")]
+        public int minCoinDrop = 1;
+
+        [Tooltip("Lượng Cổ Tiền tối đa khi rơi.")]
+        public int maxCoinDrop = 3;
+
         [Header("Vong Xuyen Attributes (v4.0)")]
         [Tooltip("Thuộc tính Ngũ Hành của Yêu Ma")]
         public ElementType elementType = ElementType.None;

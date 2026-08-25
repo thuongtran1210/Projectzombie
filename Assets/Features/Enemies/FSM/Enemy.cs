@@ -265,6 +265,19 @@ namespace ProjectZombie.Features.Enemies
                 }
             }
 
+            // Rớt Cổ Tiền (Coin Drop) dựa theo cấu hình EnemyConfig
+            if (Config != null && (IsBoss || Random.value <= Config.coinDropRate))
+            {
+                int minCoin = Config.minCoinDrop > 0 ? Config.minCoinDrop : 1;
+                int maxCoin = Config.maxCoinDrop >= minCoin ? Config.maxCoinDrop : minCoin;
+                int coinAmount = IsBoss ? maxCoin * 5 : Random.Range(minCoin, maxCoin + 1);
+
+                if (Collectibles.CoinPoolManager.Instance != null)
+                {
+                    Collectibles.CoinPoolManager.Instance.SpawnCoin(transform.position, coinAmount);
+                }
+            }
+
             StateMachine.ChangeState(DeadState);
         }
 

@@ -89,7 +89,7 @@ namespace ProjectZombie.EditorTools
                 scaler.matchWidthOrHeight = 0.5f;
             }
 
-            // 1.1. Đảm bảo có MetaCurrencyManager & GameManager
+            // 1.1. Đảm bảo có MetaCurrencyManager & GameManager & Collectible Pools
             var currencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             if (currencyMgr == null)
             {
@@ -100,6 +100,34 @@ namespace ProjectZombie.EditorTools
             if (gameMgr == null)
             {
                 gameMgr = new GameObject("GameManager", typeof(ProjectZombie.Core.Save.GameManager));
+            }
+
+            var coinPoolMgr = Object.FindObjectOfType<ProjectZombie.Features.Collectibles.CoinPoolManager>();
+            if (coinPoolMgr == null)
+            {
+                var coinPoolObj = new GameObject("[CoinPoolManager]", typeof(ProjectZombie.Features.Collectibles.CoinPoolManager));
+                if (gameMgr != null) coinPoolObj.transform.SetParent(gameMgr.transform);
+                coinPoolMgr = coinPoolObj.GetComponent<ProjectZombie.Features.Collectibles.CoinPoolManager>();
+            }
+
+            // Đảm bảo Coin_Drop.prefab luôn được tạo và gán sẵn
+            string coinPrefabPath = "Assets/_Prefabs/Collectibles/Coin_Drop.prefab";
+            GameObject coinPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(coinPrefabPath);
+            if (coinPrefab == null)
+            {
+                Projectzombie.Editor.CollectiblesTools.CoinPrefabBuilder.CreateCoinPrefab();
+                coinPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(coinPrefabPath);
+            }
+            if (coinPoolMgr != null && coinPrefab != null)
+            {
+                var soPool = new SerializedObject(coinPoolMgr);
+                var propPrefab = soPool.FindProperty("defaultCoinPrefab");
+                if (propPrefab != null && propPrefab.objectReferenceValue == null)
+                {
+                    propPrefab.objectReferenceValue = coinPrefab;
+                    soPool.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(coinPoolMgr);
+                }
             }
 
             // 2. Dựng Canvas_MetaMenu Root
