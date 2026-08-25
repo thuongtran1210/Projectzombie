@@ -11,6 +11,16 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private MetaUpgradeShopView _view;
         [SerializeField] private int _upgradeBaseCost = 100;
 
+        private void Awake()
+        {
+            if (_view == null) _view = GetComponent<MetaUpgradeShopView>();
+        }
+
+        private void OnEnable()
+        {
+            RenderShop();
+        }
+
         private void Start()
         {
             if (_view != null)

@@ -645,7 +645,75 @@ namespace ProjectZombie.EditorTools
                 var tmp = balanceTrans.GetComponent<TextMeshProUGUI>();
                 if (tmp != null) tmp.text = "0 Cổ Tiền";
             }
-            so.FindProperty("_coTienBalanceText").objectReferenceValue = balanceTrans.GetComponent<TextMeshProUGUI>();
+            // 2.1. Chi tiết gói Nâng Cấp (Ở giữa màn hình)
+            Transform cardTrans = root.Find("Card_UpgradeDetail");
+            if (cardTrans == null)
+            {
+                var cardObj = new GameObject("Card_UpgradeDetail", typeof(RectTransform), typeof(Image));
+                cardObj.transform.SetParent(root, false);
+                cardTrans = cardObj.transform;
+
+                var rect = cardObj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0, 40);
+                rect.sizeDelta = new Vector2(550, 260);
+
+                var cardImg = cardObj.GetComponent<Image>();
+                cardImg.color = new Color(0.12f, 0.18f, 0.15f, 0.95f);
+
+                // Tên nâng cấp
+                var nameObj = new GameObject("Txt_UpgradeName", typeof(RectTransform), typeof(TextMeshProUGUI));
+                nameObj.transform.SetParent(cardTrans, false);
+                var nameRect = nameObj.GetComponent<RectTransform>();
+                nameRect.anchorMin = new Vector2(0.5f, 1f);
+                nameRect.anchorMax = new Vector2(0.5f, 1f);
+                nameRect.pivot = new Vector2(0.5f, 1f);
+                nameRect.anchoredPosition = new Vector2(0, -25);
+                nameRect.sizeDelta = new Vector2(500, 50);
+                var nameTmp = nameObj.GetComponent<TextMeshProUGUI>();
+                nameTmp.fontSize = 28;
+                nameTmp.fontStyle = FontStyles.Bold;
+                nameTmp.alignment = TextAlignmentOptions.Center;
+                nameTmp.text = "Kim Cang Thể (+15 HP Máu)";
+
+                // Cấp độ
+                var lvlObj = new GameObject("Txt_Level", typeof(RectTransform), typeof(TextMeshProUGUI));
+                lvlObj.transform.SetParent(cardTrans, false);
+                var lvlRect = lvlObj.GetComponent<RectTransform>();
+                lvlRect.anchorMin = new Vector2(0.5f, 0.5f);
+                lvlRect.anchorMax = new Vector2(0.5f, 0.5f);
+                lvlRect.pivot = new Vector2(0.5f, 0.5f);
+                lvlRect.anchoredPosition = new Vector2(0, 0);
+                lvlRect.sizeDelta = new Vector2(400, 40);
+                var lvlTmp = lvlObj.GetComponent<TextMeshProUGUI>();
+                lvlTmp.fontSize = 22;
+                lvlTmp.alignment = TextAlignmentOptions.Center;
+                lvlTmp.text = "Cấp hiện tại: 1 / 10";
+
+                // Giá tiền
+                var costObj = new GameObject("Txt_Cost", typeof(RectTransform), typeof(TextMeshProUGUI));
+                costObj.transform.SetParent(cardTrans, false);
+                var costRect = costObj.GetComponent<RectTransform>();
+                costRect.anchorMin = new Vector2(0.5f, 0f);
+                costRect.anchorMax = new Vector2(0.5f, 0f);
+                costRect.pivot = new Vector2(0.5f, 0f);
+                costRect.anchoredPosition = new Vector2(0, 25);
+                costRect.sizeDelta = new Vector2(400, 45);
+                var costTmp = costObj.GetComponent<TextMeshProUGUI>();
+                costTmp.fontSize = 24;
+                costTmp.alignment = TextAlignmentOptions.Center;
+                costTmp.text = "Giá: <color=#FFD700>100 Cổ Tiền</color>";
+            }
+
+            var txtName = cardTrans.Find("Txt_UpgradeName")?.GetComponent<TextMeshProUGUI>();
+            var txtLvl = cardTrans.Find("Txt_Level")?.GetComponent<TextMeshProUGUI>();
+            var txtCost = cardTrans.Find("Txt_Cost")?.GetComponent<TextMeshProUGUI>();
+
+            if (txtName != null) so.FindProperty("_upgradeTitleText").objectReferenceValue = txtName;
+            if (txtLvl != null) so.FindProperty("_upgradeLevelText").objectReferenceValue = txtLvl;
+            if (txtCost != null) so.FindProperty("_upgradeCostText").objectReferenceValue = txtCost;
 
             // 3. Nút Mua Nâng Cấp
             Transform buyBtnTrans = root.Find("Btn_BuyUpgrade");
@@ -673,6 +741,15 @@ namespace ProjectZombie.EditorTools
                 tmp.alignment = TextAlignmentOptions.Center;
             }
             so.FindProperty("_buyUpgradeButton").objectReferenceValue = buyBtnTrans.GetComponent<Button>();
+
+            // Wire Presenter
+            if (presenter != null)
+            {
+                var soPresenter = new SerializedObject(presenter);
+                soPresenter.FindProperty("_view").objectReferenceValue = view;
+                soPresenter.ApplyModifiedProperties();
+                EditorUtility.SetDirty(presenter);
+            }
 
             // 4. Nút Đóng / Back
             Transform closeBtnTrans = root.Find("Btn_Close");

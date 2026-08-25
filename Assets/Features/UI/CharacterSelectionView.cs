@@ -93,7 +93,13 @@ namespace ProjectZombie.Features.UI
             if (_descriptionText != null) _descriptionText.text = description;
             if (_signatureSkillText != null) _signatureSkillText.text = formattedSkill;
             if (_passiveTraitText != null) _passiveTraitText.text = formattedPassive;
-            if (_characterAvatarImage != null && avatar != null) _characterAvatarImage.sprite = avatar;
+
+            if (_characterAvatarImage != null)
+            {
+                _characterAvatarImage.sprite = avatar;
+                _characterAvatarImage.enabled = (avatar != null);
+                _characterAvatarImage.color = (avatar != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
+            }
         }
     }
 }

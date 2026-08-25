@@ -111,25 +111,28 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSanctuaryTreeClicked()
         {
-            if (MetaUIManager.Instance != null)
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
             {
-                MetaUIManager.Instance.OpenScreen(MetaScreenType.SanctuaryTree);
+                metaManager.OpenScreen(MetaScreenType.SanctuaryTree);
             }
         }
 
         private void HandleCodexClicked()
         {
-            if (MetaUIManager.Instance != null)
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
             {
-                MetaUIManager.Instance.OpenScreen(MetaScreenType.Codex);
+                metaManager.OpenScreen(MetaScreenType.Codex);
             }
         }
 
         private void HandleSettingsClicked()
         {
-            if (MetaUIManager.Instance != null)
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
             {
-                MetaUIManager.Instance.OpenScreen(MetaScreenType.Settings);
+                metaManager.OpenScreen(MetaScreenType.Settings);
             }
         }
     }
