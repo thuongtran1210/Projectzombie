@@ -94,9 +94,18 @@ namespace ProjectZombie.Features.UI
 
         private void HandleHeroSelectClicked()
         {
-            if (MetaUIManager.Instance != null)
+            Debug.Log("[MainHubPresenter] Đã nhận sự kiện click nút TƯỚNG từ MainHubView!");
+
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+
+            if (metaManager != null)
             {
-                MetaUIManager.Instance.OpenScreen(MetaScreenType.CharacterSelect);
+                Debug.Log($"[MainHubPresenter] Đang gọi MetaUIManager ({metaManager.gameObject.name}).OpenScreen(CharacterSelect)...");
+                metaManager.OpenScreen(MetaScreenType.CharacterSelect);
+            }
+            else
+            {
+                Debug.LogError("[MainHubPresenter] Không tìm thấy MetaUIManager ở bất kỳ đâu trong Scene!");
             }
         }
 

@@ -26,22 +26,32 @@ namespace ProjectZombie.Features.UI
             {
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
-
-            // Nếu không phải là MainHub, mặc định ẩn màn hình khi khởi động Scene
-            if (ScreenType != MetaScreenType.MainHub)
-            {
-                Hide();
-            }
         }
 
         public virtual void Show()
         {
             gameObject.SetActive(true);
+            var cg = GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
+            }
+            Debug.Log($"[{GetType().Name}] -> Show() được gọi! (activeSelf={gameObject.activeSelf})");
         }
 
         public virtual void Hide()
         {
+            var cg = GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 0f;
+                cg.interactable = false;
+                cg.blocksRaycasts = false;
+            }
             gameObject.SetActive(false);
+            Debug.Log($"[{GetType().Name}] -> Hide() được gọi! (activeSelf={gameObject.activeSelf})");
         }
 
         /// <summary>

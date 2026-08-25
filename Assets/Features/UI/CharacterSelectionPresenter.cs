@@ -23,7 +23,6 @@ namespace ProjectZombie.Features.UI
     {
         [SerializeField] private CharacterSelectionView _view;
         [SerializeField] private ProjectZombie.Features.Player.CharacterSelectionData _selectionData;
-        [SerializeField] private GameObject[] _characterPrefabs; // [0]: Thu Sinh, [1]: Dao Si, [2]: Thanh Dong, [3]: An Si
 
         public event System.Action<GameObject> OnCharacterSelected;
 
@@ -46,6 +45,15 @@ namespace ProjectZombie.Features.UI
                 _view.OnPrevClicked += OnPrevCharacter;
                 _view.OnSelectClicked += OnSelectCharacter;
             }
+        }
+
+        private void OnEnable()
+        {
+            if (_characters == null || _characters.Length == 0)
+            {
+                InitCharacterData();
+            }
+            RenderCurrentCharacter();
         }
 
         private void Start()
@@ -126,19 +134,6 @@ namespace ProjectZombie.Features.UI
                 chosenPrefab = _selectionData.Characters[_currentIndex].playerPrefab;
                 _selectionData.SelectCharacter(_currentIndex);
             }
-            else if (_characterPrefabs != null && _currentIndex < _characterPrefabs.Length)
-            {
-                chosenPrefab = _characterPrefabs[_currentIndex];
-                if (_selectionData != null)
-                {
-                    _selectionData.SelectedPlayerPrefab = chosenPrefab;
-                }
-            }
-
-            if (chosenPrefab == null && _characterPrefabs != null && _currentIndex < _characterPrefabs.Length)
-            {
-                chosenPrefab = _characterPrefabs[_currentIndex];
-            }
 
             #if UNITY_EDITOR
             if (chosenPrefab == null)
@@ -147,7 +142,7 @@ namespace ProjectZombie.Features.UI
                     "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab",
                     "Assets/_Prefabs/Characters/Players/Dao Si.prefab",
                     "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab",
-                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab"
+                    "Assets/_Prefabs/Characters/Players/An Si.prefab"
                 };
                 if (_currentIndex >= 0 && _currentIndex < paths.Length)
                 {

@@ -13,6 +13,9 @@ namespace ProjectZombie.Features.Player
     [Serializable]
     public class GameplayUIBinder
     {
+        [Header("UI Managers")]
+        [SerializeField] private GameplayUIManager _gameplayUIManager;
+
         [Header("UI Presenters")]
         [SerializeField] private RunHUDPresenter _runHUDPresenter;
         [SerializeField] private PlayerInfoUIPresenter _playerInfoUIPresenter;
@@ -34,6 +37,11 @@ namespace ProjectZombie.Features.Player
             _upgradeUIPresenter = upgradeUI;
             _gameOverScreenPresenter = gameOver;
             _characterGaugeWidgetPresenter = gaugeWidget;
+        }
+
+        public void SetGameplayUIManager(GameplayUIManager manager)
+        {
+            _gameplayUIManager = manager;
         }
 
         public void BindAll(PlayerContext context)

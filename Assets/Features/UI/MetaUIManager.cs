@@ -74,12 +74,19 @@ namespace ProjectZombie.Features.UI
 
         public void PushScreen(BaseMetaScreenView screen)
         {
-            if (screen == null) return;
+            if (screen == null)
+            {
+                Debug.LogError("[MetaUIManager] Không thể PushScreen vì Screen truyền vào bị NULL!");
+                return;
+            }
+
+            Debug.Log($"[MetaUIManager] PushScreen: Đang hiển thị {screen.gameObject.name} (ScreenType: {screen.ScreenType})");
 
             if (_screenStack.Count > 0)
             {
                 var currentTop = _screenStack.Peek();
                 if (currentTop == screen) return; // Đang ở màn hình này rồi
+                Debug.Log($"[MetaUIManager] Ẩn màn hình cũ: {currentTop.gameObject.name}");
                 currentTop.Hide();
             }
 

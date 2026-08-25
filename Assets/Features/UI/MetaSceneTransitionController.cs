@@ -15,12 +15,12 @@ namespace ProjectZombie.Features.UI
     {
         public static MetaSceneTransitionController Instance { get; private set; }
 
-        [Header("Canvas Roots")]
-        [SerializeField] private CanvasGroup _metaMenuCanvasGroup;
-        [SerializeField] private CanvasGroup _gameplayCanvasGroup;
-        [SerializeField] private GameObject _mobileControlsPanel;
-        [SerializeField] private GameObject _runHUDPanel;
+        [Header("Canvas Group Overlay")]
         [SerializeField] private CanvasGroup _fadeOverlayCanvasGroup;
+
+        [Header("UI Subsystems")]
+        [SerializeField] private MetaUIManager _metaUIManager;
+        [SerializeField] private GameplayUIManager _gameplayUIManager;
 
         [Header("Systems")]
         [SerializeField] private MainHubPresenter _mainHubPresenter;
@@ -39,44 +39,27 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
+            if (_fadeOverlayCanvasGroup == null)
+            {
+                _fadeOverlayCanvasGroup = GetComponent<CanvasGroup>();
+            }
+
+            if (_metaUIManager == null) _metaUIManager = FindObjectOfType<MetaUIManager>(true);
+            if (_gameplayUIManager == null) _gameplayUIManager = FindObjectOfType<GameplayUIManager>(true);
             if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
             if (_spawnManager == null) _spawnManager = FindObjectOfType<SpawnManager>(true);
             if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
 
-            if (_mobileControlsPanel == null)
-            {
-                var panel = GameObject.Find("Panel_MobileControls");
-                if (panel != null) _mobileControlsPanel = panel;
-            }
-
-            if (_runHUDPanel == null)
-            {
-                var hud = GameObject.Find("UI_RunHUDRoot");
-                if (hud == null) hud = GameObject.Find("RunHUD_Root");
-                if (hud != null) _runHUDPanel = hud;
-            }
-
-            // Đăng ký lắng nghe sự kiện Xuất Trận
+            // Đăng ký lắng nghe sự kiện Xuất Trận từ Presenter
             if (_mainHubPresenter != null)
             {
                 _mainHubPresenter.OnStartRunRequested -= StartRun;
                 _mainHubPresenter.OnStartRunRequested += StartRun;
             }
 
-            // Fallback: Tìm nút Btn_StartRun trong Scene nếu chưa được wire qua Presenter
-            var startBtn = GameObject.Find("Btn_StartRun");
-            if (startBtn != null)
-            {
-                var btn = startBtn.GetComponent<UnityEngine.UI.Button>();
-                if (btn != null)
-                {
-                    btn.onClick.RemoveListener(StartRun);
-                    btn.onClick.AddListener(StartRun);
-                }
-            }
-
-            // Mặc định luôn bật Sảnh Meta Menu và ẩn Gameplay Canvas + Mobile Controls ngay từ Awake
-            ApplyStateVisuals(true);
+            // Thiết lập trạng thái hiển thị ban đầu
+            bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
+            ApplyStateVisuals(isMainMenu);
         }
 
         private void Start()
@@ -87,7 +70,6 @@ namespace ProjectZombie.Features.UI
                 _mainHubPresenter.OnStartRunRequested += StartRun;
             }
 
-            // Đồng bộ lại trạng thái từ GameStateManager
             bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
             ApplyStateVisuals(isMainMenu);
         }
@@ -141,7 +123,11 @@ namespace ProjectZombie.Features.UI
             // 2. Chuyển UI về Meta
             ApplyStateVisuals(true);
 
-            if (MetaUIManager.Instance != null)
+            if (_metaUIManager != null)
+            {
+                _metaUIManager.OpenScreen(MetaScreenType.MainHub);
+            }
+            else if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.OpenScreen(MetaScreenType.MainHub);
             }
@@ -178,49 +164,22 @@ namespace ProjectZombie.Features.UI
 
         private void ApplyStateVisuals(bool isMeta)
         {
-            if (_metaMenuCanvasGroup != null)
+            if (_metaUIManager != null)
             {
-                _metaMenuCanvasGroup.gameObject.SetActive(isMeta);
-                _metaMenuCanvasGroup.alpha = isMeta ? 1f : 0f;
-                _metaMenuCanvasGroup.blocksRaycasts = isMeta;
-                _metaMenuCanvasGroup.interactable = isMeta;
+                _metaUIManager.SetMetaCanvasActive(isMeta);
+            }
+            else if (MetaUIManager.Instance != null)
+            {
+                MetaUIManager.Instance.SetMetaCanvasActive(isMeta);
             }
 
-            if (_gameplayCanvasGroup != null)
+            if (_gameplayUIManager != null)
             {
-                _gameplayCanvasGroup.gameObject.SetActive(!isMeta);
-                _gameplayCanvasGroup.alpha = !isMeta ? 1f : 0f;
-                _gameplayCanvasGroup.blocksRaycasts = !isMeta;
-                _gameplayCanvasGroup.interactable = !isMeta;
+                _gameplayUIManager.SetGameplayCanvasActive(!isMeta);
             }
-
-            if (_mobileControlsPanel != null)
+            else if (GameplayUIManager.Instance != null)
             {
-                _mobileControlsPanel.SetActive(!isMeta);
-            }
-            else
-            {
-                var panel = GameObject.Find("Panel_MobileControls");
-                if (panel != null)
-                {
-                    _mobileControlsPanel = panel;
-                    _mobileControlsPanel.SetActive(!isMeta);
-                }
-            }
-
-            if (_runHUDPanel != null)
-            {
-                _runHUDPanel.SetActive(!isMeta);
-            }
-            else
-            {
-                var hud = GameObject.Find("UI_RunHUDRoot");
-                if (hud == null) hud = GameObject.Find("RunHUD_Root");
-                if (hud != null)
-                {
-                    _runHUDPanel = hud;
-                    _runHUDPanel.SetActive(!isMeta);
-                }
+                GameplayUIManager.Instance.SetGameplayCanvasActive(!isMeta);
             }
 
             if (_spawnManager != null)

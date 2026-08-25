@@ -46,7 +46,32 @@ namespace ProjectZombie.EditorTools
         public static void SetupFullUIInScene()
         {
             // 1. Tìm hoặc tạo Canvas Chính
-            Canvas mainCanvas = FindObjectOfType<Canvas>();
+            Canvas mainCanvas = null;
+            var masterObj = GameObject.Find("Canvas_Master");
+            if (masterObj != null) mainCanvas = masterObj.GetComponent<Canvas>();
+
+            if (mainCanvas == null)
+            {
+                var gameUICanvasObj = GameObject.Find("GameUICanvas");
+                if (gameUICanvasObj != null)
+                {
+                    mainCanvas = gameUICanvasObj.GetComponent<Canvas>();
+                    if (mainCanvas != null)
+                    {
+                        mainCanvas.gameObject.name = "Canvas_Master";
+                    }
+                }
+            }
+
+            if (mainCanvas == null)
+            {
+                mainCanvas = FindObjectOfType<Canvas>();
+                if (mainCanvas != null)
+                {
+                    mainCanvas.gameObject.name = "Canvas_Master";
+                }
+            }
+
             if (mainCanvas == null)
             {
                 GameObject canvasObj = new GameObject("Canvas_Master", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -122,12 +147,14 @@ namespace ProjectZombie.EditorTools
             Transform gameRoot = mainCanvas.transform.Find("Canvas_Gameplay");
             if (gameRoot == null)
             {
-                GameObject gameObj = new GameObject("Canvas_Gameplay", typeof(RectTransform), typeof(CanvasGroup));
+                GameObject gameObj = new GameObject("Canvas_Gameplay", typeof(RectTransform), typeof(CanvasGroup), typeof(GameplayUIManager));
                 gameObj.transform.SetParent(mainCanvas.transform, false);
                 gameRoot = gameObj.transform;
             }
             StretchRect(gameRoot.GetComponent<RectTransform>());
             var gameGroup = gameRoot.GetComponent<CanvasGroup>();
+            var gameplayManager = gameRoot.GetComponent<GameplayUIManager>();
+            if (gameplayManager == null) gameplayManager = gameRoot.gameObject.AddComponent<GameplayUIManager>();
 
             // 4. Fade Overlay Panel
             Transform fadeTrans = mainCanvas.transform.Find("Panel_FadeOverlay");
@@ -150,12 +177,17 @@ namespace ProjectZombie.EditorTools
             if (hudTrans == null) hudTrans = gameRoot.Find("RunHUD_Root");
             if (hudTrans == null)
             {
-                var existingHUD = GameObject.Find("UI_RunHUDRoot");
-                if (existingHUD == null) existingHUD = GameObject.Find("RunHUD_Root");
-                if (existingHUD != null)
+                // Tìm kiếm cả trường hợp có khoảng trắng thừa trong tên (vd: " UI_RunHUDRoot")
+                var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+                foreach (var go in allObjects)
                 {
-                    existingHUD.transform.SetParent(gameRoot, false);
-                    hudTrans = existingHUD.transform;
+                    if (go.name.Trim() == "UI_RunHUDRoot" || go.name.Trim() == "RunHUD_Root")
+                    {
+                        go.name = "UI_RunHUDRoot";
+                        go.transform.SetParent(gameRoot, false);
+                        hudTrans = go.transform;
+                        break;
+                    }
                 }
             }
 
@@ -163,12 +195,51 @@ namespace ProjectZombie.EditorTools
             if (mobileTrans == null)
             {
                 var existingMobile = GameObject.Find("Panel_MobileControls");
+                if (existingMobile == null)
+                {
+                    var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+                    foreach (var go in allObjects)
+                    {
+                        if (go.name.Trim() == "Panel_MobileControls")
+                        {
+                            existingMobile = go;
+                            break;
+                        }
+                    }
+                }
+
                 if (existingMobile != null)
                 {
                     existingMobile.transform.SetParent(gameRoot, false);
                     mobileTrans = existingMobile.transform;
                 }
             }
+
+            // Tự động gọi MobileControlsSetupTool để dựng cụm Joystick & Attack Button nếu chưa có
+            EditorApplication.ExecuteMenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire");
+
+            if (mobileTrans == null)
+            {
+                var createdMobile = GameObject.Find("Panel_MobileControls");
+                if (createdMobile != null)
+                {
+                    createdMobile.transform.SetParent(gameRoot, false);
+                    mobileTrans = createdMobile.transform;
+                }
+            }
+
+            // Wire GameplayUIManager
+            var soGameplay = new SerializedObject(gameplayManager);
+            soGameplay.FindProperty("_gameplayCanvasGroup").objectReferenceValue = gameGroup;
+            if (hudTrans != null)
+            {
+                soGameplay.FindProperty("_runHUDPanel").objectReferenceValue = hudTrans.gameObject;
+            }
+            if (mobileTrans != null)
+            {
+                soGameplay.FindProperty("_mobileControlsPanel").objectReferenceValue = mobileTrans.gameObject;
+            }
+            soGameplay.ApplyModifiedProperties();
 
             // 6. MetaSceneTransitionController
             var transitionController = FindObjectOfType<MetaSceneTransitionController>();
@@ -179,35 +250,11 @@ namespace ProjectZombie.EditorTools
             }
 
             var soTC = new SerializedObject(transitionController);
-            soTC.FindProperty("_metaMenuCanvasGroup").objectReferenceValue = metaGroup;
-            soTC.FindProperty("_gameplayCanvasGroup").objectReferenceValue = gameGroup;
-            if (mobileTrans != null)
-            {
-                soTC.FindProperty("_mobileControlsPanel").objectReferenceValue = mobileTrans.gameObject;
-            }
-            if (hudTrans != null)
-            {
-                soTC.FindProperty("_runHUDPanel").objectReferenceValue = hudTrans.gameObject;
-            }
             soTC.FindProperty("_fadeOverlayCanvasGroup").objectReferenceValue = fadeGroup;
+            soTC.FindProperty("_metaUIManager").objectReferenceValue = metaManager;
+            soTC.FindProperty("_gameplayUIManager").objectReferenceValue = gameplayManager;
             soTC.FindProperty("_mainHubPresenter").objectReferenceValue = hubTrans.GetComponent<MainHubPresenter>();
             soTC.ApplyModifiedProperties();
-
-            // Tự động gọi MobileControlsSetupTool để dựng cụm Joystick & Attack Button
-            EditorApplication.ExecuteMenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire");
-
-            // Đảm bảo Panel_MobileControls được gán lại nếu vừa mới tạo
-            if (mobileTrans == null)
-            {
-                var createdMobile = GameObject.Find("Panel_MobileControls");
-                if (createdMobile != null)
-                {
-                    createdMobile.transform.SetParent(gameRoot, false);
-                    soTC.Update();
-                    soTC.FindProperty("_mobileControlsPanel").objectReferenceValue = createdMobile;
-                    soTC.ApplyModifiedProperties();
-                }
-            }
 
             EditorUtility.SetDirty(mainCanvas);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainCanvas.gameObject.scene);
@@ -509,6 +556,20 @@ namespace ProjectZombie.EditorTools
 
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(view);
+
+            // Wire Presenter
+            if (presenter != null)
+            {
+                var soPresenter = new SerializedObject(presenter);
+                soPresenter.FindProperty("_view").objectReferenceValue = view;
+                var selectionData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                if (selectionData != null)
+                {
+                    soPresenter.FindProperty("_selectionData").objectReferenceValue = selectionData;
+                }
+                soPresenter.ApplyModifiedProperties();
+                EditorUtility.SetDirty(presenter);
+            }
         }
 
         private static void BuildSanctuaryHierarchy(Transform root)
