@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI
 {
@@ -155,9 +156,37 @@ namespace ProjectZombie.Features.UI
             {
                 Debug.LogError($"[{nameof(CharacterSelectionPresenter)}] Không tìm thấy Prefab của nhân vật tại index {_currentIndex}!");
             }
-            else
+            // Thiết lập RunLoadoutState cho trận đấu (Action RPG v5.0)
+            if (_selectionData != null && _currentIndex < _selectionData.Characters.Count)
             {
-                Debug.Log($"[{nameof(CharacterSelectionPresenter)}] Đang phát event OnCharacterSelected với Prefab: {chosenPrefab.name}");
+                var charEntry = _selectionData.Characters[_currentIndex];
+                
+                #if UNITY_EDITOR
+                // Tìm kiếm vũ khí phù hợp theo hệ nhân vật
+                var allWeapons = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                ProjectZombie.Features.Weapons.WeaponData primaryW = null;
+                var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>();
+
+                foreach (var guid in allWeapons)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(path);
+                    if (wd == null) continue;
+
+                    if (primaryW == null && (wd.weaponId == "W002" || wd.name.Contains("Bút") || wd.name.Contains("Kiếm") || wd.name.Contains("PhiTiêu")))
+                    {
+                        primaryW = wd;
+                    }
+                    else if (relics.Count < 3 && (wd.weaponId == "W003" || wd.weaponId == "W004" || wd.weaponId == "W005"))
+                    {
+                        relics.Add(wd);
+                    }
+                }
+
+                RunLoadoutState.SetLoadout(charEntry, primaryW, relics);
+                #else
+                RunLoadoutState.SetLoadout(charEntry, null, null);
+                #endif
             }
 
             OnCharacterSelected?.Invoke(chosenPrefab);

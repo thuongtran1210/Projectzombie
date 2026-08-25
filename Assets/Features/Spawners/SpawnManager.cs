@@ -15,7 +15,7 @@ namespace ProjectZombie.Features.Spawners
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
         [Header("Spawn Settings & Limits")]
-        [SerializeField] private int maxEnemyCap = 200; // Khống chế tối đa 200 quái trên màn hình (GDD Performance)
+        [SerializeField] private int maxEnemyCap = 50; // Khống chế 30-50 quái cho không gian Combo & Dash (GDD v5.0 Action RPG)
         [SerializeField] private float minSpawnRadius = 12f;
         [SerializeField] private float maxSpawnRadius = 18f;
 

@@ -34,12 +34,12 @@ namespace ProjectZombie.Features.Upgrades
 
             if (!hasWeapon)
             {
-                // Nếu chưa sở hữu, chỉ cho phép thẻ Mở Khóa (yêu cầu cấp 0) và chưa đầy 6 slot vũ khí
-                return requiredCurrentLevel == 0 && !weaponManager.IsFull();
+                // Action RPG: Không cho phép nhặt vũ khí mới ngẫu nhiên giữa trận
+                return false;
             }
             else
             {
-                // Nếu đã sở hữu, kiểm tra chưa đạt max level và khớp cấp độ
+                // Nếu đã sở hữu trong Loadout, kiểm tra chưa đạt max level và khớp cấp độ
                 return baseWeapon.WeaponLevel < baseWeapon.MaxLevel && baseWeapon.WeaponLevel == requiredCurrentLevel;
             }
         }

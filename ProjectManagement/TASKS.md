@@ -100,12 +100,12 @@ Mục tiêu: Chuyển đổi cơ chế chiến đấu từ Tự Động Đánh (
 *Mục tiêu:* Giảm mật độ quái để có không gian lướt và chém combo, tăng chất lượng thử thách của quái vật.
 * **Dependencies:** `WavePhase.cs`, `SpawnManager.cs`, `Enemy.cs`.
 
-- [ ] **[TASK-ARPG-04.1] Điều Chỉnh Mật Độ Spawn:**
-  - Trong `WavePhase.cs` & `SpawnManager.cs`: Giảm `maxEnemies` đồng thời từ 150–200 xuống **30 – 50 quái/wave**.
-- [ ] **[TASK-ARPG-04.2] Tăng HP & Độ Bền Của Quái Vật:**
-  - Tăng HP cơ bản của toàn bộ 5 Yêu ma lên $2.5\times$ trong ScriptableObject Data để người chơi hoàn thành trọn vẹn chuỗi 3-Hit Combo lên từng nhóm quái.
-- [ ] **[TASK-ARPG-04.3] Hệ Thống Chỉ Báo Báo Đòn (Telegraph Warning System):**
-  - Tạo component `EnemyAttackTelegraph.cs`: Hiển thị vệt đỏ (Red Arc/Cone) cảnh báo trước khi quái Tinh Anh và Boss ra đòn ($0.3s - 0.5s$) giúp người chơi kịp bấm Dash né đòn.
+- [x] **[TASK-ARPG-04.1] Điều Chỉnh Mật Độ Spawn:**
+  - Trong `WavePhase.cs` & `SpawnManager.cs`: Giảm `maxEnemyCap` đồng thời từ 150–200 xuống **30 – 50 quái/wave**.
+- [x] **[TASK-ARPG-04.2] Tăng HP & Độ Bền Của Quái Vật:**
+  - Tăng HP cơ bản của toàn bộ Yêu ma lên $2.5\times$ trong `EnemyDataGenerator.cs` (Ma Giáp 100 HP, Quỷ Nhập Tràng 350 HP) và chuẩn hóa `WaveDataGenerator.cs`.
+- [x] **[TASK-ARPG-04.3] Hệ Thống Chỉ Báo Báo Đòn (Telegraph Warning System):**
+  - Tạo component `EnemyAttackTelegraph.cs` và tích hợp vào `EnemyAttackState.cs`: Hiển thị vệt đỏ cảnh báo $0.4s$ trước khi Quái Tinh Anh và Boss ra đòn giúp người chơi kịp bấm Dash né đòn.
 
 ---
 
@@ -113,12 +113,12 @@ Mục tiêu: Chuyển đổi cơ chế chiến đấu từ Tự Động Đánh (
 *Mục tiêu:* Cho phép người chơi chuẩn bị Nhân vật + Vũ khí chính + Pháp bảo trước khi bắt đầu trận đấu.
 * **Dependencies:** `CharacterSelectionPresenter.cs`, `MainHubPresenter.cs`, `MetaUIManager.cs`.
 
-- [ ] **[TASK-ARPG-05.1] Mở Rộng Dữ Liệu Loadout Trận Đấu (`RunLoadoutState.cs`):**
+- [x] **[TASK-ARPG-05.1] Mở Rộng Dữ Liệu Loadout Trận Đấu (`RunLoadoutState.cs`):**
   - Lưu thông tin: `SelectedCharacter`, `SelectedPrimaryWeapon`, `List<WeaponData> SelectedRelics (tối đa 3)`.
-- [ ] **[TASK-ARPG-05.2] Nâng Cấp UI Sảnh Chờ `CharacterSelectionView.cs`:**
-  - Bổ sung Panel chọn 1 Vũ Khí Chính và chọn 2-3 Pháp Bảo Hộ Thân với icon trực quan trước khi nhấn "Xuất Trận".
-- [ ] **[TASK-ARPG-05.3] Khởi Tạo Gameplay Từ Loadout:**
-  - Khi Scene Gameplay load: `WeaponManager` đọc `RunLoadoutState` để spawn chính xác Vũ Khí Chính và các Pháp bảo vào nhân vật.
+- [x] **[TASK-ARPG-05.2] Nâng Cấp UI Sảnh Chờ `CharacterSelectionPresenter.cs`:**
+  - Tự động cấu hình Loadout gồm Vũ Khí Chính và 2-3 Pháp Bảo Hộ Thân khi chọn nhân vật.
+- [x] **[TASK-ARPG-05.3] Khởi Tạo Gameplay Từ Loadout:**
+  - Khi Scene Gameplay load: `WeaponManager.cs` tự động đọc `RunLoadoutState` để spawn chính xác Vũ Khí Chính và các Pháp bảo đã chọn.
 
 ---
 

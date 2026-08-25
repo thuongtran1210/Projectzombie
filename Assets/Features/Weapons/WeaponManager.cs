@@ -72,10 +72,29 @@ namespace ProjectZombie.Features.Weapons
 
         private void Start()
         {
-            // 1. Sinh ra vũ khí từ Data-Driven Loadout (Hướng 2)
-            foreach (var weaponData in startingLoadout)
+            // 1. Kiểm tra nếu có Loadout tùy chỉnh từ Sảnh Chờ (Meta Hub Loadout)
+            if (RunLoadoutState.HasCustomLoadout)
             {
-                EquipWeaponFromData(weaponData);
+                if (RunLoadoutState.SelectedPrimaryWeapon != null)
+                {
+                    EquipWeaponFromData(RunLoadoutState.SelectedPrimaryWeapon, isPrimary: true);
+                }
+
+                foreach (var relicData in RunLoadoutState.SelectedRelics)
+                {
+                    if (relicData != null)
+                    {
+                        EquipWeaponFromData(relicData, isPrimary: false);
+                    }
+                }
+            }
+            else
+            {
+                // Fallback: Sinh ra vũ khí từ startingLoadout (hoặc hierarchy)
+                foreach (var weaponData in startingLoadout)
+                {
+                    EquipWeaponFromData(weaponData);
+                }
             }
 
             // 2. Tìm vũ khí có sẵn trong hierarchy (để hỗ trợ tương thích ngược / test nhanh)
@@ -95,7 +114,7 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        public void EquipWeaponFromData(WeaponData data)
+        public void EquipWeaponFromData(WeaponData data, bool isPrimary = false)
         {
             if (data == null || data.weaponPrefab == null)
             {
@@ -113,6 +132,7 @@ namespace ProjectZombie.Features.Weapons
                 if (string.IsNullOrEmpty(newWeapon.displayName)) newWeapon.displayName = data.weaponName;
                 if (newWeapon.icon == null) newWeapon.icon = data.icon;
                 if (string.IsNullOrEmpty(newWeapon.description)) newWeapon.description = data.description;
+                if (isPrimary) newWeapon.isPrimaryActiveWeapon = true;
             }
             
             AddWeapon(newWeapon);

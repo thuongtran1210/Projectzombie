@@ -10,9 +10,12 @@ namespace ProjectZombie.Features.Enemies
         {
         }
 
+        private bool _isTelegraphing = false;
+
         public override void Enter()
         {
             _enemy.Rb.velocity = Vector2.zero;
+            _isTelegraphing = false;
             if (_enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.SetRunning(false);
@@ -24,6 +27,12 @@ namespace ProjectZombie.Features.Enemies
             if (_enemy.PlayerTransform == null)
             {
                 _stateMachine.ChangeState(_enemy.IdleState);
+                return;
+            }
+
+            if (_isTelegraphing)
+            {
+                // Đang trong thời gian phát vệt đỏ báo hiệu -> Đứng yên khóa hướng
                 return;
             }
 
@@ -60,14 +69,31 @@ namespace ProjectZombie.Features.Enemies
                 }
             }
 
-            // Logic tấn công
+            // Logic tấn công có hỗ trợ Telegraph
             if (Time.time >= _lastAttackTime + _enemy.Config.attackCooldown)
             {
-                if (_enemy.Attacker != null)
+                var telegraph = _enemy.GetComponent<EnemyAttackTelegraph>();
+                if (telegraph != null)
                 {
-                    _enemy.Attacker.Attack();
+                    _isTelegraphing = true;
+                    telegraph.ShowTelegraph(_enemy.PlayerTransform.position, () =>
+                    {
+                        if (_enemy != null && _enemy.Attacker != null)
+                        {
+                            _enemy.Attacker.Attack();
+                        }
+                        _lastAttackTime = Time.time;
+                        _isTelegraphing = false;
+                    });
                 }
-                _lastAttackTime = Time.time;
+                else
+                {
+                    if (_enemy.Attacker != null)
+                    {
+                        _enemy.Attacker.Attack();
+                    }
+                    _lastAttackTime = Time.time;
+                }
             }
         }
 
