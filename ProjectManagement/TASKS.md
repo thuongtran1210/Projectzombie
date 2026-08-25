@@ -84,15 +84,15 @@ Mục tiêu: Chuyển đổi cơ chế chiến đấu từ Tự Động Đánh (
 *Mục tiêu:* Cải biến giao diện Lên Cấp, tập trung biến hóa chuỗi đòn chém và thức tỉnh Pháp bảo đã chọn.
 * **Dependencies:** `UpgradeData.cs`, `UpgradeManager.cs`, `UpgradeUIPresenter.cs`.
 
-- [ ] **[TASK-ARPG-03.1] Mở Rộng Schema Dữ Liệu `UpgradeData.cs`:**
+- [x] **[TASK-ARPG-03.1] Mở Rộng Schema Dữ Liệu `UpgradeData.cs`:**
   - Thêm `UpgradeCategory`: `ComboAugment` (Biến hóa đòn chém), `RelicAwakening` (Thức tỉnh Pháp bảo), `DashTrait` (Cường hóa lướt), `ConditionalPassive` (Nội tại tình huống), `BreakthroughUltimate` (Bí tịch tuyệt kỹ).
-- [ ] **[TASK-ARPG-03.2] Nâng Cấp Bộ Lọc Gacha `UpgradeManager.cs`:**
+- [x] **[TASK-ARPG-03.2] Nâng Cấp Bộ Lọc Gacha `UpgradeManager.cs`:**
   - Chỉ cho phép xuất hiện thẻ thuộc về: (1) Vũ Khí Chính đang cầm, (2) Các Pháp bảo đã trang bị trong Loadout, (3) Thẻ Lướt & Chỉ số.
   - Triệt tiêu hoàn toàn việc roll ra các vũ khí lạ chưa được trang bị ngoài sảnh.
-- [ ] **[TASK-ARPG-03.3] Cơ Chế Đột Phá Tuyệt Kỹ (Breakthrough System):**
+- [x] **[TASK-ARPG-03.3] Cơ Chế Đột Phá Tuyệt Kỹ (Breakthrough System):**
   - Tại các mốc Level 5 và Level 10 (hoặc sau khi hạ Boss 1): Ép hiển thị 3 thẻ **Bí Tịch Tuyệt Kỹ** làm thay đổi hoàn toàn hình thái chiến đấu (VD: *Bát Quái Kiếm Trận, Hóa Thần Nhập Ma, Thái Cực Hộ Mệnh*).
-- [ ] **[TASK-ARPG-03.4] Tạo Bộ Thẻ ScriptableObjects Mẫu Cho 4 Nhóm:**
-  - Tạo các thẻ: Kiếm Khí Trảm, Trảm Phong Liên Hoàn, Tàn Ảnh Kiếm, Lướt Phản Đòn, Trảm Hậu (+100% Crit sau lưng), Cuồng Nộ.
+- [x] **[TASK-ARPG-03.4] Tạo Bộ Thẻ ScriptableObjects Mẫu Cho 4 Nhóm:**
+  - Tạo Editor Tool `ActionRPGUpgradeGenerator.cs`: Sinh tự động các thẻ Kiếm Khí Trảm, Trảm Phong Liên Hoàn, Tàn Ảnh Kiếm, Lướt Phản Đòn, Bát Quái Kiếm Trận, Hóa Thần Nhập Ma.
 
 ---
 

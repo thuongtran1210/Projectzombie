@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc301be09ccd3b54996137b7a5585f37, type: 3}
+  m_Name: ARPG_Combo_03_TrongTramDienRong
+  m_EditorClassIdentifier: 
+  id: ARPG_Combo_03_TrongTramDienRong
+  upgradeName: "Tr\u1ECDng Tr\u1EA3m Di\u1EC7n R\u1ED9ng"
+  description: "T\u0103ng <color=#FF8800>+50% G\xF3c qu\xE9t h\xECnh qu\u1EA1t</color>
+    c\u1EE7a nh\xE1t ch\xE9m, t\u0103ng m\u1EA1nh l\u1EF1c h\u1EA5t v\u0103ng qu\xE1i
+    v\u1EADt."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 4
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 5
+  targetWeaponId: 
+  comboDamageMultiplierBonus: 0.3
+  attackSpeedBonus: 0.05
+  slashAreaScaleBonus: 0.5
+  finisherKnockbackBonus: 4

@@ -9,7 +9,13 @@ namespace ProjectZombie.Features.Upgrades
         CommonUpgrade,
         FactionCounterUpgrade,
         RareUpgrade,
-        EvolutionUpgrade
+        EvolutionUpgrade,
+        // --- Nhóm Thẻ Action RPG Roguelite (GDD v5.0) ---
+        ComboAugment,        // Bí kíp biến hóa chuỗi đòn chém (Combo 1-2-3)
+        RelicAwakening,      // Thức tỉnh & cường hóa Pháp bảo hộ thân đã mang theo
+        DashTrait,           // Cường hóa kỹ năng Lướt (Dash Cancel, Tàn ảnh, Parry)
+        ConditionalPassive,  // Nội tại tình huống (Trảm hậu, Cuồng nộ, Hành quyết)
+        BreakthroughUltimate // Bí tịch đột phá tuyệt kỹ (Mốc Level 5 & 10)
     }
 
     [System.Serializable]

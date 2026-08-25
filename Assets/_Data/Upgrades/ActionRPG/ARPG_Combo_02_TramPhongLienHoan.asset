@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc301be09ccd3b54996137b7a5585f37, type: 3}
+  m_Name: ARPG_Combo_02_TramPhongLienHoan
+  m_EditorClassIdentifier: 
+  id: ARPG_Combo_02_TramPhongLienHoan
+  upgradeName: "Tr\u1EA3m Phong Li\xEAn Ho\xE0n"
+  description: "Gi\u1EA3m 30% th\u1EDDi gian tr\u1EC5 gi\u1EEFa c\xE1c nh\xE1t ch\xE9m,
+    t\u0103ng <color=#00FF88>+35% T\u1ED1c \u0111\u1ED9 vung \u0111\xF2n</color>
+    li\xEAn ho\xE0n."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 5
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 2
+  targetWeaponId: 
+  comboDamageMultiplierBonus: 0.15
+  attackSpeedBonus: 0.35
+  slashAreaScaleBonus: 0.1
+  finisherKnockbackBonus: 1.5

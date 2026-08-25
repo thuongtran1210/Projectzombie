@@ -175,7 +175,22 @@ namespace ProjectZombie.Features.Upgrades
             float weight = Mathf.Max(1f, upgrade.spawnWeight);
 
             // 1. Phân loại theo thể loại thẻ
-            if (upgrade is WeaponUpgradeData wud)
+            if (upgrade is ComboAugmentUpgradeData || upgrade.upgradeType == UpgradeType.ComboAugment)
+            {
+                // Thẻ Bí Kíp Đòn Chém cho Vũ Khí Chính -> SIÊU ƯU TIÊN (3.0x)
+                weight *= 3.0f;
+            }
+            else if (upgrade is DashTraitUpgradeData || upgrade.upgradeType == UpgradeType.DashTrait)
+            {
+                // Thẻ Cường Hóa Lướt -> ƯU TIÊN CAO (2.5x)
+                weight *= 2.5f;
+            }
+            else if (upgrade is BreakthroughUpgradeData || upgrade.upgradeType == UpgradeType.BreakthroughUltimate)
+            {
+                // Thẻ Đột Phá Tuyệt Kỹ khi thỏa mốc cấp độ -> CỰC KỲ ƯU TIÊN (6.0x)
+                weight *= 6.0f;
+            }
+            else if (upgrade is WeaponUpgradeData wud)
             {
                 if (wud.requiredCurrentLevel > 0)
                 {
@@ -184,8 +199,8 @@ namespace ProjectZombie.Features.Upgrades
                 }
                 else
                 {
-                    // Thẻ Mở khóa vũ khí mới -> Trọng số gốc
-                    weight *= 1.0f;
+                    // Thẻ Mở khóa vũ khí mới -> Trọng số thấp trong Action RPG
+                    weight *= 0.5f;
                 }
             }
             else if (upgrade is EvolutionUpgradeData)

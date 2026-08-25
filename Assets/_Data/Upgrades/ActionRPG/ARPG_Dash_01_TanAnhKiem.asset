@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13979b1682607044bfc5ff14db5a530, type: 3}
+  m_Name: ARPG_Dash_01_TanAnhKiem
+  m_EditorClassIdentifier: 
+  id: ARPG_Dash_01_TanAnhKiem
+  upgradeName: "T\xE0n \u1EA2nh Ki\u1EBFm"
+  description: "Gi\u1EA3m <color=#4DEEEA>30% Th\u1EDDi gian h\u1ED3i L\u01B0\u1EDBt</color>
+    v\xE0 t\u0103ng 35% T\u1ED1c \u0111\u1ED9 l\u01B0\u1EDBt n\xE9 \u0111\xF2n."
+  icon: {fileID: 0}
+  upgradeType: 8
+  spawnWeight: 6
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 2
+  dashCooldownReduction: 0.3
+  dashSpeedBonus: 0.35
+  postDashCritBonus: 0.15

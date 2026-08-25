@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972e44d57623a1847832672e87f32a70, type: 3}
+  m_Name: ARPG_Breakthrough_02_HoaThanNhapMa
+  m_EditorClassIdentifier: 
+  id: ARPG_Breakthrough_02_HoaThanNhapMa
+  upgradeName: "B\xED T\u1ECBch: H\xF3a Th\u1EA7n Nh\u1EADp Ma"
+  description: "\u0110\u1ED8T PH\xC1 C\u1EA4P 10: T\u0103ng <color=#FF3300>+100%
+    S\xE1t th\u01B0\u01A1ng V\u0169 Kh\xED</color>, t\u1EF1 \u0111\u1ED9ng k\u1EBFt
+    li\u1EC5u ngay qu\xE1i th\u01B0\u1EDDng d\u01B0\u1EDBi 20% HP!"
+  icon: {fileID: 0}
+  upgradeType: 10
+  spawnWeight: 10
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  requiredPlayerLevel: 10
+  allDamageMultiplier: 1
+  relicScaleMultiplier: 0.3
+  executeHealthThreshold: 0.2

@@ -165,5 +165,11 @@ namespace ProjectZombie.Features.Player
             AttackSpeed += amount;
             OnStatsUpdated?.Invoke();
         }
+
+        public void ReduceDashCooldown(float percentage)
+        {
+            DashCooldown = Mathf.Max(0.4f, DashCooldown * (1f - Mathf.Clamp01(percentage)));
+            OnStatsUpdated?.Invoke();
+        }
     }
 }
