@@ -89,6 +89,19 @@ namespace ProjectZombie.EditorTools
                 scaler.matchWidthOrHeight = 0.5f;
             }
 
+            // 1.1. Đảm bảo có MetaCurrencyManager & GameManager
+            var currencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
+            if (currencyMgr == null)
+            {
+                currencyMgr = mainCanvas.gameObject.AddComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
+            }
+
+            var gameMgr = GameObject.Find("GameManager");
+            if (gameMgr == null)
+            {
+                gameMgr = new GameObject("GameManager", typeof(ProjectZombie.Core.Save.GameManager));
+            }
+
             // 2. Dựng Canvas_MetaMenu Root
             Transform metaRoot = mainCanvas.transform.Find("Canvas_MetaMenu");
             if (metaRoot == null)
