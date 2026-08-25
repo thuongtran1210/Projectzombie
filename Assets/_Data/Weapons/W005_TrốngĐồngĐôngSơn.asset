@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W005_Tr\u1ED1ng\u0110\u1ED3ng\u0110\xF4ngS\u01A1n"
   m_EditorClassIdentifier: 
+  weaponRole: 1
   weaponId: W005
   weaponName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
   icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
@@ -21,5 +22,5 @@ MonoBehaviour:
   evolutionWeaponId: E005
   elementType: 5
   weaponPrefab: {fileID: 2389269143492382759, guid: fc61047bf4b0f7e49bc987091988e04b, type: 3}
-  baseDamage: 25
+  baseDamage: 40
   baseAttackSpeed: 1.5

@@ -1,6 +1,7 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.UI
 {

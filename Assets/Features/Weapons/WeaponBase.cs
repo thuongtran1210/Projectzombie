@@ -75,6 +75,9 @@ namespace ProjectZombie.Features.Weapons
         }
 
         [Header("Active / Passive Mode (Action RPG)")]
+        [Tooltip("Vai trò chiến đấu của vũ khí/pháp bảo")]
+        public WeaponRole weaponRole = WeaponRole.PrimaryWeapon;
+
         [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân tự động kích hoạt.")]
         public bool isPrimaryActiveWeapon = false;
 

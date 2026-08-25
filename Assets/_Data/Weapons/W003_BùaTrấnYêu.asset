@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W003_B\xF9aTr\u1EA5nY\xEAu"
   m_EditorClassIdentifier: 
+  weaponRole: 1
   weaponId: W003
   weaponName: "B\xF9a Tr\u1EA5n Y\xEAu"
   icon: {fileID: 2177920, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}

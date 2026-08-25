@@ -2,10 +2,21 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Weapons
 {
+    public enum WeaponRole
+    {
+        PrimaryWeapon,      // Vũ Khí Chính (Gắn nút Tấn Công Chủ Động, Combo 3 đòn)
+        RelicOrbitalShield, // Pháp Bảo Quỹ Đạo Hộ Thân (Xoay quanh người cản đạn/quái)
+        RelicOnHitTrigger,  // Pháp Bảo Kích Ứng Bồi Đòn (Tự động ra đòn khi chém trúng quái)
+        RelicSupportAura    // Pháp Bảo Hỗ Trợ & Trị Liệu (Hồi máu, làm chậm, tạo vùng an toàn)
+    }
+
     [CreateAssetMenu(fileName = "NewWeaponData", menuName = "ProjectZombie/Weapons/Weapon Data")]
     public class WeaponData : ScriptableObject
     {
-        [Header("Identity")]
+        [Header("Identity & Role (GDD v5.0)")]
+        [Tooltip("Vai trò chiến đấu của vũ khí/pháp bảo")]
+        public WeaponRole weaponRole = WeaponRole.PrimaryWeapon;
+
         [Tooltip("ID duy nhất của vũ khí (VD: W001)")]
         public string weaponId;
         

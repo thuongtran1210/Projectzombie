@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W007_CungTh\u1EA1chSanh"
   m_EditorClassIdentifier: 
+  weaponRole: 0
   weaponId: W007
   weaponName: "Cung Th\u1EA1ch Sanh"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
@@ -21,5 +22,5 @@ MonoBehaviour:
   evolutionWeaponId: E007
   elementType: 1
   weaponPrefab: {fileID: 2389269143492382759, guid: 38ba898b9ee477448be4157bf577c022, type: 3}
-  baseDamage: 20
+  baseDamage: 35
   baseAttackSpeed: 1
