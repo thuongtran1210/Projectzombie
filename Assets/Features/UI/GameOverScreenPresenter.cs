@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Features.UI
 {
@@ -252,8 +253,16 @@ namespace ProjectZombie.Features.UI
             view.SetMaxLevel($"Cấp độ đạt: {tracker.MaxLevelReached}");
             view.SetDamageDealt($"Sát thương gây ra: {tracker.TotalDamageDealt:F0}");
 
-            // Tính toán Currency nhận được
-            _currencyEarned = tracker.CalculateMetaCurrency();
+            // Tính toán Currency nhận được & Ghi nhận tiến trình lưu game
+            _currencyEarned = tracker.CalculateMetaCurrency(isVictory);
+            if (ProjectZombie.Core.Save.GameManager.Instance != null)
+            {
+                ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(tracker.ElapsedTime, tracker.KillCount, _currencyEarned);
+            }
+            else if (MetaCurrencyManager.Instance != null)
+            {
+                MetaCurrencyManager.Instance.AddCurrency(_currencyEarned);
+            }
 
             // Kích hoạt animation đếm số hoặc hiển thị trực tiếp
             if (animateCurrencyCount && _currencyEarned > 0)

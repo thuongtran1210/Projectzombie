@@ -41,6 +41,14 @@ namespace ProjectZombie.Features.MetaProgression
             Instance = this;
         }
 
+        private void Start()
+        {
+            if (_saveData == null && Core.Save.GameManager.Instance != null && Core.Save.GameManager.Instance.SaveData != null)
+            {
+                Initialize(Core.Save.GameManager.Instance.SaveData);
+            }
+        }
+
         // ====================================================================
         // PUBLIC API
         // ====================================================================
@@ -65,25 +73,26 @@ namespace ProjectZombie.Features.MetaProgression
             TotalCurrency += amount;
             SyncToSaveData();
             OnCurrencyChanged?.Invoke(TotalCurrency);
-            Debug.Log($"[MetaCurrencyManager] +{amount} Coin Sinh Tồn. Tổng: {TotalCurrency}");
+            Debug.Log($"[MetaCurrencyManager] +{amount} Cổ Tiền. Tổng: {TotalCurrency}");
         }
 
         /// <summary>
-        /// Chi tiêu currency (VD: mua Permanent Upgrade). Trả về false nếu không đủ.
+        /// Chi tiêu currency (VD: mua Permanent Upgrade). Trả về false nếu không đủ. Tự động lưu game.
         /// </summary>
         public bool SpendCurrency(int amount)
         {
             if (amount <= 0) return true;
             if (TotalCurrency < amount)
             {
-                Debug.Log($"[MetaCurrencyManager] Không đủ coin. Cần: {amount}, Có: {TotalCurrency}");
+                Debug.Log($"[MetaCurrencyManager] Không đủ Cổ Tiền. Cần: {amount}, Có: {TotalCurrency}");
                 return false;
             }
 
             TotalCurrency -= amount;
             SyncToSaveData();
+            SaveProgress();
             OnCurrencyChanged?.Invoke(TotalCurrency);
-            Debug.Log($"[MetaCurrencyManager] Chi {amount} Coin Sinh Tồn. Còn lại: {TotalCurrency}");
+            Debug.Log($"[MetaCurrencyManager] Chi {amount} Cổ Tiền. Còn lại: {TotalCurrency}");
             return true;
         }
 
@@ -97,7 +106,7 @@ namespace ProjectZombie.Features.MetaProgression
         }
 
         /// <summary>
-        /// Mở khóa nhân vật mới (sau khi đã SpendCurrency thành công).
+        /// Mở khóa nhân vật mới (sau khi đã SpendCurrency thành công). Tự động lưu game.
         /// </summary>
         public bool UnlockCharacter(string characterId, int cost)
         {
@@ -117,6 +126,7 @@ namespace ProjectZombie.Features.MetaProgression
             _saveData.unlockedCharacters = updated;
 
             SyncToSaveData();
+            SaveProgress();
             Debug.Log($"[MetaCurrencyManager] Mở khóa nhân vật: '{characterId}'");
             return true;
         }
@@ -134,6 +144,18 @@ namespace ProjectZombie.Features.MetaProgression
         {
             if (_saveData != null)
                 _saveData.totalCurrency = TotalCurrency;
+        }
+
+        private void SaveProgress()
+        {
+            if (Core.Save.GameManager.Instance != null)
+            {
+                Core.Save.GameManager.Instance.SaveGame();
+            }
+            else if (_saveData != null)
+            {
+                Core.Save.SaveSystem.Save(_saveData);
+            }
         }
     }
 }

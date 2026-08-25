@@ -158,14 +158,15 @@ namespace ProjectZombie.Features.Shared
 
         /// <summary>
         /// Tính toán lượng Currency Meta nhận được sau run này.
-        /// Công thức: CoinsCollected + (Kill * 1) + (Minute sống sót * 10) + (MaxLevel * 5).
+        /// Công thức: CoinsCollected + (Kill * 1) + (Minute sống sót * 10) + (MaxLevel * 5) + (Thắng trận ? 500 : 0).
         /// </summary>
-        public int CalculateMetaCurrency()
+        public int CalculateMetaCurrency(bool isVictory = false)
         {
             int fromKills    = KillCount * 1;
             int fromTime     = Mathf.FloorToInt(ElapsedTime / 60f) * 10;
             int fromLevel    = MaxLevelReached * 5;
-            return CoinsCollected + fromKills + fromTime + fromLevel;
+            int fromVictory  = isVictory ? 500 : 0;
+            return CoinsCollected + fromKills + fromTime + fromLevel + fromVictory;
         }
 
         /// <summary>Định dạng ElapsedTime thành chuỗi MM:SS.</summary>

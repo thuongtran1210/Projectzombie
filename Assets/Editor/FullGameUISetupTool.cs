@@ -89,25 +89,76 @@ namespace ProjectZombie.EditorTools
                 scaler.matchWidthOrHeight = 0.5f;
             }
 
-            // 1.1. Đảm bảo có MetaCurrencyManager & GameManager & Collectible Pools
-            var currencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
+            // 1.1. Đảm bảo quy hoạch toàn bộ Manager về root --- GAME MANAGER ---
+            GameObject managerRoot = GameObject.Find("--- GAME MANAGER ---");
+            if (managerRoot == null)
+            {
+                var stateMgr = Object.FindObjectOfType<ProjectZombie.Features.Shared.GameStateManager>();
+                if (stateMgr != null) managerRoot = stateMgr.gameObject;
+            }
+
+            if (managerRoot == null)
+            {
+                managerRoot = new GameObject("--- GAME MANAGER ---", typeof(ProjectZombie.Features.Shared.GameStateManager));
+            }
+
+            // Gắn GameManager vào root --- GAME MANAGER --- nếu chưa có
+            var gameMgrComponent = managerRoot.GetComponent<ProjectZombie.Core.Save.GameManager>();
+            if (gameMgrComponent == null)
+            {
+                gameMgrComponent = managerRoot.AddComponent<ProjectZombie.Core.Save.GameManager>();
+            }
+
+            // Gắn MetaCurrencyManager vào root --- GAME MANAGER --- nếu chưa có
+            var currencyMgr = managerRoot.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             if (currencyMgr == null)
             {
-                currencyMgr = mainCanvas.gameObject.AddComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
+                currencyMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             }
 
-            var gameMgr = GameObject.Find("GameManager");
-            if (gameMgr == null)
+            // Dọn dẹp component trùng thừa trên Canvas (nếu có)
+            var duplicateCanvasCurrencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
+            if (duplicateCanvasCurrencyMgr != null && duplicateCanvasCurrencyMgr != currencyMgr)
             {
-                gameMgr = new GameObject("GameManager", typeof(ProjectZombie.Core.Save.GameManager));
+                Object.DestroyImmediate(duplicateCanvasCurrencyMgr);
             }
 
+            // Dọn dẹp GameObject "GameManager" rời rạc nếu tồn tại
+            var standaloneGameMgr = GameObject.Find("GameManager");
+            if (standaloneGameMgr != null && standaloneGameMgr != managerRoot)
+            {
+                // Di chuyển con của standaloneGameMgr sang managerRoot trước khi xóa
+                while (standaloneGameMgr.transform.childCount > 0)
+                {
+                    standaloneGameMgr.transform.GetChild(0).SetParent(managerRoot.transform);
+                }
+                Object.DestroyImmediate(standaloneGameMgr);
+            }
+
+            // Quản lý CoinPoolManager làm con của --- GAME MANAGER ---
             var coinPoolMgr = Object.FindObjectOfType<ProjectZombie.Features.Collectibles.CoinPoolManager>();
             if (coinPoolMgr == null)
             {
                 var coinPoolObj = new GameObject("[CoinPoolManager]", typeof(ProjectZombie.Features.Collectibles.CoinPoolManager));
-                if (gameMgr != null) coinPoolObj.transform.SetParent(gameMgr.transform);
+                coinPoolObj.transform.SetParent(managerRoot.transform);
                 coinPoolMgr = coinPoolObj.GetComponent<ProjectZombie.Features.Collectibles.CoinPoolManager>();
+            }
+            else if (coinPoolMgr.transform.parent != managerRoot.transform)
+            {
+                coinPoolMgr.transform.SetParent(managerRoot.transform);
+            }
+
+            // Quản lý ExpGemPoolManager làm con của --- GAME MANAGER ---
+            var expGemPoolMgr = Object.FindObjectOfType<ProjectZombie.Features.Collectibles.ExpGemPoolManager>();
+            if (expGemPoolMgr == null)
+            {
+                var expGemPoolObj = new GameObject("[ExpGemPoolManager]", typeof(ProjectZombie.Features.Collectibles.ExpGemPoolManager));
+                expGemPoolObj.transform.SetParent(managerRoot.transform);
+                expGemPoolMgr = expGemPoolObj.GetComponent<ProjectZombie.Features.Collectibles.ExpGemPoolManager>();
+            }
+            else if (expGemPoolMgr.transform.parent != managerRoot.transform)
+            {
+                expGemPoolMgr.transform.SetParent(managerRoot.transform);
             }
 
             // Đảm bảo Coin_Drop.prefab luôn được tạo và gán sẵn

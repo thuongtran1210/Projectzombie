@@ -23,18 +23,32 @@ namespace ProjectZombie.Features.UI
             string formattedTime = $"Thời gian sống sót: <b>{minutes:00}:{seconds:00}</b>";
             string formattedKills = $"Số yêu ma diệt: <b>{killCount}</b>";
 
-            // Quy đổi Cổ Tiền: 1 kill = 1 Cổ Tiền + bonus thời gian sống sót
-            int coTienEarned = killCount + (minutes * 10);
-            if (isVictory) coTienEarned += 500; // Bonus diệt Diêm Vương
+            // Quy đổi Cổ Tiền từ RunStatsTracker (chuẩn hóa Single Source of Truth)
+            int coTienEarned = 0;
+            var tracker = ProjectZombie.Features.Shared.RunStatsTracker.Instance;
+            if (tracker != null)
+            {
+                coTienEarned = tracker.CalculateMetaCurrency(isVictory);
+            }
+            else
+            {
+                // Fallback nếu không có tracker
+                coTienEarned = killCount + (minutes * 10) + (isVictory ? 500 : 0);
+            }
 
             string title = isVictory ? "<color=#FFD700>THẮNG RUN — BÌNH YÊN U MINH</color>" : "<color=#FF4444>THẤT BẠI — DIỆM VƯƠNG TRIỆU HỒN</color>";
             string formattedCoTien = $"Cổ Tiền nhận được: <color=#FFD700>+{coTienEarned:N0}</color>";
 
-            // Cộng Cổ Tiền & Lưu Game
-            if (MetaCurrencyManager.Instance != null)
+            // Cộng Cổ Tiền & Lưu Game qua GameManager (tránh double-add nếu đã lưu)
+            if (ProjectZombie.Core.Save.GameManager.Instance != null)
+            {
+                ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(elapsedTimeSeconds, killCount, coTienEarned);
+                Debug.Log($"[{nameof(RunSummaryPresenter)}] Đã cập nhật kết quả qua GameManager (+{coTienEarned} Cổ Tiền).");
+            }
+            else if (MetaCurrencyManager.Instance != null)
             {
                 MetaCurrencyManager.Instance.AddCurrency(coTienEarned);
-                Debug.Log($"[{nameof(RunSummaryPresenter)}] Đã cộng +{coTienEarned} Cổ Tiền và lưu game!");
+                Debug.Log($"[{nameof(RunSummaryPresenter)}] Đã cộng +{coTienEarned} Cổ Tiền!");
             }
 
             if (_view != null)
