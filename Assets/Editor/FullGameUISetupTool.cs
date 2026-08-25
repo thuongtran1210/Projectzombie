@@ -699,8 +699,6 @@ namespace ProjectZombie.EditorTools
                 var tmp = titleTrans.GetComponent<TextMeshProUGUI>();
                 if (tmp != null) tmp.text = "MIẾU TỨ BẤT TỬ";
             }
-            so.FindProperty("_upgradeTitleText").objectReferenceValue = titleTrans.GetComponent<TextMeshProUGUI>();
-
             // 2. Số dư Cổ Tiền
             Transform balanceTrans = root.Find("Txt_Balance");
             if (balanceTrans == null)
@@ -724,6 +722,7 @@ namespace ProjectZombie.EditorTools
                 var tmp = balanceTrans.GetComponent<TextMeshProUGUI>();
                 if (tmp != null) tmp.text = "0 Cổ Tiền";
             }
+            so.FindProperty("_coTienBalanceText").objectReferenceValue = balanceTrans.GetComponent<TextMeshProUGUI>();
             // 2.1. Chi tiết gói Nâng Cấp (Ở giữa màn hình)
             Transform cardTrans = root.Find("Card_UpgradeDetail");
             if (cardTrans == null)
