@@ -72,6 +72,9 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private float _bufferedAttackTime;
+        private const float TAP_BUFFER_WINDOW = 0.18f;
+
         private void Update()
         {
             if (_weaponManager == null)
@@ -88,7 +91,16 @@ namespace ProjectZombie.Features.UI
                 float maxCd = 1f / Mathf.Max(0.01f, totalAttackSpeed);
 
                 _view.SetCooldown(remainingCd, maxCd);
-                _view.SetInteractable(remainingCd <= 0f);
+                _view.SetInteractable(true); // Luôn cho phép chạm để ăn Tap Buffer
+
+                // Xử lý Tap Buffer: Tự động xả đòn tiếp theo nếu vừa bấm trong buffer window
+                if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
+                {
+                    if (_weaponManager.TriggerPrimaryAttack())
+                    {
+                        _bufferedAttackTime = 0f;
+                    }
+                }
             }
             else
             {
@@ -113,7 +125,15 @@ namespace ProjectZombie.Features.UI
         {
             if (_weaponManager != null)
             {
-                _weaponManager.TriggerPrimaryAttack();
+                if (!_weaponManager.TriggerPrimaryAttack())
+                {
+                    // Nếu vũ khí chưa kịp hồi xong, lưu vào Tap Buffer
+                    _bufferedAttackTime = Time.time;
+                }
+                else
+                {
+                    _bufferedAttackTime = 0f;
+                }
             }
         }
     }

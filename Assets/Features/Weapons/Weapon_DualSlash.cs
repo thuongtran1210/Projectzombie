@@ -39,8 +39,42 @@ namespace ProjectZombie.Features.Weapons
 
         protected override void PerformAttack()
         {
+            PerformComboAttack(CurrentComboStep);
+        }
+
+        protected override void PerformComboAttack(int step)
+        {
             Vector2 center = firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
-            DamageData damageData = CreateDamageData();
+            
+            // Tính toán sát thương dựa theo bước combo (Nhát 1: 100%, Nhát 2: 120%, Nhát 3: 180%)
+            float comboMultiplier = GetComboDamageMultiplier(step);
+            DamageData baseDamage = CreateDamageData();
+            DamageData damageData = new DamageData(
+                baseDamage.Amount * comboMultiplier,
+                baseDamage.IsCritical,
+                baseDamage.Element,
+                this
+            );
+
+            // Thông số Hitbox và Lực đẩy lùi theo bước combo
+            Vector2 currentHitbox = hitboxSize;
+            float knockbackForce = 4.0f;
+            if (step == 2)
+            {
+                currentHitbox = new Vector2(hitboxSize.x * 1.25f, hitboxSize.y * 1.2f);
+                knockbackForce = 5.5f;
+            }
+            else if (step == 3)
+            {
+                currentHitbox = new Vector2(hitboxSize.x * 1.5f, hitboxSize.y * 1.4f);
+                knockbackForce = 8.0f;
+            }
+
+            // Thông báo cho PlayerController phát animation / hiệu ứng tương ứng
+            if (_playerController != null)
+            {
+                _playerController.NotifyAttackStarted(step);
+            }
 
             // Xác định góc gốc dựa trên hướng mặt của Player
             float baseAngle = 0f;
@@ -51,8 +85,8 @@ namespace ProjectZombie.Features.Weapons
 
             float angleStep = 360f / Mathf.Max(1, slashCount);
 
-            // Level 5 - 6: Sinh ra vòng sóng xung kích (Shockwave) từ tâm nhân vật
-            if (WeaponLevel >= 5 && shockwavePrefab != null && GlobalVFXPoolManager.Instance != null)
+            // Đòn Combo 3 (hoặc Level 5-6): Sinh ra vòng sóng xung kích (Shockwave) từ tâm nhân vật
+            if ((step == 3 || WeaponLevel >= 5) && shockwavePrefab != null && GlobalVFXPoolManager.Instance != null)
             {
                 GlobalVFXPoolManager.Instance.PlayEffect(shockwavePrefab, center, Quaternion.identity, 0.5f);
             }
@@ -66,7 +100,7 @@ namespace ProjectZombie.Features.Weapons
                 Vector2 hitCenter = center + (direction * forwardOffset);
 
                 // Gây sát thương (kế thừa từ Weapon_MeleeBase tự phát Hit Sparks và Game Feel)
-                DealDamageInArea(hitCenter, hitboxSize, angle, damageData);
+                DealDamageInArea(hitCenter, currentHitbox, angle, damageData, knockbackForce);
 
                 // Sinh ra vệt chém theo hướng từ Global Pool
                 if (directionalSlashPrefab != null && GlobalVFXPoolManager.Instance != null)
@@ -75,7 +109,8 @@ namespace ProjectZombie.Features.Weapons
                         directionalSlashPrefab, 
                         hitCenter, 
                         Quaternion.Euler(0, 0, angle), 
-                        0.25f
+                        0.25f,
+                        Vector3.one * (GetFinalScale() * (step == 3 ? 1.3f : 1.0f))
                     );
                     if (slash != null)
                     {

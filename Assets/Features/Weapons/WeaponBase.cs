@@ -78,6 +78,27 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân tự động kích hoạt.")]
         public bool isPrimaryActiveWeapon = false;
 
+        [Header("Combo System (Action RPG)")]
+        public int currentComboStep = 1;
+        public virtual int MaxComboSteps => 3;
+        public float comboResetWindow = 1.0f;
+        private float _lastComboHitTime;
+
+        public int CurrentComboStep => currentComboStep;
+
+        /// <summary>
+        /// Sự kiện phát ra khi đòn đánh của vũ khí trúng kẻ địch. Dành cho các Pháp bảo (Relics) On-Hit lắng nghe.
+        /// </summary>
+        public event System.Action<DamageData, Collider2D> OnHitEnemy;
+
+        /// <summary>
+        /// Gọi từ các đòn tấn công (Melee / Projectile) khi va chạm trúng kẻ địch.
+        /// </summary>
+        public void NotifyHitEnemy(DamageData damageData, Collider2D enemyCol)
+        {
+            OnHitEnemy?.Invoke(damageData, enemyCol);
+        }
+
         public float GetTotalAttackSpeed()
         {
             return CharacterStats != null ? CharacterStats.AttackSpeed + localAttackSpeedBonus : 1f;
@@ -86,6 +107,12 @@ namespace ProjectZombie.Features.Weapons
         public void Tick()
         {
             if (CharacterStats == null) return;
+
+            // Tự động reset combo về nhát 1 nếu quá thời gian chờ (Combo Window)
+            if (currentComboStep > 1 && Time.time >= _lastComboHitTime + comboResetWindow)
+            {
+                currentComboStep = 1;
+            }
 
             // Nếu là vũ khí chính chủ động, không tự động kích hoạt trong Tick
             if (isPrimaryActiveWeapon) return;
@@ -106,25 +133,54 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
-        /// Kích hoạt đòn đánh chủ động từ Nút Tấn Công.
+        /// Kích hoạt đòn đánh chủ động từ Nút Tấn Công theo chuỗi Combo.
         /// </summary>
-        public bool TriggerActiveAttack()
+        public virtual bool TriggerActiveComboAttack()
         {
             if (CharacterStats == null) return false;
 
+            // Kiểm tra Cooldown cơ bản giữa các nhát chém (phụ thuộc AttackSpeed)
             float totalAttackSpeed = GetTotalAttackSpeed();
-            float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
+            float attackCooldown = (1f / Mathf.Max(0.01f, totalAttackSpeed)) * 0.4f; // Nhịp combo nhanh hơn 40% cooldown gốc
 
-            if (Time.time >= _lastAttackTime + attackCooldown)
+            if (Time.time < _lastAttackTime + attackCooldown)
             {
-                if (CanAttack())
-                {
-                    PerformAttack();
-                    _lastAttackTime = Time.time;
-                    return true;
-                }
+                return false;
             }
-            return false;
+
+            // Kiểm tra reset combo
+            if (Time.time >= _lastComboHitTime + comboResetWindow)
+            {
+                currentComboStep = 1;
+            }
+
+            if (!CanAttack()) return false;
+
+            int executedStep = currentComboStep;
+            PerformComboAttack(executedStep);
+
+            _lastAttackTime = Time.time;
+            _lastComboHitTime = Time.time;
+
+            // Tăng bước combo tiếp theo
+            currentComboStep = (currentComboStep % MaxComboSteps) + 1;
+            return true;
+        }
+
+        /// <summary>
+        /// Kích hoạt đòn đánh đơn lẻ (Tương thích ngược).
+        /// </summary>
+        public bool TriggerActiveAttack()
+        {
+            return TriggerActiveComboAttack();
+        }
+
+        /// <summary>
+        /// Thực thi đòn đánh theo bước combo (1, 2, 3). Mặc định gọi lại PerformAttack().
+        /// </summary>
+        protected virtual void PerformComboAttack(int step)
+        {
+            PerformAttack();
         }
 
 

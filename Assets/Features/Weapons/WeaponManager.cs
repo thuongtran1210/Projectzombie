@@ -20,7 +20,7 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Transform chứa các vũ khí được sinh ra (Nếu để trống sẽ dùng transform của Player)")]
         [SerializeField] private Transform weaponHolder;
 
-        public const int MAX_WEAPONS = 6;
+        public const int MAX_WEAPONS = 4; // 1 Vũ khí chính + Tối đa 3 Pháp bảo hộ thân
 
         private PlayerStats _playerStats;
         private PlayerPassives _playerPassives;
@@ -42,6 +42,25 @@ namespace ProjectZombie.Features.Weapons
                 return found != null ? found : _activeWeapons[0];
             }
         }
+
+        /// <summary>
+        /// Danh sách các Pháp bảo phụ trợ (Relics) đang trang bị.
+        /// </summary>
+        public List<WeaponBase> RelicWeapons
+        {
+            get
+            {
+                var relics = new List<WeaponBase>();
+                var primary = PrimaryWeapon;
+                foreach (var w in _activeWeapons)
+                {
+                    if (w != primary) relics.Add(w);
+                }
+                return relics;
+            }
+        }
+
+        public int CurrentPrimaryComboStep => PrimaryWeapon != null ? PrimaryWeapon.CurrentComboStep : 1;
 
         public event System.Action OnWeaponsChanged;
 

@@ -44,11 +44,21 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        public virtual float GetComboDamageMultiplier(int step)
+        {
+            switch (step)
+            {
+                case 2: return 1.2f;
+                case 3: return 1.8f;
+                default: return 1.0f;
+            }
+        }
+
         /// <summary>
         /// Quét vùng hình chữ nhật để gây sát thương. Không cần Spawn đạn.
         /// Tối ưu 0 GC Allocation và lọc bằng LayerMask ở tầng C++ Physics.
         /// </summary>
-        protected void DealDamageInArea(Vector2 center, Vector2 boxSize, float angle, DamageData damageData)
+        protected void DealDamageInArea(Vector2 center, Vector2 boxSize, float angle, DamageData damageData, float knockbackForce = 4.0f)
         {
             int mask = TargetingUtility.EnemyLayerMask;
             int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer, mask);
@@ -81,12 +91,15 @@ namespace ProjectZombie.Features.Weapons
                     hitCount++;
                     hitAnyEnemy = true;
 
+                    // Phát sự kiện trúng đích cho các Pháp bảo (Relics) On-Hit
+                    NotifyHitEnemy(hitDamage, hit);
+
                     // Áp dụng lực đẩy lùi ra xa người chơi (trừ quái Heavy Armor)
                     if (enemy != null && !enemy.IsHeavyArmor)
                     {
                         Vector2 pushDir = ((Vector2)(hit.transform.position - transform.position)).normalized;
                         if (pushDir.sqrMagnitude < 0.001f) pushDir = Vector2.right;
-                        enemy.ApplyKnockback(pushDir, 4.0f, 0.15f);
+                        enemy.ApplyKnockback(pushDir, knockbackForce, 0.15f);
                     }
 
                     if (hitDamage.IsCritical)

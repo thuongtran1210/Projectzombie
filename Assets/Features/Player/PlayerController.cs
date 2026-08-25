@@ -130,6 +130,66 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        private bool _isAttacking;
+        private float _attackSlowdownEndTime;
+
+        public bool IsAttacking => _isAttacking;
+
+        /// <summary>
+        /// Thông báo từ Vũ khí chính khi bắt đầu tung 1 đòn chém.
+        /// </summary>
+        public void NotifyAttackStarted(int comboStep)
+        {
+            _isAttacking = true;
+            _attackSlowdownEndTime = Time.time + 0.12f; // Giảm tốc trong 0.12s để tạo lực đầm
+
+            // Kích hoạt Smart Soft-Lock nếu người chơi không chủ động kéo cần di chuyển
+            if (_movementInput == Vector2.zero)
+            {
+                TryAutoAimAtNearestEnemy(5.0f);
+            }
+
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Attack);
+            }
+        }
+
+        /// <summary>
+        /// Tự động quay mặt về phía kẻ địch gần nhất trong bán kính cho phép.
+        /// </summary>
+        public void TryAutoAimAtNearestEnemy(float radius = 5.0f)
+        {
+            Collider2D[] buffer = new Collider2D[10];
+            int count = Physics2D.OverlapCircleNonAlloc(transform.position, radius, buffer, Shared.TargetingUtility.EnemyLayerMask);
+            if (count == 0) return;
+
+            Collider2D closest = null;
+            float closestDistSqr = float.MaxValue;
+            Vector2 currentPos = transform.position;
+
+            for (int i = 0; i < count; i++)
+            {
+                var col = buffer[i];
+                if (col == null) continue;
+                float dSqr = ((Vector2)col.transform.position - currentPos).sqrMagnitude;
+                if (dSqr < closestDistSqr)
+                {
+                    closestDistSqr = dSqr;
+                    closest = col;
+                }
+            }
+
+            if (closest != null && _playerAnimator != null)
+            {
+                float dirX = closest.transform.position.x - transform.position.x;
+                if (Mathf.Abs(dirX) > 0.05f)
+                {
+                    _playerAnimator.FlipToDirection(dirX);
+                }
+            }
+        }
+
         private void OnDashPerformed(InputAction.CallbackContext context)
         {
             PerformDash();
@@ -137,17 +197,30 @@ namespace ProjectZombie.Features.Player
 
         /// <summary>
         /// Kích hoạt kỹ năng Lướt (Dash). Có thể gọi từ Input Action hoặc UI Dash Button trên mobile.
+        /// Hỗ trợ Dash Cancel (hủy ngay đòn chém đang dở để né đòn).
         /// </summary>
         public void PerformDash()
         {
             if (_playerStats == null) return;
 
-            if (Time.time >= _lastDashTime + _playerStats.DashCooldown && !_isDashing && _movementInput != Vector2.zero)
+            if (Time.time >= _lastDashTime + _playerStats.DashCooldown && !_isDashing)
             {
+                // Dash Cancel: Hủy trạng thái chém đang dở
+                _isAttacking = false;
+
                 _isDashing = true;
                 _dashEndTime = Time.time + dashDuration;
                 _lastDashTime = Time.time;
-                _dashDirection = _movementInput; // Lướt theo hướng đang đi
+                
+                // Nếu đang đứng yên, lướt theo hướng mặt hiện tại
+                if (_movementInput != Vector2.zero)
+                {
+                    _dashDirection = _movementInput;
+                }
+                else
+                {
+                    _dashDirection = transform.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                }
                 
                 // Phát event để các module quan tâm (như TaoistYinYangTracker) tự lắng nghe
                 OnDashed?.Invoke();
@@ -197,10 +270,23 @@ namespace ProjectZombie.Features.Player
             }
             else
             {
+                // Giảm tốc nhẹ 40% trong lúc vung đòn (Movement Slowdown) để tạo lực đầm
+                if (_isAttacking)
+                {
+                    if (Time.time < _attackSlowdownEndTime)
+                    {
+                        currentSpeed *= 0.4f;
+                    }
+                    else
+                    {
+                        _isAttacking = false;
+                    }
+                }
+
                 _rb.velocity = _movementInput * currentSpeed;
 
-                // Xử lý hoạt ảnh Chạy/Đứng im khi không lướt
-                if (_playerAnimator != null)
+                // Xử lý hoạt ảnh Chạy/Đứng im khi không lướt và không chém
+                if (_playerAnimator != null && !_isAttacking)
                 {
                     if (_movementInput.sqrMagnitude > 0.01f)
                         _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
