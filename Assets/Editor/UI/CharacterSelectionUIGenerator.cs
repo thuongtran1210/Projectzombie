@@ -261,6 +261,7 @@ namespace ProjectZombie.Editor.UI
             var pThuSinh = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thu Sinh.prefab");
             var pDaoSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Dao Si.prefab");
             var pThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thanh Dong.prefab");
+            var pAnSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/An Si.prefab");
 
             // Khởi tạo Database nhân vật mẫu
             var charList = new System.Collections.Generic.List<ProjectZombie.Features.Player.CharacterEntry>
@@ -318,7 +319,7 @@ namespace ProjectZombie.Editor.UI
                     signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.",
                     passiveTraitName = "Bàn Thạch Chi Khu",
                     passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi.",
-                    playerPrefab = pThuSinh, // Fallback
+                    playerPrefab = pAnSi,
                     isUnlocked = true
                 }
             };
@@ -336,7 +337,7 @@ namespace ProjectZombie.Editor.UI
                 prefabsProp.GetArrayElementAtIndex(0).objectReferenceValue = pThuSinh;
                 prefabsProp.GetArrayElementAtIndex(1).objectReferenceValue = pDaoSi;
                 prefabsProp.GetArrayElementAtIndex(2).objectReferenceValue = pThanhDong;
-                prefabsProp.GetArrayElementAtIndex(3).objectReferenceValue = pThuSinh;
+                prefabsProp.GetArrayElementAtIndex(3).objectReferenceValue = pAnSi;
             }
             soPresenter.ApplyModifiedProperties();
 

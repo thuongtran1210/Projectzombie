@@ -90,7 +90,7 @@ MonoBehaviour:
       50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n
       nhi\u1EC5m \u0110\u1EA9y l\xF9i."
     avatar: {fileID: 0}
-    playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
+    playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}
     defaultRelics: []
