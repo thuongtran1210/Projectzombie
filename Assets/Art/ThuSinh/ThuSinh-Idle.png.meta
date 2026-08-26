@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fed65ac3b5bf4c04f859efbf6aa4835b
+guid: 2100000000000000a0b77823fca88d01
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -64,7 +64,6 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
@@ -72,46 +71,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -137,8 +97,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 75ce64554f3812fa452bab849c5113fe
-      internalID: 7255401321100413456
+      spriteID: 00000000000000000000002100000000
+      internalID: 2100000000
       vertices: []
       indices: 
       edges: []
@@ -158,8 +118,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2431989ebc73af672f1b8630652616d6
-      internalID: -8132296840008203773
+      spriteID: 00000000000000000000002100012345
+      internalID: 2100012345
       vertices: []
       indices: 
       edges: []
@@ -179,8 +139,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f16115046c357678390328e9e326c7d9
-      internalID: 3769352909147936269
+      spriteID: 00000000000000000000002100024690
+      internalID: 2100024690
       vertices: []
       indices: 
       edges: []
@@ -200,8 +160,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f2c2618d9c2c2131626d6940a86fb144
-      internalID: 3892937683569068276
+      spriteID: 00000000000000000000002100037035
+      internalID: 2100037035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThuSinh-Idle_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000002100049380
+      internalID: 2100049380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThuSinh-Idle_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000002100061725
+      internalID: 2100061725
       vertices: []
       indices: 
       edges: []
@@ -209,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 5e97eb03825dee720800000000000007
     internalID: 0
     vertices: []
     indices: 
@@ -217,10 +219,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThuSinh-Idle_0: 7255401321100413456
-      ThuSinh-Idle_1: -8132296840008203773
-      ThuSinh-Idle_2: 3769352909147936269
-      ThuSinh-Idle_3: 3892937683569068276
+      ThuSinh-Idle_0: 2100000000
+      ThuSinh-Idle_1: 2100012345
+      ThuSinh-Idle_2: 2100024690
+      ThuSinh-Idle_3: 2100037035
+      ThuSinh-Idle_4: 2100049380
+      ThuSinh-Idle_5: 2100061725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

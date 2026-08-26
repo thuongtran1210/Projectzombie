@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e1a84f32997d4b2e88a31e50529d47a1
+guid: 2100000000000000a0b77823fca88d05
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -64,50 +64,10 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -137,8 +97,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4700
-      internalID: 7448014114186893283
+      spriteID: 00000000000000000000002100400000
+      internalID: 2100400000
       vertices: []
       indices: 
       edges: []
@@ -158,8 +118,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4701
-      internalID: 3575567970567205695
+      spriteID: 00000000000000000000002100412345
+      internalID: 2100412345
       vertices: []
       indices: 
       edges: []
@@ -179,8 +139,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4702
-      internalID: 5155470940424021554
+      spriteID: 00000000000000000000002100424690
+      internalID: 2100424690
       vertices: []
       indices: 
       edges: []
@@ -200,8 +160,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4703
-      internalID: 1795691144577610543
+      spriteID: 00000000000000000000002100437035
+      internalID: 2100437035
       vertices: []
       indices: 
       edges: []
@@ -221,8 +181,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4704
-      internalID: 3640327206543370602
+      spriteID: 00000000000000000000002100449380
+      internalID: 2100449380
       vertices: []
       indices: 
       edges: []
@@ -242,8 +202,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1a84f32997d4b2e88a31e50529d4705
-      internalID: 2960888640399458347
+      spriteID: 00000000000000000000002100461725
+      internalID: 2100461725
       vertices: []
       indices: 
       edges: []
@@ -251,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000007
     internalID: 0
     vertices: []
     indices: 
@@ -259,12 +219,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThuSinh-Dead_0: 7448014114186893283
-      ThuSinh-Dead_1: 3575567970567205695
-      ThuSinh-Dead_2: 5155470940424021554
-      ThuSinh-Dead_3: 1795691144577610543
-      ThuSinh-Dead_4: 3640327206543370602
-      ThuSinh-Dead_5: 2960888640399458347
+      ThuSinh-Dead_0: 2100400000
+      ThuSinh-Dead_1: 2100412345
+      ThuSinh-Dead_2: 2100424690
+      ThuSinh-Dead_3: 2100437035
+      ThuSinh-Dead_4: 2100449380
+      ThuSinh-Dead_5: 2100461725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

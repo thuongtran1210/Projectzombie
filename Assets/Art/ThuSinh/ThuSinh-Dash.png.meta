@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b86f344735164004693340013f12b9ef
+guid: 2100000000000000a0b77823fca88d04
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -83,7 +83,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AnSi-Dead_0
+      name: ThuSinh-Dash_0
       rect:
         serializedVersion: 2
         x: 0
@@ -97,14 +97,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000011
-      internalID: 2400000000
+      spriteID: 00000000000000000000002100300000
+      internalID: 2100300000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AnSi-Dead_1
+      name: ThuSinh-Dash_1
       rect:
         serializedVersion: 2
         x: 128
@@ -118,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000012
-      internalID: 2400012345
+      spriteID: 00000000000000000000002100312345
+      internalID: 2100312345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AnSi-Dead_2
+      name: ThuSinh-Dash_2
       rect:
         serializedVersion: 2
         x: 256
@@ -139,14 +139,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000013
-      internalID: 2400024690
+      spriteID: 00000000000000000000002100324690
+      internalID: 2100324690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AnSi-Dead_3
+      name: ThuSinh-Dash_3
       rect:
         serializedVersion: 2
         x: 384
@@ -160,14 +160,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000014
-      internalID: 2400037035
+      spriteID: 00000000000000000000002100337035
+      internalID: 2100337035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AnSi-Dead_4
+      name: ThuSinh-Dash_4
       rect:
         serializedVersion: 2
         x: 512
@@ -181,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000015
-      internalID: 2400049380
+      spriteID: 00000000000000000000002100349380
+      internalID: 2100349380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: AnSi-Dead_5
+      name: ThuSinh-Dash_5
       rect:
         serializedVersion: 2
         x: 640
@@ -202,8 +202,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000000000000016
-      internalID: 2400061725
+      spriteID: 00000000000000000000002100361725
+      internalID: 2100361725
       vertices: []
       indices: 
       edges: []
@@ -211,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000004
+    spriteID: 5e97eb03825dee720800000000000007
     internalID: 0
     vertices: []
     indices: 
@@ -219,12 +219,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      AnSi-Dead_0: 2400000000
-      AnSi-Dead_1: 2400012345
-      AnSi-Dead_2: 2400024690
-      AnSi-Dead_3: 2400037035
-      AnSi-Dead_4: 2400049380
-      AnSi-Dead_5: 2400061725
+      ThuSinh-Dash_0: 2100300000
+      ThuSinh-Dash_1: 2100312345
+      ThuSinh-Dash_2: 2100324690
+      ThuSinh-Dash_3: 2100337035
+      ThuSinh-Dash_4: 2100349380
+      ThuSinh-Dash_5: 2100361725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
