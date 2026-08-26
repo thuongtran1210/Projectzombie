@@ -42,15 +42,7 @@ namespace ProjectZombie.Features.Player
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
+            Instance = this;
 
             _rb = GetComponent<Rigidbody2D>();
             _playerStats = GetComponent<PlayerStats>();
@@ -63,6 +55,14 @@ namespace ProjectZombie.Features.Player
             }
             
             _rb.freezeRotation = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void OnEnable()

@@ -90,6 +90,13 @@ namespace ProjectZombie.Features.UI
                 _characters = new CharacterInfo[list.Count];
                 for (int i = 0; i < list.Count; i++)
                 {
+                    Sprite av = list[i].avatar;
+                    if (av == null && list[i].playerPrefab != null)
+                    {
+                        var sr = list[i].playerPrefab.GetComponentInChildren<SpriteRenderer>();
+                        if (sr != null) av = sr.sprite;
+                    }
+
                     _characters[i] = new CharacterInfo
                     {
                         name = list[i].characterName,
@@ -100,7 +107,7 @@ namespace ProjectZombie.Features.UI
                         signatureSkillDesc = list[i].signatureSkillDesc,
                         passiveTraitName = list[i].passiveTraitName,
                         passiveTraitDesc = list[i].passiveTraitDesc,
-                        avatar = list[i].avatar,
+                        avatar = av,
                         primaryWeapon = list[i].defaultPrimaryWeapon,
                         relics = list[i].defaultRelics
                     };

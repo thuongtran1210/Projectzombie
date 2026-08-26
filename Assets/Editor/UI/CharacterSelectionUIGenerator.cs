@@ -224,80 +224,8 @@ namespace ProjectZombie.Editor.UI
             ptTMP.color = new Color(0.9f, 0.9f, 0.9f);
             ptTMP.enableWordWrapping = true;
 
-            // 6.5. Panel Loadout Equipment Slots (Vũ Khí Chính + 3 Pháp Bảo - Action RPG v5.0)
-            GameObject loadoutCard = CreateUIElement("Panel_LoadoutEquipment", rightCol.transform);
-            RectTransform lcRT = loadoutCard.GetComponent<RectTransform>();
-            lcRT.anchorMin = new Vector2(0, 1);
-            lcRT.anchorMax = new Vector2(1, 1);
-            lcRT.pivot = new Vector2(0.5f, 1);
-            lcRT.anchoredPosition = new Vector2(0, -325);
-            lcRT.sizeDelta = new Vector2(560, 80);
-            var lcImg = loadoutCard.AddComponent<Image>();
-            lcImg.color = new Color(0.08f, 0.07f, 0.12f, 0.9f);
-
-            GameObject lhObj = CreateUIElement("Text_LoadoutHeader", loadoutCard.transform);
-            RectTransform lhRT = lhObj.GetComponent<RectTransform>();
-            lhRT.anchorMin = new Vector2(0, 1);
-            lhRT.anchorMax = new Vector2(1, 1);
-            lhRT.pivot = new Vector2(0, 1);
-            lhRT.anchoredPosition = new Vector2(10, -6);
-            lhRT.sizeDelta = new Vector2(0, 20);
-            var lhTMP = lhObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) lhTMP.font = vietFont;
-            lhTMP.text = "<color=#FFD700>TRANG BI XUAT TRAN (LOADOUT):</color>";
-            lhTMP.fontSize = 14;
-            lhTMP.fontStyle = FontStyles.Bold;
-
-            // Slot Vũ Khí Chính
-            GameObject pwObj = CreateUIElement("Slot_PrimaryWeapon", loadoutCard.transform);
-            RectTransform pwRT = pwObj.GetComponent<RectTransform>();
-            pwRT.anchorMin = new Vector2(0, 0.5f);
-            pwRT.anchorMax = new Vector2(0, 0.5f);
-            pwRT.pivot = new Vector2(0, 0.5f);
-            pwRT.anchoredPosition = new Vector2(10, -10);
-            pwRT.sizeDelta = new Vector2(44, 44);
-            var pwBg = pwObj.AddComponent<Image>();
-            pwBg.color = new Color(0.25f, 0.20f, 0.08f, 1f);
-
-            GameObject pwIconObj = CreateUIElement("Img_PrimaryIcon", pwObj.transform);
-            SetStretchAnchor(pwIconObj.GetComponent<RectTransform>());
-            var pwIcon = pwIconObj.AddComponent<Image>();
-
-            GameObject pwNameObj = CreateUIElement("Text_PrimaryName", loadoutCard.transform);
-            RectTransform pwnRT = pwNameObj.GetComponent<RectTransform>();
-            pwnRT.anchorMin = new Vector2(0, 0.5f);
-            pwnRT.anchorMax = new Vector2(0, 0.5f);
-            pwnRT.pivot = new Vector2(0, 0.5f);
-            pwnRT.anchoredPosition = new Vector2(62, -10);
-            pwnRT.sizeDelta = new Vector2(160, 40);
-            var pwnTMP = pwNameObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) pwnTMP.font = vietFont;
-            pwnTMP.text = "Vũ Khí Chính";
-            pwnTMP.fontSize = 13;
-            pwnTMP.color = new Color(1f, 0.85f, 0.3f);
-            pwnTMP.verticalAlignment = VerticalAlignmentOptions.Middle;
-
-            // 3 Slot Pháp Bảo Hộ Thân
-            Image[] relicIcons = new Image[3];
-            for (int r = 0; r < 3; r++)
-            {
-                GameObject rObj = CreateUIElement($"Slot_Relic_{r + 1}", loadoutCard.transform);
-                RectTransform rRT = rObj.GetComponent<RectTransform>();
-                rRT.anchorMin = new Vector2(0, 0.5f);
-                rRT.anchorMax = new Vector2(0, 0.5f);
-                rRT.pivot = new Vector2(0, 0.5f);
-                rRT.anchoredPosition = new Vector2(235 + r * 54, -10);
-                rRT.sizeDelta = new Vector2(44, 44);
-                var rBg = rObj.AddComponent<Image>();
-                rBg.color = new Color(0.14f, 0.10f, 0.20f, 1f);
-
-                GameObject rIconObj = CreateUIElement("Img_RelicIcon", rObj.transform);
-                SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-                relicIcons[r] = rIconObj.AddComponent<Image>();
-            }
-
             // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG"
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -425), new Vector2(560, 56), "XAC NHAN CHON TUONG", vietFont);
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -345), new Vector2(560, 56), "XAC NHAN CHON TUONG", vietFont);
             var btnImg = selectBtnObj.GetComponent<Image>();
             btnImg.color = new Color(0.85f, 0.45f, 0.15f); // Cam Đồng sáng
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();
@@ -313,15 +241,6 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
             soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
             soView.FindProperty("_characterAvatarImage").objectReferenceValue = avatarImg;
-            soView.FindProperty("_primaryWeaponIcon").objectReferenceValue = pwIcon;
-            soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = pwnTMP;
-
-            var relicProp = soView.FindProperty("_relicSlotIcons");
-            relicProp.arraySize = 3;
-            for (int i = 0; i < 3; i++)
-            {
-                relicProp.GetArrayElementAtIndex(i).objectReferenceValue = relicIcons[i];
-            }
 
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();
