@@ -1,11 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Weapons;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Presenter điều phối giữa MetaCurrencyManager / SaveData (Model) và MainHubView (View).
-    /// Tuân thủ MVP: Cập nhật Cổ Tiền, điều hướng mở các phân khu và phát tín hiệu bắt đầu trận đấu.
+    /// Presenter điều phối Sảnh Hoàng Tuyền (Main Hub).
+    /// Tuân thủ MVP: Điều hướng độc lập giữa Chọn Tướng, Tàng Bảo Các, Miếu Cổ và Xuất Trận.
     /// </summary>
     public class MainHubPresenter : MonoBehaviour
     {
@@ -29,6 +33,7 @@ namespace ProjectZombie.Features.UI
             {
                 _view.OnStartRunClicked += HandleStartRunClicked;
                 _view.OnHeroSelectClicked += HandleHeroSelectClicked;
+                _view.OnArmoryClicked += HandleArmoryClicked;
                 _view.OnSanctuaryTreeClicked += HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked += HandleCodexClicked;
                 _view.OnSettingsClicked += HandleSettingsClicked;
@@ -40,25 +45,12 @@ namespace ProjectZombie.Features.UI
             }
 
             UpdateCurrencyDisplay();
-            InitSelectedHeroPreview();
+            RefreshHubState();
         }
 
-        private void InitSelectedHeroPreview()
+        private void OnEnable()
         {
-            if (_view != null)
-            {
-                var selectionData = Resources.Load<ProjectZombie.Features.Player.CharacterSelectionData>("CharacterSelectionData");
-                if (selectionData != null && selectionData.Characters != null && 
-                    selectionData.SelectedCharacterIndex >= 0 && selectionData.SelectedCharacterIndex < selectionData.Characters.Count)
-                {
-                    var selected = selectionData.Characters[selectionData.SelectedCharacterIndex];
-                    _view.SetSelectedHeroPreview(selected.characterName, selected.avatar);
-                }
-                else
-                {
-                    _view.SetSelectedHeroPreview("THƯ SINH (HỆ KIM)", null);
-                }
-            }
+            RefreshHubState();
         }
 
         private void OnDestroy()
@@ -67,6 +59,7 @@ namespace ProjectZombie.Features.UI
             {
                 _view.OnStartRunClicked -= HandleStartRunClicked;
                 _view.OnHeroSelectClicked -= HandleHeroSelectClicked;
+                _view.OnArmoryClicked -= HandleArmoryClicked;
                 _view.OnSanctuaryTreeClicked -= HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked -= HandleCodexClicked;
                 _view.OnSettingsClicked -= HandleSettingsClicked;
@@ -78,34 +71,111 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        public void RefreshHubState()
+        {
+            UpdateCurrencyDisplay();
+            UpdateSelectedHeroDisplay();
+            UpdateLoadoutSummaryDisplay();
+        }
+
         public void UpdateCurrencyDisplay(int amount = -1)
         {
             if (_view != null)
             {
                 int balance = amount >= 0 ? amount : (_currencyManager != null ? _currencyManager.TotalCurrency : 0);
-                _view.SetCoTienBalance($"<color=#FFD700>{balance:N0}</color> Cổ Tiền");
+                _view.SetCoTienBalance($"<color=#FFD700>{balance:N0}</color>");
+                _view.SetLinhHonBalance("<color=#B388FF>0</color>");
             }
+        }
+
+        private void UpdateSelectedHeroDisplay()
+        {
+            if (_view == null) return;
+
+            CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+            if (hero == null)
+            {
+                var selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+                if (selectionData != null && selectionData.Characters != null && selectionData.Characters.Count > 0)
+                {
+                    int idx = Mathf.Clamp(selectionData.SelectedCharacterIndex, 0, selectionData.Characters.Count - 1);
+                    hero = selectionData.Characters[idx];
+                    RunLoadoutState.SetCharacter(hero);
+                }
+            }
+
+            if (hero != null)
+            {
+                string elemStr = $"<color={hero.elementHexColor}>Hệ {hero.element}</color>";
+                _view.SetSelectedHeroPreview(hero.characterName, elemStr, hero.avatar);
+            }
+            else
+            {
+                _view.SetSelectedHeroPreview("ĐẠO SĨ", "<color=#4CAF50>Hệ Mộc</color>", null);
+            }
+        }
+
+        private void UpdateLoadoutSummaryDisplay()
+        {
+            if (_view == null) return;
+
+            WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
+            List<WeaponData> relics = RunLoadoutState.SelectedRelics;
+
+            string priName = primary != null ? primary.weaponName : "Nỏ Thần";
+            Sprite priSprite = primary != null ? primary.icon : null;
+
+            var relicSprites = new List<Sprite>();
+            if (relics != null)
+            {
+                foreach (var r in relics)
+                {
+                    if (r != null && r.icon != null) relicSprites.Add(r.icon);
+                }
+            }
+
+            _view.SetEquippedLoadoutSummary(priName, priSprite, relicSprites);
         }
 
         private void HandleStartRunClicked()
         {
+            Debug.Log("<color=#00FF88>[MainHubPresenter]</color> Bắt đầu xuất trận với Tướng & Loadout đã lưu!");
+
             OnStartRunRequested?.Invoke();
+
+            if (MetaSceneTransitionController.Instance != null)
+            {
+                MetaSceneTransitionController.Instance.StartRun();
+            }
+            else
+            {
+                var transitionCtrl = FindObjectOfType<MetaSceneTransitionController>();
+                if (transitionCtrl != null)
+                {
+                    transitionCtrl.StartRun();
+                }
+                else if (MetaUIManager.Instance != null)
+                {
+                    MetaUIManager.Instance.SetMetaCanvasActive(false);
+                }
+            }
         }
 
         private void HandleHeroSelectClicked()
         {
-            Debug.Log("[MainHubPresenter] Đã nhận sự kiện click nút TƯỚNG từ MainHubView!");
-
             var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
-
             if (metaManager != null)
             {
-                Debug.Log($"[MainHubPresenter] Đang gọi MetaUIManager ({metaManager.gameObject.name}).OpenScreen(CharacterSelect)...");
                 metaManager.OpenScreen(MetaScreenType.CharacterSelect);
             }
-            else
+        }
+
+        private void HandleArmoryClicked()
+        {
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
             {
-                Debug.LogError("[MainHubPresenter] Không tìm thấy MetaUIManager ở bất kỳ đâu trong Scene!");
+                metaManager.OpenScreen(MetaScreenType.WeaponLoadout);
             }
         }
 

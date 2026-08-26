@@ -40,6 +40,33 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
+        /// Chỉ cập nhật nhân vật đã chọn (tự động điền vũ khí mặc định nếu chưa có).
+        /// </summary>
+        public static void SetCharacter(CharacterEntry character)
+        {
+            SelectedCharacter = character;
+            if (character != null)
+            {
+                if (SelectedPrimaryWeapon == null && character.defaultPrimaryWeapon != null)
+                {
+                    SelectedPrimaryWeapon = character.defaultPrimaryWeapon;
+                }
+                if ((SelectedRelics == null || SelectedRelics.Count == 0) && character.defaultRelics != null)
+                {
+                    SelectedRelics.Clear();
+                    foreach (var r in character.defaultRelics)
+                    {
+                        if (r != null && !SelectedRelics.Contains(r) && SelectedRelics.Count < 3)
+                        {
+                            SelectedRelics.Add(r);
+                        }
+                    }
+                }
+            }
+            Debug.Log($"<color=#00FF88>[RunLoadoutState]</color> Đã chọn tướng: {(character != null ? character.characterName : "Null")}");
+        }
+
+        /// <summary>
         /// Xóa bỏ cấu hình tùy chỉnh để quay về mặc định.
         /// </summary>
         public static void ResetLoadout()

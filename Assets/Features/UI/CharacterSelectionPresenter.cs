@@ -192,27 +192,28 @@ namespace ProjectZombie.Features.UI
                 }
                 #endif
 
-                RunLoadoutState.SetLoadout(charEntry, primaryW, relics);
-            }
-
-            // Cập nhật thông tin tướng đã chọn ra ngoài Sảnh Hoàng Tuyền
-            var mainHubView = FindObjectOfType<MainHubView>(true);
-            if (mainHubView != null)
-            {
-                mainHubView.SetSelectedHeroPreview(selected.name, selected.avatar);
-            }
-
-            // Flow Bước 2: Chuyển tiếp sang màn hình Chọn Vũ Khí & Pháp Bảo (Tàng Bảo Các)
-            if (MetaUIManager.Instance != null && MetaUIManager.Instance.WeaponLoadoutScreen != null)
-            {
-                var loadoutPresenter = MetaUIManager.Instance.WeaponLoadoutScreen.GetComponent<WeaponLoadoutPresenter>();
-                if (loadoutPresenter != null && _selectionData != null && _currentIndex < _selectionData.Characters.Count)
+                RunLoadoutState.SetCharacter(charEntry);
+                if (RunLoadoutState.SelectedPrimaryWeapon == null)
                 {
-                    loadoutPresenter.SetupForHero(_selectionData.Characters[_currentIndex]);
+                    RunLoadoutState.SetLoadout(charEntry, primaryW, relics);
                 }
-                MetaUIManager.Instance.PushScreen(MetaUIManager.Instance.WeaponLoadoutScreen);
+                OnCharacterSelected?.Invoke(charEntry?.playerPrefab);
             }
-            else if (MetaUIManager.Instance != null)
+
+            if (_selectionData != null)
+            {
+                _selectionData.SelectedCharacterIndex = _currentIndex;
+            }
+
+            // Cập nhật Sảnh Hoàng Tuyền
+            var mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
+            if (mainHubPresenter != null)
+            {
+                mainHubPresenter.RefreshHubState();
+            }
+
+            // Đóng Modal và quay về Sảnh Chính
+            if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.PopScreen();
             }

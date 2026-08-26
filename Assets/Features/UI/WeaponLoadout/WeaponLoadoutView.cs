@@ -8,7 +8,7 @@ using ProjectZombie.Features.Weapons;
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Passive View quản lý giao diện Tàng Bảo Các (Chọn Vũ Khí Chính & Pháp Bảo Hộ Thân) tuân thủ mô hình MVP.
+    /// Passive View quản lý giao diện Tàng Bảo Các (Kho Pháp Bảo) chuẩn mỹ thuật Cổ Phong Đông Sơn 2 Cột.
     /// </summary>
     public class WeaponLoadoutView : BaseMetaScreenView
     {
@@ -19,15 +19,22 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _heroNameText;
         [SerializeField] private TextMeshProUGUI _heroElementText;
 
-        [Header("Equipped Slots (Loadout)")]
+        [Header("Inventory Tabs")]
+        [SerializeField] private Button _tabPrimaryButton;
+        [SerializeField] private Button _tabRelicsButton;
+        [SerializeField] private Image _tabPrimaryBg;
+        [SerializeField] private Image _tabRelicsBg;
+        [SerializeField] private TextMeshProUGUI _tabPrimaryText;
+        [SerializeField] private TextMeshProUGUI _tabRelicsText;
+
+        [Header("Inventory 12-Slot Grid Container")]
+        [SerializeField] private Transform _inventoryGridContainer;
+
+        [Header("Equipped Loadout Slots")]
         [SerializeField] private Image _primarySlotIcon;
         [SerializeField] private TextMeshProUGUI _primarySlotName;
         [SerializeField] private Image[] _relicSlotIcons;
         [SerializeField] private TextMeshProUGUI[] _relicSlotNames;
-
-        [Header("Selection Containers")]
-        [SerializeField] private Transform _primaryWeaponsContainer;
-        [SerializeField] private Transform _relicWeaponsContainer;
 
         [Header("Detail Inspection Panel")]
         [SerializeField] private Image _detailIcon;
@@ -35,6 +42,8 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _detailTypeText;
         [SerializeField] private TextMeshProUGUI _detailDamageText;
         [SerializeField] private TextMeshProUGUI _detailCooldownText;
+        [SerializeField] private Image _damageFillBar;
+        [SerializeField] private Image _cooldownFillBar;
         [SerializeField] private TextMeshProUGUI _detailDescText;
 
         [Header("Action Buttons")]
@@ -43,11 +52,18 @@ namespace ProjectZombie.Features.UI
 
         public event Action OnStartBattleClicked;
         public event Action OnBackClicked;
-        public event Action<WeaponData> OnWeaponClicked;
+        public event Action OnTabPrimaryClicked;
+        public event Action OnTabRelicsClicked;
 
         protected override void Awake()
         {
             base.Awake();
+
+            if (_tabPrimaryButton != null)
+                _tabPrimaryButton.onClick.AddListener(() => OnTabPrimaryClicked?.Invoke());
+
+            if (_tabRelicsButton != null)
+                _tabRelicsButton.onClick.AddListener(() => OnTabRelicsClicked?.Invoke());
 
             if (_startBattleButton != null)
                 _startBattleButton.onClick.AddListener(() => OnStartBattleClicked?.Invoke());
@@ -73,9 +89,23 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        public void SetTabState(bool isPrimaryTab)
+        {
+            Color activeBg = new Color(0.24f, 0.18f, 0.12f, 1f); // Nâu đồng nổi
+            Color inactiveBg = new Color(0.12f, 0.10f, 0.16f, 0.9f); // Gỗ trầm chìm
+            Color activeTxt = new Color(1f, 0.88f, 0.45f, 1f); // Vàng kim
+            Color inactiveTxt = new Color(0.65f, 0.65f, 0.72f, 1f); // Xám bạc
+
+            if (_tabPrimaryBg != null) _tabPrimaryBg.color = isPrimaryTab ? activeBg : inactiveBg;
+            if (_tabRelicsBg != null) _tabRelicsBg.color = !isPrimaryTab ? activeBg : inactiveBg;
+
+            if (_tabPrimaryText != null) _tabPrimaryText.color = isPrimaryTab ? activeTxt : inactiveTxt;
+            if (_tabRelicsText != null) _tabRelicsText.color = !isPrimaryTab ? activeTxt : inactiveTxt;
+        }
+
         public void DisplayEquippedLoadout(WeaponData primary, List<WeaponData> relics)
         {
-            // 1. Vũ Khí Chính
+            // 1. Vũ Khí Chính (Ô Lục Giác)
             if (_primarySlotName != null)
                 _primarySlotName.text = primary != null ? primary.weaponName : "Chưa Chọn";
 
@@ -114,7 +144,7 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        public void DisplayWeaponDetail(WeaponData weapon)
+        public void DisplayWeaponDetail(WeaponData weapon, float damageFill, float cooldownFill)
         {
             if (weapon == null) return;
 
@@ -123,12 +153,15 @@ namespace ProjectZombie.Features.UI
             if (_detailDamageText != null) _detailDamageText.text = $"Sát thương: <color=#FFD700>{weapon.baseDamage}</color>";
             if (_detailCooldownText != null) _detailCooldownText.text = $"Hồi chiêu: <color=#4DEEEA>{weapon.baseAttackSpeed:F1}s</color>";
 
+            if (_damageFillBar != null) _damageFillBar.fillAmount = Mathf.Clamp01(damageFill);
+            if (_cooldownFillBar != null) _cooldownFillBar.fillAmount = Mathf.Clamp01(cooldownFill);
+
             if (_detailTypeText != null)
             {
                 string roleName = weapon.weaponRole == WeaponRole.PrimaryWeapon 
-                    ? "<color=#FF8800>⚔️ VŨ KHÍ CHÍNH (ĐÁNH TAY COMBO)</color>" 
-                    : "<color=#00FF88>🛡️ PHÁP BẢO HỘ THÂN (TỰ ĐỘNG)</color>";
-                _detailTypeText.text = $"{roleName} • Hệ {weapon.elementType}";
+                    ? "<color=#FF8800>[VŨ KHÍ CHÍNH] (ĐÁNH TAY COMBO)</color>" 
+                    : "<color=#00FF88>[PHÁP BẢO] (HỘ THÂN TỰ ĐỘNG)</color>";
+                _detailTypeText.text = $"{roleName}\nHệ <color=#FFD700>{weapon.elementType}</color>";
             }
 
             if (_detailIcon != null)
@@ -138,7 +171,6 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        public Transform PrimaryWeaponsContainer => _primaryWeaponsContainer;
-        public Transform RelicWeaponsContainer => _relicWeaponsContainer;
+        public Transform InventoryGridContainer => _inventoryGridContainer;
     }
 }

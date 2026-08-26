@@ -296,8 +296,8 @@ namespace ProjectZombie.Editor.UI
                 relicIcons[r] = rIconObj.AddComponent<Image>();
             }
 
-            // 7. Next Step Button: "TIẾP TỤC: CHỌN PHÁP BẢO ➔"
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -425), new Vector2(560, 56), "TIEP TUC: CHON PHAP BAO ➔", vietFont);
+            // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG"
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -425), new Vector2(560, 56), "XAC NHAN CHON TUONG", vietFont);
             var btnImg = selectBtnObj.GetComponent<Image>();
             btnImg.color = new Color(0.85f, 0.45f, 0.15f); // Cam Đồng sáng
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();

@@ -8,8 +8,14 @@ using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI
 {
+    public enum LoadoutInventoryTab
+    {
+        PrimaryWeapons,
+        Relics
+    }
+
     /// <summary>
-    /// Presenter điều phối toàn bộ luồng logic chọn Vũ Khí Chính & Pháp Bảo Hộ Thân (Tàng Bảo Các) theo mô hình MVP.
+    /// Presenter điều phối toàn bộ luồng logic Tàng Bảo Các (Kho Pháp Bảo) chuẩn 2 Cột Đối Xứng (MVP).
     /// </summary>
     public class WeaponLoadoutPresenter : MonoBehaviour
     {
@@ -21,6 +27,8 @@ namespace ProjectZombie.Features.UI
         private CharacterEntry _currentHero;
         private WeaponData _selectedPrimary;
         private readonly List<WeaponData> _selectedRelics = new List<WeaponData>();
+        private WeaponData _inspectedWeapon;
+        private LoadoutInventoryTab _currentTab = LoadoutInventoryTab.PrimaryWeapons;
 
         private void Awake()
         {
@@ -34,6 +42,8 @@ namespace ProjectZombie.Features.UI
 
             if (_view != null)
             {
+                _view.OnTabPrimaryClicked += () => SetTab(LoadoutInventoryTab.PrimaryWeapons);
+                _view.OnTabRelicsClicked += () => SetTab(LoadoutInventoryTab.Relics);
                 _view.OnStartBattleClicked += HandleStartBattle;
                 _view.OnBackClicked += HandleBack;
             }
@@ -50,7 +60,6 @@ namespace ProjectZombie.Features.UI
 
         private void OnEnable()
         {
-            // Tự động đồng bộ Anh Hùng đã chọn từ RunLoadoutState
             if (RunLoadoutState.SelectedCharacter != null)
             {
                 SetupForHero(RunLoadoutState.SelectedCharacter);
@@ -84,15 +93,12 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        /// <summary>
-        /// Khởi tạo và đồng bộ Loadout cho Anh Hùng cụ thể (Bước 2 của Flow).
-        /// </summary>
         public void SetupForHero(CharacterEntry hero)
         {
             _currentHero = hero;
             LoadAllWeaponsIfEmpty();
 
-            // 1. Gán Vũ Khí Chính mặc định
+            // 1. Vũ Khí Chính Mặc Định
             if (hero != null && hero.defaultPrimaryWeapon != null)
             {
                 _selectedPrimary = hero.defaultPrimaryWeapon;
@@ -102,7 +108,7 @@ namespace ProjectZombie.Features.UI
                 _selectedPrimary = _allWeapons.Find(w => w.weaponRole == WeaponRole.PrimaryWeapon);
             }
 
-            // 2. Gán Pháp Bảo Hộ Thân mặc định
+            // 2. Pháp Bảo Hộ Thân Mặc Định
             _selectedRelics.Clear();
             if (hero != null && hero.defaultRelics != null && hero.defaultRelics.Count > 0)
             {
@@ -115,7 +121,6 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // Fallback nếu danh sách relics trống: lấy 3 relic đầu tiên
             if (_selectedRelics.Count == 0)
             {
                 foreach (var w in _allWeapons)
@@ -127,6 +132,14 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
+            _inspectedWeapon = _selectedPrimary;
+            _currentTab = LoadoutInventoryTab.PrimaryWeapons;
+            RefreshUI();
+        }
+
+        public void SetTab(LoadoutInventoryTab tab)
+        {
+            _currentTab = tab;
             RefreshUI();
         }
 
@@ -134,8 +147,8 @@ namespace ProjectZombie.Features.UI
         {
             if (weapon == null) return;
             _selectedPrimary = weapon;
+            _inspectedWeapon = weapon;
             RefreshUI();
-            if (_view != null) _view.DisplayWeaponDetail(weapon);
         }
 
         public void ToggleRelic(WeaponData relic)
@@ -150,13 +163,13 @@ namespace ProjectZombie.Features.UI
             {
                 if (_selectedRelics.Count >= 3)
                 {
-                    _selectedRelics.RemoveAt(0); // Thay thế vị trí đầu tiên nếu đã đầy 3 slot
+                    _selectedRelics.RemoveAt(0); // Bỏ món đầu tiên nếu đã đầy 3 slot
                 }
                 _selectedRelics.Add(relic);
             }
 
+            _inspectedWeapon = relic;
             RefreshUI();
-            if (_view != null) _view.DisplayWeaponDetail(relic);
         }
 
         private void RefreshUI()
@@ -170,96 +183,109 @@ namespace ProjectZombie.Features.UI
                 _view.DisplayHeroHeader(_currentHero.characterName, elemStr, _currentHero.avatar);
             }
 
-            // 2. Cập nhật 4 Ô Trang Bị
+            // 2. Cập nhật Tab State
+            _view.SetTabState(_currentTab == LoadoutInventoryTab.PrimaryWeapons);
+
+            // 3. Cập nhật 4 Ô Trang Bị
             _view.DisplayEquippedLoadout(_selectedPrimary, _selectedRelics);
 
-            // 3. Hiển thị chi tiết vũ khí đang chọn
-            if (_selectedPrimary != null)
+            // 4. Cập nhật Chi Tiết Soi Chỉ Số
+            if (_inspectedWeapon != null)
             {
-                _view.DisplayWeaponDetail(_selectedPrimary);
-            }
-            else if (_selectedRelics.Count > 0)
-            {
-                _view.DisplayWeaponDetail(_selectedRelics[0]);
+                float dmgFill = Mathf.Clamp01(_inspectedWeapon.baseDamage / 35f);
+                float cdFill = 1f - Mathf.Clamp01(_inspectedWeapon.baseAttackSpeed / 2.5f);
+                _view.DisplayWeaponDetail(_inspectedWeapon, dmgFill, cdFill);
             }
 
-            // 4. Sinh Grid Buttons danh sách vũ khí
-            PopulateWeaponsGrid();
+            // 5. Sinh Grid 12 Ô Vật Phẩm
+            Populate12SlotInventoryGrid();
         }
 
-        private void PopulateWeaponsGrid()
+        private void Populate12SlotInventoryGrid()
         {
-            if (_view == null) return;
+            if (_view == null || _view.InventoryGridContainer == null) return;
 
-            // Grid Vũ Khí Chính
-            if (_view.PrimaryWeaponsContainer != null)
+            ClearChildren(_view.InventoryGridContainer);
+
+            // Lọc danh sách theo Tab hiện tại
+            var targetList = new List<WeaponData>();
+            foreach (var w in _allWeapons)
             {
-                ClearChildren(_view.PrimaryWeaponsContainer);
-                foreach (var w in _allWeapons)
+                if (_currentTab == LoadoutInventoryTab.PrimaryWeapons && w.weaponRole == WeaponRole.PrimaryWeapon)
                 {
-                    if (w.weaponRole == WeaponRole.PrimaryWeapon)
-                    {
-                        CreateWeaponItemButton(w, _view.PrimaryWeaponsContainer, isPrimary: true);
-                    }
+                    targetList.Add(w);
+                }
+                else if (_currentTab == LoadoutInventoryTab.Relics && w.weaponRole != WeaponRole.PrimaryWeapon)
+                {
+                    targetList.Add(w);
                 }
             }
 
-            // Grid Pháp Bảo Hộ Thân
-            if (_view.RelicWeaponsContainer != null)
+            // Tạo đúng 12 Ô (4 Cột x 3 Hàng)
+            int totalSlots = 12;
+            for (int i = 0; i < totalSlots; i++)
             {
-                ClearChildren(_view.RelicWeaponsContainer);
-                foreach (var w in _allWeapons)
+                if (i < targetList.Count)
                 {
-                    if (w.weaponRole != WeaponRole.PrimaryWeapon)
-                    {
-                        CreateWeaponItemButton(w, _view.RelicWeaponsContainer, isPrimary: false);
-                    }
+                    CreateItemSlot(targetList[i], _view.InventoryGridContainer, isLocked: false);
+                }
+                else
+                {
+                    CreateItemSlot(null, _view.InventoryGridContainer, isLocked: true);
                 }
             }
         }
 
-        private void CreateWeaponItemButton(WeaponData weapon, Transform parent, bool isPrimary)
+        private void CreateItemSlot(WeaponData weapon, Transform parent, bool isLocked)
         {
-            if (weapon == null || parent == null) return;
+            GameObject slotObj = new GameObject(isLocked ? "Slot_Locked" : $"Slot_{weapon.weaponId}", typeof(RectTransform));
+            slotObj.transform.SetParent(parent, false);
 
-            GameObject itemObj = new GameObject($"Item_{weapon.weaponId}", typeof(RectTransform), typeof(Image), typeof(Button));
-            itemObj.transform.SetParent(parent, false);
+            var slotRT = slotObj.GetComponent<RectTransform>();
+            slotRT.sizeDelta = new Vector2(80, 96); // 80px ô + 16px nhãn bên dưới
 
-            var rt = itemObj.GetComponent<RectTransform>();
-            rt.sizeDelta = isPrimary ? new Vector2(72, 72) : new Vector2(74, 74);
+            // Khung Ô Vật Phẩm (80 x 80)
+            GameObject boxObj = new GameObject("Box", typeof(RectTransform), typeof(Image), typeof(Button));
+            boxObj.transform.SetParent(slotObj.transform, false);
+            var boxRT = boxObj.GetComponent<RectTransform>();
+            boxRT.anchorMin = new Vector2(0.5f, 1f);
+            boxRT.anchorMax = new Vector2(0.5f, 1f);
+            boxRT.pivot = new Vector2(0.5f, 1f);
+            boxRT.anchoredPosition = Vector2.zero;
+            boxRT.sizeDelta = new Vector2(80, 80);
 
-            bool isEquipped = isPrimary ? (weapon == _selectedPrimary) : _selectedRelics.Contains(weapon);
-            var bgImg = itemObj.GetComponent<Image>();
-            if (bgImg != null)
-            {
-                bgImg.color = isEquipped ? new Color(0.95f, 0.78f, 0.25f, 1f) : new Color(0.24f, 0.20f, 0.32f, 0.95f);
-            }
+            var boxImg = boxObj.GetComponent<Image>();
+            Color borderColor = isLocked ? new Color(0.25f, 0.22f, 0.30f, 0.8f) : GetElementColor(weapon.elementType);
+            boxImg.color = borderColor;
 
-            // Khung đệm bên trong
+            // Nền bên trong (Inner Background)
             GameObject innerObj = new GameObject("InnerBg", typeof(RectTransform), typeof(Image));
-            innerObj.transform.SetParent(itemObj.transform, false);
+            innerObj.transform.SetParent(boxObj.transform, false);
             var inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = isEquipped ? new Vector2(3, 3) : new Vector2(2, 2);
-            inRT.offsetMax = isEquipped ? new Vector2(-3, -3) : new Vector2(-2, -2);
-            var inImg = innerObj.GetComponent<Image>();
-            if (inImg != null)
-            {
-                inImg.color = isEquipped ? new Color(0.18f, 0.14f, 0.26f, 1f) : new Color(0.12f, 0.10f, 0.16f, 1f);
-            }
+            inRT.offsetMin = new Vector2(3, 3);
+            inRT.offsetMax = new Vector2(-3, -3);
 
-            // Icon chính
+            var inImg = innerObj.GetComponent<Image>();
+            inImg.color = isLocked ? new Color(0.08f, 0.07f, 0.10f, 0.95f) : new Color(0.14f, 0.11f, 0.18f, 0.95f);
+
+            // Icon bên trong
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(innerObj.transform, false);
             var iconRT = iconObj.GetComponent<RectTransform>();
             iconRT.anchorMin = Vector2.zero;
             iconRT.anchorMax = Vector2.one;
-            iconRT.offsetMin = new Vector2(4, 4);
-            iconRT.offsetMax = new Vector2(-4, -4);
+            iconRT.offsetMin = new Vector2(6, 6);
+            iconRT.offsetMax = new Vector2(-6, -6);
 
             var iconImg = iconObj.GetComponent<Image>();
-            if (iconImg != null)
+            if (isLocked)
+            {
+                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.6f);
+                // Có thể load sprite ổ khóa nếu có
+            }
+            else
             {
                 iconImg.sprite = weapon.icon;
                 iconImg.enabled = weapon.icon != null;
@@ -267,32 +293,58 @@ namespace ProjectZombie.Features.UI
                 iconImg.preserveAspect = true;
             }
 
-            // Badge viền vàng khi trang bị
-            if (isEquipped)
+            // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
+            GameObject lblObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            lblObj.transform.SetParent(slotObj.transform, false);
+            var lblRT = lblObj.GetComponent<RectTransform>();
+            lblRT.anchorMin = new Vector2(0, 0);
+            lblRT.anchorMax = new Vector2(1, 0);
+            lblRT.pivot = new Vector2(0.5f, 0);
+            lblRT.anchoredPosition = Vector2.zero;
+            lblRT.sizeDelta = new Vector2(0, 16);
+
+            var lblTMP = lblObj.GetComponent<TextMeshProUGUI>();
+            lblTMP.fontSize = 11;
+            lblTMP.alignment = TextAlignmentOptions.Center;
+            lblTMP.fontStyle = FontStyles.Bold;
+
+            if (isLocked)
             {
-                GameObject checkObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
-                checkObj.transform.SetParent(itemObj.transform, false);
-                var cRT = checkObj.GetComponent<RectTransform>();
-                cRT.anchorMin = new Vector2(1, 1);
-                cRT.anchorMax = new Vector2(1, 1);
-                cRT.pivot = new Vector2(1, 1);
-                cRT.anchoredPosition = new Vector2(2, 2);
-                cRT.sizeDelta = new Vector2(16, 16);
-                var cImg = checkObj.GetComponent<Image>();
-                if (cImg != null)
-                {
-                    cImg.color = new Color(0.95f, 0.78f, 0.25f, 1f);
-                }
+                lblTMP.text = "<color=#666677>Khóa</color>";
+            }
+            else
+            {
+                lblTMP.text = $"<color=#{ColorUtility.ToHtmlStringRGB(borderColor)}>{weapon.weaponName}</color>";
             }
 
-            var btn = itemObj.GetComponent<Button>();
-            if (btn != null)
+            // Xử lý Click
+            var btn = boxObj.GetComponent<Button>();
+            if (!isLocked && btn != null)
             {
                 btn.onClick.AddListener(() =>
                 {
-                    if (isPrimary) SelectPrimaryWeapon(weapon);
-                    else ToggleRelic(weapon);
+                    if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
+                    {
+                        SelectPrimaryWeapon(weapon);
+                    }
+                    else
+                    {
+                        ToggleRelic(weapon);
+                    }
                 });
+            }
+        }
+
+        private Color GetElementColor(ElementType element)
+        {
+            switch (element)
+            {
+                case ElementType.Kim: return new Color(1.0f, 0.84f, 0.0f, 1f); // Vàng Kim
+                case ElementType.Moc: return new Color(0.30f, 0.75f, 0.35f, 1f); // Xanh Lục
+                case ElementType.Thuy: return new Color(0.20f, 0.65f, 0.95f, 1f); // Xanh Lam
+                case ElementType.Hoa: return new Color(0.95f, 0.28f, 0.22f, 1f); // Đỏ Chu Sa
+                case ElementType.Tho: return new Color(0.65f, 0.48f, 0.32f, 1f); // Nâu Đất Đồng
+                default: return new Color(0.85f, 0.85f, 0.90f, 1f);
             }
         }
 
@@ -308,10 +360,8 @@ namespace ProjectZombie.Features.UI
         {
             Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter]</color> XÁC NHẬN XUẤT TRẬN: Hero={_currentHero?.characterName}, Primary={_selectedPrimary?.weaponName}, Relics Count={_selectedRelics.Count}");
 
-            // Lưu toàn bộ cấu hình vào RunLoadoutState
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
 
-            // Kích hoạt Transition Overlay chuyển vào Gameplay
             if (MetaSceneTransitionController.Instance != null)
             {
                 MetaSceneTransitionController.Instance.StartRun();
@@ -325,7 +375,6 @@ namespace ProjectZombie.Features.UI
                 }
                 else if (MetaUIManager.Instance != null)
                 {
-                    // Fallback: Ẩn Canvas Meta Menu nếu không tìm thấy Transition Controller
                     MetaUIManager.Instance.SetMetaCanvasActive(false);
                 }
             }
@@ -333,6 +382,14 @@ namespace ProjectZombie.Features.UI
 
         private void HandleBack()
         {
+            RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
+
+            var mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
+            if (mainHubPresenter != null)
+            {
+                mainHubPresenter.RefreshHubState();
+            }
+
             if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.PopScreen();
