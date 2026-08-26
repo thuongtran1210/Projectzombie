@@ -8,9 +8,8 @@ using ProjectZombie.Features.Arena;
 namespace ProjectZombie.Features.Player
 {
     /// <summary>
-    /// Chịu trách nhiệm điều phối khởi tạo gameplay scene (Composition Root).
-    /// Tuân thủ Single Responsibility: Chỉ điều phối luồng vòng đời, các nhiệm vụ chi tiết
-    /// được ủy thác cho PlayerContext, GameplayUIBinder, PlayerProvider, GameStateManager.
+    /// Chịu trách nhiệm điều phối khởi tạo thực thể Player và gameplay scene (Composition Root).
+    /// Tự động spawn nhân vật ngay khi mở game để đứng tại Sảnh Hoàng Tuyền (Hub Stage) theo Hướng 1.
     /// </summary>
     public class GameplayBootstrapper : MonoBehaviour
     {
@@ -54,7 +53,7 @@ namespace ProjectZombie.Features.Player
 
         private void Start()
         {
-            // 1. Đăng ký lắng nghe sự kiện chọn tướng nếu có UI trong Scene
+            // 1. Đăng ký lắng nghe sự kiện đổi tướng từ UI trong Scene
             var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
             if (existingUI != null)
             {
@@ -62,29 +61,22 @@ namespace ProjectZombie.Features.Player
                 existingUI.OnCharacterSelected += HandleCharacterSelected;
             }
 
-            // 2. Nếu có MetaUIManager quản lý Sảnh Menu (Hướng A), nhường quyền điều phối cho MetaUIManager & MetaSceneTransitionController
-            if (MetaUIManager.Instance != null || FindObjectOfType<MetaUIManager>(true) != null)
-            {
-                Debug.Log("[GameplayBootstrapper] Phát hiện MetaUIManager: Nhường quyền khởi động cho Sảnh Hoàng Tuyền (Main Hub).");
-                return;
-            }
+            // 2. Tự động spawn thực thể nhân vật đứng sẵn ở Sảnh (Hub Stage) ngay khi mở game
+            SpawnPlayerFromSelection(null);
 
-            // 3. Fallback cho Test Scene độc lập (nếu không có Meta Menu)
-            if (TryInitializeCharacterSelectionUI())
+            // 3. Nếu đang ở MainMenu (Sảnh), chưa bắt đầu wave quái
+            bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
+            if (!isMainMenu)
             {
-                return;
+                StartMatchFlow();
             }
-
-            InitializeLevel(null);
         }
 
+        /// <summary>
+        /// Spawn hoặc thay đổi thực thể Player theo Prefab tướng đã chọn.
+        /// </summary>
         public void SpawnPlayerFromSelection(GameObject selectedPrefab)
         {
-            if (_activePlayerInstance != null)
-            {
-                Debug.Log("[GameplayBootstrapper] Player instance đã tồn tại, không spawn lại.");
-                return;
-            }
             InitializeLevel(selectedPrefab);
         }
 
@@ -93,40 +85,13 @@ namespace ProjectZombie.Features.Player
             SpawnPlayerFromSelection(selectedPrefab);
         }
 
-        private bool TryInitializeCharacterSelectionUI()
-        {
-            var existingUI = FindObjectOfType<CharacterSelectionPresenter>(true);
-            if (existingUI != null)
-            {
-                existingUI.gameObject.SetActive(true);
-                existingUI.OnCharacterSelected -= HandleCharacterSelected;
-                existingUI.OnCharacterSelected += HandleCharacterSelected;
-                Debug.Log("[GameplayBootstrapper] Đã đăng ký lắng nghe sự kiện OnCharacterSelected từ CharacterSelectionPresenter có sẵn trong scene.");
-                return true;
-            }
-
-            if (characterSelectionUIPrefab != null)
-            {
-                GameObject uiObj = Instantiate(characterSelectionUIPrefab);
-                var presenter = uiObj.GetComponent<CharacterSelectionPresenter>();
-                if (presenter != null)
-                {
-                    presenter.OnCharacterSelected += HandleCharacterSelected;
-                    Debug.Log("[GameplayBootstrapper] Đã spawn CharacterSelectionUI Prefab và đăng ký sự kiện.");
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private void InitializeLevel(GameObject overridePrefab)
         {
-            // 1. Resolve Prefab hợp lệ
+            // 1. Resolve Prefab hợp lệ từ RunLoadoutState hoặc database
             GameObject playerPrefab = ResolvePlayerPrefab(overridePrefab);
             if (playerPrefab == null)
             {
-                Debug.LogError("[GameplayBootstrapper] Player Prefab chưa được gán! Không thể khởi tạo gameplay.");
+                Debug.LogWarning("[GameplayBootstrapper] Chưa tìm thấy Player Prefab để spawn!");
                 return;
             }
 
@@ -137,23 +102,36 @@ namespace ProjectZombie.Features.Player
             PlayerContext context = PlayerContext.Create(_activePlayerInstance);
             PlayerProvider.RegisterPlayer(_activePlayerInstance);
 
-            // 4. Kết nối Camera Target
+            // 4. Kết nối Camera Target theo Player
             SetupCameraFollow(context.Transform);
 
             // 5. Inject Dependencies vào toàn bộ UI Presenters thông qua GameplayUIBinder
             _uiBinder.BindAll(context);
-
-            // 6. Bắt đầu Vòng lặp trận đấu (Match Flow)
-            StartMatchFlow();
         }
 
         private GameObject ResolvePlayerPrefab(GameObject overridePrefab)
         {
             if (overridePrefab != null) return overridePrefab;
+
+            // Ưu tiên 1: Tướng đã lưu trong RunLoadoutState
+            if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.playerPrefab != null)
+            {
+                return RunLoadoutState.SelectedCharacter.playerPrefab;
+            }
+
+            // Ưu tiên 2: Dữ liệu từ CharacterSelectionData
             if (characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
             {
                 return characterSelectionData.SelectedPlayerPrefab;
             }
+
+            // Ưu tiên 3: Fallback Resources
+            var selectionDataRes = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+            if (selectionDataRes != null && selectionDataRes.SelectedPlayerPrefab != null)
+            {
+                return selectionDataRes.SelectedPlayerPrefab;
+            }
+
             return defaultPlayerPrefab;
         }
 
@@ -172,7 +150,7 @@ namespace ProjectZombie.Features.Player
             _activePlayerInstance.name = playerPrefab.name;
             _activePlayerInstance.SetActive(true);
 
-            Debug.Log($"[GameplayBootstrapper] Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
+            Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }
 
         private void SetupCameraFollow(Transform target)
@@ -185,15 +163,13 @@ namespace ProjectZombie.Features.Player
             if (cameraFollow != null)
             {
                 cameraFollow.SetTarget(target);
-                Debug.Log("[GameplayBootstrapper] Đã thiết lập target cho CameraFollow.");
-            }
-            else
-            {
-                Debug.LogWarning("[GameplayBootstrapper] Không tìm thấy CameraFollow trong scene để đi theo Player.");
             }
         }
 
-        private void StartMatchFlow()
+        /// <summary>
+        /// Kích hoạt đếm giờ và bắt đầu xuất hiện yêu ma khi người chơi bấm Xuất Trận.
+        /// </summary>
+        public void StartMatchFlow()
         {
             if (RunStatsTracker.Instance != null)
             {

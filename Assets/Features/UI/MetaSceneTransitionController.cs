@@ -100,13 +100,12 @@ namespace ProjectZombie.Features.UI
             // 2. Chuyển UI
             ApplyStateVisuals(false);
 
-            // 3. Khởi tạo Nhân vật trong màn chơi
+            // 3. Bắt đầu trận đấu
             if (_gameplayBootstrapper != null)
             {
-                _gameplayBootstrapper.SpawnPlayerFromSelection(null);
+                _gameplayBootstrapper.StartMatchFlow();
             }
-
-            if (GameStateManager.Instance != null)
+            else if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.Playing);
             }

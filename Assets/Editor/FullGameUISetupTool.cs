@@ -194,39 +194,19 @@ namespace ProjectZombie.EditorTools
             var metaGroup = metaRoot.GetComponent<CanvasGroup>();
             var metaManager = metaRoot.GetComponent<MetaUIManager>();
 
-            // 2.1. Panel_MainHub
+            // 2.1. Panel_MainHub (Sảnh Hoàng Tuyền Chuẩn AAA)
+            ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubPrefab();
             Transform hubTrans = metaRoot.Find("Panel_MainHub");
-            if (hubTrans == null)
-            {
-                GameObject hubObj = new GameObject("Panel_MainHub", typeof(RectTransform), typeof(CanvasGroup), typeof(MainHubView), typeof(MainHubPresenter));
-                hubObj.transform.SetParent(metaRoot, false);
-                hubTrans = hubObj.transform;
-            }
-            StretchRect(hubTrans.GetComponent<RectTransform>());
-            BuildMainHubHierarchy(hubTrans);
 
-            // 2.2. Panel_CharacterSelect
+            // 2.2. Panel_CharacterSelect (Chọn Anh Hùng)
+            ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             Transform heroTrans = metaRoot.Find("Panel_CharacterSelect");
-            if (heroTrans == null)
-            {
-                GameObject heroObj = new GameObject("Panel_CharacterSelect", typeof(RectTransform), typeof(CanvasGroup), typeof(CharacterSelectionView), typeof(CharacterSelectionPresenter));
-                heroObj.transform.SetParent(metaRoot, false);
-                heroTrans = heroObj.transform;
-            }
-            StretchRect(heroTrans.GetComponent<RectTransform>());
-            BuildCharacterSelectHierarchy(heroTrans);
 
-            // 2.3. Panel_WeaponLoadout (Tàng Bảo Các - Bước 2 Chọn Pháp Bảo)
+            // 2.3. Panel_WeaponLoadout (Tàng Bảo Các)
+            ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
             Transform loadoutTrans = metaRoot.Find("Panel_WeaponLoadout");
-            if (loadoutTrans == null)
-            {
-                GameObject loadoutObj = new GameObject("Panel_WeaponLoadout", typeof(RectTransform), typeof(CanvasGroup), typeof(WeaponLoadoutView), typeof(WeaponLoadoutPresenter));
-                loadoutObj.transform.SetParent(metaRoot, false);
-                loadoutTrans = loadoutObj.transform;
-            }
-            StretchRect(loadoutTrans.GetComponent<RectTransform>());
 
-            // 2.4. Panel_SanctuaryTree
+            // 2.4. Panel_SanctuaryTree (Miếu Cổ)
             Transform sanctuaryTrans = metaRoot.Find("Panel_SanctuaryTree");
             if (sanctuaryTrans == null)
             {
