@@ -31,7 +31,11 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         public void OnUpdate()
         {
-            if (_controller.Owner == null) return;
+            if (_controller.Owner == null || !_controller.Owner.activeInHierarchy)
+            {
+                _controller.Despawn();
+                return;
+            }
 
             float speed = _data != null ? _data.orbitSpeed : 180f;
             float radius = _data != null ? _data.radius : 2f;

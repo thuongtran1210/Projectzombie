@@ -60,6 +60,25 @@ namespace ProjectZombie.Features.Weapons
             {
                 ProjectileSystem.Instance.EventDispatcher.OnProjectileDespawned -= HandleOrbDespawned;
             }
+            DespawnAllOrbs();
+        }
+
+        protected override void OnDestroy()
+        {
+            DespawnAllOrbs();
+            base.OnDestroy();
+        }
+
+        public void DespawnAllOrbs()
+        {
+            for (int i = _activeOrbs.Count - 1; i >= 0; i--)
+            {
+                var orb = _activeOrbs[i];
+                if (orb != null && orb.gameObject != null && orb.gameObject.activeInHierarchy)
+                {
+                    orb.Despawn();
+                }
+            }
             _activeOrbs.Clear();
         }
 
