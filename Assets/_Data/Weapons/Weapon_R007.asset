@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: Weapon_R007
+  m_EditorClassIdentifier: 
+  weaponRole: 3
+  weaponId: R007
+  weaponName: "Chi\u1EBFu Tr\u1EA3i Ho\xE0ng Tuy\u1EC1n"
+  icon: {fileID: 0}
+  description: "Ph\xE1p b\u1EA3o th\u1EA3 chi\u1EBFu khi\u1EBFn qu\xE1i ng\u1EE7
+    say (nh\u1EADn x2 Crit DMG khi b\u1ECB \u0111\xE1nh th\u1EE9c); Ng\u01B0\u1EDDi
+    ch\u01A1i b\u01B0\u1EDBc l\xEAn tr\u01B0\u1EE3t v\xE1n \u1EE7i v\u0103ng qu\xE1i."
+  rarity: Common
+  evolutionWeaponId: 
+  elementType: 2
+  weaponPrefab: {fileID: 0}
+  baseDamage: 0
+  baseAttackSpeed: 8

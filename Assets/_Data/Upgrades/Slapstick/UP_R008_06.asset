@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: UP_R008_06
+  m_EditorClassIdentifier: 
+  id: UP_R008_06
+  upgradeName: "\u0110\u1ED9t Ph\xE1: Thi\xEAn Binh Ch\u1ED5i Qu\xE9t"
+  description: "\u0110\u1ED8T PH\xC1 T\u1ED0I TH\u01AF\u1EE2NG: Tri\u1EC7u h\u1ED3i
+    3 c\xE2y Ch\u1ED5i Kh\u1ED5ng L\u1ED3 \u0111\u1EADp \u0111\u1ED3ng th\u1EDDi,
+    san ph\u1EB3ng chi\u1EBFn tr\u01B0\u1EDDng!"
+  icon: {fileID: 0}
+  upgradeType: 10
+  spawnWeight: 3
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  weaponId: R008
+  requiredCurrentLevel: 5
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0.9
+    attackSpeedBonus: 0
+    projectileCountBonus: 2
+    pierceBonus: 0
+    scaleBonus: 0.5
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

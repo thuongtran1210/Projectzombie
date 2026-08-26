@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: UP_R007_02
+  m_EditorClassIdentifier: 
+  id: UP_R007_02
+  upgradeName: "Chi\u1EBFu \u0110\xF4i R\u1ED9ng L\u1EDBn"
+  description: "+40% K\xEDch th\u01B0\u1EDBc t\u1EA5m chi\u1EBFu tr\u1EA3i, d\u1EC5
+    d\xE0ng b\u1EABy c\u1EA3 \u0111\xE0n qu\xE1i."
+  icon: {fileID: 0}
+  upgradeType: 7
+  spawnWeight: 6
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 2
+  weaponId: R007
+  requiredCurrentLevel: 1
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0.4
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

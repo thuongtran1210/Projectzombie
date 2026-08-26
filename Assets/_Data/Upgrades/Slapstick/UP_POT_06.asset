@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: UP_POT_06
+  m_EditorClassIdentifier: 
+  id: UP_POT_06
+  upgradeName: "\u0110\u1ED9t Ph\xE1: N\u1ED3i Th\u1EA7n B\u1EA5t T\u1EED"
+  description: "\u0110\u1ED8T PH\xC1 T\u1ED0I TH\u01AF\u1EE2NG: Qu\xE1i b\u1ECB b\u1EAFn
+    ch\u1EA1m \u0111\u1EA5t n\u1ED5 s\xE1t th\u01B0\u01A1ng chu\u1ED7i di\u1EC7n
+    r\u1ED9ng, h\u1ED3i 15% HP!"
+  icon: {fileID: 0}
+  upgradeType: 10
+  spawnWeight: 3
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 5
+  weaponId: W_POT
+  requiredCurrentLevel: 5
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0.8
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0.5
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

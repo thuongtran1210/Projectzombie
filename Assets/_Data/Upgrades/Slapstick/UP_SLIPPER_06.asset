@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: UP_SLIPPER_06
+  m_EditorClassIdentifier: 
+  id: UP_SLIPPER_06
+  upgradeName: "\u0110\u1ED9t Ph\xE1: V\u1EA1n D\xE9p Quy T\xF4ng"
+  description: "\u0110\u1ED8T PH\xC1 T\u1ED0I TH\u01AF\u1EE2NG: N\xE9m 4 chi\u1EBFc
+    d\xE9p c\xF9ng l\xFAc, 100% g\xE2y Qu\xEA \u0110\u1ED9 v\xE0 t\u0103ng +60% S\xE1t
+    th\u01B0\u01A1ng!"
+  icon: {fileID: 0}
+  upgradeType: 10
+  spawnWeight: 3
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  weaponId: W_SLIPPER
+  requiredCurrentLevel: 5
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0.6
+    attackSpeedBonus: 0
+    projectileCountBonus: 2
+    pierceBonus: 0
+    scaleBonus: 0
+    critChanceBonus: 0.25
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}

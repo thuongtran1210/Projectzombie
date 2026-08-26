@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: UP_PIPE_04
+  m_EditorClassIdentifier: 
+  id: UP_PIPE_04
+  upgradeName: "Thu\u1ED1c L\xE0o Ti\xEAn L\xE3ng"
+  description: "Qu\xE1i d\xEDnh kh\xF3i b\u1ECB say thu\u1ED1c \u0111i gi\u1EADt
+    l\xF9i nhanh h\u01A1n, sau 2s n\u1ED5 ho lan x2 S\xE1t th\u01B0\u01A1ng."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 6
+  maxLevel: 0
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 4
+  weaponId: W_PIPE
+  requiredCurrentLevel: 3
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 0.3
+    attackSpeedBonus: 0
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0
+    critChanceBonus: 0.15
+    critDamageBonus: 0
+    projectileSpeedBonus: 0
+  overrideProjectilePrefab: {fileID: 0}
