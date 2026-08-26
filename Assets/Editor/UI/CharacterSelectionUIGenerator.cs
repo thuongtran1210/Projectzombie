@@ -14,7 +14,7 @@ namespace ProjectZombie.Editor.UI
     /// </summary>
     public static class CharacterSelectionUIGenerator
     {
-        [MenuItem("ProjectZombie/UI/Generate Character Selection UI Prefab")]
+        [MenuItem("Tools/ProjectZombie/UI/Generate Character Selection UI Prefab", priority = 10)]
         public static void GenerateCharacterSelectionPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -23,26 +23,27 @@ namespace ProjectZombie.Editor.UI
                 AssetDatabase.CreateFolder("Assets/_Prefabs", "UI");
             }
 
-            // 1. Root Modal Panel (Tạo dạng Popup Panel con của GameUICanvas nếu có, hoặc Root độc lập)
-            GameObject root = new GameObject("CharacterSelectionUI", typeof(RectTransform));
+            // 1. Root Modal Panel
+            GameObject root = new GameObject("Panel_CharacterSelect", typeof(RectTransform), typeof(CanvasGroup), typeof(CharacterSelectionView), typeof(CharacterSelectionPresenter));
             RectTransform rootRT = root.GetComponent<RectTransform>();
             SetStretchAnchor(rootRT);
 
             // Presenter & View
-            var view = root.AddComponent<CharacterSelectionView>();
-            var presenter = root.AddComponent<CharacterSelectionPresenter>();
+            var view = root.GetComponent<CharacterSelectionView>();
+            var presenter = root.GetComponent<CharacterSelectionPresenter>();
             SerializedObject soPresenter = new SerializedObject(presenter);
             soPresenter.FindProperty("_view").objectReferenceValue = view;
             soPresenter.ApplyModifiedProperties();
 
-            // 2. Dim Overlay Background
-            GameObject bgDim = CreateUIElement("BackgroundDim", root.transform);
+            // 2. Dim Overlay Background (Bắt sự kiện click ra ngoài để đóng)
+            GameObject bgDim = CreateUIElement("Dim_CharacterSelect", root.transform);
             SetStretchAnchor(bgDim.GetComponent<RectTransform>());
             var bgDimImg = bgDim.AddComponent<Image>();
             bgDimImg.color = new Color(0.04f, 0.03f, 0.06f, 0.88f); // Đen khói huyền ảo
+            var bgDimBtn = bgDim.AddComponent<Button>();
 
             // 3. Main Center Modal Panel (Khung Đồng Cổ)
-            GameObject panel = CreateUIElement("Panel_MainModal", root.transform);
+            GameObject panel = CreateUIElement("Modal_CharacterSelect", root.transform);
             RectTransform panelRT = panel.GetComponent<RectTransform>();
             panelRT.sizeDelta = new Vector2(1100, 720);
             panelRT.anchoredPosition = Vector2.zero;
@@ -223,12 +224,84 @@ namespace ProjectZombie.Editor.UI
             ptTMP.color = new Color(0.9f, 0.9f, 0.9f);
             ptTMP.enableWordWrapping = true;
 
-            // 7. Select & Start Button: "XUẤT TRẬN"
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -415), new Vector2(560, 60), "XAC NHAN XUAT TRAN", vietFont);
+            // 6.5. Panel Loadout Equipment Slots (Vũ Khí Chính + 3 Pháp Bảo - Action RPG v5.0)
+            GameObject loadoutCard = CreateUIElement("Panel_LoadoutEquipment", rightCol.transform);
+            RectTransform lcRT = loadoutCard.GetComponent<RectTransform>();
+            lcRT.anchorMin = new Vector2(0, 1);
+            lcRT.anchorMax = new Vector2(1, 1);
+            lcRT.pivot = new Vector2(0.5f, 1);
+            lcRT.anchoredPosition = new Vector2(0, -325);
+            lcRT.sizeDelta = new Vector2(560, 80);
+            var lcImg = loadoutCard.AddComponent<Image>();
+            lcImg.color = new Color(0.08f, 0.07f, 0.12f, 0.9f);
+
+            GameObject lhObj = CreateUIElement("Text_LoadoutHeader", loadoutCard.transform);
+            RectTransform lhRT = lhObj.GetComponent<RectTransform>();
+            lhRT.anchorMin = new Vector2(0, 1);
+            lhRT.anchorMax = new Vector2(1, 1);
+            lhRT.pivot = new Vector2(0, 1);
+            lhRT.anchoredPosition = new Vector2(10, -6);
+            lhRT.sizeDelta = new Vector2(0, 20);
+            var lhTMP = lhObj.AddComponent<TextMeshProUGUI>();
+            if (vietFont != null) lhTMP.font = vietFont;
+            lhTMP.text = "<color=#FFD700>TRANG BI XUAT TRAN (LOADOUT):</color>";
+            lhTMP.fontSize = 14;
+            lhTMP.fontStyle = FontStyles.Bold;
+
+            // Slot Vũ Khí Chính
+            GameObject pwObj = CreateUIElement("Slot_PrimaryWeapon", loadoutCard.transform);
+            RectTransform pwRT = pwObj.GetComponent<RectTransform>();
+            pwRT.anchorMin = new Vector2(0, 0.5f);
+            pwRT.anchorMax = new Vector2(0, 0.5f);
+            pwRT.pivot = new Vector2(0, 0.5f);
+            pwRT.anchoredPosition = new Vector2(10, -10);
+            pwRT.sizeDelta = new Vector2(44, 44);
+            var pwBg = pwObj.AddComponent<Image>();
+            pwBg.color = new Color(0.25f, 0.20f, 0.08f, 1f);
+
+            GameObject pwIconObj = CreateUIElement("Img_PrimaryIcon", pwObj.transform);
+            SetStretchAnchor(pwIconObj.GetComponent<RectTransform>());
+            var pwIcon = pwIconObj.AddComponent<Image>();
+
+            GameObject pwNameObj = CreateUIElement("Text_PrimaryName", loadoutCard.transform);
+            RectTransform pwnRT = pwNameObj.GetComponent<RectTransform>();
+            pwnRT.anchorMin = new Vector2(0, 0.5f);
+            pwnRT.anchorMax = new Vector2(0, 0.5f);
+            pwnRT.pivot = new Vector2(0, 0.5f);
+            pwnRT.anchoredPosition = new Vector2(62, -10);
+            pwnRT.sizeDelta = new Vector2(160, 40);
+            var pwnTMP = pwNameObj.AddComponent<TextMeshProUGUI>();
+            if (vietFont != null) pwnTMP.font = vietFont;
+            pwnTMP.text = "Vũ Khí Chính";
+            pwnTMP.fontSize = 13;
+            pwnTMP.color = new Color(1f, 0.85f, 0.3f);
+            pwnTMP.verticalAlignment = VerticalAlignmentOptions.Middle;
+
+            // 3 Slot Pháp Bảo Hộ Thân
+            Image[] relicIcons = new Image[3];
+            for (int r = 0; r < 3; r++)
+            {
+                GameObject rObj = CreateUIElement($"Slot_Relic_{r + 1}", loadoutCard.transform);
+                RectTransform rRT = rObj.GetComponent<RectTransform>();
+                rRT.anchorMin = new Vector2(0, 0.5f);
+                rRT.anchorMax = new Vector2(0, 0.5f);
+                rRT.pivot = new Vector2(0, 0.5f);
+                rRT.anchoredPosition = new Vector2(235 + r * 54, -10);
+                rRT.sizeDelta = new Vector2(44, 44);
+                var rBg = rObj.AddComponent<Image>();
+                rBg.color = new Color(0.14f, 0.10f, 0.20f, 1f);
+
+                GameObject rIconObj = CreateUIElement("Img_RelicIcon", rObj.transform);
+                SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
+                relicIcons[r] = rIconObj.AddComponent<Image>();
+            }
+
+            // 7. Next Step Button: "TIẾP TỤC: CHỌN PHÁP BẢO ➔"
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -425), new Vector2(560, 56), "TIEP TUC: CHON PHAP BAO ➔", vietFont);
             var btnImg = selectBtnObj.GetComponent<Image>();
-            btnImg.color = new Color(0.85f, 0.25f, 0.15f); // Đỏ Chu Sa rực sáng
+            btnImg.color = new Color(0.85f, 0.45f, 0.15f); // Cam Đồng sáng
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();
-            btnTxt.fontSize = 24;
+            btnTxt.fontSize = 20;
             btnTxt.fontStyle = FontStyles.Bold;
             btnTxt.color = Color.white;
 
@@ -240,9 +313,21 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
             soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
             soView.FindProperty("_characterAvatarImage").objectReferenceValue = avatarImg;
+            soView.FindProperty("_primaryWeaponIcon").objectReferenceValue = pwIcon;
+            soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = pwnTMP;
+
+            var relicProp = soView.FindProperty("_relicSlotIcons");
+            relicProp.arraySize = 3;
+            for (int i = 0; i < 3; i++)
+            {
+                relicProp.GetArrayElementAtIndex(i).objectReferenceValue = relicIcons[i];
+            }
+
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();
             soView.FindProperty("_nextButton").objectReferenceValue = nextBtnObj.GetComponent<Button>();
+            soView.FindProperty("_modalContainer").objectReferenceValue = panelRT;
+            soView.FindProperty("_dimBackgroundButton").objectReferenceValue = bgDimBtn;
             soView.ApplyModifiedProperties();
 
             // 8.5. Wire SelectionData and Hero Prefabs to Presenter
@@ -326,32 +411,47 @@ namespace ProjectZombie.Editor.UI
             soPresenter.Update();
             soPresenter.FindProperty("_selectionData").objectReferenceValue = selData;
             var prefabsProp = soPresenter.FindProperty("_characterPrefabs");
-            prefabsProp.arraySize = 4;
-            prefabsProp.GetArrayElementAtIndex(0).objectReferenceValue = pThuSinh;
-            prefabsProp.GetArrayElementAtIndex(1).objectReferenceValue = pDaoSi;
-            prefabsProp.GetArrayElementAtIndex(2).objectReferenceValue = pThanhDong;
-            prefabsProp.GetArrayElementAtIndex(3).objectReferenceValue = pThuSinh;
+            if (prefabsProp != null)
+            {
+                prefabsProp.arraySize = 4;
+                prefabsProp.GetArrayElementAtIndex(0).objectReferenceValue = pThuSinh;
+                prefabsProp.GetArrayElementAtIndex(1).objectReferenceValue = pDaoSi;
+                prefabsProp.GetArrayElementAtIndex(2).objectReferenceValue = pThanhDong;
+                prefabsProp.GetArrayElementAtIndex(3).objectReferenceValue = pThuSinh;
+            }
             soPresenter.ApplyModifiedProperties();
 
             // 9. Save as Prefab
             string prefabPath = $"{prefabFolder}/CharacterSelectionUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
 
-            // Kiểm tra xem trong Scene có Canvas không để đặt làm con của Canvas
-            var canvas = Object.FindObjectOfType<Canvas>();
+            // Kiểm tra xem trong Scene có Canvas không để đặt làm con của Canvas_MetaMenu
+            var canvas = Object.FindAnyObjectByType<Canvas>();
             if (canvas != null)
             {
                 // Xóa instance cũ nếu có
                 var oldUI = GameObject.Find("CharacterSelectionUI");
-                if (oldUI != null && oldUI != root)
+                if (oldUI != null && oldUI != root) Object.DestroyImmediate(oldUI);
+
+                var oldPanel = GameObject.Find("Panel_CharacterSelect");
+                if (oldPanel != null && oldPanel != root) Object.DestroyImmediate(oldPanel);
+
+                var metaCanvas = GameObject.Find("Canvas_MetaMenu");
+                Transform targetParent = metaCanvas != null ? metaCanvas.transform : canvas.transform;
+
+                root.transform.SetParent(targetParent, false);
+                SetStretchAnchor(rootRT);
+
+                var metaMgr = Object.FindAnyObjectByType<MetaUIManager>();
+                if (metaMgr != null)
                 {
-                    Object.DestroyImmediate(oldUI);
+                    SerializedObject soMeta = new SerializedObject(metaMgr);
+                    soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = view;
+                    soMeta.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(metaMgr);
                 }
 
-                root.transform.SetParent(canvas.transform, false);
-                SetStretchAnchor(rootRT);
-                root.transform.SetAsLastSibling(); // Nổi lên trên cùng của Canvas
-                Debug.Log("[CharacterSelectionUIGenerator] Đã đưa CharacterSelectionUI vào trong Canvas của Scene!");
+                Debug.Log("<color=#00FF88>[CharacterSelectionUIGenerator]</color> Đã đưa Panel_CharacterSelect vào trong Canvas_MetaMenu thành công!");
             }
             else
             {

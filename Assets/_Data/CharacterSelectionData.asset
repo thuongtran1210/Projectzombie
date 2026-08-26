@@ -28,9 +28,11 @@ MonoBehaviour:
     passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
       t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
       \u0111a."
-    avatar: {fileID: 21300000, guid: 8e5f29d29bca4ba488fbca25687cfef1, type: 3}
+    avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
     isUnlocked: 1
+    defaultPrimaryWeapon: {fileID: 0}
+    defaultRelics: []
   - characterId: C002_DaoSi
     characterName: "\u0110\u1EA1o S\u0129"
     element: 2
@@ -49,6 +51,8 @@ MonoBehaviour:
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}
     isUnlocked: 1
+    defaultPrimaryWeapon: {fileID: 0}
+    defaultRelics: []
   - characterId: C003_ThanhDong
     characterName: "Thanh \u0110\u1ED3ng"
     element: 2
@@ -68,6 +72,8 @@ MonoBehaviour:
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
     isUnlocked: 1
+    defaultPrimaryWeapon: {fileID: 0}
+    defaultRelics: []
   - characterId: C004_AnSi
     characterName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
     element: 5
@@ -84,7 +90,9 @@ MonoBehaviour:
       50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n
       nhi\u1EC5m \u0110\u1EA9y l\xF9i."
     avatar: {fileID: 0}
-    playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}
+    playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
     isUnlocked: 1
+    defaultPrimaryWeapon: {fileID: 0}
+    defaultRelics: []
   selectedPlayerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
   selectedCharacterIndex: 0

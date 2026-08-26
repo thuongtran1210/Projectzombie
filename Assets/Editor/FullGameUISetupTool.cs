@@ -216,7 +216,17 @@ namespace ProjectZombie.EditorTools
             StretchRect(heroTrans.GetComponent<RectTransform>());
             BuildCharacterSelectHierarchy(heroTrans);
 
-            // 2.3. Panel_SanctuaryTree
+            // 2.3. Panel_WeaponLoadout (Tàng Bảo Các - Bước 2 Chọn Pháp Bảo)
+            Transform loadoutTrans = metaRoot.Find("Panel_WeaponLoadout");
+            if (loadoutTrans == null)
+            {
+                GameObject loadoutObj = new GameObject("Panel_WeaponLoadout", typeof(RectTransform), typeof(CanvasGroup), typeof(WeaponLoadoutView), typeof(WeaponLoadoutPresenter));
+                loadoutObj.transform.SetParent(metaRoot, false);
+                loadoutTrans = loadoutObj.transform;
+            }
+            StretchRect(loadoutTrans.GetComponent<RectTransform>());
+
+            // 2.4. Panel_SanctuaryTree
             Transform sanctuaryTrans = metaRoot.Find("Panel_SanctuaryTree");
             if (sanctuaryTrans == null)
             {
@@ -232,6 +242,7 @@ namespace ProjectZombie.EditorTools
             soMeta.FindProperty("_metaCanvasGroup").objectReferenceValue = metaGroup;
             soMeta.FindProperty("_mainHubScreen").objectReferenceValue = hubTrans.GetComponent<MainHubView>();
             soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
+            soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
             soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
             soMeta.ApplyModifiedProperties();
 

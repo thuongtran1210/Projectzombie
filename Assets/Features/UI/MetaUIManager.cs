@@ -17,6 +17,7 @@ namespace ProjectZombie.Features.UI
         [Header("Registered Screens")]
         [SerializeField] private BaseMetaScreenView _mainHubScreen;
         [SerializeField] private BaseMetaScreenView _characterSelectScreen;
+        [SerializeField] private BaseMetaScreenView _weaponLoadoutScreen;
         [SerializeField] private BaseMetaScreenView _sanctuaryTreeScreen;
         [SerializeField] private BaseMetaScreenView _codexScreen;
         [SerializeField] private BaseMetaScreenView _settingsScreen;
@@ -24,6 +25,7 @@ namespace ProjectZombie.Features.UI
         private readonly Stack<BaseMetaScreenView> _screenStack = new Stack<BaseMetaScreenView>();
 
         public bool IsInMetaMenu => _metaCanvasGroup != null && _metaCanvasGroup.gameObject.activeSelf;
+        public BaseMetaScreenView WeaponLoadoutScreen => _weaponLoadoutScreen;
 
         private void Awake()
         {
@@ -44,6 +46,7 @@ namespace ProjectZombie.Features.UI
 
             // Mặc định ẩn tất cả màn hình phụ ngay trong Awake
             if (_characterSelectScreen != null) _characterSelectScreen.Hide();
+            if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.Hide();
             if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.Hide();
             if (_codexScreen != null) _codexScreen.Hide();
             if (_settingsScreen != null) _settingsScreen.Hide();
@@ -118,6 +121,9 @@ namespace ProjectZombie.Features.UI
                     break;
                 case MetaScreenType.CharacterSelect:
                     PushScreen(_characterSelectScreen);
+                    break;
+                case MetaScreenType.WeaponLoadout:
+                    PushScreen(_weaponLoadoutScreen);
                     break;
                 case MetaScreenType.SanctuaryTree:
                     PushScreen(_sanctuaryTreeScreen);

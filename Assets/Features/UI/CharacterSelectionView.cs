@@ -23,6 +23,12 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Button _prevButton;
         [SerializeField] private Button _backButton;
 
+        [Header("Loadout Equipment Slots (Action RPG v5.0)")]
+        [SerializeField] private Image _primaryWeaponIcon;
+        [SerializeField] private TextMeshProUGUI _primaryWeaponNameText;
+        [SerializeField] private Image[] _relicSlotIcons;
+        [SerializeField] private TextMeshProUGUI[] _relicSlotNames;
+
         public event Action OnSelectClicked;
         public event Action OnNextClicked;
         public event Action OnPrevClicked;
@@ -70,19 +76,18 @@ namespace ProjectZombie.Features.UI
                     _signatureSkillText = t;
                 else if (_passiveTraitText == null && (tName.Contains("passive") || tName.Contains("bidong") || tName.Contains("trait")))
                     _passiveTraitText = t;
+                else if (_primaryWeaponNameText == null && (tName.Contains("primaryweapon") || tName.Contains("vukhichinh")))
+                    _primaryWeaponNameText = t;
             }
 
-            if (_characterAvatarImage == null)
+            var images = GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
             {
-                var images = GetComponentsInChildren<Image>(true);
-                foreach (var img in images)
-                {
-                    if (img.gameObject.name.ToLower().Contains("avatar"))
-                    {
-                        _characterAvatarImage = img;
-                        break;
-                    }
-                }
+                string imgName = img.gameObject.name.ToLower();
+                if (_characterAvatarImage == null && imgName.Contains("avatar"))
+                    _characterAvatarImage = img;
+                else if (_primaryWeaponIcon == null && (imgName.Contains("primary") || imgName.Contains("vukhi")))
+                    _primaryWeaponIcon = img;
             }
         }
 
@@ -99,6 +104,66 @@ namespace ProjectZombie.Features.UI
                 _characterAvatarImage.sprite = avatar;
                 _characterAvatarImage.enabled = (avatar != null);
                 _characterAvatarImage.color = (avatar != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
+            }
+        }
+
+        public void DisplayLoadout(Weapons.WeaponData primaryWeapon, System.Collections.Generic.List<Weapons.WeaponData> relics)
+        {
+            // 1. Hiển thị Vũ Khí Chính
+            if (_primaryWeaponNameText != null)
+            {
+                _primaryWeaponNameText.text = primaryWeapon != null ? primaryWeapon.weaponName : "Chưa Trang Bị";
+            }
+
+            if (_primaryWeaponIcon != null)
+            {
+                if (primaryWeapon != null && primaryWeapon.icon != null)
+                {
+                    _primaryWeaponIcon.sprite = primaryWeapon.icon;
+                    _primaryWeaponIcon.enabled = true;
+                    _primaryWeaponIcon.color = Color.white;
+                }
+                else
+                {
+                    _primaryWeaponIcon.enabled = false;
+                }
+            }
+
+            // 2. Hiển thị các Pháp Bảo Hộ Thân
+            if (_relicSlotIcons != null)
+            {
+                for (int i = 0; i < _relicSlotIcons.Length; i++)
+                {
+                    if (_relicSlotIcons[i] == null) continue;
+
+                    if (relics != null && i < relics.Count && relics[i] != null && relics[i].icon != null)
+                    {
+                        _relicSlotIcons[i].sprite = relics[i].icon;
+                        _relicSlotIcons[i].enabled = true;
+                        _relicSlotIcons[i].color = Color.white;
+                    }
+                    else
+                    {
+                        _relicSlotIcons[i].enabled = false;
+                    }
+                }
+            }
+
+            if (_relicSlotNames != null)
+            {
+                for (int i = 0; i < _relicSlotNames.Length; i++)
+                {
+                    if (_relicSlotNames[i] == null) continue;
+
+                    if (relics != null && i < relics.Count && relics[i] != null)
+                    {
+                        _relicSlotNames[i].text = relics[i].weaponName;
+                    }
+                    else
+                    {
+                        _relicSlotNames[i].text = "Ô Trống";
+                    }
+                }
             }
         }
     }

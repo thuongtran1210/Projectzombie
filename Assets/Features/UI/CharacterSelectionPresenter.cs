@@ -16,6 +16,8 @@ namespace ProjectZombie.Features.UI
         public string passiveTraitName;
         public string passiveTraitDesc;
         public Sprite avatar;
+        public WeaponData primaryWeapon;
+        public System.Collections.Generic.List<WeaponData> relics;
     }
 
     /// <summary>
@@ -98,7 +100,9 @@ namespace ProjectZombie.Features.UI
                         signatureSkillDesc = list[i].signatureSkillDesc,
                         passiveTraitName = list[i].passiveTraitName,
                         passiveTraitDesc = list[i].passiveTraitDesc,
-                        avatar = list[i].avatar
+                        avatar = list[i].avatar,
+                        primaryWeapon = list[i].defaultPrimaryWeapon,
+                        relics = list[i].defaultRelics
                     };
                 }
                 return;
@@ -162,35 +166,34 @@ namespace ProjectZombie.Features.UI
             {
                 var charEntry = _selectionData.Characters[_currentIndex];
                 
+                var primaryW = charEntry.defaultPrimaryWeapon;
+                var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>(charEntry.defaultRelics);
+
                 #if UNITY_EDITOR
-                // Tìm kiếm vũ khí phù hợp theo hệ nhân vật
-                var allWeapons = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
-                ProjectZombie.Features.Weapons.WeaponData primaryW = null;
-                var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>();
-
-                foreach (var guid in allWeapons)
+                if (primaryW == null || relics.Count == 0)
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(path);
-                    if (wd == null) continue;
+                    // Fallback tìm kiếm vũ khí phù hợp theo hệ nhân vật
+                    var allWeapons = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                    foreach (var guid in allWeapons)
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                        var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(path);
+                        if (wd == null) continue;
 
-                    if (primaryW == null && (wd.weaponId == "W002" || wd.name.Contains("Bút") || wd.name.Contains("Kiếm") || wd.name.Contains("PhiTiêu")))
-                    {
-                        primaryW = wd;
-                    }
-                    else if (relics.Count < 3 && (wd.weaponId == "W003" || wd.weaponId == "W004" || wd.weaponId == "W005"))
-                    {
-                        relics.Add(wd);
+                        if (primaryW == null && (wd.weaponId == "W002" || wd.name.Contains("Bút") || wd.name.Contains("Kiếm") || wd.name.Contains("PhiTiêu")))
+                        {
+                            primaryW = wd;
+                        }
+                        else if (relics.Count < 3 && (wd.weaponId == "W003" || wd.weaponId == "W004" || wd.weaponId == "W005"))
+                        {
+                            if (!relics.Contains(wd)) relics.Add(wd);
+                        }
                     }
                 }
+                #endif
 
                 RunLoadoutState.SetLoadout(charEntry, primaryW, relics);
-                #else
-                RunLoadoutState.SetLoadout(charEntry, null, null);
-                #endif
             }
-
-            OnCharacterSelected?.Invoke(chosenPrefab);
 
             // Cập nhật thông tin tướng đã chọn ra ngoài Sảnh Hoàng Tuyền
             var mainHubView = FindObjectOfType<MainHubView>(true);
@@ -199,8 +202,17 @@ namespace ProjectZombie.Features.UI
                 mainHubView.SetSelectedHeroPreview(selected.name, selected.avatar);
             }
 
-            // Đóng màn hình chọn nhân vật, quay trở về Sảnh Chính
-            if (MetaUIManager.Instance != null)
+            // Flow Bước 2: Chuyển tiếp sang màn hình Chọn Vũ Khí & Pháp Bảo (Tàng Bảo Các)
+            if (MetaUIManager.Instance != null && MetaUIManager.Instance.WeaponLoadoutScreen != null)
+            {
+                var loadoutPresenter = MetaUIManager.Instance.WeaponLoadoutScreen.GetComponent<WeaponLoadoutPresenter>();
+                if (loadoutPresenter != null && _selectionData != null && _currentIndex < _selectionData.Characters.Count)
+                {
+                    loadoutPresenter.SetupForHero(_selectionData.Characters[_currentIndex]);
+                }
+                MetaUIManager.Instance.PushScreen(MetaUIManager.Instance.WeaponLoadoutScreen);
+            }
+            else if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.PopScreen();
             }
@@ -220,6 +232,7 @@ namespace ProjectZombie.Features.UI
             string formattedPassive = $"<b>{charInfo.passiveTraitName}</b>: {charInfo.passiveTraitDesc}";
 
             _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar);
+            _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
         }
     }
 }

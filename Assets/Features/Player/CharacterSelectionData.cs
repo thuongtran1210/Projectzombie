@@ -25,6 +25,12 @@ namespace ProjectZombie.Features.Player
         public Sprite avatar;
         public GameObject playerPrefab;
         public bool isUnlocked = true;
+
+        [Header("Trang Bị Khởi Điểm (Action RPG Loadout)")]
+        [Tooltip("Vũ khí chính dùng để đánh tay (Combo 3-Hit)")]
+        public Weapons.WeaponData defaultPrimaryWeapon;
+        [Tooltip("Tối đa 3 Pháp bảo hộ thân mang theo")]
+        public List<Weapons.WeaponData> defaultRelics = new List<Weapons.WeaponData>();
     }
 
     /// <summary>
