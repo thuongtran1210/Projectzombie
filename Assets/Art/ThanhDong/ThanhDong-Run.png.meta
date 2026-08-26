@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7f728271c9d44aac9ac2f0e04f6bee3b
+guid: 4100000000000000a0b77823fca88d02
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -64,7 +64,6 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
@@ -72,7 +71,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -98,8 +97,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d4343fa8c0c8c511bc85f4decdc4eb1
-      internalID: 2100000000
+      spriteID: 00000000000000000000004100100000
+      internalID: 4100100000
       vertices: []
       indices: 
       edges: []
@@ -119,8 +118,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 304ad6cd06a33773c1e3c9396420a683
-      internalID: 2100012345
+      spriteID: 00000000000000000000004100112345
+      internalID: 4100112345
       vertices: []
       indices: 
       edges: []
@@ -140,8 +139,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a68d21fec99640a76213e39e7782db75
-      internalID: 2100024690
+      spriteID: 00000000000000000000004100124690
+      internalID: 4100124690
       vertices: []
       indices: 
       edges: []
@@ -161,8 +160,92 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e0a0789a53f078f80ed99ffc8bb34756
-      internalID: 2100037035
+      spriteID: 00000000000000000000004100137035
+      internalID: 4100137035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThanhDong-Run_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000004100149380
+      internalID: 4100149380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThanhDong-Run_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000004100161725
+      internalID: 4100161725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThanhDong-Run_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000004100174070
+      internalID: 4100174070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ThanhDong-Run_7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00000000000000000000004100186415
+      internalID: 4100186415
       vertices: []
       indices: 
       edges: []
@@ -170,7 +253,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000001
+    spriteID: 5e97eb03825dee720800000000000006
     internalID: 0
     vertices: []
     indices: 
@@ -178,10 +261,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThanhDong-Run_0: 2100000000
-      ThanhDong-Run_1: 2100012345
-      ThanhDong-Run_2: 2100024690
-      ThanhDong-Run_3: 2100037035
+      ThanhDong-Run_0: 4100100000
+      ThanhDong-Run_1: 4100112345
+      ThanhDong-Run_2: 4100124690
+      ThanhDong-Run_3: 4100137035
+      ThanhDong-Run_4: 4100149380
+      ThanhDong-Run_5: 4100161725
+      ThanhDong-Run_6: 4100174070
+      ThanhDong-Run_7: 4100186415
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

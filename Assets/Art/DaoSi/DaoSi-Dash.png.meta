@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4100000000000000a0b77823fca88d03
+guid: 3100000000000000a0b77823fca88d04
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -83,7 +83,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ThanhDong-Attack_0
+      name: DaoSi-Dash_0
       rect:
         serializedVersion: 2
         x: 0
@@ -97,14 +97,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100200000
-      internalID: 4100200000
+      spriteID: 00000000000000000000003100300000
+      internalID: 3100300000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Attack_1
+      name: DaoSi-Dash_1
       rect:
         serializedVersion: 2
         x: 128
@@ -118,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100212345
-      internalID: 4100212345
+      spriteID: 00000000000000000000003100312345
+      internalID: 3100312345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Attack_2
+      name: DaoSi-Dash_2
       rect:
         serializedVersion: 2
         x: 256
@@ -139,14 +139,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100224690
-      internalID: 4100224690
+      spriteID: 00000000000000000000003100324690
+      internalID: 3100324690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Attack_3
+      name: DaoSi-Dash_3
       rect:
         serializedVersion: 2
         x: 384
@@ -160,14 +160,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100237035
-      internalID: 4100237035
+      spriteID: 00000000000000000000003100337035
+      internalID: 3100337035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Attack_4
+      name: DaoSi-Dash_4
       rect:
         serializedVersion: 2
         x: 512
@@ -181,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100249380
-      internalID: 4100249380
+      spriteID: 00000000000000000000003100349380
+      internalID: 3100349380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ThanhDong-Attack_5
+      name: DaoSi-Dash_5
       rect:
         serializedVersion: 2
         x: 640
@@ -202,29 +202,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000004100261725
-      internalID: 4100261725
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ThanhDong-Attack_6
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 00000000000000000000004100274070
-      internalID: 4100274070
+      spriteID: 00000000000000000000003100361725
+      internalID: 3100361725
       vertices: []
       indices: 
       edges: []
@@ -232,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000006
+    spriteID: 5e97eb03825dee720800000000000005
     internalID: 0
     vertices: []
     indices: 
@@ -240,13 +219,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ThanhDong-Attack_0: 4100200000
-      ThanhDong-Attack_1: 4100212345
-      ThanhDong-Attack_2: 4100224690
-      ThanhDong-Attack_3: 4100237035
-      ThanhDong-Attack_4: 4100249380
-      ThanhDong-Attack_5: 4100261725
-      ThanhDong-Attack_6: 4100274070
+      DaoSi-Dash_0: 3100300000
+      DaoSi-Dash_1: 3100312345
+      DaoSi-Dash_2: 3100324690
+      DaoSi-Dash_3: 3100337035
+      DaoSi-Dash_4: 3100349380
+      DaoSi-Dash_5: 3100361725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

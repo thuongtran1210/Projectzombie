@@ -28,7 +28,7 @@ MonoBehaviour:
     passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
       t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
       \u0111a."
-    avatar: {fileID: 0}
+    avatar: {fileID: 2000000000, guid: 9200b3c58b2281549beb40a3263e5374, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}
@@ -48,7 +48,7 @@ MonoBehaviour:
     passiveTraitDesc: "Tr\u1EA1ng th\xE1i Th\xE1i C\u1EF1c (C\xE2n b\u1EB1ng) t\u0103ng
       25% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 v\xE0 gi\u1EA3m 20% S\xE1t th\u01B0\u01A1ng
       nh\u1EADn v\xE0o."
-    avatar: {fileID: 0}
+    avatar: {fileID: 3100000000, guid: 3100000000000000a0b77823fca88d01, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}
@@ -69,7 +69,7 @@ MonoBehaviour:
       T\u1EE9 Ph\u1EE7. Khi k\xEDch ho\u1EA1t Gi\xE1 \u0110\u1ED3ng, nh\u1EADn \u0111\u1ED3ng
       th\u1EDDi hi\u1EC7u \u1EE9ng h\u1ED9 tr\xEC c\u1EE7a c\u1EA3 4 c\xF5i th\u1EA7n
       linh."
-    avatar: {fileID: 0}
+    avatar: {fileID: 4100000000, guid: 4100000000000000a0b77823fca88d01, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}
@@ -89,7 +89,7 @@ MonoBehaviour:
     passiveTraitDesc: "M\xE1u c\xE0ng th\u1EA5p th\u1EE7 c\xE0ng cao. Khi HP d\u01B0\u1EDBi
       50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n
       nhi\u1EC5m \u0110\u1EA9y l\xF9i."
-    avatar: {fileID: 0}
+    avatar: {fileID: 2000000000, guid: c786ba05985a44e1a50b7eac8c8113d4, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}
