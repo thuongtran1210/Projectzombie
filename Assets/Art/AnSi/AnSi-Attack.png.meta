@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -64,7 +64,6 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
@@ -72,7 +71,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -98,7 +97,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a111111111111111111111111111111
+      spriteID: 11111111111111111111111111111111
       internalID: 2200000000
       vertices: []
       indices: 
@@ -119,7 +118,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a111111111111111111111111111112
+      spriteID: 22222222222222222222222222222222
       internalID: 2200012345
       vertices: []
       indices: 
@@ -140,7 +139,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a111111111111111111111111111113
+      spriteID: 33333333333333333333333333333333
       internalID: 2200024690
       vertices: []
       indices: 
@@ -161,8 +160,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a111111111111111111111111111114
+      spriteID: 44444444444444444444444444444444
       internalID: 2200037035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnSi-Attack_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55555555555555555555555555555555
+      internalID: 2200049380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnSi-Attack_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66666666666666666666666666666666
+      internalID: 2200061725
       vertices: []
       indices: 
       edges: []
@@ -170,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 5e97eb03825dee720800000000000002
     internalID: 0
     vertices: []
     indices: 
@@ -182,6 +223,8 @@ TextureImporter:
       AnSi-Attack_1: 2200012345
       AnSi-Attack_2: 2200024690
       AnSi-Attack_3: 2200037035
+      AnSi-Attack_4: 2200049380
+      AnSi-Attack_5: 2200061725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
