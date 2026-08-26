@@ -89,7 +89,7 @@ MonoBehaviour:
     passiveTraitDesc: "M\xE1u c\xE0ng th\u1EA5p th\u1EE7 c\xE0ng cao. Khi HP d\u01B0\u1EDBi
       50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n
       nhi\u1EC5m \u0110\u1EA9y l\xF9i."
-    avatar: {fileID: 2000000000, guid: c786ba05985a44e1a50b7eac8c8113d4, type: 3}
+    avatar: {fileID: 3200000000, guid: 3200000000000000a0b77823fca88d01, type: 3}
     playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}
     isUnlocked: 1
     defaultPrimaryWeapon: {fileID: 0}

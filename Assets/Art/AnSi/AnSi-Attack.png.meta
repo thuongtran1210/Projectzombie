@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5100000000000000a0b77823fca88d01
+guid: 3200000000000000a0b77823fca88d03
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -83,7 +83,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Mada-Idle_0
+      name: AnSi-Attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -97,14 +97,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100000000
-      internalID: 5100000000
+      spriteID: 00000000000000000000003200200000
+      internalID: 3200200000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mada-Idle_1
+      name: AnSi-Attack_1
       rect:
         serializedVersion: 2
         x: 128
@@ -118,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100012345
-      internalID: 5100012345
+      spriteID: 00000000000000000000003200212345
+      internalID: 3200212345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mada-Idle_2
+      name: AnSi-Attack_2
       rect:
         serializedVersion: 2
         x: 256
@@ -139,14 +139,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100024690
-      internalID: 5100024690
+      spriteID: 00000000000000000000003200224690
+      internalID: 3200224690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mada-Idle_3
+      name: AnSi-Attack_3
       rect:
         serializedVersion: 2
         x: 384
@@ -160,14 +160,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100037035
-      internalID: 5100037035
+      spriteID: 00000000000000000000003200237035
+      internalID: 3200237035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mada-Idle_4
+      name: AnSi-Attack_4
       rect:
         serializedVersion: 2
         x: 512
@@ -181,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100049380
-      internalID: 5100049380
+      spriteID: 00000000000000000000003200249380
+      internalID: 3200249380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mada-Idle_5
+      name: AnSi-Attack_5
       rect:
         serializedVersion: 2
         x: 640
@@ -202,8 +202,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00000000000000000000005100061725
-      internalID: 5100061725
+      spriteID: 00000000000000000000003200261725
+      internalID: 3200261725
       vertices: []
       indices: 
       edges: []
@@ -211,7 +211,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000008
+    spriteID: 5e97eb03825dee720800000000000009
     internalID: 0
     vertices: []
     indices: 
@@ -219,12 +219,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Mada-Idle_0: 5100000000
-      Mada-Idle_1: 5100012345
-      Mada-Idle_2: 5100024690
-      Mada-Idle_3: 5100037035
-      Mada-Idle_4: 5100049380
-      Mada-Idle_5: 5100061725
+      AnSi-Attack_0: 3200200000
+      AnSi-Attack_1: 3200212345
+      AnSi-Attack_2: 3200224690
+      AnSi-Attack_3: 3200237035
+      AnSi-Attack_4: 3200249380
+      AnSi-Attack_5: 3200261725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
