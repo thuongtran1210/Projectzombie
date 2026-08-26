@@ -37,6 +37,18 @@ namespace ProjectZombie.Features.Enemies.Special
         {
             _hasStolen = false;
             _fleeTimer = 0f;
+            if (_enemy != null && _enemy.HealthSystem != null)
+            {
+                _enemy.HealthSystem.OnDied += HandleDeathReward;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_enemy != null && _enemy.HealthSystem != null)
+            {
+                _enemy.HealthSystem.OnDied -= HandleDeathReward;
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
