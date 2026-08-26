@@ -13,9 +13,10 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | 🏃 **[TASK-ARPG-02] Trạng Thái Nhân Vật & Combat Controls** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
 | 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🎴 **[TASK-ARPG-03] Hệ Thống Nâng Cấp Trong Trận & Đột Phá** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
 | 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | 🤪 **[TASK-FUN-01 -> 06] Combat & Enemy Slapstick/Bựa/Fun** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
-| 🧪 **[TASK-402] Mobile Stress Test (60 FPS ARPG)** | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
-| 🚀 **[TASK-403] Android AAB Build & Signing Release** | ✨ **[TASK-VFX-05] Hit Sparks, Hit Stop 0.04s & Shake Polish** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
-| | 🎵 **[TASK-GP-05] Audio Feedback Layers (Hit/Death/Chime)** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
+| 🧪 **[TASK-402] Mobile Stress Test (60 FPS ARPG)** | 🤪 **[TASK-FUN-01 -> 06] Combat & Enemy Slapstick Logic (DONE)** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
+| 🚀 **[TASK-403] Android AAB Build & Signing Release** | 🎨 **[TASK-FUN-07] Art Sprites & Icons (Dép, Nồi, Điếu, Chiếu, Chổi)** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
+| | ✨ **[TASK-FUN-08] VFX Particle Prefabs (Lốc Dép, Khói, Đại Bác)** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
+| | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 📦 **[TASK-FUN-06] Database 5 Slapstick SOs & 25 Upgrade Cards** |
 
 ---
 
@@ -220,6 +221,41 @@ Mục tiêu: Đưa các cơ chế chiến đấu và quái vật dân gian hài 
   - Tự động tạo các thẻ `UpgradeData` nâng cấp / đột phá tương ứng.
 - [x] **[TASK-FUN-06.2] Tích hợp Loadout & Gameplay:**
   - Đồng bộ các vũ khí/pháp bảo mới vào UI Sảnh Chờ và hệ thống Drop trong trận.
+
+---
+
+#### 🎨 [TASK-FUN-07] Bộ Hình Ảnh Art (Sprites & Icons) Cho Vũ Khí & Pháp Bảo Slapstick
+* **Dependencies:** `Assets/Art/Weapons/`, `generate_image`.
+
+- [ ] **[TASK-FUN-07.1] Bộ 5 Sprite Icons HUD / Card 256x256 Pixel Art Cổ Phong Trong Suốt:**
+  - *Icon Dép Tổ Ong:* Màu vàng ngà viền đen dân gian, có lỗ tổ ong đặc trưng.
+  - *Icon Nồi Cơm Thạch Sanh:* Nồi đất dân gian bốc khói nghi ngút phát sáng.
+  - *Icon Điếu Cày Cửu U:* Điếu tre trúc bọc đồng phát tàn lửa rực sáng.
+  - *Icon Chiếu Trải Hoàng Tuyền:* Chiếu cói hoa văn rồng cuộn cổ truyền.
+  - *Icon Chổi Lông Gà Gia Truyền:* Cán gỗ nghiến lông ngũ sắc.
+- [ ] **[TASK-FUN-07.2] Bộ Sprite Vật Thể & Đạn Đạo In-Game:**
+  - Sprite chiếc Dép bay ném Boomerang (xoay quanh trục).
+  - Sprite Chiếu Cói trải trên sàn $3\times 2m$ hoa văn dân gian sắc nét.
+  - Sprite Hạt Cơm Nắm phát sáng hồi máu.
+- [ ] **[TASK-FUN-07.3] Sprite Nhân Vật Kẻ Địch `E_MADOINO` (Ma Đòi Nợ):**
+  - Tạo Sprite Ma Đòi Nợ tàng hình nửa trong suốt, vác bao tải tiền cắm đầu chạy.
+
+---
+
+#### ✨ [TASK-FUN-08] Bộ Hiệu Ứng VFX Prefabs & Particle Systems Cho Slapstick Combat
+* **Dependencies:** `Assets/VFX/`, `UniversalRenderPipeline`, `GlobalVFXPoolManager.cs`.
+
+- [ ] **[TASK-FUN-08.1] VFX Lốc Xoáy Dép & Hiệu Ứng Vả Mặt:**
+  - Particle System lốc xoáy quét $360^\circ$ hút quái vào tâm + Vệt tát cao su bép bép.
+- [ ] **[TASK-FUN-08.2] VFX Nồi Cơm Chân Không & Đạn Pháo Nổ Cơm Nắm:**
+  - Vòng xoáy hút chân không vào miệng nồi + Vệt khói phóng quái đại bác + Vụ nổ bung cơm nắm phát sáng.
+- [ ] **[TASK-FUN-08.3] VFX Đám Mây Khói Thuốc Lào Tiên Lãng:**
+  - Khói tím cuộn hình rồng dày đặc tồn tại $3.5s$ + Vòng khói bay quanh đầu quái dính Say Thuốc.
+- [ ] **[TASK-FUN-08.4] VFX Đường Trượt Bowling & Chổi Lông Gà Giáng Trời:**
+  - Vệt gió lướt tốc độ cao phía sau người chơi khi trượt trên chiếu.
+  - Chổi Lông Gà khổng lồ giáng từ đỉnh màn hình xuống kèm sóng xung kích chấn động ($12m/s$).
+
+---
 
 ---
 

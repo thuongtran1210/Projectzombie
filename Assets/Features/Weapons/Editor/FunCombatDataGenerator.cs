@@ -92,13 +92,35 @@ namespace ProjectZombie.Features.Weapons.Editor
                     AssetDatabase.CreateAsset(so, assetPath);
                 }
 
-                so.weaponId = item.id;
-                so.weaponName = item.name;
-                so.elementType = item.element;
-                so.baseDamage = item.damage;
-                so.baseAttackSpeed = item.cooldown;
-                so.description = item.desc;
-                so.weaponRole = item.role;
+                // Tự động tạo và liên kết Prefab tương ứng trong Assets/_Prefabs/Weapons
+                string prefabFolder = "Assets/_Prefabs/Weapons";
+                if (!AssetDatabase.IsValidFolder("Assets/_Prefabs")) AssetDatabase.CreateFolder("Assets", "_Prefabs");
+                if (!AssetDatabase.IsValidFolder(prefabFolder)) AssetDatabase.CreateFolder("Assets/_Prefabs", "Weapons");
+
+                string prefabPath = $"{prefabFolder}/Weapon_{item.id}.prefab";
+                GameObject prefabObj = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                if (prefabObj == null)
+                {
+                    GameObject tempGo = new GameObject($"Weapon_{item.id}");
+                    System.Type compType = GetWeaponComponentType(item.id);
+                    if (compType != null)
+                    {
+                        var comp = tempGo.AddComponent(compType) as WeaponBase;
+                        if (comp != null)
+                        {
+                            comp.weaponId = item.id;
+                            comp.displayName = item.name;
+                            comp.description = item.desc;
+                        }
+                    }
+                    prefabObj = PrefabUtility.SaveAsPrefabAsset(tempGo, prefabPath);
+                    Object.DestroyImmediate(tempGo);
+                }
+
+                if (prefabObj != null)
+                {
+                    so.weaponPrefab = prefabObj.GetComponent<WeaponBase>();
+                }
 
                 EditorUtility.SetDirty(so);
             }
@@ -181,6 +203,19 @@ namespace ProjectZombie.Features.Weapons.Editor
             }
 
             Debug.Log($"[FunCombatDataGenerator] Đã tạo thành công {funItems.Length} Weapons và {upgrades.Length} Thẻ Nâng Cấp Slapstick!");
+        }
+
+        private static System.Type GetWeaponComponentType(string id)
+        {
+            switch (id.ToUpper())
+            {
+                case "W_SLIPPER": return typeof(Weapon_Slipper);
+                case "W_POT": return typeof(Weapon_Pot);
+                case "W_PIPE": return typeof(Weapon_Pipe);
+                case "R007": return typeof(Relic_SleepingMat);
+                case "R008": return typeof(Relic_ChickenFeatherBroom);
+                default: return null;
+            }
         }
     }
 }

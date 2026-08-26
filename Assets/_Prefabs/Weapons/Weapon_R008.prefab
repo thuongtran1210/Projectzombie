@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &636643486730907096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3467985115671696216}
+  - component: {fileID: 1150778872380229827}
+  m_Layer: 0
+  m_Name: Weapon_R008
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3467985115671696216
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636643486730907096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1150778872380229827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636643486730907096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bab11d42a0bba24cb4a650a0e048457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firePoint: {fileID: 0}
+  weaponId: R008
+  displayName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
+  icon: {fileID: 0}
+  description: "Tri\u1EC7u h\u1ED3i Ch\u1ED5i L\xF4ng G\xE0 kh\u1ED5ng l\u1ED3 gi\xE1ng
+    t\u1EEB tr\u1EDDi xu\u1ED1ng v\u1EDBi l\u1EF1c Knockback 12m/s c\u1EF1c \u0111\u1EA1i
+    v\xE0 g\u0103m qu\xE1i v\xE0o t\u01B0\u1EDDng."
+  element: 0
+  weaponRole: 0
+  isPrimaryActiveWeapon: 0
+  currentComboStep: 1
+  comboResetWindow: 1
+  smashRadius: 3.5
+  smashKnockbackForce: 12
+  cooldownSeconds: 4

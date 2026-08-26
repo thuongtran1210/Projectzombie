@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1993518109750221862
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3248987549044263437}
+  - component: {fileID: 910008107644193619}
+  m_Layer: 0
+  m_Name: Weapon_W_POT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3248987549044263437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993518109750221862}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &910008107644193619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993518109750221862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c0284bd196866747adb53c986ebe38d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firePoint: {fileID: 0}
+  weaponId: W_POT
+  displayName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
+  icon: {fileID: 0}
+  description: "V\u0169 kh\xED c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
+    v\xE0o n\u1ED3i v\xE0 ph\xF3ng ra nh\u01B0 \u0111\u1EA1n ph\xE1o; ch\u1EA1m \u0111\u1EA5t
+    r\u01A1i c\u01A1m n\u1EAFm h\u1ED3i m\xE1u."
+  element: 0
+  weaponRole: 0
+  isPrimaryActiveWeapon: 0
+  currentComboStep: 1
+  comboResetWindow: 1
+  slashParticles: {fileID: 0}
+  maxTargetsHit: 0
+  hitSparkPrefab: {fileID: 0}
+  showGizmos: 1
+  vacuumRadius: 3.8
+  maxCapturedMobs: 3
+  cannonLaunchSpeed: 16

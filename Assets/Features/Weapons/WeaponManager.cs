@@ -116,15 +116,32 @@ namespace ProjectZombie.Features.Weapons
 
         public void EquipWeaponFromData(WeaponData data, bool isPrimary = false)
         {
-            if (data == null || data.weaponPrefab == null)
-            {
-                Debug.LogWarning("[WeaponManager] WeaponData or WeaponPrefab is null!");
-                return;
-            }
+            if (data == null) return;
 
-            // Sinh ra Prefab
             Transform parent = weaponHolder != null ? weaponHolder : transform;
-            WeaponBase newWeapon = Instantiate(data.weaponPrefab, parent);
+            WeaponBase newWeapon = null;
+
+            // 1. Khởi tạo từ Prefab nếu có
+            if (data.weaponPrefab != null)
+            {
+                newWeapon = Instantiate(data.weaponPrefab, parent);
+            }
+            else
+            {
+                // 2. Tự động Fallback: Tìm script tương ứng theo ID để gắn component động
+                System.Type weaponType = GetWeaponTypeById(data.weaponId);
+                if (weaponType != null)
+                {
+                    GameObject weaponObj = new GameObject($"Weapon_{data.weaponId}");
+                    weaponObj.transform.SetParent(parent, false);
+                    newWeapon = weaponObj.AddComponent(weaponType) as WeaponBase;
+                }
+                else
+                {
+                    Debug.LogWarning($"[WeaponManager] WeaponData '{data.weaponName}' (ID: {data.weaponId}) chưa được gán weaponPrefab hoặc Script tương ứng!");
+                    return;
+                }
+            }
             
             if (newWeapon != null)
             {
@@ -133,9 +150,24 @@ namespace ProjectZombie.Features.Weapons
                 if (newWeapon.icon == null) newWeapon.icon = data.icon;
                 if (string.IsNullOrEmpty(newWeapon.description)) newWeapon.description = data.description;
                 if (isPrimary) newWeapon.isPrimaryActiveWeapon = true;
+                
+                AddWeapon(newWeapon);
             }
-            
-            AddWeapon(newWeapon);
+        }
+
+        private System.Type GetWeaponTypeById(string weaponId)
+        {
+            if (string.IsNullOrEmpty(weaponId)) return null;
+
+            switch (weaponId.ToUpper())
+            {
+                case "W_SLIPPER": return typeof(Weapon_Slipper);
+                case "W_POT": return typeof(Weapon_Pot);
+                case "W_PIPE": return typeof(Weapon_Pipe);
+                case "R007": return typeof(Relic_SleepingMat);
+                case "R008": return typeof(Relic_ChickenFeatherBroom);
+                default: return null;
+            }
         }
 
         public void AddWeapon(WeaponBase weapon)
