@@ -128,6 +128,31 @@ namespace ProjectZombie.Features.Shared
         }
 
         /// <summary>
+        /// Trừ tiền trong trận (ví dụ khi bị Ma Đòi Nợ thó tiền).
+        /// </summary>
+        public void DeductCoins(int amount)
+        {
+            if (amount <= 0) return;
+            CoinsCollected = Mathf.Max(0, CoinsCollected - amount);
+            OnCoinsChanged?.Invoke(CoinsCollected);
+        }
+
+        /// <summary>
+        /// Thay đổi số lượng tiền trong trận (hỗ trợ cả cộng và trừ).
+        /// </summary>
+        public void AddCoins(int amount)
+        {
+            if (amount >= 0)
+            {
+                RegisterCoinCollected(amount);
+            }
+            else
+            {
+                DeductCoins(-amount);
+            }
+        }
+
+        /// <summary>
         /// Gọi bởi hệ thống sát thương để cộng dồn damage đã gây.
         /// </summary>
         public void RegisterDamage(float amount)

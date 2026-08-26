@@ -13,6 +13,7 @@ namespace ProjectZombie.Features.Enemies
         public EnemyConfig Config;
         // FIX TODO: Sử dụng Object Pooling cho ExpGem để tránh Instantiate/Destroy nhiều lần gây lag
         [SerializeField] private GameObject expGemPrefab;
+        public GameObject ExpGemPrefab => expGemPrefab;
         
         public Rigidbody2D Rb { get; private set; }
         public HealthSystem HealthSystem { get; private set; }
