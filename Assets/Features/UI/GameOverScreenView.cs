@@ -214,5 +214,10 @@ namespace ProjectZombie.Features.UI
         {
             if (currencyEarnedText != null) currencyEarnedText.text = text;
         }
+
+        public void SetCurrency(int amount)
+        {
+            if (currencyEarnedText != null) currencyEarnedText.SetText("+{0} Cổ Tiền", amount);
+        }
     }
 }

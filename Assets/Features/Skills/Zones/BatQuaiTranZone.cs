@@ -139,6 +139,9 @@ namespace ProjectZombie.Features.Skills.Zones
             }
         }
 
+        private float _lastScanTime;
+        private const float SCAN_INTERVAL = 0.1f;
+
         private void Update()
         {
             if (!_isActive) return;
@@ -148,6 +151,9 @@ namespace ProjectZombie.Features.Skills.Zones
                 _isActive = false;
                 return;
             }
+
+            if (Time.time - _lastScanTime < SCAN_INTERVAL) return;
+            _lastScanTime = Time.time;
 
             // Quét các enemy trong vùng bounding circle trước để tối ưu hiệu năng
             int mask = Shared.TargetingUtility.EnemyLayerMask;

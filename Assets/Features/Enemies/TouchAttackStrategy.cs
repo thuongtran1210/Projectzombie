@@ -31,25 +31,19 @@ namespace ProjectZombie.Features.Enemies
             TryDealTouchDamage();
         }
 
-        private void Update()
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            // Tự động kiểm tra va chạm liên tục ngay cả khi đang ở ChaseState áp sát
-            TryDealTouchDamage();
-        }
-
-        private void OnCollisionStay2D(Collision2D collision)
-        {
-            if (collision.gameObject.CompareTag("Player"))
+            if (other.CompareTag("Player") || (targetLayer != 0 && ((1 << other.gameObject.layer) & targetLayer.value) != 0))
             {
-                CheckAndApplyDamage(collision.gameObject);
+                CheckAndApplyDamage(other.gameObject);
             }
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (other.CompareTag("Player"))
+            if (collision.gameObject.CompareTag("Player") || (targetLayer != 0 && ((1 << collision.gameObject.layer) & targetLayer.value) != 0))
             {
-                CheckAndApplyDamage(other.gameObject);
+                CheckAndApplyDamage(collision.gameObject);
             }
         }
 

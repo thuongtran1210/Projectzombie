@@ -120,34 +120,37 @@ namespace ProjectZombie.Features.UI.HUD
         /// <summary> Cập nhật số cấp độ. Presenter truyền string đã định dạng.</summary>
         public void SetLevel(string formattedLevel)
         {
-            if (_levelText == null)
-            {
-                Debug.LogWarning($"[{nameof(RunHUDView)}] _levelText chưa được gán trong Inspector.");
-                return;
-            }
+            if (_levelText == null) return;
             _levelText.text = formattedLevel;
+        }
+
+        public void SetLevel(int level)
+        {
+            if (_levelText != null) _levelText.SetText("<color=#FFD700><b>Lv.{0}</b></color>", level);
         }
 
         /// <summary>Cập nhật đồng hồ. Presenter truyền string MM:SS đã định dạng.</summary>
         public void SetTimer(string formattedTime)
         {
-            if (_timerText == null)
-            {
-                Debug.LogWarning($"[{nameof(RunHUDView)}] _timerText chưa được gán trong Inspector.");
-                return;
-            }
+            if (_timerText == null) return;
             _timerText.text = formattedTime;
+        }
+
+        public void SetTimer(int minutes, int seconds)
+        {
+            if (_timerText != null) _timerText.SetText("{0:00}:{1:00}", minutes, seconds);
         }
 
         /// <summary>Cập nhật Kill Count. Presenter truyền string đã định dạng.</summary>
         public void SetKillCount(string formattedKillCount)
         {
-            if (_killCountText == null)
-            {
-                Debug.LogWarning($"[{nameof(RunHUDView)}] _killCountText chưa được gán trong Inspector.");
-                return;
-            }
+            if (_killCountText == null) return;
             _killCountText.text = formattedKillCount;
+        }
+
+        public void SetKillCount(int count)
+        {
+            if (_killCountText != null) _killCountText.SetText("Diệt: <color=#FF8C42>{0}</color>", count);
         }
 
         public struct SkillDisplayData

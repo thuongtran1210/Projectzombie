@@ -65,7 +65,7 @@ namespace ProjectZombie.Features.Spawners
                 // 3. Đưa Prefab vào EnemyPoolManager
                 if (enemyPrefab != null && EnemyPoolManager.Instance != null)
                 {
-                    int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? evt.spawnCount : 15;
+                    int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? Mathf.Max(evt.spawnCount, 40) : 30;
                     EnemyPoolManager.Instance.PrewarmPool(enemyPrefab, preloadAmount, poolKey);
 
                     if (!string.IsNullOrEmpty(evt.enemyAddress) && !_loadedAddresses.Contains(evt.enemyAddress))

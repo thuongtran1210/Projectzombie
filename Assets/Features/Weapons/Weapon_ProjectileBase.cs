@@ -23,6 +23,12 @@ namespace ProjectZombie.Features.Weapons
             {
                 projectileData = Instantiate(projectileData);
                 _isDataCloned = true;
+
+                // Tự động Prewarm Pool cho loại đạn này để tránh giật lag lúc xuất chiêu lần đầu
+                if (Projectiles.Core.ProjectileSystem.Instance != null)
+                {
+                    Projectiles.Core.ProjectileSystem.Instance.PrewarmPool(projectileData);
+                }
             }
         }
 

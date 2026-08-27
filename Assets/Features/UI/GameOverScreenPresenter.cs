@@ -177,7 +177,7 @@ namespace ProjectZombie.Features.UI
             _currencyDisplayTimer += Time.unscaledDeltaTime * 50f;
             int displayed = Mathf.Min(Mathf.FloorToInt(_currencyDisplayTimer), _currencyEarned);
 
-            view.SetCurrency($"+{displayed} Cổ Tiền");
+            view.SetCurrency(displayed);
 
             // Phát âm thanh cheng cheng mỗi khi số coin tăng lên
             if (displayed != _lastPlayedCoinTick && coinTickClip != null && _uiAudioSource != null)

@@ -15,7 +15,7 @@ namespace ProjectZombie.Features.Projectiles.Components
             _spawnPosition = transform.position;
         }
 
-        private void Update()
+        public void OnUpdate()
         {
             if (_controller == null || _controller.Data == null) return;
 

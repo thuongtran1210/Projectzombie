@@ -114,6 +114,11 @@ namespace ProjectZombie.Features.Projectiles.Components
         {
             State.DistanceTraveled = Vector2.Distance(State.SpawnPosition, transform.position);
 
+            if (_lifetime != null)
+            {
+                _lifetime.OnUpdate();
+            }
+
             if (_behaviors != null)
             {
                 for (int i = 0; i < _behaviors.Length; i++)

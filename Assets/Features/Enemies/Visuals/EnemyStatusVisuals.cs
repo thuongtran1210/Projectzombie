@@ -349,7 +349,13 @@ namespace ProjectZombie.Features.Enemies.Visuals
 
         private void Update()
         {
-            if (_isStunned && _dizzyRoot != null && _dizzyRoot.activeSelf && _starTransforms != null)
+            // Bỏ qua tính toán nếu không có hiệu ứng xoay sao choáng hay biểu tượng slapstick
+            bool hasDizzy = _isStunned && _dizzyRoot != null && _dizzyRoot.activeSelf && _starTransforms != null;
+            bool hasSlapstick = _slapstickIconObj != null && _slapstickIconObj.activeSelf;
+
+            if (!hasDizzy && !hasSlapstick) return;
+
+            if (hasDizzy)
             {
                 _currentOrbitAngle += _orbitSpeed * Time.deltaTime;
                 float angleStep = 360f / _starTransforms.Length;
@@ -376,6 +382,10 @@ namespace ProjectZombie.Features.Enemies.Visuals
             }
         }
 
+        private static readonly int _propSlowAmount = Shader.PropertyToID("_SlowAmount");
+        private static readonly int _propSlowFrostColor = Shader.PropertyToID("_SlowFrostColor");
+        private static readonly Color _defaultFrostColor = new Color(0.35f, 0.85f, 1f, 1f);
+
         private void ApplyDirectColor(Color tint, float slowIntensity = 0f)
         {
             if (_spriteRenderers == null) return;
@@ -397,8 +407,8 @@ namespace ProjectZombie.Features.Enemies.Visuals
                 if (_propBlock != null)
                 {
                     sr.GetPropertyBlock(_propBlock);
-                    _propBlock.SetFloat(Shader.PropertyToID("_SlowAmount"), slowIntensity);
-                    _propBlock.SetColor(Shader.PropertyToID("_SlowFrostColor"), new Color(0.35f, 0.85f, 1f, 1f));
+                    _propBlock.SetFloat(_propSlowAmount, slowIntensity);
+                    _propBlock.SetColor(_propSlowFrostColor, _defaultFrostColor);
                     sr.SetPropertyBlock(_propBlock);
                 }
             }

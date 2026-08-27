@@ -222,21 +222,20 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnLevelUp(int level)
         {
-            // Presenter định dạng string TRƯỚC khi truyền cho View (Chuẩn Hoàng Kim #FFD700)
-            _view.SetLevel($"<color=#FFD700><b>Lv.{level}</b></color>");
+            if (_view != null) _view.SetLevel(level);
         }
 
         private void OnTimerTick(float elapsedSeconds)
         {
+            if (_view == null) return;
             int m = Mathf.FloorToInt(elapsedSeconds / 60f);
             int s = Mathf.FloorToInt(elapsedSeconds % 60f);
-            _view.SetTimer($"{m:00}:{s:00}");
+            _view.SetTimer(m, s);
         }
 
         private void OnKillCountChanged(int count)
         {
-            // Hiển thị số lượng quái hạ với nhãn text rõ ràng chuẩn Cổ Phong thay vì emoji Unicode ngoài font
-            _view.SetKillCount($"Diệt: <color=#FF8C42>{count}</color>");
+            if (_view != null) _view.SetKillCount(count);
         }
 
         private void OnSkillsOrPassivesChanged()
