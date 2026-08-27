@@ -355,6 +355,12 @@ namespace ProjectZombie.Editor.UI
             var pThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thanh Dong.prefab");
             var pAnSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/An Si.prefab");
 
+            // Load VFX Prefabs cho 4 đòn đánh bản thể
+            var vfxThuSinh = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThuSinh_InkSlash.prefab");
+            var vfxDaoSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_DaoSi_SwordSlash.prefab");
+            var vfxThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/Projectile_ThanhDong_AirWave.prefab");
+            var vfxAnSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_AnSi_EarthImpactSlash.prefab");
+
             // Khởi tạo Database nhân vật mẫu
             var charList = new System.Collections.Generic.List<ProjectZombie.Features.Player.CharacterEntry>
             {
@@ -370,6 +376,15 @@ namespace ProjectZombie.Editor.UI
                     passiveTraitName = "Văn Khí Hộ Thể",
                     passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.",
                     playerPrefab = pThuSinh,
+                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
+                    {
+                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
+                        slashVfxPrefab = vfxThuSinh,
+                        attackName = "Vung Bút Phán Quan",
+                        meleeAreaSize = new Vector2(3.5f, 2.6f),
+                        meleeOffset = 1.3f,
+                        baseAttackSpeed = 1.8f
+                    },
                     isUnlocked = true
                 },
                 new ProjectZombie.Features.Player.CharacterEntry
@@ -384,6 +399,15 @@ namespace ProjectZombie.Editor.UI
                     passiveTraitName = "Cán Cân Âm Dương",
                     passiveTraitDesc = "Trạng thái Thái Cực (Cân bằng) tăng 25% Sát thương toàn thể và giảm 20% Sát thương nhận vào.",
                     playerPrefab = pDaoSi,
+                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
+                    {
+                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
+                        slashVfxPrefab = vfxDaoSi,
+                        attackName = "Trảm Yêu Trừ Ma Kiếm",
+                        meleeAreaSize = new Vector2(3.6f, 2.5f),
+                        meleeOffset = 1.35f,
+                        baseAttackSpeed = 2.0f
+                    },
                     isUnlocked = true
                 },
                 new ProjectZombie.Features.Player.CharacterEntry
@@ -398,6 +422,14 @@ namespace ProjectZombie.Editor.UI
                     passiveTraitName = "Linh Lực Tứ Phủ",
                     passiveTraitDesc = "Thu thập Linh Khí tích lũy thanh Linh Lực Tứ Phủ. Khi kích hoạt Giá Đồng, nhận đồng thời hiệu ứng hộ trì của cả 4 cõi thần linh.",
                     playerPrefab = pThanhDong,
+                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
+                    {
+                        attackType = ProjectZombie.Features.Player.CharacterAttackType.RangedProjectile,
+                        projectilePrefab = vfxThanhDong,
+                        attackName = "Khí Ba Đạo Mẫu",
+                        baseAttackSpeed = 2.2f,
+                        projectileSpeed = 9.0f
+                    },
                     isUnlocked = true
                 },
                 new ProjectZombie.Features.Player.CharacterEntry
@@ -412,6 +444,15 @@ namespace ProjectZombie.Editor.UI
                     passiveTraitName = "Bàn Thạch Chi Khu",
                     passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi.",
                     playerPrefab = pAnSi,
+                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
+                    {
+                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
+                        slashVfxPrefab = vfxAnSi,
+                        attackName = "Thạch Quyền Phá Địa",
+                        meleeAreaSize = new Vector2(3.6f, 2.7f),
+                        meleeOffset = 1.35f,
+                        baseAttackSpeed = 1.6f
+                    },
                     isUnlocked = true
                 }
             };

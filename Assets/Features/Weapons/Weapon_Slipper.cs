@@ -140,7 +140,10 @@ namespace ProjectZombie.Features.Weapons
             GameObject trailObj = new GameObject("Sparks");
             trailObj.transform.SetParent(slipperVisual.transform, false);
             var psTrail = trailObj.AddComponent<ParticleSystem>();
+            psTrail.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            
             var mainT = psTrail.main;
+            mainT.playOnAwake = false;
             mainT.duration = 1.0f;
             mainT.loop = true;
             mainT.startLifetime = 0.18f;
@@ -162,6 +165,7 @@ namespace ProjectZombie.Features.Weapons
 #endif
             rendT.sortingLayerName = "Skill";
             rendT.sortingOrder = 11;
+            psTrail.Play();
 
             // 1. Bay tới đích
             while (elapsed < duration)

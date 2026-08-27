@@ -49,17 +49,14 @@ namespace ProjectZombie.EditorTools
             RunHUDPresenter hudPresenter = hudRoot.GetComponent<RunHUDPresenter>();
             if (hudPresenter == null) hudPresenter = hudRoot.AddComponent<RunHUDPresenter>();
 
-            // Load tất cả Sprite Đông Sơn
-            // 1. Nạp bộ Sprite Chibi Casual Arcade mới
-            Sprite hpFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_HP_Chunky_Frame.png");
-            Sprite hpFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_HP_Chunky_Fill.png");
-            Sprite expFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_EXP_Chunky_Frame.png");
-            Sprite expFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_EXP_Chunky_Fill.png");
-            Sprite levelBadgeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
-            Sprite taijiOrbSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Meter_Taiji_Orb_Chibi.png");
-            Sprite yinyangBarSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Gauge_YinYang_Bar_Chibi.png");
-            Sprite runStatsPillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Panel_RunStats_Pill_3D.png");
-            Sprite heartRubySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Icon_Heart_Ruby.png");
+            // Load tất cả Sprite Vọng Xuyên Cổ Phong
+            Sprite hpExpFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Bar_HUD_Frame_VongXuyen_9Slice.png");
+            Sprite hpFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Bar_HUD_Fill_HP.png");
+            Sprite expFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Bar_HUD_Fill_EXP.png");
+            Sprite levelOrbSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_HUD_Player_Orb_Level.png");
+            Sprite yinyangMeterSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Panel_YinYang_Meter_HUD.png");
+            Sprite timerBoxSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_HUD_Timer_Kill_Wood.png");
+            Sprite badgePillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Upgrade_Pill_Wood_9Slice.png");
 
             TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset");
             if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
@@ -91,9 +88,9 @@ namespace ProjectZombie.EditorTools
             tlRT.anchorMax = new Vector2(0, 1);
             tlRT.pivot = new Vector2(0, 1);
             tlRT.anchoredPosition = new Vector2(25, -20);
-            tlRT.sizeDelta = new Vector2(360, 90);
+            tlRT.sizeDelta = new Vector2(380, 100);
 
-            // A. Badge Level Tròn (Bên Trái)
+            // A. Khung Tròn Gỗ Mun Đính 4 Mũi La Bàn Hiển Thị Cấp Độ (Bên Trái)
             GameObject badgeObj = new GameObject("Badge_Level", typeof(RectTransform), typeof(Image));
             badgeObj.transform.SetParent(topLeftTrans, false);
             RectTransform bRT = badgeObj.GetComponent<RectTransform>();
@@ -101,10 +98,10 @@ namespace ProjectZombie.EditorTools
             bRT.anchorMax = new Vector2(0, 0.5f);
             bRT.pivot = new Vector2(0, 0.5f);
             bRT.anchoredPosition = new Vector2(0, 0);
-            bRT.sizeDelta = new Vector2(72, 72);
+            bRT.sizeDelta = new Vector2(92, 92);
             Image bImg = badgeObj.GetComponent<Image>();
             bImg.color = Color.white;
-            if (levelBadgeSprite != null) bImg.sprite = levelBadgeSprite;
+            if (levelOrbSprite != null) bImg.sprite = levelOrbSprite;
             bImg.preserveAspect = true;
 
             GameObject lvlTxtObj = new GameObject("Txt_Level", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -116,21 +113,21 @@ namespace ProjectZombie.EditorTools
             ltRT.offsetMax = Vector2.zero;
             TextMeshProUGUI lvlTMP = lvlTxtObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) lvlTMP.font = vietFont;
-            lvlTMP.fontSize = 18;
+            lvlTMP.fontSize = 20;
             lvlTMP.fontStyle = FontStyles.Bold;
             lvlTMP.alignment = TextAlignmentOptions.Center;
             lvlTMP.text = "Lv.1";
-            lvlTMP.color = Color.white;
+            lvlTMP.color = new Color(0.96f, 0.88f, 0.72f);
 
-            // B. Khung chứa 2 thanh Máu & EXP (Bên Phải Badge)
+            // B. Khung chứa 2 thanh Máu & EXP Vát Đuôi (Bên Phải Badge)
             GameObject barsContainer = new GameObject("Bars_Container", typeof(RectTransform));
             barsContainer.transform.SetParent(topLeftTrans, false);
             RectTransform bcRT = barsContainer.GetComponent<RectTransform>();
             bcRT.anchorMin = new Vector2(0, 0.5f);
             bcRT.anchorMax = new Vector2(0, 0.5f);
             bcRT.pivot = new Vector2(0, 0.5f);
-            bcRT.anchoredPosition = new Vector2(78, 0);
-            bcRT.sizeDelta = new Vector2(260, 72);
+            bcRT.anchoredPosition = new Vector2(86, 0);
+            bcRT.sizeDelta = new Vector2(250, 72);
 
             // B.1. THANH MÁU (HP BAR)
             GameObject hpSliderObj = new GameObject("HP_Slider", typeof(RectTransform), typeof(Slider), typeof(Image));
@@ -140,12 +137,12 @@ namespace ProjectZombie.EditorTools
             hpRT.anchorMax = new Vector2(1, 1);
             hpRT.pivot = new Vector2(0.5f, 1);
             hpRT.anchoredPosition = new Vector2(0, 0);
-            hpRT.sizeDelta = new Vector2(0, 36);
+            hpRT.sizeDelta = new Vector2(0, 34);
 
             Image hpBg = hpSliderObj.GetComponent<Image>();
             hpBg.color = Color.white;
             hpBg.type = Image.Type.Sliced;
-            if (hpFrameSprite != null) hpBg.sprite = hpFrameSprite;
+            if (hpExpFrameSprite != null) hpBg.sprite = hpExpFrameSprite;
 
             Slider hpSlider = hpSliderObj.GetComponent<Slider>();
             hpSlider.minValue = 0;
@@ -157,8 +154,8 @@ namespace ProjectZombie.EditorTools
             RectTransform hfaRT = hpFillArea.GetComponent<RectTransform>();
             hfaRT.anchorMin = Vector2.zero;
             hfaRT.anchorMax = Vector2.one;
-            hfaRT.offsetMin = new Vector2(4, 4);
-            hfaRT.offsetMax = new Vector2(-4, -4);
+            hfaRT.offsetMin = new Vector2(5, 5);
+            hfaRT.offsetMax = new Vector2(-12, -5);
 
             GameObject hpFill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             hpFill.transform.SetParent(hpFillArea.transform, false);
@@ -178,11 +175,11 @@ namespace ProjectZombie.EditorTools
             RectTransform htRT = hpTxtObj.GetComponent<RectTransform>();
             htRT.anchorMin = Vector2.zero;
             htRT.anchorMax = Vector2.one;
-            htRT.offsetMin = Vector2.zero;
-            htRT.offsetMax = Vector2.zero;
+            htRT.offsetMin = new Vector2(0, 0);
+            htRT.offsetMax = new Vector2(-10, 0);
             TextMeshProUGUI hpTMP = hpTxtObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) hpTMP.font = vietFont;
-            hpTMP.fontSize = 15;
+            hpTMP.fontSize = 14;
             hpTMP.fontStyle = FontStyles.Bold;
             hpTMP.alignment = TextAlignmentOptions.Center;
             hpTMP.text = "100 / 100";
@@ -201,7 +198,7 @@ namespace ProjectZombie.EditorTools
             Image expBg = expSliderObj.GetComponent<Image>();
             expBg.color = Color.white;
             expBg.type = Image.Type.Sliced;
-            if (expFrameSprite != null) expBg.sprite = expFrameSprite;
+            if (hpExpFrameSprite != null) expBg.sprite = hpExpFrameSprite;
 
             Slider expSlider = expSliderObj.GetComponent<Slider>();
             expSlider.minValue = 0;
@@ -213,8 +210,8 @@ namespace ProjectZombie.EditorTools
             RectTransform efaRT = expFillArea.GetComponent<RectTransform>();
             efaRT.anchorMin = Vector2.zero;
             efaRT.anchorMax = Vector2.one;
-            efaRT.offsetMin = new Vector2(3, 3);
-            efaRT.offsetMax = new Vector2(-3, -3);
+            efaRT.offsetMin = new Vector2(5, 4);
+            efaRT.offsetMax = new Vector2(-12, -4);
 
             GameObject expFill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             expFill.transform.SetParent(expFillArea.transform, false);
@@ -246,77 +243,78 @@ namespace ProjectZombie.EditorTools
                 Object.DestroyImmediate(taijiTrans.GetChild(0).gameObject);
             }
 
-            Image oldTjBg = taijiTrans.GetComponent<Image>();
-            if (oldTjBg != null) Object.DestroyImmediate(oldTjBg);
-
             RectTransform tjRT = taijiTrans.GetComponent<RectTransform>();
             tjRT.anchorMin = new Vector2(0.5f, 1);
             tjRT.anchorMax = new Vector2(0.5f, 1);
             tjRT.pivot = new Vector2(0.5f, 1);
-            tjRT.anchoredPosition = new Vector2(0, -18);
-            tjRT.sizeDelta = new Vector2(280, 80);
+            tjRT.anchoredPosition = new Vector2(0, -16);
+            tjRT.sizeDelta = new Vector2(340, 90);
 
-            // A. Ngọc Thái Cực
-            GameObject orbObj = new GameObject("Orb_Taiji", typeof(RectTransform), typeof(Image));
-            orbObj.transform.SetParent(taijiTrans, false);
-            RectTransform orbRT = orbObj.GetComponent<RectTransform>();
-            orbRT.anchorMin = new Vector2(0, 0.5f);
-            orbRT.anchorMax = new Vector2(0, 0.5f);
-            orbRT.pivot = new Vector2(0, 0.5f);
-            orbRT.anchoredPosition = new Vector2(0, 0);
-            orbRT.sizeDelta = new Vector2(74, 74);
-            Image orbImg = orbObj.GetComponent<Image>();
-            orbImg.color = Color.white;
-            if (taijiOrbSprite != null) orbImg.sprite = taijiOrbSprite;
-            orbImg.preserveAspect = true;
+            Image tjBg = taijiTrans.GetComponent<Image>();
+            if (tjBg == null) tjBg = taijiTrans.gameObject.AddComponent<Image>();
+            tjBg.color = Color.white;
+            tjBg.type = Image.Type.Sliced;
+            if (yinyangMeterSprite != null) tjBg.sprite = yinyangMeterSprite;
 
-            // B. Cụm Thanh Trượt & Tiêu Đề
-            GameObject tjRight = new GameObject("Group_BarAndLabel", typeof(RectTransform));
-            tjRight.transform.SetParent(taijiTrans, false);
-            RectTransform tjrRT = tjRight.GetComponent<RectTransform>();
-            tjrRT.anchorMin = new Vector2(0, 0.5f);
-            tjrRT.anchorMax = new Vector2(0, 0.5f);
-            tjrRT.pivot = new Vector2(0, 0.5f);
-            tjrRT.anchoredPosition = new Vector2(80, 0);
-            tjrRT.sizeDelta = new Vector2(190, 64);
+            // Header Badge Trạng Thái: [ÂM THỊNH]
+            GameObject stateBadge = new GameObject("Badge_State", typeof(RectTransform), typeof(Image));
+            stateBadge.transform.SetParent(taijiTrans, false);
+            RectTransform sbRT = stateBadge.GetComponent<RectTransform>();
+            sbRT.anchorMin = new Vector2(0.5f, 1f);
+            sbRT.anchorMax = new Vector2(0.5f, 1f);
+            sbRT.pivot = new Vector2(0.5f, 1f);
+            sbRT.anchoredPosition = new Vector2(35, 6);
+            sbRT.sizeDelta = new Vector2(140, 28);
+            Image sbImg = stateBadge.GetComponent<Image>();
+            sbImg.color = Color.white;
+            sbImg.type = Image.Type.Sliced;
+            if (badgePillSprite != null) sbImg.sprite = badgePillSprite;
 
-            // B.1. Slider Âm Dương
-            GameObject tjSliderObj = new GameObject("Slider_YinYang", typeof(RectTransform), typeof(Slider), typeof(Image));
-            tjSliderObj.transform.SetParent(tjRight.transform, false);
+            GameObject tjLblObj = new GameObject("Txt_StateLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
+            tjLblObj.transform.SetParent(stateBadge.transform, false);
+            RectTransform tjlRT = tjLblObj.GetComponent<RectTransform>();
+            tjlRT.anchorMin = Vector2.zero;
+            tjlRT.anchorMax = Vector2.one;
+            tjlRT.sizeDelta = Vector2.zero;
+            TextMeshProUGUI tjLblTMP = tjLblObj.GetComponent<TextMeshProUGUI>();
+            if (vietFont != null) tjLblTMP.font = vietFont;
+            tjLblTMP.fontSize = 13;
+            tjLblTMP.fontStyle = FontStyles.Bold;
+            tjLblTMP.alignment = TextAlignmentOptions.Center;
+            tjLblTMP.text = "[ÂM THỊNH]";
+            tjLblTMP.color = new Color(0.24f, 0.16f, 0.10f);
+
+            // Slider Âm Dương Nằm Giữa Khung
+            GameObject tjSliderObj = new GameObject("Slider_YinYang", typeof(RectTransform), typeof(Slider));
+            tjSliderObj.transform.SetParent(taijiTrans, false);
             RectTransform tjsRT = tjSliderObj.GetComponent<RectTransform>();
-            tjsRT.anchorMin = new Vector2(0, 1);
-            tjsRT.anchorMax = new Vector2(1, 1);
-            tjsRT.pivot = new Vector2(0.5f, 1);
-            tjsRT.anchoredPosition = new Vector2(0, -4);
-            tjsRT.sizeDelta = new Vector2(0, 26);
-
-            Image tjsBg = tjSliderObj.GetComponent<Image>();
-            tjsBg.color = Color.white;
-            tjsBg.type = Image.Type.Sliced;
-            if (yinyangBarSprite != null) tjsBg.sprite = yinyangBarSprite;
+            tjsRT.anchorMin = new Vector2(0.5f, 0.5f);
+            tjsRT.anchorMax = new Vector2(0.5f, 0.5f);
+            tjsRT.pivot = new Vector2(0.5f, 0.5f);
+            tjsRT.anchoredPosition = new Vector2(35, 8);
+            tjsRT.sizeDelta = new Vector2(170, 20);
 
             Slider tjSlider = tjSliderObj.GetComponent<Slider>();
             tjSlider.minValue = -100;
             tjSlider.maxValue = 100;
             tjSlider.value = -40;
 
-            // B.2. Label Trạng Thái [ÂM THỊNH] / [DƯƠNG THỊNH]
-            GameObject tjLblObj = new GameObject("Txt_StateLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
-            tjLblObj.transform.SetParent(tjRight.transform, false);
-            RectTransform tjlRT = tjLblObj.GetComponent<RectTransform>();
-            tjlRT.anchorMin = new Vector2(0, 0);
-            tjlRT.anchorMax = new Vector2(1, 0);
-            tjlRT.pivot = new Vector2(0.5f, 0);
-            tjlRT.anchoredPosition = new Vector2(0, 2);
-            tjlRT.sizeDelta = new Vector2(0, 24);
-
-            TextMeshProUGUI tjLblTMP = tjLblObj.GetComponent<TextMeshProUGUI>();
-            if (vietFont != null) tjLblTMP.font = vietFont;
-            tjLblTMP.fontSize = 15;
-            tjLblTMP.fontStyle = FontStyles.Bold;
-            tjLblTMP.alignment = TextAlignmentOptions.Center;
-            tjLblTMP.text = "[ÂM THỊNH]";
-            tjLblTMP.color = new Color(0.65f, 0.85f, 1f, 1f);
+            // Sub-Title Dưới: Thái Cực Cân Bằng
+            GameObject subTitleObj = new GameObject("Txt_BalanceTitle", typeof(RectTransform), typeof(TextMeshProUGUI));
+            subTitleObj.transform.SetParent(taijiTrans, false);
+            RectTransform stRT = subTitleObj.GetComponent<RectTransform>();
+            stRT.anchorMin = new Vector2(0.5f, 0f);
+            stRT.anchorMax = new Vector2(0.5f, 0f);
+            stRT.pivot = new Vector2(0.5f, 0f);
+            stRT.anchoredPosition = new Vector2(35, 6);
+            stRT.sizeDelta = new Vector2(180, 24);
+            TextMeshProUGUI stTMP = subTitleObj.GetComponent<TextMeshProUGUI>();
+            if (vietFont != null) stTMP.font = vietFont;
+            stTMP.fontSize = 15;
+            stTMP.fontStyle = FontStyles.Bold;
+            stTMP.alignment = TextAlignmentOptions.Center;
+            stTMP.text = "Thái Cực Cân Bằng";
+            stTMP.color = new Color(0.25f, 0.16f, 0.10f);
 
             // Gắn CharacterGaugeWidgetView nếu có
             var gaugeView = taijiTrans.GetComponent<CharacterGaugeWidgetView>();
@@ -349,13 +347,13 @@ namespace ProjectZombie.EditorTools
             trRT.anchorMax = new Vector2(1, 1);
             trRT.pivot = new Vector2(1, 1);
             trRT.anchoredPosition = new Vector2(-25, -20);
-            trRT.sizeDelta = new Vector2(210, 84);
+            trRT.sizeDelta = new Vector2(200, 96);
 
             Image trBg = topRightTrans.GetComponent<Image>();
             if (trBg == null) trBg = topRightTrans.gameObject.AddComponent<Image>();
             trBg.color = Color.white;
             trBg.type = Image.Type.Sliced;
-            if (runStatsPillSprite != null) trBg.sprite = runStatsPillSprite;
+            if (timerBoxSprite != null) trBg.sprite = timerBoxSprite;
 
             // Timer Row
             GameObject tRow = new GameObject("Row_Timer", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -364,14 +362,14 @@ namespace ProjectZombie.EditorTools
             trRowRT.anchorMin = new Vector2(0, 0.5f);
             trRowRT.anchorMax = new Vector2(1, 1);
             trRowRT.offsetMin = new Vector2(16, 0);
-            trRowRT.offsetMax = new Vector2(-16, -6);
+            trRowRT.offsetMax = new Vector2(-16, -10);
             TextMeshProUGUI timerTMP = tRow.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) timerTMP.font = vietFont;
-            timerTMP.fontSize = 20;
+            timerTMP.fontSize = 24;
             timerTMP.fontStyle = FontStyles.Bold;
             timerTMP.alignment = TextAlignmentOptions.Center;
             timerTMP.text = "00:00";
-            timerTMP.color = Color.white;
+            timerTMP.color = new Color(0.98f, 0.88f, 0.60f);
 
             // Kill Count Row
             GameObject kRow = new GameObject("Row_KillCount", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -379,14 +377,15 @@ namespace ProjectZombie.EditorTools
             RectTransform krRowRT = kRow.GetComponent<RectTransform>();
             krRowRT.anchorMin = new Vector2(0, 0);
             krRowRT.anchorMax = new Vector2(1, 0.5f);
-            krRowRT.offsetMin = new Vector2(16, 6);
+            krRowRT.offsetMin = new Vector2(16, 10);
             krRowRT.offsetMax = new Vector2(-16, 0);
             TextMeshProUGUI killTMP = kRow.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) killTMP.font = vietFont;
-            killTMP.fontSize = 15;
+            killTMP.fontSize = 16;
             killTMP.fontStyle = FontStyles.Bold;
             killTMP.alignment = TextAlignmentOptions.Center;
             killTMP.text = "Diệt: 0";
+            killTMP.color = new Color(0.95f, 0.88f, 0.72f);
 
             // -------------------------------------------------------------
             // 7. WIRE THÔNG SỐ VÀO RUNHUDVIEW & PRESENTER
