@@ -250,18 +250,11 @@ namespace ProjectZombie.Features.Player
             Vector2 center = (Vector2)transform.position + direction * offset;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            // 1. Sinh hiệu ứng VFX Vệt Chém
+            // 1. Sinh hiệu ứng VFX Vệt Chém từ Object Pool
             if (attackConfig.slashVfxPrefab != null)
             {
-                GameObject vfxObj = Instantiate(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle));
-                var psList = vfxObj.GetComponentsInChildren<ParticleSystem>(true);
-                foreach (var p in psList)
-                {
-                    p.Clear();
-                    p.Play();
-                }
                 float life = attackConfig.vfxDuration > 0 ? attackConfig.vfxDuration : 0.45f;
-                Destroy(vfxObj, life);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle), life);
             }
 
             // 2. Lực dấn người tới trước (Attack Lunge Impulse)
@@ -412,8 +405,7 @@ namespace ProjectZombie.Features.Player
 
             if (_cachedHitSparksPrefab != null)
             {
-                GameObject sparks = Instantiate(_cachedHitSparksPrefab, hitPos, Quaternion.identity);
-                Destroy(sparks, 0.6f);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_cachedHitSparksPrefab, hitPos, Quaternion.identity, 0.6f);
             }
         }
 

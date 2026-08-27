@@ -107,14 +107,23 @@ namespace ProjectZombie.Features.Projectiles
                     Destroy(gameObject);
                 }
 
-                // Spawn Hit Sparks
-                GameObject hitSparksPrefab = Resources.Load<GameObject>("Prefabs/VFX/PS_ImpactSparks");
-                if (hitSparksPrefab != null)
+                // Spawn Hit Sparks từ Object Pool
+                if (_hitSparksPrefab == null)
                 {
-                    GameObject sparks = Instantiate(hitSparksPrefab, transform.position, Quaternion.identity);
-                    Destroy(sparks, 0.5f);
+                    _hitSparksPrefab = Resources.Load<GameObject>("Prefabs/VFX/PS_ImpactSparks");
+                    if (_hitSparksPrefab == null)
+                    {
+                        _hitSparksPrefab = Resources.Load<GameObject>("PS_ImpactSparks");
+                    }
+                }
+
+                if (_hitSparksPrefab != null)
+                {
+                    ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_hitSparksPrefab, transform.position, Quaternion.identity, 0.5f);
                 }
             }
         }
+
+        private static GameObject _hitSparksPrefab;
     }
 }
