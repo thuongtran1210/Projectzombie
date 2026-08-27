@@ -20,7 +20,7 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Transform chứa các vũ khí được sinh ra (Nếu để trống sẽ dùng transform của Player)")]
         [SerializeField] private Transform weaponHolder;
 
-        public const int MAX_WEAPONS = 4; // 1 Vũ khí chính + Tối đa 3 Pháp bảo hộ thân
+        public const int MAX_WEAPONS = 1; // Tối đa 1 Pháp bảo hộ thân mang vào trận
 
         private PlayerStats _playerStats;
         private PlayerPassives _playerPassives;
@@ -56,6 +56,11 @@ namespace ProjectZombie.Features.Weapons
                 {
                     if (w != primary) relics.Add(w);
                 }
+                // Nếu không có Primary Weapon riêng (dùng CharacterCombat), mọi vũ khí trong này đều là Relic
+                if (relics.Count == 0 && _activeWeapons.Count > 0 && GetComponent<CharacterCombat>() != null)
+                {
+                    return new List<WeaponBase>(_activeWeapons);
+                }
                 return relics;
             }
         }
@@ -75,17 +80,14 @@ namespace ProjectZombie.Features.Weapons
             // 1. Kiểm tra nếu có Loadout tùy chỉnh từ Sảnh Chờ (Meta Hub Loadout)
             if (RunLoadoutState.HasCustomLoadout)
             {
-                if (RunLoadoutState.SelectedPrimaryWeapon != null)
+                // Nạp 1 Pháp Bảo Hộ Thân (Relic)
+                if (RunLoadoutState.SelectedRelic != null)
                 {
-                    EquipWeaponFromData(RunLoadoutState.SelectedPrimaryWeapon, isPrimary: true);
+                    EquipWeaponFromData(RunLoadoutState.SelectedRelic, isPrimary: false);
                 }
-
-                foreach (var relicData in RunLoadoutState.SelectedRelics)
+                else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0)
                 {
-                    if (relicData != null)
-                    {
-                        EquipWeaponFromData(relicData, isPrimary: false);
-                    }
+                    EquipWeaponFromData(RunLoadoutState.SelectedRelics[0], isPrimary: false);
                 }
             }
             else
@@ -93,6 +95,7 @@ namespace ProjectZombie.Features.Weapons
                 // Fallback: Sinh ra vũ khí từ startingLoadout (hoặc hierarchy)
                 foreach (var weaponData in startingLoadout)
                 {
+                    if (_activeWeapons.Count >= MAX_WEAPONS) break;
                     EquipWeaponFromData(weaponData);
                 }
             }

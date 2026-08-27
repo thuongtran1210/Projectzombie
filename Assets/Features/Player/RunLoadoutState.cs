@@ -37,6 +37,20 @@ namespace ProjectZombie.Features.Player
             set => _selectedPrimaryWeapon = value;
         }
 
+        public static WeaponData SelectedRelic
+        {
+            get
+            {
+                EnsureInitialized();
+                return _selectedRelics != null && _selectedRelics.Count > 0 ? _selectedRelics[0] : null;
+            }
+            set
+            {
+                _selectedRelics.Clear();
+                if (value != null) _selectedRelics.Add(value);
+            }
+        }
+
         public static List<WeaponData> SelectedRelics
         {
             get
@@ -44,14 +58,14 @@ namespace ProjectZombie.Features.Player
                 EnsureInitialized();
                 return _selectedRelics;
             }
-            set => _selectedRelics = value;
+            set => _selectedRelics = value ?? new List<WeaponData>();
         }
 
         private static CharacterEntry _selectedCharacter;
         private static WeaponData _selectedPrimaryWeapon;
         private static List<WeaponData> _selectedRelics = new List<WeaponData>();
 
-        public static bool HasCustomLoadout => _selectedPrimaryWeapon != null || (_selectedRelics != null && _selectedRelics.Count > 0);
+        public static bool HasCustomLoadout => _selectedCharacter != null || _selectedPrimaryWeapon != null || (_selectedRelics != null && _selectedRelics.Count > 0);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void EnsureInitialized()

@@ -150,6 +150,17 @@ namespace ProjectZombie.Features.Player
             _activePlayerInstance.name = playerPrefab.name;
             _activePlayerInstance.SetActive(true);
 
+            // Tự động gắn và cấu hình CharacterCombat nếu chưa có
+            var combat = _activePlayerInstance.GetComponent<CharacterCombat>();
+            if (combat == null)
+            {
+                combat = _activePlayerInstance.AddComponent<CharacterCombat>();
+            }
+            if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null)
+            {
+                combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
+            }
+
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }
 

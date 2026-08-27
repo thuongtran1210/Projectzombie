@@ -5,16 +5,20 @@ using ProjectZombie.Features.Player;
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Presenter điều phối giữa WeaponManager / WeaponBase (Model) và AttackButtonView (View).
-    /// Tuân thủ kiến trúc MVP: Cập nhật icon vũ khí chính, thanh hồi chiêu và kích hoạt đánh chủ động (Active Attack).
+    /// Presenter điều phối giữa CharacterCombat / WeaponManager (Model) và AttackButtonView (View).
+    /// Tuân thủ kiến trúc MVP: Cập nhật icon đòn đánh của nhân vật, thanh hồi chiêu và kích hoạt đánh chủ động (Active Attack).
     /// </summary>
     public class AttackButtonPresenter : MonoBehaviour
     {
         [Header("View Reference")]
         [SerializeField] private AttackButtonView _view;
 
-        [Header("Model Reference")]
+        [Header("Model References")]
+        [SerializeField] private CharacterCombat _characterCombat;
         [SerializeField] private WeaponManager _weaponManager;
+
+        private float _bufferedAttackTime;
+        private const float TAP_BUFFER_WINDOW = 0.18f;
 
         private void Awake()
         {
@@ -28,7 +32,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnButtonPressed += OnAttackButtonPressed;
             }
 
-            TryBindWeaponManager();
+            TryBindCombat();
         }
 
         private void OnDestroy()
@@ -42,6 +46,12 @@ namespace ProjectZombie.Features.UI
             {
                 _weaponManager.OnWeaponsChanged -= OnWeaponsChanged;
             }
+        }
+
+        public void Bind(CharacterCombat combat)
+        {
+            _characterCombat = combat;
+            UpdateVisuals();
         }
 
         public void Bind(WeaponManager weaponManager)
@@ -60,40 +70,62 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void TryBindWeaponManager()
+        private void TryBindCombat()
         {
-            if (_weaponManager == null && PlayerController.Instance != null)
+            if (PlayerController.Instance != null)
             {
-                var wm = PlayerController.Instance.GetComponent<WeaponManager>();
-                if (wm != null)
+                if (_characterCombat == null)
                 {
-                    Bind(wm);
+                    _characterCombat = PlayerController.Instance.GetComponent<CharacterCombat>();
                 }
+
+                if (_weaponManager == null)
+                {
+                    var wm = PlayerController.Instance.GetComponent<WeaponManager>();
+                    if (wm != null) Bind(wm);
+                }
+
+                UpdateVisuals();
             }
         }
 
-        private float _bufferedAttackTime;
-        private const float TAP_BUFFER_WINDOW = 0.18f;
-
         private void Update()
         {
-            if (_weaponManager == null)
+            if (_characterCombat == null && _weaponManager == null)
             {
-                TryBindWeaponManager();
+                TryBindCombat();
                 return;
             }
 
-            WeaponBase primaryWeapon = _weaponManager.PrimaryWeapon;
-            if (primaryWeapon != null)
+            // 1. Ưu tiên đòn đánh nhân vật (CharacterCombat)
+            if (_characterCombat != null)
             {
+                float remainingCd = _characterCombat.RemainingCooldown;
+                float totalAttackSpeed = _characterCombat.GetTotalAttackSpeed();
+                float maxCd = 1f / Mathf.Max(0.01f, totalAttackSpeed);
+
+                _view.SetCooldown(remainingCd, maxCd);
+                _view.SetInteractable(true);
+
+                if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
+                {
+                    if (_characterCombat.TriggerAttack())
+                    {
+                        _bufferedAttackTime = 0f;
+                    }
+                }
+            }
+            // 2. Fallback sang vũ khí chính cũ nếu chưa có CharacterCombat
+            else if (_weaponManager != null && _weaponManager.PrimaryWeapon != null)
+            {
+                WeaponBase primaryWeapon = _weaponManager.PrimaryWeapon;
                 float remainingCd = primaryWeapon.RemainingCooldown;
                 float totalAttackSpeed = primaryWeapon.GetTotalAttackSpeed();
                 float maxCd = 1f / Mathf.Max(0.01f, totalAttackSpeed);
 
                 _view.SetCooldown(remainingCd, maxCd);
-                _view.SetInteractable(true); // Luôn cho phép chạm để ăn Tap Buffer
+                _view.SetInteractable(true);
 
-                // Xử lý Tap Buffer: Tự động xả đòn tiếp theo nếu vừa bấm trong buffer window
                 if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
                 {
                     if (_weaponManager.TriggerPrimaryAttack())
@@ -109,25 +141,48 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private void UpdateVisuals()
+        {
+            if (_view == null) return;
+
+            if (_characterCombat != null && _characterCombat.AttackIcon != null)
+            {
+                _view.SetIcon(_characterCombat.AttackIcon);
+            }
+            else if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.avatar != null)
+            {
+                _view.SetIcon(RunLoadoutState.SelectedCharacter.avatar);
+            }
+            else if (_weaponManager != null && _weaponManager.PrimaryWeapon != null && _weaponManager.PrimaryWeapon.icon != null)
+            {
+                _view.SetIcon(_weaponManager.PrimaryWeapon.icon);
+            }
+        }
+
         private void OnWeaponsChanged()
         {
-            if (_weaponManager != null && _view != null)
-            {
-                WeaponBase primaryWeapon = _weaponManager.PrimaryWeapon;
-                if (primaryWeapon != null && primaryWeapon.icon != null)
-                {
-                    _view.SetIcon(primaryWeapon.icon);
-                }
-            }
+            UpdateVisuals();
         }
 
         private void OnAttackButtonPressed()
         {
+            if (_characterCombat != null)
+            {
+                if (!_characterCombat.TriggerAttack())
+                {
+                    _bufferedAttackTime = Time.time;
+                }
+                else
+                {
+                    _bufferedAttackTime = 0f;
+                }
+                return;
+            }
+
             if (_weaponManager != null)
             {
                 if (!_weaponManager.TriggerPrimaryAttack())
                 {
-                    // Nếu vũ khí chưa kịp hồi xong, lưu vào Tap Buffer
                     _bufferedAttackTime = Time.time;
                 }
                 else

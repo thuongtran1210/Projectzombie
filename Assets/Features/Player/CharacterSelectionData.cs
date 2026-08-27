@@ -5,6 +5,61 @@ using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Player
 {
+    public enum CharacterAttackType
+    {
+        MeleeSlash,
+        RangedProjectile
+    }
+
+    [Serializable]
+    public class CharacterAttackConfig
+    {
+        [Tooltip("Loại đòn đánh: Cận chiến chém vệt (MeleeSlash) hoặc Tầm xa bắn đạn (RangedProjectile)")]
+        public CharacterAttackType attackType = CharacterAttackType.MeleeSlash;
+
+        [Tooltip("Tên đòn đánh cơ bản")]
+        public string attackName = "Đòn Đánh Thường";
+
+        [Tooltip("Icon đại diện đòn đánh hiển thị trên Attack Button")]
+        public Sprite attackIcon;
+
+        [Tooltip("Hệ nguyên tố của đòn đánh")]
+        public ElementType element = ElementType.None;
+
+        [Tooltip("Hệ số sát thương cơ bản (Ví dụ 1.0 = 100% Base Attack)")]
+        public float baseDamageMultiplier = 1.0f;
+
+        [Tooltip("Tốc độ ra đòn cơ bản (Số đòn / giây)")]
+        public float baseAttackSpeed = 1.8f;
+
+        [Header("Melee Slash Settings")]
+        [Tooltip("Kích thước vùng chém (Chiều rộng x Chiều dài)")]
+        public Vector2 meleeAreaSize = new Vector2(2.5f, 2.0f);
+        [Tooltip("Khoảng cách tâm vùng chém so với nhân vật")]
+        public float meleeOffset = 1.2f;
+        [Tooltip("VFX Vệt Chém (Slash Particle System Prefab)")]
+        public GameObject slashVfxPrefab;
+
+        [Header("Ranged Projectile Settings")]
+        [Tooltip("Prefab đạn tầm xa")]
+        public GameObject projectilePrefab;
+        [Tooltip("Tốc độ bay của đạn")]
+        public float projectileSpeed = 12f;
+        [Tooltip("Tầm bắn tối đa / Thời gian tồn tại")]
+        public float projectileLifetime = 1.5f;
+        [Tooltip("Số lượng đạn bắn ra mỗi lần")]
+        public int projectileCount = 1;
+        [Tooltip("Góc tỏa đạn (độ)")]
+        public float spreadAngle = 0f;
+
+        [Header("Combo & Multipliers")]
+        public int maxComboSteps = 3;
+        public float comboResetWindow = 1.0f;
+        public float comboStep2Multiplier = 1.2f;
+        public float comboStep3Multiplier = 1.8f;
+        public float knockbackForce = 4.0f;
+    }
+
     [Serializable]
     public class CharacterEntry
     {
@@ -13,6 +68,9 @@ namespace ProjectZombie.Features.Player
         public ElementType element;
         public string elementHexColor = "#FFD700";
         [TextArea(2, 4)] public string description;
+
+        [Header("Đòn Đánh Cơ Bản (Character Signature Basic Attack)")]
+        public CharacterAttackConfig basicAttackConfig = new CharacterAttackConfig();
         
         [Header("Kỹ Năng Chủ Động (Active Signature Skill)")]
         public string signatureSkillName;
@@ -26,10 +84,14 @@ namespace ProjectZombie.Features.Player
         public GameObject playerPrefab;
         public bool isUnlocked = true;
 
-        [Header("Trang Bị Khởi Điểm (Action RPG Loadout)")]
-        [Tooltip("Vũ khí chính dùng để đánh tay (Combo 3-Hit)")]
+        [Header("Trang Bị Khởi Điểm (1 Pháp Bảo Hộ Thân Duy Nhất)")]
+        [Tooltip("1 Pháp bảo hộ thân duy nhất mang theo vào trận")]
+        public Weapons.WeaponData defaultRelic;
+
+        [Tooltip("Tương thích ngược: Vũ khí chính cũ")]
         public Weapons.WeaponData defaultPrimaryWeapon;
-        [Tooltip("Tối đa 3 Pháp bảo hộ thân mang theo")]
+
+        [Tooltip("Tương thích ngược: danh sách relics cũ")]
         public List<Weapons.WeaponData> defaultRelics = new List<Weapons.WeaponData>();
     }
 

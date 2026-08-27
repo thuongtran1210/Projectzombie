@@ -108,32 +108,25 @@ namespace ProjectZombie.Features.UI
                 _selectedPrimary = _allWeapons.Find(w => w.weaponRole == WeaponRole.PrimaryWeapon);
             }
 
-            // 2. Pháp Bảo Hộ Thân Mặc Định
+            // 2. Pháp Bảo Hộ Thân Mặc Định (Chỉ 1 Slot)
             _selectedRelics.Clear();
-            if (hero != null && hero.defaultRelics != null && hero.defaultRelics.Count > 0)
+            if (hero != null && hero.defaultRelic != null)
             {
-                foreach (var r in hero.defaultRelics)
-                {
-                    if (r != null && !_selectedRelics.Contains(r) && _selectedRelics.Count < 3)
-                    {
-                        _selectedRelics.Add(r);
-                    }
-                }
+                _selectedRelics.Add(hero.defaultRelic);
+            }
+            else if (hero != null && hero.defaultRelics != null && hero.defaultRelics.Count > 0)
+            {
+                _selectedRelics.Add(hero.defaultRelics[0]);
             }
 
             if (_selectedRelics.Count == 0)
             {
-                foreach (var w in _allWeapons)
-                {
-                    if (w.weaponRole != WeaponRole.PrimaryWeapon && !_selectedRelics.Contains(w) && _selectedRelics.Count < 3)
-                    {
-                        _selectedRelics.Add(w);
-                    }
-                }
+                var defaultR = _allWeapons.Find(w => w.weaponRole != WeaponRole.PrimaryWeapon);
+                if (defaultR != null) _selectedRelics.Add(defaultR);
             }
 
-            _inspectedWeapon = _selectedPrimary;
-            _currentTab = LoadoutInventoryTab.PrimaryWeapons;
+            _inspectedWeapon = _selectedRelics.Count > 0 ? _selectedRelics[0] : _selectedPrimary;
+            _currentTab = LoadoutInventoryTab.Relics;
             RefreshUI();
         }
 
@@ -155,18 +148,9 @@ namespace ProjectZombie.Features.UI
         {
             if (relic == null) return;
 
-            if (_selectedRelics.Contains(relic))
-            {
-                _selectedRelics.Remove(relic);
-            }
-            else
-            {
-                if (_selectedRelics.Count >= 3)
-                {
-                    _selectedRelics.RemoveAt(0); // Bỏ món đầu tiên nếu đã đầy 3 slot
-                }
-                _selectedRelics.Add(relic);
-            }
+            // Cơ chế 1 Pháp Bảo Duy Nhất: Chọn cái mới sẽ thay thế cái cũ
+            _selectedRelics.Clear();
+            _selectedRelics.Add(relic);
 
             _inspectedWeapon = relic;
             RefreshUI();
@@ -183,11 +167,18 @@ namespace ProjectZombie.Features.UI
                 _view.DisplayHeroHeader(_currentHero.characterName, elemStr, _currentHero.avatar);
             }
 
-            // 2. Cập nhật Tab State
-            _view.SetTabState(_currentTab == LoadoutInventoryTab.PrimaryWeapons);
+            // 2. Cập nhật Tab State (Tab Pháp Bảo Duy Nhất)
+            _view.SetTabState(false);
 
-            // 3. Cập nhật 4 Ô Trang Bị
-            _view.DisplayEquippedLoadout(_selectedPrimary, _selectedRelics);
+            // 3. Cập nhật Trang Bị: Đòn Đánh Tướng (Trái) & 1 Pháp Bảo Hộ Thân (Phải)
+            if (_currentHero != null)
+            {
+                _view.DisplayEquippedLoadout(_currentHero, _selectedRelics);
+            }
+            else
+            {
+                _view.DisplayEquippedLoadout(_selectedPrimary, _selectedRelics);
+            }
 
             // 4. Cập nhật Chi Tiết Soi Chỉ Số
             if (_inspectedWeapon != null)
@@ -197,7 +188,7 @@ namespace ProjectZombie.Features.UI
                 _view.DisplayWeaponDetail(_inspectedWeapon, dmgFill, cdFill);
             }
 
-            // 5. Sinh Grid 12 Ô Vật Phẩm
+            // 5. Sinh Grid 12 Ô Vật Phẩm (Chỉ hiển thị Pháp Bảo)
             Populate12SlotInventoryGrid();
         }
 
@@ -207,19 +198,18 @@ namespace ProjectZombie.Features.UI
 
             ClearChildren(_view.InventoryGridContainer);
 
-            // Lọc danh sách theo Tab hiện tại
+            // Lọc danh sách Pháp Bảo
             var targetList = new List<WeaponData>();
             foreach (var w in _allWeapons)
             {
-                if (_currentTab == LoadoutInventoryTab.PrimaryWeapons && w.weaponRole == WeaponRole.PrimaryWeapon)
-                {
-                    targetList.Add(w);
-                }
-                else if (_currentTab == LoadoutInventoryTab.Relics && w.weaponRole != WeaponRole.PrimaryWeapon)
+                if (w != null && w.weaponRole != WeaponRole.PrimaryWeapon)
                 {
                     targetList.Add(w);
                 }
             }
+
+            // Nếu danh sách rỗng, nạp tất cả
+            if (targetList.Count == 0) targetList.AddRange(_allWeapons);
 
             // Tạo đúng 12 Ô (4 Cột x 3 Hàng)
             int totalSlots = 12;
