@@ -1,66 +1,94 @@
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared.VFX;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Weapons
 {
     /// <summary>
-    /// W_SLIPPER — Dép Tổ Ong Thần Sa (Vũ Khí Ném Boomerang Slapstick — Hệ Kim).
-    /// Chuỗi Combo 3 Đòn:
-    /// - Hit 1: Ném dép trái thẳng 4m rồi quay về tay, gây 110% DMG.
-    /// - Hit 2: Ném dép phải bay chéo 30 độ, gây 130% DMG.
-    /// - Hit 3 (Lốc Dép Vạn Năng): Xoay 360 độ quăng 2 chiếc dép tạo lốc xoáy gom quái và vả 4 hit, kích hoạt "Quê Độ" (Humiliated).
+    /// W_SLIPPER — Dép Tổ Ong Thần Sa (Pháp Bảo Hộ Thân Kích Ứng Bồi Đòn — Hệ Kim).
+    /// - Khi Hero chém trúng quái: Tự động phóng Boomerang Dép Tổ Ong bay xuyên mục tiêu và quay về.
+    /// - Khi Hero kết thúc Combo Hit 3: Kích hoạt "Lốc Dép Vạn Năng" 360 độ gom quái, gây 4 hit vả liên hoàn và khiến quái bị "Quê Độ" (Humiliated).
     /// </summary>
-    public class Weapon_Slipper : Weapon_MeleeBase
+    public class Weapon_Slipper : WeaponBase
     {
         [Header("Slipper Settings")]
         [SerializeField] private float throwRange = 4.5f;
         [SerializeField] private float returnSpeed = 12f;
-        [SerializeField] private float humiliatedChance = 0.45f;
+        [SerializeField] private float humiliatedChance = 0.5f;
+        [SerializeField] private float autoWhirlwindCooldown = 3.5f;
+        [SerializeField] private GameObject whirlwindVfxPrefab;
+
+        private float _lastWhirlwindTime;
+
+        public override void Initialize(ICharacterStats stats)
+        {
+            base.Initialize(stats);
+            weaponRole = WeaponRole.RelicOnHitTrigger;
+            isPrimaryActiveWeapon = false;
+
+            if (whirlwindVfxPrefab == null)
+            {
+                whirlwindVfxPrefab = Resources.Load<GameObject>("VFX_Relic_Slipper_Whirlwind");
+#if UNITY_EDITOR
+                if (whirlwindVfxPrefab == null)
+                {
+                    whirlwindVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Slipper_Whirlwind.prefab");
+                }
+#endif
+            }
+        }
 
         protected override void PerformAttack()
         {
-            PerformComboAttack(CurrentComboStep);
+            // Tự động tìm kẻ địch gần nhất và ném dép Boomerang
+            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 6.0f);
+            Vector2 dir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
+            StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
         }
 
-        protected override void PerformComboAttack(int step)
+        public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
         {
-            Vector2 attackDir = transform.right;
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            // Khi Hero chém trúng quái: Bồi thêm 1 chiếc dép Boomerang phóng thẳng vào mục tiêu
+            if (enemyHit != null && Random.value <= 0.6f)
             {
-                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
-                if (player != null)
+                Vector2 dir = ((Vector2)enemyHit.transform.position - (Vector2)transform.position).normalized;
+                StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.1f));
+            }
+        }
+
+        public override void OnHeroComboFinished(int finalStep, Vector2 attackDirection)
+        {
+            // Khi Hero tung đòn kết liễu Combo Hit 3: Lập tức kích hoạt Lốc Dép Vạn Năng 360 độ
+            if (finalStep == 3 && Time.time >= _lastWhirlwindTime + autoWhirlwindCooldown)
+            {
+                _lastWhirlwindTime = Time.time;
+                StartCoroutine(RoutineWhirlwindSlippers());
+            }
+        }
+
+        private void DealDamageAtPosition(Vector2 pos, DamageData dmg, float knockback)
+        {
+            int mask = TargetingUtility.EnemyLayerMask;
+            Collider2D[] hits = Physics2D.OverlapCircleAll(pos, 1.2f, mask);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].TryGetComponent<HealthSystem>(out var hp))
                 {
-                    if (player.MovementInput.sqrMagnitude > 0.01f)
-                        attackDir = player.MovementInput.normalized;
-                    else
-                        attackDir = player.transform.localScale.x < 0 ? Vector2.left : Vector2.right;
+                    hp.TakeDamage(dmg);
+                }
+                if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
+                {
+                    Vector2 kbDir = ((Vector2)hits[i].transform.position - pos).normalized;
+                    if (kbDir.sqrMagnitude < 0.01f) kbDir = Vector2.up;
+                    status.ApplyKnockback(kbDir, knockback, 0.2f);
                 }
             }
-
-            switch (step)
-            {
-                case 1:
-                    // Hit 1: Ném Dép Trái thẳng
-                    StartCoroutine(RoutineThrowSlipper(attackDir, throwRange, 1.1f, 0f));
-                    break;
-
-                case 2:
-                    // Hit 2: Ném Dép Phải chéo
-                    Vector2 angledDir = Quaternion.Euler(0, 0, 25f) * attackDir;
-                    StartCoroutine(RoutineThrowSlipper(angledDir, throwRange, 1.3f, 0f));
-                    break;
-
-                case 3:
-                    // Hit 3: Lốc Dép Vạn Năng 360 độ (4 vả liên hoàn)
-                    StartCoroutine(RoutineWhirlwindSlippers());
-                    break;
-            }
         }
 
-        private IEnumerator RoutineThrowSlipper(Vector2 dir, float range, float dmgMult, float angleOffset)
+        private IEnumerator RoutineThrowSlipper(Vector2 dir, float range, float dmgMult)
         {
             Vector2 startPos = transform.position;
             Vector2 targetPos = startPos + dir.normalized * range;
@@ -76,7 +104,7 @@ namespace ProjectZombie.Features.Weapons
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
                 Vector2 currentPos = Vector2.Lerp(startPos, targetPos, t);
-                DealDamageInArea(currentPos, new Vector2(1.2f, 1.2f), 0f, dmg, 4f);
+                DealDamageAtPosition(currentPos, dmg, 4f);
                 yield return null;
             }
 
@@ -88,20 +116,30 @@ namespace ProjectZombie.Features.Weapons
                 float t = elapsed / duration;
                 Vector2 playerPos = transform.position;
                 Vector2 currentPos = Vector2.Lerp(targetPos, playerPos, t);
-                DealDamageInArea(currentPos, new Vector2(1.2f, 1.2f), 0f, dmg, 3f);
+                DealDamageAtPosition(currentPos, dmg, 3f);
                 yield return null;
             }
         }
 
         private IEnumerator RoutineWhirlwindSlippers()
         {
+            Vector2 center = transform.position;
+
+            if (whirlwindVfxPrefab != null)
+            {
+                if (GlobalVFXPoolManager.Instance != null)
+                    GlobalVFXPoolManager.Instance.PlayEffect(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
+                else
+                    Instantiate(whirlwindVfxPrefab, center, Quaternion.identity);
+            }
+
             DamageData baseDmg = CreateDamageData();
             DamageData hitDmg = new DamageData(baseDmg.Amount * 0.5f, baseDmg.IsCritical, ElementType.Kim, baseDmg.IsCounter, this);
 
             // 4 đợt vả xoay tròn 360 độ
             for (int wave = 0; wave < 4; wave++)
             {
-                Vector2 center = transform.position;
+                center = transform.position;
                 int mask = TargetingUtility.EnemyLayerMask;
                 Collider2D[] hits = Physics2D.OverlapCircleAll(center, 3.2f, mask);
 

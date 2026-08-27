@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared.VFX;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Player;
 
@@ -17,6 +18,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float matInterval = 8.0f;
         [SerializeField] private float matDuration = 5.0f;
         [SerializeField] private Vector2 matSize = new Vector2(3.5f, 2.2f);
+        [SerializeField] private GameObject matVfxPrefab;
 
         private float _timer;
 
@@ -26,6 +28,17 @@ namespace ProjectZombie.Features.Weapons
             weaponRole = WeaponRole.RelicSupportAura;
             isPrimaryActiveWeapon = false;
             _timer = 0f;
+
+            if (matVfxPrefab == null)
+            {
+                matVfxPrefab = Resources.Load<GameObject>("VFX_Relic_SleepingMat_Decal");
+#if UNITY_EDITOR
+                if (matVfxPrefab == null)
+                {
+                    matVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_SleepingMat_Decal.prefab");
+                }
+#endif
+            }
         }
 
         protected override void PerformAttack()
@@ -45,6 +58,14 @@ namespace ProjectZombie.Features.Weapons
 
         public void DeployMat(Vector2 position)
         {
+            if (matVfxPrefab != null)
+            {
+                if (GlobalVFXPoolManager.Instance != null)
+                    GlobalVFXPoolManager.Instance.PlayEffect(matVfxPrefab, position, Quaternion.identity, matDuration);
+                else
+                    Instantiate(matVfxPrefab, position, Quaternion.identity);
+            }
+
             StartCoroutine(RoutineMatActive(position));
         }
 

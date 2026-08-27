@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared.VFX;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Player;
 
@@ -16,6 +17,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float smashRadius = 3.5f;
         [SerializeField] private float smashKnockbackForce = 12f;
         [SerializeField] private float cooldownSeconds = 4.0f;
+        [SerializeField] private GameObject broomSmashVfxPrefab;
 
         private float _lastSmashTime;
 
@@ -24,6 +26,17 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
+
+            if (broomSmashVfxPrefab == null)
+            {
+                broomSmashVfxPrefab = Resources.Load<GameObject>("VFX_Relic_ChickenBroom_Smash");
+#if UNITY_EDITOR
+                if (broomSmashVfxPrefab == null)
+                {
+                    broomSmashVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenBroom_Smash.prefab");
+                }
+#endif
+            }
         }
 
         protected override void PerformAttack()
@@ -35,6 +48,15 @@ namespace ProjectZombie.Features.Weapons
         {
             if (Time.time < _lastSmashTime + cooldownSeconds) return;
             _lastSmashTime = Time.time;
+
+            // Spawn VFX Chổi Quét Giáng Trời
+            if (broomSmashVfxPrefab != null)
+            {
+                if (GlobalVFXPoolManager.Instance != null)
+                    GlobalVFXPoolManager.Instance.PlayEffect(broomSmashVfxPrefab, targetPos, Quaternion.identity, 0.45f);
+                else
+                    Instantiate(broomSmashVfxPrefab, targetPos, Quaternion.identity);
+            }
 
             int mask = TargetingUtility.EnemyLayerMask;
             Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, smashRadius, mask);
