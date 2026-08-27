@@ -63,7 +63,30 @@ Tất cả trang bị dưới đây đều được lưu trữ trong **Tàng B�
 
 ---
 
-## 3. Giao Diện Tàng Bảo Các & Nạp Loadout (UI/UX)
+## 3. Hệ Thống Phân Loại Pháp Bảo (3 Trục Chuẩn Hóa)
+
+### 3.1. Phân Loại Theo Vai Trò Hộ Thân Trong Trận (`WeaponRole`)
+1. **🛡️ Pháp Bảo Quỹ Đạo Hộ Vệ (`RelicOrbitalShield`)**: Tự động bay quanh thân hoặc kích hoạt hào quang bảo vệ cận thân liên tục (Cản đạn, ngăn quái áp sát, bảo vệ sau lưng):
+   - `W003 Bùa Trấn Yêu`, `W005 Trống Đồng Đông Sơn`, `W_POT Nồi Cơm Thạch Sanh`.
+2. **⚔️ Pháp Bảo Kích Ứng Bồi Đòn (`RelicOnHitTrigger`)**: Tự động xuất chiêu/bắn thêm đòn phụ khi Tướng đánh trúng quái (Khuếch đại sát thương & dứt điểm nhanh):
+   - `W001 Nỏ Thần`, `W002 Bút Phán Quan`, `W004 Cửu Vĩ Hồ Trảo`, `W006 Lựu Đạn Thần Sa`, `W007 Cung Thạch Sanh`, `W012 Phi Tiêu Bát Quái`, `W_SLIPPER Dép Tổ Ong`, `R008 Chổi Lông Gà`.
+3. **🌀 Pháp Bảo Hỗ Trợ & Khống Chế (`RelicSupportAura`)**: Tự động triệu hồi linh thú, bẫy sàn (Hazard), thiêu đốt hoặc làm chậm / gây tê liệt quái theo chu kỳ:
+   - `W008 Đao Cửu Vĩ`, `W009 Trượng Long Vương`, `W010 Linh Phù Ma Da`, `W011 Nước Thánh Chùa Hương`, `W_PIPE Điếu Cày Cửu U`, `R007 Chiếu Trải Hoàng Tuyền`.
+
+### 3.2. Phân Loại Theo Thuộc Tính Ngũ Hành (`ElementType`)
+* **⚡ Hệ Kim (Bạo kích, xuyên thấu, đẩy lùi cực mạnh):** `W001`, `W002`, `W007`, `W_SLIPPER`, `R008`.
+* **🌿 Hệ Mộc (Hồi phục, trói chân, bẫy ngủ say):** `W003`, `W012`, `R007`.
+* **💧 Hệ Thủy (Làm chậm, đóng băng, sét nước lan truyền):** `W009`, `W010`.
+* **🔥 Hệ Hỏa (Thiêu đốt DoT, bão khói, nổ lan):** `W004`, `W006`, `W008`, `W_PIPE`.
+* **⛰️ Hệ Thổ (Sóng âm chấn động, choáng cứng, gom quái, giếng thiêng):** `W005`, `W011`, `W_POT`.
+
+### 3.3. Phân Loại Theo Chủ Đề Nghệ Thuật (Art Theme)
+* **Cổ Phong Thần Thoại (12 Pháp Bảo `W001` - `W012`):** Trống đồng Đông Sơn, Nỏ thần An Dương Vương, Bút phán quan Âm Ty, Linh bùa chu sa...
+* **Dân Gian Slapstick Meme (5 Pháp Bảo `W_SLIPPER`, `W_POT`, `W_PIPE`, `R007`, `R008`):** Dép tổ ong, Nồi cơm Thạch Sanh, Điếu cày thuốc lào, Chiếu cói trượt ván, Chổi lông gà...
+
+---
+
+## 4. Giao Diện Tàng Bảo Các & Nạp Loadout (UI/UX)
 
 - **`WeaponLoadoutPresenter`**:
   - Lưới vật phẩm: Hiển thị đầy đủ **17 Pháp Bảo Hộ Thân**.
@@ -73,7 +96,7 @@ Tất cả trang bị dưới đây đều được lưu trữ trong **Tàng B�
 
 ---
 
-## 4. Hệ Thống Nâng Cấp & Tiến Hóa In-Game
+## 5. Hệ Thống Nâng Cấp & Tiến Hóa In-Game
 
 Khi lên cấp trong trận, người chơi nhận ngẫu nhiên 3 thẻ:
 1. **Thẻ Cường Hóa Đòn Đánh Tướng (`ComboAugmentUpgradeData`)**: Tăng kích thước vùng chém, thêm vệt lửa, tăng tốc độ đánh và sát thương combo của Hero.

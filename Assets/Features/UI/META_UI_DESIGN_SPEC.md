@@ -85,7 +85,7 @@ graph TD
 - **Mục đích:** Giáo dục cơ chế chuyên sâu cho người chơi, tra cứu danh mục báu vật.
 - **Nội dung:**
   - **Sơ Đồ Vòng Bát Quái Ngũ Hành:** Hiển thị trực quan mối quan hệ Tương Khắc (+30% DMG) và Tương Sinh (-20% Cooldown).
-  - **Thư Viện 12 Pháp Bảo & 12 Thẻ Tiến Hóa:** Hiển thị danh sách thẻ (đã mở khóa thì sáng rõ, chưa mở khóa thì hiển thị bóng đen Silhouette kèm gợi ý mở khóa).
+  - **Thư Viện 17 Pháp Bảo Hộ Thân (12 Cổ Phong + 5 Slapstick) & Thẻ Tiến Hóa:** Hiển thị danh sách thẻ (đã mở khóa thì sáng rõ, chưa mở khóa thì hiển thị bóng đen Silhouette kèm gợi ý mở khóa).
 
 ---
 
