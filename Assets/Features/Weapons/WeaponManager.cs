@@ -67,16 +67,26 @@ namespace ProjectZombie.Features.Weapons
 
         public int CurrentPrimaryComboStep => PrimaryWeapon != null ? PrimaryWeapon.CurrentComboStep : 1;
 
+        private CharacterCombat _characterCombat;
+
         public event System.Action OnWeaponsChanged;
 
         private void Awake()
         {
             _playerStats = GetComponent<PlayerStats>();
             _playerPassives = GetComponent<PlayerPassives>();
+            _characterCombat = GetComponent<CharacterCombat>();
         }
 
         private void Start()
         {
+            // Kết nối sự kiện đánh tay của Hero tới Pháp Bảo Hộ Thân
+            if (_characterCombat != null)
+            {
+                _characterCombat.OnHitEnemy += HandleHeroHitEnemy;
+                _characterCombat.OnAttackExecuted += HandleHeroAttackExecuted;
+            }
+
             // 1. Kiểm tra nếu có Loadout tùy chỉnh từ Sảnh Chờ (Meta Hub Loadout)
             if (RunLoadoutState.HasCustomLoadout)
             {
@@ -107,6 +117,42 @@ namespace ProjectZombie.Features.Weapons
                 if (!_activeWeapons.Contains(w)) // Tránh add trùng lặp với vũ khí vừa sinh
                 {
                     AddWeapon(w);
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_characterCombat != null)
+            {
+                _characterCombat.OnHitEnemy -= HandleHeroHitEnemy;
+                _characterCombat.OnAttackExecuted -= HandleHeroAttackExecuted;
+            }
+        }
+
+        private void HandleHeroHitEnemy(DamageData damageData, Collider2D enemyCol)
+        {
+            // Chuyển tiếp tín hiệu chém trúng quái tới tất cả Pháp Bảo đang mang
+            for (int i = 0; i < _activeWeapons.Count; i++)
+            {
+                if (_activeWeapons[i] != null)
+                {
+                    _activeWeapons[i].OnHeroHitEnemy(damageData, enemyCol);
+                }
+            }
+        }
+
+        private void HandleHeroAttackExecuted(int comboStep)
+        {
+            if (comboStep == 3)
+            {
+                Vector2 forwardDir = transform.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                for (int i = 0; i < _activeWeapons.Count; i++)
+                {
+                    if (_activeWeapons[i] != null)
+                    {
+                        _activeWeapons[i].OnHeroComboFinished(comboStep, forwardDir);
+                    }
                 }
             }
         }

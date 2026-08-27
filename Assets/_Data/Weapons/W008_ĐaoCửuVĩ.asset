@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W008_\u0110aoC\u1EEDuV\u0129"
   m_EditorClassIdentifier: 
+  weaponRole: 3
   weaponId: W008
   weaponName: "\u0110ao C\u1EEDu V\u0129"
-  description: "Lu\u1ED3ng r\u1ED3ng l\u1EEDa thi\xEAu \u0111\u1ED1t li\xEAn t\u1EE5c
-    theo \u0111\u01B0\u1EDDng th\u1EB3ng."
+  icon: {fileID: 0}
+  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n phun lu\u1ED3ng r\u1ED3ng l\u1EEDa
+    thi\xEAu \u0111\u1ED1t li\xEAn t\u1EE5c k\u1EBB \u0111\u1ECBch tr\u01B0\u1EDBc
+    m\u1EB7t."
   rarity: Rare
   evolutionWeaponId: E008
   elementType: 4

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W001_N\u1ECFTh\u1EA7n"
   m_EditorClassIdentifier: 
+  weaponRole: 2
   weaponId: W001
   weaponName: "N\u1ECF Th\u1EA7n"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "M\u0169i t\xEAn th\u1EA7n An D\u01B0\u01A1ng V\u01B0\u01A1ng b\u1EAFn
-    th\u1EB3ng xuy\xEAn t\xE1o 2 k\u1EBB \u0111\u1ECBch."
+  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n t\u1EF1 \u0111\u1ED9ng ph\xF3ng
+    m\u0169i t\xEAn th\u1EA7n An D\u01B0\u01A1ng V\u01B0\u01A1ng xuy\xEAn th\u1EA5u
+    2 k\u1EBB \u0111\u1ECBch."
   rarity: Common
   evolutionWeaponId: E001
   elementType: 1

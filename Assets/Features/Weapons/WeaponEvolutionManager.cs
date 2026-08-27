@@ -41,7 +41,14 @@ namespace ProjectZombie.Features.Weapons
             new EvolutionRecipe("W009", "P009", "E009"), // Trượng Long Vương -> Long Vương Trượng
             new EvolutionRecipe("W010", "P010", "E010"), // Linh Phù Ma Da -> Thủy Cung Linh
             new EvolutionRecipe("W011", "P011", "E011"), // Nước Thánh Chùa Hương -> Giếng Thiêng
-            new EvolutionRecipe("W012", "P012", "E012")  // Phi Tiêu Bát Quái -> Phi Tiêu Cửu Cung
+            new EvolutionRecipe("W012", "P012", "E012"), // Phi Tiêu Bát Quái -> Phi Tiêu Cửu Cung
+            
+            // --- 5 Pháp Bảo Dân Gian Hài Hước (Slapstick Relics Evolution) ---
+            new EvolutionRecipe("W_SLIPPER", "P001", "E_SLIPPER"), // Dép Tổ Ong -> Vạn Dép Quy Tông
+            new EvolutionRecipe("W_POT", "P005", "E_POT"),         // Nồi Cơm Thạch Sanh -> Nồi Thần Bất Tử
+            new EvolutionRecipe("W_PIPE", "P004", "E_PIPE"),       // Điếu Cày Cửu U -> Cửu U Long Phun Khói
+            new EvolutionRecipe("R007", "P003", "E_R007"),         // Chiếu Trải Hoàng Tuyền -> Chiếu Thần Hoàng Kim
+            new EvolutionRecipe("R008", "P001", "E_R008")          // Chổi Lông Gà -> Thiên Binh Chổi Quét
         };
 
         private void Awake()

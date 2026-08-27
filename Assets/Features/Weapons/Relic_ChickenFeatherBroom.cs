@@ -60,5 +60,24 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
         }
+
+        public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
+        {
+            // Nếu đòn đánh của Hero là đòn chí mạng hoặc bạo kích, có tỉ lệ giáng ngay Chổi Lông Gà
+            if (heroDamage.IsCritical && enemyHit != null)
+            {
+                TriggerBroomSmash(enemyHit.transform.position);
+            }
+        }
+
+        public override void OnHeroComboFinished(int finalStep, Vector2 attackDirection)
+        {
+            // Khi Hero tung ra đòn kết liễu Combo Hit 3: Lập tức giáng Chổi Lông Gà vào vị trí phía trước mặt
+            if (finalStep == 3)
+            {
+                Vector2 targetPos = (Vector2)transform.position + attackDirection * 2.5f;
+                TriggerBroomSmash(targetPos);
+            }
+        }
     }
 }

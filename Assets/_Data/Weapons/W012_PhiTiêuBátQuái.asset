@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W012_PhiTi\xEAuB\xE1tQu\xE1i"
   m_EditorClassIdentifier: 
+  weaponRole: 2
   weaponId: W012
   weaponName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
   icon: {fileID: 1356788643, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Phi ti\xEAu ma thu\u1EADt xoay tr\xF2n v\xE0 quay l\u1EA1i v\u1ECB
-    tr\xED ng\u01B0\u1EDDi ch\u01A1i."
+  description: "Phi ti\xEAu ma thu\u1EADt t\u1EF1 \u0111\u1ED9ng xoay tr\xF2n qu\xE9t
+    k\u1EBB \u0111\u1ECBch v\xE0 quy h\u1ED3i."
   rarity: Common
   evolutionWeaponId: E012
   elementType: 2

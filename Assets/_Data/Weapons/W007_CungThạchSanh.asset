@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W007_CungTh\u1EA1chSanh"
   m_EditorClassIdentifier: 
-  weaponRole: 0
+  weaponRole: 2
   weaponId: W007
   weaponName: "Cung Th\u1EA1ch Sanh"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "M\u0169i t\xEAn th\u1EA7n l\u1EF1c b\u1ED1i c\u1EA3nh Th\u1EA1ch
-    Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t y\xEAu tinh."
+  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n b\u1EAFn m\u0169i t\xEAn th\u1EA7n
+    l\u1EF1c Th\u1EA1ch Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t y\xEAu tinh."
   rarity: Rare
   evolutionWeaponId: E007
   elementType: 1

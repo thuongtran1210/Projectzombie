@@ -102,6 +102,22 @@ namespace ProjectZombie.Features.Weapons
             OnHitEnemy?.Invoke(damageData, enemyCol);
         }
 
+        /// <summary>
+        /// Lắng nghe khi đòn đánh tay của Hero (CharacterCombat) đánh trúng kẻ địch để Pháp Bảo kích ứng bồi đòn lập tức.
+        /// </summary>
+        public virtual void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
+        {
+            // Các Pháp bảo On-Hit có thể override để bồi đòn thêm
+        }
+
+        /// <summary>
+        /// Lắng nghe khi Hero kết thúc chuỗi Combo (Đòn Hit 3) để kích hoạt hiệu ứng Finisher của Pháp Bảo.
+        /// </summary>
+        public virtual void OnHeroComboFinished(int finalStep, Vector2 attackDirection)
+        {
+            // Các Pháp bảo Finisher có thể override để tung chiêu lớn
+        }
+
         public float GetTotalAttackSpeed()
         {
             return CharacterStats != null ? CharacterStats.AttackSpeed + localAttackSpeedBonus : 1f;

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: "W002_B\xFAtPh\xE1nQuan"
   m_EditorClassIdentifier: 
+  weaponRole: 2
   weaponId: W002
   weaponName: "B\xFAt Ph\xE1n Quan"
   icon: {fileID: 50215943, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Nh\xE1t ch\xE9m mang uy l\u1EF1c ph\xE1n quy\u1EBFt \xE2m ty g\xE2y
-    s\xE1t th\u01B0\u01A1ng ch\xED m\u1EA1ng 2 b\xEAn."
+  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n t\u1EF1 vung nh\xE1t ch\xE9m ph\xE1n
+    quy\u1EBFt \xE2m ty g\xE2y s\xE1t th\u01B0\u01A1ng ch\xED m\u1EA1ng 2 b\xEAn."
   rarity: Common
   evolutionWeaponId: E002
   elementType: 1
