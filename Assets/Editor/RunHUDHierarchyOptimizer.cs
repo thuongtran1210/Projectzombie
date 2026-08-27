@@ -284,20 +284,42 @@ namespace ProjectZombie.EditorTools
             tjLblTMP.text = "[ÂM THỊNH]";
             tjLblTMP.color = new Color(0.24f, 0.16f, 0.10f);
 
-            // Slider Âm Dương Nằm Giữa Khung
+            // Slider Âm Dương Nằm Giữa Khung (Gradient Fill Bar)
             GameObject tjSliderObj = new GameObject("Slider_YinYang", typeof(RectTransform), typeof(Slider));
             tjSliderObj.transform.SetParent(taijiTrans, false);
             RectTransform tjsRT = tjSliderObj.GetComponent<RectTransform>();
             tjsRT.anchorMin = new Vector2(0.5f, 0.5f);
             tjsRT.anchorMax = new Vector2(0.5f, 0.5f);
             tjsRT.pivot = new Vector2(0.5f, 0.5f);
-            tjsRT.anchoredPosition = new Vector2(35, 8);
+            tjsRT.anchoredPosition = new Vector2(35, 6);
             tjsRT.sizeDelta = new Vector2(170, 20);
 
             Slider tjSlider = tjSliderObj.GetComponent<Slider>();
-            tjSlider.minValue = -100;
+            tjSlider.minValue = 0;
             tjSlider.maxValue = 100;
-            tjSlider.value = -40;
+            tjSlider.value = 50;
+
+            // Fill Area & Fill Image cho Slider_YinYang
+            GameObject tjFillArea = new GameObject("Fill Area", typeof(RectTransform));
+            tjFillArea.transform.SetParent(tjSliderObj.transform, false);
+            RectTransform tjfaRT = tjFillArea.GetComponent<RectTransform>();
+            tjfaRT.anchorMin = Vector2.zero;
+            tjfaRT.anchorMax = Vector2.one;
+            tjfaRT.offsetMin = new Vector2(2, 2);
+            tjfaRT.offsetMax = new Vector2(-2, -2);
+
+            GameObject tjFill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            tjFill.transform.SetParent(tjFillArea.transform, false);
+            RectTransform tjfRT = tjFill.GetComponent<RectTransform>();
+            tjfRT.anchorMin = Vector2.zero;
+            tjfRT.anchorMax = Vector2.one;
+            tjfRT.sizeDelta = Vector2.zero;
+            Image tjFillImg = tjFill.GetComponent<Image>();
+            tjFillImg.color = new Color(1.0f, 0.84f, 0.0f, 1f); // Hoàng kim Thái Cực
+            tjFillImg.type = Image.Type.Sliced;
+            Sprite barFill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Bar_HUD_Fill_HP.png");
+            if (barFill != null) tjFillImg.sprite = barFill;
+            tjSlider.fillRect = tjfRT;
 
             // Sub-Title Dưới: Thái Cực Cân Bằng
             GameObject subTitleObj = new GameObject("Txt_BalanceTitle", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -316,13 +338,24 @@ namespace ProjectZombie.EditorTools
             stTMP.text = "Thái Cực Cân Bằng";
             stTMP.color = new Color(0.25f, 0.16f, 0.10f);
 
-            // Gắn CharacterGaugeWidgetView nếu có
+            // Gắn CharacterGaugeWidgetView & CharacterGaugeWidgetPresenter
             var gaugeView = taijiTrans.GetComponent<CharacterGaugeWidgetView>();
             if (gaugeView == null) gaugeView = taijiTrans.gameObject.AddComponent<CharacterGaugeWidgetView>();
+            var gaugePresenter = taijiTrans.GetComponent<CharacterGaugeWidgetPresenter>();
+            if (gaugePresenter == null) gaugePresenter = taijiTrans.gameObject.AddComponent<CharacterGaugeWidgetPresenter>();
+
             SerializedObject soGauge = new SerializedObject(gaugeView);
             soGauge.FindProperty("_gaugeSlider").objectReferenceValue = tjSlider;
+            soGauge.FindProperty("_gaugeFillImage").objectReferenceValue = tjFillImg;
             soGauge.FindProperty("_gaugeTitleText").objectReferenceValue = tjLblTMP;
             soGauge.ApplyModifiedProperties();
+
+            SerializedObject soPresenterGauge = new SerializedObject(gaugePresenter);
+            soPresenterGauge.FindProperty("_view").objectReferenceValue = gaugeView;
+            soPresenterGauge.ApplyModifiedProperties();
+
+            // Mặc định ẩn widget cho đến khi Player Đạo Sĩ được spawn và kết nối
+            gaugeView.SetVisible(false);
 
             // -------------------------------------------------------------
             // 4. DỰNG LẠI TopRight_RunStats (THỜI GIAN & SỐ DIỆT)

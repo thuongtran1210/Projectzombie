@@ -42,6 +42,14 @@ namespace ProjectZombie.Features.UI.HUD
                     {
                         Bind(provider);
                     }
+                    else if (_view != null)
+                    {
+                        _view.SetVisible(false);
+                    }
+                }
+                else if (_view != null)
+                {
+                    _view.SetVisible(false);
                 }
             }
         }

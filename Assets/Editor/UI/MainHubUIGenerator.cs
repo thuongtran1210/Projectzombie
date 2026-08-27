@@ -29,6 +29,14 @@ namespace ProjectZombie.Editor.UI
             GenerateMainHubPrefab();
         }
 
+        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild & Sync All Vong Xuyen Menu (1-Click)", priority = 1)]
+        public static void RebuildAllMenuUI()
+        {
+            GenerateMainHubPrefab();
+            SettingsUIGenerator.GenerateSettingsModal();
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH & MODAL CÀI ĐẶT THÀNH CÔNG 100%!");
+        }
+
         public static void GenerateMainHubPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -100,17 +108,15 @@ namespace ProjectZombie.Editor.UI
             string prefabPath = $"{prefabFolder}/MainHubUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
 
-            // 9. Cập nhật vào Scene nếu có Canvas_MetaMenu
-            var canvas = Object.FindAnyObjectByType<Canvas>();
-            if (canvas != null)
+            // 9. Cập nhật vào Scene nếu có Canvas
+            var metaCanvasObj = GameObject.Find("Canvas_MetaMenu");
+            Canvas targetCanvas = metaCanvasObj != null ? metaCanvasObj.GetComponent<Canvas>() : Object.FindAnyObjectByType<Canvas>();
+            if (targetCanvas != null)
             {
                 var oldUI = GameObject.Find("Panel_MainHub");
                 if (oldUI != null && oldUI != root) Object.DestroyImmediate(oldUI);
 
-                var metaCanvas = GameObject.Find("Canvas_MetaMenu");
-                Transform targetParent = metaCanvas != null ? metaCanvas.transform : canvas.transform;
-
-                root.transform.SetParent(targetParent, false);
+                root.transform.SetParent(targetCanvas.transform, false);
                 SetStretchAnchor(rootRT);
                 root.transform.SetAsFirstSibling(); // MainHub nằm dưới các Modal popup
 
@@ -174,11 +180,11 @@ namespace ProjectZombie.Editor.UI
             rRT.anchorMin = new Vector2(1, 0.5f);
             rRT.anchorMax = new Vector2(1, 0.5f);
             rRT.pivot = new Vector2(1, 0.5f);
-            rRT.anchoredPosition = new Vector2(-24, 4);
-            rRT.sizeDelta = new Vector2(360, 42);
+            rRT.anchoredPosition = new Vector2(-24, 0);
+            rRT.sizeDelta = new Vector2(420, 46);
 
             var rHlg = rightGroup.AddComponent<HorizontalLayoutGroup>();
-            rHlg.spacing = 16;
+            rHlg.spacing = 14;
             rHlg.childAlignment = TextAnchor.MiddleRight;
             rHlg.childControlWidth = false;
             rHlg.childControlHeight = false;
@@ -187,7 +193,7 @@ namespace ProjectZombie.Editor.UI
 
             // Box 1: Cổ Tiền
             GameObject box1 = CreateUIElement("Box_CoTien", rightGroup.transform);
-            box1.GetComponent<RectTransform>().sizeDelta = new Vector2(130, 36);
+            box1.GetComponent<RectTransform>().sizeDelta = new Vector2(124, 36);
             var b1Img = box1.AddComponent<Image>();
             b1Img.color = Color.white;
             b1Img.type = Image.Type.Sliced;
@@ -195,7 +201,7 @@ namespace ProjectZombie.Editor.UI
 
             GameObject b1Txt = CreateUIElement("Text", box1.transform);
             SetStretchAnchor(b1Txt.GetComponent<RectTransform>());
-            b1Txt.GetComponent<RectTransform>().offsetMin = new Vector2(34, 0);
+            b1Txt.GetComponent<RectTransform>().offsetMin = new Vector2(28, 0);
             b1Txt.GetComponent<RectTransform>().offsetMax = new Vector2(-10, 0);
             coTienTMP = b1Txt.AddComponent<TextMeshProUGUI>();
             if (font != null) coTienTMP.font = font;
@@ -203,11 +209,11 @@ namespace ProjectZombie.Editor.UI
             coTienTMP.fontSize = 15;
             coTienTMP.fontStyle = FontStyles.Bold;
             coTienTMP.alignment = TextAlignmentOptions.Center;
-            coTienTMP.color = Color.white;
+            coTienTMP.color = new Color(0.98f, 0.88f, 0.60f);
 
             // Box 2: Linh Hồn / Phù Lục
             GameObject box2 = CreateUIElement("Box_LinhHon", rightGroup.transform);
-            box2.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 36);
+            box2.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 36);
             var b2Img = box2.AddComponent<Image>();
             b2Img.color = Color.white;
             b2Img.type = Image.Type.Sliced;
@@ -215,7 +221,7 @@ namespace ProjectZombie.Editor.UI
 
             GameObject b2Txt = CreateUIElement("Text", box2.transform);
             SetStretchAnchor(b2Txt.GetComponent<RectTransform>());
-            b2Txt.GetComponent<RectTransform>().offsetMin = new Vector2(34, 0);
+            b2Txt.GetComponent<RectTransform>().offsetMin = new Vector2(28, 0);
             b2Txt.GetComponent<RectTransform>().offsetMax = new Vector2(-10, 0);
             linhHonTMP = b2Txt.AddComponent<TextMeshProUGUI>();
             if (font != null) linhHonTMP.font = font;
@@ -223,9 +229,22 @@ namespace ProjectZombie.Editor.UI
             linhHonTMP.fontSize = 15;
             linhHonTMP.fontStyle = FontStyles.Bold;
             linhHonTMP.alignment = TextAlignmentOptions.Center;
-            linhHonTMP.color = Color.white;
+            linhHonTMP.color = new Color(0.85f, 0.75f, 1f);
 
-            settingsBtn = null;
+            // Nút Bánh Răng Cài Đặt (Btn_Settings)
+            Sprite gearSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Settings_Gear_Wood.png");
+            GameObject btnSetObj = CreateUIElement("Btn_Settings", rightGroup.transform);
+            btnSetObj.GetComponent<RectTransform>().sizeDelta = new Vector2(42, 42);
+            var setImg = btnSetObj.AddComponent<Image>();
+            setImg.color = Color.white;
+            if (gearSprite != null) setImg.sprite = gearSprite;
+            setImg.preserveAspect = true;
+
+            settingsBtn = btnSetObj.AddComponent<Button>();
+            var setColors = settingsBtn.colors;
+            setColors.highlightedColor = new Color(1.2f, 1.2f, 1.2f);
+            setColors.pressedColor = new Color(0.8f, 0.8f, 0.8f);
+            settingsBtn.colors = setColors;
         }
 
         private static void BuildHeroStage(Transform parent, TMP_FontAsset font,
@@ -256,7 +275,7 @@ namespace ProjectZombie.Editor.UI
                 pImg.raycastTarget = false;
             }
 
-            // Avatar Tướng Đứng Trên Bục
+            // Avatar Tướng Đứng Trên Bục (Để màu trong suốt nếu chưa có sprite để không hiện ô chữ nhật trắng)
             GameObject avObj = CreateUIElement("Img_HeroAvatar", stage.transform);
             RectTransform avRT = avObj.GetComponent<RectTransform>();
             avRT.anchorMin = new Vector2(0.5f, 0.5f);
@@ -265,6 +284,8 @@ namespace ProjectZombie.Editor.UI
             avRT.anchoredPosition = new Vector2(0, 15);
             avRT.sizeDelta = new Vector2(160, 180);
             heroAvatar = avObj.AddComponent<Image>();
+            heroAvatar.color = new Color(1, 1, 1, 0);
+            heroAvatar.enabled = false;
             heroAvatar.preserveAspect = true;
 
             // Tên Tướng: Đạo Sĩ
@@ -284,7 +305,7 @@ namespace ProjectZombie.Editor.UI
             heroName.fontSize = 22;
             heroName.fontStyle = FontStyles.Bold;
             heroName.alignment = TextAlignmentOptions.Center;
-            heroName.color = new Color(0.15f, 0.12f, 0.08f, 1f);
+            heroName.color = new Color(0.96f, 0.88f, 0.72f);
 
             heroElem = null;
         }

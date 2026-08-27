@@ -86,6 +86,11 @@ namespace ProjectZombie.Features.UI
         {
             gameObject.SetActive(true);
 
+            if (!gameObject.activeInHierarchy)
+            {
+                gameObject.SetActive(true);
+            }
+
             if (_screenCanvas != null) _screenCanvas.enabled = true;
 
             if (_screenCanvasGroup != null)
@@ -94,8 +99,16 @@ namespace ProjectZombie.Features.UI
                 _screenCanvasGroup.blocksRaycasts = true;
             }
 
-            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
-            _animCoroutine = StartCoroutine(PlayOpenAnimationRoutine());
+            if (gameObject.activeInHierarchy)
+            {
+                if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+                _animCoroutine = StartCoroutine(PlayOpenAnimationRoutine());
+            }
+            else
+            {
+                if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = 1f;
+                if (_modalContainer != null) _modalContainer.localScale = Vector3.one;
+            }
 
             Debug.Log($"[{GetType().Name}] -> Show() được gọi mượt mà!");
         }
@@ -108,8 +121,16 @@ namespace ProjectZombie.Features.UI
                 _screenCanvasGroup.blocksRaycasts = false;
             }
 
-            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
-            _animCoroutine = StartCoroutine(PlayCloseAnimationRoutine());
+            if (gameObject.activeInHierarchy)
+            {
+                if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+                _animCoroutine = StartCoroutine(PlayCloseAnimationRoutine());
+            }
+            else
+            {
+                if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = 0f;
+                if (_screenCanvas != null) _screenCanvas.enabled = false;
+            }
 
             Debug.Log($"[{GetType().Name}] -> Hide() được gọi mượt mà!");
         }

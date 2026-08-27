@@ -334,6 +334,39 @@ def generate_pedestal_hexagon():
     print("Generated Pedestal_Hexagon_2_5D_WoodStone.png")
 
 
+def generate_settings_gear_button():
+    """Vẽ Nút Bánh Răng Cài Đặt Gỗ Mun Bát Quái Cổ Phong 2.5D (64x64)"""
+    W, H = 64, 64
+    out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(out)
+
+    cx, cy = W // 2, H // 2
+    r_outer = 28
+    r_inner = 20
+
+    # Răng cưa bánh răng 8 cánh (Bát Quái Gỗ)
+    for i in range(8):
+        angle = i * (math.pi / 4)
+        gx = cx + int((r_outer + 2) * math.cos(angle))
+        gy = cy + int((r_outer + 2) * math.sin(angle))
+        draw.ellipse([gx - 5, gy - 5, gx + 5, gy + 5], fill=(32, 20, 14, 255))
+        draw.ellipse([gx - 3, gy - 3, gx + 3, gy + 3], fill=(195, 145, 65, 255))
+
+    # Viền bánh răng chính
+    draw.ellipse([cx - r_outer, cy - r_outer, cx + r_outer, cy + r_outer], fill=(32, 20, 14, 255))
+    draw.ellipse([cx - r_outer + 2, cy - r_outer + 2, cx + r_outer - 2, cy + r_outer - 2], fill=(68, 44, 30, 255))
+    draw.ellipse([cx - r_inner - 2, cy - r_inner - 2, cx + r_inner + 2, cy + r_inner + 2], fill=(215, 165, 75, 255), outline=(135, 95, 45, 255), width=2)
+    draw.ellipse([cx - r_inner + 4, cy - r_inner + 4, cx + r_inner - 4, cy + r_inner - 4], fill=(28, 18, 12, 255))
+
+    # Lỗ trung tâm đính ngọc
+    draw.ellipse([cx - 5, cy - 5, cx + 5, cy + 5], fill=(35, 185, 130, 255), outline=(255, 235, 145, 255), width=1)
+
+    path = os.path.join(DEST_DIR, "Btn_Settings_Gear_Wood.png")
+    out.save(path, "PNG")
+    write_unity_meta(path)
+    print("Generated Btn_Settings_Gear_Wood.png")
+
+
 def main():
     print("=== Generating Full 2.5D Vector UI Sprites for Vong Xuyen ===")
     generate_header_bar()
@@ -342,6 +375,7 @@ def main():
     generate_tray_loadout()
     generate_currency_pill()
     generate_pedestal_hexagon()
+    generate_settings_gear_button()
     print("=== Done Generating Sprites! ===")
 
 if __name__ == "__main__":

@@ -162,7 +162,18 @@ namespace ProjectZombie.Features.Player
                 combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
             }
 
-            // Tự động bind Player vào RunHUDPresenter
+            // Tự động gắn TaoistYinYangTracker nếu nhân vật là Đạo Sĩ và chưa có tracker
+            if (_activePlayerInstance.name.Contains("Dao Si") || _activePlayerInstance.name.Contains("DaoSi") ||
+                (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.characterId.Contains("DaoSi")))
+            {
+                var tracker = _activePlayerInstance.GetComponent<ProjectZombie.Features.YinYang.TaoistYinYangTracker>();
+                if (tracker == null)
+                {
+                    tracker = _activePlayerInstance.AddComponent<ProjectZombie.Features.YinYang.TaoistYinYangTracker>();
+                }
+            }
+
+            // Tự động bind Player vào RunHUDPresenter & CharacterGaugeWidgetPresenter
             var runHUDPresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.RunHUDPresenter>();
             if (runHUDPresenter != null)
             {
@@ -172,6 +183,20 @@ namespace ProjectZombie.Features.Player
                 var wm = _activePlayerInstance.GetComponent<WeaponManager>();
                 var passives = _activePlayerInstance.GetComponent<PlayerPassives>();
                 runHUDPresenter.Construct(health, stats, exp, wm, passives);
+            }
+
+            var gaugePresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.CharacterGaugeWidgetPresenter>();
+            if (gaugePresenter != null)
+            {
+                var gaugeProvider = _activePlayerInstance.GetComponent<ProjectZombie.Features.Player.Mechanics.ICharacterGaugeProvider>();
+                if (gaugeProvider != null)
+                {
+                    gaugePresenter.Bind(gaugeProvider);
+                }
+                else
+                {
+                    gaugePresenter.Unbind();
+                }
             }
 
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");

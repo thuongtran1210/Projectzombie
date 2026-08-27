@@ -14,9 +14,16 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private Slider _gaugeSlider;
         [SerializeField] private Image _gaugeFillImage;
         [SerializeField] private TextMeshProUGUI _gaugeTitleText;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         private void Awake()
         {
+            if (_canvasGroup == null)
+            {
+                _canvasGroup = GetComponent<CanvasGroup>();
+                if (_canvasGroup == null) _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+            }
+
             var animator = GetComponent<Animator>();
             if (animator != null)
             {
@@ -71,7 +78,23 @@ namespace ProjectZombie.Features.UI.HUD
         /// </summary>
         public void SetVisible(bool isVisible)
         {
-            gameObject.SetActive(isVisible);
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = isVisible ? 1f : 0f;
+                _canvasGroup.interactable = isVisible;
+                _canvasGroup.blocksRaycasts = isVisible;
+            }
+            
+            // Toggle các con bên trong thay vì tắt GameObject root (giúp script Presenter vẫn chạy)
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(isVisible);
+            }
+
+            // Ẩn component Image nền của chính nó nếu có
+            var img = GetComponent<Image>();
+            if (img != null) img.enabled = isVisible;
         }
     }
 }
