@@ -98,8 +98,12 @@ namespace ProjectZombie.Features.UI
             _currentHero = hero;
             LoadAllWeaponsIfEmpty();
 
-            // 1. Vũ Khí Chính Mặc Định
-            if (hero != null && hero.defaultPrimaryWeapon != null)
+            // 1. Vũ Khí Chính: Ưu tiên đã chọn trong RunLoadoutState -> hero default -> fallback
+            if (RunLoadoutState.SelectedPrimaryWeapon != null)
+            {
+                _selectedPrimary = RunLoadoutState.SelectedPrimaryWeapon;
+            }
+            else if (hero != null && hero.defaultPrimaryWeapon != null)
             {
                 _selectedPrimary = hero.defaultPrimaryWeapon;
             }
@@ -108,9 +112,17 @@ namespace ProjectZombie.Features.UI
                 _selectedPrimary = _allWeapons.Find(w => w.weaponRole == WeaponRole.PrimaryWeapon);
             }
 
-            // 2. Pháp Bảo Hộ Thân Mặc Định (Chỉ 1 Slot)
+            // 2. Pháp Bảo Hộ Thân: Ưu tiên món người chơi ĐANG CHỌN trong RunLoadoutState
             _selectedRelics.Clear();
-            if (hero != null && hero.defaultRelic != null)
+            if (RunLoadoutState.SelectedRelic != null)
+            {
+                _selectedRelics.Add(RunLoadoutState.SelectedRelic);
+            }
+            else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0)
+            {
+                _selectedRelics.Add(RunLoadoutState.SelectedRelics[0]);
+            }
+            else if (hero != null && hero.defaultRelic != null)
             {
                 _selectedRelics.Add(hero.defaultRelic);
             }

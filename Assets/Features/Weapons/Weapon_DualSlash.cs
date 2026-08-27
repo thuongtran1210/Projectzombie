@@ -78,7 +78,7 @@ namespace ProjectZombie.Features.Weapons
 
             // Xác định góc gốc dựa trên hướng mặt của Player
             float baseAngle = 0f;
-            if (_playerController != null && _playerController.transform.localScale.x < 0)
+            if (_playerController != null && _playerController.FacingDirection < 0)
             {
                 baseAngle = 180f;
             }

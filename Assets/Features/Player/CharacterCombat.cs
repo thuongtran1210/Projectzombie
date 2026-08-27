@@ -207,20 +207,21 @@ namespace ProjectZombie.Features.Player
 
         private Vector2 GetAttackDirection()
         {
-            // Kiểm tra hướng lật mặt của visual hoặc input di chuyển
-            float facing = transform.localScale.x >= 0 ? 1f : -1f;
+            // 1. Kiểm tra hướng di chuyển đang bấm nếu có
             if (playerController != null && playerController.MovementInput != Vector2.zero)
             {
                 return playerController.MovementInput.normalized;
             }
 
-            // Thử soft-aim quái gần nhất trong tầm 5m
+            // 2. Thử soft-aim quái gần nhất trong tầm 5m
             Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 5.0f);
             if (nearest != null)
             {
                 return ((Vector2)(nearest.position - transform.position)).normalized;
             }
 
+            // 3. Nếu đứng yên và không có quái: Giữ nguyên hướng mặt hiện tại (FacingDirection: Trái hoặc Phải)
+            float facing = playerController != null ? playerController.FacingDirection : (playerAnimator != null ? playerAnimator.FacingDirection : 1f);
             return new Vector2(facing, 0f);
         }
 

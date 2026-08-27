@@ -377,7 +377,7 @@ namespace ProjectZombie.Features.Enemies
         public float GetModifiedMoveSpeed(float baseSpeed)
         {
             if (!CanMove) return 0f;
-            if (IsStoned) return -baseSpeed * 0.5f; // Say thuốc đi giật lùi
+            if (IsStoned) return baseSpeed * 0.55f; // Say thuốc chỉ bị làm chậm nhẹ 45% và lảo đảo bước đi, không còn giật lùi xa mất kiểm soát
             return baseSpeed * CurrentSlowMultiplier;
         }
     }

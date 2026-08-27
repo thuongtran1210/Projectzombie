@@ -45,7 +45,7 @@ namespace ProjectZombie.Features.Weapons
                 var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
                 if (player != null)
                 {
-                    forwardDir = player.transform.localScale.x < 0 ? Vector2.left : Vector2.right;
+                    forwardDir = player.FacingVector;
                 }
             }
 
@@ -96,7 +96,7 @@ namespace ProjectZombie.Features.Weapons
 
             while (elapsed < smokeDuration)
             {
-                elapsed += 0.4f;
+                elapsed += 0.5f;
                 Collider2D[] hits = Physics2D.OverlapCircleAll(center, smokeRadius, mask);
                 for (int i = 0; i < hits.Length; i++)
                 {
@@ -106,10 +106,11 @@ namespace ProjectZombie.Features.Weapons
                     }
                     if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
                     {
-                        status.ApplyStatusEffect(StatusEffectType.Stoned, 2.5f);
+                        // Giảm thời lượng Say Thuốc xuống 0.8s (chỉ làm chậm và lảo đảo nhẹ trong khi đứng trong khói)
+                        status.ApplyStatusEffect(StatusEffectType.Stoned, 0.8f);
                     }
                 }
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.5f);
             }
         }
     }

@@ -34,6 +34,8 @@ namespace ProjectZombie.Features.Player
         public float LastDashTime => _lastDashTime;
         public Vector2 MovementInput => _movementInput;
         public bool IsDashing => _isDashing;
+        public float FacingDirection => _playerAnimator != null ? _playerAnimator.FacingDirection : (transform.localScale.x >= 0 ? 1f : -1f);
+        public Vector2 FacingVector => new Vector2(FacingDirection, 0f);
 
         /// <summary>
         /// Sự kiện phát ra khi nhân vật thực hiện kỹ năng Dash.

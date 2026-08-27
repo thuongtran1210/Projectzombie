@@ -75,6 +75,13 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        private float _facingDirection = 1f;
+
+        /// <summary>
+        /// Hướng quay mặt hiện tại của nhân vật (+1: Phải, -1: Trái). Luôn được lưu giữ ngay cả khi ngừng di chuyển.
+        /// </summary>
+        public float FacingDirection => _facingDirection;
+
         /// <summary>
         /// Xoay mặt nhân vật trái/phải dựa vào hướng Input (trục X)
         /// </summary>
@@ -85,10 +92,12 @@ namespace ProjectZombie.Features.Player
             Transform visualTransform = animator.transform;
             if (inputX > 0.01f)
             {
+                _facingDirection = 1f;
                 visualTransform.localScale = new Vector3(1f, 1f, 1f); // Xoay phải
             }
             else if (inputX < -0.01f)
             {
+                _facingDirection = -1f;
                 visualTransform.localScale = new Vector3(-1f, 1f, 1f); // Xoay trái
             }
         }

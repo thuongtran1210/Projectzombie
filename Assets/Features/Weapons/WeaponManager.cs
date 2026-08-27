@@ -204,11 +204,27 @@ namespace ProjectZombie.Features.Weapons
 
             switch (weaponId.ToUpper())
             {
+                // Pháp Bảo Dân Gian (Slapstick Relics)
                 case "W_SLIPPER": return typeof(Weapon_Slipper);
                 case "W_POT": return typeof(Weapon_Pot);
                 case "W_PIPE": return typeof(Weapon_Pipe);
                 case "R007": return typeof(Relic_SleepingMat);
                 case "R008": return typeof(Relic_ChickenFeatherBroom);
+
+                // 12 Pháp Bảo Cổ Phong Đông Sơn (W001 - W012)
+                case "W001": return typeof(Weapon_Crossbow);          // Nỏ Thần
+                case "W002": return typeof(Weapon_Targeted);          // Bút Phán Quan
+                case "W003": return typeof(Weapon_Boomerang);         // Bùa Trấn Yêu
+                case "W004": return typeof(Weapon_Flamethrower);      // Cửu Vĩ Hồ Trảo
+                case "W005": return typeof(Weapon_Orbit);             // Trống Đồng Đông Sơn
+                case "W006": return typeof(Weapon_GrenadeLauncher);   // Lựu Đạn Thần Sa
+                case "W007": return typeof(Weapon_DirectionalTorch);   // Cung Thạch Sanh
+                case "W008": return typeof(Weapon_DualSlash);          // Đao Cửu Vĩ
+                case "W009": return typeof(Weapon_LightningOrb);      // Trượng Long Vương
+                case "W010": return typeof(Weapon_PoisonDrone);       // Linh Phù Ma Da
+                case "W011": return typeof(Weapon_HolyWater);         // Nước Thánh Chùa Hương
+                case "W012": return typeof(Weapon_RandomProjectile);  // Phi Tiêu Bát Quái
+
                 default: return null;
             }
         }
