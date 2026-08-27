@@ -101,36 +101,34 @@
 
 ---
 
-### 4.2. Danh Mục Vũ Khí Chính (Primary Weapons — Chặt Chém, Bắn Định Hướng & Bựa/Fun)
+### 4.2. Danh Mục 17 Pháp Bảo Hộ Thân (Relics — Hộ Vệ, Tự Động Ra Đòn & Slapstick Fun)
 
-Người chơi chọn 1 Vũ Khí Chính tại Sảnh Chờ ngoài trận:
+Mọi trang bị trong Tàng Bảo Các đều là **Pháp Bảo Hộ Thân**. Người chơi chọn **đúng 1 Pháp Bảo** mang theo vào trận để hỗ trợ tự động:
 
-| ID | Tên Vũ Khí | Hệ | Phong Cách Đánh | Chuỗi Combo Cơ Bản | Cơ Chế Tiến Hóa / Thần Binh |
-|---|---|---|---|---|---|
-| `W_SWORD` | **Thanh Long Kiếm** | Kim | Cận chiến nhanh, linh hoạt | Nhát 1: Chém xéo (100% dmg)<br/>Nhát 2: Chém quét (120% dmg)<br/>Nhát 3: Đâm kiếm khí xuyên thấu (180% dmg) | **Hiên Viên Thần Kiếm:** Đòn thứ 3 giải phóng bão kiếm khí 3 tia bay xa $6m$. |
-| `W_PEN` | **Bút Phán Quan** | Kim | Cận chiến rộng, bạo kích | Nhát 1: Vung mực ngang (110% dmg)<br/>Nhát 2: Vẽ chữ Sinh (130% dmg)<br/>Nhát 3: Trảm chữ Tử (220% dmg, Crit cao) | **Bút Sinh Tử:** Đòn thứ 3 quét $360^\circ$ nổ mực đen, trảm sát quái thường dưới 15% HP. |
-| `W_STAFF` | **Thiền Trượng Sơn Lâm** | Thổ | Đòn nặng, khống chế diện rộng | Nhát 1: Quét gậy thấp (120% dmg, Làm chậm)<br/>Nhát 2: Đập đất rung chuyển (160% dmg)<br/>Nhát 3: Giậm trượng Địa Chấn (250% dmg, Choáng 1s) | **Hàng Ma Trượng:** Giậm đất tạo sóng nứt đá đẩy văng toàn bộ quái trong bán kính $4m$. |
-| `W_CROSSBOW`| **Nỏ Thần Cổ Loa** | Kim | Tầm xa, bắn định hướng | Nhát 1: Bắn 1 tên (100% dmg)<br/>Nhát 2: Bắn 2 tên rẻ quạt (120% dmg)<br/>Nhát 3: Bắn mũi tên Thần Sa nổ (200% dmg) | **Nỏ Liên Châu:** Bắn liên tục chùm 5 mũi tên thần lực găm nổ kẻ địch. |
-| `W_SLIPPER` | **Dép Tổ Ong Thần Sa** | Kim | Ném Boomerang Slapstick, vả liên hoàn | Nhát 1: Ném chiếc trái vả bẹp mặt (110% dmg)<br/>Nhát 2: Ném chiếc phải vả bẹp mặt (130% dmg)<br/>Nhát 3: Quăng lốc dép $360^\circ$ (200% dmg, hút quái) | **Dép Thần Vạn Năng:** Đòn 3 gây hiệu ứng *"Quê Độ"*, quái xấu hổ ôm mặt đứng im $1.5s$ hoặc quay sang đấm quái bên cạnh. |
-| `W_POT` | **Nồi Cơm Thạch Sanh** | Thổ | Cận chiến gom quái hỗn loạn & Phóng đạn quái | Nhát 1: Đập nắp nồi leng keng (100% dmg, Choáng nhẹ)<br/>Nhát 2: Mở nắp hút 3 quái nhỏ vào nồi<br/>Nhát 3: Bắn phọt quái ra như đạn đại bác (240% dmg) | **Cơm Niêu Vô Tận:** Quái bị bắn ra bay hình vòng cung (Ragdoll) đè bẹp cả hàng quái, nổ văng ra cơm nắm hồi 5% HP. |
-| `W_PIPE` | **Điếu Cày Cửu U** | Hỏa | Phun khói tầm trung, khống chế gây lú | Nhát 1: Vung cán điếu gõ đầu (100% dmg)<br/>Nhát 2: Thổi tia tàn lửa rực đỏ (140% dmg)<br/>Nhát 3: Nhả làn khói thuốc mịt mù (200% dmg) | **Thuốc Lào Tiên Giới:** Toàn bộ quái dẫm vào khói bị *"Say Khói"*, đi loạng choạng zíc zắc rồi ho sặc sụa tự phát nổ lan. |
-
----
-
-### 4.3. Danh Mục Pháp Bảo Hộ Thân (Relics — Hộ Vệ, Đính Kèm Đòn Đánh & Fun/Bựa)
-
-Người chơi chọn tối đa **3 Pháp bảo** mang theo vào trận:
-
-| ID | Tên Pháp Bảo | Hệ | Cơ Chế Hoạt Động Cốt Lõi | Hiệu Ứng Bổ Trợ Cho Chặt Chém |
+#### A. Nhóm 12 Pháp Bảo Cổ Phong (Vòng Xuyến Truyền Thuyết)
+| ID | Tên Pháp Bảo | Hệ | Cơ Chế Hoạt Động Cốt Lõi | Hiệu Ứng Hộ Thân Tự Động |
 |---|---|---|---|---|
-| `R001` | **Bùa Trấn Yêu** | Mộc | **Hộ Vệ Sau Lưng:** 3 lá bùa xoay quanh thân nhân vật | Đẩy lùi quái áp sát từ phía sau lưng khi người chơi đang chém quái phía trước. |
-| `R002` | **Cửu Vĩ Hồ Trảo** | Hỏa | **On-Hit Imbuement:** Đính kèm đòn chém | Mỗi khi chém trúng quái, móng vuốt lửa cào thêm 1 đòn thiêu đốt và hút 1% HP. |
-| `R003` | **Trống Đồng Đông Sơn** | Thổ | **Aura Khống Chế:** Đập nhịp định kỳ mỗi 3s | Phát sóng âm làm choáng quái xung quanh trong $0.8s$, tạo khoảng trống an toàn để combo. |
-| `R004` | **Lựu Đạn Thần Sa** | Hỏa | **Combo Finisher:** Nổ theo đòn kết thúc | Khi tung đòn chém thứ 3 của combo, tự động phóng ra 1 viên lựu đạn nổ đẩy lùi quái. |
-| `R005` | **Trượng Long Vương** | Thủy | **On-Crit Imbuement:** Sét lan khi bạo kích | Khi đòn chém gây sát thương Chí mạng, phóng tia sét nước giật lan 4 quái lân cận. |
-| `R006` | **Nước Thánh Chùa Hương** | Thủy | **Ground Hazard:** Vũng làm chậm | Để lại vũng nước thánh dưới chân nhân vật làm chậm quái $40\%$ và hồi máu nhẹ. |
-| `R007` | **Chiếu Trải Hoàng Tuyền** | Mộc | **Troll Hazard & Fast Lane:** Ném chiếu cói ra sàn | Quái dẫm vào thì *"Ngủ say tại chỗ"* 3s; người chơi dẫm vào thì lướt trượt như ván trượt siêu tốc (+100% Speed) húc bay đàn quái. |
-| `R008` | **Chổi Lông Gà Gia Truyền** | Kim | **On-Hit Slapstick Knockback:** Triệu hồi chổi quất | Đòn thứ 3 triệu hồi chổi lông gà khổng lồ quất quái bay dính chặt vào vách đá/mép màn hình, quái hét toáng lên. |
+| `W001` | **Nỏ Thần** | Kim | `RelicOnHitTrigger` | Bắn linh tiễn An Dương Vương xuyên thấu 2 kẻ địch gần nhất. |
+| `W002` | **Bút Phán Quan** | Kim | `RelicOnHitTrigger` | Vung nhát chém phán quyết âm ty gây sát thương chí mạng 2 bên. |
+| `W003` | **Bùa Trấn Yêu** | Mộc | `RelicOrbitalShield` | 3 lá bùa xoay quanh thân nhân vật, cản đạn và đẩy lùi quái áp sát. |
+| `W004` | **Cửu Vĩ Hồ Trảo** | Hỏa | `RelicOnHitTrigger` | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí hồi phục cho Tướng. |
+| `W005` | **Trống Đồng Đông Sơn** | Thổ | `RelicOrbitalShield` | Phát sóng âm trảm linh 5 hướng làm choáng diện rộng xung quanh ($0.8s$). |
+| `W006` | **Lựu Đạn Thần Sa** | Hỏa | `RelicOnHitTrigger` | Quăng hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng và đẩy lùi mạnh. |
+| `W007` | **Cung Thạch Sanh** | Kim | `RelicOnHitTrigger` | Bắn mũi tên thần lực Thạch Sanh xuyên qua hàng loạt yêu tinh trên đường thẳng. |
+| `W008` | **Đao Cửu Vĩ** | Hỏa | `RelicSupportAura` | Phun luồng rồng lửa thiêu đốt liên tục kẻ địch trước mặt (DoT). |
+| `W009` | **Trượng Long Vương** | Thủy | `RelicSupportAura` | Phóng sét nước thủy cung lan truyền qua chuỗi 6 yêu quái gây Choáng 0.5s. |
+| `W010` | **Linh Phù Ma Da** | Thủy | `RelicSupportAura` | Triệu hồi linh thú Ma Da phun độc sát thương liên tục lên kẻ địch. |
+| `W011` | **Nước Thánh Chùa Hương** | Thổ | `RelicSupportAura` | Tạo bãi giếng thiêng trên mặt đất làm chậm quái $40\%$ và gây sát thương liên tục. |
+| `W012` | **Phi Tiêu Bát Quái** | Mộc | `RelicOnHitTrigger` | Phi tiêu ma thuật tự động xoay tròn quét kẻ địch theo hình cánh cung rồi quy hồi. |
+
+#### B. Nhóm 5 Pháp Bảo Dân Gian Hài Hước (Slapstick Relics)
+| ID | Tên Pháp Bảo | Hệ | Cơ Chế Hoạt Động Cốt Lõi | Hiệu Ứng Hộ Thân Tự Động |
+|---|---|---|---|---|
+| `W_SLIPPER` | **Dép Tổ Ong Thần Sa** | Kim | `RelicOnHitTrigger` | Ném Boomerang dép tự động; Hit 3 quăng lốc dép gây hiệu ứng *"Quê Độ"* (quái tự đấm nhau). |
+| `W_POT` | **Nồi Cơm Thạch Sanh** | Thổ | `RelicOrbitalShield` | Gom tối đa 3-5 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi 5% HP. |
+| `W_PIPE` | **Điếu Cày Cửu U** | Hỏa | `RelicSupportAura` | Phun bão khói *"Say Thuốc Lào"* dày đặc khiến quái đi giật lùi và nổ sát thương ho sặc sụa. |
+| `R007` | **Chiếu Trải Hoàng Tuyền** | Mộc | `RelicSupportAura` | Thả chiếu bẫy ngủ say 3s (nhận x2 Crit DMG); Tướng bước lên trượt ván siêu tốc (+100% Move Speed) ủi bay quái. |
+| `R008` | **Chổi Lông Gà Gia Truyền** | Kim | `RelicOnHitTrigger` | Triệu hồi chổi khổng lồ giáng từ trời, tạo lực đẩy lùi cực đại 12m/s găm quái vào tường gây Choáng. |
 
 ---
 

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: Weapon_W_POT
   m_EditorClassIdentifier: 
-  weaponRole: 0
+  weaponRole: 1
   weaponId: W_POT
   weaponName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
   icon: {fileID: 0}
-  description: "V\u0169 kh\xED c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
+  description: "Ph\xE1p b\u1EA3o c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
     v\xE0o n\u1ED3i v\xE0 ph\xF3ng ra nh\u01B0 \u0111\u1EA1n ph\xE1o; ch\u1EA1m \u0111\u1EA5t
     r\u01A1i c\u01A1m n\u1EAFm h\u1ED3i m\xE1u."
   rarity: Common
@@ -24,4 +24,4 @@ MonoBehaviour:
   elementType: 5
   weaponPrefab: {fileID: 910008107644193619, guid: e9f474cb9bb167d42a492b2eb3b84cad, type: 3}
   baseDamage: 35
-  baseAttackSpeed: 1.4
+  baseAttackSpeed: 2

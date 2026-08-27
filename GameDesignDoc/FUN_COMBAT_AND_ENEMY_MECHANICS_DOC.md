@@ -28,7 +28,9 @@
 
 ---
 
-## 2. CHI TIẾT VŨ KHÍ CHÍNH BỰA & FUN (PRIMARY WEAPONS)
+## 2. CHI TIẾT PHÁP BẢO HỘ THÂN BỰA & FUN (SLAPSTICK RELICS)
+
+Mọi trang bị Slapstick đều được phân bổ vào **Slot Pháp Bảo Hộ Thân (Mang theo 1 Pháp Bảo vào trận)**, tự động hỗ trợ nhân vật:
 
 ### 2.1. `W_SLIPPER` — Dép Tổ Ong Thần Sa (Vũ Khí Ném Boomerang Slapstick)
 

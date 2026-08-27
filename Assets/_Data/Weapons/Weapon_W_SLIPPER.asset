@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
   m_Name: Weapon_W_SLIPPER
   m_EditorClassIdentifier: 
-  weaponRole: 0
+  weaponRole: 2
   weaponId: W_SLIPPER
   weaponName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
   icon: {fileID: 0}
-  description: "V\u0169 kh\xED n\xE9m Boomerang h\xE0i h\u01B0\u1EDBc; Hit 3 qu\u0103ng
+  description: "Ph\xE1p b\u1EA3o n\xE9m Boomerang t\u1EF1 \u0111\u1ED9ng; Hit 3 qu\u0103ng
     l\u1ED1c d\xE9p g\xE2y hi\u1EC7u \u1EE9ng 'Qu\xEA \u0110\u1ED9' khi\u1EBFn qu\xE1i
     quay sang \u0111\u1EA5m \u0111\u1ED3ng minh."
   rarity: Common
@@ -24,4 +24,4 @@ MonoBehaviour:
   elementType: 1
   weaponPrefab: {fileID: 5114245694694222754, guid: 6f0a518d172da2e4c9a5825e7599740f, type: 3}
   baseDamage: 25
-  baseAttackSpeed: 1
+  baseAttackSpeed: 1.2

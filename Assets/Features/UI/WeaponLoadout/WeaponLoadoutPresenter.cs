@@ -211,8 +211,8 @@ namespace ProjectZombie.Features.UI
             // Nếu danh sách rỗng, nạp tất cả
             if (targetList.Count == 0) targetList.AddRange(_allWeapons);
 
-            // Tạo đúng 12 Ô (4 Cột x 3 Hàng)
-            int totalSlots = 12;
+            // Hiển thị toàn bộ Pháp Bảo hiện có (tối thiểu 12 ô để lấp đầy grid)
+            int totalSlots = Mathf.Max(12, targetList.Count);
             for (int i = 0; i < totalSlots; i++)
             {
                 if (i < targetList.Count)

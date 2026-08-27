@@ -69,13 +69,13 @@ namespace ProjectZombie.Features.Weapons.Editor
             if (!AssetDatabase.IsValidFolder(upgradeFolder)) AssetDatabase.CreateFolder("Assets/_Data/Upgrades", "Slapstick");
 
             // =========================================================================
-            // 1. TẠO 5 SCRIPTABLE OBJECT WEAPON DATA
+            // 1. TẠO 5 SCRIPTABLE OBJECT WEAPON DATA (TOÀN BỘ LÀ PHÁP BẢO HỘ THÂN - RELICS)
             // =========================================================================
             FunWeaponDef[] funItems = new FunWeaponDef[]
             {
-                new FunWeaponDef("W_SLIPPER", "Dép Tổ Ong Thần Sa", ElementType.Kim, 25f, 1.0f, "Vũ khí ném Boomerang hài hước; Hit 3 quăng lốc dép gây hiệu ứng 'Quê Độ' khiến quái quay sang đấm đồng minh.", WeaponRole.PrimaryWeapon),
-                new FunWeaponDef("W_POT", "Nồi Cơm Thạch Sanh", ElementType.Tho, 35f, 1.4f, "Vũ khí cận chiến gom tối đa 3 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi máu.", WeaponRole.PrimaryWeapon),
-                new FunWeaponDef("W_PIPE", "Điếu Cày Cửu U", ElementType.Hoa, 20f, 1.1f, "Vũ khí phun luồng khói dày đặc gây hiệu ứng 'Say Thuốc Lào' khiến quái đi giật lùi và nổ sát thương ho sặc sụa.", WeaponRole.PrimaryWeapon),
+                new FunWeaponDef("W_SLIPPER", "Dép Tổ Ong Thần Sa", ElementType.Kim, 25f, 1.2f, "Pháp bảo ném Boomerang tự động; Hit 3 quăng lốc dép gây hiệu ứng 'Quê Độ' khiến quái quay sang đấm đồng minh.", WeaponRole.RelicOnHitTrigger),
+                new FunWeaponDef("W_POT", "Nồi Cơm Thạch Sanh", ElementType.Tho, 35f, 2.0f, "Pháp bảo cận chiến gom tối đa 3 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi máu.", WeaponRole.RelicOrbitalShield),
+                new FunWeaponDef("W_PIPE", "Điếu Cày Cửu U", ElementType.Hoa, 20f, 1.8f, "Pháp bảo phun luồng khói dày đặc gây hiệu ứng 'Say Thuốc Lào' khiến quái đi giật lùi và nổ sát thương ho sặc sụa.", WeaponRole.RelicSupportAura),
                 new FunWeaponDef("R007", "Chiếu Trải Hoàng Tuyền", ElementType.Moc, 0f, 8.0f, "Pháp bảo thả chiếu khiến quái ngủ say (nhận x2 Crit DMG khi bị đánh thức); Người chơi bước lên trượt ván ủi văng quái.", WeaponRole.RelicSupportAura),
                 new FunWeaponDef("R008", "Chổi Lông Gà Gia Truyền", ElementType.Kim, 45f, 4.0f, "Triệu hồi Chổi Lông Gà khổng lồ giáng từ trời xuống với lực Knockback 12m/s cực đại và găm quái vào tường.", WeaponRole.RelicOnHitTrigger)
             };
@@ -116,6 +116,14 @@ namespace ProjectZombie.Features.Weapons.Editor
                     prefabObj = PrefabUtility.SaveAsPrefabAsset(tempGo, prefabPath);
                     Object.DestroyImmediate(tempGo);
                 }
+
+                so.weaponRole = item.role;
+                so.weaponId = item.id;
+                so.weaponName = item.name;
+                so.description = item.desc;
+                so.elementType = item.element;
+                so.baseDamage = item.damage;
+                so.baseAttackSpeed = item.cooldown;
 
                 if (prefabObj != null)
                 {

@@ -1,12 +1,12 @@
 # Tài Liệu Hệ Thống Chiến Đấu & Pháp Bảo (Combat & Relic System v5.0)
 
-Hệ thống chiến đấu của trò chơi được tái cấu trúc theo mô hình **Action RPG Survivor 2.5D Cổ Phong**:
-1. **Đòn Đánh Cơ Bản Nhân Vật (`CharacterCombat`)**: Gắn liền với bản thể từng vị Tướng, điều khiển qua nút **Attack Button** (Animation + VFX Vệt chém Melee / Đạn tầm xa Ranged + Combo 1-2-3).
-2. **Pháp Bảo Hộ Thân Duy Nhất (`WeaponManager` & `RelicWeapon`)**: Mỗi trận đấu người chơi chỉ mang theo **đúng 1 Pháp Bảo** từ Tàng Bảo Các, tự động bay quanh bảo vệ (`Orbit`) hoặc bồi đòn (`On-Hit / Auto-Cast`) liên tục mỗi chu kỳ.
+Hệ thống chiến đấu của trò chơi được chuẩn hóa theo mô hình **Action RPG Survivor 2.5D Cổ Phong**:
+1. **Đòn Đánh Bản Thể Nhân Vật (`CharacterCombat`)**: Gắn liền với bản thể từng vị Tướng, điều khiển qua nút **Attack Button** (Animation + VFX Vệt chém Melee / Đạn Ranged + Combo 1-2-3 + Tap Buffer Window 0.18s).
+2. **Pháp Bảo Hộ Thân Duy Nhất (`WeaponManager` & `Relic` - Giới hạn 1 Slot)**: Mọi vũ khí rời trong game đều được quy chuẩn là **Pháp Bảo Hộ Thân (Relics)**. Người chơi mang theo **đúng 1 Pháp Bảo** từ Tàng Bảo Các, vận hành **100% Tự Động (Auto-Trigger / Orbit / Passive Aura / On-Hit)** theo chu kỳ `Tick()` để hỗ trợ chiến đấu.
 
 ---
 
-## 1. Hệ Sinh Thái Chiến Đấu (Combat & Relic Architecture)
+## 1. Kiến Trúc Vận Hành Chiến Đấu
 
 ```mermaid
 graph TD
@@ -14,86 +14,68 @@ graph TD
     B -->|Phát Hoạt Ảnh| C[PlayerAnimator: Attack State]
     B -->|Sinh VFX & Game Feel| D[VFX Vệt Chém / Đạn + CameraShake / HitStop]
     B -->|Quét Trúng Kẻ Địch| E[OnHitEnemy Event]
-    E -->|Kích Ứng Bồi Đòn| F[Pháp Bảo Hộ Thân: Relic]
-    G[Update Loop: Tick] -->|Tự Động Kích Hoạt Liên Tục| F
+    E -->|Kích Ứng Bồi Đòn| F[1 Pháp Bảo Hộ Thân Trang Bị]
+    G[Update Loop: Auto Tick] -->|Tự Động Kích Hoạt Liên Tục| F
 ```
 
-### 1.1. `CharacterCombat` (Đòn Đánh Bản Thể Nhân Vật)
+### 1.1. `CharacterCombat` (Đòn Đánh Bản Thể Tướng)
 - **Nơi gắn**: Trực tiếp trên thực thể `Player`.
-- **Vai trò**: Quản lý đòn đánh tay cơ bản đặc trưng cho từng nhân vật, tách biệt hoàn toàn khỏi việc tháo lắp vũ khí ngoài:
-  - **Melee Slash (Cận chiến)**: Quét vùng OverlapBox (Zero Allocation), sinh VFX Vệt Chém hình quạt, áp dụng lực đẩy lùi (Knockback), rung lắc màn hình (`CameraShake`) và dừng hình tạo lực đầm (`HitStop`).
-  - **Ranged Projectile (Tầm xa)**: Phóng linh kiếm/đạn phép hướng về mục tiêu với tốc độ cao.
-  - **Combo 1-2-3**: Quản lý bước combo (`CurrentComboStep`), thời gian giữ nhịp (`comboResetWindow`) và hệ số sát thương tăng tiến cho từng nhát.
-  - **Tap Buffer Window (0.18s)**: Cho phép đệm nhịp bấm nút đánh mượt mà không bị khựng hình.
+- **Vai trò**: Đòn đánh tay cơ bản đặc trưng theo nhân vật (Melee Slash / Ranged Projectile).
+- **Tính năng**: Combo 1-2-3, Tap Buffer Window 0.18s, Zero-Allocation OverlapBox, HitStop, Knockback và CameraShake.
 
 ### 1.2. `WeaponManager` (Quản Lý 1 Pháp Bảo Hộ Thân)
 - **Nơi gắn**: Trên `Player`.
 - **Giới hạn**: `MAX_WEAPONS = 1` (Chỉ mang 1 Pháp Bảo Hộ Thân vào trận).
-- **Chế độ Vận hành**: **100% Tự Động (Auto-Trigger / Passive Orbit)**.
-  - Mọi Pháp bảo khi trang bị đều được đặt `isPrimaryActiveWeapon = false` để liên tục tự động ra đòn qua hàm `Tick()` mỗi khung hình mà không chiếm quyền của nút bấm đánh tay.
-
-### 1.3. `CharacterAttackConfig` (Cấu Hình Data-Driven)
-- Tích hợp trực tiếp bên trong [CharacterSelectionData.cs](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Player/CharacterSelectionData.cs):
-  - `attackType`: `MeleeSlash` hoặc `RangedProjectile`.
-  - `attackName`, `attackIcon`: Tên và icon hiển thị trên nút Attack HUD.
-  - `baseDamageMultiplier`, `baseAttackSpeed`, `knockbackForce`.
-  - `slashVfxPrefab` (Vệt chém) hoặc `projectilePrefab` (Đạn bay).
+- **Chế độ**: `isPrimaryActiveWeapon = false` (100% Tự Động xuất chiêu, không chiếm nút đánh tay).
 
 ---
 
-## 2. Giao Diện Nút Tấn Công & Tàng Bảo Các (UI/UX)
+## 2. Danh Mục 17 Pháp Bảo Hộ Thân (12 Cổ Phong + 5 Dân Gian Slapstick)
 
-1. **`AttackButtonPresenter`**:
-   - Tự động bind vào `CharacterCombat` của Player.
-   - Hiển thị Icon đòn đánh riêng của Tướng và cập nhật thanh hồi chiêu linh hoạt.
-2. **`WeaponLoadoutPresenter` (Tàng Bảo Các)**:
-   - Cột trái: Tab duy nhất `[ KHO PHÁP BẢO HỘ THÂN (CHỌN 1) ]` hiển thị lưới 12 ô Pháp bảo.
-   - Cột phải: Hiển thị 2 ô trang bị xuất trận:
-     - **Ô 1 (Lục Giác Vàng)**: Đòn Đánh Cơ Bản Của Tướng (Cố định theo nhân vật đang chọn).
-     - **Ô 2 (Khung Lam)**: 1 Pháp Bảo Hộ Thân đã chọn từ kho.
+Tất cả trang bị dưới đây đều được lưu trữ trong **Tàng Bảo Các (`Assets/_Data/Weapons/`)** và chọn 1 mang vào trận:
 
----
+### 2.1. Nhóm 12 Pháp Bảo Cổ Phong (Vòng Xuyến Truyền Thuyết)
 
-## 3. Hệ Thống Nâng Cấp In-Game (`UpgradeManager`)
+| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Vai Trò Pháp Bảo (`WeaponRole`) | Cơ Chế Hộ Thân Trong Trận |
+| :--- | :--- | :---: | :---: | :--- |
+| **W001** | **Nỏ Thần** | Kim | `RelicOnHitTrigger` | Tự động bắn linh tiễn An Dương Vương thẳng về kẻ địch gần nhất, xuyên 2 mục tiêu. |
+| **W002** | **Bút Phán Quan** | Kim | `RelicOnHitTrigger` | Tự động vung nhát chém phán quyết âm ty gây sát thương chí mạng 2 bên. |
+| **W003** | **Bùa Trấn Yêu** | Mộc | `RelicOrbitalShield` | Vòng lá bùa thần xoay quanh bảo vệ người chơi, cản đạn và đẩy lùi quái. |
+| **W004** | **Cửu Vĩ Hồ Trảo** | Hỏa | `RelicOnHitTrigger` | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí hồi phục cho Tướng. |
+| **W005** | **Trống Đồng Đông Sơn** | Thổ | `RelicOrbitalShield` | Tự động phát sóng âm trảm linh 5 hướng gây choáng diện rộng xung quanh. |
+| **W006** | **Lựu Đạn Thần Sa** | Hỏa | `RelicOnHitTrigger` | Quăng hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng và đẩy lùi mạnh. |
+| **W007** | **Cung Thạch Sanh** | Kim | `RelicOnHitTrigger` | Bắn mũi tên thần lực Thạch Sanh xuyên qua hàng loạt yêu tinh trên đường thẳng. |
+| **W008** | **Đao Cửu Vĩ** | Hỏa | `RelicSupportAura` | Phun luồng rồng lửa thiêu đốt liên tục kẻ địch trước mặt (DoT). |
+| **W009** | **Trượng Long Vương** | Thủy | `RelicSupportAura` | Phóng sét nước thủy cung lan truyền qua chuỗi 6 yêu quái gây Choáng 0.5s. |
+| **W010** | **Linh Phù Ma Da** | Thủy | `RelicSupportAura` | Triệu hồi linh thú Ma Da phun độc sát thương liên tục lên kẻ địch. |
+| **W011** | **Nước Thánh Chùa Hương** | Thổ | `RelicSupportAura` | Tạo bãi giếng thiêng trên mặt đất làm chậm quái và gây sát thương liên tục. |
+| **W012** | **Phi Tiêu Bát Quái** | Mộc | `RelicOnHitTrigger` | Phi tiêu ma thuật tự động xoay tròn quét kẻ địch theo hình cánh cung rồi quy hồi. |
 
-Khi nhân vật lên cấp trong trận đấu, các thẻ nâng cấp sẽ phân phối tập trung:
-- **Thẻ Cường Hóa Đòn Đánh Tướng (`ComboAugmentUpgradeData`)**: Tăng kích thước vùng chém, thêm vệt lửa, tăng tốc độ đánh và sát thương combo của bản thân nhân vật.
-- **Thẻ Cường Hóa & Tiến Hóa Pháp Bảo (`WeaponUpgradeData` & `EvolutionUpgradeData`)**: Nâng cấp cấp độ (Level 1 -> 6) và tiến hóa cho đúng **1 Pháp bảo hộ thân duy nhất** đang mang theo.
+### 2.2. Nhóm 5 Pháp Bảo Dân Gian Hài Hước (Slapstick Relics)
 
-## 4. Hệ Thống Nâng Cấp (Upgrade System)
-
-Trong trận đấu, người chơi nhận EXP từ việc tiêu diệt quái vật. Khi lên cấp, người chơi được chọn 1 trong 3 nâng cấp ngẫu nhiên.
-
-### Mục tiêu của hệ thống:
-- Tạo cảm giác phát triển sức mạnh liên tục.
-- Tạo nhiều hướng build khác nhau.
-- Dễ theo dõi trên livestream.
-- Không yêu cầu người chơi sử dụng kỹ năng thủ công.
-
-### Phân loại Nâng cấp:
-Mỗi nâng cấp thuộc một trong các nhóm sau:
-1. **Weapon Upgrade**
-2. **Signature Skill Upgrade**
-3. **Common Upgrade**
-4. **Faction Counter Upgrade**
-5. **Rare Upgrade**
-6. **Evolution Upgrade**
+| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Vai Trò Pháp Bảo (`WeaponRole`) | Cơ Chế Hộ Thân Trong Trận |
+| :--- | :--- | :---: | :---: | :--- |
+| **`W_SLIPPER`** | **Dép Tổ Ong Thần Sa** | Kim | `RelicOnHitTrigger` | Ném Boomerang dép tự động; Hit 3 quăng lốc dép gây hiệu ứng **"Quê Độ"** (quái quay sang đấm nhau). |
+| **`W_POT`** | **Nồi Cơm Thạch Sanh** | Thổ | `RelicOrbitalShield` | Gom tối đa 3-5 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi máu. |
+| **`W_PIPE`** | **Điếu Cày Cửu U** | Hỏa | `RelicSupportAura` | Phun bão khói **"Say Thuốc Lào"** dày đặc khiến quái đi giật lùi và nổ sát thương ho sặc sụa. |
+| **`R007`** | **Chiếu Trải Hoàng Tuyền** | Mộc | `RelicSupportAura` | Thả chiếu bẫy ngủ say (nhận x2 Crit DMG); Tướng bước lên trượt ván ủi bay quái. |
+| **`R008`** | **Chổi Lông Gà Gia Truyền** | Kim | `RelicOnHitTrigger` | Triệu hồi chổi khổng lồ giáng từ trời, tạo lực đẩy lùi cực đại 12m/s găm quái vào tường gây Choáng. |
 
 ---
 
-### Chi Tiết: Weapon Upgrade
+## 3. Giao Diện Tàng Bảo Các & Nạp Loadout (UI/UX)
 
-Nâng cấp trực tiếp cho vũ khí chính của Hero. Mỗi vũ khí có **tối đa 6 cấp**.
+- **`WeaponLoadoutPresenter`**:
+  - Lưới vật phẩm: Hiển thị đầy đủ **17 Pháp Bảo Hộ Thân**.
+  - Ô xuất trận:
+    - **Ô 1 (Lục Giác Vàng)**: Đòn Đánh Cơ Bản Của Tướng (Cố định theo Hero đang chọn).
+    - **Ô 2 (Khung Lam)**: **1 Pháp Bảo Hộ Thân** được người chơi lựa chọn mang vào trận.
 
-- **LEVEL 1 (Cơ bản):** Mở khóa vũ khí cơ bản.
-  - *Ví dụ: Stream Blade - Phóng 1 lưỡi kiếm năng lượng, tấn công mục tiêu gần nhất.*
-- **LEVEL 2 (Đa mục tiêu):** Tăng số lượng đòn đánh / đạn (`+1 Projectile`).
-  - *Ghi chú: Giúp tăng khả năng dọn quái đầu trận.*
-- **LEVEL 3 (Sát thương):** Tăng sát thương (`+20% Damage`).
-  - *Ghi chú: Là nâng cấp ổn định cho mọi build.*
-- **LEVEL 4 (Hiệu ứng phụ):** Mở khóa hiệu ứng đặc biệt (Ricochet, Chain Attack, Explosion).
-  - *Ghi chú: Đây là mốc thay đổi gameplay đầu tiên.*
-- **LEVEL 5 (Tốc độ):** Tăng tốc độ tấn công (`+30% Attack Speed`).
-  - *Ghi chú: Tăng DPS tổng thể.*
-- **LEVEL 6 (Hiệu ứng cuối):** Mở khóa hiệu ứng tối thượng (Nổ diện rộng, Xuyên nhiều mục tiêu, Bắn thêm đạn phụ).
-  - *Ghi chú: Đây là cấp tối đa của vũ khí.*
+---
+
+## 4. Hệ Thống Nâng Cấp & Tiến Hóa In-Game
+
+Khi lên cấp trong trận, người chơi nhận ngẫu nhiên 3 thẻ:
+1. **Thẻ Cường Hóa Đòn Đánh Tướng (`ComboAugmentUpgradeData`)**: Tăng kích thước vùng chém, thêm vệt lửa, tăng tốc độ đánh và sát thương combo của Hero.
+2. **Thẻ Nâng Cấp Pháp Bảo (`WeaponUpgradeData`)**: Tăng cấp độ từ **Level 1 ➔ Level 6** cho đúng 1 Pháp Bảo Hộ Thân mang theo (Thêm tia đạn, tăng bán kính, mở khóa hiệu ứng đặc biệt).
+3. **Thẻ Tiến Hóa Tối Thượng (`EvolutionUpgradeData`)**: Đột phá Pháp Bảo thành hình thái Thần Khí Tối Thượng khi đạt Lv6 và có thẻ bổ trợ tương thích.
