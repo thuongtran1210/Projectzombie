@@ -24,6 +24,9 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private CharacterGaugeWidgetPresenter _characterGaugeWidgetPresenter;
         [SerializeField] private SignatureSkillPresenter _signatureSkillPresenter;
         [SerializeField] private AttackButtonPresenter _attackButtonPresenter;
+        [SerializeField] private DashButtonPresenter _dashButtonPresenter;
+
+        public GameplayUIBinder() { }
 
         public GameplayUIBinder(
             RunHUDPresenter runHUD,
@@ -44,6 +47,18 @@ namespace ProjectZombie.Features.Player
             _gameplayUIManager = manager;
         }
 
+        private void EnsureReferences()
+        {
+            if (_runHUDPresenter == null) _runHUDPresenter = UnityEngine.Object.FindObjectOfType<RunHUDPresenter>(true);
+            if (_playerInfoUIPresenter == null) _playerInfoUIPresenter = UnityEngine.Object.FindObjectOfType<PlayerInfoUIPresenter>(true);
+            if (_upgradeUIPresenter == null) _upgradeUIPresenter = UnityEngine.Object.FindObjectOfType<UpgradeUIPresenter>(true);
+            if (_gameOverScreenPresenter == null) _gameOverScreenPresenter = UnityEngine.Object.FindObjectOfType<GameOverScreenPresenter>(true);
+            if (_characterGaugeWidgetPresenter == null) _characterGaugeWidgetPresenter = UnityEngine.Object.FindObjectOfType<CharacterGaugeWidgetPresenter>(true);
+            if (_signatureSkillPresenter == null) _signatureSkillPresenter = UnityEngine.Object.FindObjectOfType<SignatureSkillPresenter>(true);
+            if (_attackButtonPresenter == null) _attackButtonPresenter = UnityEngine.Object.FindObjectOfType<AttackButtonPresenter>(true);
+            if (_dashButtonPresenter == null) _dashButtonPresenter = UnityEngine.Object.FindObjectOfType<DashButtonPresenter>(true);
+        }
+
         public void BindAll(PlayerContext context)
         {
             if (context == null || context.GameObject == null)
@@ -52,6 +67,8 @@ namespace ProjectZombie.Features.Player
                 return;
             }
 
+            EnsureReferences();
+
             BindRunHUD(context);
             BindPlayerInfo(context);
             BindUpgradeUI(context);
@@ -59,6 +76,7 @@ namespace ProjectZombie.Features.Player
             BindCharacterGauge(context);
             BindSignatureSkill(context);
             BindAttackButton(context);
+            BindDashButton(context);
         }
 
         private void BindRunHUD(PlayerContext context)
@@ -108,43 +126,48 @@ namespace ProjectZombie.Features.Player
 
         private void BindCharacterGauge(PlayerContext context)
         {
-            if (_characterGaugeWidgetPresenter == null)
-            {
-                _characterGaugeWidgetPresenter = UnityEngine.Object.FindObjectOfType<CharacterGaugeWidgetPresenter>(true);
-            }
-
             if (_characterGaugeWidgetPresenter != null)
             {
-                _characterGaugeWidgetPresenter.Bind(context.GaugeProvider);
-                Debug.Log($"[GameplayUIBinder] CharacterGaugeWidgetPresenter đã Bind provider: {(context.GaugeProvider != null ? context.GaugeProvider.GetType().Name : "None")}");
+                if (context.GaugeProvider != null)
+                {
+                    _characterGaugeWidgetPresenter.Bind(context.GaugeProvider);
+                    Debug.Log($"[GameplayUIBinder] CharacterGaugeWidgetPresenter đã Bind provider: {context.GaugeProvider.GetType().Name}");
+                }
+                else
+                {
+                    _characterGaugeWidgetPresenter.Unbind();
+                }
             }
         }
 
         private void BindSignatureSkill(PlayerContext context)
         {
-            if (_signatureSkillPresenter == null)
-            {
-                _signatureSkillPresenter = UnityEngine.Object.FindObjectOfType<SignatureSkillPresenter>(true);
-            }
-
             if (_signatureSkillPresenter != null)
             {
-                _signatureSkillPresenter.Bind(context.SignatureSkillManager);
-                Debug.Log("[GameplayUIBinder] SignatureSkillPresenter đã Bind SignatureSkillManager.");
+                if (context.SignatureSkillManager != null)
+                {
+                    _signatureSkillPresenter.Bind(context.SignatureSkillManager);
+                    Debug.Log("[GameplayUIBinder] SignatureSkillPresenter đã Bind SignatureSkillManager.");
+                }
             }
         }
 
         private void BindAttackButton(PlayerContext context)
         {
-            if (_attackButtonPresenter == null)
-            {
-                _attackButtonPresenter = UnityEngine.Object.FindObjectOfType<AttackButtonPresenter>(true);
-            }
-
             if (_attackButtonPresenter != null)
             {
-                _attackButtonPresenter.Bind(context.WeaponManager);
-                Debug.Log("[GameplayUIBinder] AttackButtonPresenter đã Bind WeaponManager.");
+                if (context.Combat != null) _attackButtonPresenter.Bind(context.Combat);
+                if (context.WeaponManager != null) _attackButtonPresenter.Bind(context.WeaponManager);
+                Debug.Log("[GameplayUIBinder] AttackButtonPresenter đã Bind Combat & WeaponManager.");
+            }
+        }
+
+        private void BindDashButton(PlayerContext context)
+        {
+            if (_dashButtonPresenter != null && context.Controller != null && context.Stats != null)
+            {
+                _dashButtonPresenter.Bind(context.Controller, context.Stats);
+                Debug.Log("[GameplayUIBinder] DashButtonPresenter đã Bind PlayerController & PlayerStats.");
             }
         }
     }

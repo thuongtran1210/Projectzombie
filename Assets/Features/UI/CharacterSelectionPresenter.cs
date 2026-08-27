@@ -79,9 +79,13 @@ namespace ProjectZombie.Features.UI
         {
             if (_selectionData == null)
             {
-                #if UNITY_EDITOR
-                _selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
-                #endif
+                _selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+#if UNITY_EDITOR
+                if (_selectionData == null)
+                {
+                    _selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                }
+#endif
             }
 
             if (_selectionData != null && _selectionData.Characters != null && _selectionData.Characters.Count > 0)

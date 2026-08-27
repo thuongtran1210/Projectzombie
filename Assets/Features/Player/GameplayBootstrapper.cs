@@ -173,56 +173,19 @@ namespace ProjectZombie.Features.Player
                 }
             }
 
-            // Tự động bind Player vào RunHUDPresenter & CharacterGaugeWidgetPresenter
-            var health = _activePlayerInstance.GetComponent<HealthSystem>();
-            var stats = _activePlayerInstance.GetComponent<PlayerStats>();
-            var exp = _activePlayerInstance.GetComponent<PlayerExperience>();
-            var wm = _activePlayerInstance.GetComponent<WeaponManager>();
-            var passives = _activePlayerInstance.GetComponent<PlayerPassives>();
-            var pc = _activePlayerInstance.GetComponent<PlayerController>();
-
-            var runHUDPresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.RunHUDPresenter>();
-            if (runHUDPresenter != null)
+            // Tự động inject dependencies vào toàn bộ hệ thống UI thông qua GameplayUIBinder
+            PlayerContext context = PlayerContext.Create(_activePlayerInstance);
+            if (_uiBinder == null)
             {
-                runHUDPresenter.Construct(health, stats, exp, wm, passives);
+                _uiBinder = new GameplayUIBinder(
+                    runHUDPresenter,
+                    playerInfoUIPresenter,
+                    upgradeUIPresenter,
+                    gameOverScreenPresenter,
+                    characterGaugeWidgetPresenter
+                );
             }
-
-            var gaugePresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.CharacterGaugeWidgetPresenter>();
-            if (gaugePresenter != null)
-            {
-                var gaugeProvider = _activePlayerInstance.GetComponent<ProjectZombie.Features.Player.Mechanics.ICharacterGaugeProvider>();
-                if (gaugeProvider != null)
-                {
-                    gaugePresenter.Bind(gaugeProvider);
-                }
-                else
-                {
-                    gaugePresenter.Unbind();
-                }
-            }
-
-            var skillPresenter = FindObjectOfType<ProjectZombie.Features.UI.SignatureSkillPresenter>();
-            if (skillPresenter != null)
-            {
-                var skillManager = _activePlayerInstance.GetComponent<ProjectZombie.Features.Player.Skills.SignatureSkillManager>();
-                if (skillManager != null)
-                {
-                    skillPresenter.Bind(skillManager);
-                }
-            }
-
-            var attackPresenter = FindObjectOfType<ProjectZombie.Features.UI.AttackButtonPresenter>();
-            if (attackPresenter != null)
-            {
-                if (combat != null) attackPresenter.Bind(combat);
-                if (wm != null) attackPresenter.Bind(wm);
-            }
-
-            var dashPresenter = FindObjectOfType<ProjectZombie.Features.UI.DashButtonPresenter>();
-            if (dashPresenter != null && pc != null)
-            {
-                dashPresenter.Bind(pc, stats);
-            }
+            _uiBinder.BindAll(context);
 
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }

@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Player
         public PlayerPassives Passives { get; }
         public ICharacterGaugeProvider GaugeProvider { get; }
         public SignatureSkillManager SignatureSkillManager { get; }
+        public CharacterCombat Combat { get; }
+        public PlayerController Controller { get; }
 
         public PlayerContext(GameObject playerObject)
         {
@@ -36,6 +38,8 @@ namespace ProjectZombie.Features.Player
                 Passives = playerObject.GetComponent<PlayerPassives>();
                 GaugeProvider = playerObject.GetComponent<ICharacterGaugeProvider>();
                 SignatureSkillManager = playerObject.GetComponent<SignatureSkillManager>();
+                Combat = playerObject.GetComponent<CharacterCombat>();
+                Controller = playerObject.GetComponent<PlayerController>();
 
                 ValidateComponents();
             }
