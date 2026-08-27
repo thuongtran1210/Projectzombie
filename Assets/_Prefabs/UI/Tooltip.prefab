@@ -65,8 +65,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "S\xF3ng \xE2m tr\u1EA3m linh t\u1ECFa r\u1ED9ng 5 h\u01B0\u1EDBng g\xE2y
-    cho\xE1ng di\u1EC7n r\u1ED9ng."
+  m_text: "Nh\xE1t ch\xE9m mang uy l\u1EF1c ph\xE1n quy\u1EBFt \xE2m ty g\xE2y s\xE1t
+    th\u01B0\u01A1ng ch\xED m\u1EA1ng 2 b\xEAn."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
+  m_text: "B\xFAt Ph\xE1n Quan"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -306,7 +306,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 525.173, y: 784.30273}
+  m_AnchoredPosition: {x: 362.8452, y: 769.54565}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412
