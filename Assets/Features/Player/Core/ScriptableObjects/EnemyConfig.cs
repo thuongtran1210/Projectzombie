@@ -57,6 +57,34 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Tooltip("Cơ chế Cản Đạn Xuyên (Heavy Armor Bullet Sponge) - Tiêu tốn 2 Pierce Count của đạn xuyên.")]
         public bool isHeavyArmor = false;
 
+        [Header("Status Effect Immunities (Miễn Kháng Hiệu Ứng)")]
+        [Tooltip("Danh sách các hiệu ứng trạng thái bất lợi mà quái này hoàn toàn miễn nhiễm.")]
+        public System.Collections.Generic.List<ProjectZombie.Features.Enemies.StatusEffectType> immuneStatuses = new System.Collections.Generic.List<ProjectZombie.Features.Enemies.StatusEffectType>();
+
+        /// <summary>
+        /// Kiểm tra xem quái có miễn nhiễm với loại hiệu ứng cụ thể nào không.
+        /// </summary>
+        public bool IsImmuneTo(ProjectZombie.Features.Enemies.StatusEffectType statusType)
+        {
+            if (immuneStatuses != null && immuneStatuses.Contains(statusType))
+            {
+                return true;
+            }
+
+            // Boss tự động miễn nhiễm với các hiệu ứng phá vỡ logic hành vi
+            if (tier == EnemyTier.Boss)
+            {
+                if (statusType == ProjectZombie.Features.Enemies.StatusEffectType.RagdollFlight ||
+                    statusType == ProjectZombie.Features.Enemies.StatusEffectType.Humiliated ||
+                    statusType == ProjectZombie.Features.Enemies.StatusEffectType.Dancing)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public float AttackSpeed => 1f / attackCooldown;
         public float CritChance => 0f;
         public float AttackRange => attackRange;

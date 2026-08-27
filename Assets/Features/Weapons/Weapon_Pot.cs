@@ -30,17 +30,6 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicOrbitalShield;
             isPrimaryActiveWeapon = false;
-
-            if (potVfxPrefab == null)
-            {
-                potVfxPrefab = Resources.Load<GameObject>("VFX_Relic_Pot_Suction");
-#if UNITY_EDITOR
-                if (potVfxPrefab == null)
-                {
-                    potVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pot_Suction.prefab");
-                }
-#endif
-            }
         }
 
         protected override void PerformAttack()
@@ -68,10 +57,7 @@ namespace ProjectZombie.Features.Weapons
 
             if (potVfxPrefab != null)
             {
-                if (GlobalVFXPoolManager.Instance != null)
-                    GlobalVFXPoolManager.Instance.PlayEffect(potVfxPrefab, center, Quaternion.identity, 0.6f);
-                else
-                    Instantiate(potVfxPrefab, center, Quaternion.identity);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, 0.6f);
             }
 
             int mask = TargetingUtility.EnemyLayerMask;

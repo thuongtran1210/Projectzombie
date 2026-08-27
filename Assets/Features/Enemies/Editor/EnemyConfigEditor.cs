@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Enemies.Editor
         private SerializedProperty coinDropRateProp;
         private SerializedProperty minCoinDropProp;
         private SerializedProperty maxCoinDropProp;
+        private SerializedProperty immuneStatusesProp;
 
         private void OnEnable()
         {
@@ -38,6 +39,7 @@ namespace ProjectZombie.Features.Enemies.Editor
             coinDropRateProp = serializedObject.FindProperty("coinDropRate");
             minCoinDropProp = serializedObject.FindProperty("minCoinDrop");
             maxCoinDropProp = serializedObject.FindProperty("maxCoinDrop");
+            immuneStatusesProp = serializedObject.FindProperty("immuneStatuses");
         }
 
         public override void OnInspectorGUI()
@@ -53,6 +55,9 @@ namespace ProjectZombie.Features.Enemies.Editor
             EditorGUILayout.PropertyField(maxHealthProp);
             EditorGUILayout.PropertyField(damageToPlayerProp);
             EditorGUILayout.PropertyField(isHeavyArmorProp);
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.PropertyField(immuneStatusesProp, new GUIContent("Status Immunities", "Danh sách hiệu ứng bất lợi mà quái này miễn nhiễm"), true);
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Loot & Drops (Exp & Coin)", EditorStyles.boldLabel);

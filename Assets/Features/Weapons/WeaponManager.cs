@@ -240,35 +240,67 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        private static readonly Dictionary<string, System.Type> _weaponTypeRegistry = new Dictionary<string, System.Type>(System.StringComparer.OrdinalIgnoreCase)
+        {
+            { "W_SLIPPER", typeof(Weapon_Slipper) },
+            { "W_POT", typeof(Weapon_Pot) },
+            { "W_PIPE", typeof(Weapon_Pipe) },
+            { "R007", typeof(Relic_SleepingMat) },
+            { "R008", typeof(Relic_ChickenFeatherBroom) },
+            { "W001", typeof(Weapon_Crossbow) },
+            { "W002", typeof(Weapon_Targeted) },
+            { "W003", typeof(Weapon_Boomerang) },
+            { "W004", typeof(Weapon_Flamethrower) },
+            { "W005", typeof(Weapon_Orbit) },
+            { "W006", typeof(Weapon_GrenadeLauncher) },
+            { "W007", typeof(Weapon_DirectionalTorch) },
+            { "W008", typeof(Weapon_DualSlash) },
+            { "W009", typeof(Weapon_LightningOrb) },
+            { "W010", typeof(Weapon_PoisonDrone) },
+            { "W011", typeof(Weapon_HolyWater) },
+            { "W012", typeof(Weapon_RandomProjectile) }
+        };
+
+        /// <summary>
+        /// Đăng ký Type vũ khí mới vào Registry động (phục vụ mở rộng từ plugin / DLC / modding).
+        /// </summary>
+        public static void RegisterWeaponType(string weaponId, System.Type weaponType)
+        {
+            if (!string.IsNullOrEmpty(weaponId) && weaponType != null)
+            {
+                _weaponTypeRegistry[weaponId] = weaponType;
+            }
+        }
+
         private System.Type GetWeaponTypeById(string weaponId)
         {
             if (string.IsNullOrEmpty(weaponId)) return null;
 
-            switch (weaponId.ToUpper())
+            // 1. Tìm trong Registry đã đăng ký
+            if (_weaponTypeRegistry.TryGetValue(weaponId, out var registeredType))
             {
-                // Pháp Bảo Dân Gian (Slapstick Relics)
-                case "W_SLIPPER": return typeof(Weapon_Slipper);
-                case "W_POT": return typeof(Weapon_Pot);
-                case "W_PIPE": return typeof(Weapon_Pipe);
-                case "R007": return typeof(Relic_SleepingMat);
-                case "R008": return typeof(Relic_ChickenFeatherBroom);
-
-                // 12 Pháp Bảo Cổ Phong Đông Sơn (W001 - W012)
-                case "W001": return typeof(Weapon_Crossbow);          // Nỏ Thần
-                case "W002": return typeof(Weapon_Targeted);          // Bút Phán Quan
-                case "W003": return typeof(Weapon_Boomerang);         // Bùa Trấn Yêu
-                case "W004": return typeof(Weapon_Flamethrower);      // Cửu Vĩ Hồ Trảo
-                case "W005": return typeof(Weapon_Orbit);             // Trống Đồng Đông Sơn
-                case "W006": return typeof(Weapon_GrenadeLauncher);   // Lựu Đạn Thần Sa
-                case "W007": return typeof(Weapon_DirectionalTorch);   // Cung Thạch Sanh
-                case "W008": return typeof(Weapon_DualSlash);          // Đao Cửu Vĩ
-                case "W009": return typeof(Weapon_LightningOrb);      // Trượng Long Vương
-                case "W010": return typeof(Weapon_PoisonDrone);       // Linh Phù Ma Da
-                case "W011": return typeof(Weapon_HolyWater);         // Nước Thánh Chùa Hương
-                case "W012": return typeof(Weapon_RandomProjectile);  // Phi Tiêu Bát Quái
-
-                default: return null;
+                return registeredType;
             }
+
+            // 2. Tự động suy luận Type qua Reflection (Auto-Discovery)
+            string[] candidateTypeNames = new[]
+            {
+                $"ProjectZombie.Features.Weapons.Weapon_{weaponId}, Assembly-CSharp",
+                $"ProjectZombie.Features.Weapons.Relic_{weaponId}, Assembly-CSharp",
+                $"ProjectZombie.Features.Weapons.{weaponId}, Assembly-CSharp"
+            };
+
+            foreach (var typeName in candidateTypeNames)
+            {
+                var foundType = System.Type.GetType(typeName, false, true);
+                if (foundType != null && typeof(WeaponBase).IsAssignableFrom(foundType))
+                {
+                    _weaponTypeRegistry[weaponId] = foundType;
+                    return foundType;
+                }
+            }
+
+            return null;
         }
 
         public void AddWeapon(WeaponBase weapon)

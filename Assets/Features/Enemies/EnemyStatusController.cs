@@ -128,6 +128,8 @@ namespace ProjectZombie.Features.Enemies
         /// </summary>
         public void ApplyRagdollLaunch(Vector2 direction, float speed, float duration, float impactDamage = 80f, float impactRadius = 2.5f)
         {
+            if (IsImmuneTo(StatusEffectType.RagdollFlight)) return;
+
             if (_physics != null)
             {
                 _physics.ApplyRagdollLaunch(direction, speed, duration, impactDamage, impactRadius);
@@ -136,11 +138,27 @@ namespace ProjectZombie.Features.Enemies
         }
 
         /// <summary>
+        /// Kiểm tra xem quái có miễn nhiễm với trạng thái bất lợi này không.
+        /// </summary>
+        public bool IsImmuneTo(StatusEffectType type)
+        {
+            if (_enemy != null && _enemy.Config != null)
+            {
+                return _enemy.Config.IsImmuneTo(type);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Áp dụng hoặc làm mới một Status Effect (Slow, Freeze, Stun, Burn, Humiliated, Sleeping, Stoned, Dancing).
-        /// Tự động scale thời lượng theo chỉ số Tenacity (Kháng CC).
+        /// Tự động kiểm tra Miễn Kháng (Immunity) và scale thời lượng theo chỉ số Tenacity (Kháng CC).
         /// </summary>
         public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f, Action<float> onTickDamage = null)
         {
+            // 1. Kiểm tra Miễn Kháng (Immunity Check)
+            if (IsImmuneTo(type)) return;
+
+            // 2. Tính toán giảm thời gian theo chỉ số Kiên Cường (Tenacity)
             float effectiveDuration = duration * Mathf.Clamp01(1f - Tenacity);
             if (effectiveDuration <= 0.05f) return;
 

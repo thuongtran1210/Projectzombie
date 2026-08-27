@@ -28,17 +28,6 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
-
-            if (whirlwindVfxPrefab == null)
-            {
-                whirlwindVfxPrefab = Resources.Load<GameObject>("VFX_Relic_Slipper_Whirlwind");
-#if UNITY_EDITOR
-                if (whirlwindVfxPrefab == null)
-                {
-                    whirlwindVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Slipper_Whirlwind.prefab");
-                }
-#endif
-            }
         }
 
         protected override void PerformAttack()
@@ -202,10 +191,7 @@ namespace ProjectZombie.Features.Weapons
 
             if (whirlwindVfxPrefab != null)
             {
-                if (GlobalVFXPoolManager.Instance != null)
-                    GlobalVFXPoolManager.Instance.PlayEffect(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
-                else
-                    Instantiate(whirlwindVfxPrefab, center, Quaternion.identity);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
             }
 
             DamageData baseDmg = CreateDamageData();

@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.Shared.VFX;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Weapons
 {
@@ -11,6 +11,7 @@ namespace ProjectZombie.Features.Weapons
     /// R007 — Chiếu Trải Hoàng Tuyền (Pháp Bảo Bẫy Ngủ & Đường Trượt Siêu Tốc — Hệ Mộc).
     /// - Quái bước vào mép chiếu: Lập tức ngã vật ra ngủ say 3s (Sleeping - nhận x2 crit khi bị đánh thức).
     /// - Người chơi bước/dash lên chiếu: Trở thành Trượt Ván Siêu Tốc (+100% Move Speed), ủi bay quái như chơi bowling.
+    /// Tối ưu hóa Zero-GC NonAlloc và tích hợp VFXPoolManager.
     /// </summary>
     public class Relic_SleepingMat : WeaponBase
     {
@@ -21,6 +22,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private GameObject matVfxPrefab;
 
         private float _timer;
+        private static readonly Collider2D[] _matHitBuffer = new Collider2D[30];
 
         public override void Initialize(ICharacterStats stats)
         {
@@ -28,17 +30,6 @@ namespace ProjectZombie.Features.Weapons
             weaponRole = WeaponRole.RelicSupportAura;
             isPrimaryActiveWeapon = false;
             _timer = 0f;
-
-            if (matVfxPrefab == null)
-            {
-                matVfxPrefab = Resources.Load<GameObject>("VFX_Relic_SleepingMat_Decal");
-#if UNITY_EDITOR
-                if (matVfxPrefab == null)
-                {
-                    matVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_SleepingMat_Decal.prefab");
-                }
-#endif
-            }
         }
 
         protected override void PerformAttack()
@@ -60,10 +51,7 @@ namespace ProjectZombie.Features.Weapons
         {
             if (matVfxPrefab != null)
             {
-                if (GlobalVFXPoolManager.Instance != null)
-                    GlobalVFXPoolManager.Instance.PlayEffect(matVfxPrefab, position, Quaternion.identity, matDuration);
-                else
-                    Instantiate(matVfxPrefab, position, Quaternion.identity);
+                VFXPoolManager.SpawnVFX(matVfxPrefab, position, Quaternion.identity, matDuration);
             }
 
             StartCoroutine(RoutineMatActive(position));
@@ -73,16 +61,19 @@ namespace ProjectZombie.Features.Weapons
         {
             float elapsed = 0f;
             int enemyMask = TargetingUtility.EnemyLayerMask;
+            WaitForSeconds wait = new WaitForSeconds(0.2f);
 
             while (elapsed < matDuration)
             {
+                yield return wait;
                 elapsed += 0.2f;
 
-                // 1. Quét kẻ địch bước lên chiếu -> Ngủ say 3.0s
-                Collider2D[] enemyHits = Physics2D.OverlapBoxAll(matCenter, matSize, 0f, enemyMask);
-                for (int i = 0; i < enemyHits.Length; i++)
+                // 1. Quét kẻ địch bước lên chiếu -> Ngủ say 3.0s (Zero-GC NonAlloc)
+                int hitCount = Physics2D.OverlapBoxNonAlloc(matCenter, matSize, 0f, _matHitBuffer, enemyMask);
+                for (int i = 0; i < hitCount; i++)
                 {
-                    if (enemyHits[i].TryGetComponent<EnemyStatusController>(out var status))
+                    var col = _matHitBuffer[i];
+                    if (col != null && col.TryGetComponent<EnemyStatusController>(out var status))
                     {
                         if (!status.IsSleeping)
                         {
@@ -99,17 +90,16 @@ namespace ProjectZombie.Features.Weapons
                         Mathf.Abs(playerPos.y - matCenter.y) <= matSize.y * 0.5f)
                     {
                         // Người chơi đang trượt trên chiếu: ủi bay quái xung quanh
-                        for (int i = 0; i < enemyHits.Length; i++)
+                        for (int i = 0; i < hitCount; i++)
                         {
-                            if (enemyHits[i].TryGetComponent<EnemyStatusController>(out var status))
+                            var col = _matHitBuffer[i];
+                            if (col != null && col.TryGetComponent<EnemyStatusController>(out var status))
                             {
-                                status.ApplyKnockback((enemyHits[i].transform.position - (Vector3)playerPos).normalized, 8f, 0.3f);
+                                status.ApplyKnockback((col.transform.position - (Vector3)playerPos).normalized, 8f, 0.3f);
                             }
                         }
                     }
                 }
-
-                yield return new WaitForSeconds(0.2f);
             }
         }
     }

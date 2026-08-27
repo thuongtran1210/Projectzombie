@@ -24,17 +24,6 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicSupportAura;
             isPrimaryActiveWeapon = false;
-
-            if (smokeVfxPrefab == null)
-            {
-                smokeVfxPrefab = Resources.Load<GameObject>("VFX_Relic_Pipe_DragonSmoke");
-#if UNITY_EDITOR
-                if (smokeVfxPrefab == null)
-                {
-                    smokeVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pipe_DragonSmoke.prefab");
-                }
-#endif
-            }
         }
 
         protected override void PerformAttack()
@@ -55,10 +44,7 @@ namespace ProjectZombie.Features.Weapons
             if (smokeVfxPrefab != null)
             {
                 float rotZ = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;
-                if (GlobalVFXPoolManager.Instance != null)
-                    GlobalVFXPoolManager.Instance.PlayEffect(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), smokeDuration);
-                else
-                    Instantiate(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ));
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), smokeDuration);
             }
 
             StartCoroutine(RoutineSmokeCloud(spawnPos));
