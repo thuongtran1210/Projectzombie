@@ -67,6 +67,7 @@ namespace ProjectZombie.Editor.UI
             Sprite btnBattleAmber = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Battle_Hex_Amber_Glow.png");
             Sprite skillBoxWood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Box_Skill_Icon_Wood_9Slice.png");
             Sprite heroNameBadge = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Hero_Name_Wood.png");
+            Sprite btnCloseX = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Close_X_Wood.png");
 
             // 4. Header Title: Băng Rôn Đỏ Cam Viền Vàng "CHỌN ANH HÙNG XUẤT TRẬN"
             GameObject ribbonObj = CreateUIElement("Ribbon_Title", panel.transform);
@@ -92,6 +93,24 @@ namespace ProjectZombie.Editor.UI
             titleTMP.fontStyle = FontStyles.Bold;
             titleTMP.alignment = TextAlignmentOptions.Center;
             titleTMP.color = Color.white;
+
+            // 4.5. Nút Thoát / Đóng Modal Góc Trên Bên Phải (Btn_Close / Btn_Back)
+            GameObject closeBtnObj = CreateUIElement("Btn_Close", panel.transform);
+            RectTransform closeRT = closeBtnObj.GetComponent<RectTransform>();
+            closeRT.anchorMin = new Vector2(1.0f, 1.0f);
+            closeRT.anchorMax = new Vector2(1.0f, 1.0f);
+            closeRT.pivot = new Vector2(1.0f, 1.0f);
+            closeRT.anchoredPosition = new Vector2(-12, -12);
+            closeRT.sizeDelta = new Vector2(48, 48);
+            var closeImg = closeBtnObj.AddComponent<Image>();
+            closeImg.color = Color.white;
+            if (btnCloseX != null) closeImg.sprite = btnCloseX;
+            closeImg.preserveAspect = true;
+            var closeBtn = closeBtnObj.AddComponent<Button>();
+            var closeColors = closeBtn.colors;
+            closeColors.highlightedColor = new Color(1.2f, 1.2f, 1.2f);
+            closeColors.pressedColor = new Color(0.8f, 0.8f, 0.8f);
+            closeBtn.colors = closeColors;
 
             // 5. Left Column: Khung Totem Gỗ Mun Chạm Sừng Thú & Character Preview
             GameObject leftCol = CreateUIElement("LeftColumn_Avatar", panel.transform);
@@ -337,6 +356,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();
             soView.FindProperty("_nextButton").objectReferenceValue = nextBtnObj.GetComponent<Button>();
+            soView.FindProperty("_backButton").objectReferenceValue = closeBtn;
             soView.FindProperty("_modalContainer").objectReferenceValue = panelRT;
             soView.FindProperty("_dimBackgroundButton").objectReferenceValue = bgDimBtn;
             soView.ApplyModifiedProperties();

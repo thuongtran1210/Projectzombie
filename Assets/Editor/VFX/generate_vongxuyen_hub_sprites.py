@@ -10,6 +10,16 @@ os.makedirs(DEST_DIR, exist_ok=True)
 def write_unity_meta(filepath, border=(0, 0, 0, 0), pivot=(0.5, 0.5)):
     meta_path = filepath + ".meta"
     guid = uuid.uuid4().hex
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("guid:"):
+                        guid = line.split("guid:")[1].strip()
+                        break
+        except Exception:
+            pass
+
     bx, by, bz, bw = border
     px, py = pivot
     meta_content = f"""fileFormatVersion: 2
@@ -141,7 +151,7 @@ def generate_header_bar():
 
     path = os.path.join(DEST_DIR, "Header_Wood_Bar_VongXuyen.png")
     out.save(path, "PNG")
-    write_unity_meta(path, border=(120, 10, 120, 10))
+    write_unity_meta(path, border=(0, 0, 0, 0))
     print("Generated Header_Wood_Bar_VongXuyen.png")
 
 
@@ -367,6 +377,37 @@ def generate_settings_gear_button():
     print("Generated Btn_Settings_Gear_Wood.png")
 
 
+def generate_close_x_button():
+    """Vẽ Nút Đóng Chữ X Gỗ Mun Bo Tròn Đính Kim Loại Cổ Phong (56x56)"""
+    W, H = 56, 56
+    out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(out)
+
+    cx, cy = W // 2, H // 2
+    r = 24
+
+    # 1. Viền đen dày Thick Outline ngoài cùng
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(28, 18, 14, 255))
+    # 2. Khối gỗ 3D đáy
+    draw.ellipse([cx - r + 2, cy - r + 4, cx + r - 2, cy + r - 2], fill=(45, 28, 20, 255))
+    # 3. Mặt nút gỗ mun nổi
+    draw.ellipse([cx - r + 2, cy - r + 2, cx + r - 2, cy + r - 4], fill=(78, 52, 38, 255))
+    # 4. Viền vàng đồng mỏng bên trong
+    draw.ellipse([cx - r + 5, cy - r + 5, cx + r - 5, cy + r - 7], outline=(200, 160, 95, 255), width=2)
+
+    # 5. Dấu X kim loại vàng đồng
+    d = 9
+    draw.line([(cx - d, cy - d), (cx + d, cy + d)], fill=(255, 225, 145, 255), width=4)
+    draw.line([(cx - d, cy + d), (cx + d, cy - d)], fill=(255, 225, 145, 255), width=4)
+    draw.line([(cx - d, cy - d), (cx + d, cy + d)], fill=(120, 75, 30, 255), width=2)
+    draw.line([(cx - d, cy + d), (cx + d, cy - d)], fill=(120, 75, 30, 255), width=2)
+
+    path = os.path.join(DEST_DIR, "Btn_Nav_Close_X_Wood.png")
+    out.save(path, "PNG")
+    write_unity_meta(path)
+    print("Generated Btn_Nav_Close_X_Wood.png")
+
+
 def main():
     print("=== Generating Full 2.5D Vector UI Sprites for Vong Xuyen ===")
     generate_header_bar()
@@ -376,6 +417,7 @@ def main():
     generate_currency_pill()
     generate_pedestal_hexagon()
     generate_settings_gear_button()
+    generate_close_x_button()
     print("=== Done Generating Sprites! ===")
 
 if __name__ == "__main__":

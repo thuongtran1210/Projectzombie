@@ -34,7 +34,8 @@ namespace ProjectZombie.Editor.UI
         {
             GenerateMainHubPrefab();
             SettingsUIGenerator.GenerateSettingsModal();
-            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH & MODAL CÀI ĐẶT THÀNH CÔNG 100%!");
+            CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, MODAL CHỌN ANH HÙNG & MODAL CÀI ĐẶT THÀNH CÔNG 100%!");
         }
 
         public static void GenerateMainHubPrefab()
@@ -129,7 +130,9 @@ namespace ProjectZombie.Editor.UI
                     EditorUtility.SetDirty(metaMgr);
                 }
 
-                Debug.Log($"<color=#00FF88>[MainHubUIGenerator]</color> Đã tạo Prefab Sảnh Hoàng Tuyền khớp 100% thiết kế tham khảo!");
+                EditorUtility.SetDirty(root);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(targetCanvas.gameObject.scene);
+                Debug.Log($"<color=#00FF88>[MainHubUIGenerator]</color> Đã tạo Prefab Sảnh Hoàng Tuyền khớp 100% thiết kế tham khảo và đồng bộ vào Scene!");
             }
             else
             {
@@ -154,7 +157,7 @@ namespace ProjectZombie.Editor.UI
             {
                 var hImg = header.AddComponent<Image>();
                 hImg.sprite = headerWoodSprite;
-                hImg.type = Image.Type.Sliced;
+                hImg.type = Image.Type.Simple;
                 hImg.color = Color.white;
             }
 
@@ -393,15 +396,20 @@ namespace ProjectZombie.Editor.UI
             irHlg.childControlWidth = false;
             irHlg.childControlHeight = false;
 
+            Sprite boxSlotSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Box_Skill_Icon_Wood_9Slice.png");
+
             // Slot 1: Primary Weapon
             GameObject pBox = CreateUIElement("Slot_Primary", itemsRow.transform);
             pBox.GetComponent<RectTransform>().sizeDelta = new Vector2(46, 46);
-            pBox.AddComponent<Image>().color = new Color(0.12f, 0.10f, 0.14f, 0.8f);
+            var pbImg = pBox.AddComponent<Image>();
+            pbImg.color = Color.white;
+            pbImg.type = Image.Type.Sliced;
+            if (boxSlotSprite != null) pbImg.sprite = boxSlotSprite;
 
             GameObject pIconObj = CreateUIElement("Icon", pBox.transform);
             SetStretchAnchor(pIconObj.GetComponent<RectTransform>());
-            pIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
-            pIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
+            pIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(5, 5);
+            pIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-5, -5);
             priIcon = pIconObj.AddComponent<Image>();
             priIcon.preserveAspect = true;
 
@@ -413,12 +421,15 @@ namespace ProjectZombie.Editor.UI
             {
                 GameObject rBox = CreateUIElement($"Slot_Relic_{i + 1}", itemsRow.transform);
                 rBox.GetComponent<RectTransform>().sizeDelta = new Vector2(46, 46);
-                rBox.AddComponent<Image>().color = new Color(0.12f, 0.10f, 0.14f, 0.8f);
+                var rbImg = rBox.AddComponent<Image>();
+                rbImg.color = Color.white;
+                rbImg.type = Image.Type.Sliced;
+                if (boxSlotSprite != null) rbImg.sprite = boxSlotSprite;
 
                 GameObject rIconObj = CreateUIElement("Icon", rBox.transform);
                 SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
-                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
+                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(5, 5);
+                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-5, -5);
                 relicIcons[i] = rIconObj.AddComponent<Image>();
                 relicIcons[i].preserveAspect = true;
 

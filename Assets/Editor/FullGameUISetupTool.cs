@@ -190,6 +190,34 @@ namespace ProjectZombie.EditorTools
                 metaObj.transform.SetParent(mainCanvas.transform, false);
                 metaRoot = metaObj.transform;
             }
+            
+            // Instantiate MainHubUI từ Prefab chuẩn
+            MainHubView mainHub = null;
+            GameObject mainHubPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/MainHubUI.prefab");
+            if (mainHubPrefab != null)
+            {
+                Transform oldHub = metaRoot.transform.Find("Panel_MainHub");
+                if (oldHub != null) Object.DestroyImmediate(oldHub.gameObject);
+
+                GameObject hubInstance = (GameObject)PrefabUtility.InstantiatePrefab(mainHubPrefab, metaRoot.transform);
+                hubInstance.name = "Panel_MainHub";
+                hubInstance.transform.SetAsFirstSibling();
+                mainHub = hubInstance.GetComponent<MainHubView>();
+            }
+
+            // Instantiate SettingsModalUI từ Prefab chuẩn
+            SettingsModalView settingsView = null;
+            GameObject settingsPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/SettingsModalUI.prefab");
+            if (settingsPrefab != null)
+            {
+                Transform oldSet = metaRoot.transform.Find("Modal_Settings");
+                if (oldSet != null) Object.DestroyImmediate(oldSet.gameObject);
+
+                GameObject setInstance = (GameObject)PrefabUtility.InstantiatePrefab(settingsPrefab, metaRoot.transform);
+                setInstance.name = "Modal_Settings";
+                setInstance.SetActive(false);
+                settingsView = setInstance.GetComponent<SettingsModalView>();
+            }
 
             StretchRect(metaRoot.GetComponent<RectTransform>());
             var metaGroup = metaRoot.GetComponent<CanvasGroup>();
@@ -225,6 +253,10 @@ namespace ProjectZombie.EditorTools
             soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
             soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
             soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
+            if (settingsView != null)
+            {
+                soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;
+            }
             soMeta.ApplyModifiedProperties();
 
             // 3. Dựng Canvas_Gameplay Root

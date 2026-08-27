@@ -161,25 +161,46 @@ namespace ProjectZombie.Features.UI.HUD
         /// <summary>Cập nhật danh sách icon Kỹ năng/Vũ khí sở hữu.</summary>
         public void UpdateSkills(System.Collections.Generic.IReadOnlyList<SkillDisplayData> skills)
         {
-            foreach (var entry in _spawnedSkills)
+            for (int i = _spawnedSkills.Count - 1; i >= 0; i--)
             {
-                if (entry != null)
+                if (_spawnedSkills[i] != null)
                 {
-                    Destroy(entry.gameObject);
+                    Destroy(_spawnedSkills[i].gameObject);
                 }
             }
             _spawnedSkills.Clear();
 
-            if (_skillEntryPrefab == null || _skillsContainer == null)
+            if (_skillsContainer == null)
             {
+                var found = transform.Find("Panel_Skills/ActiveSkills_Container");
+                if (found != null) _skillsContainer = found;
+                else
+                {
+                    var panelSkills = transform.Find("Panel_Skills");
+                    if (panelSkills != null) _skillsContainer = panelSkills;
+                }
+            }
+
+            if (_skillEntryPrefab == null)
+            {
+                _skillEntryPrefab = Resources.Load<SkillUIEntry>("SkillUIEntry");
+            }
+
+            if (_skillsContainer == null)
+            {
+                Debug.LogWarning("[RunHUDView] _skillsContainer chưa được gán và không tìm thấy trong Panel_Skills!");
                 return;
             }
 
-            foreach (var skill in skills)
+            if (skills != null)
             {
-                SkillUIEntry newEntry = Instantiate(_skillEntryPrefab, _skillsContainer);
-                newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
-                _spawnedSkills.Add(newEntry);
+                foreach (var skill in skills)
+                {
+                    if (_skillEntryPrefab == null) break;
+                    SkillUIEntry newEntry = Instantiate(_skillEntryPrefab, _skillsContainer);
+                    newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
+                    _spawnedSkills.Add(newEntry);
+                }
             }
         }
     }
