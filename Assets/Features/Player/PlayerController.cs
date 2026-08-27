@@ -120,9 +120,45 @@ namespace ProjectZombie.Features.Player
                 return; // Khi đang lướt thì không nhận input di chuyển mới
             }
 
-            if (moveAction != null)
+            Vector2 rawInput = Vector2.zero;
+
+            if (moveAction != null && moveAction.action != null && moveAction.action.enabled)
             {
-                _movementInput = moveAction.action.ReadValue<Vector2>().normalized;
+                rawInput = moveAction.action.ReadValue<Vector2>();
+            }
+
+            // Fallback 1: DynamicVirtualJoystick (Mobile OnScreen)
+            if (rawInput == Vector2.zero && UI.DynamicVirtualJoystick.Instance != null)
+            {
+                rawInput = UI.DynamicVirtualJoystick.Instance.InputVector;
+            }
+
+            // Fallback 2: Legacy Keyboard (WASD / Mũi tên để test nhanh trên Editor / PC)
+            if (rawInput == Vector2.zero)
+            {
+                float h = Input.GetAxisRaw("Horizontal");
+                float v = Input.GetAxisRaw("Vertical");
+                if (h != 0 || v != 0)
+                {
+                    rawInput = new Vector2(h, v);
+                }
+            }
+
+            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
+
+            // Fallback Dash từ phím Space
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                PerformDash();
+            }
+
+            // Fallback Signature Skill từ phím E hoặc U
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.U))
+            {
+                if (_signatureSkillManager != null)
+                {
+                    _signatureSkillManager.TryExecuteSkill();
+                }
             }
             
             // Xử lý Lật mặt hình ảnh

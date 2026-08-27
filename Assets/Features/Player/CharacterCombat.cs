@@ -166,6 +166,16 @@ namespace ProjectZombie.Features.Player
         {
             UpdateAimIndicator();
 
+            // Fallback bấm chuột trái hoặc phím J/K/Z/Ctrl để tấn công khi chơi trên PC / Editor
+            if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            {
+                TriggerAttack();
+            }
+            else if (Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                TriggerAttack();
+            }
+
             // Tự động reset combo về nhát 1 nếu quá thời gian chờ (Combo Window)
             float resetWindow = attackConfig != null ? attackConfig.comboResetWindow : 1.0f;
             if (_currentComboStep > 1 && Time.time >= _lastComboHitTime + resetWindow)

@@ -18,6 +18,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _signatureSkillText;
         [SerializeField] private TextMeshProUGUI _passiveTraitText;
         [SerializeField] private Image _characterAvatarImage;
+        [SerializeField] private RawImage _characterPreviewRawImage;
         [SerializeField] private Button _selectButton;
         [SerializeField] private Button _nextButton;
         [SerializeField] private Button _prevButton;
@@ -91,7 +92,7 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar)
+        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar, Texture renderTexture = null)
         {
             if (_characterNameText != null) _characterNameText.text = charName;
             if (_elementText != null) _elementText.text = formattedElement;
@@ -99,10 +100,24 @@ namespace ProjectZombie.Features.UI
             if (_signatureSkillText != null) _signatureSkillText.text = formattedSkill;
             if (_passiveTraitText != null) _passiveTraitText.text = formattedPassive;
 
+            if (_characterPreviewRawImage != null)
+            {
+                if (renderTexture != null)
+                {
+                    _characterPreviewRawImage.texture = renderTexture;
+                    _characterPreviewRawImage.enabled = true;
+                    _characterPreviewRawImage.color = Color.white;
+                }
+                else
+                {
+                    _characterPreviewRawImage.enabled = false;
+                }
+            }
+
             if (_characterAvatarImage != null)
             {
                 _characterAvatarImage.sprite = avatar;
-                _characterAvatarImage.enabled = (avatar != null);
+                _characterAvatarImage.enabled = (avatar != null && renderTexture == null);
                 _characterAvatarImage.color = (avatar != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
             }
         }

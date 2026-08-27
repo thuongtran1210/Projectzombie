@@ -21,12 +21,17 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             {
                 _skillIcon.sprite = icon;
                 _skillIcon.enabled = (icon != null);
+                _skillIcon.raycastTarget = true;
             }
-            if (_levelText != null) _levelText.text = $"Lv.{level}";
+            if (_levelText != null)
+            {
+                _levelText.text = $"Lv.{level}";
+                _levelText.raycastTarget = false;
+            }
             
             _skillName = name;
             _skillDescription = description;
-            _tooltip = tooltip;
+            _tooltip = tooltip != null ? tooltip : Object.FindAnyObjectByType<TooltipUI>();
         }
 
         public void OnPointerEnter(PointerEventData eventData)

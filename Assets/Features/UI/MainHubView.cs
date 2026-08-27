@@ -32,6 +32,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _currentHeroNameText;
         [SerializeField] private TextMeshProUGUI _currentHeroElementText;
         [SerializeField] private Image _currentHeroAvatarImage;
+        [SerializeField] private RawImage _currentHeroPreviewRawImage;
 
         [Header("Equipped Loadout Summary Card (Bottom-Left)")]
         [SerializeField] private Button _loadoutCardButton;
@@ -69,15 +70,29 @@ namespace ProjectZombie.Features.UI
             if (_linhHonText != null) _linhHonText.text = formattedText;
         }
 
-        public void SetSelectedHeroPreview(string heroName, string elementText, Sprite heroAvatar)
+        public void SetSelectedHeroPreview(string heroName, string elementText, Sprite heroAvatar, Texture renderTexture = null)
         {
             if (_currentHeroNameText != null) _currentHeroNameText.text = heroName;
             if (_currentHeroElementText != null) _currentHeroElementText.text = elementText;
 
+            if (_currentHeroPreviewRawImage != null)
+            {
+                if (renderTexture != null)
+                {
+                    _currentHeroPreviewRawImage.texture = renderTexture;
+                    _currentHeroPreviewRawImage.enabled = true;
+                    _currentHeroPreviewRawImage.color = Color.white;
+                }
+                else
+                {
+                    _currentHeroPreviewRawImage.enabled = false;
+                }
+            }
+
             if (_currentHeroAvatarImage != null)
             {
                 _currentHeroAvatarImage.sprite = heroAvatar;
-                _currentHeroAvatarImage.enabled = heroAvatar != null;
+                _currentHeroAvatarImage.enabled = (heroAvatar != null && renderTexture == null);
             }
         }
 

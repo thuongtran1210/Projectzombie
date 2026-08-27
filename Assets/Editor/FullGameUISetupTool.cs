@@ -259,6 +259,15 @@ namespace ProjectZombie.EditorTools
             }
             soMeta.ApplyModifiedProperties();
 
+            // 2.5. Tạo CharacterPreviewStage (Sân khấu chiếu Animation tướng lên UI)
+            var previewStage = Object.FindAnyObjectByType<CharacterPreviewStage>();
+            if (previewStage == null)
+            {
+                GameObject stageObj = new GameObject("CharacterPreviewStage");
+                stageObj.transform.position = new Vector3(2000f, 2000f, 0f);
+                stageObj.AddComponent<CharacterPreviewStage>();
+            }
+
             // 3. Dựng Canvas_Gameplay Root
             Transform gameRoot = mainCanvas.transform.Find("Canvas_Gameplay");
             if (gameRoot == null)

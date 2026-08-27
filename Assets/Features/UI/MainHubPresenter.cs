@@ -96,6 +96,12 @@ namespace ProjectZombie.Features.UI
             if (hero == null)
             {
                 var selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+                #if UNITY_EDITOR
+                if (selectionData == null)
+                {
+                    selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                }
+                #endif
                 if (selectionData != null && selectionData.Characters != null && selectionData.Characters.Count > 0)
                 {
                     int idx = Mathf.Clamp(selectionData.SelectedCharacterIndex, 0, selectionData.Characters.Count - 1);
@@ -104,14 +110,31 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
+            RenderTexture previewTex = null;
+            if (hero != null && hero.playerPrefab != null)
+            {
+                if (CharacterPreviewStage.Instance == null)
+                {
+                    var stageObj = new GameObject("CharacterPreviewStage");
+                    stageObj.transform.position = new Vector3(2000f, 2000f, 0f);
+                    stageObj.AddComponent<CharacterPreviewStage>();
+                }
+
+                if (CharacterPreviewStage.Instance != null)
+                {
+                    CharacterPreviewStage.Instance.DisplayCharacter(hero.playerPrefab, "Attack");
+                    previewTex = CharacterPreviewStage.Instance.PreviewTexture;
+                }
+            }
+
             if (hero != null)
             {
                 string elemStr = $"<color={hero.elementHexColor}>Hệ {hero.element}</color>";
-                _view.SetSelectedHeroPreview(hero.characterName, elemStr, hero.avatar);
+                _view.SetSelectedHeroPreview(hero.characterName, elemStr, hero.avatar, previewTex);
             }
             else
             {
-                _view.SetSelectedHeroPreview("ĐẠO SĨ", "<color=#4CAF50>Hệ Mộc</color>", null);
+                _view.SetSelectedHeroPreview("ĐẠO SĨ", "<color=#4CAF50>Hệ Mộc</color>", null, null);
             }
         }
 

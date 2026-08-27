@@ -32,11 +32,37 @@ namespace ProjectZombie.Features.Player
         {
             if (baseStatsConfig == null)
             {
-                Debug.LogError("[PlayerStats] Thiếu HeroStatsConfig! Hãy kéo thả vào Inspector.");
-                return;
+                baseStatsConfig = Resources.Load<HeroStatsConfig>("HeroStatsConfig");
+                #if UNITY_EDITOR
+                if (baseStatsConfig == null)
+                {
+                    var configs = UnityEditor.AssetDatabase.FindAssets("t:HeroStatsConfig");
+                    if (configs != null && configs.Length > 0)
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(configs[0]);
+                        baseStatsConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<HeroStatsConfig>(path);
+                    }
+                }
+                #endif
             }
 
-            InitStats();
+            if (baseStatsConfig == null)
+            {
+                Debug.LogWarning("[PlayerStats] Thiếu HeroStatsConfig, sử dụng chỉ số mặc định: MoveSpeed=5, MaxHealth=100.");
+                MaxHealth = 100f;
+                MoveSpeed = 5f;
+                DashCooldown = 2f;
+                BaseDamage = 10f;
+                AttackSpeed = 1f;
+                CritChance = 0.05f;
+                PickupRange = 2f;
+                AttackRange = 9.5f;
+                _damageMultiplier = 1f;
+            }
+            else
+            {
+                InitStats();
+            }
 
             // Đồng bộ máu qua HealthSystem (Single Source of Truth)
             var healthSystem = GetComponent<HealthSystem>();

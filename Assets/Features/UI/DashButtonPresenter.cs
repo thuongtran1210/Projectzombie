@@ -34,6 +34,23 @@ namespace ProjectZombie.Features.UI
             TryBindPlayer();
         }
 
+        public void Bind(PlayerController pc, PlayerStats stats)
+        {
+            if (_playerController != null)
+            {
+                _playerController.OnDashed -= OnPlayerDashed;
+            }
+
+            _playerController = pc;
+            _playerStats = stats;
+
+            if (_playerController != null)
+            {
+                _playerController.OnDashed += OnPlayerDashed;
+                _lastDashTime = _playerController.LastDashTime;
+            }
+        }
+
         private void OnDestroy()
         {
             if (_view != null)

@@ -199,6 +199,35 @@ namespace ProjectZombie.Features.Player
                 }
             }
 
+            var skillPresenter = FindObjectOfType<ProjectZombie.Features.UI.SignatureSkillPresenter>();
+            if (skillPresenter != null)
+            {
+                var skillManager = _activePlayerInstance.GetComponent<ProjectZombie.Features.Player.Skills.SignatureSkillManager>();
+                if (skillManager != null)
+                {
+                    skillPresenter.Bind(skillManager);
+                }
+            }
+
+            var attackPresenter = FindObjectOfType<ProjectZombie.Features.UI.AttackButtonPresenter>();
+            if (attackPresenter != null)
+            {
+                var combat = _activePlayerInstance.GetComponent<CharacterCombat>();
+                if (combat != null) attackPresenter.Bind(combat);
+                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
+                if (wm != null) attackPresenter.Bind(wm);
+            }
+
+            var dashPresenter = FindObjectOfType<ProjectZombie.Features.UI.DashButtonPresenter>();
+            if (dashPresenter != null)
+            {
+                var pc = _activePlayerInstance.GetComponent<PlayerController>();
+                if (pc != null)
+                {
+                    dashPresenter.Bind(pc, pc.GetComponent<PlayerStats>());
+                }
+            }
+
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }
 

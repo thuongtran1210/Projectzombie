@@ -32,6 +32,14 @@ namespace ProjectZombie.Editor.UI
         [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild & Sync All Vong Xuyen Menu (1-Click)", priority = 1)]
         public static void RebuildAllMenuUI()
         {
+            var previewStage = Object.FindAnyObjectByType<CharacterPreviewStage>();
+            if (previewStage == null)
+            {
+                GameObject stageObj = new GameObject("CharacterPreviewStage");
+                stageObj.transform.position = new Vector3(2000f, 2000f, 0f);
+                stageObj.AddComponent<CharacterPreviewStage>();
+            }
+
             GenerateMainHubPrefab();
             SettingsUIGenerator.GenerateSettingsModal();
             CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
@@ -68,7 +76,7 @@ namespace ProjectZombie.Editor.UI
             BuildTopHeader(root.transform, vietFont, out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn);
 
             // 4. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ)
-            BuildHeroStage(root.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg);
+            BuildHeroStage(root.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
 
             // 5. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 3 Nút Thẻ Gỗ, Nút Xuất Trận Lục Giác Ngọc Hổ Phách)
             BuildBottomHUDRow(root.transform, vietFont,
@@ -85,6 +93,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_currentHeroNameText").objectReferenceValue = heroNameTMP;
             soView.FindProperty("_currentHeroElementText").objectReferenceValue = heroElemTMP;
             soView.FindProperty("_currentHeroAvatarImage").objectReferenceValue = heroAvatarImg;
+            soView.FindProperty("_currentHeroPreviewRawImage").objectReferenceValue = heroRawImg;
 
             soView.FindProperty("_loadoutCardButton").objectReferenceValue = loadoutBtn;
             soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = priNameTMP;
@@ -251,7 +260,7 @@ namespace ProjectZombie.Editor.UI
         }
 
         private static void BuildHeroStage(Transform parent, TMP_FontAsset font,
-            out TextMeshProUGUI heroName, out TextMeshProUGUI heroElem, out Image heroAvatar)
+            out TextMeshProUGUI heroName, out TextMeshProUGUI heroElem, out Image heroAvatar, out RawImage heroRaw)
         {
             GameObject stage = CreateUIElement("Stage_HeroCenter", parent);
             RectTransform sRT = stage.GetComponent<RectTransform>();
@@ -278,7 +287,20 @@ namespace ProjectZombie.Editor.UI
                 pImg.raycastTarget = false;
             }
 
-            // Avatar Tướng Đứng Trên Bục (Để màu trong suốt nếu chưa có sprite để không hiện ô chữ nhật trắng)
+            // 1. RawImage nhận RenderTexture Animation thời gian thực
+            GameObject rawObj = CreateUIElement("Img_HeroPreview_RT", stage.transform);
+            RectTransform rawRT = rawObj.GetComponent<RectTransform>();
+            rawRT.anchorMin = new Vector2(0.5f, 0.5f);
+            rawRT.anchorMax = new Vector2(0.5f, 0.5f);
+            rawRT.pivot = new Vector2(0.5f, 0.2f);
+            rawRT.anchoredPosition = new Vector2(0, 15);
+            rawRT.sizeDelta = new Vector2(220, 220);
+            heroRaw = rawObj.AddComponent<RawImage>();
+            heroRaw.color = Color.white;
+            heroRaw.enabled = false;
+            heroRaw.raycastTarget = false;
+
+            // 2. Avatar Tướng Fallback (Image)
             GameObject avObj = CreateUIElement("Img_HeroAvatar", stage.transform);
             RectTransform avRT = avObj.GetComponent<RectTransform>();
             avRT.anchorMin = new Vector2(0.5f, 0.5f);

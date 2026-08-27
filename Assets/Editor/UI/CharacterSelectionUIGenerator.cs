@@ -133,7 +133,20 @@ namespace ProjectZombie.Editor.UI
             ofImg.color = Color.white;
             if (totemFrame != null) ofImg.sprite = totemFrame;
 
-            // Avatar Sprite Display
+            // 1. RawImage nhận RenderTexture Animation thời gian thực
+            GameObject rawPreviewObj = CreateUIElement("CharacterPreview_RT", orbFrame.transform);
+            RectTransform rawPreviewRT = rawPreviewObj.GetComponent<RectTransform>();
+            rawPreviewRT.anchorMin = new Vector2(0.5f, 0.5f);
+            rawPreviewRT.anchorMax = new Vector2(0.5f, 0.5f);
+            rawPreviewRT.pivot = new Vector2(0.5f, 0.45f);
+            rawPreviewRT.sizeDelta = new Vector2(220, 220);
+            rawPreviewRT.anchoredPosition = Vector2.zero;
+            var rawPreviewImg = rawPreviewObj.AddComponent<RawImage>();
+            rawPreviewImg.color = Color.white;
+            rawPreviewImg.enabled = false;
+            rawPreviewImg.raycastTarget = false;
+
+            // 2. Avatar Sprite Display (Fallback)
             GameObject avatarImgObj = CreateUIElement("CharacterAvatarImage", orbFrame.transform);
             RectTransform avatarRT = avatarImgObj.GetComponent<RectTransform>();
             avatarRT.anchorMin = new Vector2(0.5f, 0.5f);
@@ -352,6 +365,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
             soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
             soView.FindProperty("_characterAvatarImage").objectReferenceValue = avatarImg;
+            soView.FindProperty("_characterPreviewRawImage").objectReferenceValue = rawPreviewImg;
 
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();

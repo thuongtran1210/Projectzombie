@@ -239,7 +239,30 @@ namespace ProjectZombie.Features.UI
             string formattedSkill = $"<b>{charInfo.signatureSkillName}</b>: {charInfo.signatureSkillDesc}";
             string formattedPassive = $"<b>{charInfo.passiveTraitName}</b>: {charInfo.passiveTraitDesc}";
 
-            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar);
+            RenderTexture previewTex = null;
+            GameObject currentPrefab = null;
+            if (_selectionData != null && _selectionData.Characters != null && _currentIndex < _selectionData.Characters.Count)
+            {
+                currentPrefab = _selectionData.Characters[_currentIndex].playerPrefab;
+            }
+
+            if (currentPrefab != null)
+            {
+                if (CharacterPreviewStage.Instance == null)
+                {
+                    var stageObj = new GameObject("CharacterPreviewStage");
+                    stageObj.transform.position = new Vector3(2000f, 2000f, 0f);
+                    stageObj.AddComponent<CharacterPreviewStage>();
+                }
+
+                if (CharacterPreviewStage.Instance != null)
+                {
+                    CharacterPreviewStage.Instance.DisplayCharacter(currentPrefab, "Attack");
+                    previewTex = CharacterPreviewStage.Instance.PreviewTexture;
+                }
+            }
+
+            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar, previewTex);
             _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
         }
     }

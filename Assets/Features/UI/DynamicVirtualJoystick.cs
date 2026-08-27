@@ -12,6 +12,8 @@ namespace ProjectZombie.Features.UI
     /// </summary>
     public class DynamicVirtualJoystick : OnScreenControl, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
+        public static DynamicVirtualJoystick Instance { get; private set; }
+
         [Header("New Input System Binding")]
         [InputControl(layout = "Vector2")]
         [SerializeField] private string _controlPath = "<Gamepad>/leftStick";
@@ -36,6 +38,16 @@ namespace ProjectZombie.Features.UI
         {
             get => _controlPath;
             set => _controlPath = value;
+        }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         private void Start()
