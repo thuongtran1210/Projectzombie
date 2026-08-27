@@ -130,23 +130,57 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private Coroutine _attackRoutine;
+
         public override void Attack()
         {
-            _hasDealtDamageThisAttack = false; // Reset trạng thái cho lượt đánh mới
+            _hasDealtDamageThisAttack = false;
 
+            if (_attackRoutine != null) StopCoroutine(_attackRoutine);
+            _attackRoutine = StartCoroutine(ExecuteAttackRoutine());
+        }
+
+        private System.Collections.IEnumerator ExecuteAttackRoutine()
+        {
+            if (_enemy == null || _enemy.Config == null) yield break;
+
+            float cooldown = Mathf.Max(0.2f, _enemy.Config.attackCooldown);
+            float windupRatio = Mathf.Clamp(_enemy.Config.windupRatio, 0.1f, 0.6f);
+            float windupDelay = Mathf.Clamp(cooldown * windupRatio, 0.08f, 0.45f);
+
+            // 1. Phát Animation Attack với tốc độ đồng bộ
             var bossAnimator = GetComponentInChildren<BossAnimator>();
             if (bossAnimator != null)
             {
                 bossAnimator.PlayAnimation("Attack");
             }
-            else if (_enemy != null && _enemy.EnemyAnimator != null)
+            else if (_enemy.EnemyAnimator != null)
             {
+                _enemy.EnemyAnimator.SetAttackAnimationSpeed(1.0f / cooldown);
                 _enemy.EnemyAnimator.TriggerAttack();
             }
 
-            // Fallback tự động gây sát thương sau 0.15s nếu Animation Clip thiếu Animation Event (giảm độ trễ tránh người chơi lùi né)
-            CancelInvoke(nameof(DealMeleeDamage));
-            Invoke(nameof(DealMeleeDamage), 0.15f);
+            // 2. Chờ đúng Frame vung tay/chém xuống của quái
+            yield return new WaitForSeconds(windupDelay);
+
+            // 3. Đúng lúc chạm tay -> Sinh VFX Vệt Cào Quái & Quét Hitbox gây Damage lên Player
+            if (_enemy.Config.attackVfxPrefab != null)
+            {
+                Vector2 center = GetHitboxCenter();
+                float facingSign = transform.localScale.x < 0 ? -1f : 1f;
+                if (_enemy.PlayerTransform != null)
+                {
+                    facingSign = (_enemy.PlayerTransform.position.x < transform.position.x) ? -1f : 1f;
+                }
+                float angle = facingSign < 0 ? 180f : 0f;
+
+                GameObject vfx = Instantiate(_enemy.Config.attackVfxPrefab, center, Quaternion.Euler(0, 0, angle));
+                float life = _enemy.Config.vfxDuration > 0 ? _enemy.Config.vfxDuration : 0.35f;
+                Destroy(vfx, life);
+            }
+
+            DealMeleeDamage();
+            _attackRoutine = null;
         }
 
 #if UNITY_EDITOR

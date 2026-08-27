@@ -22,19 +22,21 @@ MonoBehaviour:
       thi\xEAng s\xF4ng n\xFAi ph\xE1n \u0111\u1ECBnh t\xE0 ma."
     basicAttackConfig:
       attackType: 0
-      attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
-      attackIcon: {fileID: 0}
+      attackName: "B\xFAt L\u1EC7nh Ph\xE1n T\xE0"
+      attackIcon: {fileID: 21300000, guid: 57fe6e4c65e9e4c4094e3bf0cf0288d1, type: 3}
       element: 0
       baseDamageMultiplier: 1
       baseAttackSpeed: 1.8
-      meleeAreaSize: {x: 2.5, y: 2}
+      meleeAreaSize: {x: 3.2, y: 2.5}
       meleeOffset: 1.2
-      slashVfxPrefab: {fileID: 0}
+      slashVfxPrefab: {fileID: 2690327226307785550, guid: f368769dc33a7c042b6b1ccdd7d7388c, type: 3}
       projectilePrefab: {fileID: 0}
       projectileSpeed: 12
       projectileLifetime: 1.5
       projectileCount: 1
       spreadAngle: 0
+      windupRatio: 0.15
+      vfxDuration: 0.3
       maxComboSteps: 3
       comboResetWindow: 1
       comboStep2Multiplier: 1.2
@@ -63,19 +65,21 @@ MonoBehaviour:
       / D\u01B0\u01A1ng Th\u1ECBnh / Th\xE1i C\u1EF1c)."
     basicAttackConfig:
       attackType: 0
-      attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
-      attackIcon: {fileID: 0}
+      attackName: "Ti\xEAn \u0110\u1EA1o Ki\u1EBFm Kh\xED"
+      attackIcon: {fileID: 21300000, guid: 98632a795bc387847b42dfe8034094bf, type: 3}
       element: 0
       baseDamageMultiplier: 1
-      baseAttackSpeed: 1.8
-      meleeAreaSize: {x: 2.5, y: 2}
-      meleeOffset: 1.2
-      slashVfxPrefab: {fileID: 0}
+      baseAttackSpeed: 2
+      meleeAreaSize: {x: 3.3, y: 2.4}
+      meleeOffset: 1.25
+      slashVfxPrefab: {fileID: 1805651134545415110, guid: 70ffab8d1cc2bce4a8b5cdfe7a27c80a, type: 3}
       projectilePrefab: {fileID: 0}
-      projectileSpeed: 12
-      projectileLifetime: 1.5
+      projectileSpeed: 14
+      projectileLifetime: 1.6
       projectileCount: 1
       spreadAngle: 0
+      windupRatio: 0.15
+      vfxDuration: 0.3
       maxComboSteps: 3
       comboResetWindow: 1
       comboStep2Multiplier: 1.2
@@ -103,20 +107,22 @@ MonoBehaviour:
       T\u1EE9 Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). Tay mang
       Chu\u1ED7i Linh Ph\xF9 T\u1EE9 Ph\u1EE7 h\u1ED9 th\xE2n tr\u1EEB t\xE0."
     basicAttackConfig:
-      attackType: 0
-      attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
-      attackIcon: {fileID: 0}
+      attackType: 1
+      attackName: "Linh L\u1EE5a T\u1EE9 Ph\u1EE7"
+      attackIcon: {fileID: 21300000, guid: a126fbb789689d648b41a95cb0c78193, type: 3}
       element: 0
       baseDamageMultiplier: 1
       baseAttackSpeed: 1.8
-      meleeAreaSize: {x: 2.5, y: 2}
-      meleeOffset: 1.2
+      meleeAreaSize: {x: 3.5, y: 2.6}
+      meleeOffset: 1.3
       slashVfxPrefab: {fileID: 0}
-      projectilePrefab: {fileID: 0}
-      projectileSpeed: 12
-      projectileLifetime: 1.5
+      projectilePrefab: {fileID: 8946744622826746836, guid: a8d70e8cb54c4c747b2ac8570e3db3d0, type: 3}
+      projectileSpeed: 8
+      projectileLifetime: 1.4
       projectileCount: 1
       spreadAngle: 0
+      windupRatio: 0.15
+      vfxDuration: 0.3
       maxComboSteps: 3
       comboResetWindow: 1
       comboStep2Multiplier: 1.2
@@ -146,24 +152,26 @@ MonoBehaviour:
       \u0111\u1ECBa. D\u1ED3n l\u1EF1c b\u1ED9c ph\xE1t \u0111\u1ECBa kh\xED."
     basicAttackConfig:
       attackType: 0
-      attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
-      attackIcon: {fileID: 0}
+      attackName: "Th\u1EA1ch Quy\u1EC1n Ph\xE1 \u0110\u1ECBa"
+      attackIcon: {fileID: 21300000, guid: ed37f7e97d293c349bf5779506006696, type: 3}
       element: 0
       baseDamageMultiplier: 1
-      baseAttackSpeed: 1.8
-      meleeAreaSize: {x: 2.5, y: 2}
-      meleeOffset: 1.2
-      slashVfxPrefab: {fileID: 0}
+      baseAttackSpeed: 1.6
+      meleeAreaSize: {x: 3.6, y: 2.7}
+      meleeOffset: 1.35
+      slashVfxPrefab: {fileID: 5187354520898896030, guid: ed4d5188951b8d14bbfb62db69625ea8, type: 3}
       projectilePrefab: {fileID: 0}
       projectileSpeed: 12
       projectileLifetime: 1.5
       projectileCount: 1
       spreadAngle: 0
+      windupRatio: 0.15
+      vfxDuration: 0.3
       maxComboSteps: 3
       comboResetWindow: 1
       comboStep2Multiplier: 1.2
       comboStep3Multiplier: 1.8
-      knockbackForce: 4
+      knockbackForce: 6
     signatureSkillName: "Th\u1EADp Ph\u01B0\u01A1ng Ch\u1EA5n Th\u1EBF"
     signatureSkillDesc: "Tr\u1EEB 30% HP hi\u1EC7n t\u1EA1i b\u1ED9c ph\xE1t \u0111\u1ECBa
       kh\xED ch\u1EA5n n\u1EE9t \u0111\u1EA5t \u0111\xE1, g\xE2y s\xE1t th\u01B0\u01A1ng
@@ -178,5 +186,5 @@ MonoBehaviour:
     defaultRelic: {fileID: 0}
     defaultPrimaryWeapon: {fileID: 0}
     defaultRelics: []
-  selectedPlayerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
-  selectedCharacterIndex: 0
+  selectedPlayerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
+  selectedCharacterIndex: 2

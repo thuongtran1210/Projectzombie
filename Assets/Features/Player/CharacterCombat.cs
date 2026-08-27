@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Juice;
+using ProjectZombie.Features.Projectiles;
 
 namespace ProjectZombie.Features.Player
 {
@@ -22,6 +23,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private PlayerController playerController;
 
         private PlayerStats _playerStats;
+        private Rigidbody2D _rb;
         private float _lastAttackTime;
         private int _currentComboStep = 1;
         private float _lastComboHitTime;
@@ -46,6 +48,7 @@ namespace ProjectZombie.Features.Player
         private void Awake()
         {
             _playerStats = GetComponent<PlayerStats>();
+            _rb = GetComponent<Rigidbody2D>();
             if (playerAnimator == null) playerAnimator = GetComponent<PlayerAnimator>();
             if (playerController == null) playerController = GetComponent<PlayerController>();
             if (firePoint == null) firePoint = transform;
@@ -83,8 +86,62 @@ namespace ProjectZombie.Features.Player
             return baseSpeed * statBonus;
         }
 
+        private SpriteRenderer _aimIndicator;
+
+        private void InitAimIndicator()
+        {
+            if (_aimIndicator != null) return;
+
+            GameObject arrowObj = new GameObject("VFX_Attack_Aim_Indicator");
+            arrowObj.transform.SetParent(transform, false);
+            arrowObj.transform.localPosition = Vector3.zero;
+
+            _aimIndicator = arrowObj.AddComponent<SpriteRenderer>();
+            _aimIndicator.sprite = Resources.Load<Sprite>("Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle");
+            if (_aimIndicator.sprite == null)
+            {
+#if UNITY_EDITOR
+                _aimIndicator.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle.png");
+#endif
+            }
+            _aimIndicator.sortingLayerName = "Skill";
+            _aimIndicator.sortingOrder = 3;
+
+            // Màu sắc theo bản sắc nguyên tố tướng (Thư Sinh: Vàng Kim, Đạo Sĩ: Xanh Ngọc, Thanh Đồng: Đỏ Cam, Ẩn Sĩ: Hổ Phách)
+            Color themeColor = new Color(1.0f, 0.85f, 0.2f, 0.65f);
+            if (attackConfig != null)
+            {
+                if (attackConfig.attackName.Contains("Tiên Đạo") || attackConfig.attackName.Contains("Linh Phù"))
+                    themeColor = new Color(0.25f, 0.95f, 0.85f, 0.65f); // Xanh ngọc
+                else if (attackConfig.attackName.Contains("Đuốc") || attackConfig.attackName.Contains("Lửa"))
+                    themeColor = new Color(1.0f, 0.4f, 0.1f, 0.7f); // Đỏ cam
+                else if (attackConfig.attackName.Contains("Thạch") || attackConfig.attackName.Contains("Địa"))
+                    themeColor = new Color(0.9f, 0.65f, 0.25f, 0.7f); // Hổ phách
+            }
+            _aimIndicator.color = themeColor;
+            arrowObj.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+        }
+
+        private void UpdateAimIndicator()
+        {
+            if (_aimIndicator == null)
+            {
+                InitAimIndicator();
+            }
+
+            if (_aimIndicator != null)
+            {
+                Vector2 dir = GetAttackDirection();
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                _aimIndicator.transform.rotation = Quaternion.Euler(0, 0, angle);
+                _aimIndicator.transform.localPosition = (Vector3)(dir * 0.4f);
+            }
+        }
+
         private void Update()
         {
+            UpdateAimIndicator();
+
             // Tự động reset combo về nhát 1 nếu quá thời gian chờ (Combo Window)
             float resetWindow = attackConfig != null ? attackConfig.comboResetWindow : 1.0f;
             if (_currentComboStep > 1 && Time.time >= _lastComboHitTime + resetWindow)
@@ -115,9 +172,15 @@ namespace ProjectZombie.Features.Player
         {
             if (attackConfig == null) return;
 
-            // 1. Kích hoạt hoạt ảnh nhân vật & Slowdown tạo lực đầm
+            // 1. Đồng bộ tốc độ Animation của Animator theo Tốc Đánh thực tế
+            float currentAtkSpeed = attackConfig.baseAttackSpeed;
+            if (_playerStats != null && _playerStats.AttackSpeed > 0.01f)
+            {
+                currentAtkSpeed *= _playerStats.AttackSpeed;
+            }
             if (playerAnimator != null)
             {
+                playerAnimator.SetAttackAnimationSpeed(currentAtkSpeed / Mathf.Max(0.1f, attackConfig.baseAttackSpeed));
                 playerAnimator.ChangeAnimationState(PlayerAnimationState.Attack);
             }
 
@@ -129,14 +192,14 @@ namespace ProjectZombie.Features.Player
             // 2. Định hướng đánh: Ưu tiên hướng nhìn hiện tại hoặc quái gần nhất
             Vector2 attackDirection = GetAttackDirection();
 
-            // 3. Thực thi đòn đánh theo Type
+            // 3. Thực thi đòn đánh theo Action Window Timing (Zero-GC Coroutine Flow)
             if (attackConfig.attackType == CharacterAttackType.MeleeSlash)
             {
-                ExecuteMeleeSlash(comboStep, attackDirection);
+                StartCoroutine(ExecuteMeleeSlashRoutine(comboStep, attackDirection, currentAtkSpeed));
             }
             else
             {
-                ExecuteRangedProjectile(comboStep, attackDirection);
+                StartCoroutine(ExecuteRangedProjectileRoutine(comboStep, attackDirection, currentAtkSpeed));
             }
 
             OnAttackExecuted?.Invoke(comboStep);
@@ -161,21 +224,40 @@ namespace ProjectZombie.Features.Player
             return new Vector2(facing, 0f);
         }
 
-        private void ExecuteMeleeSlash(int comboStep, Vector2 direction)
+        private System.Collections.IEnumerator ExecuteMeleeSlashRoutine(int comboStep, Vector2 direction, float currentAtkSpeed)
         {
+            // Tự động xoay mặt nhân vật theo hướng chém
+            if (playerAnimator != null && Mathf.Abs(direction.x) > 0.05f)
+            {
+                playerAnimator.FlipToDirection(direction.x);
+            }
+
+            // Pha 1: Wind-up Delay (Chờ tay nhân vật giơ lên trước khi bung vệt kiếm)
+            float totalCycle = 1f / Mathf.Max(0.1f, currentAtkSpeed);
+            float windupDelay = totalCycle * Mathf.Clamp(attackConfig.windupRatio, 0.05f, 0.35f);
+            if (windupDelay > 0.01f)
+            {
+                yield return new WaitForSeconds(windupDelay);
+            }
+
+            // Pha 2: Active Impact (Bung vệt chém + Quét va chạm đúng khoảnh khắc chém)
             float offset = attackConfig.meleeOffset;
             Vector2 boxSize = attackConfig.meleeAreaSize;
             Vector2 center = (Vector2)transform.position + direction * offset;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            // 1. Sinh hiệu ứng VFX Vệt Chém nếu có
+            // 1. Sinh hiệu ứng VFX Vệt Chém
             if (attackConfig.slashVfxPrefab != null)
             {
                 GameObject vfxObj = Instantiate(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle));
-                Destroy(vfxObj, 1.0f);
+                float life = attackConfig.vfxDuration > 0 ? attackConfig.vfxDuration : 0.3f;
+                Destroy(vfxObj, life);
             }
 
-            // 2. Tính toán sát thương
+            // 2. Lực dấn người tới trước (Attack Lunge Impulse)
+            ApplyAttackLunge(comboStep, direction);
+
+            // 3. Tính toán sát thương
             float comboMultiplier = GetComboMultiplier(comboStep);
             float baseAtk = _playerStats != null ? _playerStats.GetTotalDamage() : 20f;
             float totalDamage = baseAtk * attackConfig.baseDamageMultiplier * comboMultiplier;
@@ -190,7 +272,7 @@ namespace ProjectZombie.Features.Player
                 null
             );
 
-            // 3. Quét va chạm gây damage
+            // 4. Quét va chạm gây damage (Zero-GC OverlapBox)
             int mask = TargetingUtility.EnemyLayerMask;
             int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _meleeHitBuffer, mask);
             bool hitAnyEnemy = false;
@@ -220,25 +302,108 @@ namespace ProjectZombie.Features.Player
                     hitAnyEnemy = true;
                     OnHitEnemy?.Invoke(hitDamage, hit);
 
+                    // Spawn Tia lửa va chạm (HitSparks) tại điểm trúng
+                    SpawnHitImpactSparks(hit.transform.position);
+
                     if (enemy != null && !enemy.IsHeavyArmor)
                     {
                         Vector2 pushDir = ((Vector2)(hit.transform.position - transform.position)).normalized;
-                        enemy.ApplyKnockback(pushDir, attackConfig.knockbackForce, 0.15f);
+                        float knockbackForce = attackConfig.knockbackForce;
+                        if (comboStep == 3) knockbackForce *= 1.6f;
+                        enemy.ApplyKnockback(pushDir, knockbackForce, comboStep == 3 ? 0.22f : 0.15f);
                     }
                 }
             }
 
+            // 5. Game Feel theo bậc thang Combo (HitStop + CameraShake)
             if (hitAnyEnemy)
             {
-                if (isCrit)
+                TriggerDynamicGameJuice(comboStep, isCrit);
+            }
+        }
+
+        private System.Collections.IEnumerator ExecuteRangedProjectileRoutine(int comboStep, Vector2 direction, float currentAtkSpeed)
+        {
+            if (attackConfig.projectilePrefab == null) yield break;
+
+            float totalCycle = 1f / Mathf.Max(0.1f, currentAtkSpeed);
+            float windupDelay = totalCycle * Mathf.Clamp(attackConfig.windupRatio, 0.05f, 0.35f);
+            if (windupDelay > 0.01f)
+            {
+                yield return new WaitForSeconds(windupDelay);
+            }
+
+            ExecuteRangedProjectile(comboStep, direction);
+        }
+
+        /// <summary>
+        /// Tạo lực dấn người nhẹ (Attack Lunge) khi vung đòn.
+        /// </summary>
+        private void ApplyAttackLunge(int comboStep, Vector2 direction)
+        {
+            if (_rb == null) return;
+
+            float lungeSpeed = 1.8f;
+            if (comboStep == 2) lungeSpeed = 2.5f;
+            else if (comboStep == 3) lungeSpeed = 4.0f; // Nhát 3 vút mạnh
+
+            _rb.velocity = direction * lungeSpeed;
+        }
+
+        /// <summary>
+        /// Kích hoạt mức độ Rung màn hình và Dừng hình (HitStop) tăng dần theo nhịp Combo.
+        /// </summary>
+        private void TriggerDynamicGameJuice(int comboStep, bool isCrit)
+        {
+            float shakeDuration = 0.06f;
+            float shakeStrength = 0.05f;
+            float hitStopDuration = 0.03f;
+
+            if (comboStep == 1)
+            {
+                shakeDuration = 0.06f;
+                shakeStrength = 0.05f;
+                hitStopDuration = 0.025f;
+            }
+            else if (comboStep == 2)
+            {
+                shakeDuration = 0.09f;
+                shakeStrength = 0.09f;
+                hitStopDuration = 0.045f;
+            }
+            else if (comboStep == 3) // Finisher: Đầm lực ngàn cân
+            {
+                shakeDuration = 0.18f;
+                shakeStrength = 0.18f;
+                hitStopDuration = 0.08f;
+            }
+
+            if (isCrit)
+            {
+                shakeStrength *= 1.4f;
+                hitStopDuration += 0.02f;
+            }
+
+            GameJuiceEvents.RequestCameraShake(shakeDuration, shakeStrength);
+            GameJuiceEvents.RequestHitStop(hitStopDuration);
+        }
+
+        private static GameObject _cachedHitSparksPrefab;
+        private void SpawnHitImpactSparks(Vector3 hitPos)
+        {
+            if (_cachedHitSparksPrefab == null)
+            {
+                _cachedHitSparksPrefab = Resources.Load<GameObject>("Prefabs/VFX/PS_ImpactSparks");
+                if (_cachedHitSparksPrefab == null)
                 {
-                    GameJuiceEvents.RequestCameraShake(0.15f, 0.15f);
-                    GameJuiceEvents.RequestHitStop(0.05f);
+                    _cachedHitSparksPrefab = Resources.Load<GameObject>("PS_ImpactSparks");
                 }
-                else
-                {
-                    GameJuiceEvents.RequestCameraShake(0.08f, 0.04f);
-                }
+            }
+
+            if (_cachedHitSparksPrefab != null)
+            {
+                GameObject sparks = Instantiate(_cachedHitSparksPrefab, hitPos, Quaternion.identity);
+                Destroy(sparks, 0.6f);
             }
         }
 
@@ -275,6 +440,11 @@ namespace ProjectZombie.Features.Player
                 if (projObj.TryGetComponent<Rigidbody2D>(out var rb))
                 {
                     rb.velocity = boltDir * attackConfig.projectileSpeed;
+                }
+
+                if (projObj.TryGetComponent<SimpleProjectile>(out var simpleProj))
+                {
+                    simpleProj.Initialize(damageData, gameObject, attackConfig.knockbackForce);
                 }
 
                 Destroy(projObj, attackConfig.projectileLifetime);

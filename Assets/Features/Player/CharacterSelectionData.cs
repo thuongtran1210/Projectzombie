@@ -52,6 +52,12 @@ namespace ProjectZombie.Features.Player
         [Tooltip("Góc tỏa đạn (độ)")]
         public float spreadAngle = 0f;
 
+        [Header("Timing & Action Window (Đồng Bộ Nhịp Đánh)")]
+        [Tooltip("Tỉ lệ thời gian vung tay chuẩn bị trước khi bung VFX chém (0.15 = 15% chu kỳ đòn đánh)")]
+        [Range(0.05f, 0.4f)] public float windupRatio = 0.15f;
+        [Tooltip("Thời gian tồn tại của VFX đòn đánh (giây)")]
+        public float vfxDuration = 0.3f;
+
         [Header("Combo & Multipliers")]
         public int maxComboSteps = 3;
         public float comboResetWindow = 1.0f;

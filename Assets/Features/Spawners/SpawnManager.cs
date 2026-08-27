@@ -256,11 +256,27 @@ namespace ProjectZombie.Features.Spawners
         public Vector3 GetSpawnPositionOutsideCamera()
         {
             Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
-            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            float distance = Random.Range(minSpawnRadius, maxSpawnRadius);
+            int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
+            if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
 
-            Vector3 spawnPos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
-            return spawnPos;
+            // Thử tìm vị trí hợp lệ tối đa 8 lần
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                float distance = Random.Range(minSpawnRadius, maxSpawnRadius);
+                Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
+
+                // Kiểm tra xem vị trí có bị tường/vật cản cản trở không
+                Collider2D hit = Physics2D.OverlapCircle(candidatePos, 0.6f, obstacleMask);
+                if (hit == null)
+                {
+                    return candidatePos;
+                }
+            }
+
+            // Fallback nếu map quá hẹp
+            float fallbackAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            return center + new Vector3(Mathf.Cos(fallbackAngle) * minSpawnRadius, Mathf.Sin(fallbackAngle) * minSpawnRadius, 0f);
         }
     }
 }

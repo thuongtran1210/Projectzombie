@@ -21,8 +21,16 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Header("Combat")]
         public float maxHealth = 50f;
         public float damageToPlayer = 10f;
-        public float attackCooldown = 1f;
+        public float attackCooldown = 1.2f;
         public float attackRange = 2f;
+
+        [Header("Animation & Hitbox Action Window (Đồng Bộ Nhịp Đánh)")]
+        [Tooltip("Tỉ lệ thời gian vung đòn chuẩn bị trước khi Hitbox chạm vào Player (0.25 = 25% thời lượng đòn đánh)")]
+        [Range(0.1f, 0.6f)] public float windupRatio = 0.25f;
+        [Tooltip("Prefab VFX vệt chém/vồ/móng vuốt của quái")]
+        public GameObject attackVfxPrefab;
+        [Tooltip("Thời gian tồn tại của VFX quái (giây)")]
+        public float vfxDuration = 0.35f;
 
         [Header("Reward & Tier")]
         [Tooltip("Lượng EXP Gem rớt ra khi chết.")]

@@ -107,6 +107,19 @@ namespace ProjectZombie.Features.UI
                 _view.SetCooldown(remainingCd, maxCd);
                 _view.SetInteractable(true);
 
+                // Hỗ trợ phím bấm trực tiếp trên PC (Chuột trái Mouse0, Phím J, hoặc Phím K)
+                bool pcAttackPressed = false;
+#if ENABLE_INPUT_SYSTEM
+                if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame) pcAttackPressed = true;
+                if (UnityEngine.InputSystem.Keyboard.current != null && (UnityEngine.InputSystem.Keyboard.current.jKey.wasPressedThisFrame || UnityEngine.InputSystem.Keyboard.current.kKey.wasPressedThisFrame)) pcAttackPressed = true;
+#endif
+                if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.K)) pcAttackPressed = true;
+
+                if (pcAttackPressed)
+                {
+                    OnAttackButtonPressed();
+                }
+
                 if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
                 {
                     if (_characterCombat.TriggerAttack())

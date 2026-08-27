@@ -28,8 +28,8 @@
   - Cơ chế lật hướng tự động `SpriteRenderer.flipX` theo hướng di chuyển hoặc hướng ngắm mục tiêu.
 
 ### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
-- **Lối Chơi Chặt Chém Đã Tay (Action Combat Feel):** Chuỗi Combo 3 đòn liên hoàn, hỗ trợ ngắm thông minh (Smart Soft-Lock), cơ chế hủy hoạt ảnh bằng Lướt (Dash Cancel) và phản hồi lực đánh đã tay (Hit-stop $0.04s$, Camera Shake, Knockback).
-- **Hệ Thống Phân Cấp Vũ Khí & Pháp Bảo (Primary vs Relics):** Vũ khí chính quyết định phong cách chém tay chủ động, kết hợp với các Pháp bảo hộ thân tự động bảo vệ sau lưng hoặc đính kèm hiệu ứng vào đòn chém (On-Hit Imbuement).
+- **Lối Chơi Chặt Chém Đã Tay (Action Combat Feel):** Đòn đánh thường đặc trưng theo từng Tướng (Melee Slash / Ranged Projectile + Chuỗi Combo 3 đòn liên hoàn), hỗ trợ ngắm thông minh (Smart Soft-Lock), cơ chế hủy hoạt ảnh bằng Lướt (Dash Cancel) và phản hồi lực đánh đã tay (Hit-stop $0.04s$, Camera Shake, Knockback).
+- **Hệ Thống Đòn Đánh Tướng & 1 Pháp Bảo Hộ Thân (Character Basic Attack & Single Relic):** Bản thể nhân vật quyết định phong cách chém tay / bắn đạn chủ động, kết hợp với **đúng 1 Pháp bảo hộ thân duy nhất** tự động bảo vệ sau lưng hoặc đính kèm hiệu ứng vào đòn chém (On-Hit Imbuement).
 - **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Vận dụng đòn chém tay để kích hoạt chuỗi Tương Khắc (+30% Sát thương) và chuỗi Tương Sinh (-20% Cooldown + Tăng tốc đánh).
 - **Cán Cân Âm Dương Độc Quyền:** Luân chuyển giữa lối đánh Áp Sát Liều Lĩnh (Dương Thịnh) và Thả Diều Tĩnh Tại (Âm Thịnh) để mở khóa các nhánh thẻ Đột Phá hiếm.
 - **Bản Sắc Văn Hóa Dân Gian Thuần Việt:** Tích hợp truyền thuyết Tứ Bất Tử, vũ khí cổ vật (Bút Phán Quan, Nỏ Thần, Bùa Trấn Yêu, Trống Đồng Đông Sơn) và yêu quái dân gian (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
@@ -41,10 +41,9 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       SẢNH CHỜ NGOÀI TRẬN (OUT-GAME META)                    │
-│  - Chọn Nhân Vật (Character Selection)                                      │
-│  - Chọn Vũ Khí Chính (Primary Weapon)                                       │
-│  - Chọn 2 - 3 Pháp Bảo Hộ Thân (Relic Loadout)                             │
-│  - Nâng cấp Chỉ số Vĩnh viễn (Sanctuary Tree) & Rèn Vũ khí bằng Cổ Tiền    │
+│  - Chọn Nhân Vật & Đòn Đánh Đặc Trưng (Character Selection)                 │
+│  - Chọn 1 Pháp Bảo Hộ Thân Duy Nhất (Single Relic Loadout)                  │
+│  - Nâng cấp Chỉ số Vĩnh viễn (Sanctuary Tree) & Mở khóa Pháp Bảo Mới       │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │ Bắt đầu Trận Chiến (Enter Run)
                                        ▼
@@ -52,14 +51,14 @@
 │                     TRẬN ĐÁNH HACK & SLASH (IN-RUN ROGUELITE)               │
 │  1. Thao Tác Chiến Đấu:                                                     │
 │     - Tay trái: Joystick 360° di chuyển & định hướng                        │
-│     - Tay phải: Nút Đánh Combo (3-Hit Chain) + Nút Lướt (Dash) + Skill      │
+│     - Tay phải: Nút Đánh Tướng (Combo 3-Hit / Tầm Xa) + Lướt (Dash) + Skill │
 │  2. Chặt Chém & Tiêu Diệt Yêu Ma:                                           │
-│     - Vũ khí chính gây 70% DPS, Pháp bảo hỗ trợ On-Hit & Khống chế sau lưng │
+│     - Đòn đánh tướng gây 70-80% DPS, 1 Pháp bảo tự động hỗ trợ xoay quanh/bắn│
 │     - Kích hoạt Vòng Tương Sinh qua nhịp chém tay                           │
 │  3. Thu Thập Hạt Kinh Nghiệm (Exp Gem) & Lên Cấp (Level Up):                │
 │     - Chọn 1 trong 3 Thẻ Nâng Cấp Trong Trận:                               │
-│       * Biến hóa Combo Vũ Khí (Combo Augments / Bí Kíp)                     │
-│       * Thức tỉnh & Cường hóa Pháp Bảo Đã Trang Bị (Relic Awakening)        │
+│       * Biến hóa Đòn Đánh Tướng (Combo Augments / Bí Kíp Võ Học)            │
+│       * Cường Hóa & Tiến Hóa 1 Pháp Bảo Đang Mang (Relic Awakening)         │
 │       * Cường hóa Kỹ năng Lướt (Dash Traits) & Chỉ số Tình huống           │
 │     - Mốc Level 5 & 10: Đột Phá Tuyệt Kỹ (Overclock / Ultimate Breakthrough)│
 │  4. Kết Thúc Trận:                                                          │
@@ -70,7 +69,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           TIẾN TRÌNH VĨNH VIỄN                              │
 │  - Tích lũy Cổ Tiền (Vĩnh viễn) -> Nâng cấp cây Sanctuary Tree              │
-│  - Mở khóa Nhân vật, Vũ khí và Pháp bảo mới trong Cửa Hàng                  │
+│  - Mở khóa Nhân vật và Pháp bảo mới trong Cửa Hàng                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -82,22 +81,22 @@
 * **Tay Trái (Movement Area):**
   * **Dynamic Virtual Joystick (360°):** Di chuyển nhân vật mượt mà, hỗ trợ tự động căn vị trí ngón tay chạm trên nửa trái màn hình.
 * **Tay Phải (Action Button Cluster):**
-  * **Nút Tấn Công Chính (Primary Attack Button - Kích thước Lớn Nhất):** Nhấn liên tục để thực hiện chuỗi 3-Hit Combo. Hỗ trợ nhấn giữ (Hold) để chém nhịp tự động hoặc gồng chiêu tùy loại vũ khí.
+  * **Nút Tấn Công Nhân Vật (Character Basic Attack Button - Kích thước Lớn Nhất):** Nhấn liên tục để thực hiện chuỗi 3-Hit Combo hoặc bắn đạn tầm xa. Hỗ trợ Tap Buffer Window $0.18s$.
   * **Nút Lướt (Dash / Dodge Button):** Lướt nhanh qua kẻ địch (có $0.15s$ khung bất tử - I-Frame). Hỗ trợ **Hủy hoạt ảnh đòn chém (Animation Cancel)** để né đòn khẩn cấp. Cooldown: $1.2s$ (hồi lại nhanh).
   * **Nút Tuyệt Kỹ (Signature Skill Button):** Kích hoạt kỹ năng đặc biệt của nhân vật với Cooldown dài ($20s - 30s$), có vòng đếm Cooldown Radial Fill.
 
 ### 3.2. Cơ Chế Hỗ Trợ Ngắm Thông Minh (Smart Soft-Lock System)
 * Khi bấm nút Tấn công:
-  * Nếu người chơi **đang kéo Joystick:** Nhân vật chém theo hướng Joystick chỉ định.
+  * Nếu người chơi **đang kéo Joystick:** Nhân vật chém/bắn theo hướng Joystick chỉ định.
   * Nếu người chơi **thả Joystick:** Hệ thống tự động quét mục tiêu trong góc hình nón $90^\circ$ và bán kính $5m$ phía trước mặt $\rightarrow$ Tự động xoay người chém chính xác vào yêu ma gần nhất, loại bỏ hoàn toàn hiện tượng chém hụt vào không khí.
 
 ---
 
-## 4. Hệ Thống Vũ Khí Chính & Pháp Bảo Hộ Thân (Weapons & Relics)
+## 4. Hệ Thống Đòn Đánh Nhân Vật & 1 Pháp Bảo Hộ Thân (Combat & Relic Architecture)
 
 ### 4.1. Phân Định Cấu Trúc Sức Mạnh (Combat Role & DPS Distribution)
-* **Vũ Khí Chính (Primary Weapon — Chiếm 65 - 75% Tổng DPS):** Là công cụ tấn công chủ động bằng tay của người chơi. Tầm đánh định hướng, sát thương cao, nhịp combo rõ ràng.
-* **Pháp Bảo Hộ Thân (Secondary Relics — Chiếm 15 - 20% Tổng DPS):** Tối đa **3 Pháp bảo** mang theo. Đóng vai trò **Khống chế (CC), bảo vệ sau lưng, và đính kèm hiệu ứng đòn đánh (On-Hit Imbuement)**.
+* **Đòn Đánh Bản Thể Tướng (`CharacterCombat` — Chiếm 75 - 85% Tổng DPS):** Là công cụ tấn công chủ động bằng tay của người chơi qua nút Attack. Mỗi nhân vật sở hữu bộ Animation, VFX chém Melee hoặc đạn Ranged và combo 1-2-3 riêng biệt.
+* **Pháp Bảo Hộ Thân (`Relic` — Chiếm 15 - 25% Tổng DPS):** Người chơi mang theo **duy nhất 1 Pháp bảo** vào trận. Đóng vai trò **Khống chế (CC), tự động bay quanh bảo vệ (`Orbit`), hoặc tự kích hoạt theo chu kỳ độc lập**.
 * **Tuyệt Kỹ Nhân Vật (Signature Skill — Chiếm 10 - 15% Tổng DPS):** Kỹ năng giải vây, buff bùng nổ hoặc xoay chuyển thế trận.
 
 ---

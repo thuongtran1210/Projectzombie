@@ -65,6 +65,17 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
+        /// Đồng bộ tốc độ phát Animation của Animator theo chỉ số AttackSpeed của nhân vật.
+        /// </summary>
+        public void SetAttackAnimationSpeed(float speedMultiplier)
+        {
+            if (animator != null)
+            {
+                animator.speed = Mathf.Clamp(speedMultiplier, 0.5f, 3.0f);
+            }
+        }
+
+        /// <summary>
         /// Xoay mặt nhân vật trái/phải dựa vào hướng Input (trục X)
         /// </summary>
         public void FlipToDirection(float inputX)

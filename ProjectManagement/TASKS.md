@@ -9,14 +9,15 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 
 | 🔴 Backlog (Sắp Tới / Xử Lý Sau) | 🟡 In Progress (Đang Triển Khai - ARPG & Slapstick) | 🟢 Done (Đã Hoàn Thành) |
 |---|---|---|
-| 📱 **[TASK-314] Mobile UI Responsive & Safe Area** | ⚔️ **[TASK-ARPG-01] Tái Cấu Trúc Lõi Vũ Khí & 3-Hit Combo** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
-| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | 🏃 **[TASK-ARPG-02] Trạng Thái Nhân Vật & Combat Controls** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
-| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🎴 **[TASK-ARPG-03] Hệ Thống Nâng Cấp Trong Trận & Đột Phá** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
-| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | 🤪 **[TASK-FUN-01 -> 06] Combat & Enemy Slapstick/Bựa/Fun** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
-| 🧪 **[TASK-402] Mobile Stress Test (60 FPS ARPG)** | 🤪 **[TASK-FUN-01 -> 06] Combat & Enemy Slapstick Logic (DONE)** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
-| 🚀 **[TASK-403] Android AAB Build & Signing Release** | 🎨 **[TASK-FUN-07] Art Sprites & Icons (Dép, Nồi, Điếu, Chiếu, Chổi)** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
-| | ✨ **[TASK-FUN-08] VFX Particle Prefabs (Lốc Dép, Khói, Đại Bác)** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
-| | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 📦 **[TASK-FUN-06] Database 5 Slapstick SOs & 25 Upgrade Cards** |
+| 📱 **[TASK-314] Mobile UI Responsive & Safe Area** | 👊 **[TASK-FEEL-01] Hệ Thống Đánh Đã Tay (Lunge & Crunchy Hit)** | ⚔️ **[TASK-ARPG-01] Tái Cấu Trúc Lõi Vũ Khí & 1 Relic** |
+| 🪓 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành (Bát Quái / Glow)** | ✨ **[TASK-VFX-05] Bộ VFX Đòn Đánh Riêng Biệt 4 Nhân Vật** | ☯️ **[Hạng Mục 1] Lõi Ngũ Hành, Âm Dương & 0-Alloc Combat** |
+| 💥 **[TASK-GP-03] Treasure Chest Gacha Popup (1-3-5 Items)** | 🏃 **[TASK-ARPG-02] Trạng Thái Nhân Vật & Combat Controls** | 📦 **[Hạng Mục 2] Database 12 Pháp Bảo, 12 Tiến Hóa & Cổ Tiền** |
+| 🗜️ **[TASK-401] Texture Compression ASTC & Sprite Atlas** | 🎴 **[TASK-ARPG-03] Hệ Thống Nâng Cấp Trong Trận & Đột Phá** | 🧟 **[Hạng Mục 3] AI 5 Yêu Ma, 2 Boss & 20-Min Wave Timeline** |
+| 🧪 **[TASK-402] Mobile Stress Test (60 FPS ARPG)** | 🤪 **[TASK-FUN-01 -> 06] Combat & Enemy Slapstick/Bựa/Fun** | 📱 **[TASK-300] Mobile Controls (Joystick, Dash, Skill Buttons)** |
+| 🚀 **[TASK-403] Android AAB Build & Signing Release** | 🎨 **[TASK-FUN-07] Art Sprites & Icons (Dép, Nồi, Điếu, Chiếu, Chổi)** | 📊 **[TASK-312 & 313] In-Game HUD Visuals & Upgrade Cards UI** |
+| | ✨ **[TASK-FUN-08] VFX Particle Prefabs (Lốc Dép, Khói, Đại Bác)** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
+| | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
+| | | 📦 **[TASK-FUN-06] Database 5 Slapstick SOs & 25 Upgrade Cards** |
 
 ---
 
@@ -39,25 +40,60 @@ Mục tiêu: Chuyển đổi cơ chế chiến đấu từ Tự Động Đánh (
 
 ---
 
-#### ⚔️ [TASK-ARPG-01] Tái Cấu Trúc Lõi Vũ Khí & Chuỗi 3-Hit Combo (Primary vs Relics)
-*Mục tiêu:* Phân tách rõ ràng giữa 1 Vũ khí chính đánh tay và tối đa 3 Pháp bảo hộ thân.
-* **Dependencies:** `DamageUtility.cs`, `TargetingUtility.cs`, `ElementCycleManager.cs`.
+#### ⚔️ [TASK-ARPG-01] Hệ Thống Đòn Đánh Nhân Vật & 1 Pháp Bảo Hộ Thân (Character Combat & Single Relic)
+*Mục tiêu:* Đòn đánh thường gắn liền với bản thể Tướng (Melee Slash / Ranged Projectile + Combo 1-2-3), trang bị mang vào rút gọn thành 1 Pháp bảo hộ thân tự động.
+* **Dependencies:** `CharacterCombat.cs`, `CharacterSelectionData.cs`, `WeaponManager.cs`, `AttackButtonPresenter.cs`.
 
-- [x] **[TASK-ARPG-01.1] Nâng Cấp `WeaponBase.cs` Hỗ Trợ Chuỗi Combo:**
-  - Thêm thuộc tính `CurrentComboStep` ($1 \rightarrow 2 \rightarrow 3$), `MaxComboSteps = 3`, `ComboResetTime = 1.0s`.
-  - Bổ sung hàm `TriggerActiveComboAttack(int step)` và cơ chế reset combo về nhát 1 nếu quá thời gian chờ.
-  - Cung cấp event `public event Action<DamageData, Collider2D> OnHitEnemy` để các Pháp bảo và kỹ năng lắng nghe kích hoạt hiệu ứng On-Hit.
-- [x] **[TASK-ARPG-01.2] Đa Hình Hóa Hitbox & Sát Thương Trong `Weapon_MeleeBase.cs`:**
-  - Mỗi bước Combo có thông số riêng:
-    - *Nhát 1:* Hitbox hẹp phía trước, Damage hệ số $1.0\times$.
-    - *Nhát 2:* Hitbox quét quạt ngang rộng, Damage hệ số $1.2\times$.
-    - *Nhát 3:* Hitbox mở rộng / đâm sâu, Damage hệ số $1.8\times$, Knockback force mạnh $+50\%$ và kích hoạt Camera Shake.
-  - Cập nhật [Weapon_DualSlash.cs](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Weapons/Weapon_DualSlash.cs) / `Weapon_MeleeBase` tuân thủ chuỗi 3 nhát này.
-- [x] **[TASK-ARPG-01.3] Tái Cấu Trúc `WeaponManager.cs` Theo Mô Hình Loadout:**
-  - Định nghĩa rõ: `public WeaponBase PrimaryWeapon { get; }` (Chỉ duy nhất 1 vũ khí slot chính).
-  - Định nghĩa danh sách: `public IReadOnlyList<WeaponBase> RelicWeapons { get; }` (Tối đa 3 Pháp bảo mang theo).
-  - Sửa đổi hàm `TriggerPrimaryAttack()`: Kích hoạt `PrimaryWeapon.TriggerActiveComboAttack()` mượt mà.
-  - Vòng lặp `Tick()`: Chỉ chạy cho các `RelicWeapons` (nếu là dạng Aura hộ thân) hoặc đăng ký On-Hit event của `PrimaryWeapon`.
+- [x] **[TASK-ARPG-01.1] Xây Dựng `CharacterCombat.cs` (Đòn Đánh Bản Thể Nhân Vật):**
+  - Tích hợp `CharacterAttackConfig` trực tiếp trong `CharacterSelectionData.cs` (Loại đòn MeleeSlash/RangedProjectile, VFX Slash/Đạn, Sát thương, Tốc đánh, Combo 1-2-3).
+  - Quản lý `CurrentComboStep` ($1 \rightarrow 2 \rightarrow 3$), `MaxComboSteps = 3`, `comboResetWindow = 1.0s`, `Tap Buffer Window = 0.18s`.
+  - Tự động điều phối Animation Attack, lực đầm Slowdown, Smart Soft-Lock Auto-Aim, Game Feel (`CameraShake`, `HitStop`) và phát sự kiện `OnHitEnemy`.
+- [x] **[TASK-ARPG-01.2] Tối Ưu Hóa `WeaponManager.cs` Về Chế Độ 1 Pháp Bảo Duy Nhất:**
+  - Thiết lập `MAX_WEAPONS = 1`: Chỉ mang 1 Pháp Bảo Hộ Thân vào trận.
+  - Chế độ vận hành 100% tự động: Mọi Pháp bảo khi trang bị được đặt `isPrimaryActiveWeapon = false` để tự động kích hoạt/xoay quanh qua `Tick()`.
+- [x] **[TASK-ARPG-01.3] Đồng Bộ Nút Tấn Công (`AttackButtonPresenter.cs`):**
+  - Kết nối trực tiếp vào `CharacterCombat` của Player.
+  - Tự động đổi Icon và hiển thị thanh Cooldown theo đòn đánh cơ bản của nhân vật.
+- [x] **[TASK-ARPG-01.4] Tái Cấu Trúc Giao Diện Tàng Bảo Các (`WeaponLoadoutUI`):**
+  - Cột trái: Tab duy nhất `[ KHO PHÁP BẢO HỘ THÂN (CHỌN 1) ]`.
+  - Cột phải: 2 Ô Xuất Trận gồm **[Đòn Đánh Tướng]** (Cố định) và **[1 Pháp Bảo Hộ Thân]** (Tùy chọn).
+
+---
+
+#### 👊 [TASK-FEEL-01] Hệ Thống Đánh Đã Tay & Game Feel Đậm Lực (Crunchy Combat Feel & Motion Lunge)
+*Mục tiêu:* Nâng cấp cảm giác chém quái cực kỳ đã tay qua cơ chế dấn người (Lunge Impulse), khựng hình bậc thang (HitStop) và phản hồi va chạm (Hit-Reaction).
+* **Dependencies:** `CharacterCombat.cs`, `PlayerController.cs`, `GameJuiceEvents.cs`.
+
+- [x] **[TASK-FEEL-01.1] Lực Dấn Người Tới Trước (Attack Motion Lunge):**
+  - Khi tung đòn đánh thường, nhân vật tự động lướt nhẹ tới trước theo nhát chém:
+    - *Nhát 1:* Dấn nhẹ `1.8 m/s`.
+    - *Nhát 2:* Dấn vừa `2.5 m/s`.
+    - *Nhát 3 (Finisher):* Nhảy vút tới trước `4.0 m/s` càn quét quái.
+  - Tự động bám dính mục tiêu (Sticky Melee Tracking) tránh chém hụt.
+- [x] **[TASK-FEEL-01.2] Dynamic HitStop & Camera Shake Theo Bậc Thang Combo:**
+  - *Nhát 1:* HitStop $0.025s$, Shake nhẹ $0.05$.
+  - *Nhát 2:* HitStop $0.045s$, Shake vừa $0.09$.
+  - *Nhát 3 (Finisher):* HitStop **$0.08s$** tạo lực đầm ngàn cân, Shake mạnh **$0.18$** + Knockback $\times 1.6$.
+- [x] **[TASK-FEEL-01.3] Phản Hồi Va Chạm (Hit Impact Reaction):**
+  - Tự động spawn tia lửa va chạm (`PS_ImpactSparks`) ngay tại điểm tiếp xúc giữa kiếm và quái.
+  - Quái vật chớp trắng (`HitFlash`) rõ nét khi nhận đòn.
+
+---
+
+#### ✨ [TASK-VFX-05] Bộ Hiệu Ứng VFX Đòn Đánh Riêng Biệt Cho 4 Nhân Vật
+*Mục tiêu:* Xây dựng 4 bộ VFX Effect đặc trưng 3 lớp (Vệt chém/Đạn + Lõi phát sáng Core + Hạt bụi năng lượng) cho 4 vị tướng.
+* **Dependencies:** `CharacterSelectionData.asset`, `Assets/VFX/SkillLibrary/Prefabs/`, `URP_VFX_Slash_Additive.shader`.
+
+- [x] **[TASK-VFX-05.1] Thư Sinh (C001 - Hệ Kim):** `VFX_ThuSinh_InkSlash`
+  - Vệt chém mực đen Thư Pháp viền vàng Kim Additive, bốc khói bụi mực chữ triện cổ. Tích hợp Prefab `VFX_ThuSinh_InkSlash.prefab` và gán tự động vào `CharacterSelectionData.asset`.
+- [x] **[TASK-VFX-05.2] Đạo Sĩ (C002 - Hệ Mộc / Âm Dương):** `VFX_DaoSi_TalismanShot`
+  - Đạn Linh Phù Tiên Đạo bay thẳng viền tia chớp xanh ngọc lục bảo. Tích hợp Prefab `Projectile_DaoSi_TalismanShot.prefab` (Vòng Bát Quái Xoay + Đuôi Sét Xanh Ngọc) và gán tự động vào `CharacterSelectionData.asset`.
+- [x] **[TASK-VFX-05.3] Thanh Đồng (C003 - Hệ Thủy / Tứ Phủ):** `VFX_ThanhDong_FlameSlash`
+  - Vệt quét Đuốc Lửa Tứ Phủ quét góc rộng $140^\circ$, bốc tàn lửa than hồng rực rỡ mang phong cách lễ nghi Hầu Đồng. Tích hợp Prefab `VFX_ThanhDong_FlameSlash.prefab` và gán tự động vào `CharacterSelectionData.asset`.
+- [x] **[TASK-VFX-05.4] Ẩn Sĩ Sơn Lâm (C004 - Hệ Thổ):** `VFX_AnSi_EarthImpactSlash`
+  - Vệt chém quyền cước nâu hổ phách chấn địa, bốc bụi đất sỏi chấn động nứt mặt đất. Tích hợp Prefab `VFX_AnSi_EarthImpactSlash.prefab` và gán tự động vào `CharacterSelectionData.asset`.
+- [x] **[TASK-VFX-05.5] Liên Kết Tự Động Vào CharacterSelectionData:**
+  - Cung cấp MenuItem `Tools/VFX Generator/⚡ Build All 4 Character Basic Attack VFX (1-Click)` tự động liên kết toàn bộ 4 vị tướng.
 - [ ] **[TASK-ARPG-01.4] Chuyển Đổi Các Pháp Bảo Phụ Sang Cơ Chế Relic:**
   - *Bùa Trấn Yêu (`Weapon_Orbit.cs`):* Giữ nguyên vòng xoay bảo vệ nhưng chuyển trọng tâm sang Đẩy lùi (Knockback) bảo vệ sau lưng.
   - *Cửu Vĩ Hồ Trảo:* Lắng nghe `PrimaryWeapon.OnHitEnemy` $\rightarrow$ Đính kèm đòn cào lửa và hút máu On-Hit.

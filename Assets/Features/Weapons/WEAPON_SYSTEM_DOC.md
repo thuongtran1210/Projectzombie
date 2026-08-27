@@ -1,102 +1,64 @@
-# Tài Liệu Hệ Thống Vũ Khí (Weapon System) & Đạn (Projectile)
+# Tài Liệu Hệ Thống Chiến Đấu & Pháp Bảo (Combat & Relic System v5.0)
 
-Hệ thống vũ khí của trò chơi được thiết kế theo cấu trúc **Đa Vũ Khí (Multi-Weapon)** kết hợp với **Kiến trúc Component-Based (Lắp ráp Lego)** dành cho các loại đạn. Điều này mang lại khả năng mở rộng vô hạn, giúp dễ dàng tạo ra hàng chục loại vũ khí mới (như game Vampire Survivors) mà không cần viết lại mã nguồn nền tảng.
-
----
-
-## 1. Hệ Sinh Thái Vũ Khí (Weapon Manager)
-
-Quản lý việc sở hữu vũ khí và logic ra đòn của nhân vật.
-
-### `WeaponManager`
-- Nơi gắn: Trên `Player`.
-- Vai trò: Đóng vai trò như một chiếc "Balo". Tự động thu thập toàn bộ các vũ khí con (đang gắn vào Player) vào một danh sách.
-- Mỗi khung hình, Manager sẽ lặp qua tất cả vũ khí và kích hoạt hàm `Tick()` của chúng.
-
-### `WeaponBase`
-- Vai trò: Lớp trừu tượng (Abstract) nền móng cho MỌI loại vũ khí.
-- Tính năng: Quản lý thời gian hồi chiêu (Cooldown) dựa trên AttackSpeed và cung cấp hàm gọi `PerformAttack()`. Không hề ôm đồm logic Đạn hay Object Pool (đảm bảo Single Responsibility).
-
-### `Weapon_MeleeBase` (Kế thừa WeaponBase)
-- Vai trò: Chuyên dùng cho vũ khí Cận Chiến.
-- Tính năng: Tối ưu hóa bằng cách dùng `Physics2D.OverlapBoxNonAlloc` kết hợp `TargetingUtility.EnemyLayerMask` (Zero Allocation & Bitwise C++ filtering) để quét mục tiêu thay vì phải gọi GameObject Đạn vật lý.
-
-### `TargetingUtility` (Static Utility)
-- Vai trò: Bộ xử lý quét và nhắm mục tiêu quái vật dùng chung toàn bộ game (Zero GC Allocation).
-- Tính năng:
-  - Cache `TargetingUtility.EnemyLayerMask` ở tầng C++ Physics.
-  - Hỗ trợ các chế độ: `Nearest`, `LowestHealth`, `HighestHealth`, `ElementalAdvantage` (khắc chế hệ), `RandomInRange` (Reservoir Sampling 0-Alloc).
-  - Loại bỏ hoàn toàn code lặp lại `FindNearestEnemy()` trên các vũ khí tầm xa.
-
-### `Weapon_ProjectileBase` (Kế thừa WeaponBase)
-- Vai trò: Lớp trừu tượng cơ sở cho MỌI loại vũ khí có sinh ra đạn (`ProjectileData`).
-- Tính năng: Tự động quản lý việc clone ScriptableObject `ProjectileData` độc lập cho từng vũ khí, xử lý đổi Prefab đạn khi thăng cấp (`OnLevelUp`), và dọn dẹp tài nguyên khi bị hủy (`OnDestroy`).
-
-### `Weapon_RangedBase` (Kế thừa Weapon_ProjectileBase)
-- Vai trò: Chuyên dùng cho vũ khí Bắn Xa theo hướng (Directional / Fired).
-- Tính năng: Áp dụng các chỉ số riêng cho đạn bay như tăng tốc độ bay của đạn (`projectileData.Speed += modifier.projectileSpeedBonus`). Các vũ khí đại diện: `Weapon_Targeted` (Nỏ Thần, Bút Phán Quan), `Weapon_Shotgun`, `Weapon_Crossbow`.
-
-### `Weapon_Orbit` (Kế thừa Weapon_ProjectileBase)
-- Vai trò: Chuyên dùng cho vũ khí Vòng xoay / Hào quang bảo vệ (Orbit / Aura).
-- Tính năng: Kích hoạt sinh đạn xoay quanh người chơi theo nhịp hồi chiêu (`PerformAttack()`). Độc lập hoàn toàn khỏi logic tăng tốc độ bay của đạn bắn xa (`RangedBase`). Tự động đăng ký nghe sự kiện `OnProjectileDespawned` từ `ProjectileSystem` để dọn dẹp danh sách quản lý đạn rác.
-
-### Các loại Vũ Khí Thực Tế (Weapon Implementations)
-- `Weapon_Targeted` (Ranged): Tự động tìm kiếm kẻ địch gần nhất trong tầm với qua `TargetingUtility` và phóng đạn vào chúng.
-- `Weapon_DualSlash` (Melee): Đánh ra 2 nhát chém ngược hướng nhau (trái/phải) kết hợp dynamic directional VFX từ `GlobalVFXPoolManager`.
-- `Weapon_Orbit` (Orbit): Sinh các lá bùa (`W003`) xoay tròn bảo vệ nhân vật theo đợt hồi chiêu.
-- *(Có thể tạo thêm: `Weapon_Aura`, `Weapon_RandomStrike`...)*
+Hệ thống chiến đấu của trò chơi được tái cấu trúc theo mô hình **Action RPG Survivor 2.5D Cổ Phong**:
+1. **Đòn Đánh Cơ Bản Nhân Vật (`CharacterCombat`)**: Gắn liền với bản thể từng vị Tướng, điều khiển qua nút **Attack Button** (Animation + VFX Vệt chém Melee / Đạn tầm xa Ranged + Combo 1-2-3).
+2. **Pháp Bảo Hộ Thân Duy Nhất (`WeaponManager` & `RelicWeapon`)**: Mỗi trận đấu người chơi chỉ mang theo **đúng 1 Pháp Bảo** từ Tàng Bảo Các, tự động bay quanh bảo vệ (`Orbit`) hoặc bồi đòn (`On-Hit / Auto-Cast`) liên tục mỗi chu kỳ.
 
 ---
 
-## 2. Hệ Sinh Thái Đạn Data-Driven (Projectile System)
+## 1. Hệ Sinh Thái Chiến Đấu (Combat & Relic Architecture)
 
-Hệ thống đạn được chuẩn hóa hoàn toàn theo kiến trúc **Data-Driven / GAS-Inspired** (`Assets/Features/Projectiles/`).
+```mermaid
+graph TD
+    A[Attack Button / Input] -->|Bấm Đánh Chủ Động| B(CharacterCombat)
+    B -->|Phát Hoạt Ảnh| C[PlayerAnimator: Attack State]
+    B -->|Sinh VFX & Game Feel| D[VFX Vệt Chém / Đạn + CameraShake / HitStop]
+    B -->|Quét Trúng Kẻ Địch| E[OnHitEnemy Event]
+    E -->|Kích Ứng Bồi Đòn| F[Pháp Bảo Hộ Thân: Relic]
+    G[Update Loop: Tick] -->|Tự Động Kích Hoạt Liên Tục| F
+```
 
-### Cấu trúc chính:
-- **`ProjectileData`**: ScriptableObject định nghĩa các chỉ số cơ bản của đạn (Tốc độ, Thời gian sống, Layer va chạm) và danh sách các `ProjectileBehaviorData`.
-- **`ProjectileSystem`**: Quản lý việc Spawn đạn và tự động tái chế qua `ProjectilePool`.
-- **`ProjectileController`**: Component điều khiển cốt lõi gắn trên Prefab đạn.
+### 1.1. `CharacterCombat` (Đòn Đánh Bản Thể Nhân Vật)
+- **Nơi gắn**: Trực tiếp trên thực thể `Player`.
+- **Vai trò**: Quản lý đòn đánh tay cơ bản đặc trưng cho từng nhân vật, tách biệt hoàn toàn khỏi việc tháo lắp vũ khí ngoài:
+  - **Melee Slash (Cận chiến)**: Quét vùng OverlapBox (Zero Allocation), sinh VFX Vệt Chém hình quạt, áp dụng lực đẩy lùi (Knockback), rung lắc màn hình (`CameraShake`) và dừng hình tạo lực đầm (`HitStop`).
+  - **Ranged Projectile (Tầm xa)**: Phóng linh kiếm/đạn phép hướng về mục tiêu với tốc độ cao.
+  - **Combo 1-2-3**: Quản lý bước combo (`CurrentComboStep`), thời gian giữ nhịp (`comboResetWindow`) và hệ số sát thương tăng tiến cho từng nhát.
+  - **Tap Buffer Window (0.18s)**: Cho phép đệm nhịp bấm nút đánh mượt mà không bị khựng hình.
 
-### Các Behavior phổ biến:
-- **`StraightBehavior`**: Đẩy đạn bay thẳng theo hướng bắn.
-- **`HomingBehavior`**: Tự động bẻ hướng đạn đuổi theo mục tiêu gần nhất.
-- **`PierceBehavior`**: Cho phép đạn đâm xuyên qua N mục tiêu.
-- **`BounceBehavior`**: Nảy bật khi va chạm kẻ địch.
-- **`ExplosionBehavior`**: Gây sát thương AOE xung quanh điểm va chạm.
-- **`OrbitBehavior`**: Xoay tròn xung quanh nhân vật (dùng cho vũ khí Orbit/Aura).
-- **`PeriodicHitBehavior`**: Gây sát thương giật định kỳ lên kẻ địch đứng trong vùng sát thương mà không bị Despawn.
+### 1.2. `WeaponManager` (Quản Lý 1 Pháp Bảo Hộ Thân)
+- **Nơi gắn**: Trên `Player`.
+- **Giới hạn**: `MAX_WEAPONS = 1` (Chỉ mang 1 Pháp Bảo Hộ Thân vào trận).
+- **Chế độ Vận hành**: **100% Tự Động (Auto-Trigger / Passive Orbit)**.
+  - Mọi Pháp bảo khi trang bị đều được đặt `isPrimaryActiveWeapon = false` để liên tục tự động ra đòn qua hàm `Tick()` mỗi khung hình mà không chiếm quyền của nút bấm đánh tay.
+
+### 1.3. `CharacterAttackConfig` (Cấu Hình Data-Driven)
+- Tích hợp trực tiếp bên trong [CharacterSelectionData.cs](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Player/CharacterSelectionData.cs):
+  - `attackType`: `MeleeSlash` hoặc `RangedProjectile`.
+  - `attackName`, `attackIcon`: Tên và icon hiển thị trên nút Attack HUD.
+  - `baseDamageMultiplier`, `baseAttackSpeed`, `knockbackForce`.
+  - `slashVfxPrefab` (Vệt chém) hoặc `projectilePrefab` (Đạn bay).
+
+---
+
+## 2. Giao Diện Nút Tấn Công & Tàng Bảo Các (UI/UX)
+
+1. **`AttackButtonPresenter`**:
+   - Tự động bind vào `CharacterCombat` của Player.
+   - Hiển thị Icon đòn đánh riêng của Tướng và cập nhật thanh hồi chiêu linh hoạt.
+2. **`WeaponLoadoutPresenter` (Tàng Bảo Các)**:
+   - Cột trái: Tab duy nhất `[ KHO PHÁP BẢO HỘ THÂN (CHỌN 1) ]` hiển thị lưới 12 ô Pháp bảo.
+   - Cột phải: Hiển thị 2 ô trang bị xuất trận:
+     - **Ô 1 (Lục Giác Vàng)**: Đòn Đánh Cơ Bản Của Tướng (Cố định theo nhân vật đang chọn).
+     - **Ô 2 (Khung Lam)**: 1 Pháp Bảo Hộ Thân đã chọn từ kho.
 
 ---
 
-## Hướng Dẫn Nhanh Cách Tạo Vũ Khí Mới
+## 3. Hệ Thống Nâng Cấp In-Game (`UpgradeManager`)
 
-1. Tạo một GameObject con nằm trong `Player`.
-2. Gắn một Component Kế thừa từ `WeaponBase` (Ví dụ: `Weapon_Targeted` hoặc `Weapon_Orbit`).
-3. Tạo `ProjectileData` (chuột phải `Create > ProjectZombie > Projectiles > ProjectileData`) và gắn các Behavior tương ứng (như `Straight`, `Homing`, `Orbit`...).
-4. Kéo thả `ProjectileData` đó vào ô **Projectile Data** của `Weapon`.
-5. `WeaponManager` và `ProjectileSystem` sẽ tự động vận hành và tối ưu bộ nhớ qua Object Pool!
-
----
-
-## 3. Cơ Chế Tiến Hóa Vũ Khí (Weapon Evolution)
-
-Tiến hóa vũ khí là cơ chế cho phép nâng cấp một vũ khí đã đạt cấp độ tối đa (hoặc đủ điều kiện) thành một phiên bản mới, mạnh mẽ hơn và thường thay đổi hoàn toàn cơ chế bắn/đánh.
-
-### Cách cấu hình một Tiến hóa:
-1. Tạo một `UpgradeData` mới (chuột phải > `ProjectZombie/Upgrades/Upgrade Data`).
-2. Đặt `Upgrade Type` là **`WeaponEvolution`**.
-3. **`Weapon Id`**: Nhập chính xác ID của vũ khí gốc (để hệ thống tìm và xóa nó đi).
-4. **`Weapon Prefab`**: Kéo thả Prefab của Vũ khí Tiến Hóa (phiên bản mạnh hơn).
-5. **`Required Weapon Level`**: Đặt cấp độ tối thiểu mà vũ khí gốc phải đạt được (ví dụ: Level 8).
-6. **`Required Passive Id`**: (Tùy chọn) Điền ID của vật phẩm bị động yêu cầu (ví dụ: "exp_tome"). Bỏ trống nếu không yêu cầu vật phẩm ghép.
-
-### Luồng hoạt động:
-- Khi lên cấp, `UpgradeManager` sẽ quét kho vũ khí của người chơi (`WeaponManager.ActiveWeapons`).
-- Nếu người chơi có vũ khí khớp với `Weapon Id` và đạt đủ `Required Weapon Level`. 
-- Đặc biệt, hệ thống sẽ kiểm tra xem `PlayerPassives` của nhân vật đã sở hữu thẻ Passive (được định nghĩa trong `Required Passive Id`) hay chưa.
-- Khi người chơi chọn thẻ này, `WeaponManager` sẽ tự động Hủy vũ khí cũ và Instantiate vũ khí Tiến hóa mới.
-
----
+Khi nhân vật lên cấp trong trận đấu, các thẻ nâng cấp sẽ phân phối tập trung:
+- **Thẻ Cường Hóa Đòn Đánh Tướng (`ComboAugmentUpgradeData`)**: Tăng kích thước vùng chém, thêm vệt lửa, tăng tốc độ đánh và sát thương combo của bản thân nhân vật.
+- **Thẻ Cường Hóa & Tiến Hóa Pháp Bảo (`WeaponUpgradeData` & `EvolutionUpgradeData`)**: Nâng cấp cấp độ (Level 1 -> 6) và tiến hóa cho đúng **1 Pháp bảo hộ thân duy nhất** đang mang theo.
 
 ## 4. Hệ Thống Nâng Cấp (Upgrade System)
 

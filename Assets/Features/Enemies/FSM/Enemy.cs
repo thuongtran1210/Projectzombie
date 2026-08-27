@@ -160,6 +160,17 @@ namespace ProjectZombie.Features.Enemies
             {
                 HealthSystem.OnDied += HandleDeath;
             }
+
+            // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy, cho phép đàn quái tràn tới tự nhiên
+            Collider2D enemyCol = GetComponent<Collider2D>();
+            if (enemyCol != null && PlayerTransform != null)
+            {
+                Collider2D playerCol = PlayerTransform.GetComponent<Collider2D>();
+                if (playerCol != null)
+                {
+                    Physics2D.IgnoreCollision(enemyCol, playerCol, true);
+                }
+            }
         }
 
         private void OnDisable()
@@ -177,6 +188,17 @@ namespace ProjectZombie.Features.Enemies
         {
             PlayerTransform = playerTf;
             PlayerHealthSystem = playerHp;
+
+            Collider2D enemyCol = GetComponent<Collider2D>();
+            if (enemyCol != null && PlayerTransform != null)
+            {
+                Collider2D playerCol = PlayerTransform.GetComponent<Collider2D>();
+                if (playerCol != null)
+                {
+                    Physics2D.IgnoreCollision(enemyCol, playerCol, true);
+                }
+            }
+
             if (StateMachine != null && StateMachine.CurrentState == IdleState && ChaseState != null)
             {
                 StateMachine.ChangeState(ChaseState);
@@ -199,6 +221,16 @@ namespace ProjectZombie.Features.Enemies
             else if (playerTransform != null)
             {
                 PlayerHealthSystem = playerTransform.GetComponent<HealthSystem>();
+            }
+
+            Collider2D enemyCol = GetComponent<Collider2D>();
+            if (enemyCol != null && PlayerTransform != null)
+            {
+                Collider2D playerCol = PlayerTransform.GetComponent<Collider2D>();
+                if (playerCol != null)
+                {
+                    Physics2D.IgnoreCollision(enemyCol, playerCol, true);
+                }
             }
         }
 

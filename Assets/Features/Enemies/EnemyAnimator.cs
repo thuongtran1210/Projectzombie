@@ -73,6 +73,17 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        /// <summary>
+        /// Đồng bộ tốc độ phát Animation của Quái theo Cooldown thực tế.
+        /// </summary>
+        public void SetAttackAnimationSpeed(float speedMultiplier)
+        {
+            if (animator != null)
+            {
+                animator.speed = Mathf.Clamp(speedMultiplier, 0.5f, 3.0f);
+            }
+        }
+
         // --- Helper methods để tương thích với FSM hiện tại ---
         // FSM đã kiểm soát logic chặt chẽ nên ta chỉ cần map sang PlayState.
 

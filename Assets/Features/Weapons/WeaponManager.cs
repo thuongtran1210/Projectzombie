@@ -109,12 +109,6 @@ namespace ProjectZombie.Features.Weapons
                     AddWeapon(w);
                 }
             }
-
-            // Nếu có ít nhất 1 vũ khí và chưa có vũ khí nào được đánh dấu là primary, đặt vũ khí đầu tiên làm primary
-            if (_activeWeapons.Count > 0 && !_activeWeapons.Exists(w => w.isPrimaryActiveWeapon))
-            {
-                _activeWeapons[0].isPrimaryActiveWeapon = true;
-            }
         }
 
         public void EquipWeaponFromData(WeaponData data, bool isPrimary = false)
@@ -181,7 +175,10 @@ namespace ProjectZombie.Features.Weapons
                 
                 // Mọi Pháp Bảo Hộ Thân (Relic) mang vào đều là Auto-Attack / Passive Orbit
                 weapon.isPrimaryActiveWeapon = false;
-                weapon.weaponRole = WeaponRole.Relic;
+                if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
+                {
+                    weapon.weaponRole = WeaponRole.RelicOrbitalShield;
+                }
 
                 _activeWeapons.Add(weapon);
                 OnWeaponsChanged?.Invoke();
