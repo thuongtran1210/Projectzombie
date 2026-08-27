@@ -174,14 +174,16 @@ namespace ProjectZombie.Features.Player
             }
 
             // Tự động bind Player vào RunHUDPresenter & CharacterGaugeWidgetPresenter
+            var health = _activePlayerInstance.GetComponent<HealthSystem>();
+            var stats = _activePlayerInstance.GetComponent<PlayerStats>();
+            var exp = _activePlayerInstance.GetComponent<PlayerExperience>();
+            var wm = _activePlayerInstance.GetComponent<WeaponManager>();
+            var passives = _activePlayerInstance.GetComponent<PlayerPassives>();
+            var pc = _activePlayerInstance.GetComponent<PlayerController>();
+
             var runHUDPresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.RunHUDPresenter>();
             if (runHUDPresenter != null)
             {
-                var health = _activePlayerInstance.GetComponent<HealthSystem>();
-                var stats = _activePlayerInstance.GetComponent<PlayerStats>();
-                var exp = _activePlayerInstance.GetComponent<PlayerExperience>();
-                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
-                var passives = _activePlayerInstance.GetComponent<PlayerPassives>();
                 runHUDPresenter.Construct(health, stats, exp, wm, passives);
             }
 
@@ -212,20 +214,14 @@ namespace ProjectZombie.Features.Player
             var attackPresenter = FindObjectOfType<ProjectZombie.Features.UI.AttackButtonPresenter>();
             if (attackPresenter != null)
             {
-                var combat = _activePlayerInstance.GetComponent<CharacterCombat>();
                 if (combat != null) attackPresenter.Bind(combat);
-                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
                 if (wm != null) attackPresenter.Bind(wm);
             }
 
             var dashPresenter = FindObjectOfType<ProjectZombie.Features.UI.DashButtonPresenter>();
-            if (dashPresenter != null)
+            if (dashPresenter != null && pc != null)
             {
-                var pc = _activePlayerInstance.GetComponent<PlayerController>();
-                if (pc != null)
-                {
-                    dashPresenter.Bind(pc, pc.GetComponent<PlayerStats>());
-                }
+                dashPresenter.Bind(pc, stats);
             }
 
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");

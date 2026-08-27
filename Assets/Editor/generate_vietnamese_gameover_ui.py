@@ -302,6 +302,107 @@ def create_cotien_coin():
     write_unity_meta(out_path, border=(0, 0, 0, 0))
     print("Created:", out_path)
 
+def create_stat_sub_card():
+    # 256x72, 9-slice border 16,16,16,16
+    w, h = 256, 72
+    img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Nền gỗ mun tối mờ
+    pad = 2
+    draw.rounded_rectangle([pad, pad, w - pad - 1, h - pad - 1], radius=8, fill=(28, 20, 16, 230), outline=(130, 95, 55, 255), width=2)
+    draw.rounded_rectangle([pad + 3, pad + 3, w - pad - 4, h - pad - 4], radius=6, outline=(220, 180, 110, 80), width=1)
+
+    # Đinh tán vàng đồng 4 góc
+    studs = [(pad + 6, pad + 6), (w - pad - 7, pad + 6), (pad + 6, h - pad - 7), (w - pad - 7, h - pad - 7)]
+    for sx, sy in studs:
+        draw.ellipse([sx-2, sy-2, sx+2, sy+2], fill=(235, 195, 115, 255), outline=(75, 50, 25, 255))
+
+    out_path = os.path.join(FRAMES_DIR, "Card_Stat_Sub_Bg.png")
+    img.save(out_path)
+    write_unity_meta(out_path, border=(16, 16, 16, 16))
+    print("Created:", out_path)
+
+def create_gameover_banner(is_victory=False):
+    # 440x90, 9-slice border 32,32,32,32
+    w, h = 440, 90
+    img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    c_top = (210, 175, 80, 255) if is_victory else (180, 35, 30, 255)
+    c_bot = (140, 105, 35, 255) if is_victory else (100, 15, 15, 255)
+    c_border = (255, 235, 150, 255) if is_victory else (240, 190, 100, 255)
+
+    pad = 4
+    for y in range(pad, h - pad):
+        factor = (y - pad) / float(h - 2 * pad)
+        r = int(c_top[0] * (1 - factor) + c_bot[0] * factor)
+        g = int(c_top[1] * (1 - factor) + c_bot[1] * factor)
+        b = int(c_top[2] * (1 - factor) + c_bot[2] * factor)
+        draw.line([(pad + 8, y), (w - pad - 9, y)], fill=(r, g, b, 255))
+
+    # Viền ngoài hoa văn
+    draw.rounded_rectangle([pad, pad, w - pad - 1, h - pad - 1], radius=12, outline=c_border, width=3)
+    draw.rounded_rectangle([pad + 4, pad + 4, w - pad - 5, h - pad - 5], radius=9, outline=(255, 255, 200, 140), width=1)
+
+    # Chấm ngọc góc
+    studs = [(pad + 8, pad + 8), (w - pad - 9, pad + 8), (pad + 8, h - pad - 9), (w - pad - 9, h - pad - 9)]
+    for sx, sy in studs:
+        draw.ellipse([sx-3, sy-3, sx+3, sy+3], fill=(255, 245, 180, 255), outline=(90, 60, 20, 255))
+
+    fname = "Banner_GameOver_Victory.png" if is_victory else "Banner_GameOver_Defeat.png"
+    out_path = os.path.join(BADGES_DIR, fname)
+    img.save(out_path)
+    write_unity_meta(out_path, border=(32, 32, 32, 32))
+    print("Created:", out_path)
+
+def create_stat_icons():
+    # 1. Icon Thời Gian (Đồng hồ cát cổ)
+    img_time = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    d_time = ImageDraw.Draw(img_time)
+    d_time.polygon([(16, 12), (48, 12), (32, 32), (48, 52), (16, 52), (32, 32)], fill=(245, 215, 130, 255), outline=(120, 85, 30, 255))
+    d_time.rectangle([14, 10, 50, 14], fill=(210, 165, 70, 255))
+    d_time.rectangle([14, 50, 50, 54], fill=(210, 165, 70, 255))
+    out_time = os.path.join(BADGES_DIR, "Icon_Stat_Time.png")
+    img_time.save(out_time)
+    write_unity_meta(out_time)
+
+    # 2. Icon Diệt Quái (Đầu lâu ma / Sát quái)
+    img_kill = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    d_kill = ImageDraw.Draw(img_kill)
+    d_kill.ellipse([14, 12, 50, 44], fill=(235, 230, 240, 255), outline=(70, 55, 75, 255), width=2)
+    d_kill.rectangle([22, 40, 42, 54], fill=(235, 230, 240, 255), outline=(70, 55, 75, 255), width=2)
+    d_kill.ellipse([20, 26, 28, 36], fill=(50, 35, 55, 255))
+    d_kill.ellipse([36, 26, 44, 36], fill=(50, 35, 55, 255))
+    d_kill.polygon([(32, 36), (29, 42), (35, 42)], fill=(50, 35, 55, 255))
+    d_kill.line([(27, 48), (27, 54)], fill=(70, 55, 75, 255), width=2)
+    d_kill.line([(32, 48), (32, 54)], fill=(70, 55, 75, 255), width=2)
+    d_kill.line([(37, 48), (37, 54)], fill=(70, 55, 75, 255), width=2)
+    out_kill = os.path.join(BADGES_DIR, "Icon_Stat_Kill.png")
+    img_kill.save(out_kill)
+    write_unity_meta(out_kill)
+
+    # 3. Icon Cấp Độ (Lệnh bài sao vàng)
+    img_lvl = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    d_lvl = ImageDraw.Draw(img_lvl)
+    d_lvl.polygon([(32, 10), (52, 22), (52, 48), (32, 56), (12, 48), (12, 22)], fill=(225, 175, 60, 255), outline=(110, 75, 20, 255), width=2)
+    d_lvl.polygon([(32, 18), (36, 28), (47, 28), (38, 34), (41, 44), (32, 38), (23, 44), (26, 34), (17, 28), (28, 28)], fill=(255, 245, 180, 255), outline=(130, 90, 25, 255))
+    out_lvl = os.path.join(BADGES_DIR, "Icon_Stat_Level.png")
+    img_lvl.save(out_lvl)
+    write_unity_meta(out_lvl)
+
+    # 4. Icon Sát Thương (Kiếm kích song đao)
+    img_dmg = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    d_dmg = ImageDraw.Draw(img_dmg)
+    d_dmg.line([(14, 50), (46, 14)], fill=(230, 220, 240, 255), width=4)
+    d_dmg.line([(18, 54), (50, 18)], fill=(200, 185, 215, 255), width=2)
+    d_dmg.line([(50, 50), (18, 14)], fill=(240, 120, 60, 255), width=4)
+    d_dmg.ellipse([28, 28, 36, 36], fill=(255, 230, 140, 255), outline=(130, 80, 20, 255))
+    out_dmg = os.path.join(BADGES_DIR, "Icon_Stat_Damage.png")
+    img_dmg.save(out_dmg)
+    write_unity_meta(out_dmg)
+    print("Created Stat Icons!")
+
 if __name__ == '__main__':
     create_panel_dongson()
     create_button_sonmai(False)
@@ -309,4 +410,8 @@ if __name__ == '__main__':
     create_button_gomun(False)
     create_button_gomun(True)
     create_cotien_coin()
+    create_stat_sub_card()
+    create_gameover_banner(False)
+    create_gameover_banner(True)
+    create_stat_icons()
     print("All Vietnamese Folklore UI Assets successfully generated!")

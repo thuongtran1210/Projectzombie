@@ -43,7 +43,8 @@ namespace ProjectZombie.Editor.UI
             GenerateMainHubPrefab();
             SettingsUIGenerator.GenerateSettingsModal();
             CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
-            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, MODAL CHỌN ANH HÙNG & MODAL CÀI ĐẶT THÀNH CÔNG 100%!");
+            GameOverUIGenerator.RebuildGameOverUI();
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, MODAL CHỌN ANH HÙNG, CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
         }
 
         public static void GenerateMainHubPrefab()

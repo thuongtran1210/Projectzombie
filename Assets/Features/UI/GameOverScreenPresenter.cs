@@ -235,10 +235,16 @@ namespace ProjectZombie.Features.UI
                 _uiAudioSource.PlayOneShot(gameOverStingerClip, 0.85f);
             }
 
-            // Thiết lập tiêu đề
+            // Thiết lập tiêu đề & Banner Cổ Phong
             string titleText = isVictory ? "CHIẾN THẮNG!" : "ĐÃ NGÃ XUỐNG";
             Color titleColor = isVictory ? victoryColor : defeatColor;
             view.SetTitle(titleText, titleColor);
+
+            #if UNITY_EDITOR
+            string bannerPath = isVictory ? "Assets/Art/UI/Badges/Banner_GameOver_Victory.png" : "Assets/Art/UI/Badges/Banner_GameOver_Defeat.png";
+            Sprite bannerSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(bannerPath);
+            if (bannerSprite != null) view.SetBanner(bannerSprite);
+            #endif
 
             var tracker = RunStatsTracker.Instance;
             if (tracker == null)
@@ -247,11 +253,11 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            // Gửi dữ liệu đã định dạng xuống View
-            view.SetTimeAlive($"Thời gian sống: {tracker.GetFormattedTime()}");
-            view.SetKillCount($"Zombie đã hạ: {tracker.KillCount}");
-            view.SetMaxLevel($"Cấp độ đạt: {tracker.MaxLevelReached}");
-            view.SetDamageDealt($"Sát thương gây ra: {tracker.TotalDamageDealt:F0}");
+            // Gửi dữ liệu đã định dạng xuống View (Chỉ gửi số hoặc giá trị sạch)
+            view.SetTimeAlive(tracker.GetFormattedTime());
+            view.SetKillCount($"{tracker.KillCount}");
+            view.SetMaxLevel($"Lv.{tracker.MaxLevelReached}");
+            view.SetDamageDealt($"{tracker.TotalDamageDealt:N0}");
 
             // Tính toán Currency nhận được & Ghi nhận tiến trình lưu game
             _currencyEarned = tracker.CalculateMetaCurrency(isVictory);

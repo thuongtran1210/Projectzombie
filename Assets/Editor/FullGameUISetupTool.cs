@@ -371,6 +371,9 @@ namespace ProjectZombie.EditorTools
             {
                 soGameplay.FindProperty("_mobileControlsPanel").objectReferenceValue = mobileTrans.gameObject;
             }
+            // Tự động chuẩn hóa GameOver UI Cổ Phong Đông Sơn
+            ProjectZombie.Editor.UI.GameOverUIGenerator.RebuildGameOverUI();
+
             soGameplay.ApplyModifiedProperties();
 
             // 6. MetaSceneTransitionController

@@ -11,13 +11,15 @@ namespace ProjectZombie.Features.UI
     /// </summary>
     public class GameOverScreenView : MonoBehaviour
     {
-        [Header("Panel Root")]
+        [Header("Backdrop & Panel Root")]
         [SerializeField] private GameObject panel;
+        [SerializeField] private Image backdropDim;
 
-        [Header("Title")]
+        [Header("Title Banner")]
+        [SerializeField] private Image bannerImage;
         [SerializeField] private TMP_Text titleText;
 
-        [Header("Run Stats Display")]
+        [Header("Run Stats Display (Value texts)")]
         [SerializeField] private TMP_Text timeAliveText;
         [SerializeField] private TMP_Text killCountText;
         [SerializeField] private TMP_Text maxLevelText;
@@ -25,6 +27,7 @@ namespace ProjectZombie.Features.UI
 
         [Header("Currency Meta")]
         [SerializeField] private TMP_Text currencyEarnedText;
+        [SerializeField] private Image currencyIcon;
 
         [Header("Buttons")]
         [SerializeField] private Button playAgainButton;
@@ -36,7 +39,7 @@ namespace ProjectZombie.Features.UI
 
         [Header("Transition")]
         [SerializeField] private CanvasGroup canvasGroup;
-        [SerializeField] private float fadeInDuration = 0.5f;
+        [SerializeField] private float fadeInDuration = 0.4f;
 
         private Coroutine _fadeCoroutine;
 
@@ -78,27 +81,40 @@ namespace ProjectZombie.Features.UI
 
         private void EnsureReferences()
         {
+            if (backdropDim == null)
+            {
+                backdropDim = transform.Find("Backdrop_Dim")?.GetComponent<Image>();
+            }
+
             if (panel == null || panel == gameObject)
             {
-                Transform bg = transform.Find("Background_Panel") ?? transform.Find("Panel");
+                Transform bg = transform.Find("Background_Panel") ?? transform.Find("Panel_GameOver");
                 if (bg != null) panel = bg.gameObject;
+            }
+
+            if (bannerImage == null)
+            {
+                bannerImage = transform.Find("Background_Panel/Banner_Title")?.GetComponent<Image>()
+                           ?? transform.Find("Panel_GameOver/Banner_Title")?.GetComponent<Image>();
             }
 
             if (playAgainButton == null)
             {
-                playAgainButton = transform.Find("PlayAgain_Button")?.GetComponent<Button>()
+                playAgainButton = transform.Find("Background_Panel/PlayAgain_Button")?.GetComponent<Button>()
+                               ?? transform.Find("PlayAgain_Button")?.GetComponent<Button>()
                                ?? GetComponentInChildren<Button>(true);
             }
 
             if (mainMenuButton == null)
             {
-                Transform mm = transform.Find("MainMenu_Button");
-                if (mm != null) mainMenuButton = mm.GetComponent<Button>();
+                mainMenuButton = transform.Find("Background_Panel/MainMenu_Button")?.GetComponent<Button>()
+                              ?? transform.Find("MainMenu_Button")?.GetComponent<Button>();
             }
 
             if (titleText == null)
             {
-                titleText = transform.Find("Title_Text")?.GetComponent<TMP_Text>()
+                titleText = transform.Find("Background_Panel/Banner_Title/Title_Text")?.GetComponent<TMP_Text>()
+                         ?? transform.Find("Title_Text")?.GetComponent<TMP_Text>()
                          ?? transform.Find("Background_Panel/Title_Text")?.GetComponent<TMP_Text>();
             }
         }
@@ -115,7 +131,7 @@ namespace ProjectZombie.Features.UI
         {
             EnsureReferences();
 
-            // Bật toàn bộ các thành phần con trong Hierarchy (Background_Panel, Buttons...)
+            // Bật toàn bộ các thành phần con trong Hierarchy (Backdrop, Background_Panel, Buttons...)
             SetAllChildrenActive(isActive);
 
             if (panel != null && panel != gameObject)
@@ -155,6 +171,14 @@ namespace ProjectZombie.Features.UI
             }
             canvasGroup.alpha = 1f;
             _fadeCoroutine = null;
+        }
+
+        public void SetBanner(Sprite bannerSprite)
+        {
+            if (bannerImage != null && bannerSprite != null)
+            {
+                bannerImage.sprite = bannerSprite;
+            }
         }
 
         public void SetTitle(string text, Color color)
