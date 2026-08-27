@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 2
   weaponId: R008
   weaponName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
   description: "Tri\u1EC7u h\u1ED3i Ch\u1ED5i L\xF4ng G\xE0 kh\u1ED5ng l\u1ED3 gi\xE1ng
     t\u1EEB tr\u1EDDi xu\u1ED1ng v\u1EDBi l\u1EF1c Knockback 12m/s c\u1EF1c \u0111\u1EA1i
     v\xE0 g\u0103m qu\xE1i v\xE0o t\u01B0\u1EDDng."

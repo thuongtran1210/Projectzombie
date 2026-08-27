@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 3
   weaponId: W_PIPE
   weaponName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
   description: "Ph\xE1p b\u1EA3o phun lu\u1ED3ng kh\xF3i d\xE0y \u0111\u1EB7c g\xE2y
     hi\u1EC7u \u1EE9ng 'Say Thu\u1ED1c L\xE0o' khi\u1EBFn qu\xE1i \u0111i gi\u1EADt
     l\xF9i v\xE0 n\u1ED5 s\xE1t th\u01B0\u01A1ng ho s\u1EB7c s\u1EE5a."

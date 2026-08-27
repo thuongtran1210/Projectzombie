@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 3
   weaponId: W008
   weaponName: "\u0110ao C\u1EEDu V\u0129"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: dd96b89cdb604841925c81c03de51b81, type: 3}
   description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n phun lu\u1ED3ng r\u1ED3ng l\u1EEDa
     thi\xEAu \u0111\u1ED1t li\xEAn t\u1EE5c k\u1EBB \u0111\u1ECBch tr\u01B0\u1EDBc
     m\u1EB7t."

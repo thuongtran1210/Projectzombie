@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 2
   weaponId: W_SLIPPER
   weaponName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
   description: "Ph\xE1p b\u1EA3o n\xE9m Boomerang t\u1EF1 \u0111\u1ED9ng; Hit 3 qu\u0103ng
     l\u1ED1c d\xE9p g\xE2y hi\u1EC7u \u1EE9ng 'Qu\xEA \u0110\u1ED9' khi\u1EBFn qu\xE1i
     quay sang \u0111\u1EA5m \u0111\u1ED3ng minh."

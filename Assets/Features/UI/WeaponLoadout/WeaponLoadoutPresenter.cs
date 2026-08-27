@@ -196,7 +196,11 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null || _view.InventoryGridContainer == null) return;
 
-            ClearChildren(_view.InventoryGridContainer);
+            Transform gridContainer = _view.InventoryGridContainer;
+            ClearChildren(gridContainer);
+
+            // Đảm bảo Grid Container nằm trong ScrollRect và có RectMask2D để không bao giờ bị tràn ra ngoài
+            EnsureScrollViewSetup(gridContainer);
 
             // Lọc danh sách Pháp Bảo
             var targetList = new List<WeaponData>();
@@ -211,30 +215,96 @@ namespace ProjectZombie.Features.UI
             // Nếu danh sách rỗng, nạp tất cả
             if (targetList.Count == 0) targetList.AddRange(_allWeapons);
 
-            // Hiển thị toàn bộ Pháp Bảo hiện có (tối thiểu 12 ô để lấp đầy grid)
+            // Hiển thị toàn bộ Pháp Bảo hiện có (tối thiểu 12 ô)
             int totalSlots = Mathf.Max(12, targetList.Count);
             for (int i = 0; i < totalSlots; i++)
             {
                 if (i < targetList.Count)
                 {
-                    CreateItemSlot(targetList[i], _view.InventoryGridContainer, isLocked: false);
+                    var weapon = targetList[i];
+                    bool isEquipped = _selectedRelics.Contains(weapon);
+                    bool isInspected = _inspectedWeapon == weapon;
+                    CreateItemSlot(weapon, gridContainer, isLocked: false, isEquipped: isEquipped, isInspected: isInspected);
                 }
                 else
                 {
-                    CreateItemSlot(null, _view.InventoryGridContainer, isLocked: true);
+                    CreateItemSlot(null, gridContainer, isLocked: true, isEquipped: false, isInspected: false);
                 }
             }
         }
 
-        private void CreateItemSlot(WeaponData weapon, Transform parent, bool isLocked)
+        private void EnsureScrollViewSetup(Transform container)
+        {
+            RectTransform containerRT = container.GetComponent<RectTransform>();
+            if (containerRT != null)
+            {
+                // Set Pivot Top-Center để nội dung cuộn từ trên xuống dưới
+                containerRT.anchorMin = new Vector2(0f, 1f);
+                containerRT.anchorMax = new Vector2(1f, 1f);
+                containerRT.pivot = new Vector2(0.5f, 1f);
+                containerRT.anchoredPosition = Vector2.zero;
+            }
+
+            var parent = container.parent;
+            if (parent != null)
+            {
+                // Cần Image trong suốt để nhận sự kiện kéo chuột / chạm vuốt (Raycast Target)
+                var parentImg = parent.GetComponent<Image>();
+                if (parentImg == null)
+                {
+                    parentImg = parent.gameObject.AddComponent<Image>();
+                    parentImg.color = new Color(0, 0, 0, 0.01f); // Gần như vô hình nhưng vẫn nhận raycast
+                }
+                parentImg.raycastTarget = true;
+
+                if (parent.GetComponent<RectMask2D>() == null && parent.GetComponent<Mask>() == null)
+                {
+                    parent.gameObject.AddComponent<RectMask2D>();
+                }
+
+                var scrollRect = parent.GetComponent<ScrollRect>();
+                if (scrollRect == null)
+                {
+                    scrollRect = parent.gameObject.AddComponent<ScrollRect>();
+                }
+
+                scrollRect.horizontal = false;
+                scrollRect.vertical = true;
+                scrollRect.content = containerRT;
+                scrollRect.viewport = parent.GetComponent<RectTransform>();
+                scrollRect.movementType = ScrollRect.MovementType.Elastic;
+                scrollRect.elasticity = 0.1f;
+                scrollRect.inertia = true;
+                scrollRect.decelerationRate = 0.135f;
+                scrollRect.scrollSensitivity = 35f;
+            }
+
+            // Cấu hình GridLayoutGroup mượt mà (4 cột)
+            var grid = container.GetComponent<GridLayoutGroup>();
+            if (grid == null) grid = container.gameObject.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(74, 90);
+            grid.spacing = new Vector2(8, 10);
+            grid.padding = new RectOffset(6, 6, 8, 8);
+            grid.childAlignment = TextAnchor.UpperCenter;
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 4;
+
+            // ContentSizeFitter để tự động co giãn theo số lượng Pháp Bảo
+            var fitter = container.GetComponent<ContentSizeFitter>();
+            if (fitter == null) fitter = container.gameObject.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        private void CreateItemSlot(WeaponData weapon, Transform parent, bool isLocked, bool isEquipped, bool isInspected)
         {
             GameObject slotObj = new GameObject(isLocked ? "Slot_Locked" : $"Slot_{weapon.weaponId}", typeof(RectTransform));
             slotObj.transform.SetParent(parent, false);
 
             var slotRT = slotObj.GetComponent<RectTransform>();
-            slotRT.sizeDelta = new Vector2(80, 96); // 80px ô + 16px nhãn bên dưới
+            slotRT.sizeDelta = new Vector2(74, 90);
 
-            // Khung Ô Vật Phẩm (80 x 80)
+            // Khung Ô Vật Phẩm (74 x 74)
             GameObject boxObj = new GameObject("Box", typeof(RectTransform), typeof(Image), typeof(Button));
             boxObj.transform.SetParent(slotObj.transform, false);
             var boxRT = boxObj.GetComponent<RectTransform>();
@@ -242,11 +312,24 @@ namespace ProjectZombie.Features.UI
             boxRT.anchorMax = new Vector2(0.5f, 1f);
             boxRT.pivot = new Vector2(0.5f, 1f);
             boxRT.anchoredPosition = Vector2.zero;
-            boxRT.sizeDelta = new Vector2(80, 80);
+            boxRT.sizeDelta = new Vector2(74, 74);
 
             var boxImg = boxObj.GetComponent<Image>();
-            Color borderColor = isLocked ? new Color(0.25f, 0.22f, 0.30f, 0.8f) : GetElementColor(weapon.elementType);
-            boxImg.color = borderColor;
+            Color elemColor = !isLocked ? GetElementColor(weapon.elementType) : new Color(0.25f, 0.22f, 0.30f, 0.8f);
+            
+            // Nếu đang được chọn trang bị hoặc soi: Viền Vàng Kim phát sáng nổi bật
+            if (isEquipped)
+            {
+                boxImg.color = new Color(0.0f, 1.0f, 0.65f, 1.0f); // Xanh Ngọc Hộ Thân
+            }
+            else if (isInspected)
+            {
+                boxImg.color = new Color(1.0f, 0.85f, 0.2f, 1.0f); // Vàng Kim Soi
+            }
+            else
+            {
+                boxImg.color = elemColor;
+            }
 
             // Nền bên trong (Inner Background)
             GameObject innerObj = new GameObject("InnerBg", typeof(RectTransform), typeof(Image));
@@ -254,11 +337,13 @@ namespace ProjectZombie.Features.UI
             var inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = new Vector2(3, 3);
-            inRT.offsetMax = new Vector2(-3, -3);
+            inRT.offsetMin = new Vector2(2.5f, 2.5f);
+            inRT.offsetMax = new Vector2(-2.5f, -2.5f);
 
             var inImg = innerObj.GetComponent<Image>();
-            inImg.color = isLocked ? new Color(0.08f, 0.07f, 0.10f, 0.95f) : new Color(0.14f, 0.11f, 0.18f, 0.95f);
+            inImg.color = isLocked 
+                ? new Color(0.08f, 0.07f, 0.10f, 0.95f) 
+                : (isEquipped ? new Color(0.05f, 0.22f, 0.16f, 0.95f) : new Color(0.14f, 0.11f, 0.18f, 0.95f));
 
             // Icon bên trong
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
@@ -266,14 +351,13 @@ namespace ProjectZombie.Features.UI
             var iconRT = iconObj.GetComponent<RectTransform>();
             iconRT.anchorMin = Vector2.zero;
             iconRT.anchorMax = Vector2.one;
-            iconRT.offsetMin = new Vector2(6, 6);
-            iconRT.offsetMax = new Vector2(-6, -6);
+            iconRT.offsetMin = new Vector2(4, 4);
+            iconRT.offsetMax = new Vector2(-4, -4);
 
             var iconImg = iconObj.GetComponent<Image>();
             if (isLocked)
             {
-                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.6f);
-                // Có thể load sprite ổ khóa nếu có
+                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.4f);
             }
             else
             {
@@ -281,6 +365,21 @@ namespace ProjectZombie.Features.UI
                 iconImg.enabled = weapon.icon != null;
                 iconImg.color = Color.white;
                 iconImg.preserveAspect = true;
+            }
+
+            // Huy hiệu [ĐANG CHỌN] nếu được trang bị
+            if (isEquipped)
+            {
+                GameObject badgeObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
+                badgeObj.transform.SetParent(boxObj.transform, false);
+                var badgeRT = badgeObj.GetComponent<RectTransform>();
+                badgeRT.anchorMin = new Vector2(1, 1);
+                badgeRT.anchorMax = new Vector2(1, 1);
+                badgeRT.pivot = new Vector2(1, 1);
+                badgeRT.anchoredPosition = new Vector2(-1, -1);
+                badgeRT.sizeDelta = new Vector2(16, 16);
+                var badgeImg = badgeObj.GetComponent<Image>();
+                badgeImg.color = new Color(0.0f, 1.0f, 0.5f, 1f);
             }
 
             // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
@@ -291,20 +390,22 @@ namespace ProjectZombie.Features.UI
             lblRT.anchorMax = new Vector2(1, 0);
             lblRT.pivot = new Vector2(0.5f, 0);
             lblRT.anchoredPosition = Vector2.zero;
-            lblRT.sizeDelta = new Vector2(0, 16);
+            lblRT.sizeDelta = new Vector2(0, 15);
 
             var lblTMP = lblObj.GetComponent<TextMeshProUGUI>();
-            lblTMP.fontSize = 11;
+            lblTMP.fontSize = 10;
             lblTMP.alignment = TextAlignmentOptions.Center;
             lblTMP.fontStyle = FontStyles.Bold;
+            lblTMP.overflowMode = TextOverflowModes.Ellipsis;
 
             if (isLocked)
             {
-                lblTMP.text = "<color=#666677>Khóa</color>";
+                lblTMP.text = "<color=#555566>Khóa</color>";
             }
             else
             {
-                lblTMP.text = $"<color=#{ColorUtility.ToHtmlStringRGB(borderColor)}>{weapon.weaponName}</color>";
+                string nameColorHex = isEquipped ? "00FF88" : ColorUtility.ToHtmlStringRGB(elemColor);
+                lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
             }
 
             // Xử lý Click

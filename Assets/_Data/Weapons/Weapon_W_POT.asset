@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 1
   weaponId: W_POT
   weaponName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
   description: "Ph\xE1p b\u1EA3o c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
     v\xE0o n\u1ED3i v\xE0 ph\xF3ng ra nh\u01B0 \u0111\u1EA1n ph\xE1o; ch\u1EA1m \u0111\u1EA5t
     r\u01A1i c\u01A1m n\u1EAFm h\u1ED3i m\xE1u."

@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponRole: 2
   weaponId: W012
   weaponName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
-  icon: {fileID: 1356788643, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  icon: {fileID: 21300000, guid: de14356655dc4c1fb7510fe87ac5f37f, type: 3}
   description: "Phi ti\xEAu ma thu\u1EADt t\u1EF1 \u0111\u1ED9ng xoay tr\xF2n qu\xE9t
     k\u1EBB \u0111\u1ECBch v\xE0 quy h\u1ED3i."
   rarity: Common

@@ -198,10 +198,23 @@ namespace ProjectZombie.Features.UI
 
             if (_detailTypeText != null)
             {
-                string roleName = weapon.weaponRole == WeaponRole.PrimaryWeapon 
-                    ? "<color=#FF8800>[VŨ KHÍ CHÍNH] (ĐÁNH TAY COMBO)</color>" 
-                    : "<color=#00FF88>[PHÁP BẢO] (HỘ THÂN TỰ ĐỘNG)</color>";
-                _detailTypeText.text = $"{roleName}\nHệ <color=#FFD700>{weapon.elementType}</color>";
+                string roleTag = "";
+                switch (weapon.weaponRole)
+                {
+                    case WeaponRole.RelicOrbitalShield:
+                        roleTag = "<color=#00FF88>[🛡️ PHÁP BẢO QUỸ ĐẠO HỘ VỆ]</color>";
+                        break;
+                    case WeaponRole.RelicOnHitTrigger:
+                        roleTag = "<color=#FFCC00>[⚔️ PHÁP BẢO KÍCH ỨNG BỒI ĐÒN]</color>";
+                        break;
+                    case WeaponRole.RelicSupportAura:
+                        roleTag = "<color=#4DEEEA>[🌀 PHÁP BẢO HỖ TRỢ KHỐNG CHẾ]</color>";
+                        break;
+                    default:
+                        roleTag = "<color=#FF8800>[PHÁP BẢO HỘ THÂN]</color>";
+                        break;
+                }
+                _detailTypeText.text = $"{roleTag} • Hệ <color=#FFD700>{weapon.elementType}</color>";
             }
 
             if (_detailIcon != null)

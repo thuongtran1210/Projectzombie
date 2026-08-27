@@ -226,8 +226,8 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnKillCountChanged(int count)
         {
-            // Hiển thị icon skull và số lượng quái hạ với màu cam lửa (#FF8C42)
-            _view.SetKillCount($"💀 <color=#FF8C42>{count}</color>");
+            // Hiển thị số lượng quái hạ với nhãn text rõ ràng chuẩn Cổ Phong thay vì emoji Unicode ngoài font
+            _view.SetKillCount($"Diệt: <color=#FF8C42>{count}</color>");
         }
 
         private void OnSkillsOrPassivesChanged()

@@ -130,6 +130,21 @@ namespace ProjectZombie.Features.Weapons.Editor
                     so.weaponPrefab = prefabObj.GetComponent<WeaponBase>();
                 }
 
+                // Tự động tìm và gán Sprite Icon trong Assets/Art/Weapons
+                string iconPath = $"Assets/Art/Weapons/Icon_{item.id}.png";
+                if (item.id == "R007") iconPath = "Assets/Art/Weapons/Icon_R007_ChieuTrai.png";
+                if (item.id == "R008") iconPath = "Assets/Art/Weapons/Icon_R008_ChoiLongGa.png";
+                Sprite iconSprite = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
+                if (iconSprite != null)
+                {
+                    so.icon = iconSprite;
+                    if (prefabObj != null)
+                    {
+                        var comp = prefabObj.GetComponent<WeaponBase>();
+                        if (comp != null) comp.icon = iconSprite;
+                    }
+                }
+
                 EditorUtility.SetDirty(so);
             }
 
