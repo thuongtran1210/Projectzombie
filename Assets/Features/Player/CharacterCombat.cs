@@ -58,6 +58,30 @@ namespace ProjectZombie.Features.Player
             {
                 attackConfig = RunLoadoutState.SelectedCharacter.basicAttackConfig;
             }
+
+            // Fallback an toàn: Nếu chưa có attackConfig hoặc thiếu slashVfxPrefab thì tự nạp từ CharacterSelectionData
+            EnsureAttackConfigFallback();
+        }
+
+        private void EnsureAttackConfigFallback()
+        {
+            if (attackConfig == null || (attackConfig.attackType == CharacterAttackType.MeleeSlash && attackConfig.slashVfxPrefab == null))
+            {
+#if UNITY_EDITOR
+                var data = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                if (data != null && data.Characters != null && data.Characters.Count > 0)
+                {
+                    var charEntry = data.Characters[0];
+                    if (attackConfig == null) attackConfig = charEntry.basicAttackConfig;
+                    else if (attackConfig.slashVfxPrefab == null) attackConfig.slashVfxPrefab = charEntry.basicAttackConfig.slashVfxPrefab;
+                }
+
+                if (attackConfig != null && attackConfig.slashVfxPrefab == null)
+                {
+                    attackConfig.slashVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThuSinh_InkSlash.prefab");
+                }
+#endif
+            }
         }
 
         public void SetAttackConfig(CharacterAttackConfig config)
@@ -251,7 +275,13 @@ namespace ProjectZombie.Features.Player
             if (attackConfig.slashVfxPrefab != null)
             {
                 GameObject vfxObj = Instantiate(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle));
-                float life = attackConfig.vfxDuration > 0 ? attackConfig.vfxDuration : 0.3f;
+                var psList = vfxObj.GetComponentsInChildren<ParticleSystem>(true);
+                foreach (var p in psList)
+                {
+                    p.Clear();
+                    p.Play();
+                }
+                float life = attackConfig.vfxDuration > 0 ? attackConfig.vfxDuration : 0.45f;
                 Destroy(vfxObj, life);
             }
 

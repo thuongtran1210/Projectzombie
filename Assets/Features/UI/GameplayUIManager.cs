@@ -95,16 +95,28 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public void SetGameplayCanvasActive(bool isActive)
         {
-            if (_gameplayCanvasGroup == null) return;
+            if (_gameplayCanvasGroup == null) _gameplayCanvasGroup = GetComponent<CanvasGroup>();
 
-            _gameplayCanvasGroup.gameObject.SetActive(isActive);
-            _gameplayCanvasGroup.alpha = isActive ? 1f : 0f;
-            _gameplayCanvasGroup.blocksRaycasts = isActive;
-            _gameplayCanvasGroup.interactable = isActive;
+            if (_gameplayCanvasGroup != null)
+            {
+                _gameplayCanvasGroup.gameObject.SetActive(isActive);
+                _gameplayCanvasGroup.alpha = isActive ? 1f : 0f;
+                _gameplayCanvasGroup.blocksRaycasts = isActive;
+                _gameplayCanvasGroup.interactable = isActive;
+            }
+
+            SetHUDActive(isActive);
+            SetMobileControlsActive(isActive);
         }
 
         public void SetHUDActive(bool isActive)
         {
+            if (_runHUDPanel == null)
+            {
+                var hudView = GetComponentInChildren<RunHUDView>(true);
+                if (hudView != null) _runHUDPanel = hudView.gameObject;
+            }
+
             if (_runHUDPanel != null)
             {
                 _runHUDPanel.SetActive(isActive);

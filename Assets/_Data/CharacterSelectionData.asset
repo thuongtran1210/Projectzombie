@@ -74,8 +74,8 @@ MonoBehaviour:
       meleeOffset: 1.25
       slashVfxPrefab: {fileID: 1805651134545415110, guid: 70ffab8d1cc2bce4a8b5cdfe7a27c80a, type: 3}
       projectilePrefab: {fileID: 0}
-      projectileSpeed: 14
-      projectileLifetime: 1.6
+      projectileSpeed: 12
+      projectileLifetime: 1.5
       projectileCount: 1
       spreadAngle: 0
       windupRatio: 0.15
@@ -113,8 +113,8 @@ MonoBehaviour:
       element: 0
       baseDamageMultiplier: 1
       baseAttackSpeed: 1.8
-      meleeAreaSize: {x: 3.5, y: 2.6}
-      meleeOffset: 1.3
+      meleeAreaSize: {x: 2.5, y: 2}
+      meleeOffset: 1.2
       slashVfxPrefab: {fileID: 0}
       projectilePrefab: {fileID: 8946744622826746836, guid: a8d70e8cb54c4c747b2ac8570e3db3d0, type: 3}
       projectileSpeed: 8
@@ -186,5 +186,5 @@ MonoBehaviour:
     defaultRelic: {fileID: 0}
     defaultPrimaryWeapon: {fileID: 0}
     defaultRelics: []
-  selectedPlayerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
-  selectedCharacterIndex: 2
+  selectedPlayerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
+  selectedCharacterIndex: 0

@@ -162,6 +162,18 @@ namespace ProjectZombie.Features.Player
                 combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
             }
 
+            // Tự động bind Player vào RunHUDPresenter
+            var runHUDPresenter = FindObjectOfType<ProjectZombie.Features.UI.HUD.RunHUDPresenter>();
+            if (runHUDPresenter != null)
+            {
+                var health = _activePlayerInstance.GetComponent<HealthSystem>();
+                var stats = _activePlayerInstance.GetComponent<PlayerStats>();
+                var exp = _activePlayerInstance.GetComponent<PlayerExperience>();
+                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
+                var passives = _activePlayerInstance.GetComponent<PlayerPassives>();
+                runHUDPresenter.Construct(health, stats, exp, wm, passives);
+            }
+
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }
 

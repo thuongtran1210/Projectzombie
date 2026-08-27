@@ -24,6 +24,11 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorMutedText = new Color(0.85f, 0.82f, 0.78f, 1f);
 
         [MenuItem("Tools/ProjectZombie/UI/Generate Main Hub UI Prefab", priority = 10)]
+        public static void GenerateMainHubUI()
+        {
+            GenerateMainHubPrefab();
+        }
+
         public static void GenerateMainHubPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -295,9 +300,11 @@ namespace ProjectZombie.Editor.UI
             lcRT.sizeDelta = new Vector2(340, 130);
 
             var lcImg = loadoutCard.AddComponent<Image>();
-            lcImg.color = ColorWoodDark;
+            lcImg.color = Color.white;
+            lcImg.type = Image.Type.Sliced;
+            Sprite cardDongSon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
+            if (cardDongSon != null) lcImg.sprite = cardDongSon;
             loadoutBtn = loadoutCard.AddComponent<Button>();
-            CreateBorder(loadoutCard.transform, ColorBronzeBorder, 2);
 
             // Header "TRANG BỊ (LOADOUT)"
             GameObject lcTitle = CreateUIElement("Txt_Title", loadoutCard.transform);
@@ -394,9 +401,9 @@ namespace ProjectZombie.Editor.UI
             ngHlg.childControlWidth = false;
             ngHlg.childControlHeight = false;
 
-            // Nút 1: ANH HÙNG (150 x 64 - Xanh Ngọc Bích 9-Slice)
+            // Nút 1: ANH HÙNG (160 x 62 - Xanh Ngọc Bích 9-Slice)
             GameObject btn1 = CreateUIElement("Btn_HeroSelect", navGroup.transform);
-            btn1.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
+            btn1.GetComponent<RectTransform>().sizeDelta = new Vector2(160, 62);
             var b1Img = btn1.AddComponent<Image>();
             b1Img.color = Color.white;
             b1Img.type = Image.Type.Sliced;
@@ -409,14 +416,14 @@ namespace ProjectZombie.Editor.UI
             var b1TMP = b1T.AddComponent<TextMeshProUGUI>();
             if (font != null) b1TMP.font = font;
             b1TMP.text = "ANH HÙNG";
-            b1TMP.fontSize = 15;
+            b1TMP.fontSize = 17;
             b1TMP.fontStyle = FontStyles.Bold;
             b1TMP.alignment = TextAlignmentOptions.Center;
             b1TMP.color = Color.white;
 
-            // Nút 2: TÀNG BẢO CÁC (150 x 64 - Vàng Hoàng Kim 9-Slice)
+            // Nút 2: TÀNG BẢO CÁC (160 x 62 - Vàng Hoàng Kim 9-Slice)
             GameObject btn2 = CreateUIElement("Btn_Armory", navGroup.transform);
-            btn2.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
+            btn2.GetComponent<RectTransform>().sizeDelta = new Vector2(160, 62);
             var b2Img = btn2.AddComponent<Image>();
             b2Img.color = Color.white;
             b2Img.type = Image.Type.Sliced;
@@ -429,14 +436,14 @@ namespace ProjectZombie.Editor.UI
             var b2TMP = b2T.AddComponent<TextMeshProUGUI>();
             if (font != null) b2TMP.font = font;
             b2TMP.text = "TÀNG BẢO CÁC";
-            b2TMP.fontSize = 15;
+            b2TMP.fontSize = 17;
             b2TMP.fontStyle = FontStyles.Bold;
             b2TMP.alignment = TextAlignmentOptions.Center;
             b2TMP.color = new Color(0.2f, 0.12f, 0.05f, 1f);
 
-            // Nút 3: MIẾU CỔ (150 x 64 - Xanh Ngọc Bích 9-Slice)
+            // Nút 3: MIẾU CỔ (160 x 62 - Xanh Ngọc Bích 9-Slice)
             GameObject btn3 = CreateUIElement("Btn_SanctuaryTree", navGroup.transform);
-            btn3.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
+            btn3.GetComponent<RectTransform>().sizeDelta = new Vector2(160, 62);
             var b3Img = btn3.AddComponent<Image>();
             b3Img.color = Color.white;
             b3Img.type = Image.Type.Sliced;
@@ -448,7 +455,7 @@ namespace ProjectZombie.Editor.UI
             var b3TMP = b3T.AddComponent<TextMeshProUGUI>();
             if (font != null) b3TMP.font = font;
             b3TMP.text = "MIẾU CỔ";
-            b3TMP.fontSize = 15;
+            b3TMP.fontSize = 17;
             b3TMP.fontStyle = FontStyles.Bold;
             b3TMP.alignment = TextAlignmentOptions.Center;
             b3TMP.color = Color.white;
@@ -460,7 +467,7 @@ namespace ProjectZombie.Editor.UI
             stRT.anchorMax = new Vector2(1, 0.5f);
             stRT.pivot = new Vector2(1, 0.5f);
             stRT.anchoredPosition = new Vector2(-10, 0);
-            stRT.sizeDelta = new Vector2(260, 84);
+            stRT.sizeDelta = new Vector2(250, 78);
 
             var stImg = startObj.AddComponent<Image>();
             stImg.color = Color.white;
@@ -469,21 +476,12 @@ namespace ProjectZombie.Editor.UI
             if (btnRed != null) stImg.sprite = btnRed;
             startRunBtn = startObj.AddComponent<Button>();
 
-            // Viền Rồng Vàng Đồng
-            CreateBorder(startObj.transform, ColorDragonGold, 3);
-
-            GameObject stInner = CreateUIElement("InnerBg", startObj.transform);
-            SetStretchAnchor(stInner.GetComponent<RectTransform>());
-            stInner.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
-            stInner.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
-            stInner.AddComponent<Image>().color = new Color(0.68f, 0.12f, 0.08f, 1f);
-
-            GameObject stTxt = CreateUIElement("Text", stInner.transform);
+            GameObject stTxt = CreateUIElement("Text", startObj.transform);
             SetStretchAnchor(stTxt.GetComponent<RectTransform>());
             var stTMP = stTxt.AddComponent<TextMeshProUGUI>();
             if (font != null) stTMP.font = font;
             stTMP.text = "XUẤT TRẬN";
-            stTMP.fontSize = 28;
+            stTMP.fontSize = 26;
             stTMP.fontStyle = FontStyles.Bold;
             stTMP.alignment = TextAlignmentOptions.Center;
             stTMP.color = Color.white;

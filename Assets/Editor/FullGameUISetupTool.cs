@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Editor.UI;
 
 namespace ProjectZombie.EditorTools
 {
@@ -274,6 +275,13 @@ namespace ProjectZombie.EditorTools
                 }
             }
 
+            // Tự động nâng cấp và gắn trọn bộ Sprite Đông Sơn cho Top Run HUD
+            RunHUDHierarchyOptimizer.OptimizeRunHUD();
+
+            // Tự động sinh Card Template Prefab và tối ưu toàn diện Level Up Selection Modal
+            UpgradeCardPrefabGenerator.GenerateCardPrefab();
+            UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
+
             Transform mobileTrans = gameRoot.Find("Panel_MobileControls");
             if (mobileTrans == null)
             {
@@ -347,263 +355,8 @@ namespace ProjectZombie.EditorTools
 
         private static void BuildMainHubHierarchy(Transform hubRoot)
         {
-            MainHubView hubView = hubRoot.GetComponent<MainHubView>();
-            var soHub = new SerializedObject(hubView);
-
-            // 1. Header - CoTien & LinhHon
-            Transform coTienTrans = hubRoot.Find("Header_CoTien");
-            if (coTienTrans == null)
-            {
-                GameObject coTienObj = new GameObject("Header_CoTien", typeof(RectTransform), typeof(TextMeshProUGUI));
-                coTienObj.transform.SetParent(hubRoot, false);
-                coTienTrans = coTienObj.transform;
-
-                RectTransform rect = coTienObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0f, 1f);
-                rect.anchorMax = new Vector2(0f, 1f);
-                rect.pivot = new Vector2(0f, 1f);
-                rect.anchoredPosition = new Vector2(50, -40);
-                rect.sizeDelta = new Vector2(300, 60);
-
-                var tmp = coTienObj.GetComponent<TextMeshProUGUI>();
-                tmp.fontSize = 32;
-                tmp.text = "0 Cổ Tiền";
-            }
-            soHub.FindProperty("_coTienText").objectReferenceValue = coTienTrans.GetComponent<TextMeshProUGUI>();
-
-            // 2. Hero Preview Stage
-            Transform heroStageTrans = hubRoot.Find("Stage_HeroPreview");
-            if (heroStageTrans == null)
-            {
-                GameObject stageObj = new GameObject("Stage_HeroPreview", typeof(RectTransform));
-                stageObj.transform.SetParent(hubRoot, false);
-                heroStageTrans = stageObj.transform;
-
-                RectTransform rect = stageObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(0, 50);
-                rect.sizeDelta = new Vector2(300, 350);
-
-                GameObject avObj = new GameObject("Img_HeroAvatar", typeof(RectTransform), typeof(Image));
-                avObj.transform.SetParent(stageObj.transform, false);
-                RectTransform avRT = avObj.GetComponent<RectTransform>();
-                avRT.anchorMin = new Vector2(0.5f, 0.5f);
-                avRT.anchorMax = new Vector2(0.5f, 0.5f);
-                avRT.pivot = new Vector2(0.5f, 0.5f);
-                avRT.anchoredPosition = Vector2.zero;
-                avRT.sizeDelta = new Vector2(220, 220);
-
-                GameObject nameObj = new GameObject("Txt_HeroName", typeof(RectTransform), typeof(TextMeshProUGUI));
-                nameObj.transform.SetParent(stageObj.transform, false);
-                RectTransform nRT = nameObj.GetComponent<RectTransform>();
-                nRT.anchorMin = new Vector2(0.5f, 0f);
-                nRT.anchorMax = new Vector2(0.5f, 0f);
-                nRT.pivot = new Vector2(0.5f, 0f);
-                nRT.anchoredPosition = new Vector2(0, 10);
-                nRT.sizeDelta = new Vector2(280, 40);
-                var nTMP = nameObj.GetComponent<TextMeshProUGUI>();
-                nTMP.fontSize = 26;
-                nTMP.fontStyle = FontStyles.Bold;
-                nTMP.alignment = TextAlignmentOptions.Center;
-                nTMP.text = "ĐẠO SĨ";
-            }
-
-            var avImg = heroStageTrans.Find("Img_HeroAvatar")?.GetComponent<Image>();
-            var nameTMP = heroStageTrans.Find("Txt_HeroName")?.GetComponent<TextMeshProUGUI>();
-            if (avImg != null) soHub.FindProperty("_currentHeroAvatarImage").objectReferenceValue = avImg;
-            if (nameTMP != null) soHub.FindProperty("_currentHeroNameText").objectReferenceValue = nameTMP;
-
-            // 3. Navigation Bar (Bottom)
-            // 3.1. Nút ANH HÙNG
-            Transform heroBtnTrans = hubRoot.Find("Btn_HeroSelect");
-            if (heroBtnTrans == null)
-            {
-                GameObject heroBtnObj = new GameObject("Btn_HeroSelect", typeof(RectTransform), typeof(Image), typeof(Button));
-                heroBtnObj.transform.SetParent(hubRoot, false);
-                heroBtnTrans = heroBtnObj.transform;
-
-                RectTransform rect = heroBtnObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(-280, 110);
-                rect.sizeDelta = new Vector2(160, 60);
-
-                Image img = heroBtnObj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-                textObj.transform.SetParent(heroBtnObj.transform, false);
-                StretchRect(textObj.GetComponent<RectTransform>());
-
-                var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "ANH HÙNG";
-                tmp.fontSize = 18;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = Color.white;
-            }
-            soHub.FindProperty("_heroSelectButton").objectReferenceValue = heroBtnTrans.GetComponent<Button>();
-
-            // 3.2. Nút TÀNG BẢO CÁC (Vàng Hoàng Kim 9-Slice)
-            Transform armoryBtnTrans = hubRoot.Find("Btn_Armory");
-            if (armoryBtnTrans == null)
-            {
-                GameObject armoryBtnObj = new GameObject("Btn_Armory", typeof(RectTransform), typeof(Image), typeof(Button));
-                armoryBtnObj.transform.SetParent(hubRoot, false);
-                armoryBtnTrans = armoryBtnObj.transform;
-
-                RectTransform rect = armoryBtnObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(-100, 110);
-                rect.sizeDelta = new Vector2(160, 60);
-
-                Image img = armoryBtnObj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-                textObj.transform.SetParent(armoryBtnObj.transform, false);
-                StretchRect(textObj.GetComponent<RectTransform>());
-
-                var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "PHÁP BẢO";
-                tmp.fontSize = 18;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = new Color(0.2f, 0.12f, 0.05f, 1f);
-            }
-            soHub.FindProperty("_armoryButton").objectReferenceValue = armoryBtnTrans.GetComponent<Button>();
-
-            // 3.3. Nút MIẾU CỔ (Xanh Ngọc 9-Slice)
-            Transform sanctuaryBtnTrans = hubRoot.Find("Btn_SanctuaryTree");
-            if (sanctuaryBtnTrans == null)
-            {
-                GameObject sanctuaryBtnObj = new GameObject("Btn_SanctuaryTree", typeof(RectTransform), typeof(Image), typeof(Button));
-                sanctuaryBtnObj.transform.SetParent(hubRoot, false);
-                sanctuaryBtnTrans = sanctuaryBtnObj.transform;
-
-                RectTransform rect = sanctuaryBtnObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(80, 110);
-                rect.sizeDelta = new Vector2(160, 60);
-
-                Image img = sanctuaryBtnObj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-                textObj.transform.SetParent(sanctuaryBtnObj.transform, false);
-                StretchRect(textObj.GetComponent<RectTransform>());
-
-                var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "MIẾU CỔ";
-                tmp.fontSize = 18;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = Color.white;
-            }
-            soHub.FindProperty("_sanctuaryTreeButton").objectReferenceValue = sanctuaryBtnTrans.GetComponent<Button>();
-
-            // 4. Button XUẤT TRẬN (Đỏ Chu Sa Rực Rỡ 9-Slice)
-            Transform startBtnTrans = hubRoot.Find("Btn_StartRun");
-            if (startBtnTrans == null)
-            {
-                GameObject startBtnObj = new GameObject("Btn_StartRun", typeof(RectTransform), typeof(Image), typeof(Button));
-                startBtnObj.transform.SetParent(hubRoot, false);
-                startBtnTrans = startBtnObj.transform;
-
-                RectTransform rect = startBtnObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(1f, 0f);
-                rect.anchorMax = new Vector2(1f, 0f);
-                rect.pivot = new Vector2(1f, 0.5f);
-                rect.anchoredPosition = new Vector2(-60, 110);
-                rect.sizeDelta = new Vector2(240, 75);
-
-                Image img = startBtnObj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-                textObj.transform.SetParent(startBtnObj.transform, false);
-                StretchRect(textObj.GetComponent<RectTransform>());
-
-                var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "XUẤT TRẬN";
-                tmp.fontSize = 28;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = Color.white;
-            }
-            soHub.FindProperty("_startRunButton").objectReferenceValue = startBtnTrans.GetComponent<Button>();
-
-            // 5. Thẻ Tóm Tắt Trang Bị (Bottom-Left)
-            Transform loadoutCardTrans = hubRoot.Find("Card_LoadoutSummary");
-            if (loadoutCardTrans == null)
-            {
-                GameObject cardObj = new GameObject("Card_LoadoutSummary", typeof(RectTransform), typeof(Image), typeof(Button));
-                cardObj.transform.SetParent(hubRoot, false);
-                loadoutCardTrans = cardObj.transform;
-
-                RectTransform rect = cardObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0f, 0f);
-                rect.anchorMax = new Vector2(0f, 0f);
-                rect.pivot = new Vector2(0f, 0.5f);
-                rect.anchoredPosition = new Vector2(50, 110);
-                rect.sizeDelta = new Vector2(240, 75);
-
-                Image img = cardObj.GetComponent<Image>();
-                img.color = new Color(0.14f, 0.11f, 0.18f, 0.95f);
-
-                GameObject titleObj = new GameObject("Txt_Title", typeof(RectTransform), typeof(TextMeshProUGUI));
-                titleObj.transform.SetParent(cardObj.transform, false);
-                RectTransform tRT = titleObj.GetComponent<RectTransform>();
-                tRT.anchorMin = new Vector2(0, 1);
-                tRT.anchorMax = new Vector2(1, 1);
-                tRT.pivot = new Vector2(0, 1);
-                tRT.anchoredPosition = new Vector2(10, -6);
-                tRT.sizeDelta = new Vector2(-20, 18);
-                var tTMP = titleObj.GetComponent<TextMeshProUGUI>();
-                tTMP.text = "TRANG BỊ (LOADOUT)";
-                tTMP.fontSize = 11;
-                tTMP.fontStyle = FontStyles.Bold;
-                tTMP.color = new Color(0.95f, 0.82f, 0.42f, 1f);
-
-                GameObject priNameObj = new GameObject("Txt_PrimaryWeapon", typeof(RectTransform), typeof(TextMeshProUGUI));
-                priNameObj.transform.SetParent(cardObj.transform, false);
-                RectTransform pnRT = priNameObj.GetComponent<RectTransform>();
-                pnRT.anchorMin = new Vector2(0, 0);
-                pnRT.anchorMax = new Vector2(1, 0);
-                pnRT.pivot = new Vector2(0, 0);
-                pnRT.anchoredPosition = new Vector2(10, 8);
-                pnRT.sizeDelta = new Vector2(-20, 20);
-                var pnTMP = priNameObj.GetComponent<TextMeshProUGUI>();
-                pnTMP.text = "Nỏ Thần";
-                pnTMP.fontSize = 13;
-                pnTMP.color = Color.white;
-            }
-
-            soHub.FindProperty("_loadoutCardButton").objectReferenceValue = loadoutCardTrans.GetComponent<Button>();
-            var priText = loadoutCardTrans.Find("Txt_PrimaryWeapon")?.GetComponent<TextMeshProUGUI>();
-            if (priText != null) soHub.FindProperty("_primaryWeaponNameText").objectReferenceValue = priText;
-
-            soHub.ApplyModifiedProperties();
-            EditorUtility.SetDirty(hubView);
+            // Sử dụng MainHubUIGenerator để dựng giao diện MainHub theo chuẩn Art DNA Đông Sơn
+            MainHubUIGenerator.GenerateMainHubUI();
         }
 
         private static void BuildCharacterSelectHierarchy(Transform root)

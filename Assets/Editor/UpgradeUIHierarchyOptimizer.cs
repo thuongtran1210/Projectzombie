@@ -45,13 +45,13 @@ namespace ProjectZombie.EditorTools
                 panelTrans = newPanel.transform;
             }
 
-            // Cấu hình Stretch cho Upgrade_Panel
+            // Cấu hình Stretch cho Upgrade_Panel (Tỉ lệ chuẩn 9-Slice)
             RectTransform panelRect = panelTrans.GetComponent<RectTransform>();
             if (panelRect != null)
             {
                 panelRect.anchorMin = new Vector2(0.5f, 0.5f);
                 panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-                panelRect.sizeDelta = new Vector2(1100, 650);
+                panelRect.sizeDelta = new Vector2(1080, 640);
                 panelRect.anchoredPosition = Vector2.zero;
             }
 
@@ -60,6 +60,7 @@ namespace ProjectZombie.EditorTools
             {
                 panelBg.color = Color.white;
                 panelBg.type = Image.Type.Sliced;
+                panelBg.pixelsPerUnitMultiplier = 1f;
                 Sprite modalSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
                 if (modalSprite != null) panelBg.sprite = modalSprite;
             }
@@ -88,8 +89,8 @@ namespace ProjectZombie.EditorTools
             {
                 containerRect.anchorMin = new Vector2(0.5f, 0.5f);
                 containerRect.anchorMax = new Vector2(0.5f, 0.5f);
-                containerRect.sizeDelta = new Vector2(1000, 480);
-                containerRect.anchoredPosition = new Vector2(0, 30);
+                containerRect.sizeDelta = new Vector2(960, 430);
+                containerRect.anchoredPosition = new Vector2(0, 15);
             }
 
             // Đảm bảo có HorizontalLayoutGroup
@@ -117,19 +118,19 @@ namespace ProjectZombie.EditorTools
                 GameObject headerObj = new GameObject("Header_Title", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
                 headerObj.transform.SetParent(panelTrans, false);
                 headerTrans = headerObj.transform;
-
-                RectTransform hRect = headerObj.GetComponent<RectTransform>();
-                hRect.anchorMin = new Vector2(0.5f, 1f);
-                hRect.anchorMax = new Vector2(0.5f, 1f);
-                hRect.pivot = new Vector2(0.5f, 1f);
-                hRect.anchoredPosition = new Vector2(0, -20);
-                hRect.sizeDelta = new Vector2(600, 50);
-
-                TextMeshProUGUI hText = headerObj.GetComponent<TextMeshProUGUI>();
-                hText.text = "<color=#FFD700>✦ LỰA CHỌN PHÁP BẢO ✦</color>";
-                hText.fontSize = 32;
-                hText.alignment = TextAlignmentOptions.Center;
             }
+
+            RectTransform hRect = headerTrans.GetComponent<RectTransform>();
+            hRect.anchorMin = new Vector2(0.5f, 1f);
+            hRect.anchorMax = new Vector2(0.5f, 1f);
+            hRect.pivot = new Vector2(0.5f, 1f);
+            hRect.anchoredPosition = new Vector2(0, -32);
+            hRect.sizeDelta = new Vector2(600, 45);
+
+            TextMeshProUGUI hText = headerTrans.GetComponent<TextMeshProUGUI>();
+            hText.text = "<color=#FFD700><b>LỰA CHỌN PHÁP BẢO</b></color>";
+            hText.fontSize = 28;
+            hText.alignment = TextAlignmentOptions.Center;
 
             // 5. Chuẩn hóa Footer_Controls (Vùng chứa Reroll & Skip dưới đáy)
             Transform footerTrans = panelTrans.Find("Footer_Controls");
@@ -138,22 +139,23 @@ namespace ProjectZombie.EditorTools
                 GameObject footerObj = new GameObject("Footer_Controls", typeof(RectTransform), typeof(HorizontalLayoutGroup));
                 footerObj.transform.SetParent(panelTrans, false);
                 footerTrans = footerObj.transform;
-
-                RectTransform fRect = footerObj.GetComponent<RectTransform>();
-                fRect.anchorMin = new Vector2(0.5f, 0f);
-                fRect.anchorMax = new Vector2(0.5f, 0f);
-                fRect.pivot = new Vector2(0.5f, 0f);
-                fRect.anchoredPosition = new Vector2(0, 20);
-                fRect.sizeDelta = new Vector2(500, 60);
-
-                HorizontalLayoutGroup fLayout = footerObj.GetComponent<HorizontalLayoutGroup>();
-                fLayout.childAlignment = TextAnchor.MiddleCenter;
-                fLayout.spacing = 40f;
-                fLayout.childControlWidth = false;
-                fLayout.childControlHeight = false;
-                fLayout.childForceExpandWidth = false;
-                fLayout.childForceExpandHeight = false;
             }
+
+            RectTransform fRect = footerTrans.GetComponent<RectTransform>();
+            fRect.anchorMin = new Vector2(0.5f, 0f);
+            fRect.anchorMax = new Vector2(0.5f, 0f);
+            fRect.pivot = new Vector2(0.5f, 0f);
+            fRect.anchoredPosition = new Vector2(0, 36);
+            fRect.sizeDelta = new Vector2(500, 60);
+
+            HorizontalLayoutGroup fLayout = footerTrans.GetComponent<HorizontalLayoutGroup>();
+            if (fLayout == null) fLayout = footerTrans.gameObject.AddComponent<HorizontalLayoutGroup>();
+            fLayout.childAlignment = TextAnchor.MiddleCenter;
+            fLayout.spacing = 35f;
+            fLayout.childControlWidth = false;
+            fLayout.childControlHeight = false;
+            fLayout.childForceExpandWidth = false;
+            fLayout.childForceExpandHeight = false;
 
             // 6. Tạo/Tìm Button_Reroll (Áp dụng Nút Vàng Hoàng Kim 9-Slice)
             Transform rerollBtnTrans = footerTrans.Find("Button_Reroll");
@@ -165,57 +167,44 @@ namespace ProjectZombie.EditorTools
                 btnObj.layer = LayerMask.NameToLayer("UI");
                 btnObj.transform.SetParent(footerTrans, false);
                 rerollBtnTrans = btnObj.transform;
+            }
 
-                RectTransform bRect = btnObj.GetComponent<RectTransform>();
-                bRect.sizeDelta = new Vector2(180, 52);
+            RectTransform bRectReroll = rerollBtnTrans.GetComponent<RectTransform>();
+            bRectReroll.sizeDelta = new Vector2(210, 58);
 
-                Image bImg = btnObj.GetComponent<Image>();
-                bImg.color = Color.white;
-                bImg.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
-                if (btnSprite != null) bImg.sprite = btnSprite;
+            Image bImgReroll = rerollBtnTrans.GetComponent<Image>();
+            if (bImgReroll == null) bImgReroll = rerollBtnTrans.gameObject.AddComponent<Image>();
+            bImgReroll.color = Color.white;
+            bImgReroll.type = Image.Type.Sliced;
+            bImgReroll.pixelsPerUnitMultiplier = 1f;
+            Sprite btnSpriteGold = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
+            if (btnSpriteGold != null) bImgReroll.sprite = btnSpriteGold;
 
-                rerollBtn = btnObj.GetComponent<Button>();
+            rerollBtn = rerollBtnTrans.GetComponent<Button>();
+            if (rerollBtn == null) rerollBtn = rerollBtnTrans.gameObject.AddComponent<Button>();
 
-                // Text bên trong nút Reroll
+            // Text bên trong nút Reroll
+            Transform textTransReroll = rerollBtnTrans.Find("Txt_RerollCount");
+            if (textTransReroll == null)
+            {
                 GameObject textObj = new GameObject("Txt_RerollCount", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
                 textObj.layer = LayerMask.NameToLayer("UI");
-                textObj.transform.SetParent(btnObj.transform, false);
-
-                RectTransform tRect = textObj.GetComponent<RectTransform>();
-                tRect.anchorMin = Vector2.zero;
-                tRect.anchorMax = Vector2.one;
-                tRect.sizeDelta = Vector2.zero;
-
-                rerollText = textObj.GetComponent<TextMeshProUGUI>();
-                rerollText.text = "Đổi Thẻ (3)";
-                rerollText.fontSize = 20;
-                rerollText.fontStyle = FontStyles.Bold;
-                rerollText.alignment = TextAlignmentOptions.Center;
-                rerollText.color = new Color(0.2f, 0.12f, 0.05f, 1f); // Chữ nâu gỗ trên nền vàng sáng
-                rerollText.raycastTarget = false;
+                textObj.transform.SetParent(rerollBtnTrans, false);
+                textTransReroll = textObj.transform;
             }
-            else
-            {
-                rerollBtnTrans.gameObject.layer = LayerMask.NameToLayer("UI");
-                Image bImg = rerollBtnTrans.GetComponent<Image>();
-                if (bImg != null)
-                {
-                    bImg.color = Color.white;
-                    bImg.type = Image.Type.Sliced;
-                    Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
-                    if (btnSprite != null) bImg.sprite = btnSprite;
-                }
-                rerollBtn = rerollBtnTrans.GetComponent<Button>();
-                rerollText = rerollBtnTrans.GetComponentInChildren<TextMeshProUGUI>();
-                if (rerollText != null)
-                {
-                    rerollText.gameObject.layer = LayerMask.NameToLayer("UI");
-                    rerollText.color = new Color(0.2f, 0.12f, 0.05f, 1f);
-                    rerollText.fontStyle = FontStyles.Bold;
-                    rerollText.raycastTarget = false;
-                }
-            }
+
+            RectTransform tRectReroll = textTransReroll.GetComponent<RectTransform>();
+            tRectReroll.anchorMin = Vector2.zero;
+            tRectReroll.anchorMax = Vector2.one;
+            tRectReroll.sizeDelta = Vector2.zero;
+
+            rerollText = textTransReroll.GetComponent<TextMeshProUGUI>();
+            rerollText.text = "Đổi Thẻ (3)";
+            rerollText.fontSize = 20;
+            rerollText.fontStyle = FontStyles.Bold;
+            rerollText.alignment = TextAlignmentOptions.Center;
+            rerollText.color = new Color(0.2f, 0.12f, 0.05f, 1f); // Chữ nâu gỗ trên nền vàng sáng
+            rerollText.raycastTarget = false;
 
             // 7. Tạo/Tìm Button_Skip (Áp dụng Nút Đỏ Chu Sa 9-Slice)
             Transform skipBtnTrans = footerTrans.Find("Button_Skip");
@@ -225,51 +214,41 @@ namespace ProjectZombie.EditorTools
                 GameObject btnObj = new GameObject("Button_Skip", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                 btnObj.transform.SetParent(footerTrans, false);
                 skipBtnTrans = btnObj.transform;
-
-                RectTransform bRect = btnObj.GetComponent<RectTransform>();
-                bRect.sizeDelta = new Vector2(150, 52);
-
-                Image bImg = btnObj.GetComponent<Image>();
-                bImg.color = Color.white;
-                bImg.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
-                if (btnSprite != null) bImg.sprite = btnSprite;
-
-                skipBtn = btnObj.GetComponent<Button>();
-
-                GameObject textObj = new GameObject("Txt_Skip", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-                textObj.transform.SetParent(btnObj.transform, false);
-
-                RectTransform tRect = textObj.GetComponent<RectTransform>();
-                tRect.anchorMin = Vector2.zero;
-                tRect.anchorMax = Vector2.one;
-                tRect.sizeDelta = Vector2.zero;
-
-                TextMeshProUGUI skipText = textObj.GetComponent<TextMeshProUGUI>();
-                skipText.text = "Bỏ Qua";
-                skipText.fontSize = 20;
-                skipText.fontStyle = FontStyles.Bold;
-                skipText.alignment = TextAlignmentOptions.Center;
-                skipText.color = Color.white;
             }
-            else
+
+            RectTransform bRectSkip = skipBtnTrans.GetComponent<RectTransform>();
+            bRectSkip.sizeDelta = new Vector2(170, 58);
+
+            Image bImgSkip = skipBtnTrans.GetComponent<Image>();
+            if (bImgSkip == null) bImgSkip = skipBtnTrans.gameObject.AddComponent<Image>();
+            bImgSkip.color = Color.white;
+            bImgSkip.type = Image.Type.Sliced;
+            bImgSkip.pixelsPerUnitMultiplier = 1f;
+            Sprite btnSpriteRed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+            if (btnSpriteRed != null) bImgSkip.sprite = btnSpriteRed;
+
+            skipBtn = skipBtnTrans.GetComponent<Button>();
+            if (skipBtn == null) skipBtn = skipBtnTrans.gameObject.AddComponent<Button>();
+
+            Transform textTransSkip = skipBtnTrans.Find("Txt_Skip");
+            if (textTransSkip == null)
             {
-                Image bImg = skipBtnTrans.GetComponent<Image>();
-                if (bImg != null)
-                {
-                    bImg.color = Color.white;
-                    bImg.type = Image.Type.Sliced;
-                    Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
-                    if (btnSprite != null) bImg.sprite = btnSprite;
-                }
-                skipBtn = skipBtnTrans.GetComponent<Button>();
-                var skipText = skipBtnTrans.GetComponentInChildren<TextMeshProUGUI>();
-                if (skipText != null)
-                {
-                    skipText.color = Color.white;
-                    skipText.fontStyle = FontStyles.Bold;
-                }
+                GameObject textObj = new GameObject("Txt_Skip", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+                textObj.transform.SetParent(skipBtnTrans, false);
+                textTransSkip = textObj.transform;
             }
+
+            RectTransform tRectSkip = textTransSkip.GetComponent<RectTransform>();
+            tRectSkip.anchorMin = Vector2.zero;
+            tRectSkip.anchorMax = Vector2.one;
+            tRectSkip.sizeDelta = Vector2.zero;
+
+            TextMeshProUGUI skipText = textTransSkip.GetComponent<TextMeshProUGUI>();
+            skipText.text = "Bỏ Qua";
+            skipText.fontSize = 20;
+            skipText.fontStyle = FontStyles.Bold;
+            skipText.alignment = TextAlignmentOptions.Center;
+            skipText.color = Color.white;
 
             // 8. Tự động liên kết các SerializedField vào UpgradeUIView & UpgradeUIPresenter
             SerializedObject soView = new SerializedObject(uiView);

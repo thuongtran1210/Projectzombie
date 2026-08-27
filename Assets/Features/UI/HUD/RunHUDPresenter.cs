@@ -67,19 +67,27 @@ namespace ProjectZombie.Features.UI.HUD
         }
 
         // ====================================================================
-        // UNITY LIFECYCLE
-        // ====================================================================
+        private void Awake()
+        {
+            if (_view == null)
+            {
+                _view = GetComponent<RunHUDView>();
+                if (_view == null) _view = GetComponentInChildren<RunHUDView>(true);
+            }
+        }
 
         private void Start()
         {
+            if (_view == null)
+            {
+                _view = GetComponent<RunHUDView>();
+                if (_view == null) _view = GetComponentInChildren<RunHUDView>(true);
+            }
+
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (_playerHealth != null || _playerStats != null || _playerExp != null)
             {
                 Construct(_playerHealth, _playerStats, _playerExp, _weaponManager, _playerPassives);
-            }
-            else if (!_isConstructed && _view != null)
-            {
-                _view.gameObject.SetActive(false);
             }
 
             // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
@@ -97,6 +105,7 @@ namespace ProjectZombie.Features.UI.HUD
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+                HandleStateChanged(GameStateManager.Instance.CurrentState);
             }
         }
 

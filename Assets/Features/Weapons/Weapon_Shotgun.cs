@@ -20,6 +20,7 @@ namespace ProjectZombie.Features.Weapons
 
         protected override bool CanAttack()
         {
+            if (this == null || gameObject == null) return false;
             float range = CharacterStats != null ? CharacterStats.AttackRange : 8f;
             _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
             return _currentTarget != null;

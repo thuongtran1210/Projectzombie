@@ -64,6 +64,12 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
+            if (_metaUIManager == null) _metaUIManager = FindObjectOfType<MetaUIManager>(true);
+            if (_gameplayUIManager == null) _gameplayUIManager = FindObjectOfType<GameplayUIManager>(true);
+            if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
+            if (_spawnManager == null) _spawnManager = FindObjectOfType<SpawnManager>(true);
+            if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
+
             if (_mainHubPresenter != null)
             {
                 _mainHubPresenter.OnStartRunRequested -= StartRun;

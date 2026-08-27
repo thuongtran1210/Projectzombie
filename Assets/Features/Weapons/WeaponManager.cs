@@ -324,9 +324,16 @@ namespace ProjectZombie.Features.Weapons
                 return;
             }
 
-            // Cho phép tất cả vũ khí hoạt động (Vũ khí chủ động sẽ tự bỏ qua trong Tick)
-            foreach (var weapon in _activeWeapons)
+            // Cho phép tất cả vũ khí hoạt động (Duyệt ngược và lọc bỏ các vũ khí đã bị Destroy)
+            for (int i = _activeWeapons.Count - 1; i >= 0; i--)
             {
+                var weapon = _activeWeapons[i];
+                if (weapon == null)
+                {
+                    _activeWeapons.RemoveAt(i);
+                    continue;
+                }
+
                 weapon.Tick();
             }
         }
