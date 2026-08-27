@@ -18,6 +18,7 @@ namespace ProjectZombie.Features.UI
 
         [Header("Manager Reference")]
         [SerializeField] private MetaCurrencyManager _currencyManager;
+        [SerializeField] private MetaUIManager _metaUIManager;
 
         public event System.Action OnStartRunRequested;
 
@@ -25,6 +26,19 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) _view = GetComponent<MainHubView>();
             if (_currencyManager == null) _currencyManager = FindObjectOfType<MetaCurrencyManager>();
+            if (_metaUIManager == null) _metaUIManager = GetComponentInParent<MetaUIManager>() ?? MetaUIManager.Instance;
+        }
+
+        private MetaUIManager GetMetaUIManager()
+        {
+            if (_metaUIManager == null)
+            {
+                _metaUIManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>();
+#if UNITY_EDITOR
+                if (_metaUIManager == null) _metaUIManager = FindObjectOfType<MetaUIManager>(true);
+#endif
+            }
+            return _metaUIManager;
         }
 
         private void Start()
@@ -200,7 +214,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleHeroSelectClicked()
         {
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.CharacterSelect);
@@ -209,7 +223,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleArmoryClicked()
         {
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.WeaponLoadout);
@@ -218,7 +232,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSanctuaryTreeClicked()
         {
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.SanctuaryTree);
@@ -227,7 +241,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCodexClicked()
         {
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.Codex);
@@ -236,7 +250,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSettingsClicked()
         {
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.Settings);

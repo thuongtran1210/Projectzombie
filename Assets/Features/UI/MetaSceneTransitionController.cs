@@ -44,18 +44,7 @@ namespace ProjectZombie.Features.UI
                 _fadeOverlayCanvasGroup = GetComponent<CanvasGroup>();
             }
 
-            if (_metaUIManager == null) _metaUIManager = FindObjectOfType<MetaUIManager>(true);
-            if (_gameplayUIManager == null) _gameplayUIManager = FindObjectOfType<GameplayUIManager>(true);
-            if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
-            if (_spawnManager == null) _spawnManager = FindObjectOfType<SpawnManager>(true);
-            if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
-
-            // Đăng ký lắng nghe sự kiện Xuất Trận từ Presenter
-            if (_mainHubPresenter != null)
-            {
-                _mainHubPresenter.OnStartRunRequested -= StartRun;
-                _mainHubPresenter.OnStartRunRequested += StartRun;
-            }
+            EnsureReferences();
 
             // Thiết lập trạng thái hiển thị ban đầu
             bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
@@ -64,20 +53,23 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
-            if (_metaUIManager == null) _metaUIManager = FindObjectOfType<MetaUIManager>(true);
-            if (_gameplayUIManager == null) _gameplayUIManager = FindObjectOfType<GameplayUIManager>(true);
+            EnsureReferences();
+        }
+
+        private void EnsureReferences()
+        {
+            if (_metaUIManager == null) _metaUIManager = MetaUIManager.Instance ?? FindObjectOfType<MetaUIManager>(true);
+            if (_gameplayUIManager == null) _gameplayUIManager = GameplayUIManager.Instance ?? FindObjectOfType<GameplayUIManager>(true);
             if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
-            if (_spawnManager == null) _spawnManager = FindObjectOfType<SpawnManager>(true);
+            if (_spawnManager == null) _spawnManager = SpawnManager.Instance ?? FindObjectOfType<SpawnManager>(true);
             if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
 
+            // Đăng ký lắng nghe sự kiện Xuất Trận từ Presenter
             if (_mainHubPresenter != null)
             {
                 _mainHubPresenter.OnStartRunRequested -= StartRun;
                 _mainHubPresenter.OnStartRunRequested += StartRun;
             }
-
-            bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
-            ApplyStateVisuals(isMainMenu);
         }
 
         private void OnDestroy()

@@ -45,6 +45,8 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public event Action<DamageData, Collider2D> OnHitEnemy;
 
+        [SerializeField] private CombatAimIndicator aimIndicator;
+
         private void Awake()
         {
             _playerStats = GetComponent<PlayerStats>();
@@ -52,6 +54,7 @@ namespace ProjectZombie.Features.Player
             if (playerAnimator == null) playerAnimator = GetComponent<PlayerAnimator>();
             if (playerController == null) playerController = GetComponent<PlayerController>();
             if (firePoint == null) firePoint = transform;
+            if (aimIndicator == null) aimIndicator = GetComponent<CombatAimIndicator>() ?? gameObject.AddComponent<CombatAimIndicator>();
 
             // Khởi tạo config từ RunLoadoutState nếu có
             if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null)
@@ -61,6 +64,11 @@ namespace ProjectZombie.Features.Player
 
             // Fallback an toàn: Nếu chưa có attackConfig hoặc thiếu slashVfxPrefab thì tự nạp từ CharacterSelectionData
             EnsureAttackConfigFallback();
+
+            if (aimIndicator != null)
+            {
+                aimIndicator.Initialize(attackConfig);
+            }
         }
 
         private void EnsureAttackConfigFallback()
@@ -89,6 +97,10 @@ namespace ProjectZombie.Features.Player
             if (config != null)
             {
                 attackConfig = config;
+                if (aimIndicator != null)
+                {
+                    aimIndicator.ApplyThemeColor(config);
+                }
             }
         }
 
@@ -110,55 +122,12 @@ namespace ProjectZombie.Features.Player
             return baseSpeed * statBonus;
         }
 
-        private SpriteRenderer _aimIndicator;
-
-        private void InitAimIndicator()
-        {
-            if (_aimIndicator != null) return;
-
-            GameObject arrowObj = new GameObject("VFX_Attack_Aim_Indicator");
-            arrowObj.transform.SetParent(transform, false);
-            arrowObj.transform.localPosition = Vector3.zero;
-
-            _aimIndicator = arrowObj.AddComponent<SpriteRenderer>();
-            _aimIndicator.sprite = Resources.Load<Sprite>("Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle");
-            if (_aimIndicator.sprite == null)
-            {
-#if UNITY_EDITOR
-                _aimIndicator.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle.png");
-#endif
-            }
-            _aimIndicator.sortingLayerName = "Skill";
-            _aimIndicator.sortingOrder = 3;
-
-            // Màu sắc theo bản sắc nguyên tố tướng (Thư Sinh: Vàng Kim, Đạo Sĩ: Xanh Ngọc, Thanh Đồng: Đỏ Cam, Ẩn Sĩ: Hổ Phách)
-            Color themeColor = new Color(1.0f, 0.85f, 0.2f, 0.65f);
-            if (attackConfig != null)
-            {
-                if (attackConfig.attackName.Contains("Tiên Đạo") || attackConfig.attackName.Contains("Linh Phù"))
-                    themeColor = new Color(0.25f, 0.95f, 0.85f, 0.65f); // Xanh ngọc
-                else if (attackConfig.attackName.Contains("Đuốc") || attackConfig.attackName.Contains("Lửa"))
-                    themeColor = new Color(1.0f, 0.4f, 0.1f, 0.7f); // Đỏ cam
-                else if (attackConfig.attackName.Contains("Thạch") || attackConfig.attackName.Contains("Địa"))
-                    themeColor = new Color(0.9f, 0.65f, 0.25f, 0.7f); // Hổ phách
-            }
-            _aimIndicator.color = themeColor;
-            arrowObj.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
-        }
-
         private void UpdateAimIndicator()
         {
-            if (_aimIndicator == null)
-            {
-                InitAimIndicator();
-            }
-
-            if (_aimIndicator != null)
+            if (aimIndicator != null)
             {
                 Vector2 dir = GetAttackDirection();
-                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                _aimIndicator.transform.rotation = Quaternion.Euler(0, 0, angle);
-                _aimIndicator.transform.localPosition = (Vector3)(dir * 0.4f);
+                aimIndicator.UpdateAim(dir);
             }
         }
 

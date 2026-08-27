@@ -26,6 +26,8 @@ namespace ProjectZombie.Features.Weapons
         private PlayerPassives _playerPassives;
         private List<WeaponBase> _activeWeapons = new List<WeaponBase>();
 
+        private readonly List<WeaponBase> _cachedRelicWeapons = new List<WeaponBase>();
+
         public IReadOnlyList<WeaponBase> ActiveWeapons => _activeWeapons;
         public bool IsFull() => _activeWeapons.Count >= MAX_WEAPONS;
 
@@ -38,30 +40,40 @@ namespace ProjectZombie.Features.Weapons
             get
             {
                 if (_activeWeapons.Count == 0) return null;
-                var found = _activeWeapons.Find(w => w.isPrimaryActiveWeapon);
-                return found != null ? found : _activeWeapons[0];
+                for (int i = 0; i < _activeWeapons.Count; i++)
+                {
+                    if (_activeWeapons[i] != null && _activeWeapons[i].isPrimaryActiveWeapon)
+                        return _activeWeapons[i];
+                }
+                return _activeWeapons[0];
             }
         }
 
         /// <summary>
-        /// Danh sách các Pháp bảo phụ trợ (Relics) đang trang bị.
+        /// Danh sách các Pháp bảo phụ trợ (Relics) đang trang bị (Zero-GC Cache).
         /// </summary>
-        public List<WeaponBase> RelicWeapons
+        public IReadOnlyList<WeaponBase> RelicWeapons => _cachedRelicWeapons;
+
+        private void RebuildRelicCache()
         {
-            get
+            _cachedRelicWeapons.Clear();
+            var primary = PrimaryWeapon;
+            for (int i = 0; i < _activeWeapons.Count; i++)
             {
-                var relics = new List<WeaponBase>();
-                var primary = PrimaryWeapon;
-                foreach (var w in _activeWeapons)
+                var w = _activeWeapons[i];
+                if (w != null && w != primary)
                 {
-                    if (w != primary) relics.Add(w);
+                    _cachedRelicWeapons.Add(w);
                 }
-                // Nếu không có Primary Weapon riêng (dùng CharacterCombat), mọi vũ khí trong này đều là Relic
-                if (relics.Count == 0 && _activeWeapons.Count > 0 && GetComponent<CharacterCombat>() != null)
+            }
+
+            // Nếu không có Primary Weapon riêng (dùng CharacterCombat), mọi vũ khí trong này đều là Relic
+            if (_cachedRelicWeapons.Count == 0 && _activeWeapons.Count > 0 && GetComponent<CharacterCombat>() != null)
+            {
+                for (int i = 0; i < _activeWeapons.Count; i++)
                 {
-                    return new List<WeaponBase>(_activeWeapons);
+                    if (_activeWeapons[i] != null) _cachedRelicWeapons.Add(_activeWeapons[i]);
                 }
-                return relics;
             }
         }
 
@@ -146,6 +158,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
+            RebuildRelicCache();
             OnWeaponsChanged?.Invoke();
             Debug.Log($"<color=#00FF88>[WeaponManager]</color> Đã nạp lại vũ khí/pháp bảo: ActiveCount={_activeWeapons.Count}");
         }
@@ -278,6 +291,7 @@ namespace ProjectZombie.Features.Weapons
 
         public void NotifyWeaponsChanged()
         {
+            RebuildRelicCache();
             OnWeaponsChanged?.Invoke();
         }
 
