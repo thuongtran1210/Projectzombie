@@ -102,3 +102,63 @@ Khi lên cấp trong trận, người chơi nhận ngẫu nhiên 3 thẻ:
 1. **Thẻ Cường Hóa Đòn Đánh Tướng (`ComboAugmentUpgradeData`)**: Tăng kích thước vùng chém, thêm vệt lửa, tăng tốc độ đánh và sát thương combo của Hero.
 2. **Thẻ Nâng Cấp Pháp Bảo (`WeaponUpgradeData`)**: Tăng cấp độ từ **Level 1 ➔ Level 6** cho đúng 1 Pháp Bảo Hộ Thân mang theo (Thêm tia đạn, tăng bán kính, mở khóa hiệu ứng đặc biệt).
 3. **Thẻ Tiến Hóa Tối Thượng (`EvolutionUpgradeData`)**: Đột phá Pháp Bảo thành hình thái Thần Khí Tối Thượng khi đạt Lv6 và có thẻ bổ trợ tương thích.
+
+---
+
+## 6. Quy Trình Thiết Kế & Sản Xuất Visual VFX Cho Vũ Khí / Pháp Bảo (VFX Pipeline)
+
+Để đảm bảo chất lượng hình ảnh đồng nhất theo phong cách **2D Stylized Anime / Kingdom Rush Cổ Phong**, toàn bộ hiệu ứng kỹ năng / vũ khí đạn / pháp bảo phải tuân thủ nghiêm ngặt **Quy Trình 3 Bước Tiêu Chuẩn**:
+
+```mermaid
+graph LR
+    A[Bước 1: Viết Prompt & Tạo Bảng Concept Tổng Thể] --> B[Bước 2: Duyệt Visual & Bóc Tách Sprite/Particle]
+    B --> C[Bước 3: Cấu Hình Material URP & Prefab Particle]
+```
+
+### 🎯 Bước 1: Tạo Bảng Concept VFX Tổng Thể (VFX Concept Sheet 2x2 Grid)
+* **Nguyên tắc cốt lõi**: Tuyệt đối **không sinh ngay từng hạt rời rạc**. Phải viết prompt tạo **1 bức ảnh Concept toàn cảnh** chia bố cục lưới **2x2 (4 góc rõ ràng)** trên nền đen thuần khiết (`pure solid black background #000000`), không chứa text và không có vật thể chồng chéo lên nhau.
+
+```
+┌───────────────────────────────────┬───────────────────────────────────┐
+│  1. [Góc Trên-Trái] THỰC THỂ ĐẠN │  2. [Góc Trên-Phải] VỆT XOÁY      │
+│     (Projectile Entity)           │     (Trail / Vortex Energy Arc)   │
+│  - Chiếc dép xoay / Nồi / Mũi tên │  - Luồng gió cuộn, vệt tốc độ     │
+├───────────────────────────────────┼───────────────────────────────────┤
+│  3. [Góc Dưới-Trái] SÓNG VA CHẠM  │  4. [Góc Dưới-Phải] BỤI PHỤ & FX │
+│     (Impact Shockwave / Hit Spark)│     (Embers / Sparkles / Comic FX)│
+│  - Vòng sóng chấn động nổ bung    │  - Hạt sáng, đốm than, icon comic │
+└───────────────────────────────────┴───────────────────────────────────┘
+```
+
+* **Cấu trúc Prompt chuẩn Studio**:
+  > `2D mobile game VFX concept design sheet, top-down view, 4 separate isolated elements arranged neatly with wide spacing in a 2x2 grid layout on pure solid black background: Top-left: a single [Projectile Entity] in mid-air with speedlines. Top-right: a glowing [Element Color] curved energy vortex slash arc. Bottom-left: a dynamic radial comic hit impact shockwave star. Bottom-right: tiny flying [Element Color] sparkles and comic effect particles. Bold stylized vector outlines, vibrant [Color Theme] palette, high contrast, no text, no overlapping, clean game assets sheet.`
+
+### ✂️ Bước 2: Duyệt Visual & Bóc Tách Từng Thành Phần (Sprite Slicing)
+1. **Tiêu chí duyệt Concept**:
+   - Đúng ngũ hành màu sắc (Kim: Vàng sáng, Mộc: Xanh ngọc, Thủy: Lam biếc, Hỏa: Đỏ cam, Thổ: Nâu hổ phách).
+   - Đúng tỷ lệ Cartoon Chibi 1:2 (nét viền đậm, khối màu rõ ràng, không bị nhiễu hạt siêu nhỏ).
+2. **Quy trình bóc tách tự động (Chroma Keying Black-to-Alpha)**:
+   - Thuật toán tự động nhận diện 4 Bounding Box độc lập từ 4 góc lưới.
+   - Khử nền đen $100\%$ sang kênh Alpha trong suốt mịn màng (Linear Smooth Alpha Falloff).
+   - Tạo ảnh vuông chuẩn Game Texture ($256\times 256$ hoặc $512\times 512$ có padding $8\%$ chống tràn viền khi xoay):
+     - `Tex_[Weapon]_Projectile.png` (Đạn bay)
+     - `Tex_[Weapon]_Vortex.png` (Vệt gió / Vòng xoáy)
+     - `Tex_[Weapon]_HitSpark.png` (Sóng va chạm)
+     - `Tex_[Weapon]_Ember.png` (Đốm sáng bổ trợ)
+3. **Unity Texture Importer Meta**:
+   - `alphaIsTransparency: 1`
+   - `textureType: 8` (Sprite 2D and UI)
+   - `wrapMode: Clamp` (Tránh lặp viền khi trôi UV)
+
+### ⚙️ Bước 3: Cấu Hình Material URP & Multi-Layer Particle System
+1. **Material Shader Phù Hợp**:
+   - Khói / Mây đục / Bẫy sàn: Dùng `ProjectZombie/VFX/Slash_Additive` hoặc `URP/Particles/Unlit` với `Blend Mode = AlphaBlend` (`SrcAlpha, OneMinusSrcAlpha`) để êm dịu, không bị chói mắt.
+   - Tia lửa / Vệt chém / Sóng năng lượng: Dùng `Blend Mode = Additive` (`SrcAlpha, One`) để phát quang rực rỡ.
+2. **Cấu trúc Prefab Particle Đa Tầng (Multi-layer)**:
+   - **Root**: `SimulationSpace = World`, `SortingOrder` thấp hơn nhân vật (thường là 8 - 9).
+   - **Layer 1 (Core Entity)**: Đạn chính / Lốc xoáy trung tâm (Burst hoặc Loop có kiểm soát).
+   - **Layer 2 (Trail / Plumes)**: Vệt cuộn khí động học tản rìa ngoài.
+   - **Layer 3 (Embers / Sparkles)**: Tàn than, đốm sáng li ti tạo điểm nhấn sống động.
+3. **Đồng bộ Gameplay**: Cân chỉnh bán kính va chạm `Collider` (`Physics2D.OverlapCircleAll`) trong Script tương ứng khớp $100\%$ với ranh giới của hiệu ứng hiển thị trên màn hình.
+
+

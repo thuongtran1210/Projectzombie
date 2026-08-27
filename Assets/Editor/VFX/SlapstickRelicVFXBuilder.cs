@@ -31,50 +31,132 @@ namespace ProjectZombie.Editor.VFX
             Debug.Log("<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🚀 ĐÃ DỰNG THÀNH CÔNG 5 PREFAB VFX CHO PHÁP BẢO SLAPSTICK!");
         }
 
-        // 1. W_SLIPPER: Lốc Dép Vạn Năng (Kim)
+        // 1. W_SLIPPER: Lốc Dép Vạn Năng (Hệ Kim - Chuẩn Multi-Layer từ Concept Sheet)
         public static void BuildSlipperVFX()
         {
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_Slipper_Whirlwind.prefab";
+            string texSlipperPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png";
+            string texArcPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_VortexArc.png";
+            string texDropsPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_ComicDrops.png";
+
+            Texture2D texSlipper = AssetDatabase.LoadAssetAtPath<Texture2D>(texSlipperPath);
+            Texture2D texArc = AssetDatabase.LoadAssetAtPath<Texture2D>(texArcPath);
+            Texture2D texDrops = AssetDatabase.LoadAssetAtPath<Texture2D>(texDropsPath);
+
+            Material matSlipper = GetOrCreateTextureMaterial("MAT_VFX_Slipper_Item", texSlipper, Color.white, false);
+            Material matArc = GetOrCreateTextureMaterial("MAT_VFX_Slipper_Arc", texArc, new Color(2.5f, 2.0f, 0.6f, 1.0f), true);
+            Material matDrops = GetOrCreateTextureMaterial("MAT_VFX_Slipper_Drops", texDrops, new Color(2.0f, 1.8f, 0.4f, 1.0f), true);
+
             GameObject root = new GameObject("VFX_Relic_Slipper_Whirlwind");
 
-            var ps = root.AddComponent<ParticleSystem>();
-            var main = ps.main;
-            main.duration = 0.5f;
-            main.loop = false;
-            main.startLifetime = 0.45f;
-            main.startSpeed = 3.5f;
-            main.startSize = 1.2f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            // --- LAYER 1: Vòng Xoáy Lốc Năng Lượng Vàng Kim (Golden Vortex Arc) ---
+            var psArc = root.AddComponent<ParticleSystem>();
+            var main1 = psArc.main;
+            main1.duration = 0.8f;
+            main1.loop = false;
+            main1.startLifetime = 0.65f;
+            main1.startSpeed = 0f;
+            main1.startSize = new ParticleSystem.MinMaxCurve(2.8f, 3.4f);
+            main1.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            main1.simulationSpace = ParticleSystemSimulationSpace.World;
 
-            var emission = ps.emission;
-            emission.rateOverTime = 0;
-            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 6) });
+            var emiss1 = psArc.emission;
+            emiss1.rateOverTime = 0;
+            emiss1.SetBursts(new ParticleSystem.Burst[] { 
+                new ParticleSystem.Burst(0.0f, 2),
+                new ParticleSystem.Burst(0.12f, 2),
+                new ParticleSystem.Burst(0.25f, 2)
+            });
 
-            var shape = ps.shape;
-            shape.shapeType = ParticleSystemShapeType.Circle;
-            shape.radius = 1.5f;
-
-            var col = ps.colorOverLifetime;
-            col.enabled = true;
-            Gradient grad = new Gradient();
-            grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.85f, 0.2f), 0f), new GradientColorKey(Color.white, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) }
+            var col1 = psArc.colorOverLifetime;
+            col1.enabled = true;
+            Gradient grad1 = new Gradient();
+            grad1.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.9f, 0.4f), 0f), new GradientColorKey(new Color(1f, 0.6f, 0.1f), 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0f, 1f) }
             );
-            col.color = grad;
+            col1.color = grad1;
 
-            var rot = ps.rotationOverLifetime;
-            rot.enabled = true;
-            rot.z = new ParticleSystem.MinMaxCurve(720f);
+            var rot1 = psArc.rotationOverLifetime;
+            rot1.enabled = true;
+            rot1.z = new ParticleSystem.MinMaxCurve(720f * Mathf.Deg2Rad, 1080f * Mathf.Deg2Rad); // Xoáy tròn siêu tốc
 
-            var rend = root.GetComponent<ParticleSystemRenderer>();
-            rend.material = GetOrCreateVFXMaterial("MAT_VFX_Slipper_Whirlwind", new Color(1.8f, 1.5f, 0.4f, 1f), true);
-            rend.sortingLayerName = "Skill";
-            rend.sortingOrder = 10;
+            var rend1 = root.GetComponent<ParticleSystemRenderer>();
+            rend1.material = matArc;
+            rend1.sortingLayerName = "Skill";
+            rend1.sortingOrder = 9;
+
+            // --- LAYER 2: Dép Tổ Ong Bay Xoay Xung Quanh (Flying Slippers) ---
+            GameObject slippersObj = new GameObject("Flying_Slippers");
+            slippersObj.transform.SetParent(root.transform, false);
+
+            var psSlippers = slippersObj.AddComponent<ParticleSystem>();
+            var main2 = psSlippers.main;
+            main2.duration = 0.8f;
+            main2.loop = false;
+            main2.startLifetime = 0.7f;
+            main2.startSpeed = new ParticleSystem.MinMaxCurve(2.5f, 4.5f);
+            main2.startSize = new ParticleSystem.MinMaxCurve(0.6f, 0.85f); // Kích thước chiếc dép chuẩn
+            main2.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            main2.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emiss2 = psSlippers.emission;
+            emiss2.rateOverTime = 0;
+            emiss2.SetBursts(new ParticleSystem.Burst[] { 
+                new ParticleSystem.Burst(0.02f, 4),
+                new ParticleSystem.Burst(0.15f, 4)
+            });
+
+            var shape2 = psSlippers.shape;
+            shape2.shapeType = ParticleSystemShapeType.Circle;
+            shape2.radius = 0.8f;
+
+            var rot2 = psSlippers.rotationOverLifetime;
+            rot2.enabled = true;
+            rot2.z = new ParticleSystem.MinMaxCurve(-900f * Mathf.Deg2Rad, 900f * Mathf.Deg2Rad); // Dép lộn nhào 720 độ
+
+            var col2 = psSlippers.colorOverLifetime;
+            col2.enabled = true;
+            col2.color = grad1;
+
+            var rend2 = slippersObj.GetComponent<ParticleSystemRenderer>();
+            rend2.material = matSlipper;
+            rend2.sortingLayerName = "Skill";
+            rend2.sortingOrder = 10;
+
+            // --- LAYER 3: Giọt Mồ Hôi & Bụi Vàng Quê Độ (Comic Sweat Drops & Sparkles) ---
+            GameObject dropsObj = new GameObject("Comic_Sweat_Sparkles");
+            dropsObj.transform.SetParent(root.transform, false);
+
+            var psDrops = dropsObj.AddComponent<ParticleSystem>();
+            var main3 = psDrops.main;
+            main3.duration = 0.8f;
+            main3.loop = false;
+            main3.startLifetime = 0.6f;
+            main3.startSpeed = new ParticleSystem.MinMaxCurve(1.5f, 3.5f);
+            main3.startSize = new ParticleSystem.MinMaxCurve(0.4f, 0.7f);
+            main3.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emiss3 = psDrops.emission;
+            emiss3.rateOverTime = 0;
+            emiss3.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.1f, 8) });
+
+            var shape3 = psDrops.shape;
+            shape3.shapeType = ParticleSystemShapeType.Circle;
+            shape3.radius = 1.2f;
+
+            var col3 = psDrops.colorOverLifetime;
+            col3.enabled = true;
+            col3.color = grad1;
+
+            var rend3 = dropsObj.GetComponent<ParticleSystemRenderer>();
+            rend3.material = matDrops;
+            rend3.sortingLayerName = "Skill";
+            rend3.sortingOrder = 11;
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] Dựng thành công: {prefabPath}");
+            Debug.Log($"[SlapstickRelicVFXBuilder] 🩴 Dựng thành công Prefab Lốc Dép Vạn Năng: {prefabPath}");
         }
 
         // 2. W_POT: Nồi Cơm Hút Quái & Đại Bác (Thổ)
@@ -395,6 +477,53 @@ namespace ProjectZombie.Editor.VFX
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
             Debug.Log($"[SlapstickRelicVFXBuilder] Dựng thành công: {prefabPath}");
+        }
+
+        // 1.2 W_SLIPPER: Đạn Dép Bay Boomerang (Sprite Chiếc Dép + Vệt Gió)
+        public static void BuildSlipperProjectileVFX()
+        {
+            string prefabPath = $"{PREFAB_DIR}/VFX_Relic_Slipper_Projectile.prefab";
+            string texSlipperPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png";
+            string texTrailPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_VortexArc.png";
+
+            Texture2D texSlipper = AssetDatabase.LoadAssetAtPath<Texture2D>(texSlipperPath);
+            Texture2D texTrail = AssetDatabase.LoadAssetAtPath<Texture2D>(texTrailPath);
+
+            Material matSlipper = GetOrCreateTextureMaterial("MAT_VFX_Slipper_Item", texSlipper, Color.white, false);
+            Material matTrail = GetOrCreateTextureMaterial("MAT_VFX_Slipper_Arc", texTrail, new Color(2.0f, 1.8f, 0.5f, 1f), true);
+
+            GameObject root = new GameObject("VFX_Relic_Slipper_Projectile");
+
+            // Sprite Renderer hiển thị chiếc dép bay
+            var sr = root.AddComponent<SpriteRenderer>();
+            sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(texSlipperPath);
+            sr.sortingLayerName = "Skill";
+            sr.sortingOrder = 10;
+            root.transform.localScale = Vector3.one * 0.55f;
+
+            // Trail Particle theo sau
+            GameObject trailObj = new GameObject("Trail");
+            trailObj.transform.SetParent(root.transform, false);
+            var ps = trailObj.AddComponent<ParticleSystem>();
+            var main = ps.main;
+            main.duration = 1.0f;
+            main.loop = true;
+            main.startLifetime = 0.25f;
+            main.startSpeed = 0f;
+            main.startSize = 0.8f;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emiss = ps.emission;
+            emiss.rateOverTime = 16;
+
+            var rend = trailObj.GetComponent<ParticleSystemRenderer>();
+            rend.material = matTrail;
+            rend.sortingLayerName = "Skill";
+            rend.sortingOrder = 9;
+
+            PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+            Object.DestroyImmediate(root);
+            Debug.Log($"[SlapstickRelicVFXBuilder] 🩴 Dựng thành công Prefab Đạn Dép Bay: {prefabPath}");
         }
 
         private static Material GetOrCreateVFXMaterial(string matName, Color coreColor, bool isAdditive)

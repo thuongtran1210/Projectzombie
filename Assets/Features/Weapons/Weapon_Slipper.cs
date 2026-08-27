@@ -98,17 +98,84 @@ namespace ProjectZombie.Features.Weapons
             DamageData dmg = CreateDamageData();
             dmg = new DamageData(dmg.Amount * dmgMult, dmg.IsCritical, ElementType.Kim, dmg.IsCounter, this);
 
-            // Bay tới đích
+            // Sinh Visual Chiếc Dép Bay Xoay Tròn (Thu nhỏ về tỉ lệ 0.32m chuẩn Chibi)
+            GameObject slipperVisual = new GameObject("Slipper_Projectile_Visual");
+            var sr = slipperVisual.AddComponent<SpriteRenderer>();
+            var slipperSprite = Resources.Load<Sprite>("Tex_Slipper_Projectile");
+#if UNITY_EDITOR
+            if (slipperSprite == null)
+            {
+                slipperSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png");
+            }
+#endif
+            sr.sprite = slipperSprite;
+            sr.sortingLayerName = "Skill";
+            sr.sortingOrder = 12;
+            slipperVisual.transform.localScale = Vector3.one * 0.32f; // Thu nhỏ 50% so với trước
+            slipperVisual.transform.position = startPos;
+
+            // Gắn TrailRenderer (Dải Năng Lượng Ribbon Vàng Kim uốn lượn liên tục bám theo dép)
+            var trailRenderer = slipperVisual.AddComponent<TrailRenderer>();
+            trailRenderer.time = 0.22f;
+            trailRenderer.startWidth = 0.35f;
+            trailRenderer.endWidth = 0.02f;
+            trailRenderer.minVertexDistance = 0.05f;
+            trailRenderer.autodestruct = false;
+            trailRenderer.sortingLayerName = "Skill";
+            trailRenderer.sortingOrder = 11;
+
+            Gradient trailGrad = new Gradient();
+            trailGrad.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.9f, 0.4f), 0f), new GradientColorKey(new Color(1f, 0.55f, 0.1f), 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) }
+            );
+            trailRenderer.colorGradient = trailGrad;
+
+#if UNITY_EDITOR
+            Material matTrail = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Arc.mat");
+            if (matTrail != null) trailRenderer.material = matTrail;
+#endif
+
+            // Gắn thêm Hạt Bụi Năng Lượng Lấp Lánh tản ra từ đuôi dép
+            GameObject trailObj = new GameObject("Sparks");
+            trailObj.transform.SetParent(slipperVisual.transform, false);
+            var psTrail = trailObj.AddComponent<ParticleSystem>();
+            var mainT = psTrail.main;
+            mainT.duration = 1.0f;
+            mainT.loop = true;
+            mainT.startLifetime = 0.18f;
+            mainT.startSpeed = 0.8f;
+            mainT.startSize = new ParticleSystem.MinMaxCurve(0.2f, 0.45f);
+            mainT.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emissT = psTrail.emission;
+            emissT.rateOverTime = 25;
+
+            var colT = psTrail.colorOverLifetime;
+            colT.enabled = true;
+            colT.color = trailGrad;
+
+            var rendT = trailObj.GetComponent<ParticleSystemRenderer>();
+#if UNITY_EDITOR
+            Material matDrops = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Drops.mat");
+            if (matDrops != null) rendT.material = matDrops;
+#endif
+            rendT.sortingLayerName = "Skill";
+            rendT.sortingOrder = 11;
+
+            // 1. Bay tới đích
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
                 Vector2 currentPos = Vector2.Lerp(startPos, targetPos, t);
+                slipperVisual.transform.position = currentPos;
+                slipperVisual.transform.Rotate(0f, 0f, 1440f * Time.deltaTime); // Lộn nhào tốc độ cao
                 DealDamageAtPosition(currentPos, dmg, 4f);
                 yield return null;
             }
 
-            // Bay ngược về người chơi
+            // 2. Bay ngược về người chơi
             elapsed = 0f;
             while (elapsed < duration)
             {
@@ -116,9 +183,13 @@ namespace ProjectZombie.Features.Weapons
                 float t = elapsed / duration;
                 Vector2 playerPos = transform.position;
                 Vector2 currentPos = Vector2.Lerp(targetPos, playerPos, t);
+                slipperVisual.transform.position = currentPos;
+                slipperVisual.transform.Rotate(0f, 0f, -1440f * Time.deltaTime);
                 DealDamageAtPosition(currentPos, dmg, 3f);
                 yield return null;
             }
+
+            Destroy(slipperVisual);
         }
 
         private IEnumerator RoutineWhirlwindSlippers()
