@@ -178,14 +178,12 @@ namespace ProjectZombie.Features.Weapons
             if (!_activeWeapons.Contains(weapon))
             {
                 weapon.Initialize(_playerStats);
+                
+                // Mọi Pháp Bảo Hộ Thân (Relic) mang vào đều là Auto-Attack / Passive Orbit
+                weapon.isPrimaryActiveWeapon = false;
+                weapon.weaponRole = WeaponRole.Relic;
+
                 _activeWeapons.Add(weapon);
-
-                // Nếu đây là vũ khí đầu tiên, mặc định gán làm vũ khí chính
-                if (_activeWeapons.Count == 1)
-                {
-                    weapon.isPrimaryActiveWeapon = true;
-                }
-
                 OnWeaponsChanged?.Invoke();
             }
         }
