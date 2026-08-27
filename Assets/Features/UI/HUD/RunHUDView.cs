@@ -164,15 +164,6 @@ namespace ProjectZombie.Features.UI.HUD
         /// <summary>Cập nhật danh sách icon Kỹ năng/Vũ khí sở hữu.</summary>
         public void UpdateSkills(System.Collections.Generic.IReadOnlyList<SkillDisplayData> skills)
         {
-            for (int i = _spawnedSkills.Count - 1; i >= 0; i--)
-            {
-                if (_spawnedSkills[i] != null)
-                {
-                    Destroy(_spawnedSkills[i].gameObject);
-                }
-            }
-            _spawnedSkills.Clear();
-
             if (_skillsContainer == null)
             {
                 var found = transform.Find("Panel_Skills/ActiveSkills_Container");
@@ -183,6 +174,20 @@ namespace ProjectZombie.Features.UI.HUD
                     if (panelSkills != null) _skillsContainer = panelSkills;
                 }
             }
+
+            // Xóa sạch tất cả các GameObject con trong container (bao gồm cả placeholder/dummy slots từ Editor)
+            if (_skillsContainer != null)
+            {
+                for (int i = _skillsContainer.childCount - 1; i >= 0; i--)
+                {
+                    var child = _skillsContainer.GetChild(i);
+                    if (child != null)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
+            }
+            _spawnedSkills.Clear();
 
             if (_skillEntryPrefab == null)
             {

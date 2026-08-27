@@ -243,6 +243,7 @@ namespace ProjectZombie.Features.UI.HUD
             if (_view == null) return;
 
             var displaySkills = new System.Collections.Generic.List<RunHUDView.SkillDisplayData>();
+            var addedSkillIds = new System.Collections.Generic.HashSet<string>();
 
             // 1. Thu thập danh sách Vũ khí (Active Weapons)
             if (_weaponManager != null)
@@ -251,7 +252,11 @@ namespace ProjectZombie.Features.UI.HUD
                 {
                     if (weapon == null) continue;
 
-                    string weaponName = !string.IsNullOrEmpty(weapon.displayName) ? weapon.displayName : weapon.weaponId;
+                    string weaponId = !string.IsNullOrEmpty(weapon.weaponId) ? weapon.weaponId : weapon.name;
+                    if (addedSkillIds.Contains(weaponId)) continue;
+                    addedSkillIds.Add(weaponId);
+
+                    string weaponName = !string.IsNullOrEmpty(weapon.displayName) ? weapon.displayName : weaponId;
                     string desc = !string.IsNullOrEmpty(weapon.description) ? weapon.description : $"Pháp Bảo cấp {weapon.WeaponLevel}";
 
                     displaySkills.Add(new RunHUDView.SkillDisplayData
@@ -267,8 +272,15 @@ namespace ProjectZombie.Features.UI.HUD
             // 2. Thu thập danh sách Thẻ Bị Động (Passives)
             if (_playerPassives != null)
             {
-                foreach (var passiveId in _playerPassives.ActivePassives)
+                var passivesList = _playerPassives.DistinctPassives.Count > 0 
+                    ? _playerPassives.DistinctPassives 
+                    : (System.Collections.Generic.IReadOnlyCollection<string>)_playerPassives.ActivePassives;
+
+                foreach (var passiveId in passivesList)
                 {
+                    if (string.IsNullOrEmpty(passiveId) || addedSkillIds.Contains(passiveId)) continue;
+                    addedSkillIds.Add(passiveId);
+
                     int level = _playerPassives.GetUpgradeCount(passiveId);
                     if (level <= 0) level = 1;
 

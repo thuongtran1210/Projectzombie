@@ -23,6 +23,7 @@ namespace ProjectZombie.Features.Player
         private Dictionary<string, UpgradeData> _passiveDataMap = new Dictionary<string, UpgradeData>();
 
         public IReadOnlyList<string> ActivePassives => _activePassives;
+        public IReadOnlyCollection<string> DistinctPassives => _distinctPassiveIds;
         public IReadOnlyDictionary<string, UpgradeData> PassiveDataMap => _passiveDataMap;
 
         public int DistinctPassiveCount => _distinctPassiveIds.Count;
