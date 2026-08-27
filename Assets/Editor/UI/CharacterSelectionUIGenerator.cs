@@ -48,14 +48,13 @@ namespace ProjectZombie.Editor.UI
             panelRT.sizeDelta = new Vector2(1100, 720);
             panelRT.anchoredPosition = Vector2.zero;
             var panelImg = panel.AddComponent<Image>();
-            panelImg.color = new Color(0.12f, 0.10f, 0.15f, 0.95f); // Gỗ mun thau cổ
+            panelImg.color = Color.white;
+            panelImg.type = Image.Type.Sliced;
 
-            // Thử load Sprite Frame nếu có
-            Sprite cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Card_Evolution.png");
+            Sprite cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
             if (cardFrame != null)
             {
                 panelImg.sprite = cardFrame;
-                panelImg.type = Image.Type.Sliced;
             }
 
             // 4. Header Title: "CHỌN ANH HÙNG XUẤT TRẬN"
@@ -224,14 +223,18 @@ namespace ProjectZombie.Editor.UI
             ptTMP.color = new Color(0.9f, 0.9f, 0.9f);
             ptTMP.enableWordWrapping = true;
 
-            // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG"
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -345), new Vector2(560, 56), "XAC NHAN CHON TUONG", vietFont);
+            // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG" (Nút Vàng Hoàng Kim 9-Slice)
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -345), new Vector2(560, 56), "XÁC NHẬN CHỌN TƯỚNG", vietFont);
             var btnImg = selectBtnObj.GetComponent<Image>();
-            btnImg.color = new Color(0.85f, 0.45f, 0.15f); // Cam Đồng sáng
+            btnImg.color = Color.white;
+            btnImg.type = Image.Type.Sliced;
+            Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
+            if (btnSprite != null) btnImg.sprite = btnSprite;
+
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();
             btnTxt.fontSize = 20;
             btnTxt.fontStyle = FontStyles.Bold;
-            btnTxt.color = Color.white;
+            btnTxt.color = new Color(0.2f, 0.12f, 0.05f, 1f);
 
             // 8. Wire References to View Component
             SerializedObject soView = new SerializedObject(view);

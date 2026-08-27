@@ -4,6 +4,7 @@ using ProjectZombie.Features.UI.HUD;
 using ProjectZombie.Features.UI.StatsAndSkills;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Arena;
+using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.Player
 {
@@ -182,6 +183,16 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void StartMatchFlow()
         {
+            // Tự động đồng bộ / nạp lại Pháp Bảo & Vũ Khí mới nhất vào Player
+            if (_activePlayerInstance != null)
+            {
+                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
+                if (wm != null)
+                {
+                    wm.ReloadEquippedWeapons();
+                }
+            }
+
             if (RunStatsTracker.Instance != null)
             {
                 RunStatsTracker.Instance.StartTracking();

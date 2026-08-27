@@ -119,11 +119,25 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
+            CharacterEntry hero = RunLoadoutState.SelectedCharacter;
             WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
             List<WeaponData> relics = RunLoadoutState.SelectedRelics;
 
-            string priName = primary != null ? primary.weaponName : "Nỏ Thần";
-            Sprite priSprite = primary != null ? primary.icon : null;
+            string priName = "Đòn Đánh";
+            Sprite priSprite = null;
+
+            if (hero != null)
+            {
+                priName = !string.IsNullOrEmpty(hero.basicAttackConfig?.attackName) 
+                    ? hero.basicAttackConfig.attackName 
+                    : hero.characterName;
+                priSprite = hero.basicAttackConfig?.attackIcon != null ? hero.basicAttackConfig.attackIcon : hero.avatar;
+            }
+            else if (primary != null)
+            {
+                priName = primary.weaponName;
+                priSprite = primary.icon;
+            }
 
             var relicSprites = new List<Sprite>();
             if (relics != null)

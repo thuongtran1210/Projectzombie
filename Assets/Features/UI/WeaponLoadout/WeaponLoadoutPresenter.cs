@@ -153,6 +153,14 @@ namespace ProjectZombie.Features.UI
             if (weapon == null) return;
             _selectedPrimary = weapon;
             _inspectedWeapon = weapon;
+
+            RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
+            {
+                var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+                if (wm != null) wm.ReloadEquippedWeapons();
+            }
+
             RefreshUI();
         }
 
@@ -165,6 +173,14 @@ namespace ProjectZombie.Features.UI
             _selectedRelics.Add(relic);
 
             _inspectedWeapon = relic;
+
+            RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
+            {
+                var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+                if (wm != null) wm.ReloadEquippedWeapons();
+            }
+
             RefreshUI();
         }
 

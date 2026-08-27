@@ -60,7 +60,10 @@ namespace ProjectZombie.Editor.UI
             modalRT.sizeDelta = new Vector2(1160, 660);
             modalRT.anchoredPosition = Vector2.zero;
             var modalImg = modal.AddComponent<Image>();
-            modalImg.color = ColorModalBg;
+            modalImg.color = Color.white;
+            modalImg.type = Image.Type.Sliced;
+            Sprite modalFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
+            if (modalFrame != null) modalImg.sprite = modalFrame;
 
             // 4. Header Section
             BuildHeader(modal.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out Button backBtn);
@@ -694,28 +697,17 @@ namespace ProjectZombie.Editor.UI
             div2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 4);
             div2.AddComponent<Image>().color = ColorBambooFrame;
 
-            // ================= SECTION 3: NÚT XÁC NHẬN XUẤT TRẬN (Height = 60) =================
+            // ================= SECTION 3: NÚT XÁC NHẬN XUẤT TRẬN (Height = 60 - Đỏ Chu Sa 9-Slice) =================
             GameObject btnObj = CreateUIElement("Btn_StartBattle", innerObj.transform);
             btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 58);
             var btnImg = btnObj.AddComponent<Image>();
-            btnImg.color = ColorCinnabar;
+            btnImg.color = Color.white;
+            btnImg.type = Image.Type.Sliced;
+            Sprite btnRed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+            if (btnRed != null) btnImg.sprite = btnRed;
             startBattleBtn = btnObj.AddComponent<Button>();
 
-            // Viền vàng nút
-            GameObject btnBorder = CreateUIElement("Border", btnObj.transform);
-            SetStretchAnchor(btnBorder.GetComponent<RectTransform>());
-            btnBorder.GetComponent<RectTransform>().offsetMin = new Vector2(2, 2);
-            btnBorder.GetComponent<RectTransform>().offsetMax = new Vector2(-2, -2);
-            var bbImg = btnBorder.AddComponent<Image>();
-            bbImg.color = ColorGold;
-
-            GameObject btnInner = CreateUIElement("Inner", btnBorder.transform);
-            SetStretchAnchor(btnInner.GetComponent<RectTransform>());
-            btnInner.GetComponent<RectTransform>().offsetMin = new Vector2(2, 2);
-            btnInner.GetComponent<RectTransform>().offsetMax = new Vector2(-2, -2);
-            btnInner.AddComponent<Image>().color = new Color(0.72f, 0.18f, 0.14f, 1f);
-
-            GameObject btnTxt = CreateUIElement("Text", btnInner.transform);
+            GameObject btnTxt = CreateUIElement("Text", btnObj.transform);
             SetStretchAnchor(btnTxt.GetComponent<RectTransform>());
             var btTMP = btnTxt.AddComponent<TextMeshProUGUI>();
             if (font != null) btTMP.font = font;

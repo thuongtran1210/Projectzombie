@@ -92,6 +92,7 @@ namespace ProjectZombie.Features.UI
             {
                 _primaryWeaponIcon.sprite = primaryIcon;
                 _primaryWeaponIcon.enabled = primaryIcon != null;
+                _primaryWeaponIcon.color = primaryIcon != null ? Color.white : new Color(1, 1, 1, 0);
             }
 
             if (_relicIcons != null)
@@ -102,6 +103,19 @@ namespace ProjectZombie.Features.UI
                     bool hasRelic = relicSprites != null && i < relicSprites.Count && relicSprites[i] != null;
                     _relicIcons[i].sprite = hasRelic ? relicSprites[i] : null;
                     _relicIcons[i].enabled = hasRelic;
+                    _relicIcons[i].color = hasRelic ? Color.white : new Color(1, 1, 1, 0);
+
+                    // Ẩn hoặc làm mờ ô slot cha nếu slot đó không có trang bị (chỉ có 1 Pháp Bảo theo cơ chế v5.0)
+                    Transform parentSlot = _relicIcons[i].transform.parent;
+                    if (parentSlot != null && parentSlot != transform)
+                    {
+                        var parentImg = parentSlot.GetComponent<Image>();
+                        if (parentImg != null)
+                        {
+                            // Slot 1 (i == 0) hoặc slot có trang bị: hiển thị bình thường. Slot trống thừa (i > 0): ẩn đi
+                            parentSlot.gameObject.SetActive(i == 0 || hasRelic);
+                        }
+                    }
                 }
             }
         }

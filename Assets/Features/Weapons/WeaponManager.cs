@@ -87,7 +87,33 @@ namespace ProjectZombie.Features.Weapons
                 _characterCombat.OnAttackExecuted += HandleHeroAttackExecuted;
             }
 
-            // 1. Kiểm tra nếu có Loadout tùy chỉnh từ Sảnh Chờ (Meta Hub Loadout)
+            ReloadEquippedWeapons();
+        }
+
+        /// <summary>
+        /// Nạp lại toàn bộ Pháp Bảo / Vũ Khí theo RunLoadoutState hiện tại (dùng khi đổi trang bị ở Sảnh Chờ hoặc Xuất Trận).
+        /// </summary>
+        public void ReloadEquippedWeapons()
+        {
+            // 1. Dọn dẹp toàn bộ vũ khí / pháp bảo đang active cũ
+            for (int i = _activeWeapons.Count - 1; i >= 0; i--)
+            {
+                if (_activeWeapons[i] != null)
+                {
+                    Destroy(_activeWeapons[i].gameObject);
+                }
+            }
+            _activeWeapons.Clear();
+
+            // Dọn dẹp thêm các WeaponBase con nếu còn sót trong weaponHolder
+            Transform parent = weaponHolder != null ? weaponHolder : transform;
+            var oldWeapons = parent.GetComponentsInChildren<WeaponBase>(true);
+            foreach (var w in oldWeapons)
+            {
+                if (w != null) Destroy(w.gameObject);
+            }
+
+            // 2. Kiểm tra nếu có Loadout tùy chỉnh từ Sảnh Chờ (Meta Hub Loadout)
             if (RunLoadoutState.HasCustomLoadout)
             {
                 // Nạp 1 Pháp Bảo Hộ Thân (Relic)
@@ -110,7 +136,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            // 2. Tìm vũ khí có sẵn trong hierarchy (để hỗ trợ tương thích ngược / test nhanh)
+            // 3. Tìm vũ khí có sẵn trong hierarchy (để hỗ trợ tương thích ngược / test nhanh)
             WeaponBase[] attachedWeapons = GetComponentsInChildren<WeaponBase>();
             foreach (var w in attachedWeapons)
             {
@@ -119,6 +145,9 @@ namespace ProjectZombie.Features.Weapons
                     AddWeapon(w);
                 }
             }
+
+            OnWeaponsChanged?.Invoke();
+            Debug.Log($"<color=#00FF88>[WeaponManager]</color> Đã nạp lại vũ khí/pháp bảo: ActiveCount={_activeWeapons.Count}");
         }
 
         private void OnDestroy()

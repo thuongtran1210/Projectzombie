@@ -58,7 +58,10 @@ namespace ProjectZombie.EditorTools
             Image panelBg = panelTrans.GetComponent<Image>();
             if (panelBg != null)
             {
-                panelBg.color = new Color(0.05f, 0.08f, 0.12f, 0.85f); // Tối nền cổ phong
+                panelBg.color = Color.white;
+                panelBg.type = Image.Type.Sliced;
+                Sprite modalSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
+                if (modalSprite != null) panelBg.sprite = modalSprite;
             }
 
             // 3. Chuẩn hóa Cards_Container (Con của Upgrade_Panel)
@@ -152,7 +155,7 @@ namespace ProjectZombie.EditorTools
                 fLayout.childForceExpandHeight = false;
             }
 
-            // 6. Tạo/Tìm Button_Reroll
+            // 6. Tạo/Tìm Button_Reroll (Áp dụng Nút Vàng Hoàng Kim 9-Slice)
             Transform rerollBtnTrans = footerTrans.Find("Button_Reroll");
             Button rerollBtn = null;
             TextMeshProUGUI rerollText = null;
@@ -164,12 +167,12 @@ namespace ProjectZombie.EditorTools
                 rerollBtnTrans = btnObj.transform;
 
                 RectTransform bRect = btnObj.GetComponent<RectTransform>();
-                bRect.sizeDelta = new Vector2(180, 50);
+                bRect.sizeDelta = new Vector2(180, 52);
 
                 Image bImg = btnObj.GetComponent<Image>();
                 bImg.color = Color.white;
                 bImg.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Primary_Normal.png");
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
                 if (btnSprite != null) bImg.sprite = btnSprite;
 
                 rerollBtn = btnObj.GetComponent<Button>();
@@ -186,24 +189,35 @@ namespace ProjectZombie.EditorTools
 
                 rerollText = textObj.GetComponent<TextMeshProUGUI>();
                 rerollText.text = "Đổi Thẻ (3)";
-                rerollText.fontSize = 22;
+                rerollText.fontSize = 20;
+                rerollText.fontStyle = FontStyles.Bold;
                 rerollText.alignment = TextAlignmentOptions.Center;
-                rerollText.color = new Color(1f, 0.9f, 0.6f, 1f); // Màu chữ vàng đồng sáng
+                rerollText.color = new Color(0.2f, 0.12f, 0.05f, 1f); // Chữ nâu gỗ trên nền vàng sáng
                 rerollText.raycastTarget = false;
             }
             else
             {
                 rerollBtnTrans.gameObject.layer = LayerMask.NameToLayer("UI");
+                Image bImg = rerollBtnTrans.GetComponent<Image>();
+                if (bImg != null)
+                {
+                    bImg.color = Color.white;
+                    bImg.type = Image.Type.Sliced;
+                    Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
+                    if (btnSprite != null) bImg.sprite = btnSprite;
+                }
                 rerollBtn = rerollBtnTrans.GetComponent<Button>();
                 rerollText = rerollBtnTrans.GetComponentInChildren<TextMeshProUGUI>();
                 if (rerollText != null)
                 {
                     rerollText.gameObject.layer = LayerMask.NameToLayer("UI");
+                    rerollText.color = new Color(0.2f, 0.12f, 0.05f, 1f);
+                    rerollText.fontStyle = FontStyles.Bold;
                     rerollText.raycastTarget = false;
                 }
             }
 
-            // 7. Tạo/Tìm Button_Skip
+            // 7. Tạo/Tìm Button_Skip (Áp dụng Nút Đỏ Chu Sa 9-Slice)
             Transform skipBtnTrans = footerTrans.Find("Button_Skip");
             Button skipBtn = null;
             if (skipBtnTrans == null)
@@ -213,12 +227,12 @@ namespace ProjectZombie.EditorTools
                 skipBtnTrans = btnObj.transform;
 
                 RectTransform bRect = btnObj.GetComponent<RectTransform>();
-                bRect.sizeDelta = new Vector2(140, 50);
+                bRect.sizeDelta = new Vector2(150, 52);
 
                 Image bImg = btnObj.GetComponent<Image>();
                 bImg.color = Color.white;
                 bImg.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Primary_Normal.png");
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
                 if (btnSprite != null) bImg.sprite = btnSprite;
 
                 skipBtn = btnObj.GetComponent<Button>();
@@ -233,13 +247,28 @@ namespace ProjectZombie.EditorTools
 
                 TextMeshProUGUI skipText = textObj.GetComponent<TextMeshProUGUI>();
                 skipText.text = "Bỏ Qua";
-                skipText.fontSize = 22;
+                skipText.fontSize = 20;
+                skipText.fontStyle = FontStyles.Bold;
                 skipText.alignment = TextAlignmentOptions.Center;
-                skipText.color = new Color(0.9f, 0.8f, 0.8f, 1f);
+                skipText.color = Color.white;
             }
             else
             {
+                Image bImg = skipBtnTrans.GetComponent<Image>();
+                if (bImg != null)
+                {
+                    bImg.color = Color.white;
+                    bImg.type = Image.Type.Sliced;
+                    Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+                    if (btnSprite != null) bImg.sprite = btnSprite;
+                }
                 skipBtn = skipBtnTrans.GetComponent<Button>();
+                var skipText = skipBtnTrans.GetComponentInChildren<TextMeshProUGUI>();
+                if (skipText != null)
+                {
+                    skipText.color = Color.white;
+                    skipText.fontStyle = FontStyles.Bold;
+                }
             }
 
             // 8. Tự động liên kết các SerializedField vào UpgradeUIView & UpgradeUIPresenter

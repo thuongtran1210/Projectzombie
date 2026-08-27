@@ -65,9 +65,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "V\u0169 kh\xED n\xE9m Boomerang h\xE0i h\u01B0\u1EDBc; Hit 3 qu\u0103ng
-    l\u1ED1c d\xE9p g\xE2y hi\u1EC7u \u1EE9ng 'Qu\xEA \u0110\u1ED9' khi\u1EBFn qu\xE1i
-    quay sang \u0111\u1EA5m \u0111\u1ED3ng minh."
+  m_text: "S\xF3ng \xE2m tr\u1EA3m linh t\u1ECFa r\u1ED9ng 5 h\u01B0\u1EDBng g\xE2y
+    cho\xE1ng di\u1EC7n r\u1ED9ng."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -201,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
+  m_text: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -307,7 +306,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 238, y: 381.75003}
+  m_AnchoredPosition: {x: 414.62784, y: 805.186}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412

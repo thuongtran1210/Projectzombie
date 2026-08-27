@@ -328,7 +328,7 @@ namespace ProjectZombie.Editor.UI
             irHlg.childControlWidth = false;
             irHlg.childControlHeight = false;
 
-            // Ô 1: Vũ Khí Chính To (80 x 80)
+            // ================= THẺ TRANG BỊ (LOADOUT) - 2 Ô CHUẨN V5.0 =================
             GameObject pBox = CreateUIElement("Slot_Primary", itemsRow.transform);
             pBox.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 80);
             pBox.AddComponent<Image>().color = new Color(0.18f, 0.14f, 0.10f, 1f);
@@ -350,28 +350,33 @@ namespace ProjectZombie.Editor.UI
             plRT.sizeDelta = new Vector2(0, 16);
             priName = pLbl.AddComponent<TextMeshProUGUI>();
             if (font != null) priName.font = font;
-            priName.text = "Nỏ Thần";
+            priName.text = "Đòn Đánh";
             priName.fontSize = 10;
             priName.fontStyle = FontStyles.Bold;
             priName.alignment = TextAlignmentOptions.Center;
             priName.color = ColorGold;
 
-            // Ô 2, 3, 4: 3 Pháp Bảo Dọc (54 x 80)
+            // Ô Pháp Bảo Hộ Thân (Slot Relic)
             relicIcons = new Image[3];
-            Color[] elemColors = new Color[] { new Color(0.3f, 0.75f, 0.35f, 1f), new Color(0.2f, 0.65f, 0.95f, 1f), new Color(0.95f, 0.28f, 0.22f, 1f) };
             for (int i = 0; i < 3; i++)
             {
                 GameObject rBox = CreateUIElement($"Slot_Relic_{i + 1}", itemsRow.transform);
-                rBox.GetComponent<RectTransform>().sizeDelta = new Vector2(54, 80);
+                rBox.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 80);
                 rBox.AddComponent<Image>().color = new Color(0.14f, 0.11f, 0.16f, 1f);
-                CreateBorder(rBox.transform, elemColors[i], 2);
+                CreateBorder(rBox.transform, i == 0 ? new Color(0.0f, 1.0f, 0.65f, 1.0f) : new Color(0.35f, 0.35f, 0.40f, 0.5f), 2);
 
                 GameObject rIconObj = CreateUIElement("Icon", rBox.transform);
                 SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(3, 3);
-                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-3, -3);
+                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
+                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
                 relicIcons[i] = rIconObj.AddComponent<Image>();
                 relicIcons[i].preserveAspect = true;
+
+                // Ẩn 2 slot phụ vì game v5.0 chỉ dùng duy nhất 1 Pháp Bảo Hộ Thân
+                if (i > 0)
+                {
+                    rBox.SetActive(false);
+                }
             }
 
             // ================= 2. Ở GIỮA: 3 NÚT ĐIỀU HƯỚNG GỖ MUN (480 x 64) =================
@@ -389,12 +394,15 @@ namespace ProjectZombie.Editor.UI
             ngHlg.childControlWidth = false;
             ngHlg.childControlHeight = false;
 
-            // Nút 1: ANH HÙNG (150 x 64)
+            // Nút 1: ANH HÙNG (150 x 64 - Xanh Ngọc Bích 9-Slice)
             GameObject btn1 = CreateUIElement("Btn_HeroSelect", navGroup.transform);
             btn1.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
-            btn1.AddComponent<Image>().color = ColorWoodBtn;
+            var b1Img = btn1.AddComponent<Image>();
+            b1Img.color = Color.white;
+            b1Img.type = Image.Type.Sliced;
+            Sprite btnGreen = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
+            if (btnGreen != null) b1Img.sprite = btnGreen;
             heroBtn = btn1.AddComponent<Button>();
-            CreateBorder(btn1.transform, ColorBronzeBorder, 2);
 
             GameObject b1T = CreateUIElement("Text", btn1.transform);
             SetStretchAnchor(b1T.GetComponent<RectTransform>());
@@ -404,14 +412,17 @@ namespace ProjectZombie.Editor.UI
             b1TMP.fontSize = 15;
             b1TMP.fontStyle = FontStyles.Bold;
             b1TMP.alignment = TextAlignmentOptions.Center;
-            b1TMP.color = ColorGold;
+            b1TMP.color = Color.white;
 
-            // Nút 2: TÀNG BẢO CÁC (150 x 64)
+            // Nút 2: TÀNG BẢO CÁC (150 x 64 - Vàng Hoàng Kim 9-Slice)
             GameObject btn2 = CreateUIElement("Btn_Armory", navGroup.transform);
             btn2.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
-            btn2.AddComponent<Image>().color = ColorWoodBtn;
+            var b2Img = btn2.AddComponent<Image>();
+            b2Img.color = Color.white;
+            b2Img.type = Image.Type.Sliced;
+            Sprite btnGold = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
+            if (btnGold != null) b2Img.sprite = btnGold;
             armoryBtn = btn2.AddComponent<Button>();
-            CreateBorder(btn2.transform, ColorBronzeBorder, 2);
 
             GameObject b2T = CreateUIElement("Text", btn2.transform);
             SetStretchAnchor(b2T.GetComponent<RectTransform>());
@@ -421,14 +432,16 @@ namespace ProjectZombie.Editor.UI
             b2TMP.fontSize = 15;
             b2TMP.fontStyle = FontStyles.Bold;
             b2TMP.alignment = TextAlignmentOptions.Center;
-            b2TMP.color = ColorGold;
+            b2TMP.color = new Color(0.2f, 0.12f, 0.05f, 1f);
 
-            // Nút 3: MIẾU CỔ (150 x 64)
+            // Nút 3: MIẾU CỔ (150 x 64 - Xanh Ngọc Bích 9-Slice)
             GameObject btn3 = CreateUIElement("Btn_SanctuaryTree", navGroup.transform);
             btn3.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 64);
-            btn3.AddComponent<Image>().color = ColorWoodBtn;
+            var b3Img = btn3.AddComponent<Image>();
+            b3Img.color = Color.white;
+            b3Img.type = Image.Type.Sliced;
+            if (btnGreen != null) b3Img.sprite = btnGreen;
             sanctuaryBtn = btn3.AddComponent<Button>();
-            CreateBorder(btn3.transform, ColorBronzeBorder, 2);
 
             GameObject b3T = CreateUIElement("Text", btn3.transform);
             SetStretchAnchor(b3T.GetComponent<RectTransform>());
@@ -438,7 +451,7 @@ namespace ProjectZombie.Editor.UI
             b3TMP.fontSize = 15;
             b3TMP.fontStyle = FontStyles.Bold;
             b3TMP.alignment = TextAlignmentOptions.Center;
-            b3TMP.color = ColorGold;
+            b3TMP.color = Color.white;
 
             // ================= 3. GÓC PHẢI: NÚT XUẤT TRẬN ĐỎ CHU SA BỌC RỒNG VÀNG (260 x 86) =================
             GameObject startObj = CreateUIElement("Btn_StartRun", hud.transform);
@@ -450,7 +463,10 @@ namespace ProjectZombie.Editor.UI
             stRT.sizeDelta = new Vector2(260, 84);
 
             var stImg = startObj.AddComponent<Image>();
-            stImg.color = ColorCinnabar;
+            stImg.color = Color.white;
+            stImg.type = Image.Type.Sliced;
+            Sprite btnRed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+            if (btnRed != null) stImg.sprite = btnRed;
             startRunBtn = startObj.AddComponent<Button>();
 
             // Viền Rồng Vàng Đồng

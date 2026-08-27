@@ -432,21 +432,25 @@ namespace ProjectZombie.EditorTools
                 rect.sizeDelta = new Vector2(160, 60);
 
                 Image img = heroBtnObj.GetComponent<Image>();
-                img.color = new Color(0.24f, 0.18f, 0.28f, 0.95f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
+                if (btnSprite != null) img.sprite = btnSprite;
 
                 GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
                 textObj.transform.SetParent(heroBtnObj.transform, false);
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "[ ANH HÙNG ]";
+                tmp.text = "ANH HÙNG";
                 tmp.fontSize = 18;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             soHub.FindProperty("_heroSelectButton").objectReferenceValue = heroBtnTrans.GetComponent<Button>();
 
-            // 3.2. Nút TÀNG BẢO CÁC
+            // 3.2. Nút TÀNG BẢO CÁC (Vàng Hoàng Kim 9-Slice)
             Transform armoryBtnTrans = hubRoot.Find("Btn_Armory");
             if (armoryBtnTrans == null)
             {
@@ -462,21 +466,25 @@ namespace ProjectZombie.EditorTools
                 rect.sizeDelta = new Vector2(160, 60);
 
                 Image img = armoryBtnObj.GetComponent<Image>();
-                img.color = new Color(0.24f, 0.18f, 0.28f, 0.95f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
+                if (btnSprite != null) img.sprite = btnSprite;
 
                 GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
                 textObj.transform.SetParent(armoryBtnObj.transform, false);
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "[ TÀNG BẢO CÁC ]";
+                tmp.text = "PHÁP BẢO";
                 tmp.fontSize = 18;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = new Color(0.2f, 0.12f, 0.05f, 1f);
             }
             soHub.FindProperty("_armoryButton").objectReferenceValue = armoryBtnTrans.GetComponent<Button>();
 
-            // 3.3. Nút MIẾU CỔ
+            // 3.3. Nút MIẾU CỔ (Xanh Ngọc 9-Slice)
             Transform sanctuaryBtnTrans = hubRoot.Find("Btn_SanctuaryTree");
             if (sanctuaryBtnTrans == null)
             {
@@ -492,21 +500,25 @@ namespace ProjectZombie.EditorTools
                 rect.sizeDelta = new Vector2(160, 60);
 
                 Image img = sanctuaryBtnObj.GetComponent<Image>();
-                img.color = new Color(0.24f, 0.18f, 0.28f, 0.95f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
+                if (btnSprite != null) img.sprite = btnSprite;
 
                 GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
                 textObj.transform.SetParent(sanctuaryBtnObj.transform, false);
                 StretchRect(textObj.GetComponent<RectTransform>());
 
                 var tmp = textObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "[ MIẾU CỔ ]";
+                tmp.text = "MIẾU CỔ";
                 tmp.fontSize = 18;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             soHub.FindProperty("_sanctuaryTreeButton").objectReferenceValue = sanctuaryBtnTrans.GetComponent<Button>();
 
-            // 4. Button XUẤT TRẬN (Góc Phải)
+            // 4. Button XUẤT TRẬN (Đỏ Chu Sa Rực Rỡ 9-Slice)
             Transform startBtnTrans = hubRoot.Find("Btn_StartRun");
             if (startBtnTrans == null)
             {
@@ -522,7 +534,10 @@ namespace ProjectZombie.EditorTools
                 rect.sizeDelta = new Vector2(240, 75);
 
                 Image img = startBtnObj.GetComponent<Image>();
-                img.color = new Color(0.78f, 0.22f, 0.18f, 1f); // Đỏ Chu Sa
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+                if (btnSprite != null) img.sprite = btnSprite;
 
                 GameObject textObj = new GameObject("Text_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
                 textObj.transform.SetParent(startBtnObj.transform, false);
@@ -664,7 +679,7 @@ namespace ProjectZombie.EditorTools
             }
             so.FindProperty("_elementText").objectReferenceValue = elemTrans.GetComponent<TextMeshProUGUI>();
 
-            // 4. Nút Chọn
+            // 4. Nút Chọn (Nút Xanh Ngọc Bích 9-Slice)
             Transform selectBtnTrans = root.Find("Btn_SelectHero");
             if (selectBtnTrans == null)
             {
@@ -676,18 +691,22 @@ namespace ProjectZombie.EditorTools
                 rect.anchorMax = new Vector2(0.5f, 0f);
                 rect.pivot = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = new Vector2(0, 100);
-                rect.sizeDelta = new Vector2(280, 75);
+                rect.sizeDelta = new Vector2(280, 65);
                 var img = obj.GetComponent<Image>();
-                img.color = new Color(0.85f, 0.25f, 0.2f, 1f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
+                if (btnSprite != null) img.sprite = btnSprite;
 
                 var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
                 txtObj.transform.SetParent(obj.transform, false);
                 StretchRect(txtObj.GetComponent<RectTransform>());
                 var tmp = txtObj.GetComponent<TextMeshProUGUI>();
                 tmp.text = "CHỌN ANH HÙNG";
-                tmp.fontSize = 28;
+                tmp.fontSize = 24;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             so.FindProperty("_selectButton").objectReferenceValue = selectBtnTrans.GetComponent<Button>();
 
@@ -726,7 +745,7 @@ namespace ProjectZombie.EditorTools
             }
             so.FindProperty("_nextButton").objectReferenceValue = nextBtnTrans.GetComponent<Button>();
 
-            // 6. Nút Back
+            // 6. Nút Back (Nút Đỏ Chu Sa 9-Slice)
             Transform backBtnTrans = root.Find("Btn_Back");
             if (backBtnTrans == null)
             {
@@ -738,9 +757,22 @@ namespace ProjectZombie.EditorTools
                 rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 1f);
                 rect.anchoredPosition = new Vector2(50, -40);
-                rect.sizeDelta = new Vector2(100, 60);
+                rect.sizeDelta = new Vector2(120, 50);
                 var img = obj.GetComponent<Image>();
-                img.color = new Color(0.4f, 0.2f, 0.2f, 0.9f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+                if (btnSprite != null) img.sprite = btnSprite;
+
+                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                txtObj.transform.SetParent(obj.transform, false);
+                StretchRect(txtObj.GetComponent<RectTransform>());
+                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
+                tmp.text = "QUAY LẠI";
+                tmp.fontSize = 18;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             so.FindProperty("_backButton").objectReferenceValue = backBtnTrans.GetComponent<Button>();
 
@@ -903,18 +935,22 @@ namespace ProjectZombie.EditorTools
                 rect.anchorMax = new Vector2(0.5f, 0f);
                 rect.pivot = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = new Vector2(0, 100);
-                rect.sizeDelta = new Vector2(280, 75);
+                rect.sizeDelta = new Vector2(280, 65);
                 var img = obj.GetComponent<Image>();
-                img.color = new Color(0.2f, 0.6f, 0.3f, 1f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnGreen = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
+                if (btnGreen != null) img.sprite = btnGreen;
 
                 var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
                 txtObj.transform.SetParent(obj.transform, false);
                 StretchRect(txtObj.GetComponent<RectTransform>());
                 var tmp = txtObj.GetComponent<TextMeshProUGUI>();
                 tmp.text = "NÂNG CẤP";
-                tmp.fontSize = 28;
+                tmp.fontSize = 24;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             so.FindProperty("_buyUpgradeButton").objectReferenceValue = buyBtnTrans.GetComponent<Button>();
 
@@ -927,7 +963,7 @@ namespace ProjectZombie.EditorTools
                 EditorUtility.SetDirty(presenter);
             }
 
-            // 4. Nút Đóng / Back
+            // 4. Nút Đóng / Back (Nút Đỏ Chu Sa 9-Slice)
             Transform closeBtnTrans = root.Find("Btn_Close");
             if (closeBtnTrans == null)
             {
@@ -939,9 +975,22 @@ namespace ProjectZombie.EditorTools
                 rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 1f);
                 rect.anchoredPosition = new Vector2(50, -40);
-                rect.sizeDelta = new Vector2(100, 60);
+                rect.sizeDelta = new Vector2(120, 50);
                 var img = obj.GetComponent<Image>();
-                img.color = new Color(0.4f, 0.2f, 0.2f, 0.9f);
+                img.color = Color.white;
+                img.type = Image.Type.Sliced;
+                Sprite btnRed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
+                if (btnRed != null) img.sprite = btnRed;
+
+                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                txtObj.transform.SetParent(obj.transform, false);
+                StretchRect(txtObj.GetComponent<RectTransform>());
+                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
+                tmp.text = "ĐÓNG";
+                tmp.fontSize = 18;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
             so.FindProperty("_closeButton").objectReferenceValue = closeBtnTrans.GetComponent<Button>();
 
