@@ -42,199 +42,288 @@ namespace ProjectZombie.Editor.UI
             bgDimImg.color = new Color(0.04f, 0.03f, 0.06f, 0.88f); // Đen khói huyền ảo
             var bgDimBtn = bgDim.AddComponent<Button>();
 
-            // 3. Main Center Modal Panel (Khung Đồng Cổ)
+            // 3. Main Center Modal Panel (Khung Gỗ Mun Cổ 9-Slice)
             GameObject panel = CreateUIElement("Modal_CharacterSelect", root.transform);
             RectTransform panelRT = panel.GetComponent<RectTransform>();
-            panelRT.sizeDelta = new Vector2(1100, 720);
+            panelRT.sizeDelta = new Vector2(1120, 640);
             panelRT.anchoredPosition = Vector2.zero;
             var panelImg = panel.AddComponent<Image>();
             panelImg.color = Color.white;
             panelImg.type = Image.Type.Sliced;
 
-            Sprite cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Modal_Window_DongSon.png");
-            if (cardFrame != null)
-            {
-                panelImg.sprite = cardFrame;
-            }
+            Sprite modalFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Modal_TangBaoCac_9Slice.png");
+            if (modalFrame != null) panelImg.sprite = modalFrame;
 
-            // 4. Header Title: "CHỌN ANH HÙNG XUẤT TRẬN"
-            GameObject titleObj = CreateUIElement("Text_Title", panel.transform);
-            RectTransform titleRT = titleObj.GetComponent<RectTransform>();
-            titleRT.anchorMin = new Vector2(0.5f, 1.0f);
-            titleRT.anchorMax = new Vector2(0.5f, 1.0f);
-            titleRT.pivot = new Vector2(0.5f, 1.0f);
-            titleRT.anchoredPosition = new Vector2(0, -35);
-            titleRT.sizeDelta = new Vector2(800, 60);
-
-            // Tải font tiếng Việt đã bake sẵn
-            TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
+            // Load Font tiếng Việt
+            TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset");
+            if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
             if (vietFont == null) vietFont = TMP_Settings.defaultFontAsset;
 
+            // Load Sprites Vọng Xuyên Cổ Phong
+            Sprite ribbonSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Banner_Ribbon_Hero_Amber.png");
+            Sprite parchmentCard = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Parchment_Detail_9Slice.png");
+            Sprite totemFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Avatar_Totem_Wood.png");
+            Sprite btnNavArrow = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Arrow_Hex_Wood.png");
+            Sprite btnBattleAmber = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Battle_Hex_Amber_Glow.png");
+            Sprite skillBoxWood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Box_Skill_Icon_Wood_9Slice.png");
+            Sprite heroNameBadge = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Hero_Name_Wood.png");
+
+            // 4. Header Title: Băng Rôn Đỏ Cam Viền Vàng "CHỌN ANH HÙNG XUẤT TRẬN"
+            GameObject ribbonObj = CreateUIElement("Ribbon_Title", panel.transform);
+            RectTransform ribbonRT = ribbonObj.GetComponent<RectTransform>();
+            ribbonRT.anchorMin = new Vector2(0.5f, 1.0f);
+            ribbonRT.anchorMax = new Vector2(0.5f, 1.0f);
+            ribbonRT.pivot = new Vector2(0.5f, 1.0f);
+            ribbonRT.anchoredPosition = new Vector2(0, 16);
+            ribbonRT.sizeDelta = new Vector2(500, 78);
+            var ribbonImg = ribbonObj.AddComponent<Image>();
+            ribbonImg.color = Color.white;
+            ribbonImg.type = Image.Type.Sliced;
+            if (ribbonSprite != null) ribbonImg.sprite = ribbonSprite;
+
+            GameObject titleObj = CreateUIElement("Text_Title", ribbonObj.transform);
+            SetStretchAnchor(titleObj.GetComponent<RectTransform>());
+            titleObj.GetComponent<RectTransform>().offsetMin = new Vector2(50, 8);
+            titleObj.GetComponent<RectTransform>().offsetMax = new Vector2(-50, -14);
             var titleTMP = titleObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) titleTMP.font = vietFont;
-            titleTMP.text = "<color=#FFD700>CHON ANH HUNG XUAT TRAN</color>";
-            titleTMP.fontSize = 38;
+            titleTMP.text = "CHỌN ANH HÙNG XUẤT TRẬN";
+            titleTMP.fontSize = 22;
             titleTMP.fontStyle = FontStyles.Bold;
             titleTMP.alignment = TextAlignmentOptions.Center;
+            titleTMP.color = Color.white;
 
-            // 5. Left Column: Avatar & Character Preview
+            // 5. Left Column: Khung Totem Gỗ Mun Chạm Sừng Thú & Character Preview
             GameObject leftCol = CreateUIElement("LeftColumn_Avatar", panel.transform);
             RectTransform leftRT = leftCol.GetComponent<RectTransform>();
             leftRT.anchorMin = new Vector2(0f, 0.5f);
             leftRT.anchorMax = new Vector2(0f, 0.5f);
             leftRT.pivot = new Vector2(0.5f, 0.5f);
-            leftRT.anchoredPosition = new Vector2(250, -20);
-            leftRT.sizeDelta = new Vector2(360, 480);
+            leftRT.anchoredPosition = new Vector2(255, -28);
+            leftRT.sizeDelta = new Vector2(380, 460);
 
-            // Avatar Frame Background
-            var avatarBgImg = leftCol.AddComponent<Image>();
-            avatarBgImg.color = new Color(0.08f, 0.07f, 0.10f, 0.9f);
+            // Totem Wood Frame bao quanh Avatar
+            GameObject orbFrame = CreateUIElement("Avatar_Totem_Frame", leftCol.transform);
+            RectTransform ofRT = orbFrame.GetComponent<RectTransform>();
+            ofRT.anchorMin = new Vector2(0.5f, 0.5f);
+            ofRT.anchorMax = new Vector2(0.5f, 0.5f);
+            ofRT.pivot = new Vector2(0.5f, 0.5f);
+            ofRT.anchoredPosition = new Vector2(0, 36);
+            ofRT.sizeDelta = new Vector2(300, 300);
+            var ofImg = orbFrame.AddComponent<Image>();
+            ofImg.color = Color.white;
+            if (totemFrame != null) ofImg.sprite = totemFrame;
 
             // Avatar Sprite Display
-            GameObject avatarImgObj = CreateUIElement("CharacterAvatarImage", leftCol.transform);
+            GameObject avatarImgObj = CreateUIElement("CharacterAvatarImage", orbFrame.transform);
             RectTransform avatarRT = avatarImgObj.GetComponent<RectTransform>();
-            avatarRT.sizeDelta = new Vector2(240, 240);
-            avatarRT.anchoredPosition = new Vector2(0, 30);
+            avatarRT.anchorMin = new Vector2(0.5f, 0.5f);
+            avatarRT.anchorMax = new Vector2(0.5f, 0.5f);
+            avatarRT.pivot = new Vector2(0.5f, 0.45f);
+            avatarRT.sizeDelta = new Vector2(175, 175);
+            avatarRT.anchoredPosition = Vector2.zero;
             var avatarImg = avatarImgObj.AddComponent<Image>();
             avatarImg.preserveAspect = true;
 
-            // Navigation Buttons (Prev < / Next >)
-            GameObject prevBtnObj = CreateButton("Btn_Prev", leftCol.transform, new Vector2(-130, -160), new Vector2(70, 60), "<", vietFont);
-            GameObject nextBtnObj = CreateButton("Btn_Next", leftCol.transform, new Vector2(130, -160), new Vector2(70, 60), ">", vietFont);
+            // Cặp Nút Chuyển Tướng Gỗ (< và >)
+            GameObject prevBtnObj = CreateButton("Btn_Prev", leftCol.transform, new Vector2(-75, -155), new Vector2(88, 48), "<", vietFont);
+            var pImg = prevBtnObj.GetComponent<Image>();
+            pImg.color = Color.white;
+            pImg.type = Image.Type.Sliced;
+            if (btnNavArrow != null) pImg.sprite = btnNavArrow;
+            var pTxt = prevBtnObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (pTxt != null) { pTxt.fontSize = 24; pTxt.color = new Color(0.95f, 0.88f, 0.70f, 1f); }
 
-            // 6. Right Column: Character Info & Skills
+            GameObject nextBtnObj = CreateButton("Btn_Next", leftCol.transform, new Vector2(75, -155), new Vector2(88, 48), ">", vietFont);
+            var nImg = nextBtnObj.GetComponent<Image>();
+            nImg.color = Color.white;
+            nImg.type = Image.Type.Sliced;
+            if (btnNavArrow != null) nImg.sprite = btnNavArrow;
+            var nTxt = nextBtnObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (nTxt != null) { nTxt.fontSize = 24; nTxt.color = new Color(0.95f, 0.88f, 0.70f, 1f); }
+
+            // 6. Right Column: Tờ Giấy Da Cổ Chứa Thông Tin & Kỹ Năng
             GameObject rightCol = CreateUIElement("RightColumn_Info", panel.transform);
             RectTransform rightRT = rightCol.GetComponent<RectTransform>();
             rightRT.anchorMin = new Vector2(1f, 0.5f);
             rightRT.anchorMax = new Vector2(1f, 0.5f);
             rightRT.pivot = new Vector2(0.5f, 0.5f);
-            rightRT.anchoredPosition = new Vector2(-330, -20);
-            rightRT.sizeDelta = new Vector2(560, 480);
+            rightRT.anchoredPosition = new Vector2(-320, -28);
+            rightRT.sizeDelta = new Vector2(530, 460);
 
-            // Character Name & Element
-            GameObject nameObj = CreateUIElement("Text_CharacterName", rightCol.transform);
-            RectTransform nameRT = nameObj.GetComponent<RectTransform>();
-            nameRT.anchorMin = new Vector2(0, 1);
-            nameRT.anchorMax = new Vector2(1, 1);
-            nameRT.pivot = new Vector2(0, 1);
-            nameRT.anchoredPosition = new Vector2(10, -10);
-            nameRT.sizeDelta = new Vector2(0, 50);
+            var rightBgImg = rightCol.AddComponent<Image>();
+            rightBgImg.color = Color.white;
+            rightBgImg.type = Image.Type.Sliced;
+            if (parchmentCard != null) rightBgImg.sprite = parchmentCard;
+
+            // Container Nội Dung Bên Trong Right Column
+            GameObject rightInner = CreateUIElement("Inner_Content", rightCol.transform);
+            RectTransform riRT = rightInner.GetComponent<RectTransform>();
+            riRT.anchorMin = Vector2.zero;
+            riRT.anchorMax = Vector2.one;
+            riRT.offsetMin = new Vector2(18, 16);
+            riRT.offsetMax = new Vector2(-18, -16);
+
+            // Biển Tên Tướng (Badge Gỗ Cổ)
+            GameObject nameBadgeObj = CreateUIElement("Badge_HeroName", rightInner.transform);
+            RectTransform nbRT = nameBadgeObj.GetComponent<RectTransform>();
+            nbRT.anchorMin = new Vector2(0.5f, 1);
+            nbRT.anchorMax = new Vector2(0.5f, 1);
+            nbRT.pivot = new Vector2(0.5f, 1);
+            nbRT.anchoredPosition = new Vector2(0, -6);
+            nbRT.sizeDelta = new Vector2(220, 44);
+            var nbImg = nameBadgeObj.AddComponent<Image>();
+            nbImg.color = Color.white;
+            nbImg.type = Image.Type.Sliced;
+            if (heroNameBadge != null) nbImg.sprite = heroNameBadge;
+
+            GameObject nameObj = CreateUIElement("Text_CharacterName", nameBadgeObj.transform);
+            SetStretchAnchor(nameObj.GetComponent<RectTransform>());
             var nameTMP = nameObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) nameTMP.font = vietFont;
-            nameTMP.fontSize = 38;
+            nameTMP.text = "Thư Sinh";
+            nameTMP.fontSize = 20;
             nameTMP.fontStyle = FontStyles.Bold;
-            nameTMP.color = new Color(1f, 0.85f, 0.4f);
+            nameTMP.alignment = TextAlignmentOptions.Center;
+            nameTMP.color = new Color(0.96f, 0.88f, 0.72f);
 
-            GameObject elemObj = CreateUIElement("Text_Element", rightCol.transform);
-            RectTransform elemRT = elemObj.GetComponent<RectTransform>();
-            elemRT.anchorMin = new Vector2(0, 1);
-            elemRT.anchorMax = new Vector2(1, 1);
-            elemRT.pivot = new Vector2(0, 1);
-            elemRT.anchoredPosition = new Vector2(10, -65);
-            elemRT.sizeDelta = new Vector2(0, 35);
+            GameObject elemObj = new GameObject("Text_Element", typeof(RectTransform));
+            elemObj.transform.SetParent(rightInner.transform, false);
             var elemTMP = elemObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) elemTMP.font = vietFont;
-            elemTMP.fontSize = 24;
-            elemTMP.fontStyle = FontStyles.Bold;
+            elemObj.SetActive(false);
 
             // Description
-            GameObject descObj = CreateUIElement("Text_Description", rightCol.transform);
+            GameObject descObj = CreateUIElement("Text_Description", rightInner.transform);
             RectTransform descRT = descObj.GetComponent<RectTransform>();
             descRT.anchorMin = new Vector2(0, 1);
             descRT.anchorMax = new Vector2(1, 1);
-            descRT.pivot = new Vector2(0, 1);
-            descRT.anchoredPosition = new Vector2(10, -110);
-            descRT.sizeDelta = new Vector2(0, 100);
+            descRT.pivot = new Vector2(0.5f, 1);
+            descRT.anchoredPosition = new Vector2(0, -56);
+            descRT.sizeDelta = new Vector2(0, 48);
             var descTMP = descObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) descTMP.font = vietFont;
-            descTMP.fontSize = 20;
-            descTMP.color = new Color(0.85f, 0.85f, 0.85f);
+            descTMP.text = "Vị học sĩ cầm bút như kiếm, lấy trời đất làm nghiên. Từ Vọng Xuyên xa xôi, mượn mực thần kể chuyện anh hùng.";
+            descTMP.fontSize = 12;
+            descTMP.alignment = TextAlignmentOptions.Center;
+            descTMP.color = new Color(0.25f, 0.18f, 0.12f);
             descTMP.enableWordWrapping = true;
 
-            // Signature Skill Block
-            GameObject skillCard = CreateUIElement("Card_SignatureSkill", rightCol.transform);
+            // Signature Skill Block (Kỹ Năng Chủ Động)
+            GameObject skillCard = CreateUIElement("Card_SignatureSkill", rightInner.transform);
             RectTransform skillRT = skillCard.GetComponent<RectTransform>();
             skillRT.anchorMin = new Vector2(0, 1);
             skillRT.anchorMax = new Vector2(1, 1);
-            skillRT.pivot = new Vector2(0, 1);
-            skillRT.anchoredPosition = new Vector2(0, -210);
-            skillRT.sizeDelta = new Vector2(0, 95);
-            var skillBg = skillCard.AddComponent<Image>();
-            skillBg.color = new Color(0.08f, 0.08f, 0.12f, 0.8f);
+            skillRT.pivot = new Vector2(0.5f, 1);
+            skillRT.anchoredPosition = new Vector2(0, -112);
+            skillRT.sizeDelta = new Vector2(0, 84);
+
+            // Khung Icon Kỹ Năng Bên Trái
+            GameObject skBox = CreateUIElement("Box_Icon", skillCard.transform);
+            RectTransform skbRT = skBox.GetComponent<RectTransform>();
+            skbRT.anchorMin = new Vector2(0, 0.5f);
+            skbRT.anchorMax = new Vector2(0, 0.5f);
+            skbRT.pivot = new Vector2(0, 0.5f);
+            skbRT.anchoredPosition = new Vector2(6, 0);
+            skbRT.sizeDelta = new Vector2(72, 72);
+            var skbImg = skBox.AddComponent<Image>();
+            skbImg.color = Color.white;
+            skbImg.type = Image.Type.Sliced;
+            if (skillBoxWood != null) skbImg.sprite = skillBoxWood;
 
             GameObject skillHeader = CreateUIElement("Text_SkillHeader", skillCard.transform);
             RectTransform shRT = skillHeader.GetComponent<RectTransform>();
             shRT.anchorMin = new Vector2(0, 1);
             shRT.anchorMax = new Vector2(1, 1);
             shRT.pivot = new Vector2(0, 1);
-            shRT.anchoredPosition = new Vector2(10, -6);
-            shRT.sizeDelta = new Vector2(0, 24);
+            shRT.anchoredPosition = new Vector2(88, -4);
+            shRT.sizeDelta = new Vector2(-88, 20);
             var shTMP = skillHeader.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) shTMP.font = vietFont;
-            shTMP.text = "<color=#FFD700>KY NANG CHU DONG (SIGNATURE SKILL):</color>";
-            shTMP.fontSize = 16;
+            shTMP.text = "KỸ NĂNG CHỦ ĐỘNG (SIGNATURE SKILL)";
+            shTMP.fontSize = 12;
             shTMP.fontStyle = FontStyles.Bold;
+            shTMP.color = new Color(0.20f, 0.14f, 0.10f);
 
             GameObject skillTextObj = CreateUIElement("Text_SignatureSkill", skillCard.transform);
             RectTransform stRT = skillTextObj.GetComponent<RectTransform>();
             stRT.anchorMin = new Vector2(0, 0);
             stRT.anchorMax = new Vector2(1, 1);
-            stRT.offsetMin = new Vector2(10, 6);
-            stRT.offsetMax = new Vector2(-10, -28);
+            stRT.offsetMin = new Vector2(88, 4);
+            stRT.offsetMax = new Vector2(-6, -24);
             var stTMP = skillTextObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) stTMP.font = vietFont;
-            stTMP.fontSize = 16;
-            stTMP.color = new Color(0.9f, 0.9f, 0.9f);
+            stTMP.text = "Phán Quyết Tiên Định: Chọn 1 kẻ địch. Họa nên Thiên Thư, gây [Lượng] sát thương Phép và làm chậm 30% trong 5 giây.";
+            stTMP.fontSize = 11;
+            stTMP.color = new Color(0.30f, 0.22f, 0.16f);
             stTMP.enableWordWrapping = true;
 
-            // Passive Trait Block
-            GameObject passiveCard = CreateUIElement("Card_PassiveTrait", rightCol.transform);
+            // Passive Trait Block (Nội Tại Độc Quyền)
+            GameObject passiveCard = CreateUIElement("Card_PassiveTrait", rightInner.transform);
             RectTransform passiveRT = passiveCard.GetComponent<RectTransform>();
             passiveRT.anchorMin = new Vector2(0, 1);
             passiveRT.anchorMax = new Vector2(1, 1);
-            passiveRT.pivot = new Vector2(0, 1);
-            passiveRT.anchoredPosition = new Vector2(0, -315);
-            passiveRT.sizeDelta = new Vector2(0, 85);
-            var passiveBg = passiveCard.AddComponent<Image>();
-            passiveBg.color = new Color(0.08f, 0.10f, 0.12f, 0.8f);
+            passiveRT.pivot = new Vector2(0.5f, 1);
+            passiveRT.anchoredPosition = new Vector2(0, -204);
+            passiveRT.sizeDelta = new Vector2(0, 84);
+
+            // Khung Icon Nội Tại Bên Trái
+            GameObject psBox = CreateUIElement("Box_Icon", passiveCard.transform);
+            RectTransform psbRT = psBox.GetComponent<RectTransform>();
+            psbRT.anchorMin = new Vector2(0, 0.5f);
+            psbRT.anchorMax = new Vector2(0, 0.5f);
+            psbRT.pivot = new Vector2(0, 0.5f);
+            psbRT.anchoredPosition = new Vector2(6, 0);
+            psbRT.sizeDelta = new Vector2(72, 72);
+            var psbImg = psBox.AddComponent<Image>();
+            psbImg.color = Color.white;
+            psbImg.type = Image.Type.Sliced;
+            if (skillBoxWood != null) psbImg.sprite = skillBoxWood;
 
             GameObject passiveHeader = CreateUIElement("Text_PassiveHeader", passiveCard.transform);
             RectTransform phRT = passiveHeader.GetComponent<RectTransform>();
             phRT.anchorMin = new Vector2(0, 1);
             phRT.anchorMax = new Vector2(1, 1);
             phRT.pivot = new Vector2(0, 1);
-            phRT.anchoredPosition = new Vector2(10, -6);
-            phRT.sizeDelta = new Vector2(0, 24);
+            phRT.anchoredPosition = new Vector2(88, -4);
+            phRT.sizeDelta = new Vector2(-88, 20);
             var phTMP = passiveHeader.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) phTMP.font = vietFont;
-            phTMP.text = "<color=#4DEEEA>NOI TAI DOC QUYEN (PASSIVE TRAIT):</color>";
-            phTMP.fontSize = 16;
+            phTMP.text = "NỘI TẠI ĐỘC QUYỀN (PASSIVE TRAIT)";
+            phTMP.fontSize = 12;
             phTMP.fontStyle = FontStyles.Bold;
+            phTMP.color = new Color(0.20f, 0.14f, 0.10f);
 
             GameObject passiveTextObj = CreateUIElement("Text_PassiveTrait", passiveCard.transform);
             RectTransform ptRT = passiveTextObj.GetComponent<RectTransform>();
             ptRT.anchorMin = new Vector2(0, 0);
             ptRT.anchorMax = new Vector2(1, 1);
-            ptRT.offsetMin = new Vector2(10, 6);
-            ptRT.offsetMax = new Vector2(-10, -28);
+            ptRT.offsetMin = new Vector2(88, 4);
+            ptRT.offsetMax = new Vector2(-6, -24);
             var ptTMP = passiveTextObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) ptTMP.font = vietFont;
-            ptTMP.fontSize = 16;
-            ptTMP.color = new Color(0.9f, 0.9f, 0.9f);
+            ptTMP.text = "Sơn Hà Bồi Hộ: Cứ mỗi 10 giây, tạo ra 1 Bamboo Barrier nhỏ chặn đòn tấn công cơ bản tiếp theo. Tăng 10% Tốc độ di chuyển.";
+            ptTMP.fontSize = 11;
+            ptTMP.color = new Color(0.30f, 0.22f, 0.16f);
             ptTMP.enableWordWrapping = true;
 
-            // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG" (Nút Vàng Hoàng Kim 9-Slice)
-            GameObject selectBtnObj = CreateButton("Btn_Select", rightCol.transform, new Vector2(0, -345), new Vector2(560, 56), "XÁC NHẬN CHỌN TƯỚNG", vietFont);
+            // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG" (Nút Hổ Phách 3D)
+            GameObject selectBtnObj = CreateButton("Btn_Select", rightInner.transform, new Vector2(0, 8), new Vector2(460, 72), "XÁC NHẬN CHỌN TƯỚNG", vietFont);
+            RectTransform sbrt = selectBtnObj.GetComponent<RectTransform>();
+            sbrt.anchorMin = new Vector2(0.5f, 0f);
+            sbrt.anchorMax = new Vector2(0.5f, 0f);
+            sbrt.pivot = new Vector2(0.5f, 0f);
+            sbrt.anchoredPosition = new Vector2(0, 6);
+            sbrt.sizeDelta = new Vector2(460, 72);
+
             var btnImg = selectBtnObj.GetComponent<Image>();
             btnImg.color = Color.white;
             btnImg.type = Image.Type.Sliced;
-            Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_DragonGold.png");
-            if (btnSprite != null) btnImg.sprite = btnSprite;
+            if (btnBattleAmber != null) btnImg.sprite = btnBattleAmber;
 
             var btnTxt = selectBtnObj.GetComponentInChildren<TextMeshProUGUI>();
             btnTxt.fontSize = 20;
             btnTxt.fontStyle = FontStyles.Bold;
-            btnTxt.color = new Color(0.2f, 0.12f, 0.05f, 1f);
+            btnTxt.color = Color.white;
 
             // 8. Wire References to View Component
             SerializedObject soView = new SerializedObject(view);

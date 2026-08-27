@@ -51,7 +51,9 @@ namespace ProjectZombie.Editor.Tools
                 metas.Add(meta);
             }
 
+#pragma warning disable CS0618
             importer.spritesheet = metas.ToArray();
+#pragma warning restore CS0618
             importer.SaveAndReimport();
 
             // Cập nhật Animation Clip

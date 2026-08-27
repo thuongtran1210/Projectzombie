@@ -50,361 +50,298 @@ namespace ProjectZombie.EditorTools
             if (hudPresenter == null) hudPresenter = hudRoot.AddComponent<RunHUDPresenter>();
 
             // Load tất cả Sprite Đông Sơn
-            Sprite hudFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/HUD_Frame_DongSon.png");
-            Sprite lacBirdSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Ornament_LacBird_Gold.png");
+            // 1. Nạp bộ Sprite Chibi Casual Arcade mới
+            Sprite hpFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_HP_Chunky_Frame.png");
+            Sprite hpFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_HP_Chunky_Fill.png");
+            Sprite expFrameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_EXP_Chunky_Frame.png");
+            Sprite expFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Bar_EXP_Chunky_Fill.png");
+            Sprite levelBadgeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
+            Sprite taijiOrbSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Meter_Taiji_Orb_Chibi.png");
+            Sprite yinyangBarSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Gauge_YinYang_Bar_Chibi.png");
+            Sprite runStatsPillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Panel_RunStats_Pill_3D.png");
             Sprite heartRubySprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Icon_Heart_Ruby.png");
-            Sprite hpBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/HealthBar_BG_Frame.png");
-            Sprite hpFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/HealthBar_Segment_Full.png");
-            Sprite expBadgeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/EXP_Text_Badge.png");
-            Sprite expBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/ExpBar_BG_Frame.png");
-            Sprite expFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/ExpBar_Fill_Gold.png");
-            Sprite taijiSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Meter_Taiji_YinYang_DongSon.png");
 
             TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset");
             if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
             if (vietFont == null) vietFont = TMP_Settings.defaultFontAsset;
 
-            // 2. Dọn sạch các GameObject rác/cũ bị trùng lặp bên trong TopLeft_PlayerStatus trước khi build
+            // -------------------------------------------------------------
+            // 2. DỌN SẠCH & DỰNG LẠI TopLeft_PlayerStatus
+            // -------------------------------------------------------------
             Transform topLeftTrans = hudRoot.transform.Find("TopLeft_PlayerStatus");
             if (topLeftTrans == null)
             {
-                // Thử tìm con có tên TopLeft_PlayerStatus hoặc tạo mới
-                GameObject tlObj = new GameObject("TopLeft_PlayerStatus", typeof(RectTransform), typeof(Image));
+                GameObject tlObj = new GameObject("TopLeft_PlayerStatus", typeof(RectTransform));
                 tlObj.transform.SetParent(hudRoot.transform, false);
                 topLeftTrans = tlObj.transform;
             }
 
-            // Dọn sạch các text/slider cũ rải rác ngoài root hoặc trong TopLeft
-            for (int i = hudRoot.transform.childCount - 1; i >= 0; i--)
+            // Xóa sạch con cũ để tránh đè chữ
+            while (topLeftTrans.childCount > 0)
             {
-                Transform child = hudRoot.transform.GetChild(i);
-                if (child.name == "HP_Slider" || child.name == "EXP_Slider" || child.name == "Txt_HP" || child.name == "Txt_Level" || child.name == "HP_Group" || child.name == "EXP_Group")
-                {
-                    Object.DestroyImmediate(child.gameObject);
-                }
+                Object.DestroyImmediate(topLeftTrans.GetChild(0).gameObject);
             }
+
+            // Xóa bỏ component Image nền cũ nếu có
+            Image oldTlBg = topLeftTrans.GetComponent<Image>();
+            if (oldTlBg != null) Object.DestroyImmediate(oldTlBg);
 
             RectTransform tlRT = topLeftTrans.GetComponent<RectTransform>();
             tlRT.anchorMin = new Vector2(0, 1);
             tlRT.anchorMax = new Vector2(0, 1);
             tlRT.pivot = new Vector2(0, 1);
             tlRT.anchoredPosition = new Vector2(25, -20);
-            tlRT.sizeDelta = new Vector2(430, 110);
+            tlRT.sizeDelta = new Vector2(360, 90);
 
-            // Gán Khung Nền HUD Đông Sơn 9-slice
-            Image tlBg = topLeftTrans.GetComponent<Image>();
-            if (tlBg == null) tlBg = topLeftTrans.gameObject.AddComponent<Image>();
-            tlBg.color = Color.white;
-            tlBg.type = Image.Type.Sliced;
-            if (hudFrameSprite != null) tlBg.sprite = hudFrameSprite;
+            // A. Badge Level Tròn (Bên Trái)
+            GameObject badgeObj = new GameObject("Badge_Level", typeof(RectTransform), typeof(Image));
+            badgeObj.transform.SetParent(topLeftTrans, false);
+            RectTransform bRT = badgeObj.GetComponent<RectTransform>();
+            bRT.anchorMin = new Vector2(0, 0.5f);
+            bRT.anchorMax = new Vector2(0, 0.5f);
+            bRT.pivot = new Vector2(0, 0.5f);
+            bRT.anchoredPosition = new Vector2(0, 0);
+            bRT.sizeDelta = new Vector2(72, 72);
+            Image bImg = badgeObj.GetComponent<Image>();
+            bImg.color = Color.white;
+            if (levelBadgeSprite != null) bImg.sprite = levelBadgeSprite;
+            bImg.preserveAspect = true;
 
-            // Chim Lạc Trang Trí Góc
-            Transform lacBirdTrans = topLeftTrans.Find("Deco_LacBird");
-            if (lacBirdTrans == null)
-            {
-                GameObject birdObj = new GameObject("Deco_LacBird", typeof(RectTransform), typeof(Image));
-                birdObj.transform.SetParent(topLeftTrans, false);
-                lacBirdTrans = birdObj.transform;
-            }
-            RectTransform birdRT = lacBirdTrans.GetComponent<RectTransform>();
-            birdRT.anchorMin = new Vector2(0, 1);
-            birdRT.anchorMax = new Vector2(0, 1);
-            birdRT.pivot = new Vector2(0, 1);
-            birdRT.anchoredPosition = new Vector2(-12, 10);
-            birdRT.sizeDelta = new Vector2(70, 70);
-            Image birdImg = lacBirdTrans.GetComponent<Image>();
-            birdImg.color = Color.white;
-            if (lacBirdSprite != null) birdImg.sprite = lacBirdSprite;
-            birdImg.preserveAspect = true;
+            GameObject lvlTxtObj = new GameObject("Txt_Level", typeof(RectTransform), typeof(TextMeshProUGUI));
+            lvlTxtObj.transform.SetParent(badgeObj.transform, false);
+            RectTransform ltRT = lvlTxtObj.GetComponent<RectTransform>();
+            ltRT.anchorMin = Vector2.zero;
+            ltRT.anchorMax = Vector2.one;
+            ltRT.offsetMin = Vector2.zero;
+            ltRT.offsetMax = Vector2.zero;
+            TextMeshProUGUI lvlTMP = lvlTxtObj.GetComponent<TextMeshProUGUI>();
+            if (vietFont != null) lvlTMP.font = vietFont;
+            lvlTMP.fontSize = 18;
+            lvlTMP.fontStyle = FontStyles.Bold;
+            lvlTMP.alignment = TextAlignmentOptions.Center;
+            lvlTMP.text = "Lv.1";
+            lvlTMP.color = Color.white;
 
-            // -------------------------------------------------------------
-            // 3. DỰNG THANH HP (MÁU ĐỎ CHU SA)
-            // -------------------------------------------------------------
-            Transform hpGroupTrans = topLeftTrans.Find("HP_Group");
-            if (hpGroupTrans == null)
-            {
-                GameObject hpg = new GameObject("HP_Group", typeof(RectTransform));
-                hpg.transform.SetParent(topLeftTrans, false);
-                hpGroupTrans = hpg.transform;
-            }
-            RectTransform hpgRT = hpGroupTrans.GetComponent<RectTransform>();
-            hpgRT.anchorMin = new Vector2(0, 1);
-            hpgRT.anchorMax = new Vector2(0, 1);
-            hpgRT.pivot = new Vector2(0, 1);
-            hpgRT.anchoredPosition = new Vector2(60, -22);
-            hpgRT.sizeDelta = new Vector2(350, 36);
+            // B. Khung chứa 2 thanh Máu & EXP (Bên Phải Badge)
+            GameObject barsContainer = new GameObject("Bars_Container", typeof(RectTransform));
+            barsContainer.transform.SetParent(topLeftTrans, false);
+            RectTransform bcRT = barsContainer.GetComponent<RectTransform>();
+            bcRT.anchorMin = new Vector2(0, 0.5f);
+            bcRT.anchorMax = new Vector2(0, 0.5f);
+            bcRT.pivot = new Vector2(0, 0.5f);
+            bcRT.anchoredPosition = new Vector2(78, 0);
+            bcRT.sizeDelta = new Vector2(260, 72);
 
-            // Icon Tim Ruby
-            Transform heartTrans = hpGroupTrans.Find("Icon_Heart");
-            if (heartTrans == null)
-            {
-                GameObject heartObj = new GameObject("Icon_Heart", typeof(RectTransform), typeof(Image));
-                heartObj.transform.SetParent(hpGroupTrans, false);
-                heartTrans = heartObj.transform;
-            }
-            RectTransform heartRT = heartTrans.GetComponent<RectTransform>();
-            heartRT.anchorMin = new Vector2(0, 0.5f);
-            heartRT.anchorMax = new Vector2(0, 0.5f);
-            heartRT.pivot = new Vector2(0, 0.5f);
-            heartRT.anchoredPosition = new Vector2(0, 0);
-            heartRT.sizeDelta = new Vector2(28, 28);
-            Image heartImg = heartTrans.GetComponent<Image>();
-            heartImg.color = Color.white;
-            if (heartRubySprite != null) heartImg.sprite = heartRubySprite;
-            heartImg.preserveAspect = true;
+            // B.1. THANH MÁU (HP BAR)
+            GameObject hpSliderObj = new GameObject("HP_Slider", typeof(RectTransform), typeof(Slider), typeof(Image));
+            hpSliderObj.transform.SetParent(barsContainer.transform, false);
+            RectTransform hpRT = hpSliderObj.GetComponent<RectTransform>();
+            hpRT.anchorMin = new Vector2(0, 1);
+            hpRT.anchorMax = new Vector2(1, 1);
+            hpRT.pivot = new Vector2(0.5f, 1);
+            hpRT.anchoredPosition = new Vector2(0, 0);
+            hpRT.sizeDelta = new Vector2(0, 36);
 
-            // Slider HP
-            Transform hpSliderTrans = hpGroupTrans.Find("HP_Slider");
-            Slider hpSlider = null;
-            Image hpFillImg = null;
-            if (hpSliderTrans == null)
-            {
-                GameObject sliderObj = new GameObject("HP_Slider", typeof(RectTransform), typeof(Slider));
-                sliderObj.transform.SetParent(hpGroupTrans, false);
-                hpSliderTrans = sliderObj.transform;
-            }
+            Image hpBg = hpSliderObj.GetComponent<Image>();
+            hpBg.color = Color.white;
+            hpBg.type = Image.Type.Sliced;
+            if (hpFrameSprite != null) hpBg.sprite = hpFrameSprite;
 
-            RectTransform hpSliderRT = hpSliderTrans.GetComponent<RectTransform>();
-            hpSliderRT.anchorMin = new Vector2(0, 0.5f);
-            hpSliderRT.anchorMax = new Vector2(0, 0.5f);
-            hpSliderRT.pivot = new Vector2(0, 0.5f);
-            hpSliderRT.anchoredPosition = new Vector2(34, 0);
-            hpSliderRT.sizeDelta = new Vector2(200, 22);
+            Slider hpSlider = hpSliderObj.GetComponent<Slider>();
+            hpSlider.minValue = 0;
+            hpSlider.maxValue = 100;
+            hpSlider.value = 100;
 
-            hpSlider = hpSliderTrans.GetComponent<Slider>();
-            if (hpSlider == null) hpSlider = hpSliderTrans.gameObject.AddComponent<Slider>();
+            GameObject hpFillArea = new GameObject("Fill Area", typeof(RectTransform));
+            hpFillArea.transform.SetParent(hpSliderObj.transform, false);
+            RectTransform hfaRT = hpFillArea.GetComponent<RectTransform>();
+            hfaRT.anchorMin = Vector2.zero;
+            hfaRT.anchorMax = Vector2.one;
+            hfaRT.offsetMin = new Vector2(4, 4);
+            hfaRT.offsetMax = new Vector2(-4, -4);
 
-            // Nền Background của HP Bar
-            Image hpBgImg = hpSliderTrans.GetComponent<Image>();
-            if (hpBgImg == null) hpBgImg = hpSliderTrans.gameObject.AddComponent<Image>();
-            hpBgImg.color = Color.white;
-            hpBgImg.type = Image.Type.Sliced;
-            if (hpBgSprite != null) hpBgImg.sprite = hpBgSprite;
-
-            // Fill Area & Fill Image
-            Transform hpFillArea = hpSliderTrans.Find("Fill Area");
-            if (hpFillArea == null)
-            {
-                GameObject fa = new GameObject("Fill Area", typeof(RectTransform));
-                fa.transform.SetParent(hpSliderTrans, false);
-                hpFillArea = fa.transform;
-            }
-            RectTransform faRT = hpFillArea.GetComponent<RectTransform>();
-            faRT.anchorMin = Vector2.zero;
-            faRT.anchorMax = Vector2.one;
-            faRT.offsetMin = new Vector2(4, 3);
-            faRT.offsetMax = new Vector2(-4, -3);
-
-            Transform hpFillObj = hpFillArea.Find("Fill");
-            if (hpFillObj == null)
-            {
-                GameObject f = new GameObject("Fill", typeof(RectTransform), typeof(Image));
-                f.transform.SetParent(hpFillArea, false);
-                hpFillObj = f.transform;
-            }
-            RectTransform fillRT = hpFillObj.GetComponent<RectTransform>();
-            fillRT.anchorMin = Vector2.zero;
-            fillRT.anchorMax = Vector2.one;
-            fillRT.sizeDelta = Vector2.zero;
-
-            hpFillImg = hpFillObj.GetComponent<Image>();
+            GameObject hpFill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            hpFill.transform.SetParent(hpFillArea.transform, false);
+            RectTransform hfRT = hpFill.GetComponent<RectTransform>();
+            hfRT.anchorMin = Vector2.zero;
+            hfRT.anchorMax = Vector2.one;
+            hfRT.sizeDelta = Vector2.zero;
+            Image hpFillImg = hpFill.GetComponent<Image>();
             hpFillImg.color = Color.white;
             hpFillImg.type = Image.Type.Sliced;
             if (hpFillSprite != null) hpFillImg.sprite = hpFillSprite;
+            hpSlider.fillRect = hfRT;
 
-            hpSlider.fillRect = fillRT;
-            hpSlider.targetGraphic = null;
-            Transform handle = hpSliderTrans.Find("Handle Slide Area");
-            if (handle != null) Object.DestroyImmediate(handle.gameObject);
-
-            // Xóa bất kỳ text nào cũ trùng lặp trong hpGroup
-            for (int i = hpGroupTrans.childCount - 1; i >= 0; i--)
-            {
-                var c = hpGroupTrans.GetChild(i);
-                if (c.name.StartsWith("Txt_HP") && c.name != "Txt_HP") Object.DestroyImmediate(c.gameObject);
-            }
-
-            // Text Máu (vd: 100 / 100)
-            Transform hpTextTrans = hpGroupTrans.Find("Txt_HP");
-            if (hpTextTrans == null)
-            {
-                GameObject txtObj = new GameObject("Txt_HP", typeof(RectTransform), typeof(TextMeshProUGUI));
-                txtObj.transform.SetParent(hpGroupTrans, false);
-                hpTextTrans = txtObj.transform;
-            }
-            RectTransform hpTxtRT = hpTextTrans.GetComponent<RectTransform>();
-            hpTxtRT.anchorMin = new Vector2(0, 0.5f);
-            hpTxtRT.anchorMax = new Vector2(0, 0.5f);
-            hpTxtRT.pivot = new Vector2(0, 0.5f);
-            hpTxtRT.anchoredPosition = new Vector2(242, 0);
-            hpTxtRT.sizeDelta = new Vector2(100, 24);
-
-            TextMeshProUGUI hpTMP = hpTextTrans.GetComponent<TextMeshProUGUI>();
+            // Text Máu nằm lọt giữa thanh HP
+            GameObject hpTxtObj = new GameObject("Txt_HP", typeof(RectTransform), typeof(TextMeshProUGUI));
+            hpTxtObj.transform.SetParent(hpSliderObj.transform, false);
+            RectTransform htRT = hpTxtObj.GetComponent<RectTransform>();
+            htRT.anchorMin = Vector2.zero;
+            htRT.anchorMax = Vector2.one;
+            htRT.offsetMin = Vector2.zero;
+            htRT.offsetMax = Vector2.zero;
+            TextMeshProUGUI hpTMP = hpTxtObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) hpTMP.font = vietFont;
             hpTMP.fontSize = 15;
             hpTMP.fontStyle = FontStyles.Bold;
-            hpTMP.alignment = TextAlignmentOptions.Left;
-            hpTMP.text = "100/100";
-            hpTMP.color = new Color(1f, 0.92f, 0.75f, 1f);
+            hpTMP.alignment = TextAlignmentOptions.Center;
+            hpTMP.text = "100 / 100";
+            hpTMP.color = Color.white;
 
-            // -------------------------------------------------------------
-            // 4. DỰNG THANH EXP (KINH NGHIỆM VÀNG HOÀNG KIM)
-            // -------------------------------------------------------------
-            Transform expGroupTrans = topLeftTrans.Find("EXP_Group");
-            if (expGroupTrans == null)
-            {
-                GameObject eg = new GameObject("EXP_Group", typeof(RectTransform));
-                eg.transform.SetParent(topLeftTrans, false);
-                expGroupTrans = eg.transform;
-            }
-            RectTransform egRT = expGroupTrans.GetComponent<RectTransform>();
-            egRT.anchorMin = new Vector2(0, 1);
-            egRT.anchorMax = new Vector2(0, 1);
-            egRT.pivot = new Vector2(0, 1);
-            egRT.anchoredPosition = new Vector2(65, -60);
-            egRT.sizeDelta = new Vector2(370, 32);
+            // B.2. THANH KINH NGHIỆM (EXP BAR)
+            GameObject expSliderObj = new GameObject("EXP_Slider", typeof(RectTransform), typeof(Slider), typeof(Image));
+            expSliderObj.transform.SetParent(barsContainer.transform, false);
+            RectTransform expRT = expSliderObj.GetComponent<RectTransform>();
+            expRT.anchorMin = new Vector2(0, 0);
+            expRT.anchorMax = new Vector2(1, 0);
+            expRT.pivot = new Vector2(0.5f, 0);
+            expRT.anchoredPosition = new Vector2(0, 0);
+            expRT.sizeDelta = new Vector2(0, 26);
 
-            // Huy hiệu EXP Text Badge
-            Transform expBadgeTrans = expGroupTrans.Find("Badge_EXP");
-            if (expBadgeTrans == null)
-            {
-                GameObject bObj = new GameObject("Badge_EXP", typeof(RectTransform), typeof(Image));
-                bObj.transform.SetParent(expGroupTrans, false);
-                expBadgeTrans = bObj.transform;
-            }
-            RectTransform expBadgeRT = expBadgeTrans.GetComponent<RectTransform>();
-            expBadgeRT.anchorMin = new Vector2(0, 0.5f);
-            expBadgeRT.anchorMax = new Vector2(0, 0.5f);
-            expBadgeRT.pivot = new Vector2(0, 0.5f);
-            expBadgeRT.anchoredPosition = new Vector2(0, 0);
-            expBadgeRT.sizeDelta = new Vector2(34, 20);
-            Image expBadgeImg = expBadgeTrans.GetComponent<Image>();
-            expBadgeImg.color = Color.white;
-            if (expBadgeSprite != null) expBadgeImg.sprite = expBadgeSprite;
-            expBadgeImg.preserveAspect = true;
+            Image expBg = expSliderObj.GetComponent<Image>();
+            expBg.color = Color.white;
+            expBg.type = Image.Type.Sliced;
+            if (expFrameSprite != null) expBg.sprite = expFrameSprite;
 
-            // Slider EXP
-            Transform expSliderTrans = expGroupTrans.Find("EXP_Slider");
-            Slider expSlider = null;
-            Image expFillImg = null;
-            if (expSliderTrans == null)
-            {
-                GameObject sliderObj = new GameObject("EXP_Slider", typeof(RectTransform), typeof(Slider));
-                sliderObj.transform.SetParent(expGroupTrans, false);
-                expSliderTrans = sliderObj.transform;
-            }
+            Slider expSlider = expSliderObj.GetComponent<Slider>();
+            expSlider.minValue = 0;
+            expSlider.maxValue = 100;
+            expSlider.value = 0;
 
-            RectTransform expSliderRT = expSliderTrans.GetComponent<RectTransform>();
-            expSliderRT.anchorMin = new Vector2(0, 0.5f);
-            expSliderRT.anchorMax = new Vector2(0, 0.5f);
-            expSliderRT.pivot = new Vector2(0, 0.5f);
-            expSliderRT.anchoredPosition = new Vector2(38, 0);
-            expSliderRT.sizeDelta = new Vector2(210, 18);
-
-            expSlider = expSliderTrans.GetComponent<Slider>();
-            if (expSlider == null) expSlider = expSliderTrans.gameObject.AddComponent<Slider>();
-
-            Image expBgImg = expSliderTrans.GetComponent<Image>();
-            if (expBgImg == null) expBgImg = expSliderTrans.gameObject.AddComponent<Image>();
-            expBgImg.color = Color.white;
-            expBgImg.type = Image.Type.Sliced;
-            if (expBgSprite != null) expBgImg.sprite = expBgSprite;
-
-            Transform expFillArea = expSliderTrans.Find("Fill Area");
-            if (expFillArea == null)
-            {
-                GameObject fa = new GameObject("Fill Area", typeof(RectTransform));
-                fa.transform.SetParent(expSliderTrans, false);
-                expFillArea = fa.transform;
-            }
+            GameObject expFillArea = new GameObject("Fill Area", typeof(RectTransform));
+            expFillArea.transform.SetParent(expSliderObj.transform, false);
             RectTransform efaRT = expFillArea.GetComponent<RectTransform>();
             efaRT.anchorMin = Vector2.zero;
             efaRT.anchorMax = Vector2.one;
-            efaRT.offsetMin = new Vector2(4, 2);
-            efaRT.offsetMax = new Vector2(-4, -2);
+            efaRT.offsetMin = new Vector2(3, 3);
+            efaRT.offsetMax = new Vector2(-3, -3);
 
-            Transform expFillObj = expFillArea.Find("Fill");
-            if (expFillObj == null)
-            {
-                GameObject f = new GameObject("Fill", typeof(RectTransform), typeof(Image));
-                f.transform.SetParent(expFillArea, false);
-                expFillObj = f.transform;
-            }
-            RectTransform efillRT = expFillObj.GetComponent<RectTransform>();
-            efillRT.anchorMin = Vector2.zero;
-            efillRT.anchorMax = Vector2.one;
-            efillRT.sizeDelta = Vector2.zero;
-
-            expFillImg = expFillObj.GetComponent<Image>();
+            GameObject expFill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            expFill.transform.SetParent(expFillArea.transform, false);
+            RectTransform efRT = expFill.GetComponent<RectTransform>();
+            efRT.anchorMin = Vector2.zero;
+            efRT.anchorMax = Vector2.one;
+            efRT.sizeDelta = Vector2.zero;
+            Image expFillImg = expFill.GetComponent<Image>();
             expFillImg.color = Color.white;
             expFillImg.type = Image.Type.Sliced;
             if (expFillSprite != null) expFillImg.sprite = expFillSprite;
-
-            expSlider.fillRect = efillRT;
-            expSlider.targetGraphic = null;
-            Transform expHandle = expSliderTrans.Find("Handle Slide Area");
-            if (expHandle != null) Object.DestroyImmediate(expHandle.gameObject);
-
-            // Xóa bất kỳ text nào cũ trùng lặp trong expGroup
-            for (int i = expGroupTrans.childCount - 1; i >= 0; i--)
-            {
-                var c = expGroupTrans.GetChild(i);
-                if (c.name.StartsWith("Txt_Level") && c.name != "Txt_Level") Object.DestroyImmediate(c.gameObject);
-            }
-
-            // Text Cấp Độ (vd: Lv.1)
-            Transform lvlTextTrans = expGroupTrans.Find("Txt_Level");
-            if (lvlTextTrans == null)
-            {
-                GameObject txtObj = new GameObject("Txt_Level", typeof(RectTransform), typeof(TextMeshProUGUI));
-                txtObj.transform.SetParent(expGroupTrans, false);
-                lvlTextTrans = txtObj.transform;
-            }
-            RectTransform lvlTxtRT = lvlTextTrans.GetComponent<RectTransform>();
-            lvlTxtRT.anchorMin = new Vector2(0, 0.5f);
-            lvlTxtRT.anchorMax = new Vector2(0, 0.5f);
-            lvlTxtRT.pivot = new Vector2(0, 0.5f);
-            lvlTxtRT.anchoredPosition = new Vector2(242, 0);
-            lvlTxtRT.sizeDelta = new Vector2(80, 24);
-
-            TextMeshProUGUI lvlTMP = lvlTextTrans.GetComponent<TextMeshProUGUI>();
-            if (vietFont != null) lvlTMP.font = vietFont;
-            lvlTMP.fontSize = 15;
-            lvlTMP.fontStyle = FontStyles.Bold;
-            lvlTMP.alignment = TextAlignmentOptions.Left;
-            lvlTMP.text = "Lv.1";
-            lvlTMP.color = new Color(1f, 0.85f, 0.35f, 1f);
+            expSlider.fillRect = efRT;
 
             // -------------------------------------------------------------
-            // 5. CỤM TRẠNG THÁI ÂM DƯƠNG (TAIJI METER)
+            // 3. DỰNG LẠI Meter_Taiji_YinYang (CỤM ÂM DƯƠNG TRUNG TÂM)
             // -------------------------------------------------------------
             Transform taijiTrans = hudRoot.transform.Find("Meter_Taiji_YinYang");
+            if (taijiTrans == null) taijiTrans = hudRoot.transform.Find("Panel_YinYang");
             if (taijiTrans == null)
             {
-                GameObject tObj = new GameObject("Meter_Taiji_YinYang", typeof(RectTransform), typeof(Image));
+                GameObject tObj = new GameObject("Meter_Taiji_YinYang", typeof(RectTransform));
                 tObj.transform.SetParent(hudRoot.transform, false);
                 taijiTrans = tObj.transform;
             }
+            taijiTrans.name = "Meter_Taiji_YinYang";
+
+            while (taijiTrans.childCount > 0)
+            {
+                Object.DestroyImmediate(taijiTrans.GetChild(0).gameObject);
+            }
+
+            Image oldTjBg = taijiTrans.GetComponent<Image>();
+            if (oldTjBg != null) Object.DestroyImmediate(oldTjBg);
+
             RectTransform tjRT = taijiTrans.GetComponent<RectTransform>();
-            tjRT.anchorMin = new Vector2(0, 1);
-            tjRT.anchorMax = new Vector2(0, 1);
-            tjRT.pivot = new Vector2(0, 1);
-            tjRT.anchoredPosition = new Vector2(465, -20);
-            tjRT.sizeDelta = new Vector2(105, 105);
-            Image tjImg = taijiTrans.GetComponent<Image>();
-            tjImg.color = Color.white;
-            if (taijiSprite != null) tjImg.sprite = taijiSprite;
-            tjImg.preserveAspect = true;
+            tjRT.anchorMin = new Vector2(0.5f, 1);
+            tjRT.anchorMax = new Vector2(0.5f, 1);
+            tjRT.pivot = new Vector2(0.5f, 1);
+            tjRT.anchoredPosition = new Vector2(0, -18);
+            tjRT.sizeDelta = new Vector2(280, 80);
+
+            // A. Ngọc Thái Cực
+            GameObject orbObj = new GameObject("Orb_Taiji", typeof(RectTransform), typeof(Image));
+            orbObj.transform.SetParent(taijiTrans, false);
+            RectTransform orbRT = orbObj.GetComponent<RectTransform>();
+            orbRT.anchorMin = new Vector2(0, 0.5f);
+            orbRT.anchorMax = new Vector2(0, 0.5f);
+            orbRT.pivot = new Vector2(0, 0.5f);
+            orbRT.anchoredPosition = new Vector2(0, 0);
+            orbRT.sizeDelta = new Vector2(74, 74);
+            Image orbImg = orbObj.GetComponent<Image>();
+            orbImg.color = Color.white;
+            if (taijiOrbSprite != null) orbImg.sprite = taijiOrbSprite;
+            orbImg.preserveAspect = true;
+
+            // B. Cụm Thanh Trượt & Tiêu Đề
+            GameObject tjRight = new GameObject("Group_BarAndLabel", typeof(RectTransform));
+            tjRight.transform.SetParent(taijiTrans, false);
+            RectTransform tjrRT = tjRight.GetComponent<RectTransform>();
+            tjrRT.anchorMin = new Vector2(0, 0.5f);
+            tjrRT.anchorMax = new Vector2(0, 0.5f);
+            tjrRT.pivot = new Vector2(0, 0.5f);
+            tjrRT.anchoredPosition = new Vector2(80, 0);
+            tjrRT.sizeDelta = new Vector2(190, 64);
+
+            // B.1. Slider Âm Dương
+            GameObject tjSliderObj = new GameObject("Slider_YinYang", typeof(RectTransform), typeof(Slider), typeof(Image));
+            tjSliderObj.transform.SetParent(tjRight.transform, false);
+            RectTransform tjsRT = tjSliderObj.GetComponent<RectTransform>();
+            tjsRT.anchorMin = new Vector2(0, 1);
+            tjsRT.anchorMax = new Vector2(1, 1);
+            tjsRT.pivot = new Vector2(0.5f, 1);
+            tjsRT.anchoredPosition = new Vector2(0, -4);
+            tjsRT.sizeDelta = new Vector2(0, 26);
+
+            Image tjsBg = tjSliderObj.GetComponent<Image>();
+            tjsBg.color = Color.white;
+            tjsBg.type = Image.Type.Sliced;
+            if (yinyangBarSprite != null) tjsBg.sprite = yinyangBarSprite;
+
+            Slider tjSlider = tjSliderObj.GetComponent<Slider>();
+            tjSlider.minValue = -100;
+            tjSlider.maxValue = 100;
+            tjSlider.value = -40;
+
+            // B.2. Label Trạng Thái [ÂM THỊNH] / [DƯƠNG THỊNH]
+            GameObject tjLblObj = new GameObject("Txt_StateLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
+            tjLblObj.transform.SetParent(tjRight.transform, false);
+            RectTransform tjlRT = tjLblObj.GetComponent<RectTransform>();
+            tjlRT.anchorMin = new Vector2(0, 0);
+            tjlRT.anchorMax = new Vector2(1, 0);
+            tjlRT.pivot = new Vector2(0.5f, 0);
+            tjlRT.anchoredPosition = new Vector2(0, 2);
+            tjlRT.sizeDelta = new Vector2(0, 24);
+
+            TextMeshProUGUI tjLblTMP = tjLblObj.GetComponent<TextMeshProUGUI>();
+            if (vietFont != null) tjLblTMP.font = vietFont;
+            tjLblTMP.fontSize = 15;
+            tjLblTMP.fontStyle = FontStyles.Bold;
+            tjLblTMP.alignment = TextAlignmentOptions.Center;
+            tjLblTMP.text = "[ÂM THỊNH]";
+            tjLblTMP.color = new Color(0.65f, 0.85f, 1f, 1f);
+
+            // Gắn CharacterGaugeWidgetView nếu có
+            var gaugeView = taijiTrans.GetComponent<CharacterGaugeWidgetView>();
+            if (gaugeView == null) gaugeView = taijiTrans.gameObject.AddComponent<CharacterGaugeWidgetView>();
+            SerializedObject soGauge = new SerializedObject(gaugeView);
+            soGauge.FindProperty("_gaugeSlider").objectReferenceValue = tjSlider;
+            soGauge.FindProperty("_gaugeTitleText").objectReferenceValue = tjLblTMP;
+            soGauge.ApplyModifiedProperties();
 
             // -------------------------------------------------------------
-            // 6. CỤM THỜI GIAN & SỐ DIỆT (TOP RIGHT RUN STATS ĐỒNG BỘ ĐÔNG SƠN)
+            // 4. DỰNG LẠI TopRight_RunStats (THỜI GIAN & SỐ DIỆT)
             // -------------------------------------------------------------
             Transform topRightTrans = hudRoot.transform.Find("TopRight_RunStats");
+            if (topRightTrans == null) topRightTrans = hudRoot.transform.Find("Panel_TopRight");
             if (topRightTrans == null)
             {
                 GameObject trObj = new GameObject("TopRight_RunStats", typeof(RectTransform), typeof(Image));
                 trObj.transform.SetParent(hudRoot.transform, false);
                 topRightTrans = trObj.transform;
+            }
+            topRightTrans.name = "TopRight_RunStats";
+
+            while (topRightTrans.childCount > 0)
+            {
+                Object.DestroyImmediate(topRightTrans.GetChild(0).gameObject);
             }
 
             RectTransform trRT = topRightTrans.GetComponent<RectTransform>();
@@ -412,78 +349,43 @@ namespace ProjectZombie.EditorTools
             trRT.anchorMax = new Vector2(1, 1);
             trRT.pivot = new Vector2(1, 1);
             trRT.anchoredPosition = new Vector2(-25, -20);
-            trRT.sizeDelta = new Vector2(230, 95);
+            trRT.sizeDelta = new Vector2(210, 84);
 
             Image trBg = topRightTrans.GetComponent<Image>();
             if (trBg == null) trBg = topRightTrans.gameObject.AddComponent<Image>();
             trBg.color = Color.white;
             trBg.type = Image.Type.Sliced;
-            trBg.pixelsPerUnitMultiplier = 1f;
-            if (hudFrameSprite != null) trBg.sprite = hudFrameSprite;
+            if (runStatsPillSprite != null) trBg.sprite = runStatsPillSprite;
 
-            // Text Timer
-            Transform timerTrans = topRightTrans.Find("Txt_Timer");
-            if (timerTrans == null)
-            {
-                // Thử tìm ngoài root cũ nếu có
-                Transform oldTimer = hudRoot.transform.Find("Txt_Timer");
-                if (oldTimer != null)
-                {
-                    oldTimer.SetParent(topRightTrans, false);
-                    timerTrans = oldTimer;
-                }
-                else
-                {
-                    GameObject tObj = new GameObject("Txt_Timer", typeof(RectTransform), typeof(TextMeshProUGUI));
-                    tObj.transform.SetParent(topRightTrans, false);
-                    timerTrans = tObj.transform;
-                }
-            }
-            RectTransform timerRT = timerTrans.GetComponent<RectTransform>();
-            timerRT.anchorMin = new Vector2(0.5f, 1);
-            timerRT.anchorMax = new Vector2(0.5f, 1);
-            timerRT.pivot = new Vector2(0.5f, 1);
-            timerRT.anchoredPosition = new Vector2(0, -14);
-            timerRT.sizeDelta = new Vector2(190, 32);
-
-            TextMeshProUGUI timerTMP = timerTrans.GetComponent<TextMeshProUGUI>();
+            // Timer Row
+            GameObject tRow = new GameObject("Row_Timer", typeof(RectTransform), typeof(TextMeshProUGUI));
+            tRow.transform.SetParent(topRightTrans, false);
+            RectTransform trRowRT = tRow.GetComponent<RectTransform>();
+            trRowRT.anchorMin = new Vector2(0, 0.5f);
+            trRowRT.anchorMax = new Vector2(1, 1);
+            trRowRT.offsetMin = new Vector2(16, 0);
+            trRowRT.offsetMax = new Vector2(-16, -6);
+            TextMeshProUGUI timerTMP = tRow.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) timerTMP.font = vietFont;
-            timerTMP.fontSize = 22;
+            timerTMP.fontSize = 20;
             timerTMP.fontStyle = FontStyles.Bold;
             timerTMP.alignment = TextAlignmentOptions.Center;
-            timerTMP.color = new Color(1f, 0.95f, 0.8f, 1f);
             timerTMP.text = "00:00";
+            timerTMP.color = Color.white;
 
-            // Text Kill Count
-            Transform killTrans = topRightTrans.Find("Txt_KillCount");
-            if (killTrans == null)
-            {
-                Transform oldKill = hudRoot.transform.Find("Txt_KillCount");
-                if (oldKill != null)
-                {
-                    oldKill.SetParent(topRightTrans, false);
-                    killTrans = oldKill;
-                }
-                else
-                {
-                    GameObject kObj = new GameObject("Txt_KillCount", typeof(RectTransform), typeof(TextMeshProUGUI));
-                    kObj.transform.SetParent(topRightTrans, false);
-                    killTrans = kObj.transform;
-                }
-            }
-            RectTransform killRT = killTrans.GetComponent<RectTransform>();
-            killRT.anchorMin = new Vector2(0.5f, 0);
-            killRT.anchorMax = new Vector2(0.5f, 0);
-            killRT.pivot = new Vector2(0.5f, 0);
-            killRT.anchoredPosition = new Vector2(0, 14);
-            killRT.sizeDelta = new Vector2(190, 26);
-
-            TextMeshProUGUI killTMP = killTrans.GetComponent<TextMeshProUGUI>();
+            // Kill Count Row
+            GameObject kRow = new GameObject("Row_KillCount", typeof(RectTransform), typeof(TextMeshProUGUI));
+            kRow.transform.SetParent(topRightTrans, false);
+            RectTransform krRowRT = kRow.GetComponent<RectTransform>();
+            krRowRT.anchorMin = new Vector2(0, 0);
+            krRowRT.anchorMax = new Vector2(1, 0.5f);
+            krRowRT.offsetMin = new Vector2(16, 6);
+            krRowRT.offsetMax = new Vector2(-16, 0);
+            TextMeshProUGUI killTMP = kRow.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) killTMP.font = vietFont;
-            killTMP.fontSize = 16;
+            killTMP.fontSize = 15;
             killTMP.fontStyle = FontStyles.Bold;
             killTMP.alignment = TextAlignmentOptions.Center;
-            killTMP.color = new Color(1f, 0.75f, 0.35f, 1f);
             killTMP.text = "Diệt: 0";
 
             // -------------------------------------------------------------

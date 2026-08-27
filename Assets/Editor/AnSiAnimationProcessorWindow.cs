@@ -117,8 +117,8 @@ namespace ProjectZombie.Editor.Tools
             int cellW = srcW / cols;
             int cellH = srcH / rows;
 
-            int targetFrameW = 128;
-            int targetFrameH = 128;
+            int targetFrameW = _frameWidth;
+            int targetFrameH = _frameHeight;
             Texture2D outStrip = new Texture2D(targetFrameW * frameCount, targetFrameH, TextureFormat.RGBA32, false);
             Color[] clearStrip = new Color[targetFrameW * frameCount * targetFrameH];
             for (int i = 0; i < clearStrip.Length; i++) clearStrip[i] = Color.clear;
@@ -207,7 +207,9 @@ namespace ProjectZombie.Editor.Tools
             TextureImporter importer = AssetImporter.GetAtPath(targetPath) as TextureImporter;
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
+#pragma warning disable CS0618
             importer.spritesheet = metas.ToArray();
+#pragma warning restore CS0618
             importer.filterMode = FilterMode.Point;
             importer.spritePixelsPerUnit = _pixelsPerUnit;
             importer.isReadable = true;

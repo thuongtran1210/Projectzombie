@@ -243,8 +243,8 @@ namespace ProjectZombie.Features.UI
             // Nếu danh sách rỗng, nạp tất cả
             if (targetList.Count == 0) targetList.AddRange(_allWeapons);
 
-            // Hiển thị toàn bộ Pháp Bảo hiện có (tối thiểu 12 ô)
-            int totalSlots = Mathf.Max(12, targetList.Count);
+            // Hiển thị toàn bộ Pháp Bảo hiện có (tối thiểu 20 ô dạng 4x5)
+            int totalSlots = Mathf.Max(20, targetList.Count);
             for (int i = 0; i < totalSlots; i++)
             {
                 if (i < targetList.Count)
@@ -343,20 +343,32 @@ namespace ProjectZombie.Features.UI
             boxRT.sizeDelta = new Vector2(74, 74);
 
             var boxImg = boxObj.GetComponent<Image>();
+            boxImg.type = Image.Type.Sliced;
+            
+            Sprite slotWood = null;
+            Sprite slotSelected = null;
+            #if UNITY_EDITOR
+            slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+            #endif
+
+            if (slotWood != null) boxImg.sprite = slotWood;
+            
             Color elemColor = !isLocked ? GetElementColor(weapon.elementType) : new Color(0.25f, 0.22f, 0.30f, 0.8f);
             
             // Nếu đang được chọn trang bị hoặc soi: Viền Vàng Kim phát sáng nổi bật
             if (isEquipped)
             {
-                boxImg.color = new Color(0.0f, 1.0f, 0.65f, 1.0f); // Xanh Ngọc Hộ Thân
+                if (slotSelected != null) boxImg.sprite = slotSelected;
+                boxImg.color = Color.white;
             }
             else if (isInspected)
             {
-                boxImg.color = new Color(1.0f, 0.85f, 0.2f, 1.0f); // Vàng Kim Soi
+                boxImg.color = new Color(1.0f, 0.90f, 0.4f, 1.0f); // Vàng Kim Soi
             }
             else
             {
-                boxImg.color = elemColor;
+                boxImg.color = isLocked ? new Color(0.4f, 0.35f, 0.3f, 0.5f) : Color.white;
             }
 
             // Nền bên trong (Inner Background)
@@ -365,13 +377,11 @@ namespace ProjectZombie.Features.UI
             var inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = new Vector2(2.5f, 2.5f);
-            inRT.offsetMax = new Vector2(-2.5f, -2.5f);
+            inRT.offsetMin = new Vector2(4, 4);
+            inRT.offsetMax = new Vector2(-4, -4);
 
             var inImg = innerObj.GetComponent<Image>();
-            inImg.color = isLocked 
-                ? new Color(0.08f, 0.07f, 0.10f, 0.95f) 
-                : (isEquipped ? new Color(0.05f, 0.22f, 0.16f, 0.95f) : new Color(0.14f, 0.11f, 0.18f, 0.95f));
+            inImg.color = new Color(0, 0, 0, 0); // Trong suốt vì đã có Slot_Inventory_Wood_9Slice lo nền
 
             // Icon bên trong
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));

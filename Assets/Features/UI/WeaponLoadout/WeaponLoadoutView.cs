@@ -202,13 +202,13 @@ namespace ProjectZombie.Features.UI
                 switch (weapon.weaponRole)
                 {
                     case WeaponRole.RelicOrbitalShield:
-                        roleTag = "<color=#00FF88>[🛡️ PHÁP BẢO QUỸ ĐẠO HỘ VỆ]</color>";
+                        roleTag = "<color=#00FF88>[PHÁP BẢO QUỸ ĐẠO HỘ VỆ]</color>";
                         break;
                     case WeaponRole.RelicOnHitTrigger:
-                        roleTag = "<color=#FFCC00>[⚔️ PHÁP BẢO KÍCH ỨNG BỒI ĐÒN]</color>";
+                        roleTag = "<color=#FFCC00>[PHÁP BẢO KÍCH ỨNG BỒI ĐÒN]</color>";
                         break;
                     case WeaponRole.RelicSupportAura:
-                        roleTag = "<color=#4DEEEA>[🌀 PHÁP BẢO HỖ TRỢ KHỐNG CHẾ]</color>";
+                        roleTag = "<color=#4DEEEA>[PHÁP BẢO HỖ TRỢ KHỐNG CHẾ]</color>";
                         break;
                     default:
                         roleTag = "<color=#FF8800>[PHÁP BẢO HỘ THÂN]</color>";
