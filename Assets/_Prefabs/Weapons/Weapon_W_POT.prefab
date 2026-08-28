@@ -56,10 +56,8 @@ MonoBehaviour:
   isPrimaryActiveWeapon: 0
   currentComboStep: 1
   comboResetWindow: 1
-  slashParticles: {fileID: 0}
-  maxTargetsHit: 0
-  hitSparkPrefab: {fileID: 0}
-  showGizmos: 1
   vacuumRadius: 3.8
+  autoTriggerRadius: 3
   maxCapturedMobs: 3
-  cannonLaunchSpeed: 16
+  cooldownSeconds: 4
+  potVfxPrefab: {fileID: 3231622985748343058, guid: f12bbfd4b590faa45853eeca7a517b06, type: 3}

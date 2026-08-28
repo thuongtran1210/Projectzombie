@@ -59,3 +59,4 @@ MonoBehaviour:
   matInterval: 8
   matDuration: 5
   matSize: {x: 3.5, y: 2.2}
+  matVfxPrefab: {fileID: 3418663563445882567, guid: f9ddf73a8c51b5642bcc0088f830a2e6, type: 3}
