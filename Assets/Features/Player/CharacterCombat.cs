@@ -162,6 +162,10 @@ namespace ProjectZombie.Features.Player
             return baseSpeed * statBonus;
         }
 
+        /// <summary>
+        /// [LOẠI 1: CHỈ DẤU HƯỚNG ĐI (PASSIVE)]
+        /// Cập nhật mũi tên định hướng bước chân nhỏ dưới chân nhân vật theo hướng di chuyển/mặt nhìn.
+        /// </summary>
         private void UpdateAimIndicator()
         {
             if (aimIndicator != null)

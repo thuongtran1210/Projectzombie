@@ -4,9 +4,17 @@ using UnityEngine;
 namespace ProjectZombie.Features.Combat.Aiming
 {
     /// <summary>
-    /// Điều phối hiển thị toàn bộ Chỉ Dấu Kỹ Năng 2.5D (Telegraph Skill Indicators) chuẩn MOBA Liên Quân.
-    /// Hỗ trợ 3 dạng hình thái: Line Arrow (Mũi tên), Cone Sector (Hình quạt), Circle Reticle (Tâm tròn AOE).
-    /// Quản lý màu sắc cảnh báo: Normal Cast (Vàng/Ngọc) vs Cancel State (Đỏ rực).
+    /// [LOẠI 2: CHỈ DẤU KỸ NĂNG & ĐÒN ĐÁNH MOBA (ACTIVE SKILL/ATTACK TELEGRAPH INDICATOR)]
+    /// ---------------------------------------------------------------------------------------------
+    /// - Vai trò: Điều phối hiển thị toàn bộ Chỉ Dấu Kỹ Năng 2.5D (Telegraph Skill Indicators) chuẩn MOBA Liên Quân.
+    /// - Mục đích: Giúp người chơi căn cự ly, độ rộng Hitbox đòn đánh, ngắm bắn 360 độ và hủy chiêu.
+    /// - Hỗ trợ 3 dạng hình thái: Line Arrow (Mũi tên), Cone Sector (Hình quạt), Circle Reticle (Tâm tròn AOE).
+    /// - Thời điểm kích hoạt: CHỈ XUẤT HIỆN KHI ĐÈ (Hold > 0.12s) HOẶC KÉO TAY (Drag) vào nút Kỹ năng/Đánh thường.
+    /// - Phân biệt với [LOẠI 1 - CombatAimIndicator]:
+    ///     + Chỉ xuất hiện chủ động khi tương tác skill UI.
+    ///     + Kích thước bằng đúng thông số vùng sát thương thực tế của kỹ năng (2.5m - 8.0m).
+    ///     + Hỗ trợ đổi sang màu đỏ khi kéo vào Vùng Hủy Chiêu (UICancelSkillZone).
+    /// ---------------------------------------------------------------------------------------------
     /// </summary>
     public class SkillAimIndicatorController : MonoBehaviour
     {

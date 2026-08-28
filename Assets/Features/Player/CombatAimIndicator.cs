@@ -3,8 +3,14 @@ using UnityEngine;
 namespace ProjectZombie.Features.Player
 {
     /// <summary>
-    /// Component quản lý hiển thị vòng cung / mũi tên định hướng tấn công (Attack Aim Indicator).
-    /// Tuân thủ Single Responsibility (SRP), tách biệt logic hiển thị trực quan khỏi CharacterCombat.
+    /// [LOẠI 1: CHỈ DẤU HƯỚNG ĐI / ĐỊNH HƯỚNG BƯỚC CHÂN (PASSIVE DIRECTION INDICATOR)]
+    /// ---------------------------------------------------------------------------------------------
+    /// - Vai trò: Hiển thị liên tục (Passive) một mũi tên/vòng cung nhỏ sát dưới chân nhân vật (0.4m).
+    /// - Mục đích: Giúp người chơi nhận biết hướng mặt, góc nhìn và hướng di chuyển theo Joystick.
+    /// - Phân biệt với [LOẠI 2 - SkillAimIndicatorController]:
+    ///     + CombatAimIndicator: Nhỏ gọn dưới chân, luôn hiện, không thay đổi theo kích thước kỹ năng.
+    ///     + SkillAimIndicatorController: Chỉ hiện khi ĐÈ/KÉO nút Skill, vẽ vùng chém/bắn lớn (MOBA Telegraph).
+    /// ---------------------------------------------------------------------------------------------
     /// </summary>
     public class CombatAimIndicator : MonoBehaviour
     {

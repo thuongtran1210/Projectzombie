@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,13 +16,23 @@ namespace ProjectZombie.Features.UI.Controls
         [SerializeField] private float _dragThreshold = 25f;
         [Tooltip("Khoảng cách kéo tối đa (pixel) đạt 100% tầm chiêu")]
         [SerializeField] private float _maxDragDistance = 140f;
+        [Tooltip("Nếu true: Chỉ hiện chỉ dấu khi ĐÈ (Hold > 0.12s) hoặc KÉO (Drag). Nhấp nhanh (Tap) sẽ đánh ngay mà không chớp chỉ dấu.")]
+        [SerializeField] private bool _requireHoldOrDrag = false;
+        [SerializeField] private float _holdDurationThreshold = 0.12f;
 
         private Vector2 _pointerDownPos;
         private Vector2 _currentPointerPos;
         private bool _isDragging;
+        private bool _isAimActive;
         private bool _isInteractable = true;
+        private Coroutine _holdCoroutine;
 
         public bool IsDragging => _isDragging;
+        public bool RequireHoldOrDrag
+        {
+            get => _requireHoldOrDrag;
+            set => _requireHoldOrDrag = value;
+        }
 
         public event Action OnAimStarted;
         public event Action<Vector2, float, bool> OnAimUpdated; // (direction, pullPercent, isCancelHovered)
@@ -31,6 +42,10 @@ namespace ProjectZombie.Features.UI.Controls
         public void SetInteractable(bool interactable)
         {
             _isInteractable = interactable;
+            if (!interactable && _isAimActive)
+            {
+                CancelAim();
+            }
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -40,7 +55,33 @@ namespace ProjectZombie.Features.UI.Controls
             _pointerDownPos = eventData.position;
             _currentPointerPos = eventData.position;
             _isDragging = false;
+            _isAimActive = false;
 
+            if (_holdCoroutine != null) StopCoroutine(_holdCoroutine);
+
+            if (_requireHoldOrDrag)
+            {
+                _holdCoroutine = StartCoroutine(RoutineCheckHold());
+            }
+            else
+            {
+                TriggerAimStarted();
+            }
+        }
+
+        private IEnumerator RoutineCheckHold()
+        {
+            yield return new WaitForSecondsRealtime(_holdDurationThreshold);
+            if (!_isAimActive)
+            {
+                TriggerAimStarted();
+            }
+            _holdCoroutine = null;
+        }
+
+        private void TriggerAimStarted()
+        {
+            _isAimActive = true;
             OnAimStarted?.Invoke();
             UICancelSkillZone.Instance?.SetVisible(true);
         }
@@ -56,31 +97,52 @@ namespace ProjectZombie.Features.UI.Controls
             if (dist >= _dragThreshold)
             {
                 _isDragging = true;
+                if (!_isAimActive)
+                {
+                    if (_holdCoroutine != null)
+                    {
+                        StopCoroutine(_holdCoroutine);
+                        _holdCoroutine = null;
+                    }
+                    TriggerAimStarted();
+                }
             }
 
-            Vector2 aimDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
-            float pullPercent = Mathf.Clamp01(dist / _maxDragDistance);
+            if (_isAimActive)
+            {
+                Vector2 aimDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
+                float pullPercent = Mathf.Clamp01(dist / _maxDragDistance);
 
-            // Kiểm tra ngón tay kéo vào Vùng Hủy Chiêu
-            bool isCancel = UICancelSkillZone.Instance != null && 
-                            UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
+                // Kiểm tra ngón tay kéo vào Vùng Hủy Chiêu
+                bool isCancel = UICancelSkillZone.Instance != null && 
+                                UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
 
-            UICancelSkillZone.Instance?.SetHovered(isCancel);
-            OnAimUpdated?.Invoke(aimDirection, pullPercent, isCancel);
+                UICancelSkillZone.Instance?.SetHovered(isCancel);
+                OnAimUpdated?.Invoke(aimDirection, pullPercent, isCancel);
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             if (!_isInteractable) return;
 
+            if (_holdCoroutine != null)
+            {
+                StopCoroutine(_holdCoroutine);
+                _holdCoroutine = null;
+            }
+
             _currentPointerPos = eventData.position;
             Vector2 delta = _currentPointerPos - _pointerDownPos;
             float dist = delta.magnitude;
 
-            bool isCancel = UICancelSkillZone.Instance != null && 
+            bool isCancel = _isAimActive && UICancelSkillZone.Instance != null && 
                             UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
 
-            UICancelSkillZone.Instance?.SetVisible(false);
+            if (_isAimActive)
+            {
+                UICancelSkillZone.Instance?.SetVisible(false);
+            }
 
             if (isCancel)
             {
@@ -88,12 +150,26 @@ namespace ProjectZombie.Features.UI.Controls
             }
             else
             {
-                bool isQuickTap = dist < _dragThreshold;
+                bool isQuickTap = dist < _dragThreshold && !_isAimActive;
                 Vector2 finalDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
                 OnAimReleased?.Invoke(finalDirection, isQuickTap);
             }
 
             _isDragging = false;
+            _isAimActive = false;
+        }
+
+        private void CancelAim()
+        {
+            if (_holdCoroutine != null)
+            {
+                StopCoroutine(_holdCoroutine);
+                _holdCoroutine = null;
+            }
+            _isDragging = false;
+            _isAimActive = false;
+            UICancelSkillZone.Instance?.SetVisible(false);
+            OnAimCancelled?.Invoke();
         }
     }
 }

@@ -37,12 +37,13 @@ namespace ProjectZombie.Features.UI
             if (_dragHandler == null) _dragHandler = GetComponent<Controls.SmartSkillDragHandler>() ?? gameObject.AddComponent<Controls.SmartSkillDragHandler>();
             if (_dragHandler != null)
             {
+                // [LOẠI 2: CHỈ DẤU TẤN CÔNG / SKILL MOBA]
+                // Bật cờ RequireHoldOrDrag = true để khi người chơi NHẤP NHANH (Tap) chém thường liên tục thì KHÔNG chớp chỉ dấu.
+                // Chỉ hiển thị Mũi tên / Hình quạt quét khi người chơi ĐÈ (>0.12s) hoặc KÉO TAY (Drag) định hướng.
+                _dragHandler.RequireHoldOrDrag = true;
                 _dragHandler.OnAimStarted += () => OnAimStarted?.Invoke();
                 _dragHandler.OnAimUpdated += (dir, pull, isCancel) => OnAimUpdated?.Invoke(dir, pull, isCancel);
-                _dragHandler.OnAimReleased += (dir, isTap) => {
-                    if (isTap) OnButtonPressed?.Invoke();
-                    OnAimReleased?.Invoke(dir, isTap);
-                };
+                _dragHandler.OnAimReleased += (dir, isTap) => OnAimReleased?.Invoke(dir, isTap);
                 _dragHandler.OnAimCancelled += () => OnAimCancelled?.Invoke();
             }
             else if (_attackButton != null)
