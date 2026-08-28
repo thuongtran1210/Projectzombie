@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Core.Audio;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -145,6 +146,7 @@ namespace ProjectZombie.Features.UI
         public void SetTab(LoadoutInventoryTab tab)
         {
             _currentTab = tab;
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             RefreshUI();
         }
 
@@ -153,6 +155,8 @@ namespace ProjectZombie.Features.UI
             if (weapon == null) return;
             _selectedPrimary = weapon;
             _inspectedWeapon = weapon;
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
@@ -173,6 +177,8 @@ namespace ProjectZombie.Features.UI
             _selectedRelics.Add(relic);
 
             _inspectedWeapon = relic;
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)

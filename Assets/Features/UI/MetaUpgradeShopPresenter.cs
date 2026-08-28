@@ -81,6 +81,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleTabSelected(SanctuaryBranch branch)
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             if (_currentBranch != branch)
             {
                 _currentBranch = branch;
@@ -91,6 +92,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleNodeCardSelected(int cardIndex)
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             _selectedCardIndex = cardIndex;
             RenderShop();
         }
@@ -128,7 +130,11 @@ namespace ProjectZombie.Features.UI
             if (saveData == null) return;
 
             int currentLevel = saveData.GetUpgradeLevel(nodeIndex);
-            if (currentLevel >= node.maxLevel) return;
+            if (currentLevel >= node.maxLevel)
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                return;
+            }
 
             int cost = node.GetCostForLevel(currentLevel);
             if (cost <= 0) return;
@@ -137,10 +143,15 @@ namespace ProjectZombie.Features.UI
             {
                 if (MetaCurrencyManager.Instance.SpendCurrency(cost))
                 {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
                     saveData.SetUpgradeLevel(nodeIndex, currentLevel + 1);
                     Core.Save.SaveSystem.Save(saveData);
                     Debug.Log($"<color=#00FF88>[MetaUpgradeShop]</color> Đã nâng cấp '{node.displayName}' lên Cấp {currentLevel + 1} (-{cost} Cổ Tiền)!");
                     RenderShop();
+                }
+                else
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
                 }
             }
         }

@@ -26,9 +26,20 @@ namespace ProjectZombie.Features.Spawners
 
         public void ReturnToPool()
         {
-            if (Pool != null && gameObject.activeSelf)
+            if (Pool != null && gameObject != null && gameObject.activeSelf)
             {
-                Pool.Release(gameObject);
+                try
+                {
+                    Pool.Release(gameObject);
+                }
+                catch (System.Exception)
+                {
+                    gameObject.SetActive(false);
+                }
+            }
+            else if (gameObject != null)
+            {
+                gameObject.SetActive(false);
             }
         }
 

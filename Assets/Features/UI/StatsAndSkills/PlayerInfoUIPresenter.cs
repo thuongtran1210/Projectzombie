@@ -230,6 +230,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void CloseMenu()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
             if (_statsMenuView == null) return;
 
             _isMenuOpen = false;
@@ -247,6 +249,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void HandleSettingsClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
             var settingsPresenter = FindObjectOfType<SettingsModalPresenter>(true);
             if (settingsPresenter != null)
             {
@@ -260,6 +264,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void HandleQuitClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
             // Kết thúc trận, lưu ngân lượng và về Sảnh Chính
             Time.timeScale = 1f;
 

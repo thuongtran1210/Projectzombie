@@ -10,7 +10,24 @@ namespace Core.Audio
     /// </summary>
     public class AudioManager : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
+        private static AudioManager _instance;
+        public static AudioManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<AudioManager>();
+                    if (_instance == null)
+                    {
+                        var go = new GameObject("AudioManager");
+                        _instance = go.AddComponent<AudioManager>();
+                    }
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("Audio Mixer")]
         [SerializeField] private AudioMixer _masterMixer;
@@ -25,6 +42,12 @@ namespace Core.Audio
         [Header("BGM Sources (Adaptive Layering)")]
         [SerializeField] private AudioSource _bgmAudioSource;
         [SerializeField] private AudioSource _stingerAudioSource;
+
+        [Header("Core UI Sound Effects (4 Tinh Gọn)")]
+        [SerializeField] private AudioClip _uiClickClip;
+        [SerializeField] private AudioClip _uiConfirmClip;
+        [SerializeField] private AudioClip _uiErrorClip;
+        [SerializeField] private AudioClip _uiCoinClip;
 
         private const string PREFS_MASTER_VOL = "Setting_MasterVolume";
         private const string PREFS_BGM_VOL = "Setting_BGMVolume";
@@ -89,6 +112,14 @@ namespace Core.Audio
                 _stingerAudioSource.loop = false;
                 _stingerAudioSource.playOnAwake = false;
             }
+
+#if UNITY_EDITOR
+            if (_uiClickClip == null) _uiClickClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
+            if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Confirm.wav");
+            if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Card_Select.wav");
+            if (_uiErrorClip == null) _uiErrorClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
+            if (_uiCoinClip == null) _uiCoinClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
+#endif
         }
 
         private void LoadAndApplyVolumeSettings()
@@ -149,16 +180,55 @@ namespace Core.Audio
         }
 
         /// <summary>
-        /// Phát Nhạc nền (BGM).
+        /// Phát Nhạc nền (BGM) với cơ chế Fade mượt mà tránh ngắt âm đột ngột.
         /// </summary>
         public void PlayBGM(AudioConfigSO config, bool fade = true)
         {
             if (config == null || config.DirectClip == null) return;
+            PlayBGM(config.DirectClip, config.Volume, fade ? 0.75f : 0f);
+        }
 
-            _bgmAudioSource.clip = config.DirectClip;
-            _bgmAudioSource.outputAudioMixerGroup = config.MixerGroup;
-            _bgmAudioSource.volume = config.Volume;
+        public void PlayBGM(AudioClip clip, float targetVolume = 0.4f, float fadeDuration = 0.75f)
+        {
+            if (clip == null || _bgmAudioSource == null) return;
+            if (_bgmAudioSource.clip == clip && _bgmAudioSource.isPlaying) return;
+
+            StopAllCoroutines();
+            if (fadeDuration > 0f && _bgmAudioSource.isPlaying)
+            {
+                StartCoroutine(Routine_FadeBGM(clip, targetVolume, fadeDuration));
+            }
+            else
+            {
+                _bgmAudioSource.clip = clip;
+                _bgmAudioSource.volume = targetVolume;
+                _bgmAudioSource.Play();
+            }
+        }
+
+        private IEnumerator Routine_FadeBGM(AudioClip newClip, float targetVolume, float duration)
+        {
+            float startVol = _bgmAudioSource.volume;
+            float halfDuration = duration * 0.5f;
+
+            // Fade Out
+            for (float t = 0; t < halfDuration; t += Time.unscaledDeltaTime)
+            {
+                _bgmAudioSource.volume = Mathf.Lerp(startVol, 0f, t / halfDuration);
+                yield return null;
+            }
+
+            _bgmAudioSource.Stop();
+            _bgmAudioSource.clip = newClip;
             _bgmAudioSource.Play();
+
+            // Fade In
+            for (float t = 0; t < halfDuration; t += Time.unscaledDeltaTime)
+            {
+                _bgmAudioSource.volume = Mathf.Lerp(0f, targetVolume, t / halfDuration);
+                yield return null;
+            }
+            _bgmAudioSource.volume = targetVolume;
         }
 
         /// <summary>
@@ -175,7 +245,6 @@ namespace Core.Audio
             _stingerAudioSource.Play();
         }
 
-
         public void StopBGM()
         {
             if (_bgmAudioSource != null && _bgmAudioSource.isPlaying)
@@ -183,6 +252,78 @@ namespace Core.Audio
                 _bgmAudioSource.Stop();
             }
         }
+
+        #region Core UI Sound Playback (Tiện ích Giao Diện Linh Hoạt)
+
+        public void PlayUIClick(float pitch = 1f)
+        {
+            // Thêm độ lệch pitch ngẫu nhiên nhẹ (±3%) giúp âm thanh tự nhiên khi click liên tục
+            float naturalPitch = pitch * Random.Range(0.97f, 1.03f);
+            if (_uiClickClip != null) PlaySound(_uiClickClip, default, 0.9f, naturalPitch);
+        }
+
+        public void PlayUIConfirm(float pitch = 1f)
+        {
+            float naturalPitch = pitch * Random.Range(0.98f, 1.02f);
+            AudioClip clip = _uiConfirmClip != null ? _uiConfirmClip : _uiClickClip;
+            if (clip != null) PlaySound(clip, default, 1f, naturalPitch);
+        }
+
+        public void PlayUIError(float pitch = 1f)
+        {
+            if (_uiErrorClip != null)
+            {
+                PlaySound(_uiErrorClip, default, 0.9f, pitch);
+            }
+            else if (_uiClickClip != null)
+            {
+                PlaySound(_uiClickClip, default, 0.7f, 0.65f); // Low pitch error fallback
+            }
+        }
+
+        public void PlayCoinTick(float pitch = 1f)
+        {
+            // Pitch ngẫu nhiên linh hoạt từ 0.95 đến 1.10 mô phỏng tiếng đồng xu rơi đa dạng
+            float coinPitch = pitch * Random.Range(0.95f, 1.10f);
+            if (_uiCoinClip != null) PlaySound(_uiCoinClip, default, 0.85f, coinPitch);
+        }
+
+        /// <summary>
+        /// Phát trực tiếp 1 AudioClip không cần qua AudioConfigSO (tiện lợi cho UI & Event).
+        /// </summary>
+        public void PlaySound(AudioClip clip, Vector3 position = default, float volume = 1f, float pitch = 1f)
+        {
+            if (clip == null) return;
+
+            AudioSource source = _pool.Get();
+            source.clip = clip;
+            source.outputAudioMixerGroup = null;
+            source.volume = volume * UIVolume;
+            source.pitch = pitch;
+
+            if (position != default)
+            {
+                source.transform.position = position;
+                source.spatialBlend = 1f;
+            }
+            else
+            {
+                source.spatialBlend = 0f;
+            }
+
+            source.Play();
+            // Tối ưu: Giới hạn thời gian giữ AudioSource tối đa 3.5s để hoàn trả về Pool nhanh chóng
+            float playDuration = Mathf.Min(clip.length / Mathf.Max(0.01f, Mathf.Abs(pitch)), 3.5f);
+            StartCoroutine(Routine_ReleaseClipSource(source, playDuration));
+        }
+
+        private IEnumerator Routine_ReleaseClipSource(AudioSource source, float duration)
+        {
+            yield return new WaitForSecondsRealtime(duration);
+            _pool.Release(source);
+        }
+
+        #endregion
 
         #region Mixer Control Methods (Settings Panel Ready)
 
@@ -239,6 +380,15 @@ namespace Core.Audio
         }
 
         #endregion
+    }
+}
+
+namespace ProjectZombie.Core.Audio
+{
+    // Alias tương thích ngược để gọi được từ cả ProjectZombie.Core.Audio lẫn Core.Audio
+    public static class AudioHelper
+    {
+        public static global::Core.Audio.AudioManager Manager => global::Core.Audio.AudioManager.Instance;
     }
 }
 

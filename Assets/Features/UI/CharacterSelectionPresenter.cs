@@ -125,6 +125,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnNextCharacter()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex + 1) % _characters.Length;
             RenderCurrentCharacter();
@@ -132,6 +133,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnPrevCharacter()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex - 1 + _characters.Length) % _characters.Length;
             RenderCurrentCharacter();
@@ -139,6 +141,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnSelectCharacter()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             if (_characters == null || _characters.Length == 0) return;
             var selected = _characters[_currentIndex];
             Debug.Log($"[{nameof(CharacterSelectionPresenter)}] Đã chọn Anh Hùng: {selected.name} (Hệ {selected.element})");

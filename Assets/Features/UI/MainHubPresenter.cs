@@ -190,6 +190,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleStartRunClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             Debug.Log("<color=#00FF88>[MainHubPresenter]</color> Bắt đầu xuất trận với Tướng & Loadout đã lưu!");
 
             OnStartRunRequested?.Invoke();
@@ -214,6 +215,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleHeroSelectClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -223,6 +225,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleArmoryClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -232,6 +235,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSanctuaryTreeClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -241,6 +245,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCodexClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -250,6 +255,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSettingsClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {

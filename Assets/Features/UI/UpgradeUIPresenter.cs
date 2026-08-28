@@ -239,6 +239,8 @@ namespace ProjectZombie.Features.UI
 
         private void OnUpgradeSelected(UpgradeData selectedUpgrade)
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+
             if (_playerWeaponManager != null && selectedUpgrade != null)
             {
                 selectedUpgrade.ApplyUpgrade(_playerWeaponManager.gameObject);
@@ -253,16 +255,20 @@ namespace ProjectZombie.Features.UI
             if (_currentRerolls > 0)
             {
                 _currentRerolls--;
+                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
                 PopulateUpgradeScreen();
             }
             else
             {
+                global::Core.Audio.AudioManager.Instance?.PlayUIError();
                 Debug.LogWarning("[UpgradeUIPresenter] Đã hết số lần Lắc Lại trong lượt chạy!");
             }
         }
 
         private void OnSkipClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
             if (_playerWeaponManager != null)
             {
                 var healthSystem = _playerWeaponManager.GetComponent<HealthSystem>();

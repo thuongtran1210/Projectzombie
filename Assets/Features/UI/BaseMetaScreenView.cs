@@ -193,6 +193,7 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public virtual void OnBackPressed()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.PopScreen();
