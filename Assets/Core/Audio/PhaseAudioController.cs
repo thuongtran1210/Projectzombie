@@ -22,6 +22,15 @@ namespace Core.Audio
 
         private int _currentPhaseIndex = -1;
 
+        public void ForceInitialPhaseAudio()
+        {
+            if (_phaseAudioList != null && _phaseAudioList.Length > 0)
+            {
+                _currentPhaseIndex = 0;
+                TriggerPhaseAudio(_phaseAudioList[0]);
+            }
+        }
+
         private void Start()
         {
             if (ProjectZombie.Features.Shared.GameStateManager.Instance != null && 
@@ -36,6 +45,9 @@ namespace Core.Audio
             }
         }
 
+        private float _checkTimer = 0f;
+        private const float CHECK_INTERVAL = 1.0f; // Kiểm tra chuyển Phase 1 giây/lần thay vì mỗi frame
+
         private void Update()
         {
             if (ProjectZombie.Features.Shared.GameStateManager.Instance != null && 
@@ -44,10 +56,15 @@ namespace Core.Audio
                 return;
             }
 
-            if (SpawnManager.Instance == null || _phaseAudioList == null) return;
+            if (SpawnManager.Instance == null || _phaseAudioList == null || _phaseAudioList.Length == 0) return;
 
-            float currentMatchTime = SpawnManager.Instance.MatchTime;
-            CheckPhaseTransition(currentMatchTime);
+            _checkTimer += Time.deltaTime;
+            if (_checkTimer >= CHECK_INTERVAL)
+            {
+                _checkTimer = 0f;
+                float currentMatchTime = SpawnManager.Instance.MatchTime;
+                CheckPhaseTransition(currentMatchTime);
+            }
         }
 
         private void CheckPhaseTransition(float matchTime)

@@ -131,29 +131,64 @@ namespace Core.Audio
             }
 
 #if UNITY_EDITOR
-            if (_uiClickClip == null) _uiClickClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
-            if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Confirm.wav");
-            if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Card_Select.wav");
-            if (_uiWeaponEquipClip == null) _uiWeaponEquipClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
-            if (_uiErrorClip == null) _uiErrorClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
-            if (_uiCoinClip == null) _uiCoinClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
-
-            if (_swordSlashLightClip == null) _swordSlashLightClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Light.wav");
-            if (_swordSlashCritClip == null) _swordSlashCritClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
-            if (_playerDashClip == null) _playerDashClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Dash.wav");
-            if (_playerHurtClip == null) _playerHurtClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Hurt.wav");
-            if (_projectileShootClip == null) _projectileShootClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Shoot.wav");
-            if (_projectileExplodeClip == null) _projectileExplodeClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Explode.wav");
-            if (_magicOrbitClip == null) _magicOrbitClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Magic_Orbit_Loop.wav");
-            if (_ultimateSkillCastClip == null) _ultimateSkillCastClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Skill_Ultimate_Cast.wav");
-            if (_elementalReactionClip == null) _elementalReactionClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Elemental_Reaction.wav");
-            if (_statusFreezeClip == null) _statusFreezeClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Freeze.wav");
-            if (_statusBurnClip == null) _statusBurnClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Burn.wav");
-            if (_bossRoarClip == null) _bossRoarClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
-            if (_bossSmashClip == null) _bossSmashClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Smash.wav");
-            if (_hubBgmClip == null) _hubBgmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/BGM_MainHub_VongXuyen.wav");
+            if (_staticCachedAudio == null)
+            {
+                _staticCachedAudio = new System.Collections.Generic.Dictionary<string, AudioClip>();
+                LoadEditorAudioFallback();
+            }
+            ApplyEditorAudioFallback();
 #endif
         }
+
+#if UNITY_EDITOR
+        private static System.Collections.Generic.Dictionary<string, AudioClip> _staticCachedAudio;
+
+        private void LoadEditorAudioFallback()
+        {
+            _staticCachedAudio["click"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
+            _staticCachedAudio["confirm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Confirm.wav");
+            _staticCachedAudio["equip"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
+            _staticCachedAudio["error"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
+            _staticCachedAudio["coin"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
+            _staticCachedAudio["slash_light"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Light.wav");
+            _staticCachedAudio["slash_crit"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
+            _staticCachedAudio["dash"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Dash.wav");
+            _staticCachedAudio["hurt"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Hurt.wav");
+            _staticCachedAudio["shoot"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Shoot.wav");
+            _staticCachedAudio["explode"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Explode.wav");
+            _staticCachedAudio["orbit"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Magic_Orbit_Loop.wav");
+            _staticCachedAudio["ultimate"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Skill_Ultimate_Cast.wav");
+            _staticCachedAudio["reaction"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Elemental_Reaction.wav");
+            _staticCachedAudio["freeze"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Freeze.wav");
+            _staticCachedAudio["burn"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Burn.wav");
+            _staticCachedAudio["roar"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
+            _staticCachedAudio["smash"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Smash.wav");
+            _staticCachedAudio["hub_bgm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/BGM_MainHub_VongXuyen.wav");
+        }
+
+        private void ApplyEditorAudioFallback()
+        {
+            if (_staticCachedAudio == null) return;
+            if (_uiClickClip == null && _staticCachedAudio.TryGetValue("click", out var c1)) _uiClickClip = c1;
+            if (_uiConfirmClip == null && _staticCachedAudio.TryGetValue("confirm", out var c2)) _uiConfirmClip = c2;
+            if (_uiWeaponEquipClip == null && _staticCachedAudio.TryGetValue("equip", out var c3)) _uiWeaponEquipClip = c3;
+            if (_uiErrorClip == null && _staticCachedAudio.TryGetValue("error", out var c4)) _uiErrorClip = c4;
+            if (_uiCoinClip == null && _staticCachedAudio.TryGetValue("coin", out var c5)) _uiCoinClip = c5;
+            if (_swordSlashLightClip == null && _staticCachedAudio.TryGetValue("slash_light", out var c6)) _swordSlashLightClip = c6;
+            if (_swordSlashCritClip == null && _staticCachedAudio.TryGetValue("slash_crit", out var c7)) _swordSlashCritClip = c7;
+            if (_playerDashClip == null && _staticCachedAudio.TryGetValue("dash", out var c8)) _playerDashClip = c8;
+            if (_playerHurtClip == null && _staticCachedAudio.TryGetValue("hurt", out var c9)) _playerHurtClip = c9;
+            if (_projectileShootClip == null && _staticCachedAudio.TryGetValue("shoot", out var c10)) _projectileShootClip = c10;
+            if (_projectileExplodeClip == null && _staticCachedAudio.TryGetValue("explode", out var c11)) _projectileExplodeClip = c11;
+            if (_magicOrbitClip == null && _staticCachedAudio.TryGetValue("orbit", out var c12)) _magicOrbitClip = c12;
+            if (_ultimateSkillCastClip == null && _staticCachedAudio.TryGetValue("ultimate", out var c13)) _ultimateSkillCastClip = c13;
+            if (_elementalReactionClip == null && _staticCachedAudio.TryGetValue("reaction", out var c14)) _elementalReactionClip = c14;
+            if (_statusFreezeClip == null && _staticCachedAudio.TryGetValue("freeze", out var c15)) _statusFreezeClip = c15;
+            if (_statusBurnClip == null && _staticCachedAudio.TryGetValue("burn", out var c16)) _statusBurnClip = c16;
+            if (_bossRoarClip == null && _staticCachedAudio.TryGetValue("roar", out var c17)) _bossRoarClip = c17;
+            if (_bossSmashClip == null && _staticCachedAudio.TryGetValue("smash", out var c18)) _bossSmashClip = c18;
+        }
+#endif
 
         private void LoadAndApplyVolumeSettings()
         {
@@ -221,15 +256,22 @@ namespace Core.Audio
             PlayBGM(config.DirectClip, config.Volume, fade ? 0.75f : 0f);
         }
 
+        private Coroutine _fadeBgmRoutine;
+
         public void PlayBGM(AudioClip clip, float targetVolume = 0.4f, float fadeDuration = 0.75f)
         {
             if (clip == null || _bgmAudioSource == null) return;
             if (_bgmAudioSource.clip == clip && _bgmAudioSource.isPlaying) return;
 
-            StopAllCoroutines();
+            if (_fadeBgmRoutine != null)
+            {
+                StopCoroutine(_fadeBgmRoutine);
+                _fadeBgmRoutine = null;
+            }
+
             if (fadeDuration > 0f && _bgmAudioSource.isPlaying)
             {
-                StartCoroutine(Routine_FadeBGM(clip, targetVolume, fadeDuration));
+                _fadeBgmRoutine = StartCoroutine(Routine_FadeBGM(clip, targetVolume, fadeDuration));
             }
             else
             {
@@ -242,26 +284,44 @@ namespace Core.Audio
         private IEnumerator Routine_FadeBGM(AudioClip newClip, float targetVolume, float duration)
         {
             float startVol = _bgmAudioSource.volume;
-            float halfDuration = duration * 0.5f;
+            float halfDuration = Mathf.Max(duration * 0.5f, 0.15f);
 
             // Fade Out
-            for (float t = 0; t < halfDuration; t += Time.unscaledDeltaTime)
+            float elapsed = 0f;
+            while (elapsed < halfDuration)
             {
-                _bgmAudioSource.volume = Mathf.Lerp(startVol, 0f, t / halfDuration);
+                elapsed += Mathf.Min(Time.unscaledDeltaTime, 0.033f);
+                _bgmAudioSource.volume = Mathf.Lerp(startVol, 0f, elapsed / halfDuration);
                 yield return null;
             }
 
             _bgmAudioSource.Stop();
+            _bgmAudioSource.volume = 0f;
+            yield return null; // Nhường 1 frame trước khi gán clip mới để tránh nghẽn CPU
+
+            // Đảm bảo AudioClip được nạp vào bộ nhớ trước khi phát
+            if (newClip.loadState == AudioDataLoadState.Unloaded)
+            {
+                newClip.LoadAudioData();
+                while (newClip.loadState == AudioDataLoadState.Loading)
+                {
+                    yield return null;
+                }
+            }
+
             _bgmAudioSource.clip = newClip;
             _bgmAudioSource.Play();
 
             // Fade In
-            for (float t = 0; t < halfDuration; t += Time.unscaledDeltaTime)
+            elapsed = 0f;
+            while (elapsed < halfDuration)
             {
-                _bgmAudioSource.volume = Mathf.Lerp(0f, targetVolume, t / halfDuration);
+                elapsed += Mathf.Min(Time.unscaledDeltaTime, 0.033f);
+                _bgmAudioSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / halfDuration);
                 yield return null;
             }
             _bgmAudioSource.volume = targetVolume;
+            _fadeBgmRoutine = null;
         }
 
         /// <summary>

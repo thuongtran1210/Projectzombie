@@ -116,9 +116,16 @@ namespace ProjectZombie.Features.UI
                     }
                     await System.Threading.Tasks.Task.Yield();
 
-                    // 3. (80%) Nạp sẵn Database Thẻ Nâng Cấp & VFX
+                    // 3. (80%) Nạp sẵn Database Thẻ Nâng Cấp, VFX & Nhạc Trận Đấu
                     reportProgress?.Invoke(0.8f, "Đang ngưng tụ linh khí ngũ hành...");
                     Upgrades.UpgradeManager.Instance?.AutoPopulateUpgradesIfEmpty();
+                    
+                    // Phát trước BGM Trận Đấu ngầm trong Loading Screen để tránh LoadFMODSound lúc vào trận
+                    var phaseAudio = FindObjectOfType<global::Core.Audio.PhaseAudioController>();
+                    if (phaseAudio != null)
+                    {
+                        phaseAudio.ForceInitialPhaseAudio();
+                    }
                     await System.Threading.Tasks.Task.Yield();
 
                     // 4. (100%) Chuyển trạng thái Game sang Playing

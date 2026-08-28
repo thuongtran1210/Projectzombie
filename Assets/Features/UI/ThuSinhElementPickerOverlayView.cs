@@ -34,25 +34,35 @@ namespace ProjectZombie.Features.UI
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
 
-            if (_btnKim != null) _btnKim.onClick.AddListener(() => SelectElement(ElementType.Kim));
-            if (_btnMoc != null) _btnMoc.onClick.AddListener(() => SelectElement(ElementType.Moc));
-            if (_btnThuy != null) _btnThuy.onClick.AddListener(() => SelectElement(ElementType.Thuy));
-            if (_btnHoa != null) _btnHoa.onClick.AddListener(() => SelectElement(ElementType.Hoa));
-            if (_btnTho != null) _btnTho.onClick.AddListener(() => SelectElement(ElementType.Tho));
+            if (_btnKim != null) _btnKim.onClick.AddListener(OnPickKim);
+            if (_btnMoc != null) _btnMoc.onClick.AddListener(OnPickMoc);
+            if (_btnThuy != null) _btnThuy.onClick.AddListener(OnPickThuy);
+            if (_btnHoa != null) _btnHoa.onClick.AddListener(OnPickHoa);
+            if (_btnTho != null) _btnTho.onClick.AddListener(OnPickTho);
 
+            _isShowing = false;
+            enabled = false;
             gameObject.SetActive(false);
         }
+
+        private void OnPickKim() => SelectElement(ElementType.Kim);
+        private void OnPickMoc() => SelectElement(ElementType.Moc);
+        private void OnPickThuy() => SelectElement(ElementType.Thuy);
+        private void OnPickHoa() => SelectElement(ElementType.Hoa);
+        private void OnPickTho() => SelectElement(ElementType.Tho);
 
         public void ShowOverlay()
         {
             _timeRemaining = SELECTION_WINDOW_SECONDS;
             _isShowing = true;
+            enabled = true;
             gameObject.SetActive(true);
         }
 
         public void HideOverlay()
         {
             _isShowing = false;
+            enabled = false;
             gameObject.SetActive(false);
         }
 

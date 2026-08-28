@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Spawners
 {
@@ -78,13 +79,17 @@ namespace ProjectZombie.Features.Spawners
 
         private void Start()
         {
-            _wavePreloader = GetComponent<WavePreloader>();
+            // Để trống hoàn toàn Start() để không chiếm bất kỳ ms CPU / GC Alloc nào ở Frame khởi động đầu tiên.
+            // Tilemap và Preloader sẽ được nạp Lazy khi thực sự bắt đầu trận đấu (StartMatchAsync).
+        }
+
+        private void EnsureDependencies()
+        {
             if (_wavePreloader == null)
             {
-                _wavePreloader = gameObject.AddComponent<WavePreloader>();
+                _wavePreloader = GetComponent<WavePreloader>() ?? gameObject.AddComponent<WavePreloader>();
             }
 
-            // Tự động tìm kiếm Tilemap_Ground nếu chưa được gán thủ công
             if (autoFindGroundTilemap && groundTilemap == null && walkableAreaCollider == null)
             {
                 var groundObj = GameObject.Find("Tilemap_Ground");
@@ -97,24 +102,11 @@ namespace ProjectZombie.Features.Spawners
                     groundTilemap = FindObjectOfType<Tilemap>();
                 }
             }
-
-            // Trì hoãn việc khởi động Match sang Frame tiếp theo để tránh dồn gánh nặng vào Frame 1
-            StartCoroutine(RoutineStartMatchDelayed());
-        }
-
-        private IEnumerator RoutineStartMatchDelayed()
-        {
-            yield return null; // Nhường 1 frame cho Scene và UI khởi tạo xong
-
-            if (Player.PlayerProvider.HasPlayer)
-            {
-                _playerTransform = Player.PlayerProvider.PlayerTransform;
-                _ = StartMatchAsync();
-            }
         }
 
         public async System.Threading.Tasks.Task StartMatchAsync()
         {
+            EnsureDependencies();
             matchTime = 0f;
             _nextEventIndex = 0;
             _activeContinuousEvents.Clear();
