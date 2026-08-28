@@ -204,6 +204,12 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void OpenMenu()
         {
+            // Tuyệt đối không cho phép mở Pause Menu khi đang chọn nâng cấp Level Up
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+            {
+                return;
+            }
+
             if (_statsMenuView == null)
             {
                 _statsMenuView = GetComponent<PlayerStatsMenuUIView>();

@@ -60,6 +60,8 @@ namespace ProjectZombie.Features.Weapons
         /// </summary>
         protected void DealDamageInArea(Vector2 center, Vector2 boxSize, float angle, DamageData damageData, float knockbackForce = 4.0f)
         {
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+
             int mask = TargetingUtility.EnemyLayerMask;
             int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer, mask);
             int hitCount = 0;

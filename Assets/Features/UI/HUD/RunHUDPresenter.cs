@@ -116,6 +116,12 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnPauseClicked()
         {
+            // Tuyệt đối không mở Pause Menu khi người chơi đang chọn thẻ nâng cấp Level Up
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+            {
+                return;
+            }
+
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var presenter = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>(true);
             if (presenter != null)
@@ -222,6 +228,9 @@ namespace ProjectZombie.Features.UI.HUD
             // Chỉ hiển thị HUD khi đang chơi, tạm dừng hoặc đang chọn nâng cấp
             bool shouldShow = (newState == GameState.Playing || newState == GameState.Paused || newState == GameState.LevelUpSelection);
             _view.gameObject.SetActive(shouldShow);
+
+            // Khóa nút Pause khi bảng chọn thẻ nâng cấp Level Up đang hiển thị
+            _view.SetPauseButtonInteractable(newState != GameState.LevelUpSelection);
         }
 
         // ====================================================================

@@ -225,5 +225,13 @@ namespace ProjectZombie.Features.UI.HUD
                 _pauseButton.onClick.AddListener(() => _onPauseClicked?.Invoke());
             }
         }
+
+        public void SetPauseButtonInteractable(bool isInteractable)
+        {
+            if (_pauseButton != null)
+            {
+                _pauseButton.interactable = isInteractable;
+            }
+        }
     }
 }

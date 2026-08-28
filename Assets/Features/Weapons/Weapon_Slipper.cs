@@ -35,6 +35,7 @@ namespace ProjectZombie.Features.Weapons
             // Tự động tìm kẻ địch gần nhất và ném dép Boomerang
             Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 6.0f);
             Vector2 dir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
             StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
         }
 

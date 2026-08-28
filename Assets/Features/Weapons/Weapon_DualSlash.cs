@@ -76,6 +76,9 @@ namespace ProjectZombie.Features.Weapons
                 _playerController.NotifyAttackStarted(step);
             }
 
+            // Phát âm thanh vung kiếm chém gió
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+
             // Xác định góc gốc dựa trên hướng mặt của Player
             float baseAngle = 0f;
             if (_playerController != null && _playerController.FacingDirection < 0)

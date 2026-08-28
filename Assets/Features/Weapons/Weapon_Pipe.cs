@@ -47,6 +47,8 @@ namespace ProjectZombie.Features.Weapons
                 ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), smokeDuration);
             }
 
+            global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(spawnPos);
+
             StartCoroutine(RoutineSmokeCloud(spawnPos));
         }
 

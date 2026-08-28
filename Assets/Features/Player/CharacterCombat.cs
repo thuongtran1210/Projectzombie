@@ -280,6 +280,9 @@ namespace ProjectZombie.Features.Player
                 ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle), life);
             }
 
+            // Phát âm thanh vung chém sắc bén khi xuất chiêu đánh thường
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+
             // 2. Lực dấn người tới trước (Attack Lunge Impulse)
             ApplyAttackLunge(comboStep, direction);
 
@@ -344,6 +347,10 @@ namespace ProjectZombie.Features.Player
             // 5. Game Feel theo bậc thang Combo (HitStop + CameraShake)
             if (hitAnyEnemy)
             {
+                if (isCrit)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlaySlash(true, center);
+                }
                 TriggerDynamicGameJuice(comboStep, isCrit);
             }
         }
@@ -453,6 +460,8 @@ namespace ProjectZombie.Features.Player
             int count = Mathf.Max(1, attackConfig.projectileCount);
             float spread = attackConfig.spreadAngle;
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
+
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(spawnPos);
 
             for (int i = 0; i < count; i++)
             {

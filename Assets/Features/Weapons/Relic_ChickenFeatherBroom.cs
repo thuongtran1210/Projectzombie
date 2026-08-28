@@ -41,6 +41,9 @@ namespace ProjectZombie.Features.Weapons
             // Sinh VFX từ Object Pool tự thu hồi
             SpawnRelicVFX(targetPos, Quaternion.identity);
 
+            // Âm thanh vung đập chổi lông gà
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, targetPos);
+
             int mask = TargetingUtility.EnemyLayerMask;
             int numHits = Physics2D.OverlapCircleNonAlloc(targetPos, smashRadius, _smashHitBuffer, mask);
 
