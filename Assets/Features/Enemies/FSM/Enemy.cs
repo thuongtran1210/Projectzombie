@@ -255,11 +255,13 @@ namespace ProjectZombie.Features.Enemies
 
         private void Update()
         {
+            if (!GameStateManager.IsPlaying) return;
             StateMachine.CurrentState?.Update();
         }
 
         private void FixedUpdate()
         {
+            if (!GameStateManager.IsPlaying) return;
             StateMachine.CurrentState?.FixedUpdate();
         }
 

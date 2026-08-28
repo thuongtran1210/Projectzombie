@@ -364,11 +364,8 @@ namespace ProjectZombie.Features.Weapons
 
         private void Update()
         {
-            // Nếu đang ở MainMenu (Sảnh Chờ / Chọn Tướng), tạm dừng auto-tick vũ khí để nhân vật ở sảnh đứng yên tạo dáng sạch sẽ
-            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.MainMenu)
-            {
-                return;
-            }
+            // Chỉ tick vũ khí/pháp bảo khi trận đấu đang thực sự diễn ra (không Pause, không LevelUp, không MainMenu)
+            if (!GameStateManager.IsPlaying) return;
 
             // Cho phép tất cả vũ khí hoạt động (Duyệt ngược và lọc bỏ các vũ khí đã bị Destroy)
             for (int i = _activeWeapons.Count - 1; i >= 0; i--)

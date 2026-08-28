@@ -154,6 +154,8 @@ namespace ProjectZombie.Features.Player
 
         private void Update()
         {
+            if (!GameStateManager.IsPlaying) return;
+
             UpdateAimIndicator();
 
             // Fallback bấm chuột trái hoặc phím J/K/Z/Ctrl để tấn công khi chơi trên PC / Editor

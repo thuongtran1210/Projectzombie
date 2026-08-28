@@ -61,6 +61,7 @@ namespace ProjectZombie.Features.Enemies.Boss
         private void Update()
         {
             if (_healthSystem == null) return;
+            if (!GameStateManager.IsPlaying) return;
 
             if (_healthSystem.CurrentHealth <= 0)
             {

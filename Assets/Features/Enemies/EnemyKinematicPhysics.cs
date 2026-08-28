@@ -85,6 +85,8 @@ namespace ProjectZombie.Features.Enemies
 
         private void Update()
         {
+            if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
+
             float dt = Time.deltaTime;
 
             // 1. Cập nhật Knockback

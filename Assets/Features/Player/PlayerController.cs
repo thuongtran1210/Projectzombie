@@ -111,6 +111,8 @@ namespace ProjectZombie.Features.Player
 
         private void Update()
         {
+            if (!Shared.GameStateManager.IsPlaying) return;
+
             if (_isDashing)
             {
                 if (Time.time >= _dashEndTime)

@@ -14,6 +14,12 @@ namespace ProjectZombie.Features.Shared
         public GameState CurrentState { get; private set; } = GameState.MainMenu; // Mặc định là MainMenu khi mở game (Hướng A)
 
         /// <summary>
+        /// Single Source of Truth kiểm tra xem trò chơi có đang trong trạng thái chiến đấu hoạt động hay không.
+        /// Trả về false khi đang Pause, LevelUp Modal, GameOver hoặc ở MainMenu.
+        /// </summary>
+        public static bool IsPlaying => (Instance != null && Instance.CurrentState == GameState.Playing) && Time.timeScale > 0f;
+
+        /// <summary>
         /// Kích hoạt khi trạng thái trò chơi thay đổi.
         /// </summary>
         public event Action<GameState> OnStateChanged;
