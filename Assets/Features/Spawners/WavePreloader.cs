@@ -29,8 +29,16 @@ namespace ProjectZombie.Features.Spawners
             // Dùng HashSet để tránh load lặp lại nếu nhiều event dùng chung 1 loại quái
             var processedKeys = new HashSet<string>();
 
+            // Chỉ nạp trước các quái xuất hiện trong 60 giây đầu (Staged/Lazy Preload) để triệt tiêu tải CPU/VRAM lúc start trận
+            const float INITIAL_PRELOAD_WINDOW = 60f;
+
             foreach (var evt in timelineConfig.events)
             {
+                if (evt.timestampSeconds > INITIAL_PRELOAD_WINDOW && evt.eventType != TimelineEventType.BurstWave)
+                {
+                    continue; // Bỏ qua quái xuất hiện ở các wave sau (sẽ nạp ngầm khi cần)
+                }
+
                 string poolKey = evt.GetPoolKey();
                 if (string.IsNullOrEmpty(poolKey) || processedKeys.Contains(poolKey)) continue;
 
@@ -47,7 +55,6 @@ namespace ProjectZombie.Features.Spawners
                     }
                     else
                     {
-                        Debug.LogWarning($"[{nameof(WavePreloader)}] _assetProvider chưa được tiêm (null). Thử nghiệm nạp Addressables trực tiếp.");
                         var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(evt.enemyAddress);
                         await handle.Task;
                         if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
@@ -65,7 +72,7 @@ namespace ProjectZombie.Features.Spawners
                 // 3. Đưa Prefab vào EnemyPoolManager
                 if (enemyPrefab != null && EnemyPoolManager.Instance != null)
                 {
-                    int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? Mathf.Max(evt.spawnCount, 40) : 30;
+                    int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? Mathf.Min(evt.spawnCount, 25) : 15;
                     EnemyPoolManager.Instance.PrewarmPool(enemyPrefab, preloadAmount, poolKey);
 
                     if (!string.IsNullOrEmpty(evt.enemyAddress) && !_loadedAddresses.Contains(evt.enemyAddress))

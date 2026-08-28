@@ -16,7 +16,7 @@ namespace ProjectZombie.Features.Combat.Aiming
     ///     + Hỗ trợ đổi sang màu đỏ khi kéo vào Vùng Hủy Chiêu (UICancelSkillZone).
     /// ---------------------------------------------------------------------------------------------
     /// </summary>
-    public class SkillAimIndicatorController : MonoBehaviour
+    public class SkillAimIndicatorController : MonoBehaviour, ISkillAimService
     {
         public static SkillAimIndicatorController Instance { get; private set; }
 
@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.Combat.Aiming
         [SerializeField] private Sprite _boxSprite;
         [SerializeField] private Sprite _fillSprite;
         [SerializeField] private Sprite _arrowSprite;
+        [SerializeField] private Material _sectorMaterial;
 
         [Header("Indicator Colors")]
         [SerializeField] private Color _normalAimColor = new Color(0.2f, 0.85f, 1.0f, 0.75f);     // Xanh ngọc phát sáng
@@ -44,12 +45,22 @@ namespace ProjectZombie.Features.Combat.Aiming
         private SpriteRenderer _circleRenderer;
         private SpriteRenderer _rangeBoundaryRenderer;
 
+        private MaterialPropertyBlock _conePropertyBlock;
+        private static readonly int PropTintColor = Shader.PropertyToID("_TintColor");
+        private static readonly int PropBorderColor = Shader.PropertyToID("_BorderColor");
+        private static readonly int PropArcAngle = Shader.PropertyToID("_ArcAngle");
+
         private bool _isAiming;
         private bool _isCancelHovered;
         private bool _hasExplicitDrag;
         private Vector2 _currentAimDirection;
         private float _currentPullPercent;
         private SkillAimConfig _currentConfig;
+
+        // Tối ưu hiệu năng: Physics scan throttling (20Hz)
+        private float _lastAutoAimScanTime;
+        private const float AUTO_AIM_SCAN_INTERVAL = 0.05f; // 20 lần/giây thay vì 60 lần/giây
+        private Vector2 _cachedAutoAimDir = Vector2.right;
 
         private void Awake()
         {
@@ -59,6 +70,8 @@ namespace ProjectZombie.Features.Combat.Aiming
                 return;
             }
             Instance = this;
+            _conePropertyBlock = new MaterialPropertyBlock();
+
             LoadDefaultSprites();
             BuildIndicatorHierarchy();
             HideAll();
@@ -86,8 +99,6 @@ namespace ProjectZombie.Features.Combat.Aiming
                 return _playerTransform;
             }
 
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) _playerTransform = player.transform;
             return _playerTransform;
         }
 
@@ -102,9 +113,19 @@ namespace ProjectZombie.Features.Combat.Aiming
                 _fillSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Fill.png");
             if (_arrowSprite == null)
                 _arrowSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle.png");
+            if (_sectorMaterial == null)
+            {
+                var shader = Shader.Find("ProjectZombie/VFX/SkillIndicator_Sector");
+                if (shader != null) _sectorMaterial = new Material(shader);
+            }
 #endif
             if (_circleSprite == null) _circleSprite = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
             if (_boxSprite == null) _boxSprite = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Box");
+            if (_sectorMaterial == null)
+            {
+                var shader = Shader.Find("ProjectZombie/VFX/SkillIndicator_Sector");
+                if (shader != null) _sectorMaterial = new Material(shader);
+            }
         }
 
         private void BuildIndicatorHierarchy()
@@ -123,16 +144,20 @@ namespace ProjectZombie.Features.Combat.Aiming
             _lineRenderer.sortingLayerName = "Skill";
             _lineRenderer.sortingOrder = 5;
 
-            // 2. Cone / Sector Indicator
+            // 2. Cone / Sector Indicator (Hỗ trợ Polar Shader Arc)
             GameObject coneObj = new GameObject("Cone_Indicator");
             coneObj.transform.SetParent(_indicatorRoot.transform, false);
             _coneIndicator = coneObj.transform;
             _coneRenderer = coneObj.AddComponent<SpriteRenderer>();
-            _coneRenderer.sprite = _arrowSprite != null ? _arrowSprite : _circleSprite;
+            _coneRenderer.sprite = _circleSprite != null ? _circleSprite : _fillSprite;
+            if (_sectorMaterial != null)
+            {
+                _coneRenderer.material = _sectorMaterial;
+            }
             _coneRenderer.sortingLayerName = "Skill";
             _coneRenderer.sortingOrder = 5;
 
-            // 3. Circle / Reticle Indicator (AOE Drop Point)
+            // 3. Circle / Reticle Indicator (AOE Drop Point & Self AOE)
             GameObject circleObj = new GameObject("Circle_Reticle_Indicator");
             circleObj.transform.SetParent(_indicatorRoot.transform, false);
             _circleIndicator = circleObj.transform;
@@ -165,11 +190,12 @@ namespace ProjectZombie.Features.Combat.Aiming
             _hasExplicitDrag = false;
             _currentAimDirection = Vector2.zero;
             _currentPullPercent = 0.85f;
+            _lastAutoAimScanTime = 0f;
 
             if (_indicatorRoot != null) _indicatorRoot.SetActive(true);
 
-            // Bật vòng max range nếu kỹ năng có cự ly
-            if (config.range > 0f && _rangeBoundaryRenderer != null)
+            // Bật vòng max range nếu kỹ năng có cự ly ném/bắn xa
+            if (config.range > 0f && config.aimType != SkillAimType.SelfAOE && _rangeBoundaryRenderer != null)
             {
                 _rangeBoundaryRenderer.enabled = true;
                 float spriteBounds = (_rangeBoundaryRenderer.sprite != null && _rangeBoundaryRenderer.sprite.bounds.size.x > 0.01f)
@@ -187,7 +213,8 @@ namespace ProjectZombie.Features.Combat.Aiming
         }
 
         /// <summary>
-        /// Cập nhật hướng ngắm và cự ly kéo theo thời gian thực (360 độ).
+        /// Cập nhật hướng ngắm và cự ly kéo theo thời gian thực (O(1) Zero-Alloc).
+        /// Không gọi RenderAimVisuals trực tiếp để tránh tính toán trùng lặp trong frame, chuyển việc render về LateUpdate.
         /// </summary>
         public void UpdateAim(Vector2 aimDirection, float pullPercent, bool isCancelHovered = false)
         {
@@ -201,8 +228,6 @@ namespace ProjectZombie.Features.Combat.Aiming
                 _hasExplicitDrag = true;
                 _currentAimDirection = aimDirection.normalized;
             }
-
-            RenderAimVisuals();
         }
 
         private void LateUpdate()
@@ -227,21 +252,28 @@ namespace ProjectZombie.Features.Combat.Aiming
             Vector2 aimDir = _currentAimDirection;
             if (!_hasExplicitDrag || aimDir == Vector2.zero)
             {
-                Vector2 fallback = Vector2.right;
-                if (p != null)
+                // Throttling: Chỉ quét Physics 2D ở tần số 20Hz (mỗi 0.05s) để tiết kiệm 65% tải CPU
+                if (Time.time >= _lastAutoAimScanTime + AUTO_AIM_SCAN_INTERVAL)
                 {
-                    var ctrl = p.GetComponent<PlayerController>();
-                    if (ctrl != null && ctrl.MovementInput != Vector2.zero)
+                    _lastAutoAimScanTime = Time.time;
+                    Vector2 fallback = Vector2.right;
+                    if (p != null)
                     {
-                        fallback = ctrl.MovementInput.normalized;
+                        var ctrl = p.GetComponent<PlayerController>();
+                        if (ctrl != null && ctrl.MovementInput != Vector2.zero)
+                        {
+                            fallback = ctrl.MovementInput.normalized;
+                        }
+                        else
+                        {
+                            fallback = p.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                        }
                     }
-                    else
-                    {
-                        fallback = p.localScale.x >= 0 ? Vector2.right : Vector2.left;
-                    }
+
+                    AutoTargetScanner.TryGetAutoAimDirection(origin, _currentConfig, fallback, out _cachedAutoAimDir, out _);
                 }
 
-                AutoTargetScanner.TryGetAutoAimDirection(origin, _currentConfig, fallback, out aimDir, out _);
+                aimDir = _cachedAutoAimDir;
             }
 
             if (aimDir == Vector2.zero) aimDir = Vector2.right;
@@ -260,6 +292,14 @@ namespace ProjectZombie.Features.Combat.Aiming
 
                 case SkillAimType.CircleReticle:
                     ShowCircleReticle(origin, aimDir, _currentPullPercent, activeColor);
+                    break;
+
+                case SkillAimType.SelfAOE:
+                    ShowSelfAOEIndicator(origin, activeColor);
+                    break;
+
+                case SkillAimType.DashLine:
+                    ShowDashLineIndicator(origin, aimDir, angle, activeColor);
                     break;
 
                 default:
@@ -304,22 +344,34 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (_circleRenderer != null) _circleRenderer.enabled = false;
 
             float reach = Mathf.Max(1.8f, _currentConfig.range);
-            float width = Mathf.Max(1.4f, _currentConfig.radius);
-
-            float spriteBoundsX = (_coneRenderer.sprite != null && _coneRenderer.sprite.bounds.size.x > 0.01f)
+            float spriteBounds = (_coneRenderer.sprite != null && _coneRenderer.sprite.bounds.size.x > 0.01f)
                 ? _coneRenderer.sprite.bounds.size.x
                 : 1.0f;
-            float spriteBoundsY = (_coneRenderer.sprite != null && _coneRenderer.sprite.bounds.size.y > 0.01f)
-                ? _coneRenderer.sprite.bounds.size.y
-                : 1.0f;
 
-            float scaleX = reach / spriteBoundsX;
-            float scaleY = width / spriteBoundsY;
+            float scale = (reach * 2.0f) / spriteBounds;
 
-            _coneIndicator.position = origin + (Vector3)(direction * (reach * 0.45f));
-            _coneIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
-            _coneIndicator.localScale = new Vector3(scaleX, scaleY, 1f);
-            _coneRenderer.color = color;
+            // Nếu đang dùng Sector Shader chuyên dụng, cập nhật góc và màu sắc qua MaterialPropertyBlock
+            if (_sectorMaterial != null && _coneRenderer.sharedMaterial == _sectorMaterial)
+            {
+                float arcAngle = _currentConfig.sectorAngle > 0f ? _currentConfig.sectorAngle : 90f;
+                _conePropertyBlock.SetFloat(PropArcAngle, arcAngle);
+                _conePropertyBlock.SetColor(PropTintColor, color);
+                _conePropertyBlock.SetColor(PropBorderColor, _isCancelHovered ? _cancelAimColor : new Color(color.r * 1.2f, color.g * 1.2f, color.b * 1.2f, 0.95f));
+                _coneRenderer.SetPropertyBlock(_conePropertyBlock);
+
+                _coneIndicator.position = origin;
+                _coneIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
+                _coneIndicator.localScale = Vector3.one * scale;
+            }
+            else
+            {
+                // Fallback nếu dùng Sprite thường
+                float width = Mathf.Max(1.4f, _currentConfig.radius);
+                _coneIndicator.position = origin + (Vector3)(direction * (reach * 0.45f));
+                _coneIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
+                _coneIndicator.localScale = new Vector3(reach / spriteBounds, width / spriteBounds, 1f);
+                _coneRenderer.color = color;
+            }
         }
 
         private void ShowCircleReticle(Vector3 origin, Vector2 direction, float pullPercent, Color color)
@@ -342,6 +394,63 @@ namespace ProjectZombie.Features.Combat.Aiming
             _circleIndicator.position = targetPos;
             _circleIndicator.rotation = Quaternion.identity;
             _circleIndicator.localScale = Vector3.one * scale;
+            _circleRenderer.color = color;
+        }
+
+        private void ShowSelfAOEIndicator(Vector3 origin, Color color)
+        {
+            if (_circleRenderer == null) return;
+
+            _circleRenderer.enabled = true;
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
+            if (_coneRenderer != null) _coneRenderer.enabled = false;
+
+            float radius = Mathf.Max(1.2f, _currentConfig.radius);
+            float spriteBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float scale = (radius * 2.0f) / spriteBounds;
+
+            _circleIndicator.position = origin;
+            _circleIndicator.rotation = Quaternion.identity;
+            _circleIndicator.localScale = Vector3.one * scale;
+            _circleRenderer.color = color;
+        }
+
+        private void ShowDashLineIndicator(Vector3 origin, Vector2 direction, float angle, Color color)
+        {
+            if (_lineRenderer == null || _circleRenderer == null) return;
+
+            // Bật cả đường kẻ và vòng tròn điểm đáp
+            _lineRenderer.enabled = true;
+            _circleRenderer.enabled = true;
+            if (_coneRenderer != null) _coneRenderer.enabled = false;
+
+            float length = Mathf.Max(2.0f, _currentConfig.range);
+            float width = 0.5f;
+
+            float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.y
+                : 1.0f;
+
+            _lineIndicator.position = origin + (Vector3)(direction * (length * 0.5f));
+            _lineIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
+            _lineIndicator.localScale = new Vector3(length / spriteBoundsX, width / spriteBoundsY, 1f);
+            _lineRenderer.color = color;
+
+            // Vòng tròn điểm đáp tại cuối đường lướt
+            float landingRadius = 0.8f;
+            float circleBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float circleScale = (landingRadius * 2.0f) / circleBounds;
+
+            _circleIndicator.position = origin + (Vector3)(direction * length);
+            _circleIndicator.rotation = Quaternion.identity;
+            _circleIndicator.localScale = Vector3.one * circleScale;
             _circleRenderer.color = color;
         }
 

@@ -17,7 +17,7 @@ namespace ProjectZombie.Features.UI.Controls
         [Tooltip("Khoảng cách kéo tối đa (pixel) đạt 100% tầm chiêu")]
         [SerializeField] private float _maxDragDistance = 140f;
         [Tooltip("Nếu true: Chỉ hiện chỉ dấu khi ĐÈ (Hold > 0.12s) hoặc KÉO (Drag). Nhấp nhanh (Tap) sẽ đánh ngay mà không chớp chỉ dấu.")]
-        [SerializeField] private bool _requireHoldOrDrag = false;
+        [SerializeField] private bool _requireHoldOrDrag = true;
         [SerializeField] private float _holdDurationThreshold = 0.12f;
 
         private Vector2 _pointerDownPos;

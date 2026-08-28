@@ -86,8 +86,10 @@ namespace ProjectZombie.Features.Spawners
             var pool = GetOrCreatePool(prefab, addressKey);
             if (pool == null) return;
             
-            var tempObjects = new List<GameObject>(count);
-            for (int i = 0; i < count; i++)
+            // Giảm số lượng prewarm đồng bộ tối thiểu (ví dụ 6 con) để không làm đơ Game Loop
+            int immediateCount = Mathf.Min(count, 6);
+            var tempObjects = new List<GameObject>(immediateCount);
+            for (int i = 0; i < immediateCount; i++)
             {
                 GameObject obj = null;
                 try { obj = pool.Get(); } catch { }
@@ -96,6 +98,35 @@ namespace ProjectZombie.Features.Spawners
             foreach (var obj in tempObjects)
             {
                 if (obj != null) pool.Release(obj);
+            }
+
+            // Số lượng còn lại phân bổ qua Coroutine để giữ vững 60 FPS
+            int remaining = count - immediateCount;
+            if (remaining > 0 && gameObject.activeInHierarchy)
+            {
+                StartCoroutine(RoutinePrewarmSlice(pool, remaining));
+            }
+        }
+
+        private System.Collections.IEnumerator RoutinePrewarmSlice(UnityEngine.Pool.ObjectPool<GameObject> pool, int remainingCount, int itemsPerFrame = 3)
+        {
+            var tempObjects = new List<GameObject>(itemsPerFrame);
+            while (remainingCount > 0)
+            {
+                yield return null; // Chờ sang frame tiếp theo
+                int batch = Mathf.Min(remainingCount, itemsPerFrame);
+                tempObjects.Clear();
+                for (int i = 0; i < batch; i++)
+                {
+                    GameObject obj = null;
+                    try { obj = pool.Get(); } catch { }
+                    if (obj != null) tempObjects.Add(obj);
+                }
+                foreach (var obj in tempObjects)
+                {
+                    if (obj != null) pool.Release(obj);
+                }
+                remainingCount -= batch;
             }
         }
 

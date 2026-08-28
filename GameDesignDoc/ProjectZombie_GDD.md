@@ -90,6 +90,25 @@
   * Nếu người chơi **đang kéo Joystick:** Nhân vật chém/bắn theo hướng Joystick chỉ định.
   * Nếu người chơi **thả Joystick:** Hệ thống tự động quét mục tiêu trong góc hình nón $90^\circ$ và bán kính $5m$ phía trước mặt $\rightarrow$ Tự động xoay người chém chính xác vào yêu ma gần nhất, loại bỏ hoàn toàn hiện tượng chém hụt vào không khí.
 
+### 3.3. Hệ Thống Chỉ Dấu Kỹ Năng & Đòn Đánh 2.5D (Telegraph & Aim Indicator System)
+Hệ thống chỉ dấu được phân tách rõ ràng theo chuẩn MOBA (Liên Quân / Wild Rift) gồm 2 tầng hoạt động độc lập:
+
+1. **Chỉ Dấu Định Hướng Bị Động Dưới Chân (`CombatAimIndicator`):**
+   * Hiển thị liên tục (Passive) một mũi tên/vòng cung nhỏ sát dưới chân nhân vật ($0.4m$).
+   * Tự động xoay theo hướng di chuyển của Joystick hoặc hướng quay mặt của Tướng.
+   * Tự động chuyển màu bản sắc theo Ngũ hành của Tướng (Đạo Sĩ: Xanh Ngọc, Thư Sinh: Vàng Kim, Thanh Đồng: Đỏ Cam, Ẩn Sĩ: Hổ Phách).
+
+2. **Chỉ Dấu Kỹ Năng & Đòn Đánh Chủ Động (`SkillAimIndicatorController` / `ISkillAimService`):**
+   * **Kích hoạt thông minh (Smart Touch Filter):** Thiết lập `_requireHoldOrDrag = true` để **Khử chớp nháy (No Flicker)**. Khi nhấp nhanh (Quick Tap < 0.12s), đòn đánh/chiêu thức được kích hoạt ngay lập tức qua Auto-Aim mà không bật chỉ dấu; Chỉ dấu chỉ xuất hiện khi người chơi **ĐÈ (Hold > 0.12s)** hoặc **KÉO (Drag > 25px)** để căn chỉnh cự ly/góc chém.
+   * **Công nghệ đồ họa URP:** 
+     * `ConeSector`: Sử dụng Shader chuyên dụng `SH_URP_SkillIndicator_Sector` tính toán Tọa độ cực (Polar Coordinates) trên GPU để hiển thị góc quạt quét từ $30^\circ$ đến $270^\circ$ với viền phát sáng (Glow Border) và làm mịn cạnh (Anti-Aliasing Feather).
+     * `LineArrow`: Dải định hướng tầm xa (Nỏ thần, Cung Thạch Sanh).
+     * `CircleReticle`: Vòng tròn tâm rơi AOE tự do theo cự ly kéo (Nước thánh, Lựu đạn thần sa).
+     * `SelfAOE`: Hào quang kích hoạt quanh thân nhân vật (Khiên hộ thể, Trống Đồng).
+     * `DashLine`: Chỉ báo hướng lướt né đòn và hiển thị điểm đáp nhân vật.
+   * **Vùng Hủy Chiêu (Cancel Zone) & Rung Xúc Giác (Haptic Feedback):** Khi kéo ngón tay vào biểu tượng Hủy chiêu ở góc trên, thiết bị lập tức **rung nhẹ (Haptic Vibration)** phản hồi xúc giác, toàn bộ chỉ dấu chuyển sang màu đỏ rực cảnh báo và triệt tiêu lệnh tung chiêu khi nhấc tay.
+   * **Tối ưu hiệu năng:** Ứng dụng `MaterialPropertyBlock` cập nhật góc quét và màu sắc thời gian thực với Zero Memory Allocation (GC Alloc = 0).
+
 ---
 
 ## 4. Hệ Thống Đòn Đánh Nhân Vật & 1 Pháp Bảo Hộ Thân (Combat & Relic Architecture)

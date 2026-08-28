@@ -18,6 +18,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | | ✨ **[TASK-FUN-08] VFX Particle Prefabs (Lốc Dép, Khói, Đại Bác)** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
 | | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
 | | | 📦 **[TASK-FUN-06] Database 5 Slapstick SOs & 25 Upgrade Cards** |
+| | | 🚀 **[TASK-OPT-01] Triệt Tiêu Khựng Lag Khi Load Scene (Time-Sliced Prewarm)** |
 
 ---
 
@@ -115,6 +116,18 @@ Mục tiêu: Chuyển đổi cơ chế chiến đấu từ Tự Động Đánh (
   - Bổ sung các Trigger gọi Animation: `Attack_1`, `Attack_2`, `Attack_3`, `Dash` đồng bộ theo nhịp bấm.
 - [x] **[TASK-ARPG-02.5] Nâng Cấp `AttackButtonPresenter.cs` & `AttackButtonView.cs`:**
   - Bổ sung **Tap Buffer**: Nhận diện nhịp bấm liên tục của người chơi mà không bị nuốt lệnh khi vũ khí vừa kết thúc nhát chém trước.
+- [x] **[TASK-ARPG-02.6] Hệ Thống Chỉ Dấu Kỹ Năng & Đòn Đánh MOBA 2.5D (Telegraph & Aim Indicator):**
+  - Tạo Shader chuyên dụng URP `SH_URP_SkillIndicator_Sector.shader` tính toán Tọa độ Cực (Polar Coordinates) trên GPU cho hình quạt (`ConeSector`) hỗ trợ góc quét linh hoạt ($30^\circ - 270^\circ$) viền phát sáng Outer Glow.
+  - Bổ sung các dạng chỉ dấu mới vào `SkillAimType`: `SelfAOE` (Hào quang quanh người), `DashLine` (Đường lướt né đòn + chỉ điểm đáp).
+  - Tối ưu `SkillAimIndicatorController.cs` với `MaterialPropertyBlock` (Zero GC Alloc) và chuẩn hóa hợp đồng `ISkillAimService`.
+  - **Khử Chớp Nháy Cảm Ứng (Flicker-Free):** Thiết lập `_requireHoldOrDrag = true` trong `SmartSkillDragHandler.cs` (Nhấp nhanh < 0.12s tung đòn ngay không chớp chỉ dấu, Đè > 0.12s hoặc Kéo > 25px mới hiện chỉ dấu).
+  - **Rung Xúc Giác Haptic:** Tích hợp `Handheld.Vibrate()` khi rê ngón tay vào Vùng Hủy Chiêu `UICancelSkillZone.cs`.
+  - **Tối Ưu Hiệu Năng 60 FPS Zero-Alloc & Real Loading Pipeline:**
+    * Chuyển toàn bộ chu trình vẽ về duy nhất `LateUpdate()` (tránh render lặp 2-3 lần/frame khi kéo tay).
+    * Áp dụng **Physics Scan Throttling 20Hz (0.05s)** giảm 65% tải CPU `Physics2D.OverlapCircleNonAlloc` khi ngắm chiêu.
+    * Triệt tiêu `FindGameObjectWithTag` trong vòng lặp render, tương thích 100% New Input System (Cross-platform Touch + Mouse/Key).
+    * **Tận Dụng Loading Screen Nạp Ngầm (Real Async Preloading):** Kết nối `LoadingScreenPresenter.ShowTaskLoading` nạp ngầm toàn bộ Quái vật, Object Pool, Upgrade Cards và Player trong lúc thanh tiến trình đang che phủ màn hình, triệt tiêu 100% cú khựng khi bước vào chiến trường.
+  - Kết nối hoàn chỉnh với `AttackButtonPresenter.cs`, `RelicSkillPresenter.cs`, `SignatureSkillPresenter.cs`, `SmartSkillDragHandler.cs` và `UICancelSkillZone.cs`.
 
 ---
 

@@ -60,6 +60,18 @@ namespace ProjectZombie.Features.UI.Controls
 
         public void SetHovered(bool hovered)
         {
+            if (_isHovered != hovered && hovered)
+            {
+                // Rung xúc giác nhẹ trên điện thoại khi ngón tay chạm vào vùng hủy chiêu
+#if UNITY_ANDROID || UNITY_IOS
+                try
+                {
+                    Handheld.Vibrate();
+                }
+                catch { }
+#endif
+            }
+
             _isHovered = hovered;
             if (_backgroundGlow != null)
             {

@@ -82,6 +82,62 @@ namespace ProjectZombie.Features.UI
             _loadingCoroutine = StartCoroutine(RoutineAsyncLoading(asyncOp, onComplete, statusMessage));
         }
 
+        /// <summary>
+        /// Kích hoạt màn hình Loading bám sát tiến trình nạp ngầm tùy biến (Custom Async Task).
+        /// </summary>
+        public void ShowTaskLoading(System.Func<System.Action<float, string>, System.Threading.Tasks.Task> loadTask, Action onComplete = null, string initialMessage = "Đang khai mở cửa Hoàng Tuyền...")
+        {
+            if (!gameObject.activeSelf) gameObject.SetActive(true);
+            if (_view != null && !_view.gameObject.activeSelf) _view.gameObject.SetActive(true);
+
+            if (_loadingCoroutine != null) StopCoroutine(_loadingCoroutine);
+            _loadingCoroutine = StartCoroutine(RoutineTaskLoading(loadTask, onComplete, initialMessage));
+        }
+
+        private IEnumerator RoutineTaskLoading(System.Func<System.Action<float, string>, System.Threading.Tasks.Task> loadTask, Action onComplete, string initialMessage)
+        {
+            RefreshRandomTip();
+            _view.SetStatusMessage(initialMessage);
+            _view.SetProgress(0f);
+
+            bool fadeInDone = false;
+            _view.FadeIn(0.2f, () => fadeInDone = true);
+            while (!fadeInDone) yield return null;
+
+            float currentProgress = 0f;
+            float targetProgress = 0f;
+            string currentStatus = initialMessage;
+
+            System.Action<float, string> progressReporter = (prog, status) =>
+            {
+                targetProgress = Mathf.Clamp01(prog);
+                if (!string.IsNullOrEmpty(status)) currentStatus = status;
+            };
+
+            var task = loadTask != null ? loadTask(progressReporter) : System.Threading.Tasks.Task.CompletedTask;
+
+            while (!task.IsCompleted)
+            {
+                currentProgress = Mathf.MoveTowards(currentProgress, targetProgress, Time.unscaledDeltaTime * 2.5f);
+                _view.SetProgress(currentProgress);
+                _view.SetStatusMessage(currentStatus);
+                yield return null;
+            }
+
+            while (currentProgress < 1f)
+            {
+                currentProgress = Mathf.MoveTowards(currentProgress, 1f, Time.unscaledDeltaTime * 3.5f);
+                _view.SetProgress(currentProgress);
+                yield return null;
+            }
+
+            _view.SetProgress(1f);
+            yield return new WaitForSecondsRealtime(0.12f);
+
+            onComplete?.Invoke();
+            _view.FadeOut(0.25f);
+        }
+
         private IEnumerator RoutineSimulatedLoading(float duration, Action onComplete, string statusMessage)
         {
             // 1. Cập nhật ngẫu nhiên bí kíp

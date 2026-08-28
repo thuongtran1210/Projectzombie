@@ -98,6 +98,14 @@ namespace ProjectZombie.Features.Spawners
                 }
             }
 
+            // Trì hoãn việc khởi động Match sang Frame tiếp theo để tránh dồn gánh nặng vào Frame 1
+            StartCoroutine(RoutineStartMatchDelayed());
+        }
+
+        private IEnumerator RoutineStartMatchDelayed()
+        {
+            yield return null; // Nhường 1 frame cho Scene và UI khởi tạo xong
+
             if (Player.PlayerProvider.HasPlayer)
             {
                 _playerTransform = Player.PlayerProvider.PlayerTransform;

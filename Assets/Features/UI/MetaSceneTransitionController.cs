@@ -97,18 +97,39 @@ namespace ProjectZombie.Features.UI
             if (LoadingScreenPresenter.Instance != null)
             {
                 bool loadingFinished = false;
-                LoadingScreenPresenter.Instance.ShowLoading(0.85f, () =>
-                {
-                    ApplyStateVisuals(false);
 
+                LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
+                {
+                    // 1. (20%) Khởi tạo thực thể Player & Camera
+                    reportProgress?.Invoke(0.2f, "Đang triệu hồi chân thân Tướng...");
                     if (_gameplayBootstrapper != null)
                     {
                         _gameplayBootstrapper.StartMatchFlow();
                     }
-                    else if (GameStateManager.Instance != null)
+                    await System.Threading.Tasks.Task.Yield();
+
+                    // 2. (50%) Preload Quái vật & Khởi tạo Object Pool ngầm
+                    reportProgress?.Invoke(0.5f, "Đang nạp dữ liệu quái vật cõi âm...");
+                    if (Spawners.SpawnManager.Instance != null)
+                    {
+                        await Spawners.SpawnManager.Instance.StartMatchAsync();
+                    }
+                    await System.Threading.Tasks.Task.Yield();
+
+                    // 3. (80%) Nạp sẵn Database Thẻ Nâng Cấp & VFX
+                    reportProgress?.Invoke(0.8f, "Đang ngưng tụ linh khí ngũ hành...");
+                    Upgrades.UpgradeManager.Instance?.AutoPopulateUpgradesIfEmpty();
+                    await System.Threading.Tasks.Task.Yield();
+
+                    // 4. (100%) Chuyển trạng thái Game sang Playing
+                    reportProgress?.Invoke(1.0f, "Chiến trường đã sẵn sàng!");
+                    if (GameStateManager.Instance != null)
                     {
                         GameStateManager.Instance.ChangeState(GameState.Playing);
                     }
+                }, () =>
+                {
+                    ApplyStateVisuals(false);
                     loadingFinished = true;
                 }, "Đang khai mở cửa Hoàng Tuyền...");
 
@@ -127,7 +148,11 @@ namespace ProjectZombie.Features.UI
                 {
                     _gameplayBootstrapper.StartMatchFlow();
                 }
-                else if (GameStateManager.Instance != null)
+                if (Spawners.SpawnManager.Instance != null)
+                {
+                    _ = Spawners.SpawnManager.Instance.StartMatchAsync();
+                }
+                if (GameStateManager.Instance != null)
                 {
                     GameStateManager.Instance.ChangeState(GameState.Playing);
                 }

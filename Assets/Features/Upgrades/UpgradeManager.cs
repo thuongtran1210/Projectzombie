@@ -88,10 +88,17 @@ namespace ProjectZombie.Features.Upgrades
             }
         }
 
+        private static List<UpgradeData> _cachedMasterUpgrades;
+
         public void AutoPopulateUpgradesIfEmpty()
         {
             if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0)
             {
+                if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
+                {
+                    _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
+                    return;
+                }
                 PopulateAllAvailableUpgrades();
             }
         }
@@ -100,6 +107,12 @@ namespace ProjectZombie.Features.Upgrades
         public void PopulateAllAvailableUpgrades()
         {
             _allAvailableUpgrades.Clear();
+
+            if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
+            {
+                _allAvailableUpgrades.AddRange(_cachedMasterUpgrades);
+                return;
+            }
 
 #if UNITY_EDITOR
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
@@ -125,6 +138,7 @@ namespace ProjectZombie.Features.Upgrades
             }
             Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources.");
 #endif
+            _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
         }
 
         public void BanUpgrade(UpgradeData upgrade)
