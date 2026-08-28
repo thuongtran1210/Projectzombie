@@ -284,6 +284,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandlePlayAgain()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             Time.timeScale = 1f;
             if (view != null) view.SetActive(false);
 
@@ -299,6 +300,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleMainMenu()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             Time.timeScale = 1f;
             if (view != null) view.SetActive(false);
 

@@ -68,11 +68,13 @@ namespace ProjectZombie.Features.UI
 
         private void OnReturnToMainMenu()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             Debug.Log($"[{nameof(RunSummaryPresenter)}] Trở về Main Menu.");
         }
 
         private void OnRetryGame()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             Debug.Log($"[{nameof(RunSummaryPresenter)}] Thử lại Run mới.");
         }
     }

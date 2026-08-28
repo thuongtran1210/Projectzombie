@@ -140,6 +140,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCloseClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
             if (metaManager != null)
             {
