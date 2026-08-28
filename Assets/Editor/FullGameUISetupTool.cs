@@ -388,6 +388,9 @@ namespace ProjectZombie.EditorTools
             // Tự động chuẩn hóa GameOver UI Cổ Phong Đông Sơn
             ProjectZombie.Editor.UI.GameOverUIGenerator.RebuildGameOverUI();
 
+            // Tự động dựng và chuẩn hóa Bảng Thông Số Thuộc Tính & Menu Tạm Dừng trong trận 3 cột Vọng Xuyên
+            ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI();
+
             soGameplay.ApplyModifiedProperties();
 
             // 6. MetaSceneTransitionController

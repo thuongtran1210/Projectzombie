@@ -24,6 +24,8 @@ namespace ProjectZombie.Features.Player
         public float AttackRange { get; private set; } = 9.5f;
 
         private float _damageMultiplier = 1f;
+        public float DamageMultiplier => _damageMultiplier;
+        public float CritDamageMultiplier => 1.5f;
 
         // Sự kiện báo hiệu khi có chỉ số thay đổi (có thể dùng cho UI)
         public event Action OnStatsUpdated;

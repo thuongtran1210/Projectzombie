@@ -105,35 +105,20 @@ namespace ProjectZombie.Editor.UI
             Toggle dmgToggle = CreateToggleRow(frameObj.transform, "Row_Toggle_Damage", "Hiện Số Sát Thương", new Vector2(0, -85), toggleBoxOff, toggleCheckOn, vietFont);
             Toggle fpsToggle = CreateToggleRow(frameObj.transform, "Row_Toggle_60FPS", "Mượt Mà 60 FPS", new Vector2(0, -145), toggleBoxOff, toggleCheckOn, vietFont);
 
-            // 8. Close Button
+            // 8. Close Button (Nút Tròn X ở Góc Trên Bên Phải)
+            Sprite btnCloseX = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITES_PATH + "Btn_Nav_Close_X_Wood.png");
             GameObject btnCloseObj = new GameObject("Btn_Close", typeof(RectTransform), typeof(Image), typeof(Button));
             btnCloseObj.transform.SetParent(frameObj.transform, false);
             RectTransform bcRT = btnCloseObj.GetComponent<RectTransform>();
-            bcRT.anchorMin = new Vector2(0.5f, 0f);
-            bcRT.anchorMax = new Vector2(0.5f, 0f);
+            bcRT.anchorMin = new Vector2(1f, 1f);
+            bcRT.anchorMax = new Vector2(1f, 1f);
             bcRT.pivot = new Vector2(0.5f, 0.5f);
-            bcRT.anchoredPosition = new Vector2(0, -20);
-            bcRT.sizeDelta = new Vector2(180, 52);
+            bcRT.anchoredPosition = new Vector2(-14, -14);
+            bcRT.sizeDelta = new Vector2(46, 46);
             Image bcImg = btnCloseObj.GetComponent<Image>();
             bcImg.color = Color.white;
-            bcImg.type = Image.Type.Sliced;
-            if (btnWoodSub != null) bcImg.sprite = btnWoodSub;
+            if (btnCloseX != null) bcImg.sprite = btnCloseX;
             Button closeBtn = btnCloseObj.GetComponent<Button>();
-
-            GameObject btnCloseTxt = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-            btnCloseTxt.transform.SetParent(btnCloseObj.transform, false);
-            RectTransform bctRT = btnCloseTxt.GetComponent<RectTransform>();
-            bctRT.anchorMin = Vector2.zero;
-            bctRT.anchorMax = Vector2.one;
-            bctRT.offsetMin = Vector2.zero;
-            bctRT.offsetMax = Vector2.zero;
-            TextMeshProUGUI bctTMP = btnCloseTxt.GetComponent<TextMeshProUGUI>();
-            if (vietFont != null) bctTMP.font = vietFont;
-            bctTMP.fontSize = 18;
-            bctTMP.fontStyle = FontStyles.Bold;
-            bctTMP.alignment = TextAlignmentOptions.Center;
-            bctTMP.text = "< QUAY LẠI";
-            bctTMP.color = new Color(0.96f, 0.88f, 0.72f);
 
             // 9. Wire Components into SettingsModalView (kế thừa BaseMetaScreenView)
             SettingsModalView view = modalRoot.GetComponent<SettingsModalView>();
@@ -344,36 +329,53 @@ namespace ProjectZombie.Editor.UI
             return toggle;
         }
 
+        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild Settings UI Modal", false, 106)]
+        public static void RebuildSettingsUI()
+        {
+            GenerateSettingsModal();
+        }
+
         private static void LinkToMainHubScene(string prefabPath)
         {
-            var mainHubView = Object.FindObjectOfType<MainHubView>(true);
-            if (mainHubView != null)
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab == null) return;
+
+            Transform targetParent = null;
+
+            var metaManager = Object.FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
             {
-                var canvas = mainHubView.GetComponentInParent<Canvas>();
-                if (canvas != null)
+                targetParent = metaManager.transform;
+            }
+            else
+            {
+                var mainHubView = Object.FindObjectOfType<MainHubView>(true);
+                if (mainHubView != null)
                 {
-                    Transform existingModal = canvas.transform.Find("Modal_Settings");
-                    if (existingModal != null) Object.DestroyImmediate(existingModal.gameObject);
-
-                    GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                    if (prefab != null)
-                    {
-                        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, canvas.transform);
-                        instance.name = "Modal_Settings";
-                        instance.SetActive(false);
-
-                        var settingsView = instance.GetComponent<SettingsModalView>();
-                        var metaManager = Object.FindObjectOfType<MetaUIManager>(true);
-                        if (metaManager != null && settingsView != null)
-                        {
-                            SerializedObject soMeta = new SerializedObject(metaManager);
-                            soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;
-                            soMeta.ApplyModifiedProperties();
-                        }
-
-                        Debug.Log("<color=#00FF88>[SettingsUIGenerator]</color> Đã liên kết thành công Modal_Settings vào Canvas và MetaUIManager Screen Stack!");
-                    }
+                    var canvas = mainHubView.GetComponentInParent<Canvas>();
+                    if (canvas != null) targetParent = canvas.transform;
                 }
+            }
+
+            if (targetParent != null)
+            {
+                Transform existingModal = targetParent.Find("Modal_Settings");
+                if (existingModal != null) Object.DestroyImmediate(existingModal.gameObject);
+
+                GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, targetParent);
+                instance.name = "Modal_Settings";
+                instance.SetActive(false);
+
+                var settingsView = instance.GetComponent<SettingsModalView>();
+                if (metaManager != null && settingsView != null)
+                {
+                    SerializedObject soMeta = new SerializedObject(metaManager);
+                    soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;
+                    soMeta.ApplyModifiedProperties();
+                }
+
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                Debug.Log("<color=#00FF88>[SettingsUIGenerator]</color> Đã liên kết thành công Modal_Settings vào Canvas và MetaUIManager Screen Stack!");
             }
         }
     }

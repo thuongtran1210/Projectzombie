@@ -44,7 +44,7 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private TextMeshProUGUI _killCountText;  // Ví dụ: "💀 137"
 
         // ====================================================================
-        // [INSPECTOR] — Skills Display
+        // [INSPECTOR] — Skills Display & Pause Button
         // ====================================================================
 
         [Header("Skills Display")]
@@ -52,7 +52,11 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private SkillUIEntry _skillEntryPrefab;
         [SerializeField] private TooltipUI _tooltipUI;
 
+        [Header("Pause Controls")]
+        [SerializeField] private Button _pauseButton;
+
         private readonly System.Collections.Generic.List<SkillUIEntry> _spawnedSkills = new System.Collections.Generic.List<SkillUIEntry>();
+        private System.Action _onPauseClicked;
 
         // ====================================================================
         // UNITY LIFECYCLE
@@ -209,6 +213,16 @@ namespace ProjectZombie.Features.UI.HUD
                     newEntry.Setup(skill.Icon, skill.Level, skill.Name, skill.Description, _tooltipUI);
                     _spawnedSkills.Add(newEntry);
                 }
+            }
+        }
+
+        public void SetPauseButtonCallback(System.Action onPause)
+        {
+            _onPauseClicked = onPause;
+            if (_pauseButton != null)
+            {
+                _pauseButton.onClick.RemoveAllListeners();
+                _pauseButton.onClick.AddListener(() => _onPauseClicked?.Invoke());
             }
         }
     }

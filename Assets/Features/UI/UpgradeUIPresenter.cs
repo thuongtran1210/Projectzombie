@@ -31,7 +31,7 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
-            _currentRerolls = _maxRerollsPerRun;
+            _currentRerolls = CalculateMaxRerolls();
             if (_view == null)
             {
                 _view = GetComponent<UpgradeUIView>();
@@ -52,7 +52,7 @@ namespace ProjectZombie.Features.UI
 
             _playerExperience = experience;
             _playerWeaponManager = weaponManager;
-            _currentRerolls = _maxRerollsPerRun;
+            _currentRerolls = CalculateMaxRerolls();
 
             if (_view != null)
             {
@@ -65,6 +65,36 @@ namespace ProjectZombie.Features.UI
             _isConstructed = true;
         }
 
+        private int CalculateMaxRerolls()
+        {
+            int baseRerolls = Mathf.Max(1, _maxRerollsPerRun);
+            var saveData = ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance != null
+                ? ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance.GetSaveData()
+                : Core.Save.SaveSystem.Load();
+
+            if (saveData != null)
+            {
+                var treeData = Resources.Load<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("PermanentUpgradeTree");
+#if UNITY_EDITOR
+                if (treeData == null)
+                {
+                    treeData = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("Assets/_Data/Meta/PermanentUpgradeTree.asset");
+                }
+#endif
+                if (treeData != null)
+                {
+                    int rerollNodeIndex = treeData.GetNodeIndex("util_reroll");
+                    if (rerollNodeIndex >= 0)
+                    {
+                        int bonusRerolls = saveData.GetUpgradeLevel(rerollNodeIndex);
+                        baseRerolls += bonusRerolls;
+                    }
+                }
+            }
+
+            return baseRerolls;
+        }
+
         private void Start()
         {
             if (_view == null)
@@ -74,7 +104,7 @@ namespace ProjectZombie.Features.UI
 
             if (_currentRerolls <= 0)
             {
-                _currentRerolls = _maxRerollsPerRun;
+                _currentRerolls = CalculateMaxRerolls();
             }
 
             // Tương thích ngược: nếu chưa được Construct từ GameplayBootstrapper và đã kéo thả trong Inspector thì mới tự gọi Construct
@@ -129,18 +159,18 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
+                // Fallback nếu không có GameStateManager trong scene test
                 if (_view != null)
                 {
                     _view.SetActive(true);
                 }
+                Time.timeScale = 0f;
                 PopulateUpgradeScreen();
             }
         }
 
         private void HandleStateChanged(GameState newState)
         {
-            if (_view == null) return;
-
             if (newState == GameState.LevelUpSelection)
             {
                 _view.SetActive(true);
@@ -168,7 +198,7 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            _view.SetRerollCountText($"Reroll ({_currentRerolls})");
+            _view.SetRerollCountText($"Lắc Lại ({_currentRerolls})");
             _view.SetRerollInteractable(_currentRerolls > 0);
 
             int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
@@ -184,11 +214,11 @@ namespace ProjectZombie.Features.UI
                 {
                     UpgradeData upgradeData = choices[i];
 
-                    // Xử lý định dạng dữ liệu (Presenter format data)
-                    string category = FormatCategoryName(upgradeData.upgradeType);
+                    // Xử lý định dạng dữ liệu (Presenter format data Cổ Phong)
+                    string category = FormatCategoryName(upgradeData);
                     string level = FormatLevel(upgradeData);
                     string statDiff = _statFormatter.FormatStatDiff(upgradeData);
-                    string elementBadge = ElementVisualHelper.GetElementBadgeRichText(upgradeData.element);
+                    string elementBadge = FormatElementAndSynergyBadge(upgradeData);
 
                     // Thiết lập card với dữ liệu đã định dạng và callback
                     cardView.Setup(
@@ -227,7 +257,7 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                Debug.LogWarning("[UpgradeUIPresenter] Đã hết số lần Reroll trong lượt chạy!");
+                Debug.LogWarning("[UpgradeUIPresenter] Đã hết số lần Lắc Lại trong lượt chạy!");
             }
         }
 
@@ -272,17 +302,65 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private string FormatCategoryName(UpgradeType type)
+        private string FormatCategoryName(UpgradeData data)
         {
-            switch (type)
+            if (data is EvolutionUpgradeData) return "<color=#FFD700>[THẦN PHÁP TIẾN HÓA]</color>";
+            if (data is BreakthroughUpgradeData) return "<color=#FF00FF>[ĐỘT PHÁ TUYỆT KỸ]</color>";
+            if (data is ComboAugmentUpgradeData) return "<color=#FF8800>[BÍ KÍP ĐÒN CHÉM]</color>";
+            if (data is DashTraitUpgradeData) return "<color=#00E5FF>[CƯỜNG HÓA LƯỚT]</color>";
+            if (data is WeaponUpgradeData) return "<color=#00FF88>[CƯỜNG HÓA PHÁP BẢO]</color>";
+            if (data is FallbackRewardUpgradeData) return "<color=#FFD700>[THƯỞNG CỨU MỆNH]</color>";
+            if (data is RareUpgradeData) return "<color=#E0AAFF>[BÍ THUẬT HIẾM]</color>";
+            return "<color=#A0C4FF>[BỔ TRỢ KHÍ VẬN]</color>";
+        }
+
+        private string FormatElementAndSynergyBadge(UpgradeData upgradeData)
+        {
+            string baseBadge = ElementVisualHelper.GetElementBadgeRichText(upgradeData.element);
+            if (upgradeData.element == ElementType.None || _playerWeaponManager == null) return baseBadge;
+
+            bool isSameElement = false;
+            bool isGenerative = false;
+
+            for (int i = 0; i < _playerWeaponManager.ActiveWeapons.Count; i++)
             {
-                case UpgradeType.WeaponUpgrade: return "Weapon Upgrade";
-                case UpgradeType.SignatureSkillUpgrade: return "Signature Skill";
-                case UpgradeType.CommonUpgrade: return "Common Upgrade";
-                case UpgradeType.FactionCounterUpgrade: return "Faction Counter";
-                case UpgradeType.RareUpgrade: return "Rare Upgrade";
-                case UpgradeType.EvolutionUpgrade: return "Evolution Upgrade";
-                default: return type.ToString();
+                var w = _playerWeaponManager.ActiveWeapons[i];
+                if (w != null && w.element != ElementType.None)
+                {
+                    if (w.element == upgradeData.element)
+                    {
+                        isSameElement = true;
+                        break;
+                    }
+                    else if (IsElementGenerative(w.element, upgradeData.element))
+                    {
+                        isGenerative = true;
+                    }
+                }
+            }
+
+            if (isSameElement)
+            {
+                return string.IsNullOrEmpty(baseBadge) ? "<color=#4DEEEA>[ĐỒNG HỆ]</color>" : $"{baseBadge} <color=#4DEEEA>[ĐỒNG HỆ]</color>";
+            }
+            if (isGenerative)
+            {
+                return string.IsNullOrEmpty(baseBadge) ? "<color=#00FF88>[TƯƠNG SINH]</color>" : $"{baseBadge} <color=#00FF88>[TƯƠNG SINH]</color>";
+            }
+
+            return baseBadge;
+        }
+
+        private bool IsElementGenerative(ElementType parent, ElementType child)
+        {
+            switch (parent)
+            {
+                case ElementType.Kim: return child == ElementType.Thuy;
+                case ElementType.Thuy: return child == ElementType.Moc;
+                case ElementType.Moc: return child == ElementType.Hoa;
+                case ElementType.Hoa: return child == ElementType.Tho;
+                case ElementType.Tho: return child == ElementType.Kim;
+                default: return false;
             }
         }
 
@@ -291,13 +369,25 @@ namespace ProjectZombie.Features.UI
             if (data is WeaponUpgradeData weaponData)
             {
                 if (weaponData.requiredCurrentLevel == 0)
-                    return "NEW!";
+                    return "MỚI!";
                 else
-                    return $"Lv.{weaponData.requiredCurrentLevel + 1}";
+                    return $"Cấp {weaponData.requiredCurrentLevel + 1}";
             }
             else if (data is EvolutionUpgradeData)
             {
-                return "EVOLUTION";
+                return "TIẾN HÓA";
+            }
+            else if (data is BreakthroughUpgradeData)
+            {
+                return "ĐỘT PHÁ";
+            }
+            else if (data is ComboAugmentUpgradeData)
+            {
+                return "BÍ KÍP";
+            }
+            else if (data is DashTraitUpgradeData)
+            {
+                return "LƯỚT";
             }
             else if (data is FallbackRewardUpgradeData)
             {
@@ -310,9 +400,9 @@ namespace ProjectZombie.Features.UI
                 int nextLevel = count + 1;
                 if (commonData.maxLevel > 0)
                 {
-                    return $"Lv.{nextLevel}/{commonData.maxLevel}";
+                    return $"Cấp {nextLevel}/{commonData.maxLevel}";
                 }
-                return $"Lv.{nextLevel}";
+                return $"Cấp {nextLevel}";
             }
             return "";
         }

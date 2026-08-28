@@ -53,10 +53,12 @@ namespace ProjectZombie.Features.UI
 
         public void Open()
         {
+            gameObject.SetActive(true);
+            transform.SetAsLastSibling();
             LoadAndApplyInitialSettings();
             if (_view != null)
             {
-                _view.SetVisible(true);
+                _view.Show();
             }
         }
 
@@ -64,7 +66,11 @@ namespace ProjectZombie.Features.UI
         {
             if (_view != null)
             {
-                _view.SetVisible(false);
+                _view.Hide();
+            }
+            else
+            {
+                gameObject.SetActive(false);
             }
         }
 

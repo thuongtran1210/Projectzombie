@@ -421,6 +421,29 @@ namespace ProjectZombie.EditorTools
             killTMP.color = new Color(0.95f, 0.88f, 0.72f);
 
             // -------------------------------------------------------------
+            // 5. NÚT TẠM DỪNG (PAUSE BUTTON TRÊN HUD)
+            // -------------------------------------------------------------
+            Transform pauseBtnTrans = hudRoot.transform.Find("Btn_Pause");
+            if (pauseBtnTrans == null)
+            {
+                GameObject pObj = new GameObject("Btn_Pause", typeof(RectTransform), typeof(Image), typeof(Button));
+                pObj.transform.SetParent(hudRoot.transform, false);
+                pauseBtnTrans = pObj.transform;
+            }
+            RectTransform pRT = pauseBtnTrans.GetComponent<RectTransform>();
+            pRT.anchorMin = new Vector2(1, 1);
+            pRT.anchorMax = new Vector2(1, 1);
+            pRT.pivot = new Vector2(1, 1);
+            pRT.anchoredPosition = new Vector2(-235, -20);
+            pRT.sizeDelta = new Vector2(48, 48);
+
+            Image pImg = pauseBtnTrans.GetComponent<Image>();
+            pImg.color = Color.white;
+            Sprite pauseIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Close_X_Wood.png");
+            if (pauseIcon != null) pImg.sprite = pauseIcon;
+            Button pauseBtn = pauseBtnTrans.GetComponent<Button>();
+
+            // -------------------------------------------------------------
             // 7. WIRE THÔNG SỐ VÀO RUNHUDVIEW & PRESENTER
             // -------------------------------------------------------------
             SerializedObject soView = new SerializedObject(hudView);
@@ -432,6 +455,7 @@ namespace ProjectZombie.EditorTools
             soView.FindProperty("_levelText").objectReferenceValue = lvlTMP;
             soView.FindProperty("_timerText").objectReferenceValue = timerTMP;
             soView.FindProperty("_killCountText").objectReferenceValue = killTMP;
+            soView.FindProperty("_pauseButton").objectReferenceValue = pauseBtn;
 
             soView.ApplyModifiedProperties();
 

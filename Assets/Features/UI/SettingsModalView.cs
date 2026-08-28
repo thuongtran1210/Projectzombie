@@ -105,7 +105,14 @@ namespace ProjectZombie.Features.UI
 
         public void SetVisible(bool isVisible)
         {
-            gameObject.SetActive(isVisible);
+            if (isVisible)
+            {
+                Show();
+            }
+            else
+            {
+                Hide();
+            }
         }
     }
 }

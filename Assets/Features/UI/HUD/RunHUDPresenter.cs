@@ -90,6 +90,11 @@ namespace ProjectZombie.Features.UI.HUD
                 Construct(_playerHealth, _playerStats, _playerExp, _weaponManager, _playerPassives);
             }
 
+            if (_view != null)
+            {
+                _view.SetPauseButtonCallback(OnPauseClicked);
+            }
+
             // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
             if (RunStatsTracker.Instance != null)
             {
@@ -106,6 +111,19 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
                 HandleStateChanged(GameStateManager.Instance.CurrentState);
+            }
+        }
+
+        private void OnPauseClicked()
+        {
+            var presenter = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>(true);
+            if (presenter != null)
+            {
+                presenter.ToggleMenu();
+            }
+            else
+            {
+                Debug.LogWarning("[RunHUDPresenter] PlayerInfoUIPresenter không tìm thấy trong Scene để mở Pause Menu.");
             }
         }
 

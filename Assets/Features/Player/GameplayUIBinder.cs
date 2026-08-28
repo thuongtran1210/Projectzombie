@@ -101,7 +101,8 @@ namespace ProjectZombie.Features.Player
                     context.Stats,
                     context.Health,
                     context.Experience,
-                    context.WeaponManager);
+                    context.WeaponManager,
+                    context.Passives);
                 Debug.Log("[GameplayUIBinder] Đã inject dependencies vào PlayerInfoUIPresenter.");
             }
         }
