@@ -28,6 +28,8 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 7.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Tổ Ong Lượn Cánh";
         }
 
         protected override void PerformAttack()
@@ -37,6 +39,27 @@ namespace ProjectZombie.Features.Weapons
             Vector2 dir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
             global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
             StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ + Kích hoạt ngay Lốc Dép Vạn Năng gây Quê Độ 100%.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.0f);
+            Vector2 dir;
+            if (nearest != null)
+            {
+                dir = ((Vector2)nearest.position - (Vector2)transform.position).normalized;
+            }
+            else
+            {
+                dir = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
+            StartCoroutine(RoutineThrowSlipper(dir, throwRange * 1.4f, 2.0f));
+            StartCoroutine(RoutineWhirlwindSlippers());
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)

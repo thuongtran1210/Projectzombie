@@ -23,6 +23,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private GameOverScreenPresenter _gameOverScreenPresenter;
         [SerializeField] private CharacterGaugeWidgetPresenter _characterGaugeWidgetPresenter;
         [SerializeField] private SignatureSkillPresenter _signatureSkillPresenter;
+        [SerializeField] private RelicSkillPresenter _relicSkillPresenter;
         [SerializeField] private AttackButtonPresenter _attackButtonPresenter;
         [SerializeField] private DashButtonPresenter _dashButtonPresenter;
 
@@ -55,6 +56,7 @@ namespace ProjectZombie.Features.Player
             if (_gameOverScreenPresenter == null) _gameOverScreenPresenter = UnityEngine.Object.FindObjectOfType<GameOverScreenPresenter>(true);
             if (_characterGaugeWidgetPresenter == null) _characterGaugeWidgetPresenter = UnityEngine.Object.FindObjectOfType<CharacterGaugeWidgetPresenter>(true);
             if (_signatureSkillPresenter == null) _signatureSkillPresenter = UnityEngine.Object.FindObjectOfType<SignatureSkillPresenter>(true);
+            if (_relicSkillPresenter == null) _relicSkillPresenter = UnityEngine.Object.FindObjectOfType<RelicSkillPresenter>(true);
             if (_attackButtonPresenter == null) _attackButtonPresenter = UnityEngine.Object.FindObjectOfType<AttackButtonPresenter>(true);
             if (_dashButtonPresenter == null) _dashButtonPresenter = UnityEngine.Object.FindObjectOfType<DashButtonPresenter>(true);
         }
@@ -75,6 +77,7 @@ namespace ProjectZombie.Features.Player
             BindGameOverScreen(context);
             BindCharacterGauge(context);
             BindSignatureSkill(context);
+            BindRelicSkill(context);
             BindAttackButton(context);
             BindDashButton(context);
         }
@@ -149,6 +152,18 @@ namespace ProjectZombie.Features.Player
                 {
                     _signatureSkillPresenter.Bind(context.SignatureSkillManager);
                     Debug.Log("[GameplayUIBinder] SignatureSkillPresenter đã Bind SignatureSkillManager.");
+                }
+            }
+        }
+
+        private void BindRelicSkill(PlayerContext context)
+        {
+            if (_relicSkillPresenter != null)
+            {
+                if (context.WeaponManager != null)
+                {
+                    _relicSkillPresenter.Bind(context.WeaponManager);
+                    Debug.Log("[GameplayUIBinder] RelicSkillPresenter đã Bind WeaponManager.");
                 }
             }
         }

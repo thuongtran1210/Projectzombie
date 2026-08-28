@@ -1,8 +1,11 @@
-# Tài Liệu Hệ Thống Chiến Đấu & Pháp Bảo (Combat & Relic System v5.0)
+# Tài Liệu Hệ Thống Chiến Đấu & Pháp Bảo (Hybrid Relic System v6.0)
 
 Hệ thống chiến đấu của trò chơi được chuẩn hóa theo mô hình **Action RPG Survivor 2.5D Cổ Phong**:
 1. **Đòn Đánh Bản Thể Nhân Vật (`CharacterCombat`)**: Gắn liền với bản thể từng vị Tướng, điều khiển qua nút **Attack Button** (Animation + VFX Vệt chém Melee / Đạn Ranged + Combo 1-2-3 + Tap Buffer Window 0.18s).
-2. **Pháp Bảo Hộ Thân Duy Nhất (`WeaponManager` & `Relic` - Giới hạn 1 Slot)**: Mọi vũ khí rời trong game đều được quy chuẩn là **Pháp Bảo Hộ Thân (Relics)**. Người chơi mang theo **đúng 1 Pháp Bảo** từ Tàng Bảo Các, vận hành **100% Tự Động (Auto-Trigger / Orbit / Passive Aura / On-Hit)** theo chu kỳ `Tick()` để hỗ trợ chiến đấu.
+2. **Kỹ Năng Tuyệt Kỹ Bản Thể (`SignatureSkillManager`)**: Chiêu nộ đặc trưng của từng vị Tướng, điều khiển qua nút **Signature Skill Button** (Phím `Q` / Touch).
+3. **Pháp Bảo Hộ Thân Duy Nhất (`WeaponManager` & `Relic` - Giới hạn 1 Slot)**: Mọi vũ khí rời trong game đều được quy chuẩn là **Pháp Bảo Hộ Thân (Relics)** theo mô hình **Hệ Thống Lai (Hybrid Relics)**:
+   - **8 Pháp Bảo Chủ Động (Active Relics)**: Khi trang bị, nút **Relic Skill Button (`Btn_RelicSkill`)** (Phím `E` / Touch) sẽ xuất hiện trên HUD để người chơi chủ động thi triển kỹ năng chiến thuật, có Cooldown và Countdown.
+   - **9 Pháp Bảo Bị Động (Passive Relics)**: Khi trang bị, nút Relic Skill **tự động ẩn** khỏi HUD để giữ giao diện tinh gọn, pháp bảo tự động kích ứng (Auto-Tick / Orbital / On-Hit / Finisher Proc).
 
 ---
 
@@ -10,79 +13,61 @@ Hệ thống chiến đấu của trò chơi được chuẩn hóa theo mô hìn
 
 ```mermaid
 graph TD
-    A[Attack Button / Input] -->|Bấm Đánh Chủ Động| B(CharacterCombat)
-    B -->|Phát Hoạt Ảnh| C[PlayerAnimator: Attack State]
-    B -->|Sinh VFX & Game Feel| D[VFX Vệt Chém / Đạn + CameraShake / HitStop]
-    B -->|Quét Trúng Kẻ Địch| E[OnHitEnemy Event]
-    E -->|Kích Ứng Bồi Đòn| F[1 Pháp Bảo Hộ Thân Trang Bị]
-    G[Update Loop: Auto Tick] -->|Tự Động Kích Hoạt Liên Tục| F
+    A[Input: Attack / Space / Q / E] --> B{Phân Loại Thao Tác}
+    B -->|Attack Button / Chuột Trái| C[CharacterCombat: Combo 1-2-3]
+    B -->|Dash Button / Space| D[PlayerController: Lướt Né i-Frame]
+    B -->|Signature Skill / Phím Q| E[SignatureSkillManager: Tuyệt Kỹ Tướng]
+    B -->|Relic Skill / Phím E| F[WeaponManager: Kỹ Năng Pháp Bảo Chủ Động]
+    
+    C -->|OnHitEnemy / Finisher| G[9 Pháp Bảo Bị Động: Tự Động Kích Ứng]
+    H[Update Loop: Auto Tick] -->|Tự Động Xuất Chiêu| G
 ```
 
-### 1.1. `CharacterCombat` (Đòn Đánh Bản Thể Tướng)
-- **Nơi gắn**: Trực tiếp trên thực thể `Player`.
-- **Vai trò**: Đòn đánh tay cơ bản đặc trưng theo nhân vật (Melee Slash / Ranged Projectile).
-- **Tính năng**: Combo 1-2-3, Tap Buffer Window 0.18s, Zero-Allocation OverlapBox, HitStop, Knockback và CameraShake.
+---
 
-### 1.2. `WeaponManager` (Quản Lý 1 Pháp Bảo Hộ Thân)
-- **Nơi gắn**: Trên `Player`.
-- **Giới hạn**: `MAX_WEAPONS = 1` (Chỉ mang 1 Pháp Bảo Hộ Thân vào trận).
-- **Chế độ**: `isPrimaryActiveWeapon = false` (100% Tự Động xuất chiêu, không chiếm nút đánh tay).
+## 2. Danh Mục 17 Pháp Bảo Hộ Thân (8 Chủ Động + 9 Bị Động)
+
+### 2.1. ⚔️ Nhóm 8 Pháp Bảo Chủ Động (Active Relics - Có Nút Bấm HUD)
+
+| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Tên Kỹ Năng Chủ Động | Cooldown | Cơ Chế Thi Triển Khi Bấm Nút |
+| :--- | :--- | :---: | :--- | :---: | :--- |
+| **W001** | **Nỏ Thần** | Kim | **Vạn Tiễn Phá Trận** | 6.0s | Bắn chùm 5 linh tiễn thần uy định hướng xuyên quái và đẩy lùi 8m. |
+| **W005** | **Trống Đồng Đông Sơn** | Thổ | **Thần Âm Trảm Linh** | 10.0s | Dậm 3 đợt sóng âm 360 độ cực đại gây choáng cứng 1.5s và đẩy lùi toàn bộ quái. |
+| **W006** | **Lựu Đạn Thần Sa** | Hỏa | **Bão Lửa Thần Sa** | 8.0s | Quăng chùm 3 hạt Thần Sa nổ tung bão lửa thiêu rụi vùng rộng trong 4s. |
+| **W008** | **Đao Cửu Vĩ** | Hỏa | **Hỏa Long Bộc Phát** | 12.0s *(Duy trì 5s)* | Bộc phát thần uy trong 5s, liên tục vung trảm hỏa long 8 hướng và tăng tốc chạy. |
+| **W011** | **Nước Thánh Chùa Hương** | Thổ | **Trận Pháp Giếng Thiêng** | 15.0s *(Duy trì 6s)* | Tạo trận pháp 3 giếng thiêng phong tỏa làm chậm 50% quái và hồi ngay 10% Max HP. |
+| **`W_SLIPPER`** | **Dép Tổ Ong Thần Sa** | Kim | **Tổ Ong Lượn Cánh** | 7.0s | Quăng Boomerang Dép khổng lồ + Lốc Dép Vạn Năng gây Quê Độ 100% (quái đánh nhau). |
+| **`W_POT`** | **Nồi Cơm Thạch Sanh** | Thổ | **Hút Chân Không & Tiên Cơm** | 14.0s | Gom quái diện rộng 6m vào tâm nồi trong 2s, nổ hất văng 18m/s và rơi Cơm Nắm hồi máu. |
+| **`W_PIPE`** | **Điếu Cày Cửu U** | Hỏa | **Bão Khói Thuốc Lào** | 9.0s *(Duy trì 5s)* | Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương diện rộng. |
+
+### 2.2. 🛡️ Nhóm 9 Pháp Bảo Bị Động (Passive Relics - Tự Động Ẩn Nút HUD)
+
+| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Kiểu Kích Ứng | Cơ Chế Hộ Thân Tự Động |
+| :--- | :--- | :---: | :---: | :--- |
+| **W002** | **Bút Phán Quan** | Kim | `On-Hit Proc` | Tự vung nhát chém phán quyết âm ty khi Hero đánh trúng quái. |
+| **W003** | **Bùa Trấn Yêu** | Mộc | `Orbital Shield` | Vòng lá bùa thần xoay quanh cản đạn bay của yêu ma và cản quái áp sát. |
+| **W004** | **Cửu Vĩ Hồ Trảo** | Hỏa | `On-Hit Lifesteal` | Móng vuốt cáo lửa tự cào xé quái và hút sinh khí hồi phục cho Tướng. |
+| **W007** | **Cung Thạch Sanh** | Kim | `Auto Tick` | Tự động bắn mũi tên thần lực Thạch Sanh xuyên qua hàng loạt yêu tinh ở xa. |
+| **W009** | **Trượng Long Vương** | Thủy | `Auto Chain` | Tự động giáng sét nước thủy cung lan truyền qua chuỗi 6 yêu quái (Choáng 0.5s). |
+| **W010** | **Linh Phù Ma Da** | Thủy | `Pet Companion` | Triệu hồi linh thú Ma Da bơi theo phun dịch độc làm chậm liên tục. |
+| **W012** | **Phi Tiêu Bát Quái** | Mộc | `Auto Orbit` | Phi tiêu ma thuật tự động xoay tròn quét kẻ địch theo hình cánh cung rồi quy hồi. |
+| **`R007`** | **Chiếu Trải Hoàng Tuyền** | Mộc | `Periodic Trap` | Cứ mỗi 8s tự thả chiếu khiến quái ngủ say (x2 Crit); Hero bước lên trượt ván +100% tốc chạy. |
+| **`R008`** | **Chổi Lông Gà Gia Truyền** | Kim | `Finisher Proc` | Tự động giáng Chổi Lông Gà khổng lồ khi Hero kết thúc Combo Hit 3, Knockback 12m/s gây choáng. |
 
 ---
 
-## 2. Danh Mục 17 Pháp Bảo Hộ Thân (12 Cổ Phong + 5 Dân Gian Slapstick)
+## 3. Giao Diện HUD & Thao Tác Thông Minh (Smart Adaptive UI)
 
-Tất cả trang bị dưới đây đều được lưu trữ trong **Tàng Bảo Các (`Assets/_Data/Weapons/`)** và chọn 1 mang vào trận:
-
-### 2.1. Nhóm 12 Pháp Bảo Cổ Phong (Vòng Xuyến Truyền Thuyết)
-
-| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Vai Trò Pháp Bảo (`WeaponRole`) | Cơ Chế Hộ Thân Trong Trận |
-| :--- | :--- | :---: | :---: | :--- |
-| **W001** | **Nỏ Thần** | Kim | `RelicOnHitTrigger` | Tự động bắn linh tiễn An Dương Vương thẳng về kẻ địch gần nhất, xuyên 2 mục tiêu. |
-| **W002** | **Bút Phán Quan** | Kim | `RelicOnHitTrigger` | Tự động vung nhát chém phán quyết âm ty gây sát thương chí mạng 2 bên. |
-| **W003** | **Bùa Trấn Yêu** | Mộc | `RelicOrbitalShield` | Vòng lá bùa thần xoay quanh bảo vệ người chơi, cản đạn và đẩy lùi quái. |
-| **W004** | **Cửu Vĩ Hồ Trảo** | Hỏa | `RelicOnHitTrigger` | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí hồi phục cho Tướng. |
-| **W005** | **Trống Đồng Đông Sơn** | Thổ | `RelicOrbitalShield` | Tự động phát sóng âm trảm linh 5 hướng gây choáng diện rộng xung quanh. |
-| **W006** | **Lựu Đạn Thần Sa** | Hỏa | `RelicOnHitTrigger` | Quăng hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng và đẩy lùi mạnh. |
-| **W007** | **Cung Thạch Sanh** | Kim | `RelicOnHitTrigger` | Bắn mũi tên thần lực Thạch Sanh xuyên qua hàng loạt yêu tinh trên đường thẳng. |
-| **W008** | **Đao Cửu Vĩ** | Hỏa | `RelicSupportAura` | Phun luồng rồng lửa thiêu đốt liên tục kẻ địch trước mặt (DoT). |
-| **W009** | **Trượng Long Vương** | Thủy | `RelicSupportAura` | Phóng sét nước thủy cung lan truyền qua chuỗi 6 yêu quái gây Choáng 0.5s. |
-| **W010** | **Linh Phù Ma Da** | Thủy | `RelicSupportAura` | Triệu hồi linh thú Ma Da phun độc sát thương liên tục lên kẻ địch. |
-| **W011** | **Nước Thánh Chùa Hương** | Thổ | `RelicSupportAura` | Tạo bãi giếng thiêng trên mặt đất làm chậm quái và gây sát thương liên tục. |
-| **W012** | **Phi Tiêu Bát Quái** | Mộc | `RelicOnHitTrigger` | Phi tiêu ma thuật tự động xoay tròn quét kẻ địch theo hình cánh cung rồi quy hồi. |
-
-### 2.2. Nhóm 5 Pháp Bảo Dân Gian Hài Hước (Slapstick Relics)
-
-| Mã ID | Tên Pháp Bảo | Hệ Ngũ Hành | Vai Trò Pháp Bảo (`WeaponRole`) | Cơ Chế Hộ Thân Trong Trận |
-| :--- | :--- | :---: | :---: | :--- |
-| **`W_SLIPPER`** | **Dép Tổ Ong Thần Sa** | Kim | `RelicOnHitTrigger` | Ném Boomerang dép tự động; Hit 3 quăng lốc dép gây hiệu ứng **"Quê Độ"** (quái quay sang đấm nhau). |
-| **`W_POT`** | **Nồi Cơm Thạch Sanh** | Thổ | `RelicOrbitalShield` | Gom tối đa 3-5 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi máu. |
-| **`W_PIPE`** | **Điếu Cày Cửu U** | Hỏa | `RelicSupportAura` | Phun bão khói **"Say Thuốc Lào"** dày đặc khiến quái đi giật lùi và nổ sát thương ho sặc sụa. |
-| **`R007`** | **Chiếu Trải Hoàng Tuyền** | Mộc | `RelicSupportAura` | Thả chiếu bẫy ngủ say (nhận x2 Crit DMG); Tướng bước lên trượt ván ủi bay quái. |
-| **`R008`** | **Chổi Lông Gà Gia Truyền** | Kim | `RelicOnHitTrigger` | Triệu hồi chổi khổng lồ giáng từ trời, tạo lực đẩy lùi cực đại 12m/s găm quái vào tường gây Choáng. |
-
----
-
-## 3. Hệ Thống Phân Loại Pháp Bảo (3 Trục Chuẩn Hóa)
-
-### 3.1. Phân Loại Theo Vai Trò Hộ Thân Trong Trận (`WeaponRole`)
-1. **🛡️ Pháp Bảo Quỹ Đạo Hộ Vệ (`RelicOrbitalShield`)**: Tự động bay quanh thân hoặc kích hoạt hào quang bảo vệ cận thân liên tục (Cản đạn, ngăn quái áp sát, bảo vệ sau lưng):
-   - `W003 Bùa Trấn Yêu`, `W005 Trống Đồng Đông Sơn`, `W_POT Nồi Cơm Thạch Sanh`.
-2. **⚔️ Pháp Bảo Kích Ứng Bồi Đòn (`RelicOnHitTrigger`)**: Tự động xuất chiêu/bắn thêm đòn phụ khi Tướng đánh trúng quái (Khuếch đại sát thương & dứt điểm nhanh):
-   - `W001 Nỏ Thần`, `W002 Bút Phán Quan`, `W004 Cửu Vĩ Hồ Trảo`, `W006 Lựu Đạn Thần Sa`, `W007 Cung Thạch Sanh`, `W012 Phi Tiêu Bát Quái`, `W_SLIPPER Dép Tổ Ong`, `R008 Chổi Lông Gà`.
-3. **🌀 Pháp Bảo Hỗ Trợ & Khống Chế (`RelicSupportAura`)**: Tự động triệu hồi linh thú, bẫy sàn (Hazard), thiêu đốt hoặc làm chậm / gây tê liệt quái theo chu kỳ:
-   - `W008 Đao Cửu Vĩ`, `W009 Trượng Long Vương`, `W010 Linh Phù Ma Da`, `W011 Nước Thánh Chùa Hương`, `W_PIPE Điếu Cày Cửu U`, `R007 Chiếu Trải Hoàng Tuyền`.
-
-### 3.2. Phân Loại Theo Thuộc Tính Ngũ Hành (`ElementType`)
-* **⚡ Hệ Kim (Bạo kích, xuyên thấu, đẩy lùi cực mạnh):** `W001`, `W002`, `W007`, `W_SLIPPER`, `R008`.
-* **🌿 Hệ Mộc (Hồi phục, trói chân, bẫy ngủ say):** `W003`, `W012`, `R007`.
-* **💧 Hệ Thủy (Làm chậm, đóng băng, sét nước lan truyền):** `W009`, `W010`.
-* **🔥 Hệ Hỏa (Thiêu đốt DoT, bão khói, nổ lan):** `W004`, `W006`, `W008`, `W_PIPE`.
-* **⛰️ Hệ Thổ (Sóng âm chấn động, choáng cứng, gom quái, giếng thiêng):** `W005`, `W011`, `W_POT`.
-
-### 3.3. Phân Loại Theo Chủ Đề Nghệ Thuật (Art Theme)
-* **Cổ Phong Thần Thoại (12 Pháp Bảo `W001` - `W012`):** Trống đồng Đông Sơn, Nỏ thần An Dương Vương, Bút phán quan Âm Ty, Linh bùa chu sa...
-* **Dân Gian Slapstick Meme (5 Pháp Bảo `W_SLIPPER`, `W_POT`, `W_PIPE`, `R007`, `R008`):** Dép tổ ong, Nồi cơm Thạch Sanh, Điếu cày thuốc lào, Chiếu cói trượt ván, Chổi lông gà...
+- **HUD Mobile Controls:**
+  - `Btn_Attack`: Đòn đánh bản thể Tướng (Combo 1-2-3).
+  - `Btn_Dash`: Lướt né tránh.
+  - `Btn_SignatureSkill`: Tuyệt kỹ Nộ của Hero.
+  - `Btn_RelicSkill`: Kỹ năng Pháp Bảo (Tự động **HIỆN** khi mang Active Relic, tự động **ẨN** khi mang Passive Relic).
+- **Phím Tắt PC:**
+  - `Chuột Trái / J`: Đánh thường.
+  - `Space`: Lướt né.
+  - `Q / U`: Tuyệt kỹ Tướng.
+  - `E / R / I`: Kỹ năng Pháp Bảo Chủ Động.
 
 ---
 

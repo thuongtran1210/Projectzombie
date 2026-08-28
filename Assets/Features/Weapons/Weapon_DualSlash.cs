@@ -25,11 +25,15 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private ParticleSystem shockwavePrefab;
 
         private PlayerController _playerController;
+        private float _overchargeTickTimer = 0f;
 
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
             _playerController = GetComponentInParent<PlayerController>();
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 12.0f;
+            if (activeDuration <= 0f) activeDuration = 5.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Hỏa Long Bộc Phát";
         }
 
         protected override bool CanAttack()
@@ -40,6 +44,29 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformAttack()
         {
             PerformComboAttack(CurrentComboStep);
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Hỏa Long Bộc Phát — Kích hoạt trạng thái bộc phát trong 5s, liên tục vung trảm hỏa long 8 hướng.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            _overchargeTickTimer = 0f;
+            PerformComboAttack(3);
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(transform.position);
+        }
+
+        protected override void TickRelicSkillDuration()
+        {
+            _overchargeTickTimer += Time.deltaTime;
+            if (_overchargeTickTimer >= 0.35f)
+            {
+                _overchargeTickTimer = 0f;
+                int oldSlash = slashCount;
+                slashCount = Mathf.Max(6, slashCount * 2);
+                PerformComboAttack(2);
+                slashCount = oldSlash;
+            }
         }
 
         protected override void PerformComboAttack(int step)

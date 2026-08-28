@@ -24,6 +24,8 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicSupportAura;
             isPrimaryActiveWeapon = false;
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 9.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Bão Khói Thuốc Lào";
         }
 
         protected override void PerformAttack()
@@ -49,7 +51,31 @@ namespace ProjectZombie.Features.Weapons
 
             global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(spawnPos);
 
-            StartCoroutine(RoutineSmokeCloud(spawnPos));
+            StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius, smokeDuration));
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Bão Khói Thuốc Lào — Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            Vector2 forwardDir = transform.right;
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            {
+                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
+                if (player != null) forwardDir = player.FacingVector;
+            }
+
+            Vector2 spawnPos = (Vector2)transform.position + forwardDir * 2.5f;
+
+            if (smokeVfxPrefab != null)
+            {
+                float rotZ = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), 5.0f);
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(spawnPos);
+            StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius * 1.8f, 5.0f));
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
@@ -74,7 +100,7 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        private IEnumerator RoutineSmokeCloud(Vector2 center)
+        private IEnumerator RoutineSmokeCloud(Vector2 center, float radius, float duration)
         {
             float elapsed = 0f;
             int mask = TargetingUtility.EnemyLayerMask;
@@ -82,10 +108,10 @@ namespace ProjectZombie.Features.Weapons
             DamageData smokeTickDmg = CreateDamageData();
             smokeTickDmg = new DamageData(smokeTickDmg.Amount * 0.4f, smokeTickDmg.IsCritical, ElementType.Hoa, smokeTickDmg.IsCounter, this);
 
-            while (elapsed < smokeDuration)
+            while (elapsed < duration)
             {
                 elapsed += 0.5f;
-                Collider2D[] hits = Physics2D.OverlapCircleAll(center, smokeRadius, mask);
+                Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, mask);
                 for (int i = 0; i < hits.Length; i++)
                 {
                     if (hits[i].TryGetComponent<HealthSystem>(out var hp))
@@ -94,7 +120,7 @@ namespace ProjectZombie.Features.Weapons
                     }
                     if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
                     {
-                        // Giảm thời lượng Say Thuốc xuống 0.8s (chỉ làm chậm và lảo đảo nhẹ trong khi đứng trong khói)
+                        // Giảm thời lượng Say Thuốc xuống 0.8s (làm chậm và lảo đảo trong khi đứng trong khói)
                         status.ApplyStatusEffect(StatusEffectType.Stoned, 0.8f);
                     }
                 }

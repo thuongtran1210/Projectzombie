@@ -10,6 +10,13 @@ namespace ProjectZombie.Features.Weapons
     {
         private Transform _currentTarget;
 
+        public override void Initialize(ICharacterStats stats)
+        {
+            base.Initialize(stats);
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 8.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Bão Lửa Thần Sa";
+        }
+
         protected override bool CanAttack()
         {
             float range = CharacterStats != null ? CharacterStats.AttackRange : 9f;
@@ -36,6 +43,46 @@ namespace ProjectZombie.Features.Weapons
                     proj.transform.localScale = Vector3.one * GetFinalScale();
                 }
             }
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Bão Lửa Thần Sa — Quăng chùm 3 hạt Thần Sa nổ tung bão lửa thiêu rụi vùng rộng.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 12f;
+            Transform target = TargetingUtility.FindNearestEnemy(transform.position, range);
+
+            Vector2 direction;
+            if (target != null)
+            {
+                direction = (target.position - firePoint.position).normalized;
+            }
+            else
+            {
+                direction = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+            }
+
+            DamageData damageData = CreateDamageData();
+            damageData = new DamageData(damageData.Amount * 1.6f, true, ElementType.Hoa, damageData.IsCounter, this);
+            int burstCount = Mathf.Max(3, GetFinalProjectileCount() + 2);
+
+            for (int i = 0; i < burstCount; i++)
+            {
+                float offsetAngle = (i - (burstCount - 1) / 2f) * 14f;
+                Vector2 grenadeDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
+
+                if (projectileData != null)
+                {
+                    var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, grenadeDir, gameObject, damageData);
+                    if (proj != null)
+                    {
+                        proj.transform.localScale = Vector3.one * Mathf.Max(1.3f, GetFinalScale() * 1.3f);
+                    }
+                }
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(firePoint.position);
         }
     }
 }

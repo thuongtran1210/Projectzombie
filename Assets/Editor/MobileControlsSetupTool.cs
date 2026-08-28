@@ -134,6 +134,19 @@ namespace ProjectZombie.Editor.Tools
                 wiredCount++;
             }
 
+            // 4b. Chuẩn hóa & Wire RelicSkillButtonView & RelicSkillPresenter (Hybrid Relics v6.0)
+            RelicSkillButtonView relicView = mobilePanel.GetComponentInChildren<RelicSkillButtonView>(true);
+            Transform relicTransform = relicView != null ? relicView.transform : FindChildRecursive(mobilePanel.transform, "Relic");
+            if (relicTransform != null)
+            {
+                if (relicView == null) relicView = relicTransform.gameObject.AddComponent<RelicSkillButtonView>();
+                var relicPresenter = relicTransform.GetComponent<RelicSkillPresenter>();
+                if (relicPresenter == null) relicPresenter = relicTransform.gameObject.AddComponent<RelicSkillPresenter>();
+
+                WireRelicSkill(relicView, relicPresenter);
+                wiredCount++;
+            }
+
             // 5. Chuẩn hóa & Wire DashButtonView & DashButtonPresenter
             DashButtonView dashView = mobilePanel.GetComponentInChildren<DashButtonView>(true);
             Transform dashTransform = dashView != null ? dashView.transform : FindChildRecursive(mobilePanel.transform, "Dash");
@@ -254,6 +267,62 @@ namespace ProjectZombie.Editor.Tools
             EditorUtility.SetDirty(presenter);
 
             Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire SignatureSkill: {view.name}");
+        }
+
+        private static void WireRelicSkill(RelicSkillButtonView view, RelicSkillPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_relicButton").objectReferenceValue = btn;
+
+            Image fillImage = null;
+            Image iconImage = null;
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                }
+                else if (img.name.ToLower().Contains("icon") || img.name.ToLower().Contains("relic") || img.name.ToLower().Contains("art"))
+                {
+                    iconImage = img;
+                }
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            if (iconImage != null)
+            {
+                soView.FindProperty("_iconImage").objectReferenceValue = iconImage;
+            }
+
+            TextMeshProUGUI cdText = view.GetComponentInChildren<TextMeshProUGUI>(true);
+            soView.FindProperty("_cooldownText").objectReferenceValue = cdText;
+
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_buttonView").objectReferenceValue = view;
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire RelicSkill: {view.name}");
         }
 
         private static void WireDashButton(DashButtonView view, DashButtonPresenter presenter)
@@ -465,6 +534,48 @@ namespace ProjectZombie.Editor.Tools
             TextMeshProUGUI skillText = skillTextObj.GetComponent<TextMeshProUGUI>();
             skillText.alignment = TextAlignmentOptions.Center;
             skillText.fontSize = 28;
+
+            // 3b. Relic Skill Button (Nút Kỹ Năng Pháp Bảo - Hybrid Relics v6.0)
+            GameObject relicObj = new GameObject("Btn_RelicSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(RelicSkillButtonView), typeof(RelicSkillPresenter));
+            relicObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform relicRect = relicObj.GetComponent<RectTransform>();
+            relicRect.anchorMin = new Vector2(1f, 0f);
+            relicRect.anchorMax = new Vector2(1f, 0f);
+            relicRect.pivot = new Vector2(0.5f, 0.5f);
+            relicRect.anchoredPosition = new Vector2(-270, 270);
+            relicRect.sizeDelta = new Vector2(90, 90);
+            Image relicBg = relicObj.GetComponent<Image>();
+            relicBg.color = new Color(0.18f, 0.22f, 0.28f, 0.92f);
+
+            GameObject relicIconObj = new GameObject("Icon_Relic", typeof(RectTransform), typeof(Image));
+            relicIconObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicIconRect = relicIconObj.GetComponent<RectTransform>();
+            relicIconRect.anchorMin = new Vector2(0.15f, 0.15f);
+            relicIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+            relicIconRect.sizeDelta = Vector2.zero;
+            Image relicIconImg = relicIconObj.GetComponent<Image>();
+            relicIconImg.color = Color.white;
+
+            GameObject relicFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            relicFillObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicFillRect = relicFillObj.GetComponent<RectTransform>();
+            relicFillRect.anchorMin = Vector2.zero;
+            relicFillRect.anchorMax = Vector2.one;
+            relicFillRect.sizeDelta = Vector2.zero;
+            Image relicFillImg = relicFillObj.GetComponent<Image>();
+            relicFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            relicFillImg.type = Image.Type.Filled;
+            relicFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            GameObject relicTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+            relicTextObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicTextRect = relicTextObj.GetComponent<RectTransform>();
+            relicTextRect.anchorMin = Vector2.zero;
+            relicTextRect.anchorMax = Vector2.one;
+            relicTextRect.sizeDelta = Vector2.zero;
+            TextMeshProUGUI relicText = relicTextObj.GetComponent<TextMeshProUGUI>();
+            relicText.alignment = TextAlignmentOptions.Center;
+            relicText.fontSize = 24;
 
             // 4. Dash Button (Nút Lướt)
             GameObject dashObj = new GameObject("Btn_Dash", typeof(RectTransform), typeof(Image), typeof(Button), typeof(DashButtonView), typeof(DashButtonPresenter));

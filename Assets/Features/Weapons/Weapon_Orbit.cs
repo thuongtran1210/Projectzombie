@@ -15,8 +15,17 @@ namespace ProjectZombie.Features.Weapons
         [Header("Orbit Settings")]
         [SerializeField] private float baseRadius = 2f;
         [SerializeField] private int baseOrbCount = 1;
+        [SerializeField] private float activeShockwaveRadius = 5.5f;
 
         private readonly List<ProjectileController> _activeOrbs = new List<ProjectileController>();
+        private static readonly Collider2D[] _shockwaveHitBuffer = new Collider2D[30];
+
+        public override void Initialize(ICharacterStats stats)
+        {
+            base.Initialize(stats);
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 10.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Thần Âm Trảm Linh";
+        }
 
         protected override void PerformAttack()
         {
@@ -46,6 +55,45 @@ namespace ProjectZombie.Features.Weapons
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(center);
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Thần Âm Trảm Linh — Dậm sóng âm 360 độ cực đại gây choáng cứng 1.5s và đẩy lùi toàn bộ quái xung quanh.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            Vector3 center = firePoint != null ? firePoint.position : transform.position;
+            float radius = activeShockwaveRadius * GetFinalScale();
+
+            // Sinh đòn Orbit hỗ trợ
+            PerformAttack();
+
+            // Quét và gây choáng bầy quái xung quanh
+            int mask = TargetingUtility.EnemyLayerMask;
+            int numHits = Physics2D.OverlapCircleNonAlloc(center, radius, _shockwaveHitBuffer, mask);
+
+            DamageData shockwaveDmg = CreateDamageData();
+            shockwaveDmg = new DamageData(shockwaveDmg.Amount * 1.8f, true, ElementType.Tho, shockwaveDmg.IsCounter, this);
+
+            for (int i = 0; i < numHits; i++)
+            {
+                var hit = _shockwaveHitBuffer[i];
+                if (hit == null) continue;
+
+                if (hit.TryGetComponent<IDamageable>(out var damageable))
+                {
+                    damageable.TakeDamage(shockwaveDmg);
+                }
+
+                if (hit.TryGetComponent<Rigidbody2D>(out var rb))
+                {
+                    Vector2 pushDir = ((Vector2)hit.transform.position - (Vector2)center).normalized;
+                    if (pushDir == Vector2.zero) pushDir = Vector2.up;
+                    rb.AddForce(pushDir * 10f, ForceMode2D.Impulse);
+                }
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
         }
 
         private void OnEnable()

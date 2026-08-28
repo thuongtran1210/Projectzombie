@@ -22,8 +22,12 @@ namespace ProjectZombie.Features.Weapons.Editor
             public float cooldown;
             public string desc;
             public WeaponRole role;
+            public bool isPassive;
+            public float activeCd;
+            public float activeDur;
+            public string skillName;
 
-            public FunWeaponDef(string id, string name, ElementType element, float damage, float cooldown, string desc, WeaponRole role)
+            public FunWeaponDef(string id, string name, ElementType element, float damage, float cooldown, string desc, WeaponRole role, bool isPassive, float activeCd, float activeDur, string skillName)
             {
                 this.id = id;
                 this.name = name;
@@ -32,6 +36,10 @@ namespace ProjectZombie.Features.Weapons.Editor
                 this.cooldown = cooldown;
                 this.desc = desc;
                 this.role = role;
+                this.isPassive = isPassive;
+                this.activeCd = activeCd;
+                this.activeDur = activeDur;
+                this.skillName = skillName;
             }
         }
 
@@ -73,11 +81,11 @@ namespace ProjectZombie.Features.Weapons.Editor
             // =========================================================================
             FunWeaponDef[] funItems = new FunWeaponDef[]
             {
-                new FunWeaponDef("W_SLIPPER", "Dép Tổ Ong Thần Sa", ElementType.Kim, 25f, 1.2f, "Pháp bảo ném Boomerang tự động; Hit 3 quăng lốc dép gây hiệu ứng 'Quê Độ' khiến quái quay sang đấm đồng minh.", WeaponRole.RelicOnHitTrigger),
-                new FunWeaponDef("W_POT", "Nồi Cơm Thạch Sanh", ElementType.Tho, 35f, 2.0f, "Pháp bảo cận chiến gom tối đa 3 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi máu.", WeaponRole.RelicOrbitalShield),
-                new FunWeaponDef("W_PIPE", "Điếu Cày Cửu U", ElementType.Hoa, 20f, 1.8f, "Pháp bảo phun luồng khói dày đặc gây hiệu ứng 'Say Thuốc Lào' khiến quái đi giật lùi và nổ sát thương ho sặc sụa.", WeaponRole.RelicSupportAura),
-                new FunWeaponDef("R007", "Chiếu Trải Hoàng Tuyền", ElementType.Moc, 0f, 8.0f, "Pháp bảo thả chiếu khiến quái ngủ say (nhận x2 Crit DMG khi bị đánh thức); Người chơi bước lên trượt ván ủi văng quái.", WeaponRole.RelicSupportAura),
-                new FunWeaponDef("R008", "Chổi Lông Gà Gia Truyền", ElementType.Kim, 45f, 4.0f, "Triệu hồi Chổi Lông Gà khổng lồ giáng từ trời xuống với lực Knockback 12m/s cực đại và găm quái vào tường.", WeaponRole.RelicOnHitTrigger)
+                new FunWeaponDef("W_SLIPPER", "Dép Tổ Ong Thần Sa", ElementType.Kim, 25f, 1.2f, "Kỹ năng chủ động: Quăng Boomerang Dép khổng lồ + Lốc Dép Vạn Năng gây Quê Độ 100%.", WeaponRole.RelicOnHitTrigger, false, 7.0f, 0f, "Tổ Ong Lượn Cánh"),
+                new FunWeaponDef("W_POT", "Nồi Cơm Thạch Sanh", ElementType.Tho, 35f, 2.0f, "Kỹ năng chủ động: Gom quái diện rộng 6m vào tâm nồi, hất văng và hồi 15% Max HP.", WeaponRole.RelicOrbitalShield, false, 14.0f, 0f, "Hút Chân Không & Tiên Cơm"),
+                new FunWeaponDef("W_PIPE", "Điếu Cày Cửu U", ElementType.Hoa, 20f, 1.8f, "Kỹ năng chủ động: Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương.", WeaponRole.RelicSupportAura, false, 9.0f, 0f, "Bão Khói Thuốc Lào"),
+                new FunWeaponDef("R007", "Chiếu Trải Hoàng Tuyền", ElementType.Moc, 0f, 8.0f, "Pháp bảo bị động: Thả chiếu bẫy ngủ say (nhận x2 Crit); Hero bước lên trượt ván +100% tốc chạy.", WeaponRole.RelicSupportAura, true, 0f, 0f, ""),
+                new FunWeaponDef("R008", "Chổi Lông Gà Gia Truyền", ElementType.Kim, 45f, 4.0f, "Pháp bảo bị động: Tự động giáng đòn phạt khi Hero tung Combo Hit 3, đẩy lùi 12m/s gây choáng.", WeaponRole.RelicOnHitTrigger, true, 0f, 0f, "")
             };
 
             for (int i = 0; i < funItems.Length; i++)
@@ -124,6 +132,10 @@ namespace ProjectZombie.Features.Weapons.Editor
                 so.elementType = item.element;
                 so.baseDamage = item.damage;
                 so.baseAttackSpeed = item.cooldown;
+                so.isPassiveRelic = item.isPassive;
+                so.activeCooldown = item.activeCd;
+                so.activeDuration = item.activeDur;
+                so.skillActionName = item.skillName;
 
                 if (prefabObj != null)
                 {

@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Player
 
         private PlayerAnimator _playerAnimator;
         private Skills.SignatureSkillManager _signatureSkillManager;
+        private Weapons.WeaponManager _weaponManager;
 
         public static PlayerController Instance { get; private set; }
         public float LastDashTime => _lastDashTime;
@@ -50,6 +51,7 @@ namespace ProjectZombie.Features.Player
             _playerStats = GetComponent<PlayerStats>();
             _playerAnimator = GetComponent<PlayerAnimator>();
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
+            _weaponManager = GetComponent<Weapons.WeaponManager>();
 
             if (GetComponent<Visuals.PlayerStatusVisuals>() == null)
             {
@@ -154,12 +156,21 @@ namespace ProjectZombie.Features.Player
                 PerformDash();
             }
 
-            // Fallback Signature Skill từ phím E hoặc U
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.U))
+            // Fallback Signature Skill từ phím Q hoặc U
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.U))
             {
                 if (_signatureSkillManager != null)
                 {
                     _signatureSkillManager.TryExecuteSkill();
+                }
+            }
+
+            // Fallback Relic Active Skill từ phím E, R hoặc I (Hybrid Relics v6.0)
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.I))
+            {
+                if (_weaponManager != null)
+                {
+                    _weaponManager.TriggerEquippedRelicSkill();
                 }
             }
             

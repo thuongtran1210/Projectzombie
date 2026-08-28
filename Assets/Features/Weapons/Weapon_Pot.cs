@@ -30,6 +30,8 @@ namespace ProjectZombie.Features.Weapons
             base.Initialize(stats);
             weaponRole = WeaponRole.RelicOrbitalShield;
             isPrimaryActiveWeapon = false;
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 14.0f;
+            if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Hút Chân Không & Tiên Cơm";
         }
 
         protected override void PerformAttack()
@@ -42,8 +44,17 @@ namespace ProjectZombie.Features.Weapons
             if (nearMobs != null && nearMobs.Length > 0)
             {
                 _lastTriggerTime = Time.time;
-                StartCoroutine(RoutinePotDefenseSequence());
+                StartCoroutine(RoutinePotDefenseSequence(false));
             }
+        }
+
+        /// <summary>
+        /// Kỹ năng chủ động: Hút Chân Không & Tiên Cơm — Gom quái diện rộng 6m vào tâm nồi, hất văng và hồi 15% Max HP.
+        /// </summary>
+        protected override void PerformActiveRelicSkill()
+        {
+            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+            StartCoroutine(RoutinePotDefenseSequence(true));
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
@@ -51,26 +62,30 @@ namespace ProjectZombie.Features.Weapons
             // Tích lũy linh khí cơm nắm khi Hero chém trúng quái
         }
 
-        private IEnumerator RoutinePotDefenseSequence()
+        private IEnumerator RoutinePotDefenseSequence(bool isEmpowered = false)
         {
             Vector2 center = transform.position;
+            float currentRadius = isEmpowered ? vacuumRadius * 1.6f : vacuumRadius;
+            int maxMobs = isEmpowered ? maxCapturedMobs + 4 : maxCapturedMobs;
 
             if (potVfxPrefab != null)
             {
-                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, 0.6f);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, isEmpowered ? 1.0f : 0.6f);
             }
 
             int mask = TargetingUtility.EnemyLayerMask;
 
-            // 1. Gõ nắp nồi tạo sóng âm choáng nhẹ 0.35s
+            // 1. Gõ nắp nồi tạo sóng âm choáng nhẹ
             DamageData dmg = CreateDamageData();
-            Collider2D[] hits = Physics2D.OverlapCircleAll(center, vacuumRadius, mask);
+            if (isEmpowered) dmg = new DamageData(dmg.Amount * 1.5f, true, ElementType.Tho, dmg.IsCounter, this);
+
+            Collider2D[] hits = Physics2D.OverlapCircleAll(center, currentRadius, mask);
             for (int i = 0; i < hits.Length; i++)
             {
                 if (hits[i].TryGetComponent<HealthSystem>(out var hp)) hp.TakeDamage(dmg);
                 if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
                 {
-                    status.ApplyStatusEffect(StatusEffectType.Stun, 0.35f);
+                    status.ApplyStatusEffect(StatusEffectType.Stun, isEmpowered ? 0.75f : 0.35f);
                 }
             }
 
@@ -78,8 +93,8 @@ namespace ProjectZombie.Features.Weapons
 
             // 2. Hút quái vào miệng nồi rồi bắn văng ra ngoài
             List<Collider2D> captured = new List<Collider2D>();
-            hits = Physics2D.OverlapCircleAll(center, vacuumRadius, mask);
-            for (int i = 0; i < hits.Length && captured.Count < maxCapturedMobs; i++)
+            hits = Physics2D.OverlapCircleAll(center, currentRadius, mask);
+            for (int i = 0; i < hits.Length && captured.Count < maxMobs; i++)
             {
                 if (hits[i] != null) captured.Add(hits[i]);
             }
@@ -91,12 +106,12 @@ namespace ProjectZombie.Features.Weapons
                 {
                     Vector2 launchDir = ((Vector2)mob.transform.position - center).normalized;
                     if (launchDir.sqrMagnitude < 0.01f) launchDir = Random.insideUnitCircle.normalized;
-                    status.ApplyKnockback(launchDir, 14f, 0.35f);
+                    status.ApplyKnockback(launchDir, isEmpowered ? 18f : 14f, 0.4f);
                 }
             }
 
-            // 3. Rơi 3 viên Cơm Nắm hồi máu cho Hero
-            SpawnRiceBalls(center, 3);
+            // 3. Rơi Cơm Nắm hồi máu cho Hero
+            SpawnRiceBalls(center, isEmpowered ? 5 : 3);
         }
 
         private void SpawnRiceBalls(Vector2 center, int count)

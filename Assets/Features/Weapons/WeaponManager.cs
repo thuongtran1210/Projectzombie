@@ -235,6 +235,12 @@ namespace ProjectZombie.Features.Weapons
                 if (newWeapon.icon == null) newWeapon.icon = data.icon;
                 if (string.IsNullOrEmpty(newWeapon.description)) newWeapon.description = data.description;
                 if (isPrimary) newWeapon.isPrimaryActiveWeapon = true;
+
+                // Đồng bộ cấu hình Hybrid Relic (v6.0)
+                newWeapon.isPassiveRelic = data.isPassiveRelic;
+                newWeapon.activeCooldown = data.activeCooldown;
+                newWeapon.activeDuration = data.activeDuration;
+                newWeapon.skillActionName = data.skillActionName;
                 
                 AddWeapon(newWeapon);
             }
@@ -347,6 +353,41 @@ namespace ProjectZombie.Features.Weapons
 
                 NotifyWeaponsChanged();
             }
+        }
+
+        /// <summary>
+        /// Pháp bảo hộ thân duy nhất đang trang bị.
+        /// </summary>
+        public WeaponBase EquippedRelic => _activeWeapons.Count > 0 ? _activeWeapons[0] : null;
+
+        /// <summary>
+        /// Kiểm tra xem người chơi có đang trang bị Pháp Bảo Chủ Động (Active Relic) hay không.
+        /// </summary>
+        public bool HasActiveRelic(out WeaponBase activeRelic)
+        {
+            for (int i = 0; i < _activeWeapons.Count; i++)
+            {
+                var w = _activeWeapons[i];
+                if (w != null && !w.isPassiveRelic && !w.isPrimaryActiveWeapon)
+                {
+                    activeRelic = w;
+                    return true;
+                }
+            }
+            activeRelic = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo Hộ Thân khi người chơi nhấn nút Kỹ Năng Pháp Bảo / Phím E.
+        /// </summary>
+        public bool TriggerEquippedRelicSkill()
+        {
+            if (HasActiveRelic(out var activeRelic))
+            {
+                return activeRelic.TriggerActiveRelicSkill();
+            }
+            return false;
         }
 
         /// <summary>

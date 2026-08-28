@@ -17,6 +17,19 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Vai trò chiến đấu của vũ khí/pháp bảo")]
         public WeaponRole weaponRole = WeaponRole.PrimaryWeapon;
 
+        [Header("Hybrid Relic Settings (v6.0)")]
+        [Tooltip("True: Pháp bảo tự động (Passive - Không hiện nút); False: Pháp bảo chủ động (Active - Hiện nút bấm kỹ năng)")]
+        public bool isPassiveRelic = false;
+
+        [Tooltip("Thời gian hồi chiêu khi kích hoạt chủ động (giây)")]
+        public float activeCooldown = 8.0f;
+
+        [Tooltip("Thời gian hiệu lực kỹ năng chủ động (giây). 0 nếu là chiêu thức tức thời (Instant Cast)")]
+        public float activeDuration = 0f;
+
+        [Tooltip("Tên chiêu thức chủ động của Pháp Bảo")]
+        public string skillActionName;
+
         [Tooltip("ID duy nhất của vũ khí (VD: W001)")]
         public string weaponId;
         

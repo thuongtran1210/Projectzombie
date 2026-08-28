@@ -74,12 +74,37 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        [Header("Active / Passive Mode (Action RPG)")]
+        [Header("Active / Passive Mode (Hybrid Relic System v6.0)")]
         [Tooltip("Vai trò chiến đấu của vũ khí/pháp bảo")]
         public WeaponRole weaponRole = WeaponRole.PrimaryWeapon;
 
-        [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân tự động kích hoạt.")]
+        [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân.")]
         public bool isPrimaryActiveWeapon = false;
+
+        [Tooltip("True: Pháp bảo tự động (Passive - Không hiện nút); False: Pháp bảo chủ động (Active - Hiện nút bấm kỹ năng)")]
+        public bool isPassiveRelic = false;
+
+        [Tooltip("Thời gian hồi chiêu khi kích hoạt chủ động (giây)")]
+        public float activeCooldown = 8.0f;
+
+        [Tooltip("Thời gian hiệu lực kỹ năng chủ động (giây). 0 nếu là chiêu thức tức thời (Instant Cast)")]
+        public float activeDuration = 0f;
+
+        [Tooltip("Tên chiêu thức chủ động của Pháp Bảo")]
+        public string skillActionName;
+
+        private float _lastRelicSkillCastTime = -999f;
+        private float _relicSkillDurationEndTime = -999f;
+        private float _lastEmittedRelicCd = -1f;
+
+        public bool IsRelicSkillActive => Time.time < _relicSkillDurationEndTime;
+        public float RelicRemainingCooldown => Mathf.Max(0f, (_lastRelicSkillCastTime + activeCooldown) - Time.time);
+        public float RelicMaxCooldown => Mathf.Max(0.1f, activeCooldown);
+        public bool IsRelicSkillReady => RelicRemainingCooldown <= 0f;
+
+        public event System.Action<float, float> OnRelicCooldownUpdated;
+        public event System.Action OnRelicSkillReady;
+        public event System.Action OnRelicSkillExecuted;
 
         [Header("Combo System (Action RPG)")]
         public int currentComboStep = 1;
@@ -136,9 +161,30 @@ namespace ProjectZombie.Features.Weapons
             // Nếu là vũ khí chính chủ động, không tự động kích hoạt trong Tick
             if (isPrimaryActiveWeapon) return;
 
-            // Attack Speed calculation includes local bonus
+            // Xử lý cho Pháp Bảo Chủ Động (Active Relic)
+            if (!isPassiveRelic)
+            {
+                float remainingCd = RelicRemainingCooldown;
+                if (Mathf.Abs(remainingCd - _lastEmittedRelicCd) > 0.05f || (remainingCd <= 0f && _lastEmittedRelicCd > 0f))
+                {
+                    _lastEmittedRelicCd = remainingCd;
+                    OnRelicCooldownUpdated?.Invoke(remainingCd, RelicMaxCooldown);
+                    if (remainingCd <= 0f)
+                    {
+                        OnRelicSkillReady?.Invoke();
+                    }
+                }
+
+                // Nếu đang trong thời gian duy trì hiệu lực kỹ năng (Duration Buff)
+                if (IsRelicSkillActive)
+                {
+                    TickRelicSkillDuration();
+                }
+                return;
+            }
+
+            // Xử lý cho Pháp Bảo Bị Động (Passive Relic) - Tự động bắn theo nhịp
             float totalAttackSpeed = GetTotalAttackSpeed();
-            // Cooldown = 1 / AttackSpeed
             float attackCooldown = 1f / Mathf.Max(0.01f, totalAttackSpeed);
 
             if (Time.time >= _lastAttackTime + attackCooldown)
@@ -149,6 +195,44 @@ namespace ProjectZombie.Features.Weapons
                     _lastAttackTime = Time.time;
                 }
             }
+        }
+
+        /// <summary>
+        /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo khi người chơi nhấn nút Kỹ Năng Pháp Bảo.
+        /// </summary>
+        public virtual bool TriggerActiveRelicSkill()
+        {
+            if (CharacterStats == null) return false;
+            if (isPassiveRelic) return false; // Pháp bảo bị động không thể kích hoạt bằng nút
+            if (RelicRemainingCooldown > 0f) return false;
+
+            _lastRelicSkillCastTime = Time.time;
+            if (activeDuration > 0f)
+            {
+                _relicSkillDurationEndTime = Time.time + activeDuration;
+            }
+
+            PerformActiveRelicSkill();
+            OnRelicSkillExecuted?.Invoke();
+            OnRelicCooldownUpdated?.Invoke(RelicRemainingCooldown, RelicMaxCooldown);
+            return true;
+        }
+
+        /// <summary>
+        /// Thực thi chiêu thức chủ động khi bấm nút. Các Pháp bảo chủ động con có thể override hàm này.
+        /// Mặc định nếu không override sẽ gọi PerformAttack().
+        /// </summary>
+        protected virtual void PerformActiveRelicSkill()
+        {
+            PerformAttack();
+        }
+
+        /// <summary>
+        /// Gọi mỗi frame trong Tick khi kỹ năng chủ động đang trong thời gian duy trì hiệu lực (activeDuration > 0).
+        /// </summary>
+        protected virtual void TickRelicSkillDuration()
+        {
+            // Các pháp bảo dạng hào quang / bộc phát kéo dài có thể override
         }
 
         /// <summary>
