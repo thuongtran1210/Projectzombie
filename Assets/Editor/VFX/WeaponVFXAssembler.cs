@@ -421,10 +421,16 @@ namespace ProjectZombie.Editor.VFXTools
             // 1. W_POT
             SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_W_POT.prefab", "potVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_Pot_Suction.prefab");
 
-            // 2. R008
+            // 2. W_PIPE
+            SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_W_PIPE.prefab", "smokeVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_Pipe_DragonSmoke.prefab");
+
+            // 3. W_SLIPPER
+            SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_W_SLIPPER.prefab", "whirlwindVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_Slipper_Whirlwind.prefab");
+
+            // 4. R008
             SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_R008.prefab", "relicVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_ChickenBroom_Smash.prefab");
 
-            // 3. R007
+            // 5. R007
             SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_R007.prefab", "matVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_SleepingMat_Decal.prefab");
         }
 

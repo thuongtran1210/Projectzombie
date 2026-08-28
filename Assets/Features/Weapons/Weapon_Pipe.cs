@@ -19,13 +19,33 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float smokeRadius = 1.2f; // Bán kính vừa vặn 1.2m
         [SerializeField] private GameObject smokeVfxPrefab;
 
+        private void Awake()
+        {
+            EnsureVfxPrefab();
+        }
+
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
+            EnsureVfxPrefab();
             weaponRole = WeaponRole.RelicSupportAura;
             isPrimaryActiveWeapon = false;
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 9.0f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Bão Khói Thuốc Lào";
+        }
+
+        private void EnsureVfxPrefab()
+        {
+            if (smokeVfxPrefab == null)
+            {
+                smokeVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Pipe_DragonSmoke");
+#if UNITY_EDITOR
+                if (smokeVfxPrefab == null)
+                {
+                    smokeVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pipe_DragonSmoke.prefab");
+                }
+#endif
+            }
         }
 
         protected override void PerformAttack()

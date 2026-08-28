@@ -23,13 +23,33 @@ namespace ProjectZombie.Features.Weapons
 
         private float _lastWhirlwindTime;
 
+        private void Awake()
+        {
+            EnsureVfxPrefab();
+        }
+
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
+            EnsureVfxPrefab();
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 7.0f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Tổ Ong Lượn Cánh";
+        }
+
+        private void EnsureVfxPrefab()
+        {
+            if (whirlwindVfxPrefab == null)
+            {
+                whirlwindVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Slipper_Whirlwind");
+#if UNITY_EDITOR
+                if (whirlwindVfxPrefab == null)
+                {
+                    whirlwindVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Slipper_Whirlwind.prefab");
+                }
+#endif
+            }
         }
 
         protected override void PerformAttack()

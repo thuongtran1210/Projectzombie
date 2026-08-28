@@ -25,13 +25,33 @@ namespace ProjectZombie.Features.Weapons
 
         private float _lastTriggerTime;
 
+        private void Awake()
+        {
+            EnsureVfxPrefab();
+        }
+
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
+            EnsureVfxPrefab();
             weaponRole = WeaponRole.RelicOrbitalShield;
             isPrimaryActiveWeapon = false;
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 14.0f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Hút Chân Không & Tiên Cơm";
+        }
+
+        private void EnsureVfxPrefab()
+        {
+            if (potVfxPrefab == null)
+            {
+                potVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Pot_Suction");
+#if UNITY_EDITOR
+                if (potVfxPrefab == null)
+                {
+                    potVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pot_Suction.prefab");
+                }
+#endif
+            }
         }
 
         protected override void PerformAttack()
