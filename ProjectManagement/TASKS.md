@@ -295,11 +295,26 @@ Mục tiêu: Đưa các cơ chế chiến đấu và quái vật dân gian hài 
 
 ---
 
-### 🔴 Phase 5: UI Polish, Performance & Đóng Gói Phát Hành (FINAL PHASE - XỬ LÝ SAU)
+### 🔴 Phase 5: UI Polish, Performance & Đóng Gói Phát Hành (FINAL PHASE)
 
 - [ ] 🚨 **[TASK-314] Tối Ưu Hóa Toàn Diện Mobile UI Responsive, Safe Area & Multi-Resolution Adaptation**
 - [ ] 🚨 **[TASK-316] Hệ Thống UI Trực Quan Ngũ Hành Cho Người Chơi Mới (MVP)**
-- [ ] **[TASK-401] Texture Compression ASTC & Sprite Atlas (ASTC 6x6)**
+
+#### 🗜️ [TASK-401] Tối Ưu Hóa Bộ Nhớ & Draw Calls UI Bằng Hệ Thống Sprite Atlas v2 (ASTC 6x6)
+*Mục tiêu:* Gom 85+ file PNG UI nhỏ lẻ về 3 tấm Sprite Atlas theo vòng đời màn hình, giảm Draw Calls UI từ ~35 xuống còn 1 - 2 Batches/frame, tiết kiệm VRAM và duy trì 60 FPS ổn định trên Android.
+* **Dependencies:** `Assets/Art/UI/`, `Unity 2D Sprite Atlas v2`, `generate_ui_framework.py`.
+
+- [ ] **[TASK-401.1] Phân Nhóm 3 Sprite Atlas Theo Vòng Đời Màn Hình (Multi-Atlas Architecture):**
+  - **`Atlas_UI_InGame_HUD` ($1024 \times 1024$):** Gom toàn bộ Joystick, Cụm Nút Đánh/Lướt/Signature, Thanh Máu HP, Thanh EXP, Khung Avatar Mini, Khung Timer/Kill, Cán Cân Âm Dương. *Luôn nạp trong Combat Loop.*
+  - **`Atlas_UI_MainHub` ($1024 \times 1024$):** Gom Khung Gỗ Tàng Bảo Các, Nút Chọn Tướng, Nút Xuất Trận, Thanh Tab Cài Đặt, Bảng Nâng Cấp Miếu Cổ. *Chỉ nạp tại Sảnh Chờ.*
+  - **`Atlas_UI_UpgradeCards` ($1024 \times 1024$):** Gom 3 Khung Thẻ Bài 9-Slice (Common/Rare/Evolution), toàn bộ 30+ Icon Pháp Bảo (W001-W012) & Passive (P001-P012). *Chỉ nạp khi mở Level Up Modal hoặc Tủ Đồ.*
+- [ ] **[TASK-401.2] Cấu Hình Sprite Atlas v2 & Bảo Toàn 9-Slice Borders:**
+  - Thiết lập thuộc tính `Include in Build = true`, `Allow Rotation = false`, `Tight Packing = false`, `Padding = 4px` (chống lem viền / Texture Bleeding).
+  - Tự động kế thừa và bảo toàn 100% thông số `spriteBorder` (9-Slice) của từng Sprite con mà không làm méo hoa văn góc Mây Cuộn / Triện Đông Sơn.
+- [ ] **[TASK-401.3] Chuẩn Hóa Nén Texture ASTC 6x6 Cho Android Platform:**
+  - Thiết lập Default Override Android: Format `ASTC 6x6 block` (giảm 75% dung lượng VRAM so với RGBA 32-bit mà chất lượng hiển thị sắc nét 99%).
+  - Kiểm thử Draw Calls trên *Frame Debugger*: Xác nhận toàn bộ In-Game HUD chỉ tốn đúng **1 duy nhất Draw Call** khi render.
+
 - [ ] **[TASK-402] Mobile Stress Test (60 FPS ARPG)**
 - [ ] **[TASK-403] Android AAB Build & Signing (Google Play Release)**
 
