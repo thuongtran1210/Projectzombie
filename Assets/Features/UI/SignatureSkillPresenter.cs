@@ -117,7 +117,15 @@ namespace ProjectZombie.Features.UI
 
         private void OnButtonClicked()
         {
-            if (_skillManager == null || !_skillManager.IsReady) return;
+            if (_skillManager == null) return;
+
+            if (!_skillManager.IsReady || _skillManager.RemainingCooldown > 0f)
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                return;
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
             // Nếu có Overlay View thì mở Overlay chọn hệ, đồng thời thi triển skill
             if (_skillManager.ActiveSkill is ThuSinhSignatureSkill && _elementPickerOverlayView != null)
@@ -134,6 +142,8 @@ namespace ProjectZombie.Features.UI
         private void OnElementPickedFromOverlay(ElementType selectedElement)
         {
             if (_skillManager == null) return;
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
             // Nếu người chơi tự chọn hoặc hết 1.5s timeout, thi triển skill với hệ tương ứng
             if (selectedElement == ElementType.None)

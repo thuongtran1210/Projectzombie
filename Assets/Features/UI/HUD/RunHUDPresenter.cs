@@ -116,6 +116,7 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnPauseClicked()
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var presenter = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>(true);
             if (presenter != null)
             {

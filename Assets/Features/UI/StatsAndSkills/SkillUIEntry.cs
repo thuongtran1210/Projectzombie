@@ -52,6 +52,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             if (_tooltip != null)
             {
                 if (_tooltip.gameObject.activeSelf)

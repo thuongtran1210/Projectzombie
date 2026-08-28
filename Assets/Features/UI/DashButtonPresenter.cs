@@ -107,7 +107,16 @@ namespace ProjectZombie.Features.UI
         {
             if (_playerController != null)
             {
-                _playerController.PerformDash();
+                float timePassed = Time.time - _lastDashTime;
+                if (timePassed >= _dashCooldown)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                    _playerController.PerformDash();
+                }
+                else
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                }
             }
         }
     }
