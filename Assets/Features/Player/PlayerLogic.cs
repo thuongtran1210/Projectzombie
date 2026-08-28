@@ -57,6 +57,21 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        /// <summary>
+        /// Khôi phục toàn bộ trạng thái nhân vật sau khi tử trận hoặc khi chuyển cảnh về Sảnh / chơi lại.
+        /// </summary>
+        public void ResetState()
+        {
+            _isDying = false;
+            StopAllCoroutines();
+
+            if (_playerController != null) _playerController.enabled = true;
+            if (_weaponManager != null) _weaponManager.enabled = true;
+            if (_collider != null) _collider.enabled = true;
+            if (_playerAnimator != null) _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+            if (_healthSystem != null) _healthSystem.ResetHealth();
+        }
+
         private void OnDestroy()
         {
             if (_healthSystem != null)

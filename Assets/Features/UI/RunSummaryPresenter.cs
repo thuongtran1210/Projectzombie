@@ -69,13 +69,33 @@ namespace ProjectZombie.Features.UI
         private void OnReturnToMainMenu()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
-            Debug.Log($"[{nameof(RunSummaryPresenter)}] Trở về Main Menu.");
+            Time.timeScale = 1f;
+            if (_view != null) _view.gameObject.SetActive(false);
+
+            if (MetaSceneTransitionController.Instance != null)
+            {
+                MetaSceneTransitionController.Instance.ReturnToMetaHub();
+            }
+            else
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            }
         }
 
         private void OnRetryGame()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
-            Debug.Log($"[{nameof(RunSummaryPresenter)}] Thử lại Run mới.");
+            Time.timeScale = 1f;
+            if (_view != null) _view.gameObject.SetActive(false);
+
+            if (MetaSceneTransitionController.Instance != null)
+            {
+                MetaSceneTransitionController.Instance.StartRun();
+            }
+            else
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            }
         }
     }
 }

@@ -132,6 +132,27 @@ namespace ProjectZombie.Features.Spawners
             isMatchActive = false;
         }
 
+        /// <summary>
+        /// Dừng trận đấu và dọn sạch toàn bộ quái vật, boss, minion còn sót lại trên bản đồ.
+        /// </summary>
+        public void StopMatchAndClearAllEnemies()
+        {
+            isMatchActive = false;
+            matchTime = 0f;
+            _nextEventIndex = 0;
+            _activeContinuousEvents.Clear();
+            _eventTimers.Clear();
+
+            var allEnemies = FindObjectsOfType<Enemies.Enemy>();
+            for (int i = 0; i < allEnemies.Length; i++)
+            {
+                if (allEnemies[i] != null && allEnemies[i].gameObject != null)
+                {
+                    Destroy(allEnemies[i].gameObject);
+                }
+            }
+        }
+
         private void Update()
         {
             if (!isMatchActive || timelineConfig == null) return;

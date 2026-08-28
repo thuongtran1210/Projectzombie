@@ -114,6 +114,8 @@ namespace ProjectZombie.Features.Player
         {
             if (overridePrefab != null) return overridePrefab;
 
+            RunLoadoutState.EnsureInitialized();
+
             // Ưu tiên 1: Tướng đã lưu trong RunLoadoutState
             if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.playerPrefab != null)
             {
@@ -126,8 +128,14 @@ namespace ProjectZombie.Features.Player
                 return characterSelectionData.SelectedPlayerPrefab;
             }
 
-            // Ưu tiên 3: Fallback Resources
+            // Ưu tiên 3: Fallback Resources hoặc AssetDatabase
             var selectionDataRes = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+            #if UNITY_EDITOR
+            if (selectionDataRes == null)
+            {
+                selectionDataRes = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+            }
+            #endif
             if (selectionDataRes != null && selectionDataRes.SelectedPlayerPrefab != null)
             {
                 return selectionDataRes.SelectedPlayerPrefab;
@@ -200,6 +208,7 @@ namespace ProjectZombie.Features.Player
             if (cameraFollow != null)
             {
                 cameraFollow.SetTarget(target);
+                cameraFollow.ResetZoom(0.1f);
             }
         }
 
@@ -208,14 +217,45 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void StartMatchFlow()
         {
-            // Tự động đồng bộ / nạp lại Pháp Bảo & Vũ Khí mới nhất vào Player
-            if (_activePlayerInstance != null)
+            Time.timeScale = 1f;
+
+            // 1. Kiểm tra thực thể Player: Nếu chưa có hoặc đã chết ở trận trước thì spawn mới lại
+            bool needRespawn = _activePlayerInstance == null || 
+                               !_activePlayerInstance.activeInHierarchy || 
+                               (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hpCheck) && hpCheck.CurrentHealth <= 0);
+
+            if (needRespawn)
             {
+                SpawnPlayerFromSelection(null);
+            }
+            else
+            {
+                // Khôi phục đầy đủ trạng thái cho Player
+                if (_activePlayerInstance.TryGetComponent<PlayerLogic>(out var logic)) logic.ResetState();
+                if (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hp)) hp.ResetHealth();
+                if (_activePlayerInstance.TryGetComponent<PlayerController>(out var ctrl)) ctrl.enabled = true;
+                if (_activePlayerInstance.TryGetComponent<Collider2D>(out var col)) col.enabled = true;
+                if (_activePlayerInstance.TryGetComponent<PlayerAnimator>(out var anim)) anim.ChangeAnimationState(PlayerAnimationState.Idle);
+
+                if (spawnPoint != null)
+                {
+                    _activePlayerInstance.transform.position = spawnPoint.position;
+                }
+
                 var wm = _activePlayerInstance.GetComponent<WeaponManager>();
                 if (wm != null)
                 {
+                    wm.enabled = true;
                     wm.ReloadEquippedWeapons();
                 }
+
+                PlayerProvider.RegisterPlayer(_activePlayerInstance);
+                SetupCameraFollow(_activePlayerInstance.transform);
+            }
+
+            if (CameraFollow.Instance != null)
+            {
+                CameraFollow.Instance.ResetZoom(0.1f);
             }
 
             if (RunStatsTracker.Instance != null)
@@ -233,6 +273,51 @@ namespace ProjectZombie.Features.Player
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.Playing);
+            }
+        }
+
+        /// <summary>
+        /// Khôi phục thực thể nhân vật đứng sống khỏe mạnh tại Sảnh Hoàng Tuyền khi trở về Menu.
+        /// </summary>
+        public void ResetPlayerToHub()
+        {
+            Time.timeScale = 1f;
+
+            bool needRespawn = _activePlayerInstance == null || 
+                               !_activePlayerInstance.activeInHierarchy || 
+                               (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hpCheck) && hpCheck.CurrentHealth <= 0);
+
+            if (needRespawn)
+            {
+                SpawnPlayerFromSelection(null);
+            }
+            else
+            {
+                if (_activePlayerInstance.TryGetComponent<PlayerLogic>(out var logic)) logic.ResetState();
+                if (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hp)) hp.ResetHealth();
+                if (_activePlayerInstance.TryGetComponent<PlayerController>(out var ctrl)) ctrl.enabled = true;
+                if (_activePlayerInstance.TryGetComponent<Collider2D>(out var col)) col.enabled = true;
+                if (_activePlayerInstance.TryGetComponent<PlayerAnimator>(out var anim)) anim.ChangeAnimationState(PlayerAnimationState.Idle);
+
+                if (spawnPoint != null)
+                {
+                    _activePlayerInstance.transform.position = spawnPoint.position;
+                }
+
+                var wm = _activePlayerInstance.GetComponent<WeaponManager>();
+                if (wm != null)
+                {
+                    wm.enabled = true;
+                    wm.ReloadEquippedWeapons();
+                }
+
+                PlayerProvider.RegisterPlayer(_activePlayerInstance);
+                SetupCameraFollow(_activePlayerInstance.transform);
+            }
+
+            if (CameraFollow.Instance != null)
+            {
+                CameraFollow.Instance.ResetZoom(0.1f);
             }
         }
     }

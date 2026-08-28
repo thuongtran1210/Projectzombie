@@ -92,6 +92,8 @@ namespace ProjectZombie.Features.UI
 
         private IEnumerator TransitionToCombatRoutine()
         {
+            Time.timeScale = 1f;
+
             if (LoadingScreenPresenter.Instance != null)
             {
                 bool loadingFinished = false;
@@ -137,10 +139,23 @@ namespace ProjectZombie.Features.UI
 
         private IEnumerator TransitionToMetaHubRoutine()
         {
+            Time.timeScale = 1f;
+
             // 1. Fade Out tối dần
             yield return StartCoroutine(FadeRoutine(0f, 1f, 0.25f));
 
-            // 2. Chuyển UI về Meta
+            // 2. Dọn sạch quái và reset Player đứng tại Sảnh
+            if (_spawnManager != null)
+            {
+                _spawnManager.StopMatchAndClearAllEnemies();
+            }
+
+            if (_gameplayBootstrapper != null)
+            {
+                _gameplayBootstrapper.ResetPlayerToHub();
+            }
+
+            // 3. Chuyển UI về Meta Hub
             ApplyStateVisuals(true);
 
             if (_metaUIManager != null)
@@ -157,7 +172,7 @@ namespace ProjectZombie.Features.UI
                 GameStateManager.Instance.ChangeState(GameState.MainMenu);
             }
 
-            // 3. Fade In sáng lại
+            // 4. Fade In sáng lại
             yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
         }
 

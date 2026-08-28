@@ -51,6 +51,15 @@ namespace ProjectZombie.Features.Shared
         }
 
         /// <summary>
+        /// Hồi phục đầy 100% máu và thông báo cập nhật UI (dùng khi bắt đầu hoặc reset trận đấu).
+        /// </summary>
+        public void ResetHealth()
+        {
+            _currentHealth = maxHealth;
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+        }
+
+        /// <summary>
         /// Nhân HP tối đa với hệ số scale (dùng bởi EnemySpawner cho Difficulty Scaling).
         /// Cũng scale HP hiện tại theo cùng tỷ lệ để giữ %.
         /// </summary>
