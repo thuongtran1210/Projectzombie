@@ -54,6 +54,8 @@ namespace ProjectZombie.Features.Enemies.Boss
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null) _playerTransform = player.transform;
+
+            global::Core.Audio.AudioManager.Instance?.PlayBossRoar(transform.position);
         }
 
         private bool _isDead = false;

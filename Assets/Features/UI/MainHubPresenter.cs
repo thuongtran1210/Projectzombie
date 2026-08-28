@@ -88,6 +88,7 @@ namespace ProjectZombie.Features.UI
         public void RefreshHubState()
         {
             UpdateCurrencyDisplay();
+            global::Core.Audio.AudioManager.Instance?.PlayHubBGM();
             UpdateSelectedHeroDisplay();
             UpdateLoadoutSummaryDisplay();
         }

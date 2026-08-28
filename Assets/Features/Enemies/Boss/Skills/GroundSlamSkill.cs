@@ -62,6 +62,8 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
             StartCoroutine(SpawnShockwaveVFX(transform.position, slamRadius));
 
+            global::Core.Audio.AudioManager.Instance?.PlayBossSmash(transform.position);
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, slamRadius, targetLayer);
             foreach (var hit in hits)
             {

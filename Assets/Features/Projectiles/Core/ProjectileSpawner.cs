@@ -64,6 +64,8 @@ namespace ProjectZombie.Features.Projectiles.Core
                 }
             }
 
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(position);
+
             return controller;
         }
 

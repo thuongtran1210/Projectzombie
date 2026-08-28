@@ -55,6 +55,16 @@ namespace Core.Audio
         [SerializeField] private AudioClip _swordSlashCritClip;
         [SerializeField] private AudioClip _playerDashClip;
         [SerializeField] private AudioClip _playerHurtClip;
+        [SerializeField] private AudioClip _projectileShootClip;
+        [SerializeField] private AudioClip _projectileExplodeClip;
+        [SerializeField] private AudioClip _magicOrbitClip;
+        [SerializeField] private AudioClip _ultimateSkillCastClip;
+        [SerializeField] private AudioClip _elementalReactionClip;
+        [SerializeField] private AudioClip _statusFreezeClip;
+        [SerializeField] private AudioClip _statusBurnClip;
+        [SerializeField] private AudioClip _bossRoarClip;
+        [SerializeField] private AudioClip _bossSmashClip;
+        [SerializeField] private AudioClip _hubBgmClip;
 
         private const string PREFS_MASTER_VOL = "Setting_MasterVolume";
         private const string PREFS_BGM_VOL = "Setting_BGMVolume";
@@ -132,6 +142,16 @@ namespace Core.Audio
             if (_swordSlashCritClip == null) _swordSlashCritClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
             if (_playerDashClip == null) _playerDashClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Dash.wav");
             if (_playerHurtClip == null) _playerHurtClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Hurt.wav");
+            if (_projectileShootClip == null) _projectileShootClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Shoot.wav");
+            if (_projectileExplodeClip == null) _projectileExplodeClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Explode.wav");
+            if (_magicOrbitClip == null) _magicOrbitClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Magic_Orbit_Loop.wav");
+            if (_ultimateSkillCastClip == null) _ultimateSkillCastClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Skill_Ultimate_Cast.wav");
+            if (_elementalReactionClip == null) _elementalReactionClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Elemental_Reaction.wav");
+            if (_statusFreezeClip == null) _statusFreezeClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Freeze.wav");
+            if (_statusBurnClip == null) _statusBurnClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Burn.wav");
+            if (_bossRoarClip == null) _bossRoarClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
+            if (_bossSmashClip == null) _bossSmashClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Smash.wav");
+            if (_hubBgmClip == null) _hubBgmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/BGM_MainHub_VongXuyen.wav");
 #endif
         }
 
@@ -338,6 +358,93 @@ namespace Core.Audio
             {
                 float pitch = Random.Range(0.95f, 1.05f);
                 PlaySound(_playerHurtClip, position, 1.0f, pitch);
+            }
+        }
+
+        public void PlayProjectileShoot(Vector3 position = default)
+        {
+            if (_projectileShootClip != null)
+            {
+                float pitch = Random.Range(0.94f, 1.06f);
+                PlaySound(_projectileShootClip, position, 0.85f, pitch);
+            }
+        }
+
+        public void PlayProjectileExplode(Vector3 position = default)
+        {
+            if (_projectileExplodeClip != null)
+            {
+                float pitch = Random.Range(0.92f, 1.08f);
+                PlaySound(_projectileExplodeClip, position, 1.0f, pitch);
+            }
+        }
+
+        public void PlayMagicOrbit(Vector3 position = default)
+        {
+            if (_magicOrbitClip != null)
+            {
+                float pitch = Random.Range(0.96f, 1.04f);
+                PlaySound(_magicOrbitClip, position, 0.75f, pitch);
+            }
+        }
+
+        public void PlayUltimateSkillCast(Vector3 position = default)
+        {
+            if (_ultimateSkillCastClip != null)
+            {
+                PlaySound(_ultimateSkillCastClip, position, 1.0f, 1.0f);
+            }
+        }
+
+        public void PlayElementalReaction(Vector3 position = default)
+        {
+            if (_elementalReactionClip != null)
+            {
+                float pitch = Random.Range(0.97f, 1.03f);
+                PlaySound(_elementalReactionClip, position, 0.9f, pitch);
+            }
+        }
+
+        public void PlayStatusFreeze(Vector3 position = default)
+        {
+            if (_statusFreezeClip != null)
+            {
+                float pitch = Random.Range(0.95f, 1.05f);
+                PlaySound(_statusFreezeClip, position, 0.85f, pitch);
+            }
+        }
+
+        public void PlayStatusBurn(Vector3 position = default)
+        {
+            if (_statusBurnClip != null)
+            {
+                float pitch = Random.Range(0.95f, 1.05f);
+                PlaySound(_statusBurnClip, position, 0.85f, pitch);
+            }
+        }
+
+        public void PlayBossRoar(Vector3 position = default)
+        {
+            if (_bossRoarClip != null)
+            {
+                PlaySound(_bossRoarClip, position, 1.0f, 1.0f);
+            }
+        }
+
+        public void PlayBossSmash(Vector3 position = default)
+        {
+            if (_bossSmashClip != null)
+            {
+                float pitch = Random.Range(0.94f, 1.06f);
+                PlaySound(_bossSmashClip, position, 1.0f, pitch);
+            }
+        }
+
+        public void PlayHubBGM()
+        {
+            if (_hubBgmClip != null)
+            {
+                PlayBGM(_hubBgmClip, 0.40f, 1.0f);
             }
         }
 

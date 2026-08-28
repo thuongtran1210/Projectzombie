@@ -49,6 +49,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
         {
             _hasExploded = true;
 
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+
             int mask = _controller.Data != null && _controller.Data.HitLayer != 0 
                 ? (int)_controller.Data.HitLayer 
                 : TargetingUtility.EnemyLayerMask;

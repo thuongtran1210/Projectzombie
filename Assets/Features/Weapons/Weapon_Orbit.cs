@@ -44,6 +44,8 @@ namespace ProjectZombie.Features.Weapons
                     _activeOrbs.Add(orb);
                 }
             }
+
+            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(center);
         }
 
         private void OnEnable()

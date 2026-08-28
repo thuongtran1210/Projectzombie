@@ -196,6 +196,15 @@ namespace ProjectZombie.Features.Enemies
                 }
 
                 OnStatusChanged?.Invoke(type, true);
+
+                if (type == StatusEffectType.Freeze)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayStatusFreeze(transform.position);
+                }
+                else if (type == StatusEffectType.Burn)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(transform.position);
+                }
             }
 
             RecalculateStatus();

@@ -89,6 +89,8 @@ namespace ProjectZombie.Features.Player.Skills
 
             ActiveSkill.Execute(gameObject, onElementSelectedCallback);
 
+            global::Core.Audio.AudioManager.Instance?.PlayUltimateSkillCast(transform.position);
+
             RemainingCooldown = ActiveSkill.Cooldown;
             OnSkillExecuted?.Invoke();
             OnCooldownUpdated?.Invoke(RemainingCooldown, MaxCooldown);
