@@ -201,6 +201,14 @@ namespace ProjectZombie.Features.UI
         {
             _lastIsVictory = isVictory;
 
+            // Đóng khẩn cấp bảng Upgrade nếu đang mở dở khi tử trận
+            var upgradePresenter = FindObjectOfType<UpgradeUIPresenter>();
+            if (upgradePresenter != null)
+            {
+                var upgradeView = upgradePresenter.GetComponent<UpgradeUIView>();
+                if (upgradeView != null) upgradeView.SetActive(false);
+            }
+
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.GameOver);

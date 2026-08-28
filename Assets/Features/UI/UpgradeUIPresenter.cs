@@ -153,6 +153,17 @@ namespace ProjectZombie.Features.UI
 
         private void HandleLevelUp(int newLevel)
         {
+            // Bảo vệ xung đột: Tuyệt đối không mở bảng nâng cấp nếu Game Over hoặc nhân vật đã tử trận
+            if (GameStateManager.Instance != null && (GameStateManager.CurrentState == GameState.GameOver || GameStateManager.CurrentState == GameState.MainMenu))
+            {
+                return;
+            }
+
+            if (_playerExperience != null && _playerExperience.TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0)
+            {
+                return;
+            }
+
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.LevelUpSelection);
