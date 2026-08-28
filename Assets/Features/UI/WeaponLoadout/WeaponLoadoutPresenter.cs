@@ -156,7 +156,7 @@ namespace ProjectZombie.Features.UI
             _selectedPrimary = weapon;
             _inspectedWeapon = weapon;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            global::Core.Audio.AudioManager.Instance?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
@@ -178,7 +178,7 @@ namespace ProjectZombie.Features.UI
 
             _inspectedWeapon = relic;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            global::Core.Audio.AudioManager.Instance?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)

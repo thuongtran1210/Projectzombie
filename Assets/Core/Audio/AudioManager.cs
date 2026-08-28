@@ -43,9 +43,10 @@ namespace Core.Audio
         [SerializeField] private AudioSource _bgmAudioSource;
         [SerializeField] private AudioSource _stingerAudioSource;
 
-        [Header("Core UI Sound Effects (4 Tinh Gọn)")]
+        [Header("Core UI Sound Effects (Tinh Gọn & Trầm Ấm)")]
         [SerializeField] private AudioClip _uiClickClip;
         [SerializeField] private AudioClip _uiConfirmClip;
+        [SerializeField] private AudioClip _uiWeaponEquipClip;
         [SerializeField] private AudioClip _uiErrorClip;
         [SerializeField] private AudioClip _uiCoinClip;
 
@@ -117,6 +118,7 @@ namespace Core.Audio
             if (_uiClickClip == null) _uiClickClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
             if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Confirm.wav");
             if (_uiConfirmClip == null) _uiConfirmClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Card_Select.wav");
+            if (_uiWeaponEquipClip == null) _uiWeaponEquipClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
             if (_uiErrorClip == null) _uiErrorClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
             if (_uiCoinClip == null) _uiCoinClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
 #endif
@@ -267,6 +269,13 @@ namespace Core.Audio
             float naturalPitch = pitch * Random.Range(0.98f, 1.02f);
             AudioClip clip = _uiConfirmClip != null ? _uiConfirmClip : _uiClickClip;
             if (clip != null) PlaySound(clip, default, 1f, naturalPitch);
+        }
+
+        public void PlayWeaponEquip(float pitch = 1f)
+        {
+            float naturalPitch = pitch * Random.Range(0.97f, 1.03f);
+            AudioClip clip = _uiWeaponEquipClip != null ? _uiWeaponEquipClip : (_uiConfirmClip != null ? _uiConfirmClip : _uiClickClip);
+            if (clip != null) PlaySound(clip, default, 0.95f, naturalPitch);
         }
 
         public void PlayUIError(float pitch = 1f)
