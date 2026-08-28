@@ -79,6 +79,11 @@ namespace ProjectZombie.Features.Shared
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
             OnDamageTaken?.Invoke(data);
 
+            if (CompareTag("Player"))
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayPlayerHurt(transform.position);
+            }
+
             // Bắn event báo cáo sát thương cơ bản
             OnDamageReported?.Invoke(new DamageReport(amount, false, ElementType.None, transform.position, CompareTag("Player")));
 
@@ -97,6 +102,11 @@ namespace ProjectZombie.Features.Shared
 
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
             OnDamageTaken?.Invoke(damageData);
+
+            if (CompareTag("Player"))
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayPlayerHurt(transform.position);
+            }
 
             // Bắn event báo cáo sát thương đầy đủ (Crit, Element & Counter)
             OnDamageReported?.Invoke(new DamageReport(damageData.Amount, damageData.IsCritical, damageData.Element, transform.position, CompareTag("Player"), damageData.IsCounter));

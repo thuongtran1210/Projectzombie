@@ -50,6 +50,12 @@ namespace Core.Audio
         [SerializeField] private AudioClip _uiErrorClip;
         [SerializeField] private AudioClip _uiCoinClip;
 
+        [Header("In-Game Combat Sound Effects")]
+        [SerializeField] private AudioClip _swordSlashLightClip;
+        [SerializeField] private AudioClip _swordSlashCritClip;
+        [SerializeField] private AudioClip _playerDashClip;
+        [SerializeField] private AudioClip _playerHurtClip;
+
         private const string PREFS_MASTER_VOL = "Setting_MasterVolume";
         private const string PREFS_BGM_VOL = "Setting_BGMVolume";
         private const string PREFS_SFX_VOL = "Setting_SFXVolume";
@@ -121,6 +127,11 @@ namespace Core.Audio
             if (_uiWeaponEquipClip == null) _uiWeaponEquipClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
             if (_uiErrorClip == null) _uiErrorClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
             if (_uiCoinClip == null) _uiCoinClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
+
+            if (_swordSlashLightClip == null) _swordSlashLightClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Light.wav");
+            if (_swordSlashCritClip == null) _swordSlashCritClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
+            if (_playerDashClip == null) _playerDashClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Dash.wav");
+            if (_playerHurtClip == null) _playerHurtClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Hurt.wav");
 #endif
         }
 
@@ -297,6 +308,41 @@ namespace Core.Audio
             if (_uiCoinClip != null) PlaySound(_uiCoinClip, default, 0.85f, coinPitch);
         }
 
+        #endregion
+
+        #region In-Game Combat Sound Playback (Âm Thanh Chiến Đấu)
+
+        public void PlaySlash(bool isCritical = false, Vector3 position = default)
+        {
+            AudioClip clip = isCritical ? _swordSlashCritClip : _swordSlashLightClip;
+            if (clip != null)
+            {
+                float pitch = Random.Range(0.94f, 1.06f);
+                float vol = isCritical ? 1.0f : 0.85f;
+                PlaySound(clip, position, vol, pitch);
+            }
+        }
+
+        public void PlayPlayerDash(Vector3 position = default)
+        {
+            if (_playerDashClip != null)
+            {
+                float pitch = Random.Range(0.96f, 1.04f);
+                PlaySound(_playerDashClip, position, 0.9f, pitch);
+            }
+        }
+
+        public void PlayPlayerHurt(Vector3 position = default)
+        {
+            if (_playerHurtClip != null)
+            {
+                float pitch = Random.Range(0.95f, 1.05f);
+                PlaySound(_playerHurtClip, position, 1.0f, pitch);
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Phát trực tiếp 1 AudioClip không cần qua AudioConfigSO (tiện lợi cho UI & Event).
         /// </summary>
@@ -331,8 +377,6 @@ namespace Core.Audio
             yield return new WaitForSecondsRealtime(duration);
             _pool.Release(source);
         }
-
-        #endregion
 
         #region Mixer Control Methods (Settings Panel Ready)
 

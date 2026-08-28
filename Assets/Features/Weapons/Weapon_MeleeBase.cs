@@ -134,10 +134,12 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
-        /// Phát tín hiệu Game Feel (Rung màn hình & Hit Stop) thông qua Event Hub.
+        /// Phát tín hiệu Game Feel (Rung màn hình, Hit Stop & Âm thanh chém/bạo kích) thông qua Event Hub.
         /// </summary>
         protected void TriggerHitImpact(bool isCritical)
         {
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(isCritical, transform.position);
+
             if (isCritical)
             {
                 GameJuiceEvents.RequestCameraShake(0.15f, 0.15f);
@@ -151,6 +153,8 @@ namespace ProjectZombie.Features.Weapons
 
         protected void PlaySlashVFX()
         {
+            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
+
             if (slashParticles != null)
             {
                 slashParticles.Stop(); // Reset lại nếu đang play dở

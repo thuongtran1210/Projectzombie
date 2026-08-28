@@ -268,6 +268,9 @@ namespace ProjectZombie.Features.Player
                 {
                     _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dash);
                 }
+
+                // Phát âm thanh Thân Pháp Phi Vân Lướt
+                global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(transform.position);
             }
         }
 

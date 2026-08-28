@@ -17,10 +17,10 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  _directClip: {fileID: 0}
+  _directClip: {fileID: 8300000, guid: 06eb72c540b540d48a53911e1056b53c, type: 3}
   _category: 0
   _mixerGroup: {fileID: 0}
-  _volume: 0.2
-  _pitchRange: {x: 0.95, y: 1.05}
-  _cooldownTime: 0.15
+  _volume: 0.35
+  _pitchRange: {x: 0.92, y: 1.08}
+  _cooldownTime: 0.08
   _maxConcurrentVoices: 2

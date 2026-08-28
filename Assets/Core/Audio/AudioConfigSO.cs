@@ -41,7 +41,19 @@ namespace Core.Audio
         [SerializeField] private int _maxConcurrentVoices = 3;
 
         public AssetReferenceT<AudioClip> AudioClipRef => _audioClipRef;
-        public AudioClip DirectClip => _directClip;
+        public AudioClip DirectClip
+        {
+            get
+            {
+                if (_directClip != null) return _directClip;
+#if UNITY_EDITOR
+                if (name.Contains("Exp")) _directClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Exp_Gem_Pickup.wav");
+                else if (name.Contains("Die")) _directClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Enemy_Dissolve_Death.wav");
+                else if (name.Contains("LevelUp")) _directClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_LevelUp.wav");
+#endif
+                return _directClip;
+            }
+        }
         public SoundCategory Category => _category;
         public AudioMixerGroup MixerGroup => _mixerGroup;
         public float Volume => _volume;
