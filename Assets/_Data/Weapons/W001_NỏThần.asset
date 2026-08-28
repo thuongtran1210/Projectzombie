@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: "W001_N\u1ECFTh\u1EA7n"
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 0
+  activeCooldown: 6
+  activeDuration: 0
+  skillActionName: "V\u1EA1n Ti\u1EC5n Ph\xE1 Tr\u1EADn"
   weaponId: W001
   weaponName: "N\u1ECF Th\u1EA7n"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n t\u1EF1 \u0111\u1ED9ng ph\xF3ng
-    m\u0169i t\xEAn th\u1EA7n An D\u01B0\u01A1ng V\u01B0\u01A1ng xuy\xEAn th\u1EA5u
-    2 k\u1EBB \u0111\u1ECBch."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: B\u1EAFn ch\xF9m 5 linh
+    ti\u1EC5n th\u1EA7n uy xuy\xEAn qu\xE1i v\xE0 \u0111\u1EA9y l\xF9i m\u1EA1nh."
   rarity: Common
   evolutionWeaponId: E001
   elementType: 1

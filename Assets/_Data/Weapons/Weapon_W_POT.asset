@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Weapon_W_POT
   m_EditorClassIdentifier: 
   weaponRole: 1
+  isPassiveRelic: 0
+  activeCooldown: 14
+  activeDuration: 0
+  skillActionName: "H\xFAt Ch\xE2n Kh\xF4ng & Ti\xEAn C\u01A1m"
   weaponId: W_POT
   weaponName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
   icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
-  description: "Ph\xE1p b\u1EA3o c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
-    v\xE0o n\u1ED3i v\xE0 ph\xF3ng ra nh\u01B0 \u0111\u1EA1n ph\xE1o; ch\u1EA1m \u0111\u1EA5t
-    r\u01A1i c\u01A1m n\u1EAFm h\u1ED3i m\xE1u."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: Gom qu\xE1i di\u1EC7n
+    r\u1ED9ng 6m v\xE0o t\xE2m n\u1ED3i, h\u1EA5t v\u0103ng v\xE0 h\u1ED3i 15% Max
+    HP."
   rarity: Common
   evolutionWeaponId: 
   elementType: 5

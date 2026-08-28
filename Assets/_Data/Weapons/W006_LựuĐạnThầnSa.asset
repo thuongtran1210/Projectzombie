@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: "W006_L\u1EF1u\u0110\u1EA1nTh\u1EA7nSa"
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 0
+  activeCooldown: 8
+  activeDuration: 0
+  skillActionName: "B\xE3o L\u1EEDa Th\u1EA7n Sa"
   weaponId: W006
   weaponName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
   icon: {fileID: 0}
-  description: "H\u1EA1t th\u1EA7n sa ph\xE1t n\u1ED5 t\u1EA1o b\xE3o l\u1EEDa thi\xEAu
-    r\u1EE5i v\xF9ng r\u1ED9ng (Knockback m\u1EA1nh)."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: Qu\u0103ng ch\xF9m 3 h\u1EA1t
+    Th\u1EA7n Sa n\u1ED5 tung b\xE3o l\u1EEDa thi\xEAu r\u1EE5i v\xF9ng r\u1ED9ng."
   rarity: Epic
   evolutionWeaponId: E006
   elementType: 4

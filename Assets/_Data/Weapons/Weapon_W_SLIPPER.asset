@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: Weapon_W_SLIPPER
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 0
+  activeCooldown: 7
+  activeDuration: 0
+  skillActionName: "T\u1ED5 Ong L\u01B0\u1EE3n C\xE1nh"
   weaponId: W_SLIPPER
   weaponName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
   icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
-  description: "Ph\xE1p b\u1EA3o n\xE9m Boomerang t\u1EF1 \u0111\u1ED9ng; Hit 3 qu\u0103ng
-    l\u1ED1c d\xE9p g\xE2y hi\u1EC7u \u1EE9ng 'Qu\xEA \u0110\u1ED9' khi\u1EBFn qu\xE1i
-    quay sang \u0111\u1EA5m \u0111\u1ED3ng minh."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: Qu\u0103ng Boomerang D\xE9p
+    kh\u1ED5ng l\u1ED3 + L\u1ED1c D\xE9p V\u1EA1n N\u0103ng g\xE2y Qu\xEA \u0110\u1ED9
+    100%."
   rarity: Common
   evolutionWeaponId: 
   elementType: 1

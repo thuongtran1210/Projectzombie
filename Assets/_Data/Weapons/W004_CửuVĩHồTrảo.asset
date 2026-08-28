@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: "W004_C\u1EEDuV\u0129H\u1ED3Tr\u1EA3o"
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
   weaponId: W004
   weaponName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
   icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "M\xF3ng vu\u1ED1t c\xE1o l\u1EEDa t\u1EF1 t\xECm di\u1EC7t qu\xE1i
-    v\xE0 h\xFAt sinh kh\xED."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: M\xF3ng vu\u1ED1t c\xE1o
+    l\u1EEDa t\u1EF1 c\xE0o x\xE9 qu\xE1i v\xE0 h\xFAt sinh kh\xED h\u1ED3i ph\u1EE5c."
   rarity: Rare
   evolutionWeaponId: E004
   elementType: 4

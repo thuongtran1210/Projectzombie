@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: "W009_Tr\u01B0\u1EE3ngLongV\u01B0\u01A1ng"
   m_EditorClassIdentifier: 
   weaponRole: 3
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
   weaponId: W009
   weaponName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
   icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "S\xE9t n\u01B0\u1EDBc th\u1EE7y cung lan truy\u1EC1n qua chu\u1ED7i
-    6 y\xEAu qu\xE1i (Cho\xE1ng 0.5s)."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng gi\xE1ng
+    s\xE9t n\u01B0\u1EDBc th\u1EE7y cung lan truy\u1EC1n qua chu\u1ED7i 6 y\xEAu
+    qu\xE1i."
   rarity: Epic
   evolutionWeaponId: E009
   elementType: 3

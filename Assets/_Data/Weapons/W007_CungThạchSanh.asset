@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: "W007_CungTh\u1EA1chSanh"
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
   weaponId: W007
   weaponName: "Cung Th\u1EA1ch Sanh"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n b\u1EAFn m\u0169i t\xEAn th\u1EA7n
-    l\u1EF1c Th\u1EA1ch Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t y\xEAu tinh."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng b\u1EAFn
+    m\u0169i t\xEAn th\u1EA7n l\u1EF1c Th\u1EA1ch Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t
+    y\xEAu tinh."
   rarity: Rare
   evolutionWeaponId: E007
   elementType: 1

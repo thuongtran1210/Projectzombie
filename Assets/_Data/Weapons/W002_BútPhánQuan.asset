@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: "W002_B\xFAtPh\xE1nQuan"
   m_EditorClassIdentifier: 
   weaponRole: 2
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
   weaponId: W002
   weaponName: "B\xFAt Ph\xE1n Quan"
   icon: {fileID: 21300000, guid: 824c29e8b2914531b7f8c888bca56fe1, type: 3}
-  description: "Ph\xE1p b\u1EA3o h\u1ED9 th\xE2n t\u1EF1 vung nh\xE1t ch\xE9m ph\xE1n
-    quy\u1EBFt \xE2m ty g\xE2y s\xE1t th\u01B0\u01A1ng ch\xED m\u1EA1ng 2 b\xEAn."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng vung
+    nh\xE1t ch\xE9m ph\xE1n quy\u1EBFt \xE2m ty khi Hero \u0111\xE1nh tr\xFAng qu\xE1i."
   rarity: Common
   evolutionWeaponId: E002
   elementType: 1
