@@ -3,6 +3,7 @@
 **Phiên bản:** 1.0 (Được trích xuất và chuẩn hóa từ `ProjectZombie_GDD.md` v4.0)  
 **Đối tượng sử dụng:** 2D Artist, VFX Artist, UI/UX Designer, Technical Artist (TA)  
 **Nền tảng mục tiêu:** Android Mobile (Top-down 2D, Target API 33+, 60 FPS)  
+**Tài liệu liên quan:** Xem sổ tay Prompt AI sinh ảnh UI tại [UI_PROMPT_AND_ART_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md)
 
 ---
 

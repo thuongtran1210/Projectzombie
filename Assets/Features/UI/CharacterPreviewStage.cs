@@ -90,7 +90,7 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        public void DisplayCharacter(GameObject characterPrefab, string targetAnimation = "Attack")
+        public void DisplayCharacter(GameObject characterPrefab, string targetAnimation = null)
         {
             ClearCurrentModel();
             if (characterPrefab == null) return;
@@ -122,8 +122,14 @@ namespace ProjectZombie.Features.UI
             if (_currentAnimator != null)
             {
                 _currentAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
-                PlayAnimation(targetAnimation);
+                string animToPlay = !string.IsNullOrEmpty(targetAnimation) ? targetAnimation : _idleAnimState;
+                PlayAnimation(animToPlay);
             }
+        }
+
+        public void PlayIdleAnimation()
+        {
+            PlayAnimation(_idleAnimState);
         }
 
         public void PlayAnimation(string stateName)
@@ -166,7 +172,7 @@ namespace ProjectZombie.Features.UI
             var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
             foreach (var b in behaviours)
             {
-                if (b != null && !(b is Animator))
+                if (b != null)
                 {
                     b.enabled = false;
                 }

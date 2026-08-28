@@ -92,24 +92,47 @@ namespace ProjectZombie.Features.UI
 
         private IEnumerator TransitionToCombatRoutine()
         {
-            // 1. Fade Out tối dần
-            yield return StartCoroutine(FadeRoutine(0f, 1f, 0.25f));
-
-            // 2. Chuyển UI
-            ApplyStateVisuals(false);
-
-            // 3. Bắt đầu trận đấu
-            if (_gameplayBootstrapper != null)
+            if (LoadingScreenPresenter.Instance != null)
             {
-                _gameplayBootstrapper.StartMatchFlow();
-            }
-            else if (GameStateManager.Instance != null)
-            {
-                GameStateManager.Instance.ChangeState(GameState.Playing);
-            }
+                bool loadingFinished = false;
+                LoadingScreenPresenter.Instance.ShowLoading(0.85f, () =>
+                {
+                    ApplyStateVisuals(false);
 
-            // 4. Fade In sáng lại
-            yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
+                    if (_gameplayBootstrapper != null)
+                    {
+                        _gameplayBootstrapper.StartMatchFlow();
+                    }
+                    else if (GameStateManager.Instance != null)
+                    {
+                        GameStateManager.Instance.ChangeState(GameState.Playing);
+                    }
+                    loadingFinished = true;
+                }, "Đang khai mở cửa Hoàng Tuyền...");
+
+                while (!loadingFinished) yield return null;
+            }
+            else
+            {
+                // 1. Fade Out tối dần
+                yield return StartCoroutine(FadeRoutine(0f, 1f, 0.25f));
+
+                // 2. Chuyển UI
+                ApplyStateVisuals(false);
+
+                // 3. Bắt đầu trận đấu
+                if (_gameplayBootstrapper != null)
+                {
+                    _gameplayBootstrapper.StartMatchFlow();
+                }
+                else if (GameStateManager.Instance != null)
+                {
+                    GameStateManager.Instance.ChangeState(GameState.Playing);
+                }
+
+                // 4. Fade In sáng lại
+                yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
+            }
         }
 
         private IEnumerator TransitionToMetaHubRoutine()
