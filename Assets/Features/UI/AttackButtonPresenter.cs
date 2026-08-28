@@ -158,17 +158,25 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
+            Sprite iconToSet = null;
+
+            // 1. Ưu tiên tuyệt đối đòn đánh cơ bản của nhân vật (Character Signature Basic Attack)
             if (_characterCombat != null && _characterCombat.AttackIcon != null)
             {
-                _view.SetIcon(_characterCombat.AttackIcon);
+                iconToSet = _characterCombat.AttackIcon;
+            }
+            else if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null && RunLoadoutState.SelectedCharacter.basicAttackConfig.attackIcon != null)
+            {
+                iconToSet = RunLoadoutState.SelectedCharacter.basicAttackConfig.attackIcon;
             }
             else if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.avatar != null)
             {
-                _view.SetIcon(RunLoadoutState.SelectedCharacter.avatar);
+                iconToSet = RunLoadoutState.SelectedCharacter.avatar;
             }
-            else if (_weaponManager != null && _weaponManager.PrimaryWeapon != null && _weaponManager.PrimaryWeapon.icon != null)
+
+            if (iconToSet != null)
             {
-                _view.SetIcon(_weaponManager.PrimaryWeapon.icon);
+                _view.SetIcon(iconToSet);
             }
         }
 

@@ -191,6 +191,26 @@ namespace ProjectZombie.EditorTools
                 metaRoot = metaObj.transform;
             }
             
+            // 2.0. Tạo Persistent_MetaBackdrop (Che 100% Tilemap và Player bên dưới khi ở trong Menu)
+            Transform backdropTrans = metaRoot.Find("Persistent_MetaBackdrop");
+            if (backdropTrans == null)
+            {
+                GameObject backdropObj = new GameObject("Persistent_MetaBackdrop", typeof(RectTransform), typeof(Image));
+                backdropObj.transform.SetParent(metaRoot, false);
+                backdropTrans = backdropObj.transform;
+            }
+            StretchRect(backdropTrans.GetComponent<RectTransform>());
+            backdropTrans.SetAsFirstSibling();
+            var backdropImg = backdropTrans.GetComponent<Image>();
+            backdropImg.color = new Color(0.05f, 0.04f, 0.08f, 1.0f);
+            backdropImg.raycastTarget = true;
+            Sprite bgForest = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
+            if (bgForest != null)
+            {
+                backdropImg.sprite = bgForest;
+                backdropImg.color = Color.white;
+            }
+            
             // Instantiate MainHubUI từ Prefab chuẩn
             MainHubView mainHub = null;
             GameObject mainHubPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/MainHubUI.prefab");
@@ -249,6 +269,7 @@ namespace ProjectZombie.EditorTools
             // Wire MetaUIManager
             var soMeta = new SerializedObject(metaManager);
             soMeta.FindProperty("_metaCanvasGroup").objectReferenceValue = metaGroup;
+            soMeta.FindProperty("_persistentBackdrop").objectReferenceValue = backdropTrans.gameObject;
             soMeta.FindProperty("_mainHubScreen").objectReferenceValue = hubTrans.GetComponent<MainHubView>();
             soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
             soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();

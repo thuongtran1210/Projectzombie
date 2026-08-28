@@ -22,6 +22,10 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private BaseMetaScreenView _codexScreen;
         [SerializeField] private BaseMetaScreenView _settingsScreen;
 
+        [Header("Persistent Backdrop")]
+        [Tooltip("Ảnh nền cố định che 100% Tilemap và Player bên dưới khi ở trong Menu")]
+        [SerializeField] private GameObject _persistentBackdrop;
+
         private readonly Stack<BaseMetaScreenView> _screenStack = new Stack<BaseMetaScreenView>();
 
         public bool IsInMetaMenu => _metaCanvasGroup != null && _metaCanvasGroup.gameObject.activeSelf;
@@ -44,6 +48,8 @@ namespace ProjectZombie.Features.UI
                 _metaCanvasGroup = GetComponent<CanvasGroup>();
             }
 
+            EnsurePersistentBackdrop();
+
             // Mặc định ẩn tất cả màn hình phụ ngay trong Awake
             if (_characterSelectScreen != null) _characterSelectScreen.Hide();
             if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.Hide();
@@ -55,6 +61,50 @@ namespace ProjectZombie.Features.UI
             if (_mainHubScreen != null)
             {
                 PushScreen(_mainHubScreen);
+            }
+        }
+
+        private void EnsurePersistentBackdrop()
+        {
+            if (_persistentBackdrop == null)
+            {
+                var existing = transform.Find("Persistent_MetaBackdrop");
+                if (existing != null)
+                {
+                    _persistentBackdrop = existing.gameObject;
+                }
+                else
+                {
+                    GameObject backdropObj = new GameObject("Persistent_MetaBackdrop", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+                    backdropObj.transform.SetParent(transform, false);
+                    backdropObj.transform.SetAsFirstSibling();
+
+                    RectTransform rt = backdropObj.GetComponent<RectTransform>();
+                    rt.anchorMin = Vector2.zero;
+                    rt.anchorMax = Vector2.one;
+                    rt.sizeDelta = Vector2.zero;
+                    rt.anchoredPosition = Vector2.zero;
+
+                    var img = backdropObj.GetComponent<UnityEngine.UI.Image>();
+                    img.color = new Color(0.05f, 0.04f, 0.08f, 1.0f); // Tối sang trọng 100% không xuyên thấu
+                    img.raycastTarget = true; // Chặn click lọt xuống map
+
+#if UNITY_EDITOR
+                    Sprite bgForest = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
+                    if (bgForest != null)
+                    {
+                        img.sprite = bgForest;
+                        img.color = Color.white;
+                    }
+#endif
+                    _persistentBackdrop = backdropObj;
+                }
+            }
+
+            if (_persistentBackdrop != null)
+            {
+                _persistentBackdrop.transform.SetAsFirstSibling();
+                _persistentBackdrop.SetActive(true);
             }
         }
 

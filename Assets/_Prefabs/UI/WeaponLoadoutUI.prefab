@@ -1898,7 +1898,7 @@ GameObject:
   - component: {fileID: 4571998359753274315}
   - component: {fileID: 8918913425146133483}
   m_Layer: 0
-  m_Name: Btn_Back
+  m_Name: Btn_Close
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1915,14 +1915,13 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6706002466875573495}
+  m_Children: []
   m_Father: {fileID: 6076878170716229001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -28, y: 4}
-  m_SizeDelta: {x: 120, y: 44}
+  m_AnchoredPosition: {x: -16, y: 2}
+  m_SizeDelta: {x: 46, y: 46}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &2596223452727889255
 CanvasRenderer:
@@ -1952,9 +1951,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: af1619d94b874183b712191806037dd3, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Sprite: {fileID: 21300000, guid: c7ea6acc963c4caaa414ea8feb75b7ac, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

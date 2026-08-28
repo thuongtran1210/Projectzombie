@@ -418,6 +418,9 @@ namespace ProjectZombie.Editor.Tools
             attackIconRect.anchorMin = new Vector2(0.15f, 0.15f);
             attackIconRect.anchorMax = new Vector2(0.85f, 0.85f);
             attackIconRect.sizeDelta = Vector2.zero;
+            Image attackIconImg = attackIconObj.GetComponent<Image>();
+            Sprite defaultAtkSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
+            if (defaultAtkSprite != null) attackIconImg.sprite = defaultAtkSprite;
 
             GameObject attackFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
             attackFillObj.transform.SetParent(attackObj.transform, false);

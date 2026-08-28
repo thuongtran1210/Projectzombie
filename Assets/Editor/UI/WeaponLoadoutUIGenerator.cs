@@ -229,30 +229,27 @@ namespace ProjectZombie.Editor.UI
             stTMP.alignment = TextAlignmentOptions.Center;
             stTMP.color = new Color(0.35f, 0.25f, 0.18f, 1f);
 
-            // 2. Nút Quay Lại Gỗ Mun Cổ (Phải)
-            GameObject backObj = CreateUIElement("Btn_Back", headerObj.transform);
-            RectTransform bkRT = backObj.GetComponent<RectTransform>();
-            bkRT.anchorMin = new Vector2(1, 0.5f);
-            bkRT.anchorMax = new Vector2(1, 0.5f);
-            bkRT.pivot = new Vector2(1, 0.5f);
-            bkRT.anchoredPosition = new Vector2(-28, 4);
-            bkRT.sizeDelta = new Vector2(120, 44);
-            var bkImg = backObj.AddComponent<Image>();
-            bkImg.color = Color.white;
-            bkImg.type = Image.Type.Sliced;
-            Sprite btnBackSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Back_Wood_9Slice.png");
-            if (btnBackSprite != null) bkImg.sprite = btnBackSprite;
-            backBtn = backObj.AddComponent<Button>();
-
-            GameObject bkT = CreateUIElement("Text", backObj.transform);
-            SetStretchAnchor(bkT.GetComponent<RectTransform>());
-            var bkTMP = bkT.AddComponent<TextMeshProUGUI>();
-            if (font != null) bkTMP.font = font;
-            bkTMP.text = "< QUAY LẠI";
-            bkTMP.fontSize = 13;
-            bkTMP.fontStyle = FontStyles.Bold;
-            bkTMP.alignment = TextAlignmentOptions.Center;
-            bkTMP.color = new Color(0.95f, 0.88f, 0.70f, 1f);
+            // 2. Nút Đóng / Thoát Gỗ Mun Cổ (Phải) (Btn_Close)
+            GameObject closeObj = CreateUIElement("Btn_Close", headerObj.transform);
+            RectTransform closeRT = closeObj.GetComponent<RectTransform>();
+            closeRT.anchorMin = new Vector2(1, 0.5f);
+            closeRT.anchorMax = new Vector2(1, 0.5f);
+            closeRT.pivot = new Vector2(1, 0.5f);
+            closeRT.anchoredPosition = new Vector2(-16, 2);
+            closeRT.sizeDelta = new Vector2(46, 46);
+            var closeImg = closeObj.AddComponent<Image>();
+            closeImg.color = Color.white;
+            Sprite btnCloseX = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Close_X_Wood.png");
+            if (btnCloseX != null)
+            {
+                closeImg.sprite = btnCloseX;
+                closeImg.preserveAspect = true;
+            }
+            backBtn = closeObj.AddComponent<Button>();
+            var closeColors = backBtn.colors;
+            closeColors.highlightedColor = new Color(1.2f, 1.2f, 1.2f);
+            closeColors.pressedColor = new Color(0.8f, 0.8f, 0.8f);
+            backBtn.colors = closeColors;
 
             heroName = null;
             heroElem = null;

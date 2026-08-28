@@ -73,23 +73,44 @@ namespace ProjectZombie.Features.Player
 
         private void EnsureAttackConfigFallback()
         {
-            if (attackConfig == null || (attackConfig.attackType == CharacterAttackType.MeleeSlash && attackConfig.slashVfxPrefab == null))
-            {
 #if UNITY_EDITOR
+            if (attackConfig == null || (attackConfig.attackType == CharacterAttackType.MeleeSlash && attackConfig.slashVfxPrefab == null) || attackConfig.attackIcon == null)
+            {
                 var data = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
                 if (data != null && data.Characters != null && data.Characters.Count > 0)
                 {
-                    var charEntry = data.Characters[0];
-                    if (attackConfig == null) attackConfig = charEntry.basicAttackConfig;
-                    else if (attackConfig.slashVfxPrefab == null) attackConfig.slashVfxPrefab = charEntry.basicAttackConfig.slashVfxPrefab;
+                    // Tìm đúng CharacterEntry theo tên prefab/gameObject hoặc fallback entry đầu tiên
+                    CharacterEntry matchedEntry = null;
+                    foreach (var c in data.Characters)
+                    {
+                        if (c != null && !string.IsNullOrEmpty(c.characterId) && gameObject.name.Contains(c.characterName))
+                        {
+                            matchedEntry = c;
+                            break;
+                        }
+                    }
+                    if (matchedEntry == null) matchedEntry = data.Characters[0];
+
+                    if (attackConfig == null) attackConfig = matchedEntry.basicAttackConfig;
+                    else
+                    {
+                        if (attackConfig.slashVfxPrefab == null && matchedEntry.basicAttackConfig != null)
+                            attackConfig.slashVfxPrefab = matchedEntry.basicAttackConfig.slashVfxPrefab;
+                        if (attackConfig.attackIcon == null && matchedEntry.basicAttackConfig != null)
+                            attackConfig.attackIcon = matchedEntry.basicAttackConfig.attackIcon;
+                    }
                 }
 
                 if (attackConfig != null && attackConfig.slashVfxPrefab == null)
                 {
                     attackConfig.slashVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThuSinh_InkSlash.prefab");
                 }
-#endif
+                if (attackConfig != null && attackConfig.attackIcon == null)
+                {
+                    attackConfig.attackIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
+                }
             }
+#endif
         }
 
         public void SetAttackConfig(CharacterAttackConfig config)
