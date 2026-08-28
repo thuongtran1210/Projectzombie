@@ -103,6 +103,9 @@ namespace Projectzombie.Editor.TilemapTools
             // 4. Obstacles Tilemap (Tường gạch rêu, Bờ kè ao sen - có Collider)
             GameObject obstacleObj = new GameObject("Tilemap_Obstacles");
             obstacleObj.transform.SetParent(gridObj.transform);
+            int obstacleLayer = LayerMask.NameToLayer("Obstacle");
+            if (obstacleLayer != -1) obstacleObj.layer = obstacleLayer;
+
             Tilemap obstacleTilemap = obstacleObj.AddComponent<Tilemap>();
             TilemapRenderer obstacleRenderer = obstacleObj.AddComponent<TilemapRenderer>();
             obstacleRenderer.sortingLayerName = "Entities";
