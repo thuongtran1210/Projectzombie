@@ -58,6 +58,11 @@ namespace ProjectZombie.Features.UI
 
         private void HandleAimStarted()
         {
+            if (_characterCombat == null && PlayerController.Instance != null)
+            {
+                _characterCombat = PlayerController.Instance.GetComponent<CharacterCombat>();
+            }
+
             var config = _characterCombat != null ? _characterCombat.AimConfig : Combat.Aiming.SkillAimConfig.DefaultMelee;
             Combat.Aiming.SkillAimIndicatorController.Instance?.StartAim(config);
         }

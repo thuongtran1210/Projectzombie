@@ -1,3 +1,4 @@
+using ProjectZombie.Features.Player;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Combat.Aiming
@@ -37,6 +38,9 @@ namespace ProjectZombie.Features.Combat.Aiming
 
         private bool _isAiming;
         private bool _isCancelHovered;
+        private bool _hasExplicitDrag;
+        private Vector2 _currentAimDirection;
+        private float _currentPullPercent;
         private SkillAimConfig _currentConfig;
 
         private void Awake()
@@ -54,11 +58,29 @@ namespace ProjectZombie.Features.Combat.Aiming
 
         private void Start()
         {
-            if (_playerTransform == null)
+            GetPlayerTransform();
+        }
+
+        private Transform GetPlayerTransform()
+        {
+            if (_playerTransform != null && _playerTransform.gameObject.activeInHierarchy)
+                return _playerTransform;
+
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null) _playerTransform = player.transform;
+                _playerTransform = PlayerProvider.PlayerTransform;
+                return _playerTransform;
             }
+
+            if (PlayerController.Instance != null)
+            {
+                _playerTransform = PlayerController.Instance.transform;
+                return _playerTransform;
+            }
+
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) _playerTransform = player.transform;
+            return _playerTransform;
         }
 
         private void LoadDefaultSprites()
@@ -127,15 +149,14 @@ namespace ProjectZombie.Features.Combat.Aiming
         /// </summary>
         public void StartAim(SkillAimConfig config)
         {
-            if (_playerTransform == null)
-            {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null) _playerTransform = player.transform;
-            }
+            GetPlayerTransform();
 
             _currentConfig = config;
             _isAiming = true;
             _isCancelHovered = false;
+            _hasExplicitDrag = false;
+            _currentAimDirection = Vector2.zero;
+            _currentPullPercent = 0.85f;
 
             if (_indicatorRoot != null) _indicatorRoot.SetActive(true);
 
@@ -143,13 +164,18 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (config.range > 0f && _rangeBoundaryRenderer != null)
             {
                 _rangeBoundaryRenderer.enabled = true;
-                _rangeBoundaryIndicator.position = _playerTransform != null ? _playerTransform.position : transform.position;
-                _rangeBoundaryIndicator.localScale = Vector3.one * (config.range * 2.0f);
+                float spriteBounds = (_rangeBoundaryRenderer.sprite != null && _rangeBoundaryRenderer.sprite.bounds.size.x > 0.01f)
+                    ? _rangeBoundaryRenderer.sprite.bounds.size.x
+                    : 1.0f;
+                float boundaryScale = (config.range * 2.0f) / spriteBounds;
+                _rangeBoundaryIndicator.localScale = Vector3.one * boundaryScale;
             }
             else if (_rangeBoundaryRenderer != null)
             {
                 _rangeBoundaryRenderer.enabled = false;
             }
+
+            RenderAimVisuals();
         }
 
         /// <summary>
@@ -160,24 +186,72 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (!_isAiming) return;
 
             _isCancelHovered = isCancelHovered;
-            Vector3 origin = _playerTransform != null ? _playerTransform.position : transform.position;
-            Color activeColor = isCancelHovered ? _cancelAimColor : _normalAimColor;
+            _currentPullPercent = pullPercent;
 
-            if (aimDirection == Vector2.zero) aimDirection = Vector2.right;
-            float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+            if (aimDirection.sqrMagnitude > 0.001f)
+            {
+                _hasExplicitDrag = true;
+                _currentAimDirection = aimDirection.normalized;
+            }
+
+            RenderAimVisuals();
+        }
+
+        private void LateUpdate()
+        {
+            if (!_isAiming) return;
+            RenderAimVisuals();
+        }
+
+        private void RenderAimVisuals()
+        {
+            Transform p = GetPlayerTransform();
+            Vector3 origin = p != null ? p.position : transform.position;
+            origin.z = 0f;
+
+            // 1. Đồng bộ vòng Max Range theo bước chân nhân vật
+            if (_rangeBoundaryIndicator != null && _rangeBoundaryRenderer != null && _rangeBoundaryRenderer.enabled)
+            {
+                _rangeBoundaryIndicator.position = origin;
+            }
+
+            // 2. Xác định hướng ngắm: Nếu người chơi đang chủ động kéo tay thì theo tay, nếu chưa kéo thì tự bám mục tiêu gần nhất / hướng chạy
+            Vector2 aimDir = _currentAimDirection;
+            if (!_hasExplicitDrag || aimDir == Vector2.zero)
+            {
+                Vector2 fallback = Vector2.right;
+                if (p != null)
+                {
+                    var ctrl = p.GetComponent<PlayerController>();
+                    if (ctrl != null && ctrl.MovementInput != Vector2.zero)
+                    {
+                        fallback = ctrl.MovementInput.normalized;
+                    }
+                    else
+                    {
+                        fallback = p.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                    }
+                }
+
+                AutoTargetScanner.TryGetAutoAimDirection(origin, _currentConfig, fallback, out aimDir, out _);
+            }
+
+            if (aimDir == Vector2.zero) aimDir = Vector2.right;
+            float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
+            Color activeColor = _isCancelHovered ? _cancelAimColor : _normalAimColor;
 
             switch (_currentConfig.aimType)
             {
                 case SkillAimType.LineArrow:
-                    ShowLineIndicator(origin, aimDirection, angle, activeColor);
+                    ShowLineIndicator(origin, aimDir, angle, activeColor);
                     break;
 
                 case SkillAimType.ConeSector:
-                    ShowConeIndicator(origin, aimDirection, angle, activeColor);
+                    ShowConeIndicator(origin, aimDir, angle, activeColor);
                     break;
 
                 case SkillAimType.CircleReticle:
-                    ShowCircleReticle(origin, aimDirection, pullPercent, activeColor);
+                    ShowCircleReticle(origin, aimDir, _currentPullPercent, activeColor);
                     break;
 
                 default:
@@ -197,9 +271,19 @@ namespace ProjectZombie.Features.Combat.Aiming
             float length = Mathf.Max(2.0f, _currentConfig.range);
             float width = Mathf.Max(0.6f, _currentConfig.radius);
 
+            float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.y
+                : 1.0f;
+
+            float scaleX = length / spriteBoundsX;
+            float scaleY = width / spriteBoundsY;
+
             _lineIndicator.position = origin + (Vector3)(direction * (length * 0.5f));
             _lineIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
-            _lineIndicator.localScale = new Vector3(length, width, 1f);
+            _lineIndicator.localScale = new Vector3(scaleX, scaleY, 1f);
             _lineRenderer.color = color;
         }
 
@@ -211,11 +295,22 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (_lineRenderer != null) _lineRenderer.enabled = false;
             if (_circleRenderer != null) _circleRenderer.enabled = false;
 
-            float size = Mathf.Max(2.0f, _currentConfig.range);
+            float reach = Mathf.Max(1.8f, _currentConfig.range);
+            float width = Mathf.Max(1.4f, _currentConfig.radius);
 
-            _coneIndicator.position = origin + (Vector3)(direction * (size * 0.45f));
+            float spriteBoundsX = (_coneRenderer.sprite != null && _coneRenderer.sprite.bounds.size.x > 0.01f)
+                ? _coneRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float spriteBoundsY = (_coneRenderer.sprite != null && _coneRenderer.sprite.bounds.size.y > 0.01f)
+                ? _coneRenderer.sprite.bounds.size.y
+                : 1.0f;
+
+            float scaleX = reach / spriteBoundsX;
+            float scaleY = width / spriteBoundsY;
+
+            _coneIndicator.position = origin + (Vector3)(direction * (reach * 0.45f));
             _coneIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
-            _coneIndicator.localScale = new Vector3(size, size, 1f);
+            _coneIndicator.localScale = new Vector3(scaleX, scaleY, 1f);
             _coneRenderer.color = color;
         }
 
@@ -231,9 +326,14 @@ namespace ProjectZombie.Features.Combat.Aiming
             Vector3 targetPos = origin + (Vector3)(direction * distance);
             float radius = Mathf.Max(1.0f, _currentConfig.radius);
 
+            float spriteBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x
+                : 1.0f;
+            float scale = (radius * 2.0f) / spriteBounds;
+
             _circleIndicator.position = targetPos;
             _circleIndicator.rotation = Quaternion.identity;
-            _circleIndicator.localScale = Vector3.one * (radius * 2.0f);
+            _circleIndicator.localScale = Vector3.one * scale;
             _circleRenderer.color = color;
         }
 
@@ -243,6 +343,8 @@ namespace ProjectZombie.Features.Combat.Aiming
         public void StopAim()
         {
             _isAiming = false;
+            _hasExplicitDrag = false;
+            _currentAimDirection = Vector2.zero;
             HideAll();
         }
 

@@ -39,13 +39,18 @@ namespace ProjectZombie.Features.Player
         {
             get
             {
+                if (attackConfig == null) EnsureAttackConfigFallback();
+
                 if (attackConfig != null && attackConfig.attackType == CharacterAttackType.RangedProjectile)
                 {
                     float range = attackConfig.projectileSpeed * (attackConfig.projectileLifetime > 0 ? attackConfig.projectileLifetime : 1.2f);
                     return new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, Mathf.Max(4.0f, range), 0.8f, 0f, true);
                 }
-                float meleeRange = attackConfig != null ? attackConfig.meleeOffset + attackConfig.meleeAreaSize.x * 0.5f : 2.5f;
-                return new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, Mathf.Max(2.0f, meleeRange), 1.8f, 90f, true);
+
+                // Tầm với thực tế = meleeOffset (tâm chém) + nửa bề rộng hitbox
+                float reach = attackConfig != null ? attackConfig.meleeOffset + (attackConfig.meleeAreaSize.x * 0.5f) : 2.4f;
+                float width = attackConfig != null ? attackConfig.meleeAreaSize.y : 1.8f;
+                return new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, Mathf.Max(1.8f, reach), Mathf.Max(1.2f, width), 90f, true);
             }
         }
 
