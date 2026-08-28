@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ece2901adbdc48e4a9eba9bd316f4e05, type: 3}
+  m_Name: PermanentUpgradeTree
+  m_EditorClassIdentifier: 
+  nodes:
+  - branch: 0
+    nodeId: atk_power
+    displayName: "Ngo\u1EA1i C\xF4ng B\u1EA5t Di\u1EC7t"
+    description: "Gia t\u0103ng th\u1EA7n l\u1EF1c b\u1EA3n m\u1EC7nh, t\u0103ng
+      th\xEAm +5% s\xE1t th\u01B0\u01A1ng c\u01A1 b\u1EA3n cho m\u1ECDi chi\xEAu
+      th\u1EE9c."
+    icon: {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
+    maxLevel: 10
+    costPerLevel: 64000000c80000005e01000026020000200300004c040000dc050000d0070000280a0000ac0d0000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0.5
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 0
+    nodeId: atk_crit
+    displayName: "Khai S\u01A1n L\u1EF1c"
+    description: "Khai m\u1EDF nh\xE3n l\u1EF1c, t\u0103ng +3% t\u1EC9 l\u1EC7 \u0111\xE1nh
+      ch\xED m\u1EA1ng (Crit Chance)."
+    icon: {fileID: 21300000, guid: e8d62d9569a4479eb8f65bf50d5cf121, type: 3}
+    maxLevel: 5
+    costPerLevel: fa000000f401000084030000dc050000c4090000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0.03
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 0
+    nodeId: atk_speed
+    displayName: "Phong L\xF4i Tr\u1EA3m"
+    description: "\u0110\u1ED9ng t\xE1c xu\u1EA5t chi\xEAu s\u1EAFc b\xE9n, t\u0103ng
+      +4% t\u1ED1c \u0111\u1ED9 \u0111\xE1nh cho nh\xE2n v\u1EADt."
+    icon: {fileID: 21300000, guid: 75ab74d93b024d53860df112415e6d3f, type: 3}
+    maxLevel: 5
+    costPerLevel: c800000090010000ee020000b0040000d0070000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0.04
+      dashCooldownReduction: 0
+  - branch: 1
+    nodeId: def_hp
+    displayName: "Kim Cang Th\u1EA7n Th\u1EC3"
+    description: "H\u1EA5p th\u1EE5 linh kh\xED tr\u1EDDi \u0111\u1EA5t, gia t\u0103ng
+      +15 M\xE1u T\u1ED1i \u0110a v\u0129nh vi\u1EC5n."
+    icon: {fileID: 21300000, guid: 0406ae4585d64cc9bba06c02a293147a, type: 3}
+    maxLevel: 10
+    costPerLevel: 64000000c80000005e01000026020000200300004c040000dc050000d0070000280a0000ac0d0000
+    statBonusPerLevel:
+      maxHealthBonus: 15
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 1
+    nodeId: def_dash
+    displayName: "T\u1EADt Phong Thi\u1EBFt M\xE3"
+    description: "L\u01B0\u1EDBt gi\xF3 \u0111\u1EA1p m\xE2y, gi\u1EA3m 0.1s th\u1EDDi
+      gian h\u1ED3i chi\xEAu L\u01B0\u1EDBt (Dash)."
+    icon: {fileID: 21300000, guid: 3fe417efe8764da3a20339aff030c4b5, type: 3}
+    maxLevel: 5
+    costPerLevel: 960000002c01000058020000e803000008070000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0.1
+  - branch: 1
+    nodeId: def_speed
+    displayName: "Th\u1EA7n H\xE0nh B\u1ED9 Ph\xE1p"
+    description: "Th\xE2n th\u1EE7 nh\u1EB9 nh\u01B0 c\xE1nh h\u1ED3ng, t\u0103ng
+      +0.3m/s t\u1ED1c \u0111\u1ED9 di chuy\u1EC3n."
+    icon: {fileID: 21300000, guid: 24b7546c651341489c3c29ad2b1f81b6, type: 3}
+    maxLevel: 5
+    costPerLevel: c800000090010000ee020000b0040000d0070000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0.3
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 2
+    nodeId: util_magnet
+    displayName: "C\xE0n Kh\xF4n N\u1EA1p T\xE0i"
+    description: "T\u1EA1o tr\u01B0\u1EDDng l\u1EF1c t\u1EEB tr\u01B0\u1EDDng, t\u0103ng
+      +0.5m b\xE1n k\xEDnh h\xFAt C\u1ED5 Ti\u1EC1n v\xE0 Ng\u1ECDc EXP."
+    icon: {fileID: 21300000, guid: 1b09bd9ed2674a859b7ce033fb5a7e3a, type: 3}
+    maxLevel: 10
+    costPerLevel: 6400000096000000fa000000900100005802000052030000b00400004006000098080000b80b0000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0.5
+      expMultiplierBonus: 0
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 2
+    nodeId: util_exp
+    displayName: "Khai T\xE2m \u0110i\u1EC3m \u0110\u1EA1o"
+    description: "Ng\u1ED9 t\xEDnh xu\u1EA5t ch\xFAng, t\u0103ng +5% t\u1ED1c \u0111\u1ED9
+      t\xEDch l\u0169y kinh nghi\u1EC7m trong tr\u1EADn."
+    icon: {fileID: 21300000, guid: 98e10884571143c8abee7e07871e8c7e, type: 3}
+    maxLevel: 5
+    costPerLevel: c800000090010000200300007805000098080000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0.05
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0
+  - branch: 2
+    nodeId: util_reroll
+    displayName: "Thi\xEAn C\u01A1 Tr\xF9ng To\xE1n"
+    description: "Th\u1EA7n c\u01A1 di\u1EC7u to\xE1n, t\u0103ng th\xEAm may m\u1EAFn
+      v\xE0 t\u1EC9 l\u1EC7 nh\u1EADn ng\u1ECDc qu\xFD sau m\u1ED7i run."
+    icon: {fileID: 21300000, guid: 9ce44fc85685445f93c4a75d2211216d, type: 3}
+    maxLevel: 3
+    costPerLevel: f4010000b0040000c4090000
+    statBonusPerLevel:
+      maxHealthBonus: 0
+      moveSpeedBonus: 0
+      critChanceBonus: 0.02
+      baseDamageBonus: 0
+      pickupRangeBonus: 0
+      expMultiplierBonus: 0.05
+      attackSpeedBonus: 0
+      dashCooldownReduction: 0

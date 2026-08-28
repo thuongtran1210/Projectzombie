@@ -214,7 +214,7 @@ namespace ProjectZombie.Features.UI
                         roleTag = "<color=#FF8800>[PHÁP BẢO HỘ THÂN]</color>";
                         break;
                 }
-                _detailTypeText.text = $"{roleTag} • Hệ <color=#FFD700>{weapon.elementType}</color>";
+                _detailTypeText.text = $"{roleTag} | Hệ <color=#FFD700>{weapon.elementType}</color>";
             }
 
             if (_detailIcon != null)

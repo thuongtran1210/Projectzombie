@@ -64,11 +64,50 @@ namespace ProjectZombie.Features.Player
                 InitStats();
             }
 
+            // Nạp toàn bộ chỉ số vĩnh viễn đã nâng cấp tại Miếu Tứ Bất Tử
+            ApplyPermanentUpgrades();
+
             // Đồng bộ máu qua HealthSystem (Single Source of Truth)
             var healthSystem = GetComponent<HealthSystem>();
             if (healthSystem != null)
             {
                 healthSystem.SetMaxHealth(MaxHealth);
+            }
+        }
+
+        private void ApplyPermanentUpgrades()
+        {
+            var saveData = ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance != null 
+                ? ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance.GetSaveData() 
+                : Core.Save.SaveSystem.Load();
+
+            if (saveData == null || saveData.upgradeNodeLevels == null || saveData.upgradeNodeLevels.Length == 0)
+                return;
+
+            var treeData = Resources.Load<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("PermanentUpgradeTree");
+#if UNITY_EDITOR
+            if (treeData == null)
+            {
+                treeData = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("Assets/_Data/Meta/PermanentUpgradeTree.asset");
+            }
+#endif
+            if (treeData == null || treeData.nodes == null) return;
+
+            for (int i = 0; i < treeData.nodes.Length; i++)
+            {
+                var node = treeData.nodes[i];
+                int level = saveData.GetUpgradeLevel(i);
+                if (level > 0 && node != null)
+                {
+                    MaxHealth += node.statBonusPerLevel.maxHealthBonus * level;
+                    BaseDamage += node.statBonusPerLevel.baseDamageBonus * level;
+                    MoveSpeed += node.statBonusPerLevel.moveSpeedBonus * level;
+                    CritChance += node.statBonusPerLevel.critChanceBonus * level;
+                    PickupRange += node.statBonusPerLevel.pickupRangeBonus * level;
+                    ExpMultiplier += node.statBonusPerLevel.expMultiplierBonus * level;
+                    AttackSpeed += node.statBonusPerLevel.attackSpeedBonus * level;
+                    DashCooldown = Mathf.Max(0.4f, DashCooldown - node.statBonusPerLevel.dashCooldownReduction * level);
+                }
             }
         }
 

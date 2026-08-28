@@ -40,6 +40,8 @@ namespace ProjectZombie.Features.Upgrades
         public float baseDamageBonus;
         public float pickupRangeBonus;
         public float expMultiplierBonus;
+        public float attackSpeedBonus;
+        public float dashCooldownReduction;
     }
 
     /// <summary>

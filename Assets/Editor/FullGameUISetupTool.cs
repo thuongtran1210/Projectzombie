@@ -255,16 +255,9 @@ namespace ProjectZombie.EditorTools
             ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
             Transform loadoutTrans = metaRoot.Find("Panel_WeaponLoadout");
 
-            // 2.4. Panel_SanctuaryTree (Miếu Cổ)
+            // 2.4. Panel_SanctuaryTree (Miếu Tứ Bất Tử)
+            ProjectZombie.Editor.UI.SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab();
             Transform sanctuaryTrans = metaRoot.Find("Panel_SanctuaryTree");
-            if (sanctuaryTrans == null)
-            {
-                GameObject sanctuaryObj = new GameObject("Panel_SanctuaryTree", typeof(RectTransform), typeof(CanvasGroup), typeof(MetaUpgradeShopView), typeof(MetaUpgradeShopPresenter));
-                sanctuaryObj.transform.SetParent(metaRoot, false);
-                sanctuaryTrans = sanctuaryObj.transform;
-            }
-            StretchRect(sanctuaryTrans.GetComponent<RectTransform>());
-            BuildSanctuaryHierarchy(sanctuaryTrans);
 
             // Wire MetaUIManager
             var soMeta = new SerializedObject(metaManager);

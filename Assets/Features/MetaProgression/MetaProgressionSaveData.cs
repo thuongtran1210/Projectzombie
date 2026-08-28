@@ -37,5 +37,27 @@ namespace ProjectZombie.Features.MetaProgression
             if (runTime > bestRunTime) bestRunTime = runTime;
             if (killCount > bestKillCount) bestKillCount = killCount;
         }
+
+        public int GetUpgradeLevel(int nodeIndex)
+        {
+            if (upgradeNodeLevels == null || nodeIndex < 0 || nodeIndex >= upgradeNodeLevels.Length) return 0;
+            return upgradeNodeLevels[nodeIndex];
+        }
+
+        public void SetUpgradeLevel(int nodeIndex, int level)
+        {
+            if (nodeIndex < 0) return;
+            if (upgradeNodeLevels == null || upgradeNodeLevels.Length <= nodeIndex)
+            {
+                int newSize = Mathf.Max(nodeIndex + 1, (upgradeNodeLevels?.Length ?? 0) * 2);
+                int[] newArray = new int[newSize];
+                if (upgradeNodeLevels != null)
+                {
+                    Array.Copy(upgradeNodeLevels, newArray, upgradeNodeLevels.Length);
+                }
+                upgradeNodeLevels = newArray;
+            }
+            upgradeNodeLevels[nodeIndex] = level;
+        }
     }
 }

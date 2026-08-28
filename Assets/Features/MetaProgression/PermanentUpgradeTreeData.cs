@@ -3,12 +3,22 @@ using System;
 
 namespace ProjectZombie.Features.MetaProgression
 {
+    public enum SanctuaryBranch
+    {
+        TanVienSonThanh,   // ⚔️ Thiên về Tấn Công (Công, Bạo Kích, Tốc Đánh)
+        PhuDongThienVuong, // 🛡️ Thiên về Phòng Thủ (Máu, Dash, Tốc Chạy)
+        LieuHanhChuDongTu  // 📜 Bổ Trợ & Tài Phú (Hút Tiền, Tăng EXP, Reroll)
+    }
+
     /// <summary>
     /// Mô tả một nút trong cây nâng cấp vĩnh viễn.
     /// </summary>
     [Serializable]
     public class PermanentUpgradeNode
     {
+        [Tooltip("Nhánh thần linh bảo hộ của nút nâng cấp này.")]
+        public SanctuaryBranch branch = SanctuaryBranch.TanVienSonThanh;
+
         [Tooltip("ID duy nhất của nút nâng cấp này (dùng để lưu cấp độ vào SaveData).")]
         public string nodeId;
 
