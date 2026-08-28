@@ -45,22 +45,26 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 10.0f, 1.0f, 0f, true);
+
         /// <summary>
         /// Kỹ năng chủ động: Vạn Tiễn Phá Trận — Bắn chùm 5 linh tiễn thần lực cực mạnh xuyên quái theo hình nan quạt.
         /// </summary>
-        protected override void PerformActiveRelicSkill()
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
-            float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 15f;
-            Transform target = TargetingUtility.FindNearestEnemy(transform.position, range);
-
-            Vector2 direction;
-            if (target != null)
+            Vector2 direction = customAimDirection;
+            if (direction == Vector2.zero)
             {
-                direction = (target.position - firePoint.position).normalized;
-            }
-            else
-            {
-                direction = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 15f;
+                Transform target = TargetingUtility.FindNearestEnemy(transform.position, range);
+                if (target != null)
+                {
+                    direction = (target.position - firePoint.position).normalized;
+                }
+                else
+                {
+                    direction = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                }
             }
 
             DamageData damageData = CreateDamageData();

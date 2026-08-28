@@ -30,6 +30,10 @@ namespace ProjectZombie.Features.UI
             if (_view != null)
             {
                 _view.OnButtonPressed += OnAttackButtonPressed;
+                _view.OnAimStarted += HandleAimStarted;
+                _view.OnAimUpdated += HandleAimUpdated;
+                _view.OnAimReleased += HandleAimReleased;
+                _view.OnAimCancelled += HandleAimCancelled;
             }
 
             TryBindCombat();
@@ -40,12 +44,48 @@ namespace ProjectZombie.Features.UI
             if (_view != null)
             {
                 _view.OnButtonPressed -= OnAttackButtonPressed;
+                _view.OnAimStarted -= HandleAimStarted;
+                _view.OnAimUpdated -= HandleAimUpdated;
+                _view.OnAimReleased -= HandleAimReleased;
+                _view.OnAimCancelled -= HandleAimCancelled;
             }
 
             if (_weaponManager != null)
             {
                 _weaponManager.OnWeaponsChanged -= OnWeaponsChanged;
             }
+        }
+
+        private void HandleAimStarted()
+        {
+            var config = _characterCombat != null ? _characterCombat.AimConfig : Combat.Aiming.SkillAimConfig.DefaultMelee;
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StartAim(config);
+        }
+
+        private void HandleAimUpdated(Vector2 direction, float pullPercent, bool isCancel)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.UpdateAim(direction, pullPercent, isCancel);
+        }
+
+        private void HandleAimReleased(Vector2 direction, bool isQuickTap)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
+            if (isQuickTap)
+            {
+                OnAttackButtonPressed();
+            }
+            else
+            {
+                if (_characterCombat != null)
+                {
+                    _characterCombat.TriggerAttack(direction);
+                }
+            }
+        }
+
+        private void HandleAimCancelled()
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
         }
 
         public void Bind(CharacterCombat combat)

@@ -52,6 +52,10 @@ namespace ProjectZombie.Features.UI
             if (_buttonView != null)
             {
                 _buttonView.OnButtonClicked += OnButtonClicked;
+                _buttonView.OnAimStarted += HandleAimStarted;
+                _buttonView.OnAimUpdated += HandleAimUpdated;
+                _buttonView.OnAimReleased += HandleAimReleased;
+                _buttonView.OnAimCancelled += HandleAimCancelled;
             }
 
             if (_elementPickerOverlayView != null)
@@ -74,12 +78,43 @@ namespace ProjectZombie.Features.UI
             if (_buttonView != null)
             {
                 _buttonView.OnButtonClicked -= OnButtonClicked;
+                _buttonView.OnAimStarted -= HandleAimStarted;
+                _buttonView.OnAimUpdated -= HandleAimUpdated;
+                _buttonView.OnAimReleased -= HandleAimReleased;
+                _buttonView.OnAimCancelled -= HandleAimCancelled;
             }
 
             if (_elementPickerOverlayView != null)
             {
                 _elementPickerOverlayView.OnElementPicked -= OnElementPickedFromOverlay;
             }
+        }
+
+        private void HandleAimStarted()
+        {
+            if (_skillManager == null || !_skillManager.IsReady) return;
+
+            var aimConfig = (_skillManager.ActiveSkill is Combat.Aiming.IAimableSkill aimable)
+                ? aimable.AimConfig
+                : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, 5.5f, 2.5f, 120f, true);
+
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StartAim(aimConfig);
+        }
+
+        private void HandleAimUpdated(Vector2 direction, float pullPercent, bool isCancel)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.UpdateAim(direction, pullPercent, isCancel);
+        }
+
+        private void HandleAimReleased(Vector2 direction, bool isQuickTap)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
+            OnButtonClicked();
+        }
+
+        private void HandleAimCancelled()
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
         }
 
         private void RefreshUIState()

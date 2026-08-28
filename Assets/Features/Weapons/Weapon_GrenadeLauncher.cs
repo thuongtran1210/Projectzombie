@@ -45,22 +45,26 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        /// <summary>
-        /// Kỹ năng chủ động: Bão Lửa Thần Sa — Quăng chùm 3 hạt Thần Sa nổ tung bão lửa thiêu rụi vùng rộng.
-        /// </summary>
-        protected override void PerformActiveRelicSkill()
-        {
-            float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 12f;
-            Transform target = TargetingUtility.FindNearestEnemy(transform.position, range);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 7.5f, 2.4f, 0f, true);
 
-            Vector2 direction;
-            if (target != null)
+        /// <summary>
+        /// Kỹ năng chủ động: Bão Lửa Thần Sa — Quăng 3 quả lựu đạn thần sa nổ liên hoàn tạo bão lửa diện rộng.
+        /// </summary>
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            Vector2 direction = customAimDirection;
+            if (direction == Vector2.zero)
             {
-                direction = (target.position - firePoint.position).normalized;
-            }
-            else
-            {
-                direction = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 12f;
+                Transform target = TargetingUtility.FindNearestEnemy(transform.position, range);
+                if (target != null)
+                {
+                    direction = (target.position - firePoint.position).normalized;
+                }
+                else
+                {
+                    direction = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                }
             }
 
             DamageData damageData = CreateDamageData();

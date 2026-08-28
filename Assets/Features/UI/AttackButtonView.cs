@@ -15,8 +15,13 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Image _iconImage;
         [SerializeField] private Image _cooldownRadialFill;
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private Controls.SmartSkillDragHandler _dragHandler;
 
         public event System.Action OnButtonPressed;
+        public event System.Action OnAimStarted;
+        public event System.Action<Vector2, float, bool> OnAimUpdated;
+        public event System.Action<Vector2, bool> OnAimReleased;
+        public event System.Action OnAimCancelled;
 
         private void Awake()
         {
@@ -27,12 +32,23 @@ namespace ProjectZombie.Features.UI
             }
 
             if (_attackButton == null) _attackButton = GetComponent<Button>();
-            if (_attackButton != null)
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+
+            if (_dragHandler == null) _dragHandler = GetComponent<Controls.SmartSkillDragHandler>() ?? gameObject.AddComponent<Controls.SmartSkillDragHandler>();
+            if (_dragHandler != null)
+            {
+                _dragHandler.OnAimStarted += () => OnAimStarted?.Invoke();
+                _dragHandler.OnAimUpdated += (dir, pull, isCancel) => OnAimUpdated?.Invoke(dir, pull, isCancel);
+                _dragHandler.OnAimReleased += (dir, isTap) => {
+                    if (isTap) OnButtonPressed?.Invoke();
+                    OnAimReleased?.Invoke(dir, isTap);
+                };
+                _dragHandler.OnAimCancelled += () => OnAimCancelled?.Invoke();
+            }
+            else if (_attackButton != null)
             {
                 _attackButton.onClick.AddListener(() => OnButtonPressed?.Invoke());
             }
-
-            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
         }
 
         public void SetIcon(Sprite icon)
@@ -57,6 +73,11 @@ namespace ProjectZombie.Features.UI
             if (_attackButton != null)
             {
                 _attackButton.interactable = isInteractable;
+            }
+
+            if (_dragHandler != null)
+            {
+                _dragHandler.SetInteractable(isInteractable);
             }
 
             if (_canvasGroup != null)

@@ -137,6 +137,54 @@ namespace ProjectZombie.Editor.Tools
             // 4b. Chuẩn hóa & Wire RelicSkillButtonView & RelicSkillPresenter (Hybrid Relics v6.0)
             RelicSkillButtonView relicView = mobilePanel.GetComponentInChildren<RelicSkillButtonView>(true);
             Transform relicTransform = relicView != null ? relicView.transform : FindChildRecursive(mobilePanel.transform, "Relic");
+            if (relicTransform == null)
+            {
+                // Tự động tạo Btn_RelicSkill nếu Panel_MobileControls cũ chưa có
+                GameObject relicObj = new GameObject("Btn_RelicSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(RelicSkillButtonView), typeof(RelicSkillPresenter));
+                relicObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform relicRect = relicObj.GetComponent<RectTransform>();
+                relicRect.anchorMin = new Vector2(1f, 0f);
+                relicRect.anchorMax = new Vector2(1f, 0f);
+                relicRect.pivot = new Vector2(0.5f, 0.5f);
+                relicRect.anchoredPosition = new Vector2(-270, 270);
+                relicRect.sizeDelta = new Vector2(90, 90);
+                Image relicBg = relicObj.GetComponent<Image>();
+                relicBg.color = new Color(0.18f, 0.22f, 0.28f, 0.92f);
+
+                GameObject relicIconObj = new GameObject("Icon_Relic", typeof(RectTransform), typeof(Image));
+                relicIconObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicIconRect = relicIconObj.GetComponent<RectTransform>();
+                relicIconRect.anchorMin = new Vector2(0.15f, 0.15f);
+                relicIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+                relicIconRect.sizeDelta = Vector2.zero;
+                Image relicIconImg = relicIconObj.GetComponent<Image>();
+                relicIconImg.color = Color.white;
+
+                GameObject relicFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+                relicFillObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicFillRect = relicFillObj.GetComponent<RectTransform>();
+                relicFillRect.anchorMin = Vector2.zero;
+                relicFillRect.anchorMax = Vector2.one;
+                relicFillRect.sizeDelta = Vector2.zero;
+                Image relicFillImg = relicFillObj.GetComponent<Image>();
+                relicFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+                relicFillImg.type = Image.Type.Filled;
+                relicFillImg.fillMethod = Image.FillMethod.Radial360;
+
+                GameObject relicTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+                relicTextObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicTextRect = relicTextObj.GetComponent<RectTransform>();
+                relicTextRect.anchorMin = Vector2.zero;
+                relicTextRect.anchorMax = Vector2.one;
+                relicTextRect.sizeDelta = Vector2.zero;
+                TextMeshProUGUI relicText = relicTextObj.GetComponent<TextMeshProUGUI>();
+                relicText.alignment = TextAlignmentOptions.Center;
+                relicText.fontSize = 24;
+
+                relicTransform = relicObj.transform;
+                relicView = relicObj.GetComponent<RelicSkillButtonView>();
+            }
+
             if (relicTransform != null)
             {
                 if (relicView == null) relicView = relicTransform.gameObject.AddComponent<RelicSkillButtonView>();
@@ -173,14 +221,63 @@ namespace ProjectZombie.Editor.Tools
                 wiredCount++;
             }
 
+            // 7. Chuẩn hóa & Wire Skill Aim Indicator Controller & UI Cancel Skill Zone (MOBA Smart Drag-Aim)
+            SetupAimingIndicatorsAndCancelZone(canvas, mobilePanel);
+            wiredCount += 2;
+
             EditorUtility.SetDirty(mobilePanel);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mobilePanel.scene);
 
             EditorUtility.DisplayDialog(
                 "Hoàn Tất",
-                $"Đã hoàn tất quét và Auto-Wire các thành phần Mobile Controls!\nSố cụm được cấu hình: {wiredCount}",
+                $"Đã hoàn tất quét và Auto-Wire các thành phần Mobile Controls & MOBA Hit-And-Run System!\nSố cụm được cấu hình: {wiredCount}",
                 "OK"
             );
+        }
+
+        private static void SetupAimingIndicatorsAndCancelZone(Canvas canvas, GameObject mobilePanel)
+        {
+            // A. Đảm bảo UICancelSkillZone tồn tại trong Canvas
+            var cancelZone = canvas.GetComponentInChildren<Features.UI.Controls.UICancelSkillZone>(true);
+            if (cancelZone == null)
+            {
+                GameObject cancelObj = new GameObject("Zone_CancelSkill", typeof(RectTransform), typeof(CanvasGroup), typeof(Image), typeof(Features.UI.Controls.UICancelSkillZone));
+                cancelObj.transform.SetParent(mobilePanel.transform, false);
+
+                RectTransform rect = cancelObj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.75f);
+                rect.anchorMax = new Vector2(0.5f, 0.75f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = new Vector2(160, 160);
+
+                Image bgImage = cancelObj.GetComponent<Image>();
+                bgImage.color = new Color(0.85f, 0.15f, 0.15f, 0.45f);
+
+                GameObject textObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+                textObj.transform.SetParent(cancelObj.transform, false);
+                RectTransform textRect = textObj.GetComponent<RectTransform>();
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.sizeDelta = Vector2.zero;
+
+                TextMeshProUGUI text = textObj.GetComponent<TextMeshProUGUI>();
+                text.text = "KÉO ĐÂY\nĐỂ HỦY";
+                text.alignment = TextAlignmentOptions.Center;
+                text.fontSize = 20;
+                text.color = Color.white;
+
+                cancelZone = cancelObj.GetComponent<Features.UI.Controls.UICancelSkillZone>();
+                cancelObj.SetActive(false);
+            }
+
+            // B. Đảm bảo SkillAimIndicatorController tồn tại trong Scene
+            var aimController = Object.FindObjectOfType<Features.Combat.Aiming.SkillAimIndicatorController>();
+            if (aimController == null)
+            {
+                GameObject aimObj = new GameObject("SkillAimIndicatorController", typeof(Features.Combat.Aiming.SkillAimIndicatorController));
+                Undo.RegisterCreatedObjectUndo(aimObj, "Create SkillAimIndicatorController");
+            }
         }
 
         private static void WireJoystick(DynamicVirtualJoystick joystick)

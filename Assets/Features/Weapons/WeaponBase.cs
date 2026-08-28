@@ -8,9 +8,12 @@ namespace ProjectZombie.Features.Weapons
     using ProjectZombie.Features.Upgrades;
 
     /// <summary>
-    /// Lớp gốc cho mọi loại vũ khí. Quản lý Object Pool, Thời gian hồi chiêu và thông số cơ bản.
+    /// Base class cho tất cả vũ khí và Pháp Bảo Hộ Thân (Relics).
+    /// Hỗ trợ cả 2 chế độ:
+    /// - 1. Kỹ năng Pháp bảo Chủ động (Active Relic): Kích hoạt qua nút bấm / Touch Drag Aiming, quản lý Cooldown và Buff Duration.
+    /// - 2. Pháp bảo Bị động (Passive Relic): Tự động xuất chiêu theo chu kỳ Tick() / On-Hit / Finisher Combo.
     /// </summary>
-    public abstract class WeaponBase : MonoBehaviour
+    public abstract class WeaponBase : MonoBehaviour, Combat.Aiming.IAimableSkill
     {
         [Header("Base Weapon Settings")]
         [SerializeField] protected Transform firePoint;
@@ -21,6 +24,27 @@ namespace ProjectZombie.Features.Weapons
         public Sprite icon;
         [TextArea] public string description;
         public ElementType element = ElementType.None;
+        public WeaponRole weaponRole = WeaponRole.RelicOnHitTrigger;
+
+        [Header("Hybrid Relic Configuration (v6.0)")]
+        [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân.")]
+        public bool isPrimaryActiveWeapon = false;
+
+        [Tooltip("True: Pháp bảo tự động (Passive - Không hiện nút); False: Pháp bảo chủ động (Active - Hiện nút bấm kỹ năng)")]
+        public bool isPassiveRelic = false;
+
+        [Tooltip("Thời gian hồi chiêu khi kích hoạt chủ động (giây)")]
+        public float activeCooldown = 8.0f;
+
+        [Tooltip("Thời gian hiệu lực kỹ năng chủ động (giây). 0 nếu là chiêu thức tức thời (Instant Cast)")]
+        public float activeDuration = 0f;
+
+        [Tooltip("Tên chiêu thức chủ động của Pháp Bảo")]
+        public string skillActionName;
+
+        public virtual Combat.Aiming.SkillAimConfig AimConfig => isPassiveRelic 
+            ? Combat.Aiming.SkillAimConfig.DefaultInstant 
+            : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 6.5f, 1.2f, 0f, true);
 
         public int WeaponLevel { get; private set; } = 1;
         public virtual int MaxLevel => 6;
@@ -75,24 +99,6 @@ namespace ProjectZombie.Features.Weapons
         }
 
         [Header("Active / Passive Mode (Hybrid Relic System v6.0)")]
-        [Tooltip("Vai trò chiến đấu của vũ khí/pháp bảo")]
-        public WeaponRole weaponRole = WeaponRole.PrimaryWeapon;
-
-        [Tooltip("Nếu là true: Vũ khí chính, chỉ xuất chiêu khi bấm Nút Đánh. Nếu là false: Pháp bảo hộ thân.")]
-        public bool isPrimaryActiveWeapon = false;
-
-        [Tooltip("True: Pháp bảo tự động (Passive - Không hiện nút); False: Pháp bảo chủ động (Active - Hiện nút bấm kỹ năng)")]
-        public bool isPassiveRelic = false;
-
-        [Tooltip("Thời gian hồi chiêu khi kích hoạt chủ động (giây)")]
-        public float activeCooldown = 8.0f;
-
-        [Tooltip("Thời gian hiệu lực kỹ năng chủ động (giây). 0 nếu là chiêu thức tức thời (Instant Cast)")]
-        public float activeDuration = 0f;
-
-        [Tooltip("Tên chiêu thức chủ động của Pháp Bảo")]
-        public string skillActionName;
-
         private float _lastRelicSkillCastTime = -999f;
         private float _relicSkillDurationEndTime = -999f;
         private float _lastEmittedRelicCd = -1f;
@@ -198,9 +204,9 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
-        /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo khi người chơi nhấn nút Kỹ Năng Pháp Bảo.
+        /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo khi người chơi nhấn/kéo nút Kỹ Năng Pháp Bảo.
         /// </summary>
-        public virtual bool TriggerActiveRelicSkill()
+        public virtual bool TriggerActiveRelicSkill(Vector2 customAimDirection = default)
         {
             if (CharacterStats == null) return false;
             if (isPassiveRelic) return false; // Pháp bảo bị động không thể kích hoạt bằng nút
@@ -212,7 +218,7 @@ namespace ProjectZombie.Features.Weapons
                 _relicSkillDurationEndTime = Time.time + activeDuration;
             }
 
-            PerformActiveRelicSkill();
+            PerformActiveRelicSkill(customAimDirection);
             OnRelicSkillExecuted?.Invoke();
             OnRelicCooldownUpdated?.Invoke(RelicRemainingCooldown, RelicMaxCooldown);
             return true;
@@ -220,7 +226,14 @@ namespace ProjectZombie.Features.Weapons
 
         /// <summary>
         /// Thực thi chiêu thức chủ động khi bấm nút. Các Pháp bảo chủ động con có thể override hàm này.
-        /// Mặc định nếu không override sẽ gọi PerformAttack().
+        /// </summary>
+        protected virtual void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            PerformActiveRelicSkill();
+        }
+
+        /// <summary>
+        /// Phiên bản không tham số để tương thích ngược.
         /// </summary>
         protected virtual void PerformActiveRelicSkill()
         {

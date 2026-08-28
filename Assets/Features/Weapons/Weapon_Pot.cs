@@ -48,13 +48,15 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 6.0f, vacuumRadius * 1.4f, 0f, true);
+
         /// <summary>
         /// Kỹ năng chủ động: Hút Chân Không & Tiên Cơm — Gom quái diện rộng 6m vào tâm nồi, hất văng và hồi 15% Max HP.
         /// </summary>
-        protected override void PerformActiveRelicSkill()
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
-            StartCoroutine(RoutinePotDefenseSequence(true));
+            StartCoroutine(RoutinePotDefenseSequence(true, customAimDirection));
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
@@ -62,9 +64,9 @@ namespace ProjectZombie.Features.Weapons
             // Tích lũy linh khí cơm nắm khi Hero chém trúng quái
         }
 
-        private IEnumerator RoutinePotDefenseSequence(bool isEmpowered = false)
+        private IEnumerator RoutinePotDefenseSequence(bool isEmpowered = false, Vector2 customAimDirection = default)
         {
-            Vector2 center = transform.position;
+            Vector2 center = customAimDirection != Vector2.zero ? (Vector2)transform.position + customAimDirection * 2.5f : (Vector2)transform.position;
             float currentRadius = isEmpowered ? vacuumRadius * 1.6f : vacuumRadius;
             int maxMobs = isEmpowered ? maxCapturedMobs + 4 : maxCapturedMobs;
 

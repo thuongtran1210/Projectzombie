@@ -54,13 +54,15 @@ namespace ProjectZombie.Features.Weapons
             StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius, smokeDuration));
         }
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, 5.5f, 3.5f, 90f, true);
+
         /// <summary>
         /// Kỹ năng chủ động: Bão Khói Thuốc Lào — Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương.
         /// </summary>
-        protected override void PerformActiveRelicSkill()
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
-            Vector2 forwardDir = transform.right;
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
+            if (customAimDirection == Vector2.zero && PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
                 var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
                 if (player != null) forwardDir = player.FacingVector;

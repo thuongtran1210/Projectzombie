@@ -45,6 +45,10 @@ namespace ProjectZombie.Features.UI
             if (_buttonView != null)
             {
                 _buttonView.OnButtonClicked += HandleButtonClicked;
+                _buttonView.OnAimStarted += HandleAimStarted;
+                _buttonView.OnAimUpdated += HandleAimUpdated;
+                _buttonView.OnAimReleased += HandleAimReleased;
+                _buttonView.OnAimCancelled += HandleAimCancelled;
             }
 
             if (_weaponManager == null)
@@ -71,9 +75,51 @@ namespace ProjectZombie.Features.UI
             if (_buttonView != null)
             {
                 _buttonView.OnButtonClicked -= HandleButtonClicked;
+                _buttonView.OnAimStarted -= HandleAimStarted;
+                _buttonView.OnAimUpdated -= HandleAimUpdated;
+                _buttonView.OnAimReleased -= HandleAimReleased;
+                _buttonView.OnAimCancelled -= HandleAimCancelled;
             }
 
             UnsubscribeRelicEvents();
+        }
+
+        private void HandleAimStarted()
+        {
+            if (_boundActiveRelic == null || !_boundActiveRelic.IsRelicSkillReady) return;
+
+            var aimConfig = (_boundActiveRelic is Combat.Aiming.IAimableSkill aimable)
+                ? aimable.AimConfig
+                : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 6.5f, 1.2f, 0f, true);
+
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StartAim(aimConfig);
+        }
+
+        private void HandleAimUpdated(Vector2 direction, float pullPercent, bool isCancel)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.UpdateAim(direction, pullPercent, isCancel);
+        }
+
+        private void HandleAimReleased(Vector2 direction, bool isQuickTap)
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
+            if (isQuickTap)
+            {
+                HandleButtonClicked();
+            }
+            else
+            {
+                if (_weaponManager != null && _boundActiveRelic != null && _boundActiveRelic.IsRelicSkillReady)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _weaponManager.TriggerEquippedRelicSkill(direction);
+                }
+            }
+        }
+
+        private void HandleAimCancelled()
+        {
+            Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
         }
 
         private void HandleWeaponsChanged()

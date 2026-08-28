@@ -12,7 +12,7 @@ namespace ProjectZombie.Features.Player
     /// điều phối Animation, hiệu ứng VFX Slash/Đạn và tính toán sát thương kết hợp Combo 1-2-3.
     /// </summary>
     [RequireComponent(typeof(PlayerStats))]
-    public class CharacterCombat : MonoBehaviour
+    public class CharacterCombat : MonoBehaviour, Combat.Aiming.IAimableSkill
     {
         [Header("Character Basic Attack Configuration")]
         [SerializeField] private CharacterAttackConfig attackConfig;
@@ -34,6 +34,20 @@ namespace ProjectZombie.Features.Player
         public CharacterAttackConfig Config => attackConfig;
         public int CurrentComboStep => _currentComboStep;
         public Sprite AttackIcon => attackConfig != null ? attackConfig.attackIcon : null;
+
+        public Combat.Aiming.SkillAimConfig AimConfig
+        {
+            get
+            {
+                if (attackConfig != null && attackConfig.attackType == CharacterAttackType.RangedProjectile)
+                {
+                    float range = attackConfig.projectileSpeed * (attackConfig.projectileLifetime > 0 ? attackConfig.projectileLifetime : 1.2f);
+                    return new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, Mathf.Max(4.0f, range), 0.8f, 0f, true);
+                }
+                float meleeRange = attackConfig != null ? attackConfig.meleeOffset + attackConfig.meleeAreaSize.x * 0.5f : 2.5f;
+                return new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, Mathf.Max(2.0f, meleeRange), 1.8f, 90f, true);
+            }
+        }
 
         /// <summary>
         /// Sự kiện phát ra khi nhân vật tung một đòn đánh thường.
@@ -177,13 +191,13 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
-        /// Kích hoạt đòn đánh từ nút Tấn Công (Attack Button).
+        /// Kích hoạt đòn đánh từ nút Tấn Công (Attack Button). Hỗ trợ định hướng tự động hoặc kéo thủ công.
         /// </summary>
-        public bool TriggerAttack()
+        public bool TriggerAttack(Vector2 customAimDirection = default)
         {
             if (RemainingCooldown > 0f) return false;
 
-            ExecuteAttack(_currentComboStep);
+            ExecuteAttack(_currentComboStep, customAimDirection);
 
             // Cập nhật Combo Step tiếp theo
             int maxCombo = attackConfig != null ? attackConfig.maxComboSteps : 3;
@@ -194,7 +208,7 @@ namespace ProjectZombie.Features.Player
             return true;
         }
 
-        private void ExecuteAttack(int comboStep)
+        private void ExecuteAttack(int comboStep, Vector2 customAimDirection = default)
         {
             if (attackConfig == null) return;
 
@@ -215,8 +229,18 @@ namespace ProjectZombie.Features.Player
                 playerController.NotifyAttackStarted(comboStep);
             }
 
-            // 2. Định hướng đánh: Ưu tiên hướng nhìn hiện tại hoặc quái gần nhất
-            Vector2 attackDirection = GetAttackDirection();
+            // 2. Định hướng đánh: Nếu kéo tay thủ công thì dùng hướng đó, nếu bấm nhanh thì Auto-Aim quái
+            Vector2 attackDirection = customAimDirection;
+            if (attackDirection == Vector2.zero)
+            {
+                Combat.Aiming.AutoTargetScanner.TryGetAutoAimDirection(transform.position, AimConfig, GetAttackDirection(), out attackDirection, out _);
+            }
+
+            // Tự động xoay mặt nhân vật theo hướng tấn công
+            if (playerAnimator != null && Mathf.Abs(attackDirection.x) > 0.05f)
+            {
+                playerAnimator.FlipToDirection(attackDirection.x);
+            }
 
             // 3. Thực thi đòn đánh theo Action Window Timing (Zero-GC Coroutine Flow)
             if (attackConfig.attackType == CharacterAttackType.MeleeSlash)
@@ -353,6 +377,9 @@ namespace ProjectZombie.Features.Player
                 }
                 TriggerDynamicGameJuice(comboStep, isCrit);
             }
+
+            // Cho phép di chuyển ngắt ngay động tác thừa (Animation Canceling / Stutter-Step)
+            playerController?.NotifyAttackImpactComplete();
         }
 
         private System.Collections.IEnumerator ExecuteRangedProjectileRoutine(int comboStep, Vector2 direction, float currentAtkSpeed)
@@ -367,6 +394,7 @@ namespace ProjectZombie.Features.Player
             }
 
             ExecuteRangedProjectile(comboStep, direction);
+            playerController?.NotifyAttackImpactComplete();
         }
 
         /// <summary>

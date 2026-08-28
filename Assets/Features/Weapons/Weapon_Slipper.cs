@@ -41,20 +41,25 @@ namespace ProjectZombie.Features.Weapons
             StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
         }
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, throwRange * 1.4f, 1.2f, 0f, true);
+
         /// <summary>
         /// Kỹ năng chủ động: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ + Kích hoạt ngay Lốc Dép Vạn Năng gây Quê Độ 100%.
         /// </summary>
-        protected override void PerformActiveRelicSkill()
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
-            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.0f);
-            Vector2 dir;
-            if (nearest != null)
+            Vector2 dir = customAimDirection;
+            if (dir == Vector2.zero)
             {
-                dir = ((Vector2)nearest.position - (Vector2)transform.position).normalized;
-            }
-            else
-            {
-                dir = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.0f);
+                if (nearest != null)
+                {
+                    dir = ((Vector2)nearest.position - (Vector2)transform.position).normalized;
+                }
+                else
+                {
+                    dir = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                }
             }
 
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);

@@ -192,7 +192,7 @@ namespace ProjectZombie.Features.Player
         public void NotifyAttackStarted(int comboStep)
         {
             _isAttacking = true;
-            _attackSlowdownEndTime = Time.time + 0.12f; // Giảm tốc trong 0.12s để tạo lực đầm
+            _attackSlowdownEndTime = Time.time + 0.10f; // Giảm tốc nhẹ trong 0.10s đầu
 
             // Kích hoạt Smart Soft-Lock nếu người chơi không chủ động kéo cần di chuyển
             if (_movementInput == Vector2.zero)
@@ -203,6 +203,22 @@ namespace ProjectZombie.Features.Player
             if (_playerAnimator != null)
             {
                 _playerAnimator.ChangeAnimationState(PlayerAnimationState.Attack);
+            }
+        }
+
+        /// <summary>
+        /// Thông báo khoảnh khắc chạm đòn (Impact Frame) đã hoàn tất.
+        /// Lập tức giải phóng khóa di chuyển (Animation Canceling) cho phép Hit & Run mượt mà.
+        /// </summary>
+        public void NotifyAttackImpactComplete()
+        {
+            if (_movementInput.sqrMagnitude > 0.01f)
+            {
+                _isAttacking = false;
+                if (_playerAnimator != null && !_isDashing)
+                {
+                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                }
             }
         }
 
@@ -324,12 +340,12 @@ namespace ProjectZombie.Features.Player
             }
             else
             {
-                // Giảm tốc nhẹ 40% trong lúc vung đòn (Movement Slowdown) để tạo lực đầm
+                // Giảm tốc nhẹ 30% trong tích tắc vung đòn (Movement Slowdown) để tạo lực đầm nhưng không khựng chân
                 if (_isAttacking)
                 {
                     if (Time.time < _attackSlowdownEndTime)
                     {
-                        currentSpeed *= 0.4f;
+                        currentSpeed *= 0.70f;
                     }
                     else
                     {

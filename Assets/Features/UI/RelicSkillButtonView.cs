@@ -16,8 +16,13 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _cooldownText;
         [SerializeField] private Button _relicButton;
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private Controls.SmartSkillDragHandler _dragHandler;
 
         public event System.Action OnButtonClicked;
+        public event System.Action OnAimStarted;
+        public event System.Action<Vector2, float, bool> OnAimUpdated;
+        public event System.Action<Vector2, bool> OnAimReleased;
+        public event System.Action OnAimCancelled;
 
         private void Awake()
         {
@@ -27,7 +32,20 @@ namespace ProjectZombie.Features.UI
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
 
-            if (_relicButton != null)
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            if (_dragHandler == null) _dragHandler = GetComponent<Controls.SmartSkillDragHandler>() ?? gameObject.AddComponent<Controls.SmartSkillDragHandler>();
+
+            if (_dragHandler != null)
+            {
+                _dragHandler.OnAimStarted += () => OnAimStarted?.Invoke();
+                _dragHandler.OnAimUpdated += (dir, pull, isCancel) => OnAimUpdated?.Invoke(dir, pull, isCancel);
+                _dragHandler.OnAimReleased += (dir, isTap) => {
+                    if (isTap) OnButtonClicked?.Invoke();
+                    OnAimReleased?.Invoke(dir, isTap);
+                };
+                _dragHandler.OnAimCancelled += () => OnAimCancelled?.Invoke();
+            }
+            else if (_relicButton != null)
             {
                 _relicButton.onClick.AddListener(() => OnButtonClicked?.Invoke());
             }
@@ -66,6 +84,11 @@ namespace ProjectZombie.Features.UI
             if (_relicButton != null)
             {
                 _relicButton.interactable = isInteractable;
+            }
+
+            if (_dragHandler != null)
+            {
+                _dragHandler.SetInteractable(isInteractable);
             }
 
             if (_canvasGroup != null)
