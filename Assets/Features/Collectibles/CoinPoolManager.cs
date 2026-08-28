@@ -53,6 +53,16 @@ namespace ProjectZombie.Features.Collectibles
             }
         }
 
+        public void ClearPools()
+        {
+            foreach (var pool in _prefabToPoolMap.Values)
+            {
+                pool.Clear();
+            }
+            _prefabToPoolMap.Clear();
+            _activeCoins.Clear();
+        }
+
         public IObjectPool<GameObject> GetOrCreatePool(GameObject prefab)
         {
             if (prefab == null) return null;
@@ -71,9 +81,15 @@ namespace ProjectZombie.Features.Collectibles
                     config.Pool = pool;
                     return obj;
                 },
-                actionOnGet: (obj) => obj.SetActive(true),
-                actionOnRelease: (obj) => obj.SetActive(false),
-                actionOnDestroy: (obj) => Destroy(obj),
+                actionOnGet: (obj) => {
+                    if (obj != null) obj.SetActive(true);
+                },
+                actionOnRelease: (obj) => {
+                    if (obj != null) obj.SetActive(false);
+                },
+                actionOnDestroy: (obj) => {
+                    if (obj != null) Destroy(obj);
+                },
                 collectionCheck: false,
                 defaultCapacity: 50,
                 maxSize: 500
@@ -99,7 +115,20 @@ namespace ProjectZombie.Features.Collectibles
             var pool = GetOrCreatePool(targetPrefab);
             if (pool != null)
             {
-                GameObject coinObj = pool.Get();
+                GameObject coinObj = null;
+                while (pool.CountInactive > 0)
+                {
+                    coinObj = pool.Get();
+                    if (coinObj != null) break;
+                }
+
+                if (coinObj == null)
+                {
+                    coinObj = Instantiate(targetPrefab);
+                    var config = coinObj.GetComponent<CoinPoolConfig>() ?? coinObj.AddComponent<CoinPoolConfig>();
+                    config.Pool = pool;
+                }
+
                 coinObj.transform.position = position;
                 coinObj.transform.rotation = Quaternion.identity;
 

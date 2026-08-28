@@ -39,7 +39,7 @@ namespace ProjectZombie.Features.Player
         {
             // Không nhận EXP và không kích hoạt LevelUp nếu nhân vật đã tử trận hoặc Game Over
             if (TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0) return;
-            if (GameStateManager.Instance != null && (GameStateManager.CurrentState == GameState.GameOver || GameStateManager.CurrentState == GameState.MainMenu)) return;
+            if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu)) return;
 
             // Apply multiplier from stats
             float multiplier = _playerStats != null ? _playerStats.ExpMultiplier : 1f;

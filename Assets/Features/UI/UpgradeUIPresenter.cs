@@ -154,7 +154,7 @@ namespace ProjectZombie.Features.UI
         private void HandleLevelUp(int newLevel)
         {
             // Bảo vệ xung đột: Tuyệt đối không mở bảng nâng cấp nếu Game Over hoặc nhân vật đã tử trận
-            if (GameStateManager.Instance != null && (GameStateManager.CurrentState == GameState.GameOver || GameStateManager.CurrentState == GameState.MainMenu))
+            if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu))
             {
                 return;
             }

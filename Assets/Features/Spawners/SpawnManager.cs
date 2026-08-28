@@ -151,6 +151,22 @@ namespace ProjectZombie.Features.Spawners
                     Destroy(allEnemies[i].gameObject);
                 }
             }
+
+            // Dọn sạch tiền và ngọc EXP còn sót lại trên sàn
+            var allCoins = FindObjectsOfType<Collectibles.CoinDrop>();
+            for (int i = 0; i < allCoins.Length; i++)
+            {
+                if (allCoins[i] != null && allCoins[i].gameObject != null) Destroy(allCoins[i].gameObject);
+            }
+
+            var allGems = FindObjectsOfType<Collectibles.ExpGem>();
+            for (int i = 0; i < allGems.Length; i++)
+            {
+                if (allGems[i] != null && allGems[i].gameObject != null) Destroy(allGems[i].gameObject);
+            }
+
+            Collectibles.CoinPoolManager.Instance?.ClearPools();
+            Collectibles.ExpGemPoolManager.Instance?.ClearPools();
         }
 
         private void Update()
