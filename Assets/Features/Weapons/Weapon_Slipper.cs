@@ -8,9 +8,13 @@ using ProjectZombie.Features.Player;
 namespace ProjectZombie.Features.Weapons
 {
     /// <summary>
-    /// W_SLIPPER — Dép Tổ Ong Thần Sa (Pháp Bảo Hộ Thân Kích Ứng Bồi Đòn — Hệ Kim).
-    /// - Khi Hero chém trúng quái: Tự động phóng Boomerang Dép Tổ Ong bay xuyên mục tiêu và quay về.
-    /// - Khi Hero kết thúc Combo Hit 3: Kích hoạt "Lốc Dép Vạn Năng" 360 độ gom quái, gây 4 hit vả liên hoàn và khiến quái bị "Quê Độ" (Humiliated).
+    /// W_SLIPPER — Dép Tổ Ong Thần Sa (Pháp Bảo Chủ Động Đa Giai Đoạn & Bồi Đòn — Hệ Kim).
+    /// - Kỹ Năng Chủ Động (Recast 2 Phase):
+    ///     + Phase 1: Quăng Boomerang Dép khổng lồ bay theo đường cong Parabol gom quái + Lốc Dép Vạn Năng.
+    ///     + Phase 2 (Recast 3s): Tướng lướt vụt tới vị trí Dép xoay tung cước Song Phi dẫm nổ Shockwave 4m (350% Dmg, Knockback 16m/s, Stun 0.6s).
+    /// - Kỹ Năng Bị Động:
+    ///     + Hero chém trúng quái: Tự động phóng thêm 1 chiếc Dép Boomerang bồi đòn.
+    ///     + Hero kết thúc Combo Hit 3: Kích hoạt Lốc Dép Vạn Năng vả liên hoàn 4 hit gây Quê Độ (Humiliated).
     /// </summary>
     public class Weapon_Slipper : WeaponBase
     {
@@ -90,13 +94,27 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            _lastSlipperApexPosition = transform.position + (Vector3)(dir * (throwRange * 1.4f));
+            float actualThrowDist = throwRange * 1.4f;
+
+            // Chặn điểm rơi của Dép không văng ra ngoài tường/mép map
+            int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
+            if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
+            if (obstacleMask != 0)
+            {
+                RaycastHit2D hitWall = Physics2D.CircleCast(transform.position, 0.4f, dir, actualThrowDist, obstacleMask);
+                if (hitWall.collider != null)
+                {
+                    actualThrowDist = Mathf.Max(1.0f, hitWall.distance - 0.5f);
+                }
+            }
+
+            _lastSlipperApexPosition = transform.position + (Vector3)(dir * actualThrowDist);
 
             // Sinh Vòng Trận Báo Hiệu Điểm Đáp Phase 2 (Recast Dropkick Beacon)
             SpawnRecastGroundMarker(_lastSlipperApexPosition);
 
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
-            StartCoroutine(RoutineThrowSlipper(dir, throwRange * 1.4f, 2.0f));
+            StartCoroutine(RoutineThrowSlipper(dir, actualThrowDist, 2.0f));
             StartCoroutine(RoutineWhirlwindSlippers());
         }
 
@@ -147,30 +165,52 @@ namespace ProjectZombie.Features.Weapons
                 targetPos = transform.position + (Vector3)(customAimDirection * (throwRange * 1.5f));
             }
 
-            StartCoroutine(RoutineSongPhiDropkick(targetPos));
+            // GỌI CHUẨN MOVEMENT: Dash bị vật cản chặn lại trên đường lướt
+            Vector3 startPos = transform.root.position;
+            Vector2 dashDir = ((Vector2)targetPos - (Vector2)startPos).normalized;
+            float rawDistance = Vector2.Distance(startPos, targetPos);
+
+            Vector3 validDashTarget = MovementPhysicsUtility.CalculateDashDestination(startPos, dashDir, rawDistance, 0.35f);
+
+            StartCoroutine(RoutineSongPhiDropkick(validDashTarget));
         }
 
         private IEnumerator RoutineSongPhiDropkick(Vector3 targetPos)
         {
             Transform playerTf = transform.root;
             Vector3 startPos = playerTf.position;
-            float dashDuration = 0.16f;
+            Vector2 dashDir = ((Vector2)targetPos - (Vector2)startPos).normalized;
+            float dashDuration = 0.15f;
             float elapsed = 0f;
+
+            // 1. Kích hoạt Animation Dash & Quay mặt Tướng theo hướng lướt
+            if (playerTf.TryGetComponent<PlayerController>(out var playerCtrl))
+            {
+                if (dashDir.x != 0)
+                {
+                    playerTf.localScale = new Vector3(dashDir.x > 0 ? Mathf.Abs(playerTf.localScale.x) : -Mathf.Abs(playerTf.localScale.x), playerTf.localScale.y, playerTf.localScale.z);
+                }
+                var anim = playerTf.GetComponentInChildren<PlayerAnimator>();
+                if (anim != null) anim.ChangeAnimationState(PlayerAnimationState.Dash);
+            }
 
             global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(startPos);
 
+            // 2. Lướt siêu tốc (High-Speed Dash)
             while (elapsed < dashDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / dashDuration);
-                playerTf.position = Vector3.Lerp(startPos, targetPos, t);
+                // Ease-Out Cubic cho cảm giác phi thân cực nhanh và dứt khoát
+                float easeT = 1f - Mathf.Pow(1f - t, 3f);
+                playerTf.position = Vector3.Lerp(startPos, targetPos, easeT);
                 yield return null;
             }
             playerTf.position = targetPos;
 
-            // Nổ Shockwave diện rộng tại điểm đáp
+            // 3. Chạm đất tung cước Song Phi (Dropkick Impact Shockwave)
             global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(targetPos);
-            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, 4.5f, TargetingUtility.EnemyLayerMask);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, 4.0f, TargetingUtility.EnemyLayerMask);
             DamageData kickDamage = new DamageData(GetFinalDamage() * 3.5f, true, ElementType.Kim, true, this);
 
             foreach (var hit in hits)
@@ -179,14 +219,16 @@ namespace ProjectZombie.Features.Weapons
                 {
                     dmg.TakeDamage(kickDamage);
                 }
-                if (hit != null && hit.TryGetComponent<Rigidbody2D>(out var rb))
+                if (hit != null && hit.TryGetComponent<EnemyStatusController>(out var status))
                 {
                     Vector2 push = ((Vector2)hit.transform.position - (Vector2)targetPos).normalized;
-                    rb.AddForce(push * 16f, ForceMode2D.Impulse);
+                    if (push == Vector2.zero) push = dashDir;
+                    status.ApplyKnockback(push, 16f, 0.35f);
+                    status.ApplyStatusEffect(StatusEffectType.Stun, 0.6f);
                 }
             }
 
-            // Kích hoạt hiệu ứng Lốc Dép Vạn Năng bồi thêm
+            // 4. Bồi thêm Lốc Dép Vạn Năng sau khi đáp đất
             StartCoroutine(RoutineWhirlwindSlippers());
         }
 
