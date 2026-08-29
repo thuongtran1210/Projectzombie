@@ -12431,6 +12431,7 @@ MonoBehaviour:
   _boxSprite: {fileID: 0}
   _fillSprite: {fileID: 0}
   _arrowSprite: {fileID: 0}
+  _sectorMaterial: {fileID: 0}
   _normalAimColor: {r: 0.2, g: 0.85, b: 1, a: 0.75}
   _cancelAimColor: {r: 1, g: 0.25, b: 0.25, a: 0.85}
   _maxRangeBoundaryColor: {r: 1, g: 1, b: 1, a: 0.2}
@@ -33561,6 +33562,7 @@ MonoBehaviour:
   matchTime: 0
   isMatchActive: 0
   currentEnemyCount: 0
+  autoStartOnPlay: 1
 --- !u!1 &1910115012
 GameObject:
   m_ObjectHideFlags: 0

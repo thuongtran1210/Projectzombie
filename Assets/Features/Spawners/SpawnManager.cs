@@ -77,10 +77,16 @@ namespace ProjectZombie.Features.Spawners
             _playerTransform = null;
         }
 
+        [Header("Auto Start (For Quick Play / Testing)")]
+        [Tooltip("Tự động bắt đầu trận đấu khi vào Scene nếu không có UI Meta điều phối")]
+        [SerializeField] private bool autoStartOnPlay = true;
+
         private void Start()
         {
-            // Để trống hoàn toàn Start() để không chiếm bất kỳ ms CPU / GC Alloc nào ở Frame khởi động đầu tiên.
-            // Tilemap và Preloader sẽ được nạp Lazy khi thực sự bắt đầu trận đấu (StartMatchAsync).
+            if (autoStartOnPlay && !isMatchActive)
+            {
+                StartMatch();
+            }
         }
 
         private void EnsureDependencies()
@@ -102,9 +108,17 @@ namespace ProjectZombie.Features.Spawners
 #endif
             }
 
-            if (_playerTransform == null && Player.PlayerProvider.HasPlayer)
+            if (_playerTransform == null)
             {
-                _playerTransform = Player.PlayerProvider.PlayerTransform;
+                if (Player.PlayerProvider.HasPlayer)
+                {
+                    _playerTransform = Player.PlayerProvider.PlayerTransform;
+                }
+                else
+                {
+                    var playerObj = GameObject.FindGameObjectWithTag("Player") ?? GameObject.Find("Player");
+                    if (playerObj != null) _playerTransform = playerObj.transform;
+                }
             }
 
             if (autoFindGroundTilemap && groundTilemap == null && walkableAreaCollider == null)
@@ -129,13 +143,20 @@ namespace ProjectZombie.Features.Spawners
             _activeContinuousEvents.Clear();
             _eventTimers.Clear();
 
-            // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader
+            isMatchActive = true;
+
+            // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader (chạy ngầm không block isMatchActive)
             if (timelineConfig != null && _wavePreloader != null)
             {
-                await _wavePreloader.PreloadTimelineAssetsAsync(timelineConfig);
+                try
+                {
+                    await _wavePreloader.PreloadTimelineAssetsAsync(timelineConfig);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[SpawnManager] Preload assets warning: {ex.Message}");
+                }
             }
-
-            isMatchActive = true;
 
             // Kích hoạt ngay sự kiện ban đầu ở giây thứ 0s
             CheckTimelineEvents();
@@ -446,6 +467,11 @@ namespace ProjectZombie.Features.Spawners
         {
             if (walkableAreaCollider != null)
             {
+                // Nếu vô tình kéo nhầm Tilemap Obstacle vào walkableAreaCollider thì bỏ qua
+                if (walkableAreaCollider.gameObject.name.Contains("Obstacle"))
+                {
+                    return true;
+                }
                 return walkableAreaCollider.OverlapPoint(position);
             }
 
@@ -453,10 +479,11 @@ namespace ProjectZombie.Features.Spawners
             {
                 Vector3Int cellPos = groundTilemap.WorldToCell(position);
                 if (groundTilemap.HasTile(cellPos)) return true;
+                return false;
             }
 
             // Mặc định cho phép spawn nếu không có collider giới hạn
-            return walkableAreaCollider == null;
+            return true;
         }
 
         private bool IsOutsideCameraViewport(Vector3 position)
