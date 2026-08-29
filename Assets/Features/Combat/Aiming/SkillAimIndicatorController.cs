@@ -353,39 +353,60 @@ namespace ProjectZombie.Features.Combat.Aiming
             _circleRenderer.color = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 0.95f);
         }
 
+        private LineRenderer _curveLineRenderer;
+
         private void ShowCurvedTrajectoryIndicator(Vector3 origin, Vector2 direction, float angle, Color color)
         {
-            if (_lineRenderer == null || _circleRenderer == null) return;
+            if (_circleRenderer == null) return;
 
-            _lineRenderer.enabled = true;
-            _circleRenderer.enabled = true;
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
             if (_coneRenderer != null) _coneRenderer.enabled = false;
+            _circleRenderer.enabled = true;
 
-            float length = Mathf.Max(2.5f, _currentConfig.range * _currentPullPercent);
-            float curveAngle = _currentConfig.sectorAngle != 0 ? _currentConfig.sectorAngle : 35f;
+            // Khởi tạo LineRenderer uốn cong mượt mà nếu chưa có
+            if (_curveLineRenderer == null)
+            {
+                GameObject curveObj = new GameObject("Curved_Trajectory_Line");
+                curveObj.transform.SetParent(_indicatorRoot.transform, false);
+                _curveLineRenderer = curveObj.AddComponent<LineRenderer>();
+                _curveLineRenderer.useWorldSpace = true;
+                _curveLineRenderer.startWidth = 0.45f;
+                _curveLineRenderer.endWidth = 0.2f;
+                _curveLineRenderer.sortingLayerName = "Skill";
+                _curveLineRenderer.sortingOrder = 6;
+                _curveLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            }
 
-            // Hướng vòng cung bẻ lệch góc
-            float actualAngle = angle + (curveAngle * 0.5f);
-            float rad = actualAngle * Mathf.Deg2Rad;
-            Vector2 curveDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+            _curveLineRenderer.enabled = true;
+            _curveLineRenderer.startColor = color;
+            _curveLineRenderer.endColor = new Color(color.r, color.g, color.b, color.a * 0.4f);
 
-            float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
-                ? _lineRenderer.sprite.bounds.size.x : 1.0f;
-            float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
-                ? _lineRenderer.sprite.bounds.size.y : 1.0f;
+            float totalLength = Mathf.Max(3.0f, _currentConfig.range * _currentPullPercent);
+            float curveOffsetDistance = 1.8f; // Độ cong vòng cung sang ngang
 
-            _lineIndicator.position = origin + (Vector3)(curveDir * (length * 0.45f));
-            _lineIndicator.rotation = Quaternion.Euler(0f, 0f, actualAngle);
-            _lineIndicator.localScale = new Vector3(length / spriteBoundsX, 0.55f / spriteBoundsY, 1f);
-            _lineRenderer.color = color;
+            // Tính 3 điểm Bezier: Start (Chân Hero) -> Control (Đỉnh uốn cong) -> Apex (Điểm đích)
+            Vector2 perpendicular = new Vector2(-direction.y, direction.x);
+            Vector3 startPoint = origin;
+            Vector3 apexPoint = origin + (Vector3)(direction * totalLength);
+            Vector3 controlPoint = origin + (Vector3)(direction * (totalLength * 0.5f)) + (Vector3)(perpendicular * curveOffsetDistance);
+
+            int segments = 20;
+            _curveLineRenderer.positionCount = segments + 1;
+
+            for (int i = 0; i <= segments; i++)
+            {
+                float t = (float)i / segments;
+                // Quadratic Bezier Formula: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
+                Vector3 pointOnCurve = (1f - t) * (1f - t) * startPoint + 2f * (1f - t) * t * controlPoint + t * t * apexPoint;
+                _curveLineRenderer.SetPosition(i, pointOnCurve);
+            }
 
             // Điểm rơi / quay đầu của Boomerang
-            Vector3 apexPos = origin + (Vector3)(curveDir * length);
             float circleBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
                 ? _circleRenderer.sprite.bounds.size.x : 1.0f;
-            _circleIndicator.position = apexPos;
+            _circleIndicator.position = apexPoint;
             _circleIndicator.rotation = Quaternion.identity;
-            _circleIndicator.localScale = Vector3.one * (1.2f / circleBounds);
+            _circleIndicator.localScale = Vector3.one * (1.3f / circleBounds);
             _circleRenderer.color = color;
         }
 
@@ -573,6 +594,7 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (_lineRenderer != null) _lineRenderer.enabled = false;
             if (_coneRenderer != null) _coneRenderer.enabled = false;
             if (_circleRenderer != null) _circleRenderer.enabled = false;
+            if (_curveLineRenderer != null) _curveLineRenderer.enabled = false;
             if (_rangeBoundaryRenderer != null) _rangeBoundaryRenderer.enabled = false;
             if (_indicatorRoot != null) _indicatorRoot.SetActive(false);
         }

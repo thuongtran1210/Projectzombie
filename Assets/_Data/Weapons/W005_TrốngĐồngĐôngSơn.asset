@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: W005
   weaponName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
   icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: D\u1EADm s\xF3ng \xE2m
-    360 \u0111\u1ED9 c\u1EF1c \u0111\u1EA1i g\xE2y cho\xE1ng c\u1EE9ng 1.5s v\xE0
-    \u0111\u1EA9y l\xF9i qu\xE1i."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (RhythmPulse): D\u1EADm 3 \u0111\u1EE3t s\xF3ng \xE2m 360\xB0 theo nh\u1ECBp tr\u1ED1ng \u0110\xF4ng S\u01A1n g\xE2y cho\xE1ng c\u1EE9ng 1.5s v\xE0 \u0111\u1EA9y l\xF9i to\xE0n b\u1ED9 qu\xE1i!"
   rarity: Common
   evolutionWeaponId: E005
   elementType: 5

@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: R007
   weaponName: "Chi\u1EBFu Tr\u1EA3i Ho\xE0ng Tuy\u1EC1n"
   icon: {fileID: 21300000, guid: 8751e1c29ecf4155b6039ce6f6c02f26, type: 3}
-  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: Th\u1EA3 chi\u1EBFu b\u1EABy
-    ng\u1EE7 say (nh\u1EADn x2 Crit); Hero b\u01B0\u1EDBc l\xEAn tr\u01B0\u1EE3t
-    v\xE1n +100% t\u1ED1c ch\u1EA1y."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: Qu\xE1i d\u1EABm v\xE0o ng\u1EE7 say (x2 Crit); T\u01B0\u1EDBng b\u01B0\u1EDBc l\xEAn tr\u01B0\u1EE3t v\xE1n si\xEAu t\u1ED1c \u1EE7i bay qu\xE1i nh\u01B0 bowling v\xE0 g\xE2y s\xE1t th\u01B0\u01A1ng va ch\u1EA1m!"
   rarity: Common
   evolutionWeaponId: 
   elementType: 2

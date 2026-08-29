@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: W_PIPE
   weaponName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
   icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: R\xEDt h\u01A1i d\xE0i
-    nh\u1EA3 b\xE3o kh\xF3i di\u1EC7n r\u1ED9ng l\xE0m qu\xE1i \u0111i gi\u1EADt
-    l\xF9i v\xE0 ho n\u1ED5 s\xE1t th\u01B0\u01A1ng."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (VectorWall): Nh\u1EA3 b\u1EE9c t\u01B0\u1EDDng b\xE3o kh\xF3i thu\u1ED1c l\xE0o 6m l\xE0m qu\xE1i \u0111i gi\u1EADt l\xF9i, say thu\u1ED1c v\xE0 ho n\u1ED5 thi\xEAeu \u0111\u1ED1t li\xEAn t\u1EE5c!"
   rarity: Common
   evolutionWeaponId: 
   elementType: 4

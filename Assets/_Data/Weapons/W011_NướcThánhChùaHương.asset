@@ -20,8 +20,7 @@ MonoBehaviour:
   weaponId: W011
   weaponName: "N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
   icon: {fileID: 1015382363, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: T\u1EA1o tr\u1EADn ph\xE1p
-    3 gi\u1EBFng thi\xEAng phong t\u1ECFa v\xE0 h\u1ED3i 10% Max HP."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (VectorWall): D\u1EF1ng B\u1EE9c T\u01B0\u1EDDng N\u01B0\u1EDBc Th\xE1nh 4 gi\u1EBFng thi\xEAng phong t\u1ECFa l\xE0m ch\u1EADm 50% qu\xE1i v\xE0 h\u1ED3i ngay 10% Max HP."
   rarity: Rare
   evolutionWeaponId: E011
   elementType: 5

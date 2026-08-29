@@ -20,8 +20,7 @@ MonoBehaviour:
   weaponId: W001
   weaponName: "N\u1ECF Th\u1EA7n"
   icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: B\u1EAFn ch\xF9m 5 linh
-    ti\u1EC5n th\u1EA7n uy xuy\xEAn qu\xE1i v\xE0 \u0111\u1EA9y l\xF9i m\u1EA1nh."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (LineArrow 14m): Khai h\u1ECFa 3 \u0111\u1EE3t b\xE3o Linh Ti\u1EC5n xuy\xEAn th\u1EA5u 100% qu\xE1i v\xE0 \u0111\u1EA9y l\xF9i 8m d\u1ECDn s\u1EA1ch \u0111\u01B0\u1EDDng \u0111i."
   rarity: Common
   evolutionWeaponId: E001
   elementType: 1

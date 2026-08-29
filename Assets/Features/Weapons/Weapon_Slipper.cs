@@ -69,6 +69,8 @@ namespace ProjectZombie.Features.Weapons
             ? new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.DashLine, 8.0f, 1.5f, 0f, true)
             : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, throwRange * 1.5f, 1.5f, 40f, true);
 
+        private GameObject _recastMarkerInstance;
+
         /// <summary>
         /// Phase 1: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ bay vòng cung gom quái.
         /// </summary>
@@ -90,9 +92,46 @@ namespace ProjectZombie.Features.Weapons
 
             _lastSlipperApexPosition = transform.position + (Vector3)(dir * (throwRange * 1.4f));
 
+            // Sinh Vòng Trận Báo Hiệu Điểm Đáp Phase 2 (Recast Dropkick Beacon)
+            SpawnRecastGroundMarker(_lastSlipperApexPosition);
+
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
             StartCoroutine(RoutineThrowSlipper(dir, throwRange * 1.4f, 2.0f));
             StartCoroutine(RoutineWhirlwindSlippers());
+        }
+
+        private void SpawnRecastGroundMarker(Vector3 position)
+        {
+            if (_recastMarkerInstance != null) Destroy(_recastMarkerInstance);
+
+            _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
+            _recastMarkerInstance.transform.position = position;
+
+            var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
+            var circleSp = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
+#if UNITY_EDITOR
+            if (circleSp == null)
+            {
+                circleSp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png");
+            }
+#endif
+            sr.sprite = circleSp;
+            sr.color = new Color(1f, 0.85f, 0.2f, 0.65f); // Vàng kim rực sáng
+            sr.sortingLayerName = "Skill";
+            sr.sortingOrder = 4;
+            _recastMarkerInstance.transform.localScale = Vector3.one * 1.6f;
+
+            // Tự hủy sau khi hết thời gian Recast window (3s)
+            Destroy(_recastMarkerInstance, recastWindowDuration);
+        }
+
+        private void ClearRecastGroundMarker()
+        {
+            if (_recastMarkerInstance != null)
+            {
+                Destroy(_recastMarkerInstance);
+                _recastMarkerInstance = null;
+            }
         }
 
         /// <summary>
@@ -100,6 +139,8 @@ namespace ProjectZombie.Features.Weapons
         /// </summary>
         protected override void PerformRecastSkill(Vector2 customAimDirection = default)
         {
+            ClearRecastGroundMarker();
+
             Vector3 targetPos = _lastSlipperApexPosition;
             if (customAimDirection != Vector2.zero)
             {
@@ -267,26 +308,32 @@ namespace ProjectZombie.Features.Weapons
             rendT.sortingOrder = 11;
             psTrail.Play();
 
-            // 1. Bay tới đích
+            // 1. Bay tới đích theo đúng đường cong Parabol Bezier
+            Vector2 perpendicular = new Vector2(-dir.y, dir.x);
+            Vector2 controlPos = startPos + (dir.normalized * (range * 0.5f)) + (perpendicular * 1.8f);
+
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / duration;
-                Vector2 currentPos = Vector2.Lerp(startPos, targetPos, t);
+                float t = Mathf.Clamp01(elapsed / duration);
+                // Quadratic Bezier Formula: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
+                Vector2 currentPos = (1f - t) * (1f - t) * startPos + 2f * (1f - t) * t * controlPos + t * t * targetPos;
                 slipperVisual.transform.position = currentPos;
                 slipperVisual.transform.Rotate(0f, 0f, 1440f * Time.deltaTime); // Lộn nhào tốc độ cao
                 DealDamageAtPosition(currentPos, dmg, 4f);
                 yield return null;
             }
 
-            // 2. Bay ngược về người chơi
+            // 2. Bay ngược về người chơi theo đường cong hồi quy
             elapsed = 0f;
+            Vector2 returnStartPos = targetPos;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / duration;
+                float t = Mathf.Clamp01(elapsed / duration);
                 Vector2 playerPos = transform.position;
-                Vector2 currentPos = Vector2.Lerp(targetPos, playerPos, t);
+                Vector2 returnControlPos = returnStartPos + ((playerPos - returnStartPos) * 0.5f) - (perpendicular * 1.2f);
+                Vector2 currentPos = (1f - t) * (1f - t) * returnStartPos + 2f * (1f - t) * t * returnControlPos + t * t * playerPos;
                 slipperVisual.transform.position = currentPos;
                 slipperVisual.transform.Rotate(0f, 0f, -1440f * Time.deltaTime);
                 DealDamageAtPosition(currentPos, dmg, 3f);
@@ -302,18 +349,23 @@ namespace ProjectZombie.Features.Weapons
 
             if (whirlwindVfxPrefab != null)
             {
-                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
+                var vfxObj = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
+                if (vfxObj != null)
+                {
+                    vfxObj.transform.localScale = Vector3.one * 0.48f; // Thu nhỏ 52% về chuẩn tỉ lệ nhân vật Chibi
+                }
             }
 
             DamageData baseDmg = CreateDamageData();
             DamageData hitDmg = new DamageData(baseDmg.Amount * 0.5f, baseDmg.IsCritical, ElementType.Kim, baseDmg.IsCounter, this);
 
-            // 4 đợt vả xoay tròn 360 độ
+            // 4 đợt vả xoay tròn 360 độ (bán kính 1.8m chuẩn tỉ lệ bao quanh chân nhân vật)
+            float whirlwindRadius = 1.8f;
             for (int wave = 0; wave < 4; wave++)
             {
                 center = transform.position;
                 int mask = TargetingUtility.EnemyLayerMask;
-                Collider2D[] hits = Physics2D.OverlapCircleAll(center, 3.2f, mask);
+                Collider2D[] hits = Physics2D.OverlapCircleAll(center, whirlwindRadius, mask);
 
                 for (int i = 0; i < hits.Length; i++)
                 {
@@ -324,7 +376,7 @@ namespace ProjectZombie.Features.Weapons
                         {
                             // Kéo nhẹ quái lại gần tâm lốc
                             Vector2 pullDir = (center - (Vector2)hits[i].transform.position).normalized;
-                            status.ApplyKnockback(-pullDir, 2.5f, 0.15f);
+                            status.ApplyKnockback(-pullDir, 2.2f, 0.15f);
 
                             // Áp dụng Quê Độ ở đợt vả cuối
                             if (wave == 3 && Random.value <= humiliatedChance)

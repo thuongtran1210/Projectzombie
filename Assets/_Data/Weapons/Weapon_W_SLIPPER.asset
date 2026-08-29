@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: W_SLIPPER
   weaponName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
   icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng: Qu\u0103ng Boomerang D\xE9p
-    kh\u1ED5ng l\u1ED3 + L\u1ED1c D\xE9p V\u1EA1n N\u0103ng g\xE2y Qu\xEA \u0110\u1ED9
-    100%."
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (2 Giai \u0111o\u1EA1n): N\xE9m Boomerang d\xE9p bay v\xF2ng cung h\xFAt qu\xE1i -> B\u1EA5m l\u1EA7n 2 l\u01B0\u1EDBt v\u1EE5t t\u1EDBi tung c\u01B0\u1EDBc Song Phi d\u1EABm n\u1ED5 Shockwave c\u1EF1c m\u1EA1nh!"
   rarity: Common
   evolutionWeaponId: 
   elementType: 1

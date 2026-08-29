@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: R008
   weaponName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
   icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
-  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng gi\xE1ng
-    \u0111\xF2n ph\u1EA1t khi Hero tung Combo Hit 3, \u0111\u1EA9y l\xF9i 12m/s g\xE2y
-    cho\xE1ng."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng gi\xE1ng Ch\u1ED5i L\xF4ng G\xE0 kh\u1ED5ng l\u1ED3 khi k\u1EBFt th\xFAc Combo Hit 3, \u0111\u1EA9y l\xF9i 12m/s v\xE0 g\xE2y Cho\xE1ng 0.8s!"
   rarity: Common
   evolutionWeaponId: 
   elementType: 1

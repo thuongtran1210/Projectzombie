@@ -20,9 +20,7 @@ MonoBehaviour:
   weaponId: W009
   weaponName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
   icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng gi\xE1ng
-    s\xE9t n\u01B0\u1EDBc th\u1EE7y cung lan truy\u1EC1n qua chu\u1ED7i 6 y\xEAu
-    qu\xE1i."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: C\u1EA7u s\xE9t th\u1EE7y long t\u1EF1 \u0111\u1ED9ng ph\xF3ng ra v\xE0 n\u1EA3y chu\u1ED7i lan truy\u1EC1n qua 6 y\xEAu qu\xE1i (g\xE2y Cho\xE1ng 0.5s)!"
   rarity: Epic
   evolutionWeaponId: E009
   elementType: 3

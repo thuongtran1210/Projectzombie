@@ -20,8 +20,7 @@ MonoBehaviour:
   weaponId: W004
   weaponName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
   icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: M\xF3ng vu\u1ED1t c\xE1o
-    l\u1EEDa t\u1EF1 c\xE0o x\xE9 qu\xE1i v\xE0 h\xFAt sinh kh\xED h\u1ED3i ph\u1EE5c."
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: B\u1EAFn d\u01A1i h\u1ED3 ly h\xFAt m\xE1u. Khi HP < 35%: T\u1EF1 \u0111\u1ED9ng x2 s\u1ED1 l\u01B0\u1EE3ng d\u01A1i v\xE0 x2.5 hi\u1EC7u su\u1EA5t H\xFAt M\xE1u c\u1EE9u nguy!"
   rarity: Rare
   evolutionWeaponId: E004
   elementType: 4
