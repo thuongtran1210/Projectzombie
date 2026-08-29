@@ -176,10 +176,24 @@ namespace ProjectZombie.Features.UI
             // 1. Fade Out tối dần
             yield return StartCoroutine(FadeRoutine(0f, 1f, 0.25f));
 
-            // 2. Dọn sạch quái và reset Player đứng tại Sảnh
+            // 2. Dọn sạch quái, projectiles, VFX và reset Player đứng tại Sảnh
             if (_spawnManager != null)
             {
                 _spawnManager.StopMatchAndClearAllEnemies();
+            }
+
+            // Dọn sạch toàn bộ đạn / pháp bảo đang bay
+            ProjectZombie.Features.Projectiles.Core.ProjectileSystem.Instance?.DespawnAllProjectiles();
+
+            // Dọn sạch các hiệu ứng VFX / Particle đang phát
+            ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance?.ClearAllActiveEffects();
+            ProjectZombie.Core.Pooling.VFXPoolManager.ClearPools();
+
+            // Dọn sạch các vùng Trận Đồ / Zone Decals còn sót lại
+            var allZones = FindObjectsOfType<ProjectZombie.Features.Skills.Zones.BatQuaiTranZone>();
+            for (int i = 0; i < allZones.Length; i++)
+            {
+                if (allZones[i] != null && allZones[i].gameObject != null) Destroy(allZones[i].gameObject);
             }
 
             if (_gameplayBootstrapper != null)

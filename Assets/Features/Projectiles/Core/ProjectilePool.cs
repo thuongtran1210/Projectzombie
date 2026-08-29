@@ -31,34 +31,55 @@ namespace ProjectZombie.Features.Projectiles.Core
             }
         }
 
+        private readonly HashSet<GameObject> _activeObjects = new HashSet<GameObject>();
+
+        public void ReturnAllActive()
+        {
+            var activeList = new List<GameObject>(_activeObjects);
+            foreach (var obj in activeList)
+            {
+                if (obj != null)
+                {
+                    Return(obj);
+                }
+            }
+            _activeObjects.Clear();
+            _activeCount = 0;
+        }
+
         public GameObject Get()
         {
+            GameObject obj = null;
             if (_pool.Count > 0)
             {
-                var obj = _pool.Dequeue();
+                obj = _pool.Dequeue();
                 obj.SetActive(true);
                 _activeCount++;
-                return obj;
             }
-
-            // Nếu pool trống nhưng chưa đạt giới hạn MaxPoolSize, cấp phát linh hoạt (Dynamic Expansion)
-            if (_activeCount < _maxPoolSize)
+            else if (_activeCount < _maxPoolSize)
             {
-                var newObj = Instantiate(_prefab, transform);
-                newObj.SetActive(true);
+                obj = Instantiate(_prefab, transform);
+                obj.SetActive(true);
                 _activeCount++;
-                return newObj;
+            }
+            else
+            {
+                Debug.LogWarning($"[ProjectilePool] Pool cho {_prefab.name} đã đạt giới hạn tối đa ({_maxPoolSize})!");
+                return null;
             }
 
-            // Đạt giới hạn MaxPoolSize
-            Debug.LogWarning($"[ProjectilePool] Pool cho {_prefab.name} đã đạt giới hạn tối đa ({_maxPoolSize})!");
-            return null;
+            if (obj != null)
+            {
+                _activeObjects.Add(obj);
+            }
+            return obj;
         }
 
         public void Return(GameObject obj)
         {
             if (obj == null) return;
             
+            _activeObjects.Remove(obj);
             obj.SetActive(false);
             _pool.Enqueue(obj);
             _activeCount--;

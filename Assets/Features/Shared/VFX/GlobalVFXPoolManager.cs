@@ -223,23 +223,68 @@ namespace ProjectZombie.Features.Shared.VFX
             return instance;
         }
 
+        private readonly List<ParticleSystem> _activeParticles = new List<ParticleSystem>();
+        private readonly List<GameObject> _activeGameObjects = new List<GameObject>();
+
+        /// <summary>
+        /// Thu hồi và dọn dẹp toàn bộ hiệu ứng Particle & Modular VFX đang hoạt động trên màn hình.
+        /// Thường gọi khi thoát trận về Sảnh hoặc bắt đầu trận mới.
+        /// </summary>
+        public void ClearAllActiveEffects()
+        {
+            StopAllCoroutines();
+
+            for (int i = _activeParticles.Count - 1; i >= 0; i--)
+            {
+                var ps = _activeParticles[i];
+                if (ps != null && ps.gameObject != null)
+                {
+                    ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    ps.gameObject.SetActive(false);
+                    ps.transform.SetParent(transform, false);
+                }
+            }
+            _activeParticles.Clear();
+
+            for (int i = _activeGameObjects.Count - 1; i >= 0; i--)
+            {
+                var go = _activeGameObjects[i];
+                if (go != null)
+                {
+                    go.SetActive(false);
+                    go.transform.SetParent(transform, false);
+                }
+            }
+            _activeGameObjects.Clear();
+        }
+
         private IEnumerator ReleaseParticleRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
         {
+            if (instance != null && !_activeParticles.Contains(instance)) _activeParticles.Add(instance);
             yield return new WaitForSeconds(delay);
-            if (instance != null && instance.gameObject.activeSelf)
+            if (instance != null)
             {
-                instance.transform.SetParent(transform, false);
-                pool.Release(instance);
+                _activeParticles.Remove(instance);
+                if (instance.gameObject.activeSelf)
+                {
+                    instance.transform.SetParent(transform, false);
+                    pool.Release(instance);
+                }
             }
         }
 
         private IEnumerator ReleaseGameObjectRoutine(ObjectPool<GameObject> pool, GameObject instance, float delay)
         {
+            if (instance != null && !_activeGameObjects.Contains(instance)) _activeGameObjects.Add(instance);
             yield return new WaitForSeconds(delay);
-            if (instance != null && instance.activeSelf)
+            if (instance != null)
             {
-                instance.transform.SetParent(transform, false);
-                pool.Release(instance);
+                _activeGameObjects.Remove(instance);
+                if (instance.activeSelf)
+                {
+                    instance.transform.SetParent(transform, false);
+                    pool.Release(instance);
+                }
             }
         }
     }

@@ -219,6 +219,10 @@ namespace ProjectZombie.Features.Player
         {
             Time.timeScale = 1f;
 
+            // Dọn sạch hiệu ứng / đạn bay tàn dư từ trận trước
+            ProjectZombie.Features.Projectiles.Core.ProjectileSystem.Instance?.DespawnAllProjectiles();
+            ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance?.ClearAllActiveEffects();
+
             // 1. Kiểm tra thực thể Player: Nếu chưa có hoặc đã chết ở trận trước thì spawn mới lại
             bool needRespawn = _activePlayerInstance == null || 
                                !_activePlayerInstance.activeInHierarchy || 

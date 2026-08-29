@@ -69,6 +69,17 @@ namespace ProjectZombie.Features.Projectiles.Core
             return controller;
         }
 
+        public void DespawnAllProjectiles()
+        {
+            foreach (var pool in _pools.Values)
+            {
+                if (pool != null)
+                {
+                    pool.ReturnAllActive();
+                }
+            }
+        }
+
         private ProjectilePool GetOrCreatePool(ProjectileData data)
         {
             if (_pools.TryGetValue(data.ProjectileID, out var pool))

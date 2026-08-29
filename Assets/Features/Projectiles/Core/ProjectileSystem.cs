@@ -44,7 +44,15 @@ namespace ProjectZombie.Features.Projectiles.Core
         /// </summary>
         public void PrewarmPool(ProjectileData data)
         {
-            _spawner.PrewarmPool(data);
+            _spawner?.PrewarmPool(data);
+        }
+
+        /// <summary>
+        /// Thu hồi toàn bộ đạn / pháp bảo đang bay về Pool (dùng khi kết thúc trận đấu hoặc trở về Sảnh).
+        /// </summary>
+        public void DespawnAllProjectiles()
+        {
+            _spawner?.DespawnAllProjectiles();
         }
     }
 }
