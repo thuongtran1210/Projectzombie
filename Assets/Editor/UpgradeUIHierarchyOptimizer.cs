@@ -154,6 +154,13 @@ namespace ProjectZombie.EditorTools
                 headerTrans = headerObj.transform;
             }
 
+            // Nếu trong scene cũ Header_Title có TMP gắn trực tiếp, gỡ ra để tránh xung đột với Image
+            var legacyTMP = headerTrans.GetComponent<TextMeshProUGUI>();
+            if (legacyTMP != null)
+            {
+                Object.DestroyImmediate(legacyTMP);
+            }
+
             RectTransform hRect = headerTrans.GetComponent<RectTransform>();
             if (hRect == null) hRect = headerTrans.gameObject.AddComponent<RectTransform>();
             hRect.anchorMin = new Vector2(0.5f, 1f);
@@ -164,9 +171,12 @@ namespace ProjectZombie.EditorTools
 
             Image hImg = headerTrans.GetComponent<Image>();
             if (hImg == null) hImg = headerTrans.gameObject.AddComponent<Image>();
-            hImg.color = Color.white;
-            hImg.type = Image.Type.Sliced;
-            if (bannerSprite != null) hImg.sprite = bannerSprite;
+            if (hImg != null)
+            {
+                hImg.color = Color.white;
+                hImg.type = Image.Type.Sliced;
+                if (bannerSprite != null) hImg.sprite = bannerSprite;
+            }
 
             Transform hTxtTrans = headerTrans.Find("Txt_Title");
             if (hTxtTrans == null)
@@ -299,101 +309,21 @@ namespace ProjectZombie.EditorTools
             skipText.alignment = TextAlignmentOptions.Center;
             skipText.color = new Color(0.24f, 0.16f, 0.10f, 1f);
 
-            // 8. Cấu hình Thẻ Card trong Container
-            for (int i = 0; i < cardsContainerTrans.childCount; i++)
+            // 8. Tái tạo 3 Card mẫu trong Container trực tiếp từ Prefab chuẩn UpgradeCard_Template
+            UpgradeCardView cardPrefab = AssetDatabase.LoadAssetAtPath<UpgradeCardView>("Assets/_Prefabs/UI/UpgradeCard_Template.prefab");
+            if (cardPrefab != null)
             {
-                Transform card = cardsContainerTrans.GetChild(i);
-                if (card == null) continue;
-                RectTransform cardRT = card.GetComponent<RectTransform>();
-                if (cardRT != null) cardRT.sizeDelta = new Vector2(290, 410);
-
-                Image cardImg = card.GetComponent<Image>();
-                if (cardImg != null && cardBgSprite != null)
+                // Dọn sạch các card cũ bị vỡ layout
+                while (cardsContainerTrans.childCount > 0)
                 {
-                    cardImg.sprite = cardBgSprite;
-                    cardImg.type = Image.Type.Sliced;
-                    cardImg.color = Color.white;
+                    Object.DestroyImmediate(cardsContainerTrans.GetChild(0).gameObject);
                 }
 
-                // Tờ Giấy Da Lồng Bên Trong Card
-                Transform parchmentTrans = card.Find("Inner_Parchment");
-                if (parchmentTrans == null)
+                // Instantiate 3 thẻ mẫu chuẩn từ Prefab
+                for (int i = 0; i < 3; i++)
                 {
-                    GameObject pObj = new GameObject("Inner_Parchment", typeof(RectTransform), typeof(Image));
-                    pObj.transform.SetParent(card, false);
-                    pObj.transform.SetAsFirstSibling();
-                    parchmentTrans = pObj.transform;
-                }
-                RectTransform pRT = parchmentTrans.GetComponent<RectTransform>();
-                pRT.anchorMin = Vector2.zero;
-                pRT.anchorMax = Vector2.one;
-                pRT.offsetMin = new Vector2(18, 16);
-                pRT.offsetMax = new Vector2(-18, -20);
-                Image pImg = parchmentTrans.GetComponent<Image>();
-                if (pImg != null && parchmentSprite != null)
-                {
-                    pImg.sprite = parchmentSprite;
-                    pImg.type = Image.Type.Sliced;
-                }
-
-                // Gắn Thẻ Gỗ Đỉnh (Rarity / Level)
-                Transform badgeTrans = card.Find("Badge_Level");
-                if (badgeTrans == null)
-                {
-                    GameObject bObj = new GameObject("Badge_Level", typeof(RectTransform), typeof(Image));
-                    bObj.transform.SetParent(card, false);
-                    badgeTrans = bObj.transform;
-                }
-                RectTransform bgRT = badgeTrans.GetComponent<RectTransform>();
-                bgRT.anchorMin = new Vector2(0.5f, 1f);
-                bgRT.anchorMax = new Vector2(0.5f, 1f);
-                bgRT.pivot = new Vector2(0.5f, 1f);
-                bgRT.anchoredPosition = new Vector2(0, 8);
-                bgRT.sizeDelta = new Vector2(130, 34);
-                Image bgImg = badgeTrans.GetComponent<Image>();
-                if (bgImg != null && badgePillSprite != null)
-                {
-                    bgImg.sprite = badgePillSprite;
-                    bgImg.type = Image.Type.Sliced;
-                }
-
-                // Gắn khung viền Icon Orb tròn nếu có icon
-                Transform iconTrans = card.Find("Icon");
-                if (iconTrans == null) iconTrans = card.Find("Img_Icon");
-                if (iconTrans != null && iconOrbSprite != null)
-                {
-                    Transform orbTrans = card.Find("Frame_Icon_Orb");
-                    if (orbTrans == null)
-                    {
-                        GameObject orbObj = new GameObject("Frame_Icon_Orb", typeof(RectTransform), typeof(Image));
-                        orbObj.transform.SetParent(card, false);
-                        orbObj.transform.SetSiblingIndex(iconTrans.GetSiblingIndex());
-                        orbTrans = orbObj.transform;
-                    }
-                    RectTransform orbRT = orbTrans.GetComponent<RectTransform>();
-                    orbRT.anchorMin = new Vector2(0.5f, 0.5f);
-                    orbRT.anchorMax = new Vector2(0.5f, 0.5f);
-                    orbRT.pivot = new Vector2(0.5f, 0.5f);
-                    orbRT.anchoredPosition = new Vector2(0, 50);
-                    orbRT.sizeDelta = new Vector2(105, 105);
-                    Image oImg = orbTrans.GetComponent<Image>();
-                    if (oImg != null)
-                    {
-                        oImg.sprite = iconOrbSprite;
-                        oImg.preserveAspect = true;
-                    }
-
-                    // Icon nằm trong Orb
-                    iconTrans.SetParent(orbTrans, false);
-                    RectTransform iRT = iconTrans.GetComponent<RectTransform>();
-                    if (iRT != null)
-                    {
-                        iRT.anchorMin = new Vector2(0.5f, 0.5f);
-                        iRT.anchorMax = new Vector2(0.5f, 0.5f);
-                        iRT.pivot = new Vector2(0.5f, 0.5f);
-                        iRT.anchoredPosition = Vector2.zero;
-                        iRT.sizeDelta = new Vector2(70, 70);
-                    }
+                    GameObject newCardObj = (GameObject)PrefabUtility.InstantiatePrefab(cardPrefab.gameObject, cardsContainerTrans);
+                    newCardObj.name = $"UpgradeCard_Template ({i})";
                 }
             }
 
@@ -414,7 +344,6 @@ namespace ProjectZombie.EditorTools
             var rcProp = soView.FindProperty("_rerollCountText");
             if (rcProp != null) rcProp.objectReferenceValue = rerollText;
 
-            UpgradeCardView cardPrefab = AssetDatabase.LoadAssetAtPath<UpgradeCardView>("Assets/_Prefabs/UI/UpgradeCard_Template.prefab");
             if (cardPrefab != null)
             {
                 var cpProp = soView.FindProperty("_cardPrefab");
@@ -431,7 +360,7 @@ namespace ProjectZombie.EditorTools
             EditorUtility.SetDirty(rootObj);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(rootObj.scene);
 
-            Debug.Log("<color=#FFD700>[UpgradeUIOptimizer] 🚀 ĐÃ HOÀN TẤT NÂNG CẤP TOÀN DIỆN UPGRADE PANEL CHIBI CASUAL ARCADE 3D!</color>");
+            Debug.Log("<color=#FFD700>[UpgradeUIOptimizer] 🚀 ĐÃ ĐỒNG BỘ 100% 3 CARD TRONG SCENE VỚI UPGRADECARD_TEMPLATE PREFAB!</color>");
         }
     }
 }

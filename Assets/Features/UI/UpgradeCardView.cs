@@ -12,12 +12,21 @@ namespace ProjectZombie.Features.UI
     {
         [Header("Display Elements")]
         [SerializeField] private Image _iconImage;
+        [SerializeField] private Image _cardFrameImage;
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _categoryText;
         [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private TextMeshProUGUI _statDiffText;
         [SerializeField] private TextMeshProUGUI _elementBadgeText;
+
+        [Header("Evolution Synergy & Styling")]
+        [SerializeField] private GameObject _synergyContainer;
+        [SerializeField] private Image _synergyIconImage;
+        [SerializeField] private TextMeshProUGUI _synergyLabelText;
+        [SerializeField] private GameObject _evolutionBanner;
+        [SerializeField] private Color _normalFrameColor = Color.white;
+        [SerializeField] private Color _evolutionFrameColor = new Color(1f, 0.85f, 0.2f, 1f); // Vàng Kim Thần Khí
 
         [Header("Buttons")]
         [SerializeField] private Button _selectButton;
@@ -73,6 +82,56 @@ namespace ProjectZombie.Features.UI
             if (_levelText != null) _levelText.text = level;
 
             SetStatDiff(statDiff);
+            SetEvolutionMode(false);
+            SetSynergyInfo(null, null);
+        }
+
+        /// <summary>
+        /// Cấu hình hiển thị thông tin Duyên Phận / Mảnh ghép Tiến Hóa.
+        /// </summary>
+        public void SetSynergyInfo(Sprite synergyIcon, string formattedSynergyText)
+        {
+            if (_synergyContainer == null && _synergyLabelText == null) return;
+
+            bool hasSynergy = !string.IsNullOrEmpty(formattedSynergyText);
+            if (_synergyContainer != null)
+            {
+                _synergyContainer.SetActive(hasSynergy);
+            }
+
+            if (_synergyIconImage != null)
+            {
+                _synergyIconImage.gameObject.SetActive(synergyIcon != null);
+                if (synergyIcon != null)
+                {
+                    _synergyIconImage.sprite = synergyIcon;
+                }
+            }
+
+            if (_synergyLabelText != null)
+            {
+                _synergyLabelText.gameObject.SetActive(hasSynergy);
+                if (hasSynergy)
+                {
+                    _synergyLabelText.text = formattedSynergyText;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Bật/Tắt giao diện Thần Khí Tiến Hóa Vàng Kim đặc biệt.
+        /// </summary>
+        public void SetEvolutionMode(bool isEvolution)
+        {
+            if (_evolutionBanner != null)
+            {
+                _evolutionBanner.SetActive(isEvolution);
+            }
+
+            if (_cardFrameImage != null)
+            {
+                _cardFrameImage.color = isEvolution ? _evolutionFrameColor : _normalFrameColor;
+            }
         }
 
         /// <summary>

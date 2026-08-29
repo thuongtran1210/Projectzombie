@@ -244,6 +244,18 @@ namespace ProjectZombie.Features.UI
                     );
 
                     cardView.SetElementBadge(elementBadge);
+
+                    // Xử lý Huy hiệu Duyên Phận & Chế độ Thần Khí Tiến Hóa
+                    if (upgradeData is EvolutionUpgradeData)
+                    {
+                        cardView.SetEvolutionMode(true);
+                        cardView.SetSynergyInfo(null, "<color=#FFD700>★ CÔNG THỨC DUNG HỢP HOÀN TẤT ★</color>");
+                    }
+                    else
+                    {
+                        FormatSynergyInfo(upgradeData, out Sprite synIcon, out string synText);
+                        cardView.SetSynergyInfo(synIcon, synText);
+                    }
                 }
             }
         }
@@ -422,6 +434,66 @@ namespace ProjectZombie.Features.UI
                 return $"Cấp {nextLevel}";
             }
             return "";
+        }
+
+        private void FormatSynergyInfo(UpgradeData data, out Sprite icon, out string formattedText)
+        {
+            icon = null;
+            formattedText = null;
+
+            if (WeaponEvolutionManager.Instance == null || _playerWeaponManager == null) return;
+
+            var playerPassives = _playerWeaponManager.GetComponent<PlayerPassives>();
+
+            // 1. Trường hợp thẻ là Vũ Khí (WeaponUpgradeData / Base Weapon Unlock)
+            if (data is WeaponUpgradeData weaponData)
+            {
+                if (WeaponEvolutionManager.Instance.TryGetRecipeByWeaponId(weaponData.weaponId, out var recipe))
+                {
+                    bool hasPassive = playerPassives != null && playerPassives.HasPassive(recipe.requiredPassiveId);
+                    if (hasPassive)
+                    {
+                        formattedText = $"<color=#00FF88>★ Duyên Phận: Đã có {recipe.requiredPassiveId} ✓ (Sẵn sàng)</color>";
+                    }
+                    else
+                    {
+                        formattedText = $"<color=#AAAAAA>Duyên Phận: Cần {recipe.requiredPassiveId} (Chưa có)</color>";
+                    }
+                }
+            }
+            // 2. Trường hợp thẻ là Thẻ Bị Động (Common / Passive Upgrade)
+            else if (data is CommonUpgradeData commonData)
+            {
+                var recipes = WeaponEvolutionManager.Instance.GetRecipesByPassiveId(commonData.id);
+                if (recipes != null && recipes.Count > 0)
+                {
+                    List<string> weaponNames = new List<string>();
+                    bool anyWeaponOwned = false;
+
+                    foreach (var r in recipes)
+                    {
+                        bool hasWeapon = _playerWeaponManager.GetWeaponById(r.baseWeaponId) != null;
+                        if (hasWeapon)
+                        {
+                            anyWeaponOwned = true;
+                            weaponNames.Add($"<color=#00FF88>{r.baseWeaponId} ✓</color>");
+                        }
+                        else
+                        {
+                            weaponNames.Add($"<color=#888888>{r.baseWeaponId}</color>");
+                        }
+                    }
+
+                    if (anyWeaponOwned)
+                    {
+                        formattedText = $"<color=#FFD700>★ Hợp Thể:</color> {string.Join(", ", weaponNames)}";
+                    }
+                    else
+                    {
+                        formattedText = $"<color=#AAAAAA>Ghép Cùng:</color> {string.Join(", ", weaponNames)}";
+                    }
+                }
+            }
         }
     }
 }

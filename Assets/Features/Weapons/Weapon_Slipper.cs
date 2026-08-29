@@ -24,40 +24,24 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float humiliatedChance = 0.5f;
         [SerializeField] private float autoWhirlwindCooldown = 3.5f;
         [SerializeField] private GameObject whirlwindVfxPrefab;
+        [SerializeField] private Sprite slipperProjectileSprite;
+        [SerializeField] private Material trailMaterial;
+        [SerializeField] private Material dropsParticleMaterial;
+        [SerializeField] private Sprite recastMarkerCircleSprite;
 
         private float _lastWhirlwindTime;
-
-        private void Awake()
-        {
-            EnsureVfxPrefab();
-        }
 
         private Vector3 _lastSlipperApexPosition;
 
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
-            EnsureVfxPrefab();
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
             hasRecastPhase = true; // Bật cơ chế Recast 2 Phase
             recastWindowDuration = 3.0f;
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 6.5f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Tổ Ong Lượn Cánh";
-        }
-
-        private void EnsureVfxPrefab()
-        {
-            if (whirlwindVfxPrefab == null)
-            {
-                whirlwindVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Slipper_Whirlwind");
-#if UNITY_EDITOR
-                if (whirlwindVfxPrefab == null)
-                {
-                    whirlwindVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Slipper_Whirlwind.prefab");
-                }
-#endif
-            }
         }
 
         protected override void PerformAttack()
@@ -123,14 +107,7 @@ namespace ProjectZombie.Features.Weapons
             {
                 _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
                 var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
-                var circleSp = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
-#if UNITY_EDITOR
-                if (circleSp == null)
-                {
-                    circleSp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png");
-                }
-#endif
-                sr.sprite = circleSp;
+                sr.sprite = recastMarkerCircleSprite;
                 sr.color = new Color(1f, 0.85f, 0.2f, 0.65f); // Vàng kim rực sáng
                 sr.sortingLayerName = "Skill";
                 sr.sortingOrder = 4;
@@ -250,7 +227,11 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            // 4. Bồi thêm Lốc Dép Vạn Năng sau khi đáp đất
+            // Kích hoạt HitStop + Rung Camera đầm tay chuẩn đòn kết liễu
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestHitStop(0.08f);
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.35f, 0.6f);
+
+            // Bồi thêm Lốc Dép Vạn Năng tại tâm vụ nổ Shockwave
             StartCoroutine(RoutineWhirlwindSlippers());
         }
 
@@ -276,32 +257,36 @@ namespace ProjectZombie.Features.Weapons
 
         private static readonly Collider2D[] _slipperHitBuffer = new Collider2D[32];
 
-        private void DealDamageAtPosition(Vector2 pos, DamageData dmg, float knockback)
+        private void DealDamageAtPosition(Vector2 center, DamageData dmg, float radius)
         {
             int mask = TargetingUtility.EnemyLayerMask;
-            int count = Physics2D.OverlapCircleNonAlloc(pos, 1.2f, _slipperHitBuffer, mask);
+            int count = Physics2D.OverlapCircleNonAlloc(center, radius, _slipperHitBuffer, mask);
             for (int i = 0; i < count; i++)
             {
                 var hit = _slipperHitBuffer[i];
                 if (hit == null) continue;
 
-                if (hit.TryGetComponent<HealthSystem>(out var hp))
+                if (hit.TryGetComponent<IDamageable>(out var dmgReceiver))
                 {
-                    hp.TakeDamage(dmg);
+                    dmgReceiver.TakeDamage(dmg);
                 }
+
                 if (hit.TryGetComponent<EnemyStatusController>(out var status))
                 {
-                    Vector2 kbDir = ((Vector2)hit.transform.position - pos).normalized;
-                    if (kbDir.sqrMagnitude < 0.01f) kbDir = Vector2.up;
-                    status.ApplyKnockback(kbDir, knockback, 0.2f);
+                    // Hất văng quái theo hướng lốc xoáy
+                    Vector2 pushDir = ((Vector2)hit.transform.position - center).normalized;
+                    status.ApplyKnockback(pushDir, 5f, 0.15f);
+
+                    // Cơ chế Quê Độ (Humiliated)
+                    if (Random.value <= (humiliatedChance * 0.5f))
+                    {
+                        status.ApplyStatusEffect(StatusEffectType.Humiliated, 1.5f);
+                    }
                 }
             }
         }
 
         private static Gradient _cachedTrailGrad;
-        private static Sprite _cachedSlipperSprite;
-        private static Material _cachedTrailMat;
-        private static Material _cachedDropsMat;
 
         private static Gradient GetOrCreateTrailGradient()
         {
@@ -329,17 +314,7 @@ namespace ProjectZombie.Features.Weapons
             // Sinh Visual Chiếc Dép Bay Xoay Tròn (Thu nhỏ về tỉ lệ 0.32m chuẩn Chibi)
             GameObject slipperVisual = new GameObject("Slipper_Projectile_Visual");
             var sr = slipperVisual.AddComponent<SpriteRenderer>();
-            if (_cachedSlipperSprite == null)
-            {
-                _cachedSlipperSprite = Resources.Load<Sprite>("Tex_Slipper_Projectile");
-#if UNITY_EDITOR
-                if (_cachedSlipperSprite == null)
-                {
-                    _cachedSlipperSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png");
-                }
-#endif
-            }
-            sr.sprite = _cachedSlipperSprite;
+            sr.sprite = slipperProjectileSprite;
             sr.sortingLayerName = "Skill";
             sr.sortingOrder = 12;
             slipperVisual.transform.localScale = Vector3.one * 0.32f;
@@ -355,14 +330,7 @@ namespace ProjectZombie.Features.Weapons
             trailRenderer.sortingLayerName = "Skill";
             trailRenderer.sortingOrder = 11;
             trailRenderer.colorGradient = GetOrCreateTrailGradient();
-
-#if UNITY_EDITOR
-            if (_cachedTrailMat == null)
-            {
-                _cachedTrailMat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Arc.mat");
-            }
-            if (_cachedTrailMat != null) trailRenderer.material = _cachedTrailMat;
-#endif
+            if (trailMaterial != null) trailRenderer.material = trailMaterial;
 
             // Gắn thêm Hạt Bụi Năng Lượng Lấp Lánh tản ra từ đuôi dép
             GameObject trailObj = new GameObject("Sparks");
@@ -387,16 +355,9 @@ namespace ProjectZombie.Features.Weapons
             colT.color = GetOrCreateTrailGradient();
 
             var rendT = trailObj.GetComponent<ParticleSystemRenderer>();
-#if UNITY_EDITOR
-            if (_cachedDropsMat == null)
-            {
-                _cachedDropsMat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Drops.mat");
-            }
-            if (_cachedDropsMat != null) rendT.material = _cachedDropsMat;
-#endif
+            if (dropsParticleMaterial != null) rendT.material = dropsParticleMaterial;
             rendT.sortingLayerName = "Skill";
             rendT.sortingOrder = 11;
-            psTrail.Play();
             psTrail.Play();
 
             // 1. Bay tới đích theo đúng đường cong Parabol Bezier

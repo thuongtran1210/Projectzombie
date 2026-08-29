@@ -61,6 +61,49 @@ namespace ProjectZombie.Features.Weapons
             Instance = this;
         }
 
+        public IReadOnlyList<EvolutionRecipe> Recipes => _recipes;
+
+        public bool TryGetRecipeByWeaponId(string baseWeaponId, out EvolutionRecipe recipe)
+        {
+            for (int i = 0; i < _recipes.Count; i++)
+            {
+                if (string.Equals(_recipes[i].baseWeaponId, baseWeaponId, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    recipe = _recipes[i];
+                    return true;
+                }
+            }
+            recipe = default;
+            return false;
+        }
+
+        public List<EvolutionRecipe> GetRecipesByPassiveId(string passiveId)
+        {
+            List<EvolutionRecipe> result = new List<EvolutionRecipe>();
+            for (int i = 0; i < _recipes.Count; i++)
+            {
+                if (string.Equals(_recipes[i].requiredPassiveId, passiveId, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Add(_recipes[i]);
+                }
+            }
+            return result;
+        }
+
+        public bool TryGetRecipeByEvolutionId(string evolutionWeaponId, out EvolutionRecipe recipe)
+        {
+            for (int i = 0; i < _recipes.Count; i++)
+            {
+                if (string.Equals(_recipes[i].evolutionWeaponId, evolutionWeaponId, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    recipe = _recipes[i];
+                    return true;
+                }
+            }
+            recipe = default;
+            return false;
+        }
+
         /// <summary>
         /// Kiểm tra xem một vũ khí base có đạt đủ điều kiện tiến hóa hay không.
         /// </summary>

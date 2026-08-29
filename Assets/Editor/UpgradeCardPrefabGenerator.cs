@@ -123,7 +123,7 @@ namespace ProjectZombie.EditorTools
             descTMP.color = new Color(0.9f, 0.88f, 0.85f, 1f);
             descTMP.text = "Phóng ra sóng âm ngọc lũ công kích yêu ma diện rộng.";
 
-            // 7. Stat Diff Text (Bottom)
+            // 7. Stat Diff Text (Bottom Upper)
             GameObject statObj = new GameObject("StatDiff_Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             statObj.layer = LayerMask.NameToLayer("UI");
             statObj.transform.SetParent(root.transform, false);
@@ -131,34 +131,63 @@ namespace ProjectZombie.EditorTools
             statRT.anchorMin = new Vector2(0, 0);
             statRT.anchorMax = new Vector2(1, 0);
             statRT.pivot = new Vector2(0.5f, 0);
-            statRT.anchoredPosition = new Vector2(0, 18);
-            statRT.sizeDelta = new Vector2(-36, 40);
+            statRT.anchoredPosition = new Vector2(0, 42);
+            statRT.sizeDelta = new Vector2(-36, 32);
             TextMeshProUGUI statTMP = statObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) statTMP.font = vietFont;
-            statTMP.fontSize = 13;
+            statTMP.fontSize = 12;
             statTMP.fontStyle = FontStyles.Bold;
             statTMP.alignment = TextAlignmentOptions.Center;
             statTMP.enableWordWrapping = true;
             statTMP.text = "<color=#4DEEEA>+25% Sát thương</color>";
 
-            // 8. Wire SerializedFields vào UpgradeCardView
+            // 8. Evolution Synergy Container & Label (Bottom Lower)
+            GameObject synObj = new GameObject("Synergy_Container", typeof(RectTransform));
+            synObj.layer = LayerMask.NameToLayer("UI");
+            synObj.transform.SetParent(root.transform, false);
+            RectTransform synRT = synObj.GetComponent<RectTransform>();
+            synRT.anchorMin = new Vector2(0, 0);
+            synRT.anchorMax = new Vector2(1, 0);
+            synRT.pivot = new Vector2(0.5f, 0);
+            synRT.anchoredPosition = new Vector2(0, 10);
+            synRT.sizeDelta = new Vector2(-36, 28);
+
+            GameObject synTextObj = new GameObject("Synergy_Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            synTextObj.layer = LayerMask.NameToLayer("UI");
+            synTextObj.transform.SetParent(synObj.transform, false);
+            RectTransform synTextRT = synTextObj.GetComponent<RectTransform>();
+            synTextRT.anchorMin = Vector2.zero;
+            synTextRT.anchorMax = Vector2.one;
+            synTextRT.sizeDelta = Vector2.zero;
+
+            TextMeshProUGUI synTMP = synTextObj.GetComponent<TextMeshProUGUI>();
+            if (vietFont != null) synTMP.font = vietFont;
+            synTMP.fontSize = 11;
+            synTMP.alignment = TextAlignmentOptions.Center;
+            synTMP.enableWordWrapping = true;
+            synTMP.text = "<color=#AAAAAA>Duyên Phận: Cần P001</color>";
+
+            // 9. Wire SerializedFields vào UpgradeCardView
             UpgradeCardView cardView = root.GetComponent<UpgradeCardView>();
             SerializedObject so = new SerializedObject(cardView);
             so.FindProperty("_iconImage").objectReferenceValue = iconImg;
+            so.FindProperty("_cardFrameImage").objectReferenceValue = rootImg;
             so.FindProperty("_nameText").objectReferenceValue = nameTMP;
             so.FindProperty("_descriptionText").objectReferenceValue = descTMP;
             so.FindProperty("_categoryText").objectReferenceValue = catTMP;
             so.FindProperty("_levelText").objectReferenceValue = lvlTMP;
             so.FindProperty("_statDiffText").objectReferenceValue = statTMP;
+            so.FindProperty("_synergyContainer").objectReferenceValue = synObj;
+            so.FindProperty("_synergyLabelText").objectReferenceValue = synTMP;
             so.FindProperty("_selectButton").objectReferenceValue = rootBtn;
             so.ApplyModifiedProperties();
 
-            // 9. Lưu Prefab
+            // 10. Lưu Prefab
             System.IO.Directory.CreateDirectory("Assets/_Prefabs/UI");
             PrefabUtility.SaveAsPrefabAsset(root, PREFAB_PATH);
             Object.DestroyImmediate(root);
 
-            Debug.Log($"<color=#FFD700>[UpgradeCardGenerator] Đã tạo thành công Card Template Prefab tại: {PREFAB_PATH}</color>");
+            Debug.Log($"<color=#FFD700>[UpgradeCardGenerator] Đã tự động tạo và wire thành công Card Template Prefab tại: {PREFAB_PATH}</color>");
         }
     }
 }

@@ -246,27 +246,67 @@ namespace ProjectZombie.EditorTools
             // 2.1. Panel_MainHub (Sảnh Hoàng Tuyền Chuẩn AAA)
             ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubPrefab();
             Transform hubTrans = metaRoot.Find("Panel_MainHub");
+            if (hubTrans == null)
+            {
+                var hubPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/MainHubUI.prefab");
+                if (hubPrefab != null)
+                {
+                    var hubObj = (GameObject)PrefabUtility.InstantiatePrefab(hubPrefab, metaRoot);
+                    hubObj.name = "Panel_MainHub";
+                    hubTrans = hubObj.transform;
+                }
+            }
 
             // 2.2. Panel_CharacterSelect (Chọn Anh Hùng)
             ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             Transform heroTrans = metaRoot.Find("Panel_CharacterSelect");
+            if (heroTrans == null)
+            {
+                var heroPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Panel_CharacterSelect.prefab");
+                if (heroPrefab != null)
+                {
+                    var heroObj = (GameObject)PrefabUtility.InstantiatePrefab(heroPrefab, metaRoot);
+                    heroObj.name = "Panel_CharacterSelect";
+                    heroTrans = heroObj.transform;
+                }
+            }
 
             // 2.3. Panel_WeaponLoadout (Tàng Bảo Các)
             ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
             Transform loadoutTrans = metaRoot.Find("Panel_WeaponLoadout");
+            if (loadoutTrans == null)
+            {
+                var loadoutPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Panel_WeaponLoadout.prefab");
+                if (loadoutPrefab != null)
+                {
+                    var loadoutObj = (GameObject)PrefabUtility.InstantiatePrefab(loadoutPrefab, metaRoot);
+                    loadoutObj.name = "Panel_WeaponLoadout";
+                    loadoutTrans = loadoutObj.transform;
+                }
+            }
 
             // 2.4. Panel_SanctuaryTree (Miếu Tứ Bất Tử)
             ProjectZombie.Editor.UI.SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab();
             Transform sanctuaryTrans = metaRoot.Find("Panel_SanctuaryTree");
+            if (sanctuaryTrans == null)
+            {
+                var sanctPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Panel_SanctuaryTree.prefab");
+                if (sanctPrefab != null)
+                {
+                    var sanctObj = (GameObject)PrefabUtility.InstantiatePrefab(sanctPrefab, metaRoot);
+                    sanctObj.name = "Panel_SanctuaryTree";
+                    sanctuaryTrans = sanctObj.transform;
+                }
+            }
 
-            // Wire MetaUIManager
+            // Wire MetaUIManager an toàn
             var soMeta = new SerializedObject(metaManager);
             soMeta.FindProperty("_metaCanvasGroup").objectReferenceValue = metaGroup;
             soMeta.FindProperty("_persistentBackdrop").objectReferenceValue = backdropTrans.gameObject;
-            soMeta.FindProperty("_mainHubScreen").objectReferenceValue = hubTrans.GetComponent<MainHubView>();
-            soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
-            soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
-            soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
+            if (hubTrans != null) soMeta.FindProperty("_mainHubScreen").objectReferenceValue = hubTrans.GetComponent<MainHubView>();
+            if (heroTrans != null) soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
+            if (loadoutTrans != null) soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
+            if (sanctuaryTrans != null) soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
             if (settingsView != null)
             {
                 soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;

@@ -362,6 +362,8 @@ namespace ProjectZombie.Features.Combat.Aiming
         }
 
         private LineRenderer _curveLineRenderer;
+        private const int CURVE_SEGMENTS = 20;
+        private readonly Vector3[] _curvePointsBuffer = new Vector3[CURVE_SEGMENTS + 1];
 
         private void ShowCurvedTrajectoryIndicator(Vector3 origin, Vector2 direction, float angle, Color color)
         {
@@ -383,6 +385,7 @@ namespace ProjectZombie.Features.Combat.Aiming
                 _curveLineRenderer.sortingLayerName = "Skill";
                 _curveLineRenderer.sortingOrder = 6;
                 _curveLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                _curveLineRenderer.positionCount = CURVE_SEGMENTS + 1;
             }
 
             _curveLineRenderer.enabled = true;
@@ -398,16 +401,14 @@ namespace ProjectZombie.Features.Combat.Aiming
             Vector3 apexPoint = origin + (Vector3)(direction * totalLength);
             Vector3 controlPoint = origin + (Vector3)(direction * (totalLength * 0.5f)) + (Vector3)(perpendicular * curveOffsetDistance);
 
-            int segments = 20;
-            _curveLineRenderer.positionCount = segments + 1;
-
-            for (int i = 0; i <= segments; i++)
+            for (int i = 0; i <= CURVE_SEGMENTS; i++)
             {
-                float t = (float)i / segments;
+                float t = (float)i / CURVE_SEGMENTS;
                 // Quadratic Bezier Formula: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
-                Vector3 pointOnCurve = (1f - t) * (1f - t) * startPoint + 2f * (1f - t) * t * controlPoint + t * t * apexPoint;
-                _curveLineRenderer.SetPosition(i, pointOnCurve);
+                _curvePointsBuffer[i] = (1f - t) * (1f - t) * startPoint + 2f * (1f - t) * t * controlPoint + t * t * apexPoint;
             }
+
+            _curveLineRenderer.SetPositions(_curvePointsBuffer);
 
             // Điểm rơi / quay đầu của Boomerang
             float circleBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
