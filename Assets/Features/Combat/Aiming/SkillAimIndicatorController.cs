@@ -266,7 +266,15 @@ namespace ProjectZombie.Features.Combat.Aiming
                         }
                         else
                         {
-                            fallback = p.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                            var anim = p.GetComponentInChildren<Player.PlayerAnimator>();
+                            if (anim != null)
+                            {
+                                fallback = anim.FacingDirection >= 0f ? Vector2.right : Vector2.left;
+                            }
+                            else
+                            {
+                                fallback = p.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                            }
                         }
                     }
 

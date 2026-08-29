@@ -70,10 +70,11 @@ namespace ProjectZombie.Features.Weapons
         }
 
         public override Combat.Aiming.SkillAimConfig AimConfig => IsInRecastWindow 
-            ? new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.DashLine, 8.0f, 1.5f, 0f, true)
+            ? Combat.Aiming.SkillAimConfig.DefaultInstant // Phase 2: Khóa mục tiêu vào Dép, 1 chạm tung cước ngay lập tức
             : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, throwRange * 1.5f, 1.5f, 40f, true);
 
         private GameObject _recastMarkerInstance;
+        private Coroutine _recastMarkerTimerCoroutine;
 
         /// <summary>
         /// Phase 1: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ bay vòng cung gom quái.
@@ -90,87 +91,101 @@ namespace ProjectZombie.Features.Weapons
                 }
                 else
                 {
-                    dir = transform.root.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                    var anim = transform.root.GetComponentInChildren<PlayerAnimator>();
+                    float facing = anim != null ? anim.FacingDirection : (transform.root.localScale.x >= 0 ? 1f : -1f);
+                    dir = facing >= 0f ? Vector2.right : Vector2.left;
                 }
             }
 
             float actualThrowDist = throwRange * 1.4f;
+            Vector3 startPos = transform.position;
+            Vector3 desiredApexPos = startPos + (Vector3)(dir * actualThrowDist);
 
-            // Chặn điểm rơi của Dép không văng ra ngoài tường/mép map
-            int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
-            if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
-            if (obstacleMask != 0)
+            // Chốt chặn an toàn: Cho phép bay qua tường ở giữa, nhưng điểm bãi đáp chiếc dép bắt buộc phải nằm hoàn toàn trên sàn gạch hợp lệ (không ra biển Left, không kẹt trong tường)
+            _lastSlipperApexPosition = MovementPhysicsUtility.ValidateTeleportDestination(desiredApexPos, startPos, 0.45f);
+            float finalDistance = Vector2.Distance(startPos, _lastSlipperApexPosition);
+            if (finalDistance > 0.1f)
             {
-                RaycastHit2D hitWall = Physics2D.CircleCast(transform.position, 0.4f, dir, actualThrowDist, obstacleMask);
-                if (hitWall.collider != null)
-                {
-                    actualThrowDist = Mathf.Max(1.0f, hitWall.distance - 0.5f);
-                }
+                dir = ((Vector2)_lastSlipperApexPosition - (Vector2)startPos).normalized;
             }
 
-            _lastSlipperApexPosition = transform.position + (Vector3)(dir * actualThrowDist);
-
-            // Sinh Vòng Trận Báo Hiệu Điểm Đáp Phase 2 (Recast Dropkick Beacon)
+            // Sinh/Tái sử dụng Vòng Trận Báo Hiệu Điểm Đáp Phase 2 (Recast Dropkick Beacon)
             SpawnRecastGroundMarker(_lastSlipperApexPosition);
 
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
-            StartCoroutine(RoutineThrowSlipper(dir, actualThrowDist, 2.0f));
+            StartCoroutine(RoutineThrowSlipper(dir, finalDistance, 2.0f));
             StartCoroutine(RoutineWhirlwindSlippers());
         }
 
         private void SpawnRecastGroundMarker(Vector3 position)
         {
-            if (_recastMarkerInstance != null) Destroy(_recastMarkerInstance);
-
-            _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
-            _recastMarkerInstance.transform.position = position;
-
-            var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
-            var circleSp = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
-#if UNITY_EDITOR
-            if (circleSp == null)
+            if (_recastMarkerInstance == null)
             {
-                circleSp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png");
-            }
+                _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
+                var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
+                var circleSp = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
+#if UNITY_EDITOR
+                if (circleSp == null)
+                {
+                    circleSp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Indicators/TEX_Indicator_Circle.png");
+                }
 #endif
-            sr.sprite = circleSp;
-            sr.color = new Color(1f, 0.85f, 0.2f, 0.65f); // Vàng kim rực sáng
-            sr.sortingLayerName = "Skill";
-            sr.sortingOrder = 4;
-            _recastMarkerInstance.transform.localScale = Vector3.one * 1.6f;
+                sr.sprite = circleSp;
+                sr.color = new Color(1f, 0.85f, 0.2f, 0.65f); // Vàng kim rực sáng
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 4;
+                _recastMarkerInstance.transform.localScale = Vector3.one * 1.6f;
+            }
 
-            // Tự hủy sau khi hết thời gian Recast window (3s)
-            Destroy(_recastMarkerInstance, recastWindowDuration);
+            _recastMarkerInstance.transform.position = position;
+            _recastMarkerInstance.SetActive(true);
+
+            if (_recastMarkerTimerCoroutine != null) StopCoroutine(_recastMarkerTimerCoroutine);
+            _recastMarkerTimerCoroutine = StartCoroutine(RoutineDisableRecastMarker(recastWindowDuration));
+        }
+
+        private IEnumerator RoutineDisableRecastMarker(float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            ClearRecastGroundMarker();
         }
 
         private void ClearRecastGroundMarker()
         {
+            if (_recastMarkerTimerCoroutine != null)
+            {
+                StopCoroutine(_recastMarkerTimerCoroutine);
+                _recastMarkerTimerCoroutine = null;
+            }
+
             if (_recastMarkerInstance != null)
             {
-                Destroy(_recastMarkerInstance);
-                _recastMarkerInstance = null;
+                _recastMarkerInstance.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Phase 2 (Recast): Song Phi Đoạt Mệnh — Tướng lướt vụt tới vị trí chiếc Dép đang xoay, tung cước dẫm nổ Shockwave tan xác bầy quái!
+        /// Phase 2 (Recast): Song Phi Đoạt Mệnh (Anchor Dropkick Leap)
+        /// Khóa mục tiêu tuyệt đối vào vị trí chiếc Dép đang xoay, nhảy vọt trên không vượt mọi tường và bầy quái, đáp đất dẫm nổ Shockwave!
         /// </summary>
         protected override void PerformRecastSkill(Vector2 customAimDirection = default)
         {
             ClearRecastGroundMarker();
 
+            Vector3 playerPos = transform.root.position;
             Vector3 targetPos = _lastSlipperApexPosition;
-            if (customAimDirection != Vector2.zero)
+
+            // Fallback an toàn nếu chưa có vị trí Dép
+            if (targetPos == Vector3.zero || Vector2.Distance(playerPos, targetPos) < 0.1f)
             {
-                targetPos = transform.position + (Vector3)(customAimDirection * (throwRange * 1.5f));
+                var anim = transform.root.GetComponentInChildren<PlayerAnimator>();
+                float facing = anim != null ? anim.FacingDirection : 1f;
+                Vector3 fallbackDir = facing >= 0f ? Vector3.right : Vector3.left;
+                targetPos = playerPos + fallbackDir * (throwRange * 1.2f);
             }
 
-            // GỌI CHUẨN MOVEMENT: Dash bị vật cản chặn lại trên đường lướt
-            Vector3 startPos = transform.root.position;
-            Vector2 dashDir = ((Vector2)targetPos - (Vector2)startPos).normalized;
-            float rawDistance = Vector2.Distance(startPos, targetPos);
-
-            Vector3 validDashTarget = MovementPhysicsUtility.CalculateDashDestination(startPos, dashDir, rawDistance, 0.35f);
+            // Điểm đáp luôn được đảm bảo 100% nằm trên sàn hợp lệ (không ra biển Left, không kẹt tường)
+            Vector3 validDashTarget = MovementPhysicsUtility.ValidateTeleportDestination(targetPos, playerPos, 0.45f);
 
             StartCoroutine(RoutineSongPhiDropkick(validDashTarget));
         }
@@ -180,30 +195,34 @@ namespace ProjectZombie.Features.Weapons
             Transform playerTf = transform.root;
             Vector3 startPos = playerTf.position;
             Vector2 dashDir = ((Vector2)targetPos - (Vector2)startPos).normalized;
-            float dashDuration = 0.15f;
+            float leapDuration = 0.16f;
             float elapsed = 0f;
 
-            // 1. Kích hoạt Animation Dash & Quay mặt Tướng theo hướng lướt
+            // 1. Kích hoạt Animation Dash & Quay mặt Tướng theo hướng phi thân
             if (playerTf.TryGetComponent<PlayerController>(out var playerCtrl))
             {
-                if (dashDir.x != 0)
-                {
-                    playerTf.localScale = new Vector3(dashDir.x > 0 ? Mathf.Abs(playerTf.localScale.x) : -Mathf.Abs(playerTf.localScale.x), playerTf.localScale.y, playerTf.localScale.z);
-                }
                 var anim = playerTf.GetComponentInChildren<PlayerAnimator>();
-                if (anim != null) anim.ChangeAnimationState(PlayerAnimationState.Dash);
+                if (anim != null)
+                {
+                    if (dashDir.x != 0) anim.FlipToDirection(dashDir.x);
+                    anim.ChangeAnimationState(PlayerAnimationState.Dash);
+                }
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(startPos);
 
-            // 2. Lướt siêu tốc (High-Speed Dash)
-            while (elapsed < dashDuration)
+            // 2. Phi Thân Nhảy Vọt Không Gian (Aerial Parabolic Leap) — Nhảy vọt qua tường và quái
+            while (elapsed < leapDuration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / dashDuration);
-                // Ease-Out Cubic cho cảm giác phi thân cực nhanh và dứt khoát
+                float t = Mathf.Clamp01(elapsed / leapDuration);
+                // Ease-Out Cubic cho tốc độ phi thân cực nhanh và mạnh mẽ
                 float easeT = 1f - Mathf.Pow(1f - t, 3f);
-                playerTf.position = Vector3.Lerp(startPos, targetPos, easeT);
+                // Cung parabol nhấc bổng trục Y nhẹ tạo cảm giác nhảy cước trên không
+                float jumpArc = Mathf.Sin(t * Mathf.PI) * 0.75f;
+                
+                Vector3 groundPos = Vector3.Lerp(startPos, targetPos, easeT);
+                playerTf.position = new Vector3(groundPos.x, groundPos.y + jumpArc, groundPos.z);
                 yield return null;
             }
             playerTf.position = targetPos;
@@ -279,6 +298,24 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        private static Gradient _cachedTrailGrad;
+        private static Sprite _cachedSlipperSprite;
+        private static Material _cachedTrailMat;
+        private static Material _cachedDropsMat;
+
+        private static Gradient GetOrCreateTrailGradient()
+        {
+            if (_cachedTrailGrad == null)
+            {
+                _cachedTrailGrad = new Gradient();
+                _cachedTrailGrad.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.9f, 0.4f), 0f), new GradientColorKey(new Color(1f, 0.55f, 0.1f), 1f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) }
+                );
+            }
+            return _cachedTrailGrad;
+        }
+
         private IEnumerator RoutineThrowSlipper(Vector2 dir, float range, float dmgMult)
         {
             Vector2 startPos = transform.position;
@@ -292,17 +329,20 @@ namespace ProjectZombie.Features.Weapons
             // Sinh Visual Chiếc Dép Bay Xoay Tròn (Thu nhỏ về tỉ lệ 0.32m chuẩn Chibi)
             GameObject slipperVisual = new GameObject("Slipper_Projectile_Visual");
             var sr = slipperVisual.AddComponent<SpriteRenderer>();
-            var slipperSprite = Resources.Load<Sprite>("Tex_Slipper_Projectile");
-#if UNITY_EDITOR
-            if (slipperSprite == null)
+            if (_cachedSlipperSprite == null)
             {
-                slipperSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png");
-            }
+                _cachedSlipperSprite = Resources.Load<Sprite>("Tex_Slipper_Projectile");
+#if UNITY_EDITOR
+                if (_cachedSlipperSprite == null)
+                {
+                    _cachedSlipperSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png");
+                }
 #endif
-            sr.sprite = slipperSprite;
+            }
+            sr.sprite = _cachedSlipperSprite;
             sr.sortingLayerName = "Skill";
             sr.sortingOrder = 12;
-            slipperVisual.transform.localScale = Vector3.one * 0.32f; // Thu nhỏ 50% so với trước
+            slipperVisual.transform.localScale = Vector3.one * 0.32f;
             slipperVisual.transform.position = startPos;
 
             // Gắn TrailRenderer (Dải Năng Lượng Ribbon Vàng Kim uốn lượn liên tục bám theo dép)
@@ -314,17 +354,14 @@ namespace ProjectZombie.Features.Weapons
             trailRenderer.autodestruct = false;
             trailRenderer.sortingLayerName = "Skill";
             trailRenderer.sortingOrder = 11;
-
-            Gradient trailGrad = new Gradient();
-            trailGrad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.9f, 0.4f), 0f), new GradientColorKey(new Color(1f, 0.55f, 0.1f), 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) }
-            );
-            trailRenderer.colorGradient = trailGrad;
+            trailRenderer.colorGradient = GetOrCreateTrailGradient();
 
 #if UNITY_EDITOR
-            Material matTrail = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Arc.mat");
-            if (matTrail != null) trailRenderer.material = matTrail;
+            if (_cachedTrailMat == null)
+            {
+                _cachedTrailMat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Arc.mat");
+            }
+            if (_cachedTrailMat != null) trailRenderer.material = _cachedTrailMat;
 #endif
 
             // Gắn thêm Hạt Bụi Năng Lượng Lấp Lánh tản ra từ đuôi dép
@@ -347,15 +384,19 @@ namespace ProjectZombie.Features.Weapons
 
             var colT = psTrail.colorOverLifetime;
             colT.enabled = true;
-            colT.color = trailGrad;
+            colT.color = GetOrCreateTrailGradient();
 
             var rendT = trailObj.GetComponent<ParticleSystemRenderer>();
 #if UNITY_EDITOR
-            Material matDrops = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Drops.mat");
-            if (matDrops != null) rendT.material = matDrops;
+            if (_cachedDropsMat == null)
+            {
+                _cachedDropsMat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Drops.mat");
+            }
+            if (_cachedDropsMat != null) rendT.material = _cachedDropsMat;
 #endif
             rendT.sortingLayerName = "Skill";
             rendT.sortingOrder = 11;
+            psTrail.Play();
             psTrail.Play();
 
             // 1. Bay tới đích theo đúng đường cong Parabol Bezier
