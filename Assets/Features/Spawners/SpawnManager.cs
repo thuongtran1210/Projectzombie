@@ -89,6 +89,10 @@ namespace ProjectZombie.Features.Spawners
             }
         }
 
+        private Tilemap _obstacleTilemap;
+        private Bounds _safeMapBounds;
+        private bool _hasCalculatedBounds = false;
+
         private void EnsureDependencies()
         {
             if (_wavePreloader == null)
@@ -133,6 +137,52 @@ namespace ProjectZombie.Features.Spawners
                     groundTilemap = FindObjectOfType<Tilemap>();
                 }
             }
+
+            // Tự động tìm Tilemap_Obstacles nội bộ để tránh spawn quái trên nóc tường
+            if (_obstacleTilemap == null)
+            {
+                var obsObj = GameObject.Find("Tilemap_Obstacles");
+                if (obsObj != null) _obstacleTilemap = obsObj.GetComponent<Tilemap>();
+            }
+
+            CalculateSafeMapBounds();
+        }
+
+        /// <summary>
+        /// Tự động tính toán hình chữ nhật sàn đấu an toàn (Safe Map Bounds) để Clamping O(1)
+        /// </summary>
+        private void CalculateSafeMapBounds()
+        {
+            if (_hasCalculatedBounds) return;
+
+            float margin = 1.0f; // Thụt lề an toàn cách mép vực/tường 1 mét
+
+            if (walkableAreaCollider != null)
+            {
+                _safeMapBounds = walkableAreaCollider.bounds;
+                _safeMapBounds.Expand(-margin * 2f);
+                _hasCalculatedBounds = true;
+                return;
+            }
+
+            if (groundTilemap != null)
+            {
+                groundTilemap.CompressBounds();
+                Bounds localB = groundTilemap.localBounds;
+                Vector3 worldMin = groundTilemap.transform.TransformPoint(localB.min);
+                Vector3 worldMax = groundTilemap.transform.TransformPoint(localB.max);
+
+                Vector3 center = (worldMin + worldMax) * 0.5f;
+                Vector3 size = new Vector3(Mathf.Max(2f, (worldMax.x - worldMin.x) - margin * 2f), Mathf.Max(2f, (worldMax.y - worldMin.y) - margin * 2f), 10f);
+
+                _safeMapBounds = new Bounds(center, size);
+                _hasCalculatedBounds = true;
+                return;
+            }
+
+            // Fallback nếu không có Tilemap: Khung 20x20 tiêu chuẩn
+            _safeMapBounds = new Bounds(Vector3.zero, new Vector3(20f, 20f, 10f));
+            _hasCalculatedBounds = true;
         }
 
         public async System.Threading.Tasks.Task StartMatchAsync()
@@ -408,26 +458,27 @@ namespace ProjectZombie.Features.Spawners
                 float camHalfW = _mainCamera.orthographicSize * _mainCamera.aspect + cameraPadding;
                 float camDiagonal = Mathf.Sqrt(camHalfW * camHalfW + camHalfH * camHalfH);
 
-                // Đảm bảo bán kính tối thiểu vượt ra ngoài góc chéo Camera
                 effectiveMin = Mathf.Min(minSpawnRadius, camDiagonal);
                 effectiveMax = Mathf.Max(effectiveMin + 2f, maxSpawnRadius);
             }
 
-            // Giai đoạn 1: Thử lấy mẫu vị trí hợp lệ (Vừa ngoài Camera vừa trong Sàn đấu)
+            // Giai đoạn 1: Lấy mẫu vị trí (Vừa ngoài Camera, vừa nằm trong Safe Bounds và có sàn hợp lệ)
             for (int i = 0; i < 16; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(effectiveMin, effectiveMax);
                 Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
-                // 1. Phải nằm trong sàn đấu Walkable Area
+                // 1. Phải nằm trong Safe Bounds và sàn gạch Walkable
                 if (!IsInsideWalkableArea(candidatePos))
                     continue;
 
                 // 2. Không được dính Obstacle / Tường
-                Collider2D hit = Physics2D.OverlapCircle(candidatePos, 0.6f, obstacleMask);
-                if (hit != null)
-                    continue;
+                if (obstacleMask != 0)
+                {
+                    Collider2D hit = Physics2D.OverlapCircle(candidatePos, 0.5f, obstacleMask);
+                    if (hit != null) continue;
+                }
 
                 // 3. Phải nằm ngoài tầm nhìn Camera
                 if (!IsOutsideCameraViewport(candidatePos))
@@ -436,53 +487,69 @@ namespace ProjectZombie.Features.Spawners
                 return candidatePos;
             }
 
-            // Giai đoạn 2: Smart Fallback (Nếu Player đứng sát góc tường hoặc Map nhỏ)
+            // Giai đoạn 2: Smart Math Clamping Fallback (Khi Player đứng sát góc chết mép tường)
+            // Lấy ngẫu nhiên các điểm ngoài Camera rồi ép trực tiếp (Clamp) vào trong Safe Map Bounds
             for (int i = 0; i < 8; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-                float distance = Random.Range(effectiveMin * 0.7f, effectiveMin);
-                Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
+                float distance = Random.Range(effectiveMin, effectiveMax);
+                Vector3 rawPos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
-                if (IsInsideWalkableArea(candidatePos))
+                Vector3 clampedPos = ClampToSafeBounds(rawPos);
+
+                if (IsInsideWalkableArea(clampedPos))
                 {
-                    Collider2D hit = Physics2D.OverlapCircle(candidatePos, 0.6f, obstacleMask);
-                    if (hit == null)
-                    {
-                        return candidatePos;
-                    }
+                    if (obstacleMask != 0 && Physics2D.OverlapCircle(clampedPos, 0.5f, obstacleMask) != null)
+                        continue;
+
+                    return clampedPos;
                 }
             }
 
-            // Fallback cuối cùng: Lấy vị trí gần Player nhất còn thuộc sàn đấu
-            if (walkableAreaCollider != null)
-            {
-                return walkableAreaCollider.ClosestPoint(center + (Vector3)(Random.insideUnitCircle * effectiveMin));
-            }
+            // Fallback cuối cùng: Clamp điểm quanh Player về mép an toàn bên trong sàn đấu
+            Vector3 finalFallback = ClampToSafeBounds(center + (Vector3)(Random.insideUnitCircle.normalized * effectiveMin));
+            return finalFallback;
+        }
 
-            float fallbackAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            return center + new Vector3(Mathf.Cos(fallbackAngle) * minSpawnRadius, Mathf.Sin(fallbackAngle) * minSpawnRadius, 0f);
+        private Vector3 ClampToSafeBounds(Vector3 targetPos)
+        {
+            if (!_hasCalculatedBounds) CalculateSafeMapBounds();
+
+            float clampedX = Mathf.Clamp(targetPos.x, _safeMapBounds.min.x, _safeMapBounds.max.x);
+            float clampedY = Mathf.Clamp(targetPos.y, _safeMapBounds.min.y, _safeMapBounds.max.y);
+            return new Vector3(clampedX, clampedY, 0f);
         }
 
         private bool IsInsideWalkableArea(Vector3 position)
         {
-            if (walkableAreaCollider != null)
+            // 1. Bắt buộc phải nằm trong Safe Bounds của sàn đấu
+            if (_hasCalculatedBounds && !_safeMapBounds.Contains(position))
             {
-                // Nếu vô tình kéo nhầm Tilemap Obstacle vào walkableAreaCollider thì bỏ qua
-                if (walkableAreaCollider.gameObject.name.Contains("Obstacle"))
-                {
-                    return true;
-                }
-                return walkableAreaCollider.OverlapPoint(position);
-            }
-
-            if (groundTilemap != null)
-            {
-                Vector3Int cellPos = groundTilemap.WorldToCell(position);
-                if (groundTilemap.HasTile(cellPos)) return true;
                 return false;
             }
 
-            // Mặc định cho phép spawn nếu không có collider giới hạn
+            if (walkableAreaCollider != null)
+            {
+                if (!walkableAreaCollider.gameObject.name.Contains("Obstacle") && !walkableAreaCollider.OverlapPoint(position))
+                {
+                    return false;
+                }
+            }
+
+            // 2. Bắt buộc phải có sàn gạch trên Ground Tilemap
+            if (groundTilemap != null)
+            {
+                Vector3Int cellPos = groundTilemap.WorldToCell(position);
+                if (!groundTilemap.HasTile(cellPos)) return false;
+            }
+
+            // 3. Tuyệt đối không được trùng với ô tường trên Obstacle Tilemap
+            if (_obstacleTilemap != null)
+            {
+                Vector3Int obsCell = _obstacleTilemap.WorldToCell(position);
+                if (_obstacleTilemap.HasTile(obsCell)) return false;
+            }
+
             return true;
         }
 

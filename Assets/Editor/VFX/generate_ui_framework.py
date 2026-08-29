@@ -577,9 +577,75 @@ def generate_weapon_slot_frame(output_path):
     write_unity_meta(output_path, border=(24, 24, 24, 24), pivot=(0.5, 0.5))
     print(f"Generated Weapon Slot Frame: {output_path}")
 
-# -------------------------------------------------------------
-# 7. NÚT KỸ NĂNG TRẤN PHÁI (SIGNATURE SKILL) & NÚT LƯỚT (DASH)
-# -------------------------------------------------------------
+def generate_action_button_base(output_path, border_color=(201, 168, 106), glow_color=(255, 215, 0), bg_color=(24, 20, 28), inner_ring_color=(255, 215, 0), is_pressed=False):
+    """
+    Sinh Khung Nền Nút Bấm Tròn Bát Quái / Đồng Thau Cổ Phong 256x256:
+    - Viền ngoài đồng thau chạm khắc 8 chấm cung linh khí
+    - Nền sẫm ngọc bích / giấy dó
+    - Rãnh hào quang phát sáng
+    """
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    center = size / 2.0
+    r = 110.0 if not is_pressed else 104.0
+    
+    # 1. Outer Glow
+    glow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_img)
+    glow_draw.ellipse([center - r - 6, center - r - 6, center + r + 6, center + r + 6], 
+                      fill=(*glow_color, 140 if not is_pressed else 90))
+    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=8))
+    img = Image.alpha_composite(img, glow_img)
+    draw = ImageDraw.Draw(img)
+    
+    # 2. Vành kim loại ngoài
+    draw.ellipse([center - r, center - r, center + r, center + r], 
+                 fill=bg_color + (245,), outline=border_color + (255,), width=6)
+    
+    # 3. Rãnh chỉ vàng bên trong
+    inner_r = r - 12
+    draw.ellipse([center - inner_r, center - inner_r, center + inner_r, center + inner_r], 
+                 outline=inner_ring_color + (200,), width=3)
+    
+    # 4. 8 Cung ngọc tròn xung quanh viền
+    for i in range(8):
+        angle = math.radians(i * 45)
+        px = center + (r - 6) * math.cos(angle)
+        py = center + (r - 6) * math.sin(angle)
+        draw.ellipse([px - 4, py - 4, px + 4, py + 4], fill=glow_color + (255,))
+    
+    # 5. Gradient lòng nút
+    core_r = inner_r - 8
+    for ring in range(int(core_r), 0, -2):
+        factor = ring / core_r
+        cr = int(bg_color[0] * 0.4 + bg_color[0] * 0.6 * (1.0 - factor * 0.4))
+        cg = int(bg_color[1] * 0.4 + bg_color[1] * 0.6 * (1.0 - factor * 0.4))
+        cb = int(bg_color[2] * 0.4 + bg_color[2] * 0.6 * (1.0 - factor * 0.4))
+        draw.ellipse([center - ring, center - ring, center + ring, center + ring], 
+                     fill=(cr, cg, cb, 255))
+        
+    # Specular rim
+    draw.arc([center - core_r + 4, center - core_r + 4, center + core_r - 4, center + core_r - 4], 
+             start=210, end=330, fill=(255, 255, 255, 160), width=4)
+    
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Action Button Base: {output_path}")
+
+def generate_circle_mask(output_path, size=256):
+    """
+    Sinh Texture hình tròn hoàn hảo (256x256) màu trắng nguyên bản để làm Sprite Mask cho Cooldown Fill (Radial 360).
+    Giúp Unity UI Image khi bật Image.Type.Filled không bị văng ra thành hình vuông.
+    """
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    center = size / 2.0
+    r = (size / 2.0) - 2.0
+    draw.ellipse([center - r, center - r, center + r, center + r], fill=(255, 255, 255, 255))
+    img.save(output_path, "PNG")
+    write_unity_meta(output_path, border=(0, 0, 0, 0), pivot=(0.5, 0.5))
+    print(f"Generated Circle Mask: {output_path}")
+
 def generate_signature_skill_button(output_path):
     """
     Sinh Nút Kỹ Năng Trấn Phái Bát Giác Cổ Phong 256x256:
@@ -860,9 +926,37 @@ if __name__ == "__main__":
     generate_weapon_slot_frame(os.path.join(HUD_DIR, "Slot_Weapon_Equipped.png"))
     generate_top_scroll_frame(os.path.join(HUD_DIR, "Frame_Panel_Top_Scroll.png"))
     
-    # 4. Buttons
+    # 4. Buttons (Menu & Action Controls)
     generate_primary_button(os.path.join(BUTTONS_DIR, "Btn_Primary_Normal.png"), normal=True)
     generate_primary_button(os.path.join(BUTTONS_DIR, "Btn_Primary_Pressed.png"), normal=False)
+    
+    # Bộ Action Circle Buttons cho Mobile Controls
+    # 4a. Nút Đánh Thường (Đỏ Chu Sa)
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Attack.png"), 
+                                border_color=(255, 215, 0), glow_color=(255, 80, 80), bg_color=(140, 25, 25), inner_ring_color=(255, 180, 100))
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Attack_Pressed.png"), 
+                                border_color=(201, 168, 106), glow_color=(200, 50, 50), bg_color=(90, 15, 15), inner_ring_color=(200, 120, 60), is_pressed=True)
+    
+    # 4b. Nút Pháp Bảo / Relic Skill (Hắc Thạch Lam Ngọc)
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Relic.png"), 
+                                border_color=(201, 168, 106), glow_color=(77, 238, 234), bg_color=(25, 32, 42), inner_ring_color=(77, 238, 234))
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Relic_Pressed.png"), 
+                                border_color=(160, 130, 80), glow_color=(50, 180, 180), bg_color=(15, 20, 28), inner_ring_color=(50, 180, 180), is_pressed=True)
+
+    # 4c. Nút Tuyệt Kỹ Nền (Tím Khói Mực)
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Skill_Base.png"), 
+                                border_color=(255, 215, 0), glow_color=(200, 100, 255), bg_color=(35, 22, 45), inner_ring_color=(255, 215, 0))
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Skill_Base_Pressed.png"), 
+                                border_color=(201, 168, 106), glow_color=(160, 70, 200), bg_color=(20, 12, 30), inner_ring_color=(201, 168, 106), is_pressed=True)
+
+    # 4d. Nút Lướt Nền (Lam Bạc Phi Vân)
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Dash_Base.png"), 
+                                border_color=(201, 168, 106), glow_color=(120, 200, 255), bg_color=(20, 28, 40), inner_ring_color=(77, 238, 234))
+    generate_action_button_base(os.path.join(BUTTONS_DIR, "Btn_Circle_Dash_Base_Pressed.png"), 
+                                border_color=(160, 130, 80), glow_color=(80, 150, 200), bg_color=(12, 18, 28), inner_ring_color=(50, 160, 160), is_pressed=True)
+    
+    # 4e. Circle Mask cho Cooldown Radial Fill
+    generate_circle_mask(os.path.join(BUTTONS_DIR, "Mask_Circle_Solid.png"))
     
     # 5. Bộ 5 Linh Châu Ngũ Hành
     generate_element_badge(os.path.join(BADGES_DIR, "Badge_Element_Kim.png"), 

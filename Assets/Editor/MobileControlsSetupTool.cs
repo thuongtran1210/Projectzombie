@@ -15,7 +15,10 @@ namespace ProjectZombie.Editor.Tools
     /// </summary>
     public class MobileControlsSetupTool : EditorWindow
     {
-        [MenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire")]
+        [MenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire", priority = 2)]
+        [MenuItem("Tools/ProjectZombie/UI/⚡ Setup Mobile Controls (Joystick & Buttons)", priority = 2)]
+        [MenuItem("Tools/Vong Xuyen/UI & Controls/Setup Mobile Controls (Joystick & Buttons)", priority = 1)]
+        [MenuItem("ProjectZombie/UI/Setup Mobile Controls & Auto-Wire", priority = 1)]
         public static void ShowWindow()
         {
             var window = GetWindow<MobileControlsSetupTool>("Mobile Controls Setup");
@@ -311,6 +314,19 @@ namespace ProjectZombie.Editor.Tools
         {
             var soView = new SerializedObject(view);
 
+            // Gán Sprite Cổ Phong mới cho Background của Nút Tuyệt Kỹ
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png");
+                if (skillBtnSprite == null) skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png");
+                if (skillBtnSprite != null)
+                {
+                    bgImg.sprite = skillBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
             // Tìm Button
             Button btn = view.GetComponent<Button>();
             if (btn == null) btn = view.GetComponentInChildren<Button>(true);
@@ -334,6 +350,10 @@ namespace ProjectZombie.Editor.Tools
                 fillImage.fillMethod = Image.FillMethod.Radial360;
                 fillImage.fillOrigin = (int)Image.Origin360.Top;
                 fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+                
                 soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
             }
 
@@ -370,6 +390,18 @@ namespace ProjectZombie.Editor.Tools
         {
             var soView = new SerializedObject(view);
 
+            // Gán Sprite Cổ Phong mới cho Background của Nút Pháp Bảo
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite relicBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Relic.png");
+                if (relicBtnSprite != null)
+                {
+                    bgImg.sprite = relicBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
             Button btn = view.GetComponent<Button>();
             if (btn == null) btn = view.GetComponentInChildren<Button>(true);
             soView.FindProperty("_relicButton").objectReferenceValue = btn;
@@ -396,11 +428,24 @@ namespace ProjectZombie.Editor.Tools
                 fillImage.fillMethod = Image.FillMethod.Radial360;
                 fillImage.fillOrigin = (int)Image.Origin360.Top;
                 fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
                 soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
             }
 
             if (iconImage != null)
             {
+                // Nếu chưa có sprite, ẩn Image để không bị hiện khối vuông màu xám
+                if (iconImage.sprite == null)
+                {
+                    iconImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    iconImage.color = Color.white;
+                }
                 soView.FindProperty("_iconImage").objectReferenceValue = iconImage;
             }
 
@@ -426,6 +471,19 @@ namespace ProjectZombie.Editor.Tools
         {
             var soView = new SerializedObject(view);
 
+            // Gán Sprite Cổ Phong mới cho Background của Nút Lướt
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Dash_PhiVan.png");
+                if (dashBtnSprite == null) dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png");
+                if (dashBtnSprite != null)
+                {
+                    bgImg.sprite = dashBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
             Button btn = view.GetComponent<Button>();
             if (btn == null) btn = view.GetComponentInChildren<Button>(true);
             soView.FindProperty("_dashButton").objectReferenceValue = btn;
@@ -447,6 +505,10 @@ namespace ProjectZombie.Editor.Tools
                 fillImage.fillMethod = Image.FillMethod.Radial360;
                 fillImage.fillOrigin = (int)Image.Origin360.Top;
                 fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
                 soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
             }
 
@@ -472,6 +534,18 @@ namespace ProjectZombie.Editor.Tools
         {
             var soView = new SerializedObject(view);
 
+            // Gán Sprite Cổ Phong mới cho Background của Nút Đánh
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite atkBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Attack.png");
+                if (atkBtnSprite != null)
+                {
+                    bgImg.sprite = atkBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
             Button btn = view.GetComponent<Button>();
             if (btn == null) btn = view.GetComponentInChildren<Button>(true);
             soView.FindProperty("_attackButton").objectReferenceValue = btn;
@@ -491,6 +565,19 @@ namespace ProjectZombie.Editor.Tools
                 {
                     iconImage = img;
                 }
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
             }
 
             if (fillImage != null)
@@ -566,7 +653,7 @@ namespace ProjectZombie.Editor.Tools
             Sprite joyKnobSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
             if (joyKnobSprite != null) handleImg.sprite = joyKnobSprite;
 
-            // 2. Attack Button (Nút Đánh Chính - Kích thước lớn nhất)
+            // 2. Attack Button (Nút Đánh Chính - Đỏ Chu Sa Đông Sơn)
             GameObject attackObj = new GameObject("Btn_Attack", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(AttackButtonView), typeof(AttackButtonPresenter));
             attackObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform attackRect = attackObj.GetComponent<RectTransform>();
@@ -576,17 +663,22 @@ namespace ProjectZombie.Editor.Tools
             attackRect.anchoredPosition = new Vector2(-150, 150);
             attackRect.sizeDelta = new Vector2(140, 140);
             Image attackBg = attackObj.GetComponent<Image>();
-            attackBg.color = new Color(0.85f, 0.25f, 0.2f, 0.95f);
+            attackBg.color = Color.white;
+            Sprite atkBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Attack.png");
+            if (atkBtnSprite != null) attackBg.sprite = atkBtnSprite;
 
             GameObject attackIconObj = new GameObject("Icon_Weapon", typeof(RectTransform), typeof(Image));
             attackIconObj.transform.SetParent(attackObj.transform, false);
             RectTransform attackIconRect = attackIconObj.GetComponent<RectTransform>();
-            attackIconRect.anchorMin = new Vector2(0.15f, 0.15f);
-            attackIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+            attackIconRect.anchorMin = new Vector2(0.2f, 0.2f);
+            attackIconRect.anchorMax = new Vector2(0.8f, 0.8f);
             attackIconRect.sizeDelta = Vector2.zero;
             Image attackIconImg = attackIconObj.GetComponent<Image>();
+            attackIconImg.color = Color.white;
             Sprite defaultAtkSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
             if (defaultAtkSprite != null) attackIconImg.sprite = defaultAtkSprite;
+
+            Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
 
             GameObject attackFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
             attackFillObj.transform.SetParent(attackObj.transform, false);
@@ -595,11 +687,12 @@ namespace ProjectZombie.Editor.Tools
             attackFillRect.anchorMax = Vector2.one;
             attackFillRect.sizeDelta = Vector2.zero;
             Image attackFillImg = attackFillObj.GetComponent<Image>();
+            if (circleMask != null) attackFillImg.sprite = circleMask;
             attackFillImg.color = new Color(0f, 0f, 0f, 0.65f);
             attackFillImg.type = Image.Type.Filled;
             attackFillImg.fillMethod = Image.FillMethod.Radial360;
 
-            // 3. Skill Button (Nút Tuyệt Kỹ)
+            // 3. Skill Button (Nút Tuyệt Kỹ Trấn Phái Bát Giác / Tím Khói Mực)
             GameObject skillObj = new GameObject("Btn_SignatureSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(SignatureSkillButtonView), typeof(SignatureSkillPresenter));
             skillObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform skillRect = skillObj.GetComponent<RectTransform>();
@@ -607,9 +700,12 @@ namespace ProjectZombie.Editor.Tools
             skillRect.anchorMax = new Vector2(1f, 0f);
             skillRect.pivot = new Vector2(0.5f, 0.5f);
             skillRect.anchoredPosition = new Vector2(-150, 310);
-            skillRect.sizeDelta = new Vector2(100, 100);
+            skillRect.sizeDelta = new Vector2(110, 110);
             Image skillBg = skillObj.GetComponent<Image>();
-            skillBg.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+            skillBg.color = Color.white;
+            Sprite skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png");
+            if (skillBtnSprite == null) skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png");
+            if (skillBtnSprite != null) skillBg.sprite = skillBtnSprite;
 
             GameObject skillFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
             skillFillObj.transform.SetParent(skillObj.transform, false);
@@ -618,6 +714,7 @@ namespace ProjectZombie.Editor.Tools
             skillFillRect.anchorMax = Vector2.one;
             skillFillRect.sizeDelta = Vector2.zero;
             Image skillFillImg = skillFillObj.GetComponent<Image>();
+            if (circleMask != null) skillFillImg.sprite = circleMask;
             skillFillImg.color = new Color(0f, 0f, 0f, 0.65f);
             skillFillImg.type = Image.Type.Filled;
             skillFillImg.fillMethod = Image.FillMethod.Radial360;
@@ -632,7 +729,7 @@ namespace ProjectZombie.Editor.Tools
             skillText.alignment = TextAlignmentOptions.Center;
             skillText.fontSize = 28;
 
-            // 3b. Relic Skill Button (Nút Kỹ Năng Pháp Bảo - Hybrid Relics v6.0)
+            // 3b. Relic Skill Button (Nút Kỹ Năng Pháp Bảo - Hắc Thạch Lam Ngọc)
             GameObject relicObj = new GameObject("Btn_RelicSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(RelicSkillButtonView), typeof(RelicSkillPresenter));
             relicObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform relicRect = relicObj.GetComponent<RectTransform>();
@@ -640,18 +737,21 @@ namespace ProjectZombie.Editor.Tools
             relicRect.anchorMax = new Vector2(1f, 0f);
             relicRect.pivot = new Vector2(0.5f, 0.5f);
             relicRect.anchoredPosition = new Vector2(-270, 270);
-            relicRect.sizeDelta = new Vector2(90, 90);
+            relicRect.sizeDelta = new Vector2(95, 95);
             Image relicBg = relicObj.GetComponent<Image>();
-            relicBg.color = new Color(0.18f, 0.22f, 0.28f, 0.92f);
+            relicBg.color = Color.white;
+            Sprite relicBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Relic.png");
+            if (relicBtnSprite != null) relicBg.sprite = relicBtnSprite;
 
             GameObject relicIconObj = new GameObject("Icon_Relic", typeof(RectTransform), typeof(Image));
             relicIconObj.transform.SetParent(relicObj.transform, false);
             RectTransform relicIconRect = relicIconObj.GetComponent<RectTransform>();
-            relicIconRect.anchorMin = new Vector2(0.15f, 0.15f);
-            relicIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+            relicIconRect.anchorMin = new Vector2(0.2f, 0.2f);
+            relicIconRect.anchorMax = new Vector2(0.8f, 0.8f);
             relicIconRect.sizeDelta = Vector2.zero;
             Image relicIconImg = relicIconObj.GetComponent<Image>();
             relicIconImg.color = Color.white;
+            relicIconObj.SetActive(false); // Ẩn mặc định khi chưa trang bị pháp bảo, RelicSkillPresenter sẽ tự bật khi nhặt được pháp bảo chủ động
 
             GameObject relicFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
             relicFillObj.transform.SetParent(relicObj.transform, false);
@@ -660,6 +760,7 @@ namespace ProjectZombie.Editor.Tools
             relicFillRect.anchorMax = Vector2.one;
             relicFillRect.sizeDelta = Vector2.zero;
             Image relicFillImg = relicFillObj.GetComponent<Image>();
+            if (circleMask != null) relicFillImg.sprite = circleMask;
             relicFillImg.color = new Color(0f, 0f, 0f, 0.65f);
             relicFillImg.type = Image.Type.Filled;
             relicFillImg.fillMethod = Image.FillMethod.Radial360;
@@ -674,7 +775,7 @@ namespace ProjectZombie.Editor.Tools
             relicText.alignment = TextAlignmentOptions.Center;
             relicText.fontSize = 24;
 
-            // 4. Dash Button (Nút Lướt)
+            // 4. Dash Button (Nút Lướt Phi Vân)
             GameObject dashObj = new GameObject("Btn_Dash", typeof(RectTransform), typeof(Image), typeof(Button), typeof(DashButtonView), typeof(DashButtonPresenter));
             dashObj.transform.SetParent(mobilePanel.transform, false);
             RectTransform dashRect = dashObj.GetComponent<RectTransform>();
@@ -682,9 +783,12 @@ namespace ProjectZombie.Editor.Tools
             dashRect.anchorMax = new Vector2(1f, 0f);
             dashRect.pivot = new Vector2(0.5f, 0.5f);
             dashRect.anchoredPosition = new Vector2(-310, 150);
-            dashRect.sizeDelta = new Vector2(100, 100);
+            dashRect.sizeDelta = new Vector2(90, 90);
             Image dashBg = dashObj.GetComponent<Image>();
-            dashBg.color = new Color(0.25f, 0.3f, 0.4f, 0.9f);
+            dashBg.color = Color.white;
+            Sprite dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Dash_PhiVan.png");
+            if (dashBtnSprite == null) dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png");
+            if (dashBtnSprite != null) dashBg.sprite = dashBtnSprite;
 
             GameObject dashFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
             dashFillObj.transform.SetParent(dashObj.transform, false);
@@ -693,6 +797,7 @@ namespace ProjectZombie.Editor.Tools
             dashFillRect.anchorMax = Vector2.one;
             dashFillRect.sizeDelta = Vector2.zero;
             Image dashFillImg = dashFillObj.GetComponent<Image>();
+            if (circleMask != null) dashFillImg.sprite = circleMask;
             dashFillImg.color = new Color(0f, 0f, 0f, 0.65f);
             dashFillImg.type = Image.Type.Filled;
             dashFillImg.fillMethod = Image.FillMethod.Radial360;

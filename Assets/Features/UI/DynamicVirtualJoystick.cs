@@ -26,8 +26,18 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private RectTransform containerRect;
         [SerializeField] private RectTransform handleRect;
 
-        [Header("Settings")]
+        [Header("Joystick Settings")]
         [SerializeField] private float handleRange = 100f;
+        [Tooltip("Vùng chết (Deadzone) để loại bỏ rung lắc ngón tay cảm ứng.")]
+        [Range(0f, 0.5f)]
+        [SerializeField] private float deadZone = 0.1f;
+        [Tooltip("Nếu bật: khi kéo ngón tay vượt quá handleRange, gốc Joystick sẽ tự động trượt theo ngón tay.")]
+        [SerializeField] private bool _dynamicFollowDrag = true;
+
+        [Header("Fade Visual (Optional)")]
+        [Tooltip("Ẩn Joystick khi không chạm vào (chỉ hiện khi chạm).")]
+        [SerializeField] private bool _hideWhenInactive = false;
+        [SerializeField] private CanvasGroup _joystickCanvasGroup;
 
         private Vector2 _inputVector = Vector2.zero;
         public Vector2 InputVector => _inputVector;
@@ -59,9 +69,19 @@ namespace ProjectZombie.Features.UI
                 handleRect = transform.GetChild(0).GetComponent<RectTransform>();
             }
 
+            if (_joystickCanvasGroup == null)
+            {
+                _joystickCanvasGroup = GetComponent<CanvasGroup>();
+            }
+
             if (containerRect != null)
             {
                 _defaultPosition = containerRect.anchoredPosition;
+            }
+
+            if (_hideWhenInactive && _joystickCanvasGroup != null)
+            {
+                _joystickCanvasGroup.alpha = 0f;
             }
 
             // Kiểm tra EventSystem trong Scene
@@ -88,13 +108,13 @@ namespace ProjectZombie.Features.UI
                     eventData.pressEventCamera,
                     out Vector2 localPoint))
                 {
-                    // Trừ đi offset của pivot parent để tránh văng ra ngoài
-                    Vector2 pivotOffset = new Vector2(
-                        (parentRect.pivot.x - 0.5f) * parentRect.rect.width,
-                        (parentRect.pivot.y - 0.5f) * parentRect.rect.height
-                    );
                     containerRect.localPosition = localPoint;
                 }
+            }
+
+            if (_hideWhenInactive && _joystickCanvasGroup != null)
+            {
+                _joystickCanvasGroup.alpha = 1f;
             }
 
             OnDrag(eventData);
@@ -111,10 +131,32 @@ namespace ProjectZombie.Features.UI
                 out Vector2 position
             );
 
-            _inputVector = position / handleRange;
-            _inputVector = (_inputVector.magnitude > 1.0f) ? _inputVector.normalized : _inputVector;
+            // Dynamic follow: khi ngón tay vượt quá handleRange, gốc Joystick trượt theo
+            if (_dynamicFollowDrag && _isFloatingJoystick && position.magnitude > handleRange && containerRect.parent is RectTransform parentRect)
+            {
+                Vector2 excess = position - (position.normalized * handleRange);
+                containerRect.localPosition += (Vector3)excess;
+                position = position.normalized * handleRange;
+            }
 
-            handleRect.anchoredPosition = _inputVector * handleRange;
+            float distance = position.magnitude;
+            Vector2 rawDir = distance > 0.001f ? position / handleRange : Vector2.zero;
+
+            // Xử lý Deadzone mượt mà (Continuous re-scaled response curve)
+            float mag = rawDir.magnitude;
+            if (mag < deadZone)
+            {
+                _inputVector = Vector2.zero;
+            }
+            else
+            {
+                float normalizedMag = Mathf.Clamp01((mag - deadZone) / (1f - deadZone));
+                _inputVector = rawDir.normalized * normalizedMag;
+            }
+
+            // Cập nhật vị trí hiển thị của cần gạt (Knob / Handle)
+            Vector2 clampedHandlePos = (rawDir.magnitude > 1.0f) ? rawDir.normalized * handleRange : position;
+            handleRect.anchoredPosition = clampedHandlePos;
 
             // Gửi trực tiếp giá trị vào Unity New Input System
             SendValueToControl(_inputVector);
@@ -128,6 +170,11 @@ namespace ProjectZombie.Features.UI
             if (_isFloatingJoystick && containerRect != null)
             {
                 containerRect.anchoredPosition = _defaultPosition;
+            }
+
+            if (_hideWhenInactive && _joystickCanvasGroup != null)
+            {
+                _joystickCanvasGroup.alpha = 0f;
             }
 
             // Trả về Vector2.zero trong New Input System khi nhấc tay
