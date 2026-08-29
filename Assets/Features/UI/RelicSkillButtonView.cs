@@ -80,7 +80,7 @@ namespace ProjectZombie.Features.UI
         }
 
         [SerializeField] private Image _recastGlowBorder;
-
+        [SerializeField] private CanvasGroup _recastGlowCanvasGroup;
         private Coroutine _pulseRoutine;
 
         public void SetRecastGlow(bool isRecastActive)
@@ -92,6 +92,7 @@ namespace ProjectZombie.Features.UI
                 if (glowObj != null)
                 {
                     _recastGlowBorder = glowObj.GetComponent<Image>();
+                    _recastGlowCanvasGroup = glowObj.GetComponent<CanvasGroup>();
                 }
                 else
                 {
@@ -99,12 +100,19 @@ namespace ProjectZombie.Features.UI
                     newGlow.transform.SetParent(transform, false);
                     newGlow.transform.SetAsFirstSibling();
                     _recastGlowBorder = newGlow.AddComponent<Image>();
-                    _recastGlowBorder.color = new Color(1f, 0.85f, 0.2f, 0.8f); // Màu Vàng Kim phát sáng
+                    _recastGlowCanvasGroup = newGlow.AddComponent<CanvasGroup>();
+                    _recastGlowBorder.color = new Color(1f, 0.85f, 0.2f, 0.85f); // Màu Vàng Kim phát sáng
                     var rt = _recastGlowBorder.rectTransform;
                     rt.anchorMin = Vector2.zero;
                     rt.anchorMax = Vector2.one;
                     rt.sizeDelta = new Vector2(16f, 16f); // Nới rộng hơn nút bấm 16px
                 }
+            }
+
+            if (_recastGlowCanvasGroup == null && _recastGlowBorder != null)
+            {
+                _recastGlowCanvasGroup = _recastGlowBorder.GetComponent<CanvasGroup>();
+                if (_recastGlowCanvasGroup == null) _recastGlowCanvasGroup = _recastGlowBorder.gameObject.AddComponent<CanvasGroup>();
             }
 
             if (_recastGlowBorder != null)
@@ -128,7 +136,11 @@ namespace ProjectZombie.Features.UI
             while (true)
             {
                 float alpha = 0.4f + Mathf.PingPong(Time.unscaledTime * 4f, 0.6f);
-                if (_recastGlowBorder != null)
+                if (_recastGlowCanvasGroup != null)
+                {
+                    _recastGlowCanvasGroup.alpha = alpha; // Không kích hoạt Canvas Mesh Dirty Rebuild
+                }
+                else if (_recastGlowBorder != null)
                 {
                     var c = _recastGlowBorder.color;
                     c.a = alpha;

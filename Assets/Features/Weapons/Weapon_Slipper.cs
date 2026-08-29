@@ -210,16 +210,19 @@ namespace ProjectZombie.Features.Weapons
 
             // 3. Chạm đất tung cước Song Phi (Dropkick Impact Shockwave)
             global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(targetPos);
-            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, 4.0f, TargetingUtility.EnemyLayerMask);
+            int kickHitCount = Physics2D.OverlapCircleNonAlloc(targetPos, 4.0f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);
             DamageData kickDamage = new DamageData(GetFinalDamage() * 3.5f, true, ElementType.Kim, true, this);
 
-            foreach (var hit in hits)
+            for (int i = 0; i < kickHitCount; i++)
             {
-                if (hit != null && hit.TryGetComponent<IDamageable>(out var dmg))
+                var hit = _slipperHitBuffer[i];
+                if (hit == null) continue;
+
+                if (hit.TryGetComponent<IDamageable>(out var dmg))
                 {
                     dmg.TakeDamage(kickDamage);
                 }
-                if (hit != null && hit.TryGetComponent<EnemyStatusController>(out var status))
+                if (hit.TryGetComponent<EnemyStatusController>(out var status))
                 {
                     Vector2 push = ((Vector2)hit.transform.position - (Vector2)targetPos).normalized;
                     if (push == Vector2.zero) push = dashDir;
@@ -252,19 +255,24 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        private static readonly Collider2D[] _slipperHitBuffer = new Collider2D[32];
+
         private void DealDamageAtPosition(Vector2 pos, DamageData dmg, float knockback)
         {
             int mask = TargetingUtility.EnemyLayerMask;
-            Collider2D[] hits = Physics2D.OverlapCircleAll(pos, 1.2f, mask);
-            for (int i = 0; i < hits.Length; i++)
+            int count = Physics2D.OverlapCircleNonAlloc(pos, 1.2f, _slipperHitBuffer, mask);
+            for (int i = 0; i < count; i++)
             {
-                if (hits[i].TryGetComponent<HealthSystem>(out var hp))
+                var hit = _slipperHitBuffer[i];
+                if (hit == null) continue;
+
+                if (hit.TryGetComponent<HealthSystem>(out var hp))
                 {
                     hp.TakeDamage(dmg);
                 }
-                if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
+                if (hit.TryGetComponent<EnemyStatusController>(out var status))
                 {
-                    Vector2 kbDir = ((Vector2)hits[i].transform.position - pos).normalized;
+                    Vector2 kbDir = ((Vector2)hit.transform.position - pos).normalized;
                     if (kbDir.sqrMagnitude < 0.01f) kbDir = Vector2.up;
                     status.ApplyKnockback(kbDir, knockback, 0.2f);
                 }
@@ -407,17 +415,20 @@ namespace ProjectZombie.Features.Weapons
             {
                 center = transform.position;
                 int mask = TargetingUtility.EnemyLayerMask;
-                Collider2D[] hits = Physics2D.OverlapCircleAll(center, whirlwindRadius, mask);
+                int count = Physics2D.OverlapCircleNonAlloc(center, whirlwindRadius, _slipperHitBuffer, mask);
 
-                for (int i = 0; i < hits.Length; i++)
+                for (int i = 0; i < count; i++)
                 {
-                    if (hits[i].TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth > 0)
+                    var hit = _slipperHitBuffer[i];
+                    if (hit == null) continue;
+
+                    if (hit.TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth > 0)
                     {
                         hp.TakeDamage(hitDmg);
-                        if (hits[i].TryGetComponent<EnemyStatusController>(out var status))
+                        if (hit.TryGetComponent<EnemyStatusController>(out var status))
                         {
                             // Kéo nhẹ quái lại gần tâm lốc
-                            Vector2 pullDir = (center - (Vector2)hits[i].transform.position).normalized;
+                            Vector2 pullDir = (center - (Vector2)hit.transform.position).normalized;
                             status.ApplyKnockback(-pullDir, 2.2f, 0.15f);
 
                             // Áp dụng Quê Độ ở đợt vả cuối
