@@ -30,70 +30,98 @@ namespace ProjectZombie.Features.Shared
 
         private static readonly RaycastHit2D[] _hitBuffer = new RaycastHit2D[1];
         private static UnityEngine.Tilemaps.Tilemap _cachedGroundTilemap;
+        private static UnityEngine.Tilemaps.Tilemap _cachedObstacleTilemap;
         private static bool _searchedTilemap = false;
 
         public static UnityEngine.Tilemaps.Tilemap GroundTilemap
         {
             get
             {
-                if (_cachedGroundTilemap == null && !_searchedTilemap)
-                {
-                    var obj = GameObject.Find("Tilemap_Ground");
-                    if (obj != null) _cachedGroundTilemap = obj.GetComponent<UnityEngine.Tilemaps.Tilemap>();
-
-                    if (_cachedGroundTilemap == null)
-                    {
-                        var grid = Object.FindObjectOfType<Grid>();
-                        if (grid != null)
-                        {
-                            var maps = grid.GetComponentsInChildren<UnityEngine.Tilemaps.Tilemap>();
-                            foreach (var map in maps)
-                            {
-                                if (map.name.ToLower().Contains("ground") || map.name.ToLower().Contains("floor"))
-                                {
-                                    _cachedGroundTilemap = map;
-                                    break;
-                                }
-                            }
-                            if (_cachedGroundTilemap == null && maps.Length > 0) _cachedGroundTilemap = maps[0];
-                        }
-                    }
-
-                    if (_cachedGroundTilemap == null)
-                    {
-                        _cachedGroundTilemap = Object.FindObjectOfType<UnityEngine.Tilemaps.Tilemap>();
-                    }
-
-                    _searchedTilemap = true;
-                }
+                EnsureTilemapsCached();
                 return _cachedGroundTilemap;
             }
+        }
+
+        public static UnityEngine.Tilemaps.Tilemap ObstacleTilemap
+        {
+            get
+            {
+                EnsureTilemapsCached();
+                return _cachedObstacleTilemap;
+            }
+        }
+
+        private static void EnsureTilemapsCached()
+        {
+            if (_searchedTilemap && _cachedGroundTilemap != null) return;
+
+            var objGround = GameObject.Find("Tilemap_Ground");
+            if (objGround != null) _cachedGroundTilemap = objGround.GetComponent<UnityEngine.Tilemaps.Tilemap>();
+
+            var objObstacle = GameObject.Find("Tilemap_Obstacles");
+            if (objObstacle != null) _cachedObstacleTilemap = objObstacle.GetComponent<UnityEngine.Tilemaps.Tilemap>();
+
+            var grid = Object.FindObjectOfType<Grid>();
+            if (grid != null)
+            {
+                var maps = grid.GetComponentsInChildren<UnityEngine.Tilemaps.Tilemap>();
+                foreach (var map in maps)
+                {
+                    string lname = map.name.ToLower();
+                    if (_cachedGroundTilemap == null && (lname.Contains("ground") || lname.Contains("floor")))
+                    {
+                        _cachedGroundTilemap = map;
+                    }
+                    if (_cachedObstacleTilemap == null && (lname.Contains("obstacle") || lname.Contains("wall")))
+                    {
+                        _cachedObstacleTilemap = map;
+                    }
+                }
+                if (_cachedGroundTilemap == null && maps.Length > 0) _cachedGroundTilemap = maps[0];
+            }
+
+            if (_cachedGroundTilemap == null) _cachedGroundTilemap = Object.FindObjectOfType<UnityEngine.Tilemaps.Tilemap>();
+            _searchedTilemap = true;
         }
 
         public static void ResetTilemapCache()
         {
             _cachedGroundTilemap = null;
+            _cachedObstacleTilemap = null;
             _searchedTilemap = false;
         }
 
         /// <summary>
-        /// Kiểm tra xem toàn bộ diện tích cơ thể (4 góc/hướng với bán kính bodyRadius) có hoàn toàn nằm trên sàn gạch Tilemap hay không.
-        /// Ngăn chặn hiện tượng tâm điểm nằm ở rìa gạch nhưng nửa thân người bị chìa ra ngoài mép biển/vực.
+        /// Kiểm tra xem toàn bộ diện tích cơ thể (4 góc/hướng với bán kính bodyRadius) có hoàn toàn nằm trên sàn gạch Tilemap và KHÔNG chạm vào ô tường Obstacle Tilemap nào.
         /// </summary>
-        public static bool IsPositionFullyOnGround(Vector3 pos, float bodyRadius = 0.35f)
+        public static bool IsPositionFullyOnGround(Vector3 pos, float bodyRadius = 0.45f)
         {
-            var tilemap = GroundTilemap;
-            if (tilemap == null) return true;
+            var ground = GroundTilemap;
+            var obstacle = ObstacleTilemap;
 
-            // 1. Kiểm tra tâm điểm
-            if (!tilemap.HasTile(tilemap.WorldToCell(pos))) return false;
+            // 1. Kiểm tra sàn đất: Bắt buộc phải có Tile ở tâm và 4 hướng xung quanh
+            if (ground != null)
+            {
+                if (!ground.HasTile(ground.WorldToCell(pos))) return false;
 
-            // 2. Kiểm tra 4 hướng đệm an toàn (Trái, Phải, Trên, Dưới)
-            float padding = Mathf.Max(0.2f, bodyRadius);
-            if (!tilemap.HasTile(tilemap.WorldToCell(new Vector3(pos.x - padding, pos.y, pos.z)))) return false;
-            if (!tilemap.HasTile(tilemap.WorldToCell(new Vector3(pos.x + padding, pos.y, pos.z)))) return false;
-            if (!tilemap.HasTile(tilemap.WorldToCell(new Vector3(pos.x, pos.y - padding, pos.z)))) return false;
-            if (!tilemap.HasTile(tilemap.WorldToCell(new Vector3(pos.x, pos.y + padding, pos.z)))) return false;
+                float padding = Mathf.Max(0.25f, bodyRadius);
+                if (!ground.HasTile(ground.WorldToCell(new Vector3(pos.x - padding, pos.y, pos.z)))) return false;
+                if (!ground.HasTile(ground.WorldToCell(new Vector3(pos.x + padding, pos.y, pos.z)))) return false;
+                if (!ground.HasTile(ground.WorldToCell(new Vector3(pos.x, pos.y - padding, pos.z)))) return false;
+                if (!ground.HasTile(ground.WorldToCell(new Vector3(pos.x, pos.y + padding, pos.z)))) return false;
+            }
+
+            // 2. Kiểm tra tường/chướng ngại vật trên Obstacle Tilemap: Nếu có Tile tường ở tâm hoặc 4 hướng lân cận thì coi như KHÔNG hợp lệ
+            if (obstacle != null)
+            {
+                if (obstacle.HasTile(obstacle.WorldToCell(pos))) return false;
+
+                float padding = Mathf.Max(0.25f, bodyRadius);
+                if (obstacle.HasTile(obstacle.WorldToCell(new Vector3(pos.x - padding, pos.y, pos.z)))) return false;
+                if (obstacle.HasTile(obstacle.WorldToCell(new Vector3(pos.x + padding, pos.y, pos.z)))) return false;
+                if (obstacle.HasTile(obstacle.WorldToCell(new Vector3(pos.x, pos.y - padding, pos.z)))) return false;
+                if (obstacle.HasTile(obstacle.WorldToCell(new Vector3(pos.x, pos.y + padding, pos.z)))) return false;
+            }
 
             return true;
         }
@@ -101,11 +129,11 @@ namespace ProjectZombie.Features.Shared
         /// <summary>
         /// [GROUND CLAMP]: Đảm bảo tọa độ chỉ định luôn nằm hoàn toàn trong vùng sàn gạch hợp lệ (cách mép vực/tường tối thiểu bodyRadius) và không nằm trong vật cản.
         /// </summary>
-        public static Vector3 ClampToWalkableGround(Vector3 targetPos, Vector3 fallbackOrigin, float maxClampStep = 6.0f, float bodyRadius = 0.45f)
+        public static Vector3 ClampToWalkableGround(Vector3 targetPos, Vector3 fallbackOrigin, float maxClampStep = 8.0f, float bodyRadius = 0.45f)
         {
             int mask = ObstacleMask;
 
-            // 1. Nếu vị trí đã hoàn toàn hợp lệ (không đè Obstacle và 4 hướng đều trên sàn gạch) thì giữ nguyên
+            // 1. Kiểm tra va chạm Collider vật lý (Layers Obstacle / Water / Default nếu có Collider)
             bool isInsideObstacle = mask != 0 && Physics2D.OverlapCircle(targetPos, bodyRadius, mask) != null;
             bool isFullyGrounded = IsPositionFullyOnGround(targetPos, bodyRadius);
 
