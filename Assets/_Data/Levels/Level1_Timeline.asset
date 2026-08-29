@@ -19,7 +19,7 @@ MonoBehaviour:
     timestampSeconds: 0
     eventType: 0
     spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MAGIAP
     spawnPrefabRef:
       m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
       m_SubObjectName: 
@@ -31,7 +31,7 @@ MonoBehaviour:
     timestampSeconds: 60
     eventType: 0
     spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MADA
     spawnPrefabRef:
       m_AssetGUID: cc60aa0652631604ea95def9ce66ecce
       m_SubObjectName: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     timestampSeconds: 120
     eventType: 0
     spawnPrefab: {fileID: 4720196618505412990, guid: 40336bbe99d02974eb09b2c9201ef4c9, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MATROI
     spawnPrefabRef:
       m_AssetGUID: 40336bbe99d02974eb09b2c9201ef4c9
       m_SubObjectName: 
@@ -55,7 +55,7 @@ MonoBehaviour:
     timestampSeconds: 180
     eventType: 1
     spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MADA
     spawnPrefabRef:
       m_AssetGUID: cc60aa0652631604ea95def9ce66ecce
       m_SubObjectName: 
@@ -67,7 +67,7 @@ MonoBehaviour:
     timestampSeconds: 240
     eventType: 0
     spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
-    enemyAddress: 
+    enemyAddress: E_HOALYTINH
     spawnPrefabRef:
       m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
       m_SubObjectName: 
@@ -79,7 +79,7 @@ MonoBehaviour:
     timestampSeconds: 300
     eventType: 1
     spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
-    enemyAddress: 
+    enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
       m_AssetGUID: 944cc003ebcffde4a8add0899773079a
       m_SubObjectName: 
@@ -91,7 +91,7 @@ MonoBehaviour:
     timestampSeconds: 360
     eventType: 0
     spawnPrefab: {fileID: 4338019940683393192, guid: 88a398719a324b91950e1fa41890e101, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MADOINO
     spawnPrefabRef:
       m_AssetGUID: 88a398719a324b91950e1fa41890e101
       m_SubObjectName: 
@@ -103,7 +103,7 @@ MonoBehaviour:
     timestampSeconds: 480
     eventType: 1
     spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
-    enemyAddress: 
+    enemyAddress: E_HOALYTINH
     spawnPrefabRef:
       m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
       m_SubObjectName: 
@@ -115,7 +115,7 @@ MonoBehaviour:
     timestampSeconds: 600
     eventType: 3
     spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
-    enemyAddress: 
+    enemyAddress: Boss_NguuDauMaDien
     spawnPrefabRef:
       m_AssetGUID: 193a344b7a316cd42b5e32fc47df8ba7
       m_SubObjectName: 
@@ -127,7 +127,7 @@ MonoBehaviour:
     timestampSeconds: 720
     eventType: 0
     spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
-    enemyAddress: 
+    enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
       m_AssetGUID: 944cc003ebcffde4a8add0899773079a
       m_SubObjectName: 
@@ -139,7 +139,7 @@ MonoBehaviour:
     timestampSeconds: 900
     eventType: 1
     spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
-    enemyAddress: 
+    enemyAddress: E_MAGIAP
     spawnPrefabRef:
       m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
       m_SubObjectName: 
@@ -151,7 +151,7 @@ MonoBehaviour:
     timestampSeconds: 1200
     eventType: 3
     spawnPrefab: {fileID: 1348244042159176007, guid: bb55896b976f62a4cb0393430a4d8e0f, type: 3}
-    enemyAddress: 
+    enemyAddress: Boss_DiemVuong
     spawnPrefabRef:
       m_AssetGUID: bb55896b976f62a4cb0393430a4d8e0f
       m_SubObjectName: 
