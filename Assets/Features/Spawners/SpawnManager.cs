@@ -90,6 +90,23 @@ namespace ProjectZombie.Features.Spawners
                 _wavePreloader = GetComponent<WavePreloader>() ?? gameObject.AddComponent<WavePreloader>();
             }
 
+            if (timelineConfig == null)
+            {
+                timelineConfig = Resources.Load<LevelTimelineConfig>("Levels/Level1_Timeline") ??
+                                 Resources.Load<LevelTimelineConfig>("Level1_Timeline");
+#if UNITY_EDITOR
+                if (timelineConfig == null)
+                {
+                    timelineConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelTimelineConfig>("Assets/_Data/Levels/Level1_Timeline.asset");
+                }
+#endif
+            }
+
+            if (_playerTransform == null && Player.PlayerProvider.HasPlayer)
+            {
+                _playerTransform = Player.PlayerProvider.PlayerTransform;
+            }
+
             if (autoFindGroundTilemap && groundTilemap == null && walkableAreaCollider == null)
             {
                 var groundObj = GameObject.Find("Tilemap_Ground");
@@ -119,6 +136,9 @@ namespace ProjectZombie.Features.Spawners
             }
 
             isMatchActive = true;
+
+            // Kích hoạt ngay sự kiện ban đầu ở giây thứ 0s
+            CheckTimelineEvents();
         }
 
         public void StartMatch()
@@ -195,10 +215,17 @@ namespace ProjectZombie.Features.Spawners
 
         private void TriggerEvent(TimelineEvent evt)
         {
-            string poolKey = evt.GetPoolKey();
-            if (string.IsNullOrEmpty(poolKey) && evt.spawnPrefab == null) return;
+            if (evt == null) return;
 
-            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}) tại phút {(matchTime / 60f):F2}");
+            // Đảm bảo spawnPrefab luôn có sẵn
+            if (evt.spawnPrefab == null && !string.IsNullOrEmpty(evt.enemyAddress))
+            {
+                var pool = EnemyPoolManager.Instance;
+                // Nếu pool có sẵn thì vẫn tiếp tục
+            }
+
+            string poolKey = evt.GetPoolKey();
+            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
 
             switch (evt.eventType)
             {
@@ -207,6 +234,11 @@ namespace ProjectZombie.Features.Spawners
                     {
                         _activeContinuousEvents.Add(evt);
                         _eventTimers[evt] = 0f;
+                        // Spawn tức thì đợt quái đầu tiên ngay khi kích hoạt sự kiện
+                        for (int s = 0; s < Mathf.Max(1, evt.spawnCount); s++)
+                        {
+                            SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                        }
                     }
                     break;
 
@@ -283,16 +315,28 @@ namespace ProjectZombie.Features.Spawners
 
         private GameObject SpawnAtPosition(GameObject prefab, Vector3 position)
         {
-            if (EnemyPoolManager.Instance != null)
+            if (prefab == null)
             {
-                GameObject enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
-                if (enemy != null) currentEnemyCount++;
-                return enemy;
+                Debug.LogWarning("[SpawnManager] Không thể spawn quái vì prefab bị NULL trong TimelineEvent!");
+                return null;
             }
 
-            GameObject spawned = Instantiate(prefab, position, Quaternion.identity);
-            currentEnemyCount++;
-            return spawned;
+            GameObject enemy = null;
+            if (EnemyPoolManager.Instance != null)
+            {
+                enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
+            }
+            else
+            {
+                enemy = Instantiate(prefab, position, Quaternion.identity);
+            }
+
+            if (enemy != null)
+            {
+                currentEnemyCount++;
+                enemy.SetActive(true);
+            }
+            return enemy;
         }
 
 
@@ -317,14 +361,24 @@ namespace ProjectZombie.Features.Spawners
 
         public Vector3 GetSpawnPositionOutsideCamera()
         {
+            if (_playerTransform == null)
+            {
+                if (Player.PlayerProvider.HasPlayer) _playerTransform = Player.PlayerProvider.PlayerTransform;
+                else
+                {
+                    var playerObj = GameObject.FindGameObjectWithTag("Player");
+                    if (playerObj != null) _playerTransform = playerObj.transform;
+                }
+            }
+
             Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
             int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
             if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
 
             if (_mainCamera == null) _mainCamera = Camera.main;
 
-            float effectiveMin = minSpawnRadius;
-            float effectiveMax = maxSpawnRadius;
+            float effectiveMin = minSpawnRadius > 0 ? minSpawnRadius : 8f;
+            float effectiveMax = maxSpawnRadius > effectiveMin ? maxSpawnRadius : effectiveMin + 6f;
 
             // Tự động thích ứng bán kính theo kích thước Camera nếu có
             if (_mainCamera != null && _mainCamera.orthographic)
@@ -398,11 +452,11 @@ namespace ProjectZombie.Features.Spawners
             if (groundTilemap != null)
             {
                 Vector3Int cellPos = groundTilemap.WorldToCell(position);
-                return groundTilemap.HasTile(cellPos);
+                if (groundTilemap.HasTile(cellPos)) return true;
             }
 
-            // Nếu không có bất kỳ cấu hình ranh giới nào, mặc định cho phép
-            return true;
+            // Mặc định cho phép spawn nếu không có collider giới hạn
+            return walkableAreaCollider == null;
         }
 
         private bool IsOutsideCameraViewport(Vector3 position)

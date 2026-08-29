@@ -264,15 +264,13 @@ Thang đo `yinYangValue` (0 – 100, Mặc định 50 - Thái Cực):
 
 ---
 
-## 9. Lộ Trình Triển Khai Kỹ Thuật (Engineering Roadmap)
+## 10. Tiêu Chuẩn Kỹ Thuật Hiệu Năng & Tải Trận Đấu (Zero-Lag Performance Standard)
 
-1. **Giai đoạn 1 — Tái Cấu Trúc Weapon & Input Model:**
-   * Cập nhật `WeaponManager` và `WeaponBase` hỗ trợ trạng thái `PrimaryWeapon` với chuỗi 3-Hit Combo.
-   * Hoàn thiện cụm phím điều khiển chiến đấu: `AttackButton`, `DashButton`, `SignatureSkillButton`.
-2. **Giai đoạn 2 — Tái Cấu Trúc Hệ Thống Nâng Cấp Trong Trận:**
-   * Xây dựng hệ thống thẻ nâng cấp phân nhóm: Combo Augments, Relic Awakening, Dash Traits, Passives.
-   * Xây dựng giao diện Đột Phá Tuyệt Kỹ tại Level 5 & 10.
-3. **Giai đoạn 3 — Cân Bằng Lại Enemy Wave & Spawner:**
-   * Giảm mật độ spawn xuống $30-50$ quái/wave, tăng HP quái và bổ sung hành vi Telegraphing báo đòn.
-4. **Giai đoạn 4 — Đánh Bóng Game Feel & Hiệu Năng:**
-   * Tích hợp Hit-stop, Knockback, VFX vệt chém và kiểm thử 60 FPS ổn định trên Android ARM64.
+Để đảm bảo trải nghiệm mượt mà $60\text{ FPS}$ ổn định trên mọi thiết bị di động Android/iOS tầm trung:
+1. **Real Async Loading Pipeline:** Tận dụng 100% màn hình Loading Screen để nạp ngầm toàn bộ Prefab, Object Pool quái vật và khởi tạo FMOD Audio Stream. Khi Loading Screen tắt, chiến trường bắt đầu ngay với $0\text{ms}$ lag.
+2. **Time-Sliced Pooling:** Toàn bộ việc sinh đối tượng hàng loạt (Quái vật, EXP Gems, Damage Numbers) phải phân bổ qua Coroutine (tối đa 3-5 đối tượng/frame) để CPU frame time không vượt quá ngưỡng $16.6\text{ms}$.
+3. **Zero Garbage Collection (0-Alloc Loop):** Vòng lặp `Update` / `LateUpdate` / `FixedUpdate` của hệ thống Combat, Chỉ dấu kỹ năng, HUD Canvas và Audio tuyệt đối không tạo `GC.Alloc` (sử dụng Static Delegates, NonAlloc Physics, MaterialPropertyBlock).
+4. **Streaming Audio Mode:** Toàn bộ nhạc nền (BGM) dài $>1\text{ phút}$ phải cấu hình `loadType: 2 (Streaming)` và `loadInBackground: 1` để triệt tiêu tải giải nén CPU.
+
+*(Chi tiết xem thêm tại tài liệu kỹ thuật chuyên sâu: [PERFORMANCE_OPTIMIZATION_REPORT.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md)).*
+

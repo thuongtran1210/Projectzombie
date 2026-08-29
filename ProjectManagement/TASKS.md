@@ -18,7 +18,7 @@ Tài liệu quản lý danh sách công việc (Kanban Board Task Tracker) phân
 | | ✨ **[TASK-FUN-08] VFX Particle Prefabs (Lốc Dép, Khói, Đại Bác)** | 💎 **[TASK-EXP-01] Hệ Thống Hạt EXP Zero-Alloc & Magnet** |
 | | 🏛️ **[TASK-ARPG-05] UI Sảnh Chờ Chọn Loadout Vũ Khí & Relic** | 🎨 **[TASK-VFX-01 -> 04] Bộ VFX Vệt Chém, Orbit & Shockwave** |
 | | | 📦 **[TASK-FUN-06] Database 5 Slapstick SOs & 25 Upgrade Cards** |
-| | | 🚀 **[TASK-OPT-01] Triệt Tiêu Khựng Lag Khi Load Scene (Time-Sliced Prewarm)** |
+| | | 🚀 **[TASK-OPT-01] Tối Ưu Hiệu Năng Toàn Diện & Zero-Lag Loading (DONE)** |
 
 ---
 

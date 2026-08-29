@@ -29,16 +29,8 @@ namespace ProjectZombie.Features.Spawners
             // Dùng HashSet để tránh load lặp lại nếu nhiều event dùng chung 1 loại quái
             var processedKeys = new HashSet<string>();
 
-            // Chỉ nạp trước các quái xuất hiện trong 60 giây đầu (Staged/Lazy Preload) để triệt tiêu tải CPU/VRAM lúc start trận
-            const float INITIAL_PRELOAD_WINDOW = 60f;
-
             foreach (var evt in timelineConfig.events)
             {
-                if (evt.timestampSeconds > INITIAL_PRELOAD_WINDOW && evt.eventType != TimelineEventType.BurstWave)
-                {
-                    continue; // Bỏ qua quái xuất hiện ở các wave sau (sẽ nạp ngầm khi cần)
-                }
-
                 string poolKey = evt.GetPoolKey();
                 if (string.IsNullOrEmpty(poolKey) || processedKeys.Contains(poolKey)) continue;
 
@@ -69,15 +61,20 @@ namespace ProjectZombie.Features.Spawners
                     enemyPrefab = evt.spawnPrefab;
                 }
 
-                // 3. Đưa Prefab vào EnemyPoolManager
-                if (enemyPrefab != null && EnemyPoolManager.Instance != null)
+                // 3. Đưa Prefab vào EnemyPoolManager và gán lại cho Event
+                if (enemyPrefab != null)
                 {
-                    int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? Mathf.Min(evt.spawnCount, 25) : 15;
-                    EnemyPoolManager.Instance.PrewarmPool(enemyPrefab, preloadAmount, poolKey);
+                    evt.spawnPrefab = enemyPrefab;
 
-                    if (!string.IsNullOrEmpty(evt.enemyAddress) && !_loadedAddresses.Contains(evt.enemyAddress))
+                    if (EnemyPoolManager.Instance != null)
                     {
-                        _loadedAddresses.Add(evt.enemyAddress);
+                        int preloadAmount = evt.eventType == TimelineEventType.BurstWave ? Mathf.Min(evt.spawnCount, 25) : 15;
+                        EnemyPoolManager.Instance.PrewarmPool(enemyPrefab, preloadAmount, poolKey);
+
+                        if (!string.IsNullOrEmpty(evt.enemyAddress) && !_loadedAddresses.Contains(evt.enemyAddress))
+                        {
+                            _loadedAddresses.Add(evt.enemyAddress);
+                        }
                     }
                 }
             }
