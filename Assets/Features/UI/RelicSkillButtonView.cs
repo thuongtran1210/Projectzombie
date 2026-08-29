@@ -79,6 +79,65 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        [SerializeField] private Image _recastGlowBorder;
+
+        private Coroutine _pulseRoutine;
+
+        public void SetRecastGlow(bool isRecastActive)
+        {
+            if (_recastGlowBorder == null)
+            {
+                // Tự động tìm hoặc tạo một image viền sáng xung quanh nút
+                var glowObj = transform.Find("RecastGlowBorder");
+                if (glowObj != null)
+                {
+                    _recastGlowBorder = glowObj.GetComponent<Image>();
+                }
+                else
+                {
+                    var newGlow = new GameObject("RecastGlowBorder");
+                    newGlow.transform.SetParent(transform, false);
+                    newGlow.transform.SetAsFirstSibling();
+                    _recastGlowBorder = newGlow.AddComponent<Image>();
+                    _recastGlowBorder.color = new Color(1f, 0.85f, 0.2f, 0.8f); // Màu Vàng Kim phát sáng
+                    var rt = _recastGlowBorder.rectTransform;
+                    rt.anchorMin = Vector2.zero;
+                    rt.anchorMax = Vector2.one;
+                    rt.sizeDelta = new Vector2(16f, 16f); // Nới rộng hơn nút bấm 16px
+                }
+            }
+
+            if (_recastGlowBorder != null)
+            {
+                _recastGlowBorder.gameObject.SetActive(isRecastActive);
+                if (isRecastActive)
+                {
+                    if (_pulseRoutine != null) StopCoroutine(_pulseRoutine);
+                    _pulseRoutine = StartCoroutine(RoutineGlowPulse());
+                }
+                else if (_pulseRoutine != null)
+                {
+                    StopCoroutine(_pulseRoutine);
+                    _pulseRoutine = null;
+                }
+            }
+        }
+
+        private System.Collections.IEnumerator RoutineGlowPulse()
+        {
+            while (true)
+            {
+                float alpha = 0.4f + Mathf.PingPong(Time.unscaledTime * 4f, 0.6f);
+                if (_recastGlowBorder != null)
+                {
+                    var c = _recastGlowBorder.color;
+                    c.a = alpha;
+                    _recastGlowBorder.color = c;
+                }
+                yield return null;
+            }
+        }
+
         public void SetInteractable(bool isInteractable)
         {
             if (_relicButton != null)

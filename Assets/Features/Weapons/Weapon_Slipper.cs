@@ -28,13 +28,17 @@ namespace ProjectZombie.Features.Weapons
             EnsureVfxPrefab();
         }
 
+        private Vector3 _lastSlipperApexPosition;
+
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
             EnsureVfxPrefab();
             weaponRole = WeaponRole.RelicOnHitTrigger;
             isPrimaryActiveWeapon = false;
-            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 7.0f;
+            hasRecastPhase = true; // Bật cơ chế Recast 2 Phase
+            recastWindowDuration = 3.0f;
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 6.5f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Tổ Ong Lượn Cánh";
         }
 
@@ -61,10 +65,12 @@ namespace ProjectZombie.Features.Weapons
             StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, throwRange * 1.4f, 1.2f, 0f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => IsInRecastWindow 
+            ? new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.DashLine, 8.0f, 1.5f, 0f, true)
+            : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, throwRange * 1.5f, 1.5f, 40f, true);
 
         /// <summary>
-        /// Kỹ năng chủ động: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ + Kích hoạt ngay Lốc Dép Vạn Năng gây Quê Độ 100%.
+        /// Phase 1: Tổ Ong Lượn Cánh — Quăng Boomerang Dép khổng lồ bay vòng cung gom quái.
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
@@ -82,8 +88,64 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
+            _lastSlipperApexPosition = transform.position + (Vector3)(dir * (throwRange * 1.4f));
+
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
             StartCoroutine(RoutineThrowSlipper(dir, throwRange * 1.4f, 2.0f));
+            StartCoroutine(RoutineWhirlwindSlippers());
+        }
+
+        /// <summary>
+        /// Phase 2 (Recast): Song Phi Đoạt Mệnh — Tướng lướt vụt tới vị trí chiếc Dép đang xoay, tung cước dẫm nổ Shockwave tan xác bầy quái!
+        /// </summary>
+        protected override void PerformRecastSkill(Vector2 customAimDirection = default)
+        {
+            Vector3 targetPos = _lastSlipperApexPosition;
+            if (customAimDirection != Vector2.zero)
+            {
+                targetPos = transform.position + (Vector3)(customAimDirection * (throwRange * 1.5f));
+            }
+
+            StartCoroutine(RoutineSongPhiDropkick(targetPos));
+        }
+
+        private IEnumerator RoutineSongPhiDropkick(Vector3 targetPos)
+        {
+            Transform playerTf = transform.root;
+            Vector3 startPos = playerTf.position;
+            float dashDuration = 0.16f;
+            float elapsed = 0f;
+
+            global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(startPos);
+
+            while (elapsed < dashDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / dashDuration);
+                playerTf.position = Vector3.Lerp(startPos, targetPos, t);
+                yield return null;
+            }
+            playerTf.position = targetPos;
+
+            // Nổ Shockwave diện rộng tại điểm đáp
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(targetPos);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, 4.5f, TargetingUtility.EnemyLayerMask);
+            DamageData kickDamage = new DamageData(GetFinalDamage() * 3.5f, true, ElementType.Kim, true, this);
+
+            foreach (var hit in hits)
+            {
+                if (hit != null && hit.TryGetComponent<IDamageable>(out var dmg))
+                {
+                    dmg.TakeDamage(kickDamage);
+                }
+                if (hit != null && hit.TryGetComponent<Rigidbody2D>(out var rb))
+                {
+                    Vector2 push = ((Vector2)hit.transform.position - (Vector2)targetPos).normalized;
+                    rb.AddForce(push * 16f, ForceMode2D.Impulse);
+                }
+            }
+
+            // Kích hoạt hiệu ứng Lốc Dép Vạn Năng bồi thêm
             StartCoroutine(RoutineWhirlwindSlippers());
         }
 

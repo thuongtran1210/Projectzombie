@@ -45,10 +45,10 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 7.5f, 2.4f, 0f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 8.5f, 3.2f, 0f, true);
 
         /// <summary>
-        /// Kỹ năng chủ động: Bão Lửa Thần Sa — Quăng 3 quả lựu đạn thần sa nổ liên hoàn tạo bão lửa diện rộng.
+        /// Kỹ năng chủ động: Bão Lửa Thần Sa — Quăng chùm 3 hạt Thần Sa nổ tung liên hoàn tạo bão lửa thiêu rụi vùng rộng trong 4s.
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
@@ -67,26 +67,33 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            DamageData damageData = CreateDamageData();
-            damageData = new DamageData(damageData.Amount * 1.6f, true, ElementType.Hoa, damageData.IsCounter, this);
-            int burstCount = Mathf.Max(3, GetFinalProjectileCount() + 2);
+            StartCoroutine(RoutineClusterBombBarrage(direction));
+        }
 
-            for (int i = 0; i < burstCount; i++)
+        private System.Collections.IEnumerator RoutineClusterBombBarrage(Vector2 direction)
+        {
+            DamageData damageData = CreateDamageData();
+            damageData = new DamageData(damageData.Amount * 2.5f, true, ElementType.Hoa, true, this);
+            int clusterCount = 3;
+
+            for (int c = 0; c < clusterCount; c++)
             {
-                float offsetAngle = (i - (burstCount - 1) / 2f) * 14f;
-                Vector2 grenadeDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
+                float spreadAngle = (c - 1) * 18f;
+                Vector2 bombDir = Quaternion.Euler(0, 0, spreadAngle) * direction;
+                Vector3 targetLandPos = firePoint.position + (Vector3)(bombDir * (6.5f + c * 1.2f));
 
                 if (projectileData != null)
                 {
-                    var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, grenadeDir, gameObject, damageData);
+                    var proj = Projectiles.Core.ProjectileSystem.Instance?.Spawn(projectileData, firePoint.position, bombDir, gameObject, damageData);
                     if (proj != null)
                     {
-                        proj.transform.localScale = Vector3.one * Mathf.Max(1.3f, GetFinalScale() * 1.3f);
+                        proj.transform.localScale = Vector3.one * Mathf.Max(1.4f, GetFinalScale() * 1.4f);
                     }
                 }
-            }
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(firePoint.position);
+                global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(firePoint.position);
+                yield return new WaitForSeconds(0.1f);
+            }
         }
     }
 }

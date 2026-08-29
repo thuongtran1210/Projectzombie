@@ -31,11 +31,17 @@ namespace ProjectZombie.Features.Weapons
                 Vector2 orbDir = Quaternion.Euler(0, 0, spreadAngle) * direction;
 
                 var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, orbDir, gameObject, damageData);
-                if (proj != null && GetFinalScale() != 1f)
+                if (proj != null)
                 {
-                    proj.transform.localScale = Vector3.one * GetFinalScale();
+                    proj.State.RemainingBounce = 5; // Nảy chuỗi 5 lần qua 6 quái
+                    proj.State.BonusPierce = 3;
+                    if (GetFinalScale() != 1f)
+                    {
+                        proj.transform.localScale = Vector3.one * GetFinalScale();
+                    }
                 }
             }
+            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(firePoint.position);
         }
     }
 }

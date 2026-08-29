@@ -149,6 +149,7 @@ namespace ProjectZombie.Features.UI
             _boundActiveRelic.OnRelicCooldownUpdated += HandleRelicCooldownUpdated;
             _boundActiveRelic.OnRelicSkillReady += HandleRelicSkillReady;
             _boundActiveRelic.OnRelicSkillExecuted += HandleRelicSkillExecuted;
+            _boundActiveRelic.OnRelicPhaseChanged += HandleRelicPhaseChanged;
 
             RefreshUIState();
         }
@@ -160,6 +161,7 @@ namespace ProjectZombie.Features.UI
                 _boundActiveRelic.OnRelicCooldownUpdated -= HandleRelicCooldownUpdated;
                 _boundActiveRelic.OnRelicSkillReady -= HandleRelicSkillReady;
                 _boundActiveRelic.OnRelicSkillExecuted -= HandleRelicSkillExecuted;
+                _boundActiveRelic.OnRelicPhaseChanged -= HandleRelicPhaseChanged;
                 _boundActiveRelic = null;
             }
         }
@@ -171,10 +173,17 @@ namespace ProjectZombie.Features.UI
             float rem = _boundActiveRelic.RelicRemainingCooldown;
             float max = _boundActiveRelic.RelicMaxCooldown;
             bool isReady = _boundActiveRelic.IsRelicSkillReady;
+            bool isRecast = _boundActiveRelic.IsInRecastWindow;
 
             _buttonView.SetInteractable(isReady);
-            string text = rem > 0f ? $"{Mathf.CeilToInt(rem)}s" : string.Empty;
-            _buttonView.SetCooldown(rem, max, text);
+            _buttonView.SetRecastGlow(isRecast);
+            string text = rem > 0f && !isRecast ? $"{Mathf.CeilToInt(rem)}s" : string.Empty;
+            _buttonView.SetCooldown(isRecast ? 0f : rem, max, text);
+        }
+
+        private void HandleRelicPhaseChanged(WeaponBase.RelicCastPhase phase)
+        {
+            RefreshUIState();
         }
 
         private void HandleRelicCooldownUpdated(float remaining, float max)

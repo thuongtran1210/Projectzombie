@@ -74,10 +74,10 @@ namespace ProjectZombie.Features.Weapons
             StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius, smokeDuration));
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, 5.5f, 3.5f, 90f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.VectorWall, 6.0f, 4.0f, 0f, true);
 
         /// <summary>
-        /// Kỹ năng chủ động: Bão Khói Thuốc Lào — Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương.
+        /// Kỹ năng chủ động: Bão Khói Thuốc Lào — Rít hơi dài nhả bức tường bão khói diện rộng làm quái đi giật lùi, say thuốc và ho nổ thiêu đốt.
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
@@ -93,11 +93,11 @@ namespace ProjectZombie.Features.Weapons
             if (smokeVfxPrefab != null)
             {
                 float rotZ = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;
-                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), 5.0f);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(smokeVfxPrefab, spawnPos, Quaternion.Euler(0, 0, rotZ), 5.5f);
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(spawnPos);
-            StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius * 1.8f, 5.0f));
+            StartCoroutine(RoutineSmokeCloud(spawnPos, smokeRadius * 2.2f, 5.5f));
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)

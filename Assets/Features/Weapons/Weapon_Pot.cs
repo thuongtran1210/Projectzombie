@@ -68,10 +68,10 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 6.0f, vacuumRadius * 1.4f, 0f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 7.0f, vacuumRadius * 1.5f, 0f, true);
 
         /// <summary>
-        /// Kỹ năng chủ động: Hút Chân Không & Tiên Cơm — Gom quái diện rộng 6m vào tâm nồi, hất văng và hồi 15% Max HP.
+        /// Kỹ năng chủ động: Hút Chân Không & Tiên Cơm — Đặt Nồi Cơm tại vị trí chỉ định, tạo lốc xoáy hút toàn bộ quái trong phạm vi 6m rồi bắn nổ văng 18m/s và rơi Cơm Nắm hồi máu!
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {

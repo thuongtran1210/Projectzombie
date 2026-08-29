@@ -86,16 +86,25 @@ namespace ProjectZombie.Features.Weapons
                 if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
                 {
                     Vector2 playerPos = PlayerProvider.PlayerTransform.position;
-                    if (Mathf.Abs(playerPos.x - matCenter.x) <= matSize.x * 0.5f &&
-                        Mathf.Abs(playerPos.y - matCenter.y) <= matSize.y * 0.5f)
+                    if (Mathf.Abs(playerPos.x - matCenter.x) <= matSize.x * 0.65f &&
+                        Mathf.Abs(playerPos.y - matCenter.y) <= matSize.y * 0.65f)
                     {
-                        // Người chơi đang trượt trên chiếu: ủi bay quái xung quanh
+                        // Người chơi đang trượt trên chiếu: ủi bay quái như bowling và gây sát thương
                         for (int i = 0; i < hitCount; i++)
                         {
                             var col = _matHitBuffer[i];
-                            if (col != null && col.TryGetComponent<EnemyStatusController>(out var status))
+                            if (col != null)
                             {
-                                status.ApplyKnockback((col.transform.position - (Vector3)playerPos).normalized, 8f, 0.3f);
+                                if (col.TryGetComponent<IDamageable>(out var dmg))
+                                {
+                                    DamageData matRamDmg = new DamageData(GetFinalDamage() * 1.8f, true, ElementType.Moc, true, this);
+                                    dmg.TakeDamage(matRamDmg);
+                                }
+                                if (col.TryGetComponent<Rigidbody2D>(out var rb))
+                                {
+                                    Vector2 pushDir = ((Vector2)col.transform.position - playerPos).normalized;
+                                    rb.AddForce(pushDir * 14f, ForceMode2D.Impulse);
+                                }
                             }
                         }
                     }

@@ -31,15 +31,26 @@ namespace ProjectZombie.Features.Weapons
             DamageData damageData = CreateDamageData();
             int count = GetFinalProjectileCount();
 
+            // Kiểm tra trạng thái Máu Thấp (<35% HP): Kích hoạt Hồ Ly Cuồng Nộ x2 dơi hồ ly
+            bool isBerserk = false;
+            if (transform.root.TryGetComponent<HealthSystem>(out var hp) && hp.MaxHealth > 0f)
+            {
+                if (hp.CurrentHealth / hp.MaxHealth <= 0.35f)
+                {
+                    isBerserk = true;
+                    count *= 2;
+                }
+            }
+
             for (int i = 0; i < count; i++)
             {
-                float spreadAngle = Random.Range(-20f, 20f);
+                float spreadAngle = Random.Range(-25f, 25f);
                 Vector2 batDir = Quaternion.Euler(0, 0, spreadAngle) * direction;
 
                 var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, batDir, gameObject, damageData);
-                if (proj != null && GetFinalScale() != 1f)
+                if (proj != null)
                 {
-                    proj.transform.localScale = Vector3.one * GetFinalScale();
+                    proj.transform.localScale = Vector3.one * (GetFinalScale() * (isBerserk ? 1.35f : 1.0f));
                 }
             }
         }
@@ -64,13 +75,11 @@ namespace ProjectZombie.Features.Weapons
         {
             if (context.Projectile != null && context.Projectile.Owner == gameObject)
             {
-                if (CharacterStats is HealthSystem healthSystem)
+                float heal = lifestealAmountPerHit;
+                if (transform.root.TryGetComponent<HealthSystem>(out var playerHealth) && playerHealth.MaxHealth > 0f)
                 {
-                    healthSystem.Heal(lifestealAmountPerHit);
-                }
-                else if (transform.root.TryGetComponent<HealthSystem>(out var playerHealth))
-                {
-                    playerHealth.Heal(lifestealAmountPerHit);
+                    if (playerHealth.CurrentHealth / playerHealth.MaxHealth <= 0.35f) heal *= 2.5f; // x2.5 Hút máu khi nguy kịch
+                    playerHealth.Heal(heal);
                 }
             }
         }

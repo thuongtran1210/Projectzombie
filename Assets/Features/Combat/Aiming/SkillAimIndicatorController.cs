@@ -302,10 +302,113 @@ namespace ProjectZombie.Features.Combat.Aiming
                     ShowDashLineIndicator(origin, aimDir, angle, activeColor);
                     break;
 
+                case SkillAimType.VectorWall:
+                    ShowVectorWallIndicator(origin, aimDir, angle, activeColor);
+                    break;
+
+                case SkillAimType.CurvedTrajectory:
+                    ShowCurvedTrajectoryIndicator(origin, aimDir, angle, activeColor);
+                    break;
+
+                case SkillAimType.RhythmPulse:
+                    ShowRhythmPulseIndicator(origin, activeColor);
+                    break;
+
                 default:
                     HideAll();
                     break;
             }
+        }
+
+        private void ShowVectorWallIndicator(Vector3 origin, Vector2 direction, float angle, Color color)
+        {
+            if (_lineRenderer == null || _circleRenderer == null) return;
+
+            _lineRenderer.enabled = true;
+            _circleRenderer.enabled = true;
+            if (_coneRenderer != null) _coneRenderer.enabled = false;
+
+            float distance = Mathf.Max(1.5f, _currentConfig.range * _currentPullPercent);
+            Vector3 centerWallPos = origin + (Vector3)(direction * distance);
+            float wallWidth = Mathf.Max(3.0f, _currentConfig.radius);
+            float wallThickness = 0.6f;
+
+            float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.x : 1.0f;
+            float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.y : 1.0f;
+
+            // Bức tường vuông góc với hướng ngắm (+90 độ)
+            _lineIndicator.position = centerWallPos;
+            _lineIndicator.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
+            _lineIndicator.localScale = new Vector3(wallWidth / spriteBoundsX, wallThickness / spriteBoundsY, 1f);
+            _lineRenderer.color = color;
+
+            // Tâm định vị cọc trung tâm
+            float pinBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x : 1.0f;
+            _circleIndicator.position = centerWallPos;
+            _circleIndicator.rotation = Quaternion.identity;
+            _circleIndicator.localScale = Vector3.one * (0.8f / pinBounds);
+            _circleRenderer.color = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 0.95f);
+        }
+
+        private void ShowCurvedTrajectoryIndicator(Vector3 origin, Vector2 direction, float angle, Color color)
+        {
+            if (_lineRenderer == null || _circleRenderer == null) return;
+
+            _lineRenderer.enabled = true;
+            _circleRenderer.enabled = true;
+            if (_coneRenderer != null) _coneRenderer.enabled = false;
+
+            float length = Mathf.Max(2.5f, _currentConfig.range * _currentPullPercent);
+            float curveAngle = _currentConfig.sectorAngle != 0 ? _currentConfig.sectorAngle : 35f;
+
+            // Hướng vòng cung bẻ lệch góc
+            float actualAngle = angle + (curveAngle * 0.5f);
+            float rad = actualAngle * Mathf.Deg2Rad;
+            Vector2 curveDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+            float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.x : 1.0f;
+            float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
+                ? _lineRenderer.sprite.bounds.size.y : 1.0f;
+
+            _lineIndicator.position = origin + (Vector3)(curveDir * (length * 0.45f));
+            _lineIndicator.rotation = Quaternion.Euler(0f, 0f, actualAngle);
+            _lineIndicator.localScale = new Vector3(length / spriteBoundsX, 0.55f / spriteBoundsY, 1f);
+            _lineRenderer.color = color;
+
+            // Điểm rơi / quay đầu của Boomerang
+            Vector3 apexPos = origin + (Vector3)(curveDir * length);
+            float circleBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x : 1.0f;
+            _circleIndicator.position = apexPos;
+            _circleIndicator.rotation = Quaternion.identity;
+            _circleIndicator.localScale = Vector3.one * (1.2f / circleBounds);
+            _circleRenderer.color = color;
+        }
+
+        private void ShowRhythmPulseIndicator(Vector3 origin, Color color)
+        {
+            if (_circleRenderer == null) return;
+
+            _circleRenderer.enabled = true;
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
+            if (_coneRenderer != null) _coneRenderer.enabled = false;
+
+            // Vòng tròn co bóp theo sóng sin nhịp điệu (Rhythm Beat)
+            float baseRadius = Mathf.Max(2.0f, _currentConfig.radius);
+            float pulseOffset = Mathf.PingPong(Time.unscaledTime * 3.5f, 0.8f);
+            float currentRadius = baseRadius + pulseOffset;
+
+            float spriteBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
+                ? _circleRenderer.sprite.bounds.size.x : 1.0f;
+
+            _circleIndicator.position = origin;
+            _circleIndicator.rotation = Quaternion.identity;
+            _circleIndicator.localScale = Vector3.one * ((currentRadius * 2.0f) / spriteBounds);
+            _circleRenderer.color = color;
         }
 
         private void ShowLineIndicator(Vector3 origin, Vector2 direction, float angle, Color color)

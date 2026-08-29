@@ -23,9 +23,11 @@ namespace ProjectZombie.Features.Weapons
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
-            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 10.0f;
+            if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 9.0f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Thần Âm Trảm Linh";
         }
+
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.RhythmPulse, 0f, activeShockwaveRadius, 0f, false);
 
         protected override void PerformAttack()
         {

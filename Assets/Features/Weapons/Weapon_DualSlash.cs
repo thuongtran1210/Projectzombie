@@ -46,24 +46,41 @@ namespace ProjectZombie.Features.Weapons
             PerformComboAttack(CurrentComboStep);
         }
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.ConeSector, 4.5f, 2.5f, 120f, true);
+
         /// <summary>
-        /// Kỹ năng chủ động: Hỏa Long Bộc Phát — Kích hoạt trạng thái bộc phát trong 5s, liên tục vung trảm hỏa long 8 hướng.
+        /// Kỹ năng chủ động: Hỏa Long Bộc Phát — Kích hoạt trạng thái thần uy trong 5s: Tăng 35% tốc độ đánh, liên tục phóng ra Hỏa Long trảm quét 8 hướng và tạo vệt thiêu đốt bầy quái.
         /// </summary>
-        protected override void PerformActiveRelicSkill()
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             _overchargeTickTimer = 0f;
+            slashCount = Mathf.Max(6, slashCount * 2);
             PerformComboAttack(3);
             global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(transform.position);
+
+            // Bồi thêm vệt chém Hỏa Long định hướng
+            if (customAimDirection != Vector2.zero)
+            {
+                Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position + (Vector3)(customAimDirection * 2.5f), 3.5f, TargetingUtility.EnemyLayerMask);
+                DamageData dragonDmg = new DamageData(GetFinalDamage() * 2.5f, true, ElementType.Hoa, true, this);
+                foreach (var h in hits)
+                {
+                    if (h != null && h.TryGetComponent<IDamageable>(out var dmg))
+                    {
+                        dmg.TakeDamage(dragonDmg);
+                    }
+                }
+            }
         }
 
         protected override void TickRelicSkillDuration()
         {
             _overchargeTickTimer += Time.deltaTime;
-            if (_overchargeTickTimer >= 0.35f)
+            if (_overchargeTickTimer >= 0.28f)
             {
                 _overchargeTickTimer = 0f;
                 int oldSlash = slashCount;
-                slashCount = Mathf.Max(6, slashCount * 2);
+                slashCount = Mathf.Max(8, slashCount * 2);
                 PerformComboAttack(2);
                 slashCount = oldSlash;
             }

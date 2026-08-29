@@ -54,32 +54,40 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        /// <summary>
-        /// Kỹ năng chủ động: Trận Pháp Giếng Thiêng — Tạo 3 giếng thiêng phong tỏa xung quanh chân và hồi phục máu.
-        /// </summary>
-        protected override void PerformActiveRelicSkill()
-        {
-            if (projectileData != null)
-            {
-                DamageData damageData = CreateDamageData();
-                damageData = new DamageData(damageData.Amount * 1.5f, true, ElementType.Tho, damageData.IsCounter, this);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.VectorWall, 6.5f, 4.5f, 0f, true);
 
-                for (int i = 0; i < 3; i++)
+        /// <summary>
+        /// Kỹ năng chủ động: Trận Pháp Giếng Thiêng — Dựng Bức Tường Nước Thánh theo vector vạch sẵn, phong tỏa làm chậm 50% quái và hồi ngay 10% Max HP.
+        /// </summary>
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            if (projectileData == null) return;
+
+            DamageData damageData = CreateDamageData();
+            Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
+            Vector3 centerPos = transform.position + (Vector3)(forwardDir * 3.5f);
+            Vector2 perpendicular = new Vector2(-forwardDir.y, forwardDir.x);
+
+            // Dựng 4 giếng nước thánh xếp thành một đường thẳng tường chắn
+            int wallSegments = 4;
+            float segmentSpacing = 1.3f;
+            float startOffset = -((wallSegments - 1) * segmentSpacing * 0.5f);
+
+            for (int i = 0; i < wallSegments; i++)
+            {
+                Vector3 nodePos = centerPos + (Vector3)(perpendicular * (startOffset + i * segmentSpacing));
+                var proj = Projectiles.Core.ProjectileSystem.Instance?.Spawn(projectileData, nodePos, Vector2.zero, gameObject, damageData);
+                if (proj != null && GetFinalScale() != 1f)
                 {
-                    float angle = i * 120f * Mathf.Deg2Rad;
-                    Vector3 spawnPos = transform.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * 1.8f;
-                    var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, spawnPos, Vector2.zero, gameObject, damageData);
-                    if (proj != null)
-                    {
-                        proj.transform.localScale = Vector3.one * Mathf.Max(1.4f, GetFinalScale() * 1.4f);
-                    }
+                    proj.transform.localScale = Vector3.one * (GetFinalScale() * 1.3f);
                 }
             }
 
-            // Hồi phục 10% HP cho Hero khi kích hoạt
-            if (transform.root.TryGetComponent<HealthSystem>(out var health))
+            // Hồi 10% Max HP cho người chơi
+            if (CharacterStats is Player.PlayerStats ps)
             {
-                health.Heal(health.MaxHealth * 0.10f);
+                var hp = ps.GetComponent<HealthSystem>();
+                if (hp != null) hp.Heal(hp.MaxHealth * 0.10f);
             }
             else if (transform.root.TryGetComponent<IHealable>(out var healable))
             {

@@ -45,10 +45,10 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 10.0f, 1.0f, 0f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 14.0f, 1.4f, 0f, true);
 
         /// <summary>
-        /// Kỹ năng chủ động: Vạn Tiễn Phá Trận — Bắn chùm 5 linh tiễn thần lực cực mạnh xuyên quái theo hình nan quạt.
+        /// Kỹ năng chủ động: Vạn Tiễn Phá Trận — Khai hỏa 3 đợt bão Linh Tiễn Thần Uy xuyên thấu 100% mục tiêu trên đường bay và đẩy lùi bầy quái 8m.
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
@@ -67,26 +67,49 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
+            StartCoroutine(RoutinePiercingVolley(direction));
+        }
+
+        private System.Collections.IEnumerator RoutinePiercingVolley(Vector2 direction)
+        {
             DamageData damageData = CreateDamageData();
-            damageData = new DamageData(damageData.Amount * 1.5f, damageData.IsCritical, ElementType.Kim, damageData.IsCounter, this);
-            int burstCount = Mathf.Max(5, GetFinalProjectileCount() + 3);
+            damageData = new DamageData(damageData.Amount * 2.2f, true, ElementType.Kim, true, this);
+            int waves = 3;
+            int arrowsPerWave = Mathf.Max(5, GetFinalProjectileCount() + 3);
 
-            for (int i = 0; i < burstCount; i++)
+            for (int w = 0; w < waves; w++)
             {
-                float offsetAngle = (i - (burstCount - 1) / 2f) * 7.5f;
-                Vector2 boltDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
+                global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
 
-                if (projectileData != null)
+                for (int i = 0; i < arrowsPerWave; i++)
                 {
-                    var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, boltDir, gameObject, damageData);
-                    if (proj != null)
+                    float offsetAngle = (i - (arrowsPerWave - 1) / 2f) * 6.5f;
+                    Vector2 boltDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
+
+                    if (projectileData != null)
                     {
-                        proj.transform.localScale = Vector3.one * Mathf.Max(1.2f, GetFinalScale() * 1.2f);
+                        var proj = Projectiles.Core.ProjectileSystem.Instance?.Spawn(projectileData, firePoint.position, boltDir, gameObject, damageData);
+                        if (proj != null)
+                        {
+                            proj.State.BonusPierce = 99; // Xuyên thấu vô tận
+                            proj.State.SpeedMultiplier = 1.6f;
+                            proj.transform.localScale = Vector3.one * Mathf.Max(1.3f, GetFinalScale() * 1.3f);
+                        }
                     }
                 }
-            }
 
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
+                // Sóng đẩy lùi phía trước mũi tên
+                Collider2D[] hits = Physics2D.OverlapBoxAll(firePoint.position + (Vector3)(direction * 4f), new Vector2(8f, 3f), 0f, TargetingUtility.EnemyLayerMask);
+                foreach (var hit in hits)
+                {
+                    if (hit != null && hit.TryGetComponent<Rigidbody2D>(out var rb))
+                    {
+                        rb.AddForce(direction * 12f, ForceMode2D.Impulse);
+                    }
+                }
+
+                yield return new WaitForSeconds(0.12f);
+            }
         }
     }
 }

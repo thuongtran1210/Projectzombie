@@ -13,7 +13,10 @@ namespace ProjectZombie.Features.Combat.Aiming
         ConeSector,     // Hình quạt nón (Trống Đồng, Đao Cửu Vĩ, Vệt Chém)
         CircleReticle,  // Vòng tròn điểm rơi AOE (Lựu Đạn, Nước Thánh, Nồi Cơm)
         SelfAOE,        // Vòng tròn hào quang dính cố định quanh chân người chơi (Aura / Khiên hộ thể)
-        DashLine        // Đường lướt né đòn: Chỉ hướng lướt + Vòng tròn báo điểm đáp
+        DashLine,       // Đường lướt né đòn: Chỉ hướng lướt + Vòng tròn báo điểm đáp
+        VectorWall,     // Chỉ dấu dựng tường chắn / vạch đường ngăn cách (Nước Thánh, Điếu Cày)
+        CurvedTrajectory, // Chỉ dấu quỹ đạo ném cong Boomerang/Parabol (Dép Tổ Ong, Phi Tiêu)
+        RhythmPulse     // Vòng tròn co giãn theo nhịp QTE (Trống Đồng Đông Sơn)
     }
 
     /// <summary>
@@ -36,9 +39,9 @@ namespace ProjectZombie.Features.Combat.Aiming
         public SkillAimType aimType;
         [Tooltip("Tầm với tối đa của kỹ năng (Độ dài mũi tên / Khoảng cách ném AOE / Khoảng cách lướt)")]
         public float range;
-        [Tooltip("Bán kính vùng ảnh hưởng (Dành cho Circle AOE, SelfAOE hoặc độ rộng quạt/mũi tên)")]
+        [Tooltip("Bán kính vùng ảnh hưởng (Dành cho Circle AOE, SelfAOE hoặc độ rộng quạt/mũi tên/tường)")]
         public float radius;
-        [Tooltip("Góc quét hình quạt (Độ - dành cho ConeSector)")]
+        [Tooltip("Góc quét hình quạt (Độ - dành cho ConeSector) hoặc độ cong quỹ đạo (CurvedTrajectory)")]
         public float sectorAngle;
         [Tooltip("Tự động khóa mục tiêu quái vật khi bấm nhanh (Quick Tap)")]
         public bool autoTargetOnTap;
@@ -57,6 +60,9 @@ namespace ProjectZombie.Features.Combat.Aiming
         public static SkillAimConfig DefaultAOE => new SkillAimConfig(SkillAimType.CircleReticle, 6.0f, 2.2f, 0f, true);
         public static SkillAimConfig DefaultSelfAOE => new SkillAimConfig(SkillAimType.SelfAOE, 0f, 2.5f, 0f, false);
         public static SkillAimConfig DefaultDash => new SkillAimConfig(SkillAimType.DashLine, 4.5f, 0.8f, 0f, false);
+        public static SkillAimConfig DefaultVectorWall => new SkillAimConfig(SkillAimType.VectorWall, 6.0f, 4.5f, 0f, true);
+        public static SkillAimConfig DefaultCurvedTrajectory => new SkillAimConfig(SkillAimType.CurvedTrajectory, 6.5f, 1.5f, 45f, true);
+        public static SkillAimConfig DefaultRhythmPulse => new SkillAimConfig(SkillAimType.RhythmPulse, 0f, 5.0f, 0f, false);
         public static SkillAimConfig DefaultInstant => new SkillAimConfig(SkillAimType.None, 0f, 0f, 0f, false);
     }
 

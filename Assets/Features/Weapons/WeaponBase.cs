@@ -98,19 +98,36 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        public enum RelicCastPhase
+        {
+            Ready,          // Sẵn sàng kích hoạt Phase 1
+            RecastReady,    // Đang trong cửa sổ cho phép kích hoạt Phase 2 (Recast)
+            Cooldown        // Đang hồi chiêu
+        }
+
         [Header("Active / Passive Mode (Hybrid Relic System v6.0)")]
+        [Tooltip("Bật nếu Pháp Bảo hỗ trợ cơ chế Tái Kích Hoạt 2 Giai Đoạn (Two-Cast / Recast)")]
+        public bool hasRecastPhase = false;
+        [Tooltip("Thời gian mở cửa sổ cho phép bấm nút lần 2 để kích hoạt đòn kết liễu (giây)")]
+        public float recastWindowDuration = 3.5f;
+
         private float _lastRelicSkillCastTime = -999f;
         private float _relicSkillDurationEndTime = -999f;
+        private float _recastWindowEndTime = -999f;
         private float _lastEmittedRelicCd = -1f;
+        private RelicCastPhase _currentRelicPhase = RelicCastPhase.Ready;
 
+        public RelicCastPhase CurrentRelicPhase => _currentRelicPhase;
+        public bool IsInRecastWindow => hasRecastPhase && _currentRelicPhase == RelicCastPhase.RecastReady && Time.time <= _recastWindowEndTime;
         public bool IsRelicSkillActive => Time.time < _relicSkillDurationEndTime;
         public float RelicRemainingCooldown => Mathf.Max(0f, (_lastRelicSkillCastTime + activeCooldown) - Time.time);
         public float RelicMaxCooldown => Mathf.Max(0.1f, activeCooldown);
-        public bool IsRelicSkillReady => RelicRemainingCooldown <= 0f;
+        public bool IsRelicSkillReady => _currentRelicPhase == RelicCastPhase.Ready || IsInRecastWindow;
 
         public event System.Action<float, float> OnRelicCooldownUpdated;
         public event System.Action OnRelicSkillReady;
         public event System.Action OnRelicSkillExecuted;
+        public event System.Action<RelicCastPhase> OnRelicPhaseChanged;
 
         [Header("Combo System (Action RPG)")]
         public int currentComboStep = 1;
@@ -170,15 +187,26 @@ namespace ProjectZombie.Features.Weapons
             // Xử lý cho Pháp Bảo Chủ Động (Active Relic)
             if (!isPassiveRelic)
             {
+                // Kiểm tra hết hạn cửa sổ Recast Phase 2
+                if (_currentRelicPhase == RelicCastPhase.RecastReady && Time.time > _recastWindowEndTime)
+                {
+                    _currentRelicPhase = RelicCastPhase.Cooldown;
+                    _lastRelicSkillCastTime = Time.time;
+                    OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+                }
+
                 float remainingCd = RelicRemainingCooldown;
+                if (_currentRelicPhase == RelicCastPhase.Cooldown && remainingCd <= 0f)
+                {
+                    _currentRelicPhase = RelicCastPhase.Ready;
+                    OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+                    OnRelicSkillReady?.Invoke();
+                }
+
                 if (Mathf.Abs(remainingCd - _lastEmittedRelicCd) > 0.05f || (remainingCd <= 0f && _lastEmittedRelicCd > 0f))
                 {
                     _lastEmittedRelicCd = remainingCd;
                     OnRelicCooldownUpdated?.Invoke(remainingCd, RelicMaxCooldown);
-                    if (remainingCd <= 0f)
-                    {
-                        OnRelicSkillReady?.Invoke();
-                    }
                 }
 
                 // Nếu đang trong thời gian duy trì hiệu lực kỹ năng (Duration Buff)
@@ -205,14 +233,41 @@ namespace ProjectZombie.Features.Weapons
 
         /// <summary>
         /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo khi người chơi nhấn/kéo nút Kỹ Năng Pháp Bảo.
+        /// Tự động phân nhánh: Phase 1 (Setup) vs Phase 2 (Recast Detonate).
         /// </summary>
         public virtual bool TriggerActiveRelicSkill(Vector2 customAimDirection = default)
         {
             if (CharacterStats == null) return false;
             if (isPassiveRelic) return false; // Pháp bảo bị động không thể kích hoạt bằng nút
+
+            // GIAI ĐOẠN 2: TÁI KÍCH HOẠT (RECAST PHASE 2)
+            if (IsInRecastWindow)
+            {
+                _currentRelicPhase = RelicCastPhase.Cooldown;
+                _lastRelicSkillCastTime = Time.time;
+                _recastWindowEndTime = -999f;
+                PerformRecastSkill(customAimDirection);
+                OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+                OnRelicSkillExecuted?.Invoke();
+                OnRelicCooldownUpdated?.Invoke(RelicRemainingCooldown, RelicMaxCooldown);
+                return true;
+            }
+
+            // GIAI ĐOẠN 1: KÍCH HOẠT ĐẦU TIÊN (PHASE 1)
             if (RelicRemainingCooldown > 0f) return false;
 
-            _lastRelicSkillCastTime = Time.time;
+            if (hasRecastPhase)
+            {
+                _currentRelicPhase = RelicCastPhase.RecastReady;
+                _recastWindowEndTime = Time.time + recastWindowDuration;
+                OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+            }
+            else
+            {
+                _currentRelicPhase = RelicCastPhase.Cooldown;
+                _lastRelicSkillCastTime = Time.time;
+            }
+
             if (activeDuration > 0f)
             {
                 _relicSkillDurationEndTime = Time.time + activeDuration;
@@ -225,11 +280,19 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
-        /// Thực thi chiêu thức chủ động khi bấm nút. Các Pháp bảo chủ động con có thể override hàm này.
+        /// Thực thi chiêu thức chủ động Phase 1 khi bấm nút lần 1.
         /// </summary>
         protected virtual void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             PerformActiveRelicSkill();
+        }
+
+        /// <summary>
+        /// Thực thi chiêu thức Phase 2 (Recast) khi bấm nút lần 2 trong cửa sổ Recast Window.
+        /// </summary>
+        protected virtual void PerformRecastSkill(Vector2 customAimDirection = default)
+        {
+            // Các Pháp bảo Recast con override để thực thi đòn kết liễu
         }
 
         /// <summary>
