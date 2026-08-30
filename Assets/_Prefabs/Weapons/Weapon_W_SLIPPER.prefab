@@ -54,12 +54,20 @@ MonoBehaviour:
   element: 0
   weaponRole: 0
   isPrimaryActiveWeapon: 0
+  isPassiveRelic: 0
+  activeCooldown: 8
+  activeDuration: 0
+  skillActionName: 
+  hasRecastPhase: 0
+  recastWindowDuration: 3.5
   currentComboStep: 1
   comboResetWindow: 1
-  slashParticles: {fileID: 0}
-  maxTargetsHit: 0
-  hitSparkPrefab: {fileID: 0}
-  showGizmos: 1
   throwRange: 4.5
   returnSpeed: 12
   humiliatedChance: 0.45
+  autoWhirlwindCooldown: 3.5
+  whirlwindVfxPrefab: {fileID: 6089668274784451211, guid: 902878aca0f0c7b4f968596927c7d0df, type: 3}
+  slipperProjectileSprite: {fileID: 0}
+  trailMaterial: {fileID: 0}
+  dropsParticleMaterial: {fileID: 0}
+  recastMarkerCircleSprite: {fileID: 0}

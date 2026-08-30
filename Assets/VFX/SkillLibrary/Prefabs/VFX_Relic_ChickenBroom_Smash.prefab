@@ -4899,6 +4899,7 @@ GameObject:
   - component: {fileID: 759316143897362616}
   - component: {fileID: 6662657888901441540}
   - component: {fileID: 8120717219736626919}
+  - component: {fileID: 3780056263941125194}
   m_Layer: 0
   m_Name: VFX_Relic_ChickenBroom_Smash
   m_TagString: Untagged
@@ -9720,6 +9721,24 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &3780056263941125194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3967041597123839552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 123453d1a28ab8649b58b3a4b148e6ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseLevel1Scale: 0.55
+  scalePerLevel: 0.12
+  tier2SubLayers:
+  - {fileID: 3211930095460344190}
+  tier3UltimateLayers:
+  - {fileID: 3967041597123839552}
 --- !u!1 &8614715371366922804
 GameObject:
   m_ObjectHideFlags: 0

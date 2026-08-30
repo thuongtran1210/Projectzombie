@@ -92,7 +92,7 @@ namespace ProjectZombie.Features.Weapons
 
             if (potVfxPrefab != null)
             {
-                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, isEmpowered ? 1.0f : 0.6f);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, isEmpowered ? 1.0f : 0.6f, WeaponLevel);
             }
 
             int mask = TargetingUtility.EnemyLayerMask;

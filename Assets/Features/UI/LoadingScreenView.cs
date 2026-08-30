@@ -55,6 +55,9 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private int _lastReportedPercent = -1;
+        private string _lastReportedMessage = null;
+
         public void SetProgress(float normalizedProgress)
         {
             float clamped = Mathf.Clamp01(normalizedProgress);
@@ -63,16 +66,22 @@ namespace ProjectZombie.Features.UI
                 _progressBarFill.fillAmount = clamped;
             }
 
-            if (_progressPercentText != null)
+            int currentPercent = Mathf.RoundToInt(clamped * 100f);
+            if (currentPercent != _lastReportedPercent)
             {
-                _progressPercentText.text = $"{Mathf.RoundToInt(clamped * 100f)}%";
+                _lastReportedPercent = currentPercent;
+                if (_progressPercentText != null)
+                {
+                    _progressPercentText.SetText("{0}%", currentPercent);
+                }
             }
         }
 
         public void SetStatusMessage(string message)
         {
-            if (_statusMessageText != null)
+            if (_statusMessageText != null && message != _lastReportedMessage)
             {
+                _lastReportedMessage = message;
                 _statusMessageText.text = message;
             }
         }

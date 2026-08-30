@@ -103,12 +103,97 @@ Khi người chơi bấm **Pause ➔ Thoát Trận** về Sảnh Chờ (Meta Hub
 
 ---
 
-## 6. Quy Trình Thiết Kế & Sản Xuất Visual VFX Cho Vũ Khí / Pháp Bảo (VFX Pipeline)
+---
 
-Tuân thủ nghiêm ngặt **Quy Trình 3 Bước Tiêu Chuẩn** theo phong cách **2D Stylized Anime / Kingdom Rush Cổ Phong**:
+## 6. Cơ Chế Phân Cấp Sức Mạnh & Visual VFX Theo Level (Early-Game Balance & Progression)
 
-```mermaid
-graph LR
-    A[Bước 1: Viết Prompt & Tạo Bảng Concept Tổng Thể 2x2 Grid] --> B[Bước 2: Duyệt Visual & Chroma Keying Black-to-Alpha]
-    B --> C[Bước 3: Cấu Hình Material URP & Prefab Particle Đa Tầng]
-```
+Nhằm đảm bảo trải nghiệm sinh tồn kịch tính ở đầu trận (Early Game) và bùng nổ sức mạnh ở giai đoạn cuối:
+- **Component `VFXLevelScaler`:** Tự động điều chỉnh kích thước hạt (`Scale / Radius`) và phân tầng bật/tắt các lớp con (Sub-layers) theo cấp độ vũ khí (`WeaponLevel` 1 $\rightarrow$ 5/6):
+  - **Level 1 - 2 (Nhập Môn):** Kích thước hiệu ứng thu gọn ở mức **55% - 60%**, chỉ hiển thị đòn đập/đường chém cơ bản (`Base_Layer`), không có rung chấn mạnh để tránh làm rối mắt.
+  - **Level 3 - 4 (Nâng Cao):** Kích hoạt thêm các tầng hạt văng, bụi khói bồi đòn (`tier2SubLayers`).
+  - **Level 5 - 6 / Evolution (Đại Thành / Tiến Hóa):** Mở khóa toàn bộ các hiệu ứng bão hòa màn hình như Vết nứt đất (Ground Crack Decal), Sóng xung kích (Shockwave Ring) (`tier3UltimateLayers`).
+- **Tích Hợp Zero-GC Pool:** `VFXPoolManager.SpawnVFX(prefab, position, rotation, duration, weaponLevel)` tự động cấu hình và áp dụng scaling ngay khi lấy từ pool.
+
+---
+
+## 7. Ma Trận Tiến Hóa Tối Thượng (Evolution Matrix - 17 Cặp Hoàn Chỉnh)
+
+Điều kiện kích hoạt: Vũ khí Base đạt **Level Max (Lv5/Lv6)** + Đã sở hữu **Thẻ Bị Động (Passive Upgrade)** tương ứng.
+
+| Vũ Khí / Pháp Bảo Gốc | Hệ | Thẻ Passive Cần | Dạng Tiến Hóa Cuối (`Evolution`) | Hiệu Ứng Bùng Nổ Đặc Trưng |
+| :--- | :---: | :---: | :--- | :--- |
+| **`W_SLIPPER`** (Dép Tổ Ong) | Kim | `P001` (Tốc Đánh) | **`E_SLIPPER` - Vạn Dép Quy Tông** | Bão Dép bay 360 độ, tăng 200% bán kính Dropkick Shockwave. |
+| **`W_POT`** (Nồi Cơm Thạch Sanh) | Thổ | `P005` (Giáp/HP) | **`E_POT` - Nồi Thần Bất Tử** | Hố đen hút liên tục không ngừng, tăng hồi 8% HP và bọc Thổ Giáp. |
+| **`W_PIPE`** (Điếu Cày Cửu U) | Hỏa | `P004` (Sát Thương) | **`E_PIPE` - Cửu U Long Phun Khói** | Khói rồng biến thành Bão Lửa Tận Thế xoay tròn thiêu rụi toàn map. |
+| **`R007`** (Chiếu Trải Hoàng Tuyền) | Mộc | `P003` (Bán Kính) | **`E_R007` - Chiếu Thần Hoàng Kim** | Chiếu Thần dát vàng biến quái vật bước vào thành Tiền Vàng/Linh Thạch. |
+| **`R008`** (Chổi Lông Gà) | Kim | `P001` (Tốc Đánh) | **`E_R008` - Thiên Binh Chổi Quét** | Triệu hồi hàng loạt chổi khổng lồ quét liên hoàn càn quét quái. |
+| **`W001`** (Nỏ Thần) | Kim | `P001` (Tốc Đánh) | **`E001` - Nỏ Liên Châu** | Xả 5 làn tên thần uy liên thanh xòe quạt tốc độ cực đại. |
+| **`W002`** (Bút Phán Quan) | Thủy | `P002` (Sát Thương Crit) | **`E002` - Bút Sinh Tử** | Tự động gạch tên và trảm lập tức (Instakill) quái thường dưới 30% HP. |
+| **`W003`** (Bùa Trấn Yêu) | Mộc | `P003` (Bán Kính) | **`E003` - Bùa Cửu Huyền** | Bùa nổ tạo Trận Đồ Bát Quái giữ chân toàn bộ yêu ma trên sàn. |
+| **`W004`** (Cửu Vĩ Hồ Trảo) | Hỏa | `P004` (Sát Thương) | **`E004` - Hồ Ly Cửu Vĩ** | Triệu hồi Linh Hồ 9 Đuôi phóng bão lửa xoáy di động quét map. |
+| **`W005`** (Trống Đồng Đông Sơn) | Thổ | `P005` (Giáp/Hồi Máu) | **`E005` - Trống Trấn Quốc** | X2 số lượng sóng xoay, phát nổ sóng chấn động gây choáng toàn màn hình. |
+| **`W006`** (Lựu Đạn Thần Sa) | Hỏa | `P006` (Phạm Vi Nổ) | **`E006` - Bão Hỏa Diệm** | Để lại biển lửa bất tử thiêu đốt liên tục tại tâm các vụ nổ. |
+| **`W007`** (Cung Thạch Sanh) | Kim | `P007` (Xuyên Thấu) | **`E007` - Cung Thần Tiễn** | Mũi tên ánh sáng tự phân nhánh 3 tia khi xuyên qua quái. |
+| **`W008`** (Đao Cửu Vĩ) | Hỏa | `P008` (Sát Thương Gần) | **`E008` - Hỏa Long Đao** | Mỗi nhát chém phóng ra hình tượng Hỏa Long phi thân càn quét. |
+| **`W009`** (Trượng Long Vương) | Thủy | `P009` (Tốc Hồi Chiêu) | **`E009` - Long Vương Trượng** | Triệu hồi Cột Sét Thiên Lôi giáng xuống liên tục làm tê liệt quái. |
+| **`W010`** (Linh Phù Ma Da) | Thủy | `P010` (Hiệu Ứng Trừ Tốc) | **`E010` - Thủy Cung Linh** | Vùng đầm lầy hóa Thủy Triều cuộn sóng cuốn phăng hàng ngũ quái. |
+| **`W011`** (Nước Thánh Chùa Hương) | Thủy | `P011` (Hồi Máu Đội) | **`E011` - Giếng Thiêng** | Tạo suối nguồn thanh tẩy hồi máu liên tục cho Hero và diệt ma. |
+| **`W012`** (Phi Tiêu Bát Quái) | Kim | `P012` (Số Lượng Đạn) | **`E012` - Phi Tiêu Cửu Cung** | Phân thân thành 9 chiếc phi tiêu bay zíc zắc bao phủ phòng đấu. |
+
+---
+
+---
+
+## 8. Hướng Dẫn Sử Dụng Bộ Công Cụ Test Tiến Hóa (Debug & Testing Suite)
+
+Khi cần thử nghiệm nhanh các cấp độ (Lv1 $\rightarrow$ Lv5) và các dạng Tiến Hóa Cuối:
+1. Mở cửa sổ: **`Tools > ProjectZombie > Evolution & Relic Tester Window`**.
+2. Bấm **Play Game** (`Ctrl + P`).
+3. Chọn một trong các tính năng:
+   - **`Trang Bị (Lv1)`:** Thay thế ngay lập tức Pháp Bảo đang mang bằng Pháp Bảo đã chọn ở cấp 1 (Tự động cập nhật nút HUD nếu là Active Relic).
+   - **`Max Lv5`:** Đẩy vũ khí lên cấp 5 để kiểm tra sự mở rộng của hạt và hiệu ứng bồi đòn.
+   - **`⚡ [Tên Evo]` (Nút Vàng):** Kích hoạt trực tiếp dạng Tiến Hóa Tối Thượng để kiểm tra sát thương và VFX toàn màn hình.
+
+---
+
+## 9. QUY CHUẨN KỸ THUẬT VFX & DANH MỤC ĐƯỜNG DẪN CỐ ĐỊNH (ASSET MAPPING SPEC)
+
+Nhằm đảm bảo **tính nhất quán tuyệt đối**, không bị thay đổi logic/asset tùy tiện qua các lần cập nhật:
+
+### 9.1. Quy Chuẩn Shaders Sử Dụng (URP 2D Pipeline)
+1. **Shader Additive / Hào Quang Nổ Sáng:** `ProjectZombie/VFX/Slash_Additive` hoặc `Universal Render Pipeline/Particles/Unlit` (Blend Mode: Additive).
+2. **Shader Sprite / Vết Cắt / Decal Sàn:** `Universal Render Pipeline/2D/Sprite-Unlit-Default` (Blend Mode: Alpha Blend).
+3. **Shader Trail Renderer (Dải Ribbon):** `Universal Render Pipeline/Particles/Unlit` (Color over Lifetime Gradient).
+
+---
+
+### 9.2. Bảng Tra Cứu Đường Dẫn Asset & Prefab Chuẩn Của Từng Pháp Bảo
+
+| Mã ID | Tên Pháp Bảo | Prefab Vũ Khí Gắn Vào Player | Prefab VFX Chính (Spawn Pool) | Material Chính (Materials/) | Texture VFX Gốc (Textures/ / VFX/) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`W_SLIPPER`** | Dép Tổ Ong Thần Sa | `Assets/_Prefabs/Weapons/Weapon_W_SLIPPER.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Slipper_Whirlwind.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_VFX_Slipper_Whirlwind.mat` | `Assets/Art/Weapons/Icon_W_SLIPPER.png`<br>`Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png` |
+| **`W_POT`** | Nồi Cơm Thạch Sanh | `Assets/_Prefabs/Weapons/Weapon_W_POT.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pot_Suction.prefab` | `Assets/VFX/SkillLibrary/Materials/M_Pot_Suction_Vortex.mat`<br>`Assets/VFX/SkillLibrary/Materials/M_Rice_Collectible.mat` | `Assets/Art/Weapons/VFX/Tex_Pot_Suction_Vortex.png`<br>`Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png` |
+| **`W_PIPE`** | Điếu Cày Cửu U | `Assets/_Prefabs/Weapons/Weapon_W_PIPE.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pipe_DragonSmoke.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_VFX_Pipe_SmokeCloud.mat` | `Assets/Art/Weapons/VFX/Tex_DragonSmoke_Loop.png` |
+| **`R007`** | Chiếu Trải Hoàng Tuyền | `Assets/_Prefabs/Weapons/Weapon_R007.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_SleepingMat_Decal.prefab` | `Assets/VFX/SkillLibrary/Materials/M_Mat_Slide_Wind.mat`<br>`Assets/VFX/SkillLibrary/Materials/M_Sleep_Zzz_Comic.mat` | `Assets/Art/Weapons/VFX/Tex_SleepingMat_Decal.png` |
+| **`R008`** | Chổi Lông Gà Gia Truyền | `Assets/_Prefabs/Weapons/Weapon_R008.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenBroom_Smash.prefab` | `Assets/VFX/SkillLibrary/Materials/M_ChickenBroom_Giant.mat`<br>`Assets/VFX/SkillLibrary/Materials/M_Feather_Burst.mat`<br>`Assets/VFX/SkillLibrary/Materials/M_Ground_Cracked.mat` | `Assets/Art/Weapons/VFX/Tex_ChickenBroom_Giant.png`<br>`Assets/Art/Weapons/VFX/Tex_Feather_Burst.png`<br>`Assets/Art/Weapons/VFX/Tex_Ground_Cracked_Shockwave.png` |
+| **`W001`** | Nỏ Thần | `Assets/_Prefabs/Weapons/Weapon_W001_NoThan.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W001_GoldenArrow.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Arrow_Golden_Beam.mat` | `Assets/Art/VFX/Tex_VFX_GoldenArrow_Beam.png` |
+| **`W002`** | Bút Phán Quan | `Assets/_Prefabs/Weapons/Weapon_W002_ButPhanQuan.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W002_PenSlash.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_InkSlash_Arc.mat` | `Assets/Art/VFX/Tex_VFX_InkStroke_Splash.png` |
+| **`W003`** | Bùa Trấn Yêu | `Assets/_Prefabs/Weapons/Weapon_W003_BuaTranYeu.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W003_TalismanTrail.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Talisman_Ribbon_Trail.mat` | `Assets/Art/VFX/Tex_VFX_YellowTalisman.png` |
+| **`W004`** | Cửu Vĩ Hồ Trảo | `Assets/_Prefabs/Weapons/Weapon_W004_CuuViHoTrao.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W004_FoxClaws.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Fox_Claws_Slash.mat` | `Assets/Art/VFX/Tex_VFX_FoxClaw_RedSlash.png` |
+| **`W005`** | Trống Đồng Đông Sơn | `Assets/_Prefabs/Weapons/Weapon_W005_TrongDong.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W005_DongSonShockwave.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Shockwave_DongSon.mat` | `Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png` |
+| **`W006`** | Lựu Đạn Thần Sa | `Assets/_Prefabs/Weapons/Weapon_W006_LuuDanThanSa.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W006_CinnabarExplosion.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Cinnabar_Shockwave.mat` | `Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png` |
+| **`W007`** | Cung Thạch Sanh | `Assets/_Prefabs/Weapons/Weapon_W007_CungThachSanh.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W007_ThachSanhArrow.prefab` | `Assets/VFX/SkillLibrary/Materials/M_ThachSanh_Arrow_Trail.mat` | `Assets/Art/Weapons/VFX/Tex_ThachSanh_LaserArrow.png` |
+| **`W008`** | Đao Cửu Vĩ | `Assets/_Prefabs/Weapons/Weapon_W008_DaoCuuVi.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W008_FoxFlameStream.prefab` | `Assets/VFX/SkillLibrary/Materials/M_FoxFlame_Stream.mat` | `Assets/Art/Weapons/VFX/Tex_FoxFlame_Stream.png` |
+| **`W009`** | Trượng Long Vương | `Assets/_Prefabs/Weapons/Weapon_W009_TruongLongVuong.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W009_LightningChain.prefab` | `Assets/VFX/SkillLibrary/Materials/M_WaterLightning_Chain.mat` | `Assets/Art/Weapons/VFX/Tex_WaterLightning_Chain.png` |
+| **`W010`** | Linh Phù Ma Da | `Assets/_Prefabs/Weapons/Weapon_W010_LinhPhuMaDa.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W010_PoisonSwamp.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Decal_PoisonSwamp.mat` | `Assets/Art/VFX/Tex_VFX_Poison_Decal.png` |
+| **`W011`** | Nước Thánh Chùa Hương | `Assets/_Prefabs/Weapons/Weapon_W011_NuocThanh.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W011_HolyWaterAoE.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_Decal_HolyWaterPuddle.mat` | `Assets/Art/VFX/Tex_VFX_HolyWater_Splash.png` |
+| **`W012`** | Phi Tiêu Bát Quái | `Assets/_Prefabs/Weapons/Weapon_W012_PhiTieuBatQuai.prefab` | `Assets/VFX/SkillLibrary/Prefabs/VFX_W012_WindVortex.prefab` | `Assets/VFX/SkillLibrary/Materials/MAT_BatQuai_Wind_Vortex.mat` | `Assets/Art/VFX/Tex_VFX_BatQuai_WindRing.png` |
+
+---
+
+### 9.3. Nguyên Tắc Bất Biến Khi Chỉnh Sửa VFX & Script:
+1. **Không Hardcode Sprite Tùy Tiện Trong Code:** Mọi hiệu ứng phải tham chiếu trực tiếp qua `GameObject vfxPrefab` hoặc nạp từ đúng đường dẫn `Assets/VFX/SkillLibrary/Prefabs/...`.
+2. **Tuân Thủ Hệ Thống Phân Cấp `VFXLevelScaler`:** Mọi Prefab Particle System đa tầng khi tạo mới đều phải gắn `VFXLevelScaler` để tự động điều chỉnh theo cấp độ 1 $\rightarrow$ 5.
+3. **Đồng Bộ Dạng Tiến Hóa (Evolution):** Khi mở khóa `E_...`, chỉ số và visual phải được kế thừa và khuếch đại trực tiếp từ `Base Weapon` tương ứng theo đúng Bảng Ma Trận Mục 7.
+
+

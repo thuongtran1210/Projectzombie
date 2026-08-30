@@ -33,6 +33,45 @@ namespace ProjectZombie.Features.Weapons
 
         private Vector3 _lastSlipperApexPosition;
 
+        private void EnsureAssetsLoaded()
+        {
+            if (slipperProjectileSprite == null)
+            {
+#if UNITY_EDITOR
+                slipperProjectileSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_SLIPPER.png");
+#endif
+            }
+
+            if (recastMarkerCircleSprite == null)
+            {
+#if UNITY_EDITOR
+                recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+                if (recastMarkerCircleSprite == null)
+                {
+                    recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png");
+                }
+#endif
+            }
+
+            if (trailMaterial == null)
+            {
+                Shader unlitShader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default") ?? Shader.Find("Sprites/Default");
+                if (unlitShader != null)
+                {
+                    trailMaterial = new Material(unlitShader);
+                }
+            }
+
+            if (dropsParticleMaterial == null)
+            {
+                Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
+                if (particleShader != null)
+                {
+                    dropsParticleMaterial = new Material(particleShader);
+                }
+            }
+        }
+
         public override void Initialize(ICharacterStats stats)
         {
             base.Initialize(stats);
@@ -42,15 +81,40 @@ namespace ProjectZombie.Features.Weapons
             recastWindowDuration = 3.0f;
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 6.5f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Tổ Ong Lượn Cánh";
+
+            EnsureAssetsLoaded();
         }
 
         protected override void PerformAttack()
         {
+            bool isEvolution = WeaponLevel >= MaxLevel;
+            int projectileCount = isEvolution ? 4 : (WeaponLevel >= 3 ? 2 : 1);
+
             // Tự động tìm kẻ địch gần nhất và ném dép Boomerang
-            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 6.0f);
-            Vector2 dir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
+            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.0f);
+            Vector2 baseDir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
             global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
-            StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.2f));
+
+            if (isEvolution)
+            {
+                // Dạng Tiến Hóa: VẠN DÉP QUY TÔNG — Bắn chùm 4 chiếc dép Boomerang khổng lồ tỏa hình nón
+                float[] angles = new float[] { -25f, -8f, 8f, 25f };
+                for (int i = 0; i < angles.Length; i++)
+                {
+                    Vector2 spreadDir = Quaternion.Euler(0, 0, angles[i]) * baseDir;
+                    StartCoroutine(RoutineThrowSlipper(spreadDir, throwRange * 1.3f, 1.8f, isEvolution: true));
+                }
+            }
+            else
+            {
+                // Dạng thường (Lv1 - Lv5)
+                for (int i = 0; i < projectileCount; i++)
+                {
+                    float angleOffset = (i == 0) ? 0f : ((i % 2 == 1) ? 15f * ((i + 1) / 2) : -15f * (i / 2));
+                    Vector2 dir = Quaternion.Euler(0, 0, angleOffset) * baseDir;
+                    StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.0f + (WeaponLevel - 1) * 0.15f, isEvolution: false));
+                }
+            }
         }
 
         public override Combat.Aiming.SkillAimConfig AimConfig => IsInRecastWindow 
@@ -108,12 +172,13 @@ namespace ProjectZombie.Features.Weapons
                 _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
                 var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
                 sr.sprite = recastMarkerCircleSprite;
-                sr.color = new Color(1f, 0.85f, 0.2f, 0.65f); // Vàng kim rực sáng
+                sr.color = new Color(1f, 0.85f, 0.25f, 0.6f); // Vàng kim thanh mảnh
                 sr.sortingLayerName = "Skill";
                 sr.sortingOrder = 4;
-                _recastMarkerInstance.transform.localScale = Vector3.one * 1.6f;
             }
 
+            // Thu nhỏ về kích thước 0.55m chuẩn Chibi (thay vì 1.6m khổng lồ trước đó)
+            _recastMarkerInstance.transform.localScale = Vector3.one * 0.55f;
             _recastMarkerInstance.transform.position = position;
             _recastMarkerInstance.SetActive(true);
 
@@ -123,7 +188,22 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineDisableRecastMarker(float duration)
         {
-            yield return new WaitForSeconds(duration);
+            float elapsed = 0f;
+            Vector3 baseScale = Vector3.one * 0.55f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                if (_recastMarkerInstance != null && _recastMarkerInstance.activeSelf)
+                {
+                    // Xoay tròn nhẹ nhàng và co bóp theo nhịp sóng sin
+                    _recastMarkerInstance.transform.Rotate(0f, 0f, -90f * Time.deltaTime);
+                    float pulse = 1f + 0.08f * Mathf.Sin(elapsed * 8f);
+                    _recastMarkerInstance.transform.localScale = baseScale * pulse;
+                }
+                yield return null;
+            }
+
             ClearRecastGroundMarker();
         }
 
@@ -205,9 +285,13 @@ namespace ProjectZombie.Features.Weapons
             playerTf.position = targetPos;
 
             // 3. Chạm đất tung cước Song Phi (Dropkick Impact Shockwave)
+            bool isEvolution = WeaponLevel >= MaxLevel;
+            float shockwaveRadius = isEvolution ? 7.0f : (2.5f + WeaponLevel * 0.3f);
+            float damageMultiplier = isEvolution ? 6.5f : (2.2f + WeaponLevel * 0.3f);
+
             global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(targetPos);
-            int kickHitCount = Physics2D.OverlapCircleNonAlloc(targetPos, 4.0f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);
-            DamageData kickDamage = new DamageData(GetFinalDamage() * 3.5f, true, ElementType.Kim, true, this);
+            int kickHitCount = Physics2D.OverlapCircleNonAlloc(targetPos, shockwaveRadius, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);
+            DamageData kickDamage = new DamageData(GetFinalDamage() * damageMultiplier, true, ElementType.Kim, true, this);
 
             for (int i = 0; i < kickHitCount; i++)
             {
@@ -222,26 +306,32 @@ namespace ProjectZombie.Features.Weapons
                 {
                     Vector2 push = ((Vector2)hit.transform.position - (Vector2)targetPos).normalized;
                     if (push == Vector2.zero) push = dashDir;
-                    status.ApplyKnockback(push, 16f, 0.35f);
-                    status.ApplyStatusEffect(StatusEffectType.Stun, 0.6f);
+                    status.ApplyKnockback(push, isEvolution ? 24f : 14f, 0.4f);
+                    status.ApplyStatusEffect(StatusEffectType.Stun, isEvolution ? 1.2f : 0.5f);
+                    if (isEvolution)
+                    {
+                        status.ApplyStatusEffect(StatusEffectType.Humiliated, 3.0f);
+                    }
                 }
             }
 
             // Kích hoạt HitStop + Rung Camera đầm tay chuẩn đòn kết liễu
-            ProjectZombie.Core.Juice.GameJuiceEvents.RequestHitStop(0.08f);
-            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.35f, 0.6f);
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestHitStop(isEvolution ? 0.15f : 0.06f);
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.6f : 0.25f, isEvolution ? 0.8f : 0.4f);
 
-            // Bồi thêm Lốc Dép Vạn Năng tại tâm vụ nổ Shockwave
-            StartCoroutine(RoutineWhirlwindSlippers());
+            // Bồi thêm Lốc Dép Vạn Năng tại tâm vụ nổ Shockwave (Tiến hóa nổ 8 đợt vả lốc xoáy)
+            StartCoroutine(RoutineWhirlwindSlippers(isEvolution));
         }
 
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
         {
-            // Khi Hero chém trúng quái: Bồi thêm 1 chiếc dép Boomerang phóng thẳng vào mục tiêu
-            if (enemyHit != null && Random.value <= 0.6f)
+            bool isEvolution = WeaponLevel >= MaxLevel;
+            // Khi Hero chém trúng quái: Bồi thêm dép Boomerang phóng thẳng vào mục tiêu (Lv1: 30%, Tiến Hóa: 100%)
+            float procChance = isEvolution ? 1.0f : (0.25f + WeaponLevel * 0.08f);
+            if (enemyHit != null && Random.value <= procChance)
             {
                 Vector2 dir = ((Vector2)enemyHit.transform.position - (Vector2)transform.position).normalized;
-                StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.1f));
+                StartCoroutine(RoutineThrowSlipper(dir, throwRange, isEvolution ? 1.5f : 0.8f, isEvolution: isEvolution));
             }
         }
 
@@ -301,7 +391,7 @@ namespace ProjectZombie.Features.Weapons
             return _cachedTrailGrad;
         }
 
-        private IEnumerator RoutineThrowSlipper(Vector2 dir, float range, float dmgMult)
+        private IEnumerator RoutineThrowSlipper(Vector2 dir, float range, float dmgMult, bool isEvolution = false)
         {
             Vector2 startPos = transform.position;
             Vector2 targetPos = startPos + dir.normalized * range;
@@ -311,19 +401,23 @@ namespace ProjectZombie.Features.Weapons
             DamageData dmg = CreateDamageData();
             dmg = new DamageData(dmg.Amount * dmgMult, dmg.IsCritical, ElementType.Kim, dmg.IsCounter, this);
 
-            // Sinh Visual Chiếc Dép Bay Xoay Tròn (Thu nhỏ về tỉ lệ 0.32m chuẩn Chibi)
-            GameObject slipperVisual = new GameObject("Slipper_Projectile_Visual");
+            // Sinh Visual Chiếc Dép Bay Xoay Tròn:
+            // Lv1: Tỉ lệ nhỏ gọn 0.28m, Trail mỏng
+            // Tiến Hóa (E_SLIPPER): Dép Vàng Khổng Lồ 0.75m, hào quang cực sáng
+            GameObject slipperVisual = new GameObject(isEvolution ? "Giant_Golden_Slipper_Visual" : "Slipper_Projectile_Visual");
             var sr = slipperVisual.AddComponent<SpriteRenderer>();
             sr.sprite = slipperProjectileSprite;
             sr.sortingLayerName = "Skill";
             sr.sortingOrder = 12;
-            slipperVisual.transform.localScale = Vector3.one * 0.32f;
+            float scaleMultiplier = isEvolution ? 0.75f : (0.28f + WeaponLevel * 0.04f);
+            slipperVisual.transform.localScale = Vector3.one * scaleMultiplier;
             slipperVisual.transform.position = startPos;
+            if (isEvolution) sr.color = new Color(1f, 0.95f, 0.4f, 1f); // Hào quang hoàng kim
 
-            // Gắn TrailRenderer (Dải Năng Lượng Ribbon Vàng Kim uốn lượn liên tục bám theo dép)
+            // Gắn TrailRenderer (Dải Năng Lượng Ribbon Vàng Kim)
             var trailRenderer = slipperVisual.AddComponent<TrailRenderer>();
-            trailRenderer.time = 0.22f;
-            trailRenderer.startWidth = 0.35f;
+            trailRenderer.time = isEvolution ? 0.35f : 0.18f;
+            trailRenderer.startWidth = isEvolution ? 0.75f : 0.25f;
             trailRenderer.endWidth = 0.02f;
             trailRenderer.minVertexDistance = 0.05f;
             trailRenderer.autodestruct = false;
@@ -342,13 +436,13 @@ namespace ProjectZombie.Features.Weapons
             mainT.playOnAwake = false;
             mainT.duration = 1.0f;
             mainT.loop = true;
-            mainT.startLifetime = 0.18f;
-            mainT.startSpeed = 0.8f;
-            mainT.startSize = new ParticleSystem.MinMaxCurve(0.2f, 0.45f);
+            mainT.startLifetime = isEvolution ? 0.35f : 0.15f;
+            mainT.startSpeed = isEvolution ? 2.0f : 0.6f;
+            mainT.startSize = new ParticleSystem.MinMaxCurve(isEvolution ? 0.4f : 0.15f, isEvolution ? 0.8f : 0.3f);
             mainT.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emissT = psTrail.emission;
-            emissT.rateOverTime = 25;
+            emissT.rateOverTime = isEvolution ? 60 : 20;
 
             var colT = psTrail.colorOverLifetime;
             colT.enabled = true;
@@ -362,7 +456,9 @@ namespace ProjectZombie.Features.Weapons
 
             // 1. Bay tới đích theo đúng đường cong Parabol Bezier
             Vector2 perpendicular = new Vector2(-dir.y, dir.x);
-            Vector2 controlPos = startPos + (dir.normalized * (range * 0.5f)) + (perpendicular * 1.8f);
+            float arcOffset = isEvolution ? 2.6f : 1.4f;
+            Vector2 controlPos = startPos + (dir.normalized * (range * 0.5f)) + (perpendicular * arcOffset);
+            float hitRadius = isEvolution ? 4.5f : (1.8f + WeaponLevel * 0.2f);
 
             while (elapsed < duration)
             {
@@ -371,8 +467,8 @@ namespace ProjectZombie.Features.Weapons
                 // Quadratic Bezier Formula: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
                 Vector2 currentPos = (1f - t) * (1f - t) * startPos + 2f * (1f - t) * t * controlPos + t * t * targetPos;
                 slipperVisual.transform.position = currentPos;
-                slipperVisual.transform.Rotate(0f, 0f, 1440f * Time.deltaTime); // Lộn nhào tốc độ cao
-                DealDamageAtPosition(currentPos, dmg, 4f);
+                slipperVisual.transform.Rotate(0f, 0f, (isEvolution ? 2160f : 1440f) * Time.deltaTime);
+                DealDamageAtPosition(currentPos, dmg, hitRadius);
                 yield return null;
             }
 
@@ -384,36 +480,50 @@ namespace ProjectZombie.Features.Weapons
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
                 Vector2 playerPos = transform.position;
-                Vector2 returnControlPos = returnStartPos + ((playerPos - returnStartPos) * 0.5f) - (perpendicular * 1.2f);
+                Vector2 returnControlPos = returnStartPos + ((playerPos - returnStartPos) * 0.5f) - (perpendicular * (arcOffset * 0.8f));
                 Vector2 currentPos = (1f - t) * (1f - t) * returnStartPos + 2f * (1f - t) * t * returnControlPos + t * t * playerPos;
                 slipperVisual.transform.position = currentPos;
-                slipperVisual.transform.Rotate(0f, 0f, -1440f * Time.deltaTime);
-                DealDamageAtPosition(currentPos, dmg, 3f);
+                slipperVisual.transform.Rotate(0f, 0f, -(isEvolution ? 2160f : 1440f) * Time.deltaTime);
+                DealDamageAtPosition(currentPos, dmg, hitRadius * 0.85f);
                 yield return null;
             }
 
             Destroy(slipperVisual);
         }
 
-        private IEnumerator RoutineWhirlwindSlippers()
+        private IEnumerator RoutineWhirlwindSlippers(bool isEvolution = false)
         {
             Vector2 center = transform.position;
+            float whirlwindRadius = isEvolution ? 4.5f : (1.6f + WeaponLevel * 0.15f);
+            int wavesCount = isEvolution ? 8 : (WeaponLevel >= 3 ? 5 : 3);
 
             if (whirlwindVfxPrefab != null)
             {
-                var vfxObj = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(whirlwindVfxPrefab, center, Quaternion.identity, 0.5f);
+                var vfxObj = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(whirlwindVfxPrefab, center, Quaternion.identity, 0.6f, WeaponLevel);
                 if (vfxObj != null)
                 {
-                    vfxObj.transform.localScale = Vector3.one * 0.48f; // Thu nhỏ 52% về chuẩn tỉ lệ nhân vật Chibi
+                    vfxObj.transform.localScale = Vector3.one * (isEvolution ? 1.2f : 0.45f);
                 }
+            }
+            else if (recastMarkerCircleSprite != null)
+            {
+                // Fallback tạo hiệu ứng Lốc Xoáy Bão Dép bằng Sprite Vàng Kim bùng nổ xoay tròn
+                GameObject whirlVisual = new GameObject("VFX_Whirlwind_Fallback");
+                whirlVisual.transform.position = center;
+                var sr = whirlVisual.AddComponent<SpriteRenderer>();
+                sr.sprite = recastMarkerCircleSprite;
+                sr.color = isEvolution ? new Color(1f, 0.95f, 0.2f, 0.95f) : new Color(1f, 0.9f, 0.3f, 0.7f);
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 14;
+                whirlVisual.transform.localScale = Vector3.one * (isEvolution ? 1.0f : 0.4f);
+
+                StartCoroutine(RoutineAnimateWhirlwindVisual(whirlVisual, isEvolution ? 0.7f : 0.35f, isEvolution ? 4.8f : 2.0f));
             }
 
             DamageData baseDmg = CreateDamageData();
-            DamageData hitDmg = new DamageData(baseDmg.Amount * 0.5f, baseDmg.IsCritical, ElementType.Kim, baseDmg.IsCounter, this);
+            DamageData hitDmg = new DamageData(baseDmg.Amount * (isEvolution ? 0.9f : 0.4f), baseDmg.IsCritical, ElementType.Kim, baseDmg.IsCounter, this);
 
-            // 4 đợt vả xoay tròn 360 độ (bán kính 1.8m chuẩn tỉ lệ bao quanh chân nhân vật)
-            float whirlwindRadius = 1.8f;
-            for (int wave = 0; wave < 4; wave++)
+            for (int wave = 0; wave < wavesCount; wave++)
             {
                 center = transform.position;
                 int mask = TargetingUtility.EnemyLayerMask;
@@ -429,19 +539,49 @@ namespace ProjectZombie.Features.Weapons
                         hp.TakeDamage(hitDmg);
                         if (hit.TryGetComponent<EnemyStatusController>(out var status))
                         {
-                            // Kéo nhẹ quái lại gần tâm lốc
+                            // Kéo quái vào tâm lốc
                             Vector2 pullDir = (center - (Vector2)hit.transform.position).normalized;
-                            status.ApplyKnockback(-pullDir, 2.2f, 0.15f);
+                            status.ApplyKnockback(-pullDir, isEvolution ? 4.0f : 2.0f, 0.15f);
 
-                            // Áp dụng Quê Độ ở đợt vả cuối
-                            if (wave == 3 && Random.value <= humiliatedChance)
+                            // Áp dụng Quê Độ (Humiliated)
+                            if ((wave == wavesCount - 1 || isEvolution) && Random.value <= (isEvolution ? 0.9f : humiliatedChance))
                             {
-                                status.ApplyStatusEffect(StatusEffectType.Humiliated, 2.0f);
+                                status.ApplyStatusEffect(StatusEffectType.Humiliated, isEvolution ? 3.5f : 1.5f);
                             }
                         }
                     }
                 }
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.08f);
+            }
+        }
+
+        private IEnumerator RoutineAnimateWhirlwindVisual(GameObject vfxObj, float duration, float targetScaleMax = 2.2f)
+        {
+            float elapsed = 0f;
+            var sr = vfxObj.GetComponent<SpriteRenderer>();
+            Color startColor = sr != null ? sr.color : Color.white;
+            Vector3 startScale = Vector3.one * 0.4f;
+            Vector3 targetScale = Vector3.one * targetScaleMax;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                if (vfxObj != null)
+                {
+                    vfxObj.transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+                    vfxObj.transform.Rotate(0f, 0f, 720f * Time.deltaTime);
+                    if (sr != null)
+                    {
+                        sr.color = new Color(startColor.r, startColor.g, startColor.b, Mathf.Lerp(startColor.a, 0f, t));
+                    }
+                }
+                yield return null;
+            }
+
+            if (vfxObj != null)
+            {
+                Destroy(vfxObj);
             }
         }
     }

@@ -46,7 +46,7 @@ namespace ProjectZombie.Features.Weapons
             ? Combat.Aiming.SkillAimConfig.DefaultInstant 
             : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 6.5f, 1.2f, 0f, true);
 
-        public int WeaponLevel { get; private set; } = 1;
+        public int WeaponLevel { get; set; } = 1;
         public virtual int MaxLevel => 6;
         
         // Local bonuses applied from upgrades

@@ -79,13 +79,13 @@ namespace ProjectZombie.Core.Pooling
         /// <summary>
         /// Sinh hiệu ứng VFX từ Pool. Tự động kích hoạt ParticleSystem và tự thu hồi về Pool sau `duration` giây.
         /// </summary>
-        public static GameObject SpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration = 0.5f)
+        public static GameObject SpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration = 0.5f, int weaponLevel = 1)
         {
             if (prefab == null) return null;
-            return Instance.InternalSpawnVFX(prefab, position, rotation, duration);
+            return Instance.InternalSpawnVFX(prefab, position, rotation, duration, weaponLevel);
         }
 
-        private GameObject InternalSpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration)
+        private GameObject InternalSpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration, int weaponLevel = 1)
         {
             if (!_poolDictionary.TryGetValue(prefab, out var poolQueue))
             {
@@ -110,6 +110,12 @@ namespace ProjectZombie.Core.Pooling
 
             instance.transform.SetPositionAndRotation(position, rotation);
             instance.SetActive(true);
+
+            // Tự động phân cấp hiệu ứng VFX theo cấp độ vũ khí (Lv1-Lv5)
+            if (instance.TryGetComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>(out var levelScaler))
+            {
+                levelScaler.ApplyLevelScaling(weaponLevel);
+            }
 
             // Khởi động lại các ParticleSystem nếu có
             var particleSystems = instance.GetComponentsInChildren<ParticleSystem>(true);

@@ -54,11 +54,14 @@ MonoBehaviour:
   element: 0
   weaponRole: 0
   isPrimaryActiveWeapon: 0
+  isPassiveRelic: 0
+  activeCooldown: 8
+  activeDuration: 0
+  skillActionName: 
+  hasRecastPhase: 0
+  recastWindowDuration: 3.5
   currentComboStep: 1
   comboResetWindow: 1
-  slashParticles: {fileID: 0}
-  maxTargetsHit: 0
-  hitSparkPrefab: {fileID: 0}
-  showGizmos: 1
   smokeDuration: 3.5
   smokeRadius: 2.8
+  smokeVfxPrefab: {fileID: 1824559587050891609, guid: 02fe577e0a7114943a53c546da18f587, type: 3}

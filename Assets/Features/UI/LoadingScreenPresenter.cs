@@ -116,18 +116,33 @@ namespace ProjectZombie.Features.UI
 
             var task = loadTask != null ? loadTask(progressReporter) : System.Threading.Tasks.Task.CompletedTask;
 
+            float lastSentProgress = -1f;
+            string lastSentStatus = null;
+
             while (!task.IsCompleted)
             {
                 currentProgress = Mathf.MoveTowards(currentProgress, targetProgress, Time.unscaledDeltaTime * 2.5f);
-                _view.SetProgress(currentProgress);
-                _view.SetStatusMessage(currentStatus);
+                if (Mathf.Abs(currentProgress - lastSentProgress) > 0.005f)
+                {
+                    lastSentProgress = currentProgress;
+                    _view.SetProgress(currentProgress);
+                }
+                if (currentStatus != lastSentStatus)
+                {
+                    lastSentStatus = currentStatus;
+                    _view.SetStatusMessage(currentStatus);
+                }
                 yield return null;
             }
 
             while (currentProgress < 1f)
             {
                 currentProgress = Mathf.MoveTowards(currentProgress, 1f, Time.unscaledDeltaTime * 3.5f);
-                _view.SetProgress(currentProgress);
+                if (Mathf.Abs(currentProgress - lastSentProgress) > 0.005f)
+                {
+                    lastSentProgress = currentProgress;
+                    _view.SetProgress(currentProgress);
+                }
                 yield return null;
             }
 

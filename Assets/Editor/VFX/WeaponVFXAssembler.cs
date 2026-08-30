@@ -259,6 +259,13 @@ namespace ProjectZombie.Editor.VFXTools
             rotF.enabled = true;
             rotF.z = new ParticleSystem.MinMaxCurve(-360f * Mathf.Deg2Rad, 360f * Mathf.Deg2Rad);
 
+            // Gắn VFXLevelScaler: Lv1 chỉ có đập chổi vừa phải, Lv3 thêm nổ lông gà, Lv5 thêm nứt đất chấn động
+            var levelScaler = root.AddComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>();
+            levelScaler.baseLevel1Scale = 0.55f;
+            levelScaler.scalePerLevel = 0.12f;
+            levelScaler.tier2SubLayers = new GameObject[] { childFeather };
+            levelScaler.tier3UltimateLayers = new GameObject[] { }; // Không truyền root vì SetActive(false) trên root sẽ làm biến mất toàn bộ VFX
+
             SavePrefab(root, $"{PREFAB_DIR}/VFX_Relic_ChickenBroom_Smash.prefab");
         }
 
