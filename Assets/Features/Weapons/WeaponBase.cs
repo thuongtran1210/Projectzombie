@@ -199,14 +199,19 @@ namespace ProjectZombie.Features.Weapons
                 if (_currentRelicPhase == RelicCastPhase.Cooldown && remainingCd <= 0f)
                 {
                     _currentRelicPhase = RelicCastPhase.Ready;
+                    _lastEmittedRelicCd = 0f;
                     OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
                     OnRelicSkillReady?.Invoke();
+                    OnRelicCooldownUpdated?.Invoke(0f, RelicMaxCooldown);
                 }
-
-                if (Mathf.Abs(remainingCd - _lastEmittedRelicCd) > 0.05f || (remainingCd <= 0f && _lastEmittedRelicCd > 0f))
+                else if (_currentRelicPhase == RelicCastPhase.Cooldown)
                 {
-                    _lastEmittedRelicCd = remainingCd;
-                    OnRelicCooldownUpdated?.Invoke(remainingCd, RelicMaxCooldown);
+                    // Tối ưu hóa: Chỉ phát event khi có sự thay đổi rõ rệt (0.05s) hoặc qua mốc số nguyên giây
+                    if (Mathf.Abs(remainingCd - _lastEmittedRelicCd) >= 0.05f || (remainingCd <= 0f && _lastEmittedRelicCd > 0f))
+                    {
+                        _lastEmittedRelicCd = remainingCd;
+                        OnRelicCooldownUpdated?.Invoke(remainingCd, RelicMaxCooldown);
+                    }
                 }
 
                 // Nếu đang trong thời gian duy trì hiệu lực kỹ năng (Duration Buff)

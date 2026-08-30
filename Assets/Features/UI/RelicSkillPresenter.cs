@@ -177,7 +177,7 @@ namespace ProjectZombie.Features.UI
 
             _buttonView.SetInteractable(isReady);
             _buttonView.SetRecastGlow(isRecast);
-            string text = rem > 0f && !isRecast ? $"{Mathf.CeilToInt(rem)}s" : string.Empty;
+            string text = rem > 0f && !isRecast ? RelicSkillButtonView.GetCachedCooldownText(rem) : string.Empty;
             _buttonView.SetCooldown(isRecast ? 0f : rem, max, text);
         }
 
@@ -190,7 +190,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_buttonView == null) return;
 
-            string text = remaining > 0f ? $"{Mathf.CeilToInt(remaining)}s" : string.Empty;
+            string text = remaining > 0f ? RelicSkillButtonView.GetCachedCooldownText(remaining) : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
             _buttonView.SetInteractable(remaining <= 0f);
         }

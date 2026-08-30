@@ -40,6 +40,10 @@ namespace ProjectZombie.Features.Weapons
 #if UNITY_EDITOR
                 slipperProjectileSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_SLIPPER.png");
 #endif
+                if (slipperProjectileSprite == null && icon != null)
+                {
+                    slipperProjectileSprite = icon;
+                }
             }
 
             if (recastMarkerCircleSprite == null)

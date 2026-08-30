@@ -65,7 +65,30 @@ namespace ProjectZombie.Features.UI
             gameObject.SetActive(isVisible);
         }
 
-        public void SetCooldown(float remainingSeconds, float maxSeconds, string formattedText)
+        private static readonly string[] s_CooldownSecondsCache = GenerateCooldownStringCache(120);
+
+        private static string[] GenerateCooldownStringCache(int maxSeconds)
+        {
+            var cache = new string[maxSeconds + 1];
+            for (int i = 0; i <= maxSeconds; i++)
+            {
+                cache[i] = $"{i}s";
+            }
+            return cache;
+        }
+
+        public static string GetCachedCooldownText(float remainingSeconds)
+        {
+            if (remainingSeconds <= 0f) return string.Empty;
+            int sec = Mathf.CeilToInt(remainingSeconds);
+            if (sec >= 0 && sec < s_CooldownSecondsCache.Length)
+            {
+                return s_CooldownSecondsCache[sec];
+            }
+            return $"{sec}s";
+        }
+
+        public void SetCooldown(float remainingSeconds, float maxSeconds, string formattedText = null)
         {
             if (_cooldownRadialFill != null)
             {
@@ -74,8 +97,15 @@ namespace ProjectZombie.Features.UI
 
             if (_cooldownText != null)
             {
-                _cooldownText.text = formattedText;
-                _cooldownText.gameObject.SetActive(remainingSeconds > 0f);
+                if (remainingSeconds > 0f)
+                {
+                    _cooldownText.text = formattedText ?? GetCachedCooldownText(remainingSeconds);
+                    _cooldownText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _cooldownText.gameObject.SetActive(false);
+                }
             }
         }
 
