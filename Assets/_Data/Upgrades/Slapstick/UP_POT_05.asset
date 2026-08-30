@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "\u0110\u1EA1i B\xE1c Th\u1EA7n C\xF4ng"
   description: "+50% S\xE1t th\u01B0\u01A1ng \u0111\u1EA1n ph\xE1o qu\xE1i v\u1EADt
     v\xE0 t\u0103ng t\u1EA7m bay xa."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0

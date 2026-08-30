@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 5c8c46a054c749aaa523d8542c2a17db, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
@@ -33,14 +33,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CoreThreshold: 0.7
+    - _CoreThreshold: 0.55
     - _DissolveAmount: 0
     - _DissolveSoftness: 0.1
     - _DstBlend: 1
     - _SrcBlend: 5
     - _UsePolar: 0
     m_Colors:
-    - _CoreColor: {r: 1.8, g: 1.5, b: 0.4, a: 1}
-    - _EdgeColor: {r: 1, g: 0.4, b: 0.1, a: 1}
-    - _Speed: {r: 1, g: 0, b: 0, a: 0}
+    - _CoreColor: {r: 3.5, g: 3, b: 1.2, a: 1}
+    - _EdgeColor: {r: 2.2, g: 1.1, b: 0.15, a: 1}
+    - _Speed: {r: 1.5, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

@@ -47,17 +47,15 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   weaponId: W_POT
   displayName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
-  icon: {fileID: 0}
-  description: "V\u0169 kh\xED c\u1EADn chi\u1EBFn gom t\u1ED1i \u0111a 3 qu\xE1i
-    v\xE0o n\u1ED3i v\xE0 ph\xF3ng ra nh\u01B0 \u0111\u1EA1n ph\xE1o; ch\u1EA1m \u0111\u1EA5t
-    r\u01A1i c\u01A1m n\u1EAFm h\u1ED3i m\xE1u."
-  element: 0
-  weaponRole: 0
+  icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
+  description: "Pháp bảo Nồi Cơm Thạch Sanh: Kỹ năng chủ động (CircleReticle) cắm Nồi hút quái diện rộng 6m vào tâm, nổ pháo hất văng quái và văng Cơm Nắm hồi máu!"
+  element: 5
+  weaponRole: 1
   isPrimaryActiveWeapon: 0
   isPassiveRelic: 0
-  activeCooldown: 8
+  activeCooldown: 12
   activeDuration: 0
-  skillActionName: 
+  skillActionName: "H\xFAt Ch\xE2n Kh\xF4ng & Ti\xEAn C\u01A1m"
   hasRecastPhase: 0
   recastWindowDuration: 3.5
   currentComboStep: 1
@@ -65,5 +63,8 @@ MonoBehaviour:
   vacuumRadius: 3.8
   autoTriggerRadius: 3
   maxCapturedMobs: 3
-  cooldownSeconds: 4
+  cooldownSeconds: 3.8
   potVfxPrefab: {fileID: 3231622985748343058, guid: f12bbfd4b590faa45853eeca7a517b06, type: 3}
+  potSprite: {fileID: 21300000, guid: 711743b41c5fa7142b2742b1bb9a8b6f, type: 3}
+  riceBallSprite: {fileID: 21300000, guid: 5f6cc4bf9e198ec40a7d76095ce505f2, type: 3}
+  suctionMaterial: {fileID: 2100000, guid: c57b581244190104083aea853c60b34d, type: 2}

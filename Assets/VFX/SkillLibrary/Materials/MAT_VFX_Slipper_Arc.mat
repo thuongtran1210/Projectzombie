@@ -33,14 +33,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CoreThreshold: 0.7
+    - _CoreThreshold: 0.5
     - _DissolveAmount: 0
     - _DissolveSoftness: 0.1
     - _DstBlend: 1
     - _SrcBlend: 5
     - _UsePolar: 0
     m_Colors:
-    - _CoreColor: {r: 2.5, g: 2, b: 0.6, a: 1}
-    - _EdgeColor: {r: 2.5, g: 2, b: 0.6, a: 1}
-    - _Speed: {r: 1, g: 0, b: 0, a: 0}
+    - _CoreColor: {r: 3.2, g: 2.6, b: 0.9, a: 1}
+    - _EdgeColor: {r: 2.0, g: 1.1, b: 0.15, a: 1}
+    - _Speed: {r: 1.2, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

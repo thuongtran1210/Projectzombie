@@ -219,40 +219,43 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformAttack()
         {
             bool isEvolution = WeaponLevel >= MaxLevel;
-            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.5f);
+            Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 10.0f);
             Vector2 baseDir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
             global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
 
             if (isEvolution)
             {
                 // TIẾN HÓA: MA TRẬN VẠN DÉP HỘI TỤ (Slipper Convergence Matrix Slam)
-                // 4 chiếc dép vàng bay 4 hướng tạo thành ma trận, sau đó cùng lao ngược về tâm va chạm nổ tung gom quái
+                // 4 chiếc dép vàng phóng cự ly cực đại (7.5m), xé toạc toàn bộ màn hình phía trước
                 StartCoroutine(RoutineEvolutionConvergenceMatrix(baseDir));
             }
             else
             {
-                // DẠNG THƯỜNG (Lv1 - Lv5): Ném 1-2 chiếc dép Boomerang đơn lẻ
+                // DẠNG THƯỜNG (Lv1 - Lv5): Ném 1-2 chiếc dép Boomerang đơn lẻ cự ly chuẩn (3.8m - 4.8m)
                 int projectileCount = WeaponLevel >= 4 ? 2 : 1;
+                float currentRange = 3.8f + (WeaponLevel - 1) * 0.25f;
                 for (int i = 0; i < projectileCount; i++)
                 {
-                    float angleOffset = (i == 0) ? 0f : ((i % 2 == 1) ? 14f * ((i + 1) / 2) : -14f * (i / 2));
+                    float angleOffset = (i == 0) ? 0f : ((i % 2 == 1) ? 12f * ((i + 1) / 2) : -12f * (i / 2));
                     Vector2 dir = Quaternion.Euler(0, 0, angleOffset) * baseDir;
-                    StartCoroutine(RoutineThrowSlipper(dir, throwRange, 1.0f + (WeaponLevel - 1) * 0.18f, isEvolution: false));
+                    StartCoroutine(RoutineThrowSlipper(dir, currentRange, 1.0f + (WeaponLevel - 1) * 0.18f, isEvolution: false));
                 }
             }
         }
 
         private IEnumerator RoutineEvolutionConvergenceMatrix(Vector2 baseDir)
         {
-            float[] angles = new float[] { -35f, -12f, 12f, 35f };
+            // Tỏa hình nón góc vàng (-24°, -8°, 8°, 24°), tầm bắn 7.2m vượt trội hoàn toàn Lv1
+            float[] angles = new float[] { -24f, -8f, 8f, 24f };
+            float evoRange = 7.2f;
             Vector2 startPos = transform.position;
-            Vector2 convergenceCenter = startPos + baseDir * (throwRange * 1.35f);
+            Vector2 convergenceCenter = startPos + baseDir * (evoRange * 0.95f);
 
-            // Giai đoạn 1: 4 Dép Vàng Khổng Lồ bay tỏa xé toạc đội hình địch
+            // Giai đoạn 1: 4 Dép Vàng Khổng Lồ phóng vút xé gió ra cực xa
             for (int i = 0; i < angles.Length; i++)
             {
                 Vector2 spreadDir = Quaternion.Euler(0, 0, angles[i]) * baseDir;
-                StartCoroutine(RoutineThrowSlipper(spreadDir, throwRange * 1.35f, 1.8f, isEvolution: true, targetConvergencePoint: convergenceCenter));
+                StartCoroutine(RoutineThrowSlipper(spreadDir, evoRange, 1.8f, isEvolution: true, targetConvergencePoint: convergenceCenter));
             }
 
             yield return null;
@@ -262,7 +265,7 @@ namespace ProjectZombie.Features.Weapons
         #region ACTIVE RELIC SKILL (PHASE 1: RIFT TOTEM & PHASE 2: METEOR DROPKICK)
         public override Combat.Aiming.SkillAimConfig AimConfig => IsInRecastWindow 
             ? Combat.Aiming.SkillAimConfig.DefaultInstant
-            : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, throwRange * 1.5f, 1.5f, 40f, true);
+            : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, (WeaponLevel >= MaxLevel ? 7.5f : 4.5f), 1.5f, 40f, true);
 
         private GameObject _recastMarkerInstance;
         private Coroutine _recastMarkerTimerCoroutine;
@@ -273,7 +276,7 @@ namespace ProjectZombie.Features.Weapons
             Vector2 dir = customAimDirection;
             if (dir == Vector2.zero)
             {
-                Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 8.0f);
+                Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 10.0f);
                 if (nearest != null)
                 {
                     dir = ((Vector2)nearest.position - (Vector2)transform.position).normalized;
@@ -286,7 +289,8 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            float actualThrowDist = throwRange * 1.4f;
+            // Kỹ năng chủ động: Lv1 ném 4.2m; Tiến hóa ném xa 7.5m
+            float actualThrowDist = isEvolution ? 7.5f : (4.2f + (WeaponLevel - 1) * 0.3f);
             Vector3 startPos = transform.position;
             Vector3 desiredApexPos = startPos + (Vector3)(dir * actualThrowDist);
 
@@ -549,8 +553,16 @@ namespace ProjectZombie.Features.Weapons
             {
                 _cachedTrailGrad = new Gradient();
                 _cachedTrailGrad.SetKeys(
-                    new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.92f, 0.4f), 0f), new GradientColorKey(new Color(1f, 0.55f, 0.1f), 1f) },
-                    new GradientAlphaKey[] { new GradientAlphaKey(0.95f, 0f), new GradientAlphaKey(0f, 1f) }
+                    new GradientColorKey[] { 
+                        new GradientColorKey(new Color(1f, 1f, 0.85f), 0f),       // Lõi trắng vàng chói lòa
+                        new GradientColorKey(new Color(1f, 0.85f, 0.25f), 0.35f),  // Thân vàng kim rực rỡ
+                        new GradientColorKey(new Color(1f, 0.45f, 0.05f), 1f)     // Đuôi hổ phách nguyên tố Kim
+                    },
+                    new GradientAlphaKey[] { 
+                        new GradientAlphaKey(1f, 0f), 
+                        new GradientAlphaKey(0.85f, 0.5f), 
+                        new GradientAlphaKey(0f, 1f) 
+                    }
                 );
             }
             return _cachedTrailGrad;
@@ -560,7 +572,7 @@ namespace ProjectZombie.Features.Weapons
         {
             Vector2 startPos = transform.position;
             Vector2 targetPos = startPos + dir.normalized * range;
-            float duration = range / (returnSpeed * (isEvolution ? 1.25f : 1.0f));
+            float duration = range / (returnSpeed * (isEvolution ? 1.35f : 1.0f));
             float elapsed = 0f;
 
             DamageData dmg = CreateDamageData();
@@ -570,17 +582,27 @@ namespace ProjectZombie.Features.Weapons
             var sr = slipperVisual.AddComponent<SpriteRenderer>();
             sr.sprite = slipperProjectileSprite;
             sr.sortingLayerName = "Skill";
-            sr.sortingOrder = 12;
-            float scaleMultiplier = isEvolution ? 0.85f : (0.26f + WeaponLevel * 0.035f);
+            sr.sortingOrder = 13;
+            float scaleMultiplier = isEvolution ? 0.9f : (0.28f + WeaponLevel * 0.035f);
             slipperVisual.transform.localScale = Vector3.one * scaleMultiplier;
             slipperVisual.transform.position = startPos;
-            if (isEvolution) sr.color = new Color(1f, 0.95f, 0.35f, 1f);
+            if (isEvolution) sr.color = new Color(1f, 0.95f, 0.45f, 1f);
+
+            // [MỚI] Hào Quang Hoàng Kim (Golden Aura Glow Sprite) bọc quanh thân dép
+            GameObject auraObj = new GameObject("Aura_Glow");
+            auraObj.transform.SetParent(slipperVisual.transform, false);
+            var srAura = auraObj.AddComponent<SpriteRenderer>();
+            srAura.sprite = recastMarkerCircleSprite != null ? recastMarkerCircleSprite : slipperProjectileSprite;
+            srAura.color = isEvolution ? new Color(1f, 0.85f, 0.2f, 0.55f) : new Color(1f, 0.9f, 0.4f, 0.35f);
+            srAura.sortingLayerName = "Skill";
+            srAura.sortingOrder = 12;
+            auraObj.transform.localScale = Vector3.one * (isEvolution ? 1.5f : 1.25f);
 
             var trailRenderer = slipperVisual.AddComponent<TrailRenderer>();
-            trailRenderer.time = isEvolution ? 0.4f : 0.16f;
-            trailRenderer.startWidth = isEvolution ? 0.85f : 0.18f;
+            trailRenderer.time = isEvolution ? 0.42f : 0.18f;
+            trailRenderer.startWidth = isEvolution ? 0.95f : 0.22f;
             trailRenderer.endWidth = 0.02f;
-            trailRenderer.minVertexDistance = 0.04f;
+            trailRenderer.minVertexDistance = 0.035f;
             trailRenderer.autodestruct = false;
             trailRenderer.sortingLayerName = "Skill";
             trailRenderer.sortingOrder = 11;
@@ -596,9 +618,9 @@ namespace ProjectZombie.Features.Weapons
             mainT.playOnAwake = false;
             mainT.duration = 1.0f;
             mainT.loop = true;
-            mainT.startLifetime = isEvolution ? 0.4f : 0.12f;
-            mainT.startSpeed = isEvolution ? 2.5f : 0.5f;
-            mainT.startSize = new ParticleSystem.MinMaxCurve(isEvolution ? 0.45f : 0.12f, isEvolution ? 0.9f : 0.25f);
+            mainT.startLifetime = isEvolution ? 0.45f : 0.15f;
+            mainT.startSpeed = isEvolution ? 3.0f : 0.6f;
+            mainT.startSize = new ParticleSystem.MinMaxCurve(isEvolution ? 0.5f : 0.15f, isEvolution ? 1.0f : 0.3f);
             mainT.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emissT = psTrail.emission;
@@ -615,7 +637,7 @@ namespace ProjectZombie.Features.Weapons
             psTrail.Play();
 
             Vector2 perpendicular = new Vector2(-dir.y, dir.x);
-            float arcOffset = isEvolution ? 3.0f : 1.2f;
+            float arcOffset = isEvolution ? 1.6f : 1.0f;
             Vector2 controlPos = startPos + (dir.normalized * (range * 0.5f)) + (perpendicular * arcOffset);
             float hitRadius = isEvolution ? 5.0f : (1.5f + WeaponLevel * 0.18f);
             float spinSpeed = isEvolution ? 2520f : 1080f;
@@ -662,7 +684,25 @@ namespace ProjectZombie.Features.Weapons
 
         private void DealConvergenceShockwave(Vector2 center, DamageData baseDmg)
         {
-            DamageData slamDmg = new DamageData(baseDmg.Amount * 1.5f, true, ElementType.Kim, true, this);
+            // Sinh Visual Sóng Kích Hội Tụ Hoàng Kim bùng nổ (Golden Shockwave Ring & Core Burst)
+            if (recastMarkerCircleSprite != null)
+            {
+                GameObject slamVfx = new GameObject("VFX_Convergence_Slam_Burst");
+                slamVfx.transform.position = center;
+                var sr = slamVfx.AddComponent<SpriteRenderer>();
+                sr.sprite = recastMarkerCircleSprite;
+                sr.color = new Color(1f, 0.95f, 0.4f, 0.95f);
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 15;
+                slamVfx.transform.localScale = Vector3.one * 0.4f;
+
+                StartCoroutine(RoutineAnimateWhirlwindVisual(slamVfx, 0.4f, 4.5f));
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.35f, 0.4f);
+
+            DamageData slamDmg = new DamageData(baseDmg.Amount * 1.8f, true, ElementType.Kim, true, this);
             int count = Physics2D.OverlapCircleNonAlloc(center, 5.5f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);
             for (int i = 0; i < count; i++)
             {
@@ -677,8 +717,8 @@ namespace ProjectZombie.Features.Weapons
                 {
                     // Hút toàn bộ quái về tâm hội tụ
                     Vector2 pull = (center - (Vector2)hit.transform.position).normalized;
-                    status.ApplyKnockback(pull, 10f, 0.2f);
-                    status.ApplyStatusEffect(StatusEffectType.Humiliated, 2.5f);
+                    status.ApplyKnockback(pull, 12f, 0.25f);
+                    status.ApplyStatusEffect(StatusEffectType.Humiliated, 3.0f);
                 }
             }
         }

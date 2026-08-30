@@ -47,27 +47,25 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   weaponId: W_SLIPPER
   displayName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
-  icon: {fileID: 0}
-  description: "V\u0169 kh\xED n\xE9m Boomerang h\xE0i h\u01B0\u1EDBc; Hit 3 qu\u0103ng
-    l\u1ED1c d\xE9p g\xE2y hi\u1EC7u \u1EE9ng 'Qu\xEA \u0110\u1ED9' khi\u1EBFn qu\xE1i
-    quay sang \u0111\u1EA5m \u0111\u1ED3ng minh."
-  element: 0
-  weaponRole: 0
+  icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
+  description: "Pháp bảo Dép Tổ Ong Thần Sa: Kỹ năng chủ động 2 giai đoạn (Quăng Boomerang gom quái -> Recast phi thân tung cước Song Phi dẫm nổ Shockwave). Bị động: Bồi đòn và Lốc Dép Vạn Năng."
+  element: 1
+  weaponRole: 2
   isPrimaryActiveWeapon: 0
   isPassiveRelic: 0
-  activeCooldown: 8
+  activeCooldown: 6.5
   activeDuration: 0
-  skillActionName: 
-  hasRecastPhase: 0
-  recastWindowDuration: 3.5
+  skillActionName: "T\u1ED5 Ong L\u01B0\u1EE3n C\xE1nh"
+  hasRecastPhase: 1
+  recastWindowDuration: 3.2
   currentComboStep: 1
   comboResetWindow: 1
   throwRange: 4.5
   returnSpeed: 12
-  humiliatedChance: 0.45
+  humiliatedChance: 0.5
   autoWhirlwindCooldown: 3.5
   whirlwindVfxPrefab: {fileID: 6089668274784451211, guid: 902878aca0f0c7b4f968596927c7d0df, type: 3}
-  slipperProjectileSprite: {fileID: 0}
-  trailMaterial: {fileID: 0}
-  dropsParticleMaterial: {fileID: 0}
-  recastMarkerCircleSprite: {fileID: 0}
+  slipperProjectileSprite: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
+  trailMaterial: {fileID: 2100000, guid: 5710b686e14b65e4982e610ad594c161, type: 2}
+  dropsParticleMaterial: {fileID: 2100000, guid: bfa69e9cbb50bff48ab57f423e92c731, type: 2}
+  recastMarkerCircleSprite: {fileID: 21300000, guid: a61d7b38c41249f0a99602b9e4a80002, type: 3}

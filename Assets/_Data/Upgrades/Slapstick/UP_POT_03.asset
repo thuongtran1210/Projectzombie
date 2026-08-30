@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "L\u1EF1c H\xFAt Ch\xE2n Kh\xF4ng"
   description: "M\u1EDF r\u1ED9ng b\xE1n k\xEDnh h\xFAt qu\xE1i l\xEAn 5.0m, h\xFAt
     t\u1ED1i \u0111a 5 qu\xE1i th\u01B0\u1EDDng."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0

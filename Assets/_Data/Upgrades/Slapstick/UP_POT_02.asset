@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "N\u1EAFp N\u1ED3i Gang N\u1EB7ng"
   description: "+30% S\xE1t th\u01B0\u01A1ng g\xF5 n\u1EAFp, t\u0103ng th\u1EDDi
     gian Cho\xE1ng l\xEAn 0.5s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0
