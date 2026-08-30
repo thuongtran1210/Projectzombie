@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "T\u1ED5 Ong Ho\xE0ng Kim"
   description: "+45% S\xE1t th\u01B0\u01A1ng \u0111\xF2n \u0111\xE1nh v\xE0 +30%
     S\xE1t th\u01B0\u01A1ng ch\xED m\u1EA1ng."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Song D\xE9p T\u0103ng T\u1ED1c"
   description: "+25% S\xE1t th\u01B0\u01A1ng, +20% T\u1ED1c \u0111\u1ED9 bay c\u1EE7a
     d\xE9p."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0
