@@ -14,27 +14,10 @@ namespace ProjectZombie.Editor.VFX
         private const string PREFAB_DIR = "Assets/VFX/SkillLibrary/Prefabs";
         private const string MAT_DIR = "Assets/VFX/SkillLibrary/Materials";
 
-        [MenuItem("Tools/VFX Generator/🔥 Build 5 Slapstick Relic VFX (1-Click)", false, 10)]
-        public static void BuildAllSlapstickVFX()
-        {
-            if (!Directory.Exists(PREFAB_DIR)) Directory.CreateDirectory(PREFAB_DIR);
-            if (!Directory.Exists(MAT_DIR)) Directory.CreateDirectory(MAT_DIR);
-
-            BuildSlipperVFX();
-            BuildPotVFX();
-            BuildPipeVFX();
-            BuildSleepingMatVFX();
-            BuildChickenBroomVFX();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            Debug.Log("<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🚀 ĐÃ DỰNG THÀNH CÔNG 5 PREFAB VFX CHO PHÁP BẢO SLAPSTICK!");
-        }
-
-        // 1. W_SLIPPER: Lốc Dép Vạn Năng (Hệ Kim - Chuẩn Multi-Layer AAA Anime VFX)
-        [MenuItem("Tools/VFX Generator/🩴 Rebuild Slipper VFX Prefab (High Polish)", false, 1)]
+        [MenuItem("Tools/VFX Generator/Slapstick Relics/1. 🩴 Build W_SLIPPER (Dép Tổ Ong)", false, 1)]
         public static void BuildSlipperVFX()
         {
+            EnsureDirectories();
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_Slipper_Whirlwind.prefab";
             string texSlipperPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_Projectile.png";
             string texArcPath = "Assets/VFX/SkillLibrary/Textures/Tex_Slipper_VortexArc.png";
