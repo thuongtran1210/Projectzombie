@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -200,27 +200,6 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Magiap-Attack_5
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 00000000000000000000006100261725
-      internalID: 6100261725
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -237,7 +216,6 @@ TextureImporter:
       Magiap-Attack_2: 6100224690
       Magiap-Attack_3: 6100237035
       Magiap-Attack_4: 6100249380
-      Magiap-Attack_5: 6100261725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
