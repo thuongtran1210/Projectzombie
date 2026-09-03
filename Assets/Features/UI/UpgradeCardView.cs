@@ -75,7 +75,12 @@ namespace ProjectZombie.Features.UI
                 _banButton.gameObject.SetActive(onBanClicked != null);
             }
 
-            if (_iconImage != null) _iconImage.sprite = icon;
+            if (_iconImage != null)
+            {
+                _iconImage.sprite = icon;
+                _iconImage.enabled = icon != null;
+                _iconImage.preserveAspect = true;
+            }
             if (_nameText != null) _nameText.text = cardName;
             if (_descriptionText != null) _descriptionText.text = description;
             if (_categoryText != null) _categoryText.text = category;

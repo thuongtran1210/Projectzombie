@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Gi\u1EA5c Ng\u1EE7 Ng\xE0n Thu"
   description: "T\u0103ng th\u1EDDi gian ng\u1EE7 l\xEAn 4.5s; \u0110\xF2n \u0111\xE1nh
     th\u1EE9c g\xE2y +150% S\xE1t th\u01B0\u01A1ng Ch\xED m\u1EA1ng!"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 14fb91436d0d490695e9f5e1d7d40373, type: 3}
   upgradeType: 7
   spawnWeight: 6
   maxLevel: 0

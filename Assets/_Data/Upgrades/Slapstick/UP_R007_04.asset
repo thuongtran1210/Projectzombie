@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Tr\u01B0\u1EE3t Bowling Si\xEAu T\u1ED1c"
   description: "Khi ng\u01B0\u1EDDi ch\u01A1i tr\u01B0\u1EE3t tr\xEAn chi\u1EBFu:
     T\u0103ng +150% T\u1ED1c \u0111\u1ED9 v\xE0 t\xF4ng v\u0103ng qu\xE1i xa h\u01A1n."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 5831f9e52dd8493e84f89ddd4e218bb0, type: 3}
   upgradeType: 7
   spawnWeight: 6
   maxLevel: 0

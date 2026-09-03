@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "\u0110\u1ED8T PH\xC1 T\u1ED0I TH\u01AF\u1EE2NG: Th\u1EA3 2 chi\u1EBFu
     li\xEAn ti\u1EBFp, qu\xE1i ng\u1EE7 nh\u1EADn x3.0 S\xE1t th\u01B0\u01A1ng b\u1EA1o
     k\xEDch!"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 59a561f8039e419b8159fd7f33af52b6, type: 3}
   upgradeType: 10
   spawnWeight: 3
   maxLevel: 0

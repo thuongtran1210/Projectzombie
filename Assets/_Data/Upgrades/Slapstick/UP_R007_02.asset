@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Chi\u1EBFu \u0110\xF4i R\u1ED9ng L\u1EDBn"
   description: "+40% K\xEDch th\u01B0\u1EDBc t\u1EA5m chi\u1EBFu tr\u1EA3i, d\u1EC5
     d\xE0ng b\u1EABy c\u1EA3 \u0111\xE0n qu\xE1i."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 59a561f8039e419b8159fd7f33af52b6, type: 3}
   upgradeType: 7
   spawnWeight: 6
   maxLevel: 0

@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "T\u0103ng <color=#FF8800>+50% G\xF3c qu\xE9t h\xECnh qu\u1EA1t</color>
     c\u1EE7a nh\xE1t ch\xE9m, t\u0103ng m\u1EA1nh l\u1EF1c h\u1EA5t v\u0103ng qu\xE1i
     v\u1EADt."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c6a74d8be7844413b4ce69d495ccb14a, type: 3}
   upgradeType: 6
   spawnWeight: 4
   maxLevel: 0

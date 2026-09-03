@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Chi\u1EBFu Tr\u1EA3i Li\xEAn T\u1EE5c"
   description: "Gi\u1EA3m 30% th\u1EDDi gian h\u1ED3i chi\xEAu tr\u1EA3i chi\u1EBFu
     (th\u1EA3 chi\u1EBFu m\u1ED7i 5.5s)."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 59a561f8039e419b8159fd7f33af52b6, type: 3}
   upgradeType: 7
   spawnWeight: 6
   maxLevel: 0

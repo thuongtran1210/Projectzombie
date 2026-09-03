@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "Gi\u1EA3m 30% th\u1EDDi gian tr\u1EC5 gi\u1EEFa c\xE1c nh\xE1t ch\xE9m,
     t\u0103ng <color=#00FF88>+35% T\u1ED1c \u0111\u1ED9 vung \u0111\xF2n</color>
     li\xEAn ho\xE0n."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b3d25cdb70e747a4b923b33ec3b1a65c, type: 3}
   upgradeType: 6
   spawnWeight: 5
   maxLevel: 0

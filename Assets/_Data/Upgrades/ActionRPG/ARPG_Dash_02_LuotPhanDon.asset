@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "Sau khi L\u01B0\u1EDBt n\xE9 \u0111\xF2n th\xE0nh c\xF4ng, \u0111\xF2n
     ch\xE9m ti\u1EBFp theo nh\u1EADn th\xEAm <color=#FFD700>+40% T\u1EF7 l\u1EC7
     Ch\xED m\u1EA1ng</color>."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 59235e7d7a244d9b80ceaa1b5ed33cde, type: 3}
   upgradeType: 8
   spawnWeight: 5
   maxLevel: 0

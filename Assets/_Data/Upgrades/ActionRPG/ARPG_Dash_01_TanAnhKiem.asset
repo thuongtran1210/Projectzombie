@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "T\xE0n \u1EA2nh Ki\u1EBFm"
   description: "Gi\u1EA3m <color=#4DEEEA>30% Th\u1EDDi gian h\u1ED3i L\u01B0\u1EDBt</color>
     v\xE0 t\u0103ng 35% T\u1ED1c \u0111\u1ED9 l\u01B0\u1EDBt n\xE9 \u0111\xF2n."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 031bb962d90d468a8971e9089876b4d4, type: 3}
   upgradeType: 8
   spawnWeight: 6
   maxLevel: 0

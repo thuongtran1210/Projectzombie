@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa [C\u1EA5p 5 - Max Base]: <color=#FFD700>+1
     Tia \u0111\u1EA1n</color>, <color=#FF4444>+35% S\xE1t th\u01B0\u01A1ng c\u1EF1c
     \u0111\u1EA1i</color>. \u0110\u1EA1t \u0111i\u1EC1u ki\u1EC7n Ti\u1EBFn H\xF3a!"
-  icon: {fileID: 21300000, guid: 75ab74d93b024d53860df112415e6d3f, type: 3}
+  icon: {fileID: 21300000, guid: 0a62811d88a3492389930780480c92d3, type: 3}
   upgradeType: 0
   spawnWeight: 8
   maxLevel: 1
