@@ -124,10 +124,18 @@ namespace ProjectZombie.Features.Weapons
         public float RelicMaxCooldown => Mathf.Max(0.1f, activeCooldown);
         public bool IsRelicSkillReady => _currentRelicPhase == RelicCastPhase.Ready || IsInRecastWindow;
 
+        public virtual string RelicStackBadgeText => string.Empty;
+
         public event System.Action<float, float> OnRelicCooldownUpdated;
         public event System.Action OnRelicSkillReady;
         public event System.Action OnRelicSkillExecuted;
         public event System.Action<RelicCastPhase> OnRelicPhaseChanged;
+        public event System.Action<string> OnRelicStackBadgeUpdated;
+
+        protected void TriggerRelicStackBadgeUpdated(string text = null)
+        {
+            OnRelicStackBadgeUpdated?.Invoke(text ?? RelicStackBadgeText);
+        }
 
         [Header("Combo System (Action RPG)")]
         public int currentComboStep = 1;

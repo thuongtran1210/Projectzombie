@@ -68,6 +68,10 @@ namespace ProjectZombie.Features.Enemies
         }
 
         private bool _hasDealtDamageThisAttack = false;
+        private bool _isAttacking = false;
+        private Coroutine _attackRoutine;
+
+        public override bool IsAttacking => _isAttacking;
 
         private void Start()
         {
@@ -85,9 +89,22 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public override void InterruptAttack()
+        {
+            _isAttacking = false;
+            _hasDealtDamageThisAttack = false;
+            if (_attackRoutine != null)
+            {
+                StopCoroutine(_attackRoutine);
+                _attackRoutine = null;
+            }
+            CancelInvoke(nameof(DealMeleeDamage));
+        }
+
         private void DealMeleeDamage()
         {
             if (_enemy == null || _enemy.Config == null) return;
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack) return;
             if (_hasDealtDamageThisAttack) return; // Khóa chống lặp sát thương trong 1 nhịp chém
 
             _hasDealtDamageThisAttack = true;
@@ -130,10 +147,13 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
-        private Coroutine _attackRoutine;
-
         public override void Attack()
         {
+            if (_enemy != null && _enemy.StatusController != null && !_enemy.StatusController.CanAttack)
+            {
+                return;
+            }
+
             _hasDealtDamageThisAttack = false;
 
             if (_attackRoutine != null) StopCoroutine(_attackRoutine);
@@ -144,11 +164,18 @@ namespace ProjectZombie.Features.Enemies
         {
             if (_enemy == null || _enemy.Config == null) yield break;
 
-            float cooldown = Mathf.Max(0.2f, _enemy.Config.attackCooldown);
-            float windupRatio = Mathf.Clamp(_enemy.Config.windupRatio, 0.1f, 0.6f);
-            float windupDelay = Mathf.Clamp(cooldown * windupRatio, 0.08f, 0.45f);
+            _isAttacking = true;
 
-            // 1. Phát Animation Attack với tốc độ đồng bộ
+            // 1. Lấy độ dài thực tế của Clip Animation Attack
+            float clipLength = 0.5f;
+            if (_enemy.EnemyAnimator != null)
+            {
+                clipLength = _enemy.EnemyAnimator.GetCurrentAttackClipLength(0.5f);
+            }
+
+            float cooldown = Mathf.Max(0.2f, _enemy.Config.attackCooldown);
+            float animSpeed = Mathf.Clamp(clipLength / Mathf.Min(clipLength, cooldown * 0.8f), 0.8f, 2.2f);
+
             var bossAnimator = GetComponentInChildren<BossAnimator>();
             if (bossAnimator != null)
             {
@@ -156,12 +183,21 @@ namespace ProjectZombie.Features.Enemies
             }
             else if (_enemy.EnemyAnimator != null)
             {
-                _enemy.EnemyAnimator.SetAttackAnimationSpeed(1.0f / cooldown);
+                _enemy.EnemyAnimator.SetAttackAnimationSpeed(animSpeed);
                 _enemy.EnemyAnimator.TriggerAttack();
             }
 
-            // 2. Chờ đúng Frame vung tay/chém xuống của quái
-            yield return new WaitForSeconds(windupDelay);
+            // 2. Chờ đúng Frame vung tay chạm đòn (45% thời lượng thực tế của Clip sau khi áp dụng Speed)
+            float totalAnimDuration = clipLength / animSpeed;
+            float impactDelay = totalAnimDuration * 0.45f;
+            yield return new WaitForSeconds(impactDelay);
+
+            // Kiểm tra nếu quái bị dính khống chế trong lúc vung tay thì dập tắt đòn
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack)
+            {
+                InterruptAttack();
+                yield break;
+            }
 
             // 3. Đúng lúc chạm tay -> Sinh VFX Vệt Cào Quái & Quét Hitbox gây Damage lên Player
             if (_enemy.Config.attackVfxPrefab != null)
@@ -180,6 +216,12 @@ namespace ProjectZombie.Features.Enemies
             }
 
             DealMeleeDamage();
+
+            // 4. Chờ hoàn tất nốt giai đoạn thu tay về (Recovery Phase 55% còn lại)
+            float recoveryDelay = totalAnimDuration * 0.55f;
+            yield return new WaitForSeconds(recoveryDelay);
+
+            _isAttacking = false;
             _attackRoutine = null;
         }
 

@@ -258,13 +258,36 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
 
             var settingsPresenter = FindObjectOfType<SettingsModalPresenter>(true);
+            if (settingsPresenter == null)
+            {
+                // Thử tìm trong Canvas cha hoặc Resources / Prefab
+                var settingsPrefab = Resources.Load<GameObject>("UI/SettingsModalUI");
+                if (settingsPrefab == null)
+                {
+#if UNITY_EDITOR
+                    settingsPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/SettingsModalUI.prefab");
+#endif
+                }
+
+                if (settingsPrefab != null)
+                {
+                    Transform canvasTransform = transform.root;
+                    var canvas = GetComponentInParent<Canvas>();
+                    if (canvas != null) canvasTransform = canvas.transform;
+
+                    GameObject settingsObj = Instantiate(settingsPrefab, canvasTransform);
+                    settingsObj.name = "Modal_Settings";
+                    settingsPresenter = settingsObj.GetComponent<SettingsModalPresenter>();
+                }
+            }
+
             if (settingsPresenter != null)
             {
                 settingsPresenter.Open();
             }
             else
             {
-                Debug.Log("[PlayerInfoUIPresenter] SettingsModalPresenter not found in current scene.");
+                Debug.LogWarning("[PlayerInfoUIPresenter] SettingsModalPresenter not found and could not be loaded.");
             }
         }
 

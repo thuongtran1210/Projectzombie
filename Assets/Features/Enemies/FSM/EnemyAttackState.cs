@@ -36,6 +36,23 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
+            // Kiểm tra trạng thái khống chế (Stun/Freeze/Sleep): Dập tắt đòn đánh ngay lập tức
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack)
+            {
+                if (_enemy.Attacker != null && _enemy.Attacker.IsAttacking)
+                {
+                    _enemy.Attacker.InterruptAttack();
+                }
+                return;
+            }
+
+            // QUY TẮC KHÓA ATTACK STATE: Nếu quái đang vung tay chém, bắt buộc phải hoàn thành trọn vẹn nhịp đòn
+            // Không được phép hủy animation chuyển sang ChaseState giữa chừng khi Player bước lùi
+            if (_enemy.Attacker != null && _enemy.Attacker.IsAttacking)
+            {
+                return;
+            }
+
             float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
             
             // Xoay mặt về phía người chơi
@@ -94,6 +111,16 @@ namespace ProjectZombie.Features.Enemies
                     }
                     _lastAttackTime = Time.time;
                 }
+            }
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+            _isTelegraphing = false;
+            if (_enemy.Attacker != null && _enemy.Attacker.IsAttacking)
+            {
+                _enemy.Attacker.InterruptAttack();
             }
         }
 

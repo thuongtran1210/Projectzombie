@@ -660,6 +660,20 @@ namespace ProjectZombie.Editor.UI
                 soBoot.ApplyModifiedProperties();
             }
 
+            // Đảm bảo Modal_Settings có mặt trong Scene
+            Transform existingSettings = mainCanvas.transform.Find("Modal_Settings");
+            if (existingSettings == null && gameRoot != null) existingSettings = gameRoot.Find("Modal_Settings");
+            if (existingSettings == null)
+            {
+                var settingsPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/SettingsModalUI.prefab");
+                if (settingsPrefab != null)
+                {
+                    var setObj = (GameObject)PrefabUtility.InstantiatePrefab(settingsPrefab, mainCanvas.transform);
+                    setObj.name = "Modal_Settings";
+                    setObj.SetActive(false);
+                }
+            }
+
             EditorUtility.SetDirty(mainCanvas);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainCanvas.gameObject.scene);
 

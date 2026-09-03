@@ -29,7 +29,9 @@ def export_gachoi_art():
     frames = []
 
     frame_w, frame_h = 128, 128
-    target_char_h = 96
+    # Hero is 96px height in 128x128 canvas (1.5 units at PPU 64).
+    # Chibi Chicken companion should be ~44px height (0.68 units at PPU 64, exactly 45% ratio of hero).
+    target_char_h = 44
 
     for idx, sl in enumerate(valid_slices):
         sy, sx = sl
@@ -67,14 +69,14 @@ def export_gachoi_art():
         res_arr[res_arr[:, :, 3] < 100, 3] = 0
         resized = Image.fromarray(res_arr, 'RGBA')
 
-        # Place onto 128x128 canvas, bottom center aligned with 10px bottom margin
+        # Place onto 128x128 canvas, bottom center aligned with 6px bottom margin
         target = Image.new('RGBA', (frame_w, frame_h), (0, 0, 0, 0))
         px = (frame_w - nw) // 2
-        py = max(4, frame_h - nh - 10)
+        py = max(2, frame_h - nh - 6)
         target.paste(resized, (px, py), resized)
         frames.append(target)
 
-    print(f"Successfully processed {len(frames)} frames from uploaded image.")
+    print(f"Successfully processed {len(frames)} frames with target height {target_char_h}px.")
 
     # 1. GaChoi-Idle.png (3 frames: 384x128) -> Frames [0, 1, 4]
     idle_idx = [0, 1, 4]
@@ -90,7 +92,7 @@ def export_gachoi_art():
         run_img.paste(frames[idx], (i * frame_w, 0), frames[idx])
     run_img.save(os.path.join(gachoi_dir, "GaChoi-Run.png"))
 
-    # 3. GaChoi-Attack.png (4 frames: 512x128) -> Frames [9, 10, 11, 12] (Peck & Wing strike)
+    # 3. GaChoi-Attack.png (4 frames: 512x128) -> Frames [9, 10, 11, 12]
     atk_idx = [9, 10, 11, 12]
     atk_img = Image.new('RGBA', (4 * frame_w, frame_h), (0, 0, 0, 0))
     for i, idx in enumerate(atk_idx):
@@ -104,11 +106,25 @@ def export_gachoi_art():
         all_img.paste(frames[idx], (i * frame_w, 0), frames[idx])
     all_img.save(os.path.join(gachoi_dir, "GaChoi-All.png"))
 
-    # 5. Update Tex_VFX_Chibi_Chicken_Run.png for particle effects
-    vfx_tex_path = r"c:\Users\thuon\Unity\Projectzombie\Assets\VFX\SkillLibrary\Textures\Tex_VFX_Chibi_Chicken_Run.png"
-    frames[1].save(vfx_tex_path)
+    # 5. Process Feather Collectible Texture (Tex_ChickenBroom_SingleFeather_Clean.png)
+    feather_path = r"c:\Users\thuon\Unity\Projectzombie\Assets\VFX\SkillLibrary\Textures\Tex_ChickenBroom_SingleFeather_Clean.png"
+    if os.path.exists(feather_path):
+        f_img = Image.open(feather_path).convert('RGBA')
+        f_bbox = f_img.getbbox()
+        if f_bbox:
+            f_cropped = f_img.crop(f_bbox)
+            # Scale feather so target size is 28px in 64x64 canvas
+            fw, fh = f_cropped.size
+            f_scale = 28.0 / max(fw, fh)
+            f_resized = f_cropped.resize((int(round(fw * f_scale)), int(round(fh * f_scale))), Image.Resampling.LANCZOS)
+            feather_canvas = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+            fpx = (64 - f_resized.width) // 2
+            fpy = (64 - f_resized.height) // 2
+            feather_canvas.paste(f_resized, (fpx, fpy), f_resized)
+            feather_canvas.save(feather_path)
+            print(f"Resized feather texture to 28px on 64x64 canvas.")
 
-    print("GaChoi Sprite Sheets updated successfully!")
+    print("Native Sprite resolutions updated successfully!")
 
 if __name__ == "__main__":
     export_gachoi_art()

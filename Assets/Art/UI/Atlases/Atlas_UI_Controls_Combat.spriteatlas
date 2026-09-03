@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_UI_Controls_Combat
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 0
+      compressionQuality: 0
+      maxTextureSize: 0
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 80
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 3da906820d4bedb4b8800e8169524e4a, type: 3}
+    - {fileID: 102900000, guid: 4f5a39667e22a1640a57e754648dc2e5, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - a126fbb789689d648b41a95cb0c78193: 21300000
+    - 98632a795bc387847b42dfe8034094bf: 21300000
+    - ed37f7e97d293c349bf5779506006696: 21300000
+    - 5a6f7e6b80584b64b9697d4cb584f693: 21300000
+    - 57fe6e4c65e9e4c4094e3bf0cf0288d1: 21300000
+    - 44ff375eab5c4175a6070b6717d5ae91: 21300000
+    - a6b0993f611b42589611fffceadf140b: 21300000
+    - 3fe417efe8764da3a20339aff030c4b5: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: a126fbb789689d648b41a95cb0c78193, type: 3}
+  - {fileID: 21300000, guid: 98632a795bc387847b42dfe8034094bf, type: 3}
+  - {fileID: 21300000, guid: ed37f7e97d293c349bf5779506006696, type: 3}
+  - {fileID: 21300000, guid: 5a6f7e6b80584b64b9697d4cb584f693, type: 3}
+  - {fileID: 21300000, guid: 57fe6e4c65e9e4c4094e3bf0cf0288d1, type: 3}
+  - {fileID: 21300000, guid: 44ff375eab5c4175a6070b6717d5ae91, type: 3}
+  - {fileID: 21300000, guid: a6b0993f611b42589611fffceadf140b, type: 3}
+  - {fileID: 21300000, guid: 3fe417efe8764da3a20339aff030c4b5, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Icon_Atk_ThanhDong_Torch
+  - Icon_Atk_DaoSi_Sword
+  - Icon_Atk_AnSi_Fist
+  - Btn_Signature_Skill_PhanQuan
+  - Icon_Atk_ThuSinh_Brush
+  - Joystick_Base_DongSon
+  - Joystick_Knob_Taiji
+  - Btn_Dash_PhiVan
+  m_RenderDataMap: {}
+  m_Tag: Atlas_UI_Controls_Combat
+  m_IsVariant: 0

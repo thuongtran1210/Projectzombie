@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_UI_Upgrade_Icons
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 0
+      compressionQuality: 0
+      maxTextureSize: 0
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 80
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 3b2b99f290e7efb4697a2822da38833a, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 111b28e17f844dbca1f98e4c36781c41: 21300000
+    - c3207f53b448442db9c9b717cc81a81b: 21300000
+    - 25b72df37c0c4eba849b9bb1bf5ea9f1: 21300000
+    - 98e10884571143c8abee7e07871e8c7e: 21300000
+    - 0406ae4585d64cc9bba06c02a293147a: 21300000
+    - e8d62d9569a4479eb8f65bf50d5cf121: 21300000
+    - 277456e546c745c0a79f48c71f2c794c: 21300000
+    - 3ae1c8887bb145129656fc335c0997a0: 21300000
+    - 9ce44fc85685445f93c4a75d2211216d: 21300000
+    - 75ab74d93b024d53860df112415e6d3f: 21300000
+    - 24b7546c651341489c3c29ad2b1f81b6: 21300000
+    - 1b09bd9ed2674a859b7ce033fb5a7e3a: 21300000
+    - e40b4feeb42b411fa61510327426e018: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
+  - {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
+  - {fileID: 21300000, guid: 25b72df37c0c4eba849b9bb1bf5ea9f1, type: 3}
+  - {fileID: 21300000, guid: 98e10884571143c8abee7e07871e8c7e, type: 3}
+  - {fileID: 21300000, guid: 0406ae4585d64cc9bba06c02a293147a, type: 3}
+  - {fileID: 21300000, guid: e8d62d9569a4479eb8f65bf50d5cf121, type: 3}
+  - {fileID: 21300000, guid: 277456e546c745c0a79f48c71f2c794c, type: 3}
+  - {fileID: 21300000, guid: 3ae1c8887bb145129656fc335c0997a0, type: 3}
+  - {fileID: 21300000, guid: 9ce44fc85685445f93c4a75d2211216d, type: 3}
+  - {fileID: 21300000, guid: 75ab74d93b024d53860df112415e6d3f, type: 3}
+  - {fileID: 21300000, guid: 24b7546c651341489c3c29ad2b1f81b6, type: 3}
+  - {fileID: 21300000, guid: 1b09bd9ed2674a859b7ce033fb5a7e3a, type: 3}
+  - {fileID: 21300000, guid: e40b4feeb42b411fa61510327426e018, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Icon_P001_Damage
+  - Icon_Evolutions_General
+  - Icon_W008_DaoCuuVi
+  - Icon_W005_TrongDong
+  - Icon_P003_Health
+  - Icon_W012_PhiTieuBatQuai
+  - Icon_W002_ButPhanQuan
+  - Icon_P007_Armor
+  - Icon_P012_Luck
+  - Icon_W001_NoThan
+  - Icon_P006_Speed
+  - Icon_P010_Magnet
+  - Icon_W003_BuaTranYeu
+  m_RenderDataMap: {}
+  m_Tag: Atlas_UI_Upgrade_Icons
+  m_IsVariant: 0

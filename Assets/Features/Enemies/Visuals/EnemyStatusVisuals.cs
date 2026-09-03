@@ -52,12 +52,30 @@ namespace ProjectZombie.Features.Enemies.Visuals
         private bool _isDancing = false;
         private bool _isHumiliated = false;
 
+        // Procedural Sleep Visuals
+        private Transform _visualTransform;
+        private Vector3 _originalVisualLocalPos;
+        private Quaternion _originalVisualLocalRot;
+        private Vector3 _originalVisualLocalScale = Vector3.one;
+        private float _currentSleepAngle = 0f;
+
         private void Awake()
         {
             _statusController = GetComponent<EnemyStatusController>();
             _animator = GetComponentInChildren<Animator>();
             _spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
             _propBlock = new MaterialPropertyBlock();
+
+            if (_animator != null) _visualTransform = _animator.transform;
+            else if (_spriteRenderers != null && _spriteRenderers.Length > 0 && _spriteRenderers[0] != null) _visualTransform = _spriteRenderers[0].transform;
+            else _visualTransform = transform;
+
+            if (_visualTransform != null)
+            {
+                _originalVisualLocalPos = _visualTransform.localPosition;
+                _originalVisualLocalRot = _visualTransform.localRotation;
+                _originalVisualLocalScale = _visualTransform.localScale;
+            }
 
             if (_spriteRenderers != null && _spriteRenderers.Length > 0)
             {
@@ -316,7 +334,14 @@ namespace ProjectZombie.Features.Enemies.Visuals
                     {
                         _slapstickIconObj.SetActive(isActive);
                         _slapstickIconRenderer.sprite = CreateZzzSprite();
-                        _slapstickIconRenderer.color = new Color(0.2f, 0.8f, 1f, 1f);
+                        _slapstickIconRenderer.color = new Color(0.2f, 0.85f, 1f, 1f);
+                    }
+                    if (!isActive && _visualTransform != null)
+                    {
+                        _visualTransform.localPosition = _originalVisualLocalPos;
+                        _visualTransform.localRotation = _originalVisualLocalRot;
+                        _visualTransform.localScale = _originalVisualLocalScale;
+                        _currentSleepAngle = 0f;
                     }
                     break;
 
@@ -349,11 +374,32 @@ namespace ProjectZombie.Features.Enemies.Visuals
 
         private void Update()
         {
-            // Bỏ qua tính toán nếu không có hiệu ứng xoay sao choáng hay biểu tượng slapstick
-            bool hasDizzy = _isStunned && _dizzyRoot != null && _dizzyRoot.activeSelf && _starTransforms != null;
-            bool hasSlapstick = _slapstickIconObj != null && _slapstickIconObj.activeSelf;
+            // 1. Procedural Slapstick Sleeping Animation
+            if (_isSleeping && _visualTransform != null)
+            {
+                // Ngã lật nghiêng -80 độ mượt mà xuống sàn
+                _currentSleepAngle = Mathf.Lerp(_currentSleepAngle, -80f, Time.deltaTime * 12f);
+                _visualTransform.localRotation = Quaternion.Euler(0f, 0f, _currentSleepAngle);
+                
+                // Hạ thấp người sát mặt đất
+                _visualTransform.localPosition = Vector3.Lerp(_visualTransform.localPosition, _originalVisualLocalPos + new Vector3(0f, -0.2f, 0f), Time.deltaTime * 10f);
 
-            if (!hasDizzy && !hasSlapstick) return;
+                // Hiệu ứng thở khò khò phập phồng (Breathing Squash & Stretch)
+                float breath = 1f + 0.08f * Mathf.Sin(Time.time * 4.5f);
+                _visualTransform.localScale = new Vector3(_originalVisualLocalScale.x * (1f / breath), _originalVisualLocalScale.y * breath, _originalVisualLocalScale.z);
+
+                // Định vị bong bóng Zzz trên mũi/đầu quái
+                if (_slapstickIconObj != null && _slapstickIconObj.activeSelf)
+                {
+                    float bubblePulse = 0.85f + 0.25f * Mathf.PingPong(Time.time * 1.8f, 1f);
+                    _slapstickIconObj.transform.localScale = new Vector3(0.35f * bubblePulse, 0.35f * bubblePulse, 1f);
+                    _slapstickIconObj.transform.localPosition = new Vector3(0.4f, _headOffset * 0.4f + Mathf.Sin(Time.time * 3f) * 0.08f, 0f);
+                }
+            }
+
+            // 2. Xoay sao choáng & Slapstick icon
+            bool hasDizzy = _isStunned && _dizzyRoot != null && _dizzyRoot.activeSelf && _starTransforms != null;
+            bool hasSlapstick = _slapstickIconObj != null && _slapstickIconObj.activeSelf && !_isSleeping;
 
             if (hasDizzy)
             {
@@ -375,7 +421,7 @@ namespace ProjectZombie.Features.Enemies.Visuals
                 }
             }
 
-            if (_slapstickIconObj != null && _slapstickIconObj.activeSelf)
+            if (hasSlapstick)
             {
                 float pulse = 1f + 0.15f * Mathf.Sin(Time.time * 6f);
                 _slapstickIconObj.transform.localScale = new Vector3(0.35f * pulse, 0.35f * pulse, 1f);
@@ -424,6 +470,14 @@ namespace ProjectZombie.Features.Enemies.Visuals
             _isStoned = false;
             _isDancing = false;
             _isHumiliated = false;
+
+            if (_visualTransform != null)
+            {
+                _visualTransform.localPosition = _originalVisualLocalPos;
+                _visualTransform.localRotation = _originalVisualLocalRot;
+                _visualTransform.localScale = _originalVisualLocalScale;
+                _currentSleepAngle = 0f;
+            }
 
             if (_dizzyRoot != null) _dizzyRoot.SetActive(false);
             if (_footSlowIndicator != null) _footSlowIndicator.SetActive(false);

@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_UI_HUD_Ingame
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 0
+      compressionQuality: 0
+      maxTextureSize: 0
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 80
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: a9951fbdaedd57849ad50eb506d32175, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - b4b15d604ba74fe796793e96977ae5d4: 21300000
+    - 1e0d42c0982b42fdb6626cb3ebceb1da: 21300000
+    - ccfabec0edeb4e1eb55e92b6d0f3c8c0: 21300000
+    - d9ffe321cd464ad499599be9deffdb72: 21300000
+    - ca503e411bbe44308af1223887686d6f: 21300000
+    - 3a315c61c42c434dabdb9215a6800adb: 21300000
+    - c80883818b8648e68b6311592e657dbc: 21300000
+    - 6400fbb138e14fe3ac56cbb2a0019fdc: 21300000
+    - 390a19e161c9451c9636d694f963b303: 21300000
+    - 7b59ea7270e04921a3bd441c99987a58: 21300000
+    - 23c6a2d27d1241f1aa26bab1eb19ee5b: 21300000
+    - 6f5de4d263482674bb81e7a766f78f5f: 21300000
+    - dfff3c23158b44f89b620e614a0229c8: 21300000
+    - 304d799364a54112aa3726b4f126a176: 21300000
+    - 38ef76a49bae4dc186fd5fc0d049bcfa: 21300000
+    - cf8941f4ae4a4659af53605a48432a3b: 21300000
+    - 8940208588104e3880028e002c472a2b: 21300000
+    - 2c718106d63a46888f67285b600099a5: 21300000
+    - 7a534f665597484d9d5175afd9841ed7: 21300000
+    - 3af94cf64ab74763aadb614534a42329: 21300000
+    - d059d67762bf49668fbe71c0c3a57f11: 21300000
+    - a48cdc1885b04d1b9de5a0a27490b47a: 21300000
+    - 8ebf4d68594041dc89f2d8d9bb735d99: 21300000
+    - 31c8546af9e142dcb472d7b62ae95eef: 21300000
+    - f9d141aa3b4c4a14a3091301a6f1046e: 21300000
+    - ebc8612bec5940849a831f55380e5d74: 21300000
+    - 5219134c5c5b4e43a881750c1238bc1b: 21300000
+    - 47b56e3daba961542bc0b983beb3e7b3: 21300000
+    - 4676f30e61674073a1ca942df7fcd45b: 21300000
+    - 1617a62f3f9347ecaf2fd7b7cc290d00: 21300000
+    - 34294e8f1d8943d3b86b4be740051975: 21300000
+    - cc7479ff1977493a8b76a05910e5e56e: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: b4b15d604ba74fe796793e96977ae5d4, type: 3}
+  - {fileID: 21300000, guid: 1e0d42c0982b42fdb6626cb3ebceb1da, type: 3}
+  - {fileID: 21300000, guid: ccfabec0edeb4e1eb55e92b6d0f3c8c0, type: 3}
+  - {fileID: 21300000, guid: d9ffe321cd464ad499599be9deffdb72, type: 3}
+  - {fileID: 21300000, guid: ca503e411bbe44308af1223887686d6f, type: 3}
+  - {fileID: 21300000, guid: 3a315c61c42c434dabdb9215a6800adb, type: 3}
+  - {fileID: 21300000, guid: c80883818b8648e68b6311592e657dbc, type: 3}
+  - {fileID: 21300000, guid: 6400fbb138e14fe3ac56cbb2a0019fdc, type: 3}
+  - {fileID: 21300000, guid: 390a19e161c9451c9636d694f963b303, type: 3}
+  - {fileID: 21300000, guid: 7b59ea7270e04921a3bd441c99987a58, type: 3}
+  - {fileID: 21300000, guid: 23c6a2d27d1241f1aa26bab1eb19ee5b, type: 3}
+  - {fileID: 21300000, guid: 6f5de4d263482674bb81e7a766f78f5f, type: 3}
+  - {fileID: 21300000, guid: dfff3c23158b44f89b620e614a0229c8, type: 3}
+  - {fileID: 21300000, guid: 304d799364a54112aa3726b4f126a176, type: 3}
+  - {fileID: 21300000, guid: 38ef76a49bae4dc186fd5fc0d049bcfa, type: 3}
+  - {fileID: 21300000, guid: cf8941f4ae4a4659af53605a48432a3b, type: 3}
+  - {fileID: 21300000, guid: 8940208588104e3880028e002c472a2b, type: 3}
+  - {fileID: 21300000, guid: 2c718106d63a46888f67285b600099a5, type: 3}
+  - {fileID: 21300000, guid: 7a534f665597484d9d5175afd9841ed7, type: 3}
+  - {fileID: 21300000, guid: 3af94cf64ab74763aadb614534a42329, type: 3}
+  - {fileID: 21300000, guid: d059d67762bf49668fbe71c0c3a57f11, type: 3}
+  - {fileID: 21300000, guid: a48cdc1885b04d1b9de5a0a27490b47a, type: 3}
+  - {fileID: 21300000, guid: 8ebf4d68594041dc89f2d8d9bb735d99, type: 3}
+  - {fileID: 21300000, guid: 31c8546af9e142dcb472d7b62ae95eef, type: 3}
+  - {fileID: 21300000, guid: f9d141aa3b4c4a14a3091301a6f1046e, type: 3}
+  - {fileID: 21300000, guid: ebc8612bec5940849a831f55380e5d74, type: 3}
+  - {fileID: 21300000, guid: 5219134c5c5b4e43a881750c1238bc1b, type: 3}
+  - {fileID: 21300000, guid: 47b56e3daba961542bc0b983beb3e7b3, type: 3}
+  - {fileID: 21300000, guid: 4676f30e61674073a1ca942df7fcd45b, type: 3}
+  - {fileID: 21300000, guid: 1617a62f3f9347ecaf2fd7b7cc290d00, type: 3}
+  - {fileID: 21300000, guid: 34294e8f1d8943d3b86b4be740051975, type: 3}
+  - {fileID: 21300000, guid: cc7479ff1977493a8b76a05910e5e56e, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Fill_EXP_LamNgoc
+  - EXP_Text_Badge
+  - Meter_Taiji_Orb_Chibi
+  - Panel_RunStats_Pill_3D
+  - Slot_Weapon_Equipped
+  - Gauge_Stat_Fill_Cooldown
+  - HealthBar_BG_Frame
+  - Ornament_LacBird_Gold
+  - HealthBar_Segment_Empty
+  - Gauge_Stat_Bar_Frame
+  - Gauge_Stat_Fill_Damage
+  - Tex_Attack_Aim_Arrow
+  - Pedestal_Magic_Array_2.5D
+  - HUD_Frame_DongSon
+  - Frame_Panel_Top_Scroll
+  - Bar_EXP_Chunky_Frame
+  - Bar_HP_Chunky_Frame
+  - ExpBar_BG_Frame
+  - HealthBar_Segment_Full
+  - Gauge_YinYang_Bar_Chibi
+  - Frame_HUD_Bar
+  - Meter_Taiji_YinYang_DongSon
+  - Bar_HP_Chunky_Fill
+  - Frame_YinYang_Taiji
+  - Handle_LinhChau_DongThau
+  - Bar_EXP_Chunky_Fill
+  - Fill_YinYang_Taiji
+  - Tex_Attack_Aim_Arc_Reticle
+  - Icon_Heart_Ruby
+  - ExpBar_Fill_Gold
+  - PillBar_Resource_HUD
+  - Fill_HP_ChuSa
+  m_RenderDataMap: {}
+  m_Tag: Atlas_UI_HUD_Ingame
+  m_IsVariant: 0

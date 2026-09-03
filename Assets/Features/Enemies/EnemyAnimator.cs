@@ -107,6 +107,37 @@ namespace ProjectZombie.Features.Enemies
             PlayState(EnemyAnimationState.Revive);
         }
 
+        public Animator AnimatorComponent => animator;
+
+        /// <summary>
+        /// Lấy thời lượng thực tế của clip Attack hiện tại đang phát (tính bằng giây).
+        /// </summary>
+        public float GetCurrentAttackClipLength(float defaultFallback = 0.5f)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return defaultFallback;
+
+            var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+            if (clipInfo != null && clipInfo.Length > 0 && clipInfo[0].clip != null)
+            {
+                return clipInfo[0].clip.length;
+            }
+
+            // Fallback tìm clip theo tên trong controller
+            var clips = animator.runtimeAnimatorController.animationClips;
+            if (clips != null)
+            {
+                for (int i = 0; i < clips.Length; i++)
+                {
+                    if (clips[i] != null && clips[i].name.IndexOf(attackStateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return clips[i].length;
+                    }
+                }
+            }
+
+            return defaultFallback;
+        }
+
         /// <summary>
         /// Sự kiện này sẽ được gọi từ Animation Event.
         /// </summary>

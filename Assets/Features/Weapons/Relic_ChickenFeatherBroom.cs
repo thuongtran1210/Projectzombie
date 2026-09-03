@@ -25,13 +25,21 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float whirlwindRadius = 1.35f;
         [SerializeField] private Sprite broomFollowerSprite;
         [SerializeField] private Sprite featherCollectibleSprite;
+        [SerializeField] private GameObject featherCollectiblePrefab;
         [SerializeField] private GameObject whirlwindVfxPrefab;
         [SerializeField] private GameObject chickenMinionPrefab;
+        [SerializeField] private int feathersRequiredPerMinion = 5;
+
+        public Sprite FeatherCollectibleSprite => featherCollectibleSprite;
+        public int CollectedFeathers => _collectedFeathers;
+        public int FeathersRequired => feathersRequiredPerMinion;
+        public override string RelicStackBadgeText => $"{_collectedFeathers}/{feathersRequiredPerMinion}";
 
         private static readonly Collider2D[] _hitBuffer = new Collider2D[36];
         private GameObject _broomFollowerObj;
         private readonly List<GameObject> _activeMinions = new List<GameObject>();
         private readonly HashSet<Collider2D> _hitEnemiesThisCast = new HashSet<Collider2D>();
+        private int _collectedFeathers = 0;
 
         public override void Initialize(ICharacterStats stats)
         {
@@ -88,6 +96,20 @@ namespace ProjectZombie.Features.Weapons
                 {
                     broomFollowerSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_Giant_Clean.png");
                 }
+#endif
+            }
+
+            if (featherCollectibleSprite == null)
+            {
+#if UNITY_EDITOR
+                featherCollectibleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
+#endif
+            }
+
+            if (featherCollectiblePrefab == null)
+            {
+#if UNITY_EDITOR
+                featherCollectiblePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenFeather_Collectible.prefab");
 #endif
             }
         }
@@ -204,7 +226,7 @@ namespace ProjectZombie.Features.Weapons
         private IEnumerator RoutineSingleBroomFlight(Vector3 startPos, Vector2 travelDir, bool isEvolution)
         {
             float maxDist = isEvolution ? 11.0f : travelDistance;
-            float speed = isEvolution ? 9.5f : 8.0f;
+            float speed = isEvolution ? (travelSpeed * 1.35f) : (travelSpeed > 0f ? travelSpeed : 8.0f);
             float radius = 1.0f;
             float totalDuration = maxDist / speed;
             float rotZ = Mathf.Atan2(travelDir.y, travelDir.x) * Mathf.Rad2Deg;
@@ -253,12 +275,14 @@ namespace ProjectZombie.Features.Weapons
                         {
                             DamageData hitDmg = new DamageData(hitDmgAmount, true, ElementType.Kim, false, this);
                             hp.TakeDamage(hitDmg);
-                        }
 
-                        // =========================================================================
-                        // CƠ CHẾ TRIỆU HỒI: CHỔI CHÉM TRÚNG QUÁI -> GỌI LINH THÚ GÀ CON!
-                        // =========================================================================
-                        SpawnChickenMinionCompanion(col.transform.position);
+                            // Đánh dấu quái vật để rớt Lông Gà khi bị hạ gục
+                            if (!col.TryGetComponent<FeatherDropMarker>(out var marker))
+                            {
+                                marker = col.gameObject.AddComponent<FeatherDropMarker>();
+                                marker.Setup(this, hp);
+                            }
+                        }
 
                         if (isEvolution && col.TryGetComponent<EnemyStatusController>(out var status))
                         {
@@ -298,6 +322,67 @@ namespace ProjectZombie.Features.Weapons
             global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(endPos);
         }
 
+        /// <summary>
+        /// Rớt vật phẩm Lông Gà Hoàng Kim khi quái bị tiêu diệt.
+        /// </summary>
+        public void SpawnFeatherDrop(Vector3 dropPos)
+        {
+            EnsureAssets();
+
+            GameObject featherObj;
+            if (featherCollectiblePrefab != null)
+            {
+                featherObj = Instantiate(featherCollectiblePrefab, dropPos, Quaternion.identity);
+            }
+            else
+            {
+                featherObj = new GameObject("Chicken_Feather_Drop");
+                featherObj.transform.position = dropPos;
+                var sr = featherObj.AddComponent<SpriteRenderer>();
+                sr.sprite = featherCollectibleSprite;
+                sr.sortingLayerName = "Collectibles";
+                sr.sortingOrder = 10;
+                var col = featherObj.AddComponent<CircleCollider2D>();
+                col.isTrigger = true;
+                col.radius = 0.45f;
+                featherObj.AddComponent<ChickenFeatherDrop>();
+            }
+
+            var drop = featherObj.GetComponent<ChickenFeatherDrop>();
+            if (drop != null)
+            {
+                drop.Init(this);
+            }
+        }
+
+        /// <summary>
+        /// Người chơi nhặt được 1 Lông Gà. Khi tích đủ 5 Lông Gà -> Triệu hồi 1 Linh Thú Gà Con Hộ Vệ!
+        /// </summary>
+        public void AddCollectedFeather()
+        {
+            _collectedFeathers++;
+
+            // Kiểm tra đủ 5 lông gà -> Triệu hồi Gà Con
+            if (_collectedFeathers >= feathersRequiredPerMinion)
+            {
+                _collectedFeathers -= feathersRequiredPerMinion;
+
+                Vector3 spawnPos = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null 
+                    ? PlayerProvider.PlayerTransform.position + (Vector3)Random.insideUnitCircle.normalized * 0.8f 
+                    : transform.position;
+
+                SpawnChickenMinionCompanion(spawnPos);
+
+                // Âm thanh xuất trận hùng tráng & Hiệu ứng đặc sắc
+                global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                global::Core.Audio.AudioManager.Instance?.PlayUltimateSkillCast(spawnPos);
+                ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.08f, 0.1f);
+            }
+
+            // Đồng bộ cập nhật Huy hiệu số lượng Lông Gà lên Nút Kỹ Năng HUD
+            TriggerRelicStackBadgeUpdated();
+        }
+
         private void SpawnChickenMinionCompanion(Vector3 spawnPos)
         {
             if (chickenMinionPrefab == null) EnsureAssets();
@@ -313,8 +398,8 @@ namespace ProjectZombie.Features.Weapons
                     GameObject minion = Instantiate(chickenMinionPrefab, spawnPos, Quaternion.identity);
                     _activeMinions.Add(minion);
 
-                    // Âm thanh xuất hiện & Nháy nhẹ
-                    global::Core.Audio.AudioManager.Instance?.PlayCoinTick();
+                    // Âm thanh xuất hiện
+                    global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(spawnPos);
                 }
             }
         }

@@ -63,9 +63,9 @@ def create_tileset():
                 draw.ellipse([x0 + 20, y0 + 20, x0 + 45, y0 + 45], fill=(30, 60, 80, 140))
 
     # -------------------------------------------------------------
-    # 2. BỜ AO SEN & NƯỚC (Water & Lotus Pond) - Row 0..2 (Cols 4..7)
+    # 2. BỜ AO SEN & NƯỚC (Water & Lotus Pond) - Row 0..1 (Cols 4..7)
     # -------------------------------------------------------------
-    water_deep = (18, 52, 65, 255)       # Xanh lục thủy thẩm
+    water_deep = (18, 52, 65, 255)       # Xanh lục thủy thẫm
     water_mid = (28, 85, 98, 255)        # Xanh ngọc ao làng
     water_wave = (65, 145, 155, 220)     # Gợn sóng phản chiếu
     stone_edge = (95, 90, 80, 255)       # Đá xanh kè bờ ao
@@ -87,22 +87,21 @@ def create_tileset():
     draw.ellipse([x0 + 36, y0 + 10, x0 + 52, y0 + 26], fill=(235, 110, 145, 255))
     draw.ellipse([x0 + 40, y0 + 14, x0 + 48, y0 + 22], fill=(255, 215, 0, 255))
 
-    # Bờ kè đá ao sen (Border Tiles for Rule Tile)
-    # Top edge (Col 6, Row 0)
+    # Bờ kè đá ao sen (Border Tiles)
     x0, y0, x1, y1 = tile_rect(6, 0)
     draw.rectangle([x0, y0, x1 - 1, y1 - 1], fill=water_mid)
     draw.rectangle([x0, y0, x1 - 1, y0 + 20], fill=stone_edge)
     draw.line([(x0, y0 + 20), (x1 - 1, y0 + 20)], fill=(40, 40, 35, 255), width=2)
     draw.line([(x0, y0), (x1 - 1, y0)], fill=stone_highlight, width=2)
 
-    # Corner Edge (Col 7, Row 0)
+    # Góc bờ kè (Col 7, Row 0)
     x0, y0, x1, y1 = tile_rect(7, 0)
     draw.rectangle([x0, y0, x1 - 1, y1 - 1], fill=water_mid)
     draw.polygon([(x0, y0), (x1 - 1, y0), (x1 - 1, y0 + 30), (x0 + 30, y1 - 1), (x0, y1 - 1)], fill=stone_edge)
     draw.line([(x1 - 1, y0 + 30), (x0 + 30, y1 - 1)], fill=(40, 40, 35, 255), width=2)
 
     # -------------------------------------------------------------
-    # 3. TƯỜNG RÊU & VẬT CẢN (Mossy Walls & Props) - Row 2..5
+    # 3. TƯỜNG RÊU & VẬT CẢN (Mossy Walls & Props) - Row 2..3
     # -------------------------------------------------------------
     wall_brick_dark = (110, 45, 30, 255)
     wall_moss = (55, 105, 45, 255)
@@ -120,52 +119,129 @@ def create_tileset():
     draw.polygon([(x0, y1 - 1), (x0 + 16, y1 - 18), (x0 + 32, y1 - 8), (x0 + 48, y1 - 22), (x1 - 1, y1 - 1)], fill=wall_moss)
     draw.polygon([(x0 + 4, y1 - 1), (x0 + 16, y1 - 12), (x0 + 28, y1 - 4), (x1 - 1, y1 - 1)], fill=wall_moss_bright)
 
-    # Wall Mid / Column (Col 1, Row 2)
+    # Wall Mid (Col 1, Row 2)
     x0, y0, x1, y1 = tile_rect(1, 2)
     draw.rectangle([x0, y0, x1 - 1, y1 - 1], fill=wall_brick_dark)
     for wy in range(y0 + 12, y1, 14):
         draw.line([(x0, wy), (x1 - 1, wy)], fill=(50, 20, 15, 255), width=2)
     draw.polygon([(x0, y1 - 1), (x0 + 20, y1 - 30), (x0 + 40, y1 - 10), (x1 - 1, y1 - 25), (x1 - 1, y1 - 1)], fill=wall_moss)
 
-    # Bia Đá / Rùa Đội Bia Cổ (Ancient Stone Stela Prop)
-    # Bottom turtle base (Col 2, Row 3)
+    # Bia Rùa Đá (Col 2, Row 3 & Row 2)
     x0, y0, x1, y1 = tile_rect(2, 3)
     draw.ellipse([x0 + 8, y0 + 24, x1 - 8, y1 - 6], fill=(85, 90, 85, 255))
     draw.ellipse([x0 + 24, y0 + 12, x0 + 40, y0 + 28], fill=(70, 75, 70, 255))
     draw.line([(x0 + 12, y1 - 12), (x1 - 12, y1 - 12)], fill=(40, 45, 40, 255), width=2)
 
-    # Top Stela (Col 2, Row 2)
     x0, y0, x1, y1 = tile_rect(2, 2)
     draw.rectangle([x0 + 16, y0 + 8, x1 - 16, y1 - 1], fill=(120, 125, 115, 255))
     draw.arc([x0 + 16, y0 + 4, x1 - 16, y0 + 24], 180, 360, fill=(150, 155, 145, 255), width=2)
     for gy in range(y0 + 24, y1 - 8, 8):
         draw.line([(x0 + 24, gy), (x0 + 40, gy)], fill=(60, 65, 58, 255), width=2)
 
-    # Lư Hương Đồng / Đỉnh Đồng Cổ
-    # Chân Đỉnh (Col 4, Row 3)
+    # Lư Hương Đỉnh Đồng (Col 4, Row 3 & Row 2)
     x0, y0, x1, y1 = tile_rect(4, 3)
     draw.polygon([(x0 + 14, y0 + 4), (x1 - 14, y0 + 4), (x0 + 20, y1 - 10), (x1 - 20, y1 - 10)], fill=(160, 120, 40, 255))
     draw.ellipse([x0 + 16, y0 + 2, x1 - 16, y0 + 20], fill=(130, 95, 30, 255))
-    # Thân & Khói Trầm (Col 4, Row 2)
+
     x0, y0, x1, y1 = tile_rect(4, 2)
     draw.ellipse([x0 + 14, y0 + 36, x1 - 14, y1 - 8], fill=(190, 145, 45, 255))
     draw.line([(x0 + 12, y0 + 42), (x0 + 6, y0 + 30)], fill=(150, 110, 35, 255), width=3)
     draw.line([(x1 - 12, y0 + 42), (x1 - 6, y0 + 30)], fill=(150, 110, 35, 255), width=3)
     draw.arc([x0 + 24, y0 + 12, x0 + 40, y0 + 32], 0, 180, fill=(220, 220, 240, 160), width=2)
-    draw.arc([x0 + 20, y0 + 2, x0 + 36, y0 + 18], 180, 360, fill=(220, 220, 240, 120), width=2)
 
-    # Đèn Lồng Đỏ Treo Đình (Col 5, Row 2)
+    # Đèn Lồng Đỏ (Col 5, Row 2)
     x0, y0, x1, y1 = tile_rect(5, 2)
     draw.line([(x0 + 32, y0), (x0 + 32, y0 + 16)], fill=(50, 40, 30, 255), width=2)
     draw.ellipse([x0 + 18, y0 + 16, x1 - 18, y1 - 14], fill=(220, 38, 38, 255))
     draw.ellipse([x0 + 24, y0 + 18, x1 - 24, y1 - 16], fill=(255, 90, 60, 255))
     draw.line([(x0 + 32, y1 - 14), (x0 + 32, y1 - 2)], fill=(212, 175, 55, 255), width=3)
 
+    # -------------------------------------------------------------
+    # 4. DECALS & PROPS PHỤ TRỢ (Thảm Cói, Hoa Văn) - Row 4..5
+    # -------------------------------------------------------------
+    # Thảm Cói (Col 0, Row 4)
+    x0, y0, x1, y1 = tile_rect(0, 4)
+    draw.rectangle([x0 + 4, y0 + 4, x1 - 5, y1 - 5], fill=(195, 160, 100, 255))
+    draw.rectangle([x0 + 4, y0 + 4, x1 - 5, y1 - 5], outline=(150, 110, 60, 255), width=2)
+    for ty in range(y0 + 8, y1 - 8, 6):
+        draw.line([(x0 + 6, ty), (x1 - 7, ty)], fill=(165, 130, 75, 255), width=1)
+
+    # Hoa Văn Chim Lạc Đông Sơn (Col 1, Row 4)
+    x0, y0, x1, y1 = tile_rect(1, 4)
+    draw.ellipse([x0 + 8, y0 + 8, x1 - 8, y1 - 8], fill=(130, 95, 45, 180), outline=(210, 170, 70, 220), width=2)
+    draw.ellipse([x0 + 20, y0 + 20, x1 - 20, y1 - 20], outline=(210, 170, 70, 220), width=1)
+
+    # -------------------------------------------------------------
+    # 5. NỀN ĐẤT NỆN HOÀNG THỔ CỔ (Base Earth Ground) - Row 6 (Cols 0..3) & Row 7 (Cols 0..3)
+    # -------------------------------------------------------------
+    earth_base = (55, 38, 26, 255)       # Đất nện sẫm màu
+    earth_light = (78, 54, 38, 255)      # Vệt đất nổi
+    earth_dark = (38, 25, 18, 255)       # Hốc đất bóng tối
+    pebble_color = (100, 85, 70, 255)    # Sỏi đá vụn
+
+    for r in range(6, 8):
+        for c in range(4):
+            x0, y0, x1, y1 = tile_rect(c, r)
+            draw.rectangle([x0, y0, x1 - 1, y1 - 1], fill=earth_base)
+
+            # Vân đất hữu cơ ngẫu nhiên
+            for px in range(x0 + 2, x1 - 2, 8):
+                for py in range(y0 + 2, y1 - 2, 8):
+                    seed = (c * 17 + r * 31 + px * 7 + py * 13) % 100
+                    if seed < 35:
+                        draw.ellipse([px, py, px + 6, py + 4], fill=earth_light)
+                    elif seed < 65:
+                        draw.ellipse([px, py, px + 5, py + 3], fill=earth_dark)
+
+            # Rải sỏi vụn cổ kính
+            if (c, r) == (0, 6): # Đất thuần
+                pass
+            elif (c, r) == (1, 6): # Đất có sỏi nhỏ
+                draw.ellipse([x0 + 15, y0 + 20, x0 + 22, y0 + 25], fill=pebble_color)
+                draw.ellipse([x0 + 42, y0 + 40, x0 + 47, y0 + 44], fill=pebble_color)
+            elif (c, r) == (2, 6): # Đất có rễ cây ngầm
+                draw.line([(x0 + 10, y0 + 15), (x0 + 28, y0 + 30), (x0 + 48, y0 + 25)], fill=(32, 20, 14, 255), width=2)
+            elif (c, r) == (3, 6): # Đất ẩm rêu rìa
+                draw.ellipse([x0 + 8, y0 + 35, x0 + 30, y0 + 55], fill=(35, 55, 30, 200))
+
+    # -------------------------------------------------------------
+    # 6. THẢM RÊU & RỪNG TRÚC ĐÊM (Dark Forest Moss Ground) - Row 6..7 (Cols 4..7)
+    # -------------------------------------------------------------
+    moss_base = (24, 42, 28, 255)        # Rêu thẫm rừng trúc
+    moss_light = (38, 65, 42, 255)       # Bụi rêu sáng
+    moss_dark = (16, 28, 18, 255)        # Khoảng tối bóng tre
+    grass_blade = (50, 90, 55, 255)      # Ngọn cỏ dại
+
+    for r in range(6, 8):
+        for c in range(4, 8):
+            x0, y0, x1, y1 = tile_rect(c, r)
+            draw.rectangle([x0, y0, x1 - 1, y1 - 1], fill=moss_base)
+
+            # Vân rêu mờ ảo
+            for mx in range(x0 + 3, x1 - 3, 10):
+                for my in range(y0 + 3, y1 - 3, 10):
+                    mseed = (c * 19 + r * 29 + mx * 11 + my * 7) % 100
+                    if mseed < 40:
+                        draw.ellipse([mx, my, mx + 8, my + 6], fill=moss_light)
+                    elif mseed < 70:
+                        draw.ellipse([mx, my, mx + 7, my + 5], fill=moss_dark)
+
+            # Cọng cỏ dại đêm
+            if (c, r) == (4, 6): # Rêu thuần
+                pass
+            elif (c, r) == (5, 6): # Khóm cỏ nhỏ
+                draw.line([(x0 + 20, y0 + 40), (x0 + 16, y0 + 25)], fill=grass_blade, width=2)
+                draw.line([(x0 + 20, y0 + 40), (x0 + 25, y0 + 28)], fill=grass_blade, width=2)
+            elif (c, r) == (6, 6): # Đốm hoa dại vàng nhạt
+                draw.ellipse([x0 + 32, y0 + 22, x0 + 36, y0 + 26], fill=(220, 200, 120, 220))
+            elif (c, r) == (7, 6): # Đốm hoa dại tím nhạt
+                draw.ellipse([x0 + 25, y0 + 35, x0 + 29, y0 + 39], fill=(180, 140, 200, 220))
+
     output_dir = r"c:\Users\thuon\Unity\Projectzombie\Assets\Art\Tilemaps\SanDinhLangCo"
     os.makedirs(output_dir, exist_ok=True)
     out_path = os.path.join(output_dir, "Tileset_SanDinhLangCo.png")
     img.save(out_path, "PNG")
-    print(f"Successfully generated tileset at: {out_path}")
+    print(f"Successfully generated 64-tile full tileset at: {out_path}")
 
 if __name__ == "__main__":
     create_tileset()

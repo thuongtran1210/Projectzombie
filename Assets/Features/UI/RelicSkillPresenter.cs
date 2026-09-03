@@ -150,6 +150,7 @@ namespace ProjectZombie.Features.UI
             _boundActiveRelic.OnRelicSkillReady += HandleRelicSkillReady;
             _boundActiveRelic.OnRelicSkillExecuted += HandleRelicSkillExecuted;
             _boundActiveRelic.OnRelicPhaseChanged += HandleRelicPhaseChanged;
+            _boundActiveRelic.OnRelicStackBadgeUpdated += HandleRelicStackBadgeUpdated;
 
             RefreshUIState();
         }
@@ -162,6 +163,7 @@ namespace ProjectZombie.Features.UI
                 _boundActiveRelic.OnRelicSkillReady -= HandleRelicSkillReady;
                 _boundActiveRelic.OnRelicSkillExecuted -= HandleRelicSkillExecuted;
                 _boundActiveRelic.OnRelicPhaseChanged -= HandleRelicPhaseChanged;
+                _boundActiveRelic.OnRelicStackBadgeUpdated -= HandleRelicStackBadgeUpdated;
                 _boundActiveRelic = null;
             }
         }
@@ -177,8 +179,17 @@ namespace ProjectZombie.Features.UI
 
             _buttonView.SetInteractable(isReady);
             _buttonView.SetRecastGlow(isRecast);
+            _buttonView.SetStackBadge(_boundActiveRelic.RelicStackBadgeText);
             string text = rem > 0f && !isRecast ? RelicSkillButtonView.GetCachedCooldownText(rem) : string.Empty;
             _buttonView.SetCooldown(isRecast ? 0f : rem, max, text);
+        }
+
+        private void HandleRelicStackBadgeUpdated(string badgeText)
+        {
+            if (_buttonView != null)
+            {
+                _buttonView.SetStackBadge(badgeText);
+            }
         }
 
         private void HandleRelicPhaseChanged(WeaponBase.RelicCastPhase phase)

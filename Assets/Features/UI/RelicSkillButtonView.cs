@@ -109,15 +109,133 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        [Header("Stack / Progress Badge")]
+        [SerializeField] private GameObject _stackBadgeRoot;
+        [SerializeField] private Image _stackBadgeBg;
+        [SerializeField] private TextMeshProUGUI _stackBadgeText;
+        private Coroutine _stackBadgePunchRoutine;
+
+        public void SetStackBadge(string badgeText)
+        {
+            if (string.IsNullOrEmpty(badgeText))
+            {
+                if (_stackBadgeRoot != null) _stackBadgeRoot.SetActive(false);
+                return;
+            }
+
+            EnsureStackBadgeUI();
+
+            if (_stackBadgeRoot != null)
+            {
+                _stackBadgeRoot.SetActive(true);
+            }
+
+            if (_stackBadgeText != null)
+            {
+                _stackBadgeText.text = badgeText;
+            }
+
+            if (gameObject.activeInHierarchy)
+            {
+                if (_stackBadgePunchRoutine != null) StopCoroutine(_stackBadgePunchRoutine);
+                _stackBadgePunchRoutine = StartCoroutine(RoutinePunchBadge());
+            }
+        }
+
+        private void EnsureStackBadgeUI()
+        {
+            if (_stackBadgeRoot != null && _stackBadgeText != null) return;
+
+            var badgeFind = transform.Find("RelicStackBadge");
+            if (badgeFind != null)
+            {
+                _stackBadgeRoot = badgeFind.gameObject;
+                _stackBadgeBg = badgeFind.GetComponent<Image>();
+                _stackBadgeText = badgeFind.GetComponentInChildren<TextMeshProUGUI>();
+            }
+            else
+            {
+                _stackBadgeRoot = new GameObject("RelicStackBadge");
+                _stackBadgeRoot.transform.SetParent(transform, false);
+                _stackBadgeRoot.transform.SetAsLastSibling();
+
+                var rt = _stackBadgeRoot.AddComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0.5f, 0f);
+                rt.anchorMax = new Vector2(0.5f, 0f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = new Vector2(0f, -4f);
+                rt.sizeDelta = new Vector2(46f, 18f);
+
+                _stackBadgeBg = _stackBadgeRoot.AddComponent<Image>();
+                _stackBadgeBg.color = new Color(0.12f, 0.12f, 0.15f, 0.92f);
+                _stackBadgeBg.raycastTarget = false;
+
+                var textObj = new GameObject("Text_Count");
+                textObj.transform.SetParent(_stackBadgeRoot.transform, false);
+                var textRt = textObj.AddComponent<RectTransform>();
+                textRt.anchorMin = Vector2.zero;
+                textRt.anchorMax = Vector2.one;
+                textRt.sizeDelta = Vector2.zero;
+
+                _stackBadgeText = textObj.AddComponent<TextMeshProUGUI>();
+                _stackBadgeText.alignment = TextAlignmentOptions.Center;
+                _stackBadgeText.fontSize = 12f;
+                _stackBadgeText.fontStyle = FontStyles.Bold;
+                _stackBadgeText.color = new Color(1f, 0.9f, 0.35f, 1f); // Màu Vàng Kim
+                _stackBadgeText.raycastTarget = false;
+            }
+        }
+
+        private System.Collections.IEnumerator RoutinePunchBadge()
+        {
+            if (_stackBadgeRoot == null) yield break;
+            Transform t = _stackBadgeRoot.transform;
+            float elapsed = 0f;
+            float dur = 0.2f;
+            while (elapsed < dur)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float scale = 1f + 0.35f * Mathf.Sin((elapsed / dur) * Mathf.PI);
+                t.localScale = new Vector3(scale, scale, 1f);
+                yield return null;
+            }
+            t.localScale = Vector3.one;
+            _stackBadgePunchRoutine = null;
+        }
+
         [SerializeField] private Image _recastGlowBorder;
         [SerializeField] private CanvasGroup _recastGlowCanvasGroup;
         private Coroutine _pulseRoutine;
+        private static Sprite _cachedCircleGlowSprite;
+
+        private static Sprite GetOrCreateCircleSprite()
+        {
+            if (_cachedCircleGlowSprite != null) return _cachedCircleGlowSprite;
+
+            int size = 64;
+            Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.wrapMode = TextureWrapMode.Clamp;
+            Vector2 center = new Vector2(size * 0.5f, size * 0.5f);
+            float radius = size * 0.48f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), center);
+                    float a = Mathf.Clamp01((radius - d) / 1.5f);
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
+                }
+            }
+            tex.Apply();
+            _cachedCircleGlowSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            return _cachedCircleGlowSprite;
+        }
 
         public void SetRecastGlow(bool isRecastActive)
         {
             if (_recastGlowBorder == null)
             {
-                // Tự động tìm hoặc tạo một image viền sáng xung quanh nút
+                // Tự động tìm hoặc tạo một image viền sáng hình tròn xung quanh nút
                 var glowObj = transform.Find("RecastGlowBorder");
                 if (glowObj != null)
                 {
@@ -132,11 +250,28 @@ namespace ProjectZombie.Features.UI
                     _recastGlowBorder = newGlow.AddComponent<Image>();
                     _recastGlowCanvasGroup = newGlow.AddComponent<CanvasGroup>();
                     _recastGlowBorder.color = new Color(1f, 0.85f, 0.2f, 0.85f); // Màu Vàng Kim phát sáng
+                    _recastGlowBorder.raycastTarget = false;
+
                     var rt = _recastGlowBorder.rectTransform;
                     rt.anchorMin = Vector2.zero;
                     rt.anchorMax = Vector2.one;
-                    rt.sizeDelta = new Vector2(16f, 16f); // Nới rộng hơn nút bấm 16px
+                    rt.sizeDelta = new Vector2(14f, 14f); // Nới rộng hơn nút bấm 14px
                 }
+            }
+
+            if (_recastGlowBorder != null)
+            {
+                if (_recastGlowBorder.sprite == null)
+                {
+                    if (_cooldownRadialFill != null && _cooldownRadialFill.sprite != null)
+                        _recastGlowBorder.sprite = _cooldownRadialFill.sprite;
+                    else if (_relicButton != null && _relicButton.image != null && _relicButton.image.sprite != null)
+                        _recastGlowBorder.sprite = _relicButton.image.sprite;
+                    else
+                        _recastGlowBorder.sprite = GetOrCreateCircleSprite();
+                }
+
+                _recastGlowBorder.raycastTarget = false;
             }
 
             if (_recastGlowCanvasGroup == null && _recastGlowBorder != null)

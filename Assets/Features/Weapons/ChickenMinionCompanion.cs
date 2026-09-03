@@ -58,7 +58,7 @@ namespace ProjectZombie.Features.Weapons
         private void OnEnable()
         {
             _spawnTime = Time.time;
-            transform.localScale = Vector3.one * 0.75f;
+            transform.localScale = Vector3.one;
             PlayAnim(AnimStateIdle);
         }
 
@@ -92,7 +92,7 @@ namespace ProjectZombie.Features.Weapons
                 // Quay mặt theo hướng di chuyển
                 if (dirToEnemy.x != 0)
                 {
-                    transform.localScale = new Vector3(Mathf.Sign(dirToEnemy.x) * 0.75f, 0.75f, 1f);
+                    transform.localScale = new Vector3(Mathf.Sign(dirToEnemy.x), 1f, 1f);
                 }
 
                 // Mổ quái vật
@@ -115,7 +115,7 @@ namespace ProjectZombie.Features.Weapons
                     Vector2 dirToPlayer = (targetPos - transform.position);
                     if (dirToPlayer.x != 0)
                     {
-                        transform.localScale = new Vector3(Mathf.Sign(dirToPlayer.x) * 0.75f, 0.75f, 1f);
+                        transform.localScale = new Vector3(Mathf.Sign(dirToPlayer.x), 1f, 1f);
                     }
                 }
                 else
@@ -145,7 +145,7 @@ namespace ProjectZombie.Features.Weapons
                 hp.TakeDamage(dmg);
 
                 // Hiệu ứng mổ nảy người
-                transform.localScale = new Vector3(transform.localScale.x * 1.25f, 0.65f, 1f);
+                transform.localScale = new Vector3(transform.localScale.x * 1.15f, 0.85f, 1f);
                 StartCoroutine(RoutineResetScale());
 
                 // Âm thanh mổ vui nhộn
@@ -165,7 +165,7 @@ namespace ProjectZombie.Features.Weapons
         {
             yield return new WaitForSeconds(0.08f);
             float sign = Mathf.Sign(transform.localScale.x);
-            transform.localScale = new Vector3(sign * 0.75f, 0.75f, 1f);
+            transform.localScale = new Vector3(sign, 1f, 1f);
         }
 
         private void FindNearestEnemy()

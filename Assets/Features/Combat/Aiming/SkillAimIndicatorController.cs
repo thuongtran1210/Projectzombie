@@ -336,29 +336,29 @@ namespace ProjectZombie.Features.Combat.Aiming
             _circleRenderer.enabled = true;
             if (_coneRenderer != null) _coneRenderer.enabled = false;
 
-            float distance = Mathf.Max(1.5f, _currentConfig.range * _currentPullPercent);
+            float distance = Mathf.Max(0.5f, _currentConfig.range * _currentPullPercent);
             Vector3 centerWallPos = origin + (Vector3)(direction * distance);
-            float wallWidth = Mathf.Max(3.0f, _currentConfig.radius);
-            float wallThickness = 1.0f;
+            float wallWidth = _currentConfig.radius > 0.1f ? _currentConfig.radius : 3.0f;
+            float wallThickness = _currentConfig.sectorAngle > 0.1f ? _currentConfig.sectorAngle : 1.8f;
 
             float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
                 ? _lineRenderer.sprite.bounds.size.x : 1.0f;
             float spriteBoundsY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f)
                 ? _lineRenderer.sprite.bounds.size.y : 1.0f;
 
-            // Bức tường vuông góc với hướng ngắm (+90 độ)
+            // Hình chữ nhật đặt chuẩn xác tọa độ điểm rơi (nằm ngang phẳng theo sàn)
             _lineIndicator.position = centerWallPos;
-            _lineIndicator.rotation = Quaternion.Euler(0f, 0f, angle + 90f);
+            _lineIndicator.rotation = Quaternion.identity;
             _lineIndicator.localScale = new Vector3(wallWidth / spriteBoundsX, wallThickness / spriteBoundsY, 1f);
             _lineRenderer.color = color;
 
-            // Tâm định vị cọc trung tâm
+            // Tâm định vị
             float pinBounds = (_circleRenderer.sprite != null && _circleRenderer.sprite.bounds.size.x > 0.01f)
                 ? _circleRenderer.sprite.bounds.size.x : 1.0f;
             _circleIndicator.position = centerWallPos;
             _circleIndicator.rotation = Quaternion.identity;
-            _circleIndicator.localScale = Vector3.one * (1.1f / pinBounds);
-            _circleRenderer.color = new Color(color.r * 1.4f, color.g * 1.4f, color.b * 1.4f, 0.95f);
+            _circleIndicator.localScale = Vector3.one * (0.8f / pinBounds);
+            _circleRenderer.color = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 0.9f);
         }
 
         private LineRenderer _curveLineRenderer;

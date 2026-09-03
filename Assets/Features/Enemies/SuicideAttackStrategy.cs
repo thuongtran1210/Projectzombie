@@ -30,16 +30,33 @@ namespace ProjectZombie.Features.Enemies
         [SerializeField] private LayerMask targetLayer;
 
         private bool _isExploding = false;
+        private Coroutine _explodeRoutine;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[15];
 
         public float TriggerDistance => triggerDistance;
         public float ExplodeRadius => explodeRadius;
+        public override bool IsAttacking => _isExploding;
+
+        public override void InterruptAttack()
+        {
+            _isExploding = false;
+            if (_explodeRoutine != null)
+            {
+                StopCoroutine(_explodeRoutine);
+                _explodeRoutine = null;
+            }
+        }
 
         public override void Attack()
         {
+            if (_enemy != null && _enemy.StatusController != null && !_enemy.StatusController.CanAttack)
+            {
+                return;
+            }
+
             if (!_isExploding)
             {
-                StartCoroutine(ExplodeRoutine());
+                _explodeRoutine = StartCoroutine(ExplodeRoutine());
             }
         }
 

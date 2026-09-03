@@ -33,10 +33,14 @@ namespace ProjectZombie.Features.Enemies
         }
 
         private bool _hasShotThisAttack = false;
+        private bool _isAttacking = false;
+        private Coroutine _rangedAttackRoutine;
+
+        public override bool IsAttacking => _isAttacking;
 
         private void Start()
         {
-            if (_enemy.EnemyAnimator != null)
+            if (_enemy != null && _enemy.EnemyAnimator != null)
             {
                 _enemy.EnemyAnimator.OnAttackEvent += Shoot;
             }
@@ -50,24 +54,59 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public override void InterruptAttack()
+        {
+            _isAttacking = false;
+            _hasShotThisAttack = false;
+            if (_rangedAttackRoutine != null)
+            {
+                StopCoroutine(_rangedAttackRoutine);
+                _rangedAttackRoutine = null;
+            }
+            CancelInvoke(nameof(Shoot));
+        }
+
         public override void Attack()
         {
-            // Kiểm tra xem có đang bị Stun/Freeze không trước khi trigger attack
-            if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack)
             {
                 return;
             }
 
-            _hasShotThisAttack = false; // Reset trạng thái cho đợt bắn mới
+            _hasShotThisAttack = false;
+            if (_rangedAttackRoutine != null) StopCoroutine(_rangedAttackRoutine);
+            _rangedAttackRoutine = StartCoroutine(ExecuteRangedAttackRoutine());
+        }
 
+        private System.Collections.IEnumerator ExecuteRangedAttackRoutine()
+        {
+            _isAttacking = true;
+
+            float clipLength = 0.5f;
             if (_enemy.EnemyAnimator != null)
             {
+                clipLength = _enemy.EnemyAnimator.GetCurrentAttackClipLength(0.5f);
                 _enemy.EnemyAnimator.TriggerAttack();
             }
 
-            // Fallback tự động bắn sau 0.25s nếu Animation Clip thiếu Animation Event
-            CancelInvoke(nameof(Shoot));
-            Invoke(nameof(Shoot), 0.25f);
+            // Chờ đúng thời điểm bắn đạn (45% clip)
+            float shootDelay = clipLength * 0.45f;
+            yield return new WaitForSeconds(shootDelay);
+
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack)
+            {
+                InterruptAttack();
+                yield break;
+            }
+
+            Shoot();
+
+            // Chờ hoàn tất nốt animation (55% clip còn lại)
+            float recoveryDelay = clipLength * 0.55f;
+            yield return new WaitForSeconds(recoveryDelay);
+
+            _isAttacking = false;
+            _rangedAttackRoutine = null;
         }
 
         private void Shoot()
@@ -81,10 +120,10 @@ namespace ProjectZombie.Features.Enemies
             }
 
             if (_enemy.PlayerTransform == null) return;
-            if (_enemy.StatusController != null && !_enemy.StatusController.CanMove) return;
+            if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack) return;
 
             _hasShotThisAttack = true;
-            CancelInvoke(nameof(Shoot)); // Hủy timer fallback nếu Animation Event đã kích hoạt trước
+            CancelInvoke(nameof(Shoot));
 
             Vector2 targetPosition = _enemy.PlayerTransform.position;
 

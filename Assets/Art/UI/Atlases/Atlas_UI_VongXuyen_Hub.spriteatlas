@@ -1,0 +1,217 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_UI_VongXuyen_Hub
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 0
+      compressionQuality: 0
+      maxTextureSize: 0
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 80
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 21300000, guid: 637844c1d6114800a88c7d1f983f5851, type: 3}
+    - {fileID: 21300000, guid: 1da85bda3251499195669564d105c00f, type: 3}
+    - {fileID: 21300000, guid: 9f593ac43e3749748018728ae0bb4a43, type: 3}
+    - {fileID: 21300000, guid: 5dc80b37516648e5a3328f20302063f7, type: 3}
+    - {fileID: 21300000, guid: 534fe0488c534a268408f06ed01846a6, type: 3}
+    - {fileID: 21300000, guid: 686d6231f2e34168838220961ff146f9, type: 3}
+    - {fileID: 21300000, guid: a4d0e7ce3c584853af748935ffd19742, type: 3}
+    - {fileID: 21300000, guid: 1184bda4991a41cbb2cae44fe97a8039, type: 3}
+    - {fileID: 21300000, guid: d7736ecff6094d5ca6dc6e747043359c, type: 3}
+    - {fileID: 21300000, guid: 36ec8809723e4aaab824f8cbe087722d, type: 3}
+    - {fileID: 21300000, guid: af1619d94b874183b712191806037dd3, type: 3}
+    - {fileID: 21300000, guid: 65fd60a7bde5462294283cb239332c2f, type: 3}
+    - {fileID: 21300000, guid: cc3bc3eee237495a9cae35f5ea0f4f3c, type: 3}
+    - {fileID: 21300000, guid: c7ea6acc963c4caaa414ea8feb75b7ac, type: 3}
+    - {fileID: 21300000, guid: ca3d1144248c44888cbd67a593158184, type: 3}
+    - {fileID: 21300000, guid: 30d48e26d9a84ad69b731745c0ffa1b8, type: 3}
+    - {fileID: 21300000, guid: d560f3910a9f4e999d30e8d3d9a60b2e, type: 3}
+    - {fileID: 21300000, guid: cc62e9770d69413a98a46d453b360292, type: 3}
+    - {fileID: 21300000, guid: 80703d4cde7c41f584f1e7a630085a0c, type: 3}
+    - {fileID: 21300000, guid: 11fc5329fa314099b386a0bcfdc9bd23, type: 3}
+    - {fileID: 21300000, guid: 4693cfa6918f4ac19a97f553e34bab1f, type: 3}
+    - {fileID: 21300000, guid: 3572793885ad45459a7b3371d658d55a, type: 3}
+    - {fileID: 21300000, guid: 14c145fafe514292b5c88719c40ef5bf, type: 3}
+    - {fileID: 21300000, guid: 6ae16775c98d45868e9d49742f188f1b, type: 3}
+    - {fileID: 21300000, guid: c5675c8bdc774886b2e043811fa3d840, type: 3}
+    - {fileID: 21300000, guid: f9be9dc5b6364977b5aefe27cc1c3931, type: 3}
+    - {fileID: 21300000, guid: 8fd20496eca74cbb806507c73bf493c0, type: 3}
+    - {fileID: 21300000, guid: b489d931dfda4de386a4bfd118c06117, type: 3}
+    - {fileID: 21300000, guid: 99be060877b74e9a8e20862b898583d4, type: 3}
+    - {fileID: 21300000, guid: e32d49530d14494a97ad44bb631d9687, type: 3}
+    - {fileID: 21300000, guid: 234f6ef773604c3791354ee6fb0cab99, type: 3}
+    - {fileID: 21300000, guid: 0d94ca1e74de49cf8094d4ebb7b232c4, type: 3}
+    - {fileID: 21300000, guid: b6424502a37e4daaaad56bc71772068c, type: 3}
+    - {fileID: 21300000, guid: 4f0530f97a1642a5b987e15b57cd69a0, type: 3}
+    - {fileID: 21300000, guid: 8d44918ef7f04726bbced77fc216b2f5, type: 3}
+    - {fileID: 21300000, guid: 495ea7a9d70541d29d2284dd48a503ea, type: 3}
+    - {fileID: 21300000, guid: cef31f5d29f54175be95251d0208b28d, type: 3}
+    - {fileID: 21300000, guid: 57cebfa9ee6d4611a0f5a80502e26f0f, type: 3}
+    - {fileID: 21300000, guid: 284e27ee0409418bb81e3308d8c9ad8c, type: 3}
+    - {fileID: 21300000, guid: f0d3b862408f4c1a9648be66cd6c4803, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 686d6231f2e34168838220961ff146f9: 21300000
+    - b489d931dfda4de386a4bfd118c06117: 21300000
+    - d560f3910a9f4e999d30e8d3d9a60b2e: 21300000
+    - 637844c1d6114800a88c7d1f983f5851: 21300000
+    - b6424502a37e4daaaad56bc71772068c: 21300000
+    - f0d3b862408f4c1a9648be66cd6c4803: 21300000
+    - e32d49530d14494a97ad44bb631d9687: 21300000
+    - ca3d1144248c44888cbd67a593158184: 21300000
+    - 1184bda4991a41cbb2cae44fe97a8039: 21300000
+    - 9f593ac43e3749748018728ae0bb4a43: 21300000
+    - 6ae16775c98d45868e9d49742f188f1b: 21300000
+    - f9be9dc5b6364977b5aefe27cc1c3931: 21300000
+    - 30d48e26d9a84ad69b731745c0ffa1b8: 21300000
+    - 8fd20496eca74cbb806507c73bf493c0: 21300000
+    - 4693cfa6918f4ac19a97f553e34bab1f: 21300000
+    - 5dc80b37516648e5a3328f20302063f7: 21300000
+    - cc62e9770d69413a98a46d453b360292: 21300000
+    - 65fd60a7bde5462294283cb239332c2f: 21300000
+    - 234f6ef773604c3791354ee6fb0cab99: 21300000
+    - 99be060877b74e9a8e20862b898583d4: 21300000
+    - 3572793885ad45459a7b3371d658d55a: 21300000
+    - 534fe0488c534a268408f06ed01846a6: 21300000
+    - 36ec8809723e4aaab824f8cbe087722d: 21300000
+    - 11fc5329fa314099b386a0bcfdc9bd23: 21300000
+    - 495ea7a9d70541d29d2284dd48a503ea: 21300000
+    - 57cebfa9ee6d4611a0f5a80502e26f0f: 21300000
+    - af1619d94b874183b712191806037dd3: 21300000
+    - 4f0530f97a1642a5b987e15b57cd69a0: 21300000
+    - 1da85bda3251499195669564d105c00f: 21300000
+    - 14c145fafe514292b5c88719c40ef5bf: 21300000
+    - c5675c8bdc774886b2e043811fa3d840: 21300000
+    - 80703d4cde7c41f584f1e7a630085a0c: 21300000
+    - c7ea6acc963c4caaa414ea8feb75b7ac: 21300000
+    - cef31f5d29f54175be95251d0208b28d: 21300000
+    - 0d94ca1e74de49cf8094d4ebb7b232c4: 21300000
+    - 8d44918ef7f04726bbced77fc216b2f5: 21300000
+    - a4d0e7ce3c584853af748935ffd19742: 21300000
+    - cc3bc3eee237495a9cae35f5ea0f4f3c: 21300000
+    - 284e27ee0409418bb81e3308d8c9ad8c: 21300000
+    - d7736ecff6094d5ca6dc6e747043359c: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 686d6231f2e34168838220961ff146f9, type: 3}
+  - {fileID: 21300000, guid: b489d931dfda4de386a4bfd118c06117, type: 3}
+  - {fileID: 21300000, guid: d560f3910a9f4e999d30e8d3d9a60b2e, type: 3}
+  - {fileID: 21300000, guid: 637844c1d6114800a88c7d1f983f5851, type: 3}
+  - {fileID: 21300000, guid: b6424502a37e4daaaad56bc71772068c, type: 3}
+  - {fileID: 21300000, guid: f0d3b862408f4c1a9648be66cd6c4803, type: 3}
+  - {fileID: 21300000, guid: e32d49530d14494a97ad44bb631d9687, type: 3}
+  - {fileID: 21300000, guid: ca3d1144248c44888cbd67a593158184, type: 3}
+  - {fileID: 21300000, guid: 1184bda4991a41cbb2cae44fe97a8039, type: 3}
+  - {fileID: 21300000, guid: 9f593ac43e3749748018728ae0bb4a43, type: 3}
+  - {fileID: 21300000, guid: 6ae16775c98d45868e9d49742f188f1b, type: 3}
+  - {fileID: 21300000, guid: f9be9dc5b6364977b5aefe27cc1c3931, type: 3}
+  - {fileID: 21300000, guid: 30d48e26d9a84ad69b731745c0ffa1b8, type: 3}
+  - {fileID: 21300000, guid: 8fd20496eca74cbb806507c73bf493c0, type: 3}
+  - {fileID: 21300000, guid: 4693cfa6918f4ac19a97f553e34bab1f, type: 3}
+  - {fileID: 21300000, guid: 5dc80b37516648e5a3328f20302063f7, type: 3}
+  - {fileID: 21300000, guid: cc62e9770d69413a98a46d453b360292, type: 3}
+  - {fileID: 21300000, guid: 65fd60a7bde5462294283cb239332c2f, type: 3}
+  - {fileID: 21300000, guid: 234f6ef773604c3791354ee6fb0cab99, type: 3}
+  - {fileID: 21300000, guid: 99be060877b74e9a8e20862b898583d4, type: 3}
+  - {fileID: 21300000, guid: 3572793885ad45459a7b3371d658d55a, type: 3}
+  - {fileID: 21300000, guid: 534fe0488c534a268408f06ed01846a6, type: 3}
+  - {fileID: 21300000, guid: 36ec8809723e4aaab824f8cbe087722d, type: 3}
+  - {fileID: 21300000, guid: 11fc5329fa314099b386a0bcfdc9bd23, type: 3}
+  - {fileID: 21300000, guid: 495ea7a9d70541d29d2284dd48a503ea, type: 3}
+  - {fileID: 21300000, guid: 57cebfa9ee6d4611a0f5a80502e26f0f, type: 3}
+  - {fileID: 21300000, guid: af1619d94b874183b712191806037dd3, type: 3}
+  - {fileID: 21300000, guid: 4f0530f97a1642a5b987e15b57cd69a0, type: 3}
+  - {fileID: 21300000, guid: 1da85bda3251499195669564d105c00f, type: 3}
+  - {fileID: 21300000, guid: 14c145fafe514292b5c88719c40ef5bf, type: 3}
+  - {fileID: 21300000, guid: c5675c8bdc774886b2e043811fa3d840, type: 3}
+  - {fileID: 21300000, guid: 80703d4cde7c41f584f1e7a630085a0c, type: 3}
+  - {fileID: 21300000, guid: c7ea6acc963c4caaa414ea8feb75b7ac, type: 3}
+  - {fileID: 21300000, guid: cef31f5d29f54175be95251d0208b28d, type: 3}
+  - {fileID: 21300000, guid: 0d94ca1e74de49cf8094d4ebb7b232c4, type: 3}
+  - {fileID: 21300000, guid: 8d44918ef7f04726bbced77fc216b2f5, type: 3}
+  - {fileID: 21300000, guid: a4d0e7ce3c584853af748935ffd19742, type: 3}
+  - {fileID: 21300000, guid: cc3bc3eee237495a9cae35f5ea0f4f3c, type: 3}
+  - {fileID: 21300000, guid: 284e27ee0409418bb81e3308d8c9ad8c, type: 3}
+  - {fileID: 21300000, guid: d7736ecff6094d5ca6dc6e747043359c, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Banner_Upgrade_Parchment
+  - Gauge_Stat_Fill_Damage
+  - Btn_Upgrade_Wood_Sub_9Slice
+  - Badge_Hero_Name_Wood
+  - Slider_Wood_Fill_9Slice
+  - Tray_Loadout_Wood_Frame
+  - Panel_YinYang_Meter_HUD
+  - Btn_Nav_Wood_Stitched
+  - Bar_HUD_Fill_HP
+  - Banner_Parchment_Scroll
+  - Frame_Modal_TangBaoCac_9Slice
+  - Gauge_Stat_Bar_Frame
+  - Btn_Settings_Gear_Wood
+  - Gauge_Stat_Fill_Cooldown
+  - Frame_Avatar_Totem_Wood
+  - Banner_Ribbon_Hero_Amber
+  - Card_Parchment_Detail_9Slice
+  - Btn_Battle_Hex_Amber_Glow
+  - Pedestal_Hexagon_2_5D_WoodStone
+  - Header_Wood_Bar_VongXuyen
+  - Frame_HUD_Player_Orb_Level
+  - Banner_Settings_Parchment
+  - Box_Skill_Icon_Wood_9Slice
+  - Card_Upgrade_Wood_Totem_9Slice
+  - Slot_Inventory_Selected_Glow
+  - Toggle_Wood_Box_Off
+  - Btn_Back_Wood_9Slice
+  - Slider_Wood_Handle_Orb
+  - Badge_Upgrade_Pill_Wood_9Slice
+  - Frame_HUD_Timer_Kill_Wood
+  - Frame_Weapon_Orb_Gold
+  - Card_Relic_Fan_Deck
+  - Btn_Nav_Close_X_Wood
+  - Slot_Inventory_Wood_9Slice
+  - Pill_Currency_Wood
+  - Slider_Wood_Track_9Slice
+  - Bar_HUD_Fill_EXP
+  - Btn_Nav_Arrow_Hex_Wood
+  - Toggle_Wood_Checkmark_On
+  - Bar_HUD_Frame_VongXuyen_9Slice
+  m_RenderDataMap: {}
+  m_Tag: Atlas_UI_VongXuyen_Hub
+  m_IsVariant: 0

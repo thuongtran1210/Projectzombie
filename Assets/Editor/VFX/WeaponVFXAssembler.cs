@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
+using ProjectZombie.Editor.VFX;
 
 namespace ProjectZombie.Editor.VFXTools
 {
@@ -326,48 +327,7 @@ namespace ProjectZombie.Editor.VFXTools
         // =========================================================================
         private static void BuildSleepingMatVFX()
         {
-            Material matZzz = GetOrCreateMaterial("M_Sleep_Zzz_Comic", "Tex_Sleep_Zzz_Comic.png", false);
-            Material matWind = GetOrCreateMaterial("M_Mat_Slide_Wind", "Tex_Mat_Slide_Wind.png", true);
-
-            GameObject root = new GameObject("VFX_Relic_SleepingMat_Decal");
-
-            // Layer 1: Floating Zzz on sleep zone
-            var psZzz = root.AddComponent<ParticleSystem>();
-            var psrZzz = root.GetComponent<ParticleSystemRenderer>();
-            psrZzz.material = matZzz;
-            psrZzz.sortingLayerName = "Skill";
-            psrZzz.sortingOrder = 10;
-
-            var mainZ = psZzz.main;
-            mainZ.duration = 4.0f;
-            mainZ.loop = true;
-            mainZ.startLifetime = 1.2f;
-            mainZ.startSpeed = 1.2f;
-            mainZ.startSize = 0.6f;
-
-            var shapeZ = psZzz.shape;
-            shapeZ.shapeType = ParticleSystemShapeType.Box;
-            shapeZ.scale = new Vector3(2.5f, 1.5f, 0.1f);
-
-            // Layer 2: Wind Slide speed
-            GameObject childWind = new GameObject("Mat_Slide_Wind");
-            childWind.transform.SetParent(root.transform);
-            childWind.transform.localPosition = Vector3.zero;
-
-            var psWind = childWind.AddComponent<ParticleSystem>();
-            var psrWind = childWind.GetComponent<ParticleSystemRenderer>();
-            psrWind.material = matWind;
-            psrWind.sortingLayerName = "Skill";
-            psrWind.sortingOrder = 6;
-
-            var mainW = psWind.main;
-            mainW.duration = 2.0f;
-            mainW.loop = true;
-            mainW.startLifetime = 0.5f;
-            mainW.startSpeed = 3.0f;
-            mainW.startSize = 1.0f;
-
-            SavePrefab(root, $"{PREFAB_DIR}/VFX_Relic_SleepingMat_Decal.prefab");
+            SlapstickRelicVFXBuilder.BuildSleepingMatVFX();
         }
 
         // =========================================================================
@@ -439,6 +399,7 @@ namespace ProjectZombie.Editor.VFXTools
 
             // 5. R007
             SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_R007.prefab", "matVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_SleepingMat_Decal.prefab");
+            SetPrefabComponentField($"{WEAPONS_PREFAB_DIR}/Weapon_R007.prefab", "slideHitVfxPrefab", $"{PREFAB_DIR}/VFX_Relic_SleepingMat_SlideHit.prefab");
         }
 
         private static void SetPrefabComponentField(string prefabPath, string fieldName, string vfxPrefabPath)
