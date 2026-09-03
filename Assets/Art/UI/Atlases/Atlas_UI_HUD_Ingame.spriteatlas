@@ -53,6 +53,7 @@ SpriteAtlas:
     - b4b15d604ba74fe796793e96977ae5d4: 21300000
     - 1e0d42c0982b42fdb6626cb3ebceb1da: 21300000
     - ccfabec0edeb4e1eb55e92b6d0f3c8c0: 21300000
+    - 1dd405d0ac9853e47b51eadfc9b00983: 21300000
     - d9ffe321cd464ad499599be9deffdb72: 21300000
     - ca503e411bbe44308af1223887686d6f: 21300000
     - 3a315c61c42c434dabdb9215a6800adb: 21300000
@@ -71,6 +72,7 @@ SpriteAtlas:
     - 7a534f665597484d9d5175afd9841ed7: 21300000
     - 3af94cf64ab74763aadb614534a42329: 21300000
     - d059d67762bf49668fbe71c0c3a57f11: 21300000
+    - 77c2f0975c14abf478f06d3378d4bd8f: 21300000
     - a48cdc1885b04d1b9de5a0a27490b47a: 21300000
     - 8ebf4d68594041dc89f2d8d9bb735d99: 21300000
     - 31c8546af9e142dcb472d7b62ae95eef: 21300000
@@ -87,6 +89,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b4b15d604ba74fe796793e96977ae5d4, type: 3}
   - {fileID: 21300000, guid: 1e0d42c0982b42fdb6626cb3ebceb1da, type: 3}
   - {fileID: 21300000, guid: ccfabec0edeb4e1eb55e92b6d0f3c8c0, type: 3}
+  - {fileID: 21300000, guid: 1dd405d0ac9853e47b51eadfc9b00983, type: 3}
   - {fileID: 21300000, guid: d9ffe321cd464ad499599be9deffdb72, type: 3}
   - {fileID: 21300000, guid: ca503e411bbe44308af1223887686d6f, type: 3}
   - {fileID: 21300000, guid: 3a315c61c42c434dabdb9215a6800adb, type: 3}
@@ -105,6 +108,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7a534f665597484d9d5175afd9841ed7, type: 3}
   - {fileID: 21300000, guid: 3af94cf64ab74763aadb614534a42329, type: 3}
   - {fileID: 21300000, guid: d059d67762bf49668fbe71c0c3a57f11, type: 3}
+  - {fileID: 21300000, guid: 77c2f0975c14abf478f06d3378d4bd8f, type: 3}
   - {fileID: 21300000, guid: a48cdc1885b04d1b9de5a0a27490b47a, type: 3}
   - {fileID: 21300000, guid: 8ebf4d68594041dc89f2d8d9bb735d99, type: 3}
   - {fileID: 21300000, guid: 31c8546af9e142dcb472d7b62ae95eef, type: 3}
@@ -120,6 +124,7 @@ SpriteAtlas:
   - Fill_EXP_LamNgoc
   - EXP_Text_Badge
   - Meter_Taiji_Orb_Chibi
+  - Bar_HUD_Fill_HP
   - Panel_RunStats_Pill_3D
   - Slot_Weapon_Equipped
   - Gauge_Stat_Fill_Cooldown
@@ -138,6 +143,7 @@ SpriteAtlas:
   - HealthBar_Segment_Full
   - Gauge_YinYang_Bar_Chibi
   - Frame_HUD_Bar
+  - Bar_HUD_Fill_EXP
   - Meter_Taiji_YinYang_DongSon
   - Bar_HP_Chunky_Fill
   - Frame_YinYang_Taiji
