@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnNextClicked += OnNextCharacter;
                 _view.OnPrevClicked += OnPrevCharacter;
                 _view.OnSelectClicked += OnSelectCharacter;
+                _view.OnHeroTabClicked += OnSelectHeroIndex;
             }
         }
 
@@ -72,6 +73,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnNextClicked -= OnNextCharacter;
                 _view.OnPrevClicked -= OnPrevCharacter;
                 _view.OnSelectClicked -= OnSelectCharacter;
+                _view.OnHeroTabClicked -= OnSelectHeroIndex;
             }
         }
 
@@ -237,6 +239,15 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private void OnSelectHeroIndex(int heroIndex)
+        {
+            if (_characters == null || heroIndex < 0 || heroIndex >= _characters.Length) return;
+            if (_currentIndex == heroIndex) return;
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _currentIndex = heroIndex;
+            RenderCurrentCharacter();
+        }
+
         private void RenderCurrentCharacter()
         {
             if (_view == null || _characters == null || _characters.Length == 0) return;
@@ -271,6 +282,28 @@ namespace ProjectZombie.Features.UI
 
             _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar, previewTex);
             _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
+            _view.UpdateActiveTab(_currentIndex);
+
+            // Dữ liệu mẫu chỉ số sức mạnh chiến đấu theo từng nhân vật
+            float atkRatio = 0.75f;
+            float spdRatio = 0.70f;
+            float defRatio = 0.65f;
+            switch (_currentIndex)
+            {
+                case 0: // Thư Sinh (Cân bằng & Tương Sinh)
+                    atkRatio = 0.85f; spdRatio = 0.75f; defRatio = 0.60f;
+                    break;
+                case 1: // Đạo Sĩ (Âm Dương Bát Quái - Kiểm soát)
+                    atkRatio = 0.80f; spdRatio = 0.65f; defRatio = 0.80f;
+                    break;
+                case 2: // Thanh Đồng (Tứ Phủ Linh Lực - Tốc & Bắn xa)
+                    atkRatio = 0.78f; spdRatio = 0.90f; defRatio = 0.65f;
+                    break;
+                case 3: // Ẩn Sĩ Sơn Lâm (Thổ Địa - Siêu Trâu & Sát thương cận chiến)
+                    atkRatio = 0.92f; spdRatio = 0.50f; defRatio = 0.95f;
+                    break;
+            }
+            _view.DisplayStats(atkRatio, spdRatio, defRatio, $"{(int)(atkRatio * 100)}%", $"{(int)(spdRatio * 100)}%", $"{(int)(defRatio * 100)}%");
         }
     }
 }

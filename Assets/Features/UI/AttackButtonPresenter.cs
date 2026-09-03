@@ -214,9 +214,26 @@ namespace ProjectZombie.Features.UI
             {
                 iconToSet = RunLoadoutState.SelectedCharacter.basicAttackConfig.attackIcon;
             }
-            else if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.avatar != null)
+            else if (RunLoadoutState.SelectedCharacter != null)
             {
-                iconToSet = RunLoadoutState.SelectedCharacter.avatar;
+                string charId = RunLoadoutState.SelectedCharacter.characterId?.ToLower() ?? "";
+                string charName = RunLoadoutState.SelectedCharacter.characterName?.ToLower() ?? "";
+
+#if UNITY_EDITOR
+                if (charId.Contains("thusinh") || charName.Contains("thư sinh"))
+                    iconToSet = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
+                else if (charId.Contains("daosi") || charName.Contains("đạo sĩ"))
+                    iconToSet = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_DaoSi_Sword.png");
+                else if (charId.Contains("thanhdong") || charName.Contains("thanh đồng"))
+                    iconToSet = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
+                else if (charId.Contains("ansi") || charName.Contains("ẩn sĩ"))
+                    iconToSet = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
+#endif
+
+                if (iconToSet == null)
+                {
+                    iconToSet = RunLoadoutState.SelectedCharacter.avatar;
+                }
             }
 
             if (iconToSet != null)

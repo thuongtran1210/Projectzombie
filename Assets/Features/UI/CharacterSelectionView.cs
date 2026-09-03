@@ -30,10 +30,23 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Image[] _relicSlotIcons;
         [SerializeField] private TextMeshProUGUI[] _relicSlotNames;
 
+        [Header("Hero Quick Selection Tabs (4 Heroes)")]
+        [SerializeField] private Button[] _heroTabButtons;
+        [SerializeField] private Image[] _heroTabBorders;
+
+        [Header("Hero Combat Stat Gauges")]
+        [SerializeField] private Image _atkStatFill;
+        [SerializeField] private Image _spdStatFill;
+        [SerializeField] private Image _defStatFill;
+        [SerializeField] private TextMeshProUGUI _atkStatText;
+        [SerializeField] private TextMeshProUGUI _spdStatText;
+        [SerializeField] private TextMeshProUGUI _defStatText;
+
         public event Action OnSelectClicked;
         public event Action OnNextClicked;
         public event Action OnPrevClicked;
         public event Action OnBackClicked;
+        public event Action<int> OnHeroTabClicked;
 
         protected override void Awake()
         {
@@ -47,6 +60,18 @@ namespace ProjectZombie.Features.UI
                 OnBackClicked?.Invoke();
                 OnBackPressed();
             });
+
+            if (_heroTabButtons != null)
+            {
+                for (int i = 0; i < _heroTabButtons.Length; i++)
+                {
+                    int index = i;
+                    if (_heroTabButtons[i] != null)
+                    {
+                        _heroTabButtons[i].onClick.AddListener(() => OnHeroTabClicked?.Invoke(index));
+                    }
+                }
+            }
         }
 
         private void AutoWireComponentsIfMissing()
@@ -61,6 +86,8 @@ namespace ProjectZombie.Features.UI
                     _nextButton = btn;
                 else if (_prevButton == null && (btnName.Contains("prev") || btnName.Contains("trai") || btnName.Contains("left")))
                     _prevButton = btn;
+                else if (_backButton == null && (btnName.Contains("close") || btnName.Contains("back") || btnName.Contains("dong")))
+                    _backButton = btn;
             }
 
             var texts = GetComponentsInChildren<TextMeshProUGUI>(true);
@@ -73,9 +100,9 @@ namespace ProjectZombie.Features.UI
                     _elementText = t;
                 else if (_descriptionText == null && (tName.Contains("desc") || tName.Contains("mota")))
                     _descriptionText = t;
-                else if (_signatureSkillText == null && (tName.Contains("skill") || tName.Contains("kynang")))
+                else if (_signatureSkillText == null && (tName.Contains("signatureskill") || tName.Contains("kynangchudong") || tName.Contains("skill")))
                     _signatureSkillText = t;
-                else if (_passiveTraitText == null && (tName.Contains("passive") || tName.Contains("bidong") || tName.Contains("trait")))
+                else if (_passiveTraitText == null && (tName.Contains("passivetrait") || tName.Contains("noitai") || tName.Contains("trait")))
                     _passiveTraitText = t;
                 else if (_primaryWeaponNameText == null && (tName.Contains("primaryweapon") || tName.Contains("vukhichinh")))
                     _primaryWeaponNameText = t;
@@ -120,6 +147,29 @@ namespace ProjectZombie.Features.UI
                 _characterAvatarImage.enabled = (avatar != null && renderTexture == null);
                 _characterAvatarImage.color = (avatar != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
             }
+        }
+
+        public void UpdateActiveTab(int selectedIndex)
+        {
+            if (_heroTabBorders == null) return;
+            for (int i = 0; i < _heroTabBorders.Length; i++)
+            {
+                if (_heroTabBorders[i] == null) continue;
+                bool isSelected = (i == selectedIndex);
+                _heroTabBorders[i].color = isSelected ? new Color(1f, 0.85f, 0.2f, 1f) : new Color(0.4f, 0.35f, 0.3f, 0.6f);
+                _heroTabBorders[i].transform.localScale = isSelected ? Vector3.one * 1.1f : Vector3.one;
+            }
+        }
+
+        public void DisplayStats(float atkRatio, float spdRatio, float defRatio, string atkLabel = "", string spdLabel = "", string defLabel = "")
+        {
+            if (_atkStatFill != null) _atkStatFill.fillAmount = Mathf.Clamp01(atkRatio);
+            if (_spdStatFill != null) _spdStatFill.fillAmount = Mathf.Clamp01(spdRatio);
+            if (_defStatFill != null) _defStatFill.fillAmount = Mathf.Clamp01(defRatio);
+
+            if (_atkStatText != null && !string.IsNullOrEmpty(atkLabel)) _atkStatText.text = atkLabel;
+            if (_spdStatText != null && !string.IsNullOrEmpty(spdLabel)) _spdStatText.text = spdLabel;
+            if (_defStatText != null && !string.IsNullOrEmpty(defLabel)) _defStatText.text = defLabel;
         }
 
         public void DisplayLoadout(Weapons.WeaponData primaryWeapon, System.Collections.Generic.List<Weapons.WeaponData> relics)

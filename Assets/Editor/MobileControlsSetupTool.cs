@@ -17,12 +17,51 @@ namespace ProjectZombie.Editor.Tools
     {
         [MenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire", priority = 2)]
         [MenuItem("Tools/ProjectZombie/UI/⚡ Setup Mobile Controls (Joystick & Buttons)", priority = 2)]
+        [MenuItem("Tools/ProjectZombie/UI/🎨 Refresh & Apply 2D Flat Controls Sprites", priority = 3)]
         [MenuItem("Tools/Vong Xuyen/UI & Controls/Setup Mobile Controls (Joystick & Buttons)", priority = 1)]
         [MenuItem("ProjectZombie/UI/Setup Mobile Controls & Auto-Wire", priority = 1)]
         public static void ShowWindow()
         {
             var window = GetWindow<MobileControlsSetupTool>("Mobile Controls Setup");
             window.minSize = new Vector2(420, 480);
+        }
+
+        [MenuItem("Tools/ProjectZombie/UI/🎨 Refresh & Apply 2D Flat Controls Sprites", priority = 3)]
+        public static void RefreshAndApplyControlsSprites()
+        {
+            ConfigureControlSpriteImporters();
+            SetupAndWireControlsInScene();
+        }
+
+        public static void ConfigureControlSpriteImporters()
+        {
+            string[] paths = new string[]
+            {
+                "Assets/Art/UI/Joystick/Joystick_Base_DongSon.png",
+                "Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Attack.png",
+                "Assets/Art/UI/Skills/Btn_Dash_PhiVan.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png",
+                "Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png"
+            };
+
+            foreach (var path in paths)
+            {
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer != null)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    importer.alphaIsTransparency = true;
+                    importer.mipmapEnabled = false;
+                    importer.wrapMode = TextureWrapMode.Clamp;
+                    importer.filterMode = FilterMode.Bilinear;
+                    importer.SaveAndReimport();
+                }
+            }
+            AssetDatabase.Refresh();
+            Debug.Log("<color=#00FF88>[MobileControlsSetupTool]</color> Đã cấu hình và re-import toàn bộ Sprite Controls 2D Flat thành công!");
         }
 
         private void OnGUI()
@@ -38,6 +77,13 @@ namespace ProjectZombie.Editor.Tools
             );
 
             EditorGUILayout.Space(15);
+
+            if (GUILayout.Button("🎨 Re-import & Áp Dụng Bộ Sprite 2D Flat Mới", GUILayout.Height(35)))
+            {
+                RefreshAndApplyControlsSprites();
+            }
+
+            EditorGUILayout.Space(5);
 
             if (GUILayout.Button("⚡ Tự Động Quét & Chuẩn Hóa Scene Hiện Tại", GUILayout.Height(40)))
             {
