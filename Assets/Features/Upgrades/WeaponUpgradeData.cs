@@ -96,5 +96,21 @@ namespace ProjectZombie.Features.Upgrades
                 }
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#007A4D><b>[CƯỜNG HÓA PHÁP BẢO]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            if (requiredCurrentLevel == 0) return "MỚI!";
+            return $"Cấp {requiredCurrentLevel + 1}";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return requiredCurrentLevel > 0 ? 2.5f : 0.5f;
+        }
     }
 }

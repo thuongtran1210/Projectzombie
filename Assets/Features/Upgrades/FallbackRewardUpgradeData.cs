@@ -46,5 +46,20 @@ namespace ProjectZombie.Features.Upgrades
                 Debug.Log($"<color=#FFD700>[FallbackReward]</color> Nhận Túi Vàng Phong Thủy: +{goldAmount} Vàng!");
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#A33418><b>[THƯỞNG CỨU MỆNH]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "THƯỞNG";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 1.0f;
+        }
     }
 }

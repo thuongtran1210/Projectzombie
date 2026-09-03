@@ -86,5 +86,29 @@ namespace ProjectZombie.Features.Upgrades
         /// Thực thi hiệu ứng của thẻ khi người chơi chọn.
         /// </summary>
         public abstract void ApplyUpgrade(GameObject player);
+
+        /// <summary>
+        /// Trả về chuỗi hiển thị Thể Loại thẻ trên UI (VD: [THẦN PHÁP], [BÍ KÍP ĐÒN CHÉM],...)
+        /// </summary>
+        public virtual string GetCategoryDisplayName()
+        {
+            return "<color=#1B4D7E><b>[BỔ TRỢ KHÍ VẬN]</b></color>";
+        }
+
+        /// <summary>
+        /// Trả về chuỗi hiển thị Cấp độ của thẻ dựa trên trạng thái hiện tại của Player (VD: Cấp 2/5, TIẾN HÓA, MỚI!)
+        /// </summary>
+        public virtual string GetLevelDisplayName(GameObject player)
+        {
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Hệ số nhân trọng số xuất hiện động (Dynamic Weight Multiplier) của thẻ này trong lượt roll.
+        /// </summary>
+        public virtual float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 1.0f;
+        }
     }
 }

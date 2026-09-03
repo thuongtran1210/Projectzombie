@@ -64,5 +64,35 @@ namespace ProjectZombie.Features.Upgrades
                 playerPassives.IncrementUpgradeCount(upgradeName);
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#1B4D7E><b>[BỔ TRỢ KHÍ VẬN]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            if (player == null) return string.Empty;
+            var passives = player.GetComponent<PlayerPassives>();
+            int count = passives != null ? passives.GetUpgradeCount(upgradeName) : 0;
+            int nextLevel = count + 1;
+            if (maxLevel > 0)
+            {
+                return $"Cấp {nextLevel}/{maxLevel}";
+            }
+            return $"Cấp {nextLevel}";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            if (player == null) return 1.0f;
+            var passives = player.GetComponent<PlayerPassives>();
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            if (passives != null && (passives.HasPassive(key) || passives.HasPassive(upgradeName)))
+            {
+                return 2.0f; // Ưu tiên nâng max nhánh đang có
+            }
+            return 1.0f;
+        }
     }
 }

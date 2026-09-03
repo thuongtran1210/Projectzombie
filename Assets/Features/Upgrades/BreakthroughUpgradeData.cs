@@ -57,5 +57,20 @@ namespace ProjectZombie.Features.Upgrades
 
             Debug.Log($"<color=#FF00FF>[Breakthrough]</color> ĐÃ ĐỘT PHÁ TUYỆT KỸ: +{allDamageMultiplier*100}% Damage, +{relicScaleMultiplier*100}% Pháp Bảo Hộ Thân!");
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#6B2D82><b>[ĐỘT PHÁ TUYỆT KỸ]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "ĐỘT PHÁ";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 6.0f; // Cực kỳ ưu tiên khi đủ điều kiện level
+        }
     }
 }

@@ -73,6 +73,21 @@ namespace ProjectZombie.Features.Upgrades
             Debug.Log($"[RareUpgrade] Áp dụng nâng cấp hiếm: '{upgradeName}'");
         }
 
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#6B2D82><b>[BÍ THUẬT HIẾM]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "HIẾM";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 1.0f;
+        }
+
         private string GetOneTimeKey() => $"rare_upgrade_obtained_{upgradeName}";
     }
 }

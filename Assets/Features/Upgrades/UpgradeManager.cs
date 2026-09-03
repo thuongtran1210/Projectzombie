@@ -188,48 +188,8 @@ namespace ProjectZombie.Features.Upgrades
         {
             float weight = Mathf.Max(1f, upgrade.spawnWeight);
 
-            // 1. Phân loại theo thể loại thẻ
-            if (upgrade is ComboAugmentUpgradeData || upgrade.upgradeType == UpgradeType.ComboAugment)
-            {
-                // Thẻ Bí Kíp Đòn Chém cho Vũ Khí Chính -> SIÊU ƯU TIÊN (3.0x)
-                weight *= 3.0f;
-            }
-            else if (upgrade is DashTraitUpgradeData || upgrade.upgradeType == UpgradeType.DashTrait)
-            {
-                // Thẻ Cường Hóa Lướt -> ƯU TIÊN CAO (2.5x)
-                weight *= 2.5f;
-            }
-            else if (upgrade is BreakthroughUpgradeData || upgrade.upgradeType == UpgradeType.BreakthroughUltimate)
-            {
-                // Thẻ Đột Phá Tuyệt Kỹ khi thỏa mốc cấp độ -> CỰC KỲ ƯU TIÊN (6.0x)
-                weight *= 6.0f;
-            }
-            else if (upgrade is WeaponUpgradeData wud)
-            {
-                if (wud.requiredCurrentLevel > 0)
-                {
-                    // Thẻ Nâng cấp vũ khí đang có -> ƯU TIÊN CAO ĐỘ (2.5x)
-                    weight *= 2.5f;
-                }
-                else
-                {
-                    // Thẻ Mở khóa vũ khí mới -> Trọng số thấp trong Action RPG
-                    weight *= 0.5f;
-                }
-            }
-            else if (upgrade is EvolutionUpgradeData)
-            {
-                // Thẻ Tiến Hóa khi đã đủ điều kiện -> SIÊU ƯU TIÊN (4.0x)
-                weight *= 4.0f;
-            }
-            else if (upgrade is CommonUpgradeData cud)
-            {
-                if (playerPassives != null && (playerPassives.HasPassive(cud.id) || playerPassives.HasPassive(cud.upgradeName)))
-                {
-                    // Đã sở hữu Passive này -> Ưu tiên nâng max (2.0x)
-                    weight *= 2.0f;
-                }
-            }
+            // 1. Phân loại trọng số động theo từng loại thẻ (Polymorphic Dynamic Multiplier)
+            weight *= upgrade.GetDynamicWeightMultiplier(player);
 
             // 2. Cộng hưởng Ngũ Hành (Element Synergy Bonus)
             if (upgrade.element != ElementType.None && activeElements != null && activeElements.Count > 0)
@@ -244,7 +204,7 @@ namespace ProjectZombie.Features.Upgrades
                     // Tương Sinh (Thủy sinh Mộc, Mộc sinh Hỏa,...)
                     foreach (var activeElem in activeElements)
                     {
-                        if (IsElementGenerative(activeElem, upgrade.element))
+                        if (ProjectZombie.Features.UI.Helpers.ElementVisualHelper.IsElementGenerative(activeElem, upgrade.element))
                         {
                             weight *= 1.25f;
                             break;
@@ -263,20 +223,6 @@ namespace ProjectZombie.Features.Upgrades
             }
 
             return weight;
-        }
-
-        private bool IsElementGenerative(ElementType parent, ElementType child)
-        {
-            // Kim(1) sinh Thủy(3), Thủy(3) sinh Mộc(2), Mộc(2) sinh Hỏa(4), Hỏa(4) sinh Thổ(5), Thổ(5) sinh Kim(1)
-            switch (parent)
-            {
-                case ElementType.Kim: return child == ElementType.Thuy;
-                case ElementType.Thuy: return child == ElementType.Moc;
-                case ElementType.Moc: return child == ElementType.Hoa;
-                case ElementType.Hoa: return child == ElementType.Tho;
-                case ElementType.Tho: return child == ElementType.Kim;
-                default: return false;
-            }
         }
 
         /// <summary>

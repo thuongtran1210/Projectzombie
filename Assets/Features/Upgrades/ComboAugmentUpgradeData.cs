@@ -64,5 +64,20 @@ namespace ProjectZombie.Features.Upgrades
                 Debug.Log($"<color=#FFD700>[ComboAugment]</color> Đã nâng cấp Bí Kíp cho {primary.displayName}: +{comboDamageMultiplierBonus*100}% Dmg, +{slashAreaScaleBonus*100}% Range.");
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#B85D00><b>[BÍ KÍP ĐÒN CHÉM]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "BÍ KÍP";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 3.0f; // Siêu ưu tiên cho vũ khí chính
+        }
     }
 }

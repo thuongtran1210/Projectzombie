@@ -37,5 +37,20 @@ namespace ProjectZombie.Features.Upgrades
                 Debug.Log($"<color=#00FF88>[DashTrait]</color> Đã cường hóa Lướt (Dash): Cooldown còn {stats.DashCooldown:F2}s, +{postDashCritBonus*100}% Crit.");
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#0E6073><b>[CƯỜNG HÓA LƯỚT]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "LƯỚT";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 2.5f; // Ưu tiên cao
+        }
     }
 }

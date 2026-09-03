@@ -86,5 +86,20 @@ namespace ProjectZombie.Features.Upgrades
                 Debug.LogWarning($"[EvolutionUpgradeData] Old weapon with ID {weaponId} not found for evolution.");
             }
         }
+
+        public override string GetCategoryDisplayName()
+        {
+            return "<color=#A33418><b>[THẦN PHÁP TIẾN HÓA]</b></color>";
+        }
+
+        public override string GetLevelDisplayName(GameObject player)
+        {
+            return "TIẾN HÓA";
+        }
+
+        public override float GetDynamicWeightMultiplier(GameObject player)
+        {
+            return 4.0f; // Siêu ưu tiên khi đủ điều kiện
+        }
     }
 }

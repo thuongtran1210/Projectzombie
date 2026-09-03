@@ -256,7 +256,7 @@ namespace ProjectZombie.Features.UI
                     }
                     else
                     {
-                        FormatSynergyInfo(upgradeData, out Sprite synIcon, out string synText);
+                        UpgradeSynergyFormatter.FormatSynergyInfo(upgradeData, _playerWeaponManager, out Sprite synIcon, out string synText);
                         hasSynergy = synIcon != null || !string.IsNullOrEmpty(synText);
                         cardView.SetSynergyInfo(synIcon, synText);
                     }
@@ -340,14 +340,8 @@ namespace ProjectZombie.Features.UI
 
         private string FormatCategoryName(UpgradeData data)
         {
-            if (data is EvolutionUpgradeData) return "<color=#A33418><b>[THẦN PHÁP TIẾN HÓA]</b></color>";
-            if (data is BreakthroughUpgradeData) return "<color=#6B2D82><b>[ĐỘT PHÁ TUYỆT KỸ]</b></color>";
-            if (data is ComboAugmentUpgradeData) return "<color=#B85D00><b>[BÍ KÍP ĐÒN CHÉM]</b></color>";
-            if (data is DashTraitUpgradeData) return "<color=#0E6073><b>[CƯỜNG HÓA LƯỚT]</b></color>";
-            if (data is WeaponUpgradeData) return "<color=#007A4D><b>[CƯỜNG HÓA PHÁP BẢO]</b></color>";
-            if (data is FallbackRewardUpgradeData) return "<color=#A33418><b>[THƯỞNG CỨU MỆNH]</b></color>";
-            if (data is RareUpgradeData) return "<color=#6B2D82><b>[BÍ THUẬT HIẾM]</b></color>";
-            return "<color=#1B4D7E><b>[BỔ TRỢ KHÍ VẬN]</b></color>";
+            if (data == null) return string.Empty;
+            return data.GetCategoryDisplayName();
         }
 
         private string FormatElementAndSynergyBadge(UpgradeData upgradeData)
@@ -368,7 +362,7 @@ namespace ProjectZombie.Features.UI
                         isSameElement = true;
                         break;
                     }
-                    else if (IsElementGenerative(w.element, upgradeData.element))
+                    else if (ElementVisualHelper.IsElementGenerative(w.element, upgradeData.element))
                     {
                         isGenerative = true;
                     }
@@ -387,120 +381,10 @@ namespace ProjectZombie.Features.UI
             return baseBadge;
         }
 
-        private bool IsElementGenerative(ElementType parent, ElementType child)
-        {
-            switch (parent)
-            {
-                case ElementType.Kim: return child == ElementType.Thuy;
-                case ElementType.Thuy: return child == ElementType.Moc;
-                case ElementType.Moc: return child == ElementType.Hoa;
-                case ElementType.Hoa: return child == ElementType.Tho;
-                case ElementType.Tho: return child == ElementType.Kim;
-                default: return false;
-            }
-        }
-
         private string FormatLevel(UpgradeData data)
         {
-            if (data is WeaponUpgradeData weaponData)
-            {
-                if (weaponData.requiredCurrentLevel == 0)
-                    return "MỚI!";
-                else
-                    return $"Cấp {weaponData.requiredCurrentLevel + 1}";
-            }
-            else if (data is EvolutionUpgradeData)
-            {
-                return "TIẾN HÓA";
-            }
-            else if (data is BreakthroughUpgradeData)
-            {
-                return "ĐỘT PHÁ";
-            }
-            else if (data is ComboAugmentUpgradeData)
-            {
-                return "BÍ KÍP";
-            }
-            else if (data is DashTraitUpgradeData)
-            {
-                return "LƯỚT";
-            }
-            else if (data is FallbackRewardUpgradeData)
-            {
-                return "THƯỞNG";
-            }
-            else if (data is CommonUpgradeData commonData && _playerWeaponManager != null)
-            {
-                var playerPassives = _playerWeaponManager.GetComponent<PlayerPassives>();
-                int count = playerPassives != null ? playerPassives.GetUpgradeCount(commonData.upgradeName) : 0;
-                int nextLevel = count + 1;
-                if (commonData.maxLevel > 0)
-                {
-                    return $"Cấp {nextLevel}/{commonData.maxLevel}";
-                }
-                return $"Cấp {nextLevel}";
-            }
-            return "";
-        }
-
-        private void FormatSynergyInfo(UpgradeData data, out Sprite icon, out string formattedText)
-        {
-            icon = null;
-            formattedText = null;
-
-            if (WeaponEvolutionManager.Instance == null || _playerWeaponManager == null) return;
-
-            var playerPassives = _playerWeaponManager.GetComponent<PlayerPassives>();
-
-            // 1. Trường hợp thẻ là Vũ Khí (WeaponUpgradeData / Base Weapon Unlock)
-            if (data is WeaponUpgradeData weaponData)
-            {
-                if (WeaponEvolutionManager.Instance.TryGetRecipeByWeaponId(weaponData.weaponId, out var recipe))
-                {
-                    bool hasPassive = playerPassives != null && playerPassives.HasPassive(recipe.requiredPassiveId);
-                    if (hasPassive)
-                    {
-                        formattedText = $"<color=#007A4D><b>★ Duyên Phận: Đã có {recipe.requiredPassiveId} (Sẵn Sàng)</b></color>";
-                    }
-                    else
-                    {
-                        formattedText = $"<color=#5C4033>Duyên Phận: Cần {recipe.requiredPassiveId} (Chưa có)</color>";
-                    }
-                }
-            }
-            // 2. Trường hợp thẻ là Thẻ Bị Động (Common / Passive Upgrade)
-            else if (data is CommonUpgradeData commonData)
-            {
-                var recipes = WeaponEvolutionManager.Instance.GetRecipesByPassiveId(commonData.id);
-                if (recipes != null && recipes.Count > 0)
-                {
-                    List<string> weaponNames = new List<string>();
-                    bool anyWeaponOwned = false;
-
-                    foreach (var r in recipes)
-                    {
-                        bool hasWeapon = _playerWeaponManager.GetWeaponById(r.baseWeaponId) != null;
-                        if (hasWeapon)
-                        {
-                            anyWeaponOwned = true;
-                            weaponNames.Add($"<color=#007A4D><b>{r.baseWeaponId} (Đã có)</b></color>");
-                        }
-                        else
-                        {
-                            weaponNames.Add($"<color=#7A6855>{r.baseWeaponId}</color>");
-                        }
-                    }
-
-                    if (anyWeaponOwned)
-                    {
-                        formattedText = $"<color=#FFD700>★ Hợp Thể:</color> {string.Join(", ", weaponNames)}";
-                    }
-                    else
-                    {
-                        formattedText = $"<color=#AAAAAA>Ghép Cùng:</color> {string.Join(", ", weaponNames)}";
-                    }
-                }
-            }
+            if (data == null) return string.Empty;
+            return data.GetLevelDisplayName(_playerWeaponManager != null ? _playerWeaponManager.gameObject : null);
         }
     }
 }
