@@ -48,6 +48,8 @@ namespace ProjectZombie.Features.Enemies
         private Enemy _enemy;
         private EnemyKinematicPhysics _physics;
         private readonly List<ActiveStatusEffect> _activeEffects = new List<ActiveStatusEffect>();
+        private readonly List<ActiveStatusEffect> _updateBuffer = new List<ActiveStatusEffect>(8);
+        private readonly List<ActiveStatusEffect> _clearBuffer = new List<ActiveStatusEffect>(8);
 
         // Cache các Strategy Handlers tĩnh (Zero-GC)
         private static readonly Dictionary<StatusEffectType, IStatusEffectHandler> _handlers = new Dictionary<StatusEffectType, IStatusEffectHandler>
@@ -118,16 +120,23 @@ namespace ProjectZombie.Features.Enemies
         /// </summary>
         public void ClearAllStatuses()
         {
-            for (int i = _activeEffects.Count - 1; i >= 0; i--)
+            if (_activeEffects.Count == 0) return;
+
+            _clearBuffer.Clear();
+            _clearBuffer.AddRange(_activeEffects);
+            _activeEffects.Clear();
+
+            for (int i = 0; i < _clearBuffer.Count; i++)
             {
-                var effect = _activeEffects[i];
+                var effect = _clearBuffer[i];
                 if (_handlers.TryGetValue(effect.Type, out var handler) && handler != null)
                 {
                     handler.OnRemoved(_enemy, effect);
                 }
                 OnStatusChanged?.Invoke(effect.Type, false);
             }
-            _activeEffects.Clear();
+            _clearBuffer.Clear();
+
             CurrentSlowMultiplier = 1f;
             IsStunned = false;
             IsFrozen = false;
@@ -243,20 +252,27 @@ namespace ProjectZombie.Features.Enemies
 
         public void RemoveStatus(StatusEffectType type)
         {
+            bool removed = false;
             for (int i = _activeEffects.Count - 1; i >= 0; i--)
             {
+                if (i >= _activeEffects.Count) continue;
                 if (_activeEffects[i].Type == type)
                 {
                     var effect = _activeEffects[i];
-                    if (_handlers.TryGetValue(type, out var handler))
+                    _activeEffects.RemoveAt(i);
+                    removed = true;
+
+                    if (_handlers.TryGetValue(type, out var handler) && handler != null)
                     {
                         handler.OnRemoved(_enemy, effect);
                     }
-                    _activeEffects.RemoveAt(i);
                     OnStatusChanged?.Invoke(type, false);
                 }
             }
-            RecalculateStatus();
+            if (removed)
+            {
+                RecalculateStatus();
+            }
         }
 
         /// <summary>
@@ -275,33 +291,62 @@ namespace ProjectZombie.Features.Enemies
         private void Update()
         {
             if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
-
-            float dt = Time.deltaTime;
+            if (!gameObject.activeInHierarchy) return;
+            if (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive) return;
 
             if (_activeEffects.Count > 0)
             {
+                _updateBuffer.Clear();
+                _updateBuffer.AddRange(_activeEffects);
+
                 bool dirty = false;
-                for (int i = _activeEffects.Count - 1; i >= 0; i--)
+                float dt = Time.deltaTime;
+
+                for (int i = 0; i < _updateBuffer.Count; i++)
                 {
-                    var effect = _activeEffects[i];
+                    var effect = _updateBuffer[i];
+
+                    // Bỏ qua nếu effect đã bị xóa khỏi _activeEffects (ví dụ do Wake-up hoặc ClearAllStatuses)
+                    if (!_activeEffects.Contains(effect)) continue;
+
+                    // Dừng ngay nếu quái vật chết hoặc GameObject bị disable trong quá trình xử lý
+                    if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+                    {
+                        return;
+                    }
+
                     effect.ElapsedTime += dt;
 
                     // Ủy quyền xử lý tick cho Strategy Handler
-                    if (_handlers.TryGetValue(effect.Type, out var handler))
+                    if (_handlers.TryGetValue(effect.Type, out var handler) && handler != null)
                     {
                         handler.OnTick(_enemy, effect, dt);
                     }
 
+                    if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+                    {
+                        return;
+                    }
+
                     if (effect.IsExpired)
                     {
+                        // Xóa an toàn khỏi _activeEffects trước khi kích hoạt Handler / Event
+                        if (_activeEffects.Remove(effect))
+                        {
+                            dirty = true;
+                        }
+
                         if (handler != null)
                         {
                             handler.OnExpired(_enemy, effect);
                         }
 
                         OnStatusChanged?.Invoke(effect.Type, false);
-                        _activeEffects.RemoveAt(i);
-                        dirty = true;
+
+                        if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+                        {
+                            return;
+                        }
                     }
                 }
 

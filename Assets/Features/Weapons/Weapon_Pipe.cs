@@ -135,6 +135,12 @@ namespace ProjectZombie.Features.Weapons
                 if (vfx != null)
                 {
                     vfx.transform.localScale = Vector3.one * (isEvolution ? 1.4f : 1.0f);
+                    var psList = vfx.GetComponentsInChildren<ParticleSystem>(true);
+                    for (int p = 0; p < psList.Length; p++)
+                    {
+                        var main = psList[p].main;
+                        main.loop = true;
+                    }
                 }
             }
 
@@ -144,11 +150,15 @@ namespace ProjectZombie.Features.Weapons
         #endregion
 
         #region ACTIVE RELIC SKILL (VECTOR WALL - BỨC TƯỜNG BÃO KHÓI RỒNG CUỘN)
+        private float ActiveAimDistance => WeaponLevel >= MaxLevel ? 5.2f : 3.8f;
+        private float ActiveWallLength => WeaponLevel >= MaxLevel ? 7.5f : 5.2f;
+        private float ActiveWallThickness => 1.8f;
+
         public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(
             Combat.Aiming.SkillAimType.VectorWall, 
-            WeaponLevel >= MaxLevel ? 7.2f : 5.5f, 
-            WeaponLevel >= MaxLevel ? 7.5f : 5.2f, 
-            0f, 
+            ActiveAimDistance, 
+            ActiveWallLength, 
+            ActiveWallThickness, 
             true
         );
 
@@ -157,18 +167,25 @@ namespace ProjectZombie.Features.Weapons
         /// </summary>
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
-            bool isEvolution = WeaponLevel >= MaxLevel;
             Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
             if (customAimDirection == Vector2.zero && PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
                 var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
                 if (player != null) forwardDir = player.FacingVector;
             }
+            Vector2 origin = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null
+                ? (Vector2)PlayerProvider.PlayerTransform.position
+                : (Vector2)transform.position;
+            PerformActiveRelicSkill(Combat.Aiming.AimResult.FromDirection(forwardDir, origin, ActiveAimDistance));
+        }
 
-            float aimDist = isEvolution ? 5.2f : 3.8f;
-            Vector2 wallCenter = (Vector2)transform.position + forwardDir * aimDist;
-            float wallLength = isEvolution ? 7.5f : 5.2f;
-            float wallThickness = 1.8f;
+        protected override void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            bool isEvolution = WeaponLevel >= MaxLevel;
+            Vector2 forwardDir = aimResult.Direction;
+            Vector2 wallCenter = aimResult.Distance > 0.01f ? (Vector2)aimResult.TargetWorldPos : (Vector2)transform.position + forwardDir * ActiveAimDistance;
+            float wallLength = ActiveWallLength;
+            float wallThickness = ActiveWallThickness;
             float wallAngle = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;
             float duration = isEvolution ? 6.5f : 5.0f;
 
@@ -191,6 +208,12 @@ namespace ProjectZombie.Features.Weapons
                     if (vfx != null)
                     {
                         vfx.transform.localScale = Vector3.one * (isEvolution ? 1.35f : 0.95f);
+                        var psList = vfx.GetComponentsInChildren<ParticleSystem>(true);
+                        for (int p = 0; p < psList.Length; p++)
+                        {
+                            var main = psList[p].main;
+                            main.loop = true;
+                        }
                     }
                 }
             }
@@ -235,7 +258,11 @@ namespace ProjectZombie.Features.Weapons
                 this
             );
 
-            Vector2 boxSize = new Vector2(wallLength, wallThickness);
+            // Bức tường vuông góc với hướng ngắm forwardDir:
+            // boxSize.x là độ dày dọc theo forwardDir (1.8m)
+            // boxSize.y là chiều dài bức tường chắn ngang (5.2m / 7.5m)
+            // Khi xoay theo góc wallAngle của forwardDir, hitbox khớp hoàn toàn với dãy VFX khói thuốc
+            Vector2 boxSize = new Vector2(wallThickness, wallLength);
 
             while (elapsed < duration)
             {

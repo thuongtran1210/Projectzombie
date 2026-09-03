@@ -245,6 +245,21 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
+        /// Kết quả ngắm bắn gần nhất từ UI/Touch input.
+        /// </summary>
+        public Combat.Aiming.AimResult LastAimResult => _lastAimResult;
+        private Combat.Aiming.AimResult _lastAimResult;
+
+        /// <summary>
+        /// Kích hoạt Kỹ năng Chủ Động với đầy đủ dữ liệu ngắm chiêu MOBA (AimResult: Direction, Distance, TargetWorldPos, IsQuickTap).
+        /// </summary>
+        public virtual bool TriggerActiveRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            _lastAimResult = aimResult;
+            return TriggerActiveRelicSkill(aimResult.Direction);
+        }
+
+        /// <summary>
         /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo khi người chơi nhấn/kéo nút Kỹ Năng Pháp Bảo.
         /// Tự động phân nhánh: Phase 1 (Setup) vs Phase 2 (Recast Detonate).
         /// </summary>
@@ -259,7 +274,14 @@ namespace ProjectZombie.Features.Weapons
                 _currentRelicPhase = RelicCastPhase.Cooldown;
                 _lastRelicSkillCastTime = Time.time;
                 _recastWindowEndTime = -999f;
-                PerformRecastSkill(customAimDirection);
+                if (_lastAimResult.Distance > 0.001f && _lastAimResult.Direction == customAimDirection)
+                {
+                    PerformRecastSkill(_lastAimResult);
+                }
+                else
+                {
+                    PerformRecastSkill(customAimDirection);
+                }
                 OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
                 OnRelicSkillExecuted?.Invoke();
                 OnRelicCooldownUpdated?.Invoke(RelicRemainingCooldown, RelicMaxCooldown);
@@ -286,10 +308,27 @@ namespace ProjectZombie.Features.Weapons
                 _relicSkillDurationEndTime = Time.time + activeDuration;
             }
 
-            PerformActiveRelicSkill(customAimDirection);
+            if (_lastAimResult.Distance > 0.001f && _lastAimResult.Direction == customAimDirection)
+            {
+                PerformActiveRelicSkill(_lastAimResult);
+            }
+            else
+            {
+                PerformActiveRelicSkill(customAimDirection);
+            }
+
             OnRelicSkillExecuted?.Invoke();
             OnRelicCooldownUpdated?.Invoke(RelicRemainingCooldown, RelicMaxCooldown);
             return true;
+        }
+
+        /// <summary>
+        /// Thực thi chiêu thức chủ động với đầy đủ dữ liệu AimResult (Tọa độ rơi, cự ly kéo, hướng ngắm).
+        /// Các vũ khí có cự ly động (như Nồi Cơm, Tường Khói) nên override hàm này.
+        /// </summary>
+        protected virtual void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            PerformActiveRelicSkill(aimResult.Direction);
         }
 
         /// <summary>
@@ -298,6 +337,14 @@ namespace ProjectZombie.Features.Weapons
         protected virtual void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             PerformActiveRelicSkill();
+        }
+
+        /// <summary>
+        /// Thực thi chiêu thức Phase 2 (Recast) với đầy đủ AimResult.
+        /// </summary>
+        protected virtual void PerformRecastSkill(Combat.Aiming.AimResult aimResult)
+        {
+            PerformRecastSkill(aimResult.Direction);
         }
 
         /// <summary>
@@ -315,6 +362,52 @@ namespace ProjectZombie.Features.Weapons
         {
             PerformAttack();
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Gizmos Validator: Vẽ trực quan hình dạng AimConfig của Pháp Bảo trong Scene View để Level Designer kiểm tra độ lệch.
+        /// </summary>
+        protected virtual void OnDrawGizmosSelected()
+        {
+            if (isPassiveRelic) return;
+            var config = AimConfig;
+            if (config.aimType == Combat.Aiming.SkillAimType.None) return;
+
+            Vector3 origin = firePoint != null ? firePoint.position : transform.position;
+            Vector3 forward = transform.right;
+
+            Gizmos.color = new Color(0.2f, 0.85f, 1.0f, 0.65f); // Xanh Cyan
+
+            switch (config.aimType)
+            {
+                case Combat.Aiming.SkillAimType.LineArrow:
+                    Gizmos.DrawRay(origin, forward * config.range);
+                    Gizmos.DrawWireCube(origin + forward * (config.range * 0.5f), new Vector3(config.range, config.radius, 0.1f));
+                    break;
+
+                case Combat.Aiming.SkillAimType.VectorWall:
+                    Vector3 wallPos = origin + forward * config.range;
+                    float angle = Mathf.Atan2(forward.y, forward.x) * Mathf.Rad2Deg;
+                    Matrix4x4 oldMat = Gizmos.matrix;
+                    Gizmos.matrix = Matrix4x4.TRS(wallPos, Quaternion.Euler(0, 0, angle), Vector3.one);
+                    Gizmos.DrawWireCube(Vector3.zero, new Vector3(config.WallThickness, config.WallLength, 0.1f));
+                    Gizmos.matrix = oldMat;
+                    Gizmos.DrawWireSphere(wallPos, 0.35f);
+                    break;
+
+                case Combat.Aiming.SkillAimType.CircleReticle:
+                    Vector3 reticlePos = origin + forward * config.range;
+                    Gizmos.DrawLine(origin, reticlePos);
+                    Gizmos.DrawWireSphere(reticlePos, config.AOERadius);
+                    break;
+
+                case Combat.Aiming.SkillAimType.SelfAOE:
+                case Combat.Aiming.SkillAimType.RhythmPulse:
+                    Gizmos.DrawWireSphere(origin, config.radius);
+                    break;
+            }
+        }
+#endif
 
         /// <summary>
         /// Gọi mỗi frame trong Tick khi kỹ năng chủ động đang trong thời gian duy trì hiệu lực (activeDuration > 0).

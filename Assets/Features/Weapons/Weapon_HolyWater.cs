@@ -54,18 +54,18 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.VectorWall, 6.5f, 4.5f, 0f, true);
+        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.VectorWall, 3.5f, 4.5f, 1.8f, true);
 
         /// <summary>
         /// Kỹ năng chủ động: Trận Pháp Giếng Thiêng — Dựng Bức Tường Nước Thánh theo vector vạch sẵn, phong tỏa làm chậm 50% quái và hồi ngay 10% Max HP.
         /// </summary>
-        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        protected override void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
         {
             if (projectileData == null) return;
 
             DamageData damageData = CreateDamageData();
-            Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
-            Vector3 centerPos = transform.position + (Vector3)(forwardDir * 3.5f);
+            Vector2 forwardDir = aimResult.Direction;
+            Vector3 centerPos = aimResult.Distance > 0.01f ? aimResult.TargetWorldPos : transform.position + (Vector3)(forwardDir * 3.5f);
             Vector2 perpendicular = new Vector2(-forwardDir.y, forwardDir.x);
 
             // Dựng 4 giếng nước thánh xếp thành một đường thẳng tường chắn
@@ -95,6 +95,13 @@ namespace ProjectZombie.Features.Weapons
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+        }
+
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
+            Vector3 centerPos = transform.position + (Vector3)(forwardDir * 3.5f);
+            PerformActiveRelicSkill(new Combat.Aiming.AimResult(forwardDir, 3.5f, centerPos));
         }
     }
 }

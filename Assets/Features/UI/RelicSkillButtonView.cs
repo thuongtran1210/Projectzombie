@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.UI
         public event System.Action OnAimStarted;
         public event System.Action<Vector2, float, bool> OnAimUpdated;
         public event System.Action<Vector2, bool> OnAimReleased;
+        public event System.Action<Vector2, float, bool> OnAimDetailedReleased;
         public event System.Action OnAimCancelled;
 
         private void Awake()
@@ -43,6 +44,7 @@ namespace ProjectZombie.Features.UI
                     if (isTap) OnButtonClicked?.Invoke();
                     OnAimReleased?.Invoke(dir, isTap);
                 };
+                _dragHandler.OnAimDetailedReleased += (dir, pull, isTap) => OnAimDetailedReleased?.Invoke(dir, pull, isTap);
                 _dragHandler.OnAimCancelled += () => OnAimCancelled?.Invoke();
             }
             else if (_relicButton != null)

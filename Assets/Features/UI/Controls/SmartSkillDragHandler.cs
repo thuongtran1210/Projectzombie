@@ -37,6 +37,7 @@ namespace ProjectZombie.Features.UI.Controls
         public event Action OnAimStarted;
         public event Action<Vector2, float, bool> OnAimUpdated; // (direction, pullPercent, isCancelHovered)
         public event Action<Vector2, bool> OnAimReleased;      // (direction, isQuickTap)
+        public event Action<Vector2, float, bool> OnAimDetailedReleased; // (direction, pullPercent, isQuickTap)
         public event Action OnAimCancelled;
 
         public void SetInteractable(bool interactable)
@@ -152,7 +153,9 @@ namespace ProjectZombie.Features.UI.Controls
             {
                 bool isQuickTap = dist < _dragThreshold && !_isAimActive;
                 Vector2 finalDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
+                float pullPercent = Mathf.Clamp01(dist / _maxDragDistance);
                 OnAimReleased?.Invoke(finalDirection, isQuickTap);
+                OnAimDetailedReleased?.Invoke(finalDirection, pullPercent, isQuickTap);
             }
 
             _isDragging = false;

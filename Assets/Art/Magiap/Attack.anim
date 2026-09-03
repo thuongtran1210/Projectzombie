@@ -20,7 +20,7 @@ AnimationClip:
   m_PPtrCurves:
   - serializedVersion: 2
     curve:
-    - time: 0.0000
+    - time: 0
       value: {fileID: 6100200000, guid: 6100000000000000a0b77823fca88d03, type: 3}
     - time: 0.0714
       value: {fileID: 6100212345, guid: 6100000000000000a0b77823fca88d03, type: 3}
@@ -28,7 +28,7 @@ AnimationClip:
       value: {fileID: 6100224690, guid: 6100000000000000a0b77823fca88d03, type: 3}
     - time: 0.2143
       value: {fileID: 6100237035, guid: 6100000000000000a0b77823fca88d03, type: 3}
-    - time: 0.2857
+    - time: 0.2857143
       value: {fileID: 6100249380, guid: 6100000000000000a0b77823fca88d03, type: 3}
     - time: 0.3571
       value: {fileID: 6100261725, guid: 6100000000000000a0b77823fca88d03, type: 3}
@@ -65,7 +65,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.4286
+    m_StopTime: 0.42852858
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -84,4 +84,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.2857143
+    functionName: TriggerAttackEvent
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

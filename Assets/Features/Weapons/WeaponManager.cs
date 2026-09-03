@@ -379,6 +379,18 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
+        /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo Hộ Thân với đầy đủ dữ liệu ngắm chiêu MOBA (AimResult).
+        /// </summary>
+        public bool TriggerEquippedRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            if (HasActiveRelic(out var activeRelic))
+            {
+                return activeRelic.TriggerActiveRelicSkill(aimResult);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Kích hoạt Kỹ năng Chủ Động của Pháp Bảo Hộ Thân khi người chơi nhấn nút Kỹ Năng Pháp Bảo / Phím E. Hỗ trợ ngắm bắn định hướng MOBA.
         /// </summary>
         public bool TriggerEquippedRelicSkill(Vector2 customAimDirection = default)

@@ -190,6 +190,18 @@ namespace ProjectZombie.Features.Weapons
             true
         );
 
+        protected override void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            bool isEvolution = WeaponLevel >= MaxLevel;
+            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+
+            Vector2 targetCenter = aimResult.Distance > 0.01f 
+                ? (Vector2)aimResult.TargetWorldPos 
+                : (Vector2)transform.position;
+
+            StartCoroutine(RoutinePotDefenseSequence(true, targetCenter, isEvolution));
+        }
+
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             bool isEvolution = WeaponLevel >= MaxLevel;
@@ -198,7 +210,7 @@ namespace ProjectZombie.Features.Weapons
             Vector2 targetCenter = (Vector2)transform.position;
             if (customAimDirection != Vector2.zero)
             {
-                float aimDist = isEvolution ? 6.5f : 4.8f;
+                float aimDist = WeaponLevel >= MaxLevel ? 7.5f : 5.8f;
                 targetCenter = (Vector2)transform.position + customAimDirection * aimDist;
             }
 

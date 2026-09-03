@@ -20,7 +20,7 @@ namespace ProjectZombie.Features.Enemies.StatusHandlers
             Collider2D[] nearby = Physics2D.OverlapCircleAll(enemy.transform.position, 2.5f, 1 << enemy.gameObject.layer);
             for (int i = 0; i < nearby.Length; i++)
             {
-                if (nearby[i].TryGetComponent<Enemy>(out var otherEnemy))
+                if (nearby[i] != null && nearby[i].gameObject != enemy.gameObject && nearby[i].TryGetComponent<Enemy>(out var otherEnemy))
                 {
                     otherEnemy.HealthSystem?.TakeDamage(60f);
                     otherEnemy.ApplyKnockback((nearby[i].transform.position - enemy.transform.position).normalized, 5f, 0.25f);

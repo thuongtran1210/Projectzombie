@@ -233,8 +233,10 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        private void OnDrawGizmosSelected()
+#if UNITY_EDITOR
+        protected override void OnDrawGizmosSelected()
         {
+            base.OnDrawGizmosSelected();
             if (!showGizmos) return;
 
             Vector2 center = firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
@@ -254,6 +256,7 @@ namespace ProjectZombie.Features.Weapons
                 Gizmos.DrawWireCube(hitCenter, hitboxSize);
             }
         }
+#endif
     }
 }
 

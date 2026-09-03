@@ -102,6 +102,10 @@ namespace ProjectZombie.Features.UI
 
         private void HandleAimReleased(Vector2 direction, bool isQuickTap)
         {
+            var aimResult = Combat.Aiming.SkillAimIndicatorController.Instance != null
+                ? Combat.Aiming.SkillAimIndicatorController.Instance.CurrentAimResult
+                : Combat.Aiming.AimResult.FromDirection(direction, _weaponManager != null ? _weaponManager.transform.position : Vector3.zero);
+
             Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
             if (isQuickTap)
             {
@@ -112,7 +116,7 @@ namespace ProjectZombie.Features.UI
                 if (_weaponManager != null && _boundActiveRelic != null && _boundActiveRelic.IsRelicSkillReady)
                 {
                     global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
-                    _weaponManager.TriggerEquippedRelicSkill(direction);
+                    _weaponManager.TriggerEquippedRelicSkill(aimResult);
                 }
             }
         }

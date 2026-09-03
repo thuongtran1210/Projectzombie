@@ -55,15 +55,43 @@ namespace ProjectZombie.Features.Combat.Aiming
             this.autoTargetOnTap = autoTarget;
         }
 
+        // Semantic Helpers giải nghĩa trường dữ liệu rõ ràng theo từng loại hình
+        public float WallLength => radius > 0.1f ? radius : 5.2f;
+        public float WallThickness => sectorAngle > 0.1f ? sectorAngle : 1.8f;
+        public float AOERadius => radius > 0.1f ? radius : 2.0f;
+        public float ConeAngle => sectorAngle > 0.1f ? sectorAngle : 90f;
+        public float ConeReach => range > 0.1f ? range : 2.5f;
+
         public static SkillAimConfig DefaultMelee => new SkillAimConfig(SkillAimType.ConeSector, 2.5f, 1.8f, 90f, true);
         public static SkillAimConfig DefaultRanged => new SkillAimConfig(SkillAimType.LineArrow, 7.0f, 0.8f, 0f, true);
         public static SkillAimConfig DefaultAOE => new SkillAimConfig(SkillAimType.CircleReticle, 6.0f, 2.2f, 0f, true);
         public static SkillAimConfig DefaultSelfAOE => new SkillAimConfig(SkillAimType.SelfAOE, 0f, 2.5f, 0f, false);
         public static SkillAimConfig DefaultDash => new SkillAimConfig(SkillAimType.DashLine, 4.5f, 0.8f, 0f, false);
-        public static SkillAimConfig DefaultVectorWall => new SkillAimConfig(SkillAimType.VectorWall, 6.0f, 4.5f, 0f, true);
+        public static SkillAimConfig DefaultVectorWall => new SkillAimConfig(SkillAimType.VectorWall, 6.0f, 4.5f, 1.8f, true);
         public static SkillAimConfig DefaultCurvedTrajectory => new SkillAimConfig(SkillAimType.CurvedTrajectory, 6.5f, 1.5f, 45f, true);
         public static SkillAimConfig DefaultRhythmPulse => new SkillAimConfig(SkillAimType.RhythmPulse, 0f, 5.0f, 0f, false);
         public static SkillAimConfig DefaultInstant => new SkillAimConfig(SkillAimType.None, 0f, 0f, 0f, false);
+
+        // Factory Methods tạo cấu hình trực quan chuẩn mực
+        public static SkillAimConfig CreateVectorWall(float spawnDistance, float wallLength, float wallThickness = 1.8f, bool autoTarget = true)
+        {
+            return new SkillAimConfig(SkillAimType.VectorWall, spawnDistance, wallLength, wallThickness, autoTarget);
+        }
+
+        public static SkillAimConfig CreateCircleReticle(float maxCastRange, float aoeRadius, bool autoTarget = true)
+        {
+            return new SkillAimConfig(SkillAimType.CircleReticle, maxCastRange, aoeRadius, 0f, autoTarget);
+        }
+
+        public static SkillAimConfig CreateCone(float reach, float width, float arcAngle = 90f, bool autoTarget = true)
+        {
+            return new SkillAimConfig(SkillAimType.ConeSector, reach, width, arcAngle, autoTarget);
+        }
+
+        public static SkillAimConfig CreateLine(float length, float width = 1.0f, bool autoTarget = true)
+        {
+            return new SkillAimConfig(SkillAimType.LineArrow, length, width, 0f, autoTarget);
+        }
     }
 
     /// <summary>

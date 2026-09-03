@@ -143,8 +143,9 @@ namespace ProjectZombie.Features.Weapons
         }
 
 #if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
+        protected override void OnDrawGizmosSelected()
         {
+            base.OnDrawGizmosSelected();
             Transform center = firePoint != null ? firePoint : transform;
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(center.position, baseRadius);
