@@ -854,12 +854,16 @@ MonoBehaviour:
   _levelText: {fileID: 1630307394656488318}
   _statDiffText: {fileID: 3211324020580808444}
   _elementBadgeText: {fileID: 0}
+  _frameCommonWood: {fileID: 21300000, guid: 2db113772254485eb4b264cf4cd15f6b, type: 3}
+  _frameRareJade: {fileID: 21300000, guid: 82ebac629b3d419b8edb92a3dc1d64c4, type: 3}
+  _frameEvolutionGold: {fileID: 21300000, guid: c00a1ebfba3d4c2e846a8e71b8654f32, type: 3}
+  _frameSynergyAmber: {fileID: 21300000, guid: 079adc047e36456ab04481872035bf42, type: 3}
   _synergyContainer: {fileID: 5979976825060160396}
   _synergyIconImage: {fileID: 0}
   _synergyLabelText: {fileID: 1971590528237063779}
   _evolutionBanner: {fileID: 0}
   _normalFrameColor: {r: 1, g: 1, b: 1, a: 1}
-  _evolutionFrameColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  _evolutionFrameColor: {r: 1, g: 0.95, b: 0.7, a: 1}
   _selectButton: {fileID: 1503621698404428031}
   _banButton: {fileID: 0}
 --- !u!1 &8531402924100013857

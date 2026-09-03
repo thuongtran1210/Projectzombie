@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI
 {
@@ -20,13 +21,19 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _statDiffText;
         [SerializeField] private TextMeshProUGUI _elementBadgeText;
 
+        [Header("Card Tier Frames (9-Slice Skins)")]
+        [SerializeField] private Sprite _frameCommonWood;
+        [SerializeField] private Sprite _frameRareJade;
+        [SerializeField] private Sprite _frameEvolutionGold;
+        [SerializeField] private Sprite _frameSynergyAmber;
+
         [Header("Evolution Synergy & Styling")]
         [SerializeField] private GameObject _synergyContainer;
         [SerializeField] private Image _synergyIconImage;
         [SerializeField] private TextMeshProUGUI _synergyLabelText;
         [SerializeField] private GameObject _evolutionBanner;
         [SerializeField] private Color _normalFrameColor = Color.white;
-        [SerializeField] private Color _evolutionFrameColor = new Color(1f, 0.85f, 0.2f, 1f); // Vàng Kim Thần Khí
+        [SerializeField] private Color _evolutionFrameColor = new Color(1f, 0.95f, 0.7f, 1f); // Vàng Kim Thần Khí
 
         [Header("Buttons")]
         [SerializeField] private Button _selectButton;
@@ -37,6 +44,8 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            EnsureTierSpritesLoaded();
+
             if (_selectButton != null)
             {
                 _selectButton.onClick.AddListener(OnButtonClicked);
@@ -51,6 +60,51 @@ namespace ProjectZombie.Features.UI
             if (animator != null)
             {
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            }
+        }
+
+        private void EnsureTierSpritesLoaded()
+        {
+#if UNITY_EDITOR
+            if (_frameCommonWood == null) _frameCommonWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
+            if (_frameRareJade == null) _frameRareJade = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png");
+            if (_frameEvolutionGold == null) _frameEvolutionGold = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png");
+            if (_frameSynergyAmber == null) _frameSynergyAmber = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png");
+#endif
+        }
+
+        /// <summary>
+        /// Thay đổi Khung Thẻ theo Phẩm Cấp (Gỗ Mun Thường / Ngọc Bích Hiếm / Hoàng Kim Tiến Hóa / Hổ Phách Duyên Phận).
+        /// </summary>
+        public void SetCardTier(UpgradeType upgradeType, bool isEvolution, bool hasSynergy)
+        {
+            EnsureTierSpritesLoaded();
+
+            if (_cardFrameImage == null) return;
+
+            if (isEvolution || upgradeType == UpgradeType.BreakthroughUltimate || upgradeType == UpgradeType.EvolutionUpgrade)
+            {
+                if (_frameEvolutionGold != null) _cardFrameImage.sprite = _frameEvolutionGold;
+                SetEvolutionMode(true);
+            }
+            else if (hasSynergy)
+            {
+                if (_frameSynergyAmber != null) _cardFrameImage.sprite = _frameSynergyAmber;
+                SetEvolutionMode(false);
+            }
+            else if (upgradeType == UpgradeType.RareUpgrade ||
+                     upgradeType == UpgradeType.ComboAugment ||
+                     upgradeType == UpgradeType.DashTrait ||
+                     upgradeType == UpgradeType.ConditionalPassive ||
+                     upgradeType == UpgradeType.SignatureSkillUpgrade)
+            {
+                if (_frameRareJade != null) _cardFrameImage.sprite = _frameRareJade;
+                SetEvolutionMode(false);
+            }
+            else
+            {
+                if (_frameCommonWood != null) _cardFrameImage.sprite = _frameCommonWood;
+                SetEvolutionMode(false);
             }
         }
 

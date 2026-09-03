@@ -177,6 +177,17 @@ namespace ProjectZombie.EditorTools
             SerializedObject so = new SerializedObject(cardView);
             so.FindProperty("_iconImage").objectReferenceValue = iconImg;
             so.FindProperty("_cardFrameImage").objectReferenceValue = rootImg;
+
+            Sprite fWood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
+            Sprite fJade = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png");
+            Sprite fGold = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png");
+            Sprite fAmber = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png");
+
+            so.FindProperty("_frameCommonWood").objectReferenceValue = fWood;
+            so.FindProperty("_frameRareJade").objectReferenceValue = fJade;
+            so.FindProperty("_frameEvolutionGold").objectReferenceValue = fGold;
+            so.FindProperty("_frameSynergyAmber").objectReferenceValue = fAmber;
+
             so.FindProperty("_nameText").objectReferenceValue = nameTMP;
             so.FindProperty("_descriptionText").objectReferenceValue = descTMP;
             so.FindProperty("_categoryText").objectReferenceValue = catTMP;

@@ -246,16 +246,23 @@ namespace ProjectZombie.Features.UI
                     cardView.SetElementBadge(elementBadge);
 
                     // Xử lý Huy hiệu Duyên Phận & Chế độ Thần Khí Tiến Hóa
-                    if (upgradeData is EvolutionUpgradeData)
+                    bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade || upgradeData.upgradeType == UpgradeType.BreakthroughUltimate;
+                    bool hasSynergy = false;
+
+                    if (isEvolution)
                     {
                         cardView.SetEvolutionMode(true);
-                        cardView.SetSynergyInfo(null, "<color=#FFD700>★ CÔNG THỨC DUNG HỢP HOÀN TẤT ★</color>");
+                        cardView.SetSynergyInfo(null, "<color=#A33418><b>★ CÔNG THỨC DUNG HỢP HOÀN TẤT ★</b></color>");
                     }
                     else
                     {
                         FormatSynergyInfo(upgradeData, out Sprite synIcon, out string synText);
+                        hasSynergy = synIcon != null || !string.IsNullOrEmpty(synText);
                         cardView.SetSynergyInfo(synIcon, synText);
                     }
+
+                    // Tự động phân cấp màu khung thẻ (Gỗ Mun / Ngọc Bích / Hoàng Kim / Hổ Phách)
+                    cardView.SetCardTier(upgradeData.upgradeType, isEvolution, hasSynergy);
                 }
             }
         }
@@ -453,11 +460,11 @@ namespace ProjectZombie.Features.UI
                     bool hasPassive = playerPassives != null && playerPassives.HasPassive(recipe.requiredPassiveId);
                     if (hasPassive)
                     {
-                        formattedText = $"<color=#00FF88>★ Duyên Phận: Đã có {recipe.requiredPassiveId} ✓ (Sẵn sàng)</color>";
+                        formattedText = $"<color=#007A4D><b>★ Duyên Phận: Đã có {recipe.requiredPassiveId} (Sẵn Sàng)</b></color>";
                     }
                     else
                     {
-                        formattedText = $"<color=#AAAAAA>Duyên Phận: Cần {recipe.requiredPassiveId} (Chưa có)</color>";
+                        formattedText = $"<color=#5C4033>Duyên Phận: Cần {recipe.requiredPassiveId} (Chưa có)</color>";
                     }
                 }
             }
@@ -476,11 +483,11 @@ namespace ProjectZombie.Features.UI
                         if (hasWeapon)
                         {
                             anyWeaponOwned = true;
-                            weaponNames.Add($"<color=#00FF88>{r.baseWeaponId} ✓</color>");
+                            weaponNames.Add($"<color=#007A4D><b>{r.baseWeaponId} (Đã có)</b></color>");
                         }
                         else
                         {
-                            weaponNames.Add($"<color=#888888>{r.baseWeaponId}</color>");
+                            weaponNames.Add($"<color=#7A6855>{r.baseWeaponId}</color>");
                         }
                     }
 

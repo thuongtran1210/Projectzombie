@@ -454,22 +454,12 @@ namespace ProjectZombie.Features.UI
                 badgeRT.anchoredPosition = new Vector2(-2, -2);
                 badgeRT.sizeDelta = new Vector2(18, 18);
                 var badgeImg = badgeObj.GetComponent<Image>();
-                badgeImg.color = new Color(0.95f, 0.75f, 0.15f, 1f); // Vàng kim rực rỡ
-                
-                // Text checkmark
-                GameObject chkObj = new GameObject("Txt_Check", typeof(RectTransform), typeof(TextMeshProUGUI));
-                chkObj.transform.SetParent(badgeObj.transform, false);
-                var chkRT = chkObj.GetComponent<RectTransform>();
-                chkRT.anchorMin = Vector2.zero;
-                chkRT.anchorMax = Vector2.one;
-                chkRT.offsetMin = Vector2.zero;
-                chkRT.offsetMax = Vector2.zero;
-                var chkTMP = chkObj.GetComponent<TextMeshProUGUI>();
-                chkTMP.text = "✓";
-                chkTMP.fontSize = 11;
-                chkTMP.fontStyle = FontStyles.Bold;
-                chkTMP.alignment = TextAlignmentOptions.Center;
-                chkTMP.color = new Color(0.15f, 0.10f, 0.05f, 1f);
+                badgeImg.color = Color.white;
+                badgeImg.preserveAspect = true;
+#if UNITY_EDITOR
+                Sprite starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
+                if (starSprite != null) badgeImg.sprite = starSprite;
+#endif
             }
 
             // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
