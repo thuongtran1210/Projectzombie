@@ -108,6 +108,12 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        [Header("Fallback Placeholder Icons")]
+        [SerializeField] private Sprite _fallbackWeaponIcon;
+        [SerializeField] private Sprite _fallbackPassiveIcon;
+        [SerializeField] private Sprite _fallbackDashIcon;
+        [SerializeField] private Sprite _fallbackComboIcon;
+
         /// <summary>
         /// Thiết lập hiển thị toàn diện của thẻ nâng cấp kèm chuỗi Stat Diff thay đổi chỉ số.
         /// </summary>
@@ -129,12 +135,28 @@ namespace ProjectZombie.Features.UI
                 _banButton.gameObject.SetActive(onBanClicked != null);
             }
 
+            // Tự động giải quyết fallback icon nếu thẻ chưa được gán icon riêng trong Inspector
+            if (icon == null)
+            {
+                if (category != null && category.Contains("LƯỚT")) icon = _fallbackDashIcon;
+                else if (category != null && category.Contains("BÍ KÍP")) icon = _fallbackComboIcon;
+                else if (category != null && category.Contains("PHÁP BẢO")) icon = _fallbackWeaponIcon;
+                else icon = _fallbackPassiveIcon;
+            }
+
             if (_iconImage != null)
             {
                 _iconImage.sprite = icon;
                 _iconImage.enabled = icon != null;
                 _iconImage.preserveAspect = true;
+
+                // Nếu có object cha là Icon_Slot_Frame thì bật/tắt đồng bộ
+                if (_iconImage.transform.parent != null && _iconImage.transform.parent != transform)
+                {
+                    _iconImage.transform.parent.gameObject.SetActive(icon != null);
+                }
             }
+
             if (_nameText != null) _nameText.text = cardName;
             if (_descriptionText != null) _descriptionText.text = description;
             if (_categoryText != null) _categoryText.text = category;
