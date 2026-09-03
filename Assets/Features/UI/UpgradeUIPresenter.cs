@@ -333,14 +333,14 @@ namespace ProjectZombie.Features.UI
 
         private string FormatCategoryName(UpgradeData data)
         {
-            if (data is EvolutionUpgradeData) return "<color=#FFD700>[THẦN PHÁP TIẾN HÓA]</color>";
-            if (data is BreakthroughUpgradeData) return "<color=#FF00FF>[ĐỘT PHÁ TUYỆT KỸ]</color>";
-            if (data is ComboAugmentUpgradeData) return "<color=#FF8800>[BÍ KÍP ĐÒN CHÉM]</color>";
-            if (data is DashTraitUpgradeData) return "<color=#00E5FF>[CƯỜNG HÓA LƯỚT]</color>";
-            if (data is WeaponUpgradeData) return "<color=#00FF88>[CƯỜNG HÓA PHÁP BẢO]</color>";
-            if (data is FallbackRewardUpgradeData) return "<color=#FFD700>[THƯỞNG CỨU MỆNH]</color>";
-            if (data is RareUpgradeData) return "<color=#E0AAFF>[BÍ THUẬT HIẾM]</color>";
-            return "<color=#A0C4FF>[BỔ TRỢ KHÍ VẬN]</color>";
+            if (data is EvolutionUpgradeData) return "<color=#A33418><b>[THẦN PHÁP TIẾN HÓA]</b></color>";
+            if (data is BreakthroughUpgradeData) return "<color=#6B2D82><b>[ĐỘT PHÁ TUYỆT KỸ]</b></color>";
+            if (data is ComboAugmentUpgradeData) return "<color=#B85D00><b>[BÍ KÍP ĐÒN CHÉM]</b></color>";
+            if (data is DashTraitUpgradeData) return "<color=#0E6073><b>[CƯỜNG HÓA LƯỚT]</b></color>";
+            if (data is WeaponUpgradeData) return "<color=#007A4D><b>[CƯỜNG HÓA PHÁP BẢO]</b></color>";
+            if (data is FallbackRewardUpgradeData) return "<color=#A33418><b>[THƯỞNG CỨU MỆNH]</b></color>";
+            if (data is RareUpgradeData) return "<color=#6B2D82><b>[BÍ THUẬT HIẾM]</b></color>";
+            return "<color=#1B4D7E><b>[BỔ TRỢ KHÍ VẬN]</b></color>";
         }
 
         private string FormatElementAndSynergyBadge(UpgradeData upgradeData)
@@ -370,11 +370,11 @@ namespace ProjectZombie.Features.UI
 
             if (isSameElement)
             {
-                return string.IsNullOrEmpty(baseBadge) ? "<color=#4DEEEA>[ĐỒNG HỆ]</color>" : $"{baseBadge} <color=#4DEEEA>[ĐỒNG HỆ]</color>";
+                return string.IsNullOrEmpty(baseBadge) ? "<color=#0E6073><b>[ĐỒNG HỆ]</b></color>" : $"{baseBadge} <color=#0E6073><b>[ĐỒNG HỆ]</b></color>";
             }
             if (isGenerative)
             {
-                return string.IsNullOrEmpty(baseBadge) ? "<color=#00FF88>[TƯƠNG SINH]</color>" : $"{baseBadge} <color=#00FF88>[TƯƠNG SINH]</color>";
+                return string.IsNullOrEmpty(baseBadge) ? "<color=#007A4D><b>[TƯƠNG SINH]</b></color>" : $"{baseBadge} <color=#007A4D><b>[TƯƠNG SINH]</b></color>";
             }
 
             return baseBadge;

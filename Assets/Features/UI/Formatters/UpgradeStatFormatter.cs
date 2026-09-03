@@ -10,9 +10,9 @@ namespace ProjectZombie.Features.UI.Formatters
     {
         private readonly StringBuilder _sb = new StringBuilder(128);
 
-        private const string POSITIVE_COLOR = "#4DEEEA"; // Xanh Ngọc Bích cho chỉ số tăng
-        private const string CRIT_COLOR = "#FFD700";     // Hoàng Kim cho Chí Mạng / Đột Biến
-        private const string PIERCE_COLOR = "#FFA726";   // Cam Sáng cho Xuyên Thấu / Đạn
+        private const string POSITIVE_COLOR = "#0E6073"; // Xanh Ngọc Đậm tương phản cao trên sớ sáng
+        private const string CRIT_COLOR = "#A33418";     // Đỏ Chu Sa Đậm cho Chí Mạng / Đột Biến
+        private const string PIERCE_COLOR = "#B85D00";   // Nâu Cam Đậm cho Xuyên Thấu / Đạn
 
         public string FormatStatDiff(UpgradeData upgradeData)
         {

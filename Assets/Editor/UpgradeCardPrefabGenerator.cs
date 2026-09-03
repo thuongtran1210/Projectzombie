@@ -24,7 +24,9 @@ namespace ProjectZombie.EditorTools
             rootRT.sizeDelta = new Vector2(280, 420);
 
             // Sprite Card Frame Common 9-slice
-            Sprite cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Card_Common.png");
+            AssetDatabase.ImportAsset("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png", ImportAssetOptions.ForceUpdate);
+            Sprite cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
+            if (cardFrame == null) cardFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Cards/Frame_Card_Wood_9Slice.png");
             Image rootImg = root.GetComponent<Image>();
             rootImg.color = Color.white;
             rootImg.type = Image.Type.Sliced;
@@ -46,14 +48,14 @@ namespace ProjectZombie.EditorTools
             catRT.anchorMin = new Vector2(0, 1);
             catRT.anchorMax = new Vector2(0, 1);
             catRT.pivot = new Vector2(0, 1);
-            catRT.anchoredPosition = new Vector2(24, -20);
-            catRT.sizeDelta = new Vector2(130, 24);
+            catRT.anchoredPosition = new Vector2(22, -18);
+            catRT.sizeDelta = new Vector2(140, 24);
             TextMeshProUGUI catTMP = catObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) catTMP.font = vietFont;
-            catTMP.fontSize = 13;
+            catTMP.fontSize = 12;
             catTMP.fontStyle = FontStyles.Bold;
-            catTMP.color = new Color(0.7f, 0.7f, 0.75f, 1f);
-            catTMP.text = "Pháp Bảo";
+            catTMP.color = new Color(0.12f, 0.40f, 0.28f, 1f); // Xanh ngọc đậm
+            catTMP.text = "[PHÁP BẢO]";
 
             // 3. Level Text (Top-Right)
             GameObject lvlObj = new GameObject("Level_Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
@@ -63,14 +65,14 @@ namespace ProjectZombie.EditorTools
             lvlRT.anchorMin = new Vector2(1, 1);
             lvlRT.anchorMax = new Vector2(1, 1);
             lvlRT.pivot = new Vector2(1, 1);
-            lvlRT.anchoredPosition = new Vector2(-24, -20);
+            lvlRT.anchoredPosition = new Vector2(-22, -18);
             lvlRT.sizeDelta = new Vector2(80, 24);
             TextMeshProUGUI lvlTMP = lvlObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) lvlTMP.font = vietFont;
-            lvlTMP.fontSize = 13;
+            lvlTMP.fontSize = 12;
             lvlTMP.fontStyle = FontStyles.Bold;
             lvlTMP.alignment = TextAlignmentOptions.Right;
-            lvlTMP.color = new Color(1f, 0.84f, 0.3f, 1f);
+            lvlTMP.color = new Color(0.55f, 0.35f, 0.10f, 1f); // Nâu đồng
             lvlTMP.text = "Lv.1/5";
 
             // 4. Icon Frame / Container (Center Upper)
@@ -81,8 +83,8 @@ namespace ProjectZombie.EditorTools
             iconRT.anchorMin = new Vector2(0.5f, 1);
             iconRT.anchorMax = new Vector2(0.5f, 1);
             iconRT.pivot = new Vector2(0.5f, 1);
-            iconRT.anchoredPosition = new Vector2(0, -56);
-            iconRT.sizeDelta = new Vector2(110, 110);
+            iconRT.anchoredPosition = new Vector2(0, -48);
+            iconRT.sizeDelta = new Vector2(100, 100);
             Image iconImg = iconObj.GetComponent<Image>();
             iconImg.preserveAspect = true;
 
@@ -94,15 +96,15 @@ namespace ProjectZombie.EditorTools
             nameRT.anchorMin = new Vector2(0, 1);
             nameRT.anchorMax = new Vector2(1, 1);
             nameRT.pivot = new Vector2(0.5f, 1);
-            nameRT.anchoredPosition = new Vector2(0, -178);
-            nameRT.sizeDelta = new Vector2(-36, 46);
+            nameRT.anchoredPosition = new Vector2(0, -162);
+            nameRT.sizeDelta = new Vector2(-36, 44);
             TextMeshProUGUI nameTMP = nameObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) nameTMP.font = vietFont;
             nameTMP.fontSize = 18;
             nameTMP.fontStyle = FontStyles.Bold;
             nameTMP.alignment = TextAlignmentOptions.Center;
             nameTMP.enableWordWrapping = true;
-            nameTMP.color = new Color(1f, 0.92f, 0.65f, 1f);
+            nameTMP.color = new Color(0.18f, 0.10f, 0.05f, 1f); // Nâu đen gốm sớ đậm
             nameTMP.text = "Trống Đồng Đông Sơn";
 
             // 6. Description Text (Center Lower)
@@ -114,13 +116,13 @@ namespace ProjectZombie.EditorTools
             descRT.anchorMax = new Vector2(1, 1);
             descRT.pivot = new Vector2(0.5f, 0.5f);
             descRT.offsetMin = new Vector2(22, 60);
-            descRT.offsetMax = new Vector2(-22, -230);
+            descRT.offsetMax = new Vector2(-22, -215);
             TextMeshProUGUI descTMP = descObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) descTMP.font = vietFont;
-            descTMP.fontSize = 13;
+            descTMP.fontSize = 12;
             descTMP.alignment = TextAlignmentOptions.TopLeft;
             descTMP.enableWordWrapping = true;
-            descTMP.color = new Color(0.9f, 0.88f, 0.85f, 1f);
+            descTMP.color = new Color(0.25f, 0.18f, 0.12f, 1f); // Nâu mực trầm dễ đọc
             descTMP.text = "Phóng ra sóng âm ngọc lũ công kích yêu ma diện rộng.";
 
             // 7. Stat Diff Text (Bottom Upper)
@@ -131,15 +133,16 @@ namespace ProjectZombie.EditorTools
             statRT.anchorMin = new Vector2(0, 0);
             statRT.anchorMax = new Vector2(1, 0);
             statRT.pivot = new Vector2(0.5f, 0);
-            statRT.anchoredPosition = new Vector2(0, 42);
-            statRT.sizeDelta = new Vector2(-36, 32);
+            statRT.anchoredPosition = new Vector2(0, 38);
+            statRT.sizeDelta = new Vector2(-36, 28);
             TextMeshProUGUI statTMP = statObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) statTMP.font = vietFont;
             statTMP.fontSize = 12;
             statTMP.fontStyle = FontStyles.Bold;
             statTMP.alignment = TextAlignmentOptions.Center;
             statTMP.enableWordWrapping = true;
-            statTMP.text = "<color=#4DEEEA>+25% Sát thương</color>";
+            statTMP.color = new Color(0.06f, 0.38f, 0.45f, 1f); // Xanh ngọc đậm
+            statTMP.text = "+25% Sát thương";
 
             // 8. Evolution Synergy Container & Label (Bottom Lower)
             GameObject synObj = new GameObject("Synergy_Container", typeof(RectTransform));
@@ -150,7 +153,7 @@ namespace ProjectZombie.EditorTools
             synRT.anchorMax = new Vector2(1, 0);
             synRT.pivot = new Vector2(0.5f, 0);
             synRT.anchoredPosition = new Vector2(0, 10);
-            synRT.sizeDelta = new Vector2(-36, 28);
+            synRT.sizeDelta = new Vector2(-36, 24);
 
             GameObject synTextObj = new GameObject("Synergy_Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             synTextObj.layer = LayerMask.NameToLayer("UI");
@@ -163,9 +166,11 @@ namespace ProjectZombie.EditorTools
             TextMeshProUGUI synTMP = synTextObj.GetComponent<TextMeshProUGUI>();
             if (vietFont != null) synTMP.font = vietFont;
             synTMP.fontSize = 11;
+            synTMP.fontStyle = FontStyles.Bold;
             synTMP.alignment = TextAlignmentOptions.Center;
             synTMP.enableWordWrapping = true;
-            synTMP.text = "<color=#AAAAAA>Duyên Phận: Cần P001</color>";
+            synTMP.color = new Color(0.50f, 0.20f, 0.55f, 1f); // Tím mận
+            synTMP.text = "Duyên Phận: Cần P001";
 
             // 9. Wire SerializedFields vào UpgradeCardView
             UpgradeCardView cardView = root.GetComponent<UpgradeCardView>();

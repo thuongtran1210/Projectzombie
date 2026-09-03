@@ -418,15 +418,14 @@ namespace ProjectZombie.Editor.UI
             priSlotName.alignment = TextAlignmentOptions.Center;
             priSlotName.color = new Color(0.90f, 0.85f, 0.78f, 1f);
 
-            // Icon Divider ⇄ ở giữa
+            // Icon Divider (Ngôi Sao Vàng Kim) ở giữa
             GameObject divObj = CreateUIElement("Icon_Divider", slotsRow.transform);
-            divObj.GetComponent<RectTransform>().sizeDelta = new Vector2(28, 28);
-            var divTMP = divObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) divTMP.font = font;
-            divTMP.text = "⇄";
-            divTMP.fontSize = 20;
-            divTMP.alignment = TextAlignmentOptions.Center;
-            divTMP.color = new Color(0.95f, 0.75f, 0.20f, 0.85f);
+            divObj.GetComponent<RectTransform>().sizeDelta = new Vector2(22, 22);
+            var divImg = divObj.AddComponent<Image>();
+            divImg.color = Color.white;
+            divImg.preserveAspect = true;
+            Sprite starSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
+            if (starSprite != null) divImg.sprite = starSprite;
 
             // Ô 2: 1 Pháp Bảo Hộ Thân
             relicIcons = new Image[3];

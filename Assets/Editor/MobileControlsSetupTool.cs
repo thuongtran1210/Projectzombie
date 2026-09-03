@@ -17,7 +17,6 @@ namespace ProjectZombie.Editor.Tools
     {
         [MenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire", priority = 2)]
         [MenuItem("Tools/ProjectZombie/UI/⚡ Setup Mobile Controls (Joystick & Buttons)", priority = 2)]
-        [MenuItem("Tools/ProjectZombie/UI/🎨 Refresh & Apply 2D Flat Controls Sprites", priority = 3)]
         [MenuItem("Tools/Vong Xuyen/UI & Controls/Setup Mobile Controls (Joystick & Buttons)", priority = 1)]
         [MenuItem("ProjectZombie/UI/Setup Mobile Controls & Auto-Wire", priority = 1)]
         public static void ShowWindow()
