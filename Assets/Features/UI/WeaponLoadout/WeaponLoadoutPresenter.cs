@@ -370,11 +370,12 @@ namespace ProjectZombie.Features.UI
             }
             else if (isInspected)
             {
-                boxImg.color = new Color(1.0f, 0.90f, 0.4f, 1.0f); // Vàng Kim Soi
+                if (slotSelected != null) boxImg.sprite = slotSelected;
+                boxImg.color = new Color(1.0f, 0.85f, 0.4f, 0.9f); // Vàng Kim Soi
             }
             else
             {
-                boxImg.color = isLocked ? new Color(0.4f, 0.35f, 0.3f, 0.5f) : Color.white;
+                boxImg.color = isLocked ? new Color(0.35f, 0.30f, 0.25f, 0.5f) : Color.white;
             }
 
             // Nền bên trong (Inner Background)
@@ -401,7 +402,7 @@ namespace ProjectZombie.Features.UI
             var iconImg = iconObj.GetComponent<Image>();
             if (isLocked)
             {
-                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.4f);
+                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.3f);
             }
             else
             {
@@ -411,7 +412,37 @@ namespace ProjectZombie.Features.UI
                 iconImg.preserveAspect = true;
             }
 
-            // Huy hiệu [ĐANG CHỌN] nếu được trang bị
+            // Badge Hệ Ngũ Hành ở góc trên trái (Kim, Mộc, Thủy, Hỏa, Thổ)
+            if (!isLocked)
+            {
+                Sprite elemBadgeSprite = null;
+#if UNITY_EDITOR
+                switch (weapon.elementType)
+                {
+                    case ElementType.Kim: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png"); break;
+                    case ElementType.Moc: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png"); break;
+                    case ElementType.Thuy: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png"); break;
+                    case ElementType.Hoa: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png"); break;
+                    case ElementType.Tho: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png"); break;
+                }
+#endif
+                if (elemBadgeSprite != null)
+                {
+                    GameObject elemBadgeObj = new GameObject("Badge_Element", typeof(RectTransform), typeof(Image));
+                    elemBadgeObj.transform.SetParent(boxObj.transform, false);
+                    var ebRT = elemBadgeObj.GetComponent<RectTransform>();
+                    ebRT.anchorMin = new Vector2(0, 1);
+                    ebRT.anchorMax = new Vector2(0, 1);
+                    ebRT.pivot = new Vector2(0, 1);
+                    ebRT.anchoredPosition = new Vector2(2, -2);
+                    ebRT.sizeDelta = new Vector2(18, 18);
+                    var ebImg = elemBadgeObj.GetComponent<Image>();
+                    ebImg.sprite = elemBadgeSprite;
+                    ebImg.preserveAspect = true;
+                }
+            }
+
+            // Huy hiệu [ĐANG CHỌN] nếu được trang bị (Góc trên phải)
             if (isEquipped)
             {
                 GameObject badgeObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
@@ -420,10 +451,25 @@ namespace ProjectZombie.Features.UI
                 badgeRT.anchorMin = new Vector2(1, 1);
                 badgeRT.anchorMax = new Vector2(1, 1);
                 badgeRT.pivot = new Vector2(1, 1);
-                badgeRT.anchoredPosition = new Vector2(-1, -1);
-                badgeRT.sizeDelta = new Vector2(16, 16);
+                badgeRT.anchoredPosition = new Vector2(-2, -2);
+                badgeRT.sizeDelta = new Vector2(18, 18);
                 var badgeImg = badgeObj.GetComponent<Image>();
-                badgeImg.color = new Color(0.0f, 1.0f, 0.5f, 1f);
+                badgeImg.color = new Color(0.95f, 0.75f, 0.15f, 1f); // Vàng kim rực rỡ
+                
+                // Text checkmark
+                GameObject chkObj = new GameObject("Txt_Check", typeof(RectTransform), typeof(TextMeshProUGUI));
+                chkObj.transform.SetParent(badgeObj.transform, false);
+                var chkRT = chkObj.GetComponent<RectTransform>();
+                chkRT.anchorMin = Vector2.zero;
+                chkRT.anchorMax = Vector2.one;
+                chkRT.offsetMin = Vector2.zero;
+                chkRT.offsetMax = Vector2.zero;
+                var chkTMP = chkObj.GetComponent<TextMeshProUGUI>();
+                chkTMP.text = "✓";
+                chkTMP.fontSize = 11;
+                chkTMP.fontStyle = FontStyles.Bold;
+                chkTMP.alignment = TextAlignmentOptions.Center;
+                chkTMP.color = new Color(0.15f, 0.10f, 0.05f, 1f);
             }
 
             // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
@@ -444,11 +490,11 @@ namespace ProjectZombie.Features.UI
 
             if (isLocked)
             {
-                lblTMP.text = "<color=#555566>Khóa</color>";
+                lblTMP.text = "<color=#665544>Phong Ấn</color>";
             }
             else
             {
-                string nameColorHex = isEquipped ? "00FF88" : ColorUtility.ToHtmlStringRGB(elemColor);
+                string nameColorHex = isEquipped ? "FFD700" : (isInspected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor));
                 lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
             }
 

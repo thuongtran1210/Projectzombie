@@ -52,6 +52,7 @@ SpriteAtlas:
     packedSpriteRenderDataKeys:
     - 111b28e17f844dbca1f98e4c36781c41: 21300000
     - c3207f53b448442db9c9b717cc81a81b: 21300000
+    - 7d3b36a324814747a2521c21eb0a1185: 21300000
     - 25b72df37c0c4eba849b9bb1bf5ea9f1: 21300000
     - 98e10884571143c8abee7e07871e8c7e: 21300000
     - 0406ae4585d64cc9bba06c02a293147a: 21300000
@@ -67,6 +68,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
   - {fileID: 21300000, guid: c3207f53b448442db9c9b717cc81a81b, type: 3}
+  - {fileID: 21300000, guid: 7d3b36a324814747a2521c21eb0a1185, type: 3}
   - {fileID: 21300000, guid: 25b72df37c0c4eba849b9bb1bf5ea9f1, type: 3}
   - {fileID: 21300000, guid: 98e10884571143c8abee7e07871e8c7e, type: 3}
   - {fileID: 21300000, guid: 0406ae4585d64cc9bba06c02a293147a, type: 3}
@@ -81,6 +83,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - Icon_P001_Damage
   - Icon_Evolutions_General
+  - Icon_W006_LuuDanThanSa
   - Icon_W008_DaoCuuVi
   - Icon_W005_TrongDong
   - Icon_P003_Health

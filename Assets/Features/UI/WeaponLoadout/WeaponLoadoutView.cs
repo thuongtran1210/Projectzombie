@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI
 {
@@ -188,10 +189,26 @@ namespace ProjectZombie.Features.UI
         {
             if (weapon == null) return;
 
-            if (_detailNameText != null) _detailNameText.text = weapon.weaponName;
-            if (_detailDescText != null) _detailDescText.text = weapon.description;
-            if (_detailDamageText != null) _detailDamageText.text = $"Sát thương: <color=#FFD700>{weapon.baseDamage}</color>";
-            if (_detailCooldownText != null) _detailCooldownText.text = $"Hồi chiêu: <color=#4DEEEA>{weapon.baseAttackSpeed:F1}s</color>";
+            if (_detailNameText != null) 
+            {
+                _detailNameText.text = weapon.weaponName;
+                _detailNameText.color = new Color(0.18f, 0.10f, 0.05f, 1f); // Nâu đen gốm tương phản cao
+            }
+
+            if (_detailDescText != null) 
+            {
+                // Làm sạch chuỗi kỹ thuật như (CircleReticle 8.5m) nếu có
+                string cleanDesc = weapon.description ?? "";
+                cleanDesc = System.Text.RegularExpressions.Regex.Replace(cleanDesc, @"\(CircleReticle[^)]*\)", "");
+                cleanDesc = System.Text.RegularExpressions.Regex.Replace(cleanDesc, @"\(Aim[^)]*\)", "");
+                _detailDescText.text = cleanDesc.Trim();
+                _detailDescText.color = new Color(0.24f, 0.16f, 0.10f, 1f);
+            }
+
+            if (_detailDamageText != null) 
+                _detailDamageText.text = $"Sát thương: <color=#A33418><b>{weapon.baseDamage}</b></color>";
+            if (_detailCooldownText != null) 
+                _detailCooldownText.text = $"Hồi chiêu: <color=#0E6073><b>{weapon.baseAttackSpeed:F1}s</b></color>";
 
             if (_damageFillBar != null) _damageFillBar.fillAmount = Mathf.Clamp01(damageFill);
             if (_cooldownFillBar != null) _cooldownFillBar.fillAmount = Mathf.Clamp01(cooldownFill);
@@ -202,25 +219,37 @@ namespace ProjectZombie.Features.UI
                 switch (weapon.weaponRole)
                 {
                     case WeaponRole.RelicOrbitalShield:
-                        roleTag = "<color=#00FF88>[PHÁP BẢO QUỸ ĐẠO HỘ VỆ]</color>";
+                        roleTag = "<color=#007A4D><b>[QUỸ ĐẠO HỘ VỆ]</b></color>";
                         break;
                     case WeaponRole.RelicOnHitTrigger:
-                        roleTag = "<color=#FFCC00>[PHÁP BẢO KÍCH ỨNG BỒI ĐÒN]</color>";
+                        roleTag = "<color=#A86008><b>[KÍCH ỨNG BỒI ĐÒN]</b></color>";
                         break;
                     case WeaponRole.RelicSupportAura:
-                        roleTag = "<color=#4DEEEA>[PHÁP BẢO HỖ TRỢ KHỐNG CHẾ]</color>";
+                        roleTag = "<color=#0E6073><b>[HỖ TRỢ KHỐNG CHẾ]</b></color>";
                         break;
                     default:
-                        roleTag = "<color=#FF8800>[PHÁP BẢO HỘ THÂN]</color>";
+                        roleTag = "<color=#A33418><b>[PHÁP BẢO CHỦ ĐỘNG]</b></color>";
                         break;
                 }
-                _detailTypeText.text = $"{roleTag} | Hệ <color=#FFD700>{weapon.elementType}</color>";
+                
+                string elemColor = "#A86008";
+                switch (weapon.elementType)
+                {
+                    case ElementType.Kim: elemColor = "#B8860B"; break;
+                    case ElementType.Moc: elemColor = "#2E7D32"; break;
+                    case ElementType.Thuy: elemColor = "#1565C0"; break;
+                    case ElementType.Hoa: elemColor = "#C62828"; break;
+                    case ElementType.Tho: elemColor = "#5D4037"; break;
+                }
+
+                _detailTypeText.text = $"{roleTag}  •  <color={elemColor}><b>Hệ {weapon.elementType}</b></color>";
             }
 
             if (_detailIcon != null)
             {
                 _detailIcon.sprite = weapon.icon;
                 _detailIcon.enabled = weapon.icon != null;
+                _detailIcon.color = weapon.icon != null ? Color.white : new Color(1, 1, 1, 0);
             }
         }
 
