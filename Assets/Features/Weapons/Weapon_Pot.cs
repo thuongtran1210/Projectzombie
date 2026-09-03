@@ -184,8 +184,8 @@ namespace ProjectZombie.Features.Weapons
         #region ACTIVE RELIC SKILL (CIRCLE RETICLE - HÚT CHÂN KHÔNG & TIÊN CƠM)
         public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(
             Combat.Aiming.SkillAimType.CircleReticle, 
-            WeaponLevel >= MaxLevel ? 8.5f : 7.0f, 
-            WeaponLevel >= MaxLevel ? 7.5f : (vacuumRadius * 1.4f), 
+            WeaponLevel >= MaxLevel ? 7.5f : 5.8f, 
+            WeaponLevel >= MaxLevel ? 4.8f : 3.4f, 
             0f, 
             true
         );
@@ -198,7 +198,7 @@ namespace ProjectZombie.Features.Weapons
             Vector2 targetCenter = (Vector2)transform.position;
             if (customAimDirection != Vector2.zero)
             {
-                float aimDist = isEvolution ? 4.5f : 3.2f;
+                float aimDist = isEvolution ? 6.5f : 4.8f;
                 targetCenter = (Vector2)transform.position + customAimDirection * aimDist;
             }
 
@@ -215,32 +215,43 @@ namespace ProjectZombie.Features.Weapons
         }
         #endregion
 
-        #region POT SEQUENCE COROUTINE (CLANG -> SUCTION -> CANNON BLAST -> RICE RAIN)
+        #region POT SEQUENCE COROUTINE (SLAM -> INWARD SUCTION -> CANNON BLAST -> RICE RAIN)
         private IEnumerator RoutinePotDefenseSequence(bool isEmpowered, Vector2 targetCenter, bool isEvolution)
         {
             Vector2 center = targetCenter != Vector2.zero ? targetCenter : (Vector2)transform.position;
             float currentRadius = isEvolution 
-                ? (isEmpowered ? 7.5f : 5.8f) 
-                : (isEmpowered ? vacuumRadius * 1.5f : vacuumRadius + (WeaponLevel - 1) * 0.25f);
+                ? (isEmpowered ? (vacuumRadius * 1.35f) : vacuumRadius) 
+                : (isEmpowered ? vacuumRadius : (autoTriggerRadius + (WeaponLevel - 1) * 0.18f));
 
             int maxMobs = isEvolution 
-                ? (isEmpowered ? 12 : 8) 
+                ? (isEmpowered ? 14 : 8) 
                 : (isEmpowered ? maxCapturedMobs + 4 : maxCapturedMobs + WeaponLevel);
 
-            // 1. Hiệu ứng VFX Lốc Xoáy Hút Chân Không
-            if (potVfxPrefab != null)
+            // =========================================================================
+            // GIAI ĐOẠN 1: NỒI THẦN GIÁNG THẾ (GIANT POT SLAM & CLANG SHOCKWAVE)
+            // =========================================================================
+            GameObject potDropVisual = null;
+            if (potSprite != null)
             {
-                var vfx = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, isEvolution ? 1.4f : (isEmpowered ? 1.0f : 0.65f), WeaponLevel);
-                if (vfx != null)
-                {
-                    vfx.transform.localScale = Vector3.one * (isEvolution ? 1.5f : (isEmpowered ? 1.2f : 0.85f));
-                }
+                potDropVisual = new GameObject("Giant_Pot_Drop_Visual");
+                potDropVisual.transform.position = center + Vector2.up * 3.5f;
+                var srPot = potDropVisual.AddComponent<SpriteRenderer>();
+                srPot.sprite = potSprite;
+                srPot.sortingLayerName = "Skill";
+                srPot.sortingOrder = 14;
+                srPot.color = isEvolution ? new Color(1f, 0.95f, 0.5f, 1f) : Color.white;
+                float potTargetScale = isEvolution ? 1.4f : 0.95f;
+                potDropVisual.transform.localScale = Vector3.one * potTargetScale;
+
+                // Animation Nồi rơi từ trên trời xuống cắm đất
+                StartCoroutine(RoutineAnimatePotDrop(potDropVisual, center, potTargetScale));
             }
 
-            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.35f : 0.2f, isEvolution ? 0.4f : 0.25f);
+            // Sinh Vòng Sóng Âm Gõ Nắp (Clang Ring)
+            StartCoroutine(RoutineSpawnExpandingRing(center, 0.3f, 2.2f, new Color(1f, 0.85f, 0.3f, 0.9f)));
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.35f : 0.22f, isEvolution ? 0.4f : 0.25f);
             global::Core.Audio.AudioManager.Instance?.PlaySlash(true, center);
 
-            // 2. GIAI ĐOẠN 1: GÕ NẮP NỒI GANG (CLANG) -> SÓNG ÂM CHOÁNG QUÁI
             DamageData baseDmg = CreateDamageData();
             DamageData hitDmg = new DamageData(
                 baseDmg.Amount * (isEvolution ? 1.8f : (isEmpowered ? 1.4f : 1.0f)),
@@ -263,15 +274,31 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            // 3. GIAI ĐOẠN 2: LỰC HÚT CHÂN KHÔNG CO RÚT (SUCTION)
-            float suctionDuration = isEvolution ? 0.6f : 0.35f;
+            // =========================================================================
+            // GIAI ĐOẠN 2: HỐ ĐEN CHÂN KHÔNG GOM QUÁI (INWARD VACUUM SUCTION)
+            // =========================================================================
+            if (potVfxPrefab != null)
+            {
+                var vfx = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(potVfxPrefab, center, Quaternion.identity, isEvolution ? 1.4f : (isEmpowered ? 1.0f : 0.65f), WeaponLevel);
+                if (vfx != null)
+                {
+                    vfx.transform.localScale = Vector3.one * (isEvolution ? 1.5f : (isEmpowered ? 1.2f : 0.85f));
+                }
+            }
+
+            // Sinh 3 vòng sóng co rút giật ngược từ ngoài vào trong tâm (Inward Suction Rings)
+            StartCoroutine(RoutineSpawnInwardSuctionRings(center, currentRadius, isEvolution));
+
+            float suctionDuration = isEvolution ? 0.65f : 0.42f;
             float elapsed = 0f;
             List<Collider2D> captured = new List<Collider2D>();
 
             while (elapsed < suctionDuration)
             {
                 elapsed += Time.deltaTime;
-                count = Physics2D.OverlapCircleNonAlloc(center, currentRadius, _potHitBuffer, TargetingUtility.EnemyLayerMask);
+                float suctionProgress = Mathf.Clamp01(elapsed / suctionDuration);
+
+                count = Physics2D.OverlapCircleNonAlloc(center, currentRadius * 1.15f, _potHitBuffer, TargetingUtility.EnemyLayerMask);
                 for (int i = 0; i < count && captured.Count < maxMobs; i++)
                 {
                     var mob = _potHitBuffer[i];
@@ -281,42 +308,178 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
 
+                // Kéo quái chụm dồn vào ngay sát miệng nồi
                 for (int i = 0; i < captured.Count; i++)
                 {
                     var mob = captured[i];
                     if (mob != null && mob.TryGetComponent<EnemyStatusController>(out var status))
                     {
-                        Vector2 pullDir = (center - (Vector2)mob.transform.position).normalized;
-                        float pullSpeed = isEvolution ? 14f : 9f;
-                        status.ApplyKnockback(pullDir, pullSpeed, 0.1f);
+                        Vector2 mobPos = mob.transform.position;
+                        Vector2 pullDir = (center - mobPos).normalized;
+                        float dist = Vector2.Distance(center, mobPos);
+                        float pullSpeed = Mathf.Lerp(12f, 22f, suctionProgress) * (isEvolution ? 1.35f : 1.0f);
+                        
+                        // Lực hút tăng dần theo thời gian khi càng gần tâm
+                        status.ApplyKnockback(pullDir, pullSpeed, 0.12f);
                     }
                 }
                 yield return null;
             }
 
-            // 4. GIAI ĐOẠN 3: NỔ ĐẠI BÁC PHÓNG QUÁI VĂNG RA XA (CANNON RAGDOLL BLAST)
+            // =========================================================================
+            // GIAI ĐOẠN 3: NỔ ĐẠI BÁC PHÓNG QUÁI BÙNG NỔ (EXPLOSIVE CANNON BLAST)
+            // =========================================================================
             global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.45f : 0.3f, isEvolution ? 0.5f : 0.35f);
+
+            // Bộc phát Vòng Sóng Kích Đại Bác Khổng Lồ
+            StartCoroutine(RoutineSpawnExpandingRing(center, 0.4f, currentRadius * 1.3f, new Color(1f, 0.95f, 0.4f, 1f)));
+            StartCoroutine(RoutineSpawnExpandingRing(center, 0.55f, currentRadius * 1.6f, new Color(1f, 0.6f, 0.1f, 0.75f)));
+
             for (int i = 0; i < captured.Count; i++)
             {
                 var mob = captured[i];
                 if (mob != null && mob.TryGetComponent<EnemyStatusController>(out var status))
                 {
-                    Vector2 launchDir = ((Vector2)mob.transform.position - center).normalized;
-                    if (launchDir.sqrMagnitude < 0.01f) launchDir = Random.insideUnitCircle.normalized;
-                    float blastForce = isEvolution ? 22f : (isEmpowered ? 18f : 14f);
-                    status.ApplyKnockback(launchDir, blastForce, 0.45f);
+                    // Tỏa đều các góc bắn theo hình hoa thị / nan hoa 360 độ
+                    float blastAngle = (i * (360f / Mathf.Max(1, captured.Count))) + Random.Range(-12f, 12f);
+                    Vector2 launchDir = Quaternion.Euler(0, 0, blastAngle) * Vector2.right;
+
+                    float blastForce = isEvolution ? 24f : (isEmpowered ? 19f : 15f);
+                    status.ApplyKnockback(launchDir, blastForce, 0.55f);
 
                     // Sát thương va đập đại bác
                     if (mob.TryGetComponent<HealthSystem>(out var hp))
                     {
-                        hp.TakeDamage(new DamageData(baseDmg.Amount * (isEvolution ? 1.5f : 0.8f), true, ElementType.Tho, false, this));
+                        hp.TakeDamage(new DamageData(baseDmg.Amount * (isEvolution ? 1.6f : 0.9f), true, ElementType.Tho, false, this));
                     }
                 }
             }
 
-            // 5. GIAI ĐOẠN 4: VĂNG CƠM NẮM TIÊN HỒI MÁU (COLLECTIBLE RICE BALLS)
+            // =========================================================================
+            // GIAI ĐOẠN 4: VĂNG MƯA CƠM NẮM TIÊN HỒI MÁU (COLLECTIBLE RICE RAIN)
+            // =========================================================================
             int riceCount = isEvolution ? (isEmpowered ? 8 : 5) : (isEmpowered ? 5 : 3);
             SpawnCollectibleRiceBalls(center, riceCount, isEvolution);
+
+            // Thu hồi Nồi Thần Visual sau khi hoàn thành chuỗi
+            if (potDropVisual != null)
+            {
+                yield return new WaitForSeconds(0.4f);
+                Destroy(potDropVisual);
+            }
+        }
+
+        private IEnumerator RoutineAnimatePotDrop(GameObject potObj, Vector2 landPos, float targetScale)
+        {
+            if (potObj == null) yield break;
+            Vector2 startPos = potObj.transform.position;
+            float duration = 0.22f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                if (potObj == null) yield break;
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float easeIn = t * t;
+                potObj.transform.position = Vector2.Lerp(startPos, landPos, easeIn);
+                yield return null;
+            }
+
+            if (potObj == null) yield break;
+            potObj.transform.position = landPos;
+
+            // Nảy nhẹ khi tiếp đất (Squash and Stretch)
+            float bounceElapsed = 0f;
+            while (bounceElapsed < 0.15f)
+            {
+                if (potObj == null) yield break;
+                bounceElapsed += Time.deltaTime;
+                float bt = Mathf.Sin(bounceElapsed / 0.15f * Mathf.PI);
+                potObj.transform.localScale = new Vector3(targetScale * (1f + bt * 0.25f), targetScale * (1f - bt * 0.2f), 1f);
+                yield return null;
+            }
+            if (potObj != null) potObj.transform.localScale = Vector3.one * targetScale;
+        }
+
+        private IEnumerator RoutineSpawnInwardSuctionRings(Vector2 center, float startRadius, bool isEvolution)
+        {
+            var ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            if (ringSprite == null) yield break;
+
+            int ringWaves = isEvolution ? 4 : 2;
+            for (int wave = 0; wave < ringWaves; wave++)
+            {
+                GameObject inwardRing = new GameObject("Inward_Suction_Ring");
+                inwardRing.transform.position = center;
+                var sr = inwardRing.AddComponent<SpriteRenderer>();
+                sr.sprite = ringSprite;
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 11;
+                sr.color = isEvolution ? new Color(1f, 0.95f, 0.4f, 0.9f) : new Color(1f, 0.8f, 0.3f, 0.7f);
+
+                StartCoroutine(RoutineAnimateInwardRing(inwardRing, startRadius, 0.32f));
+                yield return new WaitForSeconds(0.12f);
+            }
+        }
+
+        private IEnumerator RoutineAnimateInwardRing(GameObject ringObj, float startRadius, float duration)
+        {
+            if (ringObj == null) yield break;
+            float elapsed = 0f;
+            var sr = ringObj.GetComponent<SpriteRenderer>();
+            Color baseColor = sr != null ? sr.color : Color.white;
+
+            while (elapsed < duration)
+            {
+                if (ringObj == null) yield break;
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float curRadius = Mathf.Lerp(startRadius, 0.2f, t);
+                ringObj.transform.localScale = Vector3.one * (curRadius * 2.0f);
+                ringObj.transform.Rotate(0f, 0f, 720f * Time.deltaTime);
+
+                if (sr != null)
+                {
+                    sr.color = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(baseColor.a, 0f, t * t));
+                }
+                yield return null;
+            }
+
+            if (ringObj != null) Destroy(ringObj);
+        }
+
+        private IEnumerator RoutineSpawnExpandingRing(Vector2 center, float duration, float maxRadius, Color color)
+        {
+            var ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            if (ringSprite == null) yield break;
+
+            GameObject expRing = new GameObject("Expanding_Shockwave_Ring");
+            expRing.transform.position = center;
+            var sr = expRing.AddComponent<SpriteRenderer>();
+            sr.sprite = ringSprite;
+            sr.sortingLayerName = "Skill";
+            sr.sortingOrder = 13;
+            sr.color = color;
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                if (expRing == null) yield break;
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float curScale = Mathf.Lerp(0.3f, maxRadius * 2.0f, Mathf.Sqrt(t));
+                expRing.transform.localScale = Vector3.one * curScale;
+
+                if (sr != null)
+                {
+                    sr.color = new Color(color.r, color.g, color.b, Mathf.Lerp(color.a, 0f, t));
+                }
+                yield return null;
+            }
+
+            if (expRing != null) Destroy(expRing);
         }
         #endregion
 

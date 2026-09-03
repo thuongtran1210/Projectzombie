@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "Thu\u1ED1c L\xE0o Ti\xEAn L\xE3ng"
   description: "Qu\xE1i d\xEDnh kh\xF3i b\u1ECB say thu\u1ED1c \u0111i gi\u1EADt
     l\xF9i nhanh h\u01A1n, sau 2s n\u1ED5 ho lan x2 S\xE1t th\u01B0\u01A1ng."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0

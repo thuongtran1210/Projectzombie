@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.Enemies
         public CombatMovementStrategy Movement { get; private set; }
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemyStatusController StatusController { get; private set; }
+        public Vector3 InitialLocalScale { get; private set; } = Vector3.one;
 
         // IStatusReceiver Properties
         public float Tenacity => IsBoss ? 0.7f : (Config != null && Config.tier == EnemyTier.Elite ? 0.3f : 0f);
@@ -84,6 +85,7 @@ namespace ProjectZombie.Features.Enemies
             EnemyAnimator = GetComponentInChildren<EnemyAnimator>();
             _bossElementController = GetComponent<ProjectZombie.Features.Boss.BossElementController>();
             Rb.freezeRotation = true;
+            InitialLocalScale = transform.localScale;
 
             if (Config != null)
             {
@@ -145,6 +147,17 @@ namespace ProjectZombie.Features.Enemies
 
         private void OnEnable()
         {
+            // Reset kích thước và màu sắc mặc định khi lấy ra từ Object Pool
+            if (InitialLocalScale.sqrMagnitude > 0.001f)
+            {
+                transform.localScale = InitialLocalScale;
+            }
+            var sr = GetComponentInChildren<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.color = Color.white;
+            }
+
             PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
             PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
 

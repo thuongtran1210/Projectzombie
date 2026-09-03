@@ -16,7 +16,7 @@ MonoBehaviour:
   upgradeName: "B\xE3o Kh\xF3i Lan R\u1ED9ng"
   description: "+40% Di\u1EC7n t\xEDch v\xF9ng kh\xF3i v\xE0 k\xE9o d\xE0i th\u1EDDi
     gian t\u1ED3n t\u1EA1i."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
   upgradeType: 6
   spawnWeight: 6
   maxLevel: 0

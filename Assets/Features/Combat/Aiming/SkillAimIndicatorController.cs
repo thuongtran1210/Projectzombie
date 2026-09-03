@@ -339,7 +339,7 @@ namespace ProjectZombie.Features.Combat.Aiming
             float distance = Mathf.Max(1.5f, _currentConfig.range * _currentPullPercent);
             Vector3 centerWallPos = origin + (Vector3)(direction * distance);
             float wallWidth = Mathf.Max(3.0f, _currentConfig.radius);
-            float wallThickness = 0.6f;
+            float wallThickness = 1.0f;
 
             float spriteBoundsX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f)
                 ? _lineRenderer.sprite.bounds.size.x : 1.0f;
@@ -357,8 +357,8 @@ namespace ProjectZombie.Features.Combat.Aiming
                 ? _circleRenderer.sprite.bounds.size.x : 1.0f;
             _circleIndicator.position = centerWallPos;
             _circleIndicator.rotation = Quaternion.identity;
-            _circleIndicator.localScale = Vector3.one * (0.8f / pinBounds);
-            _circleRenderer.color = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 0.95f);
+            _circleIndicator.localScale = Vector3.one * (1.1f / pinBounds);
+            _circleRenderer.color = new Color(color.r * 1.4f, color.g * 1.4f, color.b * 1.4f, 0.95f);
         }
 
         private LineRenderer _curveLineRenderer;
@@ -512,7 +512,6 @@ namespace ProjectZombie.Features.Combat.Aiming
             if (_circleRenderer == null) return;
 
             _circleRenderer.enabled = true;
-            if (_lineRenderer != null) _lineRenderer.enabled = false;
             if (_coneRenderer != null) _coneRenderer.enabled = false;
 
             float distance = Mathf.Clamp01(pullPercent) * _currentConfig.range;
@@ -528,6 +527,20 @@ namespace ProjectZombie.Features.Combat.Aiming
             _circleIndicator.rotation = Quaternion.identity;
             _circleIndicator.localScale = Vector3.one * scale;
             _circleRenderer.color = color;
+
+            // Hiển thị đường kẻ định hướng quỹ đạo từ chân Hero đến tâm thả Nồi
+            if (_lineRenderer != null)
+            {
+                _lineRenderer.enabled = true;
+                float lineLen = Mathf.Max(0.5f, distance);
+                float lineSpriteX = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.x > 0.01f) ? _lineRenderer.sprite.bounds.size.x : 1.0f;
+                float lineSpriteY = (_lineRenderer.sprite != null && _lineRenderer.sprite.bounds.size.y > 0.01f) ? _lineRenderer.sprite.bounds.size.y : 1.0f;
+                _lineIndicator.position = origin + (Vector3)(direction * (lineLen * 0.5f));
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                _lineIndicator.rotation = Quaternion.Euler(0f, 0f, angle);
+                _lineIndicator.localScale = new Vector3(lineLen / lineSpriteX, 0.25f / lineSpriteY, 1f);
+                _lineRenderer.color = new Color(color.r, color.g, color.b, 0.4f);
+            }
         }
 
         private void ShowSelfAOEIndicator(Vector3 origin, Color color)

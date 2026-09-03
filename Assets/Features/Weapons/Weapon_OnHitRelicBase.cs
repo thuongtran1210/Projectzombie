@@ -45,11 +45,11 @@ namespace ProjectZombie.Features.Weapons
         /// <summary>
         /// Sinh hiệu ứng VFX từ Object Pool tự thu hồi.
         /// </summary>
-        protected GameObject SpawnRelicVFX(Vector3 position, Quaternion rotation)
+        protected GameObject SpawnRelicVFX(Vector3 position, Quaternion rotation, int level = 1)
         {
             if (relicVfxPrefab != null)
             {
-                return ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(relicVfxPrefab, position, rotation, vfxLifeTime);
+                return ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(relicVfxPrefab, position, rotation, vfxLifeTime, level);
             }
             return null;
         }

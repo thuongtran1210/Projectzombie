@@ -18,7 +18,8 @@ namespace ProjectZombie.Features.Enemies
         Sleeping,       // Ngủ Say: Bất động, đòn đánh thức nhận 2.0x Damage (Chiếu Trải Hoàng Tuyền)
         Stoned,         // Say Thuốc Lào: Đi loạng choạng zíc zắc giật lùi, hết giờ nổ ho sặc sụa (Điếu Cày)
         Dancing,        // Mê Nhảy Múa: Dừng tấn công, nhảy theo nhịp, làm bia đỡ đạn (Loa Phường / Trống Đồng)
-        RagdollFlight   // Bị Bắn / Trượt Ngã: Bay parabol xoay vòng, nổ sát thương chuỗi khi chạm đất/tường
+        RagdollFlight,  // Bị Bắn / Trượt Ngã: Bay parabol xoay vòng, nổ sát thương chuỗi khi chạm đất/tường
+        ChickenPolymorph // Hóa Gà Con: Biến thành gà con chibi, mất khả năng tấn công, nhận thêm +50% dmg (Chổi Lông Gà)
     }
 
     /// <summary>
@@ -54,7 +55,8 @@ namespace ProjectZombie.Features.Enemies
             { StatusEffectType.Burn, new BurnStatusHandler() },
             { StatusEffectType.Humiliated, new HumiliatedStatusHandler() },
             { StatusEffectType.Stoned, new StonedStatusHandler() },
-            { StatusEffectType.Sleeping, new SleepingStatusHandler() }
+            { StatusEffectType.Sleeping, new SleepingStatusHandler() },
+            { StatusEffectType.ChickenPolymorph, new ChickenPolymorphStatusHandler() }
         };
 
         // Cumulative Modifiers
@@ -65,10 +67,11 @@ namespace ProjectZombie.Features.Enemies
         public bool IsSleeping { get; private set; } = false;
         public bool IsStoned { get; private set; } = false;
         public bool IsDancing { get; private set; } = false;
+        public bool IsChickenPolymorphed { get; private set; } = false;
         public bool IsRagdollActive => _physics != null && _physics.IsRagdollActive;
 
         public bool CanMove => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && (_physics == null || _physics.CanMovePhysics);
-        public bool CanAttack => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && !IsHumiliated && (_physics == null || !_physics.IsRagdollActive);
+        public bool CanAttack => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && !IsHumiliated && !IsChickenPolymorphed && (_physics == null || !_physics.IsRagdollActive);
 
         /// <summary>
         /// Chỉ số kháng khống chế lấy trực tiếp từ Enemy (Common: 0%, Elite: 30%, Boss: 70%).
@@ -102,6 +105,28 @@ namespace ProjectZombie.Features.Enemies
 
         private void OnEnable()
         {
+            ClearAllStatuses();
+        }
+
+        private void OnDisable()
+        {
+            ClearAllStatuses();
+        }
+
+        /// <summary>
+        /// Xóa sạch mọi hiệu ứng và gọi hàm phục hồi Handler khi quái chết / vào Object Pool.
+        /// </summary>
+        public void ClearAllStatuses()
+        {
+            for (int i = _activeEffects.Count - 1; i >= 0; i--)
+            {
+                var effect = _activeEffects[i];
+                if (_handlers.TryGetValue(effect.Type, out var handler) && handler != null)
+                {
+                    handler.OnRemoved(_enemy, effect);
+                }
+                OnStatusChanged?.Invoke(effect.Type, false);
+            }
             _activeEffects.Clear();
             CurrentSlowMultiplier = 1f;
             IsStunned = false;
@@ -110,6 +135,7 @@ namespace ProjectZombie.Features.Enemies
             IsSleeping = false;
             IsStoned = false;
             IsDancing = false;
+            IsChickenPolymorphed = false;
         }
 
         /// <summary>
@@ -295,6 +321,7 @@ namespace ProjectZombie.Features.Enemies
             bool isSleeping = false;
             bool isStoned = false;
             bool isDancing = false;
+            bool isChickenPolymorphed = false;
 
             for (int i = 0; i < _activeEffects.Count; i++)
             {
@@ -322,6 +349,9 @@ namespace ProjectZombie.Features.Enemies
                     case StatusEffectType.Dancing:
                         isDancing = true;
                         break;
+                    case StatusEffectType.ChickenPolymorph:
+                        isChickenPolymorphed = true;
+                        break;
                 }
             }
 
@@ -332,6 +362,7 @@ namespace ProjectZombie.Features.Enemies
             IsSleeping = isSleeping;
             IsStoned = isStoned;
             IsDancing = isDancing;
+            IsChickenPolymorphed = isChickenPolymorphed;
         }
 
         /// <summary>

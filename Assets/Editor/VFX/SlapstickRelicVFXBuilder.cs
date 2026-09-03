@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Editor.VFX
 {
@@ -189,13 +190,18 @@ namespace ProjectZombie.Editor.VFX
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] 🩴 Dựng thành công Prefab Lốc Dép Vạn Năng (High Polish): {prefabPath}");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var savedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (savedPrefab != null) EditorGUIUtility.PingObject(savedPrefab);
+            Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🩴 Dựng thành công Prefab Lốc Dép Vạn Năng (High Polish): {prefabPath}");
         }
 
         // 2. W_POT: Nồi Cơm Hút Quái & Đại Bác (Thổ - Chuẩn Multi-Layer AAA Anime VFX)
-        [MenuItem("Tools/VFX Generator/🍚 Rebuild Pot Suction VFX (High Polish)", false, 2)]
+        [MenuItem("Tools/VFX Generator/Slapstick Relics/2. 🍚 Build W_POT (Nồi Cơm Thạch Sanh)", false, 2)]
         public static void BuildPotVFX()
         {
+            EnsureDirectories();
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_Pot_Suction.prefab";
             string texVortexPath = "Assets/Art/Weapons/VFX/Tex_Pot_Suction_Vortex.png";
             string texRicePath = "Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png";
@@ -358,12 +364,18 @@ namespace ProjectZombie.Editor.VFX
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] 🍚 Dựng thành công Prefab Nồi Cơm Hút Chân Không (High Polish): {prefabPath}");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var savedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (savedPrefab != null) EditorGUIUtility.PingObject(savedPrefab);
+            Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🍚 Dựng thành công Prefab Nồi Cơm Hút Chân Không (High Polish): {prefabPath}");
         }
 
         // 3. W_PIPE: Mây Khói Thuốc Lào Dân Gian (Hỏa - Chuẩn Phun Cụm Khói Đặc Quánh -> Nở To & Mờ Dần)
+        [MenuItem("Tools/VFX Generator/Slapstick Relics/3. 💨 Build W_PIPE (Điếu Cày Thuốc Lào)", false, 3)]
         public static void BuildPipeVFX()
         {
+            EnsureDirectories();
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_Pipe_DragonSmoke.prefab";
             string texPuffPath = "Assets/VFX/SkillLibrary/Textures/Tex_Smoke_Puff_Clean.png";
             string texTendrilPath = "Assets/VFX/SkillLibrary/Textures/Tex_Smoke_Tendril_Clean.png";
@@ -387,20 +399,18 @@ namespace ProjectZombie.Editor.VFX
             main1.loop = false;
             main1.startLifetime = 3.0f;
             main1.startSpeed = new ParticleSystem.MinMaxCurve(0.1f, 0.35f);
-            main1.startSize = new ParticleSystem.MinMaxCurve(0.7f, 1.1f); // Thu nhỏ vừa vặn (bằng 45% lúc trước)
+            main1.startSize = new ParticleSystem.MinMaxCurve(0.7f, 1.1f);
             main1.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
             main1.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emiss1 = psCore.emission;
             emiss1.rateOverTime = 0;
-            // Burst 4 cụm khói nhỏ đan khít nhau
             emiss1.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 4) });
 
             var shape1 = psCore.shape;
             shape1.shapeType = ParticleSystemShapeType.Circle;
-            shape1.radius = 0.25f; // Bán kính tâm nhỏ gọn
+            shape1.radius = 0.25f;
 
-            // ĐỘ MỜ THEO THỜI GIAN: Ban đầu 80% Alpha -> Mờ dần về 0%
             var col1 = psCore.colorOverLifetime;
             col1.enabled = true;
             Gradient grad1 = new Gradient();
@@ -412,7 +422,7 @@ namespace ProjectZombie.Editor.VFX
                 },
                 new GradientAlphaKey[] { 
                     new GradientAlphaKey(0f, 0f), 
-                    new GradientAlphaKey(0.80f, 0.08f), // 80% Alpha vừa đủ đậm rõ nét
+                    new GradientAlphaKey(0.80f, 0.08f),
                     new GradientAlphaKey(0.70f, 0.45f), 
                     new GradientAlphaKey(0.25f, 0.75f), 
                     new GradientAlphaKey(0f, 1.0f)       
@@ -420,7 +430,6 @@ namespace ProjectZombie.Editor.VFX
             );
             col1.color = grad1;
 
-            // KÍCH THƯỚC NỞ NHẸ: 1.0 -> 1.35 lần
             var size1 = psCore.sizeOverLifetime;
             size1.enabled = true;
             AnimationCurve curve1 = new AnimationCurve();
@@ -437,7 +446,7 @@ namespace ProjectZombie.Editor.VFX
             var rend1 = root.GetComponent<ParticleSystemRenderer>();
             rend1.material = matPuff;
             rend1.sortingLayerName = "Skill";
-            rend1.sortingOrder = 8; // Nằm DƯỚI nhân vật để không che mặt Tướng
+            rend1.sortingOrder = 8;
 
             // --- LAYER 2: Vệt Mây Khói Cuộn Tản Rìa (Realistic Swirling Plumes) ---
             GameObject tendrilObj = new GameObject("Wispy_Smoke_Tendril");
@@ -449,13 +458,12 @@ namespace ProjectZombie.Editor.VFX
             main2.loop = false;
             main2.startLifetime = 2.8f;
             main2.startSpeed = new ParticleSystem.MinMaxCurve(0.15f, 0.4f);
-            main2.startSize = new ParticleSystem.MinMaxCurve(0.8f, 1.2f); // Kích thước gọn gàng
+            main2.startSize = new ParticleSystem.MinMaxCurve(0.8f, 1.2f);
             main2.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
             main2.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emiss2 = psTendril.emission;
             emiss2.rateOverTime = 0;
-            // Burst 2-3 cụm khói xoắn lượn
             emiss2.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.02f, 3) });
 
             var shape2 = psTendril.shape;
@@ -477,7 +485,7 @@ namespace ProjectZombie.Editor.VFX
             var rend2 = tendrilObj.GetComponent<ParticleSystemRenderer>();
             rend2.material = matTendril;
             rend2.sortingLayerName = "Skill";
-            rend2.sortingOrder = 8; // Dưới nhân vật
+            rend2.sortingOrder = 8;
 
             // --- LAYER 3: Tàn Than Hồng Bắn Ra Lúc Đầu (Red Fire Embers) ---
             GameObject embersObj = new GameObject("Red_Fire_Embers");
@@ -489,7 +497,7 @@ namespace ProjectZombie.Editor.VFX
             main3.loop = false;
             main3.startLifetime = 1.0f;
             main3.startSpeed = new ParticleSystem.MinMaxCurve(0.4f, 1.0f);
-            main3.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f); // Siêu nhỏ li ti
+            main3.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f);
             main3.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emiss3 = psEmbers.emission;
@@ -516,50 +524,18 @@ namespace ProjectZombie.Editor.VFX
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] 💨 Dựng thành công CỤM KHÓI ĐẶC QUÁNH ĐỨNG YÊN tại: {prefabPath}");
-        }
-
-        private static Material GetOrCreateTextureMaterial(string matName, Texture2D tex, Color tintColor, bool isAdditive)
-        {
-            string path = $"{MAT_DIR}/{matName}.mat";
-            Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
-            
-            Shader shader = Shader.Find("ProjectZombie/VFX/Slash_Additive");
-            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-
-            if (mat == null)
-            {
-                mat = new Material(shader);
-                AssetDatabase.CreateAsset(mat, path);
-            }
-            else
-            {
-                mat.shader = shader;
-            }
-
-            if (mat != null)
-            {
-                if (tex != null)
-                {
-                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
-                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
-                }
-                if (mat.HasProperty("_CoreColor")) mat.SetColor("_CoreColor", tintColor);
-                if (mat.HasProperty("_EdgeColor")) mat.SetColor("_EdgeColor", tintColor);
-                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tintColor);
-                if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", tintColor);
-                
-                // Cấu hình Blend: Nếu không phải Additive thì dùng AlphaBlend tiêu chuẩn (SrcAlpha, OneMinusSrcAlpha = 5, 10)
-                if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", 5f); // SrcAlpha
-                if (mat.HasProperty("_DstBlend")) mat.SetFloat("_DstBlend", isAdditive ? 1f : 10f); // 1: Additive, 10: OneMinusSrcAlpha (AlphaBlend thuần)
-                EditorUtility.SetDirty(mat);
-            }
-            return mat;
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var savedPipePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (savedPipePrefab != null) EditorGUIUtility.PingObject(savedPipePrefab);
+            Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 💨 Dựng thành công CỤM KHÓI ĐẶC QUÁNH ĐỨNG YÊN tại: {prefabPath}");
         }
 
         // 4. R007: Chiếu Trải Hoàng Tuyền (Mộc)
+        [MenuItem("Tools/VFX Generator/Slapstick Relics/4. 🎋 Build W_MAT (Chiếu Cói)", false, 4)]
         public static void BuildSleepingMatVFX()
         {
+            EnsureDirectories();
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_SleepingMat_Decal.prefab";
             GameObject root = new GameObject("VFX_Relic_SleepingMat_Decal");
 
@@ -595,49 +571,273 @@ namespace ProjectZombie.Editor.VFX
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] Dựng thành công: {prefabPath}");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var savedMatPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (savedMatPrefab != null) EditorGUIUtility.PingObject(savedMatPrefab);
+            Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🎋 Dựng thành công: {prefabPath}");
         }
 
-        // 5. R008: Chổi Lông Gà Giáng Trời (Kim)
+        // 5. R008: Chổi Lông Gà (Cơn Lốc Quét Rác & Đàn Gà Loạn Đả 2.5D Slapstick)
+        [MenuItem("Tools/VFX Generator/Slapstick Relics/5. 🪶 Build W_BROOM (Chổi Lông Gà)", false, 5)]
         public static void BuildChickenBroomVFX()
         {
+            EnsureDirectories();
             string prefabPath = $"{PREFAB_DIR}/VFX_Relic_ChickenBroom_Smash.prefab";
+            string stampedePrefabPath = $"{PREFAB_DIR}/VFX_Relic_Chicken_Stampede.prefab";
+
+            // Load New Slapstick Textures
+            string texWhirlPath = "Assets/VFX/SkillLibrary/Textures/Tex_VFX_Broom_Whirlwind.png";
+            string texBroomPath = "Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_Giant_Clean.png";
+            string texFeathersPath = "Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png";
+            string texDustPath = "Assets/VFX/SkillLibrary/Textures/Tex_VFX_Chicken_DustTrail.png";
+            string texChickenPath = "Assets/VFX/SkillLibrary/Textures/Tex_VFX_Chibi_Chicken_Run.png";
+
+            Texture2D texWhirl = AssetDatabase.LoadAssetAtPath<Texture2D>(texWhirlPath);
+            Texture2D texBroom = AssetDatabase.LoadAssetAtPath<Texture2D>(texBroomPath);
+            Texture2D texFeathers = AssetDatabase.LoadAssetAtPath<Texture2D>(texFeathersPath);
+            Texture2D texDust = AssetDatabase.LoadAssetAtPath<Texture2D>(texDustPath);
+            Texture2D texChicken = AssetDatabase.LoadAssetAtPath<Texture2D>(texChickenPath);
+
+            // Tạo Materials sạch sẽ, phát quang đẹp
+            Material matWhirl = GetOrCreateTextureMaterial("MAT_VFX_ChickenBroom_Whirlwind", texWhirl, new Color(2.4f, 2.0f, 0.8f, 1f), true);
+            Material matBroom = GetOrCreateTextureMaterial("MAT_VFX_ChickenBroom_Giant", texBroom, Color.white, false);
+            Material matFeathers = GetOrCreateTextureMaterial("MAT_VFX_ChickenBroom_Feathers", texFeathers, new Color(1.2f, 1.1f, 0.6f, 1f), false);
+            Material matDust = GetOrCreateTextureMaterial("MAT_VFX_ChickenBroom_DustTrail", texDust, new Color(1f, 0.95f, 0.8f, 0.65f), false);
+            Material matChicken = GetOrCreateTextureMaterial("MAT_VFX_ChickenBroom_ChibiChicken", texChicken, Color.white, false);
+
+            // =========================================================================
+            // =========================================================================
+            // PREFAB 1: CÂY CHỔI LÔNG GÀ BAY PHÓNG XÉ GIÓ (FLYING BROOM PROJECTILE)
+            // =========================================================================
             GameObject root = new GameObject("VFX_Relic_ChickenBroom_Smash");
 
-            var ps = root.AddComponent<ParticleSystem>();
-            var main = ps.main;
-            main.duration = 0.4f;
-            main.loop = false;
-            main.startLifetime = 0.35f;
-            main.startSpeed = 7.0f;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.4f, 0.9f);
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            // --- TẦNG 1: CÂY CHỔI XOAY TÍT PHÓNG NHANH ---
+            var psBroom = root.AddComponent<ParticleSystem>();
+            var mainBroom = psBroom.main;
+            mainBroom.duration = 1.4f;
+            mainBroom.loop = false;
+            mainBroom.startLifetime = 1.4f;
+            mainBroom.startSpeed = 0f;
+            mainBroom.startSize = 1.25f; // Cây chổi kích thước 1.25m rõ nét, đẹp mắt
+            mainBroom.startRotation = 0f;
+            mainBroom.simulationSpace = ParticleSystemSimulationSpace.Local;
 
-            var emission = ps.emission;
-            emission.rateOverTime = 0;
-            emission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 18) });
+            var emissBroom = psBroom.emission;
+            emissBroom.rateOverTime = 0;
+            emissBroom.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0.0f, 1) });
 
-            var shape = ps.shape;
-            shape.shapeType = ParticleSystemShapeType.Circle;
-            shape.radius = 0.5f;
+            var rotBroom = psBroom.rotationOverLifetime;
+            rotBroom.enabled = true;
+            rotBroom.z = new ParticleSystem.MinMaxCurve(1440f * Mathf.Deg2Rad); // Xoay tít 4 vòng/giây vun vút
 
-            var col = ps.colorOverLifetime;
-            col.enabled = true;
-            Gradient grad = new Gradient();
-            grad.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(new Color(1f, 0.8f, 0.2f), 0f), new GradientColorKey(new Color(0.9f, 0.3f, 0.2f), 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) }
+            var colBroom = psBroom.colorOverLifetime;
+            colBroom.enabled = true;
+            Gradient gradBroom = new Gradient();
+            gradBroom.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.85f), new GradientAlphaKey(0f, 1f) }
             );
-            col.color = grad;
+            colBroom.color = gradBroom;
 
-            var rend = root.GetComponent<ParticleSystemRenderer>();
-            rend.material = GetOrCreateVFXMaterial("MAT_VFX_ChickenBroom_Feathers", new Color(1.8f, 1.2f, 0.4f, 1f), true);
-            rend.sortingLayerName = "Skill";
-            rend.sortingOrder = 12;
+            var rendBroom = root.GetComponent<ParticleSystemRenderer>();
+            rendBroom.material = matBroom;
+            rendBroom.sortingLayerName = "Skill";
+            rendBroom.sortingOrder = 18;
+
+            // --- TẦNG 2: VỆT LÔNG GÀ VÀNG RƠI RỤNG SAU ĐUÔI (FEATHER TRAIL) ---
+            GameObject feathersObj = new GameObject("Trailing_Feathers");
+            feathersObj.transform.SetParent(root.transform, false);
+
+            var psFeathers = feathersObj.AddComponent<ParticleSystem>();
+            var mainFeathers = psFeathers.main;
+            mainFeathers.duration = 1.4f;
+            mainFeathers.loop = false;
+            mainFeathers.startLifetime = new ParticleSystem.MinMaxCurve(0.35f, 0.55f);
+            mainFeathers.startSpeed = new ParticleSystem.MinMaxCurve(0.5f, 1.5f);
+            mainFeathers.startSize = new ParticleSystem.MinMaxCurve(0.32f, 0.50f);
+            mainFeathers.startRotation = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
+            mainFeathers.simulationSpace = ParticleSystemSimulationSpace.World; // Lông gà bay rơi lại trên đường bay
+
+            var emissFeathers = psFeathers.emission;
+            emissFeathers.rateOverTime = 22; // Rải đều 22 lông gà/giây trên đường chổi bay
+
+            var shapeFeathers = psFeathers.shape;
+            shapeFeathers.shapeType = ParticleSystemShapeType.Sphere;
+            shapeFeathers.radius = 0.35f;
+
+            var rotFeathers = psFeathers.rotationOverLifetime;
+            rotFeathers.enabled = true;
+            rotFeathers.z = new ParticleSystem.MinMaxCurve(-180f * Mathf.Deg2Rad, 180f * Mathf.Deg2Rad);
+
+            var colFeathers = psFeathers.colorOverLifetime;
+            colFeathers.enabled = true;
+            Gradient gradFeathers = new Gradient();
+            gradFeathers.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(1f, 0.9f, 0.4f), 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.9f, 0.6f), new GradientAlphaKey(0f, 1f) }
+            );
+            colFeathers.color = gradFeathers;
+
+            var rendFeathers = feathersObj.GetComponent<ParticleSystemRenderer>();
+            rendFeathers.material = matFeathers;
+            rendFeathers.sortingLayerName = "Skill";
+            rendFeathers.sortingOrder = 16;
+
+            // --- TẦNG 3: BỤI KHÓI SLAPSTICK CUỘN ĐẰNG SAU ---
+            GameObject dustObj = new GameObject("Trailing_Dust");
+            dustObj.transform.SetParent(root.transform, false);
+
+            var psDust = dustObj.AddComponent<ParticleSystem>();
+            var mainDust = psDust.main;
+            mainDust.duration = 1.4f;
+            mainDust.loop = false;
+            mainDust.startLifetime = 0.35f;
+            mainDust.startSpeed = 0.3f;
+            mainDust.startSize = new ParticleSystem.MinMaxCurve(0.35f, 0.55f);
+            mainDust.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emissDust = psDust.emission;
+            emissDust.rateOverTime = 14;
+
+            var shapeDust = psDust.shape;
+            shapeDust.shapeType = ParticleSystemShapeType.Sphere;
+            shapeDust.radius = 0.25f;
+
+            var colDust = psDust.colorOverLifetime;
+            colDust.enabled = true;
+            Gradient gradDust = new Gradient();
+            gradDust.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(0.5f, 0f), new GradientAlphaKey(0f, 1f) }
+            );
+            colDust.color = gradDust;
+
+            var rendDust = dustObj.GetComponent<ParticleSystemRenderer>();
+            rendDust.material = matDust;
+            rendDust.sortingLayerName = "Skill";
+            rendDust.sortingOrder = 5;
+
+            // Gắn Level Scaler
+            var scaler = root.AddComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>();
+            scaler.tier2SubLayers = new GameObject[] { feathersObj };
+            scaler.tier3UltimateLayers = new GameObject[] { dustObj };
+            scaler.baseLevel1Scale = 0.85f;
+            scaler.scalePerLevel = 0.05f;
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
-            Debug.Log($"[SlapstickRelicVFXBuilder] Dựng thành công: {prefabPath}");
+
+            // =========================================================================
+            // PREFAB 2: ĐÀN GÀ CHIBI NỔI LOẠN (CHICKEN STAMPEDE)
+            // =========================================================================
+            GameObject stampedeRoot = new GameObject("VFX_Relic_Chicken_Stampede");
+
+            var psStampede = stampedeRoot.AddComponent<ParticleSystem>();
+            var mainStampede = psStampede.main;
+            mainStampede.duration = 1.0f;
+            mainStampede.loop = false;
+            mainStampede.startLifetime = 0.85f;
+            mainStampede.startSpeed = new ParticleSystem.MinMaxCurve(5.5f, 7.5f); // Chạy ào về phía trước
+            mainStampede.startSize = new ParticleSystem.MinMaxCurve(0.55f, 0.70f); // Gà Chibi 0.6m
+            mainStampede.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emissStampede = psStampede.emission;
+            emissStampede.rateOverTime = 0;
+            emissStampede.SetBursts(new ParticleSystem.Burst[] { 
+                new ParticleSystem.Burst(0.0f, 3),
+                new ParticleSystem.Burst(0.1f, 3),
+                new ParticleSystem.Burst(0.2f, 2)
+            });
+
+            var shapeStampede = psStampede.shape;
+            shapeStampede.shapeType = ParticleSystemShapeType.Cone;
+            shapeStampede.angle = 20f;
+            shapeStampede.radius = 0.6f;
+
+            var colStampede = psStampede.colorOverLifetime;
+            colStampede.enabled = true;
+            Gradient gradStampede = new Gradient();
+            gradStampede.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.8f), new GradientAlphaKey(0f, 1f) }
+            );
+            colStampede.color = gradStampede;
+
+            var rendStampede = stampedeRoot.GetComponent<ParticleSystemRenderer>();
+            rendStampede.material = matChicken;
+            rendStampede.sortingLayerName = "Skill";
+            rendStampede.sortingOrder = 16;
+
+            // Bụi khói dưới chân đàn gà
+            GameObject stampedeDust = new GameObject("Chicken_Run_Dust");
+            stampedeDust.transform.SetParent(stampedeRoot.transform, false);
+
+            var psSDust = stampedeDust.AddComponent<ParticleSystem>();
+            var mainSDust = psSDust.main;
+            mainSDust.duration = 1.0f;
+            mainSDust.loop = false;
+            mainSDust.startLifetime = 0.4f;
+            mainSDust.startSpeed = 1.0f;
+            mainSDust.startSize = new ParticleSystem.MinMaxCurve(0.3f, 0.45f);
+            mainSDust.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emissSDust = psSDust.emission;
+            emissSDust.rateOverTime = 20;
+
+            var rendSDust = stampedeDust.GetComponent<ParticleSystemRenderer>();
+            rendSDust.material = matDust;
+            rendSDust.sortingLayerName = "Skill";
+            rendSDust.sortingOrder = 5;
+
+            PrefabUtility.SaveAsPrefabAsset(stampedeRoot, stampedePrefabPath);
+            Object.DestroyImmediate(stampedeRoot);
+
+            // =========================================================================
+            // PREFAB 3: GÀ CON HỘ VỆ (COMPANION CHICKEN MINION - CHUẨN ANIMATOR & SPRITE)
+            // =========================================================================
+            string minionPrefabPath = $"{PREFAB_DIR}/Companion_Chicken_Minion.prefab";
+            string idleSpritePath = "Assets/Art/GaChoi/GaChoi-Idle.png";
+            string controllerPath = "Assets/Art/GaChoi/GaChoi.controller";
+
+            GameObject minionRoot = new GameObject("Companion_Chicken_Minion");
+            var minionSr = minionRoot.AddComponent<SpriteRenderer>();
+            
+            // Load sub-sprite GaChoi-Idle_0
+            Object[] allSprites = AssetDatabase.LoadAllAssetsAtPath(idleSpritePath);
+            Sprite idleSprite = null;
+            foreach (var obj in allSprites)
+            {
+                if (obj is Sprite spr)
+                {
+                    idleSprite = spr;
+                    break;
+                }
+            }
+
+            if (idleSprite != null) minionSr.sprite = idleSprite;
+            minionSr.sortingLayerName = "Entities";
+            minionSr.sortingOrder = 10;
+
+            // Gán Animator Controller
+            var anim = minionRoot.AddComponent<Animator>();
+            RuntimeAnimatorController rac = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
+            if (rac != null) anim.runtimeAnimatorController = rac;
+
+            minionRoot.AddComponent<ChickenMinionCompanion>();
+
+            PrefabUtility.SaveAsPrefabAsset(minionRoot, minionPrefabPath);
+            Object.DestroyImmediate(minionRoot);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🪶 Dựng thành công Prefab Cơn Lốc Quét Rác, Đàn Gà Loạn Đả & Gà Con Hộ Vệ (Animator Fully Wired)!");
+        }
+
+        private static void EnsureDirectories()
+        {
+            if (!Directory.Exists(PREFAB_DIR)) Directory.CreateDirectory(PREFAB_DIR);
+            if (!Directory.Exists(MAT_DIR)) Directory.CreateDirectory(MAT_DIR);
         }
 
         // 1.2 W_SLIPPER: Đạn Dép Bay Boomerang (Sprite Chiếc Dép + Vệt Gió)
@@ -685,6 +885,49 @@ namespace ProjectZombie.Editor.VFX
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             Object.DestroyImmediate(root);
             Debug.Log($"[SlapstickRelicVFXBuilder] 🩴 Dựng thành công Prefab Đạn Dép Bay: {prefabPath}");
+        }
+
+        private static Material GetOrCreateTextureMaterial(string matName, Texture2D tex, Color tintColor, bool isAdditive)
+        {
+            string path = $"{MAT_DIR}/{matName}.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            
+            Shader shader = isAdditive 
+                ? (Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("ProjectZombie/VFX/Slash_Additive"))
+                : (Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default"));
+
+            if (mat == null)
+            {
+                mat = new Material(shader);
+                AssetDatabase.CreateAsset(mat, path);
+            }
+            else
+            {
+                mat.shader = shader;
+            }
+
+            if (mat != null)
+            {
+                if (tex != null)
+                {
+                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+                }
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tintColor);
+                if (mat.HasProperty("_Color")) mat.SetColor("_Color", tintColor);
+                if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", tintColor);
+                
+                // Cấu hình Blend Modes chuẩn xác cho URP
+                if (mat.HasProperty("_Surface")) mat.SetFloat("_Surface", 1f); // Transparent
+                if (mat.HasProperty("_Blend")) mat.SetFloat("_Blend", isAdditive ? 1f : 0f); // 0=Alpha, 1=Additive
+                if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                if (mat.HasProperty("_DstBlend")) mat.SetFloat("_DstBlend", isAdditive ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                if (mat.HasProperty("_ZWrite")) mat.SetFloat("_ZWrite", 0f);
+
+                mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                EditorUtility.SetDirty(mat);
+            }
+            return mat;
         }
 
         private static Material GetOrCreateVFXMaterial(string matName, Color coreColor, bool isAdditive)

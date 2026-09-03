@@ -47,23 +47,21 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   weaponId: R008
   displayName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
-  icon: {fileID: 0}
-  description: "Tri\u1EC7u h\u1ED3i Ch\u1ED5i L\xF4ng G\xE0 kh\u1ED5ng l\u1ED3 gi\xE1ng
-    t\u1EEB tr\u1EDDi xu\u1ED1ng v\u1EDBi l\u1EF1c Knockback 12m/s c\u1EF1c \u0111\u1EA1i
-    v\xE0 g\u0103m qu\xE1i v\xE0o t\u01B0\u1EDDng."
-  element: 0
-  weaponRole: 0
+  icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
+  description: "Pháp bảo bị động: Tự động giáng Chổi Lông Gà khổng lồ từ trên trời khi Hero kết thúc Combo Hit 3 hoặc đánh Chí Mạng, đẩy lùi 12m/s và gây Choáng 0.8s!"
+  element: 1
+  weaponRole: 2
   isPrimaryActiveWeapon: 0
-  isPassiveRelic: 0
-  activeCooldown: 8
+  isPassiveRelic: 1
+  activeCooldown: 0
   activeDuration: 0
   skillActionName: 
   hasRecastPhase: 0
   recastWindowDuration: 3.5
   currentComboStep: 1
   comboResetWindow: 1
-  triggerCooldown: 1
+  triggerCooldown: 3.5
   relicVfxPrefab: {fileID: 3967041597123839552, guid: 924ff22c37f23654081e208bbb4e972a, type: 3}
   vfxLifeTime: 0.5
-  smashRadius: 3.5
-  smashKnockbackForce: 12
+  smashRadius: 1.8
+  smashKnockbackForce: 5.5

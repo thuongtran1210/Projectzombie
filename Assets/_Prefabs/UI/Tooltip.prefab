@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "+15% Ph\u1EA1m vi \u1EA3nh h\u01B0\u1EDFng c\u1EE7a k\u1EF9 n\u0103ng"
+  m_text: "-8% Th\u1EDDi gian h\u1ED3i chi\xEAu k\u1EF9 n\u0103ng & v\u0169 kh\xED"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Th\xE1p Uy \xC1p"
+  m_text: "Ng\u1ECDc H\u1ED3i Chi\xEAu"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -305,7 +305,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 350.49023, y: 1165.0587}
+  m_AnchoredPosition: {x: 100, y: 507.75}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412

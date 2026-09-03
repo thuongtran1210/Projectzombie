@@ -203,9 +203,12 @@ namespace ProjectZombie.Features.Player
             OnStatsUpdated?.Invoke();
         }
 
+        public const float MIN_MOVE_SPEED = 2.0f;
+        public const float MAX_MOVE_SPEED = 9.0f;
+
         public void AddMoveSpeed(float amount)
         {
-            MoveSpeed += amount;
+            MoveSpeed = Mathf.Clamp(MoveSpeed + amount, MIN_MOVE_SPEED, MAX_MOVE_SPEED);
             OnStatsUpdated?.Invoke();
         }
 
