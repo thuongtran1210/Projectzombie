@@ -57,6 +57,7 @@ namespace ProjectZombie.Editor.UI
             // Load Font tiếng Việt
             TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset");
             if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
+            if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if (vietFont == null) vietFont = TMP_Settings.defaultFontAsset;
 
             // Load Sprites Vọng Xuyên Cổ Phong
