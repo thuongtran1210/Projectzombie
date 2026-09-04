@@ -295,9 +295,11 @@ namespace ProjectZombie.Features.Player
             // Pha 1: Wind-up Delay (Chờ tay nhân vật giơ lên trước khi bung vệt kiếm)
             float totalCycle = 1f / Mathf.Max(0.1f, currentAtkSpeed);
             float windupDelay = totalCycle * Mathf.Clamp(attackConfig.windupRatio, 0.05f, 0.35f);
-            if (windupDelay > 0.01f)
+            float elapsedWindup = 0f;
+            while (elapsedWindup < windupDelay)
             {
-                yield return new WaitForSeconds(windupDelay);
+                elapsedWindup += Time.deltaTime;
+                yield return null;
             }
 
             // Pha 2: Active Impact (Bung vệt chém + Quét va chạm đúng khoảnh khắc chém)
