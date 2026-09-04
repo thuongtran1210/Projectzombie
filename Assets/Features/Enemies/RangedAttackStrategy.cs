@@ -82,12 +82,11 @@ namespace ProjectZombie.Features.Enemies
         {
             _isAttacking = true;
 
-            float clipLength = 0.5f;
-            if (_enemy.EnemyAnimator != null)
-            {
-                clipLength = _enemy.EnemyAnimator.GetCurrentAttackClipLength(0.5f);
-                _enemy.EnemyAnimator.TriggerAttack();
-            }
+            float clipLength = _enemy.Animator != null 
+                ? _enemy.Animator.GetCurrentClipLength(ProjectZombie.Features.Shared.AnimationConstants.ATTACK, 0.5f) 
+                : 0.5f;
+
+            _enemy.Animator?.TriggerAttack();
 
             // Chờ đúng thời điểm bắn đạn (45% clip)
             float shootDelay = clipLength * 0.45f;
@@ -104,6 +103,9 @@ namespace ProjectZombie.Features.Enemies
             // Chờ hoàn tất nốt animation (55% clip còn lại)
             float recoveryDelay = clipLength * 0.55f;
             yield return new WaitForSeconds(recoveryDelay);
+
+            // Trả Animator về tư thế Idle trong thời gian chờ cooldown tiếp theo
+            _enemy.Animator?.SetRunning(false);
 
             _isAttacking = false;
             _rangedAttackRoutine = null;

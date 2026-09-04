@@ -12,8 +12,7 @@ namespace ProjectZombie.Features.Enemies
             // Nếu đang bị Stun/Freeze hoặc Knockback thì không di chuyển logic
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
-                if (_enemy.EnemyAnimator != null) _enemy.EnemyAnimator.SetRunning(false);
-                else if (_enemy.BossAnimator != null) _enemy.BossAnimator.PlayAnimation("Idle");
+                _enemy.Animator?.SetRunning(false);
                 return;
             }
 
@@ -30,16 +29,8 @@ namespace ProjectZombie.Features.Enemies
                 Vector2 tangentDir = new Vector2(-fromCenter.y, fromCenter.x).normalized; // Hướng di chuyển vòng quanh tâm
                 _enemy.Rb.velocity = tangentDir * (currentSpeed * 0.8f);
 
-                if (_enemy.EnemyAnimator != null)
-                {
-                    _enemy.EnemyAnimator.SetRunning(true);
-                    _enemy.EnemyAnimator.FlipToDirection(tangentDir.x);
-                }
-                else if (_enemy.BossAnimator != null)
-                {
-                    _enemy.BossAnimator.PlayAnimation("Run");
-                    _enemy.BossAnimator.FlipToDirection(tangentDir.x);
-                }
+                _enemy.Animator?.SetRunning(true);
+                _enemy.Animator?.FlipToDirection(tangentDir.x);
                 return;
             }
 
@@ -51,28 +42,13 @@ namespace ProjectZombie.Features.Enemies
                 Vector2 direction = (_enemy.PlayerTransform.position - _enemy.transform.position).normalized;
                 _enemy.Rb.velocity = direction * currentSpeed;
 
-                if (_enemy.EnemyAnimator != null)
-                {
-                    _enemy.EnemyAnimator.SetRunning(true);
-                    _enemy.EnemyAnimator.FlipToDirection(direction.x);
-                }
-                else if (_enemy.BossAnimator != null)
-                {
-                    _enemy.BossAnimator.PlayAnimation("Run");
-                    _enemy.BossAnimator.FlipToDirection(direction.x);
-                }
+                _enemy.Animator?.SetRunning(true);
+                _enemy.Animator?.FlipToDirection(direction.x);
             }
             else
             {
                 _enemy.Rb.velocity = Vector2.zero;
-                if (_enemy.EnemyAnimator != null)
-                {
-                    _enemy.EnemyAnimator.SetRunning(false);
-                }
-                else if (_enemy.BossAnimator != null)
-                {
-                    _enemy.BossAnimator.PlayAnimation("Idle");
-                }
+                _enemy.Animator?.SetRunning(false);
             }
         }
 

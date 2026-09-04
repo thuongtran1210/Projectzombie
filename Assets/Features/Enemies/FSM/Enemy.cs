@@ -18,8 +18,9 @@ namespace ProjectZombie.Features.Enemies
         
         public Rigidbody2D Rb { get; private set; }
         public HealthSystem HealthSystem { get; private set; }
-        public EnemyAnimator EnemyAnimator { get; private set; }
-        public ProjectZombie.Features.Boss.BossAnimator BossAnimator { get; private set; }
+        public ICharacterAnimator Animator { get; private set; }
+        public EnemyAnimator EnemyAnimator => Animator as EnemyAnimator;
+        public ProjectZombie.Features.Boss.BossAnimator BossAnimator => Animator as ProjectZombie.Features.Boss.BossAnimator;
         public Transform PlayerTransform { get; private set; }
         public HealthSystem PlayerHealthSystem { get; private set; }
         
@@ -84,8 +85,7 @@ namespace ProjectZombie.Features.Enemies
         {
             Rb = GetComponent<Rigidbody2D>();
             HealthSystem = GetComponent<HealthSystem>();
-            EnemyAnimator = GetComponentInChildren<EnemyAnimator>();
-            BossAnimator = GetComponentInChildren<ProjectZombie.Features.Boss.BossAnimator>();
+            Animator = GetComponentInChildren<ICharacterAnimator>();
             _bossElementController = GetComponent<ProjectZombie.Features.Boss.BossElementController>();
             Rb.freezeRotation = true;
             InitialLocalScale = transform.localScale;

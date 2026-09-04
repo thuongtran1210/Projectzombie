@@ -44,10 +44,7 @@ namespace ProjectZombie.Features.Enemies.Passives
                 // Hồi 50% máu và cho phép hồi sinh
                 _healthSystem.Heal(_enemy.Config.maxHealth * 0.5f, true);
 
-                if (_enemy.EnemyAnimator != null)
-                {
-                    _enemy.EnemyAnimator.TriggerRevive();
-                }
+                _enemy.Animator?.TriggerRevive();
 
                 // Nếu quái đang ở trạng thái chết, trả về trạng thái truy đuổi
                 if (_enemy.ChaseState != null)

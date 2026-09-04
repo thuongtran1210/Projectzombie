@@ -16,14 +16,7 @@ namespace ProjectZombie.Features.Enemies
         {
             _enemy.Rb.velocity = Vector2.zero;
             _isTelegraphing = false;
-            if (_enemy.EnemyAnimator != null)
-            {
-                _enemy.EnemyAnimator.SetRunning(false);
-            }
-            else if (_enemy.BossAnimator != null)
-            {
-                _enemy.BossAnimator.PlayAnimation("Idle");
-            }
+            _enemy.Animator?.SetRunning(false);
         }
 
         public override void Update()
@@ -61,14 +54,7 @@ namespace ProjectZombie.Features.Enemies
             
             // Xoay mặt về phía người chơi
             float dirX = _enemy.PlayerTransform.position.x - _enemy.transform.position.x;
-            if (_enemy.EnemyAnimator != null)
-            {
-                _enemy.EnemyAnimator.FlipToDirection(dirX);
-            }
-            else if (_enemy.BossAnimator != null)
-            {
-                _enemy.BossAnimator.FlipToDirection(dirX);
-            }
+            _enemy.Animator?.FlipToDirection(dirX);
 
             // Kiểm tra xem quái có cần Reposition hay đổi lại trạng thái Chase dựa trên Strategy
             if (_enemy.Movement != null)

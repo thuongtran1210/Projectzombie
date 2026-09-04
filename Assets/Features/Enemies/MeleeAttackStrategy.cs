@@ -167,24 +167,17 @@ namespace ProjectZombie.Features.Enemies
             _isAttacking = true;
 
             // 1. Lấy độ dài thực tế của Clip Animation Attack
-            float clipLength = 0.5f;
-            if (_enemy.EnemyAnimator != null)
-            {
-                clipLength = _enemy.EnemyAnimator.GetCurrentAttackClipLength(0.5f);
-            }
+            float clipLength = _enemy.Animator != null 
+                ? _enemy.Animator.GetCurrentClipLength(ProjectZombie.Features.Shared.AnimationConstants.ATTACK, 0.5f) 
+                : 0.5f;
 
             float cooldown = Mathf.Max(0.2f, _enemy.Config.attackCooldown);
             float animSpeed = Mathf.Clamp(clipLength / Mathf.Min(clipLength, cooldown * 0.8f), 0.8f, 2.2f);
 
-            var bossAnimator = GetComponentInChildren<BossAnimator>();
-            if (bossAnimator != null)
+            if (_enemy.Animator != null)
             {
-                bossAnimator.PlayAnimation("Attack");
-            }
-            else if (_enemy.EnemyAnimator != null)
-            {
-                _enemy.EnemyAnimator.SetAttackAnimationSpeed(animSpeed);
-                _enemy.EnemyAnimator.TriggerAttack();
+                _enemy.Animator.SetAnimationSpeed(animSpeed);
+                _enemy.Animator.TriggerAttack();
             }
 
             // 2. Chờ đúng Frame vung tay chạm đòn (45% thời lượng thực tế của Clip sau khi áp dụng Speed)
@@ -220,6 +213,9 @@ namespace ProjectZombie.Features.Enemies
             // 4. Chờ hoàn tất nốt giai đoạn thu tay về (Recovery Phase 55% còn lại)
             float recoveryDelay = totalAnimDuration * 0.55f;
             yield return new WaitForSeconds(recoveryDelay);
+
+            // Trả Animator về tư thế Idle trong thời gian chờ cooldown tiếp theo
+            _enemy.Animator?.SetRunning(false);
 
             _isAttacking = false;
             _attackRoutine = null;

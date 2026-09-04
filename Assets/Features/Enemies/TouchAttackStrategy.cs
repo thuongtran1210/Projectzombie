@@ -82,6 +82,9 @@ namespace ProjectZombie.Features.Enemies
             {
                 damageable.TakeDamage(_enemy.GetTotalDamage());
                 _lastDamageTime = Time.time;
+
+                // Kích hoạt animation Attack nếu có
+                _enemy.Animator?.TriggerAttack();
                 return true;
             }
             return false;

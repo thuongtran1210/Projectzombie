@@ -24,7 +24,7 @@ namespace ProjectZombie.Features.Enemies
             // 1. Kiểm tra trạng thái bị khống chế (Stun/Freeze/Knockback)
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
-                if (_enemy.EnemyAnimator != null) _enemy.EnemyAnimator.SetRunning(false);
+                _enemy.Animator?.SetRunning(false);
                 return;
             }
 
@@ -41,11 +41,8 @@ namespace ProjectZombie.Features.Enemies
                 Vector2 tangentDir = new Vector2(-fromCenter.y, fromCenter.x).normalized;
                 _enemy.Rb.velocity = tangentDir * (currentSpeed * 0.8f);
 
-                if (_enemy.EnemyAnimator != null)
-                {
-                    _enemy.EnemyAnimator.SetRunning(true);
-                    _enemy.EnemyAnimator.FlipToDirection(tangentDir.x);
-                }
+                _enemy.Animator?.SetRunning(true);
+                _enemy.Animator?.FlipToDirection(tangentDir.x);
                 return;
             }
 
@@ -89,12 +86,12 @@ namespace ProjectZombie.Features.Enemies
 
             _enemy.Rb.velocity = moveVelocity;
 
-            if (_enemy.EnemyAnimator != null)
+            if (_enemy.Animator != null)
             {
                 bool isMoving = moveVelocity.sqrMagnitude > 0.05f;
-                _enemy.EnemyAnimator.SetRunning(isMoving);
+                _enemy.Animator.SetRunning(isMoving);
                 // Luôn luôn hướng mặt về phía Player khi bắn/di chuyển
-                _enemy.EnemyAnimator.FlipToDirection(directionToPlayer.x);
+                _enemy.Animator.FlipToDirection(directionToPlayer.x);
             }
         }
 

@@ -70,6 +70,8 @@ namespace ProjectZombie.Features.Enemies
                 _enemy.Rb.velocity = Vector2.zero;
             }
 
+            _enemy?.Animator?.TriggerAttack();
+
             yield return new WaitForSeconds(explodeDelay);
 
             // Gây sát thương nổ AoE với 0 GC Allocation

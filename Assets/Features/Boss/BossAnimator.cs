@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Boss
 {
@@ -9,8 +10,9 @@ namespace ProjectZombie.Features.Boss
     /// - Không dùng Animator Transitions (mũi tên)
     /// - Cache String-to-Hash tự động linh hoạt (0 GC Allocation)
     /// - Hỗ trợ AnimatorOverrideController khi Boss đổi Phase
+    /// - Implement ICharacterAnimator để tương thích đa hình trong hệ thống Enemy FSM.
     /// </summary>
-    public class BossAnimator : MonoBehaviour
+    public class BossAnimator : MonoBehaviour, ICharacterAnimator
     {
         [Header("References")]
         [Tooltip("Kéo thả Animator vào đây (nếu để trống sẽ tự tìm trong GameObject con)")]
@@ -20,6 +22,7 @@ namespace ProjectZombie.Features.Boss
         private string _currentStateName = string.Empty;
 
         public Animator Animator => animator;
+        public Animator AnimatorComponent => animator;
         public string CurrentStateName => _currentStateName;
 
         private BossAnimationEventHandler _eventHandler;
@@ -38,13 +41,13 @@ namespace ProjectZombie.Features.Boss
             }
 
             // Mặc định cache một số animation name chuẩn cơ bản
-            CacheAnimationHash("Idle");
-            CacheAnimationHash("Run");
-            CacheAnimationHash("Attack");
-            CacheAnimationHash("Dash");
-            CacheAnimationHash("GroundSlam");
-            CacheAnimationHash("Dead");
-            CacheAnimationHash("Revive");
+            CacheAnimationHash(AnimationConstants.IDLE);
+            CacheAnimationHash(AnimationConstants.RUN);
+            CacheAnimationHash(AnimationConstants.ATTACK);
+            CacheAnimationHash(AnimationConstants.DASH);
+            CacheAnimationHash(AnimationConstants.GROUND_SLAM);
+            CacheAnimationHash(AnimationConstants.DEAD);
+            CacheAnimationHash(AnimationConstants.REVIVE);
         }
 
         private void OnEnable()
@@ -66,9 +69,11 @@ namespace ProjectZombie.Features.Boss
         private void HandleAnimationFinished()
         {
             // Tự động trở về Idle khi các đòn đánh/kỹ năng không lặp kết thúc
-            if (_currentStateName == "Attack" || _currentStateName == "GroundSlam" || _currentStateName == "Dash")
+            if (_currentStateName == AnimationConstants.ATTACK || 
+                _currentStateName == AnimationConstants.GROUND_SLAM || 
+                _currentStateName == AnimationConstants.DASH)
             {
-                PlayAnimation("Idle");
+                PlayAnimation(AnimationConstants.IDLE);
             }
         }
 
@@ -103,22 +108,22 @@ namespace ProjectZombie.Features.Boss
 
         public void SetRunning(bool isRunning)
         {
-            PlayAnimation(isRunning ? "Run" : "Idle");
+            PlayAnimation(isRunning ? AnimationConstants.RUN : AnimationConstants.IDLE);
         }
 
         public void TriggerAttack()
         {
-            PlayAnimation("Attack", true);
+            PlayAnimation(AnimationConstants.ATTACK, true);
         }
 
         public void TriggerDeath()
         {
-            PlayAnimation("Dead");
+            PlayAnimation(AnimationConstants.DEAD);
         }
 
         public void TriggerRevive()
         {
-            PlayAnimation("Revive");
+            PlayAnimation(AnimationConstants.REVIVE);
         }
 
         /// <summary>

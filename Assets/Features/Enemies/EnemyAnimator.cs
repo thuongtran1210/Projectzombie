@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Enemies
 {
@@ -12,27 +14,27 @@ namespace ProjectZombie.Features.Enemies
     }
 
     /// <summary>
-    /// Điều khiển Animator cho quái vật (Slime).
+    /// Điều khiển Animator cho quái vật (Enemy).
     /// Tuân thủ nguyên tắc Animator State Machine by Script (không dùng Transitions).
+    /// Implement ICharacterAnimator để tương thích đa hình toàn hệ thống.
     /// </summary>
-    public class EnemyAnimator : MonoBehaviour
+    public class EnemyAnimator : MonoBehaviour, ICharacterAnimator
     {
         [Header("References")]
         [Tooltip("Kéo thả GameObject con chứa Animator vào đây")]
         [SerializeField] private Animator animator;
 
         [Header("State Names (Must match Animator Exact Names)")]
-        [SerializeField] private string idleStateName = "Idle";
-        [SerializeField] private string runStateName = "Run";
-        [SerializeField] private string attackStateName = "Attack";
-        [SerializeField] private string deadStateName = "Dead";
-        [SerializeField] private string reviveStateName = "Revive";
+        [SerializeField] private string idleStateName = AnimationConstants.IDLE;
+        [SerializeField] private string runStateName = AnimationConstants.RUN;
+        [SerializeField] private string attackStateName = AnimationConstants.ATTACK;
+        [SerializeField] private string deadStateName = AnimationConstants.DEAD;
+        [SerializeField] private string reviveStateName = AnimationConstants.REVIVE;
 
-        private int _idleHash;
-        private int _runHash;
-        private int _attackHash;
-        private int _deadHash;
-        private int _reviveHash;
+        private readonly Dictionary<string, int> _stateHashes = new();
+        private string _currentStateName = string.Empty;
+
+        public Animator AnimatorComponent => animator;
 
         private void Awake()
         {
@@ -41,94 +43,107 @@ namespace ProjectZombie.Features.Enemies
                 animator = GetComponentInChildren<Animator>();
             }
 
-            // Cache các hash để gọi animator.Play() hiệu quả hơn
-            _idleHash = Animator.StringToHash(idleStateName);
-            _runHash = Animator.StringToHash(runStateName);
-            _attackHash = Animator.StringToHash(attackStateName);
-            _deadHash = Animator.StringToHash(deadStateName);
-            _reviveHash = Animator.StringToHash(reviveStateName);
+            CacheAnimationHash(idleStateName);
+            CacheAnimationHash(runStateName);
+            CacheAnimationHash(attackStateName);
+            CacheAnimationHash(deadStateName);
+            CacheAnimationHash(reviveStateName);
+        }
+
+        public int CacheAnimationHash(string stateName)
+        {
+            if (string.IsNullOrEmpty(stateName)) return 0;
+
+            if (!_stateHashes.TryGetValue(stateName, out int hash))
+            {
+                hash = Animator.StringToHash(stateName);
+                _stateHashes[stateName] = hash;
+            }
+            return hash;
         }
 
         public void PlayState(EnemyAnimationState state)
         {
-            if (animator == null || !animator.gameObject.activeInHierarchy) return;
-
             switch (state)
             {
                 case EnemyAnimationState.Idle:
-                    animator.Play(_idleHash);
+                    PlayAnimation(idleStateName);
                     break;
                 case EnemyAnimationState.Run:
-                    animator.Play(_runHash);
+                    PlayAnimation(runStateName);
                     break;
                 case EnemyAnimationState.Attack:
-                    animator.Play(_attackHash);
+                    PlayAnimation(attackStateName, true);
                     break;
                 case EnemyAnimationState.Dead:
-                    animator.Play(_deadHash);
+                    PlayAnimation(deadStateName);
                     break;
                 case EnemyAnimationState.Revive:
-                    animator.Play(_reviveHash);
+                    PlayAnimation(reviveStateName);
                     break;
             }
         }
 
-        /// <summary>
-        /// Đồng bộ tốc độ phát Animation của Quái theo Cooldown thực tế.
-        /// </summary>
-        public void SetAttackAnimationSpeed(float speedMultiplier)
+        public void PlayAnimation(string stateName, bool forceReplay = false)
         {
-            if (animator != null)
-            {
-                animator.speed = Mathf.Clamp(speedMultiplier, 0.5f, 3.0f);
-            }
-        }
+            if (animator == null || !animator.gameObject.activeInHierarchy || string.IsNullOrEmpty(stateName)) return;
 
-        // --- Helper methods để tương thích với FSM hiện tại ---
-        // FSM đã kiểm soát logic chặt chẽ nên ta chỉ cần map sang PlayState.
+            if (!forceReplay && _currentStateName == stateName) return;
+
+            int hash = CacheAnimationHash(stateName);
+            _currentStateName = stateName;
+            animator.Play(hash, 0, 0f);
+        }
 
         public void SetRunning(bool isRunning)
         {
-            PlayState(isRunning ? EnemyAnimationState.Run : EnemyAnimationState.Idle);
+            PlayAnimation(isRunning ? runStateName : idleStateName);
         }
 
         public void TriggerAttack()
         {
-            PlayState(EnemyAnimationState.Attack);
+            PlayAnimation(attackStateName, true);
         }
 
         public void TriggerDeath()
         {
-            PlayState(EnemyAnimationState.Dead);
+            PlayAnimation(deadStateName);
         }
 
         public void TriggerRevive()
         {
-            PlayState(EnemyAnimationState.Revive);
+            PlayAnimation(reviveStateName);
         }
 
-        public Animator AnimatorComponent => animator;
+        public void SetAnimationSpeed(float speedMultiplier)
+        {
+            if (animator != null)
+            {
+                animator.speed = Mathf.Clamp(speedMultiplier, 0.2f, 3.0f);
+            }
+        }
 
-        /// <summary>
-        /// Lấy thời lượng thực tế của clip Attack hiện tại đang phát (tính bằng giây).
-        /// </summary>
-        public float GetCurrentAttackClipLength(float defaultFallback = 0.5f)
+        public void SetAttackAnimationSpeed(float speedMultiplier) => SetAnimationSpeed(speedMultiplier);
+
+        public float GetCurrentClipLength(string stateName, float defaultFallback = 0.5f)
         {
             if (animator == null || animator.runtimeAnimatorController == null) return defaultFallback;
 
             var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
             if (clipInfo != null && clipInfo.Length > 0 && clipInfo[0].clip != null)
             {
-                return clipInfo[0].clip.length;
+                if (string.IsNullOrEmpty(stateName) || clipInfo[0].clip.name.IndexOf(stateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return clipInfo[0].clip.length;
+                }
             }
 
-            // Fallback tìm clip theo tên trong controller
             var clips = animator.runtimeAnimatorController.animationClips;
             if (clips != null)
             {
                 for (int i = 0; i < clips.Length; i++)
                 {
-                    if (clips[i] != null && clips[i].name.IndexOf(attackStateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (clips[i] != null && clips[i].name.IndexOf(stateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         return clips[i].length;
                     }
@@ -138,8 +153,10 @@ namespace ProjectZombie.Features.Enemies
             return defaultFallback;
         }
 
+        public float GetCurrentAttackClipLength(float defaultFallback = 0.5f) => GetCurrentClipLength(attackStateName, defaultFallback);
+
         /// <summary>
-        /// Sự kiện này sẽ được gọi từ Animation Event.
+        /// Sự kiện này sẽ được gọi từ Animation Event khi ra đòn.
         /// </summary>
         public event System.Action OnAttackEvent;
 
@@ -147,6 +164,14 @@ namespace ProjectZombie.Features.Enemies
         /// Gắn hàm này vào Animation Event trên frame vũ khí chạm đất/kẻ địch.
         /// </summary>
         public void TriggerAttackEvent()
+        {
+            OnAttackEvent?.Invoke();
+        }
+
+        /// <summary>
+        /// Fallback cho các clip có Event đặt tên là AnimEvent_OnHit
+        /// </summary>
+        public void AnimEvent_OnHit()
         {
             OnAttackEvent?.Invoke();
         }
