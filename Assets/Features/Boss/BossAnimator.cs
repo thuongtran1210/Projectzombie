@@ -22,11 +22,19 @@ namespace ProjectZombie.Features.Boss
         public Animator Animator => animator;
         public string CurrentStateName => _currentStateName;
 
+        private BossAnimationEventHandler _eventHandler;
+
         private void Awake()
         {
             if (animator == null)
             {
                 animator = GetComponentInChildren<Animator>();
+            }
+
+            _eventHandler = GetComponent<BossAnimationEventHandler>();
+            if (_eventHandler == null)
+            {
+                _eventHandler = GetComponentInChildren<BossAnimationEventHandler>();
             }
 
             // Mặc định cache một số animation name chuẩn cơ bản
@@ -37,6 +45,31 @@ namespace ProjectZombie.Features.Boss
             CacheAnimationHash("GroundSlam");
             CacheAnimationHash("Dead");
             CacheAnimationHash("Revive");
+        }
+
+        private void OnEnable()
+        {
+            if (_eventHandler != null)
+            {
+                _eventHandler.OnAnimationFinished += HandleAnimationFinished;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_eventHandler != null)
+            {
+                _eventHandler.OnAnimationFinished -= HandleAnimationFinished;
+            }
+        }
+
+        private void HandleAnimationFinished()
+        {
+            // Tự động trở về Idle khi các đòn đánh/kỹ năng không lặp kết thúc
+            if (_currentStateName == "Attack" || _currentStateName == "GroundSlam" || _currentStateName == "Dash")
+            {
+                PlayAnimation("Idle");
+            }
         }
 
         /// <summary>
@@ -66,6 +99,57 @@ namespace ProjectZombie.Features.Boss
             int hash = CacheAnimationHash(stateName);
             _currentStateName = stateName;
             animator.Play(hash, 0, 0f);
+        }
+
+        public void SetRunning(bool isRunning)
+        {
+            PlayAnimation(isRunning ? "Run" : "Idle");
+        }
+
+        public void TriggerAttack()
+        {
+            PlayAnimation("Attack", true);
+        }
+
+        public void TriggerDeath()
+        {
+            PlayAnimation("Dead");
+        }
+
+        public void TriggerRevive()
+        {
+            PlayAnimation("Revive");
+        }
+
+        /// <summary>
+        /// Lấy thời lượng thực tế của clip animation theo tên (tính bằng giây).
+        /// </summary>
+        public float GetCurrentClipLength(string stateName, float defaultFallback = 0.5f)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return defaultFallback;
+
+            var clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+            if (clipInfo != null && clipInfo.Length > 0 && clipInfo[0].clip != null)
+            {
+                if (string.IsNullOrEmpty(stateName) || clipInfo[0].clip.name.IndexOf(stateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return clipInfo[0].clip.length;
+                }
+            }
+
+            var clips = animator.runtimeAnimatorController.animationClips;
+            if (clips != null)
+            {
+                for (int i = 0; i < clips.Length; i++)
+                {
+                    if (clips[i] != null && clips[i].name.IndexOf(stateName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return clips[i].length;
+                    }
+                }
+            }
+
+            return defaultFallback;
         }
 
         /// <summary>

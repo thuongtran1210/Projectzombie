@@ -57,6 +57,10 @@ namespace ProjectZombie.Features.Enemies
             {
                 _enemy.EnemyAnimator.SetRunning(false);
             }
+            else if (_enemy.BossAnimator != null)
+            {
+                _enemy.BossAnimator.PlayAnimation("Idle");
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ namespace ProjectZombie.Features.Enemies
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
                 if (_enemy.EnemyAnimator != null) _enemy.EnemyAnimator.SetRunning(false);
+                else if (_enemy.BossAnimator != null) _enemy.BossAnimator.PlayAnimation("Idle");
                 return;
             }
 
@@ -34,6 +35,11 @@ namespace ProjectZombie.Features.Enemies
                     _enemy.EnemyAnimator.SetRunning(true);
                     _enemy.EnemyAnimator.FlipToDirection(tangentDir.x);
                 }
+                else if (_enemy.BossAnimator != null)
+                {
+                    _enemy.BossAnimator.PlayAnimation("Run");
+                    _enemy.BossAnimator.FlipToDirection(tangentDir.x);
+                }
                 return;
             }
 
@@ -50,6 +56,11 @@ namespace ProjectZombie.Features.Enemies
                     _enemy.EnemyAnimator.SetRunning(true);
                     _enemy.EnemyAnimator.FlipToDirection(direction.x);
                 }
+                else if (_enemy.BossAnimator != null)
+                {
+                    _enemy.BossAnimator.PlayAnimation("Run");
+                    _enemy.BossAnimator.FlipToDirection(direction.x);
+                }
             }
             else
             {
@@ -57,6 +68,10 @@ namespace ProjectZombie.Features.Enemies
                 if (_enemy.EnemyAnimator != null)
                 {
                     _enemy.EnemyAnimator.SetRunning(false);
+                }
+                else if (_enemy.BossAnimator != null)
+                {
+                    _enemy.BossAnimator.PlayAnimation("Idle");
                 }
             }
         }

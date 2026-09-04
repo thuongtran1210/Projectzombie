@@ -71,6 +71,27 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             return (Vector2)transform.position + new Vector2(offsetX, offsetY);
         }
 
+        private bool _isAttacking = false;
+        private bool _hasDealtDamageThisAttack = false;
+        private Coroutine _attackRoutine;
+
+        public override bool IsAttacking => _isAttacking;
+
+        public override void InterruptAttack()
+        {
+            _isAttacking = false;
+            _hasDealtDamageThisAttack = false;
+            if (_attackRoutine != null)
+            {
+                StopCoroutine(_attackRoutine);
+                _attackRoutine = null;
+            }
+            if (_bossAnimator != null)
+            {
+                _bossAnimator.PlayAnimation("Idle");
+            }
+        }
+
         public override void Attack()
         {
             PerformAttack();
@@ -78,6 +99,16 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
         public void PerformAttack()
         {
+            if (_isAttacking) return;
+            if (_attackRoutine != null) StopCoroutine(_attackRoutine);
+            _attackRoutine = StartCoroutine(ExecuteAttackRoutine());
+        }
+
+        private System.Collections.IEnumerator ExecuteAttackRoutine()
+        {
+            _isAttacking = true;
+            _hasDealtDamageThisAttack = false;
+
             // BƯỚC 1: BÁO HỆU VỆT ĐỎ CHỈ DẤU (INDICATOR)
             Vector2 center = GetHitboxCenter();
             Vector3 direction = (_enemy != null && _enemy.PlayerTransform != null)
@@ -99,14 +130,40 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                     telegraphDuration,
                     new Color(1f, 0.2f, 0.2f, 0.45f)
                 ));
+
+                yield return new WaitForSeconds(telegraphDuration);
             }
 
             // BƯỚC 2: PHÁT ANIMATION CỦA BOSS
+            float clipLength = 0.7f;
             if (_bossAnimator != null)
             {
-                _bossAnimator.PlayAnimation("Attack");
+                clipLength = _bossAnimator.GetCurrentClipLength("Attack", 0.7f);
+                _bossAnimator.PlayAnimation("Attack", true);
                 _bossAnimator.FlipToDirection(direction.x);
             }
+
+            // BƯỚC 3: ĐỢI FRAME CHẠM ĐÒN (45% clip)
+            float hitDelay = clipLength * 0.45f;
+            yield return new WaitForSeconds(hitDelay);
+
+            // Gây damage nếu Animation Event chưa kích hoạt
+            if (!_hasDealtDamageThisAttack)
+            {
+                DealDamageOnHitFrame();
+            }
+
+            // BƯỚC 4: ĐỢI KẾT THÚC CLIP (55% còn lại)
+            float recoveryDelay = clipLength * 0.55f;
+            yield return new WaitForSeconds(recoveryDelay);
+
+            if (_bossAnimator != null)
+            {
+                _bossAnimator.PlayAnimation("Idle");
+            }
+
+            _isAttacking = false;
+            _attackRoutine = null;
         }
 
         /// <summary>
@@ -114,6 +171,8 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         /// </summary>
         private void DealDamageOnHitFrame()
         {
+            if (_hasDealtDamageThisAttack) return;
+            _hasDealtDamageThisAttack = true;
             Vector2 center = GetHitboxCenter();
             int filterMask = targetLayer != 0 ? targetLayer.value : LayerMask.GetMask("Player");
             if (filterMask == 0) filterMask = ~0;

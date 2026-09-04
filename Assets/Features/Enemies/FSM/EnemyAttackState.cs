@@ -20,6 +20,10 @@ namespace ProjectZombie.Features.Enemies
             {
                 _enemy.EnemyAnimator.SetRunning(false);
             }
+            else if (_enemy.BossAnimator != null)
+            {
+                _enemy.BossAnimator.PlayAnimation("Idle");
+            }
         }
 
         public override void Update()
@@ -56,10 +60,14 @@ namespace ProjectZombie.Features.Enemies
             float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
             
             // Xoay mặt về phía người chơi
+            float dirX = _enemy.PlayerTransform.position.x - _enemy.transform.position.x;
             if (_enemy.EnemyAnimator != null)
             {
-                float dirX = _enemy.PlayerTransform.position.x - _enemy.transform.position.x;
                 _enemy.EnemyAnimator.FlipToDirection(dirX);
+            }
+            else if (_enemy.BossAnimator != null)
+            {
+                _enemy.BossAnimator.FlipToDirection(dirX);
             }
 
             // Kiểm tra xem quái có cần Reposition hay đổi lại trạng thái Chase dựa trên Strategy

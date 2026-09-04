@@ -55,9 +55,11 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             Debug.Log("[GroundSlamSkill] Boss kích hoạt chiêu 'Địa Chấn Âm Ty'!");
 
             var bossAnimator = GetComponentInChildren<BossAnimator>();
+            float slamClipLength = 0.9f;
             if (bossAnimator != null)
             {
-                bossAnimator.PlayAnimation("GroundSlam");
+                slamClipLength = bossAnimator.GetCurrentClipLength("GroundSlam", 0.9f);
+                bossAnimator.PlayAnimation("GroundSlam", true);
             }
 
             StartCoroutine(SpawnShockwaveVFX(transform.position, slamRadius));
@@ -81,6 +83,13 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                         playerController.ApplySlow(slowPercentage, slowDuration);
                     }
                 }
+            }
+
+            yield return new WaitForSeconds(slamClipLength);
+
+            if (bossAnimator != null)
+            {
+                bossAnimator.PlayAnimation("Idle");
             }
         }
 
