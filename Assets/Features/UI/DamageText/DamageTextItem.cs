@@ -36,8 +36,7 @@ namespace ProjectZombie.Features.UI.DamageText
             _onDespawn = onDespawn;
             if (_textMesh == null) return;
 
-            _textMesh.alignment = TextAlignmentOptions.Center;
-            _textMesh.text = text;
+            _textMesh.SetText(text);
             _textMesh.color = color;
             _textMesh.fontSize = fontSize;
 

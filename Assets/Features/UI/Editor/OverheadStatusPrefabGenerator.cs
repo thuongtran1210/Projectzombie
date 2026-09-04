@@ -165,6 +165,7 @@ namespace ProjectZombie.Features.UI.Editor
             bgImage.sprite = hpExpFrameSprite != null ? hpExpFrameSprite : defaultSprite;
             bgImage.type = Image.Type.Sliced;
             bgImage.color = Color.white;
+            bgImage.raycastTarget = false;
 
             // 3. Delay Health Fill (Vệt máu trễ / White damage)
             GameObject delayFillObj = new GameObject("DelayFill");
@@ -182,6 +183,7 @@ namespace ProjectZombie.Features.UI.Editor
             delayImage.fillMethod = Image.FillMethod.Horizontal;
             delayImage.fillOrigin = (int)Image.OriginHorizontal.Left;
             delayImage.fillAmount = 1f;
+            delayImage.raycastTarget = false;
 
             // 4. Primary Health Fill (Thanh máu đỏ chu sa / huyết ngọc Cổ Phong)
             GameObject healthFillObj = new GameObject("HealthFill");
@@ -199,6 +201,7 @@ namespace ProjectZombie.Features.UI.Editor
             healthImage.fillMethod = Image.FillMethod.Horizontal;
             healthImage.fillOrigin = (int)Image.OriginHorizontal.Left;
             healthImage.fillAmount = 1f;
+            healthImage.raycastTarget = false;
 
             // 5. Level Badge Root (Huy hiệu Ngọc Bát Quái Cổ Phong Vọng Xuyên)
             GameObject levelBadgeObj = new GameObject("LevelBadge");
@@ -213,6 +216,7 @@ namespace ProjectZombie.Features.UI.Editor
             badgeBg.sprite = levelOrbSprite != null ? levelOrbSprite : defaultSprite;
             badgeBg.preserveAspect = true;
             badgeBg.color = Color.white;
+            badgeBg.raycastTarget = false;
 
             // 5.1 EXP Ring (Vòng tròn hoàng kim EXP bao quanh huy hiệu)
             GameObject expRingObj = new GameObject("ExpRing");
@@ -231,6 +235,7 @@ namespace ProjectZombie.Features.UI.Editor
             expRingImage.fillOrigin = (int)Image.Origin360.Top;
             expRingImage.fillClockwise = true;
             expRingImage.fillAmount = 0f;
+            expRingImage.raycastTarget = false;
 
             // 6. Level Text (TextMeshPro Cổ Phong)
             GameObject levelTextObj = new GameObject("LevelText");
@@ -249,6 +254,7 @@ namespace ProjectZombie.Features.UI.Editor
             tmpText.alignment = TextAlignmentOptions.Center;
             tmpText.color = new Color(0.98f, 0.92f, 0.76f); // Vàng kim cổ phong
             tmpText.enableAutoSizing = false;
+            tmpText.raycastTarget = false;
 
             // 7. Gắn View & Presenter Components và liên kết Inspector fields
             OverheadStatusView view = root.AddComponent<OverheadStatusView>();

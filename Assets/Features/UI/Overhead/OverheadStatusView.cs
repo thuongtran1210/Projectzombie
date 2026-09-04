@@ -137,7 +137,7 @@ namespace ProjectZombie.Features.UI.Overhead
 
             if (_levelText != null)
             {
-                _levelText.text = string.Format(_levelFormat, level);
+                _levelText.SetText(_levelFormat, level);
             }
         }
 

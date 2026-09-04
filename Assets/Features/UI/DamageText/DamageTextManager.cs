@@ -72,6 +72,17 @@ namespace ProjectZombie.Features.UI.DamageText
                 defaultCapacity: _defaultPoolCapacity,
                 maxSize: _maxPoolSize
             );
+
+            // Pre-warm pool: Khởi tạo trước các item để loại bỏ Instantiate/JIT spikes trong combat
+            var prewarmedItems = new System.Collections.Generic.List<DamageTextItem>(_defaultPoolCapacity);
+            for (int i = 0; i < _defaultPoolCapacity; i++)
+            {
+                prewarmedItems.Add(_pool.Get());
+            }
+            for (int i = 0; i < prewarmedItems.Count; i++)
+            {
+                _pool.Release(prewarmedItems[i]);
+            }
         }
 
         private void HandleDamageReported(DamageReport report)
