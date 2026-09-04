@@ -127,7 +127,6 @@ GameObject:
   - component: {fileID: 7402922671366627933}
   - component: {fileID: 1383317695757006623}
   - component: {fileID: 3525274907744799209}
-  - component: {fileID: 4297362168769072215}
   - component: {fileID: 922402464292840618}
   - component: {fileID: -59334050579850593}
   m_Layer: 6
@@ -369,27 +368,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _skillData: {fileID: 11400000, guid: 82c2b3d8750849c4ab471649987dc1e8, type: 2}
---- !u!114 &4297362168769072215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4603747337966706880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e49687c7e22bd46902a5011f46ec9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxLinhCan: 100
-  _linhCanPerGem: 3.5
-  _passiveChargeRate: 1
-  _possessionDuration: 8
-  _oracleStunRadius: 12
-  _oracleStunDuration: 2
-  _speedMultiplier: 1.25
-  _possessionAuraPrefab: {fileID: 8069695370795212956, guid: 9918f720ba2b67c40b16d5d1d8ca56e6, type: 3}
-  _oracleShockwavePrefab: {fileID: 4876445369016505830, guid: 031b8e57e27c1b443ad3f3fb9c93495c, type: 3}
 --- !u!114 &922402464292840618
 MonoBehaviour:
   m_ObjectHideFlags: 0

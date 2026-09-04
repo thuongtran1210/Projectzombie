@@ -43,13 +43,9 @@ MonoBehaviour:
       comboStep3Multiplier: 1.8
       knockbackForce: 4
     signatureSkillName: "Ph\xE1n Quy\u1EBFt Ti\u1EC1n \u0110\u1ECBnh"
-    signatureSkillDesc: "Ch\xE8n 1 hit \u1EA3o Ng\u0169 H\xE0nh v\xE0o Queue T\u01B0\u01A1ng
-      Sinh, k\xEDch ho\u1EA1t gi\u1EA3m 20% Cooldown cho v\u0169 kh\xED kh\u1EDBp
-      l\u1EC7nh."
+    signatureSkillDesc: "B\u1ED9c ph\xE1t kh\xED thi\xEAng Ph\xE1n Quan g\xE2y s\xE1t th\u01B0\u01A1ng s\u1EA5m s\xE9t di\u1EC7n r\u1ED9ng v\xE0 gi\u1EA3m 20% Cooldown cho to\xE0n b\u1ED9 v\u0169 kh\xED."
     passiveTraitName: "V\u0103n Kh\xED H\u1ED9 Th\u1EC3"
-    passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
-      t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
-      \u0111a."
+    passiveTraitDesc: "M\u1ED7i khi thu th\u1EADp \u0111\u1EE7 10 Linh Th\u1EA1ch (Exp Gem), t\u1EF1 \u0111\u1ED9ng h\u1ED3i 3% HP v\xE0 t\u0103ng 10% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n trong 2s."
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
     isUnlocked: 1
@@ -60,9 +56,7 @@ MonoBehaviour:
     characterName: "\u0110\u1EA1o S\u0129"
     element: 2
     elementHexColor: '#9B51E0'
-    description: "\u0110\u1EA1o nh\xE2n tinh th\xF4ng Ti\xEAn \u0110\u1EA1o B\xE1t
-      Qu\xE1i. V\u1EADn h\xE0nh C\xE1n C\xE2n \xC2m D\u01B0\u01A1ng (\xC2m Th\u1ECBnh
-      / D\u01B0\u01A1ng Th\u1ECBnh / Th\xE1i C\u1EF1c)."
+    description: "\u0110\u1EA1o nh\xE2n tinh th\xF4ng Ti\xEAn \u0110\u1EA1o B\xE1t Qu\xE1i. Tay c\u1EA7m Ki\u1EBFm G\u1ED7 \u0110\xE0o tr\u1EA3m y\xEAu tr\u1EEB ma, ki\u1EBFm kh\xED ph\xE1 tr\u1EADn."
     basicAttackConfig:
       attackType: 0
       attackName: "Tr\u1EA3m Y\xEAu Tr\u1EEB Ma Ki\u1EBFm"
@@ -86,13 +80,9 @@ MonoBehaviour:
       comboStep3Multiplier: 1.8
       knockbackForce: 4
     signatureSkillName: "B\xE1t Qu\xE1i Tr\u1EADn \u0110\u1ED3"
-    signatureSkillDesc: "D\u1EADm ch\xE2n t\u1EA1o v\xF9ng B\xE1t Qu\xE1i l\xE0m
-      ch\u1EADm v\xE0 g\xE2y s\xE1t th\u01B0\u01A1ng y\xEAu ma, \xE9p C\xE1n C\xE2n
-      \xC2m D\u01B0\u01A1ng v\u1EC1 50 (Th\xE1i C\u1EF1c) trong 4s."
-    passiveTraitName: "C\xE1n C\xE2n \xC2m D\u01B0\u01A1ng"
-    passiveTraitDesc: "Tr\u1EA1ng th\xE1i Th\xE1i C\u1EF1c (C\xE2n b\u1EB1ng) t\u0103ng
-      25% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 v\xE0 gi\u1EA3m 20% S\xE1t th\u01B0\u01A1ng
-      nh\u1EADn v\xE0o."
+    signatureSkillDesc: "D\u1EADm ch\xE2n tri\u1EC7u h\u1ED3i tr\u1EADn \u0111\u1ECBa B\xE1t Qu\xE1i l\xE0m ch\u1EADm 50% y\xEAu ma v\xE0 g\xE2y s\xE1t th\u01B0\u01A1ng s\u1EA5m s\xE9t li\xEAn t\u1EE5c trong 4s."
+    passiveTraitName: "Ki\u1EBFm Kh\xED B\xE1t Qu\xE1i"
+    passiveTraitDesc: "M\u1ED7i 4 \u0111\xF2n \u0111\xE1nh th\u01B0\u1EDDng, t\u1EF1 \u0111\u1ED9ng ph\xF3ng ra 1 lu\u1ED3ng Ki\u1EBFm Kh\xED xuy\xEAn th\u1EA5u g\xE2y 150% S\xE1t th\u01B0\u01A1ng."
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}
     isUnlocked: 1
@@ -103,9 +93,7 @@ MonoBehaviour:
     characterName: "Thanh \u0110\u1ED3ng"
     element: 2
     elementHexColor: '#4C7A3D'
-    description: "C\xF4 \u0110\u1ED3ng / Th\u1EA7y Ph\xE1p \u0110\u1EA1o M\u1EABu
-      T\u1EE9 Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). Tay mang
-      Chu\u1ED7i Linh Ph\xF9 T\u1EE9 Ph\u1EE7 h\u1ED9 th\xE2n tr\u1EEB t\xE0."
+    description: "C\xF4 \u0110\u1ED3ng / Th\u1EA7y Ph\xE1p \u0110\u1EA1o M\u1EABu T\u1EE9 Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). Tay mang Chu\u1ED7i Linh Ph\xF9 T\u1EE9 Ph\u1EE7 h\u1ED9 th\xE2n tr\u1EEB t\xE0."
     basicAttackConfig:
       attackType: 1
       attackName: "Kh\xED Ba \u0110\u1EA1o M\u1EABu"
@@ -129,14 +117,9 @@ MonoBehaviour:
       comboStep3Multiplier: 1.8
       knockbackForce: 4
     signatureSkillName: "Gi\xE1 \u0110\u1ED3ng T\u1EE9 Ph\u1EE7"
-    signatureSkillDesc: "Th\u1EC9nh nh\u1EADp Th\xE1nh th\u1EA7n T\u1EE9 Ph\u1EE7
-      ban h\xE0o quang 4 c\xF5i (T\u0103ng c\xF4ng / T\u0103ng t\u1ED1c / Gi\u1EA3m
-      h\u1ED3i chi\xEAu / Gi\xE1p h\u1ED9 th\xE2n) trong 5s."
-    passiveTraitName: "Linh L\u1EF1c T\u1EE9 Ph\u1EE7"
-    passiveTraitDesc: "Thu th\u1EADp Linh Kh\xED t\xEDch l\u0169y thanh Linh L\u1EF1c
-      T\u1EE9 Ph\u1EE7. Khi k\xEDch ho\u1EA1t Gi\xE1 \u0110\u1ED3ng, nh\u1EADn \u0111\u1ED3ng
-      th\u1EDDi hi\u1EC7u \u1EE9ng h\u1ED9 tr\xEC c\u1EE7a c\u1EA3 4 c\xF5i th\u1EA7n
-      linh."
+    signatureSkillDesc: "Th\u1EC9nh nh\u1EADp Th\xE1nh th\u1EA7n ban h\xE0o quang: T\u0103ng 30% S\xE1t th\u01B0\u01A1ng & T\u1ED1c ch\u1EA1y, nh\u1EADn L\xE1 ch\u1EAFn h\u1ED9 th\u1EC3 trong 5s."
+    passiveTraitName: "Linh Ph\xF9 T\u1EE5 Kh\xED"
+    passiveTraitDesc: "T\u0103ng 20% B\xE1n k\xEDnh h\xFAt v\u1EADt ph\u1EA9m v\xE0 10% t\u1EC9 l\u1EC7 r\u01A1i th\xEAm Linh H\u1ED3n h\u1ED3i ph\u1EE5c HP khi di\u1EC7t qu\xE1i."
     avatar: {fileID: 0}
     playerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
     isUnlocked: 1

@@ -162,16 +162,8 @@ namespace ProjectZombie.Features.UI
 
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
-            // Nếu có Overlay View thì mở Overlay chọn hệ, đồng thời thi triển skill
-            if (_skillManager.ActiveSkill is ThuSinhSignatureSkill && _elementPickerOverlayView != null)
-            {
-                _elementPickerOverlayView.ShowOverlay();
-            }
-            else
-            {
-                // Thi triển trực tiếp
-                _skillManager.TryExecuteSkill();
-            }
+            // Thi triển trực tiếp kỹ năng (đồng bộ cho cả 4 nhân vật)
+            _skillManager.TryExecuteSkill();
         }
 
         private void OnElementPickedFromOverlay(ElementType selectedElement)

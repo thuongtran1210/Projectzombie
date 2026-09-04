@@ -213,15 +213,6 @@ namespace ProjectZombie.Features.Upgrades
                 }
             }
 
-            // 3. Ưu đãi trọng số cho thẻ Âm Dương khi Cán Cân đang ở đúng trạng thái (Dành cho Đạo Sĩ)
-            if (upgrade.checkYinYangState && YinYang.YinYangManager.Instance != null && YinYang.YinYangManager.Instance.IsTrackerActive)
-            {
-                if (upgrade.requiredYinYangState == YinYang.YinYangManager.Instance.GetState())
-                {
-                    weight *= 1.5f; // Tăng thêm 50% tỉ lệ xuất hiện thẻ độc quyền theo trạng thái Âm/Dương
-                }
-            }
-
             return weight;
         }
 

@@ -67,12 +67,6 @@ namespace ProjectZombie.Features.Skills.Zones
 
             StartCoroutine(DecalAnimationRoutine());
 
-            // Ép Cán cân Âm Dương về 50 trong 4s
-            if (YinYangManager.Instance != null)
-            {
-                YinYangManager.Instance.SetTemporaryNeutralOverride(_duration, 50f);
-            }
-
             Destroy(gameObject, _duration + 0.3f);
         }
 

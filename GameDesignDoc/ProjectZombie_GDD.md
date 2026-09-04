@@ -1,7 +1,7 @@
 # Game Design Document — Dự Án: VONG XUYÊN
 
-**Phiên bản:** 5.0 (Official Single Source of Truth — Action RPG Roguelite Release)  
-**Thể loại:** Top-down Action RPG Roguelite / Hack & Slash (Cơ chế Ngũ Hành & Cán Cân Âm Dương)  
+**Phiên bản:** 5.1 (Official Single Source of Truth — Action RPG Standardized 4-Hero Release)  
+**Thể loại:** Top-down Action RPG Roguelite / Hack & Slash (Cơ chế Ngũ Hành & 4-Hero Standard Kit)  
 **Nền tảng:** Android Mobile (Google Play Store — Target API 33+, IL2CPP ARM64, AAB Package)  
 **Phong cách đồ họa:** 2D Top-down (Top-down 3/4 View), Mỹ thuật dân gian Việt Nam (Tranh Đông Hồ / Hàng Trống cách điệu, tông màu u linh)  
 
@@ -10,11 +10,11 @@
 ## 1. Tổng Quan (Overview)
 
 ### 1.1. Tầm nhìn sản phẩm & Cốt truyện Tổng thể (Vision Statement & Grand Narrative)
-**Vong Xuyên** lấy bối cảnh cõi giới thần thoại và tín ngưỡng dân gian Việt Nam khi **Ma Vương Tối Thượng** (Chúa Quỷ) thức tỉnh, làm đảo lộn trật tự Âm Dương và nhấn chìm tam giới vào bóng tối yêu ma.
+**Vong Xuyên** lấy bối cảnh cõi giới thần thoại và tín ngưỡng dân gian Việt Nam khi **Ma Vương Tối Thượng** (Chúa Quỷ) thức tỉnh, làm đảo lộn trật tự cõi trần và nhấn chìm tam giới vào bóng tối yêu ma.
 
 * **Mục tiêu & Điểm kết của Toàn Bộ Câu Chuyện:** Hành trình của các Anh Hùng qua các miền đất thiêng để tìm kiếm di tích, vượt thử thách và **Thức tỉnh / Triệu hồi "TỨ BẤT TỬ"** (Tản Viên Sơn Thánh, Chử Đồng Tử, Phù Đổng Thiên Vương, Thánh Mẫu Liễu Hạnh) nhằm hợp nhất thần lực đánh bại Ma Vương, cứu vãn nhân gian.
 * **Vị trí của Map 1 — "Bến Đò Vong Xuyên" (Bản MVP):** Đây là **Chương 1 (Mở Đầu)**. Khi kiệt sức trước đợt tấn công đầu tiên của quỷ dữ, linh hồn người chơi bị giam hãm tại Bến Đò Vong Xuyên — ranh giới u linh giữa cõi sống và cõi chết.
-  * **Mục tiêu cụ thể tại Map 1:** Sống sót qua 20 phút nghẹt thở, vận dụng kỹ năng chặt chém của Vũ Khí Chính, sự trợ lực của Pháp Bảo Hộ Thân, Vòng Ngũ Hành và Cán cân Âm Dương để tiêu diệt các Cai ngục & Sứ giả địa phủ (*Ngưu Đầu Mã Diện, Diêm Vương*), **phá vỡ phong ấn Hoàng Tuyền để mở đường Trở Về Trần Thế** và mở khóa bản đồ dẫn lối tới nơi phong ấn của vị Thánh Bất Tử đầu tiên.
+  * **Mục tiêu cụ thể tại Map 1:** Sống sót qua 20 phút nghẹt thở, vận dụng kỹ năng chặt chém của Vũ Khí Chính, sự trợ lực của Pháp Bảo Hộ Thân và Vòng Ngũ Hành để tiêu diệt các Cai ngục & Sứ giả địa phủ (*Ngưu Đầu Mã Diện, Diêm Vương*), **phá vỡ phong ấn Hoàng Tuyền để mở đường Trở Về Trần Thế** và mở khóa bản đồ dẫn lối tới nơi phong ấn của vị Thánh Bất Tử đầu tiên.
 
 ### 1.2. Đối tượng người chơi & Phong cách Đồ họa (Target & Graphic Specs)
 - **Người chơi mục tiêu:** Casual / Mid-core yêu thích thể loại Action RPG, Chặt chém (Hack & Slash) và Roguelite trên di động. Phiên chơi 10–20 phút/run.
@@ -29,9 +29,9 @@
 
 ### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
 - **Lối Chơi Chặt Chém Đã Tay (Action Combat Feel):** Đòn đánh thường đặc trưng theo từng Tướng (Melee Slash / Ranged Projectile + Chuỗi Combo 3 đòn liên hoàn), hỗ trợ ngắm thông minh (Smart Soft-Lock), cơ chế hủy hoạt ảnh bằng Lướt (Dash Cancel) và phản hồi lực đánh đã tay (Hit-stop $0.04s$, Camera Shake, Knockback).
-- **Hệ Thống Đòn Đánh Tướng & 1 Pháp Bảo Hộ Thân (Character Basic Attack & Single Relic):** Bản thể nhân vật quyết định phong cách chém tay / bắn đạn chủ động, kết hợp với **đúng 1 Pháp bảo hộ thân duy nhất** tự động bảo vệ sau lưng hoặc đính kèm hiệu ứng vào đòn chém (On-Hit Imbuement).
+- **Bộ Kỹ Năng Tướng Chuẩn Hóa (Standard 4-Skill Hero Kit):** Mỗi nhân vật sở hữu trọn vẹn **1 Đòn Đánh Thường + 1 Lướt Né + 1 Kỹ Năng Tuyệt Kỹ + 1 Nội Tại Bị Động** rõ ràng, trực quan, dễ chơi dễ làm quen.
+- **Hệ Thống 1 Pháp Bảo Hộ Thân (Single Relic Loadout):** Kết hợp với **đúng 1 Pháp bảo hộ thân duy nhất** tự động bảo vệ sau lưng hoặc đính kèm hiệu ứng vào đòn chém (On-Hit Imbuement).
 - **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Vận dụng đòn chém tay để kích hoạt chuỗi Tương Khắc (+30% Sát thương) và chuỗi Tương Sinh (-20% Cooldown + Tăng tốc đánh).
-- **Cán Cân Âm Dương Độc Quyền:** Luân chuyển giữa lối đánh Áp Sát Liều Lĩnh (Dương Thịnh) và Thả Diều Tĩnh Tại (Âm Thịnh) để mở khóa các nhánh thẻ Đột Phá hiếm.
 - **Bản Sắc Văn Hóa Dân Gian Thuần Việt:** Tích hợp truyền thuyết Tứ Bất Tử, vũ khí cổ vật (Bút Phán Quan, Nỏ Thần, Bùa Trấn Yêu, Trống Đồng Đông Sơn) và yêu quái dân gian (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
 
 ---
@@ -206,7 +206,7 @@ Tại các cột mốc sức mạnh đặc biệt (Cấp 5, Cấp 10 hoặc sau 
 
 ---
 
-## 6. Hệ Thống Ngũ Hành & Cán Cân Âm Dương Trong Action RPG
+## 6. Hệ Thống Ngũ Hành & Bộ Tứ Tướng Chuẩn Hóa (Standard 4-Hero Kits)
 
 ### 6.1. Vòng Tương Khắc (1 Chiều ×1.3 Sát Thương)
 $$\text{Kim} \rightarrow \text{Mộc} \rightarrow \text{Thổ} \rightarrow \text{Thủy} \rightarrow \text{Hỏa} \rightarrow \text{Kim}$$
@@ -215,14 +215,18 @@ $$\text{Kim} \rightarrow \text{Mộc} \rightarrow \text{Thổ} \rightarrow \text
 ### 6.2. Vòng Tương Sinh Trong Nhịp Chặt Chém (Elemental Resonance)
 $$\text{Kim} \rightarrow \text{Thủy} \rightarrow \text{Mộc} \rightarrow \text{Hỏa} \rightarrow \text{Thổ} \rightarrow \text{Kim}$$
 * **Cơ chế:** Đòn chém tay của Vũ khí chính đóng vai trò **"Dẫn Hệ"**. Khi đòn chém trúng quái kết hợp với Pháp bảo thuộc hệ tương sinh kế tiếp trong vòng $3s$ $\rightarrow$ Kích hoạt hiệu ứng **Cộng Hưởng Nguyên Tố**:
-  * Tức thời giảm $20\%$ Cooldown của Kỹ năng & Lướt.
+  * Tức thời giảm $20\%$ Cooldown của Kỹ năng Tuyệt Kỹ & Lướt.
   * Tăng $+25\%$ Tốc độ chém tay trong $3s$.
 
-### 6.3. Cán Cân Âm Dương (Yin-Yang Action State)
-Thang đo `yinYangValue` (0 – 100, Mặc định 50 - Thái Cực):
-* **Dương Thịnh (> 80):** Tích tụ khi người chơi **liên tục lướt áp sát và chém ở cự ly gần** $\rightarrow$ Mở khóa nhánh thẻ *"Cuồng Bạo"* (Tăng mạnh Damage & Tốc đánh).
-* **Âm Thịnh (< 20):** Tích tụ khi người chơi **giữ khoảng cách, né tránh và đánh thả diều** $\rightarrow$ Mở khóa nhánh thẻ *"Tịch Diệt"* (Tăng Né tránh & Hồi phục).
-* **Thái Cực Cân Bằng (40 – 60):** Duy trì nhịp đánh - lướt cân bằng $\rightarrow$ Mở khóa thẻ Đột Phá độc quyền *"Thái Cực"*.
+### 6.3. Chi Tiết Bộ Kit Tiêu Chuẩn Cho 4 Nhân Vật (Standard 4-Skill Kit)
+Mỗi nhân vật được trang bị độc lập: **1 Đòn Đánh Thường + 1 Lướt Né + 1 Tuyệt Kỹ + 1 Nội Tại Bị Động**:
+
+| Nhân Vật | Hệ | Đòn Đánh Thường | Lướt Né (Dash) | Tuyệt Kỹ (Signature Skill) | Nội Tại Bị Động (Passive) |
+| :--- | :---: | :--- | :--- | :--- | :--- |
+| **Thư Sinh** | **Kim** | **Vung Bút Phán Quan**<br>Chém mực 3-hit combo | **Hành Vân Lưu Thủy**<br>Lướt né vệt mực | **Phán Quyết Tiền Định**<br>Sét Phán Quan AOE + Giảm 20% CD toàn vũ khí | **Văn Khí Hộ Thể**<br>Nhặt 10 Exp Gem $\rightarrow$ Hồi 3% HP + 10% Tốc chạy (2s) |
+| **Đạo Sĩ** | **Thủy** | **Trảm Yêu Trừ Ma Kiếm**<br>Chém kiếm khí 3-hit | **Lăng Ba Vi Bộ**<br>Lướt xuyên quái | **Bát Quái Trận Đồ**<br>Trận địa làm chậm 50% & giật sét liên tục 4s | **Kiếm Khí Bát Quái**<br>Mỗi 4 đòn đánh phóng 1 luồng Kiếm Khí xuyên thấu (150% DMG) |
+| **Thanh Đồng** | **Mộc** | **Khí Ba Đạo Mẫu**<br>Bắn 3 tia Linh Phù tầm xa | **Vũ Điệu Lên Đồng**<br>Lướt né uyển chuyển | **Giá Đồng Tứ Phủ**<br>Thỉnh Thánh Thần: +30% DMG & Tốc chạy + Giáp 5s | **Linh Phù Tụ Khí**<br>+20% Bán kính nhặt đồ & 10% tỉ lệ rơi thêm Hồn Thạch hồi máu |
+| **Ẩn Sĩ** | **Thổ** | **Thạch Quyền Phá Địa**<br>Dộng quyền nứt đất AOE | **Sơn Thạch Băng Đột**<br>Lướt húc cản quái | **Thập Phương Chấn Thế**<br>Dậm nát đất: DMG lớn + Choáng 1.2s + Hất lùi | **Bàn Thạch Chi Khu**<br>Khi HP < 50% $\rightarrow$ Nhận +30% Kháng sát thương & Miễn bị đẩy lùi |
 
 ---
 
