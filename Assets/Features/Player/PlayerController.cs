@@ -359,9 +359,16 @@ namespace ProjectZombie.Features.Player
                 if (_playerAnimator != null && !_isAttacking)
                 {
                     if (_movementInput.sqrMagnitude > 0.01f)
+                    {
                         _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                        float baseSpeed = 5.0f;
+                        _playerAnimator.SetMovementAnimationSpeed(currentSpeed / baseSpeed);
+                    }
                     else
+                    {
                         _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                        _playerAnimator.SetMovementAnimationSpeed(1.0f);
+                    }
                 }
             }
         }

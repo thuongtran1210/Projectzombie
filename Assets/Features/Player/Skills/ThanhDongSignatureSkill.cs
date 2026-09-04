@@ -91,6 +91,13 @@ namespace ProjectZombie.Features.Player.Skills
                 playerStats.AddMoveSpeed(speedBonus);
             }
 
+            // Kích hoạt Tàn Ảnh Tốc Độ Xanh Lục Tứ Phủ
+            var dashVisuals = playerObj.GetComponent<Visuals.PlayerDashVisuals>();
+            if (dashVisuals != null)
+            {
+                dashVisuals.StartSpeedBuffVisual(DURATION, new Color(0.2f, 0.9f, 0.4f, 0.55f));
+            }
+
             GameObject auraObj = null;
             if (_auraPrefab != null)
             {

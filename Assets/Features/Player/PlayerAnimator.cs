@@ -75,6 +75,21 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        /// <summary>
+        /// Đồng bộ tốc độ chạy của nhân vật với hoạt ảnh chân bước (Dynamic Run Animation Speed).
+        /// </summary>
+        public void SetMovementAnimationSpeed(float speedRatio)
+        {
+            if (animator != null && _currentState == PlayerAnimationState.Run)
+            {
+                animator.speed = Mathf.Clamp(speedRatio, 0.8f, 2.5f);
+            }
+            else if (animator != null && _currentState != PlayerAnimationState.Attack)
+            {
+                animator.speed = 1.0f;
+            }
+        }
+
         private float _facingDirection = 1f;
 
         /// <summary>
