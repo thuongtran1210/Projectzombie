@@ -52,9 +52,20 @@ namespace ProjectZombie.Core.Pooling
             {
                 if (_instance == null)
                 {
-                    GameObject go = new GameObject("[VFXPoolManager]");
-                    _instance = go.AddComponent<VFXPoolManager>();
-                    DontDestroyOnLoad(go);
+                    _instance = FindFirstObjectByType<VFXPoolManager>();
+                    if (_instance == null)
+                    {
+                        Transform parent = PoolHierarchyManager.Instance != null 
+                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.VFX) 
+                            : null;
+
+                        GameObject go = new GameObject("[VFXPoolManager]");
+                        if (parent != null)
+                        {
+                            go.transform.SetParent(parent);
+                        }
+                        _instance = go.AddComponent<VFXPoolManager>();
+                    }
                 }
                 return _instance;
             }
@@ -67,8 +78,10 @@ namespace ProjectZombie.Core.Pooling
             if (_instance == null)
             {
                 _instance = this;
-                transform.SetParent(null);
-                DontDestroyOnLoad(gameObject);
+                if (transform.parent == null && PoolHierarchyManager.Instance != null)
+                {
+                    transform.SetParent(PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.VFX));
+                }
             }
             else if (_instance != this)
             {

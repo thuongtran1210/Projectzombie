@@ -16,7 +16,31 @@ namespace ProjectZombie.Features.Collectibles
         where TManager : CollectiblePoolBase<TManager, TItem>
         where TItem : MonoBehaviour, ICollectible, IPoolable
     {
-        public static TManager Instance { get; private set; }
+        private static TManager _instance;
+        public static TManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindFirstObjectByType<TManager>();
+                    if (_instance == null)
+                    {
+                        Transform parent = PoolHierarchyManager.Instance != null 
+                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles) 
+                            : null;
+
+                        GameObject go = new GameObject($"[{typeof(TManager).Name}]");
+                        if (parent != null)
+                        {
+                            go.transform.SetParent(parent);
+                        }
+                        _instance = go.AddComponent<TManager>();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         [Header("Performance & Limits")]
         [Tooltip("Số lượng vật phẩm tối đa đồng thời trên mặt đất trước khi kích hoạt nén gộp")]
@@ -29,11 +53,15 @@ namespace ProjectZombie.Features.Collectibles
 
         protected virtual void Awake()
         {
-            if (Instance == null)
+            if (_instance == null)
             {
-                Instance = (TManager)this;
+                _instance = (TManager)this;
+                if (transform.parent == null && PoolHierarchyManager.Instance != null)
+                {
+                    transform.SetParent(PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles));
+                }
             }
-            else
+            else if (_instance != this)
             {
                 Destroy(gameObject);
             }
@@ -41,9 +69,9 @@ namespace ProjectZombie.Features.Collectibles
 
         protected virtual void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
                 ClearPools();
             }
         }

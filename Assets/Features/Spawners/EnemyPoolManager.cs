@@ -7,20 +7,48 @@ namespace ProjectZombie.Features.Spawners
 {
     public class EnemyPoolManager : MonoBehaviour
     {
-        public static EnemyPoolManager Instance { get; private set; }
+        private static EnemyPoolManager _instance;
+        public static EnemyPoolManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindFirstObjectByType<EnemyPoolManager>();
+                    if (_instance == null)
+                    {
+                        Transform parent = PoolHierarchyManager.Instance != null 
+                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Enemies) 
+                            : null;
+
+                        GameObject go = new GameObject("[EnemyPoolManager]");
+                        if (parent != null)
+                        {
+                            go.transform.SetParent(parent);
+                        }
+                        _instance = go.AddComponent<EnemyPoolManager>();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         private Dictionary<GameObject, UnityEngine.Pool.ObjectPool<GameObject>> _prefabToPoolMap = new Dictionary<GameObject, UnityEngine.Pool.ObjectPool<GameObject>>();
         private Dictionary<string, UnityEngine.Pool.ObjectPool<GameObject>> _keyToPoolMap = new Dictionary<string, UnityEngine.Pool.ObjectPool<GameObject>>();
 
         private void Awake()
         {
-            if (Instance == null)
+            if (_instance == null)
             {
-                Instance = this;
+                _instance = this;
+                if (transform.parent == null && PoolHierarchyManager.Instance != null)
+                {
+                    transform.SetParent(PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Enemies));
+                }
                 _prefabToPoolMap.Clear();
                 _keyToPoolMap.Clear();
             }
-            else
+            else if (_instance != this)
             {
                 Destroy(gameObject);
             }
@@ -28,9 +56,9 @@ namespace ProjectZombie.Features.Spawners
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
                 _prefabToPoolMap.Clear();
                 _keyToPoolMap.Clear();
             }
