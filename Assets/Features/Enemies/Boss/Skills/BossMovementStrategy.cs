@@ -34,6 +34,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             // Nếu đang bị Stun/Freeze
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
+                if (_enemy.Rb != null) _enemy.Rb.velocity = Vector2.zero;
                 if (_bossAnimator != null) _bossAnimator.PlayAnimation("Idle");
                 return;
             }

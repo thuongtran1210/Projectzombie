@@ -24,6 +24,10 @@ namespace ProjectZombie.Features.Enemies
             // 1. Kiểm tra trạng thái bị khống chế (Stun/Freeze/Knockback)
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
+                if (!_enemy.StatusController.IsRagdollActive && (_enemy.GetComponent<EnemyKinematicPhysics>() == null || !_enemy.GetComponent<EnemyKinematicPhysics>().IsKnockbackActive))
+                {
+                    _enemy.Rb.velocity = Vector2.zero;
+                }
                 _enemy.Animator?.SetRunning(false);
                 return;
             }

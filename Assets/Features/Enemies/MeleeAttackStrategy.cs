@@ -40,31 +40,46 @@ namespace ProjectZombie.Features.Enemies
 
         public Vector2 GetHitboxCenter()
         {
-            if (attackPoint != null) return attackPoint.position;
-
-            float facingSign = transform.localScale.x < 0 ? -1f : 1f;
+            float facingSign = 1f;
             if (_enemy != null && _enemy.PlayerTransform != null)
             {
                 facingSign = (_enemy.PlayerTransform.position.x < transform.position.x) ? -1f : 1f;
             }
+            else if (_enemy != null && _enemy.Animator != null && _enemy.Animator.AnimatorComponent != null)
+            {
+                facingSign = _enemy.Animator.AnimatorComponent.transform.localScale.x < 0 ? -1f : (transform.localScale.x < 0 ? -1f : 1f);
+            }
+            else
+            {
+                facingSign = transform.localScale.x < 0 ? -1f : 1f;
+            }
 
-            // Tâm X được đẩy ra 1/2 attackRange, Tâm Y tự động bù 0.6m để khớp thân người chơi 2.5D
-            float effectiveOffsetY = (offsetY != 0f) ? offsetY : 0.6f;
+            // Nếu có attackPoint được gắn thủ công, lấy offset cục bộ nhân theo facingSign để luôn hướng về phía chém
+            if (attackPoint != null)
+            {
+                Vector3 localPos = attackPoint.localPosition;
+                float localOffsetX = Mathf.Abs(localPos.x) > 0.01f ? Mathf.Abs(localPos.x) * facingSign : (BaseRange * 0.5f) * facingSign;
+                float localOffsetY = (offsetY != 0f) ? offsetY : (localPos.y != 0f ? localPos.y : 0.55f);
+                return (Vector2)transform.position + new Vector2(localOffsetX, localOffsetY);
+            }
+
+            // Tâm X được đẩy ra 1/2 attackRange theo hướng mặt, Tâm Y tự động bù 0.55m để khớp vị trí ngực/thân Player
+            float effectiveOffsetY = (offsetY != 0f) ? offsetY : 0.55f;
             float offsetX = (BaseRange * 0.5f) * facingSign;
             return (Vector2)transform.position + new Vector2(offsetX, effectiveOffsetY);
         }
 
         public float GetHitboxRadius()
         {
-            // Bán kính tối thiểu 0.8m để đảm bảo bao trọn thân người chơi từ chân tới đầu
-            return Mathf.Max(BaseRange * 0.5f, 0.8f);
+            // Bán kính tối thiểu 0.85m hoặc nửa tầm đánh để bao trọn Collider của Player
+            return Mathf.Max(BaseRange * 0.6f, 0.85f);
         }
 
         public Vector2 GetHitboxBoxSize()
         {
             // Chiều rộng = attackRange, Chiều cao tối thiểu 1.6m để bao trọn mọi chiều cao tướng
             float effectiveHeight = Mathf.Max(BaseRange * boxHeightRatio, 1.6f);
-            return new Vector2(BaseRange, effectiveHeight);
+            return new Vector2(BaseRange * 1.2f, effectiveHeight);
         }
 
         private bool _hasDealtDamageThisAttack = false;
@@ -111,8 +126,9 @@ namespace ProjectZombie.Features.Enemies
             CancelInvoke(nameof(DealMeleeDamage)); // Hủy timer fallback nếu Animation Event đã kích hoạt trước
 
             Vector2 center = GetHitboxCenter();
-            int filterMask = targetLayer != 0 ? targetLayer.value : LayerMask.GetMask("Player");
-            if (filterMask == 0) filterMask = ~0;
+            // Đảm bảo quét trọn layer Player và cả default collider nếu mask chưa set
+            int playerMask = LayerMask.GetMask("Player");
+            int filterMask = targetLayer.value != 0 ? (targetLayer.value | playerMask) : (playerMask != 0 ? playerMask : ~0);
 
             int hitCount = 0;
             if (hitboxShape == HitboxShape.Circle)
@@ -130,14 +146,29 @@ namespace ProjectZombie.Features.Enemies
             for (int i = 0; i < hitCount; i++)
             {
                 var col = _hitBuffer[i];
-                if (col != null && (col.CompareTag("Player") || (targetLayer != 0 && ((1 << col.gameObject.layer) & targetLayer.value) != 0)))
+                if (col == null || col.gameObject == gameObject) continue;
+
+                if (col.CompareTag("Player") || ((1 << col.gameObject.layer) & filterMask) != 0)
                 {
                     if (col.TryGetComponent<IDamageable>(out var damageable) ||
-                        (damageable = col.GetComponentInParent<IDamageable>()) != null)
+                        (damageable = col.GetComponentInParent<IDamageable>()) != null ||
+                        (damageable = col.GetComponentInChildren<IDamageable>()) != null)
                     {
                         targetDamageable = damageable;
-                        break; // Đã xác định được Player, ngắt vòng lặp để tránh tính lại khi Player có nhiều Collider2D
+                        break;
                     }
+                }
+            }
+
+            // Fallback trực tiếp nếu Player nằm trong phạm vi nhưng collider bị lọt do timing/sweep
+            if (targetDamageable == null && _enemy.PlayerTransform != null)
+            {
+                float distToPlayer = Vector2.Distance(center, (Vector2)_enemy.PlayerTransform.position + new Vector2(0f, 0.4f));
+                if (distToPlayer <= GetHitboxRadius())
+                {
+                    targetDamageable = _enemy.PlayerHealthSystem != null 
+                        ? _enemy.PlayerHealthSystem 
+                        : _enemy.PlayerTransform.GetComponent<IDamageable>();
                 }
             }
 

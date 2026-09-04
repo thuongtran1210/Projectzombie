@@ -12,6 +12,15 @@ namespace ProjectZombie.Features.Enemies
             // Nếu đang bị Stun/Freeze hoặc Knockback thì không di chuyển logic
             if (_enemy.StatusController != null && !_enemy.StatusController.CanMove)
             {
+                // Chỉ dừng vận tốc nếu không đang trong pha vật lý Knockback/Ragdoll
+                if (_enemy.StatusController.CanMove) 
+                {
+                    _enemy.Rb.velocity = Vector2.zero;
+                }
+                else if (!_enemy.StatusController.IsRagdollActive && (_enemy.GetComponent<EnemyKinematicPhysics>() == null || !_enemy.GetComponent<EnemyKinematicPhysics>().IsKnockbackActive))
+                {
+                    _enemy.Rb.velocity = Vector2.zero;
+                }
                 _enemy.Animator?.SetRunning(false);
                 return;
             }

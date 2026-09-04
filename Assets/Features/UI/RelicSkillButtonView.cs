@@ -233,6 +233,20 @@ namespace ProjectZombie.Features.UI
             return _cachedCircleGlowSprite;
         }
 
+        private void OnDisable()
+        {
+            if (_pulseRoutine != null)
+            {
+                StopCoroutine(_pulseRoutine);
+                _pulseRoutine = null;
+            }
+            if (_stackBadgePunchRoutine != null)
+            {
+                StopCoroutine(_stackBadgePunchRoutine);
+                _stackBadgePunchRoutine = null;
+            }
+        }
+
         public void SetRecastGlow(bool isRecastActive)
         {
             if (_recastGlowBorder == null)
@@ -285,7 +299,7 @@ namespace ProjectZombie.Features.UI
             if (_recastGlowBorder != null)
             {
                 _recastGlowBorder.gameObject.SetActive(isRecastActive);
-                if (isRecastActive)
+                if (isRecastActive && isActiveAndEnabled)
                 {
                     if (_pulseRoutine != null) StopCoroutine(_pulseRoutine);
                     _pulseRoutine = StartCoroutine(RoutineGlowPulse());

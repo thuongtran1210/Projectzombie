@@ -12,7 +12,7 @@ namespace ProjectZombie.Features.Player.Visuals
     /// </summary>
     public class PlayerDashVisuals : MonoBehaviour
     {
-        [Header("Ghost Afterimage Settings")]
+        [Header("Ghost Afterimage Settings (Dash)")]
         [SerializeField] private Color _ghostColor = new Color(0.3f, 0.9f, 1f, 0.65f); // Xanh ngọc Cyan Anime
         [SerializeField] private float _ghostDuration = 0.25f;
         [SerializeField] private float _ghostSpawnInterval = 0.04f;
@@ -35,12 +35,25 @@ namespace ProjectZombie.Features.Player.Visuals
 
         public bool IsSpeedBuffActive => _isSpeedBuffActive;
 
+        private PlayerStats _playerStats;
+        private float _baselineMoveSpeed = 5.0f;
+
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();
+            _playerStats = GetComponent<PlayerStats>();
             _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
             CreateGhostPool();
+        }
+
+        private void Start()
+        {
+            if (_playerStats != null)
+            {
+                _baselineMoveSpeed = _playerStats.MoveSpeed;
+                CheckSpeedBuffStatus();
+            }
         }
 
         private void OnEnable()
@@ -48,6 +61,10 @@ namespace ProjectZombie.Features.Player.Visuals
             if (_playerController != null)
             {
                 _playerController.OnDashed += HandleDashVisuals;
+            }
+            if (_playerStats != null)
+            {
+                _playerStats.OnStatsUpdated += HandleStatsUpdated;
             }
         }
 
@@ -57,7 +74,63 @@ namespace ProjectZombie.Features.Player.Visuals
             {
                 _playerController.OnDashed -= HandleDashVisuals;
             }
+            if (_playerStats != null)
+            {
+                _playerStats.OnStatsUpdated -= HandleStatsUpdated;
+            }
             StopSpeedBuffVisual();
+        }
+
+        private void HandleStatsUpdated()
+        {
+            CheckSpeedBuffStatus();
+        }
+
+        private void CheckSpeedBuffStatus()
+        {
+            if (_playerStats == null) return;
+
+            // Nếu tốc chạy hiện tại cao hơn 15% so với tốc chạy cơ bản -> Tự động bật tàn ảnh tốc độ
+            bool isBoosted = _playerStats.MoveSpeed >= (_baselineMoveSpeed * 1.15f);
+
+            if (isBoosted && !_isSpeedBuffActive)
+            {
+                StartContinuousSpeedBuffVisual();
+            }
+            else if (!isBoosted && _isSpeedBuffActive && _speedBuffRoutine != null)
+            {
+                StopSpeedBuffVisual();
+            }
+        }
+
+        /// <summary>
+        /// Kích hoạt chuỗi tàn ảnh liên tục khi nhân vật đang duy trì trạng thái buff tốc độ.
+        /// </summary>
+        public void StartContinuousSpeedBuffVisual(Color? customColor = null)
+        {
+            if (_speedBuffRoutine != null)
+            {
+                StopCoroutine(_speedBuffRoutine);
+            }
+            _speedBuffRoutine = StartCoroutine(ContinuousSpeedBuffTrailRoutine(customColor ?? _speedBuffGhostColor));
+        }
+
+        private IEnumerator ContinuousSpeedBuffTrailRoutine(Color ghostCol)
+        {
+            _isSpeedBuffActive = true;
+
+            while (_isSpeedBuffActive)
+            {
+                // Chỉ sinh tàn ảnh khi nhân vật đang thực sự di chuyển
+                if (_playerController != null && _playerController.MovementInput.sqrMagnitude > 0.01f)
+                {
+                    SpawnSingleGhost(ghostCol);
+                }
+
+                yield return new WaitForSeconds(_speedBuffInterval);
+            }
+
+            _speedBuffRoutine = null;
         }
 
         private void CreateGhostPool()
@@ -101,7 +174,7 @@ namespace ProjectZombie.Features.Player.Visuals
         private IEnumerator GhostTrailRoutine()
         {
             float elapsed = 0f;
-            float dashTime = 0.2f;
+            float dashTime = _playerController != null ? _playerController.DashDuration : 0.2f;
 
             while (elapsed < dashTime)
             {
@@ -157,6 +230,10 @@ namespace ProjectZombie.Features.Player.Visuals
 
         private void SpawnSingleGhost(Color color)
         {
+            if (_playerSpriteRenderer == null)
+            {
+                _playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            }
             if (_playerSpriteRenderer == null || _playerSpriteRenderer.sprite == null) return;
             if (_ghostPool.Count == 0) return;
 
@@ -168,6 +245,9 @@ namespace ProjectZombie.Features.Player.Visuals
             ghost.sprite = _playerSpriteRenderer.sprite;
             ghost.flipX = _playerSpriteRenderer.flipX;
             ghost.flipY = _playerSpriteRenderer.flipY;
+            ghost.sortingLayerID = _playerSpriteRenderer.sortingLayerID;
+            ghost.sortingOrder = _playerSpriteRenderer.sortingOrder - 1; // Vẽ ngay sau lưng nhân vật
+            ghost.sharedMaterial = _playerSpriteRenderer.sharedMaterial; // Kế thừa cùng Shader URP Sprite Unlit
             ghost.color = color;
 
             StartCoroutine(FadeOutGhost(ghost, color));

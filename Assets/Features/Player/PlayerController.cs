@@ -32,6 +32,7 @@ namespace ProjectZombie.Features.Player
         private Weapons.WeaponManager _weaponManager;
 
         public static PlayerController Instance { get; private set; }
+        public float DashDuration => dashDuration;
         public float LastDashTime => _lastDashTime;
         public Vector2 MovementInput => _movementInput;
         public bool IsDashing => _isDashing;
