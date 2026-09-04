@@ -32,7 +32,7 @@ namespace ProjectZombie.Features.UI.Formatters
                     bool hasPassive = playerPassives != null && playerPassives.HasPassive(recipe.requiredPassiveId);
                     if (hasPassive)
                     {
-                        formattedText = $"<color=#007A4D><b>★ Duyên Phận: Đã có {recipe.requiredPassiveId} (Sẵn Sàng)</b></color>";
+                        formattedText = $"<color=#007A4D><b>[Duyên Phận] Đã có {recipe.requiredPassiveId} (Sẵn Sàng)</b></color>";
                     }
                     else
                     {
@@ -65,7 +65,7 @@ namespace ProjectZombie.Features.UI.Formatters
 
                     if (anyWeaponOwned)
                     {
-                        formattedText = $"<color=#FFD700>★ Hợp Thể:</color> {string.Join(", ", weaponNames)}";
+                        formattedText = $"<color=#FFD700>Hợp Thể:</color> {string.Join(", ", weaponNames)}";
                     }
                     else
                     {

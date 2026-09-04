@@ -8,10 +8,10 @@ namespace ProjectZombie.EditorTools
         [MenuItem("Tools/ProjectZombie/UI/🔧 Configure Card 9-Slice Borders")]
         public static void ConfigureBorders()
         {
-            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png", new Vector4(60, 60, 60, 60));
-            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png", new Vector4(60, 60, 60, 60));
-            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png", new Vector4(60, 60, 60, 60));
-            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png", new Vector4(60, 60, 60, 60));
+            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png", new Vector4(45, 45, 45, 45));
+            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png", new Vector4(45, 45, 45, 45));
+            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png", new Vector4(45, 45, 45, 45));
+            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png", new Vector4(45, 45, 45, 45));
 
             AssetDatabase.Refresh();
             UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();

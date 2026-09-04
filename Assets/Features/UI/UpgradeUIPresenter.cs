@@ -252,7 +252,7 @@ namespace ProjectZombie.Features.UI
                     if (isEvolution)
                     {
                         cardView.SetEvolutionMode(true);
-                        cardView.SetSynergyInfo(null, "<color=#A33418><b>★ CÔNG THỨC DUNG HỢP HOÀN TẤT ★</b></color>");
+                        cardView.SetSynergyInfo(null, "<color=#A33418><b>CÔNG THỨC DUNG HỢP HOÀN TẤT</b></color>");
                     }
                     else
                     {

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3bd91c33a3b784c84887b0028c899d, type: 3}
+  m_Name: CardThemeDatabase_Default
+  m_EditorClassIdentifier: 
+  _frameCommonWood: {fileID: 21300000, guid: 2db113772254485eb4b264cf4cd15f6b, type: 3}
+  _frameRareJade: {fileID: 21300000, guid: 82ebac629b3d419b8edb92a3dc1d64c4, type: 3}
+  _frameEvolutionGold: {fileID: 21300000, guid: c00a1ebfba3d4c2e846a8e71b8654f32, type: 3}
+  _frameSynergyAmber: {fileID: 21300000, guid: 079adc047e36456ab04481872035bf42, type: 3}
+  _fallbackWeaponIcon: {fileID: 0}
+  _fallbackPassiveIcon: {fileID: 0}
+  _fallbackDashIcon: {fileID: 0}
+  _fallbackComboIcon: {fileID: 0}
+  _commonColor: {r: 1, g: 1, b: 1, a: 1}
+  _rareColor: {r: 0.2, g: 0.85, b: 0.6, a: 1}
+  _evolutionColor: {r: 1, g: 0.88, b: 0.4, a: 1}
+  _synergyColor: {r: 1, g: 0.65, b: 0.2, a: 1}
+  _fireGlow: {r: 1, g: 0.35, b: 0.15, a: 0.6}
+  _thunderGlow: {r: 0.75, g: 0.35, b: 1, a: 0.6}
+  _windGlow: {r: 0.25, g: 0.95, b: 0.65, a: 0.6}
+  _waterGlow: {r: 0.2, g: 0.65, b: 1, a: 0.6}
+  _defaultGlow: {r: 1, g: 1, b: 1, a: 0.3}

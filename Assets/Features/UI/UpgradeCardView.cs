@@ -21,11 +21,14 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _statDiffText;
         [SerializeField] private TextMeshProUGUI _elementBadgeText;
 
-        [Header("Card Tier Frames (9-Slice Skins)")]
-        [SerializeField] private Sprite _frameCommonWood;
-        [SerializeField] private Sprite _frameRareJade;
-        [SerializeField] private Sprite _frameEvolutionGold;
-        [SerializeField] private Sprite _frameSynergyAmber;
+        [Header("Card Theme Database (Skin & Assets)")]
+        [SerializeField] private CardThemeDatabase _themeDatabase;
+
+        [Header("Fallback Placeholder Icons (Optional override if Theme not set)")]
+        [SerializeField] private Sprite _fallbackWeaponIcon;
+        [SerializeField] private Sprite _fallbackPassiveIcon;
+        [SerializeField] private Sprite _fallbackDashIcon;
+        [SerializeField] private Sprite _fallbackComboIcon;
 
         [Header("Evolution Synergy & Styling")]
         [SerializeField] private GameObject _synergyContainer;
@@ -44,8 +47,6 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
-            EnsureTierSpritesLoaded();
-
             if (_selectButton != null)
             {
                 _selectButton.onClick.AddListener(OnButtonClicked);
@@ -63,14 +64,9 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void EnsureTierSpritesLoaded()
+        public void SetThemeDatabase(CardThemeDatabase themeDatabase)
         {
-#if UNITY_EDITOR
-            if (_frameCommonWood == null) _frameCommonWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
-            if (_frameRareJade == null) _frameRareJade = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png");
-            if (_frameEvolutionGold == null) _frameEvolutionGold = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png");
-            if (_frameSynergyAmber == null) _frameSynergyAmber = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png");
-#endif
+            _themeDatabase = themeDatabase;
         }
 
         /// <summary>
@@ -78,41 +74,15 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public void SetCardTier(UpgradeType upgradeType, bool isEvolution, bool hasSynergy)
         {
-            EnsureTierSpritesLoaded();
-
             if (_cardFrameImage == null) return;
 
-            if (isEvolution || upgradeType == UpgradeType.BreakthroughUltimate || upgradeType == UpgradeType.EvolutionUpgrade)
+            if (_themeDatabase != null)
             {
-                if (_frameEvolutionGold != null) _cardFrameImage.sprite = _frameEvolutionGold;
-                SetEvolutionMode(true);
+                _cardFrameImage.sprite = _themeDatabase.GetFrameSprite(upgradeType, isEvolution, hasSynergy);
             }
-            else if (hasSynergy)
-            {
-                if (_frameSynergyAmber != null) _cardFrameImage.sprite = _frameSynergyAmber;
-                SetEvolutionMode(false);
-            }
-            else if (upgradeType == UpgradeType.RareUpgrade ||
-                     upgradeType == UpgradeType.ComboAugment ||
-                     upgradeType == UpgradeType.DashTrait ||
-                     upgradeType == UpgradeType.ConditionalPassive ||
-                     upgradeType == UpgradeType.SignatureSkillUpgrade)
-            {
-                if (_frameRareJade != null) _cardFrameImage.sprite = _frameRareJade;
-                SetEvolutionMode(false);
-            }
-            else
-            {
-                if (_frameCommonWood != null) _cardFrameImage.sprite = _frameCommonWood;
-                SetEvolutionMode(false);
-            }
-        }
 
-        [Header("Fallback Placeholder Icons")]
-        [SerializeField] private Sprite _fallbackWeaponIcon;
-        [SerializeField] private Sprite _fallbackPassiveIcon;
-        [SerializeField] private Sprite _fallbackDashIcon;
-        [SerializeField] private Sprite _fallbackComboIcon;
+            SetEvolutionMode(isEvolution || upgradeType == UpgradeType.BreakthroughUltimate || upgradeType == UpgradeType.EvolutionUpgrade);
+        }
 
         /// <summary>
         /// Thiết lập hiển thị toàn diện của thẻ nâng cấp kèm chuỗi Stat Diff thay đổi chỉ số.
@@ -138,10 +108,17 @@ namespace ProjectZombie.Features.UI
             // Tự động giải quyết fallback icon nếu thẻ chưa được gán icon riêng trong Inspector
             if (icon == null)
             {
-                if (category != null && category.Contains("LƯỚT")) icon = _fallbackDashIcon;
-                else if (category != null && category.Contains("BÍ KÍP")) icon = _fallbackComboIcon;
-                else if (category != null && category.Contains("PHÁP BẢO")) icon = _fallbackWeaponIcon;
-                else icon = _fallbackPassiveIcon;
+                if (_themeDatabase != null)
+                {
+                    icon = _themeDatabase.GetFallbackIcon(category);
+                }
+                else
+                {
+                    if (category != null && category.Contains("LƯỚT")) icon = _fallbackDashIcon;
+                    else if (category != null && category.Contains("BÍ KÍP")) icon = _fallbackComboIcon;
+                    else if (category != null && category.Contains("PHÁP BẢO")) icon = _fallbackWeaponIcon;
+                    else icon = _fallbackPassiveIcon;
+                }
             }
 
             if (_iconImage != null)
