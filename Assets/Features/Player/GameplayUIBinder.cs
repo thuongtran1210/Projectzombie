@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.HUD;
+using ProjectZombie.Features.UI.Overhead;
 using ProjectZombie.Features.UI.StatsAndSkills;
 
 namespace ProjectZombie.Features.Player
@@ -18,6 +19,7 @@ namespace ProjectZombie.Features.Player
 
         [Header("UI Presenters")]
         [SerializeField] private RunHUDPresenter _runHUDPresenter;
+        [SerializeField] private OverheadStatusPresenter _overheadStatusPresenter;
         [SerializeField] private PlayerInfoUIPresenter _playerInfoUIPresenter;
         [SerializeField] private UpgradeUIPresenter _upgradeUIPresenter;
         [SerializeField] private GameOverScreenPresenter _gameOverScreenPresenter;
@@ -51,6 +53,7 @@ namespace ProjectZombie.Features.Player
         private void EnsureReferences()
         {
             if (_runHUDPresenter == null) _runHUDPresenter = UnityEngine.Object.FindObjectOfType<RunHUDPresenter>(true);
+            if (_overheadStatusPresenter == null) _overheadStatusPresenter = UnityEngine.Object.FindObjectOfType<OverheadStatusPresenter>(true);
             if (_playerInfoUIPresenter == null) _playerInfoUIPresenter = UnityEngine.Object.FindObjectOfType<PlayerInfoUIPresenter>(true);
             if (_upgradeUIPresenter == null) _upgradeUIPresenter = UnityEngine.Object.FindObjectOfType<UpgradeUIPresenter>(true);
             if (_gameOverScreenPresenter == null) _gameOverScreenPresenter = UnityEngine.Object.FindObjectOfType<GameOverScreenPresenter>(true);
@@ -72,6 +75,7 @@ namespace ProjectZombie.Features.Player
             EnsureReferences();
 
             BindRunHUD(context);
+            BindOverheadStatus(context);
             BindPlayerInfo(context);
             BindUpgradeUI(context);
             BindGameOverScreen(context);
@@ -93,6 +97,20 @@ namespace ProjectZombie.Features.Player
                     context.WeaponManager,
                     context.Passives);
                 Debug.Log("[GameplayUIBinder] Đã inject dependencies vào RunHUDPresenter.");
+            }
+        }
+
+        private void BindOverheadStatus(PlayerContext context)
+        {
+            if (_overheadStatusPresenter == null && context.GameObject != null)
+            {
+                _overheadStatusPresenter = context.GameObject.GetComponentInChildren<OverheadStatusPresenter>(true);
+            }
+
+            if (_overheadStatusPresenter != null)
+            {
+                _overheadStatusPresenter.Construct(context.Health, context.Experience);
+                Debug.Log("[GameplayUIBinder] Đã inject dependencies vào OverheadStatusPresenter.");
             }
         }
 
