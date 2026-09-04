@@ -1,3 +1,4 @@
+using ProjectZombie.Core.Pooling;
 using ProjectZombie.Core.ScriptableObjects;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -7,7 +8,7 @@ namespace ProjectZombie.Features.Enemies
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(HealthSystem))]
-    public class Enemy : MonoBehaviour, IStatusReceiver
+    public class Enemy : MonoBehaviour, IStatusReceiver, IPoolable
     {
         [Header("References")]
         public EnemyConfig Config;
@@ -145,7 +146,7 @@ namespace ProjectZombie.Features.Enemies
             StatusController?.RemoveStatus(type);
         }
 
-        private void OnEnable()
+        public void OnSpawn()
         {
             // Reset kích thước và màu sắc mặc định khi lấy ra từ Object Pool
             if (InitialLocalScale.sqrMagnitude > 0.001f)
@@ -158,9 +159,6 @@ namespace ProjectZombie.Features.Enemies
                 sr.color = Color.white;
             }
 
-            PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
-            PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
-
             FindPlayer();
 
             // Đặt lại State thành Chase mỗi khi được lấy ra từ Pool
@@ -169,12 +167,7 @@ namespace ProjectZombie.Features.Enemies
                 StateMachine.Initialize(ChaseState);
             }
 
-            if (HealthSystem != null)
-            {
-                HealthSystem.OnDied += HandleDeath;
-            }
-
-            // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy, cho phép đàn quái tràn tới tự nhiên
+            // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy
             Collider2D enemyCol = GetComponent<Collider2D>();
             if (enemyCol != null && PlayerTransform != null)
             {
@@ -186,8 +179,29 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public void OnDespawn()
+        {
+            // Hủy các hiệu ứng trạng thái còn vướng lại
+            StatusController?.ClearAllEffects();
+        }
+
+        private void OnEnable()
+        {
+            OnSpawn();
+
+            PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
+            PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
+
+            if (HealthSystem != null)
+            {
+                HealthSystem.OnDied += HandleDeath;
+            }
+        }
+
         private void OnDisable()
         {
+            OnDespawn();
+
             PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
             PlayerProvider.OnPlayerDespawned -= HandlePlayerDespawned;
 

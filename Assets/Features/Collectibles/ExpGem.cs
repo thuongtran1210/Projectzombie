@@ -1,6 +1,7 @@
 using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Core.Events;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Collectibles
 {
@@ -21,7 +22,7 @@ namespace ProjectZombie.Features.Collectibles
     /// Tối ưu hóa 100% không dùng DOTween trong runtime để triệt tiêu rác bộ nhớ (Zero GC).
     /// Hỗ trợ phân cấp màu sắc (Visual Tiering) và cơ chế gộp hạt (Gem Merging).
     /// </summary>
-    public class ExpGem : MonoBehaviour, ICollectible
+    public class ExpGem : MonoBehaviour, ICollectible, IPoolable
     {
         [Header("Experience & Motion Settings")]
         [SerializeField] private float expAmount = 10f;
@@ -65,7 +66,7 @@ namespace ProjectZombie.Features.Collectibles
             _baseScale = new Vector3(baseScaleMultiplier, baseScaleMultiplier, 1f);
         }
 
-        private void OnEnable()
+        public void OnSpawn()
         {
             // Reset toàn bộ trạng thái khi lấy từ Pool
             _state = GemState.Spawning;
@@ -83,12 +84,22 @@ namespace ProjectZombie.Features.Collectibles
             }
         }
 
-        private void OnDisable()
+        public void OnDespawn()
         {
             if (ExpGemPoolManager.Instance != null)
             {
                 ExpGemPoolManager.Instance.UnregisterActiveGem(this);
             }
+        }
+
+        private void OnEnable()
+        {
+            OnSpawn();
+        }
+
+        private void OnDisable()
+        {
+            OnDespawn();
         }
 
         private void Update()

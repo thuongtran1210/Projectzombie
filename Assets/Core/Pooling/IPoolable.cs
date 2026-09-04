@@ -1,19 +1,21 @@
 namespace ProjectZombie.Core.Pooling
 {
     /// <summary>
-    /// Contract cho các GameObject được quản lý bởi Object Pool.
-    /// Giúp reset trạng thái chuẩn xác khi tái sử dụng mà không gây cấp phát rác (0 GC).
+    /// Giao diện chuẩn cho tất cả các GameObject/Component được quản lý bởi Object Pool.
+    /// Giúp reset state và khởi tạo lại logic một cách độc lập và đồng bộ.
     /// </summary>
     public interface IPoolable
     {
         /// <summary>
-        /// Được gọi khi object được lấy ra từ Pool.
+        /// Được gọi ngay khi Object được lấy ra khỏi Pool (Active).
+        /// Dùng để khởi tạo lại máu, reset timer, bật lại colliders/renderers.
         /// </summary>
-        void OnSpawnFromPool();
+        void OnSpawn();
 
         /// <summary>
-        /// Được gọi ngay trước khi object được trả về Pool (dọn dẹp event, cancel tween...).
+        /// Được gọi ngay trước khi Object được trả về Pool (Deactive).
+        /// Dùng để dừng coroutines, clear particle/trail effects, hủy đăng ký events.
         /// </summary>
-        void OnReturnToPool();
+        void OnDespawn();
     }
 }

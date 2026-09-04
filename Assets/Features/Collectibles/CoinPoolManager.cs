@@ -1,102 +1,26 @@
 using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.Pool;
 
 namespace ProjectZombie.Features.Collectibles
 {
     /// <summary>
     /// Manager singleton quản lý Object Pooling cho Coin Drops (Cổ Tiền rớt từ Enemy).
-    /// Hỗ trợ cơ chế Nén & Gộp đồng tiền khi số lượng trên sàn vượt quá ngưỡng cho phép,
-    /// bảo đảm duy trì 60 FPS ổn định trên thiết bị di động.
+    /// Kế thừa từ CollectiblePoolBase, hỗ trợ cơ chế Nén & Gộp đồng tiền khi số lượng trên sàn vượt quá ngưỡng cho phép.
     /// </summary>
-    public class CoinPoolManager : MonoBehaviour
+    public class CoinPoolManager : CollectiblePoolBase<CoinPoolManager, CoinDrop>
     {
-        public static CoinPoolManager Instance { get; private set; }
-
         [Header("Default Prefab")]
         [SerializeField] private GameObject defaultCoinPrefab;
 
-        [Header("Performance & Limits")]
-        [Tooltip("Số lượng đồng xu tối đa đồng thời trên mặt đất")]
-        [SerializeField] private int maxGroundCoins = 100;
+        // Backward-compatibility aliases
+        public int ActiveCoinCount => ActiveItemCount;
+        public void RegisterActiveCoin(CoinDrop coin) => RegisterActiveItem(coin);
+        public void UnregisterActiveCoin(CoinDrop coin) => UnregisterActiveItem(coin);
 
-        private Dictionary<GameObject, IObjectPool<GameObject>> _prefabToPoolMap = new Dictionary<GameObject, IObjectPool<GameObject>>();
-        private List<CoinDrop> _activeCoins = new List<CoinDrop>(120);
-
-        public int ActiveCoinCount => _activeCoins.Count;
-
-        private void Awake()
+        protected override void AttachPoolConfig(GameObject obj, IObjectPool<GameObject> pool)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        public void RegisterActiveCoin(CoinDrop coin)
-        {
-            if (coin != null && !_activeCoins.Contains(coin))
-            {
-                _activeCoins.Add(coin);
-            }
-        }
-
-        public void UnregisterActiveCoin(CoinDrop coin)
-        {
-            if (coin != null)
-            {
-                _activeCoins.Remove(coin);
-            }
-        }
-
-        public void ClearPools()
-        {
-            foreach (var pool in _prefabToPoolMap.Values)
-            {
-                pool.Clear();
-            }
-            _prefabToPoolMap.Clear();
-            _activeCoins.Clear();
-        }
-
-        public IObjectPool<GameObject> GetOrCreatePool(GameObject prefab)
-        {
-            if (prefab == null) return null;
-
-            if (_prefabToPoolMap.TryGetValue(prefab, out var existingPool))
-            {
-                return existingPool;
-            }
-
-            IObjectPool<GameObject> pool = null;
-            pool = new ObjectPool<GameObject>(
-                createFunc: () => {
-                    GameObject obj = Instantiate(prefab);
-                    var config = obj.GetComponent<CoinPoolConfig>();
-                    if (config == null) config = obj.AddComponent<CoinPoolConfig>();
-                    config.Pool = pool;
-                    return obj;
-                },
-                actionOnGet: (obj) => {
-                    if (obj != null) obj.SetActive(true);
-                },
-                actionOnRelease: (obj) => {
-                    if (obj != null) obj.SetActive(false);
-                },
-                actionOnDestroy: (obj) => {
-                    if (obj != null) Destroy(obj);
-                },
-                collectionCheck: false,
-                defaultCapacity: 50,
-                maxSize: 500
-            );
-
-            _prefabToPoolMap[prefab] = pool;
-            return pool;
+            var config = obj.GetComponent<CoinPoolConfig>() ?? obj.AddComponent<CoinPoolConfig>();
+            config.Pool = pool;
         }
 
         /// <summary>
@@ -107,9 +31,9 @@ namespace ProjectZombie.Features.Collectibles
             GameObject targetPrefab = prefab != null ? prefab : defaultCoinPrefab;
             if (targetPrefab == null) return null;
 
-            if (_activeCoins.Count >= maxGroundCoins)
+            if (ActiveItems.Count >= maxGroundItems)
             {
-                CompressDistantCoins();
+                CompressDistantItems();
             }
 
             var pool = GetOrCreatePool(targetPrefab);
@@ -124,9 +48,8 @@ namespace ProjectZombie.Features.Collectibles
 
                 if (coinObj == null)
                 {
-                    coinObj = Instantiate(targetPrefab);
-                    var config = coinObj.GetComponent<CoinPoolConfig>() ?? coinObj.AddComponent<CoinPoolConfig>();
-                    config.Pool = pool;
+                    coinObj = Instantiate(targetPrefab, transform);
+                    AttachPoolConfig(coinObj, pool);
                 }
 
                 coinObj.transform.position = position;
@@ -155,9 +78,9 @@ namespace ProjectZombie.Features.Collectibles
         /// <summary>
         /// Gộp 2 đồng tiền ở xa người chơi nhất thành 1 đồng giá trị cao hơn.
         /// </summary>
-        private void CompressDistantCoins()
+        protected override void CompressDistantItems()
         {
-            if (_activeCoins.Count < 2) return;
+            if (ActiveItems.Count < 2) return;
 
             Vector3 playerPos = Vector3.zero;
             if (Player.PlayerController.Instance != null)

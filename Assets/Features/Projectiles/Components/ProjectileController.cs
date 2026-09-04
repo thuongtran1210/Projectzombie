@@ -3,6 +3,7 @@ using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Projectiles.Core;
 using ProjectZombie.Features.Projectiles.Behaviors;
+using ProjectZombie.Core.Pooling;
 using System.Collections.Generic;
 
 namespace ProjectZombie.Features.Projectiles.Components
@@ -11,7 +12,7 @@ namespace ProjectZombie.Features.Projectiles.Components
     [RequireComponent(typeof(ProjectileCollision))]
     [RequireComponent(typeof(ProjectileLifetime))]
     [RequireComponent(typeof(ProjectileVFXListener))]
-    public class ProjectileController : MonoBehaviour
+    public class ProjectileController : MonoBehaviour, IPoolable
     {
         public ProjectileData Data { get; private set; }
         public GameObject Owner { get; private set; }
@@ -164,7 +165,12 @@ namespace ProjectZombie.Features.Projectiles.Components
             Despawn();
         }
 
-        public void Despawn()
+        public void OnSpawn()
+        {
+            // Reset transforms hoặc state cơ bản khi được kích hoạt từ Pool
+        }
+
+        public void OnDespawn()
         {
             if (_behaviors != null)
             {
@@ -173,6 +179,11 @@ namespace ProjectZombie.Features.Projectiles.Components
                     _behaviors[i].OnDespawn();
                 }
             }
+        }
+
+        public void Despawn()
+        {
+            OnDespawn();
             
             ProjectileSystem.Instance.EventDispatcher.RaiseDespawned(this);
             

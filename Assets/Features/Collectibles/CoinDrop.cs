@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Collectibles
 {
@@ -8,7 +9,7 @@ namespace ProjectZombie.Features.Collectibles
     /// Vận hành Zero GC (không dùng DOTween), FSM nhẹ tương tự ExpGem.
     /// Hỗ trợ Visual Tiering (Đồng -> Bạc -> Vàng) và tự động bay về Player khi vào tầm hút.
     /// </summary>
-    public class CoinDrop : MonoBehaviour, ICollectible
+    public class CoinDrop : MonoBehaviour, ICollectible, IPoolable
     {
         [Header("Coin & Value Settings")]
         [SerializeField] private int coinValue = 1;
@@ -51,7 +52,7 @@ namespace ProjectZombie.Features.Collectibles
             _baseScale = new Vector3(baseScaleMultiplier, baseScaleMultiplier, 1f);
         }
 
-        private void OnEnable()
+        public void OnSpawn()
         {
             _state = GemState.Spawning;
             _timer = 0f;
@@ -67,12 +68,22 @@ namespace ProjectZombie.Features.Collectibles
             }
         }
 
-        private void OnDisable()
+        public void OnDespawn()
         {
             if (CoinPoolManager.Instance != null)
             {
                 CoinPoolManager.Instance.UnregisterActiveCoin(this);
             }
+        }
+
+        private void OnEnable()
+        {
+            OnSpawn();
+        }
+
+        private void OnDisable()
+        {
+            OnDespawn();
         }
 
         private void Update()

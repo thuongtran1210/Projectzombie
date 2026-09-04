@@ -1,89 +1,130 @@
 using UnityEngine;
+using UnityEngine.Pool;
 using System.Collections.Generic;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Projectiles.Core
 {
+    /// <summary>
+    /// Pool quản lý đạn (Projectiles) dựa trên UnityEngine.Pool.IObjectPool.
+    /// Hỗ trợ Prewarm, ReturnAllActive và cơ chế FIFO Recycling khi đạt trần MaxPoolSize.
+    /// </summary>
     public class ProjectilePool : MonoBehaviour
     {
         private GameObject _prefab;
-        private Queue<GameObject> _pool = new Queue<GameObject>();
-        private int _maxPoolSize;
-        private int _activeCount;
+        private IObjectPool<GameObject> _pool;
+        private int _maxPoolSize = 200;
+
+        // Quản lý active projectiles theo thứ tự FIFO (First In First Out)
+        private readonly LinkedList<GameObject> _activeList = new();
+        private readonly HashSet<GameObject> _activeSet = new();
+
+        public int ActiveCount => _activeList.Count;
 
         public void Initialize(GameObject prefab, int prewarmCount, int maxPoolSize)
         {
             _prefab = prefab;
-            _maxPoolSize = maxPoolSize;
-            _activeCount = 0;
+            _maxPoolSize = maxPoolSize > 0 ? maxPoolSize : 200;
+
+            _pool = new ObjectPool<GameObject>(
+                createFunc: () => Instantiate(_prefab, transform),
+                actionOnGet: (obj) => {
+                    if (obj != null)
+                    {
+                        obj.SetActive(true);
+                        if (obj.TryGetComponent<IPoolable>(out var poolable))
+                        {
+                            poolable.OnSpawn();
+                        }
+                    }
+                },
+                actionOnRelease: (obj) => {
+                    if (obj != null)
+                    {
+                        if (obj.TryGetComponent<IPoolable>(out var poolable))
+                        {
+                            poolable.OnDespawn();
+                        }
+                        obj.SetActive(false);
+                    }
+                },
+                actionOnDestroy: (obj) => {
+                    if (obj != null) Destroy(obj);
+                },
+                collectionCheck: false,
+                defaultCapacity: Mathf.Min(prewarmCount, _maxPoolSize),
+                maxSize: _maxPoolSize
+            );
 
             Prewarm(prewarmCount);
         }
 
         public void Prewarm(int count)
         {
-            for (int i = 0; i < count; i++)
+            if (_pool == null || _prefab == null) return;
+
+            int targetCount = Mathf.Min(count, _maxPoolSize);
+            var temp = new List<GameObject>(targetCount);
+
+            for (int i = 0; i < targetCount; i++)
             {
-                if (_pool.Count + _activeCount >= _maxPoolSize) break;
-                
-                var obj = Instantiate(_prefab, transform);
-                obj.SetActive(false);
-                _pool.Enqueue(obj);
+                var obj = _pool.Get();
+                if (obj != null) temp.Add(obj);
+            }
+
+            for (int i = 0; i < temp.Count; i++)
+            {
+                if (temp[i] != null) _pool.Release(temp[i]);
             }
         }
 
-        private readonly HashSet<GameObject> _activeObjects = new HashSet<GameObject>();
-
         public void ReturnAllActive()
         {
-            var activeList = new List<GameObject>(_activeObjects);
-            foreach (var obj in activeList)
+            var nodes = new List<GameObject>(_activeList);
+            foreach (var obj in nodes)
             {
                 if (obj != null)
                 {
                     Return(obj);
                 }
             }
-            _activeObjects.Clear();
-            _activeCount = 0;
+            _activeList.Clear();
+            _activeSet.Clear();
         }
 
         public GameObject Get()
         {
-            GameObject obj = null;
-            if (_pool.Count > 0)
+            if (_pool == null) return null;
+
+            // FIFO Recycling: Nếu số lượng active đã chạm trần maxPoolSize, thu hồi viên đạn lâu đời nhất (First)
+            if (_activeList.Count >= _maxPoolSize && _activeList.First != null)
             {
-                obj = _pool.Dequeue();
-                obj.SetActive(true);
-                _activeCount++;
-            }
-            else if (_activeCount < _maxPoolSize)
-            {
-                obj = Instantiate(_prefab, transform);
-                obj.SetActive(true);
-                _activeCount++;
-            }
-            else
-            {
-                Debug.LogWarning($"[ProjectilePool] Pool cho {_prefab.name} đã đạt giới hạn tối đa ({_maxPoolSize})!");
-                return null;
+                GameObject oldestObj = _activeList.First.Value;
+                if (oldestObj != null)
+                {
+                    Return(oldestObj);
+                }
             }
 
+            GameObject obj = _pool.Get();
             if (obj != null)
             {
-                _activeObjects.Add(obj);
+                _activeList.AddLast(obj);
+                _activeSet.Add(obj);
             }
             return obj;
         }
 
         public void Return(GameObject obj)
         {
-            if (obj == null) return;
-            
-            _activeObjects.Remove(obj);
-            obj.SetActive(false);
-            _pool.Enqueue(obj);
-            _activeCount--;
-            if (_activeCount < 0) _activeCount = 0;
+            if (obj == null || _pool == null) return;
+
+            if (_activeSet.Remove(obj))
+            {
+                _activeList.Remove(obj);
+            }
+
+            _pool.Release(obj);
         }
     }
 }

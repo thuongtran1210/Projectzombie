@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Enemies;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Spawners
 {
@@ -52,10 +53,14 @@ namespace ProjectZombie.Features.Spawners
             }
 
             UnityEngine.Pool.ObjectPool<GameObject> pool = null;
+            Transform parentTransform = PoolHierarchyManager.Instance != null 
+                ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Enemies) 
+                : transform;
+
             pool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 createFunc: () => {
                     if (prefab == null) return null;
-                    GameObject obj = Instantiate(prefab);
+                    GameObject obj = Instantiate(prefab, parentTransform);
                     var config = obj.GetComponent<EnemyPoolConfig>();
                     if (config == null) config = obj.AddComponent<EnemyPoolConfig>();
                     config.Pool = pool;

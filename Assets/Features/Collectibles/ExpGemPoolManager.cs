@@ -1,99 +1,23 @@
 using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.Pool;
 
 namespace ProjectZombie.Features.Collectibles
 {
     /// <summary>
     /// Manager singleton quản lý Object Pooling cho Exp Gems (Kinh nghiệm rớt từ Enemy).
-    /// Hỗ trợ cơ chế Nén & Gộp hạt (Gem Compression) khi số lượng trên sân vượt quá ngưỡng cho phép,
-    /// bảo đảm duy trì 60 FPS ổn định trên di động.
+    /// Kế thừa từ CollectiblePoolBase, hỗ trợ cơ chế Nén & Gộp hạt (Gem Compression).
     /// </summary>
-    public class ExpGemPoolManager : MonoBehaviour
+    public class ExpGemPoolManager : CollectiblePoolBase<ExpGemPoolManager, ExpGem>
     {
-        public static ExpGemPoolManager Instance { get; private set; }
+        // Backward-compatibility aliases
+        public int ActiveGemCount => ActiveItemCount;
+        public void RegisterActiveGem(ExpGem gem) => RegisterActiveItem(gem);
+        public void UnregisterActiveGem(ExpGem gem) => UnregisterActiveItem(gem);
 
-        [Header("Performance & Limits")]
-        [Tooltip("Số lượng hạt kinh nghiệm tối đa đồng thời trên mặt đất")]
-        [SerializeField] private int maxGroundGems = 150;
-
-        private Dictionary<GameObject, IObjectPool<GameObject>> _prefabToPoolMap = new Dictionary<GameObject, IObjectPool<GameObject>>();
-        private List<ExpGem> _activeGems = new List<ExpGem>(200);
-
-        public int ActiveGemCount => _activeGems.Count;
-
-        private void Awake()
+        protected override void AttachPoolConfig(GameObject obj, IObjectPool<GameObject> pool)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        public void RegisterActiveGem(ExpGem gem)
-        {
-            if (gem != null && !_activeGems.Contains(gem))
-            {
-                _activeGems.Add(gem);
-            }
-        }
-
-        public void UnregisterActiveGem(ExpGem gem)
-        {
-            if (gem != null)
-            {
-                _activeGems.Remove(gem);
-            }
-        }
-
-        public void ClearPools()
-        {
-            foreach (var pool in _prefabToPoolMap.Values)
-            {
-                pool.Clear();
-            }
-            _prefabToPoolMap.Clear();
-            _activeGems.Clear();
-        }
-
-        public IObjectPool<GameObject> GetOrCreatePool(GameObject prefab)
-        {
-            if (prefab == null) return null;
-
-            if (_prefabToPoolMap.TryGetValue(prefab, out var existingPool))
-            {
-                return existingPool;
-            }
-
-            IObjectPool<GameObject> pool = null;
-            pool = new ObjectPool<GameObject>(
-                createFunc: () => {
-                    GameObject obj = Instantiate(prefab);
-                    var config = obj.GetComponent<ExpGemPoolConfig>();
-                    if (config == null) config = obj.AddComponent<ExpGemPoolConfig>();
-                    config.Pool = pool;
-                    return obj;
-                },
-                actionOnGet: (obj) => {
-                    if (obj != null) obj.SetActive(true);
-                },
-                actionOnRelease: (obj) => {
-                    if (obj != null) obj.SetActive(false);
-                },
-                actionOnDestroy: (obj) => {
-                    if (obj != null) Destroy(obj);
-                },
-                collectionCheck: false,
-                defaultCapacity: 100,
-                maxSize: 1000
-            );
-
-            _prefabToPoolMap[prefab] = pool;
-            return pool;
+            var config = obj.GetComponent<ExpGemPoolConfig>() ?? obj.AddComponent<ExpGemPoolConfig>();
+            config.Pool = pool;
         }
 
         /// <summary>
@@ -105,9 +29,9 @@ namespace ProjectZombie.Features.Collectibles
             if (prefab == null) return null;
 
             // Kiểm tra và nén hạt ở xa nếu vượt ngưỡng tối đa
-            if (_activeGems.Count >= maxGroundGems)
+            if (ActiveItems.Count >= maxGroundItems)
             {
-                CompressDistantGems();
+                CompressDistantItems();
             }
 
             var pool = GetOrCreatePool(prefab);
@@ -122,9 +46,8 @@ namespace ProjectZombie.Features.Collectibles
 
                 if (gemObj == null)
                 {
-                    gemObj = Instantiate(prefab);
-                    var config = gemObj.GetComponent<ExpGemPoolConfig>() ?? gemObj.AddComponent<ExpGemPoolConfig>();
-                    config.Pool = pool;
+                    gemObj = Instantiate(prefab, transform);
+                    AttachPoolConfig(gemObj, pool);
                 }
 
                 gemObj.transform.position = position;
@@ -149,9 +72,9 @@ namespace ProjectZombie.Features.Collectibles
         /// <summary>
         /// Thuật toán nén gộp 2 hạt Exp ở xa người chơi nhất thành 1 hạt cấp cao hơn.
         /// </summary>
-        private void CompressDistantGems()
+        protected override void CompressDistantItems()
         {
-            if (_activeGems.Count < 2) return;
+            if (ActiveItems.Count < 2) return;
 
             Vector3 playerPos = Vector3.zero;
             if (Player.PlayerController.Instance != null)
@@ -164,9 +87,9 @@ namespace ProjectZombie.Features.Collectibles
             float maxDistSq1 = -1f;
             float maxDistSq2 = -1f;
 
-            for (int i = 0; i < _activeGems.Count; i++)
+            for (int i = 0; i < ActiveItems.Count; i++)
             {
-                var gem = _activeGems[i];
+                var gem = ActiveItems[i];
                 if (gem == null || !gem.IsIdle) continue;
 
                 float distSq = (gem.transform.position - playerPos).sqrMagnitude;
