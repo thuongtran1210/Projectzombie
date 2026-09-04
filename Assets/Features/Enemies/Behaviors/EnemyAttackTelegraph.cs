@@ -27,10 +27,14 @@ namespace ProjectZombie.Features.Enemies
         /// </summary>
         public void ShowTelegraph(Vector3 targetPos, System.Action onTelegraphCompleted)
         {
-            if (SkillIndicatorManager.Instance != null)
+            if (SkillIndicatorManager.Instance != null && telegraphDuration > 0f)
             {
+                float radius = attackRadius > 0f 
+                    ? attackRadius 
+                    : ((_enemy != null && _enemy.Config != null) ? _enemy.Config.attackRange : 2.0f);
+
                 Vector3 dir = (targetPos - transform.position).normalized;
-                Vector2 size = new Vector2(attackRadius * 2f, attackRadius * 2f);
+                Vector2 size = new Vector2(radius * 2f, radius * 2f);
 
                 SkillIndicatorManager.Instance.ShowIndicator(new IndicatorRequest(
                     shape,

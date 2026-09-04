@@ -29,6 +29,11 @@ namespace ProjectZombie.Features.Enemies
         [Tooltip("Layer đối tượng nhận sát thương (mặc định Player)")]
         [SerializeField] private LayerMask targetLayer;
 
+        [Header("Danger Indicator (Chỉ Dấu Nguy Hiểm)")]
+        [Tooltip("Bật hiển thị vệt đỏ cảnh báo vùng nổ trên mặt đất")]
+        [SerializeField] private bool showTelegraphIndicator = true;
+        [SerializeField] private Color telegraphColor = new Color(1f, 0.2f, 0.1f, 0.45f);
+
         private bool _isExploding = false;
         private Coroutine _explodeRoutine;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[15];
@@ -71,6 +76,19 @@ namespace ProjectZombie.Features.Enemies
             }
 
             _enemy?.Animator?.TriggerAttack();
+
+            // Hiển thị chỉ dấu nguy hiểm vòng tròn đỏ trên mặt đất
+            if (showTelegraphIndicator && VFX.Indicators.SkillIndicatorManager.Instance != null && explodeDelay > 0f)
+            {
+                VFX.Indicators.SkillIndicatorManager.Instance.ShowIndicator(new VFX.Indicators.IndicatorRequest(
+                    VFX.Indicators.IndicatorShape.Circle,
+                    transform.position,
+                    Vector3.zero,
+                    new Vector2(explodeRadius * 2f, explodeRadius * 2f),
+                    explodeDelay,
+                    telegraphColor
+                ));
+            }
 
             yield return new WaitForSeconds(explodeDelay);
 

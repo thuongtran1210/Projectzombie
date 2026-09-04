@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5360357560310791860}
   - component: {fileID: 6521945916903708607}
   - component: {fileID: 4443889387262342083}
+  - component: {fileID: 8888888888888888888}
   m_Layer: 7
   m_Name: E_QUYNHAPTRANG
   m_TagString: Enemy
@@ -295,3 +296,17 @@ MonoBehaviour:
   attackStateName: Attack
   deadStateName: Dead
   reviveStateName: Revive
+--- !u!114 &8888888888888888888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4942488841039399808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2cc07ae2d6af614d8b822c84e7439f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customAttackRange: 0
+  indicatorType: 0

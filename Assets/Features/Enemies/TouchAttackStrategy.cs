@@ -18,6 +18,12 @@ namespace ProjectZombie.Features.Enemies
         [Tooltip("Bán kính vùng va chạm quanh tâm quái (nếu = 0 sẽ tự lấy theo Config.attackRange)")]
         [SerializeField] private float customTouchRadius = 0f;
 
+        [Header("Danger Indicator (Chỉ Dấu Nguy Hiểm)")]
+        [Tooltip("Bật hiển thị vệt đỏ cảnh báo vùng chạm/va chạm")]
+        [SerializeField] private bool showDangerIndicator = false;
+        [SerializeField] private float indicatorDuration = 0.3f;
+        [SerializeField] private Color indicatorColor = new Color(1f, 0.4f, 0.1f, 0.35f);
+
         private float _lastDamageTime;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[10];
 
@@ -28,6 +34,18 @@ namespace ProjectZombie.Features.Enemies
         public override void Attack()
         {
             // Trong FSM AttackState, hàm Attack() được gọi mỗi cooldown.
+            if (showDangerIndicator && VFX.Indicators.SkillIndicatorManager.Instance != null)
+            {
+                VFX.Indicators.SkillIndicatorManager.Instance.ShowIndicator(new VFX.Indicators.IndicatorRequest(
+                    VFX.Indicators.IndicatorShape.Circle,
+                    transform.position,
+                    Vector3.zero,
+                    new Vector2(TouchRadius * 2f, TouchRadius * 2f),
+                    indicatorDuration,
+                    indicatorColor
+                ));
+            }
+
             TryDealTouchDamage();
         }
 

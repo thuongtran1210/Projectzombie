@@ -111,10 +111,10 @@ namespace ProjectZombie.Features.Enemies.Editor
                 root.AddComponent<MeleeAttackStrategy>();
             }
 
-            // Special Behaviors
-            if (isSuicide)
+            // Special Behaviors & Telegraphs
+            if (isElite)
             {
-                root.AddComponent<SuicideExplodeBehavior>();
+                root.AddComponent<EnemyAttackTelegraph>();
             }
 
             // FSM Main Component
