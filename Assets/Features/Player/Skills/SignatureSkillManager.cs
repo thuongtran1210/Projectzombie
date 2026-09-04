@@ -87,15 +87,51 @@ namespace ProjectZombie.Features.Player.Skills
             if (ActiveSkill == null || RemainingCooldown > 0f) return false;
             if (!CanExecuteCurrentSkill()) return false;
 
-            ActiveSkill.Execute(gameObject, onElementSelectedCallback);
+            try
+            {
+                ActiveSkill.Execute(gameObject, onElementSelectedCallback);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[SignatureSkillManager] Ngoại lệ khi thực thi {ActiveSkill.GetType().Name}: {ex}");
+            }
 
             global::Core.Audio.AudioManager.Instance?.PlayUltimateSkillCast(transform.position);
 
             RemainingCooldown = ActiveSkill.Cooldown;
+            Debug.Log($"<color=#00FF88>[SignatureSkillManager]</color> Đã thi triển {ActiveSkill.GetType().Name}. Bắt đầu hồi chiêu: {RemainingCooldown:F1}s.");
+
             OnSkillExecuted?.Invoke();
             OnCooldownUpdated?.Invoke(RemainingCooldown, MaxCooldown);
 
             return true;
+        }
+
+        /// <summary>
+        /// Giảm thời gian hồi chiêu hiện tại (dành cho Buff/Passive).
+        /// </summary>
+        public void ReduceCooldown(float seconds)
+        {
+            if (RemainingCooldown > 0f)
+            {
+                RemainingCooldown = Mathf.Max(0f, RemainingCooldown - seconds);
+                if (RemainingCooldown <= 0f)
+                {
+                    RemainingCooldown = 0f;
+                    OnSkillReady?.Invoke();
+                }
+                OnCooldownUpdated?.Invoke(RemainingCooldown, MaxCooldown);
+            }
+        }
+
+        /// <summary>
+        /// Làm mới ngay lập tức hồi chiêu của kỹ năng.
+        /// </summary>
+        public void ResetCooldown()
+        {
+            RemainingCooldown = 0f;
+            OnSkillReady?.Invoke();
+            OnCooldownUpdated?.Invoke(0f, MaxCooldown);
         }
     }
 }

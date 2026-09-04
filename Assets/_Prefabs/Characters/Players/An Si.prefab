@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3769ce6f7f7d9804fbfdf389c0d18e9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skillData: {fileID: 11400000, guid: 82c2b3d8750849c4ab471649987dc1e8, type: 2}
+  _skillData: {fileID: 11400000, guid: 51d2e89213ebcf44aaf78060aa3d1e28, type: 2}
 --- !u!114 &4297362168769072215
 MonoBehaviour:
   m_ObjectHideFlags: 0

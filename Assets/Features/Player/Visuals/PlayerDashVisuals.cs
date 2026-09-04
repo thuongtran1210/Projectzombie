@@ -33,6 +33,8 @@ namespace ProjectZombie.Features.Player.Visuals
         private Coroutine _speedBuffRoutine;
         private bool _isSpeedBuffActive;
 
+        public bool IsSpeedBuffActive => _isSpeedBuffActive;
+
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();

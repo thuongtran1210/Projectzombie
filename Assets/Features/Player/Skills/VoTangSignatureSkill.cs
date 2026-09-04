@@ -1,62 +1,97 @@
+using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.YinYang;
 using ProjectZombie.Features.Enemies;
+using ProjectZombie.Core.Juice;
 
 namespace ProjectZombie.Features.Player.Skills
 {
     /// <summary>
-    /// Kỹ năng Chủ động Ẩn Sĩ Sơn Lâm: "Thập Phương Chấn Thế" (Mục 3.1.3 GDD v4.0).
-    /// Hy sinh 30% HP hiện tại dồn địa khí sơn lâm chấn vỡ đất đá (Guard condition: HP >= 15% Max HP).
-    /// Shockwave Radius & Damage tỷ lệ theo lượng HP hy sinh.
-    /// Knockback 8m/s, Choáng 1.2s, +25 điểm Dương vào YinYangManager.
-    /// Cooldown: 20s.
+    /// Kỹ năng Chủ động Ẩn Sĩ Sơn Lâm: "Thập Phương Chấn Thế" (GDD v5.1).
+    /// Thi triển:
+    /// 1. Dậm nát mặt đất giải phóng sóng địa chấn đất đá bùng nổ (Shockwave & Earth Impact).
+    /// 2. Gây 320% Sát thương Hệ Thổ trong bán kính 7.0m.
+    /// 3. Hất văng quái cực mạnh (10m/s) và làm Choáng (Stun) trong 2.0s.
+    /// 4. HÓA THÂN BÀN THẠCH (4s): Hồi 15% HP, tăng +30% Sát thương & Miễn khống chế (kèm tàn ảnh nham thạch).
+    /// 5. +25 điểm Dương vào bàn cân Âm Dương.
+    /// 6. Rung Camera mạnh & Heavy SFX.
     /// </summary>
     public class VoTangSignatureSkill : SignatureSkillBase
     {
         public override float Cooldown => 20.0f;
 
-        private static readonly Collider2D[] _hitBuffer = new Collider2D[60];
+        private readonly GameObject _shockwavePrefab;
+        private readonly GameObject _earthImpactPrefab;
 
-        public override bool CanExecute(PlayerStats stats, HealthSystem health)
+        private const float AOE_RADIUS = 7.0f;
+        private const float DAMAGE_RATIO = 3.2f; // 320% Base Damage
+        private const float STUN_DURATION = 2.0f;
+        private const float KNOCKBACK_FORCE = 10.0f;
+        private const float BUFF_DURATION = 4.0f;
+        private const float DAMAGE_BUFF_RATIO = 0.30f;
+
+        private static readonly Collider2D[] _hitBuffer = new Collider2D[80];
+
+        public VoTangSignatureSkill(GameObject shockwavePrefab = null, GameObject earthImpactPrefab = null)
         {
-            if (!base.CanExecute(stats, health)) return false;
-
-            // Guard condition: Khóa skill nếu HP hiện tại < 15% HP Max
-            float hpThreshold = health.MaxHealth * 0.15f;
-            return health.CurrentHealth >= hpThreshold;
+            _shockwavePrefab = shockwavePrefab;
+            _earthImpactPrefab = earthImpactPrefab;
         }
 
         public override void Execute(GameObject playerObj, System.Action<ElementType> onElementSelectedCallback = null)
         {
             if (playerObj == null) return;
 
-            var playerStats = playerObj.GetComponent<PlayerStats>();
-            var health = playerObj.GetComponent<HealthSystem>();
+            Vector3 center = playerObj.transform.position;
 
-            if (!CanExecute(playerStats, health))
+            // 1. Sinh Hiệu Ứng VFX Sóng Địa Chấn & Nứt Đất
+            SpawnVisualEffects(center);
+
+            // 2. Quét Sát Thương Diện Rộng, Hất Văng và Choáng quái
+            ExecuteEarthquakeImpact(playerObj, center);
+
+            // 3. Tác động Cán cân Âm Dương: Cộng thẳng +25 điểm Dương
+            if (YinYangManager.Instance != null)
             {
-                Debug.LogWarning("[VoTangSignatureSkill] Không đủ HP để thi triển Phá Giới Chấn Thế (< 15% Max HP).");
-                return;
+                YinYangManager.Instance.AdjustValue(25f);
             }
 
-            float maxHp = health.MaxHealth;
-            float currentHp = health.CurrentHealth;
+            // 4. Callback hệ Thổ
+            onElementSelectedCallback?.Invoke(ElementType.Tho);
 
-            // Hy sinh 30% HP hiện tại
-            float hpDeducted = currentHp * 0.30f;
-            health.TakeDamage(hpDeducted);
+            // 5. Rung Camera Mạnh
+            GameJuiceEvents.RequestCameraShake(0.28f, 0.55f);
 
-            // Công thức GDD v4.0
-            float hpRatio = hpDeducted / Mathf.Max(1f, maxHp);
-            float shockwaveRadius = 3.0f + hpRatio * 4.0f;
-            float baseDamage = playerStats != null ? playerStats.BaseDamage : 20f;
-            float shockwaveDamage = baseDamage * 2.5f * hpRatio;
+            // 6. Kích hoạt Coroutine Bàn Thạch Hộ Thể (4s)
+            var playerMono = playerObj.GetComponent<MonoBehaviour>();
+            if (playerMono != null)
+            {
+                playerMono.StartCoroutine(StoneBodyBuffRoutine(playerObj));
+            }
+        }
 
-            // Quét mục tiêu và áp dụng Knockback + Stun
-            Vector3 center = playerObj.transform.position;
-            int mask = Shared.TargetingUtility.EnemyLayerMask;
-            int count = Physics2D.OverlapCircleNonAlloc(center, shockwaveRadius, _hitBuffer, mask);
+        private void SpawnVisualEffects(Vector3 center)
+        {
+            if (_shockwavePrefab != null)
+            {
+                Object.Instantiate(_shockwavePrefab, center, Quaternion.identity);
+            }
+
+            if (_earthImpactPrefab != null)
+            {
+                Object.Instantiate(_earthImpactPrefab, center, Quaternion.identity);
+            }
+        }
+
+        private void ExecuteEarthquakeImpact(GameObject playerObj, Vector3 center)
+        {
+            var playerStats = playerObj.GetComponent<PlayerStats>();
+            float baseDmg = playerStats != null ? playerStats.GetTotalDamage() : 20f;
+            float totalDamage = baseDmg * DAMAGE_RATIO;
+
+            int mask = TargetingUtility.EnemyLayerMask;
+            int count = Physics2D.OverlapCircleNonAlloc(center, AOE_RADIUS, _hitBuffer, mask);
 
             for (int i = 0; i < count; i++)
             {
@@ -65,20 +100,60 @@ namespace ProjectZombie.Features.Player.Skills
 
                 if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
                 {
-                    enemyHealth.TakeDamage(shockwaveDamage);
+                    DamageData dmg = new DamageData(
+                        totalDamage,
+                        isCritical: false,
+                        element: ElementType.Tho,
+                        isCounter: false
+                    );
+                    enemyHealth.TakeDamage(dmg);
+                }
+
+                if (col.TryGetComponent<EnemyStatusController>(out var status))
+                {
+                    status.ApplyStatusEffect(StatusEffectType.Stun, STUN_DURATION);
                 }
 
                 if (col.TryGetComponent<Rigidbody2D>(out var enemyRb))
                 {
                     Vector2 knockbackDir = ((Vector2)col.transform.position - (Vector2)center).normalized;
-                    enemyRb.AddForce(knockbackDir * 8.0f, ForceMode2D.Impulse);
+                    if (knockbackDir == Vector2.zero) knockbackDir = Vector2.up;
+                    enemyRb.AddForce(knockbackDir * KNOCKBACK_FORCE, ForceMode2D.Impulse);
                 }
             }
+        }
 
-            // Tác động Cán cân Âm Dương: Cộng thẳng +25 điểm Dương
-            if (YinYangManager.Instance != null)
+        private IEnumerator StoneBodyBuffRoutine(GameObject playerObj)
+        {
+            if (playerObj == null) yield break;
+
+            var playerStats = playerObj.GetComponent<PlayerStats>();
+            var health = playerObj.GetComponent<HealthSystem>();
+
+            // Hồi phục 15% Max HP (Khiên Bàn Thạch)
+            if (health != null)
             {
-                YinYangManager.Instance.AdjustValue(25f);
+                health.Heal(health.MaxHealth * 0.15f);
+            }
+
+            // Tăng sát thương trong 4s
+            if (playerStats != null)
+            {
+                playerStats.AddDamageMultiplier(DAMAGE_BUFF_RATIO);
+            }
+
+            // Kích hoạt Tàn Ảnh Hổ Phách Nham Thạch
+            var dashVisuals = playerObj.GetComponent<Visuals.PlayerDashVisuals>();
+            if (dashVisuals != null)
+            {
+                dashVisuals.StartSpeedBuffVisual(BUFF_DURATION, new Color(0.95f, 0.55f, 0.1f, 0.7f));
+            }
+
+            yield return new WaitForSeconds(BUFF_DURATION);
+
+            if (playerStats != null)
+            {
+                playerStats.AddDamageMultiplier(-DAMAGE_BUFF_RATIO);
             }
         }
     }

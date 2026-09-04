@@ -17,3 +17,4 @@ MonoBehaviour:
   _icon: {fileID: 0}
   _baseCooldown: 30
   _tuPhuAuraPrefab: {fileID: 7321809818315038488, guid: 9918f720ba2b67c40b16d5d1d8ca56e6, type: 3}
+  _shockwavePrefab: {fileID: 4876445369016505830, guid: 031b8e57e27c1b443ad3f3fb9c93495c, type: 3}

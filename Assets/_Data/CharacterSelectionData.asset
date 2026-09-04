@@ -155,11 +155,9 @@ MonoBehaviour:
       comboStep2Multiplier: 1.2
       comboStep3Multiplier: 1.8
       knockbackForce: 4
-    signatureSkillName: "Th\u1EADp Ph\u01B0\u01A1ng Ch\u1EA5n Th\u1EBF"
-    signatureSkillDesc: "Tr\u1EEB 30% HP hi\u1EC7n t\u1EA1i b\u1ED9c ph\xE1t \u0111\u1ECBa
-      kh\xED ch\u1EA5n n\u1EE9t \u0111\u1EA5t \u0111\xE1, g\xE2y s\xE1t th\u01B0\u01A1ng
-      + Cho\xE1ng 1.2s v\xE0 \u0111\u1EA9y l\xF9i 8m/s."
-    passiveTraitName: "B\xE0n Th\u1EA1ch Chi Khu"
+    signatureSkillName: "Thập Phương Chấn Thế"
+    signatureSkillDesc: "Dậm chân bộc phát địa khí chấn nát đất đá, gây 320% sát thương, hất văng (10m/s), làm choáng 2.0s quái xung quanh và nhận Hóa Thân Bàn Thạch (+15% HP, +30% DMG)."
+    passiveTraitName: "Bàn Thạch Chi Khu"
     passiveTraitDesc: "M\xE1u c\xE0ng th\u1EA5p th\u1EE7 c\xE0ng cao. Khi HP d\u01B0\u1EDBi
       50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n
       nhi\u1EC5m \u0110\u1EA9y l\xF9i."

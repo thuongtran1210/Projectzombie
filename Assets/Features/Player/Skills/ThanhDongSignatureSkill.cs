@@ -3,27 +3,33 @@ using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Collectibles;
+using ProjectZombie.Core.Juice;
 
 namespace ProjectZombie.Features.Player.Skills
 {
     /// <summary>
     /// Kỹ năng Tuyệt Kỹ Thanh Đồng: "Giá Đồng Tứ Phủ" (Chuẩn hóa Action RPG v5.1).
     /// Thi triển trực tiếp khi nhấn nút HUD (Cooldown 30s).
-    /// Hiệu ứng trong 5s:
-    /// 1. PHÁN TRUYỀN: Tạo sóng xung kích Choáng (Stun) toàn bộ quái xung quanh trong 2.0s.
-    /// 2. BAN LỘC: Thu hút toàn bộ ExpGem trên toàn màn hình.
-    /// 3. HÀO QUANG THÁNH GIÁNG: +30% Tốc độ chạy & +30% Sát thương toàn thể trong 5 giây.
+    /// Hiệu ứng:
+    /// 1. PHÁN TRUYỀN: Tạo sóng xung kích Tứ Phủ (Oracle Shockwave), gây 180% Sát thương và Choáng (Stun) toàn bộ quái trong 8.0m (2.5s).
+    /// 2. BAN LỘC: Thu hút tức thời và liên tục toàn bộ ExpGem trên toàn màn hình.
+    /// 3. HÀO QUANG THÁNH GIÁNG (5s): +35% Tốc độ chạy (kèm tàn ảnh ngọc lục), +35% Sát thương toàn thể, hồi phục 10% HP.
+    /// 4. Camera Shake và Sound FX.
     /// </summary>
     public class ThanhDongSignatureSkill : SignatureSkillBase
     {
         public override float Cooldown => 30.0f;
 
-        private GameObject _auraPrefab;
-        private GameObject _shockwavePrefab;
+        private readonly GameObject _auraPrefab;
+        private readonly GameObject _shockwavePrefab;
         private const float DURATION = 5.0f;
-        private const float STUN_RADIUS = 10.0f;
-        private const float STUN_DURATION = 2.0f;
-        private const float SPEED_BUFF_RATIO = 0.30f;
+        private const float STUN_RADIUS = 8.0f;
+        private const float STUN_DURATION = 2.5f;
+        private const float SPEED_BUFF_RATIO = 0.35f;
+        private const float DAMAGE_BUFF_RATIO = 0.35f;
+        private const float DAMAGE_RATIO = 1.8f; // 180% Base Damage
+
+        private static readonly Collider2D[] _hitBuffer = new Collider2D[80];
 
         public ThanhDongSignatureSkill(GameObject auraPrefab = null, GameObject shockwavePrefab = null)
         {
@@ -37,8 +43,8 @@ namespace ProjectZombie.Features.Player.Skills
 
             Vector3 spawnPos = playerObj.transform.position;
 
-            // 1. Phán Truyền: Sóng xung kích làm choáng quái diện rộng
-            ExecuteOracleStun(spawnPos);
+            // 1. Phán Truyền: Sóng xung kích làm choáng quái diện rộng & gây sát thương
+            ExecuteOracleStunAndDamage(playerObj, spawnPos);
 
             // 2. Ban Lộc: Hút toàn bộ ExpGem trên sân đấu
             if (ExpGemPoolManager.Instance != null)
@@ -49,7 +55,10 @@ namespace ProjectZombie.Features.Player.Skills
             // 3. Callback hệ Mộc
             onElementSelectedCallback?.Invoke(ElementType.Moc);
 
-            // 4. Kích hoạt Coroutine Buff Hào Quang & Tốc chạy
+            // 4. Rung Camera
+            GameJuiceEvents.RequestCameraShake(0.22f, 0.45f);
+
+            // 5. Kích hoạt Coroutine Buff Hào Quang & Tốc chạy & Sát thương (5s)
             var playerMono = playerObj.GetComponent<MonoBehaviour>();
             if (playerMono != null)
             {
@@ -57,23 +66,41 @@ namespace ProjectZombie.Features.Player.Skills
             }
         }
 
-        private void ExecuteOracleStun(Vector3 center)
+        private void ExecuteOracleStunAndDamage(GameObject playerObj, Vector3 center)
         {
             if (_shockwavePrefab != null)
             {
                 Object.Instantiate(_shockwavePrefab, center, Quaternion.identity);
             }
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(center, STUN_RADIUS);
-            foreach (var col in hits)
+            var stats = playerObj.GetComponent<PlayerStats>();
+            float baseDmg = stats != null ? stats.GetTotalDamage() : 20f;
+            float totalDamage = baseDmg * DAMAGE_RATIO;
+
+            int mask = TargetingUtility.EnemyLayerMask;
+            int count = Physics2D.OverlapCircleNonAlloc(center, STUN_RADIUS, _hitBuffer, mask);
+
+            for (int i = 0; i < count; i++)
             {
-                if (col.CompareTag("Enemy"))
+                Collider2D col = _hitBuffer[i];
+                if (col == null || col.gameObject == playerObj) continue;
+
+                if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
                 {
-                    var status = col.GetComponent<EnemyStatusController>();
-                    if (status != null)
-                    {
-                        status.ApplyStatusEffect(StatusEffectType.Stun, STUN_DURATION);
-                    }
+                    DamageData dmg = new DamageData(totalDamage, false, ElementType.Moc, false);
+                    enemyHealth.TakeDamage(dmg);
+                }
+
+                if (col.TryGetComponent<EnemyStatusController>(out var status))
+                {
+                    status.ApplyStatusEffect(StatusEffectType.Stun, STUN_DURATION);
+                }
+
+                if (col.TryGetComponent<Rigidbody2D>(out var rb))
+                {
+                    Vector2 pushDir = ((Vector2)col.transform.position - (Vector2)center).normalized;
+                    if (pushDir == Vector2.zero) pushDir = Vector2.up;
+                    rb.AddForce(pushDir * 5.0f, ForceMode2D.Impulse);
                 }
             }
         }
@@ -83,19 +110,28 @@ namespace ProjectZombie.Features.Player.Skills
             if (playerObj == null) yield break;
 
             var playerStats = playerObj.GetComponent<PlayerStats>();
+            var health = playerObj.GetComponent<HealthSystem>();
             float speedBonus = 0f;
+            float dmgBonus = DAMAGE_BUFF_RATIO;
 
             if (playerStats != null)
             {
                 speedBonus = playerStats.MoveSpeed * SPEED_BUFF_RATIO;
                 playerStats.AddMoveSpeed(speedBonus);
+                playerStats.AddDamageMultiplier(dmgBonus);
+            }
+
+            // Hồi phục 10% Max HP khi thỉnh Thánh
+            if (health != null)
+            {
+                health.Heal(health.MaxHealth * 0.10f);
             }
 
             // Kích hoạt Tàn Ảnh Tốc Độ Xanh Lục Tứ Phủ
             var dashVisuals = playerObj.GetComponent<Visuals.PlayerDashVisuals>();
             if (dashVisuals != null)
             {
-                dashVisuals.StartSpeedBuffVisual(DURATION, new Color(0.2f, 0.9f, 0.4f, 0.55f));
+                dashVisuals.StartSpeedBuffVisual(DURATION, new Color(0.2f, 0.95f, 0.45f, 0.65f));
             }
 
             GameObject auraObj = null;
@@ -119,9 +155,10 @@ namespace ProjectZombie.Features.Player.Skills
             }
 
             // Kết thúc hiệu ứng
-            if (playerStats != null && speedBonus > 0f)
+            if (playerStats != null)
             {
-                playerStats.AddMoveSpeed(-speedBonus);
+                if (speedBonus > 0f) playerStats.AddMoveSpeed(-speedBonus);
+                playerStats.AddDamageMultiplier(-dmgBonus);
             }
 
             if (auraObj != null)

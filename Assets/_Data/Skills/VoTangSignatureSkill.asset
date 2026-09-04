@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9ea3e752332214d9b29f85fb7a94c6, type: 3}
   m_Name: VoTangSignatureSkill
   m_EditorClassIdentifier: 
-  _skillName: "Ph\xE1 Gi\u1EDBi Ch\u1EA5n Th\u1EBF"
-  _description: "Hy sinh 30% HP hi\u1EC7n t\u1EA1i t\u1EA1o s\xF3ng ch\u1EA5n \u0111\u1ED9ng
-    g\xE2y s\xE1t th\u01B0\u01A1ng kh\u1EE7ng, \u0111\u1EA9y l\xF9i (8m/s) v\xE0
-    l\xE0m cho\xE1ng 1.2s qu\xE1i xung quanh. T\u0103ng tr\u1EF1c ti\u1EBFp +25 \xC2m
-    D\u01B0\u01A1ng v\u1EC1 c\u1EF1c D\u01B0\u01A1ng (Cooldown: 20s). Y\xEAu c\u1EA7u
-    HP > 15%."
+  _skillName: "Thập Phương Chấn Thế"
+  _description: "Ẩn Sĩ Sơn Lâm dậm chân giải phóng địa khí núi ngàn nứt vỡ đất đá, gây 320% sát thương, hất văng (10m/s) và làm choáng 2.0s quái xung quanh. Nhận Hóa Thân Bàn Thạch (+15% HP, +30% DMG) và tăng +25 điểm về Cực Dương (Cooldown: 20s)."
   _icon: {fileID: 0}
   _baseCooldown: 20
+  _shockwavePrefab: {fileID: 3751918047475630789, guid: 77e56ae23f3d0464c9eef74322d557e0, type: 3}
+  _earthImpactPrefab: {fileID: 5187354520898896030, guid: ed4d5188951b8d14bbfb62db69625ea8, type: 3}
+

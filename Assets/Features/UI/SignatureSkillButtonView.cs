@@ -39,7 +39,6 @@ namespace ProjectZombie.Features.UI
                 _dragHandler.OnAimStarted += () => OnAimStarted?.Invoke();
                 _dragHandler.OnAimUpdated += (dir, pull, isCancel) => OnAimUpdated?.Invoke(dir, pull, isCancel);
                 _dragHandler.OnAimReleased += (dir, isTap) => {
-                    if (isTap) OnButtonClicked?.Invoke();
                     OnAimReleased?.Invoke(dir, isTap);
                 };
                 _dragHandler.OnAimCancelled += () => OnAimCancelled?.Invoke();
@@ -55,15 +54,18 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public void SetCooldown(float remainingSeconds, float maxSeconds, string formattedText)
         {
+            bool isCoolingDown = remainingSeconds > 0f;
+
             if (_cooldownRadialFill != null)
             {
                 _cooldownRadialFill.fillAmount = maxSeconds > 0f ? Mathf.Clamp01(remainingSeconds / maxSeconds) : 0f;
+                _cooldownRadialFill.gameObject.SetActive(isCoolingDown);
             }
 
             if (_cooldownText != null)
             {
                 _cooldownText.text = formattedText;
-                _cooldownText.gameObject.SetActive(remainingSeconds > 0f);
+                _cooldownText.gameObject.SetActive(isCoolingDown);
             }
         }
 
@@ -77,14 +79,10 @@ namespace ProjectZombie.Features.UI
                 _skillButton.interactable = isInteractable;
             }
 
-            if (_dragHandler != null)
-            {
-                _dragHandler.SetInteractable(isInteractable);
-            }
-
             if (_canvasGroup != null)
             {
-                _canvasGroup.alpha = isInteractable ? 1.0f : 0.4f;
+                // Giữ alpha = 1.0f để UI đếm lùi hồi chiêu và icon luôn sáng rõ
+                _canvasGroup.alpha = isInteractable ? 1.0f : 0.85f;
             }
         }
     }
