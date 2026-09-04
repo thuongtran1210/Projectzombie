@@ -77,6 +77,22 @@ namespace ProjectZombie.Features.Enemies.Editor
             // HealthSystem
             var health = root.AddComponent<HealthSystem>();
 
+            // Shadow Child
+            Sprite shadowSprite = ProjectZombie.Editor.Tools.ShadowSpriteGenerator.GetOrCreateShadowSprite();
+            if (shadowSprite != null)
+            {
+                GameObject shadowObj = new GameObject("Shadow");
+                shadowObj.transform.SetParent(root.transform, false);
+                shadowObj.transform.localPosition = new Vector3(0f, isElite ? -0.55f : (isSuicide || isTouch ? -0.35f : -0.42f), 0f);
+                shadowObj.transform.localScale = new Vector3(isElite ? 1.3f : (isSuicide || isTouch ? 0.65f : 0.85f), isElite ? 0.5f : (isSuicide || isTouch ? 0.28f : 0.35f), 1f);
+                shadowObj.transform.SetSiblingIndex(0);
+
+                var shadowSr = shadowObj.AddComponent<SpriteRenderer>();
+                shadowSr.sprite = shadowSprite;
+                shadowSr.color = new Color(0f, 0f, 0f, 0.45f);
+                shadowSr.sortingOrder = -10;
+            }
+
             // Visual Child
             GameObject visual = new GameObject("Visual");
             visual.transform.SetParent(root.transform);
@@ -167,6 +183,22 @@ namespace ProjectZombie.Features.Enemies.Editor
             col.radius = 0.8f;
 
             var health = root.AddComponent<HealthSystem>();
+
+            // Shadow Child
+            Sprite shadowSprite = ProjectZombie.Editor.Tools.ShadowSpriteGenerator.GetOrCreateShadowSprite();
+            if (shadowSprite != null)
+            {
+                GameObject shadowObj = new GameObject("Shadow");
+                shadowObj.transform.SetParent(root.transform, false);
+                shadowObj.transform.localPosition = new Vector3(0f, isFinalBoss ? -0.9f : -0.75f, 0f);
+                shadowObj.transform.localScale = new Vector3(isFinalBoss ? 2.5f : 2.0f, isFinalBoss ? 1.0f : 0.8f, 1f);
+                shadowObj.transform.SetSiblingIndex(0);
+
+                var shadowSr = shadowObj.AddComponent<SpriteRenderer>();
+                shadowSr.sprite = shadowSprite;
+                shadowSr.color = new Color(0f, 0f, 0f, 0.45f);
+                shadowSr.sortingOrder = -10;
+            }
 
             GameObject visual = new GameObject("Visual");
             visual.transform.SetParent(root.transform);
