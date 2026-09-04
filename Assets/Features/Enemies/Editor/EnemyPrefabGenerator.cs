@@ -83,8 +83,8 @@ namespace ProjectZombie.Features.Enemies.Editor
             {
                 GameObject shadowObj = new GameObject("Shadow");
                 shadowObj.transform.SetParent(root.transform, false);
-                shadowObj.transform.localPosition = new Vector3(0f, isElite ? -0.55f : (isSuicide || isTouch ? -0.35f : -0.42f), 0f);
-                shadowObj.transform.localScale = new Vector3(isElite ? 1.3f : (isSuicide || isTouch ? 0.65f : 0.85f), isElite ? 0.5f : (isSuicide || isTouch ? 0.28f : 0.35f), 1f);
+                shadowObj.transform.localPosition = new Vector3(0f, isElite ? 0.08f : 0.05f, 0f);
+                shadowObj.transform.localScale = new Vector3(isElite ? 1.3f : (isSuicide || isTouch ? 0.65f : 0.85f), isElite ? 0.45f : (isSuicide || isTouch ? 0.25f : 0.3f), 1f);
                 shadowObj.transform.SetSiblingIndex(0);
 
                 var shadowSr = shadowObj.AddComponent<SpriteRenderer>();
@@ -190,8 +190,8 @@ namespace ProjectZombie.Features.Enemies.Editor
             {
                 GameObject shadowObj = new GameObject("Shadow");
                 shadowObj.transform.SetParent(root.transform, false);
-                shadowObj.transform.localPosition = new Vector3(0f, isFinalBoss ? -0.9f : -0.75f, 0f);
-                shadowObj.transform.localScale = new Vector3(isFinalBoss ? 2.5f : 2.0f, isFinalBoss ? 1.0f : 0.8f, 1f);
+                shadowObj.transform.localPosition = new Vector3(0f, isFinalBoss ? 0.12f : 0.1f, 0f);
+                shadowObj.transform.localScale = new Vector3(isFinalBoss ? 2.5f : 2.0f, isFinalBoss ? 0.85f : 0.75f, 1f);
                 shadowObj.transform.SetSiblingIndex(0);
 
                 var shadowSr = shadowObj.AddComponent<SpriteRenderer>();

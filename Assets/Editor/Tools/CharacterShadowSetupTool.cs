@@ -87,32 +87,33 @@ namespace ProjectZombie.Editor.Tools
                 shadowObj.transform.SetSiblingIndex(0);
 
                 // 2. Tính toán Offset và Scale tương ứng với kích thước nhân vật
-                Vector3 shadowOffset = new Vector3(0f, -0.4f, 0f);
-                Vector3 shadowScale = new Vector3(0.85f, 0.35f, 1f);
+                // Vì Pivot của Sprite nhân vật nằm ở chân (Bottom-Center y = 0), bóng cần đặt sát y = 0
+                Vector3 shadowOffset = new Vector3(0f, 0.05f, 0f);
+                Vector3 shadowScale = new Vector3(0.85f, 0.3f, 1f);
 
                 if (!isPlayer)
                 {
                     // Tùy biến scale theo từng loại quái/boss
                     if (prefabName.Contains("Boss") || prefabName.Contains("DiemVuong") || prefabName.Contains("NguuDau"))
                     {
-                        shadowOffset = new Vector3(0f, -0.8f, 0f);
-                        shadowScale = new Vector3(2.2f, 0.9f, 1f);
+                        shadowOffset = new Vector3(0f, 0.1f, 0f);
+                        shadowScale = new Vector3(2.2f, 0.75f, 1f);
                     }
                     else if (prefabName.Contains("QUYNHAPTRANG"))
                     {
-                        shadowOffset = new Vector3(0f, -0.55f, 0f);
-                        shadowScale = new Vector3(1.3f, 0.5f, 1f);
+                        shadowOffset = new Vector3(0f, 0.08f, 0f);
+                        shadowScale = new Vector3(1.3f, 0.45f, 1f);
                     }
                     else if (prefabName.Contains("MATROI") || prefabName.Contains("HOALYTINH"))
                     {
-                        shadowOffset = new Vector3(0f, -0.35f, 0f);
-                        shadowScale = new Vector3(0.65f, 0.28f, 1f);
+                        shadowOffset = new Vector3(0f, 0.05f, 0f);
+                        shadowScale = new Vector3(0.65f, 0.25f, 1f);
                     }
                     else
                     {
                         // Quái thường (Ma Giáp, Ma Da...)
-                        shadowOffset = new Vector3(0f, -0.42f, 0f);
-                        shadowScale = new Vector3(0.85f, 0.35f, 1f);
+                        shadowOffset = new Vector3(0f, 0.05f, 0f);
+                        shadowScale = new Vector3(0.85f, 0.3f, 1f);
                     }
                 }
 
