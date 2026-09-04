@@ -80,7 +80,7 @@ Shader "ProjectZombie/SpriteOutline2D"
                 output.color = input.color * _Color;
 
                 #ifdef PIXELSNAP_ON
-                output.positionCS = UnityPixelSnap(output.positionCS);
+                output.positionCS.xy = floor(output.positionCS.xy / output.positionCS.w * _ScreenParams.xy + 0.5) / _ScreenParams.xy * output.positionCS.w;
                 #endif
 
                 return output;

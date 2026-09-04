@@ -157,8 +157,9 @@ namespace ProjectZombie.Features.UI
 #if ENABLE_INPUT_SYSTEM
                 if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame) pcAttackPressed = true;
                 if (UnityEngine.InputSystem.Keyboard.current != null && (UnityEngine.InputSystem.Keyboard.current.jKey.wasPressedThisFrame || UnityEngine.InputSystem.Keyboard.current.kKey.wasPressedThisFrame)) pcAttackPressed = true;
-#endif
+#elif ENABLE_LEGACY_INPUT_MANAGER
                 if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.K)) pcAttackPressed = true;
+#endif
 
                 if (pcAttackPressed)
                 {

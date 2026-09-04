@@ -118,11 +118,18 @@ namespace ProjectZombie.Features.UI
 
         private void Update()
         {
-            // Bắt phím Escape / Back button trên điện thoại Android
+            // Bắt phím Escape / Back button trên điện thoại Android chuẩn New Input System
+#if ENABLE_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                HandleHardwareBackPressed();
+            }
+#elif ENABLE_LEGACY_INPUT_MANAGER
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 HandleHardwareBackPressed();
             }
+#endif
         }
 
         public void PushScreen(BaseMetaScreenView screen)

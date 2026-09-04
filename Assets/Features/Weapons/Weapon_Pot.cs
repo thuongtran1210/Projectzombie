@@ -417,7 +417,10 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnInwardSuctionRings(Vector2 center, float startRadius, bool isEvolution)
         {
-            var ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            Sprite ringSprite = null;
+#if UNITY_EDITOR
+            ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+#endif
             if (ringSprite == null) yield break;
 
             int ringWaves = isEvolution ? 4 : 2;
@@ -464,7 +467,10 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnExpandingRing(Vector2 center, float duration, float maxRadius, Color color)
         {
-            var ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            Sprite ringSprite = null;
+#if UNITY_EDITOR
+            ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+#endif
             if (ringSprite == null) yield break;
 
             GameObject expRing = new GameObject("Expanding_Shockwave_Ring");

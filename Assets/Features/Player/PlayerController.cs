@@ -138,7 +138,29 @@ namespace ProjectZombie.Features.Player
                 rawInput = UI.DynamicVirtualJoystick.Instance.InputVector;
             }
 
-            // Fallback 2: Legacy Keyboard (WASD / Mũi tên để test nhanh trên Editor / PC)
+            // Fallback 2: Keyboard / Mouse (WASD / Mũi tên / Phím tắt)
+#if ENABLE_INPUT_SYSTEM
+            if (rawInput == Vector2.zero && UnityEngine.InputSystem.Keyboard.current != null)
+            {
+                var kb = UnityEngine.InputSystem.Keyboard.current;
+                float h = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
+                float v = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f) - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
+                if (h != 0 || v != 0)
+                {
+                    rawInput = new Vector2(h, v);
+                }
+            }
+
+            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
+
+            if (UnityEngine.InputSystem.Keyboard.current != null)
+            {
+                var kb = UnityEngine.InputSystem.Keyboard.current;
+                if (kb.spaceKey.wasPressedThisFrame) PerformDash();
+                if (kb.qKey.wasPressedThisFrame || kb.uKey.wasPressedThisFrame) _signatureSkillManager?.TryExecuteSkill();
+                if (kb.eKey.wasPressedThisFrame || kb.rKey.wasPressedThisFrame || kb.iKey.wasPressedThisFrame) _weaponManager?.TriggerEquippedRelicSkill();
+            }
+#elif ENABLE_LEGACY_INPUT_MANAGER
             if (rawInput == Vector2.zero)
             {
                 float h = Input.GetAxisRaw("Horizontal");
@@ -151,29 +173,12 @@ namespace ProjectZombie.Features.Player
 
             _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
 
-            // Fallback Dash từ phím Space
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                PerformDash();
-            }
-
-            // Fallback Signature Skill từ phím Q hoặc U
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.U))
-            {
-                if (_signatureSkillManager != null)
-                {
-                    _signatureSkillManager.TryExecuteSkill();
-                }
-            }
-
-            // Fallback Relic Active Skill từ phím E, R hoặc I (Hybrid Relics v6.0)
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.I))
-            {
-                if (_weaponManager != null)
-                {
-                    _weaponManager.TriggerEquippedRelicSkill();
-                }
-            }
+            if (Input.GetKeyDown(KeyCode.Space)) PerformDash();
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.U)) _signatureSkillManager?.TryExecuteSkill();
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.I)) _weaponManager?.TriggerEquippedRelicSkill();
+#else
+            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
+#endif
             
             // Xử lý Lật mặt hình ảnh
             if (_playerAnimator != null && _movementInput.x != 0)
