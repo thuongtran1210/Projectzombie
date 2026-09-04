@@ -37,33 +37,27 @@ namespace ProjectZombie.Features.Collectibles
             var pool = GetOrCreatePool(prefab);
             if (pool != null)
             {
-                GameObject gemObj = null;
-                while (pool.CountInactive > 0)
+                GameObject gemObj = pool.Get();
+                if (gemObj != null)
                 {
-                    gemObj = pool.Get();
-                    if (gemObj != null) break;
+                    gemObj.transform.position = position;
+                    gemObj.transform.rotation = Quaternion.identity;
+
+                    var expGem = gemObj.GetComponent<ExpGem>();
+                    if (expGem != null)
+                    {
+                        expGem.SetExpAmount(expAmount);
+                    }
+
+                    return gemObj;
                 }
-
-                if (gemObj == null)
-                {
-                    gemObj = Instantiate(prefab, transform);
-                    AttachPoolConfig(gemObj, pool);
-                }
-
-                gemObj.transform.position = position;
-                gemObj.transform.rotation = Quaternion.identity;
-
-                var expGem = gemObj.GetComponent<ExpGem>();
-                if (expGem != null)
-                {
-                    expGem.SetExpAmount(expAmount);
-                }
-
-                return gemObj;
             }
 
             // Fallback nếu không tạo được pool
-            GameObject fallbackObj = Instantiate(prefab, position, Quaternion.identity);
+            Transform fallbackParent = PoolHierarchyManager.Instance != null 
+                ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles) 
+                : transform;
+            GameObject fallbackObj = Instantiate(prefab, position, Quaternion.identity, fallbackParent);
             var fallbackGem = fallbackObj.GetComponent<ExpGem>();
             if (fallbackGem != null) fallbackGem.SetExpAmount(expAmount);
             return fallbackObj;

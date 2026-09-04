@@ -39,32 +39,26 @@ namespace ProjectZombie.Features.Collectibles
             var pool = GetOrCreatePool(targetPrefab);
             if (pool != null)
             {
-                GameObject coinObj = null;
-                while (pool.CountInactive > 0)
+                GameObject coinObj = pool.Get();
+                if (coinObj != null)
                 {
-                    coinObj = pool.Get();
-                    if (coinObj != null) break;
+                    coinObj.transform.position = position;
+                    coinObj.transform.rotation = Quaternion.identity;
+
+                    var coinDrop = coinObj.GetComponent<CoinDrop>();
+                    if (coinDrop != null)
+                    {
+                        coinDrop.SetCoinValue(amount);
+                    }
+
+                    return coinObj;
                 }
-
-                if (coinObj == null)
-                {
-                    coinObj = Instantiate(targetPrefab, transform);
-                    AttachPoolConfig(coinObj, pool);
-                }
-
-                coinObj.transform.position = position;
-                coinObj.transform.rotation = Quaternion.identity;
-
-                var coinDrop = coinObj.GetComponent<CoinDrop>();
-                if (coinDrop != null)
-                {
-                    coinDrop.SetCoinValue(amount);
-                }
-
-                return coinObj;
             }
 
-            GameObject fallbackObj = Instantiate(targetPrefab, position, Quaternion.identity);
+            Transform fallbackParent = PoolHierarchyManager.Instance != null 
+                ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles) 
+                : transform;
+            GameObject fallbackObj = Instantiate(targetPrefab, position, Quaternion.identity, fallbackParent);
             var fallbackCoin = fallbackObj.GetComponent<CoinDrop>();
             if (fallbackCoin != null) fallbackCoin.SetCoinValue(amount);
             return fallbackObj;
