@@ -12,150 +12,158 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41d564f8503fb9f46894a138ca0791b3, type: 3}
   m_Name: Level1_Timeline
   m_EditorClassIdentifier: 
-  levelName: "Man 1: U Minh Gioi"
+  levelName: "M\xE0n 1: U Minh Gi\u1EDBi"
   maxLevelDuration: 1200
   events:
-  - eventName: "Phut 00:00 - Khoi dau: Ma Giap quy binh xuat hien nen"
+  - eventName: "Ph\xFAt 00:00 - Kh\u1EDFi \u0111\u1EA7u: Ma Gi\xE1p qu\u1EF7 binh
+      xu\u1EA5t hi\u1EC7n n\u1EC1n"
     timestampSeconds: 0
     eventType: 0
     spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
     enemyAddress: E_MAGIAP
     spawnPrefabRef:
-      m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 3
-    spawnInterval: 4.0
-  - eventName: "Phut 01:00 - Ma Da tron truot tang toc ap sat"
+    spawnInterval: 4
+  - eventName: "Ph\xFAt 01:00 - Ma Da tr\u01A1n tr\u01B0\u1EE3t t\u0103ng t\u1ED1c
+      \xE1p s\xE1t"
     timestampSeconds: 60
     eventType: 0
     spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
     enemyAddress: E_MADA
     spawnPrefabRef:
-      m_AssetGUID: cc60aa0652631604ea95def9ce66ecce
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 4
     spawnInterval: 3.5
-  - eventName: "Phut 02:00 - Ma Troi bay lo lung phong ma hoa"
+  - eventName: "Ph\xFAt 02:00 - Ma Tr\u01A1i bay l\u01A1 l\u1EEDng ph\xF3ng ma h\u1ECFa"
     timestampSeconds: 120
     eventType: 0
     spawnPrefab: {fileID: 4720196618505412990, guid: 40336bbe99d02974eb09b2c9201ef4c9, type: 3}
     enemyAddress: E_MATROI
     spawnPrefabRef:
-      m_AssetGUID: 40336bbe99d02974eb09b2c9201ef4c9
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 3
-    spawnInterval: 4.0
-  - eventName: "Phut 03:00 - Bay Ma Da tran len bao vay (Burst Wave)"
+    spawnInterval: 4
+  - eventName: "Ph\xFAt 03:00 - B\u1EA7y Ma Da tr\xE0n l\xEAn bao v\xE2y (Burst Wave)"
     timestampSeconds: 180
     eventType: 1
     spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
     enemyAddress: E_MADA
     spawnPrefabRef:
-      m_AssetGUID: cc60aa0652631604ea95def9ce66ecce
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 12
     spawnInterval: 0.2
-  - eventName: "Phut 04:00 - Bay Ho Ly Tinh tinh quai lao vao tu no"
+  - eventName: "Ph\xFAt 04:00 - B\u1EA7y H\u1ED3 Ly Tinh tinh qu\xE1i lao v\xE0o
+      t\u1EF1 n\u1ED5"
     timestampSeconds: 240
     eventType: 0
     spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
     enemyAddress: E_HOALYTINH
     spawnPrefabRef:
-      m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 4
-    spawnInterval: 4.0
-  - eventName: "Phut 05:00 - ELITE QUY NHAP TRANG XUAT HIEN"
+    spawnInterval: 4
+  - eventName: "Ph\xFAt 05:00 - ELITE QU\u1EF6 NH\u1EACP TR\xC0NG XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 300
     eventType: 1
     spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
     enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
-      m_AssetGUID: 944cc003ebcffde4a8add0899773079a
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 1
-    spawnInterval: 0.0
-  - eventName: "Phut 06:00 - Ma Doi No len lut tho tien chay tron"
+    spawnInterval: 0
+  - eventName: "Ph\xFAt 06:00 - Ma \u0110\xF2i N\u1EE3 l\xE9n l\xFAt th\xF3 ti\u1EC1n
+      ch\u1EA1y tr\u1ED1n"
     timestampSeconds: 360
     eventType: 0
     spawnPrefab: {fileID: 4338019940683393192, guid: 88a398719a324b91950e1fa41890e101, type: 3}
     enemyAddress: E_MADOINO
     spawnPrefabRef:
-      m_AssetGUID: 88a398719a324b91950e1fa41890e101
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 2
-    spawnInterval: 12.0
-  - eventName: "Phut 08:00 - Bao Ma Hoa & Ho Ly Tinh bao vay (Burst Wave)"
+    spawnInterval: 12
+  - eventName: "Ph\xFAt 08:00 - B\xE3o Ma H\u1ECFa & H\u1ED3 Ly Tinh bao v\xE2y (Burst
+      Wave)"
     timestampSeconds: 480
     eventType: 1
     spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
     enemyAddress: E_HOALYTINH
     spawnPrefabRef:
-      m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 16
     spawnInterval: 0.2
-  - eventName: "Phut 10:00 - MID-BOSS NGUU DAU MA DIEN XUAT HIEN"
+  - eventName: "Ph\xFAt 10:00 - MID-BOSS NG\u01AFU \u0110\u1EA6U M\xC3 DI\u1EC6N
+      XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 600
     eventType: 3
     spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
     enemyAddress: Boss_NguuDauMaDien
     spawnPrefabRef:
-      m_AssetGUID: 193a344b7a316cd42b5e32fc47df8ba7
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 1
-    spawnInterval: 0.0
-  - eventName: "Phut 12:00 - Doi hinh Quy Binh & Cuong Thi tong luc"
+    spawnInterval: 0
+  - eventName: "Ph\xFAt 12:00 - \u0110\u1ED9i h\xECnh Qu\u1EF7 Binh & C\u01B0\u01A1ng
+      Thi t\u1ED5ng l\u1EF1c"
     timestampSeconds: 720
     eventType: 0
     spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
     enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
-      m_AssetGUID: 944cc003ebcffde4a8add0899773079a
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 2
-    spawnInterval: 6.0
-  - eventName: "Phut 15:00 - Dai Bao Yeu Ma tong luc (Multi-Burst Wave)"
+    spawnInterval: 6
+  - eventName: "Ph\xFAt 15:00 - \u0110\u1EA1i B\xE3o Y\xEAu Ma t\u1ED5ng l\u1EF1c
+      (Multi-Burst Wave)"
     timestampSeconds: 900
     eventType: 1
     spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
     enemyAddress: E_MAGIAP
     spawnPrefabRef:
-      m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 25
     spawnInterval: 0.1
-  - eventName: "Phut 20:00 - FINAL BOSS DIEM VUONG GIANG LAM"
+  - eventName: "Ph\xFAt 20:00 - FINAL BOSS DI\xCAM V\u01AF\u01A0NG GI\xC1NG L\xC2M"
     timestampSeconds: 1200
     eventType: 3
     spawnPrefab: {fileID: 1348244042159176007, guid: bb55896b976f62a4cb0393430a4d8e0f, type: 3}
     enemyAddress: Boss_DiemVuong
     spawnPrefabRef:
-      m_AssetGUID: bb55896b976f62a4cb0393430a4d8e0f
+      m_AssetGUID: 
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     spawnCount: 1
-    spawnInterval: 0.0
+    spawnInterval: 0
