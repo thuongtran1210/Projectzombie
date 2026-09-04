@@ -93,9 +93,9 @@ namespace ProjectZombie.Features.Collectibles
             float maxDistSq1 = -1f;
             float maxDistSq2 = -1f;
 
-            for (int i = 0; i < _activeCoins.Count; i++)
+            for (int i = 0; i < ActiveItems.Count; i++)
             {
-                var coin = _activeCoins[i];
+                var coin = ActiveItems[i];
                 if (coin == null || !coin.IsIdle) continue;
 
                 float distSq = (coin.transform.position - playerPos).sqrMagnitude;
@@ -137,9 +137,10 @@ namespace ProjectZombie.Features.Collectibles
         {
             if (player == null) return;
 
-            for (int i = _activeCoins.Count - 1; i >= 0; i--)
+            for (int i = ActiveItems.Count - 1; i >= 0; i--)
             {
-                var coin = _activeCoins[i];
+                if (i >= ActiveItems.Count) continue;
+                var coin = ActiveItems[i];
                 if (coin != null && coin.IsActiveOnGround)
                 {
                     coin.StartMagnetEffect(player);

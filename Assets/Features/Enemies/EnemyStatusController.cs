@@ -276,6 +276,27 @@ namespace ProjectZombie.Features.Enemies
         }
 
         /// <summary>
+        /// Xóa sạch toàn bộ hiệu ứng trạng thái (dùng khi quái vật được trả về hoặc lấy ra từ Pool).
+        /// </summary>
+        public void ClearAllEffects()
+        {
+            for (int i = _activeEffects.Count - 1; i >= 0; i--)
+            {
+                if (i >= _activeEffects.Count) continue;
+                var effect = _activeEffects[i];
+                if (_handlers.TryGetValue(effect.Type, out var handler) && handler != null)
+                {
+                    handler.OnRemoved(_enemy, effect);
+                }
+                OnStatusChanged?.Invoke(effect.Type, false);
+            }
+            _activeEffects.Clear();
+            _updateBuffer.Clear();
+            _clearBuffer.Clear();
+            RecalculateStatus();
+        }
+
+        /// <summary>
         /// Hook xử lý sát thương nhận vào để kích hoạt Wake-up Crit khi đang ngủ.
         /// </summary>
         public float ProcessIncomingDamageMultiplier()

@@ -9,7 +9,23 @@ namespace ProjectZombie.Core.Pooling
     /// </summary>
     public class PoolHierarchyManager : MonoBehaviour
     {
-        public static PoolHierarchyManager Instance { get; private set; }
+        private static PoolHierarchyManager _instance;
+        public static PoolHierarchyManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindFirstObjectByType<PoolHierarchyManager>();
+                    if (_instance == null)
+                    {
+                        var go = new GameObject("--- [POOL_HIERARCHY_ROOT] ---");
+                        _instance = go.AddComponent<PoolHierarchyManager>();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         public enum PoolCategory
         {
@@ -24,12 +40,12 @@ namespace ProjectZombie.Core.Pooling
 
         private void Awake()
         {
-            if (Instance == null)
+            if (_instance == null)
             {
-                Instance = this;
+                _instance = this;
                 InitializeRoots();
             }
-            else
+            else if (_instance != this)
             {
                 Destroy(gameObject);
             }
@@ -37,9 +53,9 @@ namespace ProjectZombie.Core.Pooling
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
                 _categoryRoots.Clear();
             }
         }

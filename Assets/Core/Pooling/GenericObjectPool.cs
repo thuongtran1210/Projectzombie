@@ -42,7 +42,7 @@ namespace ProjectZombie.Core.Pooling
             instance.gameObject.SetActive(true);
             if (instance is IPoolable poolable)
             {
-                poolable.OnSpawnFromPool();
+                poolable.OnSpawn();
             }
         }
 
@@ -50,7 +50,7 @@ namespace ProjectZombie.Core.Pooling
         {
             if (instance is IPoolable poolable)
             {
-                poolable.OnReturnToPool();
+                poolable.OnDespawn();
             }
             instance.gameObject.SetActive(false);
         }

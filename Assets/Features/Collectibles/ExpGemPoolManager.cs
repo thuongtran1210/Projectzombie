@@ -133,9 +133,10 @@ namespace ProjectZombie.Features.Collectibles
         {
             if (player == null) return;
 
-            for (int i = _activeGems.Count - 1; i >= 0; i--)
+            for (int i = ActiveItems.Count - 1; i >= 0; i--)
             {
-                var gem = _activeGems[i];
+                if (i >= ActiveItems.Count) continue;
+                var gem = ActiveItems[i];
                 if (gem != null && gem.IsActiveOnGround)
                 {
                     gem.StartMagnetEffect(player);
