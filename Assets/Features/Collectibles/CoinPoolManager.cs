@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Pool;
+using ProjectZombie.Core.Pooling;
 
 namespace ProjectZombie.Features.Collectibles
 {
