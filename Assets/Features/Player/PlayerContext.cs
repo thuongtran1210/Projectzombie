@@ -3,6 +3,7 @@ using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player.Mechanics;
 using ProjectZombie.Features.Player.Skills;
+using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
 {
@@ -23,7 +24,7 @@ namespace ProjectZombie.Features.Player
         public SignatureSkillManager SignatureSkillManager { get; }
         public CharacterCombat Combat { get; }
         public PlayerController Controller { get; }
-        public Core.PlayerInputReader InputReader { get; }
+        public PlayerInputReader InputReader { get; }
 
         public PlayerContext(GameObject playerObject)
         {
@@ -41,7 +42,7 @@ namespace ProjectZombie.Features.Player
                 SignatureSkillManager = playerObject.GetComponent<SignatureSkillManager>();
                 Combat = playerObject.GetComponent<CharacterCombat>();
                 Controller = playerObject.GetComponent<PlayerController>();
-                InputReader = playerObject.GetComponent<Core.PlayerInputReader>();
+                InputReader = playerObject.GetComponent<PlayerInputReader>();
 
                 ValidateComponents();
             }

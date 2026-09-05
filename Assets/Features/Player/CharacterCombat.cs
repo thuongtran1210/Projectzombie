@@ -3,6 +3,7 @@ using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Juice;
 using ProjectZombie.Features.Projectiles;
+using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
 {
@@ -66,13 +67,13 @@ namespace ProjectZombie.Features.Player
 
         [SerializeField] private CombatAimIndicator aimIndicator;
 
-        private Core.PlayerInputReader _inputReader;
+        private PlayerInputReader _inputReader;
 
         private void Awake()
         {
             _playerStats = GetComponent<PlayerStats>();
             _rb = GetComponent<Rigidbody2D>();
-            _inputReader = GetComponent<Core.PlayerInputReader>();
+            _inputReader = GetComponent<PlayerInputReader>();
             if (playerAnimator == null) playerAnimator = GetComponent<PlayerAnimator>();
             if (playerController == null) playerController = GetComponent<PlayerController>();
             if (firePoint == null) firePoint = transform;
@@ -97,7 +98,7 @@ namespace ProjectZombie.Features.Player
         {
             if (_inputReader == null)
             {
-                _inputReader = GetComponent<Core.PlayerInputReader>();
+                _inputReader = GetComponent<PlayerInputReader>();
             }
 
             if (_inputReader != null)

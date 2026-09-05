@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using ProjectZombie.Features.Player.Core;
+using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
 {

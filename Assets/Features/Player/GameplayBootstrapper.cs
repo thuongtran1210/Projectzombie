@@ -5,6 +5,7 @@ using ProjectZombie.Features.UI.StatsAndSkills;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Arena;
 using ProjectZombie.Features.Weapons;
+using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
 {
@@ -160,10 +161,10 @@ namespace ProjectZombie.Features.Player
             _activePlayerInstance.SetActive(true);
 
             // Tự động gắn PlayerInputReader nếu chưa có
-            var inputReader = _activePlayerInstance.GetComponent<Core.PlayerInputReader>();
+            var inputReader = _activePlayerInstance.GetComponent<PlayerInputReader>();
             if (inputReader == null)
             {
-                inputReader = _activePlayerInstance.AddComponent<Core.PlayerInputReader>();
+                inputReader = _activePlayerInstance.AddComponent<PlayerInputReader>();
             }
 
             // Tự động gắn và cấu hình CharacterCombat nếu chưa có

@@ -1,5 +1,7 @@
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player.Stats;
+using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Core.Save;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -128,15 +130,15 @@ namespace ProjectZombie.Features.Player
         /// Nạp toàn bộ chỉ số vĩnh viễn đã nâng cấp tại Miếu Tứ Bất Tử.
         /// </summary>
         public void ApplyPermanentUpgrades(
-            ProjectZombie.Features.MetaProgression.MetaProgressionSaveData customSaveData = null, 
-            ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData customTreeData = null)
+            MetaProgressionSaveData customSaveData = null, 
+            PermanentUpgradeTreeData customTreeData = null)
         {
             var saveData = customSaveData;
             if (saveData == null)
             {
-                saveData = ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance != null 
-                    ? ProjectZombie.Features.MetaProgression.MetaCurrencyManager.Instance.GetSaveData() 
-                    : Core.Save.SaveSystem.Load();
+                saveData = MetaCurrencyManager.Instance != null 
+                    ? MetaCurrencyManager.Instance.GetSaveData() 
+                    : SaveSystem.Load();
             }
 
             if (saveData == null || saveData.upgradeNodeLevels == null || saveData.upgradeNodeLevels.Length == 0)
@@ -145,11 +147,11 @@ namespace ProjectZombie.Features.Player
             var treeData = customTreeData;
             if (treeData == null)
             {
-                treeData = Resources.Load<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
 #if UNITY_EDITOR
                 if (treeData == null)
                 {
-                    treeData = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>("Assets/_Data/Meta/PermanentUpgradeTree.asset");
+                    treeData = UnityEditor.AssetDatabase.LoadAssetAtPath<PermanentUpgradeTreeData>("Assets/_Data/Meta/PermanentUpgradeTree.asset");
                 }
 #endif
             }

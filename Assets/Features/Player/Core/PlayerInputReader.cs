@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectZombie.Features.Shared;
 
-namespace ProjectZombie.Features.Player.Core
+namespace ProjectZombie.Features.Player.Input
 {
     /// <summary>
     /// Service quản lý và tập trung toàn bộ nguồn Input (New Input System, Legacy Input, Mobile Joystick, UI Buttons).
