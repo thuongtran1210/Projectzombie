@@ -159,6 +159,13 @@ namespace ProjectZombie.Features.Player
             _activePlayerInstance.name = playerPrefab.name;
             _activePlayerInstance.SetActive(true);
 
+            // Tự động gắn PlayerInputReader nếu chưa có
+            var inputReader = _activePlayerInstance.GetComponent<Core.PlayerInputReader>();
+            if (inputReader == null)
+            {
+                inputReader = _activePlayerInstance.AddComponent<Core.PlayerInputReader>();
+            }
+
             // Tự động gắn và cấu hình CharacterCombat nếu chưa có
             var combat = _activePlayerInstance.GetComponent<CharacterCombat>();
             if (combat == null)

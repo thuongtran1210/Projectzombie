@@ -66,10 +66,13 @@ namespace ProjectZombie.Features.Player
 
         [SerializeField] private CombatAimIndicator aimIndicator;
 
+        private Core.PlayerInputReader _inputReader;
+
         private void Awake()
         {
             _playerStats = GetComponent<PlayerStats>();
             _rb = GetComponent<Rigidbody2D>();
+            _inputReader = GetComponent<Core.PlayerInputReader>();
             if (playerAnimator == null) playerAnimator = GetComponent<PlayerAnimator>();
             if (playerController == null) playerController = GetComponent<PlayerController>();
             if (firePoint == null) firePoint = transform;
@@ -88,6 +91,32 @@ namespace ProjectZombie.Features.Player
             {
                 aimIndicator.Initialize(attackConfig);
             }
+        }
+
+        private void OnEnable()
+        {
+            if (_inputReader == null)
+            {
+                _inputReader = GetComponent<Core.PlayerInputReader>();
+            }
+
+            if (_inputReader != null)
+            {
+                _inputReader.OnAttackTriggered += HandleAttackTriggered;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_inputReader != null)
+            {
+                _inputReader.OnAttackTriggered -= HandleAttackTriggered;
+            }
+        }
+
+        private void HandleAttackTriggered()
+        {
+            TriggerAttack();
         }
 
         private void EnsureAttackConfigFallback()
@@ -180,40 +209,6 @@ namespace ProjectZombie.Features.Player
             if (!GameStateManager.IsPlaying) return;
 
             UpdateAimIndicator();
-
-            // Fallback bấm chuột trái hoặc phím J/K/Z/Ctrl để tấn công khi chơi trên PC / Editor
-#if ENABLE_INPUT_SYSTEM
-            bool isAttackInput = false;
-            if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                if (UnityEngine.EventSystems.EventSystem.current == null || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                {
-                    isAttackInput = true;
-                }
-            }
-            else if (UnityEngine.InputSystem.Keyboard.current != null)
-            {
-                var kb = UnityEngine.InputSystem.Keyboard.current;
-                if (kb.jKey.wasPressedThisFrame || kb.zKey.wasPressedThisFrame || kb.leftCtrlKey.wasPressedThisFrame)
-                {
-                    isAttackInput = true;
-                }
-            }
-
-            if (isAttackInput)
-            {
-                TriggerAttack();
-            }
-#elif ENABLE_LEGACY_INPUT_MANAGER
-            if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            {
-                TriggerAttack();
-            }
-            else if (Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.LeftControl))
-            {
-                TriggerAttack();
-            }
-#endif
 
             // Tự động reset combo về nhát 1 nếu quá thời gian chờ (Combo Window)
             float resetWindow = attackConfig != null ? attackConfig.comboResetWindow : 1.0f;

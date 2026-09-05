@@ -23,6 +23,7 @@ namespace ProjectZombie.Features.Player
         public SignatureSkillManager SignatureSkillManager { get; }
         public CharacterCombat Combat { get; }
         public PlayerController Controller { get; }
+        public Core.PlayerInputReader InputReader { get; }
 
         public PlayerContext(GameObject playerObject)
         {
@@ -40,6 +41,7 @@ namespace ProjectZombie.Features.Player
                 SignatureSkillManager = playerObject.GetComponent<SignatureSkillManager>();
                 Combat = playerObject.GetComponent<CharacterCombat>();
                 Controller = playerObject.GetComponent<PlayerController>();
+                InputReader = playerObject.GetComponent<Core.PlayerInputReader>();
 
                 ValidateComponents();
             }

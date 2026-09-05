@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using ProjectZombie.Features.Player.Core;
 
 namespace ProjectZombie.Features.Player
 {
@@ -8,7 +9,7 @@ namespace ProjectZombie.Features.Player
     [RequireComponent(typeof(PlayerMagnetTrigger))]
     public class PlayerController : MonoBehaviour
     {
-        [Header("Input Actions")]
+        [Header("Input Configuration")]
         [Tooltip("Kéo thả Input Action cho di chuyển (Vector2)")]
         [SerializeField] private InputActionReference moveAction;
         [Tooltip("Kéo thả Input Action cho lướt (Button)")]
@@ -20,29 +21,39 @@ namespace ProjectZombie.Features.Player
 
         private Rigidbody2D _rb;
         private PlayerStats _playerStats;
-        
+        private PlayerInputReader _inputReader;
+        private PlayerAnimator _playerAnimator;
+        private Skills.SignatureSkillManager _signatureSkillManager;
+        private Weapons.WeaponManager _weaponManager;
+
         private Vector2 _movementInput;
         private float _lastDashTime;
         private bool _isDashing;
         private float _dashEndTime;
         private Vector2 _dashDirection;
 
-        private PlayerAnimator _playerAnimator;
-        private Skills.SignatureSkillManager _signatureSkillManager;
-        private Weapons.WeaponManager _weaponManager;
+        private bool _isAttacking;
+        private float _attackSlowdownEndTime;
+
+        private float _slowMultiplier = 1f;
+        private Coroutine _slowCoroutine;
 
         public static PlayerController Instance { get; private set; }
         public float DashDuration => dashDuration;
         public float LastDashTime => _lastDashTime;
         public Vector2 MovementInput => _movementInput;
         public bool IsDashing => _isDashing;
+        public bool IsAttacking => _isAttacking;
         public float FacingDirection => _playerAnimator != null ? _playerAnimator.FacingDirection : (transform.localScale.x >= 0 ? 1f : -1f);
         public Vector2 FacingVector => new Vector2(FacingDirection, 0f);
+        public float CurrentSlowMultiplier => _slowMultiplier;
+        public PlayerInputReader InputReader => _inputReader;
 
         /// <summary>
         /// Sự kiện phát ra khi nhân vật thực hiện kỹ năng Dash.
         /// </summary>
         public event System.Action OnDashed;
+        public event System.Action<bool, float> OnSlowStatusChanged;
 
         private void Awake()
         {
@@ -53,6 +64,16 @@ namespace ProjectZombie.Features.Player
             _playerAnimator = GetComponent<PlayerAnimator>();
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
             _weaponManager = GetComponent<Weapons.WeaponManager>();
+
+            // Khởi tạo InputReader tập trung
+            _inputReader = GetComponent<PlayerInputReader>();
+            if (_inputReader == null)
+            {
+                _inputReader = gameObject.AddComponent<PlayerInputReader>();
+            }
+
+            if (moveAction != null) _inputReader.SetMoveAction(moveAction);
+            if (dashAction != null) _inputReader.SetDashAction(dashAction);
 
             if (GetComponent<Visuals.PlayerStatusVisuals>() == null)
             {
@@ -72,15 +93,13 @@ namespace ProjectZombie.Features.Player
 
         private void OnEnable()
         {
-            if (moveAction != null)
+            if (_inputReader != null)
             {
-                moveAction.action.Enable();
+                _inputReader.OnDashTriggered += HandleDashTriggered;
+                _inputReader.OnSignatureSkillTriggered += HandleSignatureSkillTriggered;
+                _inputReader.OnRelicSkillTriggered += HandleRelicSkillTriggered;
             }
-            if (dashAction != null)
-            {
-                dashAction.action.Enable();
-                dashAction.action.performed += OnDashPerformed;
-            }
+
             if (_signatureSkillManager != null)
             {
                 _signatureSkillManager.OnSkillExecuted += OnSkillExecuted;
@@ -89,19 +108,32 @@ namespace ProjectZombie.Features.Player
 
         private void OnDisable()
         {
-            if (moveAction != null)
+            if (_inputReader != null)
             {
-                moveAction.action.Disable();
+                _inputReader.OnDashTriggered -= HandleDashTriggered;
+                _inputReader.OnSignatureSkillTriggered -= HandleSignatureSkillTriggered;
+                _inputReader.OnRelicSkillTriggered -= HandleRelicSkillTriggered;
             }
-            if (dashAction != null)
-            {
-                dashAction.action.Disable();
-                dashAction.action.performed -= OnDashPerformed;
-            }
+
             if (_signatureSkillManager != null)
             {
                 _signatureSkillManager.OnSkillExecuted -= OnSkillExecuted;
             }
+        }
+
+        private void HandleDashTriggered()
+        {
+            PerformDash();
+        }
+
+        private void HandleSignatureSkillTriggered()
+        {
+            _signatureSkillManager?.TryExecuteSkill();
+        }
+
+        private void HandleRelicSkillTriggered()
+        {
+            _weaponManager?.TriggerEquippedRelicSkill();
         }
 
         private void OnSkillExecuted()
@@ -125,72 +157,15 @@ namespace ProjectZombie.Features.Player
                 return; // Khi đang lướt thì không nhận input di chuyển mới
             }
 
-            Vector2 rawInput = Vector2.zero;
+            // Đọc Input di chuyển từ PlayerInputReader
+            _movementInput = _inputReader != null ? _inputReader.MovementInput : Vector2.zero;
 
-            if (moveAction != null && moveAction.action != null && moveAction.action.enabled)
-            {
-                rawInput = moveAction.action.ReadValue<Vector2>();
-            }
-
-            // Fallback 1: DynamicVirtualJoystick (Mobile OnScreen)
-            if (rawInput == Vector2.zero && UI.DynamicVirtualJoystick.Instance != null)
-            {
-                rawInput = UI.DynamicVirtualJoystick.Instance.InputVector;
-            }
-
-            // Fallback 2: Keyboard / Mouse (WASD / Mũi tên / Phím tắt)
-#if ENABLE_INPUT_SYSTEM
-            if (rawInput == Vector2.zero && UnityEngine.InputSystem.Keyboard.current != null)
-            {
-                var kb = UnityEngine.InputSystem.Keyboard.current;
-                float h = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
-                float v = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f) - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
-                if (h != 0 || v != 0)
-                {
-                    rawInput = new Vector2(h, v);
-                }
-            }
-
-            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
-
-            if (UnityEngine.InputSystem.Keyboard.current != null)
-            {
-                var kb = UnityEngine.InputSystem.Keyboard.current;
-                if (kb.spaceKey.wasPressedThisFrame) PerformDash();
-                if (kb.qKey.wasPressedThisFrame || kb.uKey.wasPressedThisFrame) _signatureSkillManager?.TryExecuteSkill();
-                if (kb.eKey.wasPressedThisFrame || kb.rKey.wasPressedThisFrame || kb.iKey.wasPressedThisFrame) _weaponManager?.TriggerEquippedRelicSkill();
-            }
-#elif ENABLE_LEGACY_INPUT_MANAGER
-            if (rawInput == Vector2.zero)
-            {
-                float h = Input.GetAxisRaw("Horizontal");
-                float v = Input.GetAxisRaw("Vertical");
-                if (h != 0 || v != 0)
-                {
-                    rawInput = new Vector2(h, v);
-                }
-            }
-
-            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
-
-            if (Input.GetKeyDown(KeyCode.Space)) PerformDash();
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.U)) _signatureSkillManager?.TryExecuteSkill();
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.I)) _weaponManager?.TriggerEquippedRelicSkill();
-#else
-            _movementInput = rawInput.magnitude > 1f ? rawInput.normalized : rawInput;
-#endif
-            
-            // Xử lý Lật mặt hình ảnh
+            // Xử lý Lật mặt hình ảnh theo hướng di chuyển
             if (_playerAnimator != null && _movementInput.x != 0)
             {
                 _playerAnimator.FlipToDirection(_movementInput.x);
             }
         }
-
-        private bool _isAttacking;
-        private float _attackSlowdownEndTime;
-
-        public bool IsAttacking => _isAttacking;
 
         /// <summary>
         /// Thông báo từ Vũ khí chính khi bắt đầu tung 1 đòn chém.
@@ -263,11 +238,6 @@ namespace ProjectZombie.Features.Player
             }
         }
 
-        private void OnDashPerformed(InputAction.CallbackContext context)
-        {
-            PerformDash();
-        }
-
         /// <summary>
         /// Kích hoạt kỹ năng Lướt (Dash). Có thể gọi từ Input Action hoặc UI Dash Button trên mobile.
         /// Hỗ trợ Dash Cancel (hủy ngay đòn chém đang dở để né đòn).
@@ -308,12 +278,6 @@ namespace ProjectZombie.Features.Player
                 global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(transform.position);
             }
         }
-
-        private float _slowMultiplier = 1f;
-        private Coroutine _slowCoroutine;
-
-        public float CurrentSlowMultiplier => _slowMultiplier;
-        public event System.Action<bool, float> OnSlowStatusChanged;
 
         /// <summary>
         /// Áp dụng hiệu ứng làm chậm (% slowPercent) trong khoảng thời gian duration (giây).
@@ -380,4 +344,3 @@ namespace ProjectZombie.Features.Player
         }
     }
 }
-
