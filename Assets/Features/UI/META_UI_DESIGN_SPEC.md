@@ -51,7 +51,7 @@ graph TD
 ---
 
 ### 🧑 2.2. Điện Anh Hùng (Character Selection Panel)
-- **Dữ liệu (Data-Driven):** Đọc trực tiếp từ danh sách `CharacterSelectionData.asset`.
+- **Dữ liệu (Data-Driven):** Đọc trực tiếp từ danh mục `CharacterDatabase.asset` (Catalog các file `CharacterDataSO` độc lập).
 - **Thành phần hiển thị:**
   - Avatar nhân vật to bản, tên nhân vật, danh hiệu dân gian.
   - **Hệ Ngũ Hành Khởi Điểm:** Badge màu ngũ hành (Kim / Mộc / Thủy / Hỏa / Thổ / Âm Dương).

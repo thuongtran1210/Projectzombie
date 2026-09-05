@@ -326,17 +326,17 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             var hero = RunLoadoutState.SelectedCharacter;
             if (hero == null)
             {
-                var selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+                var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
 #if UNITY_EDITOR
-                if (selectionData == null)
+                if (charDb == null)
                 {
-                    selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                    charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
                 }
 #endif
-                if (selectionData != null && selectionData.Characters != null && selectionData.Characters.Count > 0)
+                if (charDb != null && charDb.Characters != null && charDb.Characters.Count > 0)
                 {
-                    int idx = Mathf.Clamp(selectionData.SelectedCharacterIndex, 0, selectionData.Characters.Count - 1);
-                    hero = selectionData.Characters[idx];
+                    var so = charDb.GetCharacterByIndex(0);
+                    if (so != null) hero = so.ToEntry();
                 }
             }
 

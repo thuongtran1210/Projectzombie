@@ -28,8 +28,12 @@ namespace ProjectZombie.Features.UI
     /// </summary>
     public class CharacterSelectionPresenter : MonoBehaviour
     {
+        [Header("View Reference")]
         [SerializeField] private CharacterSelectionView _view;
-        [SerializeField] private ProjectZombie.Features.Player.CharacterSelectionData _selectionData;
+
+        [Header("Character Database (Drag & Drop SO)")]
+        [Tooltip("Database nhân vật chuẩn hóa dạng kéo thả từng file CharacterDataSO")]
+        [SerializeField] private CharacterDatabaseSO _characterDatabase;
 
         public event System.Action<GameObject> OnCharacterSelected;
 
@@ -51,7 +55,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnNextClicked += OnNextCharacter;
                 _view.OnPrevClicked += OnPrevCharacter;
                 _view.OnSelectClicked += OnSelectCharacter;
-                _view.OnHeroTabClicked += OnSelectHeroIndex;
+                _view.OnHeroTabClicked += OnHeroTabSelected;
             }
         }
 
@@ -76,29 +80,31 @@ namespace ProjectZombie.Features.UI
                 _view.OnNextClicked -= OnNextCharacter;
                 _view.OnPrevClicked -= OnPrevCharacter;
                 _view.OnSelectClicked -= OnSelectCharacter;
-                _view.OnHeroTabClicked -= OnSelectHeroIndex;
+                _view.OnHeroTabClicked -= OnHeroTabSelected;
             }
         }
 
         private void InitCharacterData()
         {
-            if (_selectionData == null)
+            // 1. Ưu tiên nạp từ CharacterDatabaseSO (Chuẩn Drag & Drop)
+            if (_characterDatabase == null)
             {
-                _selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+                _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
 #if UNITY_EDITOR
-                if (_selectionData == null)
+                if (_characterDatabase == null)
                 {
-                    _selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                    _characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
                 }
 #endif
             }
 
-            if (_selectionData != null && _selectionData.Characters != null && _selectionData.Characters.Count > 0)
+            if (_characterDatabase != null && _characterDatabase.Characters != null && _characterDatabase.Characters.Count > 0)
             {
-                var list = _selectionData.Characters;
+                var list = _characterDatabase.Characters;
                 _characters = new CharacterInfo[list.Count];
                 for (int i = 0; i < list.Count; i++)
                 {
+                    if (list[i] == null) continue;
                     Sprite av = list[i].avatar;
                     if (av == null && list[i].playerPrefab != null)
                     {
@@ -127,7 +133,7 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            Debug.LogWarning($"[{nameof(CharacterSelectionPresenter)}] _selectionData chưa được gán hoặc danh sách trống! Kiểm tra Inspector.");
+            Debug.LogWarning($"[{nameof(CharacterSelectionPresenter)}] Chưa gán Database Nhân Vật! Kiểm tra Inspector.");
             _characters = new CharacterInfo[0];
         }
 
@@ -156,11 +162,52 @@ namespace ProjectZombie.Features.UI
 
             GameObject chosenPrefab = null;
 
-            // Single Source of Truth: Lấy trực tiếp từ CharacterSelectionData
-            if (_selectionData != null && _selectionData.Characters != null && _currentIndex < _selectionData.Characters.Count)
+            // Single Source of Truth: Ưu tiên lấy trực tiếp từ CharacterDatabaseSO
+            if (_characterDatabase != null && _characterDatabase.Characters != null && _currentIndex < _characterDatabase.Characters.Count)
             {
-                chosenPrefab = _selectionData.Characters[_currentIndex].playerPrefab;
-                _selectionData.SelectCharacter(_currentIndex);
+                var so = _characterDatabase.Characters[_currentIndex];
+                if (so != null)
+                {
+                    chosenPrefab = so.playerPrefab;
+                    var primaryW = so.defaultPrimaryWeapon;
+                    var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>(so.defaultRelics);
+                    if (so.defaultRelic != null && !relics.Contains(so.defaultRelic)) relics.Insert(0, so.defaultRelic);
+
+                    // Chuyển đổi sang CharacterEntry để nạp vào RunLoadoutState
+                    var entry = new CharacterEntry
+                    {
+                        characterId = so.characterId,
+                        characterName = so.characterName,
+                        element = so.element,
+                        elementHexColor = so.elementHexColor,
+                        description = so.description,
+                        baseMaxHealth = so.baseMaxHealth,
+                        baseMoveSpeed = so.baseMoveSpeed,
+                        baseDamage = so.baseDamage,
+                        baseCritChance = so.baseCritChance,
+                        baseDashCooldown = so.baseDashCooldown,
+                        uiAtkRatio = so.uiAtkRatio,
+                        uiSpdRatio = so.uiSpdRatio,
+                        uiDefRatio = so.uiDefRatio,
+                        signatureSkillName = so.signatureSkillName,
+                        signatureSkillDesc = so.signatureSkillDesc,
+                        passiveTraitName = so.passiveTraitName,
+                        passiveTraitDesc = so.passiveTraitDesc,
+                        avatar = so.avatar,
+                        playerPrefab = so.playerPrefab,
+                        basicAttackConfig = so.basicAttackConfig,
+                        defaultRelic = so.defaultRelic,
+                        defaultPrimaryWeapon = so.defaultPrimaryWeapon,
+                        defaultRelics = so.defaultRelics
+                    };
+
+                    RunLoadoutState.SetCharacter(entry);
+                    if (RunLoadoutState.SelectedPrimaryWeapon == null)
+                    {
+                        RunLoadoutState.SetLoadout(entry, primaryW, relics);
+                    }
+                    OnCharacterSelected?.Invoke(chosenPrefab);
+                }
             }
 
             #if UNITY_EDITOR
@@ -183,49 +230,6 @@ namespace ProjectZombie.Features.UI
             {
                 Debug.LogError($"[{nameof(CharacterSelectionPresenter)}] Không tìm thấy Prefab của nhân vật tại index {_currentIndex}!");
             }
-            // Thiết lập RunLoadoutState cho trận đấu (Action RPG v5.0)
-            if (_selectionData != null && _currentIndex < _selectionData.Characters.Count)
-            {
-                var charEntry = _selectionData.Characters[_currentIndex];
-                
-                var primaryW = charEntry.defaultPrimaryWeapon;
-                var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>(charEntry.defaultRelics);
-
-                #if UNITY_EDITOR
-                if (primaryW == null || relics.Count == 0)
-                {
-                    // Fallback tìm kiếm vũ khí phù hợp theo hệ nhân vật
-                    var allWeapons = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
-                    foreach (var guid in allWeapons)
-                    {
-                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                        var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(path);
-                        if (wd == null) continue;
-
-                        if (primaryW == null && (wd.weaponId == "W002" || wd.name.Contains("Bút") || wd.name.Contains("Kiếm") || wd.name.Contains("PhiTiêu")))
-                        {
-                            primaryW = wd;
-                        }
-                        else if (relics.Count < 3 && (wd.weaponId == "W003" || wd.weaponId == "W004" || wd.weaponId == "W005"))
-                        {
-                            if (!relics.Contains(wd)) relics.Add(wd);
-                        }
-                    }
-                }
-                #endif
-
-                RunLoadoutState.SetCharacter(charEntry);
-                if (RunLoadoutState.SelectedPrimaryWeapon == null)
-                {
-                    RunLoadoutState.SetLoadout(charEntry, primaryW, relics);
-                }
-                OnCharacterSelected?.Invoke(charEntry?.playerPrefab);
-            }
-
-            if (_selectionData != null)
-            {
-                _selectionData.SelectedCharacterIndex = _currentIndex;
-            }
 
             // Cập nhật Sảnh Hoàng Tuyền
             var mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
@@ -245,7 +249,7 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void OnSelectHeroIndex(int heroIndex)
+        private void OnHeroTabSelected(int heroIndex)
         {
             if (_characters == null || heroIndex < 0 || heroIndex >= _characters.Length) return;
             if (_currentIndex == heroIndex) return;
@@ -265,9 +269,9 @@ namespace ProjectZombie.Features.UI
 
             RenderTexture previewTex = null;
             GameObject currentPrefab = null;
-            if (_selectionData != null && _selectionData.Characters != null && _currentIndex < _selectionData.Characters.Count)
+            if (_characterDatabase != null && _characterDatabase.Characters != null && _currentIndex < _characterDatabase.Characters.Count && _characterDatabase.Characters[_currentIndex] != null)
             {
-                currentPrefab = _selectionData.Characters[_currentIndex].playerPrefab;
+                currentPrefab = _characterDatabase.Characters[_currentIndex].playerPrefab;
             }
 
             if (currentPrefab != null)

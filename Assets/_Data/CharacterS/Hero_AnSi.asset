@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57aed6999b0c9974891a5b91d96569fe, type: 3}
+  m_Name: Hero_AnSi
+  m_EditorClassIdentifier: 
+  characterId: C004_AnSi
+  characterName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
+  element: 5
+  elementHexColor: '#8A6A3E'
+  avatar: {fileID: 0}
+  playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}
+  description: "K\u1EF3 nh\xE2n t\u1EF1 tu n\u1ED9i l\u1EF1c ch\u1ED1n th\xE2m s\u01A1n,
+    h\xF2a h\u1EE3p l\xE0m m\u1ED9t v\u1EDBi n\xFAi r\u1EEBng b\u1EA3n \u0111\u1ECBa.
+    D\u1ED3n l\u1EF1c b\u1ED9c ph\xE1t \u0111\u1ECBa kh\xED."
+  baseMaxHealth: 150
+  baseMoveSpeed: 4.2
+  baseDamage: 15
+  baseCritChance: 0.04
+  baseDashCooldown: 2.4
+  uiAtkRatio: 0.92
+  uiSpdRatio: 0.5
+  uiDefRatio: 0.95
+  basicAttackConfig:
+    attackType: 0
+    attackName: "Th\u1EA1ch Quy\u1EC1n Ph\xE1 \u0110\u1ECBa"
+    attackIcon: {fileID: 21300000, guid: ed37f7e97d293c349bf5779506006696, type: 3}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 1.6
+    meleeAreaSize: {x: 3.6, y: 2.7}
+    meleeOffset: 1.35
+    slashVfxPrefab: {fileID: 5187354520898896030, guid: ed4d5188951b8d14bbfb62db69625ea8, type: 3}
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  signatureSkillName: "Th\u1EADp Ph\u01B0\u01A1ng Ch\u1EA5n Th\u1EBF"
+  signatureSkillDesc: "Tr\u1EEB 30% HP hi\u1EC7n t\u1EA1i b\u1ED9c ph\xE1t \u0111\u1ECBa
+    kh\xED ch\u1EA5n n\u1EE9t \u0111\u1EA5t \u0111\xE1, g\xE2y s\xE1t th\u01B0\u01A1ng
+    + Cho\xE1ng 1.2s v\xE0 \u0111\u1EA9y l\xF9i 8m/s."
+  passiveTraitName: "B\xE0n Th\u1EA1ch Chi Khu"
+  passiveTraitDesc: "M\xE1u c\xE0ng th\u1EA5p th\u1EE7 c\xE0ng cao. Khi HP d\u01B0\u1EDBi
+    50%, nh\u1EADn th\xEAm 30% Kh\xE1ng s\xE1t th\u01B0\u01A1ng v\xE0 mi\u1EC5n nhi\u1EC5m
+    \u0110\u1EA9y l\xF9i."
+  defaultRelic: {fileID: 0}
+  defaultPrimaryWeapon: {fileID: 0}
+  defaultRelics: []
+  isUnlockedByDefault: 1

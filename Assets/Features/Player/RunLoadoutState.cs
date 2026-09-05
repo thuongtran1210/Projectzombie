@@ -81,12 +81,12 @@ namespace ProjectZombie.Features.Player
         {
             _isInitialized = true;
 
-            // 1. Nạp Database Nhân Vật
-            var selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+            // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO (Single Source of Truth)
+            var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
             #if UNITY_EDITOR
-            if (selectionData == null)
+            if (characterDatabase == null)
             {
-                selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
             }
             #endif
 
@@ -98,25 +98,23 @@ namespace ProjectZombie.Features.Player
             string savedPrimaryId = PlayerPrefs.GetString(KEY_PRIMARY_ID, string.Empty);
             string savedRelicsCsv = PlayerPrefs.GetString(KEY_RELICS_CSV, string.Empty);
 
-            // Tìm nhân vật
-            if (selectionData != null && selectionData.Characters != null && selectionData.Characters.Count > 0)
+            // Tìm nhân vật từ CharacterDatabaseSO
+            if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
             {
+                CharacterDataSO matchedSO = null;
                 if (!string.IsNullOrEmpty(savedHeroId))
                 {
-                    foreach (var c in selectionData.Characters)
-                    {
-                        if (c.characterId == savedHeroId || c.characterName == savedHeroId)
-                        {
-                            _selectedCharacter = c;
-                            break;
-                        }
-                    }
+                    matchedSO = characterDatabase.GetCharacterById(savedHeroId);
                 }
 
-                if (_selectedCharacter == null)
+                if (matchedSO == null)
                 {
-                    int idx = Mathf.Clamp(selectionData.SelectedCharacterIndex, 0, selectionData.Characters.Count - 1);
-                    _selectedCharacter = selectionData.Characters[idx];
+                    matchedSO = characterDatabase.GetCharacterByIndex(0);
+                }
+
+                if (matchedSO != null)
+                {
+                    _selectedCharacter = matchedSO.ToEntry();
                 }
             }
 

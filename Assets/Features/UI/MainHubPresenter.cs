@@ -110,17 +110,18 @@ namespace ProjectZombie.Features.UI
             CharacterEntry hero = RunLoadoutState.SelectedCharacter;
             if (hero == null)
             {
-                var selectionData = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
+                var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
                 #if UNITY_EDITOR
-                if (selectionData == null)
+                if (characterDatabase == null)
                 {
-                    selectionData = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
+                    characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
                 }
                 #endif
-                if (selectionData != null && selectionData.Characters != null && selectionData.Characters.Count > 0)
+
+                if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0 && characterDatabase.Characters[0] != null)
                 {
-                    int idx = Mathf.Clamp(selectionData.SelectedCharacterIndex, 0, selectionData.Characters.Count - 1);
-                    hero = selectionData.Characters[idx];
+                    var so = characterDatabase.Characters[0];
+                    hero = so.ToEntry();
                     RunLoadoutState.SetCharacter(hero);
                 }
             }

@@ -133,31 +133,17 @@ namespace ProjectZombie.Editor.VFX
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(rootObj, prefabPath);
             GameObject.DestroyImmediate(rootObj);
 
-            // 4. Gán tự động vào CharacterSelectionData.asset cho Thư Sinh
-            string charDataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var charData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(charDataPath);
-            if (charData != null && charData.Characters != null && charData.Characters.Count > 0)
+            // 4. Gán tự động vào CharacterDataSO (Chuẩn mới)
+            var thuSinhSO = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_ThuSinh.asset");
+            if (thuSinhSO != null)
             {
-                ProjectZombie.Features.Player.CharacterEntry thuSinh = null;
-                foreach (var c in charData.Characters)
-                {
-                    if (c.characterId.Contains("ThuSinh"))
-                    {
-                        thuSinh = c;
-                        break;
-                    }
-                }
-
-                if (thuSinh != null)
-                {
-                    thuSinh.basicAttackConfig.slashVfxPrefab = savedPrefab;
-                    thuSinh.basicAttackConfig.attackName = "Bút Lệnh Phán Tà";
-                    thuSinh.basicAttackConfig.meleeAreaSize = new Vector2(3.2f, 2.5f);
-                    thuSinh.basicAttackConfig.meleeOffset = 1.2f;
-                    EditorUtility.SetDirty(charData);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Thư Sinh!");
-                }
+                thuSinhSO.basicAttackConfig.slashVfxPrefab = savedPrefab;
+                thuSinhSO.basicAttackConfig.attackName = "Bút Lệnh Phán Tà";
+                thuSinhSO.basicAttackConfig.meleeAreaSize = new Vector2(3.2f, 2.5f);
+                thuSinhSO.basicAttackConfig.meleeOffset = 1.2f;
+                EditorUtility.SetDirty(thuSinhSO);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Thư Sinh!");
             }
 
             AssetDatabase.Refresh();
@@ -289,34 +275,20 @@ namespace ProjectZombie.Editor.VFX
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(rootObj, prefabPath);
             GameObject.DestroyImmediate(rootObj);
 
-            // 4. Gán tự động vào CharacterSelectionData.asset cho Đạo Sĩ
-            string charDataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var charData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(charDataPath);
-            if (charData != null && charData.Characters != null && charData.Characters.Count > 0)
+            // 4. Gán tự động vào CharacterDataSO (Chuẩn mới) cho Đạo Sĩ
+            var daoSiSO = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_DaoSi.asset");
+            if (daoSiSO != null)
             {
-                ProjectZombie.Features.Player.CharacterEntry daosi = null;
-                foreach (var c in charData.Characters)
-                {
-                    if (c.characterId.Contains("DaoSi"))
-                    {
-                        daosi = c;
-                        break;
-                    }
-                }
-
-                if (daosi != null)
-                {
-                    daosi.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash;
-                    daosi.basicAttackConfig.slashVfxPrefab = savedPrefab;
-                    daosi.basicAttackConfig.projectilePrefab = null;
-                    daosi.basicAttackConfig.attackName = "Tiên Đạo Kiếm Khí";
-                    daosi.basicAttackConfig.meleeAreaSize = new Vector2(3.3f, 2.4f);
-                    daosi.basicAttackConfig.meleeOffset = 1.25f;
-                    daosi.basicAttackConfig.baseAttackSpeed = 2.0f;
-                    EditorUtility.SetDirty(charData);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Đạo Sĩ!");
-                }
+                daoSiSO.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash;
+                daoSiSO.basicAttackConfig.slashVfxPrefab = savedPrefab;
+                daoSiSO.basicAttackConfig.projectilePrefab = null;
+                daoSiSO.basicAttackConfig.attackName = "Tiên Đạo Kiếm Khí";
+                daoSiSO.basicAttackConfig.meleeAreaSize = new Vector2(3.3f, 2.4f);
+                daoSiSO.basicAttackConfig.meleeOffset = 1.25f;
+                daoSiSO.basicAttackConfig.baseAttackSpeed = 2.0f;
+                EditorUtility.SetDirty(daoSiSO);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Đạo Sĩ!");
             }
 
             AssetDatabase.Refresh();
@@ -469,36 +441,22 @@ namespace ProjectZombie.Editor.VFX
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(projObj, prefabPath);
             GameObject.DestroyImmediate(projObj);
 
-            // 4. Gán tự động vào CharacterSelectionData.asset cho Thanh Đồng
-            string charDataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var charData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(charDataPath);
-            if (charData != null && charData.Characters != null && charData.Characters.Count > 0)
+            // 4. Gán tự động vào CharacterDataSO (Chuẩn mới) cho Thanh Đồng
+            var thanhDongSO = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_ThanhDong.asset");
+            if (thanhDongSO != null)
             {
-                ProjectZombie.Features.Player.CharacterEntry thanhDong = null;
-                foreach (var c in charData.Characters)
-                {
-                    if (c.characterId.Contains("ThanhDong"))
-                    {
-                        thanhDong = c;
-                        break;
-                    }
-                }
-
-                if (thanhDong != null)
-                {
-                    thanhDong.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.RangedProjectile;
-                    thanhDong.basicAttackConfig.projectilePrefab = savedPrefab;
-                    thanhDong.basicAttackConfig.slashVfxPrefab = null;
-                    thanhDong.basicAttackConfig.attackName = "Linh Lụa Tứ Phủ";
-                    thanhDong.basicAttackConfig.projectileSpeed = 8.0f; // Bay chậm rãi mềm mại
-                    thanhDong.basicAttackConfig.projectileLifetime = 1.4f;
-                    thanhDong.basicAttackConfig.projectileCount = 1;
-                    thanhDong.basicAttackConfig.spreadAngle = 0f;
-                    thanhDong.basicAttackConfig.baseAttackSpeed = 1.8f;
-                    EditorUtility.SetDirty(charData);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Thanh Đồng!");
-                }
+                thanhDongSO.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.RangedProjectile;
+                thanhDongSO.basicAttackConfig.projectilePrefab = savedPrefab;
+                thanhDongSO.basicAttackConfig.slashVfxPrefab = null;
+                thanhDongSO.basicAttackConfig.attackName = "Linh Lụa Tứ Phủ";
+                thanhDongSO.basicAttackConfig.projectileSpeed = 8.0f; // Bay chậm rãi mềm mại
+                thanhDongSO.basicAttackConfig.projectileLifetime = 1.4f;
+                thanhDongSO.basicAttackConfig.projectileCount = 1;
+                thanhDongSO.basicAttackConfig.spreadAngle = 0f;
+                thanhDongSO.basicAttackConfig.baseAttackSpeed = 1.8f;
+                EditorUtility.SetDirty(thanhDongSO);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Thanh Đồng!");
             }
 
             AssetDatabase.Refresh();
@@ -630,34 +588,20 @@ namespace ProjectZombie.Editor.VFX
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(rootObj, prefabPath);
             GameObject.DestroyImmediate(rootObj);
 
-            // 4. Gán tự động vào CharacterSelectionData.asset cho Ẩn Sĩ
-            string charDataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var charData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(charDataPath);
-            if (charData != null && charData.Characters != null && charData.Characters.Count > 0)
+            // 4. Gán tự động vào CharacterDataSO (Chuẩn mới) cho Ẩn Sĩ
+            var anSiSO = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_AnSi.asset");
+            if (anSiSO != null)
             {
-                ProjectZombie.Features.Player.CharacterEntry anSi = null;
-                foreach (var c in charData.Characters)
-                {
-                    if (c.characterId.Contains("AnSi"))
-                    {
-                        anSi = c;
-                        break;
-                    }
-                }
-
-                if (anSi != null)
-                {
-                    anSi.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash;
-                    anSi.basicAttackConfig.slashVfxPrefab = savedPrefab;
-                    anSi.basicAttackConfig.attackName = "Thạch Quyền Phá Địa";
-                    anSi.basicAttackConfig.meleeAreaSize = new Vector2(3.6f, 2.7f);
-                    anSi.basicAttackConfig.meleeOffset = 1.35f;
-                    anSi.basicAttackConfig.baseAttackSpeed = 1.6f;
-                    anSi.basicAttackConfig.knockbackForce = 6.0f; // Ẩn sĩ đấm siêu đầm
-                    EditorUtility.SetDirty(charData);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Ẩn Sĩ!");
-                }
+                anSiSO.basicAttackConfig.attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash;
+                anSiSO.basicAttackConfig.slashVfxPrefab = savedPrefab;
+                anSiSO.basicAttackConfig.attackName = "Thạch Quyền Phá Địa";
+                anSiSO.basicAttackConfig.meleeAreaSize = new Vector2(3.6f, 2.7f);
+                anSiSO.basicAttackConfig.meleeOffset = 1.35f;
+                anSiSO.basicAttackConfig.baseAttackSpeed = 1.6f;
+                anSiSO.basicAttackConfig.knockbackForce = 6.0f; // Ẩn sĩ đấm siêu đầm
+                EditorUtility.SetDirty(anSiSO);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"[CharacterVFXBuilder] Đã gán thành công {prefabPath} cho nhân vật Ẩn Sĩ!");
             }
 
             AssetDatabase.Refresh();
@@ -690,26 +634,21 @@ namespace ProjectZombie.Editor.VFX
                 }
             }
 
-            string charDataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var charData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(charDataPath);
-            if (charData != null && charData.Characters != null)
-            {
-                foreach (var c in charData.Characters)
-                {
-                    if (c.characterId.Contains("ThuSinh"))
-                        c.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
-                    else if (c.characterId.Contains("DaoSi"))
-                        c.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_DaoSi_Sword.png");
-                    else if (c.characterId.Contains("ThanhDong"))
-                        c.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
-                    else if (c.characterId.Contains("AnSi"))
-                        c.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
-                }
+            // Gán trực tiếp vào các CharacterDataSO độc lập
+            var soThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_ThuSinh.asset");
+            if (soThuSinh != null) { soThuSinh.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png"); EditorUtility.SetDirty(soThuSinh); }
 
-                EditorUtility.SetDirty(charData);
-                AssetDatabase.SaveAssets();
-                Debug.Log("[CharacterVFXBuilder] 🎨 Đã gán thành công 4 Attack Icon cho cả 4 nhân vật!");
-            }
+            var soDaoSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_DaoSi.asset");
+            if (soDaoSi != null) { soDaoSi.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_DaoSi_Sword.png"); EditorUtility.SetDirty(soDaoSi); }
+
+            var soThanhDong = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_ThanhDong.asset");
+            if (soThanhDong != null) { soThanhDong.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png"); EditorUtility.SetDirty(soThanhDong); }
+
+            var soAnSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>("Assets/_Data/Characters/Hero_AnSi.asset");
+            if (soAnSi != null) { soAnSi.basicAttackConfig.attackIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png"); EditorUtility.SetDirty(soAnSi); }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[CharacterVFXBuilder] 🎨 Đã gán thành công 4 Attack Icon cho cả 4 nhân vật!");
         }
 
         [MenuItem("Tools/VFX Generator/⚡ Build All 4 Character Basic Attack VFX (1-Click)", false, 0)]

@@ -16,8 +16,8 @@ namespace ProjectZombie.Features.Player
     public class GameplayBootstrapper : MonoBehaviour
     {
         [Header("Character Spawner Settings")]
-        [Tooltip("Dữ liệu cấu hình nhân vật chọn từ Menu")]
-        [SerializeField] private CharacterSelectionData characterSelectionData;
+        [Tooltip("Database toàn bộ Anh Hùng (Chuẩn Drag & Drop SO)")]
+        [SerializeField] private CharacterDatabaseSO characterDatabase;
         
         [Tooltip("Prefab UI Chọn Nhân Vật để tự động mở khi bắt đầu")]
         [SerializeField] private GameObject characterSelectionUIPrefab;
@@ -65,7 +65,7 @@ namespace ProjectZombie.Features.Player
             }
 
             // 2. Tự động spawn thực thể nhân vật đứng sẵn ở Sảnh (Hub Stage) ngay khi mở game
-            SpawnPlayerFromSelection(null);
+            SpawnPlayerForActiveHero();
 
             // 3. Nếu đang ở MainMenu (Sảnh), chưa bắt đầu wave quái
             bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
@@ -84,65 +84,54 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
-        /// Spawn hoặc thay đổi thực thể Player theo Prefab tướng đã chọn.
+        /// Xử lý sự kiện khi người chơi chọn tướng mới từ UI Character Selection.
         /// </summary>
-        public void SpawnPlayerFromSelection(GameObject selectedPrefab)
-        {
-            InitializeLevel(selectedPrefab);
-        }
-
         private void HandleCharacterSelected(GameObject selectedPrefab)
         {
-            SpawnPlayerFromSelection(selectedPrefab);
+            if (selectedPrefab == null) return;
+            SpawnPlayer(selectedPrefab);
         }
 
-        private void InitializeLevel(GameObject overridePrefab)
+        public void SpawnPlayerForActiveHero()
         {
-            // 1. Resolve Prefab hợp lệ từ RunLoadoutState hoặc database
-            GameObject playerPrefab = ResolvePlayerPrefab(overridePrefab);
-            if (playerPrefab == null)
+            GameObject prefab = ResolvePlayerPrefab();
+            if (prefab != null)
             {
-                Debug.LogWarning("[GameplayBootstrapper] Chưa tìm thấy Player Prefab để spawn!");
-                return;
+                SpawnPlayer(prefab);
             }
-
-            // 2. Spawn Thực thể Player
-            SpawnPlayer(playerPrefab);
-
-            // 3. Đóng gói Model qua PlayerContext & Đăng ký PlayerProvider
-            PlayerContext context = PlayerContext.Create(_activePlayerInstance);
-            PlayerProvider.RegisterPlayer(_activePlayerInstance);
-
-            // 4. Kết nối Camera Target theo Player
-            SetupCameraFollow(context.Transform);
-
-            // 5. Inject Dependencies vào toàn bộ UI Presenters thông qua GameplayUIBinder (Gọi DUY NHẤT 1 lần)
-            _uiBinder.BindAll(context);
+            else
+            {
+                Debug.LogError("[GameplayBootstrapper] Không thể Resolve Player Prefab! Hãy kiểm tra CharacterDatabase hoặc defaultPlayerPrefab.");
+            }
         }
 
-        private GameObject ResolvePlayerPrefab(GameObject overridePrefab)
+        private GameObject ResolvePlayerPrefab()
         {
-            if (overridePrefab != null) return overridePrefab;
-
             RunLoadoutState.EnsureInitialized();
 
-            // Ưu tiên 1: Tướng đã lưu trong RunLoadoutState
+            // Ưu tiên 1: Lấy từ RunLoadoutState (Đã được khởi tạo từ Save/Default SO)
             if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.playerPrefab != null)
             {
                 return RunLoadoutState.SelectedCharacter.playerPrefab;
             }
 
-            // Ưu tiên 2: Dữ liệu từ CharacterSelectionData gán trong Inspector
-            if (characterSelectionData != null && characterSelectionData.SelectedPlayerPrefab != null)
+            // Ưu tiên 2: Lấy tướng đầu tiên từ CharacterDatabaseSO
+            if (characterDatabase == null)
             {
-                return characterSelectionData.SelectedPlayerPrefab;
+                characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+                #if UNITY_EDITOR
+                if (characterDatabase == null)
+                {
+                    characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                }
+                #endif
             }
-
-            // Ưu tiên 3: Fallback Resources
-            var selectionDataRes = Resources.Load<CharacterSelectionData>("CharacterSelectionData");
-            if (selectionDataRes != null && selectionDataRes.SelectedPlayerPrefab != null)
+            if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
             {
-                return selectionDataRes.SelectedPlayerPrefab;
+                if (characterDatabase.Characters[0] != null && characterDatabase.Characters[0].playerPrefab != null)
+                {
+                    return characterDatabase.Characters[0].playerPrefab;
+                }
             }
 
             return defaultPlayerPrefab;
@@ -207,7 +196,7 @@ namespace ProjectZombie.Features.Player
 
             if (needRespawn)
             {
-                SpawnPlayerFromSelection(null);
+                SpawnPlayerForActiveHero();
             }
             else
             {

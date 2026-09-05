@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57aed6999b0c9974891a5b91d96569fe, type: 3}
+  m_Name: Hero_DaoSi
+  m_EditorClassIdentifier: 
+  characterId: C002_DaoSi
+  characterName: "\u0110\u1EA1o S\u0129"
+  element: 2
+  elementHexColor: '#9B51E0'
+  avatar: {fileID: 0}
+  playerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}
+  description: "\u0110\u1EA1o nh\xE2n tinh th\xF4ng Ti\xEAn \u0110\u1EA1o B\xE1t
+    Qu\xE1i. V\u1EADn h\xE0nh C\xE1n C\xE2n \xC2m D\u01B0\u01A1ng (\xC2m Th\u1ECBnh
+    / D\u01B0\u01A1ng Th\u1ECBnh / Th\xE1i C\u1EF1c)."
+  baseMaxHealth: 110
+  baseMoveSpeed: 4.8
+  baseDamage: 11
+  baseCritChance: 0.05
+  baseDashCooldown: 2
+  uiAtkRatio: 0.8
+  uiSpdRatio: 0.65
+  uiDefRatio: 0.8
+  basicAttackConfig:
+    attackType: 0
+    attackName: "Tr\u1EA3m Y\xEAu Tr\u1EEB Ma Ki\u1EBFm"
+    attackIcon: {fileID: 21300000, guid: 98632a795bc387847b42dfe8034094bf, type: 3}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 2
+    meleeAreaSize: {x: 3.6, y: 2.5}
+    meleeOffset: 1.35
+    slashVfxPrefab: {fileID: 1805651134545415110, guid: 70ffab8d1cc2bce4a8b5cdfe7a27c80a, type: 3}
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  signatureSkillName: "B\xE1t Qu\xE1i Tr\u1EADn \u0110\u1ED3"
+  signatureSkillDesc: "D\u1EADm ch\xE2n t\u1EA1o v\xF9ng B\xE1t Qu\xE1i l\xE0m ch\u1EADm
+    v\xE0 g\xE2y s\xE1t th\u01B0\u01A1ng y\xEAu ma, \xE9p C\xE1n C\xE2n \xC2m D\u01B0\u01A1ng
+    v\u1EC1 50 (Th\xE1i C\u1EF1c) trong 4s."
+  passiveTraitName: "C\xE1n C\xE2n \xC2m D\u01B0\u01A1ng"
+  passiveTraitDesc: "Tr\u1EA1ng th\xE1i Th\xE1i C\u1EF1c (C\xE2n b\u1EB1ng) t\u0103ng
+    25% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 v\xE0 gi\u1EA3m 20% S\xE1t th\u01B0\u01A1ng
+    nh\u1EADn v\xE0o."
+  defaultRelic: {fileID: 0}
+  defaultPrimaryWeapon: {fileID: 0}
+  defaultRelics: []
+  isUnlockedByDefault: 1

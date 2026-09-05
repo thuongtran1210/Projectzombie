@@ -593,13 +593,13 @@ namespace ProjectZombie.Editor.UI
 
             soView.ApplyModifiedProperties();
 
-            // 8.5. Wire SelectionData and Hero Prefabs to Presenter
-            string dataPath = "Assets/_Data/CharacterSelectionData.asset";
-            var selData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>(dataPath);
-            if (selData == null)
+            // 8.5. Wire CharacterDatabaseSO and Hero Prefabs to Presenter
+            string dbPath = "Assets/_Data/CharacterDatabase.asset";
+            var charDb = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDatabaseSO>(dbPath);
+            if (charDb == null)
             {
-                selData = ScriptableObject.CreateInstance<ProjectZombie.Features.Player.CharacterSelectionData>();
-                AssetDatabase.CreateAsset(selData, dataPath);
+                CharacterDataAssetGenerator.GenerateAllCharacterAssets();
+                charDb = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDatabaseSO>(dbPath);
             }
 
             var pThuSinh = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thu Sinh.prefab");
@@ -607,156 +607,10 @@ namespace ProjectZombie.Editor.UI
             var pThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/Thanh Dong.prefab");
             var pAnSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Players/An Si.prefab");
 
-            // Load VFX Prefabs cho 4 đòn đánh bản thể
-            var vfxThuSinh = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThuSinh_InkSlash.prefab");
-            var vfxDaoSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_DaoSi_SwordSlash.prefab");
-            var vfxThanhDong = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/Projectile_ThanhDong_AirWave.prefab");
-            var vfxAnSi = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_AnSi_EarthImpactSlash.prefab");
-
-            // Load 4 Attack Icon Sprites tương ứng cho từng nhân vật
-            var iconAtkThuSinh = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
-            var iconAtkDaoSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_DaoSi_Sword.png");
-            var iconAtkThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
-            var iconAtkAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
-
-            // Khởi tạo Database nhân vật mẫu với Base Stats & UI Ratios chuẩn hóa
-            var charList = new List<ProjectZombie.Features.Player.CharacterEntry>
-            {
-                new ProjectZombie.Features.Player.CharacterEntry
-                {
-                    characterId = "C001_ThuSinh",
-                    characterName = "Thư Sinh",
-                    element = ElementType.Kim,
-                    elementHexColor = "#FFD700",
-                    description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.",
-                    baseMaxHealth = 100f,
-                    baseMoveSpeed = 5.2f,
-                    baseDamage = 12f,
-                    baseCritChance = 0.08f,
-                    baseDashCooldown = 1.8f,
-                    uiAtkRatio = 0.85f,
-                    uiSpdRatio = 0.75f,
-                    uiDefRatio = 0.60f,
-                    signatureSkillName = "Phán Quyết Tiền Định",
-                    signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.",
-                    passiveTraitName = "Văn Khí Hộ Thể",
-                    passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.",
-                    playerPrefab = pThuSinh,
-                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
-                    {
-                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
-                        attackIcon = iconAtkThuSinh,
-                        slashVfxPrefab = vfxThuSinh,
-                        attackName = "Vung Bút Phán Quan",
-                        meleeAreaSize = new Vector2(3.5f, 2.6f),
-                        meleeOffset = 1.3f,
-                        baseAttackSpeed = 1.8f
-                    },
-                    isUnlocked = true
-                },
-                new ProjectZombie.Features.Player.CharacterEntry
-                {
-                    characterId = "C002_DaoSi",
-                    characterName = "Đạo Sĩ",
-                    element = ElementType.Moc,
-                    elementHexColor = "#9B51E0",
-                    description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).",
-                    baseMaxHealth = 110f,
-                    baseMoveSpeed = 4.8f,
-                    baseDamage = 11f,
-                    baseCritChance = 0.05f,
-                    baseDashCooldown = 2.0f,
-                    uiAtkRatio = 0.80f,
-                    uiSpdRatio = 0.65f,
-                    uiDefRatio = 0.80f,
-                    signatureSkillName = "Bát Quái Trận Đồ",
-                    signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s.",
-                    passiveTraitName = "Cán Cân Âm Dương",
-                    passiveTraitDesc = "Trạng thái Thái Cực (Cân bằng) tăng 25% Sát thương toàn thể và giảm 20% Sát thương nhận vào.",
-                    playerPrefab = pDaoSi,
-                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
-                    {
-                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
-                        attackIcon = iconAtkDaoSi,
-                        slashVfxPrefab = vfxDaoSi,
-                        attackName = "Trảm Yêu Trừ Ma Kiếm",
-                        meleeAreaSize = new Vector2(3.6f, 2.5f),
-                        meleeOffset = 1.35f,
-                        baseAttackSpeed = 2.0f
-                    },
-                    isUnlocked = true
-                },
-                new ProjectZombie.Features.Player.CharacterEntry
-                {
-                    characterId = "C003_ThanhDong",
-                    characterName = "Thanh Đồng",
-                    element = ElementType.Moc,
-                    elementHexColor = "#4C7A3D",
-                    description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tay mang Chuỗi Linh Phù Tứ Phủ hộ thân trừ tà.",
-                    baseMaxHealth = 95f,
-                    baseMoveSpeed = 5.6f,
-                    baseDamage = 10f,
-                    baseCritChance = 0.10f,
-                    baseDashCooldown = 1.6f,
-                    uiAtkRatio = 0.78f,
-                    uiSpdRatio = 0.90f,
-                    uiDefRatio = 0.65f,
-                    signatureSkillName = "Giá Đồng Tứ Phủ",
-                    signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Giáp hộ thân) trong 5s.",
-                    passiveTraitName = "Linh Lực Tứ Phủ",
-                    passiveTraitDesc = "Thu thập Linh Khí tích lũy thanh Linh Lực Tứ Phủ. Khi kích hoạt Giá Đồng, nhận đồng thời hiệu ứng hộ trì của cả 4 cõi thần linh.",
-                    playerPrefab = pThanhDong,
-                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
-                    {
-                        attackType = ProjectZombie.Features.Player.CharacterAttackType.RangedProjectile,
-                        attackIcon = iconAtkThanhDong,
-                        projectilePrefab = vfxThanhDong,
-                        attackName = "Khí Ba Đạo Mẫu",
-                        baseAttackSpeed = 2.2f,
-                        projectileSpeed = 9.0f
-                    },
-                    isUnlocked = true
-                },
-                new ProjectZombie.Features.Player.CharacterEntry
-                {
-                    characterId = "C004_AnSi",
-                    characterName = "Ẩn Sĩ Sơn Lâm",
-                    element = ElementType.Tho,
-                    elementHexColor = "#8A6A3E",
-                    description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
-                    baseMaxHealth = 150f,
-                    baseMoveSpeed = 4.2f,
-                    baseDamage = 15f,
-                    baseCritChance = 0.04f,
-                    baseDashCooldown = 2.4f,
-                    uiAtkRatio = 0.92f,
-                    uiSpdRatio = 0.50f,
-                    uiDefRatio = 0.95f,
-                    signatureSkillName = "Thập Phương Chấn Thế",
-                    signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.",
-                    passiveTraitName = "Bàn Thạch Chi Khu",
-                    passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi.",
-                    playerPrefab = pAnSi,
-                    basicAttackConfig = new ProjectZombie.Features.Player.CharacterAttackConfig
-                    {
-                        attackType = ProjectZombie.Features.Player.CharacterAttackType.MeleeSlash,
-                        attackIcon = iconAtkAnSi,
-                        slashVfxPrefab = vfxAnSi,
-                        attackName = "Thạch Quyền Phá Địa",
-                        meleeAreaSize = new Vector2(3.6f, 2.7f),
-                        meleeOffset = 1.35f,
-                        baseAttackSpeed = 1.6f
-                    },
-                    isUnlocked = true
-                }
-            };
-
-            selData.SetCharacters(charList);
-            selData.SelectCharacter(0);
-            EditorUtility.SetDirty(selData);
-
             soPresenter.Update();
-            soPresenter.FindProperty("_selectionData").objectReferenceValue = selData;
+            var charDbProp = soPresenter.FindProperty("_characterDatabase");
+            if (charDbProp != null) charDbProp.objectReferenceValue = charDb;
+
             var prefabsProp = soPresenter.FindProperty("_characterPrefabs");
             if (prefabsProp != null)
             {

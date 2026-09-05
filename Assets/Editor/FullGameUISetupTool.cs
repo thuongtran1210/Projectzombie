@@ -638,10 +638,11 @@ namespace ProjectZombie.EditorTools
             {
                 var soPresenter = new SerializedObject(presenter);
                 soPresenter.FindProperty("_view").objectReferenceValue = view;
-                var selectionData = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
-                if (selectionData != null)
+                var charDb = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                if (charDb != null)
                 {
-                    soPresenter.FindProperty("_selectionData").objectReferenceValue = selectionData;
+                    var prop = soPresenter.FindProperty("_characterDatabase");
+                    if (prop != null) prop.objectReferenceValue = charDb;
                 }
                 soPresenter.ApplyModifiedProperties();
                 EditorUtility.SetDirty(presenter);

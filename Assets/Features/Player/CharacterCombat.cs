@@ -85,7 +85,7 @@ namespace ProjectZombie.Features.Player
                 attackConfig = RunLoadoutState.SelectedCharacter.basicAttackConfig;
             }
 
-            // Fallback an toàn: Nếu chưa có attackConfig hoặc thiếu slashVfxPrefab thì tự nạp từ CharacterSelectionData
+            // Fallback an toàn: Nếu chưa có attackConfig hoặc thiếu slashVfxPrefab thì tự nạp từ CharacterDatabaseSO
             EnsureAttackConfigFallback();
 
             if (aimIndicator != null)
@@ -125,28 +125,28 @@ namespace ProjectZombie.Features.Player
 #if UNITY_EDITOR
             if (attackConfig == null || (attackConfig.attackType == CharacterAttackType.MeleeSlash && attackConfig.slashVfxPrefab == null) || attackConfig.attackIcon == null)
             {
-                var data = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSelectionData>("Assets/_Data/CharacterSelectionData.asset");
-                if (data != null && data.Characters != null && data.Characters.Count > 0)
+                var db = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                if (db != null && db.Characters != null && db.Characters.Count > 0)
                 {
-                    // Tìm đúng CharacterEntry theo tên prefab/gameObject hoặc fallback entry đầu tiên
-                    CharacterEntry matchedEntry = null;
-                    foreach (var c in data.Characters)
+                    CharacterDataSO matchedSO = null;
+                    foreach (var c in db.Characters)
                     {
-                        if (c != null && !string.IsNullOrEmpty(c.characterId) && gameObject.name.Contains(c.characterName))
+                        if (c != null && !string.IsNullOrEmpty(c.characterName) && gameObject.name.Contains(c.characterName))
                         {
-                            matchedEntry = c;
+                            matchedSO = c;
                             break;
                         }
                     }
-                    if (matchedEntry == null) matchedEntry = data.Characters[0];
+                    if (matchedSO == null) matchedSO = db.Characters[0];
 
-                    if (attackConfig == null) attackConfig = matchedEntry.basicAttackConfig;
-                    else
+                    if (matchedSO != null && matchedSO.basicAttackConfig != null)
                     {
-                        if (attackConfig.slashVfxPrefab == null && matchedEntry.basicAttackConfig != null)
-                            attackConfig.slashVfxPrefab = matchedEntry.basicAttackConfig.slashVfxPrefab;
-                        if (attackConfig.attackIcon == null && matchedEntry.basicAttackConfig != null)
-                            attackConfig.attackIcon = matchedEntry.basicAttackConfig.attackIcon;
+                        if (attackConfig == null) attackConfig = matchedSO.basicAttackConfig;
+                        else
+                        {
+                            if (attackConfig.slashVfxPrefab == null) attackConfig.slashVfxPrefab = matchedSO.basicAttackConfig.slashVfxPrefab;
+                            if (attackConfig.attackIcon == null) attackConfig.attackIcon = matchedSO.basicAttackConfig.attackIcon;
+                        }
                     }
                 }
 

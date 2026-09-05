@@ -80,5 +80,39 @@ namespace ProjectZombie.Features.Player
 
         [Header("8. Trạng Thái Mở Khóa")]
         public bool isUnlockedByDefault = true;
+
+        /// <summary>
+        /// Chuyển đổi dữ liệu ScriptableObject sang struct/class CharacterEntry cho runtime compatibility.
+        /// </summary>
+        public CharacterEntry ToEntry()
+        {
+            return new CharacterEntry
+            {
+                characterId = characterId,
+                characterName = characterName,
+                element = element,
+                elementHexColor = elementHexColor,
+                avatar = avatar,
+                playerPrefab = playerPrefab,
+                description = description,
+                baseMaxHealth = baseMaxHealth,
+                baseMoveSpeed = baseMoveSpeed,
+                baseDamage = baseDamage,
+                baseCritChance = baseCritChance,
+                baseDashCooldown = baseDashCooldown,
+                uiAtkRatio = uiAtkRatio,
+                uiSpdRatio = uiSpdRatio,
+                uiDefRatio = uiDefRatio,
+                basicAttackConfig = basicAttackConfig,
+                signatureSkillName = signatureSkillName,
+                signatureSkillDesc = signatureSkillDesc,
+                passiveTraitName = passiveTraitName,
+                passiveTraitDesc = passiveTraitDesc,
+                defaultRelic = defaultRelic,
+                defaultPrimaryWeapon = defaultPrimaryWeapon,
+                defaultRelics = defaultRelics,
+                isUnlocked = isUnlockedByDefault
+            };
+        }
     }
 }

@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57aed6999b0c9974891a5b91d96569fe, type: 3}
+  m_Name: Hero_ThuSinh
+  m_EditorClassIdentifier: 
+  characterId: C001_ThuSinh
+  characterName: "Th\u01B0 Sinh"
+  element: 1
+  elementHexColor: '#FFD700'
+  avatar: {fileID: 0}
+  playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
+  description: "\u0110\u01B0\u1EE3c anh linh li\u1EC7t t\u1ED5 & \u0110\u1EE9c Th\xE1nh
+    Tr\u1EA7n \u0111i\u1EC3m h\xF3a. Tay c\u1EA7m b\xFAt l\u1EC7nh kh\xED thi\xEAng
+    s\xF4ng n\xFAi ph\xE1n \u0111\u1ECBnh t\xE0 ma."
+  baseMaxHealth: 100
+  baseMoveSpeed: 5.2
+  baseDamage: 12
+  baseCritChance: 0.08
+  baseDashCooldown: 1.8
+  uiAtkRatio: 0.85
+  uiSpdRatio: 0.75
+  uiDefRatio: 0.6
+  basicAttackConfig:
+    attackType: 0
+    attackName: "Vung B\xFAt Ph\xE1n Quan"
+    attackIcon: {fileID: 21300000, guid: 57fe6e4c65e9e4c4094e3bf0cf0288d1, type: 3}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 1.8
+    meleeAreaSize: {x: 3.5, y: 2.6}
+    meleeOffset: 1.3
+    slashVfxPrefab: {fileID: 2690327226307785550, guid: f368769dc33a7c042b6b1ccdd7d7388c, type: 3}
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  signatureSkillName: "Ph\xE1n Quy\u1EBFt Ti\u1EC1n \u0110\u1ECBnh"
+  signatureSkillDesc: "Ch\xE8n 1 hit \u1EA3o Ng\u0169 H\xE0nh v\xE0o Queue T\u01B0\u01A1ng
+    Sinh, k\xEDch ho\u1EA1t gi\u1EA3m 20% Cooldown cho v\u0169 kh\xED kh\u1EDBp l\u1EC7nh."
+  passiveTraitName: "V\u0103n Kh\xED H\u1ED9 Th\u1EC3"
+  passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
+    t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
+    \u0111a."
+  defaultRelic: {fileID: 0}
+  defaultPrimaryWeapon: {fileID: 0}
+  defaultRelics: []
+  isUnlockedByDefault: 1

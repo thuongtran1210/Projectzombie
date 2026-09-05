@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57aed6999b0c9974891a5b91d96569fe, type: 3}
+  m_Name: Hero_ThanhDong
+  m_EditorClassIdentifier: 
+  characterId: C003_ThanhDong
+  characterName: "Thanh \u0110\u1ED3ng"
+  element: 2
+  elementHexColor: '#4C7A3D'
+  avatar: {fileID: 0}
+  playerPrefab: {fileID: 4603747337966706880, guid: 12ce05702ae7c3cdd96897666b4265f5, type: 3}
+  description: "C\xF4 \u0110\u1ED3ng / Th\u1EA7y Ph\xE1p \u0110\u1EA1o M\u1EABu T\u1EE9
+    Ph\u1EE7 (Thi\xEAn, Nh\u1EA1c, Tho\u1EA3i, \u0110\u1ECBa). Tay mang Chu\u1ED7i
+    Linh Ph\xF9 T\u1EE9 Ph\u1EE7 h\u1ED9 th\xE2n tr\u1EEB t\xE0."
+  baseMaxHealth: 95
+  baseMoveSpeed: 5.6
+  baseDamage: 10
+  baseCritChance: 0.1
+  baseDashCooldown: 1.6
+  uiAtkRatio: 0.78
+  uiSpdRatio: 0.9
+  uiDefRatio: 0.65
+  basicAttackConfig:
+    attackType: 1
+    attackName: "Kh\xED Ba \u0110\u1EA1o M\u1EABu"
+    attackIcon: {fileID: 21300000, guid: a126fbb789689d648b41a95cb0c78193, type: 3}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 2.2
+    meleeAreaSize: {x: 2.5, y: 2}
+    meleeOffset: 1.2
+    slashVfxPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 8946744622826746836, guid: a8d70e8cb54c4c747b2ac8570e3db3d0, type: 3}
+    projectileSpeed: 9
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  signatureSkillName: "Gi\xE1 \u0110\u1ED3ng T\u1EE9 Ph\u1EE7"
+  signatureSkillDesc: "Th\u1EC9nh nh\u1EADp Th\xE1nh th\u1EA7n T\u1EE9 Ph\u1EE7 ban
+    h\xE0o quang 4 c\xF5i (T\u0103ng c\xF4ng / T\u0103ng t\u1ED1c / Gi\u1EA3m h\u1ED3i
+    chi\xEAu / Gi\xE1p h\u1ED9 th\xE2n) trong 5s."
+  passiveTraitName: "Linh L\u1EF1c T\u1EE9 Ph\u1EE7"
+  passiveTraitDesc: "Thu th\u1EADp Linh Kh\xED t\xEDch l\u0169y thanh Linh L\u1EF1c
+    T\u1EE9 Ph\u1EE7. Khi k\xEDch ho\u1EA1t Gi\xE1 \u0110\u1ED3ng, nh\u1EADn \u0111\u1ED3ng
+    th\u1EDDi hi\u1EC7u \u1EE9ng h\u1ED9 tr\xEC c\u1EE7a c\u1EA3 4 c\xF5i th\u1EA7n
+    linh."
+  defaultRelic: {fileID: 0}
+  defaultPrimaryWeapon: {fileID: 0}
+  defaultRelics: []
+  isUnlockedByDefault: 1
