@@ -86,6 +86,18 @@ namespace ProjectZombie.Features.Player
         public string passiveTraitName;
         [TextArea(2, 4)] public string passiveTraitDesc;
 
+        [Header("Chỉ Số Chiến Đấu Cơ Bản (Base Stats)")]
+        public float baseMaxHealth = 100f;
+        public float baseMoveSpeed = 5.0f;
+        public float baseDamage = 10f;
+        public float baseCritChance = 0.05f;
+        public float baseDashCooldown = 2.0f;
+
+        [Header("Tỉ Lệ Hiển Thị Biểu Đồ UI (0.0 -> 1.0)")]
+        [Range(0f, 1f)] public float uiAtkRatio = 0.8f;
+        [Range(0f, 1f)] public float uiSpdRatio = 0.7f;
+        [Range(0f, 1f)] public float uiDefRatio = 0.6f;
+
         public Sprite avatar;
         public GameObject playerPrefab;
         public bool isUnlocked = true;

@@ -619,7 +619,7 @@ namespace ProjectZombie.Editor.UI
             var iconAtkThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
             var iconAtkAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
 
-            // Khởi tạo Database nhân vật mẫu
+            // Khởi tạo Database nhân vật mẫu với Base Stats & UI Ratios chuẩn hóa
             var charList = new List<ProjectZombie.Features.Player.CharacterEntry>
             {
                 new ProjectZombie.Features.Player.CharacterEntry
@@ -629,6 +629,14 @@ namespace ProjectZombie.Editor.UI
                     element = ElementType.Kim,
                     elementHexColor = "#FFD700",
                     description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.",
+                    baseMaxHealth = 100f,
+                    baseMoveSpeed = 5.2f,
+                    baseDamage = 12f,
+                    baseCritChance = 0.08f,
+                    baseDashCooldown = 1.8f,
+                    uiAtkRatio = 0.85f,
+                    uiSpdRatio = 0.75f,
+                    uiDefRatio = 0.60f,
                     signatureSkillName = "Phán Quyết Tiền Định",
                     signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.",
                     passiveTraitName = "Văn Khí Hộ Thể",
@@ -653,6 +661,14 @@ namespace ProjectZombie.Editor.UI
                     element = ElementType.Moc,
                     elementHexColor = "#9B51E0",
                     description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).",
+                    baseMaxHealth = 110f,
+                    baseMoveSpeed = 4.8f,
+                    baseDamage = 11f,
+                    baseCritChance = 0.05f,
+                    baseDashCooldown = 2.0f,
+                    uiAtkRatio = 0.80f,
+                    uiSpdRatio = 0.65f,
+                    uiDefRatio = 0.80f,
                     signatureSkillName = "Bát Quái Trận Đồ",
                     signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s.",
                     passiveTraitName = "Cán Cân Âm Dương",
@@ -677,6 +693,14 @@ namespace ProjectZombie.Editor.UI
                     element = ElementType.Moc,
                     elementHexColor = "#4C7A3D",
                     description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tay mang Chuỗi Linh Phù Tứ Phủ hộ thân trừ tà.",
+                    baseMaxHealth = 95f,
+                    baseMoveSpeed = 5.6f,
+                    baseDamage = 10f,
+                    baseCritChance = 0.10f,
+                    baseDashCooldown = 1.6f,
+                    uiAtkRatio = 0.78f,
+                    uiSpdRatio = 0.90f,
+                    uiDefRatio = 0.65f,
                     signatureSkillName = "Giá Đồng Tứ Phủ",
                     signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Giáp hộ thân) trong 5s.",
                     passiveTraitName = "Linh Lực Tứ Phủ",
@@ -700,6 +724,14 @@ namespace ProjectZombie.Editor.UI
                     element = ElementType.Tho,
                     elementHexColor = "#8A6A3E",
                     description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.",
+                    baseMaxHealth = 150f,
+                    baseMoveSpeed = 4.2f,
+                    baseDamage = 15f,
+                    baseCritChance = 0.04f,
+                    baseDashCooldown = 2.4f,
+                    uiAtkRatio = 0.92f,
+                    uiSpdRatio = 0.50f,
+                    uiDefRatio = 0.95f,
                     signatureSkillName = "Thập Phương Chấn Thế",
                     signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.",
                     passiveTraitName = "Bàn Thạch Chi Khu",

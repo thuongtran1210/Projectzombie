@@ -98,7 +98,20 @@ namespace ProjectZombie.Features.Player
 
         private void InitStats()
         {
-            if (baseStatsConfig != null)
+            var selectedChar = RunLoadoutState.SelectedCharacter;
+            if (selectedChar != null && selectedChar.baseMaxHealth > 0f)
+            {
+                _baseMaxHealth = selectedChar.baseMaxHealth;
+                _baseMoveSpeed = selectedChar.baseMoveSpeed > 0f ? selectedChar.baseMoveSpeed : 5.0f;
+                _baseDashCooldown = selectedChar.baseDashCooldown > 0f ? selectedChar.baseDashCooldown : 2.0f;
+                _baseDamage = selectedChar.baseDamage > 0f ? selectedChar.baseDamage : 10.0f;
+                _baseCritChance = selectedChar.baseCritChance > 0f ? selectedChar.baseCritChance : 0.05f;
+                _baseAttackSpeed = (selectedChar.basicAttackConfig != null && selectedChar.basicAttackConfig.baseAttackSpeed > 0f) 
+                    ? selectedChar.basicAttackConfig.baseAttackSpeed 
+                    : (baseStatsConfig != null ? baseStatsConfig.attackSpeed : 1.0f);
+                _basePickupRange = baseStatsConfig != null ? baseStatsConfig.pickupRange : 2.0f;
+            }
+            else if (baseStatsConfig != null)
             {
                 _baseMaxHealth = baseStatsConfig.maxHealth;
                 _baseMoveSpeed = baseStatsConfig.moveSpeed;

@@ -18,6 +18,9 @@ namespace ProjectZombie.Features.UI
         public Sprite avatar;
         public WeaponData primaryWeapon;
         public System.Collections.Generic.List<WeaponData> relics;
+        public float atkRatio;
+        public float spdRatio;
+        public float defRatio;
     }
 
     /// <summary>
@@ -115,7 +118,10 @@ namespace ProjectZombie.Features.UI
                         passiveTraitDesc = list[i].passiveTraitDesc,
                         avatar = av,
                         primaryWeapon = list[i].defaultPrimaryWeapon,
-                        relics = list[i].defaultRelics
+                        relics = list[i].defaultRelics,
+                        atkRatio = list[i].uiAtkRatio > 0f ? list[i].uiAtkRatio : 0.8f,
+                        spdRatio = list[i].uiSpdRatio > 0f ? list[i].uiSpdRatio : 0.7f,
+                        defRatio = list[i].uiDefRatio > 0f ? list[i].uiDefRatio : 0.6f
                     };
                 }
                 return;
@@ -284,25 +290,11 @@ namespace ProjectZombie.Features.UI
             _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
             _view.UpdateActiveTab(_currentIndex);
 
-            // Dữ liệu mẫu chỉ số sức mạnh chiến đấu theo từng nhân vật
-            float atkRatio = 0.75f;
-            float spdRatio = 0.70f;
-            float defRatio = 0.65f;
-            switch (_currentIndex)
-            {
-                case 0: // Thư Sinh (Cân bằng & Tương Sinh)
-                    atkRatio = 0.85f; spdRatio = 0.75f; defRatio = 0.60f;
-                    break;
-                case 1: // Đạo Sĩ (Âm Dương Bát Quái - Kiểm soát)
-                    atkRatio = 0.80f; spdRatio = 0.65f; defRatio = 0.80f;
-                    break;
-                case 2: // Thanh Đồng (Tứ Phủ Linh Lực - Tốc & Bắn xa)
-                    atkRatio = 0.78f; spdRatio = 0.90f; defRatio = 0.65f;
-                    break;
-                case 3: // Ẩn Sĩ Sơn Lâm (Thổ Địa - Siêu Trâu & Sát thương cận chiến)
-                    atkRatio = 0.92f; spdRatio = 0.50f; defRatio = 0.95f;
-                    break;
-            }
+            // Dữ liệu chỉ số sức mạnh chiến đấu được nạp trực tiếp từ SO của từng nhân vật
+            float atkRatio = charInfo.atkRatio;
+            float spdRatio = charInfo.spdRatio;
+            float defRatio = charInfo.defRatio;
+
             _view.DisplayStats(atkRatio, spdRatio, defRatio, $"{(int)(atkRatio * 100)}%", $"{(int)(spdRatio * 100)}%", $"{(int)(defRatio * 100)}%");
         }
     }
