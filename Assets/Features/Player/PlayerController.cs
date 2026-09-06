@@ -119,6 +119,14 @@ namespace ProjectZombie.Features.Player
             {
                 _signatureSkillManager.OnSkillExecuted -= OnSkillExecuted;
             }
+
+            if (_slowCoroutine != null)
+            {
+                StopCoroutine(_slowCoroutine);
+                _slowCoroutine = null;
+            }
+            _slowMultiplier = 1f;
+            OnSlowStatusChanged?.Invoke(false, 1f);
         }
 
         private void HandleDashTriggered()

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Core.Juice
 {
@@ -30,10 +31,26 @@ namespace ProjectZombie.Core.Juice
         private void OnDisable()
         {
             GameJuiceEvents.OnHitStopRequested -= HandleHitStop;
+            if (_hitStopCoroutine != null)
+            {
+                StopCoroutine(_hitStopCoroutine);
+                _hitStopCoroutine = null;
+            }
         }
 
         private void HandleHitStop(float duration)
         {
+            // Nếu game đang Pause hoặc không trong trạng thái Playing thì bỏ qua HitStop
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing)
+            {
+                return;
+            }
+
+            if (Mathf.Approximately(Time.timeScale, 0f))
+            {
+                return;
+            }
+
             if (_hitStopCoroutine != null)
             {
                 StopCoroutine(_hitStopCoroutine);
@@ -43,19 +60,14 @@ namespace ProjectZombie.Core.Juice
 
         private IEnumerator HitStopCoroutine(float duration)
         {
-            float previousTimeScale = Time.timeScale;
-            
-            // Nếu game đang Pause (timeScale = 0) thì bỏ qua không thực hiện Hit Stop
-            if (Mathf.Approximately(previousTimeScale, 0f))
-            {
-                yield break;
-            }
-
             Time.timeScale = 0.05f;
             yield return new WaitForSecondsRealtime(duration);
 
-            // Khôi phục lại đúng timeScale trước đó (đảm bảo không tự ý Unpause game)
-            Time.timeScale = previousTimeScale;
+            // Luôn khôi phục về 1.0f nếu game đang trong trạng thái Playing (hoặc chưa khởi tạo GameStateManager)
+            if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.Playing)
+            {
+                Time.timeScale = 1.0f;
+            }
             _hitStopCoroutine = null;
         }
     }
