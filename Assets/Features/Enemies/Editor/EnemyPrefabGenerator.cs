@@ -132,6 +132,11 @@ namespace ProjectZombie.Features.Enemies.Editor
                 root.AddComponent<EnemyAttackTelegraph>();
             }
 
+            if (enemyId == "E_QUYNHAPTRANG")
+            {
+                root.AddComponent<Special.EnemyTetherLink>();
+            }
+
             // FSM Main Component
             var enemyFSM = root.AddComponent<Enemy>();
 
