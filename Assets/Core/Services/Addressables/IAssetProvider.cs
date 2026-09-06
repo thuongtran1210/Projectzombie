@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,13 +14,19 @@ namespace ProjectZombie.Core.Services.Addressables
         /// </summary>
         /// <typeparam name="T">Loại UnityEngine.Object cần load (GameObject, Sprite, AudioClip, SO...).</typeparam>
         /// <param name="address">Địa chỉ tên gợi nhớ của Asset trong Addressables Groups.</param>
+        /// <param name="cancellationToken">Token hỗ trợ hủy tác vụ bất đồng bộ khi đổi Scene/Destroy.</param>
         /// <returns>Đối tượng Asset đã nạp thành công hoặc null nếu thất bại.</returns>
-        Task<T> LoadAssetAsync<T>(string address) where T : UnityEngine.Object;
+        Task<T> LoadAssetAsync<T>(string address, CancellationToken cancellationToken = default) where T : UnityEngine.Object;
 
         /// <summary>
         /// Khởi tạo trực tiếp một GameObject từ địa chỉ Addressable.
         /// </summary>
-        Task<GameObject> InstantiateAsync(string address, Vector3 position, Quaternion rotation, Transform parent = null);
+        Task<GameObject> InstantiateAsync(string address, Vector3 position, Quaternion rotation, Transform parent = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Kiểm tra xem một Asset tại địa chỉ cụ thể đã được nạp sẵn vào RAM/Cache hay chưa.
+        /// </summary>
+        bool IsAssetLoaded(string address);
 
         /// <summary>
         /// Giải phóng một Asset cụ thể khỏi bộ nhớ RAM khi không còn sử dụng.

@@ -89,8 +89,10 @@ namespace ProjectZombie.Features.Spawners
                 createFunc: () => {
                     if (prefab == null) return null;
                     GameObject obj = Instantiate(prefab, parentTransform);
-                    var config = obj.GetComponent<EnemyPoolConfig>();
-                    if (config == null) config = obj.AddComponent<EnemyPoolConfig>();
+                    if (!obj.TryGetComponent<EnemyPoolConfig>(out var config))
+                    {
+                        config = obj.AddComponent<EnemyPoolConfig>();
+                    }
                     config.Pool = pool;
                     return obj;
                 },

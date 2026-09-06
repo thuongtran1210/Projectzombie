@@ -13,12 +13,20 @@ MonoBehaviour:
   m_Name: "E_MATROI_MaTr\u01A1i"
   m_EditorClassIdentifier: 
   moveSpeed: 4
-  preferredDistance: 5
-  minDistance: 3
+  preferredDistance: 0
+  minDistance: 0
   maxHealth: 25
   damageToPlayer: 8
   attackCooldown: 1
   attackRange: 2
+  windupRatio: 0.25
+  attackVfxPrefab: {fileID: 0}
+  vfxDuration: 0.35
   expReward: 2
   tier: 0
+  coinDropRate: 0.25
+  minCoinDrop: 1
+  maxCoinDrop: 3
   elementType: 4
+  isHeavyArmor: 0
+  immuneStatuses: 

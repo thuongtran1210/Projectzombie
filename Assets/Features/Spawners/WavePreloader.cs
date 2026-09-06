@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using ProjectZombie.Core.Services.Addressables;
@@ -13,24 +14,37 @@ namespace ProjectZombie.Features.Spawners
     {
         private IAssetProvider _assetProvider;
         private readonly List<string> _loadedAddresses = new List<string>();
+        private CancellationTokenSource _cts;
+
+        private IAssetProvider AssetProvider => _assetProvider ??= AddressableAssetManager.Instance;
 
         public void Construct(IAssetProvider assetProvider)
         {
             _assetProvider = assetProvider;
         }
 
+        private void Awake()
+        {
+            _cts = new CancellationTokenSource();
+        }
+
         /// <summary>
         /// Nạp bất đồng bộ toàn bộ Prefab quái có trong LevelTimelineConfig và đưa vào Object Pool.
         /// </summary>
-        public async Task PreloadTimelineAssetsAsync(LevelTimelineConfig timelineConfig)
+        public async Task PreloadTimelineAssetsAsync(LevelTimelineConfig timelineConfig, CancellationToken cancellationToken = default)
         {
             if (timelineConfig == null || timelineConfig.events == null) return;
+
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
+            var ct = linkedCts.Token;
 
             // Dùng HashSet để tránh load lặp lại nếu nhiều event dùng chung 1 loại quái
             var processedKeys = new HashSet<string>();
 
             foreach (var evt in timelineConfig.events)
             {
+                if (ct.IsCancellationRequested) break;
+
                 string poolKey = evt.GetPoolKey();
                 if (string.IsNullOrEmpty(poolKey) || processedKeys.Contains(poolKey)) continue;
 
@@ -38,28 +52,18 @@ namespace ProjectZombie.Features.Spawners
 
                 GameObject enemyPrefab = null;
 
-                // 1. Nạp từ Addressables nếu có địa chỉ Address
+                // 1. Nạp từ Addressables nếu có địa chỉ Address qua AssetProvider chuẩn
                 if (!string.IsNullOrEmpty(evt.enemyAddress))
                 {
-                    if (_assetProvider != null)
-                    {
-                        enemyPrefab = await _assetProvider.LoadAssetAsync<GameObject>(evt.enemyAddress);
-                    }
-                    else
-                    {
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(evt.enemyAddress);
-                        await handle.Task;
-                        if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                        {
-                            enemyPrefab = handle.Result;
-                        }
-                    }
+                    enemyPrefab = await AssetProvider.LoadAssetAsync<GameObject>(evt.enemyAddress, ct);
                 }
                 // 2. Fallback dùng Direct Reference nếu chưa gán Addressable Address
                 else if (evt.spawnPrefab != null)
                 {
                     enemyPrefab = evt.spawnPrefab;
                 }
+
+                if (ct.IsCancellationRequested) break;
 
                 // 3. Đưa Prefab vào EnemyPoolManager và gán lại cho Event
                 if (enemyPrefab != null)
@@ -85,11 +89,12 @@ namespace ProjectZombie.Features.Spawners
         /// </summary>
         public void ReleasePreloadedAssets()
         {
-            if (_assetProvider != null)
+            var provider = AssetProvider;
+            if (provider != null)
             {
                 foreach (var address in _loadedAddresses)
                 {
-                    _assetProvider.ReleaseAsset(address);
+                    provider.ReleaseAsset(address);
                 }
             }
             _loadedAddresses.Clear();
@@ -97,6 +102,9 @@ namespace ProjectZombie.Features.Spawners
 
         private void OnDestroy()
         {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
             ReleasePreloadedAssets();
         }
     }

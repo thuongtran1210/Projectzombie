@@ -10,15 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1eee2d3d04afdce409c28f27f84a36ad, type: 3}
-  m_Name: "E_DIEMVUONG_Di\u00EAmV\u01B0\u01A1ng"
+  m_Name: "E_DIEMVUONG_Di\xEAmV\u01B0\u01A1ng"
   m_EditorClassIdentifier: 
   moveSpeed: 1.8
-  preferredDistance: 5
-  minDistance: 3
+  preferredDistance: 0
+  minDistance: 0
   maxHealth: 15000
   damageToPlayer: 50
   attackCooldown: 1
   attackRange: 2
+  windupRatio: 0.25
+  attackVfxPrefab: {fileID: 0}
+  vfxDuration: 0.35
   expReward: 500
   tier: 2
+  coinDropRate: 0.25
+  minCoinDrop: 1
+  maxCoinDrop: 3
   elementType: 1
+  isHeavyArmor: 0
+  immuneStatuses: 000000000100000002000000
