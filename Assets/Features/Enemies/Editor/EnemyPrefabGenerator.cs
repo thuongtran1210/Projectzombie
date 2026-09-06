@@ -4,7 +4,6 @@ using UnityEngine;
 using ProjectZombie.Core.ScriptableObjects;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Enemies;
-using ProjectZombie.Features.Enemies.Behaviors;
 using ProjectZombie.Features.Boss;
 using ProjectZombie.Features.Enemies.Boss;
 using ProjectZombie.Features.Enemies.Boss.Skills;
