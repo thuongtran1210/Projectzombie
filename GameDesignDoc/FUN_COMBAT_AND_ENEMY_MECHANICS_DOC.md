@@ -127,7 +127,15 @@ Mọi trang bị Slapstick đều được phân bổ vào **Slot Pháp Bảo H�
 
 ### 5.2. Quái Dân Gian Tương Tác Đặc Biệt
 
-1. **Quỷ Nhập Tràng (Mê Nhảy Múa):** Khi ở trong tầm sóng âm của *Trống Đồng Đông Sơn* hoặc *Aura Loa Phường*, quái lập tức ngừng tấn công, giơ 2 tay lên nhảy theo nhịp, biến thành bức tường thịt che đạn cho người chơi.
+1. **Quỷ Nhập Tràng (Tanker Giáp Nặng & Dây Xích Oán Khí):**
+   * **Cơ Chế Liên Kết Oán Khí (Tether Linkage):** Khi xuất hiện 2 hoặc nhiều Quỷ Nhập Tràng trong bán kính $8.0m$, chúng tự động phát hiện và kết nối với nhau bằng một sợi xích oán khí phát sáng đỏ rực (`EnemyTetherLink` & `TetherBeamVisual`).
+   * **Vùng Nguy Hiểm Cắt Ngang (Laser Hazard):**
+     * Sợi xích oán khí tồn tại tối đa trong phạm vi kéo dài $10.5m$ (vượt quá khoảng cách này xích sẽ đứt).
+     * Người chơi đi qua hoặc chạm vào sợi xích (khoảng cách $\le 0.4m$ từ thân người chơi tới đoạn thẳng nối 2 quái) sẽ chịu **$20$ Sát thương/giây** và bị áp hiệu ứng **Làm Chậm $40\%$** trong $0.6s$.
+   * **Counterplay & Kỹ Năng Né Tránh:**
+     * **Dash Lướt Xuyên Xích:** Người chơi có thể sử dụng nút **Dash** (tận dụng khung bất tử I-Frames) để lướt an toàn qua sợi xích mà không bị nhận sát thương hay làm chậm.
+     * **Triệt Tiêu Liên Kết:** Tiêu diệt 1 trong 2 Quỷ Nhập Tràng sẽ lập tức hủy bỏ sợi xích nối tương ứng.
+   * **Tương Tác Hài Hước (Mê Nhảy Múa):** Khi ở trong tầm sóng âm của *Trống Đồng Đông Sơn* hoặc *Aura Loa Phường*, quái lập tức ngừng tấn công, giơ 2 tay lên nhảy theo nhịp, biến thành bức tường thịt che đạn cho người chơi.
 2. **Ma Da (Trơn Tuột Như Xà Phòng):** Khi bị đánh trúng đòn chí mạng, Ma Da không chết ngay mà bắn vọt ra xa như viên xà phòng trơn tuột, tông trúng quái khác gây sát thương liên hoàn.
 3. **Ma Trơi (Say Xỉn):** Quỹ đạo bay hình sin lượn sóng zíc zắc; nếu người chơi né được cú lao của nó, nó sẽ đâm sầm vào đá/tường và tự bất tỉnh $1s$.
 

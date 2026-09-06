@@ -244,7 +244,7 @@ Mỗi nhân vật được trang bị độc lập: **1 Đòn Đánh Thường +
 |---|---|---|---|---|
 | `E_MAGIAP` | **Ma Giáp** | Kim | Quái lính đi bộ | Bị hất lùi (Knockback) rõ rệt theo hướng vung đao; có thể bị ném dính vào tường. |
 | `E_MATROI` | **Ma Trơi** | Hỏa | Quái cơ động lao nhanh | Bay zíc zắc khó đoán; nếu chém hụt lao vào đá tự choáng bản thân $1s$. |
-| `E_QUYNHAPTRANG`| **Quỷ Nhập Tràng**| Thổ | Quái Tanker Giáp Nặng | Kháng hất lùi; khi gặp hiệu ứng âm thanh (Trống/Loa) sẽ dừng đánh đứng nhảy nhót. |
+| `E_QUYNHAPTRANG`| **Quỷ Nhập Tràng**| Thổ | Quái Tanker Giáp Nặng | Kháng hất lùi; Giăng Dây Xích Oán Khí nối đôi gây sát thương + làm chậm; khi gặp sóng âm (Trống/Loa) sẽ dừng đánh nhảy múa. |
 | `E_MADA` | **Ma Da** | Thủy | Quái bắn tỉa từ xa | Phun nước độc; khi bị chém trúng sẽ trơn tuột văng ra xa như xà phòng. |
 | `E_HOALYTINH` | **Hồ Ly Tinh Nhỏ**| Hỏa | Quái cảm tử phát nổ | Khi bị chém chết sẽ có $0.5s$ đếm ngược phát nổ; có thể dùng đòn 3 đánh bay nó vào giữa đàn quái khác. |
 | `E_MADOINO` | **Ma Đòi Nợ** | Kim | Quái trộm cắp chạy nhanh | Không đánh mất máu; lao vào cướp 50 Cổ Tiền/Exp rồi bỏ chạy. Diệt trong 5s nhận thưởng gấp đôi! |
