@@ -112,6 +112,16 @@ namespace ProjectZombie.Features.UI
                         if (sr != null) av = sr.sprite;
                     }
 
+                    var relicsList = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>();
+                    if (list[i].defaultRelics != null && list[i].defaultRelics.Count > 0)
+                    {
+                        relicsList.AddRange(list[i].defaultRelics);
+                    }
+                    if (list[i].defaultRelic != null && !relicsList.Contains(list[i].defaultRelic))
+                    {
+                        relicsList.Insert(0, list[i].defaultRelic);
+                    }
+
                     _characters[i] = new CharacterInfo
                     {
                         name = list[i].characterName,
@@ -124,7 +134,7 @@ namespace ProjectZombie.Features.UI
                         passiveTraitDesc = list[i].passiveTraitDesc,
                         avatar = av,
                         primaryWeapon = list[i].defaultPrimaryWeapon,
-                        relics = list[i].defaultRelics,
+                        relics = relicsList,
                         atkRatio = list[i].uiAtkRatio > 0f ? list[i].uiAtkRatio : 0.8f,
                         spdRatio = list[i].uiSpdRatio > 0f ? list[i].uiSpdRatio : 0.7f,
                         defRatio = list[i].uiDefRatio > 0f ? list[i].uiDefRatio : 0.6f

@@ -13,6 +13,11 @@ namespace ProjectZombie.Features.Spawners
     {
         public static SpawnManager Instance { get; private set; }
 
+        /// <summary>
+        /// Sự kiện phát ra khi một đợt quái / mốc Timeline mới được kích hoạt.
+        /// </summary>
+        public static event System.Action<ProjectZombie.Features.UI.HUD.WaveInfo> OnWaveTriggered;
+
         [Header("Timeline Configuration")]
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
@@ -297,6 +302,12 @@ namespace ProjectZombie.Features.Spawners
 
             string poolKey = evt.GetPoolKey();
             Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
+
+            // Phát sự kiện cho tầng UI (Wave Banner Widget) cập nhật
+            string stageName = timelineConfig != null ? timelineConfig.levelName : "Chiến Trường";
+            int totalEvents = timelineConfig != null && timelineConfig.events != null ? timelineConfig.events.Count : 1;
+            int currentWave = Mathf.Min(_nextEventIndex + 1, totalEvents);
+            OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds));
 
             switch (evt.eventType)
             {

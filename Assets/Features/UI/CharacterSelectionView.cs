@@ -94,7 +94,7 @@ namespace ProjectZombie.Features.UI
             foreach (var t in texts)
             {
                 string tName = t.gameObject.name.ToLower();
-                if (_characterNameText == null && (tName.Contains("name") || tName.Contains("ten")))
+                if (_characterNameText == null && (tName.Contains("name") || tName.Contains("ten")) && !tName.Contains("weapon") && !tName.Contains("relic"))
                     _characterNameText = t;
                 else if (_elementText == null && (tName.Contains("element") || tName.Contains("he")))
                     _elementText = t;
@@ -104,7 +104,7 @@ namespace ProjectZombie.Features.UI
                     _signatureSkillText = t;
                 else if (_passiveTraitText == null && (tName.Contains("passivetrait") || tName.Contains("noitai") || tName.Contains("trait")))
                     _passiveTraitText = t;
-                else if (_primaryWeaponNameText == null && (tName.Contains("primaryweapon") || tName.Contains("vukhichinh")))
+                else if (_primaryWeaponNameText == null && (tName.Contains("primaryweapon") || tName.Contains("vukhichinh") || tName.Contains("weaponname")))
                     _primaryWeaponNameText = t;
             }
 
@@ -114,10 +114,54 @@ namespace ProjectZombie.Features.UI
                 string imgName = img.gameObject.name.ToLower();
                 if (_characterAvatarImage == null && imgName.Contains("avatar"))
                     _characterAvatarImage = img;
-                else if (_primaryWeaponIcon == null && (imgName.Contains("primary") || imgName.Contains("vukhi")))
+                else if (_primaryWeaponIcon == null && (imgName.Contains("icon_weapon") || (imgName.Contains("primary") && imgName.Contains("icon"))))
                     _primaryWeaponIcon = img;
             }
-        }
+
+            // Tự động tìm và liên kết các Slot Pháp Bảo (Relics) trong Row_LoadoutSlots nếu chưa gán trong Inspector
+            if (_relicSlotIcons == null || _relicSlotIcons.Length == 0 || _relicSlotIcons[0] == null)
+            {
+                var foundRelicIcons = new System.Collections.Generic.List<Image>();
+                var foundRelicNames = new System.Collections.Generic.List<TextMeshProUGUI>();
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var rSlot = transform.Find($"Panel_Inner/Row_LoadoutSlots/Slot_Relic_{i}") 
+                             ?? transform.Find($"Row_LoadoutSlots/Slot_Relic_{i}");
+                    if (rSlot == null)
+                    {
+                        // Quét sâu tìm theo tên Slot_Relic
+                        foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                        {
+                            if (child.name == $"Slot_Relic_{i}")
+                            {
+                                rSlot = child;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (rSlot != null)
+                    {
+                        var iconTrans = rSlot.Find("Icon_Relic");
+                        if (iconTrans != null)
+                        {
+                            var img = iconTrans.GetComponent<Image>();
+                            if (img != null) foundRelicIcons.Add(img);
+                        }
+
+                        var nameTrans = rSlot.Find("Text_RelicName");
+                        if (nameTrans != null)
+                        {
+                            var txt = nameTrans.GetComponent<TextMeshProUGUI>();
+                            if (txt != null) foundRelicNames.Add(txt);
+                        }
+                    }
+                }
+
+                if (foundRelicIcons.Count > 0) _relicSlotIcons = foundRelicIcons.ToArray();
+                if (foundRelicNames.Count > 0) _relicSlotNames = foundRelicNames.ToArray();
+            }
 
         public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar, Texture renderTexture = null)
         {
