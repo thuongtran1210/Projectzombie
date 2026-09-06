@@ -162,6 +162,7 @@ namespace ProjectZombie.Features.UI
                 if (foundRelicIcons.Count > 0) _relicSlotIcons = foundRelicIcons.ToArray();
                 if (foundRelicNames.Count > 0) _relicSlotNames = foundRelicNames.ToArray();
             }
+        }
 
         public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar, Texture renderTexture = null)
         {
