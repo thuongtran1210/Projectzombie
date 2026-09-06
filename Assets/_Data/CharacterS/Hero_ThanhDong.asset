@@ -60,7 +60,8 @@ MonoBehaviour:
     T\u1EE9 Ph\u1EE7. Khi k\xEDch ho\u1EA1t Gi\xE1 \u0110\u1ED3ng, nh\u1EADn \u0111\u1ED3ng
     th\u1EDDi hi\u1EC7u \u1EE9ng h\u1ED9 tr\xEC c\u1EE7a c\u1EA3 4 c\xF5i th\u1EA7n
     linh."
-  defaultRelic: {fileID: 0}
-  defaultPrimaryWeapon: {fileID: 0}
-  defaultRelics: []
+  defaultRelic: {fileID: 11400000, guid: 38d878be87fef1741bc0a7e70e0c2f89, type: 2}
+  defaultPrimaryWeapon: {fileID: 11400000, guid: 38d878be87fef1741bc0a7e70e0c2f89, type: 2}
+  defaultRelics:
+  - {fileID: 11400000, guid: 38d878be87fef1741bc0a7e70e0c2f89, type: 2}
   isUnlockedByDefault: 1

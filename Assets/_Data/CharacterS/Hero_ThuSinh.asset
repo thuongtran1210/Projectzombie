@@ -58,7 +58,8 @@ MonoBehaviour:
   passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
     t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
     \u0111a."
-  defaultRelic: {fileID: 0}
-  defaultPrimaryWeapon: {fileID: 0}
-  defaultRelics: []
+  defaultRelic: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
+  defaultPrimaryWeapon: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
+  defaultRelics:
+  - {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
   isUnlockedByDefault: 1

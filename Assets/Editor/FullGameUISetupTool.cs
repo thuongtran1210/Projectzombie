@@ -38,7 +38,7 @@ namespace ProjectZombie.EditorTools
 
             EditorGUILayout.Space(15);
 
-            if (GUILayout.Button("⚡ Tự Động Dựng & Chuẩn Hóa Toàn Bộ Canvas", GUILayout.Height(45)))
+            if (GUILayout.Button("Tu Dong Dung va Chuan Hoa Toan Bo Canvas", GUILayout.Height(45)))
             {
                 SetupFullUIInScene();
             }

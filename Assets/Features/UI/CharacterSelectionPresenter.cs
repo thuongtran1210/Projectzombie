@@ -61,10 +61,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnEnable()
         {
-            if (_characters == null || _characters.Length == 0)
-            {
-                InitCharacterData();
-            }
+            InitCharacterData();
             RenderCurrentCharacter();
         }
 
@@ -248,6 +245,12 @@ namespace ProjectZombie.Features.UI
                 mainHubPresenter.RefreshHubState();
             }
 
+            // Xóa focus active control của EventSystem trước khi đóng màn hình
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            }
+
             // Đóng Modal và quay về Sảnh Chính
             if (MetaUIManager.Instance != null)
             {
@@ -263,6 +266,12 @@ namespace ProjectZombie.Features.UI
         {
             if (_characters == null || heroIndex < 0 || heroIndex >= _characters.Length) return;
             if (_currentIndex == heroIndex) return;
+
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            }
+
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             _currentIndex = heroIndex;
             RenderCurrentCharacter();

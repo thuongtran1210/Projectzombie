@@ -18,6 +18,11 @@ namespace ProjectZombie.Features.Spawners
         /// </summary>
         public static event System.Action<ProjectZombie.Features.UI.HUD.WaveInfo> OnWaveTriggered;
 
+        /// <summary>
+        /// Sự kiện cập nhật tiến trình thời gian của trận đấu (matchTime, maxDuration, progress 0..1).
+        /// </summary>
+        public static event System.Action<float, float, float> OnTimelineProgressUpdated;
+
         [Header("Timeline Configuration")]
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
@@ -49,6 +54,15 @@ namespace ProjectZombie.Features.Spawners
 
         public float MatchTime => matchTime;
         public int CurrentEnemyCount => currentEnemyCount;
+        public bool IsMatchActive => isMatchActive;
+        public LevelTimelineConfig TimelineConfig => timelineConfig;
+        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 1200f;
+        public float MatchProgress => Mathf.Clamp01(matchTime / Mathf.Max(1f, LevelDuration));
+        public int CurrentWaveIndex => Mathf.Max(1, _nextEventIndex);
+        public int TotalWaves => (timelineConfig != null && timelineConfig.events != null) ? Mathf.Max(1, timelineConfig.events.Count) : 1;
+        public string CurrentStageName => (timelineConfig != null && !string.IsNullOrEmpty(timelineConfig.levelName)) ? timelineConfig.levelName : "Man 1: U Minh Gioi";
+        public TimelineEvent CurrentActiveEvent => (timelineConfig != null && timelineConfig.events != null && _nextEventIndex > 0 && _nextEventIndex <= timelineConfig.events.Count) ? timelineConfig.events[_nextEventIndex - 1] : null;
+        public TimelineEvent NextUpcomingEvent => (timelineConfig != null && timelineConfig.events != null && _nextEventIndex < timelineConfig.events.Count) ? timelineConfig.events[_nextEventIndex] : null;
 
         private void Awake()
         {
@@ -271,10 +285,15 @@ namespace ProjectZombie.Features.Spawners
 
             matchTime += Time.deltaTime;
 
-            // 1. Kiểm tra kích hoạt Timeline Event mới
+            // 1. Cập nhật tiến trình thời gian cho HUD / Wave Banner
+            float maxDuration = LevelDuration;
+            float progress = Mathf.Clamp01(matchTime / Mathf.Max(1f, maxDuration));
+            OnTimelineProgressUpdated?.Invoke(matchTime, maxDuration, progress);
+
+            // 2. Kiểm tra kích hoạt Timeline Event mới
             CheckTimelineEvents();
 
-            // 2. Chạy các Continuous Spawn Event
+            // 3. Chạy các Continuous Spawn Event
             HandleContinuousSpawns();
         }
 

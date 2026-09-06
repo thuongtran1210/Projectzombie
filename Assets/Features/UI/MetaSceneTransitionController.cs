@@ -82,11 +82,19 @@ namespace ProjectZombie.Features.UI
 
         public void StartRun()
         {
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            }
             StartCoroutine(TransitionToCombatRoutine());
         }
 
         public void ReturnToMetaHub()
         {
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            }
             StartCoroutine(TransitionToMetaHubRoutine());
         }
 

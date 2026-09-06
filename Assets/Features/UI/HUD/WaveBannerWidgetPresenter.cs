@@ -4,13 +4,15 @@ using ProjectZombie.Features.Spawners;
 namespace ProjectZombie.Features.UI.HUD
 {
     /// <summary>
-    /// Presenter điều phối hiển thị thông tin Ải và Đợt quái (Wave Progress).
-    /// Độc lập 100% với RunHUDPresenter, tự động đăng ký và hủy đăng ký event an toàn.
+    /// Presenter điều phối hiển thị thông tin Ải, Đợt quái và Thanh tiến trình quái xuất hiện theo giai đoạn.
+    /// Độc lập 100% với RunHUDPresenter, tự động đồng bộ ngay khi khởi tạo và cập nhật thời gian thực.
     /// </summary>
     public class WaveBannerWidgetPresenter : MonoBehaviour
     {
         [Header("View Reference")]
         [SerializeField] private WaveBannerWidgetView _view;
+
+        private string _lastWaveDesc = "";
 
         private void Awake()
         {
@@ -20,14 +22,71 @@ namespace ProjectZombie.Features.UI.HUD
             }
         }
 
+        private void Start()
+        {
+            SyncCurrentStageData();
+        }
+
         private void OnEnable()
         {
             SpawnManager.OnWaveTriggered += HandleWaveTriggered;
+            SpawnManager.OnTimelineProgressUpdated += HandleTimelineProgressUpdated;
+            SyncCurrentStageData();
         }
 
         private void OnDisable()
         {
             SpawnManager.OnWaveTriggered -= HandleWaveTriggered;
+            SpawnManager.OnTimelineProgressUpdated -= HandleTimelineProgressUpdated;
+        }
+
+        private void Update()
+        {
+            // Dự phòng cập nhật mượt mà khi SpawnManager đang chạy
+            if (SpawnManager.Instance != null && SpawnManager.Instance.IsMatchActive)
+            {
+                float time = SpawnManager.Instance.MatchTime;
+                float maxTime = SpawnManager.Instance.LevelDuration;
+                float progress = SpawnManager.Instance.MatchProgress;
+                UpdateProgressView(time, maxTime, progress);
+            }
+        }
+
+        /// <summary>
+        /// Đồng bộ trực tiếp dữ liệu số màn chơi và đợt quái từ SpawnManager (tránh bị rỗng hoặc lệch nhịp khi khởi động).
+        /// </summary>
+        public void SyncCurrentStageData()
+        {
+            if (_view == null) return;
+
+            var spawner = SpawnManager.Instance;
+            if (spawner != null)
+            {
+                string stageTitle = spawner.CurrentStageName.ToUpper();
+                int currentWave = spawner.CurrentWaveIndex;
+                int totalWaves = spawner.TotalWaves;
+                string waveIndexStr = $"HOI {currentWave:D2} / {totalWaves:D2}";
+
+                _view.UpdateMiniBadge(stageTitle, waveIndexStr);
+
+                if (spawner.TimelineConfig != null)
+                {
+                    _view.SetupTimelineMarkers(spawner.TimelineConfig);
+                }
+
+                var activeEvt = spawner.CurrentActiveEvent;
+                if (activeEvt != null && !string.IsNullOrEmpty(activeEvt.eventName))
+                {
+                    _lastWaveDesc = activeEvt.eventName;
+                }
+
+                UpdateProgressView(spawner.MatchTime, spawner.LevelDuration, spawner.MatchProgress);
+            }
+            else
+            {
+                _view.UpdateMiniBadge("MAN 1: U MINH GIOI", "HOI 01 / 10");
+                _view.UpdateStageProgress(0f, "00:00 / 20:00 (0%)", "Chuan bi chien dau");
+            }
         }
 
         private void HandleWaveTriggered(WaveInfo info)
@@ -36,8 +95,15 @@ namespace ProjectZombie.Features.UI.HUD
 
             // 1. Format dữ liệu cho Thẻ Tre Mini (Top-Center)
             string stageTitle = $"{info.stageName.ToUpper()}";
-            string waveIndexStr = $"DOT {info.currentWaveIndex:D2} / {info.totalWaves:D2}";
+            string waveIndexStr = $"HOI {info.currentWaveIndex:D2} / {info.totalWaves:D2}";
             _view.UpdateMiniBadge(stageTitle, waveIndexStr);
+
+            _lastWaveDesc = info.waveTitle;
+
+            if (SpawnManager.Instance != null && SpawnManager.Instance.TimelineConfig != null)
+            {
+                _view.SetupTimelineMarkers(SpawnManager.Instance.TimelineConfig);
+            }
 
             // 2. Format tiêu đề và phụ đề cho Banner Pop-up chuyển Wave
             string bannerTitle = $"DOT {info.currentWaveIndex}: {info.waveTitle.ToUpper()}";
@@ -45,6 +111,25 @@ namespace ProjectZombie.Features.UI.HUD
 
             // Kích hoạt hoạt ảnh Banner ở giữa màn hình
             _view.PlayWaveTransitionBanner(bannerTitle, bannerSubText, info.eventType);
+        }
+
+        private void HandleTimelineProgressUpdated(float matchTime, float maxDuration, float progress)
+        {
+            UpdateProgressView(matchTime, maxDuration, progress);
+        }
+
+        private void UpdateProgressView(float matchTime, float maxDuration, float progress)
+        {
+            if (_view == null) return;
+
+            int curMin = Mathf.FloorToInt(matchTime / 60f);
+            int curSec = Mathf.FloorToInt(matchTime % 60f);
+            int maxMin = Mathf.FloorToInt(maxDuration / 60f);
+            int maxSec = Mathf.FloorToInt(maxDuration % 60f);
+
+            string progressTimeStr = $"{curMin:D2}:{curSec:D2} / {maxMin:D2}:{maxSec:D2} ({progress * 100f:F0}%)";
+            _view.UpdateStageProgress(progress, progressTimeStr, _lastWaveDesc);
+            _view.UpdateMarkerStatus(matchTime, progress);
         }
 
         private string GetSubTextForEventType(TimelineEventType eventType)

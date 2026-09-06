@@ -168,6 +168,20 @@ namespace ProjectZombie.Features.Player
                 combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
             }
 
+            if (_activePlayerInstance.TryGetComponent<WeaponManager>(out var wm))
+            {
+                wm.enabled = true;
+                wm.ReloadEquippedWeapons();
+            }
+
+            // Đăng ký toàn cục và kết nối Camera / UI với nhân vật mới
+            PlayerProvider.RegisterPlayer(_activePlayerInstance);
+            SetupCameraFollow(_activePlayerInstance.transform);
+            if (_uiBinder != null)
+            {
+                _uiBinder.BindAll(PlayerContext.Create(_activePlayerInstance));
+            }
+
             Debug.Log($"<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}");
         }
 
@@ -218,6 +232,15 @@ namespace ProjectZombie.Features.Player
                 }
 
                 PlayerProvider.RegisterPlayer(_activePlayerInstance);
+                SetupCameraFollow(_activePlayerInstance.transform);
+                if (_uiBinder != null)
+                {
+                    _uiBinder.BindAll(PlayerContext.Create(_activePlayerInstance));
+                }
+            }
+
+            if (_activePlayerInstance != null)
+            {
                 SetupCameraFollow(_activePlayerInstance.transform);
             }
 

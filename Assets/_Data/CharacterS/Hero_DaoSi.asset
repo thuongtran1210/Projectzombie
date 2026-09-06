@@ -59,7 +59,8 @@ MonoBehaviour:
   passiveTraitDesc: "Tr\u1EA1ng th\xE1i Th\xE1i C\u1EF1c (C\xE2n b\u1EB1ng) t\u0103ng
     25% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 v\xE0 gi\u1EA3m 20% S\xE1t th\u01B0\u01A1ng
     nh\u1EADn v\xE0o."
-  defaultRelic: {fileID: 0}
-  defaultPrimaryWeapon: {fileID: 0}
-  defaultRelics: []
+  defaultRelic: {fileID: 11400000, guid: 85245508c49d2df43b319d98f1e91cf9, type: 2}
+  defaultPrimaryWeapon: {fileID: 11400000, guid: 85245508c49d2df43b319d98f1e91cf9, type: 2}
+  defaultRelics:
+  - {fileID: 11400000, guid: 85245508c49d2df43b319d98f1e91cf9, type: 2}
   isUnlockedByDefault: 1

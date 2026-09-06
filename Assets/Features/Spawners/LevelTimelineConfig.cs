@@ -38,6 +38,9 @@ namespace ProjectZombie.Features.Spawners
         [Tooltip("Khoảng thời gian giữa các lần spawn (dành cho Continuous/Pillar).")]
         public float spawnInterval = 2f;
 
+        [Tooltip("Icon đại diện quái / sự kiện hiển thị trên thanh tiến trình Timeline (Tùy chọn, nếu để trống sẽ tự động lấy từ Prefab).")]
+        public Sprite eventIcon;
+
         /// <summary>
         /// Lấy Key định danh duy nhất cho Object Pool (Ưu tiên Addressable enemyAddress, fallback lấy tên spawnPrefab).
         /// </summary>
@@ -46,6 +49,20 @@ namespace ProjectZombie.Features.Spawners
             if (!string.IsNullOrEmpty(enemyAddress)) return enemyAddress;
             if (spawnPrefab != null) return spawnPrefab.name;
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Lấy Sprite icon đại diện cho sự kiện (ưu tiên eventIcon, sau đó đến SpriteRenderer từ spawnPrefab).
+        /// </summary>
+        public Sprite GetIcon()
+        {
+            if (eventIcon != null) return eventIcon;
+            if (spawnPrefab != null)
+            {
+                var sr = spawnPrefab.GetComponentInChildren<SpriteRenderer>();
+                if (sr != null && sr.sprite != null) return sr.sprite;
+            }
+            return null;
         }
     }
 

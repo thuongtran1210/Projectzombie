@@ -114,48 +114,70 @@ namespace ProjectZombie.Features.UI
                 string imgName = img.gameObject.name.ToLower();
                 if (_characterAvatarImage == null && imgName.Contains("avatar"))
                     _characterAvatarImage = img;
-                else if (_primaryWeaponIcon == null && (imgName.Contains("icon_weapon") || (imgName.Contains("primary") && imgName.Contains("icon"))))
-                    _primaryWeaponIcon = img;
             }
 
-            // Tự động tìm và liên kết các Slot Pháp Bảo (Relics) trong Row_LoadoutSlots nếu chưa gán trong Inspector
+            // Tự động tìm Slot Vũ Khí Chính
+            if (_primaryWeaponIcon == null || _primaryWeaponNameText == null)
+            {
+                var pwSlot = transform.Find("Modal_CharacterSelect/Panel_Inner/Right_InfoSection/Row_LoadoutSlots/Slot_PrimaryWeapon")
+                          ?? transform.Find("Modal_CharacterSelect/Row_LoadoutSlots/Slot_PrimaryWeapon");
+                if (pwSlot == null)
+                {
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name == "Slot_PrimaryWeapon") { pwSlot = child; break; }
+                    }
+                }
+
+                if (pwSlot != null)
+                {
+                    if (_primaryWeaponIcon == null)
+                    {
+                        var iconTrans = pwSlot.Find("Icon_Weapon");
+                        if (iconTrans != null) _primaryWeaponIcon = iconTrans.GetComponent<Image>();
+                    }
+                    if (_primaryWeaponNameText == null)
+                    {
+                        var nameTrans = pwSlot.Find("Text_PrimaryWeaponName");
+                        if (nameTrans != null) _primaryWeaponNameText = nameTrans.GetComponent<TextMeshProUGUI>();
+                    }
+                }
+            }
+
+            // Tự động tìm và liên kết 1 Slot Pháp Bảo (Relic) trong Row_LoadoutSlots nếu chưa gán trong Inspector
             if (_relicSlotIcons == null || _relicSlotIcons.Length == 0 || _relicSlotIcons[0] == null)
             {
                 var foundRelicIcons = new System.Collections.Generic.List<Image>();
                 var foundRelicNames = new System.Collections.Generic.List<TextMeshProUGUI>();
 
-                for (int i = 0; i < 3; i++)
+                var rSlot = transform.Find("Modal_CharacterSelect/Panel_Inner/Right_InfoSection/Row_LoadoutSlots/Slot_Relic_0") 
+                         ?? transform.Find("Modal_CharacterSelect/Row_LoadoutSlots/Slot_Relic_0");
+                if (rSlot == null)
                 {
-                    var rSlot = transform.Find($"Panel_Inner/Row_LoadoutSlots/Slot_Relic_{i}") 
-                             ?? transform.Find($"Row_LoadoutSlots/Slot_Relic_{i}");
-                    if (rSlot == null)
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
                     {
-                        // Quét sâu tìm theo tên Slot_Relic
-                        foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                        if (child.name == "Slot_Relic_0")
                         {
-                            if (child.name == $"Slot_Relic_{i}")
-                            {
-                                rSlot = child;
-                                break;
-                            }
+                            rSlot = child;
+                            break;
                         }
                     }
+                }
 
-                    if (rSlot != null)
+                if (rSlot != null)
+                {
+                    var iconTrans = rSlot.Find("Icon_Relic");
+                    if (iconTrans != null)
                     {
-                        var iconTrans = rSlot.Find("Icon_Relic");
-                        if (iconTrans != null)
-                        {
-                            var img = iconTrans.GetComponent<Image>();
-                            if (img != null) foundRelicIcons.Add(img);
-                        }
+                        var img = iconTrans.GetComponent<Image>();
+                        if (img != null) foundRelicIcons.Add(img);
+                    }
 
-                        var nameTrans = rSlot.Find("Text_RelicName");
-                        if (nameTrans != null)
-                        {
-                            var txt = nameTrans.GetComponent<TextMeshProUGUI>();
-                            if (txt != null) foundRelicNames.Add(txt);
-                        }
+                    var nameTrans = rSlot.Find("Text_RelicName");
+                    if (nameTrans != null)
+                    {
+                        var txt = nameTrans.GetComponent<TextMeshProUGUI>();
+                        if (txt != null) foundRelicNames.Add(txt);
                     }
                 }
 

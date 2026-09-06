@@ -48,8 +48,10 @@ namespace ProjectZombie.Editor
             var iconAtkThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
             var iconAtkAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
 
-            var relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/Relic_ButPhanQuan.asset");
-            if (relicThuSinh == null) relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W002_ButPhanQuan.asset");
+            var relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W002_BútPhánQuan.asset");
+            var relicDaoSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W003_BùaTrấnYêu.asset");
+            var relicThanhDong = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W010_LinhPhùMaDa.asset");
+            var relicAnSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W005_TrốngĐồngĐôngSơn.asset");
 
             // 2. Tạo hoặc cập nhật 4 file CharacterDataSO độc lập
             var listSO = new List<CharacterDataSO>();
@@ -84,7 +86,9 @@ namespace ProjectZombie.Editor
                 meleeOffset = 1.3f,
                 baseAttackSpeed = 1.8f
             };
+            soThuSinh.defaultPrimaryWeapon = relicThuSinh;
             soThuSinh.defaultRelic = relicThuSinh;
+            soThuSinh.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicThuSinh };
             EditorUtility.SetDirty(soThuSinh);
             listSO.Add(soThuSinh);
 
@@ -118,6 +122,9 @@ namespace ProjectZombie.Editor
                 meleeOffset = 1.35f,
                 baseAttackSpeed = 2.0f
             };
+            soDaoSi.defaultPrimaryWeapon = relicDaoSi;
+            soDaoSi.defaultRelic = relicDaoSi;
+            soDaoSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicDaoSi };
             EditorUtility.SetDirty(soDaoSi);
             listSO.Add(soDaoSi);
 
@@ -150,6 +157,9 @@ namespace ProjectZombie.Editor
                 baseAttackSpeed = 2.2f,
                 projectileSpeed = 9.0f
             };
+            soThanhDong.defaultPrimaryWeapon = relicThanhDong;
+            soThanhDong.defaultRelic = relicThanhDong;
+            soThanhDong.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicThanhDong };
             EditorUtility.SetDirty(soThanhDong);
             listSO.Add(soThanhDong);
 
@@ -183,6 +193,9 @@ namespace ProjectZombie.Editor
                 meleeOffset = 1.35f,
                 baseAttackSpeed = 1.6f
             };
+            soAnSi.defaultPrimaryWeapon = relicAnSi;
+            soAnSi.defaultRelic = relicAnSi;
+            soAnSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicAnSi };
             EditorUtility.SetDirty(soAnSi);
             listSO.Add(soAnSi);
 

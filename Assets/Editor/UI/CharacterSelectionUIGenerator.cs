@@ -18,6 +18,9 @@ namespace ProjectZombie.Editor.UI
         [MenuItem("Tools/ProjectZombie/UI/Generate Character Selection UI Prefab", priority = 10)]
         public static void GenerateCharacterSelectionPrefab()
         {
+            // Tự động đồng bộ và nạp dữ liệu vũ khí/pháp bảo của 4 tướng vào ScriptableObjects
+            CharacterDataAssetGenerator.GenerateCharacterAssets();
+
             string prefabFolder = "Assets/_Prefabs/UI";
             if (!AssetDatabase.IsValidFolder(prefabFolder))
             {
@@ -460,7 +463,7 @@ namespace ProjectZombie.Editor.UI
             // Slot Vũ Khí Chính
             GameObject pwSlotObj = CreateUIElement("Slot_PrimaryWeapon", loadoutRow.transform);
             RectTransform pwRT = pwSlotObj.GetComponent<RectTransform>();
-            pwRT.anchoredPosition = new Vector2(-180, -42);
+            pwRT.anchoredPosition = new Vector2(-75, -42);
             pwRT.sizeDelta = new Vector2(56, 56);
             var pwBgImg = pwSlotObj.AddComponent<Image>();
             pwBgImg.type = Image.Type.Sliced;
@@ -480,54 +483,50 @@ namespace ProjectZombie.Editor.UI
             pwnRT.anchorMax = new Vector2(0.5f, 0f);
             pwnRT.pivot = new Vector2(0.5f, 1f);
             pwnRT.anchoredPosition = new Vector2(0, -4);
-            pwnRT.sizeDelta = new Vector2(90, 16);
+            pwnRT.sizeDelta = new Vector2(100, 16);
             var pwnTMP = pwNameObj.AddComponent<TextMeshProUGUI>();
             if (vietFont != null) pwnTMP.font = vietFont;
-            pwnTMP.text = "Bút Phán Quan";
+            pwnTMP.text = "Vũ Khí Bản Mệnh";
             pwnTMP.fontSize = 9.5f;
             pwnTMP.fontStyle = FontStyles.Bold;
             pwnTMP.alignment = TextAlignmentOptions.Center;
             pwnTMP.color = new Color(0.25f, 0.18f, 0.12f);
 
-            // 3 Slot Pháp Bảo (Relics)
-            Image[] relicIcons = new Image[3];
-            TextMeshProUGUI[] relicNames = new TextMeshProUGUI[3];
+            // 1 Slot Pháp Bảo Khởi Điểm (Relic duy nhất mang theo)
+            Image[] relicIcons = new Image[1];
+            TextMeshProUGUI[] relicNames = new TextMeshProUGUI[1];
 
-            for (int r = 0; r < 3; r++)
-            {
-                float posX = -60f + (r * 110f);
-                GameObject rSlotObj = CreateUIElement($"Slot_Relic_{r}", loadoutRow.transform);
-                RectTransform rRT = rSlotObj.GetComponent<RectTransform>();
-                rRT.anchoredPosition = new Vector2(posX, -42);
-                rRT.sizeDelta = new Vector2(56, 56);
-                var rBgImg = rSlotObj.AddComponent<Image>();
-                rBgImg.type = Image.Type.Sliced;
-                if (slotInvWood != null) rBgImg.sprite = slotInvWood;
-                rBgImg.color = Color.white;
+            GameObject rSlotObj = CreateUIElement("Slot_Relic_0", loadoutRow.transform);
+            RectTransform rRT = rSlotObj.GetComponent<RectTransform>();
+            rRT.anchoredPosition = new Vector2(75, -42);
+            rRT.sizeDelta = new Vector2(56, 56);
+            var rBgImg = rSlotObj.AddComponent<Image>();
+            rBgImg.type = Image.Type.Sliced;
+            if (slotInvWood != null) rBgImg.sprite = slotInvWood;
+            rBgImg.color = Color.white;
 
-                GameObject rIconObj = CreateUIElement("Icon_Relic", rSlotObj.transform);
-                SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(6, 6);
-                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-6, -6);
-                var rIconImg = rIconObj.AddComponent<Image>();
-                rIconImg.preserveAspect = true;
-                relicIcons[r] = rIconImg;
+            GameObject rIconObj = CreateUIElement("Icon_Relic", rSlotObj.transform);
+            SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
+            rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(6, 6);
+            rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-6, -6);
+            var rIconImg = rIconObj.AddComponent<Image>();
+            rIconImg.preserveAspect = true;
+            relicIcons[0] = rIconImg;
 
-                GameObject rNameObj = CreateUIElement("Text_RelicName", rSlotObj.transform);
-                RectTransform rnRT = rNameObj.GetComponent<RectTransform>();
-                rnRT.anchorMin = new Vector2(0.5f, 0f);
-                rnRT.anchorMax = new Vector2(0.5f, 0f);
-                rnRT.pivot = new Vector2(0.5f, 1f);
-                rnRT.anchoredPosition = new Vector2(0, -4);
-                rnRT.sizeDelta = new Vector2(95, 16);
-                var rnTMP = rNameObj.AddComponent<TextMeshProUGUI>();
-                if (vietFont != null) rnTMP.font = vietFont;
-                rnTMP.text = $"Pháp Bảo {r + 1}";
-                rnTMP.fontSize = 9.5f;
-                rnTMP.alignment = TextAlignmentOptions.Center;
-                rnTMP.color = new Color(0.30f, 0.22f, 0.16f);
-                relicNames[r] = rnTMP;
-            }
+            GameObject rNameObj = CreateUIElement("Text_RelicName", rSlotObj.transform);
+            RectTransform rnRT = rNameObj.GetComponent<RectTransform>();
+            rnRT.anchorMin = new Vector2(0.5f, 0f);
+            rnRT.anchorMax = new Vector2(0.5f, 0f);
+            rnRT.pivot = new Vector2(0.5f, 1f);
+            rnRT.anchoredPosition = new Vector2(0, -4);
+            rnRT.sizeDelta = new Vector2(100, 16);
+            var rnTMP = rNameObj.AddComponent<TextMeshProUGUI>();
+            if (vietFont != null) rnTMP.font = vietFont;
+            rnTMP.text = "Pháp Bảo Hộ Thân";
+            rnTMP.fontSize = 9.5f;
+            rnTMP.alignment = TextAlignmentOptions.Center;
+            rnTMP.color = new Color(0.30f, 0.22f, 0.16f);
+            relicNames[0] = rnTMP;
 
             // 7. Select Button: "XÁC NHẬN CHỌN TƯỚNG" (Nút Hổ Phách 3D)
             GameObject selectBtnObj = CreateButton("Btn_Select", rightInner.transform, new Vector2(0, 4), new Vector2(490, 64), "XÁC NHẬN XUẤT TRẬN", vietFont);
@@ -565,15 +564,15 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_modalContainer").objectReferenceValue = panelRT;
             soView.FindProperty("_dimBackgroundButton").objectReferenceValue = bgDimBtn;
 
-            // Loadout slots
+            // Loadout slots (1 Primary Weapon + 1 Relic)
             soView.FindProperty("_primaryWeaponIcon").objectReferenceValue = pwIconImg;
             soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = pwnTMP;
             var rIconsProp = soView.FindProperty("_relicSlotIcons");
-            rIconsProp.arraySize = 3;
-            for (int r = 0; r < 3; r++) rIconsProp.GetArrayElementAtIndex(r).objectReferenceValue = relicIcons[r];
+            rIconsProp.arraySize = 1;
+            rIconsProp.GetArrayElementAtIndex(0).objectReferenceValue = relicIcons[0];
             var rNamesProp = soView.FindProperty("_relicSlotNames");
-            rNamesProp.arraySize = 3;
-            for (int r = 0; r < 3; r++) rNamesProp.GetArrayElementAtIndex(r).objectReferenceValue = relicNames[r];
+            rNamesProp.arraySize = 1;
+            rNamesProp.GetArrayElementAtIndex(0).objectReferenceValue = relicNames[0];
 
             // Hero Tabs
             var hTabBtnsProp = soView.FindProperty("_heroTabButtons");

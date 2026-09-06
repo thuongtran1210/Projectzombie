@@ -55,7 +55,6 @@ SpriteAtlas:
     - {fileID: 21300000, guid: 1184bda4991a41cbb2cae44fe97a8039, type: 3}
     - {fileID: 21300000, guid: d7736ecff6094d5ca6dc6e747043359c, type: 3}
     - {fileID: 21300000, guid: 36ec8809723e4aaab824f8cbe087722d, type: 3}
-    - {fileID: 21300000, guid: af1619d94b874183b712191806037dd3, type: 3}
     - {fileID: 21300000, guid: 65fd60a7bde5462294283cb239332c2f, type: 3}
     - {fileID: 21300000, guid: cc3bc3eee237495a9cae35f5ea0f4f3c, type: 3}
     - {fileID: 21300000, guid: c7ea6acc963c4caaa414ea8feb75b7ac, type: 3}
@@ -115,7 +114,6 @@ SpriteAtlas:
     - 11fc5329fa314099b386a0bcfdc9bd23: 21300000
     - 495ea7a9d70541d29d2284dd48a503ea: 21300000
     - 57cebfa9ee6d4611a0f5a80502e26f0f: 21300000
-    - af1619d94b874183b712191806037dd3: 21300000
     - 4f0530f97a1642a5b987e15b57cd69a0: 21300000
     - 1da85bda3251499195669564d105c00f: 21300000
     - 14c145fafe514292b5c88719c40ef5bf: 21300000
@@ -157,7 +155,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 11fc5329fa314099b386a0bcfdc9bd23, type: 3}
   - {fileID: 21300000, guid: 495ea7a9d70541d29d2284dd48a503ea, type: 3}
   - {fileID: 21300000, guid: 57cebfa9ee6d4611a0f5a80502e26f0f, type: 3}
-  - {fileID: 21300000, guid: af1619d94b874183b712191806037dd3, type: 3}
   - {fileID: 21300000, guid: 4f0530f97a1642a5b987e15b57cd69a0, type: 3}
   - {fileID: 21300000, guid: 1da85bda3251499195669564d105c00f, type: 3}
   - {fileID: 21300000, guid: 14c145fafe514292b5c88719c40ef5bf, type: 3}
@@ -198,7 +195,6 @@ SpriteAtlas:
   - Card_Upgrade_Wood_Totem_9Slice
   - Slot_Inventory_Selected_Glow
   - Toggle_Wood_Box_Off
-  - Btn_Back_Wood_9Slice
   - Slider_Wood_Handle_Orb
   - Badge_Upgrade_Pill_Wood_9Slice
   - Frame_HUD_Timer_Kill_Wood

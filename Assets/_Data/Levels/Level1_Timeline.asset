@@ -28,6 +28,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 3
     spawnInterval: 4
+    eventIcon: {fileID: 4951109404168921002, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 01:00 - Ma Da tr\u01A1n tr\u01B0\u1EE3t t\u0103ng t\u1ED1c
       \xE1p s\xE1t"
     timestampSeconds: 60
@@ -41,6 +42,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 4
     spawnInterval: 3.5
+    eventIcon: {fileID: 48799176676763939, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 02:00 - Ma Tr\u01A1i bay l\u01A1 l\u1EEDng ph\xF3ng ma h\u1ECFa"
     timestampSeconds: 120
     eventType: 0
@@ -53,6 +55,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 3
     spawnInterval: 4
+    eventIcon: {fileID: 6824302259244931010, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 03:00 - B\u1EA7y Ma Da tr\xE0n l\xEAn bao v\xE2y (Burst Wave)"
     timestampSeconds: 180
     eventType: 1
@@ -65,6 +68,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 12
     spawnInterval: 0.2
+    eventIcon: {fileID: 48799176676763939, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 04:00 - B\u1EA7y H\u1ED3 Ly Tinh tinh qu\xE1i lao v\xE0o
       t\u1EF1 n\u1ED5"
     timestampSeconds: 240
@@ -78,6 +82,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 4
     spawnInterval: 4
+    eventIcon: {fileID: -7598605706414661151, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 05:00 - ELITE QU\u1EF6 NH\u1EACP TR\xC0NG XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 300
     eventType: 1
@@ -90,6 +95,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 1
     spawnInterval: 0
+    eventIcon: {fileID: 7673597929921603940, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 06:00 - Ma \u0110\xF2i N\u1EE3 l\xE9n l\xFAt th\xF3 ti\u1EC1n
       ch\u1EA1y tr\u1ED1n"
     timestampSeconds: 360
@@ -103,6 +109,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 2
     spawnInterval: 12
+    eventIcon: {fileID: 2300207099776836425, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 08:00 - B\xE3o Ma H\u1ECFa & H\u1ED3 Ly Tinh bao v\xE2y (Burst
       Wave)"
     timestampSeconds: 480
@@ -116,6 +123,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 16
     spawnInterval: 0.2
+    eventIcon: {fileID: -7598605706414661151, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 10:00 - MID-BOSS NG\u01AFU \u0110\u1EA6U M\xC3 DI\u1EC6N
       XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 600
@@ -129,6 +137,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 1
     spawnInterval: 0
+    eventIcon: {fileID: -7964961199430536366, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 12:00 - \u0110\u1ED9i h\xECnh Qu\u1EF7 Binh & C\u01B0\u01A1ng
       Thi t\u1ED5ng l\u1EF1c"
     timestampSeconds: 720
@@ -142,6 +151,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 2
     spawnInterval: 6
+    eventIcon: {fileID: 7673597929921603940, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 15:00 - \u0110\u1EA1i B\xE3o Y\xEAu Ma t\u1ED5ng l\u1EF1c
       (Multi-Burst Wave)"
     timestampSeconds: 900
@@ -155,6 +165,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 25
     spawnInterval: 0.1
+    eventIcon: {fileID: 4951109404168921002, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 20:00 - FINAL BOSS DI\xCAM V\u01AF\u01A0NG GI\xC1NG L\xC2M"
     timestampSeconds: 1200
     eventType: 3
@@ -167,3 +178,4 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     spawnCount: 1
     spawnInterval: 0
+    eventIcon: {fileID: 6889845902964837195, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
