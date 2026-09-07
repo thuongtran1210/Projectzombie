@@ -33,18 +33,6 @@ namespace ProjectZombie.Editor.Optimization
             public bool isOptimal;
         }
 
-        private struct TextureAuditItem
-        {
-            public string path;
-            public Texture2D texture;
-            public int width;
-            public int height;
-            public int maxTextureSize;
-            public TextureImporterCompression compression;
-            public bool isCrunched;
-            public bool isUncompressed;
-        }
-
         [MenuItem("ProjectZombie/Optimization/Memory & Asset Optimizer", false, 10)]
         public static void ShowWindow()
         {
@@ -250,31 +238,35 @@ namespace ProjectZombie.Editor.Optimization
 
         private void DrawTextureTab()
         {
-            GUILayout.Label("🖼️ Kiểm Toán & Nén Texture / Sprite (Texture Compression)", EditorStyles.boldLabel);
+            GUILayout.Label("🖼️ Kiểm Toán & Nén Texture / Sprite (Texture & SpriteAtlas Optimizer)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "Chuẩn hóa Texture cho Game 2D Di Động:\n" +
-                "• Chuyển từ 'Uncompressed' (16MB/tấm) sang 'Compressed / Normal Quality' (1.5MB/tấm).\n" +
-                "• Bật Crunched Compression / ASTC để giảm 80% dung lượng RAM và dung lượng file APK/IPA.",
-                MessageType.None);
+                "Quy chuẩn Texture & SpriteAtlas trong Unity 2D:\n" +
+                "• Source Sprites trong thư mục UI (đóng gói vào SpriteAtlas): BẮT BUỘC để 'Uncompressed' để SpriteAtlas tự nén Master, tránh hiện tượng nén 2 lần (Double Compression) gây mờ và phát sinh cảnh báo vàng.\n" +
+                "• Standalone Textures (VFX, Backgrounds, Decals): Nén 'Compressed / Crunched 85%' để tiết kiệm tối đa RAM.",
+                MessageType.Info);
 
             GUILayout.Space(6);
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("🔄 Quét Toàn Bộ Textures", GUILayout.Height(32)))
+
+            GUI.backgroundColor = new Color(0.3f, 0.85f, 0.45f);
+            if (GUILayout.Button("🔧 1. Khôi Phục Nguồn SpriteAtlas Về Uncompressed (Xóa Sạch Cảnh Báo)", GUILayout.Height(36)))
             {
-                AuditTextures();
+                FixAllSpriteAtlasSourceTextures();
             }
 
-            GUI.backgroundColor = new Color(0.3f, 0.9f, 0.4f);
-            if (GUILayout.Button("⚡ Tự Động Nén Texture Chưa Tối Ưu (1-Click)", GUILayout.Height(32)))
+            GUI.backgroundColor = new Color(0.4f, 0.7f, 1.0f);
+            if (GUILayout.Button("⚡ 2. Nén Standalone Textures & VFX (Bỏ Qua SpriteAtlas)", GUILayout.Height(36)))
             {
-                OptimizeAllTextures();
+                OptimizeStandaloneTextures();
             }
             GUI.backgroundColor = Color.white;
             EditorGUILayout.EndHorizontal();
 
             GUILayout.Space(10);
-            int uncompressedCount = _textureItems.FindAll(t => t.isUncompressed).Count;
-            GUILayout.Label($"Tổng số Textures ({_textureItems.Count} files) — Chưa nén: {uncompressedCount} files:", EditorStyles.boldLabel);
+            int atlasWarningCount = _textureItems.FindAll(t => t.isAtlasSource && !t.isUncompressed).Count;
+            int standaloneUncompressedCount = _textureItems.FindAll(t => !t.isAtlasSource && t.isUncompressed).Count;
+
+            GUILayout.Label($"Tổng số Textures ({_textureItems.Count} files) | UI Atlas cần Uncompressed: {atlasWarningCount} | Standalone chưa nén: {standaloneUncompressedCount}", EditorStyles.boldLabel);
 
             EditorGUILayout.BeginVertical("box");
             for (int i = 0; i < Mathf.Min(_textureItems.Count, 30); i++)
@@ -282,8 +274,16 @@ namespace ProjectZombie.Editor.Optimization
                 var item = _textureItems[i];
                 EditorGUILayout.BeginHorizontal();
 
-                GUI.color = item.isUncompressed ? new Color(1f, 0.4f, 0.2f) : Color.green;
-                GUILayout.Label(item.isUncompressed ? "⚠ [Chưa Nén]" : "✔ [Đã Nén]", GUILayout.Width(90));
+                if (item.isAtlasSource)
+                {
+                    GUI.color = item.isUncompressed ? Color.green : new Color(1f, 0.4f, 0.2f);
+                    GUILayout.Label(item.isUncompressed ? "✔ [Atlas OK]" : "⚠ [Cần Uncompressed]", GUILayout.Width(130));
+                }
+                else
+                {
+                    GUI.color = !item.isUncompressed ? Color.green : new Color(1f, 0.6f, 0.2f);
+                    GUILayout.Label(!item.isUncompressed ? "✔ [Đã Nén]" : "⚠ [Chưa Nén]", GUILayout.Width(130));
+                }
                 GUI.color = Color.white;
 
                 GUILayout.Label(Path.GetFileName(item.path), GUILayout.Width(220));
@@ -300,6 +300,19 @@ namespace ProjectZombie.Editor.Optimization
             EditorGUILayout.EndVertical();
         }
 
+        private struct TextureAuditItem
+        {
+            public string path;
+            public Texture2D texture;
+            public int width;
+            public int height;
+            public int maxTextureSize;
+            public TextureImporterCompression compression;
+            public bool isCrunched;
+            public bool isUncompressed;
+            public bool isAtlasSource;
+        }
+
         private void AuditTextures()
         {
             _textureItems.Clear();
@@ -313,6 +326,7 @@ namespace ProjectZombie.Editor.Optimization
 
                 if (tex == null || importer == null) continue;
 
+                bool isAtlasSource = path.StartsWith("Assets/Art/UI/", System.StringComparison.OrdinalIgnoreCase) || path.Contains("/UI/");
                 bool isUncompressed = (importer.textureCompression == TextureImporterCompression.Uncompressed);
 
                 _textureItems.Add(new TextureAuditItem
@@ -324,12 +338,44 @@ namespace ProjectZombie.Editor.Optimization
                     maxTextureSize = importer.maxTextureSize,
                     compression = importer.textureCompression,
                     isCrunched = importer.crunchedCompression,
-                    isUncompressed = isUncompressed
+                    isUncompressed = isUncompressed,
+                    isAtlasSource = isAtlasSource
                 });
             }
         }
 
-        private void OptimizeAllTextures()
+        public static void FixAllSpriteAtlasSourceTextures()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:Texture2D", new string[] { "Assets/Art/UI" });
+            int fixedCount = 0;
+            AssetDatabase.StartAssetEditing();
+
+            try
+            {
+                foreach (string guid in guids)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                    if (importer != null && importer.textureCompression != TextureImporterCompression.Uncompressed)
+                    {
+                        importer.textureCompression = TextureImporterCompression.Uncompressed;
+                        importer.crunchedCompression = false;
+                        EditorUtility.SetDirty(importer);
+                        importer.SaveAndReimport();
+                        fixedCount++;
+                    }
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+
+            AssetDatabase.Refresh();
+            EditorUtility.DisplayDialog("Xử Lý Nguồn SpriteAtlas Hoàn Tất", $"Đã chuyển {fixedCount} file Sprite trong thư mục UI về 'Uncompressed' chuẩn để SpriteAtlas tự nén, triệt tiêu 100% cảnh báo vàng!", "Tuyệt vời");
+        }
+
+        private void OptimizeStandaloneTextures()
         {
             int optimizedCount = 0;
             AssetDatabase.StartAssetEditing();
@@ -338,7 +384,7 @@ namespace ProjectZombie.Editor.Optimization
             {
                 foreach (var item in _textureItems)
                 {
-                    if (!item.isUncompressed) continue;
+                    if (item.isAtlasSource || !item.isUncompressed) continue;
 
                     TextureImporter importer = AssetImporter.GetAtPath(item.path) as TextureImporter;
                     if (importer == null) continue;
@@ -359,7 +405,7 @@ namespace ProjectZombie.Editor.Optimization
 
             AssetDatabase.Refresh();
             AuditTextures();
-            EditorUtility.DisplayDialog("Tối Ưu Texture Hoàn Tất", $"Đã nén chuẩn di động thành công {optimizedCount} Textures!", "Đồng ý");
+            EditorUtility.DisplayDialog("Tối Ưu Standalone Texture Hoàn Tất", $"Đã nén chuẩn di động thành công {optimizedCount} Textures độc lập (VFX/Decals)!", "Đồng ý");
         }
 
         #endregion
