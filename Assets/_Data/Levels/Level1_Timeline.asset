@@ -89,7 +89,7 @@ MonoBehaviour:
     spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
     enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
-      m_AssetGUID: 
+      m_AssetGUID: 944cc003ebcffde4a8add0899773079a
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
     spawnPrefab: {fileID: 4338019940683393192, guid: 88a398719a324b91950e1fa41890e101, type: 3}
     enemyAddress: E_MADOINO
     spawnPrefabRef:
-      m_AssetGUID: 
+      m_AssetGUID: 88a398719a324b91950e1fa41890e101
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
     spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
     enemyAddress: E_HOALYTINH
     spawnPrefabRef:
-      m_AssetGUID: 
+      m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
     spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
     enemyAddress: Boss_NguuDauMaDien
     spawnPrefabRef:
-      m_AssetGUID: 
+      m_AssetGUID: 193a344b7a316cd42b5e32fc47df8ba7
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
