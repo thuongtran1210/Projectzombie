@@ -169,14 +169,22 @@ namespace ProjectZombie.Features.Enemies
                 StateMachine.Initialize(ChaseState);
             }
 
-            // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy
+            // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy & Gán PhysicsMaterial2D không ma sát
             Collider2D enemyCol = GetComponent<Collider2D>();
-            if (enemyCol != null && PlayerTransform != null)
+            if (enemyCol != null)
             {
-                Collider2D playerCol = PlayerTransform.GetComponent<Collider2D>();
-                if (playerCol != null)
+                if (enemyCol.sharedMaterial == null || enemyCol.sharedMaterial.friction > 0f)
                 {
-                    Physics2D.IgnoreCollision(enemyCol, playerCol, true);
+                    enemyCol.sharedMaterial = new PhysicsMaterial2D("Frictionless_Enemy") { friction = 0f, bounciness = 0f };
+                }
+
+                if (PlayerTransform != null)
+                {
+                    Collider2D playerCol = PlayerTransform.GetComponent<Collider2D>();
+                    if (playerCol != null)
+                    {
+                        Physics2D.IgnoreCollision(enemyCol, playerCol, true);
+                    }
                 }
             }
         }

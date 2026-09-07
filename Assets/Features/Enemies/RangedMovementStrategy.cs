@@ -65,22 +65,25 @@ namespace ProjectZombie.Features.Enemies
 
             if (distance < _enemy.Config.minDistance)
             {
-                // Player quá gần (< minDistance) -> Lùi lại khẩn cấp + Strafe nhẹ
-                Vector2 retreatDir = (-directionToPlayer + strafeVector * 0.4f).normalized;
-                moveVelocity = retreatDir * (currentSpeed * 1.1f); // Tăng 10% tốc độ khi tháo chạy
+                // Player quá gần (< minDistance) -> Lùi lại khẩn cấp + Strafe nhẹ (né tường sau lưng)
+                Vector2 rawRetreatDir = (-directionToPlayer + strafeVector * 0.4f).normalized;
+                Vector2 steeredRetreatDir = CalculateSteeringDirection(rawRetreatDir);
+                moveVelocity = steeredRetreatDir * (currentSpeed * 1.1f); // Tăng 10% tốc độ khi tháo chạy
             }
             else if (distance > _enemy.Config.preferredDistance)
             {
-                // Player quá xa (> preferredDistance) -> Tiến lại gần + Strafe nhẹ
-                Vector2 advanceDir = (directionToPlayer + strafeVector * 0.3f).normalized;
-                moveVelocity = advanceDir * currentSpeed;
+                // Player quá xa (> preferredDistance) -> Tiến lại gần + Strafe nhẹ (né vật cản trước mặt)
+                Vector2 rawAdvanceDir = (directionToPlayer + strafeVector * 0.3f).normalized;
+                Vector2 steeredAdvanceDir = CalculateSteeringDirection(rawAdvanceDir);
+                moveVelocity = steeredAdvanceDir * currentSpeed;
             }
             else
             {
                 // Trong tầm an toàn (minDistance <= distance <= preferredDistance) -> Strafe di chuyển ngang nhẹ
                 if (allowStrafe)
                 {
-                    moveVelocity = strafeVector * (currentSpeed * 0.5f);
+                    Vector2 steeredStrafeDir = CalculateSteeringDirection(strafeVector.normalized);
+                    moveVelocity = steeredStrafeDir * (currentSpeed * 0.5f);
                 }
                 else
                 {

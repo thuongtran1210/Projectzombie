@@ -43,16 +43,31 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
-            float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
-            
-            // Di chuyển thẳng về phía người chơi nếu ngoài tầm đánh
-            if (distance > _enemy.Config.AttackRange)
+            // Xử lý hành vi Ma Đòi Nợ bỏ chạy sau khi thó tiền thành công
+            if (_enemy.TryGetComponent<Special.EnemyDebtCollector>(out var debtCollector) && debtCollector.IsFleeing)
             {
-                Vector2 direction = (_enemy.PlayerTransform.position - _enemy.transform.position).normalized;
-                _enemy.Rb.velocity = direction * currentSpeed;
+                Vector2 awayDir = ((Vector2)_enemy.transform.position - (Vector2)_enemy.PlayerTransform.position).normalized;
+                if (awayDir.sqrMagnitude < 0.001f) awayDir = Random.insideUnitCircle.normalized;
+                
+                Vector2 steeredAwayDir = CalculateSteeringDirection(awayDir);
+                _enemy.Rb.velocity = steeredAwayDir * currentSpeed;
 
                 _enemy.Animator?.SetRunning(true);
-                _enemy.Animator?.FlipToDirection(direction.x);
+                _enemy.Animator?.FlipToDirection(steeredAwayDir.x);
+                return;
+            }
+
+            float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
+            
+            // Di chuyển về phía người chơi nếu ngoài tầm đánh (kết hợp né vật cản và trượt tường)
+            if (distance > _enemy.Config.AttackRange)
+            {
+                Vector2 rawDirection = ((Vector2)_enemy.PlayerTransform.position - (Vector2)_enemy.transform.position).normalized;
+                Vector2 steeredDirection = CalculateSteeringDirection(rawDirection);
+                _enemy.Rb.velocity = steeredDirection * currentSpeed;
+
+                _enemy.Animator?.SetRunning(true);
+                _enemy.Animator?.FlipToDirection(steeredDirection.x);
             }
             else
             {
@@ -64,6 +79,10 @@ namespace ProjectZombie.Features.Enemies
         public override bool IsInAttackRange(float distanceToPlayer)
         {
             if (_enemy == null || _enemy.Config == null) return false;
+            if (_enemy.TryGetComponent<Special.EnemyDebtCollector>(out var debtCollector) && debtCollector.IsFleeing)
+            {
+                return false;
+            }
             return distanceToPlayer <= _enemy.Config.AttackRange;
         }
 

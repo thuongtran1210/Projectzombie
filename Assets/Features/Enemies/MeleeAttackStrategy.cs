@@ -180,6 +180,8 @@ namespace ProjectZombie.Features.Enemies
 
         public override void Attack()
         {
+            if (!gameObject.activeInHierarchy) return;
+
             if (_enemy != null && _enemy.StatusController != null && !_enemy.StatusController.CanAttack)
             {
                 return;

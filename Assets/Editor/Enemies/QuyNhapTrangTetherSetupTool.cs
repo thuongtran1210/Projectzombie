@@ -57,13 +57,25 @@ namespace ProjectZombie.EditorTools
                     lineRenderer = beamTrans.gameObject.AddComponent<LineRenderer>();
                 }
 
-                lineRenderer.positionCount = 2;
-                lineRenderer.startWidth = 0.18f;
-                lineRenderer.endWidth = 0.18f;
+                lineRenderer.positionCount = 14;
+                lineRenderer.startWidth = 0.09f;
+                lineRenderer.endWidth = 0.09f;
                 lineRenderer.useWorldSpace = true;
-                lineRenderer.sortingLayerName = "VFX_World";
-                lineRenderer.sortingOrder = 100;
+                lineRenderer.sortingLayerName = "Skill";
+                lineRenderer.sortingOrder = 500;
                 lineRenderer.enabled = false;
+
+                // Gán Material URP 2D Unlit hoặc Sprite Default để hiển thị rõ màu sắc
+                if (lineRenderer.sharedMaterial == null)
+                {
+                    Material defaultMat = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat");
+                    if (defaultMat == null)
+                    {
+                        Shader sh = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default") ?? Shader.Find("Sprites/Default");
+                        if (sh != null) defaultMat = new Material(sh);
+                    }
+                    if (defaultMat != null) lineRenderer.sharedMaterial = defaultMat;
+                }
 
                 // Lưu thay đổi vào Prefab
                 PrefabUtility.SaveAsPrefabAsset(prefabRoot, prefabPath);

@@ -4,6 +4,7 @@ using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Collectibles;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.UI.DamageText;
 
 namespace ProjectZombie.Features.Enemies.Special
 {
@@ -28,6 +29,9 @@ namespace ProjectZombie.Features.Enemies.Special
         private bool _hasStolen = false;
         private float _fleeTimer = 0f;
 
+        public bool HasStolen => _hasStolen;
+        public bool IsFleeing => _hasStolen && _fleeTimer > 0f;
+
         private void Awake()
         {
             _enemy = GetComponent<Enemy>();
@@ -51,6 +55,34 @@ namespace ProjectZombie.Features.Enemies.Special
             }
         }
 
+        private void Update()
+        {
+            if (_hasStolen)
+            {
+                _fleeTimer -= Time.deltaTime;
+                if (_fleeTimer <= 0f)
+                {
+                    // Hết 5s mà không bị tiêu diệt -> Chạy thoát thành công và biến mất
+                    if (_enemy != null && _enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive)
+                    {
+                        gameObject.SetActive(false);
+                    }
+                }
+                return;
+            }
+
+            // Chủ động quét cự ly áp sát người chơi để thó tiền ngay cả khi va chạm vật lý bị IgnoreCollision
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            {
+                float stealRadius = _enemy != null && _enemy.Config != null ? Mathf.Max(_enemy.Config.AttackRange, 0.9f) : 1.0f;
+                float dist = Vector2.Distance(transform.position, PlayerProvider.PlayerTransform.position);
+                if (dist <= stealRadius)
+                {
+                    ExecuteSteal();
+                }
+            }
+        }
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
             if (_hasStolen) return;
@@ -61,8 +93,10 @@ namespace ProjectZombie.Features.Enemies.Special
             }
         }
 
-        private void ExecuteSteal()
+        public void ExecuteSteal()
         {
+            if (_hasStolen) return;
+
             _hasStolen = true;
             _fleeTimer = fleeDuration;
 
@@ -72,34 +106,24 @@ namespace ProjectZombie.Features.Enemies.Special
                 RunStatsTracker.Instance.AddCoins(-stolenCoins);
             }
 
-            // Tăng tốc bỏ chạy
-            _enemy.MoveSpeedMultiplier = fleeSpeedMultiplier;
-
-            StartCoroutine(RoutineFleeAndEscape());
-        }
-
-        private IEnumerator RoutineFleeAndEscape()
-        {
-            while (_fleeTimer > 0f)
+            // Tái sử dụng chung ObjectPool DamageText (0-GC Alloc): Hiện -50 màu Đỏ Cam thuần số (không icon, không text)
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
-                _fleeTimer -= Time.deltaTime;
-
-                // Di chuyển ngược hướng người chơi (bỏ chạy)
-                if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+                Vector3 spawnPos = PlayerProvider.PlayerTransform.position + Vector3.up * 0.8f;
+                if (DamageTextManager.Instance != null)
                 {
-                    float baseSpeed = _enemy.Config != null ? _enemy.Config.moveSpeed : 3f;
-                    float finalSpeed = baseSpeed * _enemy.MoveSpeedMultiplier;
-                    Vector2 awayFromPlayer = ((Vector2)transform.position - (Vector2)PlayerProvider.PlayerTransform.position).normalized;
-                    _enemy.Rb.velocity = awayFromPlayer * finalSpeed;
+                    DamageTextManager.Instance.ShowCustomText($"-{stolenCoins}", spawnPos, new Color(1f, 0.35f, 0.2f, 1f));
                 }
-
-                yield return null;
             }
 
-            // Hết 5s mà không bị giết -> Chạy thoát thành công
-            if (_enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive)
+            // Tăng tốc bỏ chạy
+            if (_enemy != null)
             {
-                gameObject.SetActive(false);
+                _enemy.MoveSpeedMultiplier = fleeSpeedMultiplier;
+                if (_enemy.StateMachine != null && _enemy.ChaseState != null)
+                {
+                    _enemy.StateMachine.ChangeState(_enemy.ChaseState);
+                }
             }
         }
 
@@ -110,6 +134,13 @@ namespace ProjectZombie.Features.Enemies.Special
                 // Thưởng gấp đôi khi bắt và tiêu diệt được Ma Đòi Nợ
                 int rewardCoins = stolenCoins * 2;
                 float rewardExp = stolenExp * 2;
+
+                // Tái sử dụng chung ObjectPool DamageText (0-GC Alloc): Hiện +100 màu Vàng Hoàng Kim thuần số
+                Vector3 spawnPos = transform.position + Vector3.up * 0.8f;
+                if (DamageTextManager.Instance != null)
+                {
+                    DamageTextManager.Instance.ShowCustomText($"+{rewardCoins}", spawnPos, new Color(1f, 0.88f, 0.2f, 1f));
+                }
 
                 if (CoinPoolManager.Instance != null)
                 {

@@ -22,7 +22,7 @@ MonoBehaviour:
     spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
     enemyAddress: E_MAGIAP
     spawnPrefabRef:
-      m_AssetGUID: 
+      m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0

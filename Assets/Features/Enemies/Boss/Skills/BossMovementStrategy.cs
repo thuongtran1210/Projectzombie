@@ -48,15 +48,17 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
             float distance = Vector2.Distance(_enemy.transform.position, _enemy.PlayerTransform.position);
             Vector2 direction = (_enemy.PlayerTransform.position - _enemy.transform.position).normalized;
 
-            // Ngoài tầm đánh: Đuổi theo Player
+            // Ngoài tầm đánh: Đuổi theo Player (kết hợp né cột trụ và vật cản)
             if (distance > _enemy.Config.AttackRange)
             {
-                _enemy.Rb.velocity = direction * currentSpeed;
+                Vector2 rawDirection = ((Vector2)_enemy.PlayerTransform.position - (Vector2)_enemy.transform.position).normalized;
+                Vector2 steeredDirection = CalculateSteeringDirection(rawDirection);
+                _enemy.Rb.velocity = steeredDirection * currentSpeed;
 
                 if (_bossAnimator != null)
                 {
                     _bossAnimator.PlayAnimation("Run");
-                    _bossAnimator.FlipToDirection(direction.x);
+                    _bossAnimator.FlipToDirection(steeredDirection.x);
                 }
             }
             else

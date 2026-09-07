@@ -98,7 +98,16 @@ namespace ProjectZombie.Features.Enemies
             if (targetObj.TryGetComponent<IDamageable>(out var damageable) ||
                 (damageable = targetObj.GetComponentInParent<IDamageable>()) != null)
             {
-                damageable.TakeDamage(_enemy.GetTotalDamage());
+                if (_enemy.TryGetComponent<Special.EnemyDebtCollector>(out var debtCollector))
+                {
+                    debtCollector.ExecuteSteal();
+                }
+
+                float totalDamage = _enemy.GetTotalDamage();
+                if (totalDamage > 0f)
+                {
+                    damageable.TakeDamage(totalDamage);
+                }
                 _lastDamageTime = Time.time;
 
                 // Kích hoạt animation Attack nếu có

@@ -87,7 +87,7 @@ namespace ProjectZombie.Features.UI.DamageText
 
         private void HandleDamageReported(DamageReport report)
         {
-            if (_styleConfig == null || _textPrefab == null) return;
+            if (_styleConfig == null || _textPrefab == null || report.Amount <= 0f) return;
 
             // 1. Off-Screen Culling: Kiểm tra xem vị trí trúng đòn có nằm trong Camera hay không
             if (_mainCamera == null) _mainCamera = Camera.main;
@@ -118,6 +118,32 @@ namespace ProjectZombie.Features.UI.DamageText
             // 4. Lấy Item từ Pool và khởi tạo
             DamageTextItem item = _pool.Get();
             item.Setup(formattedText, textColor, fontSize, report.Position, _styleConfig, (releasedItem) =>
+            {
+                _pool.Release(releasedItem);
+            });
+        }
+
+        /// <summary>
+        /// Hiển thị chữ số tùy biến (như -50, +100 của Ma Đòi Nợ) sử dụng chung ObjectPool của DamageText (Zero-GC).
+        /// </summary>
+        public void ShowCustomText(string text, Vector3 worldPosition, Color color, float customFontSize = 0f)
+        {
+            if (_styleConfig == null || _textPrefab == null || _pool == null) return;
+
+            // Off-Screen Culling
+            if (_mainCamera == null) _mainCamera = Camera.main;
+            if (_mainCamera != null)
+            {
+                Vector3 viewportPos = _mainCamera.WorldToViewportPoint(worldPosition);
+                bool isVisible = viewportPos.x >= 0f && viewportPos.x <= 1f &&
+                                 viewportPos.y >= 0f && viewportPos.y <= 1f &&
+                                 viewportPos.z > 0f;
+                if (!isVisible) return;
+            }
+
+            float fontSize = customFontSize > 0f ? customFontSize : _styleConfig.NormalFontSize * 1.15f;
+            DamageTextItem item = _pool.Get();
+            item.Setup(text, color, fontSize, worldPosition, _styleConfig, (releasedItem) =>
             {
                 _pool.Release(releasedItem);
             });

@@ -27,6 +27,17 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
+            // Nếu đang trong trạng thái bỏ chạy (như Ma Đòi Nợ sau khi thó tiền), thoát ngay khỏi AttackState
+            if (_enemy.TryGetComponent<Special.EnemyDebtCollector>(out var debtCollector) && debtCollector.IsFleeing)
+            {
+                if (_enemy.Attacker != null && _enemy.Attacker.IsAttacking)
+                {
+                    _enemy.Attacker.InterruptAttack();
+                }
+                _stateMachine.ChangeState(_enemy.ChaseState);
+                return;
+            }
+
             if (_isTelegraphing)
             {
                 // Đang trong thời gian phát vệt đỏ báo hiệu -> Đứng yên khóa hướng
@@ -89,7 +100,9 @@ namespace ProjectZombie.Features.Enemies
                     _isTelegraphing = true;
                     telegraph.ShowTelegraph(_enemy.PlayerTransform.position, () =>
                     {
-                        if (_enemy != null && _enemy.Attacker != null)
+                        if (_enemy != null && _enemy.gameObject.activeInHierarchy && 
+                            _enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive && 
+                            _enemy.Attacker != null)
                         {
                             _enemy.Attacker.Attack();
                         }

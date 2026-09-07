@@ -110,7 +110,9 @@ namespace ProjectZombie.EditorTools
                 pivot = new Vector2(0.5f, 0.5f)
             });
 
+#pragma warning disable CS0618
             importer.spritesheet = metaDataList.ToArray();
+#pragma warning restore CS0618
             EditorUtility.SetDirty(importer);
             importer.SaveAndReimport();
             AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate);
