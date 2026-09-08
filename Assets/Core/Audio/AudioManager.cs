@@ -163,7 +163,7 @@ namespace Core.Audio
             _staticCachedAudio["burn"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Burn.wav");
             _staticCachedAudio["roar"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
             _staticCachedAudio["smash"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Smash.wav");
-            _staticCachedAudio["hub_bgm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/BGM_MainHub_VongXuyen.wav");
+            _staticCachedAudio["hub_bgm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/Lotus_Fields_at_Level_One.mp3");
         }
 
         private void ApplyEditorAudioFallback()
@@ -187,6 +187,7 @@ namespace Core.Audio
             if (_statusBurnClip == null && _staticCachedAudio.TryGetValue("burn", out var c16)) _statusBurnClip = c16;
             if (_bossRoarClip == null && _staticCachedAudio.TryGetValue("roar", out var c17)) _bossRoarClip = c17;
             if (_bossSmashClip == null && _staticCachedAudio.TryGetValue("smash", out var c18)) _bossSmashClip = c18;
+            if (_hubBgmClip == null && _staticCachedAudio.TryGetValue("hub_bgm", out var c19)) _hubBgmClip = c19;
         }
 #endif
 
@@ -562,6 +563,10 @@ namespace Core.Audio
         {
             BGMVolume = Mathf.Clamp01(linearVolume);
             SetMixerVolume(_bgmVolumeParam, BGMVolume);
+            if (_bgmAudioSource != null && (_masterMixer == null || _bgmAudioSource.outputAudioMixerGroup == null))
+            {
+                _bgmAudioSource.volume = BGMVolume;
+            }
             if (saveToPrefs)
             {
                 PlayerPrefs.SetFloat(PREFS_BGM_VOL, BGMVolume);

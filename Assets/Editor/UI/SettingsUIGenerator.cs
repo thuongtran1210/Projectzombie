@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
 using ProjectZombie.Features.UI;
+using ProjectZombie.Features.UI.StatsAndSkills;
 
 namespace ProjectZombie.Editor.UI
 {
@@ -139,16 +140,33 @@ namespace ProjectZombie.Editor.UI
             so.FindProperty("_overlayCloseButton").objectReferenceValue = ovBtn;
             so.ApplyModifiedProperties();
 
-            // Mặc định ẩn modal
+            // Wire Presenter
+            SettingsModalPresenter presenter = modalRoot.GetComponent<SettingsModalPresenter>();
+            if (presenter != null)
+            {
+                SerializedObject soPresenter = new SerializedObject(presenter);
+                soPresenter.FindProperty("_view").objectReferenceValue = view;
+                soPresenter.ApplyModifiedProperties();
+            }
+
+            // Mặc định ẩn modal hoàn toàn
             modalRoot.SetActive(false);
 
-            // 10. Save Prefab
+            // 10. Save Prefab to _Prefabs and Resources
+            string resourcesDir = "Assets/Resources/UI";
+            if (!System.IO.Directory.Exists(resourcesDir))
+            {
+                System.IO.Directory.CreateDirectory(resourcesDir);
+            }
+            string resourcesPrefabPath = $"{resourcesDir}/SettingsModalUI.prefab";
+
             PrefabUtility.SaveAsPrefabAsset(modalRoot, PREFAB_OUTPUT_PATH);
+            PrefabUtility.SaveAsPrefabAsset(modalRoot, resourcesPrefabPath);
             Object.DestroyImmediate(modalRoot);
 
-            Debug.Log($"<color=#00FF88>[SettingsUIGenerator]</color> Đã tạo thành công Prefab Cài Đặt tại: {PREFAB_OUTPUT_PATH}");
+            Debug.Log($"<color=#00FF88>[SettingsUIGenerator]</color> Đã tạo thành công Prefab Cài Đặt tại: {PREFAB_OUTPUT_PATH} và {resourcesPrefabPath}");
 
-            // Tự động gắn vào MainHub trong Scene nếu có
+            // Tự động gắn vào MainHub hoặc In-Game Canvas trong Scene nếu có
             LinkToMainHubScene(PREFAB_OUTPUT_PATH);
         }
 
@@ -356,6 +374,20 @@ namespace ProjectZombie.Editor.UI
                     var canvas = mainHubView.GetComponentInParent<Canvas>();
                     if (canvas != null) targetParent = canvas.transform;
                 }
+                else
+                {
+                    var statsMenuView = Object.FindObjectOfType<PlayerStatsMenuUIView>(true);
+                    if (statsMenuView != null)
+                    {
+                        var canvas = statsMenuView.GetComponentInParent<Canvas>();
+                        if (canvas != null) targetParent = canvas.transform;
+                    }
+                    else
+                    {
+                        var anyCanvas = Object.FindObjectOfType<Canvas>(true);
+                        if (anyCanvas != null) targetParent = anyCanvas.transform;
+                    }
+                }
             }
 
             if (targetParent != null)
@@ -376,7 +408,7 @@ namespace ProjectZombie.Editor.UI
                 }
 
                 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-                Debug.Log("<color=#00FF88>[SettingsUIGenerator]</color> Đã liên kết thành công Modal_Settings vào Canvas và MetaUIManager Screen Stack!");
+                Debug.Log("<color=#00FF88>[SettingsUIGenerator]</color> Đã liên kết thành công Modal_Settings vào Canvas hiện tại!");
             }
         }
     }

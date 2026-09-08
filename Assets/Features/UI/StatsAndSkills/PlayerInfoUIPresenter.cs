@@ -257,10 +257,13 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
 
+            var canvas = GetComponentInParent<Canvas>();
+            Transform canvasTransform = canvas != null ? canvas.transform : transform.root;
+
             var settingsPresenter = FindObjectOfType<SettingsModalPresenter>(true);
             if (settingsPresenter == null)
             {
-                // Thử tìm trong Canvas cha hoặc Resources / Prefab
+                // Thử tìm trong Resources / Prefab
                 var settingsPrefab = Resources.Load<GameObject>("UI/SettingsModalUI");
                 if (settingsPrefab == null)
                 {
@@ -271,10 +274,6 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
                 if (settingsPrefab != null)
                 {
-                    Transform canvasTransform = transform.root;
-                    var canvas = GetComponentInParent<Canvas>();
-                    if (canvas != null) canvasTransform = canvas.transform;
-
                     GameObject settingsObj = Instantiate(settingsPrefab, canvasTransform);
                     settingsObj.name = "Modal_Settings";
                     settingsPresenter = settingsObj.GetComponent<SettingsModalPresenter>();
@@ -283,6 +282,11 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
             if (settingsPresenter != null)
             {
+                if (canvasTransform != null && settingsPresenter.transform.parent != canvasTransform)
+                {
+                    settingsPresenter.transform.SetParent(canvasTransform, false);
+                }
+                settingsPresenter.transform.SetAsLastSibling();
                 settingsPresenter.Open();
             }
             else
@@ -294,6 +298,9 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         private void HandleQuitClicked()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
+            // Đóng menu trước để reset trạng thái menu
+            CloseMenu();
 
             // Kết thúc trận, lưu ngân lượng và về Sảnh Chính
             Time.timeScale = 1f;
@@ -311,12 +318,27 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
                 }
             }
 
-            if (GameStateManager.Instance != null)
+            if (MetaSceneTransitionController.Instance != null)
             {
-                GameStateManager.Instance.ChangeState(GameState.MainMenu);
+                MetaSceneTransitionController.Instance.ReturnToMetaHub();
             }
+            else
+            {
+                if (GameStateManager.Instance != null)
+                {
+                    GameStateManager.Instance.ChangeState(GameState.MainMenu);
+                }
 
-            SceneManager.LoadScene("SampleScene");
+                string currentSceneName = SceneManager.GetActiveScene().name;
+                if (!string.IsNullOrEmpty(currentSceneName))
+                {
+                    SceneManager.LoadScene(currentSceneName);
+                }
+                else
+                {
+                    SceneManager.LoadScene("SampleScene");
+                }
+            }
         }
 
         private void UpdateHeroDisplay()

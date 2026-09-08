@@ -23,25 +23,65 @@ namespace ProjectZombie.EditorTools
             window.minSize = new Vector2(460, 420);
         }
 
+        private Vector2 _scrollPos;
+
         private void OnGUI()
         {
+            _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
             EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("Cấu Trúc Toàn Bộ UI Canvas (Hướng A - All-in-One)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Quản Lý & Dựng UI Canvas (Modular Setup)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "Tool này sẽ tự động thiết lập hoặc chuẩn hóa Scene hiện tại:\n" +
-                "1. Tạo/Chuẩn hóa Canvas_MetaMenu (Sảnh Hoàng Tuyền, Chọn Anh Hùng, Miếu Nâng Cấp).\n" +
-                "2. Tạo/Chuẩn hóa Canvas_Gameplay (Run HUD, cụm nút Mobile Controls: Attack, Dash, Skill).\n" +
-                "3. Thiết lập Fade Transition Overlay và kết nối MetaSceneTransitionController.\n" +
-                "4. Tự động Wire toàn bộ View và Presenter theo chuẩn MVP.",
+                "Bạn có thể chọn dựng/cập nhật riêng lẻ từng hệ thống UI để không ảnh hưởng đến các phần khác, hoặc chạy thiết lập toàn bộ.",
                 MessageType.Info
             );
 
-            EditorGUILayout.Space(15);
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("1. CÁC HỆ THỐNG RIÊNG LẺ (MODULAR)", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("Tu Dong Dung va Chuan Hoa Toan Bo Canvas", GUILayout.Height(45)))
+            if (GUILayout.Button("⚙️ Cập Nhật Modal Cài Đặt (Settings Modal)", GUILayout.Height(30)))
             {
-                SetupFullUIInScene();
+                ProjectZombie.Editor.UI.SettingsUIGenerator.RebuildSettingsUI();
             }
+
+            if (GUILayout.Button("📊 Cập Nhật Bảng Thông Số & Pause Menu Trong Trận", GUILayout.Height(30)))
+            {
+                ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI();
+            }
+
+            if (GUILayout.Button("⚔️ Cập Nhật Top Run HUD (Máu, Cấp, EXP, Kỹ Năng)", GUILayout.Height(30)))
+            {
+                RunHUDHierarchyOptimizer.OptimizeRunHUD();
+            }
+
+            if (GUILayout.Button("🃏 Cập Nhật Bảng Chọn Thẻ Level Up (Upgrade Modal)", GUILayout.Height(30)))
+            {
+                UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
+            }
+
+            if (GUILayout.Button("☠️ Cập Nhật Màn Hình Kết Thúc Trận (GameOver UI)", GUILayout.Height(30)))
+            {
+                ProjectZombie.Editor.UI.GameOverUIGenerator.RebuildGameOverUI();
+            }
+
+            if (GUILayout.Button("🏯 Cập Nhật Sảnh Chính (Main Hub UI)", GUILayout.Height(30)))
+            {
+                ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubUI();
+            }
+
+            EditorGUILayout.Space(15);
+            EditorGUILayout.LabelField("2. THIẾT LẬP TOÀN DIỆN (FULL 1-CLICK)", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("Chỉ bấm nút này khi bạn muốn khởi tạo mới lại toàn bộ Canvas từ đầu.", MessageType.Warning);
+
+            if (GUILayout.Button("⚠️ Tự Động Dựng & Đồng Bộ Toàn Bộ Canvas (All-in-One)", GUILayout.Height(40)))
+            {
+                if (EditorUtility.DisplayDialog("Xác nhận", "Bạn có chắc chắn muốn dựng lại toàn bộ Canvas không? Các tùy biến UI thủ công có thể sẽ được thiết lập lại về mặc định.", "Đồng Ý", "Hủy"))
+                {
+                    SetupFullUIInScene();
+                }
+            }
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.EndScrollView();
         }
 
         public static void SetupFullUIInScene()
@@ -225,7 +265,8 @@ namespace ProjectZombie.EditorTools
                 mainHub = hubInstance.GetComponent<MainHubView>();
             }
 
-            // Instantiate SettingsModalUI từ Prefab chuẩn
+            // Regenerate và Instantiate SettingsModalUI từ Prefab chuẩn
+            ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal();
             SettingsModalView settingsView = null;
             GameObject settingsPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/SettingsModalUI.prefab");
             if (settingsPrefab != null)
@@ -373,8 +414,7 @@ namespace ProjectZombie.EditorTools
             // Tự động nâng cấp và gắn trọn bộ Sprite Đông Sơn cho Top Run HUD
             RunHUDHierarchyOptimizer.OptimizeRunHUD();
 
-            // Tự động sinh Card Template Prefab và tối ưu toàn diện Level Up Selection Modal
-            UpgradeCardPrefabGenerator.GenerateCardPrefab();
+            // Tối ưu toàn diện Level Up Selection Modal theo Prefab tùy chỉnh của người dùng
             UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
 
             Transform mobileTrans = gameRoot.Find("Panel_MobileControls");

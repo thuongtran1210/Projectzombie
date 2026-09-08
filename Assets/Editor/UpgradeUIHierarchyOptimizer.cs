@@ -14,9 +14,8 @@ namespace ProjectZombie.EditorTools
         [MenuItem("Tools/ProjectZombie/UI/Optimize UpgradeUI Hierarchy")]
         public static void OptimizeUpgradeUI()
         {
-            // 0. Làm mới AssetDatabase và tái tạo Prefab thẻ bài mới nhất trước khi đồng bộ vào Scene
+            // 0. Làm mới AssetDatabase trước khi đồng bộ vào Scene
             AssetDatabase.Refresh();
-            UpgradeCardPrefabGenerator.GenerateCardPrefab();
 
             GameObject rootObj = GameObject.Find("UpgradeUI_Root");
             if (rootObj == null)

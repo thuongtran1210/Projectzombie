@@ -17,13 +17,31 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            EnsureViewAndEvents();
+        }
+
+        private void OnEnable()
+        {
+            EnsureViewAndEvents();
+        }
+
+        private void EnsureViewAndEvents()
+        {
             if (_view == null)
             {
                 _view = GetComponent<SettingsModalView>();
+                if (_view == null) _view = GetComponentInChildren<SettingsModalView>(true);
             }
 
             if (_view != null)
             {
+                _view.OnBGMVolumeChanged -= HandleBGMVolumeChanged;
+                _view.OnSFXVolumeChanged -= HandleSFXVolumeChanged;
+                _view.OnScreenShakeToggled -= HandleScreenShakeToggled;
+                _view.OnDamageNumbersToggled -= HandleDamageNumbersToggled;
+                _view.On60FPSToggled -= Handle60FPSToggled;
+                _view.OnCloseClicked -= HandleCloseClicked;
+
                 _view.OnBGMVolumeChanged += HandleBGMVolumeChanged;
                 _view.OnSFXVolumeChanged += HandleSFXVolumeChanged;
                 _view.OnScreenShakeToggled += HandleScreenShakeToggled;
@@ -36,6 +54,17 @@ namespace ProjectZombie.Features.UI
         private void Start()
         {
             LoadAndApplyInitialSettings();
+
+            // Đảm bảo modal không hiện khi vừa nạp Scene nếu không có MetaUIManager đang mở
+            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
+            if (metaManager == null)
+            {
+                if (_view != null)
+                {
+                    _view.Hide();
+                }
+                gameObject.SetActive(false);
+            }
         }
 
         private void OnDestroy()
@@ -55,7 +84,13 @@ namespace ProjectZombie.Features.UI
         {
             gameObject.SetActive(true);
             transform.SetAsLastSibling();
+            EnsureViewAndEvents();
             LoadAndApplyInitialSettings();
+            if (_view == null)
+            {
+                _view = GetComponent<SettingsModalView>();
+                if (_view == null) _view = GetComponentInChildren<SettingsModalView>(true);
+            }
             if (_view != null)
             {
                 _view.Show();
@@ -142,7 +177,7 @@ namespace ProjectZombie.Features.UI
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
-            if (metaManager != null)
+            if (metaManager != null && metaManager.IsInMetaMenu)
             {
                 metaManager.PopScreen();
             }

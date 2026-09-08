@@ -76,20 +76,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
 
-            if (_closeButton != null)
-                _closeButton.onClick.AddListener(() => _onClose?.Invoke());
-
-            if (_dimBackgroundButton != null)
-                _dimBackgroundButton.onClick.AddListener(() => _onClose?.Invoke());
-
-            if (_resumeButton != null)
-                _resumeButton.onClick.AddListener(() => _onResume?.Invoke());
-
-            if (_settingsButton != null)
-                _settingsButton.onClick.AddListener(() => _onSettings?.Invoke());
-
-            if (_quitButton != null)
-                _quitButton.onClick.AddListener(() => _onQuit?.Invoke());
+            EnsureButtonsAndListeners();
         }
 
         // ====================================================================
@@ -102,6 +89,62 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             _onResume = onResume;
             _onSettings = onSettings;
             _onQuit = onQuit;
+
+            EnsureButtonsAndListeners();
+        }
+
+        private void EnsureButtonsAndListeners()
+        {
+            // Auto-detect missing button references
+            if (_closeButton == null || _resumeButton == null || _settingsButton == null || _quitButton == null || _dimBackgroundButton == null)
+            {
+                foreach (var btn in GetComponentsInChildren<Button>(true))
+                {
+                    string nameLower = btn.name.ToLower();
+                    if (_resumeButton == null && (nameLower.Contains("resume") || nameLower.Contains("tieptuc")))
+                        _resumeButton = btn;
+                    else if (_settingsButton == null && (nameLower.Contains("setting") || nameLower.Contains("caidat")))
+                        _settingsButton = btn;
+                    else if (_quitButton == null && (nameLower.Contains("quit") || nameLower.Contains("thoat") || nameLower.Contains("bocuoc")))
+                        _quitButton = btn;
+                    else if (_closeButton == null && (nameLower.Contains("close") || nameLower.Contains("btn_close") || nameLower.Contains("dong")))
+                        _closeButton = btn;
+                    else if (_dimBackgroundButton == null && (nameLower.Contains("dim") || nameLower.Contains("overlay") || nameLower.Contains("background")))
+                        _dimBackgroundButton = btn;
+                }
+            }
+
+            if (_closeButton != null)
+            {
+                _closeButton.onClick.RemoveAllListeners();
+                _closeButton.onClick.AddListener(() => _onClose?.Invoke());
+            }
+
+            if (_dimBackgroundButton != null)
+            {
+                _dimBackgroundButton.onClick.RemoveAllListeners();
+                _dimBackgroundButton.onClick.AddListener(() => _onClose?.Invoke());
+            }
+
+            if (_resumeButton != null)
+            {
+                _resumeButton.onClick.RemoveAllListeners();
+                _resumeButton.onClick.AddListener(() => _onResume?.Invoke());
+            }
+
+            if (_settingsButton != null)
+            {
+                _settingsButton.onClick.RemoveAllListeners();
+                _settingsButton.onClick.AddListener(() => {
+                    _onSettings?.Invoke();
+                });
+            }
+
+            if (_quitButton != null)
+            {
+                _quitButton.onClick.RemoveAllListeners();
+                _quitButton.onClick.AddListener(() => _onQuit?.Invoke());
+            }
         }
 
         public void SetHeroInfo(Sprite avatar, string heroName, string elementBadgeFormatted)
