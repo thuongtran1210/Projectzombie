@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W007_CungTh\u1EA1chSanh"
+  m_EditorClassIdentifier: 
+  weaponRole: 2
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
+  weaponId: W007
+  weaponName: "Cung Th\u1EA1ch Sanh"
+  icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng b\u1EAFn
+    m\u0169i t\xEAn th\u1EA7n l\u1EF1c Th\u1EA1ch Sanh xuy\xEAn qua h\xE0ng lo\u1EA1t
+    y\xEAu tinh."
+  rarity: Rare
+  evolutionWeaponId: E007
+  elementType: 1
+  weaponPrefab: {fileID: 2389269143492382759, guid: 38ba898b9ee477448be4157bf577c022, type: 3}
+  baseDamage: 35
+  baseAttackSpeed: 1

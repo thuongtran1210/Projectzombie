@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W006_L\u1EF1u\u0110\u1EA1nTh\u1EA7nSa"
+  m_EditorClassIdentifier: 
+  weaponRole: 2
+  isPassiveRelic: 0
+  activeCooldown: 8
+  activeDuration: 0
+  skillActionName: "B\xE3o L\u1EEDa Th\u1EA7n Sa"
+  weaponId: W006
+  weaponName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
+  icon: {fileID: 0}
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (CircleReticle 8.5m): Qu\u0103ng ch\xF9m 3 h\u1EA1t Th\u1EA7n Sa n\u1ED5 tung b\xE3o l\u1EEDa thi\xEAu r\u1EE5i v\xF9ng r\u1ED9ng trong 4s!"
+  rarity: Epic
+  evolutionWeaponId: E006
+  elementType: 4
+  weaponPrefab: {fileID: 2389269143492382759, guid: 09b4e48d3ee686148a9b8e0397b2d8c1, type: 3}
+  baseDamage: 45
+  baseAttackSpeed: 2.5

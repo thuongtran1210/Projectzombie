@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: Weapon_W_PIPE
+  m_EditorClassIdentifier: 
+  weaponRole: 3
+  isPassiveRelic: 0
+  activeCooldown: 9
+  activeDuration: 0
+  skillActionName: "B\xE3o Kh\xF3i Thu\u1ED1c L\xE0o"
+  weaponId: W_PIPE
+  weaponName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
+  icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (VectorWall): Nh\u1EA3 b\u1EE9c t\u01B0\u1EDDng b\xE3o kh\xF3i thu\u1ED1c l\xE0o 6m l\xE0m qu\xE1i \u0111i gi\u1EADt l\xF9i, say thu\u1ED1c v\xE0 ho n\u1ED5 thi\xEAeu \u0111\u1ED1t li\xEAn t\u1EE5c!"
+  rarity: Common
+  evolutionWeaponId: 
+  elementType: 4
+  weaponPrefab: {fileID: 8432581299616604464, guid: f45d613da3cd67b458b6fc256d438f50, type: 3}
+  baseDamage: 20
+  baseAttackSpeed: 1.8

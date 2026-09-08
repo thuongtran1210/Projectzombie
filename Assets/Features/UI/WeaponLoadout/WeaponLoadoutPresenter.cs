@@ -61,13 +61,23 @@ namespace ProjectZombie.Features.UI
 
         private void OnEnable()
         {
+            LoadAllWeaponsIfEmpty();
+
             if (RunLoadoutState.SelectedCharacter != null)
             {
                 SetupForHero(RunLoadoutState.SelectedCharacter);
             }
             else
             {
-                RefreshUI();
+                RunLoadoutState.EnsureInitialized();
+                if (RunLoadoutState.SelectedCharacter != null)
+                {
+                    SetupForHero(RunLoadoutState.SelectedCharacter);
+                }
+                else
+                {
+                    RefreshUI();
+                }
             }
         }
 
@@ -75,21 +85,43 @@ namespace ProjectZombie.Features.UI
         {
             if (_allWeapons == null || _allWeapons.Count == 0)
             {
-                #if UNITY_EDITOR
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
                 _allWeapons = new List<WeaponData>();
-                foreach (var guid in guids)
+
+                var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
+                if (loaded1 != null && loaded1.Length > 0) _allWeapons.AddRange(loaded1);
+
+                var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
+                if (loaded2 != null && loaded2.Length > 0)
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    if (wd != null && !_allWeapons.Contains(wd))
+                    foreach (var w in loaded2)
                     {
-                        _allWeapons.Add(wd);
+                        if (w != null && !_allWeapons.Contains(w)) _allWeapons.Add(w);
                     }
                 }
-                #else
-                var loaded = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-                _allWeapons = new List<WeaponData>(loaded);
+
+                var loaded3 = Resources.LoadAll<WeaponData>("");
+                if (loaded3 != null && loaded3.Length > 0)
+                {
+                    foreach (var w in loaded3)
+                    {
+                        if (w != null && !_allWeapons.Contains(w)) _allWeapons.Add(w);
+                    }
+                }
+
+                #if UNITY_EDITOR
+                if (_allWeapons.Count == 0)
+                {
+                    string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                    foreach (var guid in guids)
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                        var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                        if (wd != null && !_allWeapons.Contains(wd))
+                        {
+                            _allWeapons.Add(wd);
+                        }
+                    }
+                }
                 #endif
             }
         }
@@ -350,6 +382,7 @@ namespace ProjectZombie.Features.UI
 
             var boxImg = boxObj.GetComponent<Image>();
             boxImg.type = Image.Type.Sliced;
+            boxImg.raycastTarget = true;
             
             Sprite slotWood = null;
             Sprite slotSelected = null;
@@ -389,6 +422,7 @@ namespace ProjectZombie.Features.UI
 
             var inImg = innerObj.GetComponent<Image>();
             inImg.color = new Color(0, 0, 0, 0); // Trong suốt vì đã có Slot_Inventory_Wood_9Slice lo nền
+            inImg.raycastTarget = false;
 
             // Icon bên trong
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
@@ -400,6 +434,7 @@ namespace ProjectZombie.Features.UI
             iconRT.offsetMax = new Vector2(-4, -4);
 
             var iconImg = iconObj.GetComponent<Image>();
+            iconImg.raycastTarget = false;
             if (isLocked)
             {
                 iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.3f);
@@ -439,6 +474,7 @@ namespace ProjectZombie.Features.UI
                     var ebImg = elemBadgeObj.GetComponent<Image>();
                     ebImg.sprite = elemBadgeSprite;
                     ebImg.preserveAspect = true;
+                    ebImg.raycastTarget = false;
                 }
             }
 
@@ -456,6 +492,7 @@ namespace ProjectZombie.Features.UI
                 var badgeImg = badgeObj.GetComponent<Image>();
                 badgeImg.color = Color.white;
                 badgeImg.preserveAspect = true;
+                badgeImg.raycastTarget = false;
 #if UNITY_EDITOR
                 Sprite starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
                 if (starSprite != null) badgeImg.sprite = starSprite;
@@ -477,6 +514,7 @@ namespace ProjectZombie.Features.UI
             lblTMP.alignment = TextAlignmentOptions.Center;
             lblTMP.fontStyle = FontStyles.Bold;
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
+            lblTMP.raycastTarget = false;
 
             if (isLocked)
             {
@@ -490,19 +528,23 @@ namespace ProjectZombie.Features.UI
 
             // Xử lý Click
             var btn = boxObj.GetComponent<Button>();
-            if (!isLocked && btn != null)
+            if (btn != null)
             {
-                btn.onClick.AddListener(() =>
+                btn.targetGraphic = boxImg;
+                if (!isLocked)
                 {
-                    if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
+                    btn.onClick.AddListener(() =>
                     {
-                        SelectPrimaryWeapon(weapon);
-                    }
-                    else
-                    {
-                        ToggleRelic(weapon);
-                    }
-                });
+                        if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
+                        {
+                            SelectPrimaryWeapon(weapon);
+                        }
+                        else
+                        {
+                            ToggleRelic(weapon);
+                        }
+                    });
+                }
             }
         }
 

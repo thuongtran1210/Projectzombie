@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: "W004_C\u1EEDuV\u0129H\u1ED3Tr\u1EA3o"
+  m_EditorClassIdentifier: 
+  weaponRole: 2
+  isPassiveRelic: 1
+  activeCooldown: 0
+  activeDuration: 0
+  skillActionName: 
+  weaponId: W004
+  weaponName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
+  icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: B\u1EAFn d\u01A1i h\u1ED3 ly h\xFAt m\xE1u. Khi HP < 35%: T\u1EF1 \u0111\u1ED9ng x2 s\u1ED1 l\u01B0\u1EE3ng d\u01A1i v\xE0 x2.5 hi\u1EC7u su\u1EA5t H\xFAt M\xE1u c\u1EE9u nguy!"
+  rarity: Rare
+  evolutionWeaponId: E004
+  elementType: 4
+  weaponPrefab: {fileID: 9098636652766733402, guid: c886942421aec064db2a865c80dee974, type: 3}
+  baseDamage: 18
+  baseAttackSpeed: 1.2

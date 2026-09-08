@@ -83,6 +83,8 @@ namespace ProjectZombie.Features.Player
 
             // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO (Single Source of Truth)
             var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Character/CharacterDatabase");
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
             #if UNITY_EDITOR
             if (characterDatabase == null)
             {
@@ -266,20 +268,42 @@ namespace ProjectZombie.Features.Player
             PlayerPrefs.Save();
         }
 
-        private static List<WeaponData> LoadAllWeaponsDatabase()
+        public static List<WeaponData> LoadAllWeaponsDatabase()
         {
             var list = new List<WeaponData>();
-            #if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
-            foreach (var guid in guids)
+
+            var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
+            if (loaded1 != null && loaded1.Length > 0) list.AddRange(loaded1);
+
+            var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
+            if (loaded2 != null && loaded2.Length > 0)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                if (wd != null && !list.Contains(wd)) list.Add(wd);
+                foreach (var w in loaded2)
+                {
+                    if (w != null && !list.Contains(w)) list.Add(w);
+                }
             }
-            #else
-            var loaded = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-            list.AddRange(loaded);
+
+            var loaded3 = Resources.LoadAll<WeaponData>("");
+            if (loaded3 != null && loaded3.Length > 0)
+            {
+                foreach (var w in loaded3)
+                {
+                    if (w != null && !list.Contains(w)) list.Add(w);
+                }
+            }
+
+            #if UNITY_EDITOR
+            if (list.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                foreach (var guid in guids)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                    if (wd != null && !list.Contains(wd)) list.Add(wd);
+                }
+            }
             #endif
             return list;
         }

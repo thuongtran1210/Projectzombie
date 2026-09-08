@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f46a068b35443468d83b1d0544b85d, type: 3}
+  m_Name: Weapon_W_SLIPPER
+  m_EditorClassIdentifier: 
+  weaponRole: 2
+  isPassiveRelic: 0
+  activeCooldown: 7
+  activeDuration: 0
+  skillActionName: "T\u1ED5 Ong L\u01B0\u1EE3n C\xE1nh"
+  weaponId: W_SLIPPER
+  weaponName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
+  icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (2 Giai \u0111o\u1EA1n): N\xE9m Boomerang d\xE9p bay v\xF2ng cung h\xFAt qu\xE1i -> B\u1EA5m l\u1EA7n 2 l\u01B0\u1EDBt v\u1EE5t t\u1EDBi tung c\u01B0\u1EDBc Song Phi d\u1EABm n\u1ED5 Shockwave c\u1EF1c m\u1EA1nh!"
+  rarity: Common
+  evolutionWeaponId: 
+  elementType: 1
+  weaponPrefab: {fileID: 5114245694694222754, guid: 6f0a518d172da2e4c9a5825e7599740f, type: 3}
+  baseDamage: 25
+  baseAttackSpeed: 1.2
