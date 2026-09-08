@@ -184,6 +184,35 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 _selectionHighlight.gameObject.SetActive(false);
             }
 
+            // Đảm bảo Image nền trên chính Root Button nhận Raycast, còn các Graphic con (CooldownFill, Icon, Text) không chặn Raycast
+            Image selfImg = GetComponent<Image>();
+            if (selfImg != null)
+            {
+                selfImg.raycastTarget = true;
+            }
+
+            var childGraphics = GetComponentsInChildren<Graphic>(true);
+            foreach (var g in childGraphics)
+            {
+                if (g.gameObject != gameObject && g != _selectionHighlight)
+                {
+                    // Khi bật Edit Mode: tắt raycast của con để không nuốt sự kiện click của CustomizableControlButton
+                    // Khi tắt Edit Mode: khôi phục lại
+                    if (enable)
+                    {
+                        g.raycastTarget = false;
+                    }
+                    else
+                    {
+                        // CooldownFill & Text không cần raycast, các graphic khác bật lại
+                        if (!g.name.ToLower().Contains("cooldown") && !g.name.ToLower().Contains("fill") && !g.name.ToLower().Contains("txt"))
+                        {
+                            g.raycastTarget = true;
+                        }
+                    }
+                }
+            }
+
             // Tắt hoàn toàn việc kích hoạt đòn đánh / skill / joystick khi đang ở chế độ tùy chỉnh
             var dragHandlers = GetComponentsInChildren<SmartSkillDragHandler>(true);
             foreach (var dh in dragHandlers)

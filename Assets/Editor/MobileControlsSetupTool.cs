@@ -353,13 +353,33 @@ namespace ProjectZombie.Editor.Tools
                 Undo.RegisterCreatedObjectUndo(mgrObj, "Create MobileControlsLayoutManager");
             }
 
-            // Gắn CustomizableControlButton cho từng nút
-            AttachCustomizableButton(mobilePanel, "Btn_Attack", "Đánh Thường", 0.7f, 1.5f);
-            AttachCustomizableButton(mobilePanel, "Btn_SignatureSkill", "Tuyệt Kỹ", 0.7f, 1.5f);
-            AttachCustomizableButton(mobilePanel, "Btn_RelicSkill", "Pháp Bảo", 0.7f, 1.5f);
-            AttachCustomizableButton(mobilePanel, "Btn_Dash", "Lướt Phi Vân", 0.7f, 1.5f);
+            // Gắn CustomizableControlButton theo Component View và Tên
+            AttachCustomizableByComponent<AttackButtonView>(mobilePanel, "Btn_Attack", "Đánh Thường", 0.7f, 1.5f);
+            AttachCustomizableByComponent<SignatureSkillButtonView>(mobilePanel, "Btn_SignatureSkill", "Tuyệt Kỹ", 0.7f, 1.5f);
+            AttachCustomizableByComponent<RelicSkillButtonView>(mobilePanel, "Btn_RelicSkill", "Pháp Bảo", 0.7f, 1.5f);
+            AttachCustomizableByComponent<DashButtonView>(mobilePanel, "Btn_Dash", "Lướt Phi Vân", 0.7f, 1.5f);
+            
             AttachCustomizableButton(mobilePanel, "Joystick_Visual", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
             AttachCustomizableButton(mobilePanel, "DynamicVirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+        }
+
+        private static void AttachCustomizableByComponent<T>(GameObject root, string fallbackName, string displayName, float minScale, float maxScale) where T : Component
+        {
+            T comp = root.GetComponentInChildren<T>(true);
+            Transform t = comp != null ? comp.transform : FindChildRecursive(root.transform, fallbackName);
+            if (t != null)
+            {
+                var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+                if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+
+                var so = new SerializedObject(customBtn);
+                so.FindProperty("_controlId").stringValue = t.name;
+                so.FindProperty("_displayName").stringValue = displayName;
+                so.FindProperty("_minScale").floatValue = minScale;
+                so.FindProperty("_maxScale").floatValue = maxScale;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(customBtn);
+            }
         }
 
         private static void AttachCustomizableButton(GameObject root, string targetName, string displayName, float minScale, float maxScale)
