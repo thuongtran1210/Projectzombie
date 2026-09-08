@@ -25,6 +25,8 @@ namespace ProjectZombie.Features.UI
             bool fps60 = PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = fps60 ? 60 : 30;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            Input.multiTouchEnabled = true;
 
             float bgm = PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f);
             float sfx = PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f);

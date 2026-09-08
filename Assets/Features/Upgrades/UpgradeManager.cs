@@ -128,7 +128,11 @@ namespace ProjectZombie.Features.Upgrades
             UnityEditor.EditorUtility.SetDirty(this);
             Debug.Log($"[UpgradeManager] Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ dự án.");
 #else
-            var loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+            var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+            if (loadedUpgrades == null || loadedUpgrades.Length == 0)
+            {
+                loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+            }
             foreach (var u in loadedUpgrades)
             {
                 if (u != null && !(u is FallbackRewardUpgradeData))

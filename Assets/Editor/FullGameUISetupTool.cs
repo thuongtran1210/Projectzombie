@@ -73,6 +73,11 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             }
 
+            if (GUILayout.Button("📦 Đồng Bộ Tất Cả Resources Cho Android Build (1-Click)", GUILayout.Height(30)))
+            {
+                AndroidBuildResourceSyncTool.SyncAllResourcesForAndroid();
+            }
+
             EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("2. THIẾT LẬP TOÀN DIỆN (FULL 1-CLICK)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("Chỉ bấm nút này khi bạn muốn khởi tạo mới lại toàn bộ Canvas từ đầu.", MessageType.Warning);

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83c7ed31224204b9914128bcc65d51, type: 3}
+  m_Name: "W010_Lv4_LinhPh\xF9MaDa"
+  m_EditorClassIdentifier: 
+  id: W010_Lv4
+  upgradeName: "Linh Ph\xF9 Ma Da [C\u1EA5p 4]"
+  description: "Linh Ph\xF9 Ma Da [C\u1EA5p 4]: <color=#00FF88>+30% S\xE1t th\u01B0\u01A1ng</color>,
+    <color=#FFD700>+20% T\u1ED1c \u0111\u1ED9 \u0111\xE1nh & Bay \u0111\u1EA1n</color>."
+  icon: {fileID: 21300000, guid: 75ab74d93b024d53860df112415e6d3f, type: 3}
+  upgradeType: 0
+  spawnWeight: 8
+  maxLevel: 1
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 0
+  weaponId: W010
+  requiredCurrentLevel: 3
+  weaponPrefab: {fileID: 0}
+  statModifier:
+    damageBonus: 10
+    attackSpeedBonus: 0.2
+    projectileCountBonus: 0
+    pierceBonus: 0
+    scaleBonus: 0
+    critChanceBonus: 0
+    critDamageBonus: 0
+    projectileSpeedBonus: 2
+  overrideProjectilePrefab: {fileID: 0}

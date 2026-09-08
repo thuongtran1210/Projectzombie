@@ -160,43 +160,89 @@ namespace Core.Audio
                 }
             }
 
-#if UNITY_EDITOR
+            EnsureAudioClipsLoaded();
+        }
+
+        private static System.Collections.Generic.Dictionary<string, AudioClip> _staticCachedAudio;
+
+        private void EnsureAudioClipsLoaded()
+        {
             if (_staticCachedAudio == null)
             {
                 _staticCachedAudio = new System.Collections.Generic.Dictionary<string, AudioClip>();
-                LoadEditorAudioFallback();
+                LoadAudioFallbackDictionary();
             }
-            ApplyEditorAudioFallback();
+            ApplyAudioFallback();
+        }
+
+        private void LoadAudioFallbackDictionary()
+        {
+            // 1. Tải từ Resources (Khả dụng 100% trên Android APK)
+            LoadResourceClip("click", "Audios/SFX_UI_Wooden_Click");
+            LoadResourceClip("confirm", "Audios/SFX_UI_Confirm");
+            LoadResourceClip("equip", "Audios/SFX_UI_Weapon_Equip");
+            LoadResourceClip("error", "Audios/SFX_UI_Error");
+            LoadResourceClip("coin", "Audios/SFX_Coin_Tick");
+            LoadResourceClip("slash_light", "Audios/SFX_Sword_Slash_Light");
+            LoadResourceClip("slash_crit", "Audios/SFX_Sword_Slash_Crit");
+            LoadResourceClip("dash", "Audios/SFX_Player_Dash");
+            LoadResourceClip("hurt", "Audios/SFX_Player_Hurt");
+            LoadResourceClip("shoot", "Audios/SFX_Projectile_Shoot");
+            LoadResourceClip("explode", "Audios/SFX_Projectile_Explode");
+            LoadResourceClip("orbit", "Audios/SFX_Magic_Orbit_Loop");
+            LoadResourceClip("ultimate", "Audios/SFX_Skill_Ultimate_Cast");
+            LoadResourceClip("reaction", "Audios/SFX_Elemental_Reaction");
+            LoadResourceClip("freeze", "Audios/SFX_Status_Freeze");
+            LoadResourceClip("burn", "Audios/SFX_Status_Burn");
+            LoadResourceClip("roar", "Audios/SFX_Boss_Roar_Warning");
+            LoadResourceClip("smash", "Audios/SFX_Boss_Smash");
+            LoadResourceClip("hub_bgm", "Audios/Lotus_Fields_at_Level_One");
+
+#if UNITY_EDITOR
+            // 2. Fallback AssetDatabase nếu chưa sync vào Resources
+            LoadEditorClipFallback("click", "Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
+            LoadEditorClipFallback("confirm", "Assets/_Data/Audios/SFX_UI_Confirm.wav");
+            LoadEditorClipFallback("equip", "Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
+            LoadEditorClipFallback("error", "Assets/_Data/Audios/SFX_UI_Error.wav");
+            LoadEditorClipFallback("coin", "Assets/_Data/Audios/SFX_Coin_Tick.wav");
+            LoadEditorClipFallback("slash_light", "Assets/_Data/Audios/SFX_Sword_Slash_Light.wav");
+            LoadEditorClipFallback("slash_crit", "Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
+            LoadEditorClipFallback("dash", "Assets/_Data/Audios/SFX_Player_Dash.wav");
+            LoadEditorClipFallback("hurt", "Assets/_Data/Audios/SFX_Player_Hurt.wav");
+            LoadEditorClipFallback("shoot", "Assets/_Data/Audios/SFX_Projectile_Shoot.wav");
+            LoadEditorClipFallback("explode", "Assets/_Data/Audios/SFX_Projectile_Explode.wav");
+            LoadEditorClipFallback("orbit", "Assets/_Data/Audios/SFX_Magic_Orbit_Loop.wav");
+            LoadEditorClipFallback("ultimate", "Assets/_Data/Audios/SFX_Skill_Ultimate_Cast.wav");
+            LoadEditorClipFallback("reaction", "Assets/_Data/Audios/SFX_Elemental_Reaction.wav");
+            LoadEditorClipFallback("freeze", "Assets/_Data/Audios/SFX_Status_Freeze.wav");
+            LoadEditorClipFallback("burn", "Assets/_Data/Audios/SFX_Status_Burn.wav");
+            LoadEditorClipFallback("roar", "Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
+            LoadEditorClipFallback("smash", "Assets/_Data/Audios/SFX_Boss_Smash.wav");
+            LoadEditorClipFallback("hub_bgm", "Assets/_Data/Audios/Lotus_Fields_at_Level_One.mp3");
 #endif
         }
 
-#if UNITY_EDITOR
-        private static System.Collections.Generic.Dictionary<string, AudioClip> _staticCachedAudio;
-
-        private void LoadEditorAudioFallback()
+        private void LoadResourceClip(string key, string resourcePath)
         {
-            _staticCachedAudio["click"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Wooden_Click.wav");
-            _staticCachedAudio["confirm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Confirm.wav");
-            _staticCachedAudio["equip"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Weapon_Equip.wav");
-            _staticCachedAudio["error"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_UI_Error.wav");
-            _staticCachedAudio["coin"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Coin_Tick.wav");
-            _staticCachedAudio["slash_light"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Light.wav");
-            _staticCachedAudio["slash_crit"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Sword_Slash_Crit.wav");
-            _staticCachedAudio["dash"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Dash.wav");
-            _staticCachedAudio["hurt"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Player_Hurt.wav");
-            _staticCachedAudio["shoot"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Shoot.wav");
-            _staticCachedAudio["explode"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Projectile_Explode.wav");
-            _staticCachedAudio["orbit"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Magic_Orbit_Loop.wav");
-            _staticCachedAudio["ultimate"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Skill_Ultimate_Cast.wav");
-            _staticCachedAudio["reaction"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Elemental_Reaction.wav");
-            _staticCachedAudio["freeze"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Freeze.wav");
-            _staticCachedAudio["burn"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Status_Burn.wav");
-            _staticCachedAudio["roar"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Roar_Warning.wav");
-            _staticCachedAudio["smash"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/SFX_Boss_Smash.wav");
-            _staticCachedAudio["hub_bgm"] = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Data/Audios/Lotus_Fields_at_Level_One.mp3");
+            if (!_staticCachedAudio.ContainsKey(key) || _staticCachedAudio[key] == null)
+            {
+                var clip = Resources.Load<AudioClip>(resourcePath);
+                if (clip != null) _staticCachedAudio[key] = clip;
+            }
         }
 
-        private void ApplyEditorAudioFallback()
+#if UNITY_EDITOR
+        private void LoadEditorClipFallback(string key, string assetPath)
+        {
+            if (!_staticCachedAudio.ContainsKey(key) || _staticCachedAudio[key] == null)
+            {
+                var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+                if (clip != null) _staticCachedAudio[key] = clip;
+            }
+        }
+#endif
+
+        private void ApplyAudioFallback()
         {
             if (_staticCachedAudio == null) return;
             if (_uiClickClip == null && _staticCachedAudio.TryGetValue("click", out var c1)) _uiClickClip = c1;
@@ -219,7 +265,6 @@ namespace Core.Audio
             if (_bossSmashClip == null && _staticCachedAudio.TryGetValue("smash", out var c18)) _bossSmashClip = c18;
             if (_hubBgmClip == null && _staticCachedAudio.TryGetValue("hub_bgm", out var c19)) _hubBgmClip = c19;
         }
-#endif
 
         private void LoadAndApplyVolumeSettings()
         {

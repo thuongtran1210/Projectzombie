@@ -55,10 +55,33 @@ namespace ProjectZombie.Features.Spawners
                 // 1. Nạp từ Addressables nếu có địa chỉ Address qua AssetProvider chuẩn
                 if (!string.IsNullOrEmpty(evt.enemyAddress))
                 {
-                    enemyPrefab = await AssetProvider.LoadAssetAsync<GameObject>(evt.enemyAddress, ct);
+                    try
+                    {
+                        enemyPrefab = await AssetProvider.LoadAssetAsync<GameObject>(evt.enemyAddress, ct);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[WavePreloader] Addressables load failed for '{evt.enemyAddress}': {ex.Message}. Thử fallback sang Resources...");
+                    }
+
+                    // 1.1 Fallback nạp từ Resources nếu Addressables chưa build
+                    if (enemyPrefab == null)
+                    {
+                        enemyPrefab = Resources.Load<GameObject>($"Enemies/{evt.enemyAddress}") ??
+                                      Resources.Load<GameObject>(evt.enemyAddress);
+                    }
+
+#if UNITY_EDITOR
+                    // 1.2 Fallback Editor AssetDatabase
+                    if (enemyPrefab == null)
+                    {
+                        enemyPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Prefabs/Characters/Enemies/{evt.enemyAddress}.prefab");
+                    }
+#endif
                 }
+
                 // 2. Fallback dùng Direct Reference nếu chưa gán Addressable Address
-                else if (evt.spawnPrefab != null)
+                if (enemyPrefab == null && evt.spawnPrefab != null)
                 {
                     enemyPrefab = evt.spawnPrefab;
                 }
