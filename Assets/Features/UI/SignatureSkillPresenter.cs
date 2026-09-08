@@ -108,8 +108,34 @@ namespace ProjectZombie.Features.UI
 
         private void HandleAimReleased(Vector2 direction, bool isQuickTap)
         {
+            var aimResult = Combat.Aiming.SkillAimIndicatorController.Instance != null
+                ? Combat.Aiming.SkillAimIndicatorController.Instance.CurrentAimResult
+                : Combat.Aiming.AimResult.FromDirection(direction, _skillManager != null ? _skillManager.transform.position : Vector3.zero);
+
             Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
-            OnButtonClicked();
+
+            if (isQuickTap)
+            {
+                OnButtonClicked();
+            }
+            else
+            {
+                if (_skillManager != null && _skillManager.IsReady && _skillManager.RemainingCooldown <= 0f)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+
+                    if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null && aimResult.Direction != Vector2.zero)
+                    {
+                        var anim = PlayerProvider.PlayerTransform.GetComponentInChildren<Player.PlayerAnimator>();
+                        if (anim != null)
+                        {
+                            anim.FlipToDirection(aimResult.Direction.x);
+                        }
+                    }
+
+                    _skillManager.TryExecuteSkill();
+                }
+            }
         }
 
         private void HandleAimCancelled()

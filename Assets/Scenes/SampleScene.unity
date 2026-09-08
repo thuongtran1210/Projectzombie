@@ -55228,10 +55228,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 539fb814e7062bd4bb27776298684da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _circleSprite: {fileID: 0}
-  _boxSprite: {fileID: 0}
-  _fillSprite: {fileID: 0}
-  _arrowSprite: {fileID: 0}
+  _circleSprite: {fileID: 21300000, guid: f8a9a4b0cf3950d42a295c1239611401, type: 3}
+  _boxSprite: {fileID: 21300000, guid: b7a722a20912e314b954b9d0676756a1, type: 3}
+  _fillSprite: {fileID: 21300000, guid: 7392fafcd35474947b22eef9d932229d, type: 3}
+  _arrowSprite: {fileID: 21300000, guid: 47b56e3daba961542bc0b983beb3e7b3, type: 3}
   _sectorMaterial: {fileID: 0}
   _normalAimColor: {r: 0.2, g: 0.85, b: 1, a: 0.75}
   _cancelAimColor: {r: 1, g: 0.25, b: 0.25, a: 0.85}

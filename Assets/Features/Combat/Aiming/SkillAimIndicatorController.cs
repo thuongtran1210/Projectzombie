@@ -113,11 +113,56 @@ namespace ProjectZombie.Features.Combat.Aiming
 #endif
             if (_circleSprite == null) _circleSprite = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Circle");
             if (_boxSprite == null) _boxSprite = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Box");
+            if (_fillSprite == null) _fillSprite = Resources.Load<Sprite>("Art/VFX/Indicators/TEX_Indicator_Fill");
+            if (_arrowSprite == null) _arrowSprite = Resources.Load<Sprite>("Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle");
             if (_sectorMaterial == null)
             {
                 var shader = Shader.Find("ProjectZombie/VFX/SkillIndicator_Sector");
                 if (shader != null) _sectorMaterial = new Material(shader);
             }
+
+            // Fallback an toàn: Tự tạo Sprite trắng procedural nếu thiết bị không tải được sprite file
+            if (_boxSprite == null) _boxSprite = CreateProceduralBoxSprite();
+            if (_circleSprite == null) _circleSprite = CreateProceduralCircleSprite();
+            if (_fillSprite == null) _fillSprite = _boxSprite;
+            if (_arrowSprite == null) _arrowSprite = _boxSprite;
+        }
+
+        private static Sprite CreateProceduralBoxSprite()
+        {
+            var tex = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+            var cols = new Color[32 * 32];
+            for (int i = 0; i < cols.Length; i++) cols[i] = Color.white;
+            tex.SetPixels(cols);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 32f);
+        }
+
+        private static Sprite CreateProceduralCircleSprite()
+        {
+            var tex = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            var cols = new Color[64 * 64];
+            Vector2 center = new Vector2(31.5f, 31.5f);
+            float radius = 30f;
+            for (int y = 0; y < 64; y++)
+            {
+                for (int x = 0; x < 64; x++)
+                {
+                    float dist = Vector2.Distance(new Vector2(x, y), center);
+                    // Tạo vòng tròn rỗng viền nét
+                    if (dist <= radius && dist >= radius - 4f)
+                    {
+                        cols[y * 64 + x] = Color.white;
+                    }
+                    else
+                    {
+                        cols[y * 64 + x] = Color.clear;
+                    }
+                }
+            }
+            tex.SetPixels(cols);
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 64f);
         }
 
         private void BuildIndicatorHierarchy()
