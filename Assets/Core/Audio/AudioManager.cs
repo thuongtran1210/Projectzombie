@@ -119,6 +119,22 @@ namespace Core.Audio
                 _bgmAudioSource = bgmObj.AddComponent<AudioSource>();
                 _bgmAudioSource.loop = true;
                 _bgmAudioSource.playOnAwake = false;
+                _bgmAudioSource.spatialBlend = 0f;
+                _bgmAudioSource.dopplerLevel = 0f;
+                _bgmAudioSource.bypassReverbZones = true;
+            }
+            else
+            {
+                _bgmAudioSource.spatialBlend = 0f;
+            }
+
+            if (_masterMixer != null && _bgmAudioSource.outputAudioMixerGroup == null)
+            {
+                var groups = _masterMixer.FindMatchingGroups("BGM");
+                if (groups != null && groups.Length > 0)
+                {
+                    _bgmAudioSource.outputAudioMixerGroup = groups[0];
+                }
             }
 
             if (_stingerAudioSource == null)
@@ -128,6 +144,20 @@ namespace Core.Audio
                 _stingerAudioSource = stingerObj.AddComponent<AudioSource>();
                 _stingerAudioSource.loop = false;
                 _stingerAudioSource.playOnAwake = false;
+                _stingerAudioSource.spatialBlend = 0f;
+            }
+            else
+            {
+                _stingerAudioSource.spatialBlend = 0f;
+            }
+
+            if (_masterMixer != null && _stingerAudioSource.outputAudioMixerGroup == null)
+            {
+                var groups = _masterMixer.FindMatchingGroups("SFX");
+                if (groups != null && groups.Length > 0)
+                {
+                    _stingerAudioSource.outputAudioMixerGroup = groups[0];
+                }
             }
 
 #if UNITY_EDITOR
@@ -304,13 +334,16 @@ namespace Core.Audio
             if (newClip.loadState == AudioDataLoadState.Unloaded)
             {
                 newClip.LoadAudioData();
-                while (newClip.loadState == AudioDataLoadState.Loading)
-                {
-                    yield return null;
-                }
+            }
+            int waitFrames = 0;
+            while (newClip.loadState == AudioDataLoadState.Loading && waitFrames < 60)
+            {
+                waitFrames++;
+                yield return null;
             }
 
             _bgmAudioSource.clip = newClip;
+            _bgmAudioSource.spatialBlend = 0f;
             _bgmAudioSource.Play();
 
             // Fade In
