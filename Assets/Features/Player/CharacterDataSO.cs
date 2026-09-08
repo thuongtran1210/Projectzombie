@@ -63,10 +63,12 @@ namespace ProjectZombie.Features.Player
         [Header("5. Kỹ Năng Chủ Động (Active Signature Skill)")]
         public string signatureSkillName;
         [TextArea(2, 3)] public string signatureSkillDesc;
+        public Sprite signatureSkillIcon;
 
         [Header("6. Nội Tại Độc Quyền (Passive Trait)")]
         public string passiveTraitName;
         [TextArea(2, 3)] public string passiveTraitDesc;
+        public Sprite passiveTraitIcon;
 
         [Header("7. Trang Bị Khởi Điểm")]
         [Tooltip("1 Pháp Bảo Hộ Thân duy nhất mang theo")]

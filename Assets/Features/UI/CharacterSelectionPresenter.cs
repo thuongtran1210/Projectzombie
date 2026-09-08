@@ -13,8 +13,10 @@ namespace ProjectZombie.Features.UI
         public string description;
         public string signatureSkillName;
         public string signatureSkillDesc;
+        public Sprite signatureSkillIcon;
         public string passiveTraitName;
         public string passiveTraitDesc;
+        public Sprite passiveTraitIcon;
         public Sprite avatar;
         public WeaponData primaryWeapon;
         public System.Collections.Generic.List<WeaponData> relics;
@@ -127,8 +129,10 @@ namespace ProjectZombie.Features.UI
                         description = list[i].description,
                         signatureSkillName = list[i].signatureSkillName,
                         signatureSkillDesc = list[i].signatureSkillDesc,
+                        signatureSkillIcon = list[i].signatureSkillIcon,
                         passiveTraitName = list[i].passiveTraitName,
                         passiveTraitDesc = list[i].passiveTraitDesc,
+                        passiveTraitIcon = list[i].passiveTraitIcon,
                         avatar = av,
                         primaryWeapon = list[i].defaultPrimaryWeapon,
                         relics = relicsList,
@@ -136,6 +140,16 @@ namespace ProjectZombie.Features.UI
                         spdRatio = list[i].uiSpdRatio > 0f ? list[i].uiSpdRatio : 0.7f,
                         defRatio = list[i].uiDefRatio > 0f ? list[i].uiDefRatio : 0.6f
                     };
+                }
+
+                if (_view != null && _characters.Length > 0)
+                {
+                    Sprite[] tabAvatars = new Sprite[_characters.Length];
+                    for (int a = 0; a < _characters.Length; a++)
+                    {
+                        tabAvatars[a] = _characters[a].avatar;
+                    }
+                    _view.SetupHeroTabAvatars(tabAvatars);
                 }
                 return;
             }
@@ -325,7 +339,7 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar, previewTex);
+            _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar, previewTex, charInfo.signatureSkillIcon, charInfo.passiveTraitIcon);
             _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
             _view.UpdateActiveTab(_currentIndex);
 

@@ -17,6 +17,8 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private TextMeshProUGUI _signatureSkillText;
         [SerializeField] private TextMeshProUGUI _passiveTraitText;
+        [SerializeField] private Image _signatureSkillIcon;
+        [SerializeField] private Image _passiveTraitIcon;
         [SerializeField] private Image _characterAvatarImage;
         [SerializeField] private RawImage _characterPreviewRawImage;
         [SerializeField] private Button _selectButton;
@@ -33,6 +35,7 @@ namespace ProjectZombie.Features.UI
         [Header("Hero Quick Selection Tabs (4 Heroes)")]
         [SerializeField] private Button[] _heroTabButtons;
         [SerializeField] private Image[] _heroTabBorders;
+        [SerializeField] private Image[] _heroTabIcons;
 
         [Header("Hero Combat Stat Gauges")]
         [SerializeField] private Image _atkStatFill;
@@ -203,15 +206,80 @@ namespace ProjectZombie.Features.UI
                 if (foundRelicIcons.Count > 0) _relicSlotIcons = foundRelicIcons.ToArray();
                 if (foundRelicNames.Count > 0) _relicSlotNames = foundRelicNames.ToArray();
             }
+
+            // Tự động tìm Box_Icon cho Kỹ năng Chủ Động & Nội Tại
+            if (_signatureSkillIcon == null)
+            {
+                var sigIconTrans = transform.Find("Modal_CharacterSelect/Panel_Inner/Right_InfoSection/Card_SignatureSkill/Box_Icon/Icon_Skill")
+                                ?? transform.Find("Panel_CharacterSelect/RightColumn_Info/Inner_Content/Card_SignatureSkill/Box_Icon/Icon_Skill");
+                if (sigIconTrans == null)
+                {
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name == "Icon_Skill" || (child.parent != null && child.parent.parent != null && child.parent.parent.name.Contains("SignatureSkill") && child.name.Contains("Icon")))
+                        {
+                            sigIconTrans = child;
+                            break;
+                        }
+                    }
+                }
+                if (sigIconTrans != null) _signatureSkillIcon = sigIconTrans.GetComponent<Image>();
+            }
+
+            if (_passiveTraitIcon == null)
+            {
+                var passIconTrans = transform.Find("Modal_CharacterSelect/Panel_Inner/Right_InfoSection/Card_PassiveTrait/Box_Icon/Icon_Trait")
+                                 ?? transform.Find("Panel_CharacterSelect/RightColumn_Info/Inner_Content/Card_PassiveTrait/Box_Icon/Icon_Trait");
+                if (passIconTrans == null)
+                {
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name == "Icon_Trait" || (child.parent != null && child.parent.parent != null && child.parent.parent.name.Contains("PassiveTrait") && child.name.Contains("Icon")))
+                        {
+                            passIconTrans = child;
+                            break;
+                        }
+                    }
+                }
+                if (passIconTrans != null) _passiveTraitIcon = passIconTrans.GetComponent<Image>();
+            }
         }
 
-        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar, Texture renderTexture = null)
+        public void DisplayCharacter(string charName, string formattedElement, string description, string formattedSkill, string formattedPassive, Sprite avatar, Texture renderTexture = null, Sprite signatureSkillIcon = null, Sprite passiveTraitIcon = null)
         {
             if (_characterNameText != null) _characterNameText.text = charName;
             if (_elementText != null) _elementText.text = formattedElement;
             if (_descriptionText != null) _descriptionText.text = description;
             if (_signatureSkillText != null) _signatureSkillText.text = formattedSkill;
             if (_passiveTraitText != null) _passiveTraitText.text = formattedPassive;
+
+            if (_signatureSkillIcon != null)
+            {
+                if (signatureSkillIcon != null)
+                {
+                    _signatureSkillIcon.sprite = signatureSkillIcon;
+                    _signatureSkillIcon.enabled = true;
+                    _signatureSkillIcon.color = Color.white;
+                }
+                else
+                {
+                    _signatureSkillIcon.enabled = false;
+                }
+            }
+
+            if (_passiveTraitIcon != null)
+            {
+                if (passiveTraitIcon != null)
+                {
+                    _passiveTraitIcon.sprite = passiveTraitIcon;
+                    _passiveTraitIcon.enabled = true;
+                    _passiveTraitIcon.color = Color.white;
+                }
+                else
+                {
+                    _passiveTraitIcon.enabled = false;
+                }
+            }
 
             if (_characterPreviewRawImage == null)
             {
@@ -251,6 +319,25 @@ namespace ProjectZombie.Features.UI
                 _characterAvatarImage.sprite = avatar;
                 _characterAvatarImage.enabled = (avatar != null && renderTexture == null);
                 _characterAvatarImage.color = (avatar != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
+            }
+        }
+
+        public void SetupHeroTabAvatars(Sprite[] avatars)
+        {
+            if (_heroTabIcons == null || avatars == null) return;
+            for (int i = 0; i < _heroTabIcons.Length; i++)
+            {
+                if (_heroTabIcons[i] == null) continue;
+                if (i < avatars.Length && avatars[i] != null)
+                {
+                    _heroTabIcons[i].sprite = avatars[i];
+                    _heroTabIcons[i].enabled = true;
+                    _heroTabIcons[i].color = Color.white;
+                }
+                else
+                {
+                    _heroTabIcons[i].enabled = false;
+                }
             }
         }
 

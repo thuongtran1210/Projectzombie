@@ -48,13 +48,26 @@ namespace ProjectZombie.Editor
             var iconAtkThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThanhDong_Torch.png");
             var iconAtkAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_AnSi_Fist.png");
 
+            var iconSkillThuSinh = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_ThuSinh_Signature.png");
+            var iconTraitThuSinh = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Trait_ThuSinh_Passive.png");
+            var iconSkillDaoSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_DaoSi_Signature.png");
+            var iconTraitDaoSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Trait_DaoSi_Passive.png");
+            var iconSkillThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_ThanhDong_Signature.png");
+            var iconTraitThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Trait_ThanhDong_Passive.png");
+            var iconSkillAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_AnSi_Signature.png");
+            var iconTraitAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Trait_AnSi_Passive.png");
+
             var relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W002_BútPhánQuan.asset");
             var relicDaoSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W003_BùaTrấnYêu.asset");
             var relicThanhDong = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W010_LinhPhùMaDa.asset");
             var relicAnSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>("Assets/_Data/Weapons/W005_TrốngĐồngĐôngSơn.asset");
+            var avatarThuSinh = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroAvatars/Avatar_Head_ThuSinh.png") ?? LoadFirstSprite("Assets/Art/ThuSinh/ThuSinh-Idle.png");
+            var avatarDaoSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroAvatars/Avatar_Head_DaoSi.png") ?? LoadFirstSprite("Assets/Art/DaoSi/Daosi-Idle.png");
+            var avatarThanhDong = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroAvatars/Avatar_Head_ThanhDong.png") ?? LoadFirstSprite("Assets/Art/ThanhDong/ThanhDong-Idle.png");
+            var avatarAnSi = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroAvatars/Avatar_Head_AnSi.png") ?? LoadFirstSprite("Assets/Art/AnSi/AnSi-Idle.png");
 
             // 2. Tạo hoặc cập nhật 4 file CharacterDataSO độc lập
-            var listSO = new List<CharacterDataSO>();
+            List<CharacterDataSO> listSO = new List<CharacterDataSO>();
 
             // --- TƯỚNG 1: THƯ SINH ---
             var soThuSinh = GetOrCreateSO<CharacterDataSO>($"{charactersFolder}/Hero_ThuSinh.asset");
@@ -62,6 +75,7 @@ namespace ProjectZombie.Editor
             soThuSinh.characterName = "Thư Sinh";
             soThuSinh.element = ElementType.Kim;
             soThuSinh.elementHexColor = "#FFD700";
+            soThuSinh.avatar = avatarThuSinh;
             soThuSinh.description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.";
             soThuSinh.baseMaxHealth = 100f;
             soThuSinh.baseMoveSpeed = 5.2f;
@@ -73,8 +87,10 @@ namespace ProjectZombie.Editor
             soThuSinh.uiDefRatio = 0.60f;
             soThuSinh.signatureSkillName = "Phán Quyết Tiền Định";
             soThuSinh.signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.";
+            soThuSinh.signatureSkillIcon = iconSkillThuSinh;
             soThuSinh.passiveTraitName = "Văn Khí Hộ Thể";
             soThuSinh.passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.";
+            soThuSinh.passiveTraitIcon = iconTraitThuSinh;
             soThuSinh.playerPrefab = pThuSinh;
             soThuSinh.basicAttackConfig = new CharacterAttackConfig
             {
@@ -98,6 +114,7 @@ namespace ProjectZombie.Editor
             soDaoSi.characterName = "Đạo Sĩ";
             soDaoSi.element = ElementType.Moc;
             soDaoSi.elementHexColor = "#9B51E0";
+            soDaoSi.avatar = avatarDaoSi;
             soDaoSi.description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).";
             soDaoSi.baseMaxHealth = 110f;
             soDaoSi.baseMoveSpeed = 4.8f;
@@ -109,8 +126,10 @@ namespace ProjectZombie.Editor
             soDaoSi.uiDefRatio = 0.80f;
             soDaoSi.signatureSkillName = "Bát Quái Trận Đồ";
             soDaoSi.signatureSkillDesc = "Dậm chân tạo vùng Bát Quái làm chậm và gây sát thương yêu ma, ép Cán Cân Âm Dương về 50 (Thái Cực) trong 4s.";
+            soDaoSi.signatureSkillIcon = iconSkillDaoSi;
             soDaoSi.passiveTraitName = "Cán Cân Âm Dương";
             soDaoSi.passiveTraitDesc = "Trạng thái Thái Cực (Cân bằng) tăng 25% Sát thương toàn thể và giảm 20% Sát thương nhận vào.";
+            soDaoSi.passiveTraitIcon = iconTraitDaoSi;
             soDaoSi.playerPrefab = pDaoSi;
             soDaoSi.basicAttackConfig = new CharacterAttackConfig
             {
@@ -134,6 +153,7 @@ namespace ProjectZombie.Editor
             soThanhDong.characterName = "Thanh Đồng";
             soThanhDong.element = ElementType.Moc;
             soThanhDong.elementHexColor = "#4C7A3D";
+            soThanhDong.avatar = avatarThanhDong;
             soThanhDong.description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tay mang Chuỗi Linh Phù Tứ Phủ hộ thân trừ tà.";
             soThanhDong.baseMaxHealth = 95f;
             soThanhDong.baseMoveSpeed = 5.6f;
@@ -145,8 +165,10 @@ namespace ProjectZombie.Editor
             soThanhDong.uiDefRatio = 0.65f;
             soThanhDong.signatureSkillName = "Giá Đồng Tứ Phủ";
             soThanhDong.signatureSkillDesc = "Thỉnh nhập Thánh thần Tứ Phủ ban hào quang 4 cõi (Tăng công / Tăng tốc / Giảm hồi chiêu / Giáp hộ thân) trong 5s.";
+            soThanhDong.signatureSkillIcon = iconSkillThanhDong;
             soThanhDong.passiveTraitName = "Linh Lực Tứ Phủ";
             soThanhDong.passiveTraitDesc = "Thu thập Linh Khí tích lũy thanh Linh Lực Tứ Phủ. Khi kích hoạt Giá Đồng, nhận đồng thời hiệu ứng hộ trì của cả 4 cõi thần linh.";
+            soThanhDong.passiveTraitIcon = iconTraitThanhDong;
             soThanhDong.playerPrefab = pThanhDong;
             soThanhDong.basicAttackConfig = new CharacterAttackConfig
             {
@@ -169,6 +191,7 @@ namespace ProjectZombie.Editor
             soAnSi.characterName = "Ẩn Sĩ Sơn Lâm";
             soAnSi.element = ElementType.Tho;
             soAnSi.elementHexColor = "#8A6A3E";
+            soAnSi.avatar = avatarAnSi;
             soAnSi.description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.";
             soAnSi.baseMaxHealth = 150f;
             soAnSi.baseMoveSpeed = 4.2f;
@@ -180,8 +203,10 @@ namespace ProjectZombie.Editor
             soAnSi.uiDefRatio = 0.95f;
             soAnSi.signatureSkillName = "Thập Phương Chấn Thế";
             soAnSi.signatureSkillDesc = "Trừ 30% HP hiện tại bộc phát địa khí chấn nứt đất đá, gây sát thương + Choáng 1.2s và đẩy lùi 8m/s.";
+            soAnSi.signatureSkillIcon = iconSkillAnSi;
             soAnSi.passiveTraitName = "Bàn Thạch Chi Khu";
             soAnSi.passiveTraitDesc = "Máu càng thấp thủ càng cao. Khi HP dưới 50%, nhận thêm 30% Kháng sát thương và miễn nhiễm Đẩy lùi.";
+            soAnSi.passiveTraitIcon = iconTraitAnSi;
             soAnSi.playerPrefab = pAnSi;
             soAnSi.basicAttackConfig = new CharacterAttackConfig
             {
@@ -210,6 +235,16 @@ namespace ProjectZombie.Editor
 
             Debug.Log($"<color=#00FF88>[CharacterDataAssetGenerator]</color> Đã tạo thành công 4 file CharacterDataSO tại '{charactersFolder}' và liên kết vào '{dbPath}'!");
             EditorUtility.DisplayDialog("Character Database Generator", "Đã tạo thành công 4 file ScriptableObject độc lập cho từng tướng trong thư mục 'Assets/_Data/Characters/'!\n\nBạn có thể mở từng file để tinh chỉnh chỉ số hoặc kéo thả thêm tướng mới vào 'Assets/_Data/CharacterDatabase.asset'.", "Đã hiểu!");
+        }
+
+        private static Sprite LoadFirstSprite(string texturePath)
+        {
+            var assets = AssetDatabase.LoadAllAssetsAtPath(texturePath);
+            foreach (var asset in assets)
+            {
+                if (asset is Sprite sp) return sp;
+            }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(texturePath);
         }
 
         private static T GetOrCreateSO<T>(string assetPath) where T : ScriptableObject

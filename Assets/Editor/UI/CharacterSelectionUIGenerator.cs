@@ -18,6 +18,12 @@ namespace ProjectZombie.Editor.UI
         [MenuItem("Tools/ProjectZombie/UI/Generate Character Selection UI Prefab", priority = 10)]
         public static void GenerateCharacterSelectionPrefab()
         {
+            // Tắt Unity Remote kiểm tra adb khi không kết nối thiết bị để tránh CommandInvokationFailure
+            if (EditorSettings.unityRemoteDevice != "None")
+            {
+                EditorSettings.unityRemoteDevice = "None";
+            }
+
             // Tự động đồng bộ và nạp dữ liệu vũ khí/pháp bảo của 4 tướng vào ScriptableObjects
             CharacterDataAssetGenerator.GenerateCharacterAssets();
 
@@ -98,8 +104,7 @@ namespace ProjectZombie.Editor.UI
             SetStretchAnchor(titleObj.GetComponent<RectTransform>());
             titleObj.GetComponent<RectTransform>().offsetMin = new Vector2(50, 8);
             titleObj.GetComponent<RectTransform>().offsetMax = new Vector2(-50, -14);
-            var titleTMP = titleObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) titleTMP.font = vietFont;
+            var titleTMP = CreateTextMeshPro(titleObj, vietFont);
             titleTMP.text = "CHỌN ANH HÙNG XUẤT TRẬN";
             titleTMP.fontSize = 22;
             titleTMP.fontStyle = FontStyles.Bold;
@@ -195,6 +200,7 @@ namespace ProjectZombie.Editor.UI
 
             Button[] heroTabBtns = new Button[4];
             Image[] heroTabBorders = new Image[4];
+            Image[] heroTabIcons = new Image[4];
             string[] heroTabNames = new string[] { "Thư Sinh", "Đạo Sĩ", "Thanh Đồng", "Ẩn Sĩ" };
 
             for (int i = 0; i < 4; i++)
@@ -214,17 +220,29 @@ namespace ProjectZombie.Editor.UI
                 var btnComp = tabBtnObj.AddComponent<Button>();
                 heroTabBtns[i] = btnComp;
 
+                // Avatar Icon bên trong ô chọn nhanh
+                GameObject tabIconObj = CreateUIElement("Icon_Avatar", tabBtnObj.transform);
+                RectTransform tiRT = tabIconObj.GetComponent<RectTransform>();
+                tiRT.anchorMin = new Vector2(0.5f, 0.5f);
+                tiRT.anchorMax = new Vector2(0.5f, 0.5f);
+                tiRT.pivot = new Vector2(0.5f, 0.5f);
+                tiRT.anchoredPosition = new Vector2(0, 6);
+                tiRT.sizeDelta = new Vector2(48, 48);
+                var tiImg = tabIconObj.AddComponent<Image>();
+                tiImg.preserveAspect = true;
+                tiImg.raycastTarget = false;
+                heroTabIcons[i] = tiImg;
+
                 GameObject tabNameObj = CreateUIElement("Text_Name", tabBtnObj.transform);
                 RectTransform tnRT = tabNameObj.GetComponent<RectTransform>();
                 tnRT.anchorMin = new Vector2(0f, 0f);
                 tnRT.anchorMax = new Vector2(1f, 0f);
                 tnRT.pivot = new Vector2(0.5f, 0f);
-                tnRT.anchoredPosition = new Vector2(0, 4);
-                tnRT.sizeDelta = new Vector2(0, 18);
-                var tnTMP = tabNameObj.AddComponent<TextMeshProUGUI>();
-                if (vietFont != null) tnTMP.font = vietFont;
+                tnRT.anchoredPosition = new Vector2(0, 3);
+                tnRT.sizeDelta = new Vector2(0, 16);
+                var tnTMP = CreateTextMeshPro(tabNameObj, vietFont);
                 tnTMP.text = heroTabNames[i];
-                tnTMP.fontSize = 10;
+                tnTMP.fontSize = 9.5f;
                 tnTMP.fontStyle = FontStyles.Bold;
                 tnTMP.alignment = TextAlignmentOptions.Center;
                 tnTMP.color = new Color(0.95f, 0.88f, 0.70f);
@@ -275,8 +293,7 @@ namespace ProjectZombie.Editor.UI
 
             GameObject nameObj = CreateUIElement("Text_CharacterName", nameBadgeObj.transform);
             SetStretchAnchor(nameObj.GetComponent<RectTransform>());
-            var nameTMP = nameObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) nameTMP.font = vietFont;
+            var nameTMP = CreateTextMeshPro(nameObj, vietFont);
             nameTMP.text = "Thư Sinh";
             nameTMP.fontSize = 20;
             nameTMP.fontStyle = FontStyles.Bold;
@@ -290,8 +307,7 @@ namespace ProjectZombie.Editor.UI
             etRT.pivot = new Vector2(0.5f, 0.5f);
             etRT.anchoredPosition = new Vector2(120, 0);
             etRT.sizeDelta = new Vector2(110, 32);
-            var elemTMP = elemTagObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) elemTMP.font = vietFont;
+            var elemTMP = CreateTextMeshPro(elemTagObj, vietFont);
             elemTMP.text = "<color=#FFD700>HỆ KIM</color>";
             elemTMP.fontSize = 15;
             elemTMP.fontStyle = FontStyles.Bold;
@@ -302,11 +318,10 @@ namespace ProjectZombie.Editor.UI
             RectTransform descRT = descObj.GetComponent<RectTransform>();
             descRT.anchorMin = new Vector2(0, 1);
             descRT.anchorMax = new Vector2(1, 1);
-            descRT.pivot = new Vector2(0.5f, 1);
+            descRT.pivot = new Vector2(0, 1);
             descRT.anchoredPosition = new Vector2(0, -48);
             descRT.sizeDelta = new Vector2(0, 36);
-            var descTMP = descObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) descTMP.font = vietFont;
+            var descTMP = CreateTextMeshPro(descObj, vietFont);
             descTMP.text = "Vị học sĩ cầm bút như kiếm, lấy trời đất làm nghiên. Từ Vọng Xuyên xa xôi mượn mực thần kể chuyện anh hùng.";
             descTMP.fontSize = 11.5f;
             descTMP.alignment = TextAlignmentOptions.Center;
@@ -350,6 +365,13 @@ namespace ProjectZombie.Editor.UI
             skbImg.type = Image.Type.Sliced;
             if (skillBoxWood != null) skbImg.sprite = skillBoxWood;
 
+            GameObject skIconObj = CreateUIElement("Icon_Skill", skBox.transform);
+            SetStretchAnchor(skIconObj.GetComponent<RectTransform>());
+            skIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
+            skIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
+            var skIconImg = skIconObj.AddComponent<Image>();
+            skIconImg.preserveAspect = true;
+
             GameObject skillHeader = CreateUIElement("Text_SkillHeader", skillCard.transform);
             RectTransform shRT = skillHeader.GetComponent<RectTransform>();
             shRT.anchorMin = new Vector2(0, 1);
@@ -357,8 +379,7 @@ namespace ProjectZombie.Editor.UI
             shRT.pivot = new Vector2(0, 1);
             shRT.anchoredPosition = new Vector2(72, -2);
             shRT.sizeDelta = new Vector2(-72, 18);
-            var shTMP = skillHeader.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) shTMP.font = vietFont;
+            var shTMP = CreateTextMeshPro(skillHeader, vietFont);
             shTMP.text = "KỸ NĂNG CHỦ ĐỘNG (SIGNATURE SKILL)";
             shTMP.fontSize = 11.5f;
             shTMP.fontStyle = FontStyles.Bold;
@@ -370,8 +391,7 @@ namespace ProjectZombie.Editor.UI
             stRT.anchorMax = new Vector2(1, 1);
             stRT.offsetMin = new Vector2(72, 2);
             stRT.offsetMax = new Vector2(-4, -20);
-            var stTMP = skillTextObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) stTMP.font = vietFont;
+            var stTMP = CreateTextMeshPro(skillTextObj, vietFont);
             stTMP.text = "Phán Quyết Tiên Định: Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown.";
             stTMP.fontSize = 10.5f;
             stTMP.color = new Color(0.30f, 0.22f, 0.16f);
@@ -382,7 +402,7 @@ namespace ProjectZombie.Editor.UI
             RectTransform passiveRT = passiveCard.GetComponent<RectTransform>();
             passiveRT.anchorMin = new Vector2(0, 1);
             passiveRT.anchorMax = new Vector2(1, 1);
-            passiveRT.pivot = new Vector2(0.5f, 1);
+            passiveRT.pivot = new Vector2(0, 1);
             passiveRT.anchoredPosition = new Vector2(0, -188);
             passiveRT.sizeDelta = new Vector2(0, 68);
 
@@ -398,6 +418,13 @@ namespace ProjectZombie.Editor.UI
             psbImg.type = Image.Type.Sliced;
             if (skillBoxWood != null) psbImg.sprite = skillBoxWood;
 
+            GameObject psIconObj = CreateUIElement("Icon_Trait", psBox.transform);
+            SetStretchAnchor(psIconObj.GetComponent<RectTransform>());
+            psIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
+            psIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
+            var psIconImg = psIconObj.AddComponent<Image>();
+            psIconImg.preserveAspect = true;
+
             GameObject passiveHeader = CreateUIElement("Text_PassiveHeader", passiveCard.transform);
             RectTransform phRT = passiveHeader.GetComponent<RectTransform>();
             phRT.anchorMin = new Vector2(0, 1);
@@ -405,8 +432,7 @@ namespace ProjectZombie.Editor.UI
             phRT.pivot = new Vector2(0, 1);
             phRT.anchoredPosition = new Vector2(72, -2);
             phRT.sizeDelta = new Vector2(-72, 18);
-            var phTMP = passiveHeader.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) phTMP.font = vietFont;
+            var phTMP = CreateTextMeshPro(passiveHeader, vietFont);
             phTMP.text = "NỘI TẠI ĐỘC QUYỀN (PASSIVE TRAIT)";
             phTMP.fontSize = 11.5f;
             phTMP.fontStyle = FontStyles.Bold;
@@ -418,8 +444,7 @@ namespace ProjectZombie.Editor.UI
             ptRT.anchorMax = new Vector2(1, 1);
             ptRT.offsetMin = new Vector2(72, 2);
             ptRT.offsetMax = new Vector2(-4, -20);
-            var ptTMP = passiveTextObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) ptTMP.font = vietFont;
+            var ptTMP = CreateTextMeshPro(passiveTextObj, vietFont);
             ptTMP.text = "Văn Khí Hộ Thể: Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.";
             ptTMP.fontSize = 10.5f;
             ptTMP.color = new Color(0.30f, 0.22f, 0.16f);
@@ -441,8 +466,7 @@ namespace ProjectZombie.Editor.UI
             lhRT.pivot = new Vector2(0.5f, 1);
             lhRT.anchoredPosition = new Vector2(0, 0);
             lhRT.sizeDelta = new Vector2(0, 18);
-            var lhTMP = loadoutHeader.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) lhTMP.font = vietFont;
+            var lhTMP = CreateTextMeshPro(loadoutHeader, vietFont);
             lhTMP.text = "TRANG BỊ XUẤT TRẬN (LOADOUT KHỞI ĐẦU)";
             lhTMP.fontSize = 11.5f;
             lhTMP.fontStyle = FontStyles.Bold;
@@ -473,8 +497,7 @@ namespace ProjectZombie.Editor.UI
             pwnRT.pivot = new Vector2(0.5f, 1f);
             pwnRT.anchoredPosition = new Vector2(0, -4);
             pwnRT.sizeDelta = new Vector2(100, 16);
-            var pwnTMP = pwNameObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) pwnTMP.font = vietFont;
+            var pwnTMP = CreateTextMeshPro(pwNameObj, vietFont);
             pwnTMP.text = "Vũ Khí Bản Mệnh";
             pwnTMP.fontSize = 9.5f;
             pwnTMP.fontStyle = FontStyles.Bold;
@@ -509,8 +532,7 @@ namespace ProjectZombie.Editor.UI
             rnRT.pivot = new Vector2(0.5f, 1f);
             rnRT.anchoredPosition = new Vector2(0, -4);
             rnRT.sizeDelta = new Vector2(100, 16);
-            var rnTMP = rNameObj.AddComponent<TextMeshProUGUI>();
-            if (vietFont != null) rnTMP.font = vietFont;
+            var rnTMP = CreateTextMeshPro(rNameObj, vietFont);
             rnTMP.text = "Pháp Bảo Hộ Thân";
             rnTMP.fontSize = 9.5f;
             rnTMP.alignment = TextAlignmentOptions.Center;
@@ -543,6 +565,8 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_descriptionText").objectReferenceValue = descTMP;
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
             soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
+            soView.FindProperty("_signatureSkillIcon").objectReferenceValue = skIconImg;
+            soView.FindProperty("_passiveTraitIcon").objectReferenceValue = psIconImg;
             soView.FindProperty("_characterAvatarImage").objectReferenceValue = null;
             soView.FindProperty("_characterPreviewRawImage").objectReferenceValue = rawPreviewImg;
 
@@ -570,6 +594,12 @@ namespace ProjectZombie.Editor.UI
             var hTabBordersProp = soView.FindProperty("_heroTabBorders");
             hTabBordersProp.arraySize = 4;
             for (int h = 0; h < 4; h++) hTabBordersProp.GetArrayElementAtIndex(h).objectReferenceValue = heroTabBorders[h];
+            var hTabIconsProp = soView.FindProperty("_heroTabIcons");
+            if (hTabIconsProp != null)
+            {
+                hTabIconsProp.arraySize = 4;
+                for (int h = 0; h < 4; h++) hTabIconsProp.GetArrayElementAtIndex(h).objectReferenceValue = heroTabIcons[h];
+            }
 
             // Stat Gauges
             soView.FindProperty("_atkStatFill").objectReferenceValue = atkFill;
@@ -744,13 +774,27 @@ namespace ProjectZombie.Editor.UI
             vRT.pivot = new Vector2(1, 0.5f);
             vRT.anchoredPosition = new Vector2(0, 0);
             vRT.sizeDelta = new Vector2(30, 18);
-            statValText = valObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) statValText.font = font;
+            statValText = CreateTextMeshPro(valObj, font);
             statValText.text = "80%";
             statValText.fontSize = 9.5f;
             statValText.fontStyle = FontStyles.Bold;
             statValText.alignment = TextAlignmentOptions.Right;
             statValText.color = new Color(0.25f, 0.18f, 0.12f);
+        }
+
+        private static TextMeshProUGUI CreateTextMeshPro(GameObject obj, TMP_FontAsset font)
+        {
+            var tmp = obj.AddComponent<TextMeshProUGUI>();
+            if (font != null)
+            {
+                tmp.font = font;
+                if (font.material != null)
+                {
+                    tmp.fontSharedMaterial = font.material;
+                }
+            }
+            tmp.raycastTarget = false;
+            return tmp;
         }
 
         private static GameObject CreateUIElement(string name, Transform parent)
@@ -778,8 +822,7 @@ namespace ProjectZombie.Editor.UI
 
             GameObject txtObj = CreateUIElement("Text", btnObj.transform);
             SetStretchAnchor(txtObj.GetComponent<RectTransform>());
-            var tmp = txtObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) tmp.font = font;
+            var tmp = CreateTextMeshPro(txtObj, font);
             tmp.text = text;
             tmp.fontSize = 24;
             tmp.fontStyle = FontStyles.Bold;

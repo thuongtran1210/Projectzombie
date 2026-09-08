@@ -16,7 +16,7 @@ MonoBehaviour:
   characterName: "Th\u01B0 Sinh"
   element: 1
   elementHexColor: '#FFD700'
-  avatar: {fileID: 2100000000, guid: 2100000000000000a0b77823fca88d01, type: 3}
+  avatar: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
   playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
   description: "\u0110\u01B0\u1EE3c anh linh li\u1EC7t t\u1ED5 & \u0110\u1EE9c Th\xE1nh
     Tr\u1EA7n \u0111i\u1EC3m h\xF3a. Tay c\u1EA7m b\xFAt l\u1EC7nh kh\xED thi\xEAng
@@ -54,10 +54,12 @@ MonoBehaviour:
   signatureSkillName: "Ph\xE1n Quy\u1EBFt Ti\u1EC1n \u0110\u1ECBnh"
   signatureSkillDesc: "Ch\xE8n 1 hit \u1EA3o Ng\u0169 H\xE0nh v\xE0o Queue T\u01B0\u01A1ng
     Sinh, k\xEDch ho\u1EA1t gi\u1EA3m 20% Cooldown cho v\u0169 kh\xED kh\u1EDBp l\u1EC7nh."
+  signatureSkillIcon: {fileID: 21300000, guid: 3f8a129d47ec4466b0a1491cf08b49e1, type: 3}
   passiveTraitName: "V\u0103n Kh\xED H\u1ED9 Th\u1EC3"
   passiveTraitDesc: "Khi k\xEDch ho\u1EA1t T\u01B0\u01A1ng Sinh Ng\u0169 H\xE0nh,
     t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
     \u0111a."
+  passiveTraitIcon: {fileID: 21300000, guid: 5472764acc5a4fc797796be01edc1f47, type: 3}
   defaultRelic: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
   defaultPrimaryWeapon: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
   defaultRelics:
