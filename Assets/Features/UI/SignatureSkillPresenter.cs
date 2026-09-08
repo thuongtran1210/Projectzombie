@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Skills;
 using ProjectZombie.Features.Shared;
 
@@ -126,7 +127,7 @@ namespace ProjectZombie.Features.UI
 
                     if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null && aimResult.Direction != Vector2.zero)
                     {
-                        var anim = PlayerProvider.PlayerTransform.GetComponentInChildren<Player.PlayerAnimator>();
+                        var anim = PlayerProvider.PlayerTransform.GetComponentInChildren<PlayerAnimator>();
                         if (anim != null)
                         {
                             anim.FlipToDirection(aimResult.Direction.x);
