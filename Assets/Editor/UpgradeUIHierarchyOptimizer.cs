@@ -52,6 +52,9 @@ namespace ProjectZombie.EditorTools
 
             Undo.RegisterFullObjectHierarchyUndo(rootObj, "Optimize UpgradeUI Hierarchy");
 
+            // Đảm bảo UpgradeUI_Root luôn nằm dưới cùng trong Canvas Hierarchy để render đè lên trên Mobile Controls
+            rootObj.transform.SetAsLastSibling();
+
             // 1. Lấy hoặc gắn UpgradeUIView & UpgradeUIPresenter trên Root
             UpgradeUIView uiView = rootObj.GetComponent<UpgradeUIView>();
             if (uiView == null) uiView = rootObj.AddComponent<UpgradeUIView>();

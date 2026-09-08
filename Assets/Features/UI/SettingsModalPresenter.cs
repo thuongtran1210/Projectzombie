@@ -63,6 +63,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnScreenShakeToggled -= HandleScreenShakeToggled;
                 _view.OnDamageNumbersToggled -= HandleDamageNumbersToggled;
                 _view.On60FPSToggled -= Handle60FPSToggled;
+                _view.OnCustomizeControlsClicked -= HandleCustomizeControlsClicked;
                 _view.OnCloseClicked -= HandleCloseClicked;
 
                 _view.OnBGMVolumeChanged += HandleBGMVolumeChanged;
@@ -70,6 +71,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnScreenShakeToggled += HandleScreenShakeToggled;
                 _view.OnDamageNumbersToggled += HandleDamageNumbersToggled;
                 _view.On60FPSToggled += Handle60FPSToggled;
+                _view.OnCustomizeControlsClicked += HandleCustomizeControlsClicked;
                 _view.OnCloseClicked += HandleCloseClicked;
             }
         }
@@ -91,6 +93,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnScreenShakeToggled -= HandleScreenShakeToggled;
                 _view.OnDamageNumbersToggled -= HandleDamageNumbersToggled;
                 _view.On60FPSToggled -= Handle60FPSToggled;
+                _view.OnCustomizeControlsClicked -= HandleCustomizeControlsClicked;
                 _view.OnCloseClicked -= HandleCloseClicked;
             }
         }
@@ -188,6 +191,72 @@ namespace ProjectZombie.Features.UI
             PlayerPrefs.Save();
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = isOn ? 60 : 30;
+        }
+
+        private void HandleCustomizeControlsClicked()
+        {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
+            // Tìm hoặc mở Customizer Presenter
+            var customizer = FindObjectOfType<ProjectZombie.Features.UI.Controls.Customization.MobileControlsCustomizerPresenter>(true);
+            if (customizer == null)
+            {
+                var customizerPrefab = Resources.Load<GameObject>("UI/MobileControlsCustomizerUI");
+                if (customizerPrefab == null)
+                {
+#if UNITY_EDITOR
+                    customizerPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/MobileControlsCustomizerUI.prefab");
+#endif
+                }
+
+                if (customizerPrefab != null)
+                {
+                    var canvas = GetComponentInParent<Canvas>();
+                    var inst = Instantiate(customizerPrefab, canvas != null ? canvas.transform : transform.root);
+                    inst.name = "MobileControlsCustomizerUI";
+                    customizer = inst.GetComponent<ProjectZombie.Features.UI.Controls.Customization.MobileControlsCustomizerPresenter>();
+                }
+            }
+
+            if (customizer != null)
+            {
+                // 1. Tạm ẩn Settings Modal
+                Close();
+
+                // 2. Tạm ẩn Bảng Thông Số Nhân Vật (Panel_PlayerStatsMenu) nếu đang mở
+                var statsView = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerStatsMenuUIView>(true);
+                bool wasStatsActive = statsView != null && statsView.gameObject.activeSelf;
+                if (wasStatsActive)
+                {
+                    statsView.gameObject.SetActive(false);
+                }
+
+                // 3. Đảm bảo Panel điều khiển (Panel_MobileControls) được kích hoạt để người chơi thấy các nút và kéo chỉnh
+                if (GameplayUIManager.Instance != null)
+                {
+                    GameplayUIManager.Instance.SetMobileControlsActive(true);
+                }
+                else
+                {
+                    var mobileControlsObj = GameObject.Find("Panel_MobileControls");
+                    if (mobileControlsObj != null) mobileControlsObj.SetActive(true);
+                }
+
+                // 4. Mở Customizer Overlay
+                customizer.OpenCustomizer(() => {
+                    // Khi đóng Customizer, khôi phục lại Bảng Thông Số & Modal Settings
+                    if (wasStatsActive && statsView != null)
+                    {
+                        statsView.gameObject.SetActive(true);
+                        statsView.Show();
+                    }
+                    Open();
+                });
+            }
+            else
+            {
+                Debug.LogWarning("[SettingsModalPresenter] MobileControlsCustomizerPresenter not found!");
+            }
         }
 
         private void HandleCloseClicked()

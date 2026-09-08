@@ -78,7 +78,9 @@ namespace ProjectZombie.Features.UI
 
             string formattedText = remaining > 0f ? $"{remaining:F1}s" : string.Empty;
             _view.SetCooldown(remaining, _dashCooldown, formattedText);
-            _view.SetInteractable(remaining <= 0f);
+
+            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
+            _view.SetInteractable(!isEditMode && remaining <= 0f);
         }
 
         private void TryBindPlayer()
@@ -105,6 +107,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnButtonClicked()
         {
+            if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             if (_playerController != null)
             {
                 float timePassed = Time.time - _lastDashTime;

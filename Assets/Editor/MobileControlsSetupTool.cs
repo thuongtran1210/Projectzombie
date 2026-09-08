@@ -97,7 +97,7 @@ namespace ProjectZombie.Editor.Tools
             }
         }
 
-        private static void SetupAndWireControlsInScene()
+        public static void SetupAndWireControlsInScene()
         {
             // 1. Tìm hoặc kiểm tra Canvas
             Canvas canvas = FindObjectOfType<Canvas>();
@@ -150,23 +150,79 @@ namespace ProjectZombie.Editor.Tools
 
             int wiredCount = 0;
 
-            // 3. Chuẩn hóa & Wire DynamicVirtualJoystick
+            // 3. Chuẩn hóa & Wire TouchZone_Left & DynamicVirtualJoystick
+            Transform joyZoneTrans = FindChildRecursive(mobilePanel.transform, "TouchZone_Left");
             DynamicVirtualJoystick joystick = mobilePanel.GetComponentInChildren<DynamicVirtualJoystick>(true);
+
+            if (joyZoneTrans == null)
+            {
+                // Tạo TouchZone_Left bao phủ toàn bộ nửa trái màn hình (0 -> 0.5 Width)
+                GameObject zoneObj = new GameObject("TouchZone_Left", typeof(RectTransform), typeof(Image));
+                zoneObj.transform.SetParent(mobilePanel.transform, false);
+                zoneObj.transform.SetAsFirstSibling();
+                RectTransform zRT = zoneObj.GetComponent<RectTransform>();
+                zRT.anchorMin = new Vector2(0f, 0f);
+                zRT.anchorMax = new Vector2(0.5f, 1f);
+                zRT.offsetMin = Vector2.zero;
+                zRT.offsetMax = Vector2.zero;
+
+                Image zoneImg = zoneObj.GetComponent<Image>();
+                zoneImg.color = Color.clear; // 100% trong suốt để nhận Touch Event
+                zoneImg.raycastTarget = true;
+
+                joyZoneTrans = zoneObj.transform;
+            }
+
+            // Nếu Joystick cũ đang nằm ngoài, đưa vào làm con hoặc gắn handler
             if (joystick != null)
             {
-                WireJoystick(joystick);
+                if (joystick.gameObject.name.Contains("TouchZone"))
+                {
+                    WireJoystick(joystick);
+                }
+                else
+                {
+                    // Di chuyển DynamicVirtualJoystick làm con của Panel_MobileControls hoặc liên kết TouchZone
+                    WireJoystick(joystick);
+                    
+                    // Gắn thêm DynamicVirtualJoystick vào TouchZone nếu TouchZone chưa có
+                    var zoneJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
+                    if (zoneJoystick == null) zoneJoystick = joyZoneTrans.gameObject.AddComponent<DynamicVirtualJoystick>();
+                    WireTouchZoneJoystick(zoneJoystick, joystick.GetComponent<RectTransform>());
+                }
                 wiredCount++;
             }
             else
             {
-                // Thử tìm GameObject có tên Joystick
-                Transform joyTransform = FindChildRecursive(mobilePanel.transform, "Joystick");
-                if (joyTransform != null)
-                {
-                    joystick = joyTransform.gameObject.AddComponent<DynamicVirtualJoystick>();
-                    WireJoystick(joystick);
-                    wiredCount++;
-                }
+                var zoneJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
+                if (zoneJoystick == null) zoneJoystick = joyZoneTrans.gameObject.AddComponent<DynamicVirtualJoystick>();
+                
+                // Tạo visual joystick con nếu chưa có
+                GameObject joyVisual = new GameObject("Joystick_Visual", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+                joyVisual.transform.SetParent(mobilePanel.transform, false);
+                RectTransform jvRT = joyVisual.GetComponent<RectTransform>();
+                jvRT.anchorMin = new Vector2(0f, 0f);
+                jvRT.anchorMax = new Vector2(0f, 0f);
+                jvRT.pivot = new Vector2(0.5f, 0.5f);
+                jvRT.anchoredPosition = new Vector2(250, 250);
+                jvRT.sizeDelta = new Vector2(240, 240);
+
+                Image jvImg = joyVisual.GetComponent<Image>();
+                jvImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
+                jvImg.color = Color.white;
+                jvImg.raycastTarget = false;
+
+                GameObject handleObj = new GameObject("JoystickHandle", typeof(RectTransform), typeof(Image));
+                handleObj.transform.SetParent(joyVisual.transform, false);
+                RectTransform handleRect = handleObj.GetComponent<RectTransform>();
+                handleRect.sizeDelta = new Vector2(100, 100);
+                Image handleImg = handleObj.GetComponent<Image>();
+                handleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
+                handleImg.color = Color.white;
+                handleImg.raycastTarget = false;
+
+                WireTouchZoneJoystick(zoneJoystick, jvRT);
+                wiredCount++;
             }
 
             // 4. Chuẩn hóa & Wire SignatureSkillButtonView & Presenter
@@ -273,14 +329,55 @@ namespace ProjectZombie.Editor.Tools
             SetupAimingIndicatorsAndCancelZone(canvas, mobilePanel);
             wiredCount += 2;
 
+            // 8. Tự động gắn CustomizableControlButton & Khởi tạo MobileControlsLayoutManager (Hệ thống Tùy Biến Bố Cục)
+            SetupCustomizableControlsAndLayoutManager(mobilePanel);
+
             EditorUtility.SetDirty(mobilePanel);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mobilePanel.scene);
 
             EditorUtility.DisplayDialog(
                 "Hoàn Tất",
-                $"Đã hoàn tất quét và Auto-Wire các thành phần Mobile Controls & MOBA Hit-And-Run System!\nSố cụm được cấu hình: {wiredCount}",
+                $"Đã hoàn tất quét và Auto-Wire các thành phần Mobile Controls, MOBA Hit-And-Run System & Mobile Layout Customizer!\nSố cụm được cấu hình: {wiredCount}",
                 "OK"
             );
+        }
+
+        private static void SetupCustomizableControlsAndLayoutManager(GameObject mobilePanel)
+        {
+            // Đảm bảo MobileControlsLayoutManager tồn tại trong Scene
+            var layoutMgr = Object.FindObjectOfType<Features.UI.Controls.Customization.MobileControlsLayoutManager>();
+            if (layoutMgr == null)
+            {
+                GameObject mgrObj = new GameObject("MobileControlsLayoutManager", typeof(Features.UI.Controls.Customization.MobileControlsLayoutManager));
+                mgrObj.transform.SetParent(mobilePanel.transform.parent, false);
+                Undo.RegisterCreatedObjectUndo(mgrObj, "Create MobileControlsLayoutManager");
+            }
+
+            // Gắn CustomizableControlButton cho từng nút
+            AttachCustomizableButton(mobilePanel, "Btn_Attack", "Đánh Thường", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Btn_SignatureSkill", "Tuyệt Kỹ", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Btn_RelicSkill", "Pháp Bảo", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Btn_Dash", "Lướt Phi Vân", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Joystick_Visual", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "DynamicVirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+        }
+
+        private static void AttachCustomizableButton(GameObject root, string targetName, string displayName, float minScale, float maxScale)
+        {
+            Transform t = FindChildRecursive(root.transform, targetName);
+            if (t != null)
+            {
+                var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+                if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+
+                var so = new SerializedObject(customBtn);
+                so.FindProperty("_controlId").stringValue = t.name;
+                so.FindProperty("_displayName").stringValue = displayName;
+                so.FindProperty("_minScale").floatValue = minScale;
+                so.FindProperty("_maxScale").floatValue = maxScale;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(customBtn);
+            }
         }
 
         private static void SetupAimingIndicatorsAndCancelZone(Canvas canvas, GameObject mobilePanel)
@@ -350,9 +447,52 @@ namespace ProjectZombie.Editor.Tools
 
             so.FindProperty("containerRect").objectReferenceValue = container;
             so.FindProperty("handleRect").objectReferenceValue = handle;
+            
+            // Bật chế độ Floating Joystick: chạm bất kỳ đâu bên trái joystick cũng tự nhảy đến chỗ chạm
+            var floatProp = so.FindProperty("_isFloatingJoystick");
+            if (floatProp != null) floatProp.boolValue = true;
+
+            var followProp = so.FindProperty("_dynamicFollowDrag");
+            if (followProp != null) followProp.boolValue = true;
+
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(joystick);
-            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire Joystick: {joystick.name} (Handle: {(handle != null ? handle.name : "None")})");
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire Joystick: {joystick.name} (Handle: {(handle != null ? handle.name : "None")}, Floating: True)");
+        }
+
+        private static void WireTouchZoneJoystick(DynamicVirtualJoystick zoneJoystick, RectTransform visualContainer)
+        {
+            var so = new SerializedObject(zoneJoystick);
+            RectTransform handle = null;
+
+            if (visualContainer != null)
+            {
+                foreach (RectTransform child in visualContainer)
+                {
+                    if (child.name.ToLower().Contains("handle") || child.name.ToLower().Contains("knob") || child.name.ToLower().Contains("point"))
+                    {
+                        handle = child;
+                        break;
+                    }
+                }
+                if (handle == null && visualContainer.childCount > 0)
+                {
+                    handle = visualContainer.GetChild(0) as RectTransform;
+                }
+            }
+
+            so.FindProperty("containerRect").objectReferenceValue = visualContainer;
+            so.FindProperty("handleRect").objectReferenceValue = handle;
+
+            var floatProp = so.FindProperty("_isFloatingJoystick");
+            if (floatProp != null) floatProp.boolValue = true;
+
+            var followProp = so.FindProperty("_dynamicFollowDrag");
+            if (followProp != null) followProp.boolValue = true;
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(zoneJoystick);
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire TouchZone Joystick: {zoneJoystick.name} -> Visual: {(visualContainer != null ? visualContainer.name : "None")}");
         }
 
         private static void WireSignatureSkill(SignatureSkillButtonView view, SignatureSkillPresenter presenter)

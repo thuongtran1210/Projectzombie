@@ -62,16 +62,15 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
-            if (containerRect == null) containerRect = GetComponent<RectTransform>();
-            if (handleRect == null && transform.childCount > 0)
-            {
-                // Tự động tìm Handle nếu con đầu tiên là Image
-                handleRect = transform.GetChild(0).GetComponent<RectTransform>();
-            }
+            AutoResolveReferences();
 
             if (_joystickCanvasGroup == null)
             {
                 _joystickCanvasGroup = GetComponent<CanvasGroup>();
+                if (_joystickCanvasGroup == null && containerRect != null)
+                {
+                    _joystickCanvasGroup = containerRect.GetComponent<CanvasGroup>();
+                }
             }
 
             if (containerRect != null)
@@ -92,7 +91,64 @@ namespace ProjectZombie.Features.UI
 
             if (containerRect == null || handleRect == null)
             {
-                Debug.LogWarning($"[{nameof(DynamicVirtualJoystick)}] containerRect hoặc handleRect chưa được gán trên Inspector.");
+                Debug.LogWarning($"[{nameof(DynamicVirtualJoystick)}] containerRect hoặc handleRect chưa được gán trên Inspector trên GameObject: {gameObject.name}.");
+            }
+        }
+
+        private void AutoResolveReferences()
+        {
+            if (containerRect == null)
+            {
+                // Thử tìm "Joystick_Visual" hoặc "Joystick" hoặc "Container" trong con hoặc anh em
+                Transform visual = transform.Find("Joystick_Visual") ?? transform.Find("Joystick") ?? transform.Find("Container");
+                if (visual == null && transform.parent != null)
+                {
+                    visual = transform.parent.Find("Joystick_Visual") ?? transform.parent.Find("Joystick") ?? transform.parent.Find("Container");
+                }
+
+                if (visual != null)
+                {
+                    containerRect = visual.GetComponent<RectTransform>();
+                }
+                else
+                {
+                    containerRect = GetComponent<RectTransform>();
+                }
+            }
+
+            if (handleRect == null)
+            {
+                // Tìm handle bên trong containerRect hoặc chính transform
+                Transform searchRoot = containerRect != null ? containerRect.transform : transform;
+                Transform handle = searchRoot.Find("JoystickHandle") 
+                                   ?? searchRoot.Find("Handle") 
+                                   ?? searchRoot.Find("Knob") 
+                                   ?? searchRoot.Find("Knob_Visual")
+                                   ?? searchRoot.Find("Handle_Visual");
+
+                if (handle == null && searchRoot.childCount > 0)
+                {
+                    handle = searchRoot.GetChild(0);
+                }
+
+                // Nếu vẫn chưa có, thử tìm sâu hơn trong tất cả children
+                if (handle == null)
+                {
+                    var allChildren = searchRoot.GetComponentsInChildren<RectTransform>(true);
+                    foreach (var child in allChildren)
+                    {
+                        if (child != searchRoot && (child.name.ToLower().Contains("handle") || child.name.ToLower().Contains("knob")))
+                        {
+                            handle = child.transform;
+                            break;
+                        }
+                    }
+                }
+
+                if (handle != null)
+                {
+                    handleRect = handle.GetComponent<RectTransform>();
+                }
             }
         }
 
@@ -100,9 +156,12 @@ namespace ProjectZombie.Features.UI
         {
             if (containerRect == null || handleRect == null) return;
 
-            if (_isFloatingJoystick && containerRect.parent is RectTransform parentRect)
+            // Nếu chạm vào vùng TouchZone hoặc bật chế độ Floating:
+            // Đưa containerRect (Gốc Joystick) nhảy trực tiếp đến điểm ngón tay chạm trên màn hình
+            if (_isFloatingJoystick || containerRect.gameObject != gameObject)
             {
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                RectTransform parentRect = containerRect.parent as RectTransform;
+                if (parentRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     parentRect,
                     eventData.position,
                     eventData.pressEventCamera,
@@ -132,11 +191,15 @@ namespace ProjectZombie.Features.UI
             );
 
             // Dynamic follow: khi ngón tay vượt quá handleRange, gốc Joystick trượt theo
-            if (_dynamicFollowDrag && _isFloatingJoystick && position.magnitude > handleRange && containerRect.parent is RectTransform parentRect)
+            if (_dynamicFollowDrag && (_isFloatingJoystick || containerRect.gameObject != gameObject) && position.magnitude > handleRange)
             {
-                Vector2 excess = position - (position.normalized * handleRange);
-                containerRect.localPosition += (Vector3)excess;
-                position = position.normalized * handleRange;
+                RectTransform parentRect = containerRect.parent as RectTransform;
+                if (parentRect != null)
+                {
+                    Vector2 excess = position - (position.normalized * handleRange);
+                    containerRect.localPosition += (Vector3)excess;
+                    position = position.normalized * handleRange;
+                }
             }
 
             float distance = position.magnitude;
@@ -162,7 +225,21 @@ namespace ProjectZombie.Features.UI
             SendValueToControl(_inputVector);
         }
 
-        public void OnPointerUp(PointerEventData eventData)
+        protected override void OnDisable()
+        {
+            ResetJoystick();
+            base.OnDisable();
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                ResetJoystick();
+            }
+        }
+
+        public void ResetJoystick()
         {
             _inputVector = Vector2.zero;
             if (handleRect != null) handleRect.anchoredPosition = Vector2.zero;
@@ -177,8 +254,12 @@ namespace ProjectZombie.Features.UI
                 _joystickCanvasGroup.alpha = 0f;
             }
 
-            // Trả về Vector2.zero trong New Input System khi nhấc tay
             SendValueToControl(Vector2.zero);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            ResetJoystick();
         }
     }
 }

@@ -147,6 +147,11 @@ namespace ProjectZombie.Features.UI
                 _skillButton.interactable = isInteractable;
             }
 
+            if (_dragHandler != null)
+            {
+                _dragHandler.SetInteractable(isInteractable);
+            }
+
             if (_canvasGroup != null)
             {
                 // Giữ alpha = 1.0f để UI đếm lùi hồi chiêu và icon luôn sáng rõ

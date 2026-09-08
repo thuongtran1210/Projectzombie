@@ -124,13 +124,34 @@ namespace ProjectZombie.Features.UI.HUD
 
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             var presenter = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>(true);
+            if (presenter == null)
+            {
+                // Fallback cứu hộ: Tự động tải từ Resources nếu Scene chưa có
+                var prefab = Resources.Load<GameObject>("UI/PlayerStatsMenuUI");
+                if (prefab == null)
+                {
+#if UNITY_EDITOR
+                    prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/PlayerStatsMenuUI.prefab");
+#endif
+                }
+
+                if (prefab != null)
+                {
+                    var canvas = GetComponentInParent<Canvas>();
+                    Transform targetParent = canvas != null ? canvas.transform : transform.root;
+                    var inst = Instantiate(prefab, targetParent);
+                    inst.name = "Panel_PlayerStatsMenu";
+                    presenter = inst.GetComponent<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>();
+                }
+            }
+
             if (presenter != null)
             {
                 presenter.ToggleMenu();
             }
             else
             {
-                Debug.LogWarning("[RunHUDPresenter] PlayerInfoUIPresenter không tìm thấy trong Scene để mở Pause Menu.");
+                Debug.LogWarning("[RunHUDPresenter] PlayerInfoUIPresenter không tìm thấy trong Scene và không tải được từ Resources.");
             }
         }
 

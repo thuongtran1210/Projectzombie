@@ -77,6 +77,23 @@ namespace ProjectZombie.Features.UI.HUD
                     _hpFillImage = fillRect.GetComponent<Image>();
                 }
             }
+
+            if (_pauseButton == null)
+            {
+                var tr = transform.Find("Btn_Pause");
+                if (tr != null) _pauseButton = tr.GetComponent<Button>();
+                else
+                {
+                    foreach (var btn in GetComponentsInChildren<Button>(true))
+                    {
+                        if (btn.name.ToLower().Contains("pause"))
+                        {
+                            _pauseButton = btn;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -219,6 +236,12 @@ namespace ProjectZombie.Features.UI.HUD
         public void SetPauseButtonCallback(System.Action onPause)
         {
             _onPauseClicked = onPause;
+            if (_pauseButton == null)
+            {
+                var tr = transform.Find("Btn_Pause");
+                if (tr != null) _pauseButton = tr.GetComponent<Button>();
+            }
+
             if (_pauseButton != null)
             {
                 _pauseButton.onClick.RemoveAllListeners();

@@ -217,9 +217,38 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             }
             if (_statsMenuView == null) return;
 
+            // Tự động tìm nạp PlayerContext nếu chưa được inject qua bootstrapper
+            if (!_isConstructed || _playerStats == null)
+            {
+                var playerObj = PlayerProvider.PlayerGameObject ?? GameObject.FindWithTag("Player");
+                if (playerObj != null)
+                {
+                    Construct(
+                        playerObj.GetComponent<PlayerStats>(),
+                        playerObj.GetComponent<HealthSystem>(),
+                        playerObj.GetComponent<PlayerExperience>(),
+                        playerObj.GetComponent<WeaponManager>(),
+                        playerObj.GetComponent<PlayerPassives>()
+                    );
+                }
+                else
+                {
+                    var stats = FindObjectOfType<PlayerStats>();
+                    var hp = FindObjectOfType<HealthSystem>();
+                    var exp = FindObjectOfType<PlayerExperience>();
+                    var wm = FindObjectOfType<WeaponManager>();
+                    var passives = FindObjectOfType<PlayerPassives>();
+                    if (stats != null)
+                    {
+                        Construct(stats, hp, exp, wm, passives);
+                    }
+                }
+            }
+
             _isMenuOpen = true;
             _statsMenuView.gameObject.SetActive(true);
             _statsMenuView.transform.SetAsLastSibling();
+            _statsMenuView.Show();
             SetupViewCallbacks();
 
             if (GameStateManager.Instance != null)
@@ -241,7 +270,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (_statsMenuView == null) return;
 
             _isMenuOpen = false;
-            _statsMenuView.gameObject.SetActive(false);
+            _statsMenuView.Hide();
 
             if (GameStateManager.Instance != null)
             {

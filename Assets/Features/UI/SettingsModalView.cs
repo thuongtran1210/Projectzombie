@@ -27,12 +27,14 @@ namespace ProjectZombie.Features.UI
         [Header("Modal Action Buttons")]
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _overlayCloseButton;
+        [SerializeField] private Button _customizeControlsButton;
 
         public event Action<float> OnBGMVolumeChanged;
         public event Action<float> OnSFXVolumeChanged;
         public event Action<bool> OnScreenShakeToggled;
         public event Action<bool> OnDamageNumbersToggled;
         public event Action<bool> On60FPSToggled;
+        public event Action OnCustomizeControlsClicked;
         public event Action OnCloseClicked;
 
         protected override void Awake()
@@ -95,7 +97,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Auto-detect buttons
-            if (_closeButton == null || _overlayCloseButton == null)
+            if (_closeButton == null || _overlayCloseButton == null || _customizeControlsButton == null)
             {
                 foreach (var btn in GetComponentsInChildren<Button>(true))
                 {
@@ -104,6 +106,8 @@ namespace ProjectZombie.Features.UI
                         _closeButton = btn;
                     else if (_overlayCloseButton == null && (nameLower.Contains("overlay") || nameLower.Contains("dim") || nameLower.Contains("dark")))
                         _overlayCloseButton = btn;
+                    else if (_customizeControlsButton == null && (nameLower.Contains("custom") || nameLower.Contains("layout") || nameLower.Contains("phim") || nameLower.Contains("nut")))
+                        _customizeControlsButton = btn;
                 }
             }
 
@@ -147,6 +151,12 @@ namespace ProjectZombie.Features.UI
             {
                 _fps60Toggle.onValueChanged.RemoveAllListeners();
                 _fps60Toggle.onValueChanged.AddListener(isOn => On60FPSToggled?.Invoke(isOn));
+            }
+
+            if (_customizeControlsButton != null)
+            {
+                _customizeControlsButton.onClick.RemoveAllListeners();
+                _customizeControlsButton.onClick.AddListener(() => OnCustomizeControlsClicked?.Invoke());
             }
 
             if (_closeButton != null)

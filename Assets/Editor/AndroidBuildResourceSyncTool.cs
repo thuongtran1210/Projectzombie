@@ -39,6 +39,21 @@ namespace ProjectZombie.EditorTools
             SyncSingleAsset("Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset");
             SyncSingleAsset("Assets/_Data/MetaProgression/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset");
 
+            // Tự động dựng lại Prefab Cài Đặt (Settings Modal) nền gỗ mun đặc chuẩn Cổ Phong
+            ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal();
+
+            // Tự động dựng lại Menu Tạm Dừng / Chỉ Số Nhân Vật (Pause Menu) nền gỗ đặc chuẩn Cổ Phong
+            ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI();
+
+            // Tự động dựng lại Prefab Tùy Chỉnh Phím Ảo (Mobile Controls Customizer Overlay)
+            ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI();
+
+            // Tự động tối ưu và đồng bộ thứ tự Hierarchy cho UpgradeUI_Root
+            UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
+
+            // Tự động chuẩn hóa cụm TouchZone_Left và Dynamic Joystick động
+            ProjectZombie.Editor.Tools.MobileControlsSetupTool.SetupAndWireControlsInScene();
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 

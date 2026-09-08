@@ -51,7 +51,7 @@ namespace ProjectZombie.Features.UI.Controls
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (!_isInteractable) return;
+            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             _pointerDownPos = eventData.position;
             _currentPointerPos = eventData.position;
@@ -89,7 +89,7 @@ namespace ProjectZombie.Features.UI.Controls
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!_isInteractable) return;
+            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             _currentPointerPos = eventData.position;
             Vector2 delta = _currentPointerPos - _pointerDownPos;
@@ -125,7 +125,7 @@ namespace ProjectZombie.Features.UI.Controls
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (!_isInteractable) return;
+            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             if (_holdCoroutine != null)
             {
@@ -162,7 +162,20 @@ namespace ProjectZombie.Features.UI.Controls
             _isAimActive = false;
         }
 
-        private void CancelAim()
+        private void OnDisable()
+        {
+            CancelAim();
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                CancelAim();
+            }
+        }
+
+        public void CancelAim()
         {
             if (_holdCoroutine != null)
             {

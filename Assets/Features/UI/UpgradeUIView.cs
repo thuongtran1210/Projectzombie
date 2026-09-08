@@ -256,12 +256,49 @@ namespace ProjectZombie.Features.UI
 
         public void SetActive(bool isActive)
         {
-            if (_upgradePanel == null)
+            if (_upgradePanel != null)
+            {
+                _upgradePanel.SetActive(isActive);
+            }
+            else
             {
                 Debug.LogWarning($"[{nameof(UpgradeUIView)}] _upgradePanel chưa được gán trong Inspector.");
-                return;
             }
-            _upgradePanel.SetActive(isActive);
+
+            // Đồng bộ an toàn: Khi mở bảng nâng cấp, bắt buộc ẩn cụm phím điều khiển và thu hồi toàn bộ chỉ dấu
+            if (isActive)
+            {
+                if (GameplayUIManager.Instance != null)
+                {
+                    GameplayUIManager.Instance.SetMobileControlsActive(false);
+                }
+                else
+                {
+                    var mobileControls = GameObject.Find("Panel_MobileControls");
+                    if (mobileControls != null) mobileControls.SetActive(false);
+                }
+
+                // Thu hồi mọi chỉ dấu đang vẽ trên màn hình
+                Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
+                DynamicVirtualJoystick.Instance?.ResetJoystick();
+            }
+            else
+            {
+                // Khi đóng bảng nâng cấp và game đang chạy, khôi phục lại Panel_MobileControls
+                if (ProjectZombie.Features.Shared.GameStateManager.Instance == null || 
+                    ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState == ProjectZombie.Features.Shared.GameState.Playing)
+                {
+                    if (GameplayUIManager.Instance != null)
+                    {
+                        GameplayUIManager.Instance.SetMobileControlsActive(true);
+                    }
+                    else
+                    {
+                        var mobileControls = GameObject.Find("Panel_MobileControls");
+                        if (mobileControls != null) mobileControls.SetActive(true);
+                    }
+                }
+            }
         }
 
         public int GetCardsLength()

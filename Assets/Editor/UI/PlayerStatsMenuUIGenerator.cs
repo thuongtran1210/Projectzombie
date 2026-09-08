@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
 using System.IO;
+using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.StatsAndSkills;
 
 namespace ProjectZombie.Editor.UI
@@ -54,7 +55,7 @@ namespace ProjectZombie.Editor.UI
             dimImg.color = new Color(0, 0, 0, 0.75f);
             var dimBtn = dimObj.AddComponent<Button>();
 
-            // Modal Container
+            // Modal Container (Kích thước chuẩn 960x560)
             GameObject modalObj = CreateUIElement("Modal_Container", root.transform);
             RectTransform modalRT = modalObj.GetComponent<RectTransform>();
             modalRT.anchorMin = new Vector2(0.5f, 0.5f);
@@ -62,12 +63,32 @@ namespace ProjectZombie.Editor.UI
             modalRT.pivot = new Vector2(0.5f, 0.5f);
             modalRT.anchoredPosition = Vector2.zero;
             modalRT.sizeDelta = new Vector2(960, 560);
-            var modalImg = modalObj.AddComponent<Image>();
-            modalImg.color = Color.white;
+
+            // Nền Gỗ Mun Đặc (Solid Dark Wood Background - 100% Opaque chống xuyên thấu)
+            GameObject bgObj = CreateUIElement("Background_Wood_Dark", modalObj.transform);
+            RectTransform bgRT = bgObj.GetComponent<RectTransform>();
+            SetStretchAnchor(bgRT);
+            bgRT.offsetMin = new Vector2(10, 10);
+            bgRT.offsetMax = new Vector2(-10, -10);
+            var bgImg = bgObj.AddComponent<Image>();
+            bgImg.color = new Color(0.12f, 0.08f, 0.07f, 0.98f);
+            if (cardTotem != null)
+            {
+                bgImg.sprite = cardTotem;
+                bgImg.type = Image.Type.Sliced;
+            }
+
+            // Khung Viền Rồng Vàng 4 Góc (Ornamental Dragon Frame)
+            GameObject borderObj = CreateUIElement("Frame_Border_Dragon", modalObj.transform);
+            RectTransform borderRT = borderObj.GetComponent<RectTransform>();
+            SetStretchAnchor(borderRT);
+            var borderImg = borderObj.AddComponent<Image>();
+            borderImg.color = Color.white;
+            borderImg.raycastTarget = false;
             if (modalFrame != null)
             {
-                modalImg.sprite = modalFrame;
-                modalImg.type = Image.Type.Sliced;
+                borderImg.sprite = modalFrame;
+                borderImg.type = Image.Type.Sliced;
             }
 
             // Header Bar
@@ -488,6 +509,9 @@ namespace ProjectZombie.Editor.UI
             // 3. Serialize Fields into PlayerStatsMenuUIView & PlayerInfoUIPresenter
             SerializedObject soView = new SerializedObject(view);
 
+            soView.FindProperty("_modalContainer").objectReferenceValue = modalRT;
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
             soView.FindProperty("_dimBackgroundButton").objectReferenceValue = dimBtn;
             soView.FindProperty("_closeButton").objectReferenceValue = closeBtn;
             soView.FindProperty("_titleText").objectReferenceValue = titleTxt;
@@ -525,12 +549,17 @@ namespace ProjectZombie.Editor.UI
             soPresenter.FindProperty("_statsMenuView").objectReferenceValue = view;
             soPresenter.ApplyModifiedProperties();
 
-            // Save Prefab
+            // Save Prefab to _Prefabs and Resources
             string prefabPath = $"{prefabFolder}/PlayerStatsMenuUI.prefab";
+            string resFolder = "Assets/Resources/UI";
+            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
+            string resPrefabPath = $"{resFolder}/PlayerStatsMenuUI.prefab";
+
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+            PrefabUtility.SaveAsPrefabAsset(root, resPrefabPath);
             GameObject.DestroyImmediate(root);
 
-            Debug.Log($"<color=#00FF88>[PlayerStatsMenuUIGenerator]</color> Đã sinh thành công Prefab tại {prefabPath}");
+            Debug.Log($"<color=#00FF88>[PlayerStatsMenuUIGenerator]</color> Đã sinh thành công Prefab tại {prefabPath} và {resPrefabPath}");
             return prefab;
         }
 
@@ -630,18 +659,42 @@ namespace ProjectZombie.Editor.UI
             GameObject prefab = GeneratePlayerStatsMenuPrefab();
             if (prefab == null) return;
 
-            Canvas mainCanvas = Object.FindAnyObjectByType<Canvas>();
+            Canvas[] allCanvases = Object.FindObjectsOfType<Canvas>(true);
+            Canvas mainCanvas = null;
+            Transform gameRoot = null;
+
+            foreach (var c in allCanvases)
+            {
+                if (c.name.Contains("Master") || c.name.Contains("Main") || c.name.Contains("Gameplay"))
+                {
+                    mainCanvas = c;
+                    break;
+                }
+            }
+            if (mainCanvas == null && allCanvases.Length > 0) mainCanvas = allCanvases[0];
             if (mainCanvas == null) return;
 
-            Transform gameRoot = mainCanvas.transform.Find("Canvas_Gameplay");
-            if (gameRoot == null) gameRoot = mainCanvas.transform;
-
-            Transform existingPanel = gameRoot.Find("Panel_PlayerStatsMenu");
-            if (existingPanel == null) existingPanel = mainCanvas.transform.Find("Panel_PlayerStatsMenu");
-
-            if (existingPanel != null)
+            // Tìm Canvas_Gameplay nếu có
+            foreach (var c in allCanvases)
             {
-                Object.DestroyImmediate(existingPanel.gameObject);
+                if (c.name == "Canvas_Gameplay")
+                {
+                    gameRoot = c.transform;
+                    break;
+                }
+            }
+            if (gameRoot == null)
+            {
+                Transform found = mainCanvas.transform.Find("Canvas_Gameplay");
+                if (found != null) gameRoot = found;
+                else gameRoot = mainCanvas.transform;
+            }
+
+            // Xóa triệt để TẤT CẢ các instance cũ của Panel_PlayerStatsMenu trong Scene
+            var oldPanels = Object.FindObjectsOfType<PlayerStatsMenuUIView>(true);
+            foreach (var oldP in oldPanels)
+            {
+                Object.DestroyImmediate(oldP.gameObject);
             }
 
             GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, gameRoot);
@@ -658,11 +711,11 @@ namespace ProjectZombie.Editor.UI
                 var pProp = soBoot.FindProperty("playerInfoUIPresenter");
                 if (pProp != null) pProp.objectReferenceValue = presenter;
                 soBoot.ApplyModifiedProperties();
+                EditorUtility.SetDirty(bootstrapper);
             }
 
             // Đảm bảo Modal_Settings có mặt trong Scene
-            Transform existingSettings = mainCanvas.transform.Find("Modal_Settings");
-            if (existingSettings == null && gameRoot != null) existingSettings = gameRoot.Find("Modal_Settings");
+            var existingSettings = Object.FindObjectOfType<SettingsModalPresenter>(true);
             if (existingSettings == null)
             {
                 var settingsPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/SettingsModalUI.prefab");
@@ -674,7 +727,7 @@ namespace ProjectZombie.Editor.UI
                 }
             }
 
-            EditorUtility.SetDirty(mainCanvas);
+            EditorUtility.SetDirty(mainCanvas.gameObject);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainCanvas.gameObject.scene);
 
             Debug.Log("<color=#00FF88>[PlayerStatsMenuUIGenerator]</color> ĐÃ DỰNG THÀNH CÔNG VÀ KẾT NỐI BẢNG THÔNG SỐ NHÂN VẬT 3 CỘT VÀO SCENE!");

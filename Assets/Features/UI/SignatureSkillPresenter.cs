@@ -148,7 +148,8 @@ namespace ProjectZombie.Features.UI
         {
             if (_skillManager == null || _buttonView == null) return;
 
-            bool canExecute = _skillManager.CanExecuteCurrentSkill() && _skillManager.RemainingCooldown <= 0f;
+            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
+            bool canExecute = !isEditMode && _skillManager.CanExecuteCurrentSkill() && _skillManager.RemainingCooldown <= 0f;
             _buttonView.SetInteractable(canExecute);
 
             float rem = _skillManager.RemainingCooldown;
@@ -163,7 +164,8 @@ namespace ProjectZombie.Features.UI
             string text = remaining > 0f ? $"{Mathf.CeilToInt(remaining)}s" : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
 
-            bool canExecute = _skillManager != null && _skillManager.CanExecuteCurrentSkill() && remaining <= 0f;
+            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
+            bool canExecute = !isEditMode && _skillManager != null && _skillManager.CanExecuteCurrentSkill() && remaining <= 0f;
             _buttonView.SetInteractable(canExecute);
         }
 
@@ -179,7 +181,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnButtonClicked()
         {
-            if (_skillManager == null) return;
+            if (_skillManager == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             if (!_skillManager.IsReady || _skillManager.RemainingCooldown > 0f)
             {

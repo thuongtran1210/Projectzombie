@@ -86,17 +86,19 @@ namespace ProjectZombie.Features.UI
         {
             gameObject.SetActive(true);
 
-            if (!gameObject.activeInHierarchy)
-            {
-                gameObject.SetActive(true);
-            }
-
             if (_screenCanvas != null) _screenCanvas.enabled = true;
 
             if (_screenCanvasGroup != null)
             {
+                _screenCanvasGroup.alpha = 1f;
                 _screenCanvasGroup.interactable = true;
                 _screenCanvasGroup.blocksRaycasts = true;
+            }
+
+            if (_modalContainer != null)
+            {
+                _modalContainer.gameObject.SetActive(true);
+                _modalContainer.localScale = Vector3.one;
             }
 
             if (gameObject.activeInHierarchy)
@@ -104,13 +106,6 @@ namespace ProjectZombie.Features.UI
                 if (_animCoroutine != null) StopCoroutine(_animCoroutine);
                 _animCoroutine = StartCoroutine(PlayOpenAnimationRoutine());
             }
-            else
-            {
-                if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = 1f;
-                if (_modalContainer != null) _modalContainer.localScale = Vector3.one;
-            }
-
-            Debug.Log($"[{GetType().Name}] -> Show() được gọi mượt mà!");
         }
 
         public virtual void Hide()
@@ -131,29 +126,26 @@ namespace ProjectZombie.Features.UI
                 if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = 0f;
                 if (_screenCanvas != null) _screenCanvas.enabled = false;
             }
-
-            Debug.Log($"[{GetType().Name}] -> Hide() được gọi mượt mà!");
         }
 
         /// <summary>
-        /// Hiệu ứng mở Modal mượt mà: Fade Alpha (0 -> 1) + Scale Pop-In (0.92 -> 1.0) trong 0.15s
+        /// Hiệu ứng mở Modal mượt mà: Fade Alpha (0.8 -> 1) + Scale Pop-In (0.95 -> 1.0) trong 0.12s
         /// </summary>
         protected virtual IEnumerator PlayOpenAnimationRoutine()
         {
-            float duration = 0.15f;
+            float duration = 0.12f;
             float elapsed = 0f;
 
-            if (_modalContainer != null) _modalContainer.localScale = new Vector3(0.92f, 0.92f, 1f);
-            if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = 0f;
+            if (_modalContainer != null) _modalContainer.localScale = new Vector3(0.95f, 0.95f, 1f);
 
             while (elapsed < duration)
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
-                float easeOut = Mathf.Sin(t * Mathf.PI * 0.5f); // Smooth Ease Out
+                float easeOut = Mathf.Sin(t * Mathf.PI * 0.5f);
 
-                if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = easeOut;
-                if (_modalContainer != null) _modalContainer.localScale = Vector3.Lerp(new Vector3(0.92f, 0.92f, 1f), Vector3.one, easeOut);
+                if (_screenCanvasGroup != null) _screenCanvasGroup.alpha = Mathf.Lerp(0.8f, 1f, easeOut);
+                if (_modalContainer != null) _modalContainer.localScale = Vector3.Lerp(new Vector3(0.95f, 0.95f, 1f), Vector3.one, easeOut);
 
                 yield return null;
             }

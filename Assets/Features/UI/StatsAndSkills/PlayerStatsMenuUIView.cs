@@ -12,6 +12,13 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
     public class PlayerStatsMenuUIView : MonoBehaviour
     {
         // ====================================================================
+        // [INSPECTOR] — Container & CanvasGroup
+        // ====================================================================
+        [Header("Container & Canvas")]
+        [SerializeField] private RectTransform _modalContainer;
+        [SerializeField] private CanvasGroup _canvasGroup;
+
+        // ====================================================================
         // [INSPECTOR] — Header & Navigation
         // ====================================================================
         [Header("Header & Navigation")]
@@ -69,6 +76,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void Awake()
         {
+            EnsureHierarchyAndComponents();
+
             // Đảm bảo Animator hoạt động khi Time.timeScale = 0
             var animator = GetComponent<Animator>();
             if (animator != null)
@@ -77,6 +86,63 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             }
 
             EnsureButtonsAndListeners();
+        }
+
+        private void OnEnable()
+        {
+            Show();
+        }
+
+        public void Show()
+        {
+            EnsureHierarchyAndComponents();
+
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = 1f;
+                _canvasGroup.interactable = true;
+                _canvasGroup.blocksRaycasts = true;
+            }
+
+            if (_modalContainer != null)
+            {
+                _modalContainer.gameObject.SetActive(true);
+                _modalContainer.localScale = Vector3.one;
+            }
+
+            EnsureButtonsAndListeners();
+        }
+
+        public void Hide()
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.interactable = false;
+                _canvasGroup.blocksRaycasts = false;
+            }
+            gameObject.SetActive(false);
+        }
+
+        private void EnsureHierarchyAndComponents()
+        {
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            if (_modalContainer == null)
+            {
+                Transform modal = transform.Find("Modal_Container");
+                if (modal == null)
+                {
+                    foreach (Transform child in transform)
+                    {
+                        string n = child.name.ToLower();
+                        if (n.Contains("modal") || n.Contains("container") || n.Contains("frame"))
+                        {
+                            modal = child;
+                            break;
+                        }
+                    }
+                }
+                if (modal != null) _modalContainer = modal.GetComponent<RectTransform>();
+            }
         }
 
         // ====================================================================

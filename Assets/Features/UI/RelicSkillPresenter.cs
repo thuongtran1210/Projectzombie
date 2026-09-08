@@ -178,7 +178,8 @@ namespace ProjectZombie.Features.UI
 
             float rem = _boundActiveRelic.RelicRemainingCooldown;
             float max = _boundActiveRelic.RelicMaxCooldown;
-            bool isReady = _boundActiveRelic.IsRelicSkillReady;
+            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
+            bool isReady = !isEditMode && _boundActiveRelic.IsRelicSkillReady;
             bool isRecast = _boundActiveRelic.IsInRecastWindow;
 
             _buttonView.SetInteractable(isReady);
@@ -207,7 +208,8 @@ namespace ProjectZombie.Features.UI
 
             string text = remaining > 0f ? RelicSkillButtonView.GetCachedCooldownText(remaining) : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
-            _buttonView.SetInteractable(remaining <= 0f);
+            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
+            _buttonView.SetInteractable(!isEditMode && remaining <= 0f);
         }
 
         private void HandleRelicSkillReady()
@@ -222,7 +224,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleButtonClicked()
         {
-            if (_weaponManager == null || _boundActiveRelic == null) return;
+            if (_weaponManager == null || _boundActiveRelic == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             if (!_boundActiveRelic.IsRelicSkillReady)
             {

@@ -136,6 +136,11 @@ namespace ProjectZombie.Features.UI
 
         private void Update()
         {
+            if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode)
+            {
+                return;
+            }
+
             if (_characterCombat == null && _weaponManager == null)
             {
                 TryBindCombat();
@@ -250,6 +255,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnAttackButtonPressed()
         {
+            if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             if (_characterCombat != null)
             {
                 if (!_characterCombat.TriggerAttack())
