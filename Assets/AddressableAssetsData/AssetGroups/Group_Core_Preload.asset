@@ -16,7 +16,17 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 26eb188e86fa62a49b3a5b8c1867121f
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 229d1d4561bf6f943bf922d7642df32d
+    m_Address: Collectibles_Atlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a9abe52fa65cdb44831fbe9256ada3a
+    m_Address: ExpGem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:
