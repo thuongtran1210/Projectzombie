@@ -144,6 +144,25 @@ namespace ProjectZombie.Editor.UI
             // 7. Wire Presenter
             SerializedObject soPresenter = new SerializedObject(presenter);
             soPresenter.FindProperty("_view").objectReferenceValue = view;
+
+            // Wire Sprites cho Android Runtime
+            soPresenter.FindProperty("_slotWoodSprite").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            soPresenter.FindProperty("_slotSelectedSprite").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+            soPresenter.FindProperty("_badgeEquippedSprite").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
+            soPresenter.FindProperty("_badgeElementKim").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+            soPresenter.FindProperty("_badgeElementMoc").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
+            soPresenter.FindProperty("_badgeElementThuy").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
+            soPresenter.FindProperty("_badgeElementHoa").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
+            soPresenter.FindProperty("_badgeElementTho").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
+
             soPresenter.ApplyModifiedProperties();
 
             // 8. Lưu Prefab

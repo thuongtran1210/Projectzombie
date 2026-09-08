@@ -48,6 +48,9 @@ namespace ProjectZombie.EditorTools
             // Tự động dựng lại Prefab Tùy Chỉnh Phím Ảo (Mobile Controls Customizer Overlay)
             ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI();
 
+            // Tự động dựng lại Prefab Tàng Bảo Các (Kho Pháp Bảo) chuẩn Sprite & Badges Android
+            ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
+
             // Tự động tối ưu và đồng bộ thứ tự Hierarchy cho UpgradeUI_Root
             UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
 

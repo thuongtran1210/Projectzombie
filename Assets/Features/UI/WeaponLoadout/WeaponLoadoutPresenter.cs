@@ -25,6 +25,16 @@ namespace ProjectZombie.Features.UI
         [Header("Weapon Database")]
         [SerializeField] private List<WeaponData> _allWeapons = new List<WeaponData>();
 
+        [Header("UI Sprites & Badges (Serialized for Android Runtime)")]
+        [SerializeField] private Sprite _slotWoodSprite;
+        [SerializeField] private Sprite _slotSelectedSprite;
+        [SerializeField] private Sprite _badgeEquippedSprite;
+        [SerializeField] private Sprite _badgeElementKim;
+        [SerializeField] private Sprite _badgeElementMoc;
+        [SerializeField] private Sprite _badgeElementThuy;
+        [SerializeField] private Sprite _badgeElementHoa;
+        [SerializeField] private Sprite _badgeElementTho;
+
         private CharacterEntry _currentHero;
         private WeaponData _selectedPrimary;
         private readonly List<WeaponData> _selectedRelics = new List<WeaponData>();
@@ -384,11 +394,11 @@ namespace ProjectZombie.Features.UI
             boxImg.type = Image.Type.Sliced;
             boxImg.raycastTarget = true;
             
-            Sprite slotWood = null;
-            Sprite slotSelected = null;
+            Sprite slotWood = _slotWoodSprite;
+            Sprite slotSelected = _slotSelectedSprite;
             #if UNITY_EDITOR
-            slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
-            slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+            if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
             #endif
 
             if (slotWood != null) boxImg.sprite = slotWood;
@@ -421,7 +431,7 @@ namespace ProjectZombie.Features.UI
             inRT.offsetMax = new Vector2(-4, -4);
 
             var inImg = innerObj.GetComponent<Image>();
-            inImg.color = new Color(0, 0, 0, 0); // Trong suốt vì đã có Slot_Inventory_Wood_9Slice lo nền
+            inImg.color = new Color(0.12f, 0.09f, 0.16f, 0.85f); // Nền sẫm chuẩn Cổ Phong để nổi bật Icon vũ khí
             inImg.raycastTarget = false;
 
             // Icon bên trong
@@ -450,17 +460,7 @@ namespace ProjectZombie.Features.UI
             // Badge Hệ Ngũ Hành ở góc trên trái (Kim, Mộc, Thủy, Hỏa, Thổ)
             if (!isLocked)
             {
-                Sprite elemBadgeSprite = null;
-#if UNITY_EDITOR
-                switch (weapon.elementType)
-                {
-                    case ElementType.Kim: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png"); break;
-                    case ElementType.Moc: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png"); break;
-                    case ElementType.Thuy: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png"); break;
-                    case ElementType.Hoa: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png"); break;
-                    case ElementType.Tho: elemBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png"); break;
-                }
-#endif
+                Sprite elemBadgeSprite = GetElementBadgeSprite(weapon.elementType);
                 if (elemBadgeSprite != null)
                 {
                     GameObject elemBadgeObj = new GameObject("Badge_Element", typeof(RectTransform), typeof(Image));
@@ -493,10 +493,12 @@ namespace ProjectZombie.Features.UI
                 badgeImg.color = Color.white;
                 badgeImg.preserveAspect = true;
                 badgeImg.raycastTarget = false;
+                
+                Sprite starSprite = _badgeEquippedSprite;
 #if UNITY_EDITOR
-                Sprite starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
-                if (starSprite != null) badgeImg.sprite = starSprite;
+                if (starSprite == null) starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
 #endif
+                if (starSprite != null) badgeImg.sprite = starSprite;
             }
 
             // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
@@ -558,6 +560,50 @@ namespace ProjectZombie.Features.UI
                 case ElementType.Hoa: return new Color(0.95f, 0.28f, 0.22f, 1f); // Đỏ Chu Sa
                 case ElementType.Tho: return new Color(0.65f, 0.48f, 0.32f, 1f); // Nâu Đất Đồng
                 default: return new Color(0.85f, 0.85f, 0.90f, 1f);
+            }
+        }
+
+        private Sprite GetElementBadgeSprite(ElementType element)
+        {
+            switch (element)
+            {
+                case ElementType.Kim:
+                    if (_badgeElementKim != null) return _badgeElementKim;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+#else
+                    return null;
+#endif
+                case ElementType.Moc:
+                    if (_badgeElementMoc != null) return _badgeElementMoc;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
+#else
+                    return null;
+#endif
+                case ElementType.Thuy:
+                    if (_badgeElementThuy != null) return _badgeElementThuy;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
+#else
+                    return null;
+#endif
+                case ElementType.Hoa:
+                    if (_badgeElementHoa != null) return _badgeElementHoa;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
+#else
+                    return null;
+#endif
+                case ElementType.Tho:
+                    if (_badgeElementTho != null) return _badgeElementTho;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
+#else
+                    return null;
+#endif
+                default:
+                    return null;
             }
         }
 
