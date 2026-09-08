@@ -19,7 +19,7 @@ MonoBehaviour:
       xu\u1EA5t hi\u1EC7n n\u1EC1n"
     timestampSeconds: 0
     eventType: 0
-    spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MAGIAP
     spawnPrefabRef:
       m_AssetGUID: e78d9a5a4396d0a43b442de8fa48afc7
@@ -33,7 +33,7 @@ MonoBehaviour:
       \xE1p s\xE1t"
     timestampSeconds: 60
     eventType: 0
-    spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MADA
     spawnPrefabRef:
       m_AssetGUID: 
@@ -46,7 +46,7 @@ MonoBehaviour:
   - eventName: "Ph\xFAt 02:00 - Ma Tr\u01A1i bay l\u01A1 l\u1EEDng ph\xF3ng ma h\u1ECFa"
     timestampSeconds: 120
     eventType: 0
-    spawnPrefab: {fileID: 4720196618505412990, guid: 40336bbe99d02974eb09b2c9201ef4c9, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MATROI
     spawnPrefabRef:
       m_AssetGUID: 
@@ -59,7 +59,7 @@ MonoBehaviour:
   - eventName: "Ph\xFAt 03:00 - B\u1EA7y Ma Da tr\xE0n l\xEAn bao v\xE2y (Burst Wave)"
     timestampSeconds: 180
     eventType: 1
-    spawnPrefab: {fileID: 1193935233806825299, guid: cc60aa0652631604ea95def9ce66ecce, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MADA
     spawnPrefabRef:
       m_AssetGUID: 
@@ -73,7 +73,7 @@ MonoBehaviour:
       t\u1EF1 n\u1ED5"
     timestampSeconds: 240
     eventType: 0
-    spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_HOALYTINH
     spawnPrefabRef:
       m_AssetGUID: 
@@ -86,7 +86,7 @@ MonoBehaviour:
   - eventName: "Ph\xFAt 05:00 - ELITE QU\u1EF6 NH\u1EACP TR\xC0NG XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 300
     eventType: 1
-    spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
       m_AssetGUID: 944cc003ebcffde4a8add0899773079a
@@ -100,7 +100,7 @@ MonoBehaviour:
       ch\u1EA1y tr\u1ED1n"
     timestampSeconds: 360
     eventType: 0
-    spawnPrefab: {fileID: 4338019940683393192, guid: 88a398719a324b91950e1fa41890e101, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MADOINO
     spawnPrefabRef:
       m_AssetGUID: 88a398719a324b91950e1fa41890e101
@@ -114,7 +114,7 @@ MonoBehaviour:
       Wave)"
     timestampSeconds: 480
     eventType: 1
-    spawnPrefab: {fileID: 509878819556777675, guid: cfbcec5a64e8e8e45b9fdf7888549503, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_HOALYTINH
     spawnPrefabRef:
       m_AssetGUID: cfbcec5a64e8e8e45b9fdf7888549503
@@ -128,7 +128,7 @@ MonoBehaviour:
       XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 600
     eventType: 3
-    spawnPrefab: {fileID: 6556722217386542342, guid: 193a344b7a316cd42b5e32fc47df8ba7, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: Boss_NguuDauMaDien
     spawnPrefabRef:
       m_AssetGUID: 193a344b7a316cd42b5e32fc47df8ba7
@@ -142,7 +142,7 @@ MonoBehaviour:
       Thi t\u1ED5ng l\u1EF1c"
     timestampSeconds: 720
     eventType: 0
-    spawnPrefab: {fileID: 4942488841039399808, guid: 944cc003ebcffde4a8add0899773079a, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_QUYNHAPTRANG
     spawnPrefabRef:
       m_AssetGUID: 
@@ -156,7 +156,7 @@ MonoBehaviour:
       (Multi-Burst Wave)"
     timestampSeconds: 900
     eventType: 1
-    spawnPrefab: {fileID: 5431972333897014678, guid: e78d9a5a4396d0a43b442de8fa48afc7, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: E_MAGIAP
     spawnPrefabRef:
       m_AssetGUID: 
@@ -169,7 +169,7 @@ MonoBehaviour:
   - eventName: "Ph\xFAt 20:00 - FINAL BOSS DI\xCAM V\u01AF\u01A0NG GI\xC1NG L\xC2M"
     timestampSeconds: 1200
     eventType: 3
-    spawnPrefab: {fileID: 1348244042159176007, guid: bb55896b976f62a4cb0393430a4d8e0f, type: 3}
+    spawnPrefab: {fileID: 0}
     enemyAddress: Boss_DiemVuong
     spawnPrefabRef:
       m_AssetGUID: 
