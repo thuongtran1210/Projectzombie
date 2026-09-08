@@ -54,6 +54,11 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private void OnDisable()
+        {
+            InterruptAttack();
+        }
+
         public override void InterruptAttack()
         {
             _isAttacking = false;

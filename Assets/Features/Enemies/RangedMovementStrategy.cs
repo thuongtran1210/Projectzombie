@@ -105,15 +105,18 @@ namespace ProjectZombie.Features.Enemies
         public override bool IsInAttackRange(float distanceToPlayer)
         {
             if (_enemy == null || _enemy.Config == null) return false;
-            // Cho phép bắn khi xa hơn minDistance và nằm trong attackRange tổng thể
-            return distanceToPlayer >= _enemy.Config.minDistance && distanceToPlayer <= _enemy.Config.AttackRange;
+            // Cho phép bắn khi xa hơn minDistance và nằm trong khoảng preferredDistance đến attackRange
+            // Ngưỡng vào AttackState được giới hạn tối ưu quanh preferredDistance + dung sai 0.8m để quái chủ động tiến lại gần thay vì đứng xa chôn chân
+            float maxEffectiveEntryRange = Mathf.Min(_enemy.Config.AttackRange, _enemy.Config.preferredDistance + 0.8f);
+            return distanceToPlayer >= _enemy.Config.minDistance && distanceToPlayer <= maxEffectiveEntryRange;
         }
 
         public override bool ShouldReposition(float distanceToPlayer)
         {
             if (_enemy == null || _enemy.Config == null) return false;
-            // Chỉ bắt buộc Reposition khi Player áp sát quá gần (< minDistance) hoặc chạy khỏi tầm bắn
-            return distanceToPlayer < _enemy.Config.minDistance || distanceToPlayer > _enemy.Config.AttackRange;
+            // Reposition khi Player áp sát quá gần (< minDistance) hoặc đã rời khỏi cự ly tối ưu (> preferredDistance + 0.8m)
+            float maxEffectiveRange = Mathf.Min(_enemy.Config.AttackRange, _enemy.Config.preferredDistance + 0.8f);
+            return distanceToPlayer < _enemy.Config.minDistance || distanceToPlayer > maxEffectiveRange;
         }
     }
 }

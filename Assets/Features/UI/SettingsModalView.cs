@@ -144,19 +144,19 @@ namespace ProjectZombie.Features.UI
         {
             if (_bgmSlider != null)
             {
-                _bgmSlider.value = bgmVol;
+                _bgmSlider.SetValueWithoutNotify(bgmVol);
                 UpdateBGMValueText(bgmVol);
             }
 
             if (_sfxSlider != null)
             {
-                _sfxSlider.value = sfxVol;
+                _sfxSlider.SetValueWithoutNotify(sfxVol);
                 UpdateSFXValueText(sfxVol);
             }
 
-            if (_screenShakeToggle != null) _screenShakeToggle.isOn = screenShake;
-            if (_damageNumbersToggle != null) _damageNumbersToggle.isOn = damageNumbers;
-            if (_fps60Toggle != null) _fps60Toggle.isOn = fps60;
+            if (_screenShakeToggle != null) _screenShakeToggle.SetIsOnWithoutNotify(screenShake);
+            if (_damageNumbersToggle != null) _damageNumbersToggle.SetIsOnWithoutNotify(damageNumbers);
+            if (_fps60Toggle != null) _fps60Toggle.SetIsOnWithoutNotify(fps60);
         }
 
         private void UpdateBGMValueText(float val)

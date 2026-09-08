@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eee2d3d04afdce409c28f27f84a36ad, type: 3}
   m_Name: E_MADA_MaDa
   m_EditorClassIdentifier: 
-  moveSpeed: 2
-  preferredDistance: 5
-  minDistance: 3
+  moveSpeed: 2.2
+  preferredDistance: 4.5
+  minDistance: 2.5
   maxHealth: 35
   damageToPlayer: 5
   attackCooldown: 2
-  attackRange: 7
+  attackRange: 5.5
   expReward: 50
   tier: 0
   elementType: 3

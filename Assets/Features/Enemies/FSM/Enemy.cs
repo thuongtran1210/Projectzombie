@@ -150,6 +150,12 @@ namespace ProjectZombie.Features.Enemies
 
         public void OnSpawn()
         {
+            // Reset trạng thái tấn công cũ nếu có
+            if (Attacker != null)
+            {
+                Attacker.InterruptAttack();
+            }
+
             // Reset kích thước và màu sắc mặc định khi lấy ra từ Object Pool
             if (InitialLocalScale.sqrMagnitude > 0.001f)
             {
@@ -191,6 +197,11 @@ namespace ProjectZombie.Features.Enemies
 
         public void OnDespawn()
         {
+            if (Attacker != null)
+            {
+                Attacker.InterruptAttack();
+            }
+
             // Hủy các hiệu ứng trạng thái còn vướng lại
             StatusController?.ClearAllEffects();
         }

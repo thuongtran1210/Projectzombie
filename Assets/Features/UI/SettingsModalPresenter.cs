@@ -11,9 +11,30 @@ namespace ProjectZombie.Features.UI
     {
         [SerializeField] private SettingsModalView _view;
 
-        private const string PREF_SCREEN_SHAKE = "Setting_ScreenShake";
-        private const string PREF_DAMAGE_NUMBERS = "Setting_DamageNumbers";
-        private const string PREF_TARGET_60FPS = "Setting_Target60FPS";
+        public const string PREF_SCREEN_SHAKE = "Setting_ScreenShake";
+        public const string PREF_DAMAGE_NUMBERS = "Setting_DamageNumbers";
+        public const string PREF_TARGET_60FPS = "Setting_Target60FPS";
+
+        public static bool IsScreenShakeEnabled => PlayerPrefs.GetInt(PREF_SCREEN_SHAKE, 1) == 1;
+        public static bool IsDamageNumbersEnabled => PlayerPrefs.GetInt(PREF_DAMAGE_NUMBERS, 1) == 1;
+        public static bool Is60FPSEnabled => PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void ApplyGlobalSettingsOnBoot()
+        {
+            bool fps60 = PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = fps60 ? 60 : 30;
+
+            float bgm = PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f);
+            float sfx = PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f);
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.SetBGMVolume(bgm, false);
+                AudioManager.Instance.SetSFXVolume(sfx, false);
+            }
+        }
 
         private void Awake()
         {
@@ -124,6 +145,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Áp dụng FPS
+            QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = fps60 ? 60 : 30;
         }
 
@@ -170,6 +192,7 @@ namespace ProjectZombie.Features.UI
         {
             PlayerPrefs.SetInt(PREF_TARGET_60FPS, isOn ? 1 : 0);
             PlayerPrefs.Save();
+            QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = isOn ? 60 : 30;
         }
 
