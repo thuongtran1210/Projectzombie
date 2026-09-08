@@ -38,18 +38,32 @@ namespace ProjectZombie.Features.UI
         protected override void Awake()
         {
             base.Awake();
+            EnsureComponentsAndEvents();
+        }
 
-            if (_screenCanvasGroup != null)
+        public void EnsureComponentsAndEvents()
+        {
+            if (_screenCanvasGroup == null) _screenCanvasGroup = GetComponent<CanvasGroup>();
+            if (_screenCanvas == null) _screenCanvas = GetComponent<Canvas>();
+
+            if (_modalContainer == null)
             {
-                _screenCanvasGroup.alpha = 0f;
-                _screenCanvasGroup.interactable = false;
-                _screenCanvasGroup.blocksRaycasts = false;
+                foreach (Transform child in transform)
+                {
+                    string cn = child.name.ToLower();
+                    if (cn.Contains("frame") || cn.Contains("modal") || cn.Contains("content") || cn.Contains("container"))
+                    {
+                        _modalContainer = child.GetComponent<RectTransform>();
+                        break;
+                    }
+                }
             }
 
-            // Auto-detect missing references
+            // Auto-detect missing slider references
             if (_bgmSlider == null || _sfxSlider == null)
             {
-                foreach (var slider in GetComponentsInChildren<Slider>(true))
+                var allSliders = GetComponentsInChildren<Slider>(true);
+                foreach (var slider in allSliders)
                 {
                     string nameLower = slider.name.ToLower();
                     if (_bgmSlider == null && (nameLower.Contains("bgm") || nameLower.Contains("music") || nameLower.Contains("nhac")))
@@ -57,11 +71,15 @@ namespace ProjectZombie.Features.UI
                     else if (_sfxSlider == null && (nameLower.Contains("sfx") || nameLower.Contains("sound") || nameLower.Contains("hieuung")))
                         _sfxSlider = slider;
                 }
+                if (_bgmSlider == null && allSliders.Length > 0) _bgmSlider = allSliders[0];
+                if (_sfxSlider == null && allSliders.Length > 1) _sfxSlider = allSliders[1];
             }
 
+            // Auto-detect toggles
             if (_screenShakeToggle == null || _damageNumbersToggle == null || _fps60Toggle == null)
             {
-                foreach (var toggle in GetComponentsInChildren<Toggle>(true))
+                var allToggles = GetComponentsInChildren<Toggle>(true);
+                foreach (var toggle in allToggles)
                 {
                     string nameLower = toggle.name.ToLower();
                     if (_screenShakeToggle == null && (nameLower.Contains("shake") || nameLower.Contains("rung")))
@@ -71,8 +89,12 @@ namespace ProjectZombie.Features.UI
                     else if (_fps60Toggle == null && (nameLower.Contains("fps") || nameLower.Contains("60fps") || nameLower.Contains("muot")))
                         _fps60Toggle = toggle;
                 }
+                if (_screenShakeToggle == null && allToggles.Length > 0) _screenShakeToggle = allToggles[0];
+                if (_damageNumbersToggle == null && allToggles.Length > 1) _damageNumbersToggle = allToggles[1];
+                if (_fps60Toggle == null && allToggles.Length > 2) _fps60Toggle = allToggles[2];
             }
 
+            // Auto-detect buttons
             if (_closeButton == null || _overlayCloseButton == null)
             {
                 foreach (var btn in GetComponentsInChildren<Button>(true))
@@ -142,6 +164,8 @@ namespace ProjectZombie.Features.UI
 
         public void InitializeSettings(float bgmVol, float sfxVol, bool screenShake, bool damageNumbers, bool fps60)
         {
+            EnsureComponentsAndEvents();
+
             if (_bgmSlider != null)
             {
                 _bgmSlider.SetValueWithoutNotify(bgmVol);
@@ -171,20 +195,7 @@ namespace ProjectZombie.Features.UI
 
         public override void Show()
         {
-            if (_screenCanvasGroup == null) _screenCanvasGroup = GetComponent<CanvasGroup>();
-            if (_modalContainer == null)
-            {
-                foreach (Transform child in transform)
-                {
-                    string cn = child.name.ToLower();
-                    if (cn.Contains("frame") || cn.Contains("modal") || cn.Contains("content") || cn.Contains("container"))
-                    {
-                        _modalContainer = child.GetComponent<RectTransform>();
-                        break;
-                    }
-                }
-            }
-
+            EnsureComponentsAndEvents();
             gameObject.SetActive(true);
 
             if (_screenCanvasGroup != null)
@@ -196,6 +207,7 @@ namespace ProjectZombie.Features.UI
 
             if (_modalContainer != null)
             {
+                _modalContainer.gameObject.SetActive(true);
                 _modalContainer.localScale = Vector3.one;
             }
 

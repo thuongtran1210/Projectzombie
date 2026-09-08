@@ -72,20 +72,12 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private bool _isOpen;
+
         private void Start()
         {
+            EnsureViewAndEvents();
             LoadAndApplyInitialSettings();
-
-            // Đảm bảo modal không hiện khi vừa nạp Scene nếu không có MetaUIManager đang mở
-            var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>() ?? FindObjectOfType<MetaUIManager>(true);
-            if (metaManager == null)
-            {
-                if (_view != null)
-                {
-                    _view.Hide();
-                }
-                gameObject.SetActive(false);
-            }
         }
 
         private void OnDestroy()
