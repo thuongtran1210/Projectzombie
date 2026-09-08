@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectZombie.Features.UI
@@ -5,6 +6,7 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Sân khấu độc lập render nhân vật thời gian thực qua Camera con và RenderTexture,
     /// cho phép phát Animation Attack / Idle / Cast trực tiếp lên UI (RawImage).
+    /// Tối ưu 60 FPS không khựng, tự động chuyển đổi mượt mà giữa Chu kỳ Tấn công và Thở Đứng Yên (Idle).
     /// </summary>
     public class CharacterPreviewStage : MonoBehaviour
     {
@@ -19,11 +21,17 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private string _primaryAnimState = "Attack";
         [SerializeField] private string _idleAnimState = "Idle";
         [SerializeField] private bool _loopAttack = true;
-        [SerializeField] private float _attackInterval = 2.5f;
+        [SerializeField] private float _attackInterval = 3.2f;
+
+        [Header("Chibi Game Feel")]
+        [SerializeField] private bool _enableBreathingFloat = true;
+        [SerializeField] private float _breathingSpeed = 3.0f;
+        [SerializeField] private float _breathingAmount = 0.035f;
 
         private GameObject _currentModelInstance;
         private Animator _currentAnimator;
         private float _timer;
+        private bool _isPlayingAttack = false;
 
         public RenderTexture PreviewTexture => _renderTexture;
 
@@ -46,7 +54,7 @@ namespace ProjectZombie.Features.UI
                 _renderTexture = new RenderTexture(512, 512, 16, RenderTextureFormat.ARGB32)
                 {
                     name = "RT_CharacterPreview",
-                    antiAliasing = 2,
+                    antiAliasing = 4,
                     filterMode = FilterMode.Bilinear,
                     useMipMap = false
                 };
@@ -60,7 +68,7 @@ namespace ProjectZombie.Features.UI
                 {
                     GameObject camObj = new GameObject("Camera_Preview");
                     camObj.transform.SetParent(transform, false);
-                    camObj.transform.localPosition = new Vector3(0, 0.8f, -10f);
+                    camObj.transform.localPosition = new Vector3(0, 0.45f, -10f);
                     _previewCamera = camObj.AddComponent<Camera>();
                 }
             }
@@ -68,7 +76,7 @@ namespace ProjectZombie.Features.UI
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _previewCamera.backgroundColor = new Color(0, 0, 0, 0); // Nền trong suốt 100%
             _previewCamera.orthographic = true;
-            _previewCamera.orthographicSize = 1.6f;
+            _previewCamera.orthographicSize = 1.45f;
             _previewCamera.nearClipPlane = 0.1f;
             _previewCamera.farClipPlane = 50f;
             _previewCamera.targetTexture = _renderTexture;
@@ -89,6 +97,8 @@ namespace ProjectZombie.Features.UI
                 }
             }
         }
+
+        private float _currentAttackDuration = 0.5f;
 
         public void DisplayCharacter(GameObject characterPrefab, string targetAnimation = null)
         {
@@ -121,40 +131,112 @@ namespace ProjectZombie.Features.UI
 
             if (_currentAnimator != null)
             {
+                // Luôn cập nhật Animator không phụ thuộc vào Main Camera hay Time.timeScale
                 _currentAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+                _currentAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                _currentAnimator.applyRootMotion = false;
+
+                // Tính thời lượng thực của clip Attack để transition mượt mà
+                CalculateAttackDuration();
+
                 string animToPlay = !string.IsNullOrEmpty(targetAnimation) ? targetAnimation : _idleAnimState;
-                PlayAnimation(animToPlay);
+                if (_currentAnimator.runtimeAnimatorController != null && _currentAnimator.isActiveAndEnabled)
+                {
+                    if (animToPlay.ToLower().Contains("attack"))
+                    {
+                        PlayAttackAnimation();
+                    }
+                    else
+                    {
+                        PlayIdleAnimation();
+                    }
+                }
+            }
+        }
+
+        private void CalculateAttackDuration()
+        {
+            _currentAttackDuration = 0.45f;
+            if (_currentAnimator != null && _currentAnimator.runtimeAnimatorController != null)
+            {
+                var clips = _currentAnimator.runtimeAnimatorController.animationClips;
+                if (clips != null)
+                {
+                    foreach (var clip in clips)
+                    {
+                        if (clip != null && clip.name.ToLower().Contains("attack"))
+                        {
+                            _currentAttackDuration = Mathf.Max(0.25f, clip.length);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         public void PlayIdleAnimation()
         {
-            PlayAnimation(_idleAnimState);
+            _isPlayingAttack = false;
+            _timer = 0f;
+            PlayState(_idleAnimState);
         }
 
-        public void PlayAnimation(string stateName)
+        public void PlayAttackAnimation()
         {
-            if (_currentAnimator == null || string.IsNullOrEmpty(stateName)) return;
+            _isPlayingAttack = true;
+            _timer = 0f;
+            PlayState(_primaryAnimState);
+        }
 
-            if (_currentAnimator.HasState(0, Animator.StringToHash(stateName)))
+        private void PlayState(string stateName)
+        {
+            if (_currentAnimator == null || !_currentAnimator.isActiveAndEnabled || _currentAnimator.runtimeAnimatorController == null || string.IsNullOrEmpty(stateName)) return;
+
+            int stateHash = Animator.StringToHash(stateName);
+            if (_currentAnimator.HasState(0, stateHash))
             {
-                _currentAnimator.Play(stateName, 0, 0f);
+                _currentAnimator.Play(stateHash, 0, 0f);
+                _currentAnimator.Update(0f);
             }
-            else if (_currentAnimator.HasState(0, Animator.StringToHash("Attack_1")))
+            else if (stateName == _primaryAnimState && _currentAnimator.HasState(0, Animator.StringToHash("Attack_1")))
             {
                 _currentAnimator.Play("Attack_1", 0, 0f);
+                _currentAnimator.Update(0f);
+            }
+            else if (stateName == _idleAnimState && _currentAnimator.HasState(0, Animator.StringToHash("Default")))
+            {
+                _currentAnimator.Play("Default", 0, 0f);
+                _currentAnimator.Update(0f);
             }
         }
 
         private void Update()
         {
-            if (_loopAttack && _currentAnimator != null)
+            // 1. Nhấp nhô thở Chibi tự nhiên tạo cảm giác nhân vật sống động
+            if (_enableBreathingFloat && _modelSpawnPoint != null)
+            {
+                float floatY = Mathf.Sin(Time.unscaledTime * _breathingSpeed) * _breathingAmount;
+                _modelSpawnPoint.localPosition = new Vector3(0f, floatY, 0f);
+            }
+
+            if (_currentAnimator == null) return;
+
+            // 2. Quản lý chuyển động mượt mà giữa Attack và Idle dựa theo thời gian thực (UnscaledTime)
+            if (_isPlayingAttack)
+            {
+                _timer += Time.unscaledDeltaTime;
+                // Khi thời gian đánh kết thúc chuẩn theo độ dài clip animation -> chuyển sang Idle mượt mà
+                if (_timer >= _currentAttackDuration)
+                {
+                    PlayIdleAnimation();
+                }
+            }
+            else if (_loopAttack)
             {
                 _timer += Time.unscaledDeltaTime;
                 if (_timer >= _attackInterval)
                 {
-                    _timer = 0f;
-                    PlayAnimation(_primaryAnimState);
+                    PlayAttackAnimation();
                 }
             }
         }
@@ -178,17 +260,20 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // Đảm bảo SpriteRenderer và Animator con luôn bật
+            // Đảm bảo SpriteRenderer và Animator con luôn bật và render đẹp
             var renderers = root.GetComponentsInChildren<SpriteRenderer>(true);
             foreach (var r in renderers)
             {
                 r.enabled = true;
+                r.sortingOrder = 1;
             }
 
             var animators = root.GetComponentsInChildren<Animator>(true);
             foreach (var a in animators)
             {
                 a.enabled = true;
+                a.updateMode = AnimatorUpdateMode.UnscaledTime;
+                a.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             }
         }
 
@@ -201,6 +286,7 @@ namespace ProjectZombie.Features.UI
                 _currentAnimator = null;
             }
             _timer = 0f;
+            _isPlayingAttack = false;
         }
 
         private void OnDestroy()
