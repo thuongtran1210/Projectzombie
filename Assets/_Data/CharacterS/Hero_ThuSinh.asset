@@ -16,7 +16,7 @@ MonoBehaviour:
   characterName: "Th\u01B0 Sinh"
   element: 1
   elementHexColor: '#FFD700'
-  avatar: {fileID: 0}
+  avatar: {fileID: 2100000000, guid: 2100000000000000a0b77823fca88d01, type: 3}
   playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
   description: "\u0110\u01B0\u1EE3c anh linh li\u1EC7t t\u1ED5 & \u0110\u1EE9c Th\xE1nh
     Tr\u1EA7n \u0111i\u1EC3m h\xF3a. Tay c\u1EA7m b\xFAt l\u1EC7nh kh\xED thi\xEAng

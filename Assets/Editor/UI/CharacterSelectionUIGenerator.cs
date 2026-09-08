@@ -136,7 +136,7 @@ namespace ProjectZombie.Editor.UI
             pedRT.anchorMax = new Vector2(0.5f, 0.5f);
             pedRT.pivot = new Vector2(0.5f, 0.5f);
             pedRT.anchoredPosition = new Vector2(0, -65);
-            pedRT.sizeDelta = new Vector2(290, 85);
+            pedRT.sizeDelta = new Vector2(300, 180);
             var pedImg = pedestalObj.AddComponent<Image>();
             pedImg.color = Color.white;
             if (pedestalSprite != null) pedImg.sprite = pedestalSprite;
@@ -154,29 +154,18 @@ namespace ProjectZombie.Editor.UI
             ofImg.color = Color.white;
             if (totemFrame != null) ofImg.sprite = totemFrame;
 
-            // 1. RawImage nhận RenderTexture Animation thời gian thực
+            // 1. RawImage nhận RenderTexture Animation thời gian thực (Toàn khung 240x240)
             GameObject rawPreviewObj = CreateUIElement("CharacterPreview_RT", orbFrame.transform);
             RectTransform rawPreviewRT = rawPreviewObj.GetComponent<RectTransform>();
             rawPreviewRT.anchorMin = new Vector2(0.5f, 0.5f);
             rawPreviewRT.anchorMax = new Vector2(0.5f, 0.5f);
             rawPreviewRT.pivot = new Vector2(0.5f, 0.45f);
-            rawPreviewRT.sizeDelta = new Vector2(210, 210);
+            rawPreviewRT.sizeDelta = new Vector2(240, 240);
             rawPreviewRT.anchoredPosition = Vector2.zero;
             var rawPreviewImg = rawPreviewObj.AddComponent<RawImage>();
             rawPreviewImg.color = Color.white;
-            rawPreviewImg.enabled = false;
+            rawPreviewImg.enabled = true;
             rawPreviewImg.raycastTarget = false;
-
-            // 2. Avatar Sprite Display (Fallback)
-            GameObject avatarImgObj = CreateUIElement("CharacterAvatarImage", orbFrame.transform);
-            RectTransform avatarRT = avatarImgObj.GetComponent<RectTransform>();
-            avatarRT.anchorMin = new Vector2(0.5f, 0.5f);
-            avatarRT.anchorMax = new Vector2(0.5f, 0.5f);
-            avatarRT.pivot = new Vector2(0.5f, 0.45f);
-            avatarRT.sizeDelta = new Vector2(170, 170);
-            avatarRT.anchoredPosition = Vector2.zero;
-            var avatarImg = avatarImgObj.AddComponent<Image>();
-            avatarImg.preserveAspect = true;
 
             // Cặp Nút Chuyển Tướng Gỗ (< và >)
             GameObject prevBtnObj = CreateButton("Btn_Prev", leftCol.transform, new Vector2(-155, 60), new Vector2(52, 52), "<", vietFont);
@@ -554,7 +543,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_descriptionText").objectReferenceValue = descTMP;
             soView.FindProperty("_signatureSkillText").objectReferenceValue = stTMP;
             soView.FindProperty("_passiveTraitText").objectReferenceValue = ptTMP;
-            soView.FindProperty("_characterAvatarImage").objectReferenceValue = avatarImg;
+            soView.FindProperty("_characterAvatarImage").objectReferenceValue = null;
             soView.FindProperty("_characterPreviewRawImage").objectReferenceValue = rawPreviewImg;
 
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
@@ -620,6 +609,26 @@ namespace ProjectZombie.Editor.UI
                 prefabsProp.GetArrayElementAtIndex(3).objectReferenceValue = pAnSi;
             }
             soPresenter.ApplyModifiedProperties();
+
+            // Khởi tạo và gắn Preview Texture cho Thư Sinh ngay lập tức trong Editor
+            var previewStage = Object.FindAnyObjectByType<CharacterPreviewStage>();
+            if (previewStage == null)
+            {
+                GameObject stageObj = new GameObject("CharacterPreviewStage");
+                stageObj.transform.position = new Vector3(2000f, 2000f, 0f);
+                previewStage = stageObj.AddComponent<CharacterPreviewStage>();
+            }
+
+            if (previewStage != null)
+            {
+                if (pThuSinh != null) previewStage.DisplayCharacter(pThuSinh, "Attack");
+                if (previewStage.PreviewTexture != null)
+                {
+                    rawPreviewImg.texture = previewStage.PreviewTexture;
+                    rawPreviewImg.enabled = true;
+                    rawPreviewImg.gameObject.SetActive(true);
+                }
+            }
 
             // 9. Save as Prefab
             string prefabPath = $"{prefabFolder}/CharacterSelectionUI.prefab";

@@ -174,14 +174,15 @@ namespace ProjectZombie.EditorTools
                 RectTransform pRect = pedestalTrans.GetComponent<RectTransform>();
                 if (pRect != null)
                 {
-                    pRect.sizeDelta = new Vector2(256, 138);
-                    pRect.anchoredPosition = new Vector2(0, -40);
+                    pRect.sizeDelta = new Vector2(320, 190);
+                    pRect.anchoredPosition = new Vector2(0, -45);
                 }
 
                 Image pImg = pedestalTrans.GetComponent<Image>();
                 if (pImg != null)
                 {
                     pImg.sprite = pedestalHex;
+                    pImg.preserveAspect = true;
                     pImg.color = Color.white;
                 }
             }

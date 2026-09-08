@@ -293,6 +293,22 @@ namespace ProjectZombie.Features.UI
                 currentPrefab = _characterDatabase.Characters[_currentIndex].playerPrefab;
             }
 
+            #if UNITY_EDITOR
+            if (currentPrefab == null)
+            {
+                string[] paths = new string[] {
+                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab",
+                    "Assets/_Prefabs/Characters/Players/Dao Si.prefab",
+                    "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab",
+                    "Assets/_Prefabs/Characters/Players/An Si.prefab"
+                };
+                if (_currentIndex >= 0 && _currentIndex < paths.Length)
+                {
+                    currentPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(paths[_currentIndex]);
+                }
+            }
+            #endif
+
             if (currentPrefab != null)
             {
                 if (CharacterPreviewStage.Instance == null)

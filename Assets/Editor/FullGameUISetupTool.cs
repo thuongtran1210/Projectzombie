@@ -68,6 +68,11 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubUI();
             }
 
+            if (GUILayout.Button("🧙 Cập Nhật Màn Hình Chọn Tướng (Character Selection UI)", GUILayout.Height(30)))
+            {
+                ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
+            }
+
             EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("2. THIẾT LẬP TOÀN DIỆN (FULL 1-CLICK)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("Chỉ bấm nút này khi bạn muốn khởi tạo mới lại toàn bộ Canvas từ đầu.", MessageType.Warning);
@@ -502,191 +507,8 @@ namespace ProjectZombie.EditorTools
 
         private static void BuildCharacterSelectHierarchy(Transform root)
         {
-            var view = root.GetComponent<CharacterSelectionView>();
-            var presenter = root.GetComponent<CharacterSelectionPresenter>();
-            var so = new SerializedObject(view);
-
-            // Nền tối
-            Image bg = root.GetComponent<Image>();
-            if (bg == null) bg = root.gameObject.AddComponent<Image>();
-            bg.color = new Color(0.08f, 0.08f, 0.12f, 0.95f);
-
-            // 1. Tên nhân vật
-            Transform nameTrans = root.Find("Txt_HeroName");
-            if (nameTrans == null)
-            {
-                var obj = new GameObject("Txt_HeroName", typeof(RectTransform), typeof(TextMeshProUGUI));
-                obj.transform.SetParent(root, false);
-                nameTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 1f);
-                rect.anchorMax = new Vector2(0.5f, 1f);
-                rect.pivot = new Vector2(0.5f, 1f);
-                rect.anchoredPosition = new Vector2(0, -60);
-                rect.sizeDelta = new Vector2(500, 70);
-                var tmp = obj.GetComponent<TextMeshProUGUI>();
-                tmp.fontSize = 42;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.text = "THƯ SINH";
-            }
-            so.FindProperty("_characterNameText").objectReferenceValue = nameTrans.GetComponent<TextMeshProUGUI>();
-
-            // 2. Avatar
-            Transform avatarTrans = root.Find("Img_Avatar");
-            if (avatarTrans == null)
-            {
-                var obj = new GameObject("Img_Avatar", typeof(RectTransform), typeof(Image));
-                obj.transform.SetParent(root, false);
-                avatarTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(0, 50);
-                rect.sizeDelta = new Vector2(260, 260);
-            }
-            so.FindProperty("_characterAvatarImage").objectReferenceValue = avatarTrans.GetComponent<Image>();
-
-            // 3. Hệ Ngũ Hành
-            Transform elemTrans = root.Find("Txt_Element");
-            if (elemTrans == null)
-            {
-                var obj = new GameObject("Txt_Element", typeof(RectTransform), typeof(TextMeshProUGUI));
-                obj.transform.SetParent(root, false);
-                elemTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(0, -110);
-                rect.sizeDelta = new Vector2(400, 50);
-                var tmp = obj.GetComponent<TextMeshProUGUI>();
-                tmp.fontSize = 28;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.text = "<color=#E8C468>HỆ KIM</color>";
-            }
-            else
-            {
-                var tmp = elemTrans.GetComponent<TextMeshProUGUI>();
-                if (tmp != null) tmp.text = "<color=#E8C468>HỆ KIM</color>";
-            }
-            so.FindProperty("_elementText").objectReferenceValue = elemTrans.GetComponent<TextMeshProUGUI>();
-
-            // 4. Nút Chọn (Nút Xanh Ngọc Bích 9-Slice)
-            Transform selectBtnTrans = root.Find("Btn_SelectHero");
-            if (selectBtnTrans == null)
-            {
-                var obj = new GameObject("Btn_SelectHero", typeof(RectTransform), typeof(Image), typeof(Button));
-                obj.transform.SetParent(root, false);
-                selectBtnTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(0, 100);
-                rect.sizeDelta = new Vector2(280, 65);
-                var img = obj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_JadeGreen.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
-                txtObj.transform.SetParent(obj.transform, false);
-                StretchRect(txtObj.GetComponent<RectTransform>());
-                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "CHỌN ANH HÙNG";
-                tmp.fontSize = 24;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = Color.white;
-            }
-            so.FindProperty("_selectButton").objectReferenceValue = selectBtnTrans.GetComponent<Button>();
-
-            // 5. Nút Prev & Next
-            Transform prevBtnTrans = root.Find("Btn_Prev");
-            if (prevBtnTrans == null)
-            {
-                var obj = new GameObject("Btn_Prev", typeof(RectTransform), typeof(Image), typeof(Button));
-                obj.transform.SetParent(root, false);
-                prevBtnTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(-220, 50);
-                rect.sizeDelta = new Vector2(70, 90);
-                var img = obj.GetComponent<Image>();
-                img.color = new Color(0.3f, 0.3f, 0.4f, 0.9f);
-            }
-            so.FindProperty("_prevButton").objectReferenceValue = prevBtnTrans.GetComponent<Button>();
-
-            Transform nextBtnTrans = root.Find("Btn_Next");
-            if (nextBtnTrans == null)
-            {
-                var obj = new GameObject("Btn_Next", typeof(RectTransform), typeof(Image), typeof(Button));
-                obj.transform.SetParent(root, false);
-                nextBtnTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = new Vector2(220, 50);
-                rect.sizeDelta = new Vector2(70, 90);
-                var img = obj.GetComponent<Image>();
-                img.color = new Color(0.3f, 0.3f, 0.4f, 0.9f);
-            }
-            so.FindProperty("_nextButton").objectReferenceValue = nextBtnTrans.GetComponent<Button>();
-
-            // 6. Nút Back (Nút Đỏ Chu Sa 9-Slice)
-            Transform backBtnTrans = root.Find("Btn_Back");
-            if (backBtnTrans == null)
-            {
-                var obj = new GameObject("Btn_Back", typeof(RectTransform), typeof(Image), typeof(Button));
-                obj.transform.SetParent(root, false);
-                backBtnTrans = obj.transform;
-                var rect = obj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0f, 1f);
-                rect.anchorMax = new Vector2(0f, 1f);
-                rect.pivot = new Vector2(0f, 1f);
-                rect.anchoredPosition = new Vector2(50, -40);
-                rect.sizeDelta = new Vector2(120, 50);
-                var img = obj.GetComponent<Image>();
-                img.color = Color.white;
-                img.type = Image.Type.Sliced;
-                Sprite btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Action_CinnabarRed.png");
-                if (btnSprite != null) img.sprite = btnSprite;
-
-                var txtObj = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
-                txtObj.transform.SetParent(obj.transform, false);
-                StretchRect(txtObj.GetComponent<RectTransform>());
-                var tmp = txtObj.GetComponent<TextMeshProUGUI>();
-                tmp.text = "QUAY LẠI";
-                tmp.fontSize = 18;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.color = Color.white;
-            }
-            so.FindProperty("_backButton").objectReferenceValue = backBtnTrans.GetComponent<Button>();
-
-            so.ApplyModifiedProperties();
-            EditorUtility.SetDirty(view);
-
-            // Wire Presenter
-            if (presenter != null)
-            {
-                var soPresenter = new SerializedObject(presenter);
-                soPresenter.FindProperty("_view").objectReferenceValue = view;
-                var charDb = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-                if (charDb != null)
-                {
-                    var prop = soPresenter.FindProperty("_characterDatabase");
-                    if (prop != null) prop.objectReferenceValue = charDb;
-                }
-                soPresenter.ApplyModifiedProperties();
-                EditorUtility.SetDirty(presenter);
-            }
+            // Sử dụng CharacterSelectionUIGenerator để dựng giao diện Chọn Tướng theo chuẩn Art DNA Đông Sơn
+            ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
         }
 
         private static void BuildSanctuaryHierarchy(Transform root)

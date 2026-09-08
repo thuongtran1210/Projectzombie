@@ -313,9 +313,10 @@ namespace ProjectZombie.Editor.UI
                 pRT.anchorMax = new Vector2(0.5f, 0.5f);
                 pRT.pivot = new Vector2(0.5f, 0.25f);
                 pRT.anchoredPosition = new Vector2(0, -45);
-                pRT.sizeDelta = new Vector2(340, 140);
+                pRT.sizeDelta = new Vector2(340, 205);
                 var pImg = pedObj.AddComponent<Image>();
                 pImg.sprite = pedestalSprite;
+                pImg.preserveAspect = true;
                 pImg.color = Color.white;
                 pImg.raycastTarget = false;
             }

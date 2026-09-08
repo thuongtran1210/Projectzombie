@@ -116,6 +116,25 @@ namespace ProjectZombie.Features.UI
                     _characterAvatarImage = img;
             }
 
+            // Tự động tìm RawImage hiển thị Render Texture nhân vật
+            if (_characterPreviewRawImage == null)
+            {
+                var rawImages = GetComponentsInChildren<RawImage>(true);
+                foreach (var raw in rawImages)
+                {
+                    string rawName = raw.gameObject.name.ToLower();
+                    if (rawName.Contains("preview") || rawName.Contains("rt") || rawName.Contains("hero"))
+                    {
+                        _characterPreviewRawImage = raw;
+                        break;
+                    }
+                }
+                if (_characterPreviewRawImage == null && rawImages.Length > 0)
+                {
+                    _characterPreviewRawImage = rawImages[0];
+                }
+            }
+
             // Tự động tìm Slot Vũ Khí Chính
             if (_primaryWeaponIcon == null || _primaryWeaponNameText == null)
             {
@@ -194,6 +213,24 @@ namespace ProjectZombie.Features.UI
             if (_signatureSkillText != null) _signatureSkillText.text = formattedSkill;
             if (_passiveTraitText != null) _passiveTraitText.text = formattedPassive;
 
+            if (_characterPreviewRawImage == null)
+            {
+                var rawImages = GetComponentsInChildren<RawImage>(true);
+                foreach (var r in rawImages)
+                {
+                    string rName = r.gameObject.name.ToLower();
+                    if (rName.Contains("preview") || rName.Contains("rt") || rName.Contains("hero"))
+                    {
+                        _characterPreviewRawImage = r;
+                        break;
+                    }
+                }
+                if (_characterPreviewRawImage == null && rawImages.Length > 0)
+                {
+                    _characterPreviewRawImage = rawImages[0];
+                }
+            }
+
             if (_characterPreviewRawImage != null)
             {
                 if (renderTexture != null)
@@ -201,6 +238,7 @@ namespace ProjectZombie.Features.UI
                     _characterPreviewRawImage.texture = renderTexture;
                     _characterPreviewRawImage.enabled = true;
                     _characterPreviewRawImage.color = Color.white;
+                    _characterPreviewRawImage.gameObject.SetActive(true);
                 }
                 else
                 {
