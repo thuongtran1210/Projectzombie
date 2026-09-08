@@ -68,7 +68,7 @@ namespace ProjectZombie.Editor.UI
             titleTMP.fontSize = 17;
             titleTMP.fontStyle = FontStyles.Bold;
             titleTMP.alignment = TextAlignmentOptions.Left;
-            titleTMP.text = "📐 Chạm vào một nút để chỉnh sửa";
+            titleTMP.text = "CHẠM VÀO NÚT ĐỂ ĐIỀU CHỈNH";
             titleTMP.color = new Color(1f, 0.88f, 0.55f);
 
             // 3.2. Subtitle hướng dẫn
@@ -84,7 +84,7 @@ namespace ProjectZombie.Editor.UI
             if (vietFont != null) gdTMP.font = vietFont;
             gdTMP.fontSize = 13;
             gdTMP.alignment = TextAlignmentOptions.Left;
-            gdTMP.text = "• Kéo thả nút để đổi vị trí\n• Dùng thanh trượt giữa để chỉnh Cỡ / Mờ";
+            gdTMP.text = "- Kéo thả nút để đổi vị trí\n- Dùng thanh trượt giữa để chỉnh Cỡ / Mờ";
             gdTMP.color = new Color(0.82f, 0.82f, 0.82f);
 
             // 3.3. Sliders Area (Scale & Opacity) đặt ở vị trí X = 370 -> 640
@@ -96,11 +96,11 @@ namespace ProjectZombie.Editor.UI
 
             // 3.4. Action Buttons (Save, Reset, Cancel) đặt ở bên phải X = 660 -> 1000
             // Nút Lưu to nổi bật (Xanh ngọc / Hổ phách kim)
-            Button btnSave = CreateActionButton(topBarObj.transform, "Btn_Save", "💾 LƯU", new Vector2(720, -55), new Vector2(110, 68), btnAmber != null ? btnAmber : btnGoMun, new Color(0.2f, 1.0f, 0.5f), vietFont, 16);
+            Button btnSave = CreateActionButton(topBarObj.transform, "Btn_Save", "LƯU", new Vector2(720, -55), new Vector2(110, 68), btnAmber != null ? btnAmber : btnGoMun, new Color(0.2f, 1.0f, 0.5f), vietFont, 16);
             // Nút Mặc định (Gỗ mun)
-            Button btnReset = CreateActionButton(topBarObj.transform, "Btn_Reset", "🔄 MẶC ĐỊNH", new Vector2(850, -55), new Vector2(115, 68), btnGoMun, new Color(0.95f, 0.95f, 0.95f), vietFont, 14);
+            Button btnReset = CreateActionButton(topBarObj.transform, "Btn_Reset", "MẶC ĐỊNH", new Vector2(850, -55), new Vector2(115, 68), btnGoMun, new Color(0.95f, 0.95f, 0.95f), vietFont, 14);
             // Nút Hủy (Sơn mài chu sa đỏ)
-            Button btnCancel = CreateActionButton(topBarObj.transform, "Btn_Cancel", "❌ HỦY", new Vector2(965, -55), new Vector2(95, 68), btnSonMai != null ? btnSonMai : btnGoMun, new Color(1f, 0.6f, 0.6f), vietFont, 14);
+            Button btnCancel = CreateActionButton(topBarObj.transform, "Btn_Cancel", "HỦY", new Vector2(965, -55), new Vector2(95, 68), btnSonMai != null ? btnSonMai : btnGoMun, new Color(1f, 0.6f, 0.6f), vietFont, 14);
 
             // 4. Wire View & Presenter
             MobileControlsCustomizerView view = rootObj.GetComponent<MobileControlsCustomizerView>();

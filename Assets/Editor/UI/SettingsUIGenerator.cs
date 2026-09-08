@@ -180,7 +180,7 @@ namespace ProjectZombie.Editor.UI
             cstTMP.fontSize = 18;
             cstTMP.fontStyle = FontStyles.Bold;
             cstTMP.alignment = TextAlignmentOptions.Center;
-            cstTMP.text = "📐 TÙY CHỈNH PHÍM ĐIỀU KHIỂN";
+            cstTMP.text = "TÙY CHỈNH PHÍM ĐIỀU KHIỂN";
             cstTMP.color = new Color(1f, 0.92f, 0.65f);
 
             // 9. Close Button (Nút Đóng X)

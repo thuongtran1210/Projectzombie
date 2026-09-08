@@ -99,11 +99,30 @@ namespace ProjectZombie.Features.UI
         {
             if (containerRect == null)
             {
-                // Thử tìm "Joystick_Visual" hoặc "Joystick" hoặc "Container" trong con hoặc anh em
+                // 1. Thử tìm trong con của chính GameObject
                 Transform visual = transform.Find("Joystick_Visual") ?? transform.Find("Joystick") ?? transform.Find("Container");
+                
+                // 2. Thử tìm trong anh em (siblings) cùng parent
                 if (visual == null && transform.parent != null)
                 {
-                    visual = transform.parent.Find("Joystick_Visual") ?? transform.parent.Find("Joystick") ?? transform.parent.Find("Container");
+                    visual = transform.parent.Find("Joystick_Visual") 
+                          ?? transform.parent.Find("DynamicVirtualJoystick") 
+                          ?? transform.parent.Find("Joystick") 
+                          ?? transform.parent.Find("Container");
+                }
+
+                // 3. Thử tìm sâu trong toàn bộ Panel_MobileControls / Canvas cha
+                if (visual == null && transform.root != null)
+                {
+                    var allTransforms = transform.root.GetComponentsInChildren<Transform>(true);
+                    foreach (var t in allTransforms)
+                    {
+                        if (t != transform && (t.name == "Joystick_Visual" || t.name == "DynamicVirtualJoystick"))
+                        {
+                            visual = t;
+                            break;
+                        }
+                    }
                 }
 
                 if (visual != null)
@@ -131,7 +150,7 @@ namespace ProjectZombie.Features.UI
                     handle = searchRoot.GetChild(0);
                 }
 
-                // Nếu vẫn chưa có, thử tìm sâu hơn trong tất cả children
+                // Nếu vẫn chưa có, thử tìm sâu hơn trong tất cả children của searchRoot hoặc parent
                 if (handle == null)
                 {
                     var allChildren = searchRoot.GetComponentsInChildren<RectTransform>(true);
