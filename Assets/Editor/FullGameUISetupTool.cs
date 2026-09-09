@@ -184,6 +184,13 @@ namespace ProjectZombie.EditorTools
                 relicInventoryMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.RelicInventoryManager>();
             }
 
+            // Gắn RelicGachaManager vào root --- GAME MANAGER --- nếu chưa có
+            var relicGachaMgr = managerRoot.GetComponent<ProjectZombie.Features.MetaProgression.Gacha.RelicGachaManager>();
+            if (relicGachaMgr == null)
+            {
+                relicGachaMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.Gacha.RelicGachaManager>();
+            }
+
             // Dọn dẹp component trùng thừa trên Canvas (nếu có)
             var duplicateCanvasCurrencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             if (duplicateCanvasCurrencyMgr != null && duplicateCanvasCurrencyMgr != currencyMgr)
@@ -372,6 +379,7 @@ namespace ProjectZombie.EditorTools
             Transform codexTrans = metaRoot.Find("Panel_CardCodex");
 
             // 2.6. Panel_GachaShop (Bảo Rương Vạn Cổ)
+            ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs();
             Transform gachaTrans = metaRoot.Find("Panel_GachaShop");
             if (gachaTrans == null)
             {

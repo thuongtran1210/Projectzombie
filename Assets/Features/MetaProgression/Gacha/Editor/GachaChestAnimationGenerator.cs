@@ -42,7 +42,18 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                     }
                 }
 
-                // 3. Fallback: Nếu vẫn null, ép TextureImporter SaveAndReimport
+                // 3. Thử load qua Texture2D và tạo Sprite fallback
+                if (sprite == null)
+                {
+                    Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                    if (tex != null)
+                    {
+                        sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                        sprite.name = $"Chest_Frame_{i:02d}";
+                    }
+                }
+
+                // 4. Fallback: Nếu vẫn null, ép TextureImporter SaveAndReimport
                 if (sprite == null)
                 {
                     var importer = AssetImporter.GetAtPath(path) as TextureImporter;
@@ -56,6 +67,18 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 }
 
                 frames[i - 1] = sprite;
+            }
+
+            if (frames[0] == null)
+            {
+                // Fallback từ Spritesheet nếu frame rời không tìm thấy
+                string sheetPath = "Assets/Art/UI/Gacha/UI_Gacha_Chest_Spritesheet.png";
+                Texture2D sheetTex = AssetDatabase.LoadAssetAtPath<Texture2D>(sheetPath);
+                if (sheetTex != null)
+                {
+                    var fbSprite = Sprite.Create(sheetTex, new Rect(0, 0, sheetTex.width, sheetTex.height), new Vector2(0.5f, 0.5f), 100f);
+                    for (int i = 0; i < 8; i++) frames[i] = fbSprite;
+                }
             }
 
             if (frames[0] == null)

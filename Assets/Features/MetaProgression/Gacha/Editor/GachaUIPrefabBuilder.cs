@@ -378,6 +378,22 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             pEpicText.alignment = TextAlignmentOptions.Center;
             pEpicText.fontSize = 14;
 
+            // Status text thông báo (Không đủ tiền, lỗi...)
+            var statusMsgGo = new GameObject("Txt_StatusMessage", typeof(RectTransform), typeof(TextMeshProUGUI));
+            statusMsgGo.transform.SetParent(modalGo.transform, false);
+            var statusMsgRect = statusMsgGo.GetComponent<RectTransform>();
+            statusMsgRect.anchorMin = new Vector2(0.5f, 0);
+            statusMsgRect.anchorMax = new Vector2(0.5f, 0);
+            statusMsgRect.pivot = new Vector2(0.5f, 0);
+            statusMsgRect.anchoredPosition = new Vector2(0, 96);
+            statusMsgRect.sizeDelta = new Vector2(600, 30);
+            var statusMsgText = statusMsgGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) statusMsgText.font = font;
+            statusMsgText.text = "";
+            statusMsgText.fontSize = 15;
+            statusMsgText.alignment = TextAlignmentOptions.Center;
+            statusMsgText.raycastTarget = false;
+
             // 6. Nút Quay Đáy Modal (Quay 1x & Quay 10x)
             var bottomActionsGo = new GameObject("Bottom_Action_Bar", typeof(RectTransform));
             bottomActionsGo.transform.SetParent(modalGo.transform, false);
@@ -415,6 +431,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             b1Text.text = "Quay 1x\n<color=#FFD700>100 Cổ Tiền</color>";
             b1Text.fontSize = 15;
             b1Text.alignment = TextAlignmentOptions.Center;
+            b1Text.raycastTarget = false;
 
             // Nút Quay 10x
             var btn10Go = new GameObject("Btn_Roll_10x", typeof(RectTransform), typeof(Image), typeof(Button));
@@ -437,6 +454,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             b10Text.text = "Quay 10x\n<color=#FFD700>900 Cổ Tiền</color>";
             b10Text.fontSize = 15;
             b10Text.alignment = TextAlignmentOptions.Center;
+            b10Text.raycastTarget = false;
 
             // 7. Result Modal Popup
             var resultPopupGo = new GameObject("Result_Popup_Panel", typeof(RectTransform), typeof(Image));
@@ -486,6 +504,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             vSo.FindProperty("_currencyBalanceText").objectReferenceValue = coinText;
             vSo.FindProperty("_bannerTitleText").objectReferenceValue = titleText;
             vSo.FindProperty("_bannerDescriptionText").objectReferenceValue = subTitleText;
+            vSo.FindProperty("_statusMessageText").objectReferenceValue = statusMsgText;
             vSo.FindProperty("_singleCostText").objectReferenceValue = b1Text;
             vSo.FindProperty("_multiCostText").objectReferenceValue = b10Text;
             vSo.FindProperty("_legendaryPityText").objectReferenceValue = pLegText;

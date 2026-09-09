@@ -15,10 +15,21 @@ namespace ProjectZombie.Features.UI.Gacha
         [Header("View Reference")]
         [SerializeField] private GachaChestView _view;
 
-        private void Start()
+        private void Awake()
         {
             if (_view == null) _view = GetComponent<GachaChestView>();
+            if (_view == null) _view = GetComponentInChildren<GachaChestView>(true);
 
+            if (_view != null)
+            {
+                _view.OnSingleRollClicked += HandleSingleRoll;
+                _view.OnMultiRollClicked += HandleMultiRoll;
+                _view.OnCloseResultClicked += HandleCloseResult;
+            }
+        }
+
+        private void OnEnable()
+        {
             // Subscribe Model Events
             if (MetaCurrencyManager.Instance != null)
             {
@@ -32,19 +43,10 @@ namespace ProjectZombie.Features.UI.Gacha
                 RelicGachaManager.Instance.OnPityCountersChanged += HandlePityChanged;
             }
 
-            // Subscribe View User Inputs
-            if (_view != null)
-            {
-                _view.OnSingleRollClicked += HandleSingleRoll;
-                _view.OnMultiRollClicked += HandleMultiRoll;
-                _view.OnCloseResultClicked += HandleCloseResult;
-            }
-
-            // Khởi tạo hiển thị ban đầu
             RefreshAllUI();
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             if (MetaCurrencyManager.Instance != null)
             {
@@ -57,7 +59,10 @@ namespace ProjectZombie.Features.UI.Gacha
                 RelicGachaManager.Instance.OnGachaFailed -= HandleGachaFailed;
                 RelicGachaManager.Instance.OnPityCountersChanged -= HandlePityChanged;
             }
+        }
 
+        private void OnDestroy()
+        {
             if (_view != null)
             {
                 _view.OnSingleRollClicked -= HandleSingleRoll;
@@ -127,17 +132,47 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void HandleSingleRoll()
         {
+            Debug.Log("[GachaChestPresenter] HandleSingleRoll được kích hoạt!");
+            if (RelicGachaManager.Instance == null)
+            {
+                var mgr = FindObjectOfType<RelicGachaManager>();
+                if (mgr == null)
+                {
+                    Debug.LogWarning("[GachaChestPresenter] Không tìm thấy RelicGachaManager trong Scene! Đang tự tạo fallback...");
+                    var go = new GameObject("RelicGachaManager", typeof(RelicGachaManager));
+                }
+            }
+
             if (RelicGachaManager.Instance != null)
             {
                 RelicGachaManager.Instance.Roll(1);
+            }
+            else
+            {
+                Debug.LogError("[GachaChestPresenter] RelicGachaManager.Instance vẫn là NULL sau khi tìm kiếm!");
             }
         }
 
         private void HandleMultiRoll()
         {
+            Debug.Log("[GachaChestPresenter] HandleMultiRoll được kích hoạt!");
+            if (RelicGachaManager.Instance == null)
+            {
+                var mgr = FindObjectOfType<RelicGachaManager>();
+                if (mgr == null)
+                {
+                    Debug.LogWarning("[GachaChestPresenter] Không tìm thấy RelicGachaManager trong Scene! Đang tự tạo fallback...");
+                    var go = new GameObject("RelicGachaManager", typeof(RelicGachaManager));
+                }
+            }
+
             if (RelicGachaManager.Instance != null)
             {
                 RelicGachaManager.Instance.Roll(10);
+            }
+            else
+            {
+                Debug.LogError("[GachaChestPresenter] RelicGachaManager.Instance vẫn là NULL sau khi tìm kiếm!");
             }
         }
 
