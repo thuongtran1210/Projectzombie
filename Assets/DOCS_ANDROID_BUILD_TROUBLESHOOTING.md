@@ -106,6 +106,37 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 
 ---
 
+### ❌ Lỗi 2.3: Đảo Ngược Hướng Đồng Bộ Asset trong `SyncRegistry` Khiến Mất Dữ Liệu Banner Gacha / Thần Thẻ
+- **Hiện tượng**: Quay Gacha trong `Modal_Gacha` (Bảo Gương) trừ tiền nhưng trong `Panel_CardCodex` (Bách Bảo Các / Thần Thẻ) không nhận được mảnh pháp bảo đã trúng.
+- **Nguyên nhân**:
+  - Trong `SyncRegistry.cs`, quy tắc đồng bộ đơn lẻ bị cấu hình đảo chiều nguồn và đích:
+    ```csharp
+    // SAI (Dẫn đến không đồng bộ cấu hình mới từ _Data sang Resources):
+    SyncRule.ForSingleAsset("GachaBanner", "Assets/Resources/Gacha/banner_standard.asset", "Assets/_Data/Gacha/banner_standard.asset");
+    ```
+  - Khi chạy Tool Sync, file mới chứa danh sách Drop Pool trong `_Data` không được đẩy vào `Resources`, dẫn đến bản build Android load file cấu hình cũ/thiếu ID vũ khí.
+- **Cách khắc phục**:
+  - Đảo đúng chiều `SourcePath` (_Data) $\rightarrow$ `TargetPath` (Resources):
+    ```csharp
+    // ĐÚNG:
+    SyncRule.ForSingleAsset("GachaBanner", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset");
+    ```
+
+---
+
+### ❌ Lỗi 2.4: Phân Tích Kiến Trúc Load Tài Nguyên Trên Android: `Resources.Load` vs `Addressables`
+- **Thực trạng hiện tại**:
+  - Dự án đang sử dụng mô hình **Offline-First Synchronous** qua `Resources.Load` kết hợp công cụ tiền xử lý **Android Resource Sync Tool** và nén Texture **ASTC** / Audio **Vorbis**.
+- **Đặc điểm & Hạn chế của `Resources.Load` trên Android**:
+  1. *Metadata Overhead*: Toàn bộ asset trong `Resources` sẽ được lập chỉ mục vào `resources.assets`, nạp metadata vào RAM ngay khi mở game.
+  2. *Không hỗ trợ Hot-Update*: Muốn thêm vũ khí/tướng mới phải build lại toàn bộ APK/AAB.
+  3. *Freeze Spike*: Load Prefab lớn trực tiếp trên Main Thread có thể gây khựng hình nhẹ.
+- **Lộ trình nâng cấp Addressables (Khuyến nghị cho Live-Ops)**:
+  - Chuyển đổi các gói tài nguyên nặng (Quái vật, VFX, Audio, UI Prefabs) sang **Addressable Groups**.
+  - Tích hợp cơ chế tải bất đồng bộ `Addressables.LoadAssetAsync<T>()` và **Google Play Asset Delivery (PAD)** khi phát hành chính thức trên Google Play Store.
+
+---
+
 ## 3. Nhóm Lỗi Cảm Ứng Mobile, Phím Ảo (Joystick & Action Buttons)
 
 ### ❌ Lỗi 3.1: Joystick Báo Cảnh Báo Thiếu Reference (`containerRect` / `handleRect`)
@@ -180,6 +211,17 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
     Input.multiTouchEnabled = true;
     ```
   - Các panel căn neo (Anchor) theo Safe Area của màn hình điện thoại.
+
+---
+
+### ❌ Lỗi 4.3: Lỗi Ô Vuông Trắng / Tím `[?]` (Missing Glyph) Do Dùng Emoji Unicode Trực Tiếp
+- **Hiện tượng**: Trên Editor hiển thị được icon emoji (như 💀, 💰, ⚔️, ⚠️), nhưng build sang Android thì bị biến thành ký tự ô vuông `[?]` hoặc khối màu hồng/trắng.
+- **Nguyên nhân**:
+  - Font Asset tùy chỉnh trong TextMeshPro (ví dụ `NotoSerif-Bold SDF`, `Montserrat SDF`) chỉ nạp bảng ký tự ASCII và Tiếng Việt, **không chứa Glyph của Emoji Unicode** của Android OS.
+- **Cách khắc phục**:
+  - **CẤM** chèn Emoji Unicode trực tiếp vào chuỗi string C#.
+  - Thay thế bằng **TMP Rich Text Tags** (`<color=...>`, `<b>...</b>`) kết hợp thuật ngữ Tiếng Việt thuần Cổ Phong (ví dụ: `[Hạ Địch]: 10` thay vì `💀 10`, `[Cổ Tiền]: 1,000` thay vì `💰 1,000`).
+  - Sử dụng **TMP Sprite Asset** (`<sprite name="coin">`) hoặc đặt `Image` Component riêng nếu cần hiển thị biểu tượng đồ họa.
 
 ---
 

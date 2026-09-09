@@ -467,16 +467,11 @@ MonoBehaviour:
   _tabInactiveSprite: {fileID: 0}
   _cardSlotWoodSprite: {fileID: 21300000, guid: cef31f5d29f54175be95251d0208b28d, type: 3}
   _cardSlotSelectedSprite: {fileID: 21300000, guid: 495ea7a9d70541d29d2284dd48a503ea, type: 3}
-  _starBadgeSprite: {fileID: 0}
   _badgeElementKim: {fileID: 21300000, guid: d60cb2cc4be6465c9cabff804ceddb2f, type: 3}
   _badgeElementMoc: {fileID: 21300000, guid: 99e79eff2080428faf8613f30d516a31, type: 3}
   _badgeElementThuy: {fileID: 21300000, guid: 5b3a34533abd4a5285385e43ef180953, type: 3}
   _badgeElementHoa: {fileID: 21300000, guid: cf2b0187c6f14883a46ef3628d831bd0, type: 3}
   _badgeElementTho: {fileID: 21300000, guid: 981171020e6f45bd8c4b405de7679ea0, type: 3}
-  _borderCommon: {fileID: 0}
-  _borderRare: {fileID: 0}
-  _borderEpic: {fileID: 0}
-  _borderLegendary: {fileID: 0}
 --- !u!114 &21926605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6914,7 +6909,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1760, y: 960}
+  m_SizeDelta: {x: 1600, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &322562012
 MonoBehaviour:
@@ -9773,7 +9768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.6, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 6, y: 0}
+  m_AnchoredPosition: {x: 5.999939, y: 0}
   m_SizeDelta: {x: -12, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &417080428
@@ -12022,10 +12017,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.08925751
-    y: 0
-    width: 0.821485
-    height: 1
+    x: 0
+    y: 0.125
+    width: 1
+    height: 0.75
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 40
@@ -59089,7 +59084,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1760, y: 960}
+  m_SizeDelta: {x: 1600, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &742323566
 MonoBehaviour:
@@ -63521,7 +63516,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1760, y: 960}
+  m_SizeDelta: {x: 1600, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &981440131
 MonoBehaviour:
@@ -84776,7 +84771,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 40
-    OrthographicSize: 7.5
+    OrthographicSize: 9.974999
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
@@ -93049,7 +93044,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1760, y: 960}
+  m_SizeDelta: {x: 1600, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1778297630
 MonoBehaviour:
@@ -93328,7 +93323,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1100, y: 640}
+  m_SizeDelta: {x: 1400, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1789706999
 MonoBehaviour:
@@ -93437,7 +93432,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 10}
-  m_SizeDelta: {x: 980, y: 430}
+  m_SizeDelta: {x: 1200, y: 430}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1797668463
 MonoBehaviour:
@@ -93471,7 +93466,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 26
+  m_Spacing: 100
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -96358,7 +96353,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1760, y: 960}
+  m_SizeDelta: {x: 1600, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2026176242
 MonoBehaviour:
