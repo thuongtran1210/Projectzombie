@@ -5,46 +5,17 @@ using ProjectZombie.Core.Save;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.MetaProgression.Gacha.Data;
 using ProjectZombie.Features.MetaProgression.Gacha.Core;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha
 {
     /// <summary>
     /// Domain Service trung tâm điều phối toàn bộ nghiệp vụ Gacha Mở Rương Pháp Bảo (Meta Shop).
     /// Áp dụng SOLID, Clean Architecture, Pity Pipeline (Hard/Soft Pity), và tích hợp mượt mà với RelicInventoryManager.
+    /// Kế thừa PersistentSingleton<RelicGachaManager> chuẩn kiến trúc.
     /// </summary>
-    public class RelicGachaManager : MonoBehaviour
+    public class RelicGachaManager : PersistentSingleton<RelicGachaManager>
     {
-        private static RelicGachaManager _instance;
-        private static bool _isApplicationQuitting = false;
-
-        public static RelicGachaManager Instance
-        {
-            get
-            {
-                if (_isApplicationQuitting)
-                {
-                    return _instance;
-                }
-
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<RelicGachaManager>();
-                    if (_instance == null && Application.isPlaying)
-                    {
-                        var go = new GameObject("[Auto] RelicGachaManager");
-                        _instance = go.AddComponent<RelicGachaManager>();
-                        DontDestroyOnLoad(go);
-                    }
-                }
-                if (_instance != null)
-                {
-                    _instance.EnsureInitialized();
-                }
-                return _instance;
-            }
-            private set => _instance = value;
-        }
-
         [Header("Banner Cấu Hình Hiện Tại")]
         [SerializeField] private GachaBannerConfigSO _activeBanner;
 
@@ -70,16 +41,9 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         public int PityLegendary => _saveData != null ? _saveData.gachaPityLegendary : 0;
         public int PityEpic => _saveData != null ? _saveData.gachaPityEpic : 0;
 
-        private void Awake()
+        protected override void Awake()
         {
-            _isApplicationQuitting = false;
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
+            base.Awake();
 
             if (_currencyProcessor == null) _currencyProcessor = new CoTienCurrencyProcessor();
             if (_dataProvider == null) _dataProvider = new LocalSOGachaDataProvider();
@@ -90,19 +54,6 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             }
 
             EnsureInitialized();
-        }
-
-        private void OnApplicationQuit()
-        {
-            _isApplicationQuitting = true;
-        }
-
-        private void OnDestroy()
-        {
-            if (_instance == this)
-            {
-                _instance = null;
-            }
         }
 
         private void Start()

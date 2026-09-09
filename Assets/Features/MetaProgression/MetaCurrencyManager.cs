@@ -1,49 +1,17 @@
 using UnityEngine;
 using System;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.MetaProgression
 {
     /// <summary>
     /// Singleton quản lý Currency Meta ("Cổ Tiền" — tiền xu cổ Việt Nam) — đồng tiền vĩnh viễn không mất
     /// giữa các run. Đồng bộ với GameManager để lưu/tải qua Local Save System.
+    /// Kế thừa PersistentSingleton<MetaCurrencyManager> chuẩn kiến trúc.
     /// </summary>
-    public class MetaCurrencyManager : MonoBehaviour
+    public class MetaCurrencyManager : PersistentSingleton<MetaCurrencyManager>
     {
-        // ====================================================================
-        // SINGLETON
-        // ====================================================================
-        private static MetaCurrencyManager _instance;
-        private static bool _isApplicationQuitting = false;
-
-        public static MetaCurrencyManager Instance
-        {
-            get
-            {
-                if (_isApplicationQuitting)
-                {
-                    return _instance;
-                }
-
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<MetaCurrencyManager>();
-                    if (_instance == null && Application.isPlaying)
-                    {
-                        var go = new GameObject("[Auto] MetaCurrencyManager");
-                        _instance = go.AddComponent<MetaCurrencyManager>();
-                        DontDestroyOnLoad(go);
-                    }
-                }
-                if (_instance != null)
-                {
-                    _instance.EnsureInitialized();
-                }
-                return _instance;
-            }
-            private set => _instance = value;
-        }
-
         // ====================================================================
         // STATE
         // ====================================================================
@@ -60,30 +28,10 @@ namespace ProjectZombie.Features.MetaProgression
         // UNITY LIFECYCLE
         // ====================================================================
 
-        private void Awake()
+        protected override void Awake()
         {
-            _isApplicationQuitting = false;
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
+            base.Awake();
             EnsureInitialized();
-        }
-
-        private void OnApplicationQuit()
-        {
-            _isApplicationQuitting = true;
-        }
-
-        private void OnDestroy()
-        {
-            if (_instance == this)
-            {
-                _instance = null;
-            }
         }
 
         private void Start()

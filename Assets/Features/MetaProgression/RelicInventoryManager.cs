@@ -1,46 +1,17 @@
 using System;
 using UnityEngine;
 using ProjectZombie.Core.Save;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.MetaProgression
 {
     /// <summary>
     /// Domain Service trung tâm quản lý logic Sở Hữu, Thu Thập Thẻ Mảnh và Gộp Thẻ Nâng Sao Vũ Khí / Pháp Bảo.
     /// Thiết kế chuẩn SOLID, Data-Driven, phát sinh sự kiện để UI Presenter cập nhật phản hồi.
+    /// Kế thừa PersistentSingleton<RelicInventoryManager> chuẩn kiến trúc.
     /// </summary>
-    public class RelicInventoryManager : MonoBehaviour
+    public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>
     {
-        private static RelicInventoryManager _instance;
-        private static bool _isApplicationQuitting = false;
-
-        public static RelicInventoryManager Instance
-        {
-            get
-            {
-                if (_isApplicationQuitting)
-                {
-                    return _instance;
-                }
-
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<RelicInventoryManager>();
-                    if (_instance == null && Application.isPlaying)
-                    {
-                        var go = new GameObject("[Auto] RelicInventoryManager");
-                        _instance = go.AddComponent<RelicInventoryManager>();
-                        DontDestroyOnLoad(go);
-                    }
-                }
-                if (_instance != null)
-                {
-                    _instance.EnsureInitialized();
-                }
-                return _instance;
-            }
-            private set => _instance = value;
-        }
-
         [Header("Cấu Hình Progression")]
         [SerializeField] private RelicStarProgressionSO _progressionConfig;
 
@@ -50,30 +21,10 @@ namespace ProjectZombie.Features.MetaProgression
 
         private MetaProgressionSaveData _saveData;
 
-        private void Awake()
+        protected override void Awake()
         {
-            _isApplicationQuitting = false;
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
+            base.Awake();
             EnsureInitialized();
-        }
-
-        private void OnApplicationQuit()
-        {
-            _isApplicationQuitting = true;
-        }
-
-        private void OnDestroy()
-        {
-            if (_instance == this)
-            {
-                _instance = null;
-            }
         }
 
         private void Start()
