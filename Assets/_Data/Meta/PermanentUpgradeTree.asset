@@ -153,17 +153,18 @@ MonoBehaviour:
   - branch: 2
     nodeId: util_reroll
     displayName: "Thi\xEAn C\u01A1 Tr\xF9ng To\xE1n"
-    description: "Th\u1EA7n c\u01A1 di\u1EC7u to\xE1n, t\u0103ng th\xEAm may m\u1EAFn
-      v\xE0 t\u1EC9 l\u1EC7 nh\u1EADn ng\u1ECDc qu\xFD sau m\u1ED7i run."
+    description: "Th\u1EA7n c\u01A1 di\u1EC7u to\xE1n, ban th\xEAm +1 l\u01B0\u1EE3t \u0110\u1ED5i
+      Th\u1EBB (Reroll) Kh\xED V\u1EADn mi\u1EC5n ph\xED \u0111\u1EA7u m\u1ED7i tr\u1EADn
+      \u0111\u1EA5u."
     icon: {fileID: 21300000, guid: 9ce44fc85685445f93c4a75d2211216d, type: 3}
     maxLevel: 3
     costPerLevel: f4010000b0040000c4090000
     statBonusPerLevel:
       maxHealthBonus: 0
       moveSpeedBonus: 0
-      critChanceBonus: 0.02
+      critChanceBonus: 0
       baseDamageBonus: 0
       pickupRangeBonus: 0
-      expMultiplierBonus: 0.05
+      expMultiplierBonus: 0
       attackSpeedBonus: 0
       dashCooldownReduction: 0

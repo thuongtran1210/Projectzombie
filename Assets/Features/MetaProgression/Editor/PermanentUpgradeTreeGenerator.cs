@@ -137,18 +137,25 @@ namespace ProjectZombie.Editor.MetaProgression
                     branch = SanctuaryBranch.LieuHanhChuDongTu,
                     nodeId = "util_reroll",
                     displayName = "Thiên Cơ Trùng Toán",
-                    description = "Thần cơ diệu toán, tăng thêm may mắn và tỉ lệ nhận ngọc quý sau mỗi run.",
+                    description = "Thần cơ diệu toán, ban thêm +1 lượt Đổi Thẻ (Reroll) Khí Vận miễn phí đầu mỗi trận đấu.",
                     icon = iconLuck,
                     maxLevel = 3,
                     costPerLevel = new int[] { 500, 1200, 2500 },
-                    statBonusPerLevel = new PlayerStatModifier { critChanceBonus = 0.02f, expMultiplierBonus = 0.05f }
+                    statBonusPerLevel = new PlayerStatModifier { critChanceBonus = 0f, expMultiplierBonus = 0f }
                 }
             };
 
             EditorUtility.SetDirty(tree);
+
+            // Tự động đồng bộ file asset sang Assets/Resources/ để runtime Resources.Load luôn tải được
+            string resFolder = "Assets/Resources";
+            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
+            string resAssetPath = $"{resFolder}/PermanentUpgradeTree.asset";
+            AssetDatabase.CopyAsset(assetPath, resAssetPath);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"<color=#00FF88>[PermanentUpgradeTreeGenerator]</color> Đã tạo thành công Cây Nâng Cấp Vĩnh Viễn 3 Nhánh tại: {assetPath}");
+            Debug.Log($"<color=#00FF88>[PermanentUpgradeTreeGenerator]</color> Đã tạo và đồng bộ Cây Nâng Cấp Vĩnh Viễn 3 Nhánh tại: {assetPath} và {resAssetPath}");
             return tree;
         }
     }

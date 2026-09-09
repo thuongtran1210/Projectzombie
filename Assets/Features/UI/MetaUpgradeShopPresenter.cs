@@ -247,6 +247,7 @@ namespace ProjectZombie.Features.UI
             if (mod.dashCooldownReduction > 0) sb.Append($"- Giảm Hồi Chiêu Lướt: -{mod.dashCooldownReduction * currentLevel:0.##}s (Cấp kế: -{mod.dashCooldownReduction * (currentLevel + 1):0.##}s)\n");
             if (mod.pickupRangeBonus > 0) sb.Append($"- Bán Kính Nam Châm: +{mod.pickupRangeBonus * currentLevel:0.#} m (Cấp kế: +{mod.pickupRangeBonus * (currentLevel + 1):0.#})\n");
             if (mod.expMultiplierBonus > 0) sb.Append($"- Bội Số Kinh Nghiệm: +{mod.expMultiplierBonus * currentLevel * 100:0.#}% (Cấp kế: +{mod.expMultiplierBonus * (currentLevel + 1) * 100:0.#}%)\n");
+            if (node.nodeId == "util_reroll") sb.Append($"- Lượt Đổi Thẻ Khí Vận: +{currentLevel} Lượt (Cấp kế: +{currentLevel + 1} Lượt)\n");
 
             return sb.ToString().TrimEnd();
         }

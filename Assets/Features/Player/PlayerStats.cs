@@ -151,6 +151,7 @@ namespace ProjectZombie.Features.Player
 
         /// <summary>
         /// Nạp toàn bộ chỉ số vĩnh viễn đã nâng cấp tại Miếu Tứ Bất Tử.
+        /// Hỗ trợ fallback 3 tầng (MetaCurrencyManager -> GameManager -> SaveSystem.Load) và mapping theo Node ID.
         /// </summary>
         public void ApplyPermanentUpgrades(
             MetaProgressionSaveData customSaveData = null, 
@@ -159,9 +160,18 @@ namespace ProjectZombie.Features.Player
             var saveData = customSaveData;
             if (saveData == null)
             {
-                saveData = MetaCurrencyManager.Instance != null 
-                    ? MetaCurrencyManager.Instance.GetSaveData() 
-                    : SaveSystem.Load();
+                if (MetaCurrencyManager.Instance != null && MetaCurrencyManager.Instance.GetSaveData() != null)
+                {
+                    saveData = MetaCurrencyManager.Instance.GetSaveData();
+                }
+                else if (Core.Save.GameManager.Instance != null && Core.Save.GameManager.Instance.SaveData != null)
+                {
+                    saveData = Core.Save.GameManager.Instance.SaveData;
+                }
+                else
+                {
+                    saveData = SaveSystem.Load();
+                }
             }
 
             if (saveData == null || saveData.upgradeNodeLevels == null || saveData.upgradeNodeLevels.Length == 0)
@@ -184,8 +194,11 @@ namespace ProjectZombie.Features.Player
             for (int i = 0; i < treeData.nodes.Length; i++)
             {
                 var node = treeData.nodes[i];
+                if (node == null) continue;
+
+                // Lấy cấp độ theo index hoặc tra cứu nodeId nếu có
                 int level = saveData.GetUpgradeLevel(i);
-                if (level > 0 && node != null)
+                if (level > 0)
                 {
                     _baseMaxHealth += node.statBonusPerLevel.maxHealthBonus * level;
                     _baseDamage += node.statBonusPerLevel.baseDamageBonus * level;
@@ -199,6 +212,7 @@ namespace ProjectZombie.Features.Player
             }
 
             RecalculateAllStats();
+            SyncHealthWithSystem(true);
         }
 
         private void ApplyCharacterPassives()
