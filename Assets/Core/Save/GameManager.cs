@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Features.MetaProgression.Gacha;
 
 namespace ProjectZombie.Core.Save
 {

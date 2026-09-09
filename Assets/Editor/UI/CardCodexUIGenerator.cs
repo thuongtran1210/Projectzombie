@@ -194,9 +194,9 @@ namespace ProjectZombie.Editor.UI
             cntRT.sizeDelta = new Vector2(0, 800);
 
             var grid = content.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(120, 150);
-            grid.spacing = new Vector2(16, 16);
-            grid.padding = new RectOffset(16, 16, 16, 16);
+            grid.cellSize = new Vector2(120, 140);
+            grid.spacing = new Vector2(14, 14);
+            grid.padding = new RectOffset(14, 14, 14, 14);
             grid.childAlignment = TextAnchor.UpperLeft;
 
             var csf = content.AddComponent<ContentSizeFitter>();
@@ -334,10 +334,16 @@ namespace ProjectZombie.Editor.UI
             soPresenter.FindProperty("_tabInactiveSprite").objectReferenceValue = tabWoodInactive;
             soPresenter.FindProperty("_cardSlotWoodSprite").objectReferenceValue = slotWoodSprite;
             soPresenter.FindProperty("_cardSlotSelectedSprite").objectReferenceValue = slotSelectedSprite;
-            soPresenter.FindProperty("_borderCommon").objectReferenceValue = borderCommon;
-            soPresenter.FindProperty("_borderRare").objectReferenceValue = borderRare;
-            soPresenter.FindProperty("_borderEpic").objectReferenceValue = borderEpic;
-            soPresenter.FindProperty("_borderLegendary").objectReferenceValue = borderLegendary;
+            soPresenter.FindProperty("_badgeElementKim").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+            soPresenter.FindProperty("_badgeElementMoc").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
+            soPresenter.FindProperty("_badgeElementThuy").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
+            soPresenter.FindProperty("_badgeElementHoa").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
+            soPresenter.FindProperty("_badgeElementTho").objectReferenceValue = 
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
             soPresenter.ApplyModifiedProperties();
 
             // 8. Lưu Prefab

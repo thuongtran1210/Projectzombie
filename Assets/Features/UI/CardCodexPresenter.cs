@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.MetaProgression;
@@ -22,11 +23,85 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Sprite _cardSlotSelectedSprite;
         [SerializeField] private Sprite _starBadgeSprite;
 
+        [Header("Element Badges")]
+        [SerializeField] private Sprite _badgeElementKim;
+        [SerializeField] private Sprite _badgeElementMoc;
+        [SerializeField] private Sprite _badgeElementThuy;
+        [SerializeField] private Sprite _badgeElementHoa;
+        [SerializeField] private Sprite _badgeElementTho;
+
         [Header("Rarity Borders")]
         [SerializeField] private Sprite _borderCommon;
         [SerializeField] private Sprite _borderRare;
         [SerializeField] private Sprite _borderEpic;
         [SerializeField] private Sprite _borderLegendary;
+
+        private Color GetElementColor(ElementType element)
+        {
+            switch (element)
+            {
+                case ElementType.Kim: return new Color(1.0f, 0.84f, 0.0f, 1f); // Vàng Kim
+                case ElementType.Moc: return new Color(0.30f, 0.75f, 0.35f, 1f); // Xanh Lục
+                case ElementType.Thuy: return new Color(0.20f, 0.65f, 0.95f, 1f); // Xanh Lam
+                case ElementType.Hoa: return new Color(0.95f, 0.28f, 0.22f, 1f); // Đỏ Chu Sa
+                case ElementType.Tho: return new Color(0.65f, 0.48f, 0.32f, 1f); // Nâu Đất Đồng
+                default: return new Color(0.85f, 0.85f, 0.90f, 1f);
+            }
+        }
+
+        private Sprite GetElementBadgeSprite(ElementType element)
+        {
+            switch (element)
+            {
+                case ElementType.Kim:
+                    if (_badgeElementKim != null) return _badgeElementKim;
+                    var bKim = Resources.Load<Sprite>("UI/Badges/Badge_Element_Kim") ?? Resources.Load<Sprite>("Badge_Element_Kim");
+                    if (bKim != null) return bKim;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+#else
+                    return null;
+#endif
+                case ElementType.Moc:
+                    if (_badgeElementMoc != null) return _badgeElementMoc;
+                    var bMoc = Resources.Load<Sprite>("UI/Badges/Badge_Element_Moc") ?? Resources.Load<Sprite>("Badge_Element_Moc");
+                    if (bMoc != null) return bMoc;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
+#else
+                    return null;
+#endif
+                case ElementType.Thuy:
+                    if (_badgeElementThuy != null) return _badgeElementThuy;
+                    var bThuy = Resources.Load<Sprite>("UI/Badges/Badge_Element_Thuy") ?? Resources.Load<Sprite>("Badge_Element_Thuy");
+                    if (bThuy != null) return bThuy;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
+#else
+                    return null;
+#endif
+                case ElementType.Hoa:
+                    if (_badgeElementHoa != null) return _badgeElementHoa;
+                    var bHoa = Resources.Load<Sprite>("UI/Badges/Badge_Element_Hoa") ?? Resources.Load<Sprite>("Badge_Element_Hoa");
+                    if (bHoa != null) return bHoa;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
+#else
+                    return null;
+#endif
+                case ElementType.Tho:
+                    if (_badgeElementTho != null) return _badgeElementTho;
+                    var bTho = Resources.Load<Sprite>("UI/Badges/Badge_Element_Tho") ?? Resources.Load<Sprite>("Badge_Element_Tho");
+                    if (bTho != null) return bTho;
+#if UNITY_EDITOR
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
+#else
+                    return null;
+#endif
+                default:
+                    return null;
+            }
+        }
 
         public Sprite GetRarityBorder(ProjectZombie.Features.Shared.ItemRarity rarity)
         {
@@ -250,6 +325,9 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null || _view.CardsGridContainer == null) return;
 
+            _relicSlotMap.Clear();
+            _upgradeSlotMap.Clear();
+
             for (int i = _view.CardsGridContainer.childCount - 1; i >= 0; i--)
             {
                 Destroy(_view.CardsGridContainer.GetChild(i).gameObject);
@@ -313,94 +391,176 @@ namespace ProjectZombie.Features.UI
             int shards = relicMgr != null ? relicMgr.GetRelicShardCount(weapon.weaponId) : 0;
             var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
             int reqShards = nextStep != null ? nextStep.requiredShards : 5;
+            bool isUnlocked = star > 0;
+            bool isSelected = _selectedRelic == weapon;
 
-            GameObject itemObj = new GameObject($"Card_{weapon.weaponId}", typeof(RectTransform), typeof(Image), typeof(Button));
-            itemObj.transform.SetParent(_view.CardsGridContainer, false);
+            // 1. Root Slot Object (120 x 140)
+            GameObject slotObj = new GameObject($"Card_{weapon.weaponId}", typeof(RectTransform));
+            slotObj.transform.SetParent(_view.CardsGridContainer, false);
 
-            var rt = itemObj.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(120, 150);
+            var slotRT = slotObj.GetComponent<RectTransform>();
+            slotRT.sizeDelta = new Vector2(120, 140);
 
-            var img = itemObj.GetComponent<Image>();
-            img.type = Image.Type.Sliced;
-            img.sprite = GetRarityBorder(weapon.rarity);
-            img.color = star > 0 ? Color.white : new Color(0.6f, 0.55f, 0.5f, 0.85f);
+            // 2. Khung Ô Vật Phẩm (Box 110 x 110)
+            GameObject boxObj = new GameObject("Box", typeof(RectTransform), typeof(Image), typeof(Button));
+            boxObj.transform.SetParent(slotObj.transform, false);
+            var boxRT = boxObj.GetComponent<RectTransform>();
+            boxRT.anchorMin = new Vector2(0.5f, 1f);
+            boxRT.anchorMax = new Vector2(0.5f, 1f);
+            boxRT.pivot = new Vector2(0.5f, 1f);
+            boxRT.anchoredPosition = Vector2.zero;
+            boxRT.sizeDelta = new Vector2(110, 110);
 
-            // Icon
+            var boxImg = boxObj.GetComponent<Image>();
+            boxImg.type = Image.Type.Sliced;
+            boxImg.raycastTarget = true;
+
+            Sprite slotWood = _cardSlotWoodSprite;
+            Sprite slotSelected = _cardSlotSelectedSprite;
+            if (slotWood == null) slotWood = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (slotSelected == null) slotSelected = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
+#if UNITY_EDITOR
+            if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+#endif
+
+            if (isSelected)
+            {
+                if (slotSelected != null) boxImg.sprite = slotSelected;
+                boxImg.color = Color.white;
+            }
+            else
+            {
+                if (slotWood != null) boxImg.sprite = slotWood;
+                boxImg.color = isUnlocked ? Color.white : new Color(0.40f, 0.35f, 0.30f, 0.6f);
+            }
+
+            // 3. Nền Bên Trong (Inner Background - Đậm nét chuẩn Cổ Phong)
+            GameObject innerObj = new GameObject("InnerBg", typeof(RectTransform), typeof(Image));
+            innerObj.transform.SetParent(boxObj.transform, false);
+            var inRT = innerObj.GetComponent<RectTransform>();
+            inRT.anchorMin = Vector2.zero;
+            inRT.anchorMax = Vector2.one;
+            inRT.offsetMin = new Vector2(5, 5);
+            inRT.offsetMax = new Vector2(-5, -5);
+
+            var inImg = innerObj.GetComponent<Image>();
+            inImg.color = new Color(0.12f, 0.09f, 0.16f, 0.85f);
+            inImg.raycastTarget = false;
+
+            // 4. Icon Pháp Bảo
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
-            iconObj.transform.SetParent(itemObj.transform, false);
+            iconObj.transform.SetParent(innerObj.transform, false);
             var iconRT = iconObj.GetComponent<RectTransform>();
-            iconRT.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRT.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRT.sizeDelta = new Vector2(68, 68);
-            iconRT.anchoredPosition = new Vector2(0, 16);
+            iconRT.anchorMin = Vector2.zero;
+            iconRT.anchorMax = Vector2.one;
+            iconRT.offsetMin = new Vector2(6, 6);
+            iconRT.offsetMax = new Vector2(-6, -6);
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.sprite = weapon.icon;
+            iconImg.enabled = weapon.icon != null;
             iconImg.preserveAspect = true;
             iconImg.raycastTarget = false;
-            iconImg.color = star > 0 ? Color.white : new Color(0.45f, 0.45f, 0.45f, 0.75f);
+            iconImg.color = isUnlocked ? Color.white : new Color(0.35f, 0.30f, 0.35f, 0.45f);
 
-            // Badge Sao ở góc trên trái
-            if (star > 0)
+            // 5. Huy hiệu Hệ Ngũ Hành ở góc trên trái
+            if (isUnlocked)
             {
-                GameObject starObj = new GameObject("Txt_Star", typeof(RectTransform), typeof(TextMeshProUGUI));
-                starObj.transform.SetParent(itemObj.transform, false);
-                var starRT = starObj.GetComponent<RectTransform>();
-                starRT.anchorMin = new Vector2(0, 1);
-                starRT.anchorMax = new Vector2(0, 1);
-                starRT.pivot = new Vector2(0, 1);
-                starRT.anchoredPosition = new Vector2(8, -8);
-                starRT.sizeDelta = new Vector2(50, 18);
-
-                var starTMP = starObj.GetComponent<TextMeshProUGUI>();
-                starTMP.text = $"<color=#FFD700>{star} Sao</color>";
-                starTMP.fontSize = 11;
-                starTMP.fontStyle = FontStyles.Bold;
+                Sprite elemBadge = GetElementBadgeSprite(weapon.elementType);
+                if (elemBadge != null)
+                {
+                    GameObject elemBadgeObj = new GameObject("Badge_Element", typeof(RectTransform), typeof(Image));
+                    elemBadgeObj.transform.SetParent(boxObj.transform, false);
+                    var ebRT = elemBadgeObj.GetComponent<RectTransform>();
+                    ebRT.anchorMin = new Vector2(0, 1);
+                    ebRT.anchorMax = new Vector2(0, 1);
+                    ebRT.pivot = new Vector2(0, 1);
+                    ebRT.anchoredPosition = new Vector2(2, -2);
+                    ebRT.sizeDelta = new Vector2(24, 24);
+                    var ebImg = elemBadgeObj.GetComponent<Image>();
+                    ebImg.sprite = elemBadge;
+                    ebImg.preserveAspect = true;
+                    ebImg.raycastTarget = false;
+                }
             }
 
-            // Thanh tiến độ thẻ mảnh (X/Y Thẻ)
+            // 6. Huy hiệu Cấp Sao ở góc trên phải
+            if (star > 0)
+            {
+                GameObject starObj = new GameObject("Badge_Star", typeof(RectTransform), typeof(TextMeshProUGUI));
+                starObj.transform.SetParent(boxObj.transform, false);
+                var starRT = starObj.GetComponent<RectTransform>();
+                starRT.anchorMin = new Vector2(1, 1);
+                starRT.anchorMax = new Vector2(1, 1);
+                starRT.pivot = new Vector2(1, 1);
+                starRT.anchoredPosition = new Vector2(-4, -2);
+                starRT.sizeDelta = new Vector2(48, 20);
+
+                var starTMP = starObj.GetComponent<TextMeshProUGUI>();
+                starTMP.text = $"<color=#FFD700><b>{star}★</b></color>";
+                starTMP.fontSize = 12;
+                starTMP.alignment = TextAlignmentOptions.Right;
+                starTMP.raycastTarget = false;
+            }
+
+            // 7. Thanh Tiến Độ Thẻ Mảnh (Góc dưới trong ô)
             GameObject shardObj = new GameObject("Txt_Shards", typeof(RectTransform), typeof(TextMeshProUGUI));
-            shardObj.transform.SetParent(itemObj.transform, false);
+            shardObj.transform.SetParent(boxObj.transform, false);
             var shardRT = shardObj.GetComponent<RectTransform>();
             shardRT.anchorMin = new Vector2(0, 0);
             shardRT.anchorMax = new Vector2(1, 0);
             shardRT.pivot = new Vector2(0.5f, 0);
-            shardRT.anchoredPosition = new Vector2(0, 24);
-            shardRT.sizeDelta = new Vector2(-12, 16);
+            shardRT.anchoredPosition = new Vector2(0, 3);
+            shardRT.sizeDelta = new Vector2(-8, 16);
 
             var shardTMP = shardObj.GetComponent<TextMeshProUGUI>();
             if (star >= 5)
             {
-                shardTMP.text = "<color=#00FF88>Tối Đa</color>";
+                shardTMP.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
             }
             else
             {
                 string colorHex = shards >= reqShards ? "00FF88" : "FFAA00";
-                shardTMP.text = $"<color=#{colorHex}>{shards}/{reqShards}</color>";
+                shardTMP.text = $"<color=#{colorHex}><b>{shards}/{reqShards}</b></color>";
             }
-            shardTMP.fontSize = 11.5f;
+            shardTMP.fontSize = 11f;
             shardTMP.alignment = TextAlignmentOptions.Center;
-            shardTMP.fontStyle = FontStyles.Bold;
+            shardTMP.raycastTarget = false;
 
-            // Tên Vũ Khí
-            GameObject txtObj = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI));
-            txtObj.transform.SetParent(itemObj.transform, false);
-            var txtRT = txtObj.GetComponent<RectTransform>();
-            txtRT.anchorMin = new Vector2(0, 0);
-            txtRT.anchorMax = new Vector2(1, 0);
-            txtRT.pivot = new Vector2(0.5f, 0);
-            txtRT.anchoredPosition = new Vector2(0, 6);
-            txtRT.sizeDelta = new Vector2(-10, 18);
+            // 8. Nhãn Tên Vũ Khí bên dưới
+            GameObject lblObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            lblObj.transform.SetParent(slotObj.transform, false);
+            var lblRT = lblObj.GetComponent<RectTransform>();
+            lblRT.anchorMin = new Vector2(0, 0);
+            lblRT.anchorMax = new Vector2(1, 0);
+            lblRT.pivot = new Vector2(0.5f, 0);
+            lblRT.anchoredPosition = Vector2.zero;
+            lblRT.sizeDelta = new Vector2(0, 24);
 
-            var tmp = txtObj.GetComponent<TextMeshProUGUI>();
-            tmp.text = weapon.weaponName;
-            tmp.fontSize = 11f;
-            tmp.fontStyle = FontStyles.Bold;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = star > 0 ? new Color(0.98f, 0.90f, 0.72f, 1f) : new Color(0.7f, 0.65f, 0.6f, 0.85f);
-            tmp.overflowMode = TextOverflowModes.Ellipsis;
+            var lblTMP = lblObj.GetComponent<TextMeshProUGUI>();
+            lblTMP.fontSize = 13.5f;
+            lblTMP.alignment = TextAlignmentOptions.Center;
+            lblTMP.fontStyle = FontStyles.Bold;
+            lblTMP.overflowMode = TextOverflowModes.Ellipsis;
+            lblTMP.raycastTarget = false;
 
-            var btn = itemObj.GetComponent<Button>();
+            if (!isUnlocked)
+            {
+                lblTMP.text = isSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
+            }
+            else
+            {
+                Color elemColor = GetElementColor(weapon.elementType);
+                string nameColorHex = isSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor);
+                lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+            }
+
+            // Lưu mapping để update selection
+            _relicSlotMap[weapon] = (slotObj, boxImg, lblTMP, isUnlocked);
+
+            // Xử lý Click
+            var btn = boxObj.GetComponent<Button>();
             btn.onClick.AddListener(() =>
             {
                 global::Core.Audio.AudioManager.Instance?.PlayUIClick();
@@ -410,57 +570,97 @@ namespace ProjectZombie.Features.UI
 
         private void CreateUpgradeCardItemView(UpgradeData data)
         {
-            GameObject itemObj = new GameObject($"CardItem_{data.id}", typeof(RectTransform), typeof(Image), typeof(Button));
-            itemObj.transform.SetParent(_view.CardsGridContainer, false);
+            // 1. Root Slot Object (120 x 140)
+            GameObject slotObj = new GameObject($"CardItem_{data.id}", typeof(RectTransform));
+            slotObj.transform.SetParent(_view.CardsGridContainer, false);
 
-            var rt = itemObj.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(120, 150);
+            var slotRT = slotObj.GetComponent<RectTransform>();
+            slotRT.sizeDelta = new Vector2(120, 140);
 
-            // Xác định Rarity cho Upgrade
-            var rarity = data.upgradeType switch
+            // 2. Khung Box (110 x 110)
+            GameObject boxObj = new GameObject("Box", typeof(RectTransform), typeof(Image), typeof(Button));
+            boxObj.transform.SetParent(slotObj.transform, false);
+            var boxRT = boxObj.GetComponent<RectTransform>();
+            boxRT.anchorMin = new Vector2(0.5f, 1f);
+            boxRT.anchorMax = new Vector2(0.5f, 1f);
+            boxRT.pivot = new Vector2(0.5f, 1f);
+            boxRT.anchoredPosition = Vector2.zero;
+            boxRT.sizeDelta = new Vector2(110, 110);
+
+            var boxImg = boxObj.GetComponent<Image>();
+            boxImg.type = Image.Type.Sliced;
+            boxImg.raycastTarget = true;
+
+            Sprite slotWood = _cardSlotWoodSprite;
+            Sprite slotSelected = _cardSlotSelectedSprite;
+            if (slotWood == null) slotWood = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (slotSelected == null) slotSelected = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
+#if UNITY_EDITOR
+            if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+#endif
+            bool isSelected = _selectedUpgrade == data;
+            if (isSelected)
             {
-                UpgradeType.BreakthroughUltimate or UpgradeType.EvolutionUpgrade or UpgradeType.RelicFusion => ProjectZombie.Features.Shared.ItemRarity.Legendary,
-                UpgradeType.ComboAugment or UpgradeType.DashTrait or UpgradeType.ConditionalPassive => ProjectZombie.Features.Shared.ItemRarity.Epic,
-                UpgradeType.RareUpgrade => ProjectZombie.Features.Shared.ItemRarity.Rare,
-                _ => ProjectZombie.Features.Shared.ItemRarity.Common
-            };
+                if (slotSelected != null) boxImg.sprite = slotSelected;
+                boxImg.color = Color.white;
+            }
+            else
+            {
+                if (slotWood != null) boxImg.sprite = slotWood;
+                boxImg.color = Color.white;
+            }
 
-            var img = itemObj.GetComponent<Image>();
-            img.type = Image.Type.Sliced;
-            img.sprite = GetRarityBorder(rarity);
-            img.color = Color.white;
+            // 3. Inner Background
+            GameObject innerObj = new GameObject("InnerBg", typeof(RectTransform), typeof(Image));
+            innerObj.transform.SetParent(boxObj.transform, false);
+            var inRT = innerObj.GetComponent<RectTransform>();
+            inRT.anchorMin = Vector2.zero;
+            inRT.anchorMax = Vector2.one;
+            inRT.offsetMin = new Vector2(5, 5);
+            inRT.offsetMax = new Vector2(-5, -5);
 
+            var inImg = innerObj.GetComponent<Image>();
+            inImg.color = new Color(0.12f, 0.09f, 0.16f, 0.85f);
+            inImg.raycastTarget = false;
+
+            // 4. Icon
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
-            iconObj.transform.SetParent(itemObj.transform, false);
+            iconObj.transform.SetParent(innerObj.transform, false);
             var iconRT = iconObj.GetComponent<RectTransform>();
-            iconRT.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRT.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRT.sizeDelta = new Vector2(68, 68);
-            iconRT.anchoredPosition = new Vector2(0, 14);
+            iconRT.anchorMin = Vector2.zero;
+            iconRT.anchorMax = Vector2.one;
+            iconRT.offsetMin = new Vector2(6, 6);
+            iconRT.offsetMax = new Vector2(-6, -6);
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.sprite = data.icon;
+            iconImg.enabled = data.icon != null;
             iconImg.preserveAspect = true;
             iconImg.raycastTarget = false;
 
-            GameObject txtObj = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI));
-            txtObj.transform.SetParent(itemObj.transform, false);
-            var txtRT = txtObj.GetComponent<RectTransform>();
-            txtRT.anchorMin = new Vector2(0, 0);
-            txtRT.anchorMax = new Vector2(1, 0);
-            txtRT.pivot = new Vector2(0.5f, 0);
-            txtRT.anchoredPosition = new Vector2(0, 6);
-            txtRT.sizeDelta = new Vector2(-10, 30);
+            // 5. Tên Upgrade bên dưới
+            GameObject lblObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            lblObj.transform.SetParent(slotObj.transform, false);
+            var lblRT = lblObj.GetComponent<RectTransform>();
+            lblRT.anchorMin = new Vector2(0, 0);
+            lblRT.anchorMax = new Vector2(1, 0);
+            lblRT.pivot = new Vector2(0.5f, 0);
+            lblRT.anchoredPosition = Vector2.zero;
+            lblRT.sizeDelta = new Vector2(0, 24);
 
-            var tmp = txtObj.GetComponent<TextMeshProUGUI>();
-            tmp.text = data.upgradeName;
-            tmp.fontSize = 11;
-            tmp.fontStyle = FontStyles.Bold;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.98f, 0.90f, 0.72f, 1f);
-            tmp.enableWordWrapping = true;
+            var lblTMP = lblObj.GetComponent<TextMeshProUGUI>();
+            lblTMP.text = isSelected ? $"<color=#FFFFFF>{data.upgradeName}</color>" : $"<color=#F1E6C8>{data.upgradeName}</color>";
+            lblTMP.fontSize = 12.5f;
+            lblTMP.fontStyle = FontStyles.Bold;
+            lblTMP.alignment = TextAlignmentOptions.Center;
+            lblTMP.overflowMode = TextOverflowModes.Ellipsis;
+            lblTMP.raycastTarget = false;
 
-            var btn = itemObj.GetComponent<Button>();
+            // Lưu mapping để update selection
+            _upgradeSlotMap[data] = (slotObj, boxImg, lblTMP);
+
+            var btn = boxObj.GetComponent<Button>();
             btn.onClick.AddListener(() =>
             {
                 global::Core.Audio.AudioManager.Instance?.PlayUIClick();
@@ -468,10 +668,91 @@ namespace ProjectZombie.Features.UI
             });
         }
 
+        private readonly Dictionary<WeaponData, (GameObject slotObj, Image boxImg, TextMeshProUGUI lblTMP, bool isUnlocked)> _relicSlotMap = new Dictionary<WeaponData, (GameObject, Image, TextMeshProUGUI, bool)>();
+        private readonly Dictionary<UpgradeData, (GameObject slotObj, Image boxImg, TextMeshProUGUI lblTMP)> _upgradeSlotMap = new Dictionary<UpgradeData, (GameObject, Image, TextMeshProUGUI)>();
+
+        private void UpdateSelectionVisuals()
+        {
+            Sprite slotWood = _cardSlotWoodSprite;
+            Sprite slotSelected = _cardSlotSelectedSprite;
+            if (slotWood == null) slotWood = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (slotSelected == null) slotSelected = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
+#if UNITY_EDITOR
+            if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+#endif
+
+            if (_currentTab == CodexTabType.RelicFusion)
+            {
+                foreach (var kvp in _relicSlotMap)
+                {
+                    var weapon = kvp.Key;
+                    var (slotObj, boxImg, lblTMP, isUnlocked) = kvp.Value;
+                    if (slotObj == null || boxImg == null) continue;
+
+                    bool isSelected = weapon == _selectedRelic;
+
+                    if (isSelected)
+                    {
+                        if (slotSelected != null) boxImg.sprite = slotSelected;
+                        boxImg.color = Color.white;
+                    }
+                    else
+                    {
+                        if (slotWood != null) boxImg.sprite = slotWood;
+                        boxImg.color = isUnlocked ? Color.white : new Color(0.40f, 0.35f, 0.30f, 0.6f);
+                    }
+
+                    if (lblTMP != null)
+                    {
+                        if (!isUnlocked)
+                        {
+                            lblTMP.text = isSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
+                        }
+                        else
+                        {
+                            Color elemColor = GetElementColor(weapon.elementType);
+                            string nameColorHex = isSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor);
+                            lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var kvp in _upgradeSlotMap)
+                {
+                    var data = kvp.Key;
+                    var (slotObj, boxImg, lblTMP) = kvp.Value;
+                    if (slotObj == null || boxImg == null) continue;
+
+                    bool isSelected = data == _selectedUpgrade;
+
+                    if (isSelected)
+                    {
+                        if (slotSelected != null) boxImg.sprite = slotSelected;
+                        boxImg.color = Color.white;
+                    }
+                    else
+                    {
+                        if (slotWood != null) boxImg.sprite = slotWood;
+                        boxImg.color = Color.white;
+                    }
+
+                    if (lblTMP != null)
+                    {
+                        lblTMP.text = isSelected ? $"<color=#FFFFFF>{data.upgradeName}</color>" : $"<color=#F1E6C8>{data.upgradeName}</color>";
+                    }
+                }
+            }
+        }
+
         private void SelectRelic(WeaponData weapon)
         {
             if (weapon == null) return;
             _selectedRelic = weapon;
+
+            UpdateSelectionVisuals();
 
             var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
             int star = relicMgr != null ? relicMgr.GetRelicStarLevel(weapon.weaponId) : 0;
@@ -512,6 +793,8 @@ namespace ProjectZombie.Features.UI
         {
             if (data == null) return;
             _selectedUpgrade = data;
+
+            UpdateSelectionVisuals();
 
             bool isFusion = data is FusionUpgradeData;
             string categoryName = data.GetCategoryDisplayName();
