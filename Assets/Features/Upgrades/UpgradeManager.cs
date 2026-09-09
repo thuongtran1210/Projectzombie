@@ -260,9 +260,8 @@ namespace ProjectZombie.Features.Upgrades
             }
 
             var selectedUpgrades = new List<UpgradeData>();
-            bool hasNewWeaponUnlockSelected = false;
 
-            // 2. Thuật toán Weighted Random có kiểm soát (Max 1 New Weapon Unlock)
+            // 2. Thuật toán Weighted Random tiêu chuẩn
             while (selectedUpgrades.Count < count && validUpgrades.Count > 0 && totalWeight > 0f)
             {
                 float randomValue = Random.Range(0f, totalWeight);
@@ -271,26 +270,9 @@ namespace ProjectZombie.Features.Upgrades
                 for (int i = 0; i < validUpgrades.Count; i++)
                 {
                     currentSum += weights[i];
-                    if (currentSum >= randomValue)
+                    if (currentSum >= randomValue || i == validUpgrades.Count - 1)
                     {
                         var chosen = validUpgrades[i];
-
-                        // Nếu đã chọn 1 thẻ Mở Khóa Mới rồi thì không cho phép chọn thêm thẻ Mở Khóa Mới thứ 2
-                        bool isNewWeaponUnlock = (chosen is WeaponUpgradeData wud) && wud.requiredCurrentLevel == 0;
-                        if (isNewWeaponUnlock && hasNewWeaponUnlockSelected)
-                        {
-                            // Loại bỏ thẻ mở khóa này khỏi pool roll hiện tại để tìm thẻ khác
-                            totalWeight -= weights[i];
-                            validUpgrades.RemoveAt(i);
-                            weights.RemoveAt(i);
-                            break;
-                        }
-
-                        if (isNewWeaponUnlock)
-                        {
-                            hasNewWeaponUnlockSelected = true;
-                        }
-
                         selectedUpgrades.Add(chosen);
                         totalWeight -= weights[i];
 

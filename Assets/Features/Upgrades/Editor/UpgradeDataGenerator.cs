@@ -56,7 +56,6 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
             GenerateCommonPassives(baseFolder);
             GenerateEvolutions(baseFolder);
-            GenerateWeaponUnlockUpgrades(baseFolder);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -164,69 +163,6 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 so.FindProperty("weaponId").stringValue = e.baseWeaponId;
                 so.FindProperty("requiredCurrentLevel").intValue = 5;
                 so.FindProperty("requiredPassiveId").stringValue = e.requiredPassiveId;
-                so.ApplyModifiedProperties();
-            }
-        }
-
-        private static void GenerateWeaponUnlockUpgrades(string baseFolder)
-        {
-            string[] weaponIds = { "W001", "W002", "W003", "W004", "W005", "W006", "W007", "W008", "W009", "W010", "W011", "W012" };
-            string[] weaponNames = { "Nỏ Thần", "Bút Phán Quan", "Bùa Trấn Yêu", "Cửu Vĩ Hồ Trảo", "Trống Đồng Đông Sơn", "Lựu Đạn Thần Sa", "Cung Thạch Sanh", "Đao Cửu Vĩ", "Trượng Long Vương", "Linh Phù Ma Da", "Nước Thánh Chùa Hương", "Phi Tiêu Bát Quái" };
-
-            for (int i = 0; i < weaponIds.Length; i++)
-            {
-                string wId = weaponIds[i];
-                string wName = weaponNames[i];
-                string assetPath = $"{baseFolder}/Weapons/Unlock_{wId}_{wName.Replace(" ", "")}.asset";
-
-                var asset = AssetDatabase.LoadAssetAtPath<WeaponUpgradeData>(assetPath);
-                if (asset == null)
-                {
-                    asset = ScriptableObject.CreateInstance<WeaponUpgradeData>();
-                    AssetDatabase.CreateAsset(asset, assetPath);
-                }
-
-                // Tự động tìm Prefab vũ khí tương ứng trong Assets/_Prefabs/Weapons/
-                GameObject weaponPrefab = null;
-                string[] guids = AssetDatabase.FindAssets($"Weapon_{wId}_ t:Prefab", new string[] { "Assets/_Prefabs/Weapons" });
-                if (guids.Length > 0)
-                {
-                    string prefabPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-                    weaponPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                }
-
-                SerializedObject so = new SerializedObject(asset);
-                so.FindProperty("upgradeName").stringValue = $"Mở khóa: {wName}";
-                so.FindProperty("description").stringValue = $"Nhận Pháp Bảo {wName} vào trang bị active.";
-                so.FindProperty("upgradeType").enumValueIndex = (int)UpgradeType.WeaponUpgrade;
-                so.FindProperty("spawnWeight").floatValue = 5f;
-                so.FindProperty("weaponId").stringValue = wId;
-                so.FindProperty("requiredCurrentLevel").intValue = 0; // 0 = Unlock new weapon
-                if (weaponPrefab != null)
-                {
-                    so.FindProperty("weaponPrefab").objectReferenceValue = weaponPrefab;
-                    
-                    // Tìm icon tương ứng từ WeaponBase hoặc icon file
-                    var weaponComp = weaponPrefab.GetComponent<WeaponBase>();
-                    if (weaponComp != null && weaponComp.icon != null)
-                    {
-                        so.FindProperty("icon").objectReferenceValue = weaponComp.icon;
-                    }
-                    else
-                    {
-                        // Thử tìm từ file icon độc lập trong Assets/Art/Weapons/
-                        string[] iconGuids = AssetDatabase.FindAssets($"Icon_{wId}_ t:Sprite", new string[] { "Assets/Art/Weapons" });
-                        if (iconGuids.Length > 0)
-                        {
-                            string iconPath = AssetDatabase.GUIDToAssetPath(iconGuids[0]);
-                            Sprite iconSprite = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
-                            if (iconSprite != null)
-                            {
-                                so.FindProperty("icon").objectReferenceValue = iconSprite;
-                            }
-                        }
-                    }
-                }
                 so.ApplyModifiedProperties();
             }
         }

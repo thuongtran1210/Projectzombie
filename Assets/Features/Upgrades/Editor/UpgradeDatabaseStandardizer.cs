@@ -128,17 +128,6 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 string wId = weaponIds[w];
                 string wName = weaponNames[w];
 
-                // Ensure Unlock card (Level 0) has correct id
-                string unlockPath = $"{weaponsFolder}/Unlock_{wId}_{wName.Replace(" ", "")}.asset";
-                var unlockAsset = AssetDatabase.LoadAssetAtPath<WeaponUpgradeData>(unlockPath);
-                if (unlockAsset != null)
-                {
-                    unlockAsset.id = $"Unlock_{wId}";
-                    unlockAsset.weaponId = wId;
-                    unlockAsset.requiredCurrentLevel = 0;
-                    EditorUtility.SetDirty(unlockAsset);
-                }
-
                 // Generate Level 2 to Level 5 upgrade cards
                 for (int lvl = 1; lvl <= 4; lvl++)
                 {
@@ -160,10 +149,14 @@ namespace ProjectZombie.Features.Upgrades.Editor
                     asset.spawnWeight = 8f;
                     asset.maxLevel = 1;
 
-                    // Copy icon from unlock card if exists
-                    if (unlockAsset != null && unlockAsset.icon != null)
+                    if (asset.icon == null)
                     {
-                        asset.icon = unlockAsset.icon;
+                        string[] iconGuids = AssetDatabase.FindAssets($"Icon_{wId} t:Sprite", new string[] { "Assets/Art/Weapons" });
+                        if (iconGuids.Length > 0)
+                        {
+                            string iconPath = AssetDatabase.GUIDToAssetPath(iconGuids[0]);
+                            asset.icon = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
+                        }
                     }
 
                     var mod = new WeaponStatModifier();
