@@ -25,9 +25,13 @@ namespace ProjectZombie.Features.Player.Skills
 
             Vector3 spawnPos = playerObj.transform.position;
 
+            Transform vfxRoot = ProjectZombie.Core.Pooling.PoolHierarchyManager.Instance != null 
+                ? ProjectZombie.Core.Pooling.PoolHierarchyManager.Instance.GetCategoryRoot(ProjectZombie.Core.Pooling.PoolHierarchyManager.PoolCategory.VFX) 
+                : null;
+
             if (_zonePrefab != null)
             {
-                GameObject zoneObj = Object.Instantiate(_zonePrefab, spawnPos, Quaternion.identity);
+                GameObject zoneObj = Object.Instantiate(_zonePrefab, spawnPos, Quaternion.identity, vfxRoot);
                 var zoneScript = zoneObj.GetComponent<BatQuaiTranZone>();
                 if (zoneScript != null)
                 {
@@ -38,6 +42,7 @@ namespace ProjectZombie.Features.Player.Skills
             {
                 // Fallback tạo GameObject động có BatQuaiTranZone & LineRenderer
                 GameObject zoneObj = new GameObject("BatQuaiTranZone_Dynamic");
+                if (vfxRoot != null) zoneObj.transform.SetParent(vfxRoot);
                 var lineRenderer = zoneObj.AddComponent<LineRenderer>();
                 lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
                 lineRenderer.startColor = new Color(0.9f, 0.8f, 0.5f, 0.6f);

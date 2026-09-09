@@ -70,7 +70,7 @@ namespace ProjectZombie.Features.Player.Skills
         {
             if (_shockwavePrefab != null)
             {
-                Object.Instantiate(_shockwavePrefab, center, Quaternion.identity);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_shockwavePrefab, center, Quaternion.identity, 1.2f);
             }
 
             var stats = playerObj.GetComponent<PlayerStats>();

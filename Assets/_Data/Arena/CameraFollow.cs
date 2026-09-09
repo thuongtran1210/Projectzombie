@@ -26,7 +26,7 @@ namespace ProjectZombie.Features.Arena
         private Vector3 _shakeOffset = Vector3.zero;
         private Coroutine _shakeCoroutine;
         private Coroutine _zoomCoroutine;
-        private float _defaultOrthoSize = 5.5f;
+        private float _defaultOrthoSize = 6.0f;
 
         public float DefaultOrthoSize => _defaultOrthoSize;
 

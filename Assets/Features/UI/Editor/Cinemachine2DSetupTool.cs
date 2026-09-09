@@ -70,13 +70,13 @@ namespace ProjectZombie.Features.CameraTools.Editor
                 if (vcam == null) vcam = vcamObj.AddComponent<CinemachineVirtualCamera>();
             }
 
-            // 4. Cấu hình Lens & Body (Framing Transposer chuẩn 2D Action)
+            // 4. Cấu hình Lens & Body (Framing Transposer chuẩn 2D Action Roguelite)
             vcam.m_Lens.Orthographic = true;
-            vcam.m_Lens.OrthographicSize = 5.5f;
+            vcam.m_Lens.OrthographicSize = 6.0f;
             vcam.m_Lens.NearClipPlane = 0.1f;
             vcam.m_Lens.FarClipPlane = 5000f;
 
-            // Cấu hình Body = Framing Transposer
+            // Cấu hình Body = Framing Transposer (Định tâm 100% vào nhân vật, không trễ góc)
             var transposer = vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer == null)
             {
@@ -84,22 +84,20 @@ namespace ProjectZombie.Features.CameraTools.Editor
             }
 
             transposer.m_TrackedObjectOffset = Vector3.zero;
-            transposer.m_LookaheadTime = 0.15f; // Dự đoán hướng di chuyển 0.15s
-            transposer.m_LookaheadSmoothing = 5f;
+            transposer.m_LookaheadTime = 0f; // Bỏ lookahead để không bị giật/lệch góc khi đổi hướng sát mép
+            transposer.m_LookaheadSmoothing = 0f;
             transposer.m_LookaheadIgnoreY = false;
 
-            // Damping (độ êm ái)
-            transposer.m_XDamping = 0.5f;
-            transposer.m_YDamping = 0.5f;
+            // Damping (bám nhạy và êm ái)
+            transposer.m_XDamping = 0.25f;
+            transposer.m_YDamping = 0.25f;
             transposer.m_ZDamping = 0f;
 
-            // Dead Zone (vùng đứng yên không dịch camera)
-            transposer.m_DeadZoneWidth = 0.05f;
-            transposer.m_DeadZoneHeight = 0.05f;
-
-            // Soft Zone (vùng camera bắt đầu bám theo)
-            transposer.m_SoftZoneWidth = 0.6f;
-            transposer.m_SoftZoneHeight = 0.6f;
+            // Dead Zone & Soft Zone (0 để bám liên tục, nhân vật ở góc nào camera cũng theo tới)
+            transposer.m_DeadZoneWidth = 0f;
+            transposer.m_DeadZoneHeight = 0f;
+            transposer.m_SoftZoneWidth = 0.1f;
+            transposer.m_SoftZoneHeight = 0.1f;
             transposer.m_BiasX = 0f;
             transposer.m_BiasY = 0f;
 
@@ -110,7 +108,14 @@ namespace ProjectZombie.Features.CameraTools.Editor
             var impulseSource = vcamObj.GetComponent<CinemachineImpulseSource>();
             if (impulseSource == null) impulseSource = vcamObj.AddComponent<CinemachineImpulseSource>();
 
-            // 6. Gắn hoặc cập nhật CameraFollow component trên Main Camera
+            // 6. Gỡ bỏ Confiner nếu có (Confiner là nguyên nhân chặn camera ở góc hẹp và làm quái vật va chạm lộn xộn)
+            var oldConfiner2D = vcamObj.GetComponent<CinemachineConfiner2D>();
+            if (oldConfiner2D != null) Undo.DestroyObjectImmediate(oldConfiner2D);
+
+            var oldConfinerObj = GameObject.Find("Arena_CameraConfiner2D");
+            if (oldConfinerObj != null) Undo.DestroyObjectImmediate(oldConfinerObj);
+
+            // 7. Gắn hoặc cập nhật CameraFollow component trên Main Camera
             var cameraFollow = mainCam.GetComponent<CameraFollow>();
             if (cameraFollow == null) cameraFollow = Undo.AddComponent<CameraFollow>(mainCam.gameObject);
 
@@ -121,7 +126,7 @@ namespace ProjectZombie.Features.CameraTools.Editor
             if (impulseProp != null) impulseProp.objectReferenceValue = impulseSource;
             cfSO.ApplyModifiedProperties();
 
-            // 7. Tự động liên kết Player nếu Player đã có trong Scene
+            // 8. Tự động liên kết Player nếu Player đã có trong Scene
             var player = GameObject.FindWithTag("Player");
             if (player != null)
             {
@@ -134,7 +139,7 @@ namespace ProjectZombie.Features.CameraTools.Editor
             Undo.CollapseUndoOperations(group);
             Selection.activeGameObject = vcamObj;
 
-            EditorUtility.DisplayDialog("Thành công", "Đã nâng cấp hệ thống Camera sang Cinemachine 2D hoàn chỉnh!\n\n- Gỡ bỏ PixelPerfectCamera\n- Cấu hình Framing Transposer & Lookahead\n- Tích hợp Screen Shake Impulse", "OK");
+            EditorUtility.DisplayDialog("Thành công", "Đã tối ưu hệ thống Camera 2D Roguelite!\n\n- Gỡ bỏ Confiner (Đã sửa lỗi AI quái vật & góc hẹp)\n- Định tâm trực tiếp mượt mà vào nhân vật (Ortho Size 6.0)\n- Bám sát ngay cả khi ở các góc hẹp của bản đồ", "OK");
             Debug.Log("<color=green>[Cinemachine 2D]</color> Cấu hình Camera hoàn tất thành công!");
         }
     }

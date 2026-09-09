@@ -76,7 +76,7 @@ namespace ProjectZombie.Features.Player.Skills
             // Trận Địa Thư Pháp Dưới Chân
             if (_groundDecalPrefab != null)
             {
-                Object.Instantiate(_groundDecalPrefab, center, Quaternion.identity);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_groundDecalPrefab, center, Quaternion.identity, 2.0f);
             }
 
             // Vệt Mực Xoáy 4 Hướng
@@ -86,14 +86,14 @@ namespace ProjectZombie.Features.Player.Skills
                 {
                     float angle = i * 90f;
                     Quaternion rot = Quaternion.Euler(0f, 0f, angle);
-                    Object.Instantiate(_inkSlashPrefab, center, rot);
+                    ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_inkSlashPrefab, center, rot, 0.8f);
                 }
             }
 
             // Sét Phán Quan nếu có Prefab
             if (_lightningPrefab != null)
             {
-                Object.Instantiate(_lightningPrefab, center, Quaternion.identity);
+                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(_lightningPrefab, center, Quaternion.identity, 1.2f);
             }
         }
 
