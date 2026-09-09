@@ -41,6 +41,8 @@ namespace ProjectZombie.Features.UI
                 _view.OnTabChanged += SetTab;
                 _view.OnAlchemyFusionClicked += HandleFusionClicked;
             }
+
+            SubscribeManagers();
         }
 
         private void OnDestroy()
@@ -51,13 +53,76 @@ namespace ProjectZombie.Features.UI
                 _view.OnTabChanged -= SetTab;
                 _view.OnAlchemyFusionClicked -= HandleFusionClicked;
             }
+
+            UnsubscribeManagers();
         }
 
         private void OnEnable()
         {
+            SubscribeManagers();
             LoadAllData();
             RefreshCurrency();
             SetTab(_currentTab);
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeManagers();
+        }
+
+        private void SubscribeManagers()
+        {
+            if (RelicInventoryManager.Instance != null)
+            {
+                RelicInventoryManager.Instance.OnRelicShardsChanged -= HandleRelicDataChanged;
+                RelicInventoryManager.Instance.OnRelicShardsChanged += HandleRelicDataChanged;
+                RelicInventoryManager.Instance.OnRelicStarUpgraded -= HandleRelicDataChanged;
+                RelicInventoryManager.Instance.OnRelicStarUpgraded += HandleRelicDataChanged;
+            }
+
+            if (MetaCurrencyManager.Instance != null)
+            {
+                MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
+                MetaCurrencyManager.Instance.OnCurrencyChanged += HandleCurrencyChanged;
+            }
+        }
+
+        private void UnsubscribeManagers()
+        {
+            if (RelicInventoryManager.Instance != null)
+            {
+                RelicInventoryManager.Instance.OnRelicShardsChanged -= HandleRelicDataChanged;
+                RelicInventoryManager.Instance.OnRelicStarUpgraded -= HandleRelicDataChanged;
+            }
+
+            if (MetaCurrencyManager.Instance != null)
+            {
+                MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
+            }
+        }
+
+        private void HandleRelicDataChanged(string relicId, int val)
+        {
+            RefreshUI();
+        }
+
+        private void HandleCurrencyChanged(int newBalance)
+        {
+            RefreshCurrency();
+            if (_selectedRelic != null && _currentTab == CodexTabType.RelicFusion)
+            {
+                SelectRelic(_selectedRelic);
+            }
+        }
+
+        public void RefreshUI()
+        {
+            RefreshCurrency();
+            PopulateGridForTab(_currentTab);
+            if (_selectedRelic != null && _currentTab == CodexTabType.RelicFusion)
+            {
+                SelectRelic(_selectedRelic);
+            }
         }
 
         public void LoadAllData()
@@ -66,31 +131,41 @@ namespace ProjectZombie.Features.UI
             _allFusionUpgrades.Clear();
             _allWeapons.Clear();
 
+            var seenUpgradeIds = new HashSet<string>();
+            var seenWeaponIds = new HashSet<string>();
+
+            void TryAddUpgrade(UpgradeData u)
+            {
+                if (u == null) return;
+                string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                if (seenUpgradeIds.Add(upId))
+                {
+                    _allUpgrades.Add(u);
+                    if (u is FusionUpgradeData f) _allFusionUpgrades.Add(f);
+                }
+            }
+
+            void TryAddWeapon(WeaponData w)
+            {
+                if (w == null || string.IsNullOrEmpty(w.weaponId)) return;
+                if (seenWeaponIds.Add(w.weaponId))
+                {
+                    _allWeapons.Add(w);
+                }
+            }
+
             // 1. Load Upgrades
             var loadedUpgrades = Resources.LoadAll<UpgradeData>("");
             if (loadedUpgrades != null)
             {
-                foreach (var u in loadedUpgrades)
-                {
-                    if (u != null)
-                    {
-                        _allUpgrades.Add(u);
-                        if (u is FusionUpgradeData f) _allFusionUpgrades.Add(f);
-                    }
-                }
+                foreach (var u in loadedUpgrades) TryAddUpgrade(u);
             }
 
             // 2. Load Weapons
             var loadedWeapons = Resources.LoadAll<WeaponData>("");
             if (loadedWeapons != null)
             {
-                foreach (var w in loadedWeapons)
-                {
-                    if (w != null && !_allWeapons.Contains(w))
-                    {
-                        _allWeapons.Add(w);
-                    }
-                }
+                foreach (var w in loadedWeapons) TryAddWeapon(w);
             }
 
 #if UNITY_EDITOR
@@ -101,7 +176,7 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    if (w != null && !_allWeapons.Contains(w)) _allWeapons.Add(w);
+                    TryAddWeapon(w);
                 }
             }
             if (_allUpgrades.Count == 0)
@@ -111,11 +186,7 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var u = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                    if (u != null && !_allUpgrades.Contains(u))
-                    {
-                        _allUpgrades.Add(u);
-                        if (u is FusionUpgradeData f && !_allFusionUpgrades.Contains(f)) _allFusionUpgrades.Add(f);
-                    }
+                    TryAddUpgrade(u);
                 }
             }
 #endif

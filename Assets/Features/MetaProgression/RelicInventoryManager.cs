@@ -180,15 +180,56 @@ namespace ProjectZombie.Features.MetaProgression
         }
 
         /// <summary>
-        /// Nhận thêm thẻ mảnh từ phần thưởng chiến trường hoặc rương báu.
+        /// Đặt trực tiếp số thẻ mảnh của pháp bảo (dùng cho Debug / Test / Tool).
+        /// </summary>
+        public void SetRelicShards(string relicId, int count)
+        {
+            if (string.IsNullOrEmpty(relicId)) return;
+
+            int currentStar = GetRelicStarLevel(relicId);
+            int newShards = Mathf.Max(0, count);
+
+            if (_saveData != null)
+            {
+                _saveData.SetRelicProgress(relicId, newShards, currentStar);
+            }
+
+            SaveDataToDisk();
+            Debug.Log($"[RelicInventoryManager] Set thẻ '{relicId}': {newShards}");
+            OnRelicShardsChanged?.Invoke(relicId, newShards);
+        }
+
+        /// <summary>
+        /// Đặt trực tiếp cấp sao của pháp bảo từ 0★ đến 5★ (dùng cho Debug / Test / Tool).
+        /// </summary>
+        public void SetRelicStarLevel(string relicId, int starLevel)
+        {
+            if (string.IsNullOrEmpty(relicId)) return;
+
+            int currentShards = GetRelicShardCount(relicId);
+            int newStar = Mathf.Clamp(starLevel, 0, 5);
+
+            if (_saveData != null)
+            {
+                _saveData.SetRelicProgress(relicId, currentShards, newStar);
+            }
+
+            SaveDataToDisk();
+            Debug.Log($"[RelicInventoryManager] Set cấp sao '{relicId}': {newStar}★");
+            OnRelicStarUpgraded?.Invoke(relicId, newStar);
+            if (newStar >= 1) OnRelicUnlocked?.Invoke(relicId);
+        }
+
+        /// <summary>
+        /// Nhận thêm hoặc bớt thẻ mảnh (hỗ trợ count âm/dương).
         /// </summary>
         public void AddRelicShards(string relicId, int count)
         {
-            if (string.IsNullOrEmpty(relicId) || count <= 0) return;
+            if (string.IsNullOrEmpty(relicId)) return;
 
             int currentShards = GetRelicShardCount(relicId);
             int currentStar = GetRelicStarLevel(relicId);
-            int newShards = currentShards + count;
+            int newShards = Mathf.Max(0, currentShards + count);
 
             if (_saveData != null)
             {
@@ -197,7 +238,7 @@ namespace ProjectZombie.Features.MetaProgression
 
             SaveDataToDisk();
 
-            Debug.Log($"[RelicInventoryManager] Nhận +{count} thẻ '{relicId}'. Tổng hiện có: {newShards}");
+            Debug.Log($"[RelicInventoryManager] Thay đổi {(count >= 0 ? "+" : "")}{count} thẻ '{relicId}'. Tổng hiện có: {newShards}");
             OnRelicShardsChanged?.Invoke(relicId, newShards);
         }
 

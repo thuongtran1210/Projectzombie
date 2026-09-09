@@ -78,6 +78,11 @@ namespace ProjectZombie.EditorTools
                 AndroidBuildResourceSyncTool.SyncAllResourcesForAndroid();
             }
 
+            if (GUILayout.Button("🎮 Bảng Quản Lý Save Data (+ / - Tiền, Thẻ Mảnh, Sao, Hero)", GUILayout.Height(30)))
+            {
+                SaveDataAndProgressionEditorWindow.ShowWindow();
+            }
+
             EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("2. THIẾT LẬP TOÀN DIỆN (FULL 1-CLICK)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("Chỉ bấm nút này khi bạn muốn khởi tạo mới lại toàn bộ Canvas từ đầu.", MessageType.Warning);

@@ -98,40 +98,44 @@ namespace ProjectZombie.Features.UI
             if (_allWeapons == null || _allWeapons.Count == 0)
             {
                 _allWeapons = new List<WeaponData>();
+                var seenIds = new HashSet<string>();
+
+                void TryAddWeapon(WeaponData w)
+                {
+                    if (w == null || string.IsNullOrEmpty(w.weaponId)) return;
+                    if (seenIds.Add(w.weaponId))
+                    {
+                        _allWeapons.Add(w);
+                    }
+                }
 
                 var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-                if (loaded1 != null && loaded1.Length > 0) _allWeapons.AddRange(loaded1);
+                if (loaded1 != null && loaded1.Length > 0)
+                {
+                    foreach (var w in loaded1) TryAddWeapon(w);
+                }
 
                 var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
                 if (loaded2 != null && loaded2.Length > 0)
                 {
-                    foreach (var w in loaded2)
-                    {
-                        if (w != null && !_allWeapons.Contains(w)) _allWeapons.Add(w);
-                    }
+                    foreach (var w in loaded2) TryAddWeapon(w);
                 }
 
                 var loaded3 = Resources.LoadAll<WeaponData>("");
                 if (loaded3 != null && loaded3.Length > 0)
                 {
-                    foreach (var w in loaded3)
-                    {
-                        if (w != null && !_allWeapons.Contains(w)) _allWeapons.Add(w);
-                    }
+                    foreach (var w in loaded3) TryAddWeapon(w);
                 }
 
                 #if UNITY_EDITOR
                 if (_allWeapons.Count == 0)
                 {
-                    string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                    string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons", "Assets/Resources/Weapons" });
                     foreach (var guid in guids)
                     {
                         string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                         var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                        if (wd != null && !_allWeapons.Contains(wd))
-                        {
-                            _allWeapons.Add(wd);
-                        }
+                        TryAddWeapon(wd);
                     }
                 }
                 #endif

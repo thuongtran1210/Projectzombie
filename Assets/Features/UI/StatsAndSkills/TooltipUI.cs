@@ -44,7 +44,20 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void UpdatePosition()
         {
-            Vector2 pos = Input.mousePosition;
+            Vector2 pos = Vector2.zero;
+            if (UnityEngine.InputSystem.Mouse.current != null)
+            {
+                pos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+            }
+            else if (UnityEngine.InputSystem.Touchscreen.current != null && UnityEngine.InputSystem.Touchscreen.current.primaryTouch.press.isPressed)
+            {
+                pos = UnityEngine.InputSystem.Touchscreen.current.primaryTouch.position.ReadValue();
+            }
+            else
+            {
+                pos = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            }
+
             Vector3 targetPos = (Vector3)pos + (Vector3)_offset;
 
             // Clamp vị trí trong kích thước màn hình

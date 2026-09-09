@@ -132,6 +132,42 @@ namespace ProjectZombie.Features.MetaProgression
         }
 
         /// <summary>
+        /// Đặt trực tiếp số Cổ Tiền (dùng cho Tool / Test). Tự động lưu game.
+        /// </summary>
+        public void SetCurrency(int amount)
+        {
+            TotalCurrency = Mathf.Max(0, amount);
+            SyncToSaveData();
+            SaveProgress();
+            OnCurrencyChanged?.Invoke(TotalCurrency);
+            Debug.Log($"[MetaCurrencyManager] Set Cổ Tiền: {TotalCurrency}");
+        }
+
+        /// <summary>
+        /// Đặt trạng thái Khóa / Mở Khóa nhân vật (dùng cho Tool / Test). Tự động lưu game.
+        /// </summary>
+        public void SetCharacterLock(string characterId, bool isUnlocked)
+        {
+            if (string.IsNullOrEmpty(characterId) || _saveData == null) return;
+            if (characterId == "default" || characterId == "C001_ThuSinh") isUnlocked = true; // Starter hero luôn mở
+
+            var list = new System.Collections.Generic.List<string>(_saveData.unlockedCharacters ?? new string[0]);
+            if (isUnlocked && !list.Contains(characterId))
+            {
+                list.Add(characterId);
+            }
+            else if (!isUnlocked && list.Contains(characterId))
+            {
+                list.Remove(characterId);
+            }
+
+            _saveData.unlockedCharacters = list.ToArray();
+            SyncToSaveData();
+            SaveProgress();
+            Debug.Log($"[MetaCurrencyManager] Set nhân vật '{characterId}' = {(isUnlocked ? "MỞ KHÓA" : "KHÓA")}");
+        }
+
+        /// <summary>
         /// Trả về SaveData hiện tại để GameManager có thể serialize và gửi lên web.
         /// </summary>
         public MetaProgressionSaveData GetSaveData() => _saveData;
