@@ -13,7 +13,9 @@ namespace ProjectZombie.EditorTools.BuildSync
             new SyncRule("Quái vật (Enemies)", "Assets/_Prefabs/Characters/Enemies", "Assets/Resources/Enemies", "*.prefab"),
             new SyncRule("Tướng (Players)", "Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab"),
             new SyncRule("Timeline Màn Chơi (Levels)", "Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset"),
-            new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab")
+            new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab"),
+            new SyncRule("UI HUD Sprites (Pins, Badges)", "Assets/Art/UI/HUD", "Assets/Resources/UI/HUD", "*.png"),
+            new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png")
         };
 
         public static readonly List<SyncRule> SingleAssetRules = new List<SyncRule>
