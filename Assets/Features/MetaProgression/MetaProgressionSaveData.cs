@@ -10,6 +10,17 @@ namespace ProjectZombie.Features.MetaProgression
     [Serializable]
     public class MetaProgressionSaveData
     {
+        [Header("Cloud & Metadata")]
+        [Tooltip("Phiên bản cấu trúc dữ liệu lưu (dùng để migrate dữ liệu khi update game).")]
+        public int saveVersion = 1;
+
+        [Tooltip("Unix Timestamp thời điểm lưu lần cuối (dùng để resolve xung đột Cloud / Local).")]
+        public long lastSavedTimestamp = 0;
+
+        [Tooltip("Định danh phần cứng thiết bị chơi.")]
+        public string deviceId = "";
+
+        [Header("Currencies & Progression")]
         [Tooltip("Tổng số Cổ Tiền (tiền xu cổ Việt Nam) tích lũy.")]
         public int totalCurrency = 0;
 
