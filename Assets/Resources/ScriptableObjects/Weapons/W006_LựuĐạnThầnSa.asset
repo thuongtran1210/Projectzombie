@@ -20,8 +20,10 @@ MonoBehaviour:
   weaponId: W006
   weaponName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
   icon: {fileID: 0}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (CircleReticle 8.5m): Qu\u0103ng ch\xF9m 3 h\u1EA1t Th\u1EA7n Sa n\u1ED5 tung b\xE3o l\u1EEDa thi\xEAu r\u1EE5i v\xF9ng r\u1ED9ng trong 4s!"
-  rarity: Epic
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (CircleReticle 8.5m): Qu\u0103ng
+    ch\xF9m 3 h\u1EA1t Th\u1EA7n Sa n\u1ED5 tung b\xE3o l\u1EEDa thi\xEAu r\u1EE5i
+    v\xF9ng r\u1ED9ng trong 4s!"
+  rarity: 1
   evolutionWeaponId: E006
   elementType: 4
   weaponPrefab: {fileID: 2389269143492382759, guid: 09b4e48d3ee686148a9b8e0397b2d8c1, type: 3}

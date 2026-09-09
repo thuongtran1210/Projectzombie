@@ -274,6 +274,7 @@ namespace ProjectZombie.Features.UI
                             WeaponId = weapon.weaponId,
                             WeaponName = weapon.weaponName,
                             Icon = weapon.icon,
+                            Rarity = weapon.rarity,
                             ElementBadge = GetElementBadgeSprite(weapon.elementType),
                             NameColor = GetElementColor(weapon.elementType),
                             StarLevel = star,
@@ -411,7 +412,9 @@ namespace ProjectZombie.Features.UI
                 btnLabel = "CẢNH GIỚI TỐI ĐA (5 SAO)";
             }
 
-            string category = weapon.weaponRole == WeaponRole.PrimaryWeapon ? "[VŨ KHÍ CHÍNH]" : "[PHÁP BẢO HỘ THÂN]";
+            string rarityTag = $"<color={weapon.rarity.GetHexColor()}>[{weapon.rarity.GetDisplayName()}]</color>";
+            string roleTag = weapon.weaponRole == WeaponRole.PrimaryWeapon ? "[VŨ KHÍ CHÍNH]" : "[PHÁP BẢO HỘ THÂN]";
+            string category = $"{rarityTag} {roleTag}";
             string desc = $"{weapon.description}\n\n";
 
             if (nextStep != null)

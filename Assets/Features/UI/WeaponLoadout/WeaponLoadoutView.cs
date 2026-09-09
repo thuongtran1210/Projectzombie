@@ -254,5 +254,26 @@ namespace ProjectZombie.Features.UI
         }
 
         public Transform InventoryGridContainer => _inventoryGridContainer;
+
+        /// <summary>
+        /// Xóa sạch các slot item cũ trong Grid Container.
+        /// </summary>
+        public void ClearGrid()
+        {
+            if (_inventoryGridContainer == null) return;
+            for (int i = _inventoryGridContainer.childCount - 1; i >= 0; i--)
+            {
+                Destroy(_inventoryGridContainer.GetChild(i).gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Tạo một UniversalItemSlotView chuẩn trong Grid Container.
+        /// </summary>
+        public ProjectZombie.Features.UI.Common.UniversalItemSlotView CreateSlotItem()
+        {
+            if (_inventoryGridContainer == null) return null;
+            return ProjectZombie.Features.UI.Common.UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+        }
     }
 }

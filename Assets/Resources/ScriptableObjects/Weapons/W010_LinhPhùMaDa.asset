@@ -22,7 +22,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
   description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: Tri\u1EC7u h\u1ED3i linh
     th\xFA Ma Da b\u01A1i theo phun \u0111\u1ED9c l\xE0m ch\u1EADm li\xEAn t\u1EE5c."
-  rarity: Rare
+  rarity: 1
   evolutionWeaponId: E010
   elementType: 3
   weaponPrefab: {fileID: 2389269143492382759, guid: 377ab103817394b4380fc599ef9bc0b4, type: 3}

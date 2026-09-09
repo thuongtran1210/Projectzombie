@@ -2,52 +2,40 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectZombie.Features.Shared;
 
-namespace ProjectZombie.Features.UI
+namespace ProjectZombie.Features.UI.Common
 {
-    public struct RelicSlotViewModel
-    {
-        public string WeaponId;
-        public string WeaponName;
-        public Sprite Icon;
-        public ProjectZombie.Features.Shared.ItemRarity Rarity;
-        public Sprite ElementBadge;
-        public Color NameColor;
-        public int StarLevel;
-        public int ShardCount;
-        public int ReqShards;
-        public bool IsUnlocked;
-        public bool IsSelected;
-    }
-
-    public struct UpgradeSlotViewModel
-    {
-        public string UpgradeId;
-        public string UpgradeName;
-        public Sprite Icon;
-        public bool IsSelected;
-    }
-
     /// <summary>
-    /// Passive View quản lý hiển thị một ô Thần Thẻ / Pháp Bảo trong Grid Bách Bảo Các.
-    /// Chuẩn MVP: Không chứa logic nghiệp vụ hay truy xuất Model.
+    /// Passive View chuẩn mực duy nhất (Single Source of Truth) quản lý hiển thị một ô Item / Pháp Bảo / Thần Binh.
+    /// Tuân thủ nghiêm ngặt mô hình MVP: Không chứa logic nghiệp vụ, chỉ nhận ViewModel và render thị giác.
     /// </summary>
-    public class CodexSlotItemView : MonoBehaviour
+    public class UniversalItemSlotView : MonoBehaviour
     {
-        [Header("Components")]
-        [SerializeField] private Image _boxImage;
+        [Header("Khung & Nền")]
+        [SerializeField] private Image _boxBorderImage;
+        [SerializeField] private Image _innerBgImage;
+        [SerializeField] private Image _rarityGlowImage;
         [SerializeField] private Image _iconImage;
-        [SerializeField] private Image _elementBadgeImage;
-        [SerializeField] private TextMeshProUGUI _starText;
-        [SerializeField] private TextMeshProUGUI _shardProgressText;
-        [SerializeField] private TextMeshProUGUI _nameText;
+
+        [Header("Huy Hiệu Góc")]
+        [SerializeField] private Image _elementBadgeImage;      // Góc trái trên (Ngũ Hành)
+        [SerializeField] private TextMeshProUGUI _starBadgeText;  // Góc phải trên (1★ - 5★)
+        [SerializeField] private GameObject _equippedBadge;      // Góc phải dưới (Đã trang bị)
+
+        [Header("Nhãn & Tiến Trình")]
+        [SerializeField] private TextMeshProUGUI _bottomProgressText; // Dưới icon (Tiến trình mảnh X/5)
+        [SerializeField] private TextMeshProUGUI _nameText;           // Tên vật phẩm
+
+        [Header("Tương Tác")]
         [SerializeField] private Button _clickButton;
 
-        [Header("Sprites Config")]
-        [SerializeField] private Sprite _normalSlotSprite;
-        [SerializeField] private Sprite _selectedSlotSprite;
+        [Header("Sprite Resources Cổ Phong")]
+        [SerializeField] private Sprite _normalSlotWoodSprite;
+        [SerializeField] private Sprite _selectedSlotGlowSprite;
 
         private Action _onClickedCallback;
+        private UniversalItemSlotViewModel _currentVM;
 
         private void Awake()
         {
@@ -62,27 +50,31 @@ namespace ProjectZombie.Features.UI
             _onClickedCallback?.Invoke();
         }
 
-        public void BindRelic(RelicSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
+        /// <summary>
+        /// Nạp dữ liệu và render toàn bộ trạng thái của Item Slot.
+        /// </summary>
+        public void BindData(UniversalItemSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
         {
+            _currentVM = vm;
             _onClickedCallback = onClicked;
-            _normalSlotSprite = normalSlot;
-            _selectedSlotSprite = selectedSlot;
+            if (normalSlot != null) _normalSlotWoodSprite = normalSlot;
+            if (selectedSlot != null) _selectedSlotGlowSprite = selectedSlot;
 
-            // 1. Box State
-            UpdateBoxVisual(vm.IsSelected, vm.IsUnlocked);
-
-            // 2. Icon
+            // 1. Icon Pháp Bảo
             if (_iconImage != null)
             {
                 _iconImage.sprite = vm.Icon;
                 _iconImage.enabled = vm.Icon != null;
-                _iconImage.color = vm.IsUnlocked ? Color.white : new Color(0.35f, 0.30f, 0.35f, 0.45f);
+                _iconImage.color = vm.IsLocked ? new Color(0.35f, 0.30f, 0.35f, 0.45f) : Color.white;
             }
 
-            // 3. Element Badge
+            // 2. Viền Độ Hiếm & Hào Quang (Rarity Frame)
+            UpdateRarityAndSelectionVisuals(vm);
+
+            // 3. Huy hiệu Ngũ Hành (Top-Left)
             if (_elementBadgeImage != null)
             {
-                if (vm.IsUnlocked && vm.ElementBadge != null)
+                if (!vm.IsLocked && vm.ElementBadge != null)
                 {
                     _elementBadgeImage.sprite = vm.ElementBadge;
                     _elementBadgeImage.gameObject.SetActive(true);
@@ -93,118 +85,101 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // 4. Star Badge
-            if (_starText != null)
+            // 4. Cấp Sao (Top-Right)
+            if (_starBadgeText != null)
             {
                 if (vm.StarLevel > 0)
                 {
-                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel}★</b></color>";
-                    _starText.gameObject.SetActive(true);
+                    _starBadgeText.text = $"<color=#FFD700><b>{vm.StarLevel}★</b></color>";
+                    _starBadgeText.gameObject.SetActive(true);
                 }
                 else
                 {
-                    _starText.gameObject.SetActive(false);
+                    _starBadgeText.gameObject.SetActive(false);
                 }
             }
 
-            // 5. Shards Progress
-            if (_shardProgressText != null)
+            // 5. Huy hiệu Đã Trang Bị (Equipped Badge)
+            if (_equippedBadge != null)
             {
-                if (vm.StarLevel >= 5)
+                _equippedBadge.SetActive(vm.IsEquipped);
+            }
+
+            // 6. Thanh Tiến Trình / Nhãn Dưới (Bottom Progress Text)
+            if (_bottomProgressText != null)
+            {
+                if (!string.IsNullOrEmpty(vm.CustomBottomText))
                 {
-                    _shardProgressText.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
+                    _bottomProgressText.text = vm.CustomBottomText;
                 }
-                else
+                else if (vm.StarLevel >= 5)
+                {
+                    _bottomProgressText.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
+                }
+                else if (vm.ReqShards > 0)
                 {
                     string colorHex = vm.ShardCount >= vm.ReqShards ? "00FF88" : "FFAA00";
-                    _shardProgressText.text = $"<color=#{colorHex}><b>{vm.ShardCount}/{vm.ReqShards}</b></color>";
+                    _bottomProgressText.text = $"<color=#{colorHex}><b>{vm.ShardCount}/{vm.ReqShards}</b></color>";
+                }
+                else
+                {
+                    _bottomProgressText.text = "";
                 }
             }
 
-            // 6. Label Name
+            // 7. Nhãn Tên Vật Phẩm (Name Label)
             if (_nameText != null)
             {
-                if (!vm.IsUnlocked)
+                if (vm.IsLocked)
                 {
                     _nameText.text = vm.IsSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
                 }
                 else
                 {
-                    string nameColorHex = vm.IsSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(vm.NameColor);
-                    _nameText.text = $"<color=#{nameColorHex}>{vm.WeaponName}</color>";
+                    Color rarityColor = vm.Rarity.GetColor();
+                    string colorHex = vm.IsSelected ? "FFFFFF" : (vm.CustomNameColor.HasValue ? ColorUtility.ToHtmlStringRGB(vm.CustomNameColor.Value) : ColorUtility.ToHtmlStringRGB(rarityColor));
+                    _nameText.text = $"<color=#{colorHex}>{vm.ItemName}</color>";
                 }
             }
         }
 
-        public void BindUpgrade(UpgradeSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
+        private void UpdateRarityAndSelectionVisuals(UniversalItemSlotViewModel vm)
         {
-            _onClickedCallback = onClicked;
-            _normalSlotSprite = normalSlot;
-            _selectedSlotSprite = selectedSlot;
+            if (_boxBorderImage == null) return;
 
-            // 1. Box State
-            UpdateBoxVisual(vm.IsSelected, true);
+            Color rarityColor = vm.Rarity.GetColor();
 
-            // 2. Icon
-            if (_iconImage != null)
+            if (vm.IsSelected || vm.IsEquipped)
             {
-                _iconImage.sprite = vm.Icon;
-                _iconImage.enabled = vm.Icon != null;
-                _iconImage.color = Color.white;
-            }
-
-            // 3. Hide Element & Star for basic upgrades
-            if (_elementBadgeImage != null) _elementBadgeImage.gameObject.SetActive(false);
-            if (_starText != null) _starText.gameObject.SetActive(false);
-            if (_shardProgressText != null) _shardProgressText.text = "";
-
-            // 4. Label Name
-            if (_nameText != null)
-            {
-                _nameText.text = vm.IsSelected ? $"<color=#FFFFFF>{vm.UpgradeName}</color>" : $"<color=#F1E6C8>{vm.UpgradeName}</color>";
-            }
-        }
-
-        public void SetSelected(bool isSelected, bool isUnlocked = true, Color? customNameColor = null, string baseName = null)
-        {
-            UpdateBoxVisual(isSelected, isUnlocked);
-
-            if (_nameText != null)
-            {
-                if (!isUnlocked)
-                {
-                    _nameText.text = isSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
-                }
-                else if (!string.IsNullOrEmpty(baseName))
-                {
-                    string nameColorHex = isSelected ? "FFFFFF" : (customNameColor.HasValue ? ColorUtility.ToHtmlStringRGB(customNameColor.Value) : "F1E6C8");
-                    _nameText.text = $"<color=#{nameColorHex}>{baseName}</color>";
-                }
-            }
-        }
-
-        private void UpdateBoxVisual(bool isSelected, bool isUnlocked)
-        {
-            if (_boxImage == null) return;
-
-            if (isSelected)
-            {
-                if (_selectedSlotSprite != null) _boxImage.sprite = _selectedSlotSprite;
-                _boxImage.color = Color.white;
+                if (_selectedSlotGlowSprite != null) _boxBorderImage.sprite = _selectedSlotGlowSprite;
+                _boxBorderImage.color = vm.IsEquipped ? new Color(1f, 0.85f, 0.2f, 1f) : Color.white;
             }
             else
             {
-                if (_normalSlotSprite != null) _boxImage.sprite = _normalSlotSprite;
-                _boxImage.color = isUnlocked ? Color.white : new Color(0.40f, 0.35f, 0.30f, 0.6f);
+                if (_normalSlotWoodSprite != null) _boxBorderImage.sprite = _normalSlotWoodSprite;
+                _boxBorderImage.color = vm.IsLocked ? new Color(0.40f, 0.35f, 0.30f, 0.6f) : Color.white;
+            }
+
+            if (_rarityGlowImage != null)
+            {
+                if (!vm.IsLocked)
+                {
+                    _rarityGlowImage.color = new Color(rarityColor.r, rarityColor.g, rarityColor.b, 0.25f);
+                    _rarityGlowImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _rarityGlowImage.gameObject.SetActive(false);
+                }
             }
         }
 
         /// <summary>
         /// Tạo cấu trúc GameObject đầy đủ chuẩn Cổ Phong runtime nếu prefab chưa được build trong Asset.
         /// </summary>
-        public static CodexSlotItemView CreateDynamicSlot(Transform parent)
+        public static UniversalItemSlotView CreateDynamicSlot(Transform parent)
         {
-            GameObject slotObj = new GameObject("CodexSlotItem", typeof(RectTransform));
+            GameObject slotObj = new GameObject("UniversalItemSlot", typeof(RectTransform));
             slotObj.transform.SetParent(parent, false);
 
             var slotRT = slotObj.GetComponent<RectTransform>();
@@ -238,6 +213,18 @@ namespace ProjectZombie.Features.UI
             inImg.color = new Color(0.12f, 0.09f, 0.16f, 0.85f);
             inImg.raycastTarget = false;
 
+            // Rarity Glow (Nền ánh quang phẩm cấp)
+            GameObject glowObj = new GameObject("RarityGlow", typeof(RectTransform), typeof(Image));
+            glowObj.transform.SetParent(innerObj.transform, false);
+            var glowRT = glowObj.GetComponent<RectTransform>();
+            glowRT.anchorMin = Vector2.zero;
+            glowRT.anchorMax = Vector2.one;
+            glowRT.offsetMin = Vector2.zero;
+            glowRT.offsetMax = Vector2.zero;
+            var glowImg = glowObj.GetComponent<Image>();
+            glowImg.raycastTarget = false;
+            glowObj.SetActive(false);
+
             // Icon
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(innerObj.transform, false);
@@ -250,7 +237,7 @@ namespace ProjectZombie.Features.UI
             iconImg.preserveAspect = true;
             iconImg.raycastTarget = false;
 
-            // Element Badge
+            // Element Badge (Top-Left)
             GameObject elemBadgeObj = new GameObject("Badge_Element", typeof(RectTransform), typeof(Image));
             elemBadgeObj.transform.SetParent(boxObj.transform, false);
             var ebRT = elemBadgeObj.GetComponent<RectTransform>();
@@ -264,7 +251,7 @@ namespace ProjectZombie.Features.UI
             ebImg.raycastTarget = false;
             elemBadgeObj.SetActive(false);
 
-            // Star Badge
+            // Star Badge (Top-Right)
             GameObject starObj = new GameObject("Badge_Star", typeof(RectTransform), typeof(TextMeshProUGUI));
             starObj.transform.SetParent(boxObj.transform, false);
             var starRT = starObj.GetComponent<RectTransform>();
@@ -279,7 +266,21 @@ namespace ProjectZombie.Features.UI
             starTMP.raycastTarget = false;
             starObj.SetActive(false);
 
-            // Shard Progress
+            // Equipped Badge (Bottom-Right / Top Center)
+            GameObject eqObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
+            eqObj.transform.SetParent(boxObj.transform, false);
+            var eqRT = eqObj.GetComponent<RectTransform>();
+            eqRT.anchorMin = new Vector2(1, 0);
+            eqRT.anchorMax = new Vector2(1, 0);
+            eqRT.pivot = new Vector2(1, 0);
+            eqRT.anchoredPosition = new Vector2(-2, 2);
+            eqRT.sizeDelta = new Vector2(22, 22);
+            var eqImg = eqObj.GetComponent<Image>();
+            eqImg.color = new Color(1f, 0.85f, 0.2f, 1f);
+            eqImg.raycastTarget = false;
+            eqObj.SetActive(false);
+
+            // Shard Progress / Bottom text
             GameObject shardObj = new GameObject("Txt_Shards", typeof(RectTransform), typeof(TextMeshProUGUI));
             shardObj.transform.SetParent(boxObj.transform, false);
             var shardRT = shardObj.GetComponent<RectTransform>();
@@ -309,13 +310,16 @@ namespace ProjectZombie.Features.UI
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
             lblTMP.raycastTarget = false;
 
-            // Attach & Bind Fields
-            var slotView = slotObj.AddComponent<CodexSlotItemView>();
-            slotView._boxImage = boxImg;
+            // Attach Component
+            var slotView = slotObj.AddComponent<UniversalItemSlotView>();
+            slotView._boxBorderImage = boxImg;
+            slotView._innerBgImage = inImg;
+            slotView._rarityGlowImage = glowImg;
             slotView._iconImage = iconImg;
             slotView._elementBadgeImage = ebImg;
-            slotView._starText = starTMP;
-            slotView._shardProgressText = shardTMP;
+            slotView._starBadgeText = starTMP;
+            slotView._equippedBadge = eqObj;
+            slotView._bottomProgressText = shardTMP;
             slotView._nameText = lblTMP;
             slotView._clickButton = boxBtn;
 

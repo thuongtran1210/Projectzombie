@@ -20,8 +20,10 @@ MonoBehaviour:
   weaponId: W_POT
   weaponName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
   icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (CircleReticle): C\u1EAFm N\u1ED3i t\u1EEB xa h\xFAt to\xE0n b\u1ED9 qu\xE1i 6m, b\u1EAFn n\u1ED5 v\u0103ng 18m/s v\xE0 r\u01A1i C\u01A1m N\u1EAFm h\u1ED3i m\xE1u!"
-  rarity: Common
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (CircleReticle): C\u1EAFm
+    N\u1ED3i t\u1EEB xa h\xFAt to\xE0n b\u1ED9 qu\xE1i 6m, b\u1EAFn n\u1ED5 v\u0103ng
+    18m/s v\xE0 r\u01A1i C\u01A1m N\u1EAFm h\u1ED3i m\xE1u!"
+  rarity: 2
   evolutionWeaponId: 
   elementType: 5
   weaponPrefab: {fileID: 910008107644193619, guid: e9f474cb9bb167d42a492b2eb3b84cad, type: 3}

@@ -20,8 +20,10 @@ MonoBehaviour:
   weaponId: W008
   weaponName: "\u0110ao C\u1EEDu V\u0129"
   icon: {fileID: 21300000, guid: dd96b89cdb604841925c81c03de51b81, type: 3}
-  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (ConeSector 120\xB0): Th\u1EA7n uy 5s: T\u0103ng 35% t\u1ED1c \u0111\xE1nh, vung tr\u1EA3m H\u1ECFa Long 8 h\u01B0\u1EDBng qu\xE9t s\u1EA1ch b\u1EA7y qu\xE1i!"
-  rarity: Rare
+  description: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (ConeSector 120\xB0): Th\u1EA7n
+    uy 5s: T\u0103ng 35% t\u1ED1c \u0111\xE1nh, vung tr\u1EA3m H\u1ECFa Long 8 h\u01B0\u1EDBng
+    qu\xE9t s\u1EA1ch b\u1EA7y qu\xE1i!"
+  rarity: 1
   evolutionWeaponId: E008
   elementType: 4
   weaponPrefab: {fileID: 2389269143492382759, guid: c4e20858a963ae341b688874c521a84e, type: 3}

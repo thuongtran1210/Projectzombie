@@ -23,7 +23,7 @@ MonoBehaviour:
   description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: Phi ti\xEAu ma thu\u1EADt
     t\u1EF1 \u0111\u1ED9ng xoay tr\xF2n qu\xE9t k\u1EBB \u0111\u1ECBch v\xE0 quy
     h\u1ED3i."
-  rarity: Common
+  rarity: 1
   evolutionWeaponId: E012
   elementType: 2
   weaponPrefab: {fileID: 2389269143492382759, guid: 3af183ec83a5ed74e90b5e32a49d50a8, type: 3}
