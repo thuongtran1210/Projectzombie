@@ -31,6 +31,7 @@ namespace ProjectZombie.Features.Player
         private HealthSystem _healthSystem;
         private PlayerAnimator _playerAnimator;
         private PlayerController _playerController;
+        private CharacterCombat _characterCombat;
         private WeaponManager _weaponManager;
         private Collider2D _collider;
 
@@ -46,6 +47,7 @@ namespace ProjectZombie.Features.Player
             _healthSystem = GetComponent<HealthSystem>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _playerController = GetComponent<PlayerController>();
+            _characterCombat = GetComponent<CharacterCombat>();
             _weaponManager = GetComponent<WeaponManager>();
             _collider = GetComponent<Collider2D>();
 
@@ -53,7 +55,16 @@ namespace ProjectZombie.Features.Player
             {
                 // Ngăn HealthSystem ẩn GameObject để player kịp chạy animation tử trận
                 _healthSystem.DisableGameObjectOnDeath = false;
+                _healthSystem.OnDied -= HandlePlayerDeath;
                 _healthSystem.OnDied += HandlePlayerDeath;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (_healthSystem != null)
+            {
+                _healthSystem.DisableGameObjectOnDeath = false;
             }
         }
 
@@ -66,6 +77,7 @@ namespace ProjectZombie.Features.Player
             StopAllCoroutines();
 
             if (_playerController != null) _playerController.enabled = true;
+            if (_characterCombat != null) _characterCombat.enabled = true;
             if (_weaponManager != null) _weaponManager.enabled = true;
             if (_collider != null) _collider.enabled = true;
             if (_playerAnimator != null) _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
@@ -93,19 +105,25 @@ namespace ProjectZombie.Features.Player
                 _playerController.enabled = false;
             }
 
-            // 2. Tắt hệ thống vũ khí để ngừng bắn tự động
+            // 2. Vô hiệu hóa hệ thống tấn công thường
+            if (_characterCombat != null)
+            {
+                _characterCombat.enabled = false;
+            }
+
+            // 3. Tắt hệ thống vũ khí để ngừng bắn tự động
             if (_weaponManager != null)
             {
                 _weaponManager.enabled = false;
             }
 
-            // 3. Tắt Collider để kẻ địch không tiếp tục va chạm/đẩy xác
+            // 4. Tắt Collider để kẻ địch không tiếp tục va chạm/đẩy xác
             if (_collider != null)
             {
                 _collider.enabled = false;
             }
 
-            // 4. Kích hoạt hoạt ảnh gục ngã / tử trận
+            // 5. Kích hoạt hoạt ảnh gục ngã / tử trận
             if (_playerAnimator != null)
             {
                 _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dead);

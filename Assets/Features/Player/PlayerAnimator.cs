@@ -52,6 +52,16 @@ namespace ProjectZombie.Features.Player
             // Nếu đang ở đúng State này rồi thì bỏ qua, không play lại từ đầu để tránh giật hình
             if (_currentState == newState) return;
 
+            // Đảm bảo hoạt ảnh Tử Trận luôn phát mượt mà theo Unscaled Time (kể cả khi Slow-motion hoặc Time.timeScale = 0)
+            if (newState == PlayerAnimationState.Dead)
+            {
+                animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            }
+            else
+            {
+                animator.updateMode = AnimatorUpdateMode.Normal;
+            }
+
             if (_stateHashes.TryGetValue(newState, out int stateHash))
             {
                 animator.Play(stateHash);

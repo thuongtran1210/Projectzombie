@@ -158,6 +158,11 @@ namespace ProjectZombie.Features.Player
                 _activePlayerInstance.AddComponent<PlayerInputReader>();
             }
 
+            if (!_activePlayerInstance.TryGetComponent<PlayerLogic>(out _))
+            {
+                _activePlayerInstance.AddComponent<PlayerLogic>();
+            }
+
             if (!_activePlayerInstance.TryGetComponent<CharacterCombat>(out var combat))
             {
                 combat = _activePlayerInstance.AddComponent<CharacterCombat>();
