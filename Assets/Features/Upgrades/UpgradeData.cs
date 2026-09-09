@@ -10,6 +10,7 @@ namespace ProjectZombie.Features.Upgrades
         FactionCounterUpgrade,
         RareUpgrade,
         EvolutionUpgrade,
+        RelicFusion,         // Luyện hóa & Gộp thẻ tạo Pháp bảo Thần Binh
         // --- Nhóm Thẻ Action RPG Roguelite (GDD v5.0) ---
         ComboAugment,        // Bí kíp biến hóa chuỗi đòn chém (Combo 1-2-3)
         RelicAwakening,      // Thức tỉnh & cường hóa Pháp bảo hộ thân đã mang theo
