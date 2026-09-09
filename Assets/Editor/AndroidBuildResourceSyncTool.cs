@@ -235,34 +235,70 @@ namespace ProjectZombie.EditorTools
                 });
             }
 
-            // 3. Quét sự chênh lệch Assets giữa _Data và Resources
+            // 3. Quét sự chênh lệch Assets giữa _Data/_Prefabs và Resources
             CheckDirectorySyncStatus(DATA_UPGRADES_PATH, RES_UPGRADES_PATH, "*.asset", "Thẻ Nâng Cấp (Upgrades)");
-            CheckDirectorySyncStatus(DATA_AUDIOS_PATH, RES_AUDIOS_PATH, "*.*", "Âm thanh (Audios)");
+            CheckDirectorySyncStatus(DATA_AUDIOS_PATH, RES_AUDIOS_PATH, "*.*", "Âm thanh (Audios)", new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" });
+            CheckDirectorySyncStatus(DATA_WEAPONS_PATH, RES_WEAPONS_PATH, "*.asset", "Pháp Bảo (Weapons)");
             CheckDirectorySyncStatus(ENEMY_PREFABS_PATH, RES_ENEMIES_PATH, "*.prefab", "Quái vật (Enemies)");
+            CheckDirectorySyncStatus("Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab", "Tướng (Players)");
+            CheckDirectorySyncStatus("Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset", "Timeline Màn Chơi (Levels)");
+            CheckDirectorySyncStatus("Assets/_Prefabs/UI", RES_UI_PATH, "*.prefab", "Giao Diện (UI Prefabs)");
 
-            // 4. Kiểm tra các Prefab UI cốt lõi trong Resources/UI
-            CheckCoreUIPrefab("SettingsModalUI");
-            CheckCoreUIPrefab("PlayerStatsMenuUI");
-            CheckCoreUIPrefab("MobileControlsCustomizerUI");
-            CheckCoreUIPrefab("WeaponLoadoutUI");
-            CheckCoreUIPrefab("CardCodexUI");
+            // 4. Kiểm tra các Single Assets cốt lõi cho Runtime
+            CheckSingleAssetRuntime("Assets/Resources/CharacterDatabase.asset", "CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset");
+            CheckSingleAssetRuntime("Assets/Resources/PermanentUpgradeTree.asset", "PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset");
+
+            // 5. Kiểm tra các Prefab UI cốt lõi cần thiết trong Runtime
+            CheckCoreUIPrefabRuntime("SettingsModalUI");
+            CheckCoreUIPrefabRuntime("PlayerStatsMenuUI");
+            CheckCoreUIPrefabRuntime("MobileControlsCustomizerUI");
+            CheckCoreUIPrefabRuntime("WeaponLoadoutUI");
+            CheckCoreUIPrefabRuntime("CardCodexUI");
 
             _isScanned = true;
             Repaint();
         }
 
-        private void CheckDirectorySyncStatus(string sourceDir, string resDir, string pattern, string categoryName)
+        private void CheckDirectorySyncStatus(string sourceDir, string resDir, string pattern, string categoryName, string[] allowedExtensions = null)
         {
             if (!Directory.Exists(sourceDir)) return;
             string[] srcFiles = Directory.GetFiles(sourceDir, pattern, SearchOption.AllDirectories);
             int srcCount = 0;
-            foreach (var f in srcFiles) if (!f.EndsWith(".meta")) srcCount++;
+            foreach (var f in srcFiles)
+            {
+                if (f.EndsWith(".meta")) continue;
+                if (allowedExtensions != null)
+                {
+                    string ext = Path.GetExtension(f).ToLower();
+                    bool allowed = false;
+                    foreach (var ve in allowedExtensions)
+                    {
+                        if (ext == ve) { allowed = true; break; }
+                    }
+                    if (!allowed) continue;
+                }
+                srcCount++;
+            }
 
             int resCount = 0;
             if (Directory.Exists(resDir))
             {
                 string[] resFiles = Directory.GetFiles(resDir, pattern, SearchOption.AllDirectories);
-                foreach (var f in resFiles) if (!f.EndsWith(".meta")) resCount++;
+                foreach (var f in resFiles)
+                {
+                    if (f.EndsWith(".meta")) continue;
+                    if (allowedExtensions != null)
+                    {
+                        string ext = Path.GetExtension(f).ToLower();
+                        bool allowed = false;
+                        foreach (var ve in allowedExtensions)
+                        {
+                            if (ext == ve) { allowed = true; break; }
+                        }
+                        if (!allowed) continue;
+                    }
+                    resCount++;
+                }
             }
 
             if (resCount < srcCount)
@@ -277,17 +313,53 @@ namespace ProjectZombie.EditorTools
             }
         }
 
-        private void CheckCoreUIPrefab(string prefabName)
+        private void CheckSingleAssetRuntime(string resPath, string assetName, string srcPath)
         {
-            string path = $"{RES_UI_PATH}/{prefabName}.prefab";
-            if (!File.Exists(path))
+            if (!File.Exists(resPath) && !File.Exists(srcPath))
+            {
+                _auditIssues.Add(new AuditItem
+                {
+                    Severity = AuditItem.SeverityLevel.Warning,
+                    Title = $"Thiếu Asset: {assetName}",
+                    Description = $"Không tìm thấy asset tại {srcPath} hoặc {resPath}.",
+                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động cập nhật."
+                });
+            }
+            else if (!File.Exists(resPath) && File.Exists(srcPath))
+            {
+                _auditIssues.Add(new AuditItem
+                {
+                    Severity = AuditItem.SeverityLevel.Warning,
+                    Title = $"Chưa đồng bộ Runtime: {assetName}",
+                    Description = $"Asset đã có tại nguồn ({srcPath}) nhưng chưa được copy vào thư mục Resources/ để load khi chạy build Android.",
+                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ (1-CLICK SYNC)' để tự động copy vào Resources."
+                });
+            }
+        }
+
+        private void CheckCoreUIPrefabRuntime(string prefabName)
+        {
+            string resPath = $"{RES_UI_PATH}/{prefabName}.prefab";
+            string masterPath = $"Assets/_Prefabs/UI/{prefabName}.prefab";
+
+            if (!File.Exists(resPath) && !File.Exists(masterPath))
             {
                 _auditIssues.Add(new AuditItem
                 {
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Thiếu Prefab UI: {prefabName}",
-                    Description = $"Không tìm thấy {prefabName}.prefab trong {RES_UI_PATH}.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động sinh lại đầy đủ Prefab UI."
+                    Description = $"Không tìm thấy {prefabName}.prefab trong Assets/_Prefabs/UI hoặc Resources/UI.",
+                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động copy/sinh Prefab UI."
+                });
+            }
+            else if (!File.Exists(resPath) && File.Exists(masterPath))
+            {
+                _auditIssues.Add(new AuditItem
+                {
+                    Severity = AuditItem.SeverityLevel.Warning,
+                    Title = $"Chưa đồng bộ Runtime UI: {prefabName}",
+                    Description = $"Prefab đã có tại Assets/_Prefabs/UI/{prefabName}.prefab nhưng chưa được đồng bộ vào Resources/UI/ để load khi chạy game.",
+                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để copy ngay vào Resources/UI/."
                 });
             }
         }
@@ -304,7 +376,7 @@ namespace ProjectZombie.EditorTools
             EnsureDirectory("Assets/Resources/Players");
 
             int upgradesCount = SyncDirectoryAssets(DATA_UPGRADES_PATH, RES_UPGRADES_PATH, "*.asset");
-            int audiosCount = SyncDirectoryAssets(DATA_AUDIOS_PATH, RES_AUDIOS_PATH, "*.*", new[] { ".wav", ".mp3", ".ogg", ".asset" });
+            int audiosCount = SyncDirectoryAssets(DATA_AUDIOS_PATH, RES_AUDIOS_PATH, "*.*", new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" });
             int weaponsCount = SyncDirectoryAssets(DATA_WEAPONS_PATH, RES_WEAPONS_PATH, "*.asset");
             int enemiesCount = SyncDirectoryAssets(ENEMY_PREFABS_PATH, RES_ENEMIES_PATH, "*.prefab");
             int playersCount = SyncDirectoryAssets("Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab");
@@ -314,16 +386,15 @@ namespace ProjectZombie.EditorTools
             SyncSingleAsset("Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset");
             SyncSingleAsset("Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset");
 
-            // Tự động dựng lại toàn bộ các UI Prefab Cổ Phong
-            try { ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal(); } catch { }
-            try { ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI(); } catch { }
-            try { ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI(); } catch { }
-            try { ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab(); } catch { }
-            try { ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab(); } catch { }
+            // 1. Đồng bộ Prefab UI từ Assets/_Prefabs/UI sang Assets/Resources/UI (Bảo toàn 100% chỉnh sửa của người dùng)
+            int uiCount = SyncDirectoryAssets("Assets/_Prefabs/UI", RES_UI_PATH, "*.prefab");
 
-            // Tối ưu Upgrade UI & Mobile Controls
-            try { UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI(); } catch { }
-            try { ProjectZombie.Editor.Tools.MobileControlsSetupTool.SetupAndWireControlsInScene(); } catch { }
+            // 2. Chỉ sinh fallback nếu Prefab hoàn toàn chưa tồn tại ở cả 2 nơi (KHÔNG ghi đè prefab người dùng đã sửa)
+            EnsureFallbackUIPrefab("SettingsModalUI", () => ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal());
+            EnsureFallbackUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI());
+            EnsureFallbackUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI());
+            EnsureFallbackUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab());
+            EnsureFallbackUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab());
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -335,8 +406,7 @@ namespace ProjectZombie.EditorTools
                              $"✓ Đã đồng bộ {enemiesCount} Quái Vật vào Resources/Enemies/\n" +
                              $"✓ Đã đồng bộ {playersCount} Tướng (Player) vào Resources/Players/\n" +
                              $"✓ Đã đồng bộ {levelsCount} Timeline Màn Chơi vào Resources/Levels/\n" +
-                             $"✓ Đã sinh đầy đủ 5/5 Prefab UI Cốt Lõi (Settings, Stats, Controls, Loadout, Codex)!\n" +
-                             $"✓ Đã chuẩn hóa phím ảo cảm ứng và liên kết Scene.";
+                             $"✓ Đã bảo toàn & đồng bộ {uiCount} Prefab UI tùy chỉnh vào Resources/UI/!";
 
             if (HasOpenInstances<AndroidBuildResourceSyncTool>())
             {
@@ -345,12 +415,40 @@ namespace ProjectZombie.EditorTools
                 window.Repaint();
             }
 
-            Debug.Log($"<color=#00FF88>[AndroidBuildResourceSyncTool] HOÀN TẤT ĐỒNG BỘ!</color>\n{summary}");
+            Debug.Log($"<color=#00FF88>[AndroidBuildResourceSyncTool] HOÀN TẤT ĐỒNG BỘ (BẢO TOÀN CUSTOM EDITS)!</color>\n{summary}");
 
             if (!isSilent)
             {
                 EditorUtility.DisplayDialog("Đồng Bộ Android Thành Công!",
-                    "Toàn bộ tài nguyên, âm thanh, dữ liệu và giao diện UI đã được đồng bộ 100% vào thư mục Resources.\n\nSẵn sàng đóng gói Android APK!", "OK");
+                    "Toàn bộ tài nguyên, âm thanh, dữ liệu và giao diện UI đã được đồng bộ 100% vào thư mục Resources.\n\nMọi thay đổi tùy chỉnh của bạn trên Editor đã được bảo toàn nguyên vẹn!", "OK");
+            }
+        }
+
+        private static void EnsureFallbackUIPrefab(string prefabName, Action generateAction)
+        {
+            string resPath = $"{RES_UI_PATH}/{prefabName}.prefab";
+            string masterPath = $"Assets/_Prefabs/UI/{prefabName}.prefab";
+
+            if (!File.Exists(resPath) && !File.Exists(masterPath))
+            {
+                try
+                {
+                    generateAction?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[AndroidBuildResourceSyncTool] Không thể sinh fallback cho {prefabName}: {e.Message}");
+                }
+            }
+            else if (File.Exists(masterPath) && !File.Exists(resPath))
+            {
+                File.Copy(masterPath, resPath, true);
+                AssetDatabase.ImportAsset(resPath, ImportAssetOptions.ForceUpdate);
+            }
+            else if (!File.Exists(masterPath) && File.Exists(resPath))
+            {
+                File.Copy(resPath, masterPath, true);
+                AssetDatabase.ImportAsset(masterPath, ImportAssetOptions.ForceUpdate);
             }
         }
 
@@ -377,6 +475,7 @@ namespace ProjectZombie.EditorTools
         private static int SyncDirectoryAssets(string sourceDir, string targetDir, string searchPattern, string[] allowedExtensions = null)
         {
             if (!Directory.Exists(sourceDir)) return 0;
+            EnsureDirectory(targetDir);
 
             string[] files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.AllDirectories);
             int count = 0;
@@ -408,14 +507,26 @@ namespace ProjectZombie.EditorTools
                 {
                     var srcInfo = new FileInfo(srcFile);
                     var destInfo = new FileInfo(destFile);
-                    if (srcInfo.Length == destInfo.Length && srcInfo.LastWriteTimeUtc <= destInfo.LastWriteTimeUtc)
+
+                    // Nếu cùng kích thước và thời gian sửa đổi gần như nhau (trong 2s), bỏ qua
+                    if (srcInfo.Length == destInfo.Length && Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) < 2)
                     {
+                        count++;
+                        continue;
+                    }
+
+                    // Bảo vệ thay đổi của người dùng: Nếu file đích (Resources) mới hơn file nguồn (_Data), đồng bộ ngược lại!
+                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(2))
+                    {
+                        File.Copy(destFile, srcFile, true);
+                        AssetDatabase.ImportAsset(srcFile, ImportAssetOptions.ForceUpdate);
                         count++;
                         continue;
                     }
                 }
 
-                AssetDatabase.CopyAsset(srcFile, destFile);
+                File.Copy(srcFile, destFile, true);
+                AssetDatabase.ImportAsset(destFile, ImportAssetOptions.ForceUpdate);
                 count++;
             }
 
@@ -428,17 +539,34 @@ namespace ProjectZombie.EditorTools
             {
                 if (!File.Exists(dest))
                 {
-                    AssetDatabase.CopyAsset(src, dest);
+                    File.Copy(src, dest, true);
+                    AssetDatabase.ImportAsset(dest, ImportAssetOptions.ForceUpdate);
                 }
                 else
                 {
                     var srcInfo = new FileInfo(src);
                     var destInfo = new FileInfo(dest);
-                    if (srcInfo.Length != destInfo.Length || srcInfo.LastWriteTimeUtc > destInfo.LastWriteTimeUtc)
+
+                    if (srcInfo.Length == destInfo.Length && Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) < 2)
                     {
-                        AssetDatabase.CopyAsset(src, dest);
+                        return;
                     }
+
+                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(2))
+                    {
+                        File.Copy(dest, src, true);
+                        AssetDatabase.ImportAsset(src, ImportAssetOptions.ForceUpdate);
+                        return;
+                    }
+
+                    File.Copy(src, dest, true);
+                    AssetDatabase.ImportAsset(dest, ImportAssetOptions.ForceUpdate);
                 }
+            }
+            else if (File.Exists(dest))
+            {
+                File.Copy(dest, src, true);
+                AssetDatabase.ImportAsset(src, ImportAssetOptions.ForceUpdate);
             }
         }
     }

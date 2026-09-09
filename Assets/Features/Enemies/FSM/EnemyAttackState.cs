@@ -5,18 +5,22 @@ namespace ProjectZombie.Features.Enemies
     public class EnemyAttackState : EnemyState
     {
         private float _lastAttackTime;
+        private bool _isTelegraphing = false;
+        private EnemyAttackTelegraph _telegraph;
 
         public EnemyAttackState(Enemy enemy, EnemyStateMachine stateMachine) : base(enemy, stateMachine)
         {
         }
-
-        private bool _isTelegraphing = false;
 
         public override void Enter()
         {
             _enemy.Rb.velocity = Vector2.zero;
             _isTelegraphing = false;
             _enemy.Animator?.SetRunning(false);
+            if (_telegraph == null)
+            {
+                _enemy.TryGetComponent(out _telegraph);
+            }
         }
 
         public override void Update()
@@ -94,11 +98,10 @@ namespace ProjectZombie.Features.Enemies
             // Logic tấn công có hỗ trợ Telegraph
             if (Time.time >= _lastAttackTime + _enemy.Config.attackCooldown)
             {
-                var telegraph = _enemy.GetComponent<EnemyAttackTelegraph>();
-                if (telegraph != null)
+                if (_telegraph != null)
                 {
                     _isTelegraphing = true;
-                    telegraph.ShowTelegraph(_enemy.PlayerTransform.position, () =>
+                    _telegraph.ShowTelegraph(_enemy.PlayerTransform.position, () =>
                     {
                         if (_enemy != null && _enemy.gameObject.activeInHierarchy && 
                             _enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive && 

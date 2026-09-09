@@ -333,36 +333,12 @@ namespace ProjectZombie.Features.Weapons
         }
 
         /// <summary>
-        /// Rớt vật phẩm Lông Gà Hoàng Kim khi quái bị tiêu diệt.
+        /// Rớt vật phẩm Lông Gà Hoàng Kim khi quái bị tiêu diệt (Zero GC Object Pooling).
         /// </summary>
         public void SpawnFeatherDrop(Vector3 dropPos)
         {
             EnsureAssets();
-
-            GameObject featherObj;
-            if (featherCollectiblePrefab != null)
-            {
-                featherObj = Instantiate(featherCollectiblePrefab, dropPos, Quaternion.identity);
-            }
-            else
-            {
-                featherObj = new GameObject("Chicken_Feather_Drop");
-                featherObj.transform.position = dropPos;
-                var sr = featherObj.AddComponent<SpriteRenderer>();
-                sr.sprite = featherCollectibleSprite;
-                sr.sortingLayerName = "Collectibles";
-                sr.sortingOrder = 10;
-                var col = featherObj.AddComponent<CircleCollider2D>();
-                col.isTrigger = true;
-                col.radius = 0.45f;
-                featherObj.AddComponent<ChickenFeatherDrop>();
-            }
-
-            var drop = featherObj.GetComponent<ChickenFeatherDrop>();
-            if (drop != null)
-            {
-                drop.Init(this);
-            }
+            ChickenFeatherDrop.GetFromPool(dropPos, this, featherCollectiblePrefab, featherCollectibleSprite);
         }
 
         /// <summary>

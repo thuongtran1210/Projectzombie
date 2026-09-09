@@ -1,5 +1,7 @@
 using UnityEngine;
 using Core.Audio;
+using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI
 {
@@ -136,9 +138,17 @@ namespace ProjectZombie.Features.UI
             bool damageNumbers = PlayerPrefs.GetInt(PREF_DAMAGE_NUMBERS, 1) == 1;
             bool fps60 = PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
 
+            // Btn_CustomizeControls chỉ hiện khi đang trong trận đấu (có Player active và không ở MainMenu)
+            bool isInMatch = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null;
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.MainMenu)
+            {
+                isInMatch = false;
+            }
+
             if (_view != null)
             {
                 _view.InitializeSettings(bgm, sfx, screenShake, damageNumbers, fps60);
+                _view.SetCustomizeControlsVisible(isInMatch);
             }
 
             // Áp dụng FPS

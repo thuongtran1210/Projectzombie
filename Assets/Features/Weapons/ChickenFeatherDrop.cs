@@ -57,6 +57,58 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        private static readonly System.Collections.Generic.Queue<ChickenFeatherDrop> _pool = new();
+
+        public static ChickenFeatherDrop GetFromPool(Vector3 pos, Relic_ChickenFeatherBroom source, GameObject prefab = null, Sprite defaultSprite = null)
+        {
+            ChickenFeatherDrop drop = null;
+            while (_pool.Count > 0 && drop == null)
+            {
+                drop = _pool.Dequeue();
+            }
+
+            if (drop == null)
+            {
+                GameObject go;
+                if (prefab != null)
+                {
+                    go = Instantiate(prefab, pos, Quaternion.identity);
+                }
+                else
+                {
+                    go = new GameObject("Chicken_Feather_Drop");
+                    go.transform.position = pos;
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite = defaultSprite;
+                    sr.sortingLayerName = "Collectibles";
+                    sr.sortingOrder = 10;
+                    var col = go.AddComponent<CircleCollider2D>();
+                    col.isTrigger = true;
+                    col.radius = 0.45f;
+                    drop = go.AddComponent<ChickenFeatherDrop>();
+                }
+                if (drop == null)
+                {
+                    drop = go.GetComponent<ChickenFeatherDrop>() ?? go.AddComponent<ChickenFeatherDrop>();
+                }
+            }
+            else
+            {
+                drop.transform.position = pos;
+                drop.gameObject.SetActive(true);
+            }
+
+            drop.Init(source);
+            return drop;
+        }
+
+        private void ReturnToPool()
+        {
+            if (!gameObject.activeSelf) return;
+            gameObject.SetActive(false);
+            _pool.Enqueue(this);
+        }
+
         private void Update()
         {
             if (_isCollected) return;
@@ -64,7 +116,7 @@ namespace ProjectZombie.Features.Weapons
             // Tự biến mất khi quá hạn
             if (Time.time >= _spawnTime + lifetime)
             {
-                Destroy(gameObject);
+                ReturnToPool();
                 return;
             }
 
@@ -127,7 +179,7 @@ namespace ProjectZombie.Features.Weapons
 
             // Âm thanh nhặt & tia sáng
             global::Core.Audio.AudioManager.Instance?.PlayCoinTick();
-            Destroy(gameObject);
+            ReturnToPool();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -161,12 +213,24 @@ namespace ProjectZombie.Features.Weapons
                 _hp.OnDied += HandleDeath;
             }
 
-            CreateOverheadMarker();
+            _dropped = false;
+            if (_markerVisualObj != null)
+            {
+                _markerVisualObj.SetActive(true);
+            }
+            else
+            {
+                CreateOverheadMarker();
+            }
         }
 
         private void CreateOverheadMarker()
         {
-            if (_markerVisualObj != null) return;
+            if (_markerVisualObj != null)
+            {
+                _markerVisualObj.SetActive(true);
+                return;
+            }
 
             var col = GetComponent<Collider2D>();
             if (col != null)
@@ -202,7 +266,7 @@ namespace ProjectZombie.Features.Weapons
 
         private void Update()
         {
-            if (_markerVisualObj == null) return;
+            if (_markerVisualObj == null || !_markerVisualObj.activeSelf) return;
 
             // Hiệu ứng bồng bềnh & xoay nhấp nháy trên đầu quái
             float bobbing = Mathf.Sin(Time.time * 5f) * 0.08f;
@@ -221,7 +285,7 @@ namespace ProjectZombie.Features.Weapons
 
             if (_markerVisualObj != null)
             {
-                Destroy(_markerVisualObj);
+                _markerVisualObj.SetActive(false);
             }
 
             if (_broom != null)
@@ -242,7 +306,7 @@ namespace ProjectZombie.Features.Weapons
             }
             if (_markerVisualObj != null)
             {
-                Destroy(_markerVisualObj);
+                _markerVisualObj.SetActive(false);
             }
         }
     }

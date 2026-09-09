@@ -150,6 +150,8 @@ namespace ProjectZombie.Features.Enemies
 
         public void OnSpawn()
         {
+            _frameOffset = Random.Range(0, 4);
+
             // Reset trạng thái tấn công cũ nếu có
             if (Attacker != null)
             {
@@ -301,9 +303,25 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        private int _frameOffset;
+
         private void Update()
         {
             if (!GameStateManager.IsPlaying) return;
+
+            // Distance Throttling: Quái ngoài màn hình (> 14m) chỉ cập nhật FSM 1 lần mỗi 4 frames
+            if (!IsBoss && PlayerTransform != null)
+            {
+                float sqrDist = ((Vector2)transform.position - (Vector2)PlayerTransform.position).sqrMagnitude;
+                if (sqrDist > 196f) // 14m * 14m
+                {
+                    if (((Time.frameCount + _frameOffset) & 3) != 0)
+                    {
+                        return;
+                    }
+                }
+            }
+
             StateMachine.CurrentState?.Update();
         }
 

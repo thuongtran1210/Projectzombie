@@ -203,6 +203,15 @@ namespace ProjectZombie.Features.UI
             if (_sfxValText != null) _sfxValText.text = $"{Mathf.RoundToInt(val * 100)}%";
         }
 
+        public void SetCustomizeControlsVisible(bool isVisible)
+        {
+            EnsureComponentsAndEvents();
+            if (_customizeControlsButton != null)
+            {
+                _customizeControlsButton.gameObject.SetActive(isVisible);
+            }
+        }
+
         public override void Show()
         {
             EnsureComponentsAndEvents();
