@@ -55,6 +55,15 @@ namespace ProjectZombie.Features.UI.Controls.Customization
             if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
             if (_canvasGroup == null) _canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
+            // Đảm bảo có Graphic để bắt sự kiện chạm/kéo thả khi ở Edit Mode
+            Image selfImg = GetComponent<Image>();
+            if (selfImg == null)
+            {
+                selfImg = gameObject.AddComponent<Image>();
+                selfImg.color = Color.clear;
+                selfImg.raycastTarget = true;
+            }
+
             _defaultAnchoredPosition = _rectTransform.anchoredPosition;
             _defaultScale = _rectTransform.localScale;
             _defaultOpacity = _canvasGroup.alpha;
@@ -100,6 +109,13 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 float s = Mathf.Clamp(data.scale, _minScale, _maxScale);
                 RectTransform.localScale = new Vector3(s, s, 1f);
                 _currentScale = new Vector2(s, s);
+
+                // Đồng bộ toạ độ gốc của Joystick nếu đối tượng là Joystick
+                var joystick = GetComponent<DynamicVirtualJoystick>() ?? GetComponentInChildren<DynamicVirtualJoystick>(true);
+                if (joystick != null)
+                {
+                    joystick.SetDefaultPosition(data.anchoredPosition);
+                }
             }
 
             if (_canvasGroup != null)
@@ -146,6 +162,12 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 RectTransform.anchoredPosition = _defaultAnchoredPosition;
                 RectTransform.localScale = _defaultScale;
                 _currentScale = _defaultScale;
+
+                var joystick = GetComponent<DynamicVirtualJoystick>() ?? GetComponentInChildren<DynamicVirtualJoystick>(true);
+                if (joystick != null)
+                {
+                    joystick.SetDefaultPosition(_defaultAnchoredPosition);
+                }
             }
 
             if (_canvasGroup != null)
@@ -288,6 +310,13 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 // Clamp trong phạm vi Safe Area màn hình
                 Vector2 clampedPos = ClampToParentBounds(parentRect, localPoint);
                 RectTransform.localPosition = clampedPos;
+
+                var joystick = GetComponent<DynamicVirtualJoystick>() ?? GetComponentInChildren<DynamicVirtualJoystick>(true);
+                if (joystick != null)
+                {
+                    joystick.SetDefaultPosition(RectTransform.anchoredPosition);
+                }
+
                 OnPositionChangedInEditMode?.Invoke(this, RectTransform.anchoredPosition);
             }
         }

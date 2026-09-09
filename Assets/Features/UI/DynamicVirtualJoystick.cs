@@ -44,6 +44,14 @@ namespace ProjectZombie.Features.UI
 
         private Vector2 _defaultPosition;
 
+        /// <summary>
+        /// Cập nhật toạ độ mặc định (Home/Default Position) khi thay đổi qua trình tùy biến UI.
+        /// </summary>
+        public void SetDefaultPosition(Vector2 newPos)
+        {
+            _defaultPosition = newPos;
+        }
+
         protected override string controlPathInternal
         {
             get => _controlPath;

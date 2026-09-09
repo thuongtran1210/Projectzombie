@@ -327,8 +327,12 @@ namespace ProjectZombie.Editor.Tools
             AttachCustomizableByComponent<RelicSkillButtonView>(mobilePanel, "Btn_RelicSkill", "Pháp Bảo", 0.7f, 1.5f);
             AttachCustomizableByComponent<DashButtonView>(mobilePanel, "Btn_Dash", "Lướt Phi Vân", 0.7f, 1.5f);
             
-            AttachCustomizableButton(mobilePanel, "Joystick_Visual", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            // Cần Gạt Di Chuyển (hỗ trợ cả Component lẫn tên UI_VirtualJoystick, DynamicVirtualJoystick, Joystick_Visual)
+            AttachCustomizableByComponent<Features.UI.DynamicVirtualJoystick>(mobilePanel, "UI_VirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "UI_VirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
             AttachCustomizableButton(mobilePanel, "DynamicVirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Joystick_Visual", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Joystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
         }
 
         private static void AttachCustomizableByComponent<T>(GameObject root, string fallbackName, string displayName, float minScale, float maxScale) where T : Component
@@ -337,6 +341,15 @@ namespace ProjectZombie.Editor.Tools
             Transform t = comp != null ? comp.transform : FindChildRecursive(root.transform, fallbackName);
             if (t != null)
             {
+                // Đảm bảo có Graphic để nhận Raycast cho chế độ tùy chỉnh
+                var img = t.GetComponent<Image>();
+                if (img == null)
+                {
+                    img = t.gameObject.AddComponent<Image>();
+                    img.color = Color.clear;
+                    img.raycastTarget = true;
+                }
+
                 var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
                 if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
 
@@ -355,6 +368,15 @@ namespace ProjectZombie.Editor.Tools
             Transform t = FindChildRecursive(root.transform, targetName);
             if (t != null)
             {
+                // Đảm bảo có Graphic để nhận Raycast cho chế độ tùy chỉnh
+                var img = t.GetComponent<Image>();
+                if (img == null)
+                {
+                    img = t.gameObject.AddComponent<Image>();
+                    img.color = Color.clear;
+                    img.raycastTarget = true;
+                }
+
                 var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
                 if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
 
