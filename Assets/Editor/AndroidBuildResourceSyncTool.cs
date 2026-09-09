@@ -106,11 +106,21 @@ namespace ProjectZombie.EditorTools
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(4);
-            if (GUILayout.Button("⚙️ Tự động cấu hình Android Player Settings chuẩn (IL2CPP + ARM64 + API 34)", GUILayout.Height(26)))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("⚙️ Cấu hình Player Settings (IL2CPP + ARM64)", GUILayout.Height(28)))
             {
                 AndroidAuditEngine.OptimizePlayerSettings();
                 RunDiagnosticScan();
             }
+
+            GUI.backgroundColor = new Color(1f, 0.75f, 0.2f);
+            if (GUILayout.Button("📦 TỐI ƯU DUNG LƯỢNG APK (Nén ASTC & Vorbis)", GUILayout.Height(28)))
+            {
+                AndroidAuditEngine.OptimizeTexturesAndAudios();
+                RunDiagnosticScan();
+            }
+            GUI.backgroundColor = Color.white;
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawAuditSection()
