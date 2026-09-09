@@ -28,17 +28,25 @@ namespace ProjectZombie.EditorTools
         private const string RES_UI_PATH = "Assets/Resources/UI";
 
         private Vector2 _scrollPos;
-        private List<AuditItem> _auditIssues = new List<AuditItem>();
-        private bool _isScanned = false;
-        private string _lastSyncSummary = "";
+        [SerializeField] private List<AuditItem> _auditIssues = new List<AuditItem>();
+        [SerializeField] private bool _isScanned = false;
+        [SerializeField] private string _lastSyncSummary = "";
 
+        [Serializable]
         public struct AuditItem
         {
             public enum SeverityLevel { Info, Warning, Error }
+            public enum FixActionType { None, OptimizePlayerSettings, SyncDirectory, SyncSingleAsset, SyncUIPrefab }
+
             public SeverityLevel Severity;
             public string Title;
             public string Description;
             public string Recommendation;
+            public FixActionType ActionType;
+            public string ActionSource;
+            public string ActionTarget;
+            public string ActionPattern;
+            public string FixButtonText;
         }
 
         [MenuItem("Tools/ProjectZombie/📱 Android Pre-Build Wizard & 1-Click Sync", priority = 1)]
@@ -159,15 +167,32 @@ namespace ProjectZombie.EditorTools
                 EditorGUILayout.LabelField($"Phát hiện: {errCount} Lỗi Nghiêm Trọng | {warnCount} Cảnh Báo", EditorStyles.miniBoldLabel);
                 EditorGUILayout.Space(4);
 
-                foreach (var issue in _auditIssues)
+                for (int i = 0; i < _auditIssues.Count; i++)
                 {
+                    var issue = _auditIssues[i];
                     MessageType mType = issue.Severity == AuditItem.SeverityLevel.Error ? MessageType.Error :
                                        (issue.Severity == AuditItem.SeverityLevel.Warning ? MessageType.Warning : MessageType.Info);
 
                     EditorGUILayout.BeginVertical(EditorStyles.textArea);
                     EditorGUILayout.HelpBox($"[{issue.Severity.ToString().ToUpper()}] {issue.Title}\n{issue.Description}\n💡 Khắc phục: {issue.Recommendation}", mType);
+
+                    if (issue.ActionType != AuditItem.FixActionType.None)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.FlexibleSpace();
+                        GUI.backgroundColor = issue.Severity == AuditItem.SeverityLevel.Error ? new Color(1f, 0.6f, 0.6f) : new Color(1f, 0.85f, 0.4f);
+                        string btnText = string.IsNullOrEmpty(issue.FixButtonText) ? "🛠️ Khắc Phục Mục Này Ngay" : issue.FixButtonText;
+                        if (GUILayout.Button(btnText, GUILayout.Height(24), GUILayout.MinWidth(180)))
+                        {
+                            ExecuteIndividualFix(issue);
+                            GUIUtility.ExitGUI();
+                        }
+                        GUI.backgroundColor = Color.white;
+                        EditorGUILayout.EndHorizontal();
+                    }
+
                     EditorGUILayout.EndVertical();
-                    EditorGUILayout.Space(2);
+                    EditorGUILayout.Space(4);
                 }
             }
 
@@ -195,6 +220,7 @@ namespace ProjectZombie.EditorTools
 
         public void RunDiagnosticScan()
         {
+            AssetDatabase.Refresh();
             _auditIssues.Clear();
 
             // 1. Kiểm tra Scripting Backend & Target Architecture
@@ -206,7 +232,9 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Error,
                     Title = "Scripting Backend chưa đặt là IL2CPP",
                     Description = $"Hiện đang dùng {backend}. Google Play và các thiết bị Android 64-bit hiện đại bắt buộc IL2CPP.",
-                    Recommendation = "Nhấn '⚙️ Tự động cấu hình Android Player Settings' hoặc chỉnh trong Player Settings > Other Settings."
+                    Recommendation = "Nhấn nút bên dưới để tự động cấu hình sang IL2CPP + ARM64.",
+                    ActionType = AuditItem.FixActionType.OptimizePlayerSettings,
+                    FixButtonText = "⚙️ Cấu Hình IL2CPP Ngay"
                 });
             }
 
@@ -218,7 +246,9 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Error,
                     Title = "Chưa kích hoạt kiến trúc ARM64",
                     Description = "Target Architecture chưa có ARM64, game sẽ không chạy được trên phần lớn máy Android đời mới.",
-                    Recommendation = "Kích hoạt ARM64 trong Player Settings > Target Architectures."
+                    Recommendation = "Nhấn nút bên dưới để tự động kích hoạt ARM64.",
+                    ActionType = AuditItem.FixActionType.OptimizePlayerSettings,
+                    FixButtonText = "⚙️ Kích Hoạt ARM64 Ngay"
                 });
             }
 
@@ -231,7 +261,9 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = "Target API Level thấp hơn 34 (Android 14)",
                     Description = $"Hiện tại Target API Level là: {targetApi}. Google Play yêu cầu tối thiểu API Level 34.",
-                    Recommendation = "Đặt Target API Level thành 'Automatic (highest installed)' hoặc 'API Level 34'."
+                    Recommendation = "Nhấn nút bên dưới để đặt Target API Level thành 'Automatic (highest installed)'.",
+                    ActionType = AuditItem.FixActionType.OptimizePlayerSettings,
+                    FixButtonText = "⚙️ Cập Nhật API Level 34"
                 });
             }
 
@@ -257,6 +289,17 @@ namespace ProjectZombie.EditorTools
 
             _isScanned = true;
             Repaint();
+
+            if (_auditIssues.Count == 0)
+            {
+                ShowNotification(new GUIContent("✓ Quét hoàn tất: 0 Lỗi, 0 Cảnh Báo!"));
+            }
+            else
+            {
+                int errCount = _auditIssues.FindAll(x => x.Severity == AuditItem.SeverityLevel.Error).Count;
+                int warnCount = _auditIssues.FindAll(x => x.Severity == AuditItem.SeverityLevel.Warning).Count;
+                ShowNotification(new GUIContent($"Quét xong: {errCount} Lỗi, {warnCount} Cảnh Báo"));
+            }
         }
 
         private void CheckDirectorySyncStatus(string sourceDir, string resDir, string pattern, string categoryName, string[] allowedExtensions = null)
@@ -308,7 +351,12 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Chưa đồng bộ đầy đủ {categoryName}",
                     Description = $"Thư mục gốc có {srcCount} files nhưng Resources chỉ có {resCount} files.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ (1-CLICK SYNC)' để tự động cập nhật."
+                    Recommendation = $"Nhấn nút bên dưới để đồng bộ riêng mục {categoryName} vào Resources.",
+                    ActionType = AuditItem.FixActionType.SyncDirectory,
+                    ActionSource = sourceDir,
+                    ActionTarget = resDir,
+                    ActionPattern = pattern,
+                    FixButtonText = $"⚡ Đồng Bộ Riêng {categoryName}"
                 });
             }
         }
@@ -322,7 +370,8 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Thiếu Asset: {assetName}",
                     Description = $"Không tìm thấy asset tại {srcPath} hoặc {resPath}.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động cập nhật."
+                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động cập nhật.",
+                    ActionType = AuditItem.FixActionType.None
                 });
             }
             else if (!File.Exists(resPath) && File.Exists(srcPath))
@@ -332,7 +381,11 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Chưa đồng bộ Runtime: {assetName}",
                     Description = $"Asset đã có tại nguồn ({srcPath}) nhưng chưa được copy vào thư mục Resources/ để load khi chạy build Android.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ (1-CLICK SYNC)' để tự động copy vào Resources."
+                    Recommendation = $"Nhấn nút bên dưới để copy riêng {assetName} vào Resources/.",
+                    ActionType = AuditItem.FixActionType.SyncSingleAsset,
+                    ActionSource = srcPath,
+                    ActionTarget = resPath,
+                    FixButtonText = $"⚡ Đồng Bộ {assetName}"
                 });
             }
         }
@@ -349,7 +402,10 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Thiếu Prefab UI: {prefabName}",
                     Description = $"Không tìm thấy {prefabName}.prefab trong Assets/_Prefabs/UI hoặc Resources/UI.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để tự động copy/sinh Prefab UI."
+                    Recommendation = "Nhấn nút bên dưới để tự động tạo mới Prefab UI này.",
+                    ActionType = AuditItem.FixActionType.SyncUIPrefab,
+                    ActionTarget = prefabName,
+                    FixButtonText = $"🛠️ Sinh Prefab {prefabName}"
                 });
             }
             else if (!File.Exists(resPath) && File.Exists(masterPath))
@@ -359,8 +415,70 @@ namespace ProjectZombie.EditorTools
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Chưa đồng bộ Runtime UI: {prefabName}",
                     Description = $"Prefab đã có tại Assets/_Prefabs/UI/{prefabName}.prefab nhưng chưa được đồng bộ vào Resources/UI/ để load khi chạy game.",
-                    Recommendation = "Nhấn '⚡ ĐỒNG BỘ TẤT CẢ' để copy ngay vào Resources/UI/."
+                    Recommendation = $"Nhấn nút bên dưới để copy {prefabName} vào Resources/UI/.",
+                    ActionType = AuditItem.FixActionType.SyncUIPrefab,
+                    ActionTarget = prefabName,
+                    FixButtonText = $"⚡ Đồng Bộ {prefabName}"
                 });
+            }
+        }
+
+        private void ExecuteIndividualFix(AuditItem issue)
+        {
+            switch (issue.ActionType)
+            {
+                case AuditItem.FixActionType.OptimizePlayerSettings:
+                    OptimizePlayerSettings();
+                    break;
+
+                case AuditItem.FixActionType.SyncDirectory:
+                    string[] exts = issue.ActionSource == DATA_AUDIOS_PATH ? new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" } : null;
+                    int count = SyncDirectoryAssets(issue.ActionSource, issue.ActionTarget, issue.ActionPattern ?? "*.*", exts);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    ShowNotification(new GUIContent($"✓ Đã đồng bộ {count} files vào {issue.ActionTarget}"));
+                    break;
+
+                case AuditItem.FixActionType.SyncSingleAsset:
+                    SyncSingleAsset(issue.ActionSource, issue.ActionTarget);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    ShowNotification(new GUIContent($"✓ Đã đồng bộ {Path.GetFileName(issue.ActionTarget)}!"));
+                    break;
+
+                case AuditItem.FixActionType.SyncUIPrefab:
+                    SyncSingleUIPrefabByName(issue.ActionTarget);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    ShowNotification(new GUIContent($"✓ Đã cập nhật UI Prefab {issue.ActionTarget}!"));
+                    break;
+            }
+
+            RunDiagnosticScan();
+        }
+
+        private static void SyncSingleUIPrefabByName(string prefabName)
+        {
+            switch (prefabName)
+            {
+                case "SettingsModalUI":
+                    EnsureFallbackUIPrefab("SettingsModalUI", () => ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal());
+                    break;
+                case "PlayerStatsMenuUI":
+                    EnsureFallbackUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI());
+                    break;
+                case "MobileControlsCustomizerUI":
+                    EnsureFallbackUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI());
+                    break;
+                case "WeaponLoadoutUI":
+                    EnsureFallbackUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab());
+                    break;
+                case "CardCodexUI":
+                    EnsureFallbackUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab());
+                    break;
+                default:
+                    EnsureFallbackUIPrefab(prefabName, null);
+                    break;
             }
         }
 
