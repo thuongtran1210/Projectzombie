@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnStartRunClicked += HandleStartRunClicked;
                 _view.OnHeroSelectClicked += HandleHeroSelectClicked;
                 _view.OnArmoryClicked += HandleArmoryClicked;
+                _view.OnGachaClicked += HandleGachaClicked;
                 _view.OnDeckCardsClicked += HandleCodexClicked;
                 _view.OnSanctuaryTreeClicked += HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked += HandleCodexClicked;
@@ -75,6 +76,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnStartRunClicked -= HandleStartRunClicked;
                 _view.OnHeroSelectClicked -= HandleHeroSelectClicked;
                 _view.OnArmoryClicked -= HandleArmoryClicked;
+                _view.OnGachaClicked -= HandleGachaClicked;
                 _view.OnDeckCardsClicked -= HandleCodexClicked;
                 _view.OnSanctuaryTreeClicked -= HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked -= HandleCodexClicked;
@@ -234,6 +236,16 @@ namespace ProjectZombie.Features.UI
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.WeaponLoadout);
+            }
+        }
+
+        private void HandleGachaClicked()
+        {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            var metaManager = GetMetaUIManager();
+            if (metaManager != null)
+            {
+                metaManager.OpenScreen(MetaScreenType.GachaShop);
             }
         }
 

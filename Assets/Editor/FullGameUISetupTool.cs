@@ -73,6 +73,11 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             }
 
+            if (GUILayout.Button("⛩️ Cập Nhật Bảo Rương Gacha (Gacha Shop UI)", GUILayout.Height(30)))
+            {
+                ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs();
+            }
+
             if (GUILayout.Button("📦 Đồng Bộ Tất Cả Resources Cho Android Build (1-Click)", GUILayout.Height(30)))
             {
                 AndroidBuildResourceSyncTool.SyncAllResourcesForAndroid();
@@ -366,6 +371,19 @@ namespace ProjectZombie.EditorTools
             ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab();
             Transform codexTrans = metaRoot.Find("Panel_CardCodex");
 
+            // 2.6. Panel_GachaShop (Bảo Rương Vạn Cổ)
+            Transform gachaTrans = metaRoot.Find("Panel_GachaShop");
+            if (gachaTrans == null)
+            {
+                var gachaPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab");
+                if (gachaPrefab != null)
+                {
+                    var gachaObj = (GameObject)PrefabUtility.InstantiatePrefab(gachaPrefab, metaRoot);
+                    gachaObj.name = "Panel_GachaShop";
+                    gachaTrans = gachaObj.transform;
+                }
+            }
+
             // Wire MetaUIManager an toàn
             var soMeta = new SerializedObject(metaManager);
             soMeta.FindProperty("_metaCanvasGroup").objectReferenceValue = metaGroup;
@@ -375,6 +393,7 @@ namespace ProjectZombie.EditorTools
             if (loadoutTrans != null) soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
             if (sanctuaryTrans != null) soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
             if (codexTrans != null) soMeta.FindProperty("_codexScreen").objectReferenceValue = codexTrans.GetComponent<CardCodexView>();
+            if (gachaTrans != null) soMeta.FindProperty("_gachaShopScreen").objectReferenceValue = gachaTrans.GetComponent<ProjectZombie.Features.UI.Gacha.GachaChestView>();
             if (settingsView != null)
             {
                 soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;

@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private BaseMetaScreenView _sanctuaryTreeScreen;
         [SerializeField] private BaseMetaScreenView _codexScreen;
         [SerializeField] private BaseMetaScreenView _settingsScreen;
+        [SerializeField] private BaseMetaScreenView _gachaShopScreen;
 
         [Header("Persistent Backdrop")]
         [Tooltip("Ảnh nền cố định che 100% Tilemap và Player bên dưới khi ở trong Menu")]
@@ -50,12 +51,15 @@ namespace ProjectZombie.Features.UI
 
             EnsurePersistentBackdrop();
 
+            AutoResolveMissingScreens();
+
             // Mặc định ẩn tất cả màn hình phụ ngay trong Awake
             if (_characterSelectScreen != null) _characterSelectScreen.Hide();
             if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.Hide();
             if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.Hide();
             if (_codexScreen != null) _codexScreen.Hide();
             if (_settingsScreen != null) _settingsScreen.Hide();
+            if (_gachaShopScreen != null) _gachaShopScreen.Hide();
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
             if (_mainHubScreen != null)
@@ -171,27 +175,68 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private void AutoResolveMissingScreens()
+        {
+            if (_mainHubScreen == null) _mainHubScreen = GetComponentInChildren<MainHubView>(true);
+            if (_characterSelectScreen == null) _characterSelectScreen = GetComponentInChildren<CharacterSelectionView>(true);
+            if (_weaponLoadoutScreen == null) _weaponLoadoutScreen = GetComponentInChildren<WeaponLoadoutView>(true);
+            if (_sanctuaryTreeScreen == null) _sanctuaryTreeScreen = GetComponentInChildren<MetaUpgradeShopView>(true);
+            if (_codexScreen == null) _codexScreen = GetComponentInChildren<CardCodexView>(true);
+            if (_settingsScreen == null) _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
+            if (_gachaShopScreen == null) _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
+        }
+
         public void OpenScreen(MetaScreenType screenType)
         {
             switch (screenType)
             {
                 case MetaScreenType.MainHub:
+                    if (_mainHubScreen == null) AutoResolveMissingScreens();
                     PushScreen(_mainHubScreen);
                     break;
                 case MetaScreenType.CharacterSelect:
+                    if (_characterSelectScreen == null) AutoResolveMissingScreens();
                     PushScreen(_characterSelectScreen);
                     break;
                 case MetaScreenType.WeaponLoadout:
+                    if (_weaponLoadoutScreen == null) AutoResolveMissingScreens();
                     PushScreen(_weaponLoadoutScreen);
                     break;
                 case MetaScreenType.SanctuaryTree:
+                    if (_sanctuaryTreeScreen == null) AutoResolveMissingScreens();
                     PushScreen(_sanctuaryTreeScreen);
                     break;
                 case MetaScreenType.Codex:
+                    if (_codexScreen == null) AutoResolveMissingScreens();
                     PushScreen(_codexScreen);
                     break;
                 case MetaScreenType.Settings:
+                    if (_settingsScreen == null) AutoResolveMissingScreens();
                     PushScreen(_settingsScreen);
+                    break;
+                case MetaScreenType.GachaShop:
+                    if (_gachaShopScreen == null)
+                    {
+                        AutoResolveMissingScreens();
+                        if (_gachaShopScreen == null)
+                        {
+                            // Tự động nạp Prefab nếu trong Scene chưa có sẵn
+                            var gachaPrefab = Resources.Load<GameObject>("UI/Gacha/GachaShopPanel") ?? Resources.Load<GameObject>("GachaShopPanel");
+#if UNITY_EDITOR
+                            if (gachaPrefab == null)
+                            {
+                                gachaPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab");
+                            }
+#endif
+                            if (gachaPrefab != null)
+                            {
+                                var instance = Instantiate(gachaPrefab, transform);
+                                instance.name = "Panel_GachaShop";
+                                _gachaShopScreen = instance.GetComponent<ProjectZombie.Features.UI.Gacha.GachaChestView>();
+                            }
+                        }
+                    }
+                    PushScreen(_gachaShopScreen);
                     break;
             }
         }

@@ -11,7 +11,8 @@ namespace ProjectZombie.Features.UI
         WeaponLoadout,
         SanctuaryTree,
         Codex,
-        Settings
+        Settings,
+        GachaShop
     }
 
     /// <summary>

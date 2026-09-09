@@ -31,7 +31,7 @@ namespace ProjectZombie.Features.UI.Gacha
 
             if (_rarityText != null)
             {
-                _rarityText.text = $"<color={data.rarity.GetHexColor()}>✦ {data.rarity.GetDisplayName()}</color>";
+                _rarityText.text = $"<color={data.rarity.GetHexColor()}>[{data.rarity.GetDisplayName()}]</color>";
             }
 
             if (_shardCountText != null)

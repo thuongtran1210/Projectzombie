@@ -83,10 +83,10 @@ namespace ProjectZombie.Editor.UI
             // 4. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ)
             BuildHeroStage(root.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
 
-            // 5. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 3 Nút Thẻ Gỗ, Nút Xuất Trận Lục Giác Ngọc Hổ Phách)
+            // 5. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 4 Nút Thẻ Gỗ, Nút Xuất Trận Lục Giác Ngọc Hổ Phách)
             BuildBottomHUDRow(root.transform, vietFont,
                 out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priNameTMP, out Image priIconImg, out Image[] relicIcons,
-                out Button heroBtn, out Button armoryBtn, out Button sanctuaryBtn,
+                out Button heroBtn, out Button armoryBtn, out Button gachaBtn, out Button sanctuaryBtn,
                 out Button startRunBtn);
 
             // 6. Wire Properties to MainHubView
@@ -118,6 +118,7 @@ namespace ProjectZombie.Editor.UI
 
             soView.FindProperty("_heroSelectButton").objectReferenceValue = heroBtn;
             soView.FindProperty("_armoryButton").objectReferenceValue = armoryBtn;
+            soView.FindProperty("_gachaButton").objectReferenceValue = gachaBtn;
             soView.FindProperty("_sanctuaryTreeButton").objectReferenceValue = sanctuaryBtn;
             soView.FindProperty("_startRunButton").objectReferenceValue = startRunBtn;
             soView.ApplyModifiedProperties();
@@ -393,7 +394,7 @@ namespace ProjectZombie.Editor.UI
 
         private static void BuildBottomHUDRow(Transform parent, TMP_FontAsset font,
             out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priName, out Image priIcon, out Image[] relicIcons,
-            out Button heroBtn, out Button armoryBtn, out Button sanctuaryBtn,
+            out Button heroBtn, out Button armoryBtn, out Button gachaBtn, out Button sanctuaryBtn,
             out Button startRunBtn)
         {
             GameObject hud = CreateUIElement("Bottom_HUDRow", parent);
@@ -501,17 +502,17 @@ namespace ProjectZombie.Editor.UI
             priIcon = null;
             relicIcons = new Image[0];
 
-            // ================= 2. Ở GIỮA: 3 NÚT THẺ GỖ KHÂU CHỈ SƠN MÀI =================
+            // ================= 2. Ở GIỮA: 4 NÚT THẺ GỖ KHÂU CHỈ SƠN MÀI =================
             GameObject navGroup = CreateUIElement("Group_NavButtons", hud.transform);
             RectTransform ngRT = navGroup.GetComponent<RectTransform>();
             ngRT.anchorMin = new Vector2(0.5f, 0);
             ngRT.anchorMax = new Vector2(0.5f, 0);
             ngRT.pivot = new Vector2(0.5f, 0);
             ngRT.anchoredPosition = new Vector2(0, 10);
-            ngRT.sizeDelta = new Vector2(420, 54);
+            ngRT.sizeDelta = new Vector2(560, 54);
 
             var ngHlg = navGroup.AddComponent<HorizontalLayoutGroup>();
-            ngHlg.spacing = 14;
+            ngHlg.spacing = 12;
             ngHlg.childAlignment = TextAnchor.MiddleCenter;
             ngHlg.childControlWidth = false;
             ngHlg.childControlHeight = false;
@@ -521,7 +522,7 @@ namespace ProjectZombie.Editor.UI
 
             // Nút 1: ANH HÙNG
             GameObject btn1 = CreateUIElement("Btn_HeroSelect", navGroup.transform);
-            btn1.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 50);
+            btn1.GetComponent<RectTransform>().sizeDelta = new Vector2(115, 50);
             var b1Img = btn1.AddComponent<Image>();
             b1Img.color = Color.white;
             b1Img.type = Image.Type.Sliced;
@@ -532,14 +533,14 @@ namespace ProjectZombie.Editor.UI
             SetStretchAnchor(b1T.GetComponent<RectTransform>());
             var b1TMP = CreateTextMeshPro(b1T, font);
             b1TMP.text = "ANH HÙNG";
-            b1TMP.fontSize = 14;
+            b1TMP.fontSize = 13.5f;
             b1TMP.fontStyle = FontStyles.Bold;
             b1TMP.alignment = TextAlignmentOptions.Center;
             b1TMP.color = new Color(0.96f, 0.90f, 0.72f, 1f);
 
             // Nút 2: TÀNG BẢO CÁC
             GameObject btn2 = CreateUIElement("Btn_Armory", navGroup.transform);
-            btn2.GetComponent<RectTransform>().sizeDelta = new Vector2(136, 50);
+            btn2.GetComponent<RectTransform>().sizeDelta = new Vector2(125, 50);
             var b2Img = btn2.AddComponent<Image>();
             b2Img.color = Color.white;
             b2Img.type = Image.Type.Sliced;
@@ -550,14 +551,31 @@ namespace ProjectZombie.Editor.UI
             SetStretchAnchor(b2T.GetComponent<RectTransform>());
             var b2TMP = CreateTextMeshPro(b2T, font);
             b2TMP.text = "TÀNG BẢO CÁC";
-            b2TMP.fontSize = 14;
+            b2TMP.fontSize = 13.5f;
             b2TMP.fontStyle = FontStyles.Bold;
             b2TMP.alignment = TextAlignmentOptions.Center;
             b2TMP.color = new Color(0.96f, 0.90f, 0.72f, 1f);
 
-            // Nút 3: MIẾU CỔ
+            // Nút 3: BẢO RƯƠNG (GACHA)
+            GameObject btnGacha = CreateUIElement("Btn_GachaShop", navGroup.transform);
+            btnGacha.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 50);
+            var bgImg = btnGacha.AddComponent<Image>();
+            bgImg.color = Color.white;
+            bgImg.type = Image.Type.Sliced;
+            if (btnNavWoodSprite != null) bgImg.sprite = btnNavWoodSprite;
+            gachaBtn = btnGacha.AddComponent<Button>();
+
+            GameObject bgT = CreateUIElement("Text", btnGacha.transform);
+            SetStretchAnchor(bgT.GetComponent<RectTransform>());
+            var bgTMP = CreateTextMeshPro(bgT, font);
+            bgTMP.text = "<color=#FFD700>BẢO RƯƠNG</color>";
+            bgTMP.fontSize = 13.5f;
+            bgTMP.fontStyle = FontStyles.Bold;
+            bgTMP.alignment = TextAlignmentOptions.Center;
+
+            // Nút 4: MIẾU CỔ
             GameObject btn3 = CreateUIElement("Btn_SanctuaryTree", navGroup.transform);
-            btn3.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 50);
+            btn3.GetComponent<RectTransform>().sizeDelta = new Vector2(115, 50);
             var b3Img = btn3.AddComponent<Image>();
             b3Img.color = Color.white;
             b3Img.type = Image.Type.Sliced;
@@ -568,7 +586,7 @@ namespace ProjectZombie.Editor.UI
             SetStretchAnchor(b3T.GetComponent<RectTransform>());
             var b3TMP = CreateTextMeshPro(b3T, font);
             b3TMP.text = "MIẾU CỔ";
-            b3TMP.fontSize = 14;
+            b3TMP.fontSize = 13.5f;
             b3TMP.fontStyle = FontStyles.Bold;
             b3TMP.alignment = TextAlignmentOptions.Center;
             b3TMP.color = new Color(0.96f, 0.90f, 0.72f, 1f);

@@ -28,11 +28,11 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 // 1. Thử Load direct Sprite
                 Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-                // 2. Nếu null, quét sub-assets của Texture
+                // 2. Thử load sub assets
                 if (sprite == null)
                 {
-                    var allAssets = AssetDatabase.LoadAllAssetsAtPath(path);
-                    foreach (var a in allAssets)
+                    var all = AssetDatabase.LoadAllAssetsAtPath(path);
+                    foreach (var a in all)
                     {
                         if (a is Sprite s)
                         {
@@ -42,7 +42,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                     }
                 }
 
-                // 3. Fallback: Nếu vẫn null, ép TextureImporter sang Sprite và thử lại
+                // 3. Fallback: Nếu vẫn null, ép TextureImporter SaveAndReimport
                 if (sprite == null)
                 {
                     var importer = AssetImporter.GetAtPath(path) as TextureImporter;

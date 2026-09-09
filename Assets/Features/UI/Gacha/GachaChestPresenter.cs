@@ -72,13 +72,13 @@ namespace ProjectZombie.Features.UI.Gacha
 
             // 1. Cổ Tiền
             int totalCoins = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0;
-            _view.SetCurrencyBalance($"🪙 <b>{totalCoins:N0}</b>");
+            _view.SetCurrencyBalance($"Cổ Tiền: <color=#FFD700><b>{totalCoins:N0}</b></color>");
 
             // 2. Banner Info & Costs
             var banner = RelicGachaManager.Instance != null ? RelicGachaManager.Instance.ActiveBanner : null;
             if (banner != null)
             {
-                _view.SetBannerInfo($"<color=#FFD700>✦ {banner.bannerName} ✦</color>", banner.bannerDescription);
+                _view.SetBannerInfo($"<color=#FFD700>[ {banner.bannerName} ]</color>", banner.bannerDescription);
                 _view.SetCosts($"Quay 1x\n<color=#FFD700>{banner.singleRollCost:N0} Cổ Tiền</color>", $"Quay 10x\n<color=#00FF88>{banner.multiRollCost:N0} Cổ Tiền</color>");
 
                 // 3. Pity counters
@@ -98,11 +98,11 @@ namespace ProjectZombie.Features.UI.Gacha
             int remainEpic = Mathf.Max(0, banner.epicGuaranteedEvery - pityEpic);
 
             string legText = remainLeg == 0 
-                ? "<color=#FBBF24><b>★ LƯỢT TIẾP THEO CHẮC CHẮN THẦN BINH!</b></color>"
+                ? "<color=#FBBF24><b>[LƯỢT TIẾP THEO CHẮC CHẮN THẦN BINH!]</b></color>"
                 : $"Còn <color=#FBBF24><b>{remainLeg}</b></color> lượt chắc chắn ra <color=#FBBF24>Thần Binh</color>";
 
             string epicText = remainEpic == 0 
-                ? "<color=#C084FC><b>✦ LƯỢT TIẾP THEO CHẮC CHẮN CỰC PHẨM!</b></color>"
+                ? "<color=#C084FC><b>[LƯỢT TIẾP THEO CHẮC CHẮN CỰC PHẨM!]</b></color>"
                 : $"Còn <color=#C084FC><b>{remainEpic}</b></color> lượt chắc chắn ra <color=#C084FC>Cực Phẩm</color>";
 
             _view.SetPityInfo(legText, epicText);
@@ -112,7 +112,7 @@ namespace ProjectZombie.Features.UI.Gacha
         {
             if (_view != null)
             {
-                _view.SetCurrencyBalance($"🪙 <b>{newBalance:N0}</b>");
+                _view.SetCurrencyBalance($"Cổ Tiền: <color=#FFD700><b>{newBalance:N0}</b></color>");
             }
         }
 

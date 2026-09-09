@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.UI
         [Header("Navigation Buttons")]
         [SerializeField] private Button _heroSelectButton;
         [SerializeField] private Button _armoryButton;
+        [SerializeField] private Button _gachaButton;
         [SerializeField] private Button _sanctuaryTreeButton;
         [SerializeField] private Button _codexButton;
 
@@ -44,6 +45,7 @@ namespace ProjectZombie.Features.UI
         public event Action OnStartRunClicked;
         public event Action OnHeroSelectClicked;
         public event Action OnArmoryClicked;
+        public event Action OnGachaClicked;
         public event Action OnDeckCardsClicked;
         public event Action OnSanctuaryTreeClicked;
         public event Action OnCodexClicked;
@@ -56,6 +58,7 @@ namespace ProjectZombie.Features.UI
             if (_startRunButton != null) _startRunButton.onClick.AddListener(() => OnStartRunClicked?.Invoke());
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
+            if (_gachaButton != null) _gachaButton.onClick.AddListener(() => OnGachaClicked?.Invoke());
             if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
             if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());

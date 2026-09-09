@@ -11,8 +11,9 @@ namespace ProjectZombie.Features.UI.Gacha
     /// View thụ động (Passive View) cho màn hình Gacha Bảo Rương Vạn Cổ.
     /// Tuân thủ quy chuẩn MVP: Chỉ nhận dữ liệu đã định dạng từ Presenter, không chứa logic nghiệp vụ.
     /// </summary>
-    public class GachaChestView : MonoBehaviour
+    public class GachaChestView : BaseMetaScreenView
     {
+        public override MetaScreenType ScreenType => MetaScreenType.GachaShop;
         [Header("Texts (TextMeshProUGUI)")]
         [SerializeField] private TextMeshProUGUI _currencyBalanceText;
         [SerializeField] private TextMeshProUGUI _bannerTitleText;
@@ -40,8 +41,19 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private readonly List<GachaCardRewardView> _spawnedCards = new List<GachaCardRewardView>();
 
-        private void Awake()
+        [Header("Back Navigation Button")]
+        [SerializeField] private Button _backButton;
+
+        public event Action OnBackClicked;
+
+        protected override void Awake()
         {
+            base.Awake();
+
+            if (_backButton != null) _backButton.onClick.AddListener(() => {
+                OnBackClicked?.Invoke();
+                if (MetaUIManager.Instance != null) MetaUIManager.Instance.PopScreen();
+            });
             if (_chestAnimator != null)
             {
                 // Bắt buộc theo quy chuẩn 12.6 của AGENTS.md
