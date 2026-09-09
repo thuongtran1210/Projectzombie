@@ -14,7 +14,36 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
     /// </summary>
     public class RelicGachaManager : MonoBehaviour
     {
-        public static RelicGachaManager Instance { get; private set; }
+        private static RelicGachaManager _instance;
+        private static bool _isApplicationQuitting = false;
+
+        public static RelicGachaManager Instance
+        {
+            get
+            {
+                if (_isApplicationQuitting)
+                {
+                    return _instance;
+                }
+
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<RelicGachaManager>();
+                    if (_instance == null && Application.isPlaying)
+                    {
+                        var go = new GameObject("[Auto] RelicGachaManager");
+                        _instance = go.AddComponent<RelicGachaManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                if (_instance != null)
+                {
+                    _instance.EnsureInitialized();
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("Banner Cấu Hình Hiện Tại")]
         [SerializeField] private GachaBannerConfigSO _activeBanner;
@@ -43,32 +72,49 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            _isApplicationQuitting = false;
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
 
-            _currencyProcessor = new CoTienCurrencyProcessor();
-            _dataProvider = new LocalSOGachaDataProvider();
+            if (_currencyProcessor == null) _currencyProcessor = new CoTienCurrencyProcessor();
+            if (_dataProvider == null) _dataProvider = new LocalSOGachaDataProvider();
 
             if (_activeBanner == null)
             {
                 _activeBanner = Resources.Load<GachaBannerConfigSO>("Gacha/banner_standard");
             }
+
+            EnsureInitialized();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isApplicationQuitting = true;
         }
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
             }
         }
 
         private void Start()
         {
+            EnsureInitialized();
+        }
+
+        public void EnsureInitialized()
+        {
+            if (_currencyProcessor == null) _currencyProcessor = new CoTienCurrencyProcessor();
+            if (_dataProvider == null) _dataProvider = new LocalSOGachaDataProvider();
+
             if (_saveData == null)
             {
                 var gm = GameManager.Instance;

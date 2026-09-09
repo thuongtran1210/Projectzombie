@@ -13,7 +13,36 @@ namespace ProjectZombie.Features.MetaProgression
         // ====================================================================
         // SINGLETON
         // ====================================================================
-        public static MetaCurrencyManager Instance { get; private set; }
+        private static MetaCurrencyManager _instance;
+        private static bool _isApplicationQuitting = false;
+
+        public static MetaCurrencyManager Instance
+        {
+            get
+            {
+                if (_isApplicationQuitting)
+                {
+                    return _instance;
+                }
+
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<MetaCurrencyManager>();
+                    if (_instance == null && Application.isPlaying)
+                    {
+                        var go = new GameObject("[Auto] MetaCurrencyManager");
+                        _instance = go.AddComponent<MetaCurrencyManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                if (_instance != null)
+                {
+                    _instance.EnsureInitialized();
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         // ====================================================================
         // STATE
@@ -33,19 +62,48 @@ namespace ProjectZombie.Features.MetaProgression
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            _isApplicationQuitting = false;
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            EnsureInitialized();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isApplicationQuitting = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         private void Start()
         {
-            if (_saveData == null && Core.Save.GameManager.Instance != null && Core.Save.GameManager.Instance.SaveData != null)
+            EnsureInitialized();
+        }
+
+        public void EnsureInitialized()
+        {
+            if (_saveData == null)
             {
-                Initialize(Core.Save.GameManager.Instance.SaveData);
+                var gm = Core.Save.GameManager.Instance;
+                if (gm != null && gm.SaveData != null)
+                {
+                    Initialize(gm.SaveData);
+                }
+                else
+                {
+                    Initialize(Core.Save.SaveSystem.Load());
+                }
             }
         }
 

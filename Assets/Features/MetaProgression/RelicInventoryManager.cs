@@ -10,7 +10,36 @@ namespace ProjectZombie.Features.MetaProgression
     /// </summary>
     public class RelicInventoryManager : MonoBehaviour
     {
-        public static RelicInventoryManager Instance { get; private set; }
+        private static RelicInventoryManager _instance;
+        private static bool _isApplicationQuitting = false;
+
+        public static RelicInventoryManager Instance
+        {
+            get
+            {
+                if (_isApplicationQuitting)
+                {
+                    return _instance;
+                }
+
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<RelicInventoryManager>();
+                    if (_instance == null && Application.isPlaying)
+                    {
+                        var go = new GameObject("[Auto] RelicInventoryManager");
+                        _instance = go.AddComponent<RelicInventoryManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                if (_instance != null)
+                {
+                    _instance.EnsureInitialized();
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("Cấu Hình Progression")]
         [SerializeField] private RelicStarProgressionSO _progressionConfig;
@@ -23,15 +52,36 @@ namespace ProjectZombie.Features.MetaProgression
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            _isApplicationQuitting = false;
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            EnsureInitialized();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isApplicationQuitting = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         private void Start()
+        {
+            EnsureInitialized();
+        }
+
+        public void EnsureInitialized()
         {
             if (_saveData == null)
             {

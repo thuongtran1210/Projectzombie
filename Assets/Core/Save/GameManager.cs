@@ -11,22 +11,59 @@ namespace ProjectZombie.Core.Save
     /// </summary>
     public class GameManager : MonoBehaviour
     {
-        public static GameManager Instance { get; private set; }
+        private static GameManager _instance;
+        private static bool _isApplicationQuitting = false;
+
+        public static GameManager Instance
+        {
+            get
+            {
+                if (_isApplicationQuitting)
+                {
+                    return _instance;
+                }
+
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<GameManager>();
+                    if (_instance == null && Application.isPlaying)
+                    {
+                        var go = new GameObject("[Auto] GameManager");
+                        _instance = go.AddComponent<GameManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         public MetaProgressionSaveData SaveData { get; private set; }
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            _isApplicationQuitting = false;
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
 
             // Nạp dữ liệu Save khi game khởi động
-            LoadGame();
+            if (SaveData == null)
+            {
+                LoadGame();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
 
         private void Start()
@@ -110,6 +147,7 @@ namespace ProjectZombie.Core.Save
 
         private void OnApplicationQuit()
         {
+            _isApplicationQuitting = true;
             SaveGame();
         }
     }
