@@ -115,7 +115,12 @@ namespace ProjectZombie.Features.Weapons.Editor
             so.FindProperty("weaponId").stringValue = def.id;
             so.FindProperty("weaponName").stringValue = def.name;
             so.FindProperty("description").stringValue = def.desc;
-            so.FindProperty("rarity").stringValue = def.rarity;
+            ProjectZombie.Features.Shared.ItemRarity itemRarity = ProjectZombie.Features.Shared.ItemRarity.Common;
+            if (System.Enum.TryParse(def.rarity, out ProjectZombie.Features.Shared.ItemRarity parsedRarity))
+            {
+                itemRarity = parsedRarity;
+            }
+            so.FindProperty("rarity").enumValueIndex = (int)itemRarity;
             so.FindProperty("evolutionWeaponId").stringValue = def.evoId;
             so.FindProperty("elementType").enumValueIndex = (int)def.element;
             so.FindProperty("baseDamage").floatValue = def.damage;

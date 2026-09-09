@@ -42,6 +42,16 @@ namespace ProjectZombie.Features.MetaProgression
         [Tooltip("Danh sách tiến trình thẻ mảnh & cấp sao của vũ khí / pháp bảo.")]
         public System.Collections.Generic.List<RelicProgressEntry> relicProgressList = new System.Collections.Generic.List<RelicProgressEntry>();
 
+        [Header("Gacha Chest Progression")]
+        [Tooltip("Số lượt mở rương liên tiếp chưa nhận được Thần Binh (Legendary Pity Counter).")]
+        public int gachaPityLegendary = 0;
+
+        [Tooltip("Số lượt mở rương liên tiếp chưa nhận được Cực Phẩm (Epic Pity Counter).")]
+        public int gachaPityEpic = 0;
+
+        [Tooltip("Tổng số lượt quay Gacha đã thực hiện.")]
+        public int totalGachaRolls = 0;
+
         /// <summary>
         /// Cập nhật kỷ lục sau mỗi run.
         /// </summary>

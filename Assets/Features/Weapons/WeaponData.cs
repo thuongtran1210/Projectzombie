@@ -44,7 +44,7 @@ namespace ProjectZombie.Features.Weapons
         public string description;
 
         [Tooltip("Độ hiếm của Pháp Bảo")]
-        public string rarity = "Common";
+        public ProjectZombie.Features.Shared.ItemRarity rarity = ProjectZombie.Features.Shared.ItemRarity.Common;
 
         [Tooltip("ID Evolution / Vũ khí tối thượng liên kết")]
         public string evolutionWeaponId;
