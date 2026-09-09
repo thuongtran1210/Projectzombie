@@ -15,6 +15,12 @@ namespace ProjectZombie.Editor.Tools
     /// </summary>
     public class MobileControlsSetupTool : EditorWindow
     {
+        [MenuItem("Tools/ProjectZombie/🎮 Cấu Hình Mobile Controls & Virtual Joystick (1-Click)", priority = 5)]
+        public static void QuickSetupMobileControls()
+        {
+            SetupAndWireControlsInScene();
+        }
+
         [MenuItem("Tools/ProjectZombie/UI/Điều Khiển Mobile (Controls)/1. Thiết Lập Virtual Joystick & Nút Bấm", priority = 31)]
         public static void ShowWindow()
         {

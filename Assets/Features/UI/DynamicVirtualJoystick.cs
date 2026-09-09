@@ -188,6 +188,7 @@ namespace ProjectZombie.Features.UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (!isActiveAndEnabled || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             if (containerRect == null || handleRect == null) return;
 
             // Chế độ Floating Joystick: Chỉ nhảy container khi được cấu hình rõ ràng
@@ -214,6 +215,7 @@ namespace ProjectZombie.Features.UI
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!isActiveAndEnabled || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             if (containerRect == null || handleRect == null) return;
 
             // Tính vị trí ngón tay so với tâm của containerRect
