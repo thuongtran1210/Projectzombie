@@ -21,13 +21,19 @@ namespace ProjectZombie.Features.UI.HUD
         [Header("Monster Stage Progress Bar")]
         [SerializeField] private Slider _stageProgressSlider;
         [SerializeField] private Image _stageProgressFillImage;
-        [SerializeField] private TextMeshProUGUI _stageProgressText; // Ví dụ: "03:45 / 20:00 (18%)"
+        [SerializeField] private TextMeshProUGUI _stageProgressText; // Ví dụ: "03:45 / 15:00 (25%)"
         [SerializeField] private TextMeshProUGUI _waveDescriptionText; // Ví dụ: "Giai doan: Ma Giap quai binh"
         [SerializeField] private GameObject _bossMarkerIcon;
 
-        [Header("Stage Monster Timeline Markers")]
+        [Header("Stage Monster Timeline Markers & Pins")]
         [SerializeField] private RectTransform _timelineMarkersContainer;
+        [SerializeField] private RectTransform _playerIndicatorPin; // Con trỏ ngọc Chim Lạc chạy theo thời gian
+        [SerializeField] private Sprite _playerIndicatorSprite;
+        [SerializeField] private Sprite _phaseDividerSprite;       // Trụ đồng phân chia Phase
         [SerializeField] private Sprite _markerBgSprite;
+        [SerializeField] private Sprite _swarmBadgeSprite;         // Badge song kiếm
+        [SerializeField] private Sprite _eliteBadgeSprite;         // Badge đầu trâu
+        [SerializeField] private Sprite _finalBossBadgeSprite;     // Badge Rồng Lửa Diêm Vương
 
         [Header("Center Transition Banner")]
         [SerializeField] private CanvasGroup _bannerCanvasGroup;
@@ -43,9 +49,11 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private Color _pillarWaveColor = new Color(0.85f, 0.65f, 0.15f); // Hoàng Kim Thạch (#D9A626)
 
         private readonly System.Collections.Generic.List<TimelineMarkerUI> _activeMarkers = new System.Collections.Generic.List<TimelineMarkerUI>();
+        private readonly System.Collections.Generic.List<GameObject> _phaseDividers = new System.Collections.Generic.List<GameObject>();
         private Coroutine _bannerCoroutine;
         private Sequence _bannerSequence;
         private Tweener _progressTweener;
+        private Tweener _playerPinPulseTweener;
         private LevelTimelineConfig _cachedTimelineConfig;
 
         private class TimelineMarkerUI
@@ -57,6 +65,8 @@ namespace ProjectZombie.Features.UI.HUD
             public Image frameBg;
             public Image iconImage;
             public bool isPassed;
+            public bool isWarningPulsing;
+            public Tweener warningTweener;
         }
 
         private void Awake()
@@ -72,6 +82,14 @@ namespace ProjectZombie.Features.UI.HUD
         {
             _bannerSequence?.Kill();
             _progressTweener?.Kill();
+            _playerPinPulseTweener?.Kill();
+            if (_activeMarkers != null)
+            {
+                foreach (var marker in _activeMarkers)
+                {
+                    marker?.warningTweener?.Kill();
+                }
+            }
         }
 
         /// <summary>
@@ -116,6 +134,64 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 _waveDescriptionText.text = waveDescription;
             }
+
+            // Đồng bộ vị trí của Con trỏ người chơi (Player Indicator Pin)
+            UpdatePlayerIndicatorPosition(targetValue);
+        }
+
+        private void UpdatePlayerIndicatorPosition(float normalizedProgress)
+        {
+            if (_playerIndicatorPin == null && _timelineMarkersContainer != null)
+            {
+                EnsurePlayerIndicatorCreated();
+            }
+
+            if (_playerIndicatorPin != null)
+            {
+                _playerIndicatorPin.anchorMin = new Vector2(normalizedProgress, 0.5f);
+                _playerIndicatorPin.anchorMax = new Vector2(normalizedProgress, 0.5f);
+                _playerIndicatorPin.anchoredPosition = new Vector2(0f, 14f); // Nhô nhẹ lên trên thanh bar
+            }
+        }
+
+        private void EnsureSpritesLoaded()
+        {
+#if UNITY_EDITOR
+            if (_playerIndicatorSprite == null)
+                _playerIndicatorSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Pin_Player_LacBird.png");
+            if (_phaseDividerSprite == null)
+                _phaseDividerSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Pin_Phase_Divider.png");
+            if (_swarmBadgeSprite == null)
+                _swarmBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Badge_Swarm_Swords.png");
+            if (_eliteBadgeSprite == null)
+                _eliteBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Badge_Elite_OxHead.png");
+            if (_finalBossBadgeSprite == null)
+                _finalBossBadgeSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Badge_Boss_Dragon.png");
+#endif
+        }
+
+        private void EnsurePlayerIndicatorCreated()
+        {
+            EnsureSpritesLoaded();
+            if (_playerIndicatorPin != null || _timelineMarkersContainer == null) return;
+
+            GameObject pinObj = new GameObject("PlayerIndicatorPin_Jade", typeof(RectTransform), typeof(Image));
+            pinObj.transform.SetParent(_timelineMarkersContainer.parent != null ? _timelineMarkersContainer.parent : _timelineMarkersContainer, false);
+            _playerIndicatorPin = pinObj.GetComponent<RectTransform>();
+            _playerIndicatorPin.pivot = new Vector2(0.5f, 0f); // Điểm nhọn cắm xuống thanh bar
+            _playerIndicatorPin.sizeDelta = new Vector2(26f, 38f);
+            _playerIndicatorPin.SetAsLastSibling(); // Luôn nổi lên trên cùng
+
+            Image pinImg = pinObj.GetComponent<Image>();
+            pinImg.preserveAspect = true;
+            if (_playerIndicatorSprite != null) pinImg.sprite = _playerIndicatorSprite;
+            else pinImg.color = new Color(0.3f, 0.95f, 0.7f, 1f); // Xanh ngọc phát sáng
+
+            // Hoạt ảnh bập bùng nhẹ của ngọc linh hồn
+            _playerPinPulseTweener?.Kill();
+            _playerPinPulseTweener = _playerIndicatorPin.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.7f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine);
         }
 
         /// <summary>
@@ -125,11 +201,11 @@ namespace ProjectZombie.Features.UI.HUD
         {
             if (config == null || config.events == null || config.events.Count == 0) return;
 
-            // Nếu đã từng setup đúng config này rồi thì không cần tạo lại GameObject
             if (_cachedTimelineConfig == config && _activeMarkers.Count > 0) return;
             _cachedTimelineConfig = config;
 
-            // Tìm container nếu chưa được serialize
+            EnsureSpritesLoaded();
+
             if (_timelineMarkersContainer == null)
             {
                 var found = transform.Find("ProgressBar_StageMonster/Container_TimelineMarkers");
@@ -142,13 +218,22 @@ namespace ProjectZombie.Features.UI.HUD
             // Dọn sạch marker cũ
             for (int i = _timelineMarkersContainer.childCount - 1; i >= 0; i--)
             {
-                Destroy(_timelineMarkersContainer.GetChild(i).gameObject);
+                var child = _timelineMarkersContainer.GetChild(i);
+                if (child != null && child.gameObject != null && child != _playerIndicatorPin)
+                {
+                    Destroy(child.gameObject);
+                }
             }
             _activeMarkers.Clear();
+            _phaseDividers.Clear();
 
             float totalDuration = Mathf.Max(1f, config.maxLevelDuration);
 
-            // Duyệt danh sách Timeline Events để đặt Marker
+            // 1. Tạo 2 Vạch Phân Giai Đoạn (Phase Divider Pins) tại phút 05:00 (33.3%) và 10:00 (66.6%)
+            CreatePhaseDivider(0.333f, "Divider_Phase1_2");
+            CreatePhaseDivider(0.666f, "Divider_Phase2_3");
+
+            // 2. Duyệt danh sách Timeline Events để đặt Marker phân cấp
             for (int i = 0; i < config.events.Count; i++)
             {
                 var evt = config.events[i];
@@ -157,7 +242,17 @@ namespace ProjectZombie.Features.UI.HUD
                 float normX = Mathf.Clamp01(evt.timestampSeconds / totalDuration);
                 Sprite iconSprite = evt.GetIcon();
 
-                // Tạo Marker GameObject
+                // Phân cấp kích thước hiển thị
+                float markerSize = 22f;
+                if (evt.eventType == TimelineEventType.BossSpawn)
+                {
+                    markerSize = (evt.timestampSeconds >= totalDuration - 5f) ? 38f : 32f; // Final Boss 38px, Mid-Boss 32px
+                }
+                else if (evt.eventType == TimelineEventType.BurstWave)
+                {
+                    markerSize = 26f;
+                }
+
                 GameObject markerObj = new GameObject($"Marker_{i:D2}_{evt.eventType}", typeof(RectTransform));
                 markerObj.transform.SetParent(_timelineMarkersContainer, false);
 
@@ -166,11 +261,9 @@ namespace ProjectZombie.Features.UI.HUD
                 mRT.anchorMax = new Vector2(normX, 0.5f);
                 mRT.pivot = new Vector2(0.5f, 0.5f);
                 mRT.anchoredPosition = Vector2.zero;
-
-                float markerSize = (evt.eventType == TimelineEventType.BossSpawn) ? 28f : 22f;
                 mRT.sizeDelta = new Vector2(markerSize, markerSize);
 
-                // Khung viền Marker (Gỗ Mun / Viền màu theo loại sự kiện)
+                // Khung viền Marker
                 GameObject bgObj = new GameObject("Img_FrameBg", typeof(RectTransform), typeof(Image));
                 bgObj.transform.SetParent(markerObj.transform, false);
                 RectTransform bgRT = bgObj.GetComponent<RectTransform>();
@@ -178,10 +271,28 @@ namespace ProjectZombie.Features.UI.HUD
                 bgRT.anchorMax = Vector2.one;
                 bgRT.sizeDelta = Vector2.zero;
                 Image bgImg = bgObj.GetComponent<Image>();
-                if (_markerBgSprite != null) bgImg.sprite = _markerBgSprite;
+                
+                // Gán khung đặc thù nếu có sprite riêng
+                if (evt.eventType == TimelineEventType.BossSpawn && evt.timestampSeconds >= totalDuration - 5f && _finalBossBadgeSprite != null)
+                {
+                    bgImg.sprite = _finalBossBadgeSprite;
+                }
+                else if (evt.eventType == TimelineEventType.BossSpawn && _eliteBadgeSprite != null)
+                {
+                    bgImg.sprite = _eliteBadgeSprite;
+                }
+                else if (evt.eventType == TimelineEventType.BurstWave && _swarmBadgeSprite != null)
+                {
+                    bgImg.sprite = _swarmBadgeSprite;
+                }
+                else if (_markerBgSprite != null)
+                {
+                    bgImg.sprite = _markerBgSprite;
+                }
+
                 bgImg.color = GetColorForEventType(evt.eventType);
 
-                // Icon quái / sự kiện
+                // Icon quái
                 GameObject iconObj = new GameObject("Img_MonsterIcon", typeof(RectTransform), typeof(Image));
                 iconObj.transform.SetParent(markerObj.transform, false);
                 RectTransform iconRT = iconObj.GetComponent<RectTransform>();
@@ -198,7 +309,6 @@ namespace ProjectZombie.Features.UI.HUD
                 }
                 else
                 {
-                    // Fallback nếu chưa có sprite
                     iconImg.color = new Color(1f, 1f, 1f, 0.4f);
                 }
 
@@ -210,13 +320,35 @@ namespace ProjectZombie.Features.UI.HUD
                     markerObj = markerObj,
                     frameBg = bgImg,
                     iconImage = iconImg,
-                    isPassed = false
+                    isPassed = false,
+                    isWarningPulsing = false
                 });
             }
+
+            EnsurePlayerIndicatorCreated();
+        }
+
+        private void CreatePhaseDivider(float normalizedX, string name)
+        {
+            GameObject divObj = new GameObject(name, typeof(RectTransform), typeof(Image));
+            divObj.transform.SetParent(_timelineMarkersContainer, false);
+            RectTransform divRT = divObj.GetComponent<RectTransform>();
+            divRT.anchorMin = new Vector2(normalizedX, 0.5f);
+            divRT.anchorMax = new Vector2(normalizedX, 0.5f);
+            divRT.pivot = new Vector2(0.5f, 0.5f);
+            divRT.anchoredPosition = Vector2.zero;
+            divRT.sizeDelta = new Vector2(10f, 28f);
+
+            Image divImg = divObj.GetComponent<Image>();
+            divImg.preserveAspect = true;
+            if (_phaseDividerSprite != null) divImg.sprite = _phaseDividerSprite;
+            else divImg.color = new Color(0.85f, 0.7f, 0.3f, 0.85f); // Trụ đồng
+
+            _phaseDividers.Add(divObj);
         }
 
         /// <summary>
-        /// Cập nhật trạng thái của các Icon quái trên Timeline khi trận đấu diễn ra.
+        /// Cập nhật trạng thái của các Icon quái trên Timeline (Đã qua mốc / Cảnh báo radar sắp tới).
         /// </summary>
         public void UpdateMarkerStatus(float matchTime, float progress)
         {
@@ -229,17 +361,22 @@ namespace ProjectZombie.Features.UI.HUD
 
                 if (matchTime >= marker.timestamp)
                 {
+                    if (marker.isWarningPulsing)
+                    {
+                        marker.isWarningPulsing = false;
+                        marker.warningTweener?.Kill();
+                        marker.markerObj.transform.localScale = Vector3.one;
+                    }
+
                     if (!marker.isPassed)
                     {
                         marker.isPassed = true;
-                        // Hiệu ứng nảy nhẹ khi người chơi cán mốc quái này
                         marker.markerObj.transform.DOKill();
-                        marker.markerObj.transform.DOPunchScale(new Vector3(0.22f, 0.22f, 0f), 0.3f, 5, 0.5f);
+                        marker.markerObj.transform.DOPunchScale(new Vector3(0.25f, 0.25f, 0f), 0.35f, 5, 0.5f);
 
-                        // Đổi màu viền biểu thị đã qua mốc
                         if (marker.frameBg != null)
                         {
-                            marker.frameBg.color = new Color(1f, 0.85f, 0.4f, 0.85f); // Vàng Hoàng Kim
+                            marker.frameBg.color = new Color(1f, 0.85f, 0.4f, 0.85f);
                         }
                         if (marker.iconImage != null)
                         {
@@ -250,13 +387,42 @@ namespace ProjectZombie.Features.UI.HUD
                 else
                 {
                     marker.isPassed = false;
-                    if (marker.frameBg != null)
+                    float timeRemaining = marker.timestamp - matchTime;
+
+                    // Hiệu ứng Cảnh báo Radar (Warning Pulse) khi còn 20s trước mốc Boss hoặc Burst Wave
+                    if (timeRemaining <= 20f && (marker.eventType == TimelineEventType.BossSpawn || marker.eventType == TimelineEventType.BurstWave))
                     {
-                        marker.frameBg.color = GetColorForEventType(marker.eventType);
+                        if (!marker.isWarningPulsing)
+                        {
+                            marker.isWarningPulsing = true;
+                            marker.warningTweener?.Kill();
+                            marker.warningTweener = marker.markerObj.transform.DOScale(1.25f, 0.4f)
+                                .SetLoops(-1, LoopType.Yoyo)
+                                .SetEase(Ease.InOutSine);
+
+                            if (marker.frameBg != null)
+                            {
+                                marker.frameBg.color = new Color(1f, 0.2f, 0.2f, 1f); // Rực đỏ cảnh báo
+                            }
+                        }
                     }
-                    if (marker.iconImage != null)
+                    else
                     {
-                        marker.iconImage.color = Color.white;
+                        if (marker.isWarningPulsing)
+                        {
+                            marker.isWarningPulsing = false;
+                            marker.warningTweener?.Kill();
+                            marker.markerObj.transform.localScale = Vector3.one;
+                        }
+
+                        if (marker.frameBg != null)
+                        {
+                            marker.frameBg.color = GetColorForEventType(marker.eventType);
+                        }
+                        if (marker.iconImage != null)
+                        {
+                            marker.iconImage.color = Color.white;
+                        }
                     }
                 }
             }

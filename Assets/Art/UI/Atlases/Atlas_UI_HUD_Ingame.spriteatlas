@@ -53,38 +53,59 @@ SpriteAtlas:
     - 1dd405d0ac9853e47b51eadfc9b00983: 21300000
     - ca503e411bbe44308af1223887686d6f: 21300000
     - 3a315c61c42c434dabdb9215a6800adb: 21300000
+    - da57ee421312deb4da3f3691e30ff18e: 21300000
     - 7b59ea7270e04921a3bd441c99987a58: 21300000
     - 23c6a2d27d1241f1aa26bab1eb19ee5b: 21300000
     - 6f5de4d263482674bb81e7a766f78f5f: 21300000
+    - 40a9b1c3f8874f540bc21c5683f16c77: 21300000
+    - a07a355492181cf4bbbe265ccdd5ee89: 21300000
+    - 14975ee4b074c4b4cbf731bed1cdc703: 21300000
     - d059d67762bf49668fbe71c0c3a57f11: 21300000
     - 77c2f0975c14abf478f06d3378d4bd8f: 21300000
+    - 1f442cda4cdd19540bb5d84b86e85779: 21300000
+    - 3665abcbea6f716478ef4281144562aa: 21300000
     - 5219134c5c5b4e43a881750c1238bc1b: 21300000
     - 47b56e3daba961542bc0b983beb3e7b3: 21300000
+    - 9ce8969d70b446542aa3aa4b87bd402c: 21300000
     - 1617a62f3f9347ecaf2fd7b7cc290d00: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 1dd405d0ac9853e47b51eadfc9b00983, type: 3}
   - {fileID: 21300000, guid: ca503e411bbe44308af1223887686d6f, type: 3}
   - {fileID: 21300000, guid: 3a315c61c42c434dabdb9215a6800adb, type: 3}
+  - {fileID: 21300000, guid: da57ee421312deb4da3f3691e30ff18e, type: 3}
   - {fileID: 21300000, guid: 7b59ea7270e04921a3bd441c99987a58, type: 3}
   - {fileID: 21300000, guid: 23c6a2d27d1241f1aa26bab1eb19ee5b, type: 3}
   - {fileID: 21300000, guid: 6f5de4d263482674bb81e7a766f78f5f, type: 3}
+  - {fileID: 21300000, guid: 40a9b1c3f8874f540bc21c5683f16c77, type: 3}
+  - {fileID: 21300000, guid: a07a355492181cf4bbbe265ccdd5ee89, type: 3}
+  - {fileID: 21300000, guid: 14975ee4b074c4b4cbf731bed1cdc703, type: 3}
   - {fileID: 21300000, guid: d059d67762bf49668fbe71c0c3a57f11, type: 3}
   - {fileID: 21300000, guid: 77c2f0975c14abf478f06d3378d4bd8f, type: 3}
+  - {fileID: 21300000, guid: 1f442cda4cdd19540bb5d84b86e85779, type: 3}
+  - {fileID: 21300000, guid: 3665abcbea6f716478ef4281144562aa, type: 3}
   - {fileID: 21300000, guid: 5219134c5c5b4e43a881750c1238bc1b, type: 3}
   - {fileID: 21300000, guid: 47b56e3daba961542bc0b983beb3e7b3, type: 3}
+  - {fileID: 21300000, guid: 9ce8969d70b446542aa3aa4b87bd402c, type: 3}
   - {fileID: 21300000, guid: 1617a62f3f9347ecaf2fd7b7cc290d00, type: 3}
   m_PackedSpriteNamesToIndex:
   - Bar_HUD_Fill_HP
   - Slot_Weapon_Equipped
   - Gauge_Stat_Fill_Cooldown
+  - Badge_Boss_Special
   - Gauge_Stat_Bar_Frame
   - Gauge_Stat_Fill_Damage
   - Tex_Attack_Aim_Arrow
+  - Badge_Elite_OxHead
+  - Badge_Swarm_Swords
+  - Pin_Player_LacBird
   - Frame_HUD_Bar
   - Bar_HUD_Fill_EXP
+  - Timeline_HUD_Kit
+  - Pin_Phase_Divider
   - Fill_YinYang_Taiji
   - Tex_Attack_Aim_Arc_Reticle
+  - Badge_Boss_Dragon
   - ExpBar_Fill_Gold
   m_RenderDataMap: {}
   m_Tag: Atlas_UI_HUD_Ingame
