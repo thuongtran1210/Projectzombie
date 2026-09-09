@@ -29,4 +29,9 @@ MonoBehaviour:
     critChanceBonus: 0
     baseDamageBonus: 0
     pickupRangeBonus: 0
-    expMultiplierBonus: 0.1
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0.08
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

@@ -20,7 +20,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: c6a74d8be7844413b4ce69d495ccb14a, type: 3}
   upgradeType: 6
   spawnWeight: 4
-  maxLevel: 0
+  maxLevel: 1
   requiredYinYangState: 1
   checkYinYangState: 0
   element: 5

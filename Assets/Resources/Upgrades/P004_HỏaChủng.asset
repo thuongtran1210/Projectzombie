@@ -26,6 +26,11 @@ MonoBehaviour:
     maxHealthBonus: 0
     moveSpeedBonus: 0
     critChanceBonus: 0
-    baseDamageBonus: 4
+    baseDamageBonus: 0
     pickupRangeBonus: 0
     expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0.15
