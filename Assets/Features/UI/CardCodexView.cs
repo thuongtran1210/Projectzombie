@@ -54,6 +54,7 @@ namespace ProjectZombie.Features.UI
         public event Action OnBackClicked;
         public event Action<CodexTabType> OnTabChanged;
         public event Action OnAlchemyFusionClicked;
+        public event Action OnShown;
 
         protected override void Awake()
         {
@@ -67,6 +68,12 @@ namespace ProjectZombie.Features.UI
             if (_tabComboButton != null) _tabComboButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.ComboSkills));
 
             if (_alchemyFusionButton != null) _alchemyFusionButton.onClick.AddListener(() => OnAlchemyFusionClicked?.Invoke());
+        }
+
+        public override void Show()
+        {
+            base.Show();
+            OnShown?.Invoke();
         }
 
         public override void OnBackPressed()
@@ -173,5 +180,26 @@ namespace ProjectZombie.Features.UI
 
         public Transform CardsGridContainer => _cardsGridContainer;
         public Transform RecipeIngredientsContainer => _recipeIngredientsContainer;
+
+        /// <summary>
+        /// Dọn dẹp toàn bộ slot item cũ trong Grid Container.
+        /// </summary>
+        public void ClearGrid()
+        {
+            if (_cardsGridContainer == null) return;
+            for (int i = _cardsGridContainer.childCount - 1; i >= 0; i--)
+            {
+                Destroy(_cardsGridContainer.GetChild(i).gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Tạo một slot item mới trong grid.
+        /// </summary>
+        public CodexSlotItemView CreateSlotItem()
+        {
+            return CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+        }
     }
 }
+
