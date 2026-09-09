@@ -27,6 +27,16 @@ namespace ProjectZombie.Editor.UI
             OptimizeActiveScene();
         }
 
+        public static void OptimizeRaycastInActiveScene()
+        {
+            OptimizeActiveScene();
+        }
+
+        public static void OptimizeRaycastInAllUIPrefabs()
+        {
+            OptimizeAllPrefabs();
+        }
+
         private static void OptimizeActiveScene()
         {
             var activeScene = EditorSceneManager.GetActiveScene();
