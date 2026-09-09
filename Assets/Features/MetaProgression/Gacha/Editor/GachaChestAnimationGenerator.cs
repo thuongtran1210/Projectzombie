@@ -19,23 +19,42 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
 
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
-            // Nạp các frames (thử nạp Sprite, nếu chưa reimport kịp thì nạp Texture2D và ép kiểu)
+            // Nạp các frames
             Sprite[] frames = new Sprite[8];
             for (int i = 1; i <= 8; i++)
             {
                 string path = $"Assets/Art/UI/Gacha/Chest_Frame_{i:02d}.png";
-                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                
+                // 1. Thử Load direct Sprite
+                Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+                // 2. Nếu null, quét sub-assets của Texture
                 if (sprite == null)
                 {
-                    // Ép TextureImporter import lại nếu cần
+                    var allAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+                    foreach (var a in allAssets)
+                    {
+                        if (a is Sprite s)
+                        {
+                            sprite = s;
+                            break;
+                        }
+                    }
+                }
+
+                // 3. Fallback: Nếu vẫn null, ép TextureImporter sang Sprite và thử lại
+                if (sprite == null)
+                {
                     var importer = AssetImporter.GetAtPath(path) as TextureImporter;
                     if (importer != null)
                     {
                         importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
                         importer.SaveAndReimport();
                         sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
                     }
                 }
+
                 frames[i - 1] = sprite;
             }
 
