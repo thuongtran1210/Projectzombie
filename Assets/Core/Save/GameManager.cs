@@ -30,10 +30,24 @@ namespace ProjectZombie.Core.Save
 
         private void Start()
         {
-            // Khởi tạo MetaCurrencyManager nếu tồn tại
-            if (MetaCurrencyManager.Instance != null && SaveData != null)
+            InitializeAllManagers();
+        }
+
+        private void InitializeAllManagers()
+        {
+            if (SaveData == null) return;
+
+            if (MetaCurrencyManager.Instance != null)
             {
                 MetaCurrencyManager.Instance.Initialize(SaveData);
+            }
+            if (RelicInventoryManager.Instance != null)
+            {
+                RelicInventoryManager.Instance.Initialize(SaveData);
+            }
+            if (RelicGachaManager.Instance != null)
+            {
+                RelicGachaManager.Instance.Initialize(SaveData);
             }
         }
 
@@ -43,10 +57,7 @@ namespace ProjectZombie.Core.Save
         public void LoadGame()
         {
             SaveData = SaveSystem.Load();
-            if (MetaCurrencyManager.Instance != null && SaveData != null)
-            {
-                MetaCurrencyManager.Instance.Initialize(SaveData);
-            }
+            InitializeAllManagers();
         }
 
         /// <summary>
@@ -54,9 +65,14 @@ namespace ProjectZombie.Core.Save
         /// </summary>
         public void SaveGame()
         {
+            if (SaveData == null)
+            {
+                SaveData = new MetaProgressionSaveData();
+            }
+
             if (MetaCurrencyManager.Instance != null)
             {
-                SaveData = MetaCurrencyManager.Instance.GetSaveData();
+                SaveData.totalCurrency = MetaCurrencyManager.Instance.TotalCurrency;
             }
 
             SaveSystem.Save(SaveData);

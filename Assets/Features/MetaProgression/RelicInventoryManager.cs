@@ -33,9 +33,17 @@ namespace ProjectZombie.Features.MetaProgression
 
         private void Start()
         {
-            if (_saveData == null && GameManager.Instance != null && GameManager.Instance.SaveData != null)
+            if (_saveData == null)
             {
-                Initialize(GameManager.Instance.SaveData);
+                var gm = GameManager.Instance;
+                if (gm != null && gm.SaveData != null)
+                {
+                    Initialize(gm.SaveData);
+                }
+                else
+                {
+                    Initialize(SaveSystem.Load());
+                }
             }
         }
 

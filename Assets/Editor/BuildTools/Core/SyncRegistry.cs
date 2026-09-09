@@ -24,7 +24,7 @@ namespace ProjectZombie.EditorTools.BuildSync
         {
             SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset"),
             SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset"),
-            SyncRule.ForSingleAsset("GachaBanner_Standard_VanCo", "Assets/_Data/Gacha/GachaBanner_Standard_VanCo.asset", "Assets/Resources/GachaBanner_Standard_VanCo.asset")
+            SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/Resources/Gacha/banner_standard.asset", "Assets/_Data/Gacha/banner_standard.asset")
         };
 
         public static readonly List<SyncRule> UIPrefabRules = new List<SyncRule>
@@ -34,7 +34,11 @@ namespace ProjectZombie.EditorTools.BuildSync
             SyncRule.ForUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI()),
             SyncRule.ForUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab()),
             SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab()),
-            SyncRule.ForUIPrefab("GachaShopPanelUI", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs())
+            new SyncRule("GachaShopPanel", "Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab", "Assets/Resources/UI/Gacha/GachaShopPanel.prefab", "*.prefab")
+            {
+                Type = RuleType.UIPrefab,
+                FallbackGenerator = () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs()
+            }
         };
     }
 }

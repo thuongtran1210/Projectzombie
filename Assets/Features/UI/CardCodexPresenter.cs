@@ -49,10 +49,10 @@ namespace ProjectZombie.Features.UI
 #if UNITY_EDITOR
             string borderPath = rarity switch
             {
-                ProjectZombie.Features.Shared.ItemRarity.Legendary => "Assets/Art/UI/Gacha/Border_Rarity_Legendary.png",
-                ProjectZombie.Features.Shared.ItemRarity.Epic => "Assets/Art/UI/Gacha/Border_Rarity_Epic.png",
-                ProjectZombie.Features.Shared.ItemRarity.Rare => "Assets/Art/UI/Gacha/Border_Rarity_Rare.png",
-                _ => "Assets/Art/UI/Gacha/Border_Rarity_Common.png"
+                ProjectZombie.Features.Shared.ItemRarity.Legendary => "Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png",
+                ProjectZombie.Features.Shared.ItemRarity.Epic => "Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png",
+                ProjectZombie.Features.Shared.ItemRarity.Rare => "Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png",
+                _ => "Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png"
             };
             return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(borderPath);
 #else
@@ -318,26 +318,12 @@ namespace ProjectZombie.Features.UI
             itemObj.transform.SetParent(_view.CardsGridContainer, false);
 
             var rt = itemObj.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(110, 130);
+            rt.sizeDelta = new Vector2(120, 150);
 
             var img = itemObj.GetComponent<Image>();
             img.type = Image.Type.Sliced;
-            if (_cardSlotWoodSprite != null) img.sprite = _cardSlotWoodSprite;
-            img.color = star > 0 ? Color.white : new Color(0.6f, 0.55f, 0.5f, 0.8f);
-
-            // Viền Rarity 9-Slice
-            GameObject borderObj = new GameObject("Border_Rarity", typeof(RectTransform), typeof(Image));
-            borderObj.transform.SetParent(itemObj.transform, false);
-            var borderRT = borderObj.GetComponent<RectTransform>();
-            borderRT.anchorMin = Vector2.zero;
-            borderRT.anchorMax = Vector2.one;
-            borderRT.offsetMin = Vector2.zero;
-            borderRT.offsetMax = Vector2.zero;
-            var borderImg = borderObj.GetComponent<Image>();
-            borderImg.type = Image.Type.Sliced;
-            borderImg.sprite = GetRarityBorder(weapon.rarity);
-            borderImg.raycastTarget = false;
-            borderImg.color = star > 0 ? Color.white : new Color(0.7f, 0.7f, 0.7f, 0.6f);
+            img.sprite = GetRarityBorder(weapon.rarity);
+            img.color = star > 0 ? Color.white : new Color(0.6f, 0.55f, 0.5f, 0.85f);
 
             // Icon
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
@@ -345,14 +331,14 @@ namespace ProjectZombie.Features.UI
             var iconRT = iconObj.GetComponent<RectTransform>();
             iconRT.anchorMin = new Vector2(0.5f, 0.5f);
             iconRT.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRT.sizeDelta = new Vector2(64, 64);
-            iconRT.anchoredPosition = new Vector2(0, 14);
+            iconRT.sizeDelta = new Vector2(68, 68);
+            iconRT.anchoredPosition = new Vector2(0, 16);
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.sprite = weapon.icon;
             iconImg.preserveAspect = true;
             iconImg.raycastTarget = false;
-            iconImg.color = star > 0 ? Color.white : new Color(0.5f, 0.5f, 0.5f, 0.7f);
+            iconImg.color = star > 0 ? Color.white : new Color(0.45f, 0.45f, 0.45f, 0.75f);
 
             // Badge Sao ở góc trên trái
             if (star > 0)
@@ -363,8 +349,8 @@ namespace ProjectZombie.Features.UI
                 starRT.anchorMin = new Vector2(0, 1);
                 starRT.anchorMax = new Vector2(0, 1);
                 starRT.pivot = new Vector2(0, 1);
-                starRT.anchoredPosition = new Vector2(4, -4);
-                starRT.sizeDelta = new Vector2(50, 20);
+                starRT.anchoredPosition = new Vector2(8, -8);
+                starRT.sizeDelta = new Vector2(50, 18);
 
                 var starTMP = starObj.GetComponent<TextMeshProUGUI>();
                 starTMP.text = $"<color=#FFD700>{star} Sao</color>";
@@ -379,20 +365,20 @@ namespace ProjectZombie.Features.UI
             shardRT.anchorMin = new Vector2(0, 0);
             shardRT.anchorMax = new Vector2(1, 0);
             shardRT.pivot = new Vector2(0.5f, 0);
-            shardRT.anchoredPosition = new Vector2(0, 22);
-            shardRT.sizeDelta = new Vector2(-8, 16);
+            shardRT.anchoredPosition = new Vector2(0, 24);
+            shardRT.sizeDelta = new Vector2(-12, 16);
 
             var shardTMP = shardObj.GetComponent<TextMeshProUGUI>();
             if (star >= 5)
             {
-                shardTMP.text = "<color=#00FF88>MAX</color>";
+                shardTMP.text = "<color=#00FF88>Tối Đa</color>";
             }
             else
             {
                 string colorHex = shards >= reqShards ? "00FF88" : "FFAA00";
                 shardTMP.text = $"<color=#{colorHex}>{shards}/{reqShards}</color>";
             }
-            shardTMP.fontSize = 11;
+            shardTMP.fontSize = 11.5f;
             shardTMP.alignment = TextAlignmentOptions.Center;
             shardTMP.fontStyle = FontStyles.Bold;
 
@@ -403,15 +389,15 @@ namespace ProjectZombie.Features.UI
             txtRT.anchorMin = new Vector2(0, 0);
             txtRT.anchorMax = new Vector2(1, 0);
             txtRT.pivot = new Vector2(0.5f, 0);
-            txtRT.anchoredPosition = new Vector2(0, 4);
-            txtRT.sizeDelta = new Vector2(-6, 18);
+            txtRT.anchoredPosition = new Vector2(0, 6);
+            txtRT.sizeDelta = new Vector2(-10, 18);
 
             var tmp = txtObj.GetComponent<TextMeshProUGUI>();
             tmp.text = weapon.weaponName;
-            tmp.fontSize = 10.5f;
+            tmp.fontSize = 11f;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = star > 0 ? new Color(0.95f, 0.88f, 0.70f, 1f) : new Color(0.7f, 0.65f, 0.6f, 0.9f);
+            tmp.color = star > 0 ? new Color(0.98f, 0.90f, 0.72f, 1f) : new Color(0.7f, 0.65f, 0.6f, 0.85f);
             tmp.overflowMode = TextOverflowModes.Ellipsis;
 
             var btn = itemObj.GetComponent<Button>();
@@ -428,12 +414,7 @@ namespace ProjectZombie.Features.UI
             itemObj.transform.SetParent(_view.CardsGridContainer, false);
 
             var rt = itemObj.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(110, 130);
-
-            var img = itemObj.GetComponent<Image>();
-            img.type = Image.Type.Sliced;
-            if (_cardSlotWoodSprite != null) img.sprite = _cardSlotWoodSprite;
-            img.color = Color.white;
+            rt.sizeDelta = new Vector2(120, 150);
 
             // Xác định Rarity cho Upgrade
             var rarity = data.upgradeType switch
@@ -444,26 +425,18 @@ namespace ProjectZombie.Features.UI
                 _ => ProjectZombie.Features.Shared.ItemRarity.Common
             };
 
-            // Viền Rarity 9-Slice
-            GameObject borderObj = new GameObject("Border_Rarity", typeof(RectTransform), typeof(Image));
-            borderObj.transform.SetParent(itemObj.transform, false);
-            var borderRT = borderObj.GetComponent<RectTransform>();
-            borderRT.anchorMin = Vector2.zero;
-            borderRT.anchorMax = Vector2.one;
-            borderRT.offsetMin = Vector2.zero;
-            borderRT.offsetMax = Vector2.zero;
-            var borderImg = borderObj.GetComponent<Image>();
-            borderImg.type = Image.Type.Sliced;
-            borderImg.sprite = GetRarityBorder(rarity);
-            borderImg.raycastTarget = false;
+            var img = itemObj.GetComponent<Image>();
+            img.type = Image.Type.Sliced;
+            img.sprite = GetRarityBorder(rarity);
+            img.color = Color.white;
 
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(itemObj.transform, false);
             var iconRT = iconObj.GetComponent<RectTransform>();
             iconRT.anchorMin = new Vector2(0.5f, 0.5f);
             iconRT.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRT.sizeDelta = new Vector2(64, 64);
-            iconRT.anchoredPosition = new Vector2(0, 10);
+            iconRT.sizeDelta = new Vector2(68, 68);
+            iconRT.anchoredPosition = new Vector2(0, 14);
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.sprite = data.icon;
@@ -476,15 +449,15 @@ namespace ProjectZombie.Features.UI
             txtRT.anchorMin = new Vector2(0, 0);
             txtRT.anchorMax = new Vector2(1, 0);
             txtRT.pivot = new Vector2(0.5f, 0);
-            txtRT.anchoredPosition = new Vector2(0, 4);
-            txtRT.sizeDelta = new Vector2(-6, 26);
+            txtRT.anchoredPosition = new Vector2(0, 6);
+            txtRT.sizeDelta = new Vector2(-10, 30);
 
             var tmp = txtObj.GetComponent<TextMeshProUGUI>();
             tmp.text = data.upgradeName;
             tmp.fontSize = 11;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.95f, 0.88f, 0.70f, 1f);
+            tmp.color = new Color(0.98f, 0.90f, 0.72f, 1f);
             tmp.enableWordWrapping = true;
 
             var btn = itemObj.GetComponent<Button>();

@@ -40,10 +40,10 @@ namespace ProjectZombie.Editor.UI
             Sprite currencyPill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Pill_Currency_Wood.png");
             Sprite coTienIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Icon_CoTien_VongXuyen.png");
 
-            Sprite borderCommon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Common.png");
-            Sprite borderRare = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Rare.png");
-            Sprite borderEpic = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Epic.png");
-            Sprite borderLegendary = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Legendary.png");
+            Sprite borderCommon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
+            Sprite borderRare = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png");
+            Sprite borderEpic = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png");
+            Sprite borderLegendary = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png");
 
             // 1. Root GameObject
             GameObject root = new GameObject("Panel_CardCodex", typeof(RectTransform), typeof(CanvasGroup), typeof(CardCodexView), typeof(CardCodexPresenter));
@@ -194,7 +194,7 @@ namespace ProjectZombie.Editor.UI
             cntRT.sizeDelta = new Vector2(0, 800);
 
             var grid = content.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(110, 130);
+            grid.cellSize = new Vector2(120, 150);
             grid.spacing = new Vector2(16, 16);
             grid.padding = new RectOffset(16, 16, 16, 16);
             grid.childAlignment = TextAnchor.UpperLeft;

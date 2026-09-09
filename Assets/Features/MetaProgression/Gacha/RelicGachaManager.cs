@@ -27,7 +27,17 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         private IGachaDataProvider _dataProvider;
         private MetaProgressionSaveData _saveData;
 
-        public GachaBannerConfigSO ActiveBanner => _activeBanner;
+        public GachaBannerConfigSO ActiveBanner
+        {
+            get
+            {
+                if (_activeBanner == null)
+                {
+                    _activeBanner = Resources.Load<GachaBannerConfigSO>("Gacha/banner_standard");
+                }
+                return _activeBanner;
+            }
+        }
         public int PityLegendary => _saveData != null ? _saveData.gachaPityLegendary : 0;
         public int PityEpic => _saveData != null ? _saveData.gachaPityEpic : 0;
 
@@ -42,6 +52,11 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
 
             _currencyProcessor = new CoTienCurrencyProcessor();
             _dataProvider = new LocalSOGachaDataProvider();
+
+            if (_activeBanner == null)
+            {
+                _activeBanner = Resources.Load<GachaBannerConfigSO>("Gacha/banner_standard");
+            }
         }
 
         private void OnDestroy()
@@ -54,9 +69,17 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
 
         private void Start()
         {
-            if (_saveData == null && GameManager.Instance != null && GameManager.Instance.SaveData != null)
+            if (_saveData == null)
             {
-                Initialize(GameManager.Instance.SaveData);
+                var gm = GameManager.Instance;
+                if (gm != null && gm.SaveData != null)
+                {
+                    Initialize(gm.SaveData);
+                }
+                else
+                {
+                    Initialize(SaveSystem.Load());
+                }
             }
         }
 
