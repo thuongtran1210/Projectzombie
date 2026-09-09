@@ -28,6 +28,9 @@ namespace ProjectZombie.Features.MetaProgression
         [Tooltip("Số kill cao nhất trong một run.")]
         public int bestKillCount = 0;
 
+        [Tooltip("Danh sách tiến trình thẻ mảnh & cấp sao của vũ khí / pháp bảo.")]
+        public System.Collections.Generic.List<RelicProgressEntry> relicProgressList = new System.Collections.Generic.List<RelicProgressEntry>();
+
         /// <summary>
         /// Cập nhật kỷ lục sau mỗi run.
         /// </summary>
@@ -36,6 +39,44 @@ namespace ProjectZombie.Features.MetaProgression
             totalRunsPlayed++;
             if (runTime > bestRunTime) bestRunTime = runTime;
             if (killCount > bestKillCount) bestKillCount = killCount;
+        }
+
+        public int GetRelicShards(string relicId)
+        {
+            if (string.IsNullOrEmpty(relicId) || relicProgressList == null) return 0;
+            var entry = relicProgressList.Find(x => x.relicId == relicId);
+            return entry.relicId != null ? entry.shardCount : 0;
+        }
+
+        public int GetRelicStarLevel(string relicId)
+        {
+            if (string.IsNullOrEmpty(relicId) || relicProgressList == null) return 0;
+            var entry = relicProgressList.Find(x => x.relicId == relicId);
+            return entry.relicId != null ? entry.starLevel : 0;
+        }
+
+        public void SetRelicProgress(string relicId, int shardCount, int starLevel)
+        {
+            if (string.IsNullOrEmpty(relicId)) return;
+            if (relicProgressList == null) relicProgressList = new System.Collections.Generic.List<RelicProgressEntry>();
+
+            int idx = relicProgressList.FindIndex(x => x.relicId == relicId);
+            if (idx >= 0)
+            {
+                var entry = relicProgressList[idx];
+                entry.shardCount = Mathf.Max(0, shardCount);
+                entry.starLevel = Mathf.Clamp(starLevel, 0, 5);
+                relicProgressList[idx] = entry;
+            }
+            else
+            {
+                relicProgressList.Add(new RelicProgressEntry
+                {
+                    relicId = relicId,
+                    shardCount = Mathf.Max(0, shardCount),
+                    starLevel = Mathf.Clamp(starLevel, 0, 5)
+                });
+            }
         }
 
         public int GetUpgradeLevel(int nodeIndex)
@@ -59,5 +100,16 @@ namespace ProjectZombie.Features.MetaProgression
             }
             upgradeNodeLevels[nodeIndex] = level;
         }
+    }
+
+    /// <summary>
+    /// Bản ghi lưu trữ số thẻ mảnh (Shards) và cấp sao (0..5★) của một vũ khí / pháp bảo.
+    /// </summary>
+    [Serializable]
+    public struct RelicProgressEntry
+    {
+        public string relicId;
+        public int shardCount;
+        public int starLevel;
     }
 }

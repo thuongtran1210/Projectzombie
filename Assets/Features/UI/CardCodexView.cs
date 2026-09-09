@@ -8,13 +8,14 @@ namespace ProjectZombie.Features.UI
 {
     public enum CodexTabType
     {
-        RelicFusion, // Luyện Hóa Thần Binh
+        RelicFusion, // Thần Binh & Pháp Bảo (Gộp thẻ mở khóa & tăng sao)
         Passives,    // Thần Thẻ Bị Động
         ComboSkills  // Bí Kíp Đòn Chém
     }
 
     /// <summary>
-    /// Passive View quản lý hiển thị Bách Bảo Các (Thần Thẻ & Luyện Khí Codex UI).
+    /// Passive View quản lý hiển thị Bách Bảo Các (Thần Thẻ & Lò Luyện Khí Gộp Thẻ UI).
+    /// Chuẩn MVP: Không chứa logic nghiệp vụ gộp thẻ.
     /// </summary>
     public class CardCodexView : BaseMetaScreenView
     {
@@ -43,6 +44,8 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _detailName;
         [SerializeField] private TextMeshProUGUI _detailType;
         [SerializeField] private TextMeshProUGUI _detailDesc;
+        [SerializeField] private TextMeshProUGUI _detailStarBadge;
+        [SerializeField] private TextMeshProUGUI _detailShardProgress;
         [SerializeField] private GameObject _fusionRecipeSection;
         [SerializeField] private Transform _recipeIngredientsContainer;
         [SerializeField] private Button _alchemyFusionButton;
@@ -90,6 +93,59 @@ namespace ProjectZombie.Features.UI
             if (_tabComboTxt != null) _tabComboTxt.color = activeTab == CodexTabType.ComboSkills ? activeCol : inactiveCol;
         }
 
+        public void DisplayRelicDetail(string cardName, string category, string desc, Sprite icon, int starLevel, int currentShards, int reqShards, int cost, bool canFuse, string fuseBtnLabel)
+        {
+            if (_detailName != null) _detailName.text = cardName;
+            if (_detailType != null) _detailType.text = category;
+            if (_detailDesc != null) _detailDesc.text = desc;
+            if (_detailIcon != null)
+            {
+                _detailIcon.sprite = icon;
+                _detailIcon.enabled = icon != null;
+            }
+
+            if (_detailStarBadge != null)
+            {
+                if (starLevel == 0)
+                {
+                    _detailStarBadge.text = "<color=#888888>Chưa Sở Hữu (0 Sao)</color>";
+                }
+                else
+                {
+                    _detailStarBadge.text = $"<color=#FFD700>Cấp Độ: {starLevel} Sao</color>";
+                }
+            }
+
+            if (_detailShardProgress != null)
+            {
+                if (starLevel >= 5)
+                {
+                    _detailShardProgress.text = "<color=#00FF88>Đạt Cảnh Giới Tối Đa (Max)</color>";
+                }
+                else
+                {
+                    string colorHex = currentShards >= reqShards ? "00FF88" : "FFAA00";
+                    _detailShardProgress.text = $"Tiến Độ Thẻ: <color=#{colorHex}>{currentShards}/{reqShards} Thẻ</color>";
+                }
+            }
+
+            if (_fusionRecipeSection != null)
+            {
+                _fusionRecipeSection.SetActive(true);
+            }
+
+            if (_alchemyFusionButton != null)
+            {
+                _alchemyFusionButton.gameObject.SetActive(true);
+                _alchemyFusionButton.interactable = canFuse;
+            }
+
+            if (_fusionButtonText != null)
+            {
+                _fusionButtonText.text = fuseBtnLabel;
+            }
+        }
+
         public void DisplayCardDetail(string cardName, string category, string desc, Sprite icon, bool isFusion, List<string> ingredients = null)
         {
             if (_detailName != null) _detailName.text = cardName;
@@ -101,9 +157,17 @@ namespace ProjectZombie.Features.UI
                 _detailIcon.enabled = icon != null;
             }
 
+            if (_detailStarBadge != null) _detailStarBadge.text = "";
+            if (_detailShardProgress != null) _detailShardProgress.text = "";
+
             if (_fusionRecipeSection != null)
             {
                 _fusionRecipeSection.SetActive(isFusion);
+            }
+
+            if (_alchemyFusionButton != null)
+            {
+                _alchemyFusionButton.gameObject.SetActive(false);
             }
         }
 

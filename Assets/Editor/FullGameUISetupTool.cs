@@ -167,6 +167,13 @@ namespace ProjectZombie.EditorTools
                 currencyMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             }
 
+            // Gắn RelicInventoryManager vào root --- GAME MANAGER --- nếu chưa có
+            var relicInventoryMgr = managerRoot.GetComponent<ProjectZombie.Features.MetaProgression.RelicInventoryManager>();
+            if (relicInventoryMgr == null)
+            {
+                relicInventoryMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.RelicInventoryManager>();
+            }
+
             // Dọn dẹp component trùng thừa trên Canvas (nếu có)
             var duplicateCanvasCurrencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
             if (duplicateCanvasCurrencyMgr != null && duplicateCanvasCurrencyMgr != currencyMgr)
@@ -350,6 +357,10 @@ namespace ProjectZombie.EditorTools
                 }
             }
 
+            // 2.5. Panel_CardCodex (Bách Bảo Các & Lò Luyện Khí Gộp Thẻ)
+            ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab();
+            Transform codexTrans = metaRoot.Find("Panel_CardCodex");
+
             // Wire MetaUIManager an toàn
             var soMeta = new SerializedObject(metaManager);
             soMeta.FindProperty("_metaCanvasGroup").objectReferenceValue = metaGroup;
@@ -358,6 +369,7 @@ namespace ProjectZombie.EditorTools
             if (heroTrans != null) soMeta.FindProperty("_characterSelectScreen").objectReferenceValue = heroTrans.GetComponent<CharacterSelectionView>();
             if (loadoutTrans != null) soMeta.FindProperty("_weaponLoadoutScreen").objectReferenceValue = loadoutTrans.GetComponent<WeaponLoadoutView>();
             if (sanctuaryTrans != null) soMeta.FindProperty("_sanctuaryTreeScreen").objectReferenceValue = sanctuaryTrans.GetComponent<MetaUpgradeShopView>();
+            if (codexTrans != null) soMeta.FindProperty("_codexScreen").objectReferenceValue = codexTrans.GetComponent<CardCodexView>();
             if (settingsView != null)
             {
                 soMeta.FindProperty("_settingsScreen").objectReferenceValue = settingsView;
@@ -452,7 +464,7 @@ namespace ProjectZombie.EditorTools
             }
 
             // Tự động gọi MobileControlsSetupTool để dựng cụm Joystick & Attack Button nếu chưa có
-            EditorApplication.ExecuteMenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire");
+            ProjectZombie.Editor.Tools.MobileControlsSetupTool.SetupAndWireControlsInScene();
 
             if (mobileTrans == null)
             {

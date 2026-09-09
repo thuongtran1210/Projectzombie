@@ -471,12 +471,60 @@ namespace ProjectZombie.Features.Weapons
 
         public virtual float GetDamage()
         {
-            return CharacterStats.GetTotalDamage() + localDamageBonus;
+            float baseDmg = CharacterStats != null ? CharacterStats.GetTotalDamage() + localDamageBonus : localDamageBonus;
+
+            // Áp dụng Bonus Cấp Sao (Star Level) từ Relic Progression
+            var relicMgr = ProjectZombie.Features.MetaProgression.RelicInventoryManager.Instance;
+            if (relicMgr != null && !string.IsNullOrEmpty(weaponId))
+            {
+                int star = relicMgr.GetRelicStarLevel(weaponId);
+                if (star >= 2)
+                {
+                    // 2★ trở lên: +15% dmg mỗi mốc
+                    float starDmgMultiplier = 1f + (star >= 5 ? 0.45f : (star >= 2 ? 0.15f : 0f));
+                    baseDmg *= starDmgMultiplier;
+                }
+            }
+
+            return baseDmg;
         }
 
         // --- Final Stat Getters for Projectiles ---
         
         public virtual float GetFinalDamage() => GetDamage();
+
+        public virtual float GetFinalSpeed()
+        {
+            float baseSpeed = 10f;
+            if (CharacterStats is ProjectZombie.Features.Player.PlayerStats ps)
+            {
+                baseSpeed = ps.MoveSpeed; // PlayerStats không có ProjectileSpeed riêng ở root
+            }
+            return baseSpeed + localProjectileSpeedBonus;
+        }
+        
+        public virtual float GetFinalAreaScale()
+        {
+            float scale = 1f;
+            if (CharacterStats is ProjectZombie.Features.Player.PlayerStats ps)
+            {
+                scale = ps.AreaScale;
+            }
+            scale += localScaleBonus;
+
+            // Bonus Area từ Cấp Sao (4★+)
+            var relicMgr = ProjectZombie.Features.MetaProgression.RelicInventoryManager.Instance;
+            if (relicMgr != null && !string.IsNullOrEmpty(weaponId))
+            {
+                int star = relicMgr.GetRelicStarLevel(weaponId);
+                if (star >= 4)
+                {
+                    scale *= 1.30f; // +30% Area
+                }
+            }
+
+            return scale;
+        }
         
         public virtual float GetFinalCritChance() => CharacterStats != null ? CharacterStats.CritChance + localCritChanceBonus : localCritChanceBonus;
         

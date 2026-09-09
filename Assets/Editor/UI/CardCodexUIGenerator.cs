@@ -243,9 +243,19 @@ namespace ProjectZombie.Editor.UI
             dNameTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);
 
             var dTypeTMP = CreateTextMeshPro(CreateUIElement("Txt_Type", dInfoObj.transform), font);
-            dTypeTMP.text = "<color=#FFD700>[LUYỆN HÓA THẦN BINH]</color>";
+            dTypeTMP.text = "<color=#FFD700>[THẦN BINH & PHÁP BẢO]</color>";
             dTypeTMP.fontSize = 13;
             dTypeTMP.color = new Color(0.85f, 0.78f, 0.65f, 1f);
+
+            var dStarTMP = CreateTextMeshPro(CreateUIElement("Txt_StarBadge", dInfoObj.transform), font);
+            dStarTMP.text = "<color=#FFD700>Cấp Độ: 3 Sao</color>";
+            dStarTMP.fontSize = 14;
+            dStarTMP.fontStyle = FontStyles.Bold;
+
+            var dShardTMP = CreateTextMeshPro(CreateUIElement("Txt_ShardProgress", dInfoObj.transform), font);
+            dShardTMP.text = "Tiến Độ Thẻ: <color=#00FF88>15/20 Thẻ</color>";
+            dShardTMP.fontSize = 13;
+            dShardTMP.color = new Color(0.9f, 0.85f, 0.75f, 1f);
 
             // Mô Tả
             GameObject descObj = CreateUIElement("Txt_Description", rightCol.transform);
@@ -306,6 +316,8 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_detailName").objectReferenceValue = dNameTMP;
             soView.FindProperty("_detailType").objectReferenceValue = dTypeTMP;
             soView.FindProperty("_detailDesc").objectReferenceValue = dDescTMP;
+            soView.FindProperty("_detailStarBadge").objectReferenceValue = dStarTMP;
+            soView.FindProperty("_detailShardProgress").objectReferenceValue = dShardTMP;
             soView.FindProperty("_alchemyFusionButton").objectReferenceValue = alchemyBtn;
             soView.FindProperty("_fusionButtonText").objectReferenceValue = abTxt;
             soView.ApplyModifiedProperties();
