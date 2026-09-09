@@ -183,12 +183,17 @@ namespace ProjectZombie.Features.Weapons
             {
                 sr.sprite = _broom.FeatherCollectibleSprite;
             }
-#if UNITY_EDITOR
             else
             {
-                sr.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
-            }
+                sr.sprite = Resources.Load<Sprite>("Textures/Tex_ChickenBroom_SingleFeather_Clean") ??
+                            Resources.Load<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
+#if UNITY_EDITOR
+                if (sr.sprite == null)
+                {
+                    sr.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
+                }
 #endif
+            }
             sr.sortingLayerName = "Skill";
             sr.sortingOrder = 12;
             sr.color = new Color(1f, 0.95f, 0.35f, 1f); // Màu Vàng Kim phát sáng

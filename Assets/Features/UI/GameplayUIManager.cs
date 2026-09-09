@@ -125,6 +125,12 @@ namespace ProjectZombie.Features.UI
 
         public void SetMobileControlsActive(bool isActive)
         {
+            if (_mobileControlsPanel == null)
+            {
+                var trans = transform.Find("Panel_MobileControls");
+                if (trans != null) _mobileControlsPanel = trans.gameObject;
+            }
+
             if (_mobileControlsPanel != null)
             {
                 _mobileControlsPanel.SetActive(isActive);

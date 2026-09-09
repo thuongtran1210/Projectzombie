@@ -43,10 +43,18 @@ namespace ProjectZombie.Features.UI
         {
             if (_skillManager == null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null)
+                var skillMgr = PlayerProvider.GetPlayerComponent<SignatureSkillManager>();
+                if (skillMgr != null)
                 {
-                    Bind(player.GetComponent<SignatureSkillManager>());
+                    Bind(skillMgr);
+                }
+                else
+                {
+                    var player = GameObject.FindGameObjectWithTag("Player");
+                    if (player != null)
+                    {
+                        Bind(player.GetComponent<SignatureSkillManager>());
+                    }
                 }
             }
 

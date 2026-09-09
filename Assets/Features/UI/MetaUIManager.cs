@@ -89,14 +89,16 @@ namespace ProjectZombie.Features.UI
                     img.color = new Color(0.05f, 0.04f, 0.08f, 1.0f); // Tối sang trọng 100% không xuyên thấu
                     img.raycastTarget = true; // Chặn click lọt xuống map
 
+                    Sprite bgForest = Resources.Load<Sprite>("UI/VongXuyen/BG_VongXuyen_Forest_Hub") ?? Resources.Load<Sprite>("BG_VongXuyen_Forest_Hub");
 #if UNITY_EDITOR
-                    Sprite bgForest = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
+                    if (bgForest == null)
+                        bgForest = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
+#endif
                     if (bgForest != null)
                     {
                         img.sprite = bgForest;
                         img.color = Color.white;
                     }
-#endif
                     _persistentBackdrop = backdropObj;
                 }
             }

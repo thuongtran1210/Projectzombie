@@ -34,6 +34,8 @@ namespace ProjectZombie.Features.UI
 #endif
             }
 
+            if (_tabActiveSprite == null) _tabActiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Active") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Active");
+            if (_tabInactiveSprite == null) _tabInactiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Inactive") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Inactive");
 #if UNITY_EDITOR
             if (_tabActiveSprite == null)
                 _tabActiveSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Active.png");

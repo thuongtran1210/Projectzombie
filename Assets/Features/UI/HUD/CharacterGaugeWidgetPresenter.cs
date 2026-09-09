@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Mechanics;
 
 namespace ProjectZombie.Features.UI.HUD
@@ -34,22 +35,30 @@ namespace ProjectZombie.Features.UI.HUD
             // Tự động fallback tìm ICharacterGaugeProvider trên Player nếu chưa được inject qua Bootstrapper
             if (_currentProvider == null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null)
+                var provider = PlayerProvider.GetPlayerComponent<ICharacterGaugeProvider>();
+                if (provider != null)
                 {
-                    var provider = player.GetComponent<ICharacterGaugeProvider>();
-                    if (provider != null)
+                    Bind(provider);
+                }
+                else
+                {
+                    var player = GameObject.FindGameObjectWithTag("Player");
+                    if (player != null)
                     {
-                        Bind(provider);
+                        var pComp = player.GetComponent<ICharacterGaugeProvider>();
+                        if (pComp != null)
+                        {
+                            Bind(pComp);
+                        }
+                        else if (_view != null)
+                        {
+                            _view.SetVisible(false);
+                        }
                     }
                     else if (_view != null)
                     {
                         _view.SetVisible(false);
                     }
-                }
-                else if (_view != null)
-                {
-                    _view.SetVisible(false);
                 }
             }
         }

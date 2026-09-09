@@ -37,6 +37,15 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
+        /// Lấy component trên GameObject Player an toàn.
+        /// </summary>
+        public static T GetPlayerComponent<T>() where T : class
+        {
+            if (PlayerTransform == null) return null;
+            return PlayerTransform.GetComponent<T>();
+        }
+
+        /// <summary>
         /// Xóa bỏ tham chiếu khi người chơi chết hoặc đổi màn chơi.
         /// </summary>
         public static void ClearPlayer()

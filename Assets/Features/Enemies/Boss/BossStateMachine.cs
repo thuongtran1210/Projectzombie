@@ -1,6 +1,7 @@
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Boss;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Enemies.Boss
 {
@@ -52,8 +53,15 @@ namespace ProjectZombie.Features.Enemies.Boss
 
         private void Start()
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) _playerTransform = player.transform;
+            if (PlayerProvider.HasPlayer)
+            {
+                _playerTransform = PlayerProvider.PlayerTransform;
+            }
+            else
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null) _playerTransform = player.transform;
+            }
 
             global::Core.Audio.AudioManager.Instance?.PlayBossRoar(transform.position);
         }
@@ -113,7 +121,7 @@ namespace ProjectZombie.Features.Enemies.Boss
         private void EnterPhase2()
         {
             _currentPhase = BossPhase.Phase2_Sub50;
-            Debug.Log($"[BossStateMachine] ⚠️ {bossName} KÍCH HOẠT PHASE 2! HP <= 50%");
+            Debug.Log($"[BossStateMachine]  {bossName} KÍCH HOẠT PHASE 2! HP <= 50%");
 
             // Triệu Hồn Âm Binh (Gọi 10 Ma Giáp)
             if (maGiapPrefab != null)

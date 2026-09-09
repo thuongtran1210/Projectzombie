@@ -156,6 +156,12 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void EnsureSpritesLoaded()
         {
+            if (_playerIndicatorSprite == null) _playerIndicatorSprite = Resources.Load<Sprite>("UI/HUD/Pin_Player_LacBird") ?? Resources.Load<Sprite>("Pin_Player_LacBird");
+            if (_phaseDividerSprite == null) _phaseDividerSprite = Resources.Load<Sprite>("UI/HUD/Pin_Phase_Divider") ?? Resources.Load<Sprite>("Pin_Phase_Divider");
+            if (_swarmBadgeSprite == null) _swarmBadgeSprite = Resources.Load<Sprite>("UI/HUD/Badge_Swarm_Swords") ?? Resources.Load<Sprite>("Badge_Swarm_Swords");
+            if (_eliteBadgeSprite == null) _eliteBadgeSprite = Resources.Load<Sprite>("UI/HUD/Badge_Elite_OxHead") ?? Resources.Load<Sprite>("Badge_Elite_OxHead");
+            if (_finalBossBadgeSprite == null) _finalBossBadgeSprite = Resources.Load<Sprite>("UI/HUD/Badge_Boss_Dragon") ?? Resources.Load<Sprite>("Badge_Boss_Dragon");
+
 #if UNITY_EDITOR
             if (_playerIndicatorSprite == null)
                 _playerIndicatorSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HUD/Pin_Player_LacBird.png");

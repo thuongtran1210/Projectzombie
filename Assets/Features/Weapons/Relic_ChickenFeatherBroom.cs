@@ -101,15 +101,25 @@ namespace ProjectZombie.Features.Weapons
 
             if (featherCollectibleSprite == null)
             {
+                featherCollectibleSprite = Resources.Load<Sprite>("Textures/Tex_ChickenBroom_SingleFeather_Clean") ??
+                                           Resources.Load<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
 #if UNITY_EDITOR
-                featherCollectibleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
+                if (featherCollectibleSprite == null)
+                {
+                    featherCollectibleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
+                }
 #endif
             }
 
             if (featherCollectiblePrefab == null)
             {
+                featherCollectiblePrefab = Resources.Load<GameObject>("Prefabs/VFX_Relic_ChickenFeather_Collectible") ??
+                                           Resources.Load<GameObject>("VFX_Relic_ChickenFeather_Collectible");
 #if UNITY_EDITOR
-                featherCollectiblePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenFeather_Collectible.prefab");
+                if (featherCollectiblePrefab == null)
+                {
+                    featherCollectiblePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenFeather_Collectible.prefab");
+                }
 #endif
             }
         }

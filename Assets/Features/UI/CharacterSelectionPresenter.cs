@@ -257,6 +257,16 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
+            if (chosenPrefab == null)
+            {
+                string[] heroNames = new string[] { "Thu Sinh", "Dao Si", "Thanh Dong", "An Si" };
+                if (_currentIndex >= 0 && _currentIndex < heroNames.Length)
+                {
+                    chosenPrefab = Resources.Load<GameObject>($"Players/{heroNames[_currentIndex]}") ??
+                                   Resources.Load<GameObject>(heroNames[_currentIndex]);
+                }
+            }
+
             #if UNITY_EDITOR
             if (chosenPrefab == null)
             {
@@ -331,6 +341,16 @@ namespace ProjectZombie.Features.UI
             if (_characterDatabase != null && _characterDatabase.Characters != null && _currentIndex < _characterDatabase.Characters.Count && _characterDatabase.Characters[_currentIndex] != null)
             {
                 currentPrefab = _characterDatabase.Characters[_currentIndex].playerPrefab;
+            }
+
+            if (currentPrefab == null)
+            {
+                string[] heroNames = new string[] { "Thu Sinh", "Dao Si", "Thanh Dong", "An Si" };
+                if (_currentIndex >= 0 && _currentIndex < heroNames.Length)
+                {
+                    currentPrefab = Resources.Load<GameObject>($"Players/{heroNames[_currentIndex]}") ??
+                                    Resources.Load<GameObject>(heroNames[_currentIndex]);
+                }
             }
 
             #if UNITY_EDITOR

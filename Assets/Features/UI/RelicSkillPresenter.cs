@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI
 {
@@ -53,10 +54,18 @@ namespace ProjectZombie.Features.UI
 
             if (_weaponManager == null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null)
+                var weaponMgr = PlayerProvider.GetPlayerComponent<WeaponManager>();
+                if (weaponMgr != null)
                 {
-                    Bind(player.GetComponent<WeaponManager>());
+                    Bind(weaponMgr);
+                }
+                else
+                {
+                    var player = GameObject.FindGameObjectWithTag("Player");
+                    if (player != null)
+                    {
+                        Bind(player.GetComponent<WeaponManager>());
+                    }
                 }
             }
             else

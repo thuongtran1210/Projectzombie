@@ -92,21 +92,41 @@ namespace ProjectZombie.Features.Weapons
 #endif
             }
 
-#if UNITY_EDITOR
             if (potSprite == null)
             {
-                potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Pot_Projectile.png");
-                if (potSprite == null) potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_POT.png");
+                potSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Pot_Projectile") ??
+                            Resources.Load<Sprite>("Weapons/Icon_W_POT") ??
+                            Resources.Load<Sprite>("Icon_W_POT");
+#if UNITY_EDITOR
+                if (potSprite == null)
+                {
+                    potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Pot_Projectile.png");
+                    if (potSprite == null) potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_POT.png");
+                }
+#endif
             }
             if (riceBallSprite == null)
             {
-                riceBallSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png");
+                riceBallSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Rice_Collectible") ??
+                                 Resources.Load<Sprite>("Tex_Rice_Collectible");
+#if UNITY_EDITOR
+                if (riceBallSprite == null)
+                {
+                    riceBallSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png");
+                }
+#endif
             }
             if (suctionMaterial == null)
             {
-                suctionMaterial = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Pot_Suction.mat");
-            }
+                suctionMaterial = Resources.Load<Material>("Materials/MAT_VFX_Pot_Suction") ??
+                                  Resources.Load<Material>("MAT_VFX_Pot_Suction");
+#if UNITY_EDITOR
+                if (suctionMaterial == null)
+                {
+                    suctionMaterial = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Pot_Suction.mat");
+                }
 #endif
+            }
         }
 
         private void Update()
@@ -417,9 +437,11 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnInwardSuctionRings(Vector2 center, float startRadius, bool isEvolution)
         {
-            Sprite ringSprite = null;
+            Sprite ringSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
 #if UNITY_EDITOR
-            ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            if (ringSprite == null)
+                ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
 #endif
             if (ringSprite == null) yield break;
 
@@ -467,9 +489,11 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnExpandingRing(Vector2 center, float duration, float maxRadius, Color color)
         {
-            Sprite ringSprite = null;
+            Sprite ringSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
 #if UNITY_EDITOR
-            ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+            if (ringSprite == null)
+                ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
 #endif
             if (ringSprite == null) yield break;
 

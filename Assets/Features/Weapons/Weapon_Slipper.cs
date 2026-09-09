@@ -47,8 +47,11 @@ namespace ProjectZombie.Features.Weapons
         {
             if (slipperProjectileSprite == null)
             {
+                slipperProjectileSprite = Resources.Load<Sprite>("Weapons/Icon_W_SLIPPER") ??
+                                          Resources.Load<Sprite>("Icon_W_SLIPPER");
 #if UNITY_EDITOR
-                slipperProjectileSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_SLIPPER.png");
+                if (slipperProjectileSprite == null)
+                    slipperProjectileSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_SLIPPER.png");
 #endif
                 if (slipperProjectileSprite == null && icon != null)
                 {
@@ -58,11 +61,18 @@ namespace ProjectZombie.Features.Weapons
 
             if (recastMarkerCircleSprite == null)
             {
+                recastMarkerCircleSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                           Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                           Resources.Load<Sprite>("VFX/Tex_VFX_DongSon_SonicWave") ??
+                                           Resources.Load<Sprite>("Tex_VFX_DongSon_SonicWave");
 #if UNITY_EDITOR
-                recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
                 if (recastMarkerCircleSprite == null)
                 {
-                    recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png");
+                    recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
+                    if (recastMarkerCircleSprite == null)
+                    {
+                        recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png");
+                    }
                 }
 #endif
             }

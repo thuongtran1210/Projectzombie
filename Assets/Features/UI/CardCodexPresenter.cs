@@ -155,14 +155,16 @@ namespace ProjectZombie.Features.UI
             }
 
             // 1. Load Upgrades
-            var loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+            var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+            if (loadedUpgrades == null || loadedUpgrades.Length == 0) loadedUpgrades = Resources.LoadAll<UpgradeData>("");
             if (loadedUpgrades != null)
             {
                 foreach (var u in loadedUpgrades) TryAddUpgrade(u);
             }
 
             // 2. Load Weapons
-            var loadedWeapons = Resources.LoadAll<WeaponData>("");
+            var loadedWeapons = Resources.LoadAll<WeaponData>("Weapons");
+            if (loadedWeapons == null || loadedWeapons.Length == 0) loadedWeapons = Resources.LoadAll<WeaponData>("");
             if (loadedWeapons != null)
             {
                 foreach (var w in loadedWeapons) TryAddWeapon(w);

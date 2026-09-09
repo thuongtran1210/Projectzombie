@@ -182,26 +182,27 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 
 ---
 
-## 5. Quy Trình Chuẩn Chuẩn Bị Trước Khi Build APK (Checklist 1-Click)
+## 5. Quy Trình Chuẩn Chuẩn Bị Trước Khi Build APK (Android Wizard & Checklist)
 
-Trước khi vào **File > Build Settings > Build (Android)**, chỉ cần thực hiện 2 bước đơn giản sau:
+Trước khi vào **File > Build Settings > Build (Android)**, bạn thực hiện qua cửa sổ Wizard tự động:
 
-### ✅ Bước 1: Chạy Tool Tự Động Đồng Bộ
+### ✅ Bước 1: Mở Bảng Điều Khiển Android Pre-Build Wizard
 Trên thanh Menu Unity Editor:
-> 👉 **`Tools > ProjectZombie > ⚡ 1-Click Sync All Resources for Android Build`**
+> 👉 **`Tools > ProjectZombie > 📱 Android Pre-Build Wizard & 1-Click Sync`**
 
-Tool sẽ tự động:
-1. Đồng bộ toàn bộ **Thẻ Nâng Cấp (Upgrades)** vào `Assets/Resources/Upgrades/`.
-2. Đồng bộ toàn bộ **Âm Thanh (BGM / SFX)** vào `Assets/Resources/Audios/`.
-3. Đồng bộ toàn bộ **Quái Vật (Enemies)** vào `Assets/Resources/Enemies/`.
-4. Tạo và nạp mới các Prefab UI: `PlayerStatsMenuUI`, `SettingsModalUI`, `MobileControlsCustomizerUI`.
-5. Chuẩn hóa cụm phím ảo `TouchZone_Left` và `DynamicVirtualJoystick`.
+Cửa sổ sẽ:
+1. **🔍 Quét chẩn đoán (Scan)**: Tự động kiểm tra Scripting Backend (IL2CPP), Target Architecture (ARM64), Target API Level (34+), và phát hiện sự chênh lệch tài nguyên hoặc thiếu hụt Prefab UI.
+2. **⚙️ Tự động cấu hình Settings**: Nút hỗ trợ 1-Click thiết lập IL2CPP, ARM64 + ARMv7, Linear Color Space theo chuẩn Google Play.
+3. **⚡ Đồng bộ 100% tài nguyên (1-Click Sync)**:
+   - Đồng bộ **Thẻ Nâng Cấp (Upgrades)** vào `Assets/Resources/Upgrades/`.
+   - Đồng bộ **Âm Thanh (BGM / SFX)** vào `Assets/Resources/Audios/`.
+   - Đồng bộ **Pháp Bảo (Weapons)** vào `Assets/Resources/Weapons/`.
+   - Đồng bộ **Quái Vật (Enemies)** vào `Assets/Resources/Enemies/`.
+   - Tự động sinh đầy đủ **5/5 Prefab UI**: `SettingsModalUI`, `PlayerStatsMenuUI`, `MobileControlsCustomizerUI`, `WeaponLoadoutUI` (Tàng Bảo Các), `CardCodexUI` (Thư Viện Thần Thẻ & Luyện Khí).
+   - Chuẩn hóa phím ảo cảm ứng `TouchZone_Left` và `DynamicVirtualJoystick`.
 
 ---
 
-### ✅ Bước 2: Kiểm Tra Project Settings
-- **Target Architecture**: Bật cả `ARMv7` và `ARM64`.
-- **Scripting Backend**: `IL2CPP`.
-- **Target API Level**: `Android 14 (API level 34)` hoặc `Automatic (highest installed)`.
-- **Color Space**: `Linear`.
-- **Graphic APIs**: `Vulkan` / `OpenGLES3`.
+### ✅ Bước 2: Build APK / AAB
+- Vào **File > Build Settings > Switch Platform sang Android**.
+- Nhấn **Build** hoặc **Build and Run** để trải nghiệm game trên thiết bị Android thực tế!

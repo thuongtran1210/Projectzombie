@@ -342,6 +342,8 @@ namespace ProjectZombie.Features.UI
         {
             Sprite slotWood = _slotWoodSprite;
             Sprite slotSelected = _slotSelectedSprite;
+            if (slotWood == null) slotWood = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (slotSelected == null) slotSelected = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
 #if UNITY_EDITOR
             if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
             if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
@@ -526,6 +528,8 @@ namespace ProjectZombie.Features.UI
             
             Sprite slotWood = _slotWoodSprite;
             Sprite slotSelected = _slotSelectedSprite;
+            if (slotWood == null) slotWood = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (slotSelected == null) slotSelected = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
             #if UNITY_EDITOR
             if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
             if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
@@ -630,6 +634,7 @@ namespace ProjectZombie.Features.UI
             badgeImg.raycastTarget = false;
             
             Sprite starSprite = _badgeEquippedSprite;
+            if (starSprite == null) starSprite = Resources.Load<Sprite>("UI/Badges/Badge_Level_Chibi_Star") ?? Resources.Load<Sprite>("Badge_Level_Chibi_Star");
 #if UNITY_EDITOR
             if (starSprite == null) starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
 #endif
@@ -716,6 +721,8 @@ namespace ProjectZombie.Features.UI
             {
                 case ElementType.Kim:
                     if (_badgeElementKim != null) return _badgeElementKim;
+                    var bKim = Resources.Load<Sprite>("UI/Badges/Badge_Element_Kim") ?? Resources.Load<Sprite>("Badge_Element_Kim");
+                    if (bKim != null) return bKim;
 #if UNITY_EDITOR
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
 #else
@@ -723,6 +730,8 @@ namespace ProjectZombie.Features.UI
 #endif
                 case ElementType.Moc:
                     if (_badgeElementMoc != null) return _badgeElementMoc;
+                    var bMoc = Resources.Load<Sprite>("UI/Badges/Badge_Element_Moc") ?? Resources.Load<Sprite>("Badge_Element_Moc");
+                    if (bMoc != null) return bMoc;
 #if UNITY_EDITOR
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
 #else
@@ -730,6 +739,8 @@ namespace ProjectZombie.Features.UI
 #endif
                 case ElementType.Thuy:
                     if (_badgeElementThuy != null) return _badgeElementThuy;
+                    var bThuy = Resources.Load<Sprite>("UI/Badges/Badge_Element_Thuy") ?? Resources.Load<Sprite>("Badge_Element_Thuy");
+                    if (bThuy != null) return bThuy;
 #if UNITY_EDITOR
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
 #else
@@ -737,6 +748,8 @@ namespace ProjectZombie.Features.UI
 #endif
                 case ElementType.Hoa:
                     if (_badgeElementHoa != null) return _badgeElementHoa;
+                    var bHoa = Resources.Load<Sprite>("UI/Badges/Badge_Element_Hoa") ?? Resources.Load<Sprite>("Badge_Element_Hoa");
+                    if (bHoa != null) return bHoa;
 #if UNITY_EDITOR
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
 #else
@@ -744,6 +757,8 @@ namespace ProjectZombie.Features.UI
 #endif
                 case ElementType.Tho:
                     if (_badgeElementTho != null) return _badgeElementTho;
+                    var bTho = Resources.Load<Sprite>("UI/Badges/Badge_Element_Tho") ?? Resources.Load<Sprite>("Badge_Element_Tho");
+                    if (bTho != null) return bTho;
 #if UNITY_EDITOR
                     return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
 #else
