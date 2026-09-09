@@ -87,18 +87,18 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 var mod = new PlayerStatModifier();
                 switch (i)
                 {
-                    case 0: mod.baseDamageBonus = 5f; break;      // P001 Sát thương
-                    case 1: mod.critChanceBonus = 0.05f; break;   // P002 Chí mạng
-                    case 2: mod.maxHealthBonus = 15f; break;      // P003 Máu
-                    case 3: mod.baseDamageBonus = 4f; break;      // P004 Hỏa
-                    case 4: mod.pickupRangeBonus = 1.0f; break;   // P005 Phạm vi
-                    case 5: mod.baseDamageBonus = 6f; break;      // P006 Nổ
-                    case 6: mod.maxHealthBonus = 25f; break;      // P007 Giáp Mộc
-                    case 7: mod.baseDamageBonus = 3f; break;      // P008 Tốc Đánh
-                    case 8: mod.expMultiplierBonus = 0.1f; break; // P009 Hồi chiêu / Exp
-                    case 9: mod.pickupRangeBonus = 1.5f; break;   // P010 Hút hồn
-                    case 10: mod.moveSpeedBonus = 0.6f; break;    // P011 Tốc độ chạy
-                    case 11: mod.expMultiplierBonus = 0.15f; break;// P012 May mắn
+                    case 0: mod.baseDamageBonus = 3f; break;          // P001 Sát thương
+                    case 1: mod.critChanceBonus = 0.05f; break;       // P002 Chí mạng
+                    case 2: mod.maxHealthBonus = 20f; break;          // P003 Máu
+                    case 3: mod.fireDamageBonus = 0.15f; break;       // P004 Hỏa Chủng
+                    case 4: mod.areaScaleBonus = 0.15f; break;        // P005 Tháp Uy Áp (AoE)
+                    case 5: mod.baseDamageBonus = 4f; mod.areaScaleBonus = 0.10f; break; // P006 Nổ
+                    case 6: mod.maxHealthBonus = 30f; break;          // P007 Giáp Mộc
+                    case 7: mod.attackSpeedBonus = 0.12f; break;      // P008 Hạt Tốc Đánh
+                    case 8: mod.dashCooldownReduction = 0.08f; break; // P009 Ngọc Hồi Chiêu
+                    case 9: mod.pickupRangeBonus = 1.5f; break;       // P010 Hút hồn
+                    case 10: mod.moveSpeedBonus = 0.6f; break;        // P011 Tốc độ chạy
+                    case 11: mod.expMultiplierBonus = 0.15f; break;   // P012 May mắn
                 }
                 asset.playerStatModifier = mod;
 

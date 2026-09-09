@@ -48,12 +48,17 @@ namespace ProjectZombie.Features.Upgrades
             var playerStats = player.GetComponent<PlayerStats>();
             if (playerStats != null)
             {
-                playerStats.AddMaxHealth(playerStatModifier.maxHealthBonus);
-                playerStats.AddMoveSpeed(playerStatModifier.moveSpeedBonus);
-                playerStats.AddCritChance(playerStatModifier.critChanceBonus);
-                playerStats.AddBaseDamage(playerStatModifier.baseDamageBonus);
-                playerStats.AddPickupRange(playerStatModifier.pickupRangeBonus);
-                playerStats.AddExpMultiplier(playerStatModifier.expMultiplierBonus);
+                if (playerStatModifier.maxHealthBonus > 0f) playerStats.AddMaxHealth(playerStatModifier.maxHealthBonus);
+                if (playerStatModifier.moveSpeedBonus > 0f) playerStats.AddMoveSpeed(playerStatModifier.moveSpeedBonus);
+                if (playerStatModifier.critChanceBonus > 0f) playerStats.AddCritChance(playerStatModifier.critChanceBonus);
+                if (playerStatModifier.baseDamageBonus > 0f) playerStats.AddBaseDamage(playerStatModifier.baseDamageBonus);
+                if (playerStatModifier.pickupRangeBonus > 0f) playerStats.AddPickupRange(playerStatModifier.pickupRangeBonus);
+                if (playerStatModifier.expMultiplierBonus > 0f) playerStats.AddExpMultiplier(playerStatModifier.expMultiplierBonus);
+                if (playerStatModifier.attackSpeedBonus > 0f) playerStats.AddAttackSpeed(playerStatModifier.attackSpeedBonus);
+                if (playerStatModifier.dashCooldownReduction > 0f) playerStats.ReduceDashCooldown(playerStatModifier.dashCooldownReduction);
+                if (playerStatModifier.dashSpeedBonus > 0f) playerStats.AddDashSpeedMultiplier(playerStatModifier.dashSpeedBonus);
+                if (playerStatModifier.areaScaleBonus > 0f) playerStats.AddAreaScale(playerStatModifier.areaScaleBonus);
+                if (playerStatModifier.fireDamageBonus > 0f) playerStats.AddFireDamageBonus(playerStatModifier.fireDamageBonus);
             }
 
             var playerPassives = player.GetComponent<PlayerPassives>();

@@ -29,6 +29,12 @@ namespace ProjectZombie.Features.Player
         private int _currentComboStep = 1;
         private float _lastComboHitTime;
 
+        // Các chỉ số nâng cấp Bí Kíp Đòn Chém (Combo Augment Modifiers)
+        private float _bonusComboDamageMultiplier = 0f;
+        private float _bonusAttackSpeedMultiplier = 0f;
+        private float _bonusSlashAreaScale = 0f;
+        private float _bonusFinisherKnockback = 0f;
+
         // Bộ nhớ đệm không cấp phát GC cho đòn quét cận chiến
         private static readonly Collider2D[] _meleeHitBuffer = new Collider2D[50];
 
@@ -242,7 +248,7 @@ namespace ProjectZombie.Features.Player
             if (attackConfig == null) return;
 
             // 1. Đồng bộ tốc độ Animation của Animator theo Tốc Đánh thực tế
-            float currentAtkSpeed = attackConfig.baseAttackSpeed;
+            float currentAtkSpeed = attackConfig.baseAttackSpeed * (1f + _bonusAttackSpeedMultiplier);
             if (_playerStats != null && _playerStats.AttackSpeed > 0.01f)
             {
                 currentAtkSpeed *= _playerStats.AttackSpeed;
@@ -323,8 +329,9 @@ namespace ProjectZombie.Features.Player
             }
 
             // Pha 2: Active Impact (Bung vệt chém + Quét va chạm đúng khoảnh khắc chém)
-            float offset = attackConfig.meleeOffset;
-            Vector2 boxSize = attackConfig.meleeAreaSize;
+            float areaScale = (1f + _bonusSlashAreaScale) * (_playerStats != null ? _playerStats.AreaScale : 1f);
+            float offset = attackConfig.meleeOffset * Mathf.Sqrt(areaScale);
+            Vector2 boxSize = attackConfig.meleeAreaSize * areaScale;
             Vector2 center = (Vector2)transform.position + direction * offset;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
@@ -342,9 +349,13 @@ namespace ProjectZombie.Features.Player
             ApplyAttackLunge(comboStep, direction);
 
             // 3. Tính toán sát thương
-            float comboMultiplier = GetComboMultiplier(comboStep);
+            float comboMultiplier = GetComboMultiplier(comboStep) + _bonusComboDamageMultiplier;
             float baseAtk = _playerStats != null ? _playerStats.GetTotalDamage() : 20f;
             float totalDamage = baseAtk * attackConfig.baseDamageMultiplier * comboMultiplier;
+            if (attackConfig.element == ElementType.Hoa && _playerStats != null && _playerStats.FireDamageBonus > 0f)
+            {
+                totalDamage *= (1f + _playerStats.FireDamageBonus);
+            }
             bool isCrit = _playerStats != null && UnityEngine.Random.value < _playerStats.CritChance;
             if (isCrit) totalDamage *= 1.5f;
 
@@ -386,6 +397,16 @@ namespace ProjectZombie.Features.Player
                     hitAnyEnemy = true;
                     OnHitEnemy?.Invoke(hitDamage, hit);
 
+                    // Kiểm tra Ngưỡng Kết Liễu Quái Thường (Execute Threshold)
+                    if (_playerStats != null && _playerStats.ExecuteThreshold > 0f && enemy != null && !enemy.IsHeavyArmor && !enemy.IsBoss)
+                    {
+                        if (health.CurrentHealth > 0 && (health.CurrentHealth / health.MaxHealth) <= _playerStats.ExecuteThreshold)
+                        {
+                            DamageData executeDmg = new DamageData(health.CurrentHealth * 2f, true, damageData.Element, false, null);
+                            health.TakeDamage(executeDmg);
+                        }
+                    }
+
                     // Spawn Tia lửa va chạm (HitSparks) tại điểm trúng
                     SpawnHitImpactSparks(hit.transform.position);
 
@@ -393,7 +414,7 @@ namespace ProjectZombie.Features.Player
                     {
                         Vector2 pushDir = ((Vector2)(hit.transform.position - transform.position)).normalized;
                         float knockbackForce = attackConfig.knockbackForce;
-                        if (comboStep == 3) knockbackForce *= 1.6f;
+                        if (comboStep == 3) knockbackForce = (knockbackForce * 1.6f) + _bonusFinisherKnockback;
                         enemy.ApplyKnockback(pushDir, knockbackForce, comboStep == 3 ? 0.22f : 0.15f);
                     }
                 }
@@ -554,5 +575,29 @@ namespace ProjectZombie.Features.Player
                 default: return 1.0f;
             }
         }
+
+        #region Action RPG Augment Helpers
+
+        public void AddComboDamageBonus(float amount)
+        {
+            _bonusComboDamageMultiplier += amount;
+        }
+
+        public void AddAttackSpeedBonus(float amount)
+        {
+            _bonusAttackSpeedMultiplier += amount;
+        }
+
+        public void AddSlashAreaScaleBonus(float amount)
+        {
+            _bonusSlashAreaScale += amount;
+        }
+
+        public void AddFinisherKnockbackBonus(float amount)
+        {
+            _bonusFinisherKnockback += amount;
+        }
+
+        #endregion
     }
 }

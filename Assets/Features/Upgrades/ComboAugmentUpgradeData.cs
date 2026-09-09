@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
+using ProjectZombie.Features.Player;
 using System.Linq;
 
 namespace ProjectZombie.Features.Upgrades
@@ -29,16 +30,16 @@ namespace ProjectZombie.Features.Upgrades
 
         public override bool IsAvailable(GameObject player)
         {
-            var weaponManager = player.GetComponent<WeaponManager>();
-            if (weaponManager == null) return false;
+            if (player == null) return false;
+            var combat = player.GetComponent<CharacterCombat>();
+            if (combat == null) return false;
 
-            // Nếu không chỉ định targetWeaponId thì áp dụng cho Vũ khí chính hiện tại
-            var primary = weaponManager.PrimaryWeapon;
-            if (primary == null) return false;
-
-            if (!string.IsNullOrEmpty(targetWeaponId))
+            // Kiểm tra nếu đã nhận Bí Kíp này rồi thì không xuất hiện lại
+            var passives = player.GetComponent<PlayerPassives>();
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            if (passives != null && passives.HasPassive(key))
             {
-                return string.Equals(primary.weaponId, targetWeaponId, System.StringComparison.OrdinalIgnoreCase);
+                return false;
             }
 
             return true;
@@ -46,22 +47,23 @@ namespace ProjectZombie.Features.Upgrades
 
         public override void ApplyUpgrade(GameObject player)
         {
-            var weaponManager = player.GetComponent<WeaponManager>();
-            if (weaponManager == null) return;
-
-            var primary = weaponManager.PrimaryWeapon;
-            if (primary != null)
+            if (player == null) return;
+            var combat = player.GetComponent<CharacterCombat>();
+            if (combat != null)
             {
-                WeaponStatModifier mod = new WeaponStatModifier
-                {
-                    damageBonus = primary.GetDamage() * comboDamageMultiplierBonus,
-                    attackSpeedBonus = attackSpeedBonus,
-                    scaleBonus = slashAreaScaleBonus
-                };
+                combat.AddComboDamageBonus(comboDamageMultiplierBonus);
+                combat.AddAttackSpeedBonus(attackSpeedBonus);
+                combat.AddSlashAreaScaleBonus(slashAreaScaleBonus);
+                combat.AddFinisherKnockbackBonus(finisherKnockbackBonus);
 
-                primary.ApplyStatModifier(mod);
-                weaponManager.NotifyWeaponsChanged();
-                Debug.Log($"<color=#FFD700>[ComboAugment]</color> Đã nâng cấp Bí Kíp cho {primary.displayName}: +{comboDamageMultiplierBonus*100}% Dmg, +{slashAreaScaleBonus*100}% Range.");
+                var passives = player.GetComponent<PlayerPassives>();
+                string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+                if (passives != null)
+                {
+                    passives.AddPassive(key, this);
+                }
+
+                Debug.Log($"<color=#FFD700>[ComboAugment]</color> Đã nâng cấp Bí Kíp {upgradeName}: +{comboDamageMultiplierBonus * 100}% Dmg, +{slashAreaScaleBonus * 100}% Range, +{attackSpeedBonus * 100}% Speed.");
             }
         }
 

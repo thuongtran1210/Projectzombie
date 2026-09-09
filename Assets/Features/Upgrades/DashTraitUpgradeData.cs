@@ -21,20 +21,39 @@ namespace ProjectZombie.Features.Upgrades
 
         public override bool IsAvailable(GameObject player)
         {
+            if (player == null) return false;
             var stats = player.GetComponent<PlayerStats>();
-            return stats != null;
+            if (stats == null) return false;
+
+            var passives = player.GetComponent<PlayerPassives>();
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            if (passives != null && passives.HasPassive(key))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void ApplyUpgrade(GameObject player)
         {
+            if (player == null) return;
             var stats = player.GetComponent<PlayerStats>();
             if (stats != null)
             {
-                // Giảm cooldown dash và tăng crit
-                stats.ReduceDashCooldown(dashCooldownReduction);
-                stats.AddCritChance(postDashCritBonus);
+                // Giảm cooldown dash, tăng tốc lướt và tăng crit
+                if (dashCooldownReduction > 0f) stats.ReduceDashCooldown(dashCooldownReduction);
+                if (dashSpeedBonus > 0f) stats.AddDashSpeedMultiplier(dashSpeedBonus);
+                if (postDashCritBonus > 0f) stats.AddCritChance(postDashCritBonus);
 
-                Debug.Log($"<color=#00FF88>[DashTrait]</color> Đã cường hóa Lướt (Dash): Cooldown còn {stats.DashCooldown:F2}s, +{postDashCritBonus*100}% Crit.");
+                var passives = player.GetComponent<PlayerPassives>();
+                string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+                if (passives != null)
+                {
+                    passives.AddPassive(key, this);
+                }
+
+                Debug.Log($"<color=#00FF88>[DashTrait]</color> Đã cường hóa Lướt (Dash): Cooldown còn {stats.DashCooldown:F2}s, Tốc lướt x{stats.DashSpeedMultiplier:F2}, +{postDashCritBonus * 100}% Crit.");
             }
         }
 

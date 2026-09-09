@@ -42,6 +42,9 @@ namespace ProjectZombie.Features.Upgrades
         public float expMultiplierBonus;
         public float attackSpeedBonus;
         public float dashCooldownReduction;
+        public float dashSpeedBonus;
+        public float areaScaleBonus;
+        public float fireDamageBonus;
     }
 
     /// <summary>

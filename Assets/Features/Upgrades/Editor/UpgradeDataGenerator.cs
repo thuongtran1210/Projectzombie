@@ -75,18 +75,18 @@ namespace ProjectZombie.Features.Upgrades.Editor
         {
             PassiveDef[] passives = new PassiveDef[]
             {
-                new PassiveDef("P001", "Bùa Sát Thương", "+10% Sát thương cơ bản cho nhân vật", new PlayerStatModifier { baseDamageBonus = 10f }),
+                new PassiveDef("P001", "Bùa Sát Thương", "+10% Sát thương toàn thể cho nhân vật", new PlayerStatModifier { baseDamageBonus = 3f }),
                 new PassiveDef("P002", "Ấn Chí Mạng", "+5% Tỷ lệ đòn đánh chí mạng", new PlayerStatModifier { critChanceBonus = 0.05f }),
-                new PassiveDef("P003", "Chuông Hồi Máu", "Hồi phục 1% máu tối đa mỗi khoảng thời gian", new PlayerStatModifier { maxHealthBonus = 20f }),
-                new PassiveDef("P004", "Hỏa Chủng", "+10% Tốc độ đánh cho toàn bộ vũ khí", new PlayerStatModifier { baseDamageBonus = 5f }),
-                new PassiveDef("P005", "Tháp Uy Áp", "+15% Phạm vi ảnh hưởng đòn đánh (AoE)", new PlayerStatModifier { baseDamageBonus = 5f }),
-                new PassiveDef("P006", "Thuốc Nổ Thần Tiên", "+20% Bán kính vụ nổ và đẩy lùi", new PlayerStatModifier { baseDamageBonus = 8f }),
-                new PassiveDef("P007", "Mộc Giáp", "+5 Giáp phòng thủ cho nhân vật", new PlayerStatModifier { maxHealthBonus = 30f }),
-                new PassiveDef("P008", "Hạt Tốc Đánh", "+12% Tốc độ tấn công", new PlayerStatModifier { baseDamageBonus = 5f }),
-                new PassiveDef("P009", "Ngọc Hồi Chiêu", "-10% Thời gian hồi chiêu tất cả chiêu thức", new PlayerStatModifier { baseDamageBonus = 5f }),
+                new PassiveDef("P003", "Chuông Hồi Máu", "Hồi phục máu tối đa cho nhân vật", new PlayerStatModifier { maxHealthBonus = 20f }),
+                new PassiveDef("P004", "Hỏa Chủng", "+15% Sát thương hệ Hỏa và thiêu đốt", new PlayerStatModifier { fireDamageBonus = 0.15f }),
+                new PassiveDef("P005", "Tháp Uy Áp", "+15% Phạm vi ảnh hưởng của kỹ năng", new PlayerStatModifier { areaScaleBonus = 0.15f }),
+                new PassiveDef("P006", "Thuốc Nổ Thần Tiên", "+20% Sát thương nổ diện rộng", new PlayerStatModifier { baseDamageBonus = 4f, areaScaleBonus = 0.10f }),
+                new PassiveDef("P007", "Mộc Giáp", "+30 Máu tối đa và giáp bảo hộ", new PlayerStatModifier { maxHealthBonus = 30f }),
+                new PassiveDef("P008", "Hạt Tốc Đánh", "+12% Tốc độ tấn công", new PlayerStatModifier { attackSpeedBonus = 0.12f }),
+                new PassiveDef("P009", "Ngọc Hồi Chiêu", "-8% Thời gian hồi chiêu Lướt & Kỹ năng", new PlayerStatModifier { dashCooldownReduction = 0.08f }),
                 new PassiveDef("P010", "Túi Hút Hồn", "+30% Bán kính nhặt Hạt Kinh Nghiệm", new PlayerStatModifier { pickupRangeBonus = 1.5f }),
-                new PassiveDef("P011", "Bánh Xe Tốc Độ", "+10% Tốc độ di chuyển nhân vật", new PlayerStatModifier { moveSpeedBonus = 0.5f }),
-                new PassiveDef("P012", "Bùa May Mắn", "+15% Tỷ lệ rơi Cổ Tiền và may mắn Gacha", new PlayerStatModifier { expMultiplierBonus = 0.15f })
+                new PassiveDef("P011", "Bánh Xe Tốc Độ", "+10% Tốc độ di chuyển nhân vật", new PlayerStatModifier { moveSpeedBonus = 0.6f }),
+                new PassiveDef("P012", "Bùa May Mắn", "+15% Tỷ lệ nhận Exp và may mắn", new PlayerStatModifier { expMultiplierBonus = 0.15f })
             };
 
             foreach (var p in passives)
@@ -100,10 +100,12 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 }
 
                 SerializedObject so = new SerializedObject(asset);
+                so.FindProperty("id").stringValue = p.id;
                 so.FindProperty("upgradeName").stringValue = p.name;
                 so.FindProperty("description").stringValue = p.desc;
                 so.FindProperty("upgradeType").enumValueIndex = (int)UpgradeType.CommonUpgrade;
                 so.FindProperty("spawnWeight").floatValue = 10f;
+                so.FindProperty("maxLevel").intValue = 5;
 
                 var maxHp = so.FindProperty("playerStatModifier.maxHealthBonus");
                 if (maxHp != null) maxHp.floatValue = p.modifier.maxHealthBonus;
@@ -122,6 +124,18 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
                 var exp = so.FindProperty("playerStatModifier.expMultiplierBonus");
                 if (exp != null) exp.floatValue = p.modifier.expMultiplierBonus;
+
+                var atkSpd = so.FindProperty("playerStatModifier.attackSpeedBonus");
+                if (atkSpd != null) atkSpd.floatValue = p.modifier.attackSpeedBonus;
+
+                var cd = so.FindProperty("playerStatModifier.dashCooldownReduction");
+                if (cd != null) cd.floatValue = p.modifier.dashCooldownReduction;
+
+                var area = so.FindProperty("playerStatModifier.areaScaleBonus");
+                if (area != null) area.floatValue = p.modifier.areaScaleBonus;
+
+                var fire = so.FindProperty("playerStatModifier.fireDamageBonus");
+                if (fire != null) fire.floatValue = p.modifier.fireDamageBonus;
 
                 so.ApplyModifiedProperties();
             }

@@ -97,6 +97,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             asset.element = elem;
             asset.upgradeType = UpgradeType.ComboAugment;
             asset.spawnWeight = weight;
+            asset.maxLevel = 1;
             asset.comboDamageMultiplierBonus = dmg;
             asset.attackSpeedBonus = spd;
             asset.slashAreaScaleBonus = scale;
@@ -120,6 +121,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             asset.element = elem;
             asset.upgradeType = UpgradeType.DashTrait;
             asset.spawnWeight = weight;
+            asset.maxLevel = 1;
             asset.dashCooldownReduction = cdReduc;
             asset.dashSpeedBonus = spd;
             asset.postDashCritBonus = crit;
@@ -141,6 +143,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             asset.description = desc;
             asset.upgradeType = UpgradeType.BreakthroughUltimate;
             asset.spawnWeight = weight;
+            asset.maxLevel = 1;
             asset.requiredPlayerLevel = reqLevel;
             asset.allDamageMultiplier = dmgMult;
             asset.relicScaleMultiplier = relicScale;

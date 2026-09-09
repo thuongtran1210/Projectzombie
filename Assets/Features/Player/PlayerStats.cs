@@ -18,7 +18,10 @@ namespace ProjectZombie.Features.Player
         CritChance,
         PickupRange,
         ExpMultiplier,
-        AttackRange
+        AttackRange,
+        DashSpeedMultiplier,
+        AreaScale,
+        FireDamageBonus
     }
 
     /// <summary>
@@ -39,6 +42,9 @@ namespace ProjectZombie.Features.Player
         private float _basePickupRange = 2f;
         private float _baseExpMultiplier = 1f;
         private float _baseAttackRange = 9.5f;
+        private float _baseDashSpeedMultiplier = 1f;
+        private float _baseAreaScale = 1f;
+        private float _baseFireDamageBonus = 0f;
 
         // Modifiers dictionary cho từng loại chỉ số
         private readonly Dictionary<PlayerStatType, List<StatModifier>> _statModifiers = new Dictionary<PlayerStatType, List<StatModifier>>();
@@ -53,6 +59,10 @@ namespace ProjectZombie.Features.Player
         public float PickupRange { get; private set; }
         public float ExpMultiplier { get; private set; } = 1f;
         public float AttackRange { get; private set; } = 9.5f;
+        public float DashSpeedMultiplier { get; private set; } = 1f;
+        public float AreaScale { get; private set; } = 1f;
+        public float FireDamageBonus { get; private set; } = 0f;
+        public float ExecuteThreshold { get; private set; } = 0f;
 
         private float _damageMultiplier = 1f;
         public float DamageMultiplier => _damageMultiplier;
@@ -322,6 +332,15 @@ namespace ProjectZombie.Features.Player
                 case PlayerStatType.AttackRange:
                     AttackRange = CalculateFinalValue(_baseAttackRange, PlayerStatType.AttackRange);
                     break;
+                case PlayerStatType.DashSpeedMultiplier:
+                    DashSpeedMultiplier = Mathf.Max(0.5f, CalculateFinalValue(_baseDashSpeedMultiplier, PlayerStatType.DashSpeedMultiplier));
+                    break;
+                case PlayerStatType.AreaScale:
+                    AreaScale = Mathf.Max(0.2f, CalculateFinalValue(_baseAreaScale, PlayerStatType.AreaScale));
+                    break;
+                case PlayerStatType.FireDamageBonus:
+                    FireDamageBonus = CalculateFinalValue(_baseFireDamageBonus, PlayerStatType.FireDamageBonus);
+                    break;
             }
         }
 
@@ -336,6 +355,9 @@ namespace ProjectZombie.Features.Player
             PickupRange = CalculateFinalValue(_basePickupRange, PlayerStatType.PickupRange);
             ExpMultiplier = CalculateFinalValue(_baseExpMultiplier, PlayerStatType.ExpMultiplier);
             AttackRange = CalculateFinalValue(_baseAttackRange, PlayerStatType.AttackRange);
+            DashSpeedMultiplier = Mathf.Max(0.5f, CalculateFinalValue(_baseDashSpeedMultiplier, PlayerStatType.DashSpeedMultiplier));
+            AreaScale = Mathf.Max(0.2f, CalculateFinalValue(_baseAreaScale, PlayerStatType.AreaScale));
+            FireDamageBonus = CalculateFinalValue(_baseFireDamageBonus, PlayerStatType.FireDamageBonus);
         }
 
         private void SyncHealthWithSystem(bool resetToFull)
@@ -435,6 +457,33 @@ namespace ProjectZombie.Features.Player
         {
             _baseDashCooldown = Mathf.Max(0.4f, _baseDashCooldown * (1f - Mathf.Clamp01(percentage)));
             RecalculateStat(PlayerStatType.DashCooldown);
+            OnStatsUpdated?.Invoke();
+        }
+
+        public void AddDashSpeedMultiplier(float bonus)
+        {
+            _baseDashSpeedMultiplier += bonus;
+            RecalculateStat(PlayerStatType.DashSpeedMultiplier);
+            OnStatsUpdated?.Invoke();
+        }
+
+        public void AddAreaScale(float bonus)
+        {
+            _baseAreaScale += bonus;
+            RecalculateStat(PlayerStatType.AreaScale);
+            OnStatsUpdated?.Invoke();
+        }
+
+        public void AddFireDamageBonus(float bonus)
+        {
+            _baseFireDamageBonus += bonus;
+            RecalculateStat(PlayerStatType.FireDamageBonus);
+            OnStatsUpdated?.Invoke();
+        }
+
+        public void SetExecuteThreshold(float threshold)
+        {
+            ExecuteThreshold = Mathf.Max(ExecuteThreshold, threshold);
             OnStatsUpdated?.Invoke();
         }
 

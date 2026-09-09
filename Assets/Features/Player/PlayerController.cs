@@ -314,7 +314,8 @@ namespace ProjectZombie.Features.Player
 
             if (_isDashing)
             {
-                _rb.velocity = _dashDirection * (currentSpeed * dashSpeedMultiplier);
+                float totalDashMultiplier = dashSpeedMultiplier * (_playerStats != null ? _playerStats.DashSpeedMultiplier : 1f);
+                _rb.velocity = _dashDirection * (currentSpeed * totalDashMultiplier);
             }
             else
             {

@@ -26,18 +26,29 @@ namespace ProjectZombie.Features.Upgrades
 
         public override bool IsAvailable(GameObject player)
         {
+            if (player == null) return false;
             var exp = player.GetComponent<PlayerExperience>();
-            if (exp == null) return false;
+            if (exp == null || exp.CurrentLevel < requiredPlayerLevel) return false;
 
-            return exp.CurrentLevel >= requiredPlayerLevel;
+            var passives = player.GetComponent<PlayerPassives>();
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            if (passives != null && passives.HasPassive(key))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override void ApplyUpgrade(GameObject player)
         {
+            if (player == null) return;
             var stats = player.GetComponent<PlayerStats>();
             if (stats != null)
             {
-                stats.AddDamageMultiplier(allDamageMultiplier);
+                if (allDamageMultiplier > 0f) stats.AddDamageMultiplier(allDamageMultiplier);
+                if (relicScaleMultiplier > 0f) stats.AddAreaScale(relicScaleMultiplier);
+                if (executeHealthThreshold > 0f) stats.SetExecuteThreshold(executeHealthThreshold);
             }
 
             var weaponManager = player.GetComponent<WeaponManager>();
@@ -55,7 +66,14 @@ namespace ProjectZombie.Features.Upgrades
                 weaponManager.NotifyWeaponsChanged();
             }
 
-            Debug.Log($"<color=#FF00FF>[Breakthrough]</color> ĐÃ ĐỘT PHÁ TUYỆT KỸ: +{allDamageMultiplier*100}% Damage, +{relicScaleMultiplier*100}% Pháp Bảo Hộ Thân!");
+            var passives = player.GetComponent<PlayerPassives>();
+            string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+            if (passives != null)
+            {
+                passives.AddPassive(key, this);
+            }
+
+            Debug.Log($"<color=#FF00FF>[Breakthrough]</color> ĐÃ ĐỘT PHÁ TUYỆT KỸ {upgradeName}: +{allDamageMultiplier * 100}% Damage, +{relicScaleMultiplier * 100}% Pháp Bảo Hộ Thân, Kết liễu quái dưới {executeHealthThreshold * 100}% HP!");
         }
 
         public override string GetCategoryDisplayName()
