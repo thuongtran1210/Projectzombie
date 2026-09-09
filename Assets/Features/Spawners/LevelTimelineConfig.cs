@@ -52,14 +52,37 @@ namespace ProjectZombie.Features.Spawners
         }
 
         /// <summary>
+        /// Lấy Prefab quái vật an toàn (nếu spawnPrefab bị null thì tự động fallback load theo enemyAddress / Resources / AssetDatabase).
+        /// </summary>
+        public GameObject GetPrefabOrLoad()
+        {
+            if (spawnPrefab != null) return spawnPrefab;
+
+            if (!string.IsNullOrEmpty(enemyAddress))
+            {
+                spawnPrefab = Resources.Load<GameObject>($"Enemies/{enemyAddress}") ??
+                              Resources.Load<GameObject>(enemyAddress);
+
+#if UNITY_EDITOR
+                if (spawnPrefab == null)
+                {
+                    spawnPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Prefabs/Characters/Enemies/{enemyAddress}.prefab");
+                }
+#endif
+            }
+            return spawnPrefab;
+        }
+
+        /// <summary>
         /// Lấy Sprite icon đại diện cho sự kiện (ưu tiên eventIcon, sau đó đến SpriteRenderer từ spawnPrefab).
         /// </summary>
         public Sprite GetIcon()
         {
             if (eventIcon != null) return eventIcon;
-            if (spawnPrefab != null)
+            var prefab = GetPrefabOrLoad();
+            if (prefab != null)
             {
-                var sr = spawnPrefab.GetComponentInChildren<SpriteRenderer>();
+                var sr = prefab.GetComponentInChildren<SpriteRenderer>();
                 if (sr != null && sr.sprite != null) return sr.sprite;
             }
             return null;

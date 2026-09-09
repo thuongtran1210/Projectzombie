@@ -317,13 +317,7 @@ namespace ProjectZombie.Features.Spawners
         {
             if (evt == null) return;
 
-            // Đảm bảo spawnPrefab luôn có sẵn
-            if (evt.spawnPrefab == null && !string.IsNullOrEmpty(evt.enemyAddress))
-            {
-                var pool = EnemyPoolManager.Instance;
-                // Nếu pool có sẵn thì vẫn tiếp tục
-            }
-
+            GameObject prefab = evt.GetPrefabOrLoad();
             string poolKey = evt.GetPoolKey();
             Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
 
@@ -343,24 +337,24 @@ namespace ProjectZombie.Features.Spawners
                         // Spawn tức thì đợt quái đầu tiên ngay khi kích hoạt sự kiện
                         for (int s = 0; s < Mathf.Max(1, evt.spawnCount); s++)
                         {
-                            SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                            SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
                         }
                     }
                     break;
 
                 case TimelineEventType.BurstWave:
-                    SpawnBurstWave(evt.spawnPrefab, evt.spawnCount);
+                    SpawnBurstWave(prefab, evt.spawnCount, poolKey);
                     break;
 
                 case TimelineEventType.BossSpawn:
                     ClearSmallEnemiesAround(20f); // Dọn sạch quái nhỏ trong bán kính 20m khi Boss xuất hiện
-                    SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                    SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
                     break;
 
                 case TimelineEventType.SpawnPillar:
-                    if (evt.spawnPrefab != null)
+                    if (prefab != null)
                     {
-                        SpawnPillar(evt.spawnPrefab);
+                        SpawnPillar(prefab);
                     }
                     break;
             }
@@ -416,40 +410,50 @@ namespace ProjectZombie.Features.Spawners
                     {
                         // Spawn từ 1 đến nhiều quái theo batch của event
                         int spawnBatch = Mathf.Clamp(evt.spawnCount > 0 ? evt.spawnCount : 1, 1, maxEnemyCap - currentEnemyCount);
+                        GameObject prefab = evt.GetPrefabOrLoad();
+                        string poolKey = evt.GetPoolKey();
                         for (int b = 0; b < spawnBatch; b++)
                         {
-                            SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                            SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
                         }
                     }
                 }
             }
         }
 
-        public void SpawnBurstWave(GameObject prefab, int count)
+        public void SpawnBurstWave(GameObject prefab, int count, string poolKey = null)
         {
             int actualSpawn = Mathf.Min(count, maxEnemyCap - currentEnemyCount);
             for (int i = 0; i < actualSpawn; i++)
             {
-                SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera());
+                SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
             }
         }
 
-        private GameObject SpawnAtPosition(GameObject prefab, Vector3 position)
+        private GameObject SpawnAtPosition(GameObject prefab, Vector3 position, string poolKey = null)
         {
-            if (prefab == null)
-            {
-                Debug.LogWarning("[SpawnManager] Không thể spawn quái vì prefab bị NULL trong TimelineEvent!");
-                return null;
-            }
-
             GameObject enemy = null;
+
             if (EnemyPoolManager.Instance != null)
             {
-                enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
+                if (prefab != null)
+                {
+                    enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
+                }
+                else if (!string.IsNullOrEmpty(poolKey))
+                {
+                    enemy = EnemyPoolManager.Instance.SpawnEnemy(poolKey, position, Quaternion.identity);
+                }
             }
-            else
+            else if (prefab != null)
             {
                 enemy = Instantiate(prefab, position, Quaternion.identity);
+            }
+
+            if (enemy == null && prefab == null)
+            {
+                Debug.LogWarning($"[SpawnManager] Không thể spawn quái vì cả Prefab và PoolKey ('{poolKey}') đều không tìm thấy đối tượng hợp lệ!");
+                return null;
             }
 
             if (enemy != null)
