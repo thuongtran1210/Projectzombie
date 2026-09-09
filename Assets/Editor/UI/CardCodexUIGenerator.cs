@@ -222,15 +222,15 @@ namespace ProjectZombie.Editor.UI
             dhRT.anchorMax = new Vector2(1, 1);
             dhRT.pivot = new Vector2(0.5f, 1);
             dhRT.anchoredPosition = new Vector2(0, -18);
-            dhRT.sizeDelta = new Vector2(-36, 100);
+            dhRT.sizeDelta = new Vector2(-36, 120);
 
             GameObject dIconObj = CreateUIElement("Icon_Card", detailHeader.transform);
             RectTransform diRT = dIconObj.GetComponent<RectTransform>();
             diRT.anchorMin = new Vector2(0, 0.5f);
             diRT.anchorMax = new Vector2(0, 0.5f);
             diRT.pivot = new Vector2(0, 0.5f);
-            diRT.anchoredPosition = Vector2.zero;
-            diRT.sizeDelta = new Vector2(86, 86);
+            diRT.anchoredPosition = new Vector2(10, 0);
+            diRT.sizeDelta = new Vector2(90, 90);
             var diImg = dIconObj.AddComponent<Image>();
             diImg.preserveAspect = true;
 
@@ -238,29 +238,40 @@ namespace ProjectZombie.Editor.UI
             RectTransform dfRT = dInfoObj.GetComponent<RectTransform>();
             dfRT.anchorMin = new Vector2(0, 0);
             dfRT.anchorMax = new Vector2(1, 1);
-            dfRT.offsetMin = new Vector2(100, 0);
+            dfRT.offsetMin = new Vector2(115, 0);
             dfRT.offsetMax = Vector2.zero;
+
+            var infoLayout = dInfoObj.AddComponent<VerticalLayoutGroup>();
+            infoLayout.childControlWidth = true;
+            infoLayout.childControlHeight = false;
+            infoLayout.childForceExpandWidth = true;
+            infoLayout.childForceExpandHeight = false;
+            infoLayout.spacing = 3;
 
             var dNameTMP = CreateTextMeshPro(CreateUIElement("Txt_Name", dInfoObj.transform), font);
             dNameTMP.text = "Vạn Dép Bát Quái Thần Hỏa";
             dNameTMP.fontSize = 20;
             dNameTMP.fontStyle = FontStyles.Bold;
             dNameTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);
+            dNameTMP.rectTransform.sizeDelta = new Vector2(0, 26);
 
             var dTypeTMP = CreateTextMeshPro(CreateUIElement("Txt_Type", dInfoObj.transform), font);
             dTypeTMP.text = "<color=#FFD700>[THẦN BINH & PHÁP BẢO]</color>";
             dTypeTMP.fontSize = 13;
             dTypeTMP.color = new Color(0.85f, 0.78f, 0.65f, 1f);
+            dTypeTMP.rectTransform.sizeDelta = new Vector2(0, 20);
 
             var dStarTMP = CreateTextMeshPro(CreateUIElement("Txt_StarBadge", dInfoObj.transform), font);
             dStarTMP.text = "<color=#FFD700>Cấp Độ: 3 Sao</color>";
             dStarTMP.fontSize = 14;
             dStarTMP.fontStyle = FontStyles.Bold;
+            dStarTMP.rectTransform.sizeDelta = new Vector2(0, 22);
 
             var dShardTMP = CreateTextMeshPro(CreateUIElement("Txt_ShardProgress", dInfoObj.transform), font);
             dShardTMP.text = "Tiến Độ Thẻ: <color=#00FF88>15/20 Thẻ</color>";
             dShardTMP.fontSize = 13;
             dShardTMP.color = new Color(0.9f, 0.85f, 0.75f, 1f);
+            dShardTMP.rectTransform.sizeDelta = new Vector2(0, 20);
 
             // Mô Tả
             GameObject descObj = CreateUIElement("Txt_Description", rightCol.transform);

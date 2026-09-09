@@ -55,6 +55,12 @@ namespace ProjectZombie.Features.UI
             SubscribeManagers();
         }
 
+        private void Start()
+        {
+            SubscribeManagers();
+            RefreshUI();
+        }
+
         private void OnDestroy()
         {
             if (_view != null)
