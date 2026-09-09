@@ -150,70 +150,39 @@ namespace ProjectZombie.Editor.Tools
 
             int wiredCount = 0;
 
-            // 3. Chuẩn hóa & Wire TouchZone_Left & DynamicVirtualJoystick
+            // 3. Chuẩn hóa & Wire DynamicVirtualJoystick (Cố định góc dưới trái, không dịch chuyển container)
             Transform joyZoneTrans = FindChildRecursive(mobilePanel.transform, "TouchZone_Left");
+            if (joyZoneTrans != null)
+            {
+                // Nếu TouchZone_Left có gắn DynamicVirtualJoystick thừa, xóa đi để tránh xung đột singleton
+                var excessJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
+                if (excessJoystick != null)
+                {
+                    DestroyImmediate(excessJoystick);
+                }
+            }
+
             DynamicVirtualJoystick joystick = mobilePanel.GetComponentInChildren<DynamicVirtualJoystick>(true);
 
-            if (joyZoneTrans == null)
+            if (joystick == null)
             {
-                // Tạo TouchZone_Left bao phủ toàn bộ nửa trái màn hình (0 -> 0.5 Width)
-                GameObject zoneObj = new GameObject("TouchZone_Left", typeof(RectTransform), typeof(Image));
-                zoneObj.transform.SetParent(mobilePanel.transform, false);
-                zoneObj.transform.SetAsFirstSibling();
-                RectTransform zRT = zoneObj.GetComponent<RectTransform>();
-                zRT.anchorMin = new Vector2(0f, 0f);
-                zRT.anchorMax = new Vector2(0.5f, 1f);
-                zRT.offsetMin = Vector2.zero;
-                zRT.offsetMax = Vector2.zero;
+                // Tạo mới cụm DynamicVirtualJoystick cố định chuẩn
+                GameObject joyObj = new GameObject("DynamicVirtualJoystick", typeof(RectTransform), typeof(Image), typeof(DynamicVirtualJoystick), typeof(CanvasGroup));
+                joyObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform joyRect = joyObj.GetComponent<RectTransform>();
+                joyRect.anchorMin = new Vector2(0f, 0f);
+                joyRect.anchorMax = new Vector2(0f, 0f);
+                joyRect.pivot = new Vector2(0.5f, 0.5f);
+                joyRect.anchoredPosition = new Vector2(250, 250);
+                joyRect.sizeDelta = new Vector2(240, 240);
 
-                Image zoneImg = zoneObj.GetComponent<Image>();
-                zoneImg.color = Color.clear; // 100% trong suốt để nhận Touch Event
-                zoneImg.raycastTarget = true;
-
-                joyZoneTrans = zoneObj.transform;
-            }
-
-            // Nếu Joystick cũ đang nằm ngoài, đưa vào làm con hoặc gắn handler
-            if (joystick != null)
-            {
-                if (joystick.gameObject.name.Contains("TouchZone"))
-                {
-                    WireJoystick(joystick);
-                }
-                else
-                {
-                    // Di chuyển DynamicVirtualJoystick làm con của Panel_MobileControls hoặc liên kết TouchZone
-                    WireJoystick(joystick);
-                    
-                    // Gắn thêm DynamicVirtualJoystick vào TouchZone nếu TouchZone chưa có
-                    var zoneJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
-                    if (zoneJoystick == null) zoneJoystick = joyZoneTrans.gameObject.AddComponent<DynamicVirtualJoystick>();
-                    WireTouchZoneJoystick(zoneJoystick, joystick.GetComponent<RectTransform>());
-                }
-                wiredCount++;
-            }
-            else
-            {
-                var zoneJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
-                if (zoneJoystick == null) zoneJoystick = joyZoneTrans.gameObject.AddComponent<DynamicVirtualJoystick>();
-                
-                // Tạo visual joystick con nếu chưa có
-                GameObject joyVisual = new GameObject("Joystick_Visual", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
-                joyVisual.transform.SetParent(mobilePanel.transform, false);
-                RectTransform jvRT = joyVisual.GetComponent<RectTransform>();
-                jvRT.anchorMin = new Vector2(0f, 0f);
-                jvRT.anchorMax = new Vector2(0f, 0f);
-                jvRT.pivot = new Vector2(0.5f, 0.5f);
-                jvRT.anchoredPosition = new Vector2(250, 250);
-                jvRT.sizeDelta = new Vector2(240, 240);
-
-                Image jvImg = joyVisual.GetComponent<Image>();
-                jvImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
-                jvImg.color = Color.white;
-                jvImg.raycastTarget = false;
+                Image joyBg = joyObj.GetComponent<Image>();
+                joyBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
+                joyBg.color = Color.white;
+                joyBg.raycastTarget = true;
 
                 GameObject handleObj = new GameObject("JoystickHandle", typeof(RectTransform), typeof(Image));
-                handleObj.transform.SetParent(joyVisual.transform, false);
+                handleObj.transform.SetParent(joyObj.transform, false);
                 RectTransform handleRect = handleObj.GetComponent<RectTransform>();
                 handleRect.sizeDelta = new Vector2(100, 100);
                 Image handleImg = handleObj.GetComponent<Image>();
@@ -221,9 +190,11 @@ namespace ProjectZombie.Editor.Tools
                 handleImg.color = Color.white;
                 handleImg.raycastTarget = false;
 
-                WireTouchZoneJoystick(zoneJoystick, jvRT);
-                wiredCount++;
+                joystick = joyObj.GetComponent<DynamicVirtualJoystick>();
             }
+
+            WireJoystick(joystick);
+            wiredCount++;
 
             // 4. Chuẩn hóa & Wire SignatureSkillButtonView & Presenter
             SignatureSkillButtonView skillView = mobilePanel.GetComponentInChildren<SignatureSkillButtonView>(true);
@@ -468,16 +439,16 @@ namespace ProjectZombie.Editor.Tools
             so.FindProperty("containerRect").objectReferenceValue = container;
             so.FindProperty("handleRect").objectReferenceValue = handle;
             
-            // Bật chế độ Floating Joystick: chạm bất kỳ đâu bên trái joystick cũng tự nhảy đến chỗ chạm
+            // Cố định Joystick tại góc dưới trái (Fixed Mode), chỉ di chuyển núm kéo (Knob/Handle)
             var floatProp = so.FindProperty("_isFloatingJoystick");
-            if (floatProp != null) floatProp.boolValue = true;
+            if (floatProp != null) floatProp.boolValue = false;
 
             var followProp = so.FindProperty("_dynamicFollowDrag");
-            if (followProp != null) followProp.boolValue = true;
+            if (followProp != null) followProp.boolValue = false;
 
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(joystick);
-            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire Joystick: {joystick.name} (Handle: {(handle != null ? handle.name : "None")}, Floating: True)");
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire Joystick: {joystick.name} (Handle: {(handle != null ? handle.name : "None")}, Fixed Mode: True)");
         }
 
         private static void WireTouchZoneJoystick(DynamicVirtualJoystick zoneJoystick, RectTransform visualContainer)
@@ -505,10 +476,10 @@ namespace ProjectZombie.Editor.Tools
             so.FindProperty("handleRect").objectReferenceValue = handle;
 
             var floatProp = so.FindProperty("_isFloatingJoystick");
-            if (floatProp != null) floatProp.boolValue = true;
+            if (floatProp != null) floatProp.boolValue = false;
 
             var followProp = so.FindProperty("_dynamicFollowDrag");
-            if (followProp != null) followProp.boolValue = true;
+            if (followProp != null) followProp.boolValue = false;
 
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(zoneJoystick);

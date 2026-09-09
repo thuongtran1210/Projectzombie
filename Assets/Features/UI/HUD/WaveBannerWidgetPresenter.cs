@@ -85,7 +85,7 @@ namespace ProjectZombie.Features.UI.HUD
             else
             {
                 _view.UpdateMiniBadge("MAN 1: U MINH GIOI", "HOI 01 / 10");
-                _view.UpdateStageProgress(0f, "00:00 / 20:00 (0%)", "Chuan bi chien dau");
+                _view.UpdateStageProgress(0f, "00:00 / 15:00 (0%)", "Chuan bi chien dau");
             }
         }
 

@@ -32,7 +32,7 @@ namespace ProjectZombie.Features.Spawners.Editor
             }
 
             config.levelName = "Màn 1: U Minh Giới";
-            config.maxLevelDuration = 1200f; // 20 phút (1200 giây)
+            config.maxLevelDuration = 900f; // 15 phút (900 giây)
             config.events.Clear();
 
             // Load Prefabs từ thư mục Enemies
@@ -45,7 +45,7 @@ namespace ProjectZombie.Features.Spawners.Editor
             GameObject nguuDauMaDienPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Enemies/Boss_NguuDauMaDien.prefab");
             GameObject diemVuongPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Characters/Enemies/Boss_DiemVuong.prefab");
 
-            // 00:00 - Quái nền: Ma Giáp (Quỷ Binh)
+            // 00:00 (0s) - Quái nền: Ma Giáp (Quỷ Binh)
             config.events.Add(new TimelineEvent
             {
                 eventName = "Phút 00:00 - Khởi đầu: Ma Giáp quỷ binh xuất hiện nền",
@@ -54,10 +54,10 @@ namespace ProjectZombie.Features.Spawners.Editor
                 spawnPrefab = maGiapPrefab,
                 enemyAddress = "E_MAGIAP",
                 spawnCount = 3,
-                spawnInterval = 4.0f
+                spawnInterval = 2.5f
             });
 
-            // 01:00 - Ma Da trơn trượt áp sát
+            // 01:00 (60s) - Ma Da trơn trượt tăng tốc áp sát
             config.events.Add(new TimelineEvent
             {
                 eventName = "Phút 01:00 - Ma Da trơn trượt tăng tốc áp sát",
@@ -66,10 +66,10 @@ namespace ProjectZombie.Features.Spawners.Editor
                 spawnPrefab = maDaPrefab,
                 enemyAddress = "E_MADA",
                 spawnCount = 4,
-                spawnInterval = 3.5f
+                spawnInterval = 2.5f
             });
 
-            // 02:00 - Ma Trơi bay lơ lửng phóng ma hỏa
+            // 02:00 (120s) - Ma Trơi bay lơ lửng phóng ma hỏa
             config.events.Add(new TimelineEvent
             {
                 eventName = "Phút 02:00 - Ma Trơi bay lơ lửng phóng ma hỏa",
@@ -78,10 +78,10 @@ namespace ProjectZombie.Features.Spawners.Editor
                 spawnPrefab = maTroiPrefab,
                 enemyAddress = "E_MATROI",
                 spawnCount = 3,
-                spawnInterval = 4.0f
+                spawnInterval = 3.0f
             });
 
-            // 03:00 - Bầy Ma Da tràn lên bao vây (Burst Wave)
+            // 03:00 (180s) - Bầy Ma Da tràn lên bao vây (Burst Wave)
             config.events.Add(new TimelineEvent
             {
                 eventName = "Phút 03:00 - Bầy Ma Da tràn lên bao vây (Burst Wave)",
@@ -89,27 +89,15 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.BurstWave,
                 spawnPrefab = maDaPrefab,
                 enemyAddress = "E_MADA",
-                spawnCount = 12,
-                spawnInterval = 0.2f
+                spawnCount = 15,
+                spawnInterval = 0.1f
             });
 
-            // 04:00 - Hồ Ly Tinh tinh quái lao vào tự nổ AoE
+            // 04:30 (270s) - Elite Quỷ Nhập Tràng xuất hiện (Thịt đè người)
             config.events.Add(new TimelineEvent
             {
-                eventName = "Phút 04:00 - Bầy Hồ Ly Tinh tinh quái lao vào tự nổ",
-                timestampSeconds = 240f,
-                eventType = TimelineEventType.Continuous,
-                spawnPrefab = hoaLyTinhPrefab,
-                enemyAddress = "E_HOALYTINH",
-                spawnCount = 4,
-                spawnInterval = 4.0f
-            });
-
-            // 05:00 - Elite Quỷ Nhập Tràng xuất hiện (Thịt đè người)
-            config.events.Add(new TimelineEvent
-            {
-                eventName = "Phút 05:00 - ELITE QUỶ NHẬP TRÀNG XUẤT HIỆN",
-                timestampSeconds = 300f,
+                eventName = "Phút 04:30 - ELITE QUỶ NHẬP TRÀNG XUẤT HIỆN",
+                timestampSeconds = 270f,
                 eventType = TimelineEventType.BurstWave,
                 spawnPrefab = quyNhapTrangPrefab,
                 enemyAddress = "E_QUYNHAPTRANG",
@@ -117,35 +105,35 @@ namespace ProjectZombie.Features.Spawners.Editor
                 spawnInterval = 0.0f
             });
 
-            // 06:00 - Ma Đòi Nợ lén lút thó tiền chạy trốn
+            // 06:00 (360s) - Ma Đòi Nợ & Hồ Ly Tinh tinh quái xuất hiện
             config.events.Add(new TimelineEvent
             {
-                eventName = "Phút 06:00 - Ma Đòi Nợ lén lút thó tiền chạy trốn",
+                eventName = "Phút 06:00 - Ma Đòi Nợ & Hồ Ly Tinh tinh quái",
                 timestampSeconds = 360f,
+                eventType = TimelineEventType.Continuous,
+                spawnPrefab = hoaLyTinhPrefab,
+                enemyAddress = "E_HOALYTINH",
+                spawnCount = 4,
+                spawnInterval = 3.0f
+            });
+
+            // 06:45 (405s) - Ma Đòi Nợ lén lút thó tiền chạy trốn
+            config.events.Add(new TimelineEvent
+            {
+                eventName = "Phút 06:45 - Ma Đòi Nợ lén lút thó tiền chạy trốn",
+                timestampSeconds = 405f,
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = maDoiNoPrefab,
                 enemyAddress = "E_MADOINO",
                 spawnCount = 2,
-                spawnInterval = 12.0f
+                spawnInterval = 8.0f
             });
 
-            // 08:00 - Bão Ma Hỏa & Hồ Ly Tinh bao vây (Burst Wave)
+            // 07:30 (450s) - Mid-Boss Ngưu Đầu Mã Diện xuất hiện (Chính giữa trận đấu 15 phút)
             config.events.Add(new TimelineEvent
             {
-                eventName = "Phút 08:00 - Bão Ma Hỏa & Hồ Ly Tinh bao vây (Burst Wave)",
-                timestampSeconds = 480f,
-                eventType = TimelineEventType.BurstWave,
-                spawnPrefab = hoaLyTinhPrefab,
-                enemyAddress = "E_HOALYTINH",
-                spawnCount = 16,
-                spawnInterval = 0.2f
-            });
-
-            // 10:00 - Mid-Boss Ngưu Đầu Mã Diện xuất hiện
-            config.events.Add(new TimelineEvent
-            {
-                eventName = "Phút 10:00 - MID-BOSS NGƯU ĐẦU MÃ DIỆN XUẤT HIỆN",
-                timestampSeconds = 600f,
+                eventName = "Phút 07:30 - MID-BOSS NGƯU ĐẦU MÃ DIỆN XUẤT HIỆN",
+                timestampSeconds = 450f,
                 eventType = TimelineEventType.BossSpawn,
                 spawnPrefab = nguuDauMaDienPrefab,
                 enemyAddress = "Boss_NguuDauMaDien",
@@ -153,35 +141,47 @@ namespace ProjectZombie.Features.Spawners.Editor
                 spawnInterval = 0.0f
             });
 
-            // 12:00 - Đội hình Quỷ Binh & Cương Thi tổng lực
+            // 09:30 (570s) - Bão Ma Hỏa & Hồ Ly Tinh bao vây (Burst Wave)
             config.events.Add(new TimelineEvent
             {
-                eventName = "Phút 12:00 - Đội hình Quỷ Binh & Cương Thi tổng lực",
-                timestampSeconds = 720f,
-                eventType = TimelineEventType.Continuous,
-                spawnPrefab = quyNhapTrangPrefab,
-                enemyAddress = "E_QUYNHAPTRANG",
-                spawnCount = 2,
-                spawnInterval = 6.0f
-            });
-
-            // 15:00 - Đại Bão Yêu Ma tổng lực (Multi-Burst Wave)
-            config.events.Add(new TimelineEvent
-            {
-                eventName = "Phút 15:00 - Đại Bão Yêu Ma tổng lực (Multi-Burst Wave)",
-                timestampSeconds = 900f,
+                eventName = "Phút 09:30 - Bão Ma Hỏa & Hồ Ly Tinh bao vây (Burst Wave)",
+                timestampSeconds = 570f,
                 eventType = TimelineEventType.BurstWave,
-                spawnPrefab = maGiapPrefab,
-                enemyAddress = "E_MAGIAP",
-                spawnCount = 25,
+                spawnPrefab = hoaLyTinhPrefab,
+                enemyAddress = "E_HOALYTINH",
+                spawnCount = 20,
                 spawnInterval = 0.1f
             });
 
-            // 20:00 - Final Boss Diêm Vương giáng lâm
+            // 11:30 (690s) - Đội hình Quỷ Binh & Cương Thi tổng lực
             config.events.Add(new TimelineEvent
             {
-                eventName = "Phút 20:00 - FINAL BOSS DIÊM VƯƠNG GIÁNG LÂM",
-                timestampSeconds = 1200f,
+                eventName = "Phút 11:30 - Đội hình Quỷ Binh & Cương Thi tổng lực",
+                timestampSeconds = 690f,
+                eventType = TimelineEventType.Continuous,
+                spawnPrefab = quyNhapTrangPrefab,
+                enemyAddress = "E_QUYNHAPTRANG",
+                spawnCount = 3,
+                spawnInterval = 4.0f
+            });
+
+            // 13:30 (810s) - Đại Bão Yêu Ma Pre-Boss Rush (Burst Wave)
+            config.events.Add(new TimelineEvent
+            {
+                eventName = "Phút 13:30 - Đại Bão Yêu Ma Pre-Boss Rush (Burst Wave)",
+                timestampSeconds = 810f,
+                eventType = TimelineEventType.BurstWave,
+                spawnPrefab = maGiapPrefab,
+                enemyAddress = "E_MAGIAP",
+                spawnCount = 30,
+                spawnInterval = 0.05f
+            });
+
+            // 15:00 (900s) - Final Boss Diêm Vương giáng lâm
+            config.events.Add(new TimelineEvent
+            {
+                eventName = "Phút 15:00 - FINAL BOSS DIÊM VƯƠNG GIÁNG LÂM",
+                timestampSeconds = 900f,
                 eventType = TimelineEventType.BossSpawn,
                 spawnPrefab = diemVuongPrefab,
                 enemyAddress = "Boss_DiemVuong",
@@ -193,7 +193,19 @@ namespace ProjectZombie.Features.Spawners.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"[LevelTimelineGenerator] ✅ Đã cập nhật thành công Level Timeline Asset tại: {assetPath} với đầy đủ tất cả Enemy & Boss!");
+            // Highlight/Ping Asset trong Project Window để Designer thấy ngay kết quả
+            EditorGUIUtility.PingObject(config);
+            Selection.activeObject = config;
+
+            string summaryMsg = $"Đã cập nhật thành công Level Timeline Asset (15 Phút - 900s)!\n\n" +
+                               $"- Màn chơi: {config.levelName}\n" +
+                               $"- Tổng số Event: {config.events.Count} sự kiện\n" +
+                               $"- Mid-Boss: Phút 07:30 (450s)\n" +
+                               $"- Final Boss: Phút 15:00 (900s)\n" +
+                               $"- Vị trí lưu: {assetPath}";
+
+            Debug.Log($"[LevelTimelineGenerator] ✅ {summaryMsg}");
+            EditorUtility.DisplayDialog("Level Timeline Generator", summaryMsg, "Xác nhận");
         }
     }
 }

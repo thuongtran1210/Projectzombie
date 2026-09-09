@@ -31,8 +31,8 @@ namespace ProjectZombie.Features.UI
         [Tooltip("Vùng chết (Deadzone) để loại bỏ rung lắc ngón tay cảm ứng.")]
         [Range(0f, 0.5f)]
         [SerializeField] private float deadZone = 0.1f;
-        [Tooltip("Nếu bật: khi kéo ngón tay vượt quá handleRange, gốc Joystick sẽ tự động trượt theo ngón tay.")]
-        [SerializeField] private bool _dynamicFollowDrag = true;
+        [Tooltip("Nếu bật: khi kéo ngón tay vượt quá handleRange, gốc Joystick sẽ trượt theo (chỉ tác dụng khi bật Floating Joystick).")]
+        [SerializeField] private bool _dynamicFollowDrag = false;
 
         [Header("Fade Visual (Optional)")]
         [Tooltip("Ẩn Joystick khi không chạm vào (chỉ hiện khi chạm).")]
@@ -53,6 +53,13 @@ namespace ProjectZombie.Features.UI
         private void Awake()
         {
             Instance = this;
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Instance = this;
+            AutoResolveReferences();
         }
 
         private void OnDestroy()
@@ -175,9 +182,8 @@ namespace ProjectZombie.Features.UI
         {
             if (containerRect == null || handleRect == null) return;
 
-            // Nếu chạm vào vùng TouchZone hoặc bật chế độ Floating:
-            // Đưa containerRect (Gốc Joystick) nhảy trực tiếp đến điểm ngón tay chạm trên màn hình
-            if (_isFloatingJoystick || containerRect.gameObject != gameObject)
+            // Chế độ Floating Joystick: Chỉ nhảy container khi được cấu hình rõ ràng
+            if (_isFloatingJoystick)
             {
                 RectTransform parentRect = containerRect.parent as RectTransform;
                 if (parentRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -186,7 +192,7 @@ namespace ProjectZombie.Features.UI
                     eventData.pressEventCamera,
                     out Vector2 localPoint))
                 {
-                    containerRect.localPosition = localPoint;
+                    containerRect.anchoredPosition = localPoint;
                 }
             }
 
@@ -202,21 +208,24 @@ namespace ProjectZombie.Features.UI
         {
             if (containerRect == null || handleRect == null) return;
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            // Tính vị trí ngón tay so với tâm của containerRect
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 containerRect,
                 eventData.position,
                 eventData.pressEventCamera,
-                out Vector2 position
-            );
+                out Vector2 position))
+            {
+                return;
+            }
 
-            // Dynamic follow: khi ngón tay vượt quá handleRange, gốc Joystick trượt theo
-            if (_dynamicFollowDrag && (_isFloatingJoystick || containerRect.gameObject != gameObject) && position.magnitude > handleRange)
+            // Nếu bật Dynamic Follow Drag và là Floating Joystick: khi kéo quá xa thì container mới trượt nhẹ theo
+            if (_dynamicFollowDrag && _isFloatingJoystick && position.magnitude > handleRange)
             {
                 RectTransform parentRect = containerRect.parent as RectTransform;
                 if (parentRect != null)
                 {
                     Vector2 excess = position - (position.normalized * handleRange);
-                    containerRect.localPosition += (Vector3)excess;
+                    containerRect.anchoredPosition += excess;
                     position = position.normalized * handleRange;
                 }
             }
@@ -237,7 +246,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Cập nhật vị trí hiển thị của cần gạt (Knob / Handle)
-            Vector2 clampedHandlePos = (rawDir.magnitude > 1.0f) ? rawDir.normalized * handleRange : position;
+            Vector2 clampedHandlePos = (distance > handleRange) ? (position / distance) * handleRange : position;
             handleRect.anchoredPosition = clampedHandlePos;
 
             // Gửi trực tiếp giá trị vào Unity New Input System

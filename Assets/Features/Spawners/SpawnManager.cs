@@ -27,7 +27,12 @@ namespace ProjectZombie.Features.Spawners
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
         [Header("Spawn Settings & Limits")]
+        [Header("Spawn Settings & Limits")]
         [SerializeField] private int maxEnemyCap = 50; // Khống chế 30-50 quái cho không gian Combo & Dash (GDD v5.0 Action RPG)
+        [Tooltip("Số lượng quái tối thiểu cần duy trì trên sàn đấu để tránh khoảng lặng khi người chơi quét sạch quái")]
+        [SerializeField] private int minEnemyFloor = 8;
+        [Tooltip("Hệ số gia tốc spawn bù quái khi số quái trên sân thấp hơn minEnemyFloor")]
+        [SerializeField] private float adaptiveCatchupRate = 3.0f;
         [SerializeField] private float minSpawnRadius = 10f;
         [SerializeField] private float maxSpawnRadius = 16f;
 
@@ -56,7 +61,7 @@ namespace ProjectZombie.Features.Spawners
         public int CurrentEnemyCount => currentEnemyCount;
         public bool IsMatchActive => isMatchActive;
         public LevelTimelineConfig TimelineConfig => timelineConfig;
-        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 1200f;
+        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 900f; // 15 phút (900 giây)
         public float MatchProgress => Mathf.Clamp01(matchTime / Mathf.Max(1f, LevelDuration));
         public int CurrentWaveIndex => Mathf.Max(1, _nextEventIndex);
         public int TotalWaves => (timelineConfig != null && timelineConfig.events != null) ? Mathf.Max(1, timelineConfig.events.Count) : 1;
@@ -387,19 +392,34 @@ namespace ProjectZombie.Features.Spawners
 
         private void HandleContinuousSpawns()
         {
-            if (currentEnemyCount >= maxEnemyCap) return;
+            if (currentEnemyCount >= maxEnemyCap || _activeContinuousEvents.Count == 0) return;
+
+            // Cơ chế Adaptive Pressure: Nếu người chơi quá mạnh dọn sạch sàn đấu (quái < minEnemyFloor),
+            // tăng tốc độ đếm nhịp spawn gấp adaptiveCatchupRate lần để bù quái tức thì, loại bỏ 100% khoảng lặng.
+            float timeMultiplier = 1.0f;
+            if (currentEnemyCount < minEnemyFloor)
+            {
+                // Khi quái = 0 thì tốc độ catch-up đạt tối đa (3x - 4x)
+                float deficitRatio = 1f - ((float)currentEnemyCount / Mathf.Max(1, minEnemyFloor));
+                timeMultiplier += deficitRatio * adaptiveCatchupRate;
+            }
 
             for (int i = 0; i < _activeContinuousEvents.Count; i++)
             {
                 var evt = _activeContinuousEvents[i];
-                _eventTimers[evt] += Time.deltaTime;
+                _eventTimers[evt] += Time.deltaTime * timeMultiplier;
 
                 if (_eventTimers[evt] >= evt.spawnInterval)
                 {
                     _eventTimers[evt] = 0f;
                     if (currentEnemyCount < maxEnemyCap)
                     {
-                        SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                        // Spawn từ 1 đến nhiều quái theo batch của event
+                        int spawnBatch = Mathf.Clamp(evt.spawnCount > 0 ? evt.spawnCount : 1, 1, maxEnemyCap - currentEnemyCount);
+                        for (int b = 0; b < spawnBatch; b++)
+                        {
+                            SpawnAtPosition(evt.spawnPrefab, GetSpawnPositionOutsideCamera());
+                        }
                     }
                 }
             }

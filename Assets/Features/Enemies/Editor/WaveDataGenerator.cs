@@ -44,31 +44,29 @@ namespace ProjectZombie.Features.Enemies.Editor
 
             WaveDef[] waveTimeline = new WaveDef[]
             {
-                new WaveDef("Wave_Minute_01", 30f, 15, 0.8f),
-                new WaveDef("Wave_Minute_02", 90f, 20, 0.6f),
-                new WaveDef("Wave_Minute_03", 150f, 25, 0.5f),
-                new WaveDef("Wave_Minute_04", 210f, 30, 0.5f),
-                new WaveDef("Wave_Minute_05", 300f, 1, 0f, true, false, 2.0f), // Elite 1: Quỷ Nhập Tràng (05:00)
-                new WaveDef("Wave_Minute_06", 360f, 30, 0.4f),
-                new WaveDef("Wave_Minute_07", 420f, 35, 0.4f),
-                new WaveDef("Wave_Minute_08", 480f, 35, 0.35f),
-                new WaveDef("Wave_Minute_09", 540f, 40, 0.35f),
-                new WaveDef("Wave_Minute_10", 600f, 1, 0f, false, true, 5.0f), // Boss 1: Ngưu Đầu Mã Diện (10:00)
-                new WaveDef("Wave_Minute_11", 660f, 40, 0.3f),
-                new WaveDef("Wave_Minute_12", 720f, 45, 0.25f, true), // Mini Swarm (Bão Yêu 45 mob)
-                new WaveDef("Wave_Minute_13", 780f, 45, 0.3f),
-                new WaveDef("Wave_Minute_14", 840f, 50, 0.3f),
-                new WaveDef("Wave_Minute_15", 900f, 3, 0.5f, true), // Multi-Elite Rush (15:00)
-                new WaveDef("Wave_Minute_16", 960f, 50, 0.3f),
-                new WaveDef("Wave_Minute_17", 1020f, 50, 0.3f),
-                new WaveDef("Wave_Minute_18", 1080f, 50, 0.3f),
-                new WaveDef("Wave_Minute_19", 1140f, 50, 0.25f),
-                new WaveDef("Wave_Minute_20", 1200f, 1, 0f, false, true, 15.0f) // Final Boss: Diêm Vương (20:00)
+                new WaveDef("Wave_Minute_01", 30f, 15, 0.6f),
+                new WaveDef("Wave_Minute_02", 90f, 20, 0.5f),
+                new WaveDef("Wave_Minute_03", 150f, 25, 0.4f),
+                new WaveDef("Wave_Minute_04", 210f, 30, 0.35f),
+                new WaveDef("Wave_Minute_05", 270f, 1, 0f, true, false, 2.0f), // Elite 1: Quỷ Nhập Tràng (04:30)
+                new WaveDef("Wave_Minute_06", 330f, 30, 0.3f),
+                new WaveDef("Wave_Minute_07", 390f, 35, 0.3f),
+                new WaveDef("Wave_Minute_08", 450f, 1, 0f, false, true, 5.0f),  // Mid-Boss: Ngưu Đầu Mã Diện (07:30)
+                new WaveDef("Wave_Minute_09", 510f, 40, 0.25f),
+                new WaveDef("Wave_Minute_10", 570f, 45, 0.25f, true),            // Mini Swarm (Bão Yêu 45 mob - 09:30)
+                new WaveDef("Wave_Minute_11", 630f, 45, 0.25f),
+                new WaveDef("Wave_Minute_12", 690f, 50, 0.2f),
+                new WaveDef("Wave_Minute_13", 750f, 50, 0.2f),
+                new WaveDef("Wave_Minute_14", 810f, 50, 0.15f, true),            // Pre-Boss Multi-Elite Rush (13:30)
+                new WaveDef("Wave_Minute_15", 900f, 1, 0f, false, true, 15.0f)  // Final Boss: Diêm Vương (15:00)
             };
 
             int successCount = 0;
+            System.Collections.Generic.HashSet<string> generatedFileNames = new System.Collections.Generic.HashSet<string>();
+
             foreach (var def in waveTimeline)
             {
+                generatedFileNames.Add($"{def.fileName}.asset");
                 string assetPath = $"{folderPath}/{def.fileName}.asset";
                 var asset = AssetDatabase.LoadAssetAtPath<SpawnWaveConfig>(assetPath);
                 if (asset == null)
@@ -86,12 +84,32 @@ namespace ProjectZombie.Features.Enemies.Editor
                 so.FindProperty("hpMultiplierOverride").floatValue = def.hpMultiplier;
                 so.ApplyModifiedProperties();
 
+                EditorUtility.SetDirty(asset);
                 successCount++;
+            }
+
+            // Tự động quét và dọn sạch các file ScriptableObject cũ không còn nằm trong Timeline (ví dụ: Wave_Minute_16 đến 20)
+            int deletedCount = 0;
+            string[] existingGuids = AssetDatabase.FindAssets("t:SpawnWaveConfig", new string[] { folderPath });
+            foreach (var guid in existingGuids)
+            {
+                string existingPath = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = System.IO.Path.GetFileName(existingPath);
+                if (!generatedFileNames.Contains(fileName))
+                {
+                    AssetDatabase.DeleteAsset(existingPath);
+                    deletedCount++;
+                }
             }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"[WaveDataGenerator] Đã tạo/cập nhật thành công {successCount} Wave Config SOs trong {folderPath} bám sát GDD v4.0 Timeline!");
+
+            string reportMsg = $"Đã tạo/cập nhật thành công {successCount} Wave Config SOs (15 Phút) trong {folderPath}!\n" +
+                              (deletedCount > 0 ? $"Đã tự động xóa sạch {deletedCount} Wave SO cũ thừa (Wave 16-20)." : "Không có file thừa cần xóa.");
+
+            Debug.Log($"[WaveDataGenerator] {reportMsg}");
+            EditorUtility.DisplayDialog("Wave Data Generator", reportMsg, "Tuyệt vời");
         }
     }
 }

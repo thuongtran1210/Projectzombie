@@ -147,40 +147,40 @@ namespace ProjectZombie.EditorTools
 
                 switch (i)
                 {
-                    case 0: // Phut 00:00 Ma Giap
+                    case 0: // Phut 00:00 (0s) Ma Giap
                         if (spriteMap.TryGetValue("Icon_Monster_MaGiap", out var sp0)) evt.eventIcon = sp0;
                         break;
-                    case 1: // Phut 01:00 Ma Da
+                    case 1: // Phut 01:00 (60s) Ma Da
                         if (spriteMap.TryGetValue("Icon_Monster_MaDa", out var sp1)) evt.eventIcon = sp1;
                         break;
-                    case 2: // Phut 02:00 Ma Troi
+                    case 2: // Phut 02:00 (120s) Ma Troi
                         if (spriteMap.TryGetValue("Icon_Monster_MaTroi", out var sp2)) evt.eventIcon = sp2;
                         break;
-                    case 3: // Phut 03:00 Ma Da Burst
+                    case 3: // Phut 03:00 (180s) Ma Da Burst
                         if (spriteMap.TryGetValue("Icon_Monster_MaDa", out var sp3)) evt.eventIcon = sp3;
                         break;
-                    case 4: // Phut 04:00 Ho Ly Tinh
-                        if (spriteMap.TryGetValue("Icon_Monster_HoLyTinh", out var sp4)) evt.eventIcon = sp4;
+                    case 4: // Phut 04:30 (270s) Elite Quy Nhap Trang
+                        if (spriteMap.TryGetValue("Icon_Monster_QuyNhapTrang", out var sp4)) evt.eventIcon = sp4;
                         break;
-                    case 5: // Phut 05:00 Quy Nhap Trang
-                        if (spriteMap.TryGetValue("Icon_Monster_QuyNhapTrang", out var sp5)) evt.eventIcon = sp5;
+                    case 5: // Phut 06:00 (360s) Ho Ly Tinh
+                        if (spriteMap.TryGetValue("Icon_Monster_HoLyTinh", out var sp5)) evt.eventIcon = sp5;
                         break;
-                    case 6: // Phut 06:00 Ma Doi No
+                    case 6: // Phut 06:45 (405s) Ma Doi No
                         if (spriteMap.TryGetValue("Icon_Monster_MaDoiNo", out var sp6)) evt.eventIcon = sp6;
                         break;
-                    case 7: // Phut 08:00 Ho Ly Tinh Burst
-                        if (spriteMap.TryGetValue("Icon_Monster_HoLyTinh", out var sp7)) evt.eventIcon = sp7;
+                    case 7: // Phut 07:30 (450s) Mid-Boss Nguu Dau Ma Dien
+                        if (spriteMap.TryGetValue("Icon_Monster_NguuDauMaDien", out var sp7)) evt.eventIcon = sp7;
                         break;
-                    case 8: // Phut 10:00 Nguu Dau Ma Dien Mid-Boss
-                        if (spriteMap.TryGetValue("Icon_Monster_NguuDauMaDien", out var sp8)) evt.eventIcon = sp8;
+                    case 8: // Phut 09:30 (570s) Ho Ly Tinh Burst
+                        if (spriteMap.TryGetValue("Icon_Monster_HoLyTinh", out var sp8)) evt.eventIcon = sp8;
                         break;
-                    case 9: // Phut 12:00 Quy Nhap Trang
+                    case 9: // Phut 11:30 (690s) Quy Nhap Trang
                         if (spriteMap.TryGetValue("Icon_Monster_QuyNhapTrang", out var sp9)) evt.eventIcon = sp9;
                         break;
-                    case 10: // Phut 15:00 Ma Giap Burst
+                    case 10: // Phut 13:30 (810s) Ma Giap Burst Pre-Boss
                         if (spriteMap.TryGetValue("Icon_Monster_MaGiap", out var sp10)) evt.eventIcon = sp10;
                         break;
-                    case 11: // Phut 20:00 Diem Vuong Final Boss
+                    case 11: // Phut 15:00 (900s) Diem Vuong Final Boss
                         if (spriteMap.TryGetValue("Icon_Monster_DiemVuong", out var sp11)) evt.eventIcon = sp11;
                         break;
                 }

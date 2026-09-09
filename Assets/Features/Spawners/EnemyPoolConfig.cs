@@ -26,6 +26,9 @@ namespace ProjectZombie.Features.Spawners
 
         public void ReturnToPool()
         {
+            // Đồng bộ giảm bộ đếm quái trong SpawnManager để luôn phản ánh chính xác số lượng quái còn sống
+            SpawnManager.Instance?.OnEnemyDied();
+
             if (Pool != null && gameObject != null && gameObject.activeSelf)
             {
                 try

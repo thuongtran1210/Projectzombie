@@ -71,10 +71,10 @@ namespace ProjectZombie.Features.Spawners
     {
         [Header("Level Information")]
         public string levelName = "Màn 1: U Minh Giới";
-        public float maxLevelDuration = 1200f; // 20 phút (1200 giây)
+        public float maxLevelDuration = 900f; // 15 phút (900 giây)
 
         [Header("Timeline Events")]
-        [Tooltip("Danh sách các sự kiện spawn xếp theo thời gian từ 0s -> 1200s.")]
+        [Tooltip("Danh sách các sự kiện spawn xếp theo thời gian từ 0s -> 900s.")]
         public List<TimelineEvent> events = new List<TimelineEvent>();
 
         private void OnValidate()
