@@ -27,7 +27,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         private IGachaDataProvider _dataProvider;
         private MetaProgressionSaveData _saveData;
 
-        public GachaBannerConfigSO ActiveBanner => _activeBanner;
+        public GachaBannerConfigSO ActiveBanner => GetOrLoadActiveBanner();
         public int PityLegendary => _saveData != null ? _saveData.gachaPityLegendary : 0;
         public int PityEpic => _saveData != null ? _saveData.gachaPityEpic : 0;
 
@@ -43,14 +43,52 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             // Mặc định nạp processor thanh toán bằng Cổ Tiền và data provider nội bộ
             _currencyProcessor = new CoTienCurrencyProcessor();
             _dataProvider = new LocalSOGachaDataProvider();
+
+            EnsureSaveData();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         private void Start()
         {
-            if (_saveData == null && GameManager.Instance != null && GameManager.Instance.SaveData != null)
+            EnsureSaveData();
+        }
+
+        private void EnsureSaveData()
+        {
+            if (_saveData == null)
             {
-                Initialize(GameManager.Instance.SaveData);
+                if (GameManager.Instance != null && GameManager.Instance.SaveData != null)
+                {
+                    Initialize(GameManager.Instance.SaveData);
+                }
+                else
+                {
+                    _saveData = new MetaProgressionSaveData();
+                }
             }
+        }
+
+        private GachaBannerConfigSO GetOrLoadActiveBanner()
+        {
+            if (_activeBanner == null)
+            {
+#if UNITY_EDITOR
+                _activeBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>("Assets/_Data/Gacha/GachaBanner_Standard_VanCo.asset");
+#endif
+                if (_activeBanner == null)
+                {
+                    var allBanners = Resources.LoadAll<GachaBannerConfigSO>("");
+                    if (allBanners != null && allBanners.Length > 0) _activeBanner = allBanners[0];
+                }
+            }
+            return _activeBanner;
         }
 
         public void Initialize(MetaProgressionSaveData saveData)

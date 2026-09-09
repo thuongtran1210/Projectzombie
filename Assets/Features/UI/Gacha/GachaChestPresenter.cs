@@ -132,47 +132,17 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void HandleSingleRoll()
         {
-            Debug.Log("[GachaChestPresenter] HandleSingleRoll được kích hoạt!");
-            if (RelicGachaManager.Instance == null)
-            {
-                var mgr = FindObjectOfType<RelicGachaManager>();
-                if (mgr == null)
-                {
-                    Debug.LogWarning("[GachaChestPresenter] Không tìm thấy RelicGachaManager trong Scene! Đang tự tạo fallback...");
-                    var go = new GameObject("RelicGachaManager", typeof(RelicGachaManager));
-                }
-            }
-
             if (RelicGachaManager.Instance != null)
             {
                 RelicGachaManager.Instance.Roll(1);
-            }
-            else
-            {
-                Debug.LogError("[GachaChestPresenter] RelicGachaManager.Instance vẫn là NULL sau khi tìm kiếm!");
             }
         }
 
         private void HandleMultiRoll()
         {
-            Debug.Log("[GachaChestPresenter] HandleMultiRoll được kích hoạt!");
-            if (RelicGachaManager.Instance == null)
-            {
-                var mgr = FindObjectOfType<RelicGachaManager>();
-                if (mgr == null)
-                {
-                    Debug.LogWarning("[GachaChestPresenter] Không tìm thấy RelicGachaManager trong Scene! Đang tự tạo fallback...");
-                    var go = new GameObject("RelicGachaManager", typeof(RelicGachaManager));
-                }
-            }
-
             if (RelicGachaManager.Instance != null)
             {
                 RelicGachaManager.Instance.Roll(10);
-            }
-            else
-            {
-                Debug.LogError("[GachaChestPresenter] RelicGachaManager.Instance vẫn là NULL sau khi tìm kiếm!");
             }
         }
 
