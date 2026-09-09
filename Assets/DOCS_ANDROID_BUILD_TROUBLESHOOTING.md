@@ -10,6 +10,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 3. [Nhóm Lỗi Cảm Ứng Mobile, Phím Ảo (Joystick & Action Buttons)](#3-nhóm-lỗi-cảm-ứng-mobile-phím-ảo-joystick--action-buttons)
 4. [Nhóm Lỗi UI Layout & Màn Hình Cảm Ứng (Customizer, Modal, Safe Area)](#4-nhóm-lỗi-ui-layout--màn-hình-cảm-ứng-customizer-modal-safe-area)
 5. [Quy Trình Chuẩn Chuẩn Bị Trước Khi Build APK (Checklist 1-Click)](#5-quy-trình-chuẩn-chuẩn-bị-trước-khi-build-apk-checklist-1-click)
+6. [Cơ Chế Bảo Trì & Khóa Nóng Tính Năng/Vũ Khí Khi Đã Lên CH Play (Live-Ops Feature Flag)](#6-cơ-chế-bảo-trì--khóa-nóng-tính-năngvũ-khí-khi-đã-lên-ch-play-live-ops-feature-flag)
 
 ---
 
@@ -206,3 +207,88 @@ Cửa sổ sẽ:
 ### ✅ Bước 2: Build APK / AAB
 - Vào **File > Build Settings > Switch Platform sang Android**.
 - Nhấn **Build** hoặc **Build and Run** để trải nghiệm game trên thiết bị Android thực tế!
+
+---
+
+## 6. Cơ Chế Bảo Trì & Khóa Nóng Tính Năng/Vũ Khí Khi Đã Lên CH Play (Live-Ops Feature Flag)
+
+Khi game đã phát hành lên **Google Play (CH Play)**, để bảo trì hoặc tạm khóa một vũ khí / tính năng bị lỗi (mà không làm crash game người chơi cũ), dự án hỗ trợ 3 cấp độ vận hành:
+
+### 🟢 Cấp Độ 1: Feature Flag Cục Bộ (Qua Bản Vá Nhỏ)
+- Thêm trường `isUnderMaintenance` trong [`WeaponData.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Weapons/WeaponData.cs):
+  ```csharp
+  [Header("Live-Ops & Maintenance")]
+  public bool isUnderMaintenance = false;
+  public string maintenanceNotice = "Pháp bảo đang được thợ rèn trùng tu!";
+  ```
+- **Xử lý UI**: Khi `isUnderMaintenance == true`, trong [`WeaponLoadoutPresenter.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs) gắn nhãn 🔒 **"BẢO TRÌ"** và vô hiệu hóa nút Trang Bị.
+- **Xử lý Rút Thẻ**: Trong [`UpgradeManager.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Upgrades/UpgradeManager.cs), tự động bỏ qua thẻ nâng cấp liên kết với vũ khí đang bảo trì.
+
+---
+
+### 🟡 Cấp Độ 2: Quản Lý Khóa Tập Trung (Centralized Blacklist)
+Tạo lớp quản lý trạng thái tĩnh `MaintenanceManager.cs` để quản lý danh sách đen các ID tính năng/vũ khí:
+```csharp
+public static class MaintenanceManager
+{
+    private static readonly HashSet<string> DisabledWeaponIds = new HashSet<string> {
+        // "wp_dieu_cay", // Bỏ comment để tạm khóa Điếu Cày
+    };
+
+    public static bool IsCardCodexEnabled => true; // Đổi thành false để tạm đóng Thư Viện Thần Thẻ
+
+    public static bool IsWeaponAvailable(string weaponId)
+    {
+        return !DisabledWeaponIds.Contains(weaponId);
+    }
+}
+```
+
+---
+
+### 🔴 Cấp Độ 3: Khóa Nóng Từ Xa Tức Thì 0 Giây (Firebase Remote Config)
+*Khóa trực tiếp trên máy người chơi toàn cầu qua Cloud mà không cần đẩy bản cập nhật lên CH Play.*
+
+#### 1. Quy trình kết nối Cloud Remote Config:
+1. Tải SDK **Firebase Remote Config** vào dự án Unity (`FirebaseRemoteConfig.unitypackage`).
+2. Cấu hình các Key JSON trên Firebase Console:
+   - `disabled_weapons`: `"wp_dieu_cay,wp_noi_com_nieu"`
+   - `disabled_features`: `"CardCodex,UpgradeShop"`
+   - `maintenance_msg`: `"Hệ thống đang cân bằng lại chỉ số pháp bảo này!"`
+
+#### 2. Lớp Quản Lý `RemoteConfigManager.cs`:
+```csharp
+public class RemoteConfigManager : MonoBehaviour
+{
+    public static RemoteConfigManager Instance { get; private set; }
+    private HashSet<string> _disabledWeapons = new HashSet<string>();
+
+    public bool IsWeaponAvailable(string weaponId)
+    {
+        if (string.IsNullOrEmpty(weaponId)) return true;
+        return !_disabledWeapons.Contains(weaponId);
+    }
+}
+```
+
+#### 3. Điểm Đấu Nối Trong Game:
+- **Tàng Bảo Các (`WeaponLoadoutPresenter.cs`)**:
+  ```csharp
+  bool isAvailable = RemoteConfigManager.Instance == null || RemoteConfigManager.Instance.IsWeaponAvailable(weapon.weaponId);
+  if (!isAvailable) { /* Hiện Badge Bảo Trì & Fallback sang Kiếm Trúc */ }
+  ```
+- **Rút Thẻ Khi Lên Cấp (`UpgradeManager.cs`)**:
+  ```csharp
+  if (RemoteConfigManager.Instance != null && !RemoteConfigManager.Instance.IsWeaponAvailable(upgrade.linkedWeaponId))
+  {
+      continue; // Bỏ qua không bốc trúng thẻ của vũ khí đang khóa
+  }
+  ```
+- **Nút Menu Sảnh Chính (`MainHubPresenter.cs`)**:
+  ```csharp
+  if (RemoteConfigManager.Instance != null && !RemoteConfigManager.Instance.IsFeatureAvailable("CardCodex"))
+  {
+      _btnCodex.interactable = false; // Tạm khóa mở Thư viện Thần Thẻ
+  }
+  ```
+
