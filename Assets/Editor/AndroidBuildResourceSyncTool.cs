@@ -37,7 +37,7 @@ namespace ProjectZombie.EditorTools
 
             // Đồng bộ CharacterDatabase và PermanentUpgradeTree nếu cần
             SyncSingleAsset("Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset");
-            SyncSingleAsset("Assets/_Data/MetaProgression/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset");
+            SyncSingleAsset("Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset");
 
             // Tự động dựng lại Prefab Cài Đặt (Settings Modal) nền gỗ mun đặc chuẩn Cổ Phong
             ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal();
