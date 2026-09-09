@@ -1,6 +1,6 @@
 # Lộ Trình Phát Triển Dự Án — VONG XUYÊN (Android Release Roadmap)
 
-**Dự án:** Vong Xuyên (Top-down Survival Roguelite — GDD v4.0)  
+**Dự án:** Vong Xuyên (Top-down Survival Roguelite — GDD v5.1)  
 **Nền tảng:** Android Mobile (Google Play Store — Target API 33+, IL2CPP ARM64)  
 **Phiên bản mục tiêu:** MVP 1.0 (Store Release)
 

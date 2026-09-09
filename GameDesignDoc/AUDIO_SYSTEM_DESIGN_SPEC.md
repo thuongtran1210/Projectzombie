@@ -60,7 +60,7 @@ graph TD
 | **[`AudioConfigSO.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Core/Audio/AudioConfigSO.cs)** | `Assets/Core/Audio/` | ScriptableObject định nghĩa cấu hình âm thanh nâng cao (Volume, Pitch Random, Cooldown chống xé tiếng, Mixer Group). |
 | **[`AudioEventListener.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Core/Audio/AudioEventListener.cs)** | `Assets/Core/Audio/` | Lắng nghe Domain Events (`EnemyDiedEvent`, `PlayerLevelUpEvent`, `ExpCollectedEvent`). Có cơ chế **Pitch Combo Scaling** (+0.04 pitch mỗi lần nhặt Exp liên tiếp). |
 | **[`PhaseAudioController.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Core/Audio/PhaseAudioController.cs)** | `Assets/Core/Audio/` | Tự động chuyển BGM và phát âm Stinger báo hiệu khi chuyển Phase theo thời gian trận đấu (`SpawnManager.MatchTime`). |
-| **[`AudioTrigger.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Core/Audio/AudioTrigger.cs)** | `Assets/Core/Audio/` | Component hỗ trợ gắn trực tiếp vào GameObject, Button hoặc Animation Event. |
+| **[`AudioEventListener.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Core/Audio/AudioEventListener.cs)** | `Assets/Core/Audio/` | Component hỗ trợ lắng nghe sự kiện phát âm thanh từ Event Channels hoặc Animation Event. |
 
 ---
 

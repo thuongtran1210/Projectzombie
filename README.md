@@ -191,15 +191,35 @@ Nhằm đảm bảo trải nghiệm **60 FPS ổn định** trên thiết bị A
 
 ---
 
-## 📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation)
+## 📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation Hub)
 
-- 📖 [Game Design Document (GDD v4.0)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md) — Chi tiết thiết kế toàn bộ hệ thống trò chơi.
+Hệ thống tài liệu dự án được cấu trúc bài bản và phân loại chi tiết tại [📜 GameDesignDoc/README.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/README.md):
+
+### 👑 Thiết Kế & Gameplay Cốt Lõi
+- 📖 [Master Game Design Document (GDD v5.1)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md) — Single Source of Truth toàn diện (4 Tướng Cổ Phong, Ngũ Hành, Gacha & Tiến hóa Pháp bảo).
+- ⚔️ [Hệ Thống Chiến Đấu & Pháp Bảo (Hybrid Relic System v6.5)](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Weapons/WEAPON_SYSTEM_DOC.md) — Kiến trúc C# vũ khí, quỹ đạo đạn, hitbox.
+- 👹 [Cơ Chế Chiến Đấu & Yêu Ma Slapstick](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md) — Cơ chế chiến đấu vui nhộn, biến hình, văng gãy của quái vật.
+- 🗺️ [Kịch Bản Màn Chơi & Diễn Biến Wave 20 Phút](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/LEVEL_SCENARIO_GUIDE.md) — Tiến trình Wave, Boss Ngưu Đầu Mã Diện.
+- 🧲 [Quy Chuẩn Physics 2D & Ma Trận Va Chạm](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PHYSICS_LAYER_DESIGN_SPEC.md) — Phân tầng Layer và tối ưu hóa 0 GC va chạm.
+
+### 🎨 Mỹ Thuật, Đồ Họa & Giao Diện
+- 🎨 [Hướng Dẫn Mỹ Thuật & VFX (Art & VFX Style Guide)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ART_VFX_STYLE_GUIDE.md) — Định hướng 2D Cổ Phong Đông Sơn, 2-Tone Cell Shading, Thick Outline.
+- 📐 [Quy Chuẩn Kích Thước Hình Học Nhân Vật & VFX](file:///c:/Users/thuon/Unity/Projectzombie/CHARACTER_VFX_SIZE_GUIDELINES.md) — Metric 1m = 32 PPU, tỷ lệ Chibi 1:1.2, Hitbox Capsule.
+- 🧩 [Quy Chuẩn Thiết Kế Tilemap 2.5D](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/TILEMAP_DESIGN_SPEC.md) — PPU = 64, Auto-tiling Rule Tiles, Multi-layer Grid.
+- 🖼️ [Kim Chỉ Nam Thiết Kế UI/UX Di Động](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/GAME_UI_STYLE_GUIDE.md) — 7 Trụ cột UI, HUD In-game, Joystick ảo, Bảng nâng cấp.
+- 🤖 [Sổ Tay Prompt AI Sinh Asset UI](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md) — Prompt chuẩn 9-Slice, Panel hoa văn Đông Sơn.
+
+### 🔊 Âm Thanh & Dịch Vụ Kỹ Thuật
+- 🔊 [Đặc Tả Hệ Thống Âm Thanh Cổ Phong](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md) — Mõ gỗ, Khánh ngọc, AudioSource Pooling 0 GC.
+- 💰 [Đặc Tả Kiếm Tiền & Quảng Cáo AdMob](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ADMOB_MONETIZATION_SPEC.md) — Rewarded Video, Interstitial, Collapsible Banner.
+- ☁️ [Đặc Tả Lưu Trữ Đám Mây (Cloud Save)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md) — Offline-first, Google Play Games Services, Conflict Resolution.
+- ⚡ [Báo Cáo Tối Ưu Hiệu Năng & Zero Freeze Spikes](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md) — Triệt tiêu giật lag, 60 FPS Mobile.
+- 📱 [Sổ Tay Xử Lý Lỗi Build Android](file:///c:/Users/thuon/Unity/Projectzombie/Assets/DOCS_ANDROID_BUILD_TROUBLESHOOTING.md) — Gradle, Keystore, ProGuard, Target SDK 33+.
+
+### 📐 Kiến Trúc & Quản Lý
 - 📐 [Sơ Đồ Kiến Trúc Hệ Thống (SYSTEM_ARCHITECTURE.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md) — Kiến trúc 6 tầng và Data Flow.
-- 📊 [Sơ Đồ Luồng Hoạt Động Trực Quan (SYSTEM_FLOWCHART.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_FLOWCHART.md) — Sơ đồ khối trực quan hóa chi tiết các luồng (Combat, Spawner, Upgrade, MVP).
-- 🎨 [Hướng Dẫn Art Direction UI (UI_ART_DIRECTION_GUIDE.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/UI_ART_DIRECTION_GUIDE.md) — Bảng màu Ngũ Hành, UI Panels & Buttons.
-- ⚔️ [Hướng Dẫn Tối Ưu Gameplay & Game Feel](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/GAMEPLAY_PRODUCTION_GUIDE.md) — Hit Flash, Screen Shake, Knockback.
-- 🥞 [Chuẩn Hóa Sorting Layers & Y-Sorting](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SORTING_LAYERS_GUIDE.md) — Thiết lập Rendering 2D.
-- 📋 [Bảng Nhiệm Vụ & Tiến Độ (TASKS.md)](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/TASKS.md) — Sprint Task Tracker.
+- 📊 [Sơ Đồ Luồng Hoạt Động Trực Quan (SYSTEM_FLOWCHART.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_FLOWCHART.md) — Sơ đồ khối (Combat, Spawner, Upgrade, MVP).
+- 📋 [Lộ Trình Phát Triển (ROADMAP.md)](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/ROADMAP.md) & [Bảng Nhiệm Vụ (TASKS.md)](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/TASKS.md) — Sprint & Task Tracker.
 
 ---
 
