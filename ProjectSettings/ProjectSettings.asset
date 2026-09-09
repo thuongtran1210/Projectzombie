@@ -291,7 +291,11 @@ PlayerSettings:
   m_BuildTargetIcons:
   - m_BuildTarget: 
     m_Icons:
-    - {fileID: 2800000, guid: fbae709c3a0e462e8c18ae872157ec65, type: 3}
+    - serializedVersion: 2
+      m_Icon: {fileID: 0}
+      m_Width: 0
+      m_Height: 0
+      m_Kind: 0
   m_BuildTargetPlatformIcons:
   - m_BuildTarget: Android
     m_Icons:
@@ -829,7 +833,7 @@ PlayerSettings:
   cloudProjectId: 9ffe5241-fa0a-4a49-af70-048cf789cc6c
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 'Southern Myth: Relic Guardians'
+  projectName: Projectzombie
   organizationId: thuongtran24092001
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

@@ -35,6 +35,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private RawImage _currentHeroPreviewRawImage;
 
         [Header("Equipped Loadout Summary Card (Bottom-Left)")]
+        [SerializeField] private Button _deckCardsButton;
         [SerializeField] private Button _loadoutCardButton;
         [SerializeField] private TextMeshProUGUI _primaryWeaponNameText;
         [SerializeField] private Image _primaryWeaponIcon;
@@ -43,6 +44,7 @@ namespace ProjectZombie.Features.UI
         public event Action OnStartRunClicked;
         public event Action OnHeroSelectClicked;
         public event Action OnArmoryClicked;
+        public event Action OnDeckCardsClicked;
         public event Action OnSanctuaryTreeClicked;
         public event Action OnCodexClicked;
         public event Action OnSettingsClicked;
@@ -55,6 +57,7 @@ namespace ProjectZombie.Features.UI
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
+            if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());
             if (_codexButton != null) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_settingsButton != null) _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());

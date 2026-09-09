@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnStartRunClicked += HandleStartRunClicked;
                 _view.OnHeroSelectClicked += HandleHeroSelectClicked;
                 _view.OnArmoryClicked += HandleArmoryClicked;
+                _view.OnDeckCardsClicked += HandleCodexClicked;
                 _view.OnSanctuaryTreeClicked += HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked += HandleCodexClicked;
                 _view.OnSettingsClicked += HandleSettingsClicked;
@@ -74,6 +75,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnStartRunClicked -= HandleStartRunClicked;
                 _view.OnHeroSelectClicked -= HandleHeroSelectClicked;
                 _view.OnArmoryClicked -= HandleArmoryClicked;
+                _view.OnDeckCardsClicked -= HandleCodexClicked;
                 _view.OnSanctuaryTreeClicked -= HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked -= HandleCodexClicked;
                 _view.OnSettingsClicked -= HandleSettingsClicked;

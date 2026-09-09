@@ -84,7 +84,7 @@ namespace ProjectZombie.Editor.UI
 
             // 5. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 3 Nút Thẻ Gỗ, Nút Xuất Trận Lục Giác Ngọc Hổ Phách)
             BuildBottomHUDRow(root.transform, vietFont,
-                out Button loadoutBtn, out TextMeshProUGUI priNameTMP, out Image priIconImg, out Image[] relicIcons,
+                out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priNameTMP, out Image priIconImg, out Image[] relicIcons,
                 out Button heroBtn, out Button armoryBtn, out Button sanctuaryBtn,
                 out Button startRunBtn);
 
@@ -99,13 +99,21 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_currentHeroAvatarImage").objectReferenceValue = heroAvatarImg;
             soView.FindProperty("_currentHeroPreviewRawImage").objectReferenceValue = heroRawImg;
 
+            soView.FindProperty("_deckCardsButton").objectReferenceValue = deckCardsBtn;
             soView.FindProperty("_loadoutCardButton").objectReferenceValue = loadoutBtn;
             soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = priNameTMP;
             soView.FindProperty("_primaryWeaponIcon").objectReferenceValue = priIconImg;
 
             var relicProp = soView.FindProperty("_relicIcons");
-            relicProp.arraySize = 3;
-            for (int i = 0; i < 3; i++) relicProp.GetArrayElementAtIndex(i).objectReferenceValue = relicIcons[i];
+            if (relicIcons != null && relicIcons.Length > 0)
+            {
+                relicProp.arraySize = relicIcons.Length;
+                for (int i = 0; i < relicIcons.Length; i++) relicProp.GetArrayElementAtIndex(i).objectReferenceValue = relicIcons[i];
+            }
+            else
+            {
+                relicProp.arraySize = 0;
+            }
 
             soView.FindProperty("_heroSelectButton").objectReferenceValue = heroBtn;
             soView.FindProperty("_armoryButton").objectReferenceValue = armoryBtn;
@@ -383,7 +391,7 @@ namespace ProjectZombie.Editor.UI
         }
 
         private static void BuildBottomHUDRow(Transform parent, TMP_FontAsset font,
-            out Button loadoutBtn, out TextMeshProUGUI priName, out Image priIcon, out Image[] relicIcons,
+            out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priName, out Image priIcon, out Image[] relicIcons,
             out Button heroBtn, out Button armoryBtn, out Button sanctuaryBtn,
             out Button startRunBtn)
         {
@@ -395,14 +403,14 @@ namespace ProjectZombie.Editor.UI
             hRT.anchoredPosition = new Vector2(0, 16);
             hRT.sizeDelta = new Vector2(-40, 150);
 
-            // ================= 1. GÓC TRÁI: BỘ BÀI NAN QUẠT & KHAY LOADOUT GỖ =================
-            GameObject loadoutContainer = CreateUIElement("Container_LoadoutDeck", hud.transform);
+            // ================= 1. GÓC TRÁI: THẦN THẺ & LUYỆN KHÍ (CODEX / ALCHEMY) =================
+            GameObject loadoutContainer = CreateUIElement("Container_CardCodex", hud.transform);
             RectTransform lcRT = loadoutContainer.GetComponent<RectTransform>();
             lcRT.anchorMin = new Vector2(0, 0);
             lcRT.anchorMax = new Vector2(0, 0);
             lcRT.pivot = new Vector2(0, 0);
             lcRT.anchoredPosition = new Vector2(15, 0);
-            lcRT.sizeDelta = new Vector2(240, 180);
+            lcRT.sizeDelta = new Vector2(230, 175);
 
             // Bộ Bài Xòe Nan Quạt Phía Sau
             Sprite cardDeckSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Relic_Fan_Deck.png");
@@ -413,21 +421,22 @@ namespace ProjectZombie.Editor.UI
                 dRT.anchorMin = new Vector2(0, 0);
                 dRT.anchorMax = new Vector2(0, 0);
                 dRT.pivot = new Vector2(0, 0);
-                dRT.anchoredPosition = new Vector2(12, 48);
+                dRT.anchoredPosition = new Vector2(24, 46);
                 dRT.sizeDelta = new Vector2(174, 106);
                 var dImg = deckObj.AddComponent<Image>();
                 dImg.sprite = cardDeckSprite;
                 dImg.color = Color.white;
+                dImg.raycastTarget = false;
             }
 
-            // Khung Gỗ Loadout Phía Trước
-            GameObject loadoutCard = CreateUIElement("Tray_Loadout_Wood_Frame", loadoutContainer.transform);
+            // Khung Gỗ Sơn Mài Thần Thẻ Phía Trước (Nút Bấm Thư Viện Thẻ & Luyện Khí)
+            GameObject loadoutCard = CreateUIElement("Btn_CardCodex_Wood_Frame", loadoutContainer.transform);
             RectTransform tcRT = loadoutCard.GetComponent<RectTransform>();
             tcRT.anchorMin = new Vector2(0, 0);
             tcRT.anchorMax = new Vector2(0, 0);
             tcRT.pivot = new Vector2(0, 0);
             tcRT.anchoredPosition = new Vector2(0, 0);
-            tcRT.sizeDelta = new Vector2(225, 96);
+            tcRT.sizeDelta = new Vector2(225, 82);
 
             var lcImg = loadoutCard.AddComponent<Image>();
             lcImg.color = Color.white;
@@ -435,76 +444,61 @@ namespace ProjectZombie.Editor.UI
             Sprite trayWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Card_Stat_Sub_Bg.png");
             if (trayWoodSprite == null) trayWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Tray_Loadout_Wood_Frame.png");
             if (trayWoodSprite != null) lcImg.sprite = trayWoodSprite;
-            loadoutBtn = loadoutCard.AddComponent<Button>();
+            
+            deckCardsBtn = loadoutCard.AddComponent<Button>();
+            loadoutBtn = deckCardsBtn;
 
-            // Header "TRANG BỊ (LOADOUT)"
-            GameObject lcTitle = CreateUIElement("Txt_Title", loadoutCard.transform);
-            RectTransform lctRT = lcTitle.GetComponent<RectTransform>();
-            lctRT.anchorMin = new Vector2(0, 1);
-            lctRT.anchorMax = new Vector2(1, 1);
-            lctRT.pivot = new Vector2(0, 1);
-            lctRT.anchoredPosition = new Vector2(16, -6);
-            lctRT.sizeDelta = new Vector2(-32, 16);
-            var lctTMP = CreateTextMeshPro(lcTitle, font);
-            lctTMP.text = "TRANG BỊ (LOADOUT)";
-            lctTMP.fontSize = 11;
-            lctTMP.fontStyle = FontStyles.Bold;
-            lctTMP.color = new Color(0.92f, 0.82f, 0.60f, 1f);
+            // Icon Bát Quái / Lò Luyện Khí Nhỏ Bên Trái Khung Gỗ
+            Sprite iconScrollSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+            if (iconScrollSprite == null) iconScrollSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Icon_LinhHon_NgocLam.png");
+            
+            GameObject iconBadgeObj = CreateUIElement("Icon_Badge", loadoutCard.transform);
+            RectTransform ibRT = iconBadgeObj.GetComponent<RectTransform>();
+            ibRT.anchorMin = new Vector2(0, 0.5f);
+            ibRT.anchorMax = new Vector2(0, 0.5f);
+            ibRT.pivot = new Vector2(0, 0.5f);
+            ibRT.anchoredPosition = new Vector2(14, 0);
+            ibRT.sizeDelta = new Vector2(44, 44);
+            var ibImg = iconBadgeObj.AddComponent<Image>();
+            if (iconScrollSprite != null) ibImg.sprite = iconScrollSprite;
+            ibImg.preserveAspect = true;
+            ibImg.raycastTarget = false;
 
-            // Hàng 2 Ô Trang Bị
-            GameObject itemsRow = CreateUIElement("Row_Items", loadoutCard.transform);
-            RectTransform irRT = itemsRow.GetComponent<RectTransform>();
-            irRT.anchorMin = new Vector2(0, 0);
-            irRT.anchorMax = new Vector2(1, 1);
-            irRT.offsetMin = new Vector2(16, 8);
-            irRT.offsetMax = new Vector2(-16, -26);
+            // Cột Text Bên Phải: "THẦN THẺ" & "Lò Luyện Khí • Công Thức"
+            GameObject textGroup = CreateUIElement("Group_Text", loadoutCard.transform);
+            RectTransform tgRT = textGroup.GetComponent<RectTransform>();
+            tgRT.anchorMin = new Vector2(0, 0);
+            tgRT.anchorMax = new Vector2(1, 1);
+            tgRT.offsetMin = new Vector2(66, 8);
+            tgRT.offsetMax = new Vector2(-12, -8);
 
-            var irHlg = itemsRow.AddComponent<HorizontalLayoutGroup>();
-            irHlg.spacing = 14;
-            irHlg.childAlignment = TextAnchor.MiddleLeft;
-            irHlg.childControlWidth = false;
-            irHlg.childControlHeight = false;
+            var tgVlg = textGroup.AddComponent<VerticalLayoutGroup>();
+            tgVlg.spacing = 2;
+            tgVlg.childAlignment = TextAnchor.MiddleLeft;
+            tgVlg.childControlWidth = true;
+            tgVlg.childControlHeight = false;
 
-            Sprite boxSlotSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Slot_Card_Equipment_9Slice.png");
-            if (boxSlotSprite == null) boxSlotSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Box_Skill_Icon_Wood_9Slice.png");
+            // Tiêu Đề Chính: "THẦN THẺ" (Vàng Kim)
+            GameObject titleObj = CreateUIElement("Txt_MainTitle", textGroup.transform);
+            var titleTMP = CreateTextMeshPro(titleObj, font);
+            titleTMP.text = "THẦN THẺ";
+            titleTMP.fontSize = 15;
+            titleTMP.fontStyle = FontStyles.Bold;
+            titleTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);
+            titleTMP.alignment = TextAlignmentOptions.Left;
 
-            // Slot 1: Primary Weapon
-            GameObject pBox = CreateUIElement("Slot_Primary", itemsRow.transform);
-            pBox.GetComponent<RectTransform>().sizeDelta = new Vector2(48, 48);
-            var pbImg = pBox.AddComponent<Image>();
-            pbImg.color = Color.white;
-            pbImg.type = Image.Type.Sliced;
-            if (boxSlotSprite != null) pbImg.sprite = boxSlotSprite;
-
-            GameObject pIconObj = CreateUIElement("Icon", pBox.transform);
-            SetStretchAnchor(pIconObj.GetComponent<RectTransform>());
-            pIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
-            pIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
-            priIcon = pIconObj.AddComponent<Image>();
-            priIcon.preserveAspect = true;
+            // Phụ Đề: "Luyện Khí & Công Thức"
+            GameObject subObj = CreateUIElement("Txt_SubTitle", textGroup.transform);
+            var subTMP = CreateTextMeshPro(subObj, font);
+            subTMP.text = "<color=#C4A77D>Luyện Khí • Công Thức</color>";
+            subTMP.fontSize = 10.5f;
+            subTMP.fontStyle = FontStyles.Normal;
+            subTMP.color = new Color(0.85f, 0.78f, 0.65f, 1f);
+            subTMP.alignment = TextAlignmentOptions.Left;
 
             priName = null;
-
-            // Slot 2: Pháp Bảo Hộ Thân
-            relicIcons = new Image[3];
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject rBox = CreateUIElement($"Slot_Relic_{i + 1}", itemsRow.transform);
-                rBox.GetComponent<RectTransform>().sizeDelta = new Vector2(48, 48);
-                var rbImg = rBox.AddComponent<Image>();
-                rbImg.color = Color.white;
-                rbImg.type = Image.Type.Sliced;
-                if (boxSlotSprite != null) rbImg.sprite = boxSlotSprite;
-
-                GameObject rIconObj = CreateUIElement("Icon", rBox.transform);
-                SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-                rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
-                rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
-                relicIcons[i] = rIconObj.AddComponent<Image>();
-                relicIcons[i].preserveAspect = true;
-
-                if (i > 0) rBox.SetActive(false);
-            }
+            priIcon = null;
+            relicIcons = new Image[0];
 
             // ================= 2. Ở GIỮA: 3 NÚT THẺ GỖ KHÂU CHỈ SƠN MÀI =================
             GameObject navGroup = CreateUIElement("Group_NavButtons", hud.transform);
