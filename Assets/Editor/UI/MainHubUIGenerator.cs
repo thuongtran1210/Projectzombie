@@ -23,13 +23,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorDragonGold = new Color(0.98f, 0.75f, 0.25f, 1f);
         private static readonly Color ColorMutedText = new Color(0.85f, 0.82f, 0.78f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/Generate Main Hub UI Prefab", priority = 10)]
-        public static void GenerateMainHubUI()
-        {
-            GenerateMainHubPrefab();
-        }
-
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild & Sync All Vong Xuyen Menu (1-Click)", priority = 1)]
+        [MenuItem("Tools/ProjectZombie/UI/1. ⚡ Đồng Bộ Toàn Bộ Menu Sảnh Vọng Xuyên (1-Click)", priority = 1)]
         public static void RebuildAllMenuUI()
         {
             var previewStage = Object.FindAnyObjectByType<CharacterPreviewStage>();
@@ -43,8 +37,16 @@ namespace ProjectZombie.Editor.UI
             GenerateMainHubPrefab();
             SettingsUIGenerator.GenerateSettingsModal();
             CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
+            WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
+            SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab();
             GameOverUIGenerator.RebuildGameOverUI();
-            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, MODAL CHỌN ANH HÙNG, CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
+        }
+
+        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/1. Tạo Prefab Sảnh Chính (Main Hub UI)", priority = 11)]
+        public static void GenerateMainHubUI()
+        {
+            GenerateMainHubPrefab();
         }
 
         public static void GenerateMainHubPrefab()

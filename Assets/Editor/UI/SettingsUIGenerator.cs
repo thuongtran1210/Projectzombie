@@ -16,9 +16,7 @@ namespace ProjectZombie.Editor.UI
         private const string SPRITES_PATH = "Assets/Art/UI/VongXuyen/";
         private const string PREFAB_OUTPUT_PATH = "Assets/_Prefabs/UI/SettingsModalUI.prefab";
 
-        [MenuItem("Tools/ProjectZombie/UI/Generate Settings UI Prefab", false, 105)]
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild Settings UI Modal", false, 106)]
-        [MenuItem("ProjectZombie/⚡ Rebuild Settings UI Modal", false, 106)]
+        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/5. Tạo Modal Cài Đặt (Settings Modal UI)", priority = 15)]
         public static void RebuildSettingsUI()
         {
             GenerateSettingsModal();

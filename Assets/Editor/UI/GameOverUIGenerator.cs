@@ -19,7 +19,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorMutedText = new Color(0.85f, 0.82f, 0.78f, 1f);
         private static readonly Color ColorValueText = new Color(1.0f, 0.95f, 0.8f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild GameOver UI (Chuẩn Cổ Phong)", priority = 20)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/5. Tạo Màn Hình Kết Thúc Trận (GameOver UI)", priority = 25)]
         public static void RebuildGameOverUI()
         {
             Canvas mainCanvas = Object.FindAnyObjectByType<Canvas>();

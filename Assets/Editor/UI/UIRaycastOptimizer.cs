@@ -15,11 +15,19 @@ namespace ProjectZombie.Editor.UI
     /// </summary>
     public static class UIRaycastOptimizer
     {
-        [MenuItem("Tools/ProjectZombie/UI/Disable Static UI Raycasts (Active Scene)", priority = 2)]
-        [MenuItem("ProjectZombie/UI/Disable Static UI Raycasts (Active Scene)", priority = 2)]
-        [MenuItem("Tools/ProjectZombie/UI/Disable Static UI Raycasts (All Prefabs)", priority = 3)]
-        [MenuItem("ProjectZombie/UI/Disable Static UI Raycasts (All Prefabs)", priority = 3)]
-        public static void OptimizeRaycastInActiveScene()
+        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/1. Tắt Raycast Target Toàn Bộ UI Prefabs", priority = 41)]
+        public static void OptimizeRaycastsAllPrefabs()
+        {
+            OptimizeAllPrefabs();
+        }
+
+        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/2. Tắt Raycast Target UI (Scene Hiện Tại)", priority = 42)]
+        public static void OptimizeRaycastsActiveScene()
+        {
+            OptimizeActiveScene();
+        }
+
+        private static void OptimizeActiveScene()
         {
             var activeScene = EditorSceneManager.GetActiveScene();
             if (!activeScene.isLoaded)
@@ -69,8 +77,7 @@ namespace ProjectZombie.Editor.UI
                 "Tuyệt vời");
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Tắt Raycast Target Toàn Bộ UI Prefabs", priority = 11)]
-        public static void OptimizeRaycastInAllUIPrefabs()
+        public static void OptimizeAllPrefabs()
         {
             string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Prefabs/UI", "Assets/Art/UI" });
             int totalDisabled = 0;

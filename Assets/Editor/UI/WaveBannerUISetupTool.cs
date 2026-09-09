@@ -14,7 +14,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class WaveBannerUISetupTool
     {
-        [MenuItem("Tools/Vong Xuyen/UI/Setup Wave Banner UI (Top Center)", priority = 10)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2. Thiết Lập Wave Banner (Top Center)", priority = 22)]
         public static void SetupWaveBannerUI()
         {
             // 1. Tìm RunHUD Root

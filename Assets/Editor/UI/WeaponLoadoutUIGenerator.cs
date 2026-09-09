@@ -25,7 +25,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorJadeCyan = new Color(0.25f, 0.85f, 0.82f, 1f);
         private static readonly Color ColorMutedText = new Color(0.80f, 0.80f, 0.85f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/Generate Weapon Loadout UI Prefab", priority = 20)]
+        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/3. Tạo Kho Pháp Bảo (Weapon Loadout UI)", priority = 13)]
         public static void GenerateWeaponLoadoutPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -51,13 +51,13 @@ namespace ProjectZombie.Editor.UI
             bgDimImg.color = ColorBgOverlay;
             var bgDimBtn = bgDim.AddComponent<Button>();
 
-            // 3. Modal Box Trung Tâm (1160 x 660)
+            // 3. Modal Box Trung Tâm (1760 x 960) Chuẩn Mobile Landscape
             GameObject modal = CreateUIElement("Modal_WeaponLoadout", root.transform);
             RectTransform modalRT = modal.GetComponent<RectTransform>();
             modalRT.anchorMin = new Vector2(0.5f, 0.5f);
             modalRT.anchorMax = new Vector2(0.5f, 0.5f);
             modalRT.pivot = new Vector2(0.5f, 0.5f);
-            modalRT.sizeDelta = new Vector2(1160, 660);
+            modalRT.sizeDelta = new Vector2(1760, 960);
             modalRT.anchoredPosition = Vector2.zero;
             var modalImg = modal.AddComponent<Image>();
             modalImg.color = Color.white;
@@ -68,23 +68,23 @@ namespace ProjectZombie.Editor.UI
             // 4. Header Section
             BuildHeader(modal.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out Button backBtn);
 
-            // 5. Body Section - 2 Cột Đối Xứng
+            // 5. Body Section - 2 Cột Đối Xứng Cân Đối
             GameObject bodyObj = CreateUIElement("Container_Body2Cols", modal.transform);
             RectTransform bodyRT = bodyObj.GetComponent<RectTransform>();
             bodyRT.anchorMin = new Vector2(0, 0);
             bodyRT.anchorMax = new Vector2(1, 1);
-            bodyRT.offsetMin = new Vector2(28, 24);
-            bodyRT.offsetMax = new Vector2(-28, -72); // 72px cho Header
+            bodyRT.offsetMin = new Vector2(36, 28);
+            bodyRT.offsetMax = new Vector2(-36, -88); // 88px cho Header Băng Rôn
 
             var bodyHlg = bodyObj.AddComponent<HorizontalLayoutGroup>();
-            bodyHlg.spacing = 20;
+            bodyHlg.spacing = 28;
             bodyHlg.childAlignment = TextAnchor.UpperCenter;
             bodyHlg.childControlWidth = true;
             bodyHlg.childControlHeight = true;
             bodyHlg.childForceExpandWidth = true;
             bodyHlg.childForceExpandHeight = true;
 
-            // Cột Trái: Kho Đồ Dạng Tab (Width 50%)
+            // Cột Trái: Kho Đồ Dạng Grid 20 Ô Pháp Bảo (Width 50%)
             BuildLeftInventoryColumn(bodyObj.transform, vietFont, 
                 out Button tabPriBtn, out Button tabRelBtn, 
                 out Image tabPriBg, out Image tabRelBg, 
@@ -191,7 +191,7 @@ namespace ProjectZombie.Editor.UI
                     EditorUtility.SetDirty(metaMgr);
                 }
 
-                Debug.Log($"<color=#00FF88>[WeaponLoadoutUIGenerator]</color> Đã tạo Prefab Tàng Bảo Các 2 Cột chuẩn ảnh thiết kế và kết nối thành công!");
+                Debug.Log($"<color=#00FF88>[WeaponLoadoutUIGenerator]</color> Đã tạo Prefab Tàng Bảo Các Mobile Landscape (1760x960) chuẩn ảnh thiết kế và kết nối thành công!");
             }
             else
             {
@@ -206,17 +206,17 @@ namespace ProjectZombie.Editor.UI
             hRT.anchorMin = new Vector2(0, 1);
             hRT.anchorMax = new Vector2(1, 1);
             hRT.pivot = new Vector2(0.5f, 1);
-            hRT.anchoredPosition = new Vector2(0, 8);
-            hRT.sizeDelta = new Vector2(0, 72);
+            hRT.anchoredPosition = new Vector2(0, 20);
+            hRT.sizeDelta = new Vector2(0, 88);
 
-            // 1. Cuộn Giấy Da Tiêu Đề (Giữa): TÀNG BẢO CÁC - Kho Pháp Bảo
+            // 1. Cuộn Giấy Da Tiêu Đề (Giữa): - TÀNG BẢO CÁC - Kho Pháp Bảo
             GameObject titleObj = CreateUIElement("Banner_Title", headerObj.transform);
             RectTransform tRT = titleObj.GetComponent<RectTransform>();
             tRT.anchorMin = new Vector2(0.5f, 0.5f);
             tRT.anchorMax = new Vector2(0.5f, 0.5f);
             tRT.pivot = new Vector2(0.5f, 0.5f);
             tRT.anchoredPosition = new Vector2(0, 4);
-            tRT.sizeDelta = new Vector2(440, 84);
+            tRT.sizeDelta = new Vector2(680, 96);
 
             var tImg = titleObj.AddComponent<Image>();
             tImg.color = Color.white;
@@ -226,24 +226,24 @@ namespace ProjectZombie.Editor.UI
 
             GameObject mainT = CreateUIElement("Txt_MainTitle", titleObj.transform);
             RectTransform mtRT = mainT.GetComponent<RectTransform>();
-            mtRT.anchoredPosition = new Vector2(0, 10);
-            mtRT.sizeDelta = new Vector2(360, 24);
+            mtRT.anchoredPosition = new Vector2(0, 14);
+            mtRT.sizeDelta = new Vector2(500, 32);
             var mtTMP = mainT.AddComponent<TextMeshProUGUI>();
             if (font != null) mtTMP.font = font;
             mtTMP.text = "- TÀNG BẢO CÁC -";
-            mtTMP.fontSize = 20;
+            mtTMP.fontSize = 26;
             mtTMP.fontStyle = FontStyles.Bold;
             mtTMP.alignment = TextAlignmentOptions.Center;
             mtTMP.color = new Color(0.18f, 0.12f, 0.08f, 1f);
 
             GameObject subT = CreateUIElement("Txt_SubTitle", titleObj.transform);
             RectTransform stRT = subT.GetComponent<RectTransform>();
-            stRT.anchoredPosition = new Vector2(0, -12);
-            stRT.sizeDelta = new Vector2(360, 16);
+            stRT.anchoredPosition = new Vector2(0, -16);
+            stRT.sizeDelta = new Vector2(500, 24);
             var stTMP = subT.AddComponent<TextMeshProUGUI>();
             if (font != null) stTMP.font = font;
             stTMP.text = "Kho Pháp Bảo";
-            stTMP.fontSize = 12;
+            stTMP.fontSize = 15;
             stTMP.fontStyle = FontStyles.Bold;
             stTMP.alignment = TextAlignmentOptions.Center;
             stTMP.color = new Color(0.35f, 0.25f, 0.18f, 1f);
@@ -254,8 +254,8 @@ namespace ProjectZombie.Editor.UI
             closeRT.anchorMin = new Vector2(1, 0.5f);
             closeRT.anchorMax = new Vector2(1, 0.5f);
             closeRT.pivot = new Vector2(1, 0.5f);
-            closeRT.anchoredPosition = new Vector2(-16, 2);
-            closeRT.sizeDelta = new Vector2(46, 46);
+            closeRT.anchoredPosition = new Vector2(-16, -10);
+            closeRT.sizeDelta = new Vector2(64, 64);
             var closeImg = closeObj.AddComponent<Image>();
             closeImg.color = Color.white;
             Sprite btnCloseX = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Close_X_Wood.png");
@@ -283,7 +283,7 @@ namespace ProjectZombie.Editor.UI
         {
             GameObject col = CreateUIElement("Col_LeftInventory", parent);
             var img = col.AddComponent<Image>();
-            img.color = new Color(0.18f, 0.12f, 0.08f, 0.65f); // Nền gỗ tối bên trái
+            img.color = new Color(0.16f, 0.11f, 0.08f, 0.70f); // Nền gỗ tối bên trái
             img.type = Image.Type.Sliced;
 
             // Container Nội Dung Bên Trong
@@ -291,8 +291,8 @@ namespace ProjectZombie.Editor.UI
             RectTransform inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = new Vector2(10, 10);
-            inRT.offsetMax = new Vector2(-10, -10);
+            inRT.offsetMin = new Vector2(14, 14);
+            inRT.offsetMax = new Vector2(-14, -14);
 
             // Tab không cần hiển thị vì chỉ có 1 kho duy nhất
             GameObject tabContainer = CreateUIElement("Container_Tabs", innerObj.transform);
@@ -310,12 +310,12 @@ namespace ProjectZombie.Editor.UI
             RectTransform gRT = gridObj.GetComponent<RectTransform>();
             gRT.anchorMin = new Vector2(0, 0);
             gRT.anchorMax = new Vector2(1, 1);
-            gRT.offsetMin = new Vector2(6, 6);
-            gRT.offsetMax = new Vector2(-6, -6);
+            gRT.offsetMin = new Vector2(8, 8);
+            gRT.offsetMax = new Vector2(-8, -8);
 
             var glg = gridObj.AddComponent<GridLayoutGroup>();
-            glg.cellSize = new Vector2(104, 104);
-            glg.spacing = new Vector2(8, 8);
+            glg.cellSize = new Vector2(140, 160);
+            glg.spacing = new Vector2(14, 14);
             glg.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             glg.constraintCount = 4;
             glg.childAlignment = TextAnchor.UpperCenter;
@@ -342,11 +342,11 @@ namespace ProjectZombie.Editor.UI
             RectTransform inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = new Vector2(16, 14);
-            inRT.offsetMax = new Vector2(-16, -14);
+            inRT.offsetMin = new Vector2(24, 20);
+            inRT.offsetMax = new Vector2(-24, -20);
 
             var vlg = innerObj.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 10;
+            vlg.spacing = 18;
             vlg.childControlWidth = true;
             vlg.childControlHeight = false;
             vlg.childForceExpandWidth = true;
@@ -360,9 +360,9 @@ namespace ProjectZombie.Editor.UI
             Sprite gaugeCd = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Gauge_Stat_Fill_Cooldown.png");
             Sprite btnBattleAmber = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Battle_Hex_Amber_Glow.png");
 
-            // ================= SECTION 1: KHAY 2 TRANG BỊ XUẤT TRẬN =================
+            // ================= SECTION 1: KHAY 2 TRANG BỊ XUẤT TRẬN (Cao 160px) =================
             GameObject s1 = CreateUIElement("Section_Loadout", innerObj.transform);
-            s1.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 120);
+            s1.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 160);
 
             // Nền khay gỗ mun cho 2 slot
             var s1Img = s1.AddComponent<Image>();
@@ -375,18 +375,18 @@ namespace ProjectZombie.Editor.UI
             // Hàng 2 Ô: [Vũ Khí Chính] ⇄ [Pháp Bảo Xuất Trận]
             GameObject slotsRow = CreateUIElement("Row_Slots", s1.transform);
             SetStretchAnchor(slotsRow.GetComponent<RectTransform>());
-            slotsRow.GetComponent<RectTransform>().offsetMin = new Vector2(10, 6);
-            slotsRow.GetComponent<RectTransform>().offsetMax = new Vector2(-10, -6);
+            slotsRow.GetComponent<RectTransform>().offsetMin = new Vector2(16, 8);
+            slotsRow.GetComponent<RectTransform>().offsetMax = new Vector2(-16, -8);
 
             var srHlg = slotsRow.AddComponent<HorizontalLayoutGroup>();
-            srHlg.spacing = 20;
+            srHlg.spacing = 30;
             srHlg.childAlignment = TextAnchor.MiddleCenter;
             srHlg.childControlWidth = false;
             srHlg.childControlHeight = false;
 
             // Ô 1: Vũ Khí Bản Mệnh
             GameObject pSlot = CreateUIElement("Slot_PrimaryHex", slotsRow.transform);
-            pSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(190, 100);
+            pSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(280, 136);
 
             GameObject pTag = CreateUIElement("Txt_Tag", pSlot.transform);
             RectTransform ptRT = pTag.GetComponent<RectTransform>();
@@ -394,11 +394,11 @@ namespace ProjectZombie.Editor.UI
             ptRT.anchorMax = new Vector2(1, 1);
             ptRT.pivot = new Vector2(0.5f, 1);
             ptRT.anchoredPosition = Vector2.zero;
-            ptRT.sizeDelta = new Vector2(0, 18);
+            ptRT.sizeDelta = new Vector2(0, 24);
             var ptTMP = pTag.AddComponent<TextMeshProUGUI>();
             if (font != null) ptTMP.font = font;
             ptTMP.text = "VŨ KHÍ CHÍNH";
-            ptTMP.fontSize = 11;
+            ptTMP.fontSize = 14;
             ptTMP.fontStyle = FontStyles.Bold;
             ptTMP.alignment = TextAlignmentOptions.Center;
             ptTMP.color = new Color(0.95f, 0.80f, 0.45f, 1f); // Vàng kim
@@ -408,8 +408,8 @@ namespace ProjectZombie.Editor.UI
             phfRT.anchorMin = new Vector2(0.5f, 0);
             phfRT.anchorMax = new Vector2(0.5f, 0);
             phfRT.pivot = new Vector2(0.5f, 0);
-            phfRT.anchoredPosition = new Vector2(0, 20);
-            phfRT.sizeDelta = new Vector2(58, 58);
+            phfRT.anchoredPosition = new Vector2(0, 26);
+            phfRT.sizeDelta = new Vector2(76, 76);
             var phfImg = pHexFrame.AddComponent<Image>();
             phfImg.color = Color.white;
             phfImg.type = Image.Type.Sliced;
@@ -417,8 +417,8 @@ namespace ProjectZombie.Editor.UI
 
             GameObject pIconObj = CreateUIElement("Icon", pHexFrame.transform);
             SetStretchAnchor(pIconObj.GetComponent<RectTransform>());
-            pIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(6, 6);
-            pIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-6, -6);
+            pIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(8, 8);
+            pIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-8, -8);
             priSlotIcon = pIconObj.AddComponent<Image>();
             priSlotIcon.preserveAspect = true;
 
@@ -428,18 +428,18 @@ namespace ProjectZombie.Editor.UI
             plRT.anchorMax = new Vector2(1, 0);
             plRT.pivot = new Vector2(0.5f, 0);
             plRT.anchoredPosition = Vector2.zero;
-            plRT.sizeDelta = new Vector2(0, 18);
+            plRT.sizeDelta = new Vector2(0, 22);
             priSlotName = pLbl.AddComponent<TextMeshProUGUI>();
             if (font != null) priSlotName.font = font;
             priSlotName.text = "Trảm Yêu Trừ Ma Kiếm";
-            priSlotName.fontSize = 11;
+            priSlotName.fontSize = 14;
             priSlotName.fontStyle = FontStyles.Bold;
             priSlotName.alignment = TextAlignmentOptions.Center;
             priSlotName.color = new Color(0.90f, 0.85f, 0.78f, 1f);
 
             // Icon Divider (Ngôi Sao Vàng Kim) ở giữa
             GameObject divObj = CreateUIElement("Icon_Divider", slotsRow.transform);
-            divObj.GetComponent<RectTransform>().sizeDelta = new Vector2(22, 22);
+            divObj.GetComponent<RectTransform>().sizeDelta = new Vector2(28, 28);
             var divImg = divObj.AddComponent<Image>();
             divImg.color = Color.white;
             divImg.preserveAspect = true;
@@ -451,7 +451,7 @@ namespace ProjectZombie.Editor.UI
             relicNames = new TextMeshProUGUI[3];
 
             GameObject rSlot = CreateUIElement("Slot_Relic_1", slotsRow.transform);
-            rSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(190, 100);
+            rSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(280, 136);
 
             GameObject rTag = CreateUIElement("Txt_Tag", rSlot.transform);
             RectTransform rtRT = rTag.GetComponent<RectTransform>();
@@ -459,11 +459,11 @@ namespace ProjectZombie.Editor.UI
             rtRT.anchorMax = new Vector2(1, 1);
             rtRT.pivot = new Vector2(0.5f, 1);
             rtRT.anchoredPosition = Vector2.zero;
-            rtRT.sizeDelta = new Vector2(0, 18);
+            rtRT.sizeDelta = new Vector2(0, 24);
             var rtTMP = rTag.AddComponent<TextMeshProUGUI>();
             if (font != null) rtTMP.font = font;
             rtTMP.text = "PHÁP BẢO XUẤT TRẬN";
-            rtTMP.fontSize = 11;
+            rtTMP.fontSize = 14;
             rtTMP.fontStyle = FontStyles.Bold;
             rtTMP.alignment = TextAlignmentOptions.Center;
             rtTMP.color = new Color(0.95f, 0.80f, 0.45f, 1f);
@@ -473,8 +473,8 @@ namespace ProjectZombie.Editor.UI
             rbRT.anchorMin = new Vector2(0.5f, 0);
             rbRT.anchorMax = new Vector2(0.5f, 0);
             rbRT.pivot = new Vector2(0.5f, 0);
-            rbRT.anchoredPosition = new Vector2(0, 20);
-            rbRT.sizeDelta = new Vector2(58, 58);
+            rbRT.anchoredPosition = new Vector2(0, 26);
+            rbRT.sizeDelta = new Vector2(76, 76);
             var rBoxImg = rBox.AddComponent<Image>();
             rBoxImg.color = Color.white;
             rBoxImg.type = Image.Type.Sliced;
@@ -482,8 +482,8 @@ namespace ProjectZombie.Editor.UI
 
             GameObject rIconObj = CreateUIElement("Icon", rBox.transform);
             SetStretchAnchor(rIconObj.GetComponent<RectTransform>());
-            rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(6, 6);
-            rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-6, -6);
+            rIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(8, 8);
+            rIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-8, -8);
             relicIcons[0] = rIconObj.AddComponent<Image>();
             relicIcons[0].preserveAspect = true;
 
@@ -493,20 +493,20 @@ namespace ProjectZombie.Editor.UI
             rlRT.anchorMax = new Vector2(1, 0);
             rlRT.pivot = new Vector2(0.5f, 0);
             rlRT.anchoredPosition = Vector2.zero;
-            rlRT.sizeDelta = new Vector2(0, 18);
+            rlRT.sizeDelta = new Vector2(0, 22);
             relicNames[0] = rLbl.AddComponent<TextMeshProUGUI>();
             if (font != null) relicNames[0].font = font;
             relicNames[0].text = "Bùa Trấn Yêu";
-            relicNames[0].fontSize = 11;
+            relicNames[0].fontSize = 14;
             relicNames[0].fontStyle = FontStyles.Bold;
             relicNames[0].alignment = TextAlignmentOptions.Center;
             relicNames[0].color = new Color(0.90f, 0.85f, 0.78f, 1f);
 
             for (int i = 1; i < 3; i++) { relicIcons[i] = new GameObject().AddComponent<Image>(); relicNames[i] = new GameObject().AddComponent<TextMeshProUGUI>(); }
 
-            // ================= SECTION 2: SOI CHI TIẾT PHÁP BẢO (Giấy Da Cao Cấp) =================
+            // ================= SECTION 2: SOI CHI TIẾT PHÁP BẢO (Giấy Da Cao Cấp - Cao 430px) =================
             GameObject s2 = CreateUIElement("Section_Detail", innerObj.transform);
-            s2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 260);
+            s2.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 430);
 
             // Khung Nền Thẻ Chi Tiết Bo Góc (Gỗ Mờ)
             var s2Img = s2.AddComponent<Image>();
@@ -518,8 +518,8 @@ namespace ProjectZombie.Editor.UI
             // Container Nội Dung Soi
             GameObject dContent = CreateUIElement("Detail_Content", s2.transform);
             SetStretchAnchor(dContent.GetComponent<RectTransform>());
-            dContent.GetComponent<RectTransform>().offsetMin = new Vector2(16, 12);
-            dContent.GetComponent<RectTransform>().offsetMax = new Vector2(-16, -12);
+            dContent.GetComponent<RectTransform>().offsetMin = new Vector2(24, 18);
+            dContent.GetComponent<RectTransform>().offsetMax = new Vector2(-24, -18);
 
             // 1. Header Tên & Tag
             GameObject dHeader = CreateUIElement("Header_Weapon", dContent.transform);
@@ -528,7 +528,7 @@ namespace ProjectZombie.Editor.UI
             dhRT.anchorMax = new Vector2(1, 1);
             dhRT.pivot = new Vector2(0.5f, 1);
             dhRT.anchoredPosition = Vector2.zero;
-            dhRT.sizeDelta = new Vector2(0, 48);
+            dhRT.sizeDelta = new Vector2(0, 68);
 
             GameObject dnObj = CreateUIElement("Txt_WeaponName", dHeader.transform);
             RectTransform dnRT = dnObj.GetComponent<RectTransform>();
@@ -536,11 +536,11 @@ namespace ProjectZombie.Editor.UI
             dnRT.anchorMax = new Vector2(1, 1);
             dnRT.pivot = new Vector2(0, 1);
             dnRT.anchoredPosition = Vector2.zero;
-            dnRT.sizeDelta = new Vector2(0, 26);
+            dnRT.sizeDelta = new Vector2(0, 36);
             detailName = dnObj.AddComponent<TextMeshProUGUI>();
             if (font != null) detailName.font = font;
             detailName.text = "Bùa Trấn Yêu";
-            detailName.fontSize = 20;
+            detailName.fontSize = 26;
             detailName.fontStyle = FontStyles.Bold;
             detailName.color = new Color(0.18f, 0.10f, 0.05f, 1f);
 
@@ -550,29 +550,29 @@ namespace ProjectZombie.Editor.UI
             dtRT.anchorMax = new Vector2(1, 0);
             dtRT.pivot = new Vector2(0, 0);
             dtRT.anchoredPosition = Vector2.zero;
-            dtRT.sizeDelta = new Vector2(0, 20);
+            dtRT.sizeDelta = new Vector2(0, 26);
             detailType = dtObj.AddComponent<TextMeshProUGUI>();
             if (font != null) detailType.font = font;
             detailType.text = "<color=#007A4D><b>[QUỸ ĐẠO HỘ VỆ]</b></color>  •  <color=#2E7D32><b>Hệ Mộc</b></color>";
-            detailType.fontSize = 12;
+            detailType.fontSize = 16;
             detailType.fontStyle = FontStyles.Bold;
 
-            // 2. Thân Soi (Icon Lớn 84x84 + Cụm Chỉ Số & Mô Tả)
+            // 2. Thân Soi (Icon Lớn 110x110 + Cụm Chỉ Số & Mô Tả)
             GameObject dBody = CreateUIElement("Body_Weapon", dContent.transform);
             RectTransform dbRT2 = dBody.GetComponent<RectTransform>();
             dbRT2.anchorMin = new Vector2(0, 0);
             dbRT2.anchorMax = new Vector2(1, 1);
             dbRT2.offsetMin = Vector2.zero;
-            dbRT2.offsetMax = new Vector2(0, -52);
+            dbRT2.offsetMax = new Vector2(0, -74);
 
-            // Khung Icon 80x80
+            // Khung Icon 110x110
             GameObject dFrame = CreateUIElement("Frame_Icon", dBody.transform);
             RectTransform dfRT = dFrame.GetComponent<RectTransform>();
             dfRT.anchorMin = new Vector2(0, 1);
             dfRT.anchorMax = new Vector2(0, 1);
             dfRT.pivot = new Vector2(0, 1);
             dfRT.anchoredPosition = new Vector2(0, -4);
-            dfRT.sizeDelta = new Vector2(80, 80);
+            dfRT.sizeDelta = new Vector2(110, 110);
             var dfImg = dFrame.AddComponent<Image>();
             dfImg.color = Color.white;
             dfImg.type = Image.Type.Sliced;
@@ -582,8 +582,8 @@ namespace ProjectZombie.Editor.UI
 
             GameObject dIconObj = CreateUIElement("Icon", dFrame.transform);
             SetStretchAnchor(dIconObj.GetComponent<RectTransform>());
-            dIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(8, 8);
-            dIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-8, -8);
+            dIconObj.GetComponent<RectTransform>().offsetMin = new Vector2(10, 10);
+            dIconObj.GetComponent<RectTransform>().offsetMax = new Vector2(-10, -10);
             detailIcon = dIconObj.AddComponent<Image>();
             detailIcon.preserveAspect = true;
 
@@ -592,7 +592,7 @@ namespace ProjectZombie.Editor.UI
             RectTransform drRT = dRight.GetComponent<RectTransform>();
             drRT.anchorMin = new Vector2(0, 0);
             drRT.anchorMax = new Vector2(1, 1);
-            drRT.offsetMin = new Vector2(96, 0);
+            drRT.offsetMin = new Vector2(130, 0);
             drRT.offsetMax = Vector2.zero;
 
             // Stat Bars Row (Sát Thương & Hồi Chiêu)
@@ -602,7 +602,7 @@ namespace ProjectZombie.Editor.UI
             stRT.anchorMax = new Vector2(1, 1);
             stRT.pivot = new Vector2(0, 1);
             stRT.anchoredPosition = Vector2.zero;
-            stRT.sizeDelta = new Vector2(0, 48);
+            stRT.sizeDelta = new Vector2(0, 60);
 
             // Sát Thương
             GameObject dmgCol = CreateUIElement("Col_Damage", statRow.transform);
@@ -618,11 +618,11 @@ namespace ProjectZombie.Editor.UI
             dtRT2.anchorMax = new Vector2(1, 1);
             dtRT2.pivot = new Vector2(0, 1);
             dtRT2.anchoredPosition = Vector2.zero;
-            dtRT2.sizeDelta = new Vector2(0, 18);
+            dtRT2.sizeDelta = new Vector2(0, 24);
             detailDmg = dmgTxtObj.AddComponent<TextMeshProUGUI>();
             if (font != null) detailDmg.font = font;
             detailDmg.text = "Sát thương: <color=#A33418><b>8</b></color>";
-            detailDmg.fontSize = 12;
+            detailDmg.fontSize = 16;
             detailDmg.fontStyle = FontStyles.Bold;
             detailDmg.color = new Color(0.25f, 0.16f, 0.10f, 1f);
 
@@ -632,7 +632,7 @@ namespace ProjectZombie.Editor.UI
             dbRT.anchorMax = new Vector2(1, 0);
             dbRT.pivot = new Vector2(0, 0);
             dbRT.anchoredPosition = new Vector2(0, 2);
-            dbRT.sizeDelta = new Vector2(0, 12);
+            dbRT.sizeDelta = new Vector2(0, 16);
             var dbImg = dmgBg.AddComponent<Image>();
             dbImg.color = Color.white;
             dbImg.type = Image.Type.Sliced;
@@ -661,11 +661,11 @@ namespace ProjectZombie.Editor.UI
             ctRT.anchorMax = new Vector2(1, 1);
             ctRT.pivot = new Vector2(0, 1);
             ctRT.anchoredPosition = Vector2.zero;
-            ctRT.sizeDelta = new Vector2(0, 18);
+            ctRT.sizeDelta = new Vector2(0, 24);
             detailCd = cdTxtObj.AddComponent<TextMeshProUGUI>();
             if (font != null) detailCd.font = font;
             detailCd.text = "Hồi chiêu: <color=#0E6073><b>0.4s</b></color>";
-            detailCd.fontSize = 12;
+            detailCd.fontSize = 16;
             detailCd.fontStyle = FontStyles.Bold;
             detailCd.color = new Color(0.25f, 0.16f, 0.10f, 1f);
 
@@ -675,7 +675,7 @@ namespace ProjectZombie.Editor.UI
             cbRT.anchorMax = new Vector2(1, 0);
             cbRT.pivot = new Vector2(0, 0);
             cbRT.anchoredPosition = new Vector2(0, 2);
-            cbRT.sizeDelta = new Vector2(0, 12);
+            cbRT.sizeDelta = new Vector2(0, 16);
             var cbImg = cdBg.AddComponent<Image>();
             cbImg.color = Color.white;
             cbImg.type = Image.Type.Sliced;
@@ -696,17 +696,17 @@ namespace ProjectZombie.Editor.UI
             ddRT.anchorMin = new Vector2(0, 0);
             ddRT.anchorMax = new Vector2(1, 1);
             ddRT.offsetMin = Vector2.zero;
-            ddRT.offsetMax = new Vector2(0, -56);
+            ddRT.offsetMax = new Vector2(0, -68);
             detailDesc = descObj.AddComponent<TextMeshProUGUI>();
             if (font != null) detailDesc.font = font;
             detailDesc.text = "Vòng lá bùa thần xoay quanh cản đạn và đẩy lùi yêu ma.";
-            detailDesc.fontSize = 13;
-            detailDesc.color = new Color(0.28f, 0.18f, 0.12f, 1f);
+            detailDesc.fontSize = 16;
+            detailDesc.color = new Color(0.24f, 0.14f, 0.08f, 1f);
             detailDesc.enableWordWrapping = true;
 
-            // ================= SECTION 3: NÚT XÁC NHẬN XUẤT TRẬN =================
+            // ================= SECTION 3: NÚT XÁC NHẬN XUẤT TRẬN (Cao 78px) =================
             GameObject btnObj = CreateUIElement("Btn_StartBattle", innerObj.transform);
-            btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 68);
+            btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 78);
             var btnImg = btnObj.AddComponent<Image>();
             btnImg.color = Color.white;
             btnImg.type = Image.Type.Sliced;
@@ -718,7 +718,7 @@ namespace ProjectZombie.Editor.UI
             var btTMP = btnTxt.AddComponent<TextMeshProUGUI>();
             if (font != null) btTMP.font = font;
             btTMP.text = "XÁC NHẬN XUẤT TRẬN";
-            btTMP.fontSize = 20;
+            btTMP.fontSize = 24;
             btTMP.fontStyle = FontStyles.Bold;
             btTMP.alignment = TextAlignmentOptions.Center;
             btTMP.color = new Color(1f, 0.95f, 0.80f, 1f);

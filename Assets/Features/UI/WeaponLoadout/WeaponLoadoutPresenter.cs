@@ -207,7 +207,7 @@ namespace ProjectZombie.Features.UI
                 if (wm != null) wm.ReloadEquippedWeapons();
             }
 
-            RefreshUI();
+            UpdateSelectionDetailsOnly();
         }
 
         public void ToggleRelic(WeaponData relic)
@@ -229,7 +229,33 @@ namespace ProjectZombie.Features.UI
                 if (wm != null) wm.ReloadEquippedWeapons();
             }
 
-            RefreshUI();
+            UpdateSelectionDetailsOnly();
+        }
+
+        private void UpdateSelectionDetailsOnly()
+        {
+            if (_view == null) return;
+
+            // Cập nhật 2 ô xuất trận bên cột phải
+            if (_currentHero != null)
+            {
+                _view.DisplayEquippedLoadout(_currentHero, _selectedRelics);
+            }
+            else
+            {
+                _view.DisplayEquippedLoadout(_selectedPrimary, _selectedRelics);
+            }
+
+            // Cập nhật bảng soi chi tiết bên cột phải
+            if (_inspectedWeapon != null)
+            {
+                float dmgFill = Mathf.Clamp01(_inspectedWeapon.baseDamage / 35f);
+                float cdFill = 1f - Mathf.Clamp01(_inspectedWeapon.baseAttackSpeed / 2.5f);
+                _view.DisplayWeaponDetail(_inspectedWeapon, dmgFill, cdFill);
+            }
+
+            // Cập nhật trạng thái viền sáng / huy hiệu của các ô trong Grid mà KHÔNG reset ScrollPosition
+            UpdateGridItemStates();
         }
 
         private void RefreshUI()
@@ -264,8 +290,61 @@ namespace ProjectZombie.Features.UI
                 _view.DisplayWeaponDetail(_inspectedWeapon, dmgFill, cdFill);
             }
 
-            // 5. Sinh Grid 12 Ô Vật Phẩm (Chỉ hiển thị Pháp Bảo)
+            // 5. Sinh Grid Vật Phẩm
             Populate12SlotInventoryGrid();
+        }
+
+        private readonly Dictionary<WeaponData, (GameObject slotObj, Image boxImg, GameObject badgeEquipped, TextMeshProUGUI lblTMP)> _slotMap = new Dictionary<WeaponData, (GameObject, Image, GameObject, TextMeshProUGUI)>();
+
+        private void UpdateGridItemStates()
+        {
+            Sprite slotWood = _slotWoodSprite;
+            Sprite slotSelected = _slotSelectedSprite;
+#if UNITY_EDITOR
+            if (slotWood == null) slotWood = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (slotSelected == null) slotSelected = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+#endif
+
+            foreach (var kvp in _slotMap)
+            {
+                var weapon = kvp.Key;
+                var info = kvp.Value;
+                if (weapon == null || info.slotObj == null) continue;
+
+                bool isEquipped = _selectedRelics.Contains(weapon);
+                bool isInspected = _inspectedWeapon == weapon;
+
+                if (info.boxImg != null)
+                {
+                    if (isEquipped)
+                    {
+                        if (slotSelected != null) info.boxImg.sprite = slotSelected;
+                        info.boxImg.color = Color.white;
+                    }
+                    else if (isInspected)
+                    {
+                        if (slotSelected != null) info.boxImg.sprite = slotSelected;
+                        info.boxImg.color = new Color(1.0f, 0.85f, 0.4f, 0.9f);
+                    }
+                    else
+                    {
+                        if (slotWood != null) info.boxImg.sprite = slotWood;
+                        info.boxImg.color = Color.white;
+                    }
+                }
+
+                if (info.badgeEquipped != null)
+                {
+                    info.badgeEquipped.SetActive(isEquipped);
+                }
+
+                if (info.lblTMP != null)
+                {
+                    Color elemColor = GetElementColor(weapon.elementType);
+                    string nameColorHex = isEquipped ? "FFD700" : (isInspected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor));
+                    info.lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+                }
+            }
         }
 
         private void Populate12SlotInventoryGrid()
@@ -273,6 +352,7 @@ namespace ProjectZombie.Features.UI
             if (_view == null || _view.InventoryGridContainer == null) return;
 
             Transform gridContainer = _view.InventoryGridContainer;
+            _slotMap.Clear();
             ClearChildren(gridContainer);
 
             // Đảm bảo Grid Container nằm trong ScrollRect và có RectMask2D để không bao giờ bị tràn ra ngoài
@@ -318,7 +398,6 @@ namespace ProjectZombie.Features.UI
                 containerRT.anchorMin = new Vector2(0f, 1f);
                 containerRT.anchorMax = new Vector2(1f, 1f);
                 containerRT.pivot = new Vector2(0.5f, 1f);
-                containerRT.anchoredPosition = Vector2.zero;
             }
 
             var parent = container.parent;
@@ -355,12 +434,12 @@ namespace ProjectZombie.Features.UI
                 scrollRect.scrollSensitivity = 35f;
             }
 
-            // Cấu hình GridLayoutGroup mượt mà (4 cột)
+            // Cấu hình GridLayoutGroup mượt mà (4 cột) chuẩn Mobile
             var grid = container.GetComponent<GridLayoutGroup>();
             if (grid == null) grid = container.gameObject.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(74, 90);
-            grid.spacing = new Vector2(8, 10);
-            grid.padding = new RectOffset(6, 6, 8, 8);
+            grid.cellSize = new Vector2(120, 135);
+            grid.spacing = new Vector2(10, 12);
+            grid.padding = new RectOffset(8, 8, 8, 8);
             grid.childAlignment = TextAnchor.UpperCenter;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = 4;
@@ -378,9 +457,9 @@ namespace ProjectZombie.Features.UI
             slotObj.transform.SetParent(parent, false);
 
             var slotRT = slotObj.GetComponent<RectTransform>();
-            slotRT.sizeDelta = new Vector2(74, 90);
+            slotRT.sizeDelta = new Vector2(120, 135);
 
-            // Khung Ô Vật Phẩm (74 x 74)
+            // Khung Ô Vật Phẩm (120 x 110)
             GameObject boxObj = new GameObject("Box", typeof(RectTransform), typeof(Image), typeof(Button));
             boxObj.transform.SetParent(slotObj.transform, false);
             var boxRT = boxObj.GetComponent<RectTransform>();
@@ -388,7 +467,7 @@ namespace ProjectZombie.Features.UI
             boxRT.anchorMax = new Vector2(0.5f, 1f);
             boxRT.pivot = new Vector2(0.5f, 1f);
             boxRT.anchoredPosition = Vector2.zero;
-            boxRT.sizeDelta = new Vector2(74, 74);
+            boxRT.sizeDelta = new Vector2(110, 110);
 
             var boxImg = boxObj.GetComponent<Image>();
             boxImg.type = Image.Type.Sliced;
@@ -427,21 +506,21 @@ namespace ProjectZombie.Features.UI
             var inRT = innerObj.GetComponent<RectTransform>();
             inRT.anchorMin = Vector2.zero;
             inRT.anchorMax = Vector2.one;
-            inRT.offsetMin = new Vector2(4, 4);
-            inRT.offsetMax = new Vector2(-4, -4);
+            inRT.offsetMin = new Vector2(5, 5);
+            inRT.offsetMax = new Vector2(-5, -5);
 
             var inImg = innerObj.GetComponent<Image>();
             inImg.color = new Color(0.12f, 0.09f, 0.16f, 0.85f); // Nền sẫm chuẩn Cổ Phong để nổi bật Icon vũ khí
             inImg.raycastTarget = false;
 
-            // Icon bên trong
+            // Icon bên trong (Lớn rõ nét)
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(innerObj.transform, false);
             var iconRT = iconObj.GetComponent<RectTransform>();
             iconRT.anchorMin = Vector2.zero;
             iconRT.anchorMax = Vector2.one;
-            iconRT.offsetMin = new Vector2(4, 4);
-            iconRT.offsetMax = new Vector2(-4, -4);
+            iconRT.offsetMin = new Vector2(6, 6);
+            iconRT.offsetMax = new Vector2(-6, -6);
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.raycastTarget = false;
@@ -470,7 +549,7 @@ namespace ProjectZombie.Features.UI
                     ebRT.anchorMax = new Vector2(0, 1);
                     ebRT.pivot = new Vector2(0, 1);
                     ebRT.anchoredPosition = new Vector2(2, -2);
-                    ebRT.sizeDelta = new Vector2(18, 18);
+                    ebRT.sizeDelta = new Vector2(24, 24);
                     var ebImg = elemBadgeObj.GetComponent<Image>();
                     ebImg.sprite = elemBadgeSprite;
                     ebImg.preserveAspect = true;
@@ -479,27 +558,25 @@ namespace ProjectZombie.Features.UI
             }
 
             // Huy hiệu [ĐANG CHỌN] nếu được trang bị (Góc trên phải)
-            if (isEquipped)
-            {
-                GameObject badgeObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
-                badgeObj.transform.SetParent(boxObj.transform, false);
-                var badgeRT = badgeObj.GetComponent<RectTransform>();
-                badgeRT.anchorMin = new Vector2(1, 1);
-                badgeRT.anchorMax = new Vector2(1, 1);
-                badgeRT.pivot = new Vector2(1, 1);
-                badgeRT.anchoredPosition = new Vector2(-2, -2);
-                badgeRT.sizeDelta = new Vector2(18, 18);
-                var badgeImg = badgeObj.GetComponent<Image>();
-                badgeImg.color = Color.white;
-                badgeImg.preserveAspect = true;
-                badgeImg.raycastTarget = false;
-                
-                Sprite starSprite = _badgeEquippedSprite;
+            GameObject badgeObj = new GameObject("Badge_Equipped", typeof(RectTransform), typeof(Image));
+            badgeObj.transform.SetParent(boxObj.transform, false);
+            var badgeRT = badgeObj.GetComponent<RectTransform>();
+            badgeRT.anchorMin = new Vector2(1, 1);
+            badgeRT.anchorMax = new Vector2(1, 1);
+            badgeRT.pivot = new Vector2(1, 1);
+            badgeRT.anchoredPosition = new Vector2(-2, -2);
+            badgeRT.sizeDelta = new Vector2(24, 24);
+            var badgeImg = badgeObj.GetComponent<Image>();
+            badgeImg.color = Color.white;
+            badgeImg.preserveAspect = true;
+            badgeImg.raycastTarget = false;
+            
+            Sprite starSprite = _badgeEquippedSprite;
 #if UNITY_EDITOR
-                if (starSprite == null) starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
+            if (starSprite == null) starSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
 #endif
-                if (starSprite != null) badgeImg.sprite = starSprite;
-            }
+            if (starSprite != null) badgeImg.sprite = starSprite;
+            badgeObj.SetActive(isEquipped);
 
             // Nhãn text bên dưới ô (Weapon Name / Element / Khóa)
             GameObject lblObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -509,10 +586,10 @@ namespace ProjectZombie.Features.UI
             lblRT.anchorMax = new Vector2(1, 0);
             lblRT.pivot = new Vector2(0.5f, 0);
             lblRT.anchoredPosition = Vector2.zero;
-            lblRT.sizeDelta = new Vector2(0, 15);
+            lblRT.sizeDelta = new Vector2(0, 22);
 
             var lblTMP = lblObj.GetComponent<TextMeshProUGUI>();
-            lblTMP.fontSize = 10;
+            lblTMP.fontSize = 13.5f;
             lblTMP.alignment = TextAlignmentOptions.Center;
             lblTMP.fontStyle = FontStyles.Bold;
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
@@ -526,6 +603,9 @@ namespace ProjectZombie.Features.UI
             {
                 string nameColorHex = isEquipped ? "FFD700" : (isInspected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor));
                 lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+                
+                // Đăng ký vào mapping để cập nhật trạng thái UI mượt mà mà không reset thanh cuộn
+                _slotMap[weapon] = (slotObj, boxImg, badgeObj, lblTMP);
             }
 
             // Xử lý Click

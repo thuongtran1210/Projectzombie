@@ -13,7 +13,7 @@ namespace ProjectZombie.EditorTools
     {
         private const string PREFAB_PATH = "Assets/_Prefabs/UI/UpgradeCard_Template.prefab";
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Generate UpgradeCard Template Prefab", priority = 3)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/3. Tạo Thẻ Upgrade (Level Up Card)", priority = 23)]
         public static void GenerateCardPrefab()
         {
             // 1. Tạo Root GameObject

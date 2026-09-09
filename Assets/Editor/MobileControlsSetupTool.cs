@@ -15,17 +15,14 @@ namespace ProjectZombie.Editor.Tools
     /// </summary>
     public class MobileControlsSetupTool : EditorWindow
     {
-        [MenuItem("Tools/ProjectZombie/Mobile Controls Setup & Auto-Wire", priority = 2)]
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Setup Mobile Controls (Joystick & Buttons)", priority = 2)]
-        [MenuItem("Tools/Vong Xuyen/UI & Controls/Setup Mobile Controls (Joystick & Buttons)", priority = 1)]
-        [MenuItem("ProjectZombie/UI/Setup Mobile Controls & Auto-Wire", priority = 1)]
+        [MenuItem("Tools/ProjectZombie/UI/Điều Khiển Mobile (Controls)/1. Thiết Lập Virtual Joystick & Nút Bấm", priority = 31)]
         public static void ShowWindow()
         {
             var window = GetWindow<MobileControlsSetupTool>("Mobile Controls Setup");
             window.minSize = new Vector2(420, 480);
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/🎨 Refresh & Apply 2D Flat Controls Sprites", priority = 3)]
+        [MenuItem("Tools/ProjectZombie/UI/Điều Khiển Mobile (Controls)/2. Áp Dụng Sprite Nút Bấm 2D Flat", priority = 32)]
         public static void RefreshAndApplyControlsSprites()
         {
             ConfigureControlSpriteImporters();

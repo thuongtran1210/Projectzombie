@@ -653,7 +653,7 @@ namespace ProjectZombie.Editor.UI
             return btnObj;
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Rebuild In-Game Character Stats Menu", priority = 21)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/4. Bảng Thông Số & Tạm Dừng (Pause & Stats Menu)", priority = 24)]
         public static void RebuildPlayerStatsMenuUI()
         {
             GameObject prefab = GeneratePlayerStatsMenuPrefab();

@@ -15,7 +15,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class RunHUDHierarchyOptimizer
     {
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Optimize & Apply Dong Son Run HUD (1-Click)", priority = 2)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/1. Tối Ưu Top Run HUD (Máu, Cấp, Kỹ Năng)", priority = 21)]
         public static void OptimizeRunHUD()
         {
             // 1. Tìm RunHUD Root

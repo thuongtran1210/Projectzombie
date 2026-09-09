@@ -5,11 +5,11 @@ namespace ProjectZombie.EditorTools
 {
     public static class SpriteBorderConfigurator
     {
-        [MenuItem("Tools/ProjectZombie/UI/🔧 Configure Card 9-Slice Borders")]
+        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/3. Cấu Hình 9-Slice Border (Border Editor)", priority = 43)]
         public static void ConfigureBorders()
         {
             ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png", new Vector4(45, 45, 45, 45));
-            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png", new Vector4(45, 45, 45, 45));
+            ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png", new Vector4(80, 80, 80, 80));
             ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png", new Vector4(45, 45, 45, 45));
             ConfigureSingleSprite("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png", new Vector4(45, 45, 45, 45));
 
