@@ -51,8 +51,19 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            EnsureButtonListener();
+        }
+
+        public void EnsureButtonListener()
+        {
+            if (_clickButton == null)
+            {
+                _clickButton = GetComponentInChildren<Button>(true);
+            }
+
             if (_clickButton != null)
             {
+                _clickButton.onClick.RemoveListener(HandleClick);
                 _clickButton.onClick.AddListener(HandleClick);
             }
         }
@@ -67,6 +78,7 @@ namespace ProjectZombie.Features.UI
             _onClickedCallback = onClicked;
             _normalSlotSprite = normalSlot;
             _selectedSlotSprite = selectedSlot;
+            EnsureButtonListener();
 
             // 1. Box State
             UpdateBoxVisual(vm.IsSelected, vm.IsUnlocked);
@@ -98,7 +110,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (vm.StarLevel > 0)
                 {
-                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel}★</b></color>";
+                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel} Sao</b></color>";
                     _starText.gameObject.SetActive(true);
                 }
                 else
@@ -141,6 +153,7 @@ namespace ProjectZombie.Features.UI
             _onClickedCallback = onClicked;
             _normalSlotSprite = normalSlot;
             _selectedSlotSprite = selectedSlot;
+            EnsureButtonListener();
 
             // 1. Box State
             UpdateBoxVisual(vm.IsSelected, true);
@@ -309,6 +322,8 @@ namespace ProjectZombie.Features.UI
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
             lblTMP.raycastTarget = false;
 
+            boxBtn.targetGraphic = boxImg;
+
             // Attach & Bind Fields
             var slotView = slotObj.AddComponent<CodexSlotItemView>();
             slotView._boxImage = boxImg;
@@ -318,6 +333,7 @@ namespace ProjectZombie.Features.UI
             slotView._shardProgressText = shardTMP;
             slotView._nameText = lblTMP;
             slotView._clickButton = boxBtn;
+            slotView.EnsureButtonListener();
 
             return slotView;
         }

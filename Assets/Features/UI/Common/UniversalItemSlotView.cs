@@ -90,7 +90,7 @@ namespace ProjectZombie.Features.UI.Common
             {
                 if (vm.StarLevel > 0)
                 {
-                    _starBadgeText.text = $"<color=#FFD700><b>{vm.StarLevel}★</b></color>";
+                    _starBadgeText.text = $"<color=#FFD700><b>{vm.StarLevel} Sao</b></color>";
                     _starBadgeText.gameObject.SetActive(true);
                 }
                 else

@@ -48,8 +48,8 @@ namespace ProjectZombie.Core.Architecture
 
             if (_instance != null && _instance != this)
             {
-                Debug.LogWarning($"[{typeof(T).Name}] Phát hiện bản thể trùng thừa trên '{gameObject.name}'. Đang tự động hủy...");
-                Destroy(gameObject);
+                Debug.Log($"[{typeof(T).Name}] Bản thể đã được khởi tạo bởi CoreBootstrapper. Tự động hủy component thừa trên '{gameObject.name}'.");
+                Destroy(this);
                 return;
             }
 
