@@ -338,23 +338,123 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             bodyHlg.childControlWidth = true;
             bodyHlg.childControlHeight = true;
 
-            // 5.1. Cột Trái: Banner Artwork
+            // 5.1. Cột Trái: Danh Sách Các Loại Rương (Chest Selection List)
             var leftColGo = new GameObject("Col_Left_Banner", typeof(RectTransform), typeof(Image));
             leftColGo.transform.SetParent(bodyGo.transform, false);
             var leftColImg = leftColGo.GetComponent<Image>();
-            leftColImg.color = new Color(0.14f, 0.10f, 0.08f, 0.8f);
+            leftColImg.color = new Color(0.10f, 0.08f, 0.07f, 0.9f);
             leftColImg.type = Image.Type.Sliced;
+            Sprite leftColBg = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Parchment_Detail_9Slice.png");
+            if (leftColBg != null) leftColImg.sprite = leftColBg;
 
-            var bannerArtGo = new GameObject("Banner_Image", typeof(RectTransform), typeof(Image));
-            bannerArtGo.transform.SetParent(leftColGo.transform, false);
-            var baRect = bannerArtGo.GetComponent<RectTransform>();
-            baRect.anchorMin = Vector2.zero;
-            baRect.anchorMax = Vector2.one;
-            baRect.offsetMin = new Vector2(12, 12);
-            baRect.offsetMax = new Vector2(-12, -12);
-            var baImg = bannerArtGo.GetComponent<Image>();
-            baImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/UI_Gacha_Banner_Artwork.jpg");
-            baImg.preserveAspect = true;
+            // 5.1.1. Header Tiêu Đề Danh Sách Rương
+            var listHeaderGo = new GameObject("Header_ChestList", typeof(RectTransform), typeof(Image));
+            listHeaderGo.transform.SetParent(leftColGo.transform, false);
+            var lhRect = listHeaderGo.GetComponent<RectTransform>();
+            lhRect.anchorMin = new Vector2(0, 1);
+            lhRect.anchorMax = new Vector2(1, 1);
+            lhRect.pivot = new Vector2(0.5f, 1);
+            lhRect.anchoredPosition = new Vector2(0, -10);
+            lhRect.sizeDelta = new Vector2(-24, 46);
+            var lhImg = listHeaderGo.GetComponent<Image>();
+            lhImg.type = Image.Type.Sliced;
+            Sprite listHeaderSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Header_Wood_Bar_VongXuyen.png");
+            if (listHeaderSprite != null) lhImg.sprite = listHeaderSprite;
+
+            var lhTextGo = new GameObject("Txt_Header", typeof(RectTransform), typeof(TextMeshProUGUI));
+            lhTextGo.transform.SetParent(listHeaderGo.transform, false);
+            var lhtRect = lhTextGo.GetComponent<RectTransform>();
+            lhtRect.anchorMin = Vector2.zero;
+            lhtRect.anchorMax = Vector2.one;
+            lhtRect.sizeDelta = Vector2.zero;
+            var lhText = lhTextGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) lhText.font = font;
+            lhText.text = "DANH SÁCH BẢO RƯƠNG";
+            lhText.fontSize = 17;
+            lhText.fontStyle = FontStyles.Bold;
+            lhText.alignment = TextAlignmentOptions.Center;
+            lhText.color = new Color(0.98f, 0.88f, 0.50f, 1f);
+
+            // 5.1.2. ScrollView Danh Sách Rương
+            var scrollListGo = new GameObject("ScrollView_ChestList", typeof(RectTransform), typeof(ScrollRect));
+            scrollListGo.transform.SetParent(leftColGo.transform, false);
+            var slRect = scrollListGo.GetComponent<RectTransform>();
+            slRect.anchorMin = Vector2.zero;
+            slRect.anchorMax = Vector2.one;
+            slRect.offsetMin = new Vector2(12, 12);
+            slRect.offsetMax = new Vector2(-12, -64);
+
+            var scrollRect = scrollListGo.GetComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
+            viewportGo.transform.SetParent(scrollListGo.transform, false);
+            var vpRect = viewportGo.GetComponent<RectTransform>();
+            vpRect.anchorMin = Vector2.zero;
+            vpRect.anchorMax = Vector2.one;
+            vpRect.sizeDelta = Vector2.zero;
+            scrollRect.viewport = vpRect;
+
+            var contentGo = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            contentGo.transform.SetParent(viewportGo.transform, false);
+            var cntRect = contentGo.GetComponent<RectTransform>();
+            cntRect.anchorMin = new Vector2(0, 1);
+            cntRect.anchorMax = new Vector2(1, 1);
+            cntRect.pivot = new Vector2(0.5f, 1);
+            cntRect.sizeDelta = new Vector2(0, 500);
+            scrollRect.content = cntRect;
+
+            var vlg = contentGo.GetComponent<VerticalLayoutGroup>();
+            vlg.spacing = 10;
+            vlg.padding = new RectOffset(4, 4, 6, 6);
+            vlg.childControlWidth = true;
+            vlg.childControlHeight = false;
+
+            var csf = contentGo.GetComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // Sprites cho Item Card
+            Sprite slotBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            Sprite selectedGlowSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+            Sprite badgePillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Upgrade_Pill_Wood_9Slice.png");
+            Sprite chestBronzeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Chest_Frame_01.png");
+
+            // 1. Rương Đồng (Bảo Rương Vạn Cổ - KHẢ DỤNG)
+            CreateChestSelectionItem(
+                contentGo.transform, font, "Item_Chest_Bronze",
+                "Bảo Rương Đồng",
+                "Bảo Rương Vạn Cổ - 100 Cổ Tiền/lượt",
+                "<color=#00FF88>ĐANG MỞ</color>",
+                isSelected: true, isUnlocked: true,
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+
+            // 2. Rương Huyền Thiết (Bạc - KHÓA)
+            CreateChestSelectionItem(
+                contentGo.transform, font, "Item_Chest_Silver",
+                "Bảo Rương Bạc",
+                "<color=#888888>Mở tại Cảnh Giới Trúc Cơ (Tầng 2)</color>",
+                "<color=#FFAA00>CHƯA MỞ</color>",
+                isSelected: false, isUnlocked: false,
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+
+            // 3. Rương Hoàng Kim (Vàng - KHÓA)
+            CreateChestSelectionItem(
+                contentGo.transform, font, "Item_Chest_Gold",
+                "Bảo Rương Vàng",
+                "<color=#888888>Mở khi vượt Ải Vong Xuyên Hà</color>",
+                "<color=#FFAA00>CHƯA MỞ</color>",
+                isSelected: false, isUnlocked: false,
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+
+            // 4. Rương Tiên Ngọc (Ngọc - KHÓA)
+            CreateChestSelectionItem(
+                contentGo.transform, font, "Item_Chest_Jade",
+                "Bảo Rương Ngọc",
+                "<color=#888888>Sự Kiện Đặc Biệt (Sắp Ra Mắt)</color>",
+                "<color=#FFAA00>CHƯA MỞ</color>",
+                isSelected: false, isUnlocked: false,
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
 
             // 5.2. Cột Phải: Vùng Rương Bát Quái & Hào Quang & Pity
             var rightColGo = new GameObject("Col_Right_ChestStage", typeof(RectTransform), typeof(Image));
@@ -559,6 +659,141 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             resultPopupGo.SetActive(false);
 
             return panelGo;
+        }
+
+        private static GameObject CreateChestSelectionItem(
+            Transform parent, 
+            TMP_FontAsset font, 
+            string itemName, 
+            string title, 
+            string subTitle, 
+            string statusBadgeText, 
+            bool isSelected, 
+            bool isUnlocked,
+            Sprite chestIcon,
+            Sprite slotBg,
+            Sprite selectedGlow,
+            Sprite badgePill)
+        {
+            var itemGo = new GameObject(itemName, typeof(RectTransform), typeof(Image), typeof(Button));
+            itemGo.transform.SetParent(parent, false);
+            var itemRect = itemGo.GetComponent<RectTransform>();
+            itemRect.sizeDelta = new Vector2(0, 108);
+
+            var itemImg = itemGo.GetComponent<Image>();
+            itemImg.type = Image.Type.Sliced;
+            if (slotBg != null) itemImg.sprite = slotBg;
+            itemImg.color = isUnlocked ? Color.white : new Color(0.45f, 0.40f, 0.38f, 0.85f);
+
+            var btn = itemGo.GetComponent<Button>();
+            btn.interactable = isUnlocked;
+
+            // Viền sáng vàng khi được chọn (Selected Glow)
+            if (isSelected && selectedGlow != null)
+            {
+                var glowGo = new GameObject("Selected_Glow", typeof(RectTransform), typeof(Image));
+                glowGo.transform.SetParent(itemGo.transform, false);
+                var gRect = glowGo.GetComponent<RectTransform>();
+                gRect.anchorMin = Vector2.zero;
+                gRect.anchorMax = Vector2.one;
+                gRect.sizeDelta = Vector2.zero;
+                var gImg = glowGo.GetComponent<Image>();
+                gImg.type = Image.Type.Sliced;
+                gImg.sprite = selectedGlow;
+                gImg.raycastTarget = false;
+            }
+
+            // Icon Rương bên trái
+            var iconBoxGo = new GameObject("Icon_Box", typeof(RectTransform), typeof(Image));
+            iconBoxGo.transform.SetParent(itemGo.transform, false);
+            var ibRect = iconBoxGo.GetComponent<RectTransform>();
+            ibRect.anchorMin = new Vector2(0, 0.5f);
+            ibRect.anchorMax = new Vector2(0, 0.5f);
+            ibRect.pivot = new Vector2(0, 0.5f);
+            ibRect.anchoredPosition = new Vector2(16, 0);
+            ibRect.sizeDelta = new Vector2(76, 76);
+            var ibImg = iconBoxGo.GetComponent<Image>();
+            ibImg.color = new Color(0.08f, 0.06f, 0.05f, 0.8f);
+
+            var iconGo = new GameObject("Chest_Icon", typeof(RectTransform), typeof(Image));
+            iconGo.transform.SetParent(iconBoxGo.transform, false);
+            var iRect = iconGo.GetComponent<RectTransform>();
+            iRect.anchorMin = Vector2.zero;
+            iRect.anchorMax = Vector2.one;
+            iRect.offsetMin = new Vector2(4, 4);
+            iRect.offsetMax = new Vector2(-4, -4);
+            var iconImg = iconGo.GetComponent<Image>();
+            if (chestIcon != null) iconImg.sprite = chestIcon;
+            iconImg.preserveAspect = true;
+            iconImg.color = isUnlocked ? Color.white : new Color(0.4f, 0.4f, 0.4f, 0.6f);
+            iconImg.raycastTarget = false;
+
+            // Vùng Chữ (Tiêu đề + Mô tả)
+            var infoGo = new GameObject("Info_Container", typeof(RectTransform));
+            infoGo.transform.SetParent(itemGo.transform, false);
+            var infoRect = infoGo.GetComponent<RectTransform>();
+            infoRect.anchorMin = new Vector2(0, 0);
+            infoRect.anchorMax = new Vector2(1, 1);
+            infoRect.offsetMin = new Vector2(104, 10);
+            infoRect.offsetMax = new Vector2(-120, -10);
+
+            var titleGo = new GameObject("Txt_Title", typeof(RectTransform), typeof(TextMeshProUGUI));
+            titleGo.transform.SetParent(infoGo.transform, false);
+            var tRect = titleGo.GetComponent<RectTransform>();
+            tRect.anchorMin = new Vector2(0, 0.5f);
+            tRect.anchorMax = new Vector2(1, 1);
+            tRect.offsetMin = Vector2.zero;
+            tRect.offsetMax = Vector2.zero;
+            var tText = titleGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) tText.font = font;
+            tText.text = title;
+            tText.fontSize = 17;
+            tText.fontStyle = FontStyles.Bold;
+            tText.alignment = TextAlignmentOptions.MidlineLeft;
+            tText.color = isSelected ? new Color(1f, 0.92f, 0.55f, 1f) : (isUnlocked ? new Color(0.9f, 0.85f, 0.75f, 1f) : new Color(0.6f, 0.55f, 0.5f, 1f));
+
+            var subGo = new GameObject("Txt_Sub", typeof(RectTransform), typeof(TextMeshProUGUI));
+            subGo.transform.SetParent(infoGo.transform, false);
+            var sRect = subGo.GetComponent<RectTransform>();
+            sRect.anchorMin = new Vector2(0, 0);
+            sRect.anchorMax = new Vector2(1, 0.5f);
+            sRect.offsetMin = Vector2.zero;
+            sRect.offsetMax = Vector2.zero;
+            var sText = subGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) sText.font = font;
+            sText.text = subTitle;
+            sText.fontSize = 12.5f;
+            sText.alignment = TextAlignmentOptions.MidlineLeft;
+            sText.color = isUnlocked ? new Color(0.75f, 0.70f, 0.62f, 1f) : new Color(0.5f, 0.45f, 0.42f, 1f);
+
+            // Badge Trạng Thái Bên Phải
+            var badgeGo = new GameObject("Badge_Status", typeof(RectTransform), typeof(Image));
+            badgeGo.transform.SetParent(itemGo.transform, false);
+            var bRect = badgeGo.GetComponent<RectTransform>();
+            bRect.anchorMin = new Vector2(1, 0.5f);
+            bRect.anchorMax = new Vector2(1, 0.5f);
+            bRect.pivot = new Vector2(1, 0.5f);
+            bRect.anchoredPosition = new Vector2(-16, 0);
+            bRect.sizeDelta = new Vector2(100, 32);
+            var bImg = badgeGo.GetComponent<Image>();
+            bImg.type = Image.Type.Sliced;
+            if (badgePill != null) bImg.sprite = badgePill;
+            bImg.color = isUnlocked ? (isSelected ? new Color(0.15f, 0.45f, 0.25f, 0.9f) : new Color(0.2f, 0.15f, 0.12f, 0.8f)) : new Color(0.25f, 0.20f, 0.18f, 0.8f);
+
+            var btGo = new GameObject("Txt_Badge", typeof(RectTransform), typeof(TextMeshProUGUI));
+            btGo.transform.SetParent(badgeGo.transform, false);
+            var btRect = btGo.GetComponent<RectTransform>();
+            btRect.anchorMin = Vector2.zero;
+            btRect.anchorMax = Vector2.one;
+            btRect.sizeDelta = Vector2.zero;
+            var btText = btGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) btText.font = font;
+            btText.text = statusBadgeText;
+            btText.fontSize = 11.5f;
+            btText.fontStyle = FontStyles.Bold;
+            btText.alignment = TextAlignmentOptions.Center;
+
+            return itemGo;
         }
     }
 }

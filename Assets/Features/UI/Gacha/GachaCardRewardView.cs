@@ -38,7 +38,7 @@ namespace ProjectZombie.Features.UI.Gacha
             {
                 if (data.isConvertedToCurrency)
                 {
-                    _shardCountText.text = $"<color=#FFD700>+{data.convertedCurrencyAmount:N0} Cổ Tiền</color> (Max ★5)";
+                    _shardCountText.text = $"<color=#FFD700>+{data.convertedCurrencyAmount:N0} Cổ Tiền</color> (Đã đạt 5 Sao)";
                 }
                 else
                 {
@@ -50,11 +50,11 @@ namespace ProjectZombie.Features.UI.Gacha
             {
                 if (data.isConvertedToCurrency || data.currentStarLevel >= 5)
                 {
-                    _starLevelText.text = "<color=#FFD700><b>★ MAX 5</b></color>";
+                    _starLevelText.text = "<color=#FFD700><b>5 Sao (Tối Đa)</b></color>";
                 }
                 else
                 {
-                    _starLevelText.text = data.currentStarLevel > 0 ? $"<color=#FFD700>★ {data.currentStarLevel}</color>" : "<color=#888888>Chưa mở khóa</color>";
+                    _starLevelText.text = data.currentStarLevel > 0 ? $"<color=#FFD700>{data.currentStarLevel} Sao</color>" : "<color=#888888>Chưa mở khóa</color>";
                 }
             }
 
