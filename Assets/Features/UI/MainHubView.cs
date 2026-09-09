@@ -56,7 +56,7 @@ namespace ProjectZombie.Features.UI
             if (_startRunButton != null) _startRunButton.onClick.AddListener(() => OnStartRunClicked?.Invoke());
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
-            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
+            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
             if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());
             if (_codexButton != null) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());

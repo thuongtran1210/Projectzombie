@@ -39,8 +39,9 @@ namespace ProjectZombie.Editor.UI
             CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
             SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab();
+            CardCodexUIGenerator.GenerateCardCodexPrefab();
             GameOverUIGenerator.RebuildGameOverUI();
-            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, THƯ VIỆN THẦN THẺ (CODEX), CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
         }
 
         [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/1. Tạo Prefab Sảnh Chính (Main Hub UI)", priority = 11)]
@@ -623,10 +624,6 @@ namespace ProjectZombie.Editor.UI
             if (font != null)
             {
                 tmp.font = font;
-                if (font.material != null)
-                {
-                    tmp.fontSharedMaterial = font.material;
-                }
             }
             tmp.raycastTarget = false;
             return tmp;

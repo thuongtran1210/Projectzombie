@@ -56,9 +56,9 @@ namespace ProjectZombie.Features.UI
                     name = "RT_CharacterPreview",
                     antiAliasing = 4,
                     filterMode = FilterMode.Bilinear,
-                    useMipMap = false
+                    useMipMap = false,
+                    hideFlags = HideFlags.DontSave
                 };
-                _renderTexture.Create();
             }
 
             if (_previewCamera == null)
@@ -102,8 +102,9 @@ namespace ProjectZombie.Features.UI
 
         public void DisplayCharacter(GameObject characterPrefab, string targetAnimation = null)
         {
+            SetupCameraAndTexture();
             ClearCurrentModel();
-            if (characterPrefab == null) return;
+            if (characterPrefab == null || _modelSpawnPoint == null) return;
 
             // Tìm con Visual hoặc SpriteRenderer của Prefab mẫu để sinh độc lập
             Transform visualSource = characterPrefab.transform.Find("Visual");
@@ -122,6 +123,7 @@ namespace ProjectZombie.Features.UI
             }
 
             instance.tag = "Untagged";
+            instance.transform.SetParent(_modelSpawnPoint, false);
             instance.transform.localPosition = Vector3.zero;
             instance.transform.localRotation = Quaternion.identity;
             instance.transform.localScale = Vector3.one;
@@ -281,10 +283,29 @@ namespace ProjectZombie.Features.UI
         {
             if (_currentModelInstance != null)
             {
-                Destroy(_currentModelInstance);
+                if (Application.isPlaying)
+                {
+                    Destroy(_currentModelInstance);
+                }
+                else
+                {
+                    DestroyImmediate(_currentModelInstance);
+                }
                 _currentModelInstance = null;
                 _currentAnimator = null;
             }
+
+            // Dọn dẹp sạch sẽ các GameObject con còn sót lại trong _modelSpawnPoint
+            if (_modelSpawnPoint != null)
+            {
+                for (int i = _modelSpawnPoint.childCount - 1; i >= 0; i--)
+                {
+                    var child = _modelSpawnPoint.GetChild(i).gameObject;
+                    if (Application.isPlaying) Destroy(child);
+                    else DestroyImmediate(child);
+                }
+            }
+
             _timer = 0f;
             _isPlayingAttack = false;
         }
