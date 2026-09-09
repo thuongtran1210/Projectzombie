@@ -36,12 +36,26 @@ namespace ProjectZombie.Features.UI.Gacha
 
             if (_shardCountText != null)
             {
-                _shardCountText.text = $"<color=#00FF88>+{data.shardCount}</color> Mảnh";
+                if (data.isConvertedToCurrency)
+                {
+                    _shardCountText.text = $"<color=#FFD700>+{data.convertedCurrencyAmount:N0} Cổ Tiền</color> (Max ★5)";
+                }
+                else
+                {
+                    _shardCountText.text = $"<color=#00FF88>+{data.shardCount}</color> Mảnh";
+                }
             }
 
             if (_starLevelText != null)
             {
-                _starLevelText.text = data.currentStarLevel > 0 ? $"<color=#FFD700>★ {data.currentStarLevel}</color>" : "<color=#888888>Chưa mở khóa</color>";
+                if (data.isConvertedToCurrency || data.currentStarLevel >= 5)
+                {
+                    _starLevelText.text = "<color=#FFD700><b>★ MAX 5</b></color>";
+                }
+                else
+                {
+                    _starLevelText.text = data.currentStarLevel > 0 ? $"<color=#FFD700>★ {data.currentStarLevel}</color>" : "<color=#888888>Chưa mở khóa</color>";
+                }
             }
 
             if (_iconImage != null)

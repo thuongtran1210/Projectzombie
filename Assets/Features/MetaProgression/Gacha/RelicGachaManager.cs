@@ -117,15 +117,44 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             {
                 var drop = CalculateSingleDrop(_activeBanner);
                 
-                // Đồng bộ kết quả vào kho mảnh RelicInventoryManager
+                // Kiểm tra trạng thái cấp sao hiện tại
+                int currentStar = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicStarLevel(drop.relicId) : 1;
+                bool isMaxStar = currentStar >= 5;
                 bool isNew = RelicInventoryManager.Instance != null && !RelicInventoryManager.Instance.IsRelicUnlocked(drop.relicId);
                 
-                if (RelicInventoryManager.Instance != null)
+                bool isConverted = false;
+                int convertedCoins = 0;
+
+                if (isMaxStar)
                 {
-                    RelicInventoryManager.Instance.AddRelicShards(drop.relicId, drop.shardAmount);
+                    // Pháp bảo đã đạt tối đa 5 sao -> Tự động quy đổi mảnh thành Cổ Tiền
+                    // Tỷ lệ: Phổ Thông = 20/mảnh, Bảo Phẩm = 40/mảnh, Cực Phẩm = 80/mảnh, Thần Binh = 200/mảnh
+                    int ratePerShard = drop.rarity switch
+                    {
+                        ItemRarity.Common => 20,
+                        ItemRarity.Rare => 40,
+                        ItemRarity.Epic => 80,
+                        ItemRarity.Legendary => 200,
+                        _ => 20
+                    };
+
+                    convertedCoins = drop.shardAmount * ratePerShard;
+                    isConverted = true;
+
+                    if (MetaCurrencyManager.Instance != null)
+                    {
+                        MetaCurrencyManager.Instance.AddCurrency(convertedCoins);
+                    }
+                }
+                else
+                {
+                    // Chưa đạt max sao -> Thêm mảnh vào kho
+                    if (RelicInventoryManager.Instance != null)
+                    {
+                        RelicInventoryManager.Instance.AddRelicShards(drop.relicId, drop.shardAmount);
+                    }
                 }
 
-                int currentStar = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicStarLevel(drop.relicId) : 1;
                 int totalShards = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicShardCount(drop.relicId) : drop.shardAmount;
 
                 results.Add(new GachaDropResult
@@ -138,7 +167,9 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
                     isNewUnlock = isNew,
                     currentStarLevel = currentStar,
                     totalShardsAfter = totalShards,
-                    icon = drop.icon
+                    icon = drop.icon,
+                    isConvertedToCurrency = isConverted,
+                    convertedCurrencyAmount = convertedCoins
                 });
             }
 

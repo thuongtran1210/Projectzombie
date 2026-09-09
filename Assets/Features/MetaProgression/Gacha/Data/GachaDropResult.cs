@@ -18,5 +18,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Data
         public int currentStarLevel;   // Cấp sao hiện tại sau khi cộng mảnh
         public int totalShardsAfter;   // Tổng số mảnh hiện có sau khi cộng
         public UnityEngine.Sprite icon;
+        public bool isConvertedToCurrency;      // Cờ báo hiệu đã max 5 sao -> quy đổi sang Cổ Tiền
+        public int convertedCurrencyAmount;    // Số Cổ Tiền nhận được do quy đổi
     }
 }
