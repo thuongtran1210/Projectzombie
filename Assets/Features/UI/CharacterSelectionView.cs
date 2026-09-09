@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Image _characterAvatarImage;
         [SerializeField] private RawImage _characterPreviewRawImage;
         [SerializeField] private Button _selectButton;
+        [SerializeField] private TextMeshProUGUI _selectButtonText;
         [SerializeField] private Button _nextButton;
         [SerializeField] private Button _prevButton;
         [SerializeField] private Button _backButton;
@@ -242,6 +243,40 @@ namespace ProjectZombie.Features.UI
                     }
                 }
                 if (passIconTrans != null) _passiveTraitIcon = passIconTrans.GetComponent<Image>();
+            }
+
+            // Tự động tìm Text trong _selectButton nếu chưa gán
+            if (_selectButtonText == null && _selectButton != null)
+            {
+                _selectButtonText = _selectButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            }
+        }
+
+        public void SetCharacterLockState(bool isUnlocked, int unlockCost = 0)
+        {
+            if (_selectButtonText != null)
+            {
+                if (isUnlocked)
+                {
+                    _selectButtonText.text = "XÁC NHẬN XUẤT TRẬN";
+                    _selectButtonText.color = Color.white;
+                }
+                else
+                {
+                    _selectButtonText.text = unlockCost > 0 
+                        ? $"CHƯA MỞ KHÓA ({unlockCost} Cổ Tiền)" 
+                        : "CHƯA MỞ KHÓA (Tại Điện Anh Hùng)";
+                    _selectButtonText.color = new Color(0.9f, 0.75f, 0.65f, 1f);
+                }
+            }
+
+            if (_selectButton != null)
+            {
+                var img = _selectButton.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = isUnlocked ? Color.white : new Color(0.55f, 0.50f, 0.45f, 0.85f);
+                }
             }
         }
 

@@ -6,6 +6,8 @@ using Core.Audio;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Core.Save;
 
 namespace ProjectZombie.Features.UI
 {
@@ -39,7 +41,7 @@ namespace ProjectZombie.Features.UI
         private WeaponData _selectedPrimary;
         private readonly List<WeaponData> _selectedRelics = new List<WeaponData>();
         private WeaponData _inspectedWeapon;
-        private LoadoutInventoryTab _currentTab = LoadoutInventoryTab.PrimaryWeapons;
+        private LoadoutInventoryTab _currentTab = LoadoutInventoryTab.Relics;
 
         private void Awake()
         {
@@ -136,6 +138,26 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        public bool IsRelicOwned(WeaponData relic)
+        {
+            if (relic == null) return false;
+            // Vũ khí khởi đầu luôn sở hữu
+            if (relic.weaponId == "wp_kiem_truc") return true;
+
+            if (RelicInventoryManager.Instance != null)
+            {
+                return RelicInventoryManager.Instance.IsRelicUnlocked(relic.weaponId);
+            }
+
+            // Fallback nếu chưa khởi tạo manager
+            if (GameManager.Instance != null && GameManager.Instance.SaveData != null)
+            {
+                return GameManager.Instance.SaveData.GetRelicStarLevel(relic.weaponId) >= 1;
+            }
+
+            return false;
+        }
+
         public void SetupForHero(CharacterEntry hero)
         {
             _currentHero = hero;
@@ -155,29 +177,30 @@ namespace ProjectZombie.Features.UI
                 _selectedPrimary = _allWeapons.Find(w => w.weaponRole == WeaponRole.PrimaryWeapon);
             }
 
-            // 2. Pháp Bảo Hộ Thân: Ưu tiên món người chơi ĐANG CHỌN trong RunLoadoutState
+            // 2. Pháp Bảo Hộ Thân: Chỉ ưu tiên những món ĐÃ MỞ KHÓA
             _selectedRelics.Clear();
-            if (RunLoadoutState.SelectedRelic != null)
+            if (RunLoadoutState.SelectedRelic != null && IsRelicOwned(RunLoadoutState.SelectedRelic))
             {
                 _selectedRelics.Add(RunLoadoutState.SelectedRelic);
             }
-            else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0)
+            else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0 && IsRelicOwned(RunLoadoutState.SelectedRelics[0]))
             {
                 _selectedRelics.Add(RunLoadoutState.SelectedRelics[0]);
             }
-            else if (hero != null && hero.defaultRelic != null)
+            else if (hero != null && hero.defaultRelic != null && IsRelicOwned(hero.defaultRelic))
             {
                 _selectedRelics.Add(hero.defaultRelic);
             }
-            else if (hero != null && hero.defaultRelics != null && hero.defaultRelics.Count > 0)
+            else if (hero != null && hero.defaultRelics != null && hero.defaultRelics.Count > 0 && IsRelicOwned(hero.defaultRelics[0]))
             {
                 _selectedRelics.Add(hero.defaultRelics[0]);
             }
 
+            // Nếu chưa có món mở khóa nào, tìm món đã sở hữu đầu tiên trong danh mục (ví dụ wp_kiem_truc)
             if (_selectedRelics.Count == 0)
             {
-                var defaultR = _allWeapons.Find(w => w.weaponRole != WeaponRole.PrimaryWeapon);
-                if (defaultR != null) _selectedRelics.Add(defaultR);
+                var ownedRelic = _allWeapons.Find(w => w.weaponRole != WeaponRole.PrimaryWeapon && IsRelicOwned(w));
+                if (ownedRelic != null) _selectedRelics.Add(ownedRelic);
             }
 
             _inspectedWeapon = _selectedRelics.Count > 0 ? _selectedRelics[0] : _selectedPrimary;
@@ -214,6 +237,13 @@ namespace ProjectZombie.Features.UI
         {
             if (relic == null) return;
 
+            // Nếu pháp bảo chưa mở khóa: Chỉ chuyển sang chế độ Soi Chi Tiết, không cho trang bị
+            if (!IsRelicOwned(relic))
+            {
+                InspectRelic(relic);
+                return;
+            }
+
             // Cơ chế 1 Pháp Bảo Duy Nhất: Chọn cái mới sẽ thay thế cái cũ
             _selectedRelics.Clear();
             _selectedRelics.Add(relic);
@@ -229,6 +259,14 @@ namespace ProjectZombie.Features.UI
                 if (wm != null) wm.ReloadEquippedWeapons();
             }
 
+            UpdateSelectionDetailsOnly();
+        }
+
+        public void InspectRelic(WeaponData relic)
+        {
+            if (relic == null) return;
+            _inspectedWeapon = relic;
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
             UpdateSelectionDetailsOnly();
         }
 
@@ -294,7 +332,7 @@ namespace ProjectZombie.Features.UI
             Populate12SlotInventoryGrid();
         }
 
-        private readonly Dictionary<WeaponData, (GameObject slotObj, Image boxImg, GameObject badgeEquipped, TextMeshProUGUI lblTMP)> _slotMap = new Dictionary<WeaponData, (GameObject, Image, GameObject, TextMeshProUGUI)>();
+        private readonly Dictionary<WeaponData, (GameObject slotObj, Image boxImg, GameObject badgeEquipped, TextMeshProUGUI lblTMP, bool isLocked)> _slotMap = new Dictionary<WeaponData, (GameObject, Image, GameObject, TextMeshProUGUI, bool)>();
 
         private void UpdateGridItemStates()
         {
@@ -313,6 +351,7 @@ namespace ProjectZombie.Features.UI
 
                 bool isEquipped = _selectedRelics.Contains(weapon);
                 bool isInspected = _inspectedWeapon == weapon;
+                bool isLocked = info.isLocked;
 
                 if (info.boxImg != null)
                 {
@@ -324,12 +363,12 @@ namespace ProjectZombie.Features.UI
                     else if (isInspected)
                     {
                         if (slotSelected != null) info.boxImg.sprite = slotSelected;
-                        info.boxImg.color = new Color(1.0f, 0.85f, 0.4f, 0.9f);
+                        info.boxImg.color = isLocked ? new Color(0.85f, 0.75f, 0.5f, 0.9f) : new Color(1.0f, 0.85f, 0.4f, 0.9f);
                     }
                     else
                     {
                         if (slotWood != null) info.boxImg.sprite = slotWood;
-                        info.boxImg.color = Color.white;
+                        info.boxImg.color = isLocked ? new Color(0.35f, 0.30f, 0.25f, 0.5f) : Color.white;
                     }
                 }
 
@@ -340,9 +379,16 @@ namespace ProjectZombie.Features.UI
 
                 if (info.lblTMP != null)
                 {
-                    Color elemColor = GetElementColor(weapon.elementType);
-                    string nameColorHex = isEquipped ? "FFD700" : (isInspected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor));
-                    info.lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+                    if (isLocked)
+                    {
+                        info.lblTMP.text = isInspected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
+                    }
+                    else
+                    {
+                        Color elemColor = GetElementColor(weapon.elementType);
+                        string nameColorHex = isEquipped ? "FFD700" : (isInspected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(elemColor));
+                        info.lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
+                    }
                 }
             }
         }
@@ -378,9 +424,10 @@ namespace ProjectZombie.Features.UI
                 if (i < targetList.Count)
                 {
                     var weapon = targetList[i];
+                    bool isUnlocked = IsRelicOwned(weapon);
                     bool isEquipped = _selectedRelics.Contains(weapon);
                     bool isInspected = _inspectedWeapon == weapon;
-                    CreateItemSlot(weapon, gridContainer, isLocked: false, isEquipped: isEquipped, isInspected: isInspected);
+                    CreateItemSlot(weapon, gridContainer, isLocked: !isUnlocked, isEquipped: isEquipped, isInspected: isInspected);
                 }
                 else
                 {
@@ -453,7 +500,7 @@ namespace ProjectZombie.Features.UI
 
         private void CreateItemSlot(WeaponData weapon, Transform parent, bool isLocked, bool isEquipped, bool isInspected)
         {
-            GameObject slotObj = new GameObject(isLocked ? "Slot_Locked" : $"Slot_{weapon.weaponId}", typeof(RectTransform));
+            GameObject slotObj = new GameObject(weapon == null ? "Slot_Empty" : (isLocked ? $"Slot_Locked_{weapon.weaponId}" : $"Slot_{weapon.weaponId}"), typeof(RectTransform));
             slotObj.transform.SetParent(parent, false);
 
             var slotRT = slotObj.GetComponent<RectTransform>();
@@ -482,7 +529,7 @@ namespace ProjectZombie.Features.UI
 
             if (slotWood != null) boxImg.sprite = slotWood;
             
-            Color elemColor = !isLocked ? GetElementColor(weapon.elementType) : new Color(0.25f, 0.22f, 0.30f, 0.8f);
+            Color elemColor = (weapon != null && !isLocked) ? GetElementColor(weapon.elementType) : new Color(0.25f, 0.22f, 0.30f, 0.8f);
             
             // Nếu đang được chọn trang bị hoặc soi: Viền Vàng Kim phát sáng nổi bật
             if (isEquipped)
@@ -493,7 +540,7 @@ namespace ProjectZombie.Features.UI
             else if (isInspected)
             {
                 if (slotSelected != null) boxImg.sprite = slotSelected;
-                boxImg.color = new Color(1.0f, 0.85f, 0.4f, 0.9f); // Vàng Kim Soi
+                boxImg.color = isLocked ? new Color(0.85f, 0.75f, 0.5f, 0.9f) : new Color(1.0f, 0.85f, 0.4f, 0.9f); // Vàng Kim Soi
             }
             else
             {
@@ -524,9 +571,16 @@ namespace ProjectZombie.Features.UI
 
             var iconImg = iconObj.GetComponent<Image>();
             iconImg.raycastTarget = false;
-            if (isLocked)
+            if (weapon == null)
             {
-                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.3f);
+                iconImg.color = new Color(0.35f, 0.30f, 0.40f, 0.15f);
+            }
+            else if (isLocked)
+            {
+                iconImg.sprite = weapon.icon;
+                iconImg.enabled = weapon.icon != null;
+                iconImg.color = new Color(0.35f, 0.30f, 0.35f, 0.4f); // Tối mờ khi chưa mở khóa
+                iconImg.preserveAspect = true;
             }
             else
             {
@@ -537,7 +591,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Badge Hệ Ngũ Hành ở góc trên trái (Kim, Mộc, Thủy, Hỏa, Thổ)
-            if (!isLocked)
+            if (weapon != null && !isLocked)
             {
                 Sprite elemBadgeSprite = GetElementBadgeSprite(weapon.elementType);
                 if (elemBadgeSprite != null)
@@ -595,9 +649,14 @@ namespace ProjectZombie.Features.UI
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
             lblTMP.raycastTarget = false;
 
-            if (isLocked)
+            if (weapon == null)
             {
-                lblTMP.text = "<color=#665544>Phong Ấn</color>";
+                lblTMP.text = "<color=#443322>Ô Trống</color>";
+            }
+            else if (isLocked)
+            {
+                lblTMP.text = isInspected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
+                _slotMap[weapon] = (slotObj, boxImg, badgeObj, lblTMP, true);
             }
             else
             {
@@ -605,7 +664,7 @@ namespace ProjectZombie.Features.UI
                 lblTMP.text = $"<color=#{nameColorHex}>{weapon.weaponName}</color>";
                 
                 // Đăng ký vào mapping để cập nhật trạng thái UI mượt mà mà không reset thanh cuộn
-                _slotMap[weapon] = (slotObj, boxImg, badgeObj, lblTMP);
+                _slotMap[weapon] = (slotObj, boxImg, badgeObj, lblTMP, false);
             }
 
             // Xử lý Click
@@ -613,11 +672,15 @@ namespace ProjectZombie.Features.UI
             if (btn != null)
             {
                 btn.targetGraphic = boxImg;
-                if (!isLocked)
+                if (weapon != null)
                 {
                     btn.onClick.AddListener(() =>
                     {
-                        if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
+                        if (isLocked)
+                        {
+                            InspectRelic(weapon);
+                        }
+                        else if (weapon.weaponRole == WeaponRole.PrimaryWeapon)
                         {
                             SelectPrimaryWeapon(weapon);
                         }

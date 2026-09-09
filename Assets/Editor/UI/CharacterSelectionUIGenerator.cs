@@ -580,6 +580,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_characterPreviewRawImage").objectReferenceValue = rawPreviewImg;
 
             soView.FindProperty("_selectButton").objectReferenceValue = selectBtnObj.GetComponent<Button>();
+            soView.FindProperty("_selectButtonText").objectReferenceValue = btnTxt;
             soView.FindProperty("_prevButton").objectReferenceValue = prevBtnObj.GetComponent<Button>();
             soView.FindProperty("_nextButton").objectReferenceValue = nextBtnObj.GetComponent<Button>();
             soView.FindProperty("_backButton").objectReferenceValue = closeBtn;

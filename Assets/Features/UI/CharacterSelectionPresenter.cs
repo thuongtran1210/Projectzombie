@@ -2,11 +2,14 @@ using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
+using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Features.UI
 {
     public struct CharacterInfo
     {
+        public string characterId;
+        public int unlockCost;
         public string name;
         public ElementType element;
         public string elementHexColor;
@@ -123,6 +126,8 @@ namespace ProjectZombie.Features.UI
 
                     _characters[i] = new CharacterInfo
                     {
+                        characterId = list[i].characterId,
+                        unlockCost = 0,
                         name = list[i].characterName,
                         element = list[i].element,
                         elementHexColor = string.IsNullOrEmpty(list[i].elementHexColor) ? "#FFD700" : list[i].elementHexColor,
@@ -158,6 +163,18 @@ namespace ProjectZombie.Features.UI
             _characters = new CharacterInfo[0];
         }
 
+        private bool IsHeroUnlocked(string heroId)
+        {
+            if (string.IsNullOrEmpty(heroId)) return true;
+            // Tướng khởi đầu mặc định luôn mở
+            if (heroId == "default" || heroId == "C001_ThuSinh") return true;
+            if (MetaCurrencyManager.Instance != null)
+            {
+                return MetaCurrencyManager.Instance.IsCharacterUnlocked(heroId);
+            }
+            return true;
+        }
+
         private void OnNextCharacter()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
@@ -176,9 +193,18 @@ namespace ProjectZombie.Features.UI
 
         private void OnSelectCharacter()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             if (_characters == null || _characters.Length == 0) return;
             var selected = _characters[_currentIndex];
+
+            // Kiểm tra trạng thái mở khóa từ Save Data
+            if (!IsHeroUnlocked(selected.characterId))
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                Debug.LogWarning($"[{nameof(CharacterSelectionPresenter)}] Anh Hùng '{selected.name}' ({selected.characterId}) chưa được mở khóa trong Save Data!");
+                return;
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             Debug.Log($"[{nameof(CharacterSelectionPresenter)}] Đã chọn Anh Hùng: {selected.name} (Hệ {selected.element})");
 
             GameObject chosenPrefab = null;
@@ -342,6 +368,9 @@ namespace ProjectZombie.Features.UI
             _view.DisplayCharacter(charInfo.name, formattedElement, charInfo.description, formattedSkill, formattedPassive, charInfo.avatar, previewTex, charInfo.signatureSkillIcon, charInfo.passiveTraitIcon);
             _view.DisplayLoadout(charInfo.primaryWeapon, charInfo.relics);
             _view.UpdateActiveTab(_currentIndex);
+
+            bool isUnlocked = IsHeroUnlocked(charInfo.characterId);
+            _view.SetCharacterLockState(isUnlocked, charInfo.unlockCost);
 
             // Dữ liệu chỉ số sức mạnh chiến đấu được nạp trực tiếp từ SO của từng nhân vật
             float atkRatio = charInfo.atkRatio;
