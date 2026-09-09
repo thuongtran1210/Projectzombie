@@ -22,6 +22,44 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Sprite _cardSlotSelectedSprite;
         [SerializeField] private Sprite _starBadgeSprite;
 
+        [Header("Rarity Borders")]
+        [SerializeField] private Sprite _borderCommon;
+        [SerializeField] private Sprite _borderRare;
+        [SerializeField] private Sprite _borderEpic;
+        [SerializeField] private Sprite _borderLegendary;
+
+        public Sprite GetRarityBorder(ProjectZombie.Features.Shared.ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case ProjectZombie.Features.Shared.ItemRarity.Legendary:
+                    if (_borderLegendary != null) return _borderLegendary;
+                    break;
+                case ProjectZombie.Features.Shared.ItemRarity.Epic:
+                    if (_borderEpic != null) return _borderEpic;
+                    break;
+                case ProjectZombie.Features.Shared.ItemRarity.Rare:
+                    if (_borderRare != null) return _borderRare;
+                    break;
+                default:
+                    if (_borderCommon != null) return _borderCommon;
+                    break;
+            }
+
+#if UNITY_EDITOR
+            string borderPath = rarity switch
+            {
+                ProjectZombie.Features.Shared.ItemRarity.Legendary => "Assets/Art/UI/Gacha/Border_Rarity_Legendary.png",
+                ProjectZombie.Features.Shared.ItemRarity.Epic => "Assets/Art/UI/Gacha/Border_Rarity_Epic.png",
+                ProjectZombie.Features.Shared.ItemRarity.Rare => "Assets/Art/UI/Gacha/Border_Rarity_Rare.png",
+                _ => "Assets/Art/UI/Gacha/Border_Rarity_Common.png"
+            };
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(borderPath);
+#else
+            return _borderCommon;
+#endif
+        }
+
         private List<WeaponData> _allWeapons = new List<WeaponData>();
         private List<UpgradeData> _allUpgrades = new List<UpgradeData>();
         private List<FusionUpgradeData> _allFusionUpgrades = new List<FusionUpgradeData>();
@@ -287,6 +325,20 @@ namespace ProjectZombie.Features.UI
             if (_cardSlotWoodSprite != null) img.sprite = _cardSlotWoodSprite;
             img.color = star > 0 ? Color.white : new Color(0.6f, 0.55f, 0.5f, 0.8f);
 
+            // Viền Rarity 9-Slice
+            GameObject borderObj = new GameObject("Border_Rarity", typeof(RectTransform), typeof(Image));
+            borderObj.transform.SetParent(itemObj.transform, false);
+            var borderRT = borderObj.GetComponent<RectTransform>();
+            borderRT.anchorMin = Vector2.zero;
+            borderRT.anchorMax = Vector2.one;
+            borderRT.offsetMin = Vector2.zero;
+            borderRT.offsetMax = Vector2.zero;
+            var borderImg = borderObj.GetComponent<Image>();
+            borderImg.type = Image.Type.Sliced;
+            borderImg.sprite = GetRarityBorder(weapon.rarity);
+            borderImg.raycastTarget = false;
+            borderImg.color = star > 0 ? Color.white : new Color(0.7f, 0.7f, 0.7f, 0.6f);
+
             // Icon
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(itemObj.transform, false);
@@ -382,6 +434,28 @@ namespace ProjectZombie.Features.UI
             img.type = Image.Type.Sliced;
             if (_cardSlotWoodSprite != null) img.sprite = _cardSlotWoodSprite;
             img.color = Color.white;
+
+            // Xác định Rarity cho Upgrade
+            var rarity = data.upgradeType switch
+            {
+                UpgradeType.BreakthroughUltimate or UpgradeType.EvolutionUpgrade or UpgradeType.RelicFusion => ProjectZombie.Features.Shared.ItemRarity.Legendary,
+                UpgradeType.ComboAugment or UpgradeType.DashTrait or UpgradeType.ConditionalPassive => ProjectZombie.Features.Shared.ItemRarity.Epic,
+                UpgradeType.RareUpgrade => ProjectZombie.Features.Shared.ItemRarity.Rare,
+                _ => ProjectZombie.Features.Shared.ItemRarity.Common
+            };
+
+            // Viền Rarity 9-Slice
+            GameObject borderObj = new GameObject("Border_Rarity", typeof(RectTransform), typeof(Image));
+            borderObj.transform.SetParent(itemObj.transform, false);
+            var borderRT = borderObj.GetComponent<RectTransform>();
+            borderRT.anchorMin = Vector2.zero;
+            borderRT.anchorMax = Vector2.one;
+            borderRT.offsetMin = Vector2.zero;
+            borderRT.offsetMax = Vector2.zero;
+            var borderImg = borderObj.GetComponent<Image>();
+            borderImg.type = Image.Type.Sliced;
+            borderImg.sprite = GetRarityBorder(rarity);
+            borderImg.raycastTarget = false;
 
             GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
             iconObj.transform.SetParent(itemObj.transform, false);

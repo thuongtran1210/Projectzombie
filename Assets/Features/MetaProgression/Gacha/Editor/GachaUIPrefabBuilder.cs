@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.Gacha;
 using ProjectZombie.Features.MetaProgression.Gacha;
 
@@ -45,9 +46,44 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             // 3. Tạo GachaShopPanel Prefab (Modal Cổ Phong Cao Cấp)
             string shopPrefabPath = $"{prefabDir}/GachaShopPanel.prefab";
             var shopGo = CreateShopPanelObject(cardPrefab.GetComponent<GachaCardRewardView>(), vietFont);
-            PrefabUtility.SaveAsPrefabAsset(shopGo, shopPrefabPath);
-            GameObject.DestroyImmediate(shopGo);
+            var savedPrefab = PrefabUtility.SaveAsPrefabAsset(shopGo, shopPrefabPath);
             Debug.Log($"[GachaUIPrefabBuilder] Đã tạo GachaShopPanel Prefab tại '{shopPrefabPath}'.");
+
+            // 4. Đồng bộ trực tiếp vào Scene (Canvas_MetaMenu)
+            var canvas = Object.FindAnyObjectByType<Canvas>();
+            if (canvas != null)
+            {
+                var oldUI = GameObject.Find("Panel_GachaShop");
+                if (oldUI != null && oldUI != shopGo) Object.DestroyImmediate(oldUI);
+
+                var metaCanvas = GameObject.Find("Canvas_MetaMenu");
+                Transform targetParent = metaCanvas != null ? metaCanvas.transform : canvas.transform;
+
+                shopGo.transform.SetParent(targetParent, false);
+                var cg = shopGo.GetComponent<CanvasGroup>();
+                if (cg != null)
+                {
+                    cg.alpha = 0f;
+                    cg.blocksRaycasts = false;
+                }
+
+                var metaMgr = Object.FindAnyObjectByType<MetaUIManager>();
+                if (metaMgr != null)
+                {
+                    SerializedObject soMeta = new SerializedObject(metaMgr);
+                    soMeta.FindProperty("_gachaShopScreen").objectReferenceValue = shopGo.GetComponent<GachaChestView>();
+                    soMeta.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(metaMgr);
+                }
+
+                EditorUtility.SetDirty(shopGo);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(targetParent.gameObject.scene);
+                Debug.Log($"<color=#00FF88>[GachaUIPrefabBuilder]</color> Đã đồng bộ Panel_GachaShop vào Scene (Canvas_MetaMenu) thành công!");
+            }
+            else
+            {
+                GameObject.DestroyImmediate(shopGo);
+            }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -513,6 +549,8 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             vSo.FindProperty("_multiRollButton").objectReferenceValue = btn10;
             vSo.FindProperty("_closeResultButton").objectReferenceValue = closeResultBtnGo.GetComponent<Button>();
             vSo.FindProperty("_chestAnimator").objectReferenceValue = cAnim;
+            vSo.FindProperty("_sunburstTransform").objectReferenceValue = sunRect;
+            vSo.FindProperty("_sunburstImage").objectReferenceValue = sunImg;
             vSo.FindProperty("_resultPopupPanel").objectReferenceValue = resultPopupGo;
             vSo.FindProperty("_cardsContainer").objectReferenceValue = gridGo.transform;
             vSo.FindProperty("_cardPrefab").objectReferenceValue = cardPrefab;

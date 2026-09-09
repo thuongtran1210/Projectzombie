@@ -15,13 +15,16 @@ namespace ProjectZombie.EditorTools.BuildSync
             new SyncRule("Timeline Màn Chơi (Levels)", "Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset"),
             new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab"),
             new SyncRule("UI HUD Sprites (Pins, Badges)", "Assets/Art/UI/HUD", "Assets/Resources/UI/HUD", "*.png"),
-            new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png")
+            new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png"),
+            new SyncRule("UI Gacha Sprites & Art", "Assets/Art/UI/Gacha", "Assets/Resources/UI/Gacha", "*.*", new[] { ".png", ".jpg", ".asset" }),
+            new SyncRule("Gacha Banner Configs", "Assets/_Data/Gacha", "Assets/Resources/Gacha", "*.asset")
         };
 
         public static readonly List<SyncRule> SingleAssetRules = new List<SyncRule>
         {
             SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset"),
-            SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset")
+            SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset"),
+            SyncRule.ForSingleAsset("GachaBanner_Standard_VanCo", "Assets/_Data/Gacha/GachaBanner_Standard_VanCo.asset", "Assets/Resources/GachaBanner_Standard_VanCo.asset")
         };
 
         public static readonly List<SyncRule> UIPrefabRules = new List<SyncRule>
@@ -30,7 +33,8 @@ namespace ProjectZombie.EditorTools.BuildSync
             SyncRule.ForUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI()),
             SyncRule.ForUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI()),
             SyncRule.ForUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab()),
-            SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab())
+            SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab()),
+            SyncRule.ForUIPrefab("GachaShopPanelUI", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs())
         };
     }
 }

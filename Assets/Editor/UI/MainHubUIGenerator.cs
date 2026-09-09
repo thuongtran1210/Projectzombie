@@ -137,8 +137,18 @@ namespace ProjectZombie.Editor.UI
             Canvas targetCanvas = metaCanvasObj != null ? metaCanvasObj.GetComponent<Canvas>() : Object.FindAnyObjectByType<Canvas>();
             if (targetCanvas != null)
             {
-                var oldUI = GameObject.Find("Panel_MainHub");
-                if (oldUI != null && oldUI != root) Object.DestroyImmediate(oldUI);
+                var oldUI1 = GameObject.Find("Panel_MainHub");
+                if (oldUI1 != null && oldUI1 != root) Object.DestroyImmediate(oldUI1);
+                var oldUI2 = GameObject.Find("MainHubUI");
+                if (oldUI2 != null && oldUI2 != root) Object.DestroyImmediate(oldUI2);
+
+                if (metaCanvasObj != null)
+                {
+                    var ch1 = metaCanvasObj.transform.Find("Panel_MainHub");
+                    if (ch1 != null && ch1.gameObject != root) Object.DestroyImmediate(ch1.gameObject);
+                    var ch2 = metaCanvasObj.transform.Find("MainHubUI");
+                    if (ch2 != null && ch2.gameObject != root) Object.DestroyImmediate(ch2.gameObject);
+                }
 
                 root.transform.SetParent(targetCanvas.transform, false);
                 SetStretchAnchor(rootRT);

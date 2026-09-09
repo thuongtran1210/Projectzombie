@@ -190,6 +190,18 @@ namespace ProjectZombie.EditorTools
             {
                 relicGachaMgr = managerRoot.AddComponent<ProjectZombie.Features.MetaProgression.Gacha.RelicGachaManager>();
             }
+            var gachaBannerSO = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.MetaProgression.Gacha.Data.GachaBannerConfigSO>("Assets/_Data/Gacha/GachaBanner_Standard_VanCo.asset");
+            if (relicGachaMgr != null && gachaBannerSO != null)
+            {
+                var soGacha = new SerializedObject(relicGachaMgr);
+                var propBanner = soGacha.FindProperty("_activeBanner");
+                if (propBanner != null && propBanner.objectReferenceValue == null)
+                {
+                    propBanner.objectReferenceValue = gachaBannerSO;
+                    soGacha.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(relicGachaMgr);
+                }
+            }
 
             // Dọn dẹp component trùng thừa trên Canvas (nếu có)
             var duplicateCanvasCurrencyMgr = mainCanvas.GetComponent<ProjectZombie.Features.MetaProgression.MetaCurrencyManager>();
@@ -285,19 +297,11 @@ namespace ProjectZombie.EditorTools
                 backdropImg.color = Color.white;
             }
             
-            // Instantiate MainHubUI từ Prefab chuẩn
-            MainHubView mainHub = null;
-            GameObject mainHubPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/MainHubUI.prefab");
-            if (mainHubPrefab != null)
-            {
-                Transform oldHub = metaRoot.transform.Find("Panel_MainHub");
-                if (oldHub != null) Object.DestroyImmediate(oldHub.gameObject);
-
-                GameObject hubInstance = (GameObject)PrefabUtility.InstantiatePrefab(mainHubPrefab, metaRoot.transform);
-                hubInstance.name = "Panel_MainHub";
-                hubInstance.transform.SetAsFirstSibling();
-                mainHub = hubInstance.GetComponent<MainHubView>();
-            }
+            // Dọn dẹp các instance MainHub cũ nếu có để tránh nhân bản
+            Transform oldHub1 = metaRoot.transform.Find("Panel_MainHub");
+            if (oldHub1 != null) Object.DestroyImmediate(oldHub1.gameObject);
+            Transform oldHub2 = metaRoot.transform.Find("MainHubUI");
+            if (oldHub2 != null) Object.DestroyImmediate(oldHub2.gameObject);
 
             // Regenerate và Instantiate SettingsModalUI từ Prefab chuẩn
             ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal();

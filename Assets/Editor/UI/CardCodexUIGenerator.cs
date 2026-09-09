@@ -40,6 +40,11 @@ namespace ProjectZombie.Editor.UI
             Sprite currencyPill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Pill_Currency_Wood.png");
             Sprite coTienIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Icon_CoTien_VongXuyen.png");
 
+            Sprite borderCommon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Common.png");
+            Sprite borderRare = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Rare.png");
+            Sprite borderEpic = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Epic.png");
+            Sprite borderLegendary = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Border_Rarity_Legendary.png");
+
             // 1. Root GameObject
             GameObject root = new GameObject("Panel_CardCodex", typeof(RectTransform), typeof(CanvasGroup), typeof(CardCodexView), typeof(CardCodexPresenter));
             RectTransform rootRT = root.GetComponent<RectTransform>();
@@ -329,6 +334,10 @@ namespace ProjectZombie.Editor.UI
             soPresenter.FindProperty("_tabInactiveSprite").objectReferenceValue = tabWoodInactive;
             soPresenter.FindProperty("_cardSlotWoodSprite").objectReferenceValue = slotWoodSprite;
             soPresenter.FindProperty("_cardSlotSelectedSprite").objectReferenceValue = slotSelectedSprite;
+            soPresenter.FindProperty("_borderCommon").objectReferenceValue = borderCommon;
+            soPresenter.FindProperty("_borderRare").objectReferenceValue = borderRare;
+            soPresenter.FindProperty("_borderEpic").objectReferenceValue = borderEpic;
+            soPresenter.FindProperty("_borderLegendary").objectReferenceValue = borderLegendary;
             soPresenter.ApplyModifiedProperties();
 
             // 8. Lưu Prefab

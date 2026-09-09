@@ -31,6 +31,8 @@ namespace ProjectZombie.Features.UI.Gacha
 
         [Header("Animation & Result Modal")]
         [SerializeField] private Animator _chestAnimator;
+        [SerializeField] private RectTransform _sunburstTransform;
+        [SerializeField] private Image _sunburstImage;
         [SerializeField] private GameObject _resultPopupPanel;
         [SerializeField] private Transform _cardsContainer;
         [SerializeField] private GachaCardRewardView _cardPrefab;
@@ -40,6 +42,7 @@ namespace ProjectZombie.Features.UI.Gacha
         public event Action OnCloseResultClicked;
 
         private readonly List<GachaCardRewardView> _spawnedCards = new List<GachaCardRewardView>();
+        private bool _isRolling = false;
 
         [Header("Back Navigation Button")]
         [SerializeField] private Button _backButton;
@@ -51,6 +54,7 @@ namespace ProjectZombie.Features.UI.Gacha
             base.Awake();
 
             if (_backButton != null) _backButton.onClick.AddListener(() => {
+                if (_isRolling) return;
                 OnBackClicked?.Invoke();
                 if (MetaUIManager.Instance != null) MetaUIManager.Instance.PopScreen();
             });
@@ -60,13 +64,28 @@ namespace ProjectZombie.Features.UI.Gacha
                 _chestAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
             }
 
-            if (_singleRollButton != null) _singleRollButton.onClick.AddListener(() => OnSingleRollClicked?.Invoke());
-            if (_multiRollButton != null) _multiRollButton.onClick.AddListener(() => OnMultiRollClicked?.Invoke());
+            if (_singleRollButton != null) _singleRollButton.onClick.AddListener(() => {
+                if (_isRolling) return;
+                OnSingleRollClicked?.Invoke();
+            });
+            if (_multiRollButton != null) _multiRollButton.onClick.AddListener(() => {
+                if (_isRolling) return;
+                OnMultiRollClicked?.Invoke();
+            });
             if (_closeResultButton != null) _closeResultButton.onClick.AddListener(() => OnCloseResultClicked?.Invoke());
 
             if (_resultPopupPanel != null)
             {
                 _resultPopupPanel.SetActive(false);
+            }
+        }
+
+        private void Update()
+        {
+            // Hào quang Sunburst tự động xoay nhẹ nhàng êm ái khi ở trạng thái Idle
+            if (_sunburstTransform != null && gameObject.activeInHierarchy && !_isRolling)
+            {
+                _sunburstTransform.Rotate(0f, 0f, -20f * Time.unscaledDeltaTime);
             }
         }
 
@@ -103,13 +122,60 @@ namespace ProjectZombie.Features.UI.Gacha
 
         public void PlayChestOpenAnimation(Action onAnimationComplete)
         {
+            StopAllCoroutines();
+            StartCoroutine(AnimateChestOpenRoutine(onAnimationComplete));
+        }
+
+        private System.Collections.IEnumerator AnimateChestOpenRoutine(Action onAnimationComplete)
+        {
+            _isRolling = true;
+            SetRollButtonsInteractable(false);
+
             if (_chestAnimator != null)
             {
                 _chestAnimator.SetTrigger("OpenChest");
             }
 
-            // Gọi callback hiển thị kết quả
+            // Hiệu ứng Hào Quang Sunburst bừng sáng và xoay tốc độ cao trong lúc mở rương (0.85 giây)
+            float duration = 0.85f;
+            float elapsed = 0f;
+            Vector3 originalScale = _sunburstTransform != null ? _sunburstTransform.localScale : Vector3.one;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.Clamp01(elapsed / duration);
+
+                if (_sunburstTransform != null)
+                {
+                    // Xoay nhanh dần
+                    _sunburstTransform.Rotate(0f, 0f, -240f * Time.unscaledDeltaTime);
+
+                    // Phóng to bừng sáng hình sin
+                    float scaleFactor = 1f + 0.22f * Mathf.Sin(progress * Mathf.PI);
+                    _sunburstTransform.localScale = originalScale * scaleFactor;
+                }
+
+                yield return null;
+            }
+
+            if (_sunburstTransform != null)
+            {
+                _sunburstTransform.localScale = originalScale;
+            }
+
+            _isRolling = false;
+            SetRollButtonsInteractable(true);
+
+            // Mở bảng kết quả thẻ bài sau khi hoạt ảnh mở rương kết thúc
             onAnimationComplete?.Invoke();
+        }
+
+        private void SetRollButtonsInteractable(bool interactable)
+        {
+            if (_singleRollButton != null) _singleRollButton.interactable = interactable;
+            if (_multiRollButton != null) _multiRollButton.interactable = interactable;
+            if (_backButton != null) _backButton.interactable = interactable;
         }
 
         public void DisplayResults(List<GachaDropResult> results)
@@ -141,6 +207,12 @@ namespace ProjectZombie.Features.UI.Gacha
             if (_resultPopupPanel != null)
             {
                 _resultPopupPanel.SetActive(false);
+            }
+
+            // Trả trạng thái rương về Idle sau khi đóng popup
+            if (_chestAnimator != null)
+            {
+                _chestAnimator.Play("Idle", 0, 0f);
             }
         }
     }
