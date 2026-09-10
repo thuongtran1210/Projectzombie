@@ -9,6 +9,7 @@ namespace ProjectZombie.Features.Weapons
     public class Weapon_Crossbow : Weapon_RangedBase
     {
         private Transform _currentTarget;
+        private static readonly Collider2D[] _wavePushBuffer = new Collider2D[50];
 
         public override void Initialize(ICharacterStats stats)
         {
@@ -98,10 +99,11 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
 
-                // Sóng đẩy lùi phía trước mũi tên
-                Collider2D[] hits = Physics2D.OverlapBoxAll(firePoint.position + (Vector3)(direction * 4f), new Vector2(8f, 3f), 0f, TargetingUtility.EnemyLayerMask);
-                foreach (var hit in hits)
+                // Sóng đẩy lùi phía trước mũi tên (0 GC Allocation)
+                int pushHits = Physics2D.OverlapBoxNonAlloc(firePoint.position + (Vector3)(direction * 4f), new Vector2(8f, 3f), 0f, _wavePushBuffer, TargetingUtility.EnemyLayerMask);
+                for (int h = 0; h < pushHits; h++)
                 {
+                    var hit = _wavePushBuffer[h];
                     if (hit != null && hit.TryGetComponent<Rigidbody2D>(out var rb))
                     {
                         rb.AddForce(direction * 12f, ForceMode2D.Impulse);

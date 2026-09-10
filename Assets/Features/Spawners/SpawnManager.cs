@@ -471,13 +471,16 @@ namespace ProjectZombie.Features.Spawners
             currentEnemyCount = Mathf.Max(0, currentEnemyCount - 1);
         }
 
+        private static readonly Collider2D[] _clearEnemiesBuffer = new Collider2D[64];
+
         private void ClearSmallEnemiesAround(float radius)
         {
             if (_playerTransform == null) return;
-            Collider2D[] hits = Physics2D.OverlapCircleAll(_playerTransform.position, radius);
-            foreach (var hit in hits)
+            int hitCount = Physics2D.OverlapCircleNonAlloc(_playerTransform.position, radius, _clearEnemiesBuffer);
+            for (int i = 0; i < hitCount; i++)
             {
-                if (hit.CompareTag("Enemy") && !hit.name.Contains("Boss"))
+                var hit = _clearEnemiesBuffer[i];
+                if (hit != null && hit.CompareTag("Enemy") && !hit.name.Contains("Boss"))
                 {
                     hit.gameObject.SetActive(false);
                     OnEnemyDied();

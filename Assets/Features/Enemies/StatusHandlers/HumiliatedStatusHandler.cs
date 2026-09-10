@@ -20,18 +20,21 @@ namespace ProjectZombie.Features.Enemies.StatusHandlers
             }
         }
 
+        private static readonly Collider2D[] _alliesBuffer = new Collider2D[16];
+
         private void TriggerFriendlyPunch(Enemy enemy)
         {
             if (enemy == null) return;
 
-            // Tìm 1 quái bạn gần nhất trong phạm vi 1.5m để đấm
-            Collider2D[] allies = Physics2D.OverlapCircleAll(enemy.transform.position, 1.5f, 1 << enemy.gameObject.layer);
-            for (int i = 0; i < allies.Length; i++)
+            // Tìm 1 quái bạn gần nhất trong phạm vi 1.5m để đấm (0 GC Allocation)
+            int count = Physics2D.OverlapCircleNonAlloc(enemy.transform.position, 1.5f, _alliesBuffer, 1 << enemy.gameObject.layer);
+            for (int i = 0; i < count; i++)
             {
-                if (allies[i].gameObject != enemy.gameObject && allies[i].TryGetComponent<Enemy>(out var allyEnemy))
+                var ally = _alliesBuffer[i];
+                if (ally != null && ally.gameObject != enemy.gameObject && ally.TryGetComponent<Enemy>(out var allyEnemy))
                 {
                     allyEnemy.HealthSystem?.TakeDamage(50f);
-                    allyEnemy.ApplyKnockback((allies[i].transform.position - enemy.transform.position).normalized, 4f, 0.2f);
+                    allyEnemy.ApplyKnockback((ally.transform.position - enemy.transform.position).normalized, 4f, 0.2f);
                     break;
                 }
             }

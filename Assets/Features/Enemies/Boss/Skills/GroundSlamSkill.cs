@@ -19,6 +19,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
         [SerializeField] private float slowDuration = 3.0f;
         [SerializeField] private float telegraphDuration = 1.0f; // Thời gian báo vệt đỏ phình to
         [SerializeField] private LayerMask targetLayer;
+        private static readonly Collider2D[] _slamHitBuffer = new Collider2D[16];
 
         public void PerformGroundSlam()
         {
@@ -66,19 +67,19 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
             global::Core.Audio.AudioManager.Instance?.PlayBossSmash(transform.position);
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, slamRadius, targetLayer);
-            foreach (var hit in hits)
+            // Quét trúng đối tượng bằng NonAlloc (0 GC Allocation)
+            int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, slamRadius, _slamHitBuffer, targetLayer);
+            for (int i = 0; i < hitCount; i++)
             {
-                if (hit.CompareTag("Player"))
+                var hit = _slamHitBuffer[i];
+                if (hit != null && hit.CompareTag("Player"))
                 {
-                    var health = hit.GetComponent<HealthSystem>();
-                    if (health != null)
+                    if (hit.TryGetComponent<HealthSystem>(out var health))
                     {
                         health.TakeDamage(new DamageData(slamDamage, false, ElementType.Tho));
                     }
 
-                    var playerController = hit.GetComponent<ProjectZombie.Features.Player.PlayerController>();
-                    if (playerController != null)
+                    if (hit.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var playerController))
                     {
                         playerController.ApplySlow(slowPercentage, slowDuration);
                     }

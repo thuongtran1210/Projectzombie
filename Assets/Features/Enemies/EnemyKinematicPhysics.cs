@@ -34,6 +34,7 @@ namespace ProjectZombie.Features.Enemies
         public bool CanMovePhysics => !_isKnockbackActive && !_isRagdollActive;
 
         public event Action OnRagdollEnded;
+        private static readonly Collider2D[] _ragdollHitBuffer = new Collider2D[32];
 
         private void Awake()
         {
@@ -132,14 +133,15 @@ namespace ProjectZombie.Features.Enemies
 
             OnRagdollEnded?.Invoke();
 
-            // Nổ sát thương va đập lan sang quái xung quanh
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _ragdollImpactRadius, 1 << gameObject.layer);
-            for (int i = 0; i < hits.Length; i++)
+            // Nổ sát thương va đập lan sang quái xung quanh (0 GC Allocation)
+            int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, _ragdollImpactRadius, _ragdollHitBuffer, 1 << gameObject.layer);
+            for (int i = 0; i < hitCount; i++)
             {
-                if (hits[i].gameObject != gameObject && hits[i].TryGetComponent<Enemy>(out var otherEnemy))
+                var hit = _ragdollHitBuffer[i];
+                if (hit != null && hit.gameObject != gameObject && hit.TryGetComponent<Enemy>(out var otherEnemy))
                 {
                     otherEnemy.HealthSystem?.TakeDamage(_ragdollImpactDamage);
-                    otherEnemy.ApplyKnockback((hits[i].transform.position - transform.position).normalized, 6f, 0.25f);
+                    otherEnemy.ApplyKnockback((hit.transform.position - transform.position).normalized, 6f, 0.25f);
                 }
             }
         }

@@ -474,12 +474,22 @@ namespace ProjectZombie.Features.UI.HUD
 
             if (_bannerTitleText != null)
             {
+                _bannerTitleText.enableAutoSizing = true;
+                _bannerTitleText.fontSizeMin = 18f;
+                _bannerTitleText.fontSizeMax = 32f;
+                _bannerTitleText.enableWordWrapping = true;
+                _bannerTitleText.alignment = TMPro.TextAlignmentOptions.Center;
                 _bannerTitleText.text = title;
                 _bannerTitleText.color = themeColor;
             }
 
             if (_bannerSubText != null)
             {
+                _bannerSubText.enableAutoSizing = true;
+                _bannerSubText.fontSizeMin = 12f;
+                _bannerSubText.fontSizeMax = 16f;
+                _bannerSubText.enableWordWrapping = true;
+                _bannerSubText.alignment = TMPro.TextAlignmentOptions.Center;
                 _bannerSubText.text = subTitle;
                 _bannerSubText.color = new Color(0.95f, 0.92f, 0.88f);
             }

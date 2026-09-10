@@ -13,6 +13,7 @@ namespace ProjectZombie.EditorTools
     public static class EpicWaveTransitionBannerSetupTool
     {
         [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2.1. Thiết Lập Đại Banner Chuyển Wave (Giữa Màn Hình)", priority = 23)]
+        [MenuItem("ProjectZombie/UI/2.1. Thiết Lập Đại Banner Chuyển Wave (Giữa Màn Hình)", priority = 23)]
         public static void SetupEpicWaveTransitionBannerOnly()
         {
             // 1. Tìm Canvas_Gameplay trực tiếp từ Scene
@@ -101,11 +102,11 @@ namespace ProjectZombie.EditorTools
             // Icon Huy Hiệu
             Transform badgeTrans = GetOrCreateChild(containerTrans, "Icon_EventBadge");
             RectTransform bIconRT = EnsureComponent<RectTransform>(badgeTrans.gameObject);
-            bIconRT.anchorMin = new Vector2(0.5f, 1f);
-            bIconRT.anchorMax = new Vector2(0.5f, 1f);
+            bIconRT.anchorMin = new Vector2(0.5f, 0.5f);
+            bIconRT.anchorMax = new Vector2(0.5f, 0.5f);
             bIconRT.pivot = new Vector2(0.5f, 0.5f);
-            bIconRT.anchoredPosition = new Vector2(0, -12);
-            bIconRT.sizeDelta = new Vector2(56, 56);
+            bIconRT.anchoredPosition = new Vector2(0, 44);
+            bIconRT.sizeDelta = new Vector2(52, 52);
             Image bIconImg = EnsureComponent<Image>(badgeTrans.gameObject);
             bIconImg.preserveAspect = true;
             bIconImg.color = new Color(1f, 0.72f, 0.15f);
@@ -113,13 +114,16 @@ namespace ProjectZombie.EditorTools
             // Tag Hồi Text
             Transform bTagTrans = GetOrCreateChild(containerTrans, "Txt_BannerTag");
             RectTransform btagRT = EnsureComponent<RectTransform>(bTagTrans.gameObject);
-            btagRT.anchorMin = new Vector2(0, 0.64f);
-            btagRT.anchorMax = new Vector2(1, 0.92f);
-            btagRT.offsetMin = new Vector2(30, 0);
-            btagRT.offsetMax = new Vector2(-30, 0);
+            btagRT.anchorMin = new Vector2(0, 0.5f);
+            btagRT.anchorMax = new Vector2(1, 0.5f);
+            btagRT.pivot = new Vector2(0.5f, 0.5f);
+            btagRT.anchoredPosition = new Vector2(0, 78);
+            btagRT.sizeDelta = new Vector2(0, 26);
+            btagRT.offsetMin = new Vector2(100, btagRT.offsetMin.y);
+            btagRT.offsetMax = new Vector2(-100, btagRT.offsetMax.y);
             TextMeshProUGUI bTagTMP = EnsureComponent<TextMeshProUGUI>(bTagTrans.gameObject);
             if (vietFont != null) bTagTMP.font = vietFont;
-            bTagTMP.fontSize = 17;
+            bTagTMP.fontSize = 16;
             bTagTMP.fontStyle = FontStyles.Bold;
             bTagTMP.alignment = TextAlignmentOptions.Center;
             bTagTMP.text = "HỒI THỨ 03 / 10";
@@ -128,13 +132,19 @@ namespace ProjectZombie.EditorTools
             // Tiêu Đề Lớn
             Transform bTitleTrans = GetOrCreateChild(containerTrans, "Txt_BannerTitle");
             RectTransform btRT = EnsureComponent<RectTransform>(bTitleTrans.gameObject);
-            btRT.anchorMin = new Vector2(0, 0.32f);
-            btRT.anchorMax = new Vector2(1, 0.68f);
-            btRT.offsetMin = new Vector2(30, 0);
-            btRT.offsetMax = new Vector2(-30, 0);
+            btRT.anchorMin = new Vector2(0, 0.5f);
+            btRT.anchorMax = new Vector2(1, 0.5f);
+            btRT.pivot = new Vector2(0.5f, 0.5f);
+            btRT.anchoredPosition = new Vector2(0, -6);
+            btRT.sizeDelta = new Vector2(0, 48);
+            btRT.offsetMin = new Vector2(110, btRT.offsetMin.y);
+            btRT.offsetMax = new Vector2(-110, btRT.offsetMax.y);
             TextMeshProUGUI bTitleTMP = EnsureComponent<TextMeshProUGUI>(bTitleTrans.gameObject);
             if (vietFont != null) bTitleTMP.font = vietFont;
-            bTitleTMP.fontSize = 34;
+            bTitleTMP.enableAutoSizing = true;
+            bTitleTMP.fontSizeMin = 18;
+            bTitleTMP.fontSizeMax = 32;
+            bTitleTMP.enableWordWrapping = true;
             bTitleTMP.fontStyle = FontStyles.Bold;
             bTitleTMP.alignment = TextAlignmentOptions.Center;
             bTitleTMP.text = "BẦY QUỶ XƯƠNG BAO VÂY!";
@@ -143,13 +153,19 @@ namespace ProjectZombie.EditorTools
             // Phụ Đề
             Transform bSubTrans = GetOrCreateChild(containerTrans, "Txt_BannerSub");
             RectTransform bsRT = EnsureComponent<RectTransform>(bSubTrans.gameObject);
-            bsRT.anchorMin = new Vector2(0, 0.08f);
-            bsRT.anchorMax = new Vector2(1, 0.34f);
-            bsRT.offsetMin = new Vector2(30, 0);
-            bsRT.offsetMax = new Vector2(-30, 0);
+            bsRT.anchorMin = new Vector2(0, 0.5f);
+            bsRT.anchorMax = new Vector2(1, 0.5f);
+            bsRT.pivot = new Vector2(0.5f, 0.5f);
+            bsRT.anchoredPosition = new Vector2(0, -56);
+            bsRT.sizeDelta = new Vector2(0, 28);
+            bsRT.offsetMin = new Vector2(100, bsRT.offsetMin.y);
+            bsRT.offsetMax = new Vector2(-100, bsRT.offsetMax.y);
             TextMeshProUGUI bSubTMP = EnsureComponent<TextMeshProUGUI>(bSubTrans.gameObject);
             if (vietFont != null) bSubTMP.font = vietFont;
-            bSubTMP.fontSize = 17;
+            bSubTMP.enableAutoSizing = true;
+            bSubTMP.fontSizeMin = 12;
+            bSubTMP.fontSizeMax = 16;
+            bSubTMP.enableWordWrapping = true;
             bSubTMP.fontStyle = FontStyles.Bold;
             bSubTMP.alignment = TextAlignmentOptions.Center;
             bSubTMP.text = "BẦY QUÁI BỘC PHÁT (BURST WAVE)";

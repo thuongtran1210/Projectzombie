@@ -1,7 +1,34 @@
 fileFormatVersion: 2
 guid: 549e71e68e86d40468dbbfe97ffd6342
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 4951109404168921002
+    second: Icon_Monster_MaGiap
+  - first:
+      213: 48799176676763939
+    second: Icon_Monster_MaDa
+  - first:
+      213: 6824302259244931010
+    second: Icon_Monster_MaTroi
+  - first:
+      213: -7598605706414661151
+    second: Icon_Monster_HoLyTinh
+  - first:
+      213: 7673597929921603940
+    second: Icon_Monster_QuyNhapTrang
+  - first:
+      213: 2300207099776836425
+    second: Icon_Monster_MaDoiNo
+  - first:
+      213: 1549832049182390123
+    second: Icon_Monster_MaDoiNo_Left
+  - first:
+      213: -7964961199430536366
+    second: Icon_Monster_NguuDauMaDien
+  - first:
+      213: 6889845902964837195
+    second: Icon_Monster_DiemVuong
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,9 +162,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aaf959f55cfd5b440800000000000000
+      spriteID: 44af3be6d6e7f1a4bbd725ff57a060da
       internalID: 4951109404168921002
       vertices: []
       indices: 
@@ -156,9 +183,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3296627b79e5da000800000000000000
+      spriteID: 00ad8c83e1aa4634289cb8ef9919f963
       internalID: 48799176676763939
       vertices: []
       indices: 
@@ -177,9 +204,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2c790328fbac4be50800000000000000
+      spriteID: 5eb18f972b21c424a87adbb3a3d5ec82
       internalID: 6824302259244931010
       vertices: []
       indices: 
@@ -198,9 +225,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1e1e5e08e545c8690800000000000000
+      spriteID: 968c582531e2ad64b97581cf1308a961
       internalID: -7598605706414661151
       vertices: []
       indices: 
@@ -219,9 +246,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 469662a29a81e7a60800000000000000
+      spriteID: 6a7de795eb23b0444ba7a35368a719c4
       internalID: 7673597929921603940
       vertices: []
       indices: 
@@ -240,10 +267,31 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 943a7049b2afbef10800000000000000
+      spriteID: 1fe9fa05f4ba40245a9caea5c6ae40c9
       internalID: 2300207099776836425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Icon_Monster_MaDoiNo_Left
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 341
+        height: 341
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15820394819283746152435465768798
+      internalID: 1549832049182390123
       vertices: []
       indices: 
       edges: []
@@ -261,9 +309,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2537c224df5c67190800000000000000
+      spriteID: 9176f4e64f899b24483a918a287959b2
       internalID: -7964961199430536366
       vertices: []
       indices: 
@@ -282,9 +330,9 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4b46634856ad9f50800000000000000
+      spriteID: 5f9d1469e5d7d3b4bb8e84126c8f94cb
       internalID: 6889845902964837195
       vertices: []
       indices: 
@@ -301,14 +349,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Icon_Monster_DiemVuong: 6889845902964837195
-      Icon_Monster_HoLyTinh: -7598605706414661151
-      Icon_Monster_MaDa: 48799176676763939
-      Icon_Monster_MaDoiNo: 2300207099776836425
       Icon_Monster_MaGiap: 4951109404168921002
+      Icon_Monster_MaDa: 48799176676763939
       Icon_Monster_MaTroi: 6824302259244931010
-      Icon_Monster_NguuDauMaDien: -7964961199430536366
+      Icon_Monster_HoLyTinh: -7598605706414661151
       Icon_Monster_QuyNhapTrang: 7673597929921603940
+      Icon_Monster_MaDoiNo: 2300207099776836425
+      Icon_Monster_MaDoiNo_Left: 1549832049182390123
+      Icon_Monster_NguuDauMaDien: -7964961199430536366
+      Icon_Monster_DiemVuong: 6889845902964837195
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

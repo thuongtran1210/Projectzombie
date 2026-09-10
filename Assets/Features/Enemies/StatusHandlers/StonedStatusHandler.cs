@@ -13,17 +13,20 @@ namespace ProjectZombie.Features.Enemies.StatusHandlers
 
         public void OnTick(Enemy enemy, ActiveStatusEffect effectData, float deltaTime) { }
 
+        private static readonly Collider2D[] _nearbyBuffer = new Collider2D[24];
+
         public void OnExpired(Enemy enemy, ActiveStatusEffect effectData)
         {
             if (enemy == null) return;
 
-            Collider2D[] nearby = Physics2D.OverlapCircleAll(enemy.transform.position, 2.5f, 1 << enemy.gameObject.layer);
-            for (int i = 0; i < nearby.Length; i++)
+            int count = Physics2D.OverlapCircleNonAlloc(enemy.transform.position, 2.5f, _nearbyBuffer, 1 << enemy.gameObject.layer);
+            for (int i = 0; i < count; i++)
             {
-                if (nearby[i] != null && nearby[i].gameObject != enemy.gameObject && nearby[i].TryGetComponent<Enemy>(out var otherEnemy))
+                var col = _nearbyBuffer[i];
+                if (col != null && col.gameObject != enemy.gameObject && col.TryGetComponent<Enemy>(out var otherEnemy))
                 {
                     otherEnemy.HealthSystem?.TakeDamage(60f);
-                    otherEnemy.ApplyKnockback((nearby[i].transform.position - enemy.transform.position).normalized, 5f, 0.25f);
+                    otherEnemy.ApplyKnockback((col.transform.position - enemy.transform.position).normalized, 5f, 0.25f);
                 }
             }
         }

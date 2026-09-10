@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
         private bool _isDashing = false;
         public bool IsDashing => _isDashing;
+        private static readonly Collider2D[] _dashHitBuffer = new Collider2D[16];
 
         public void PerformDash(Vector3 targetPosition)
         {
@@ -90,10 +91,11 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
                 if (!hitPlayerDuringDash)
                 {
-                    Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, dashWidth);
-                    foreach (var col in hits)
+                    int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, dashWidth, _dashHitBuffer);
+                    for (int i = 0; i < hitCount; i++)
                     {
-                        if (col.CompareTag("Player"))
+                        var col = _dashHitBuffer[i];
+                        if (col != null && col.CompareTag("Player"))
                         {
                             var health = col.GetComponent<HealthSystem>();
                             if (health != null)
@@ -101,6 +103,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
                                 health.TakeDamage(new DamageData(35f, false, ElementType.Tho));
                                 hitPlayerDuringDash = true;
                                 Debug.Log("[BullDashSkill] Boss lao tông trúng người chơi! Gây 35 Sát thương.");
+                                break;
                             }
                         }
                     }

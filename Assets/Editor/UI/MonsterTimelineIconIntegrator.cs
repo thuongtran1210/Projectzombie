@@ -92,6 +92,15 @@ namespace ProjectZombie.EditorTools
                 pivot = new Vector2(0.5f, 0.5f)
             });
 
+            // R2C0: Ma Doi No - Bien the trai (Bot-Left)
+            metaDataList.Add(new SpriteMetaData
+            {
+                name = "Icon_Monster_MaDoiNo_Left",
+                rect = new Rect(0, 0, 341, 341),
+                alignment = (int)SpriteAlignment.Center,
+                pivot = new Vector2(0.5f, 0.5f)
+            });
+
             // R2C1: Nguu Dau Ma Dien (Bot-Mid)
             metaDataList.Add(new SpriteMetaData
             {
@@ -187,8 +196,25 @@ namespace ProjectZombie.EditorTools
             }
 
             EditorUtility.SetDirty(timeline);
+
+            // Dong bo sang Resources theo chuan Kien truc Rule 13.3
+            string resourcesTimelinePath = "Assets/Resources/Levels/Level1_Timeline.asset";
+            LevelTimelineConfig resTimeline = AssetDatabase.LoadAssetAtPath<LevelTimelineConfig>(resourcesTimelinePath);
+            if (resTimeline != null)
+            {
+                Undo.RecordObject(resTimeline, "Integrate Monster Icons to Resources");
+                for (int i = 0; i < timeline.events.Count && i < resTimeline.events.Count; i++)
+                {
+                    if (resTimeline.events[i] != null && timeline.events[i] != null)
+                    {
+                        resTimeline.events[i].eventIcon = timeline.events[i].eventIcon;
+                    }
+                }
+                EditorUtility.SetDirty(resTimeline);
+            }
+
             AssetDatabase.SaveAssets();
-            Debug.Log("<color=#4DEEEA><b>[MonsterTimelineIconIntegrator]</b> Da slice 8 Sprite Icon va gan thanh cong vao Level1_Timeline.asset!</color>");
+            Debug.Log("<color=#4DEEEA><b>[MonsterTimelineIconIntegrator]</b> Đã slice 9 Sprite Icon và gắn thành công vào Level1_Timeline.asset (_Data & Resources)!</color>");
         }
     }
 }

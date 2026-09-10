@@ -107,7 +107,15 @@ namespace ProjectZombie.Features.UI.HUD
 
             // 2. Format tiêu đề và phụ đề cho Banner Pop-up chuyển Wave
             string bannerTag = $"HỒI THỨ {info.currentWaveIndex:D2} / {info.totalWaves:D2}";
-            string bannerTitle = info.waveTitle.ToUpper();
+            
+            // Tối ưu chuỗi tiêu đề: Lọc bỏ prefix kỹ thuật thời gian (vd: 'Phút 00:00 - ') để tiêu đề ngắn gọn, uy lực
+            string cleanTitle = info.waveTitle ?? "";
+            int dashIdx = cleanTitle.IndexOf(" - ");
+            if (dashIdx >= 0 && dashIdx < 20)
+            {
+                cleanTitle = cleanTitle.Substring(dashIdx + 3).Trim();
+            }
+            string bannerTitle = cleanTitle.ToUpper();
             string bannerSubText = GetSubTextForEventType(info.eventType);
 
             // Kích hoạt hoạt ảnh Banner ở giữa màn hình (Ưu tiên lấy icon quái/Boss có sẵn của Wave)

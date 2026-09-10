@@ -321,17 +321,24 @@ namespace ProjectZombie.Features.Weapons
 
         private void SpawnRecastGroundMarker(Vector3 position, bool isEvolution = false)
         {
+            SpriteRenderer srMarker = null;
             if (_recastMarkerInstance == null)
             {
                 _recastMarkerInstance = new GameObject("VFX_Slipper_Recast_Beacon");
-                var sr = _recastMarkerInstance.AddComponent<SpriteRenderer>();
-                sr.sprite = recastMarkerCircleSprite;
-                sr.sortingLayerName = "Skill";
-                sr.sortingOrder = 4;
+                srMarker = _recastMarkerInstance.AddComponent<SpriteRenderer>();
+                srMarker.sprite = recastMarkerCircleSprite;
+                srMarker.sortingLayerName = "Skill";
+                srMarker.sortingOrder = 4;
+            }
+            else
+            {
+                _recastMarkerInstance.TryGetComponent<SpriteRenderer>(out srMarker);
             }
 
-            var srMarker = _recastMarkerInstance.GetComponent<SpriteRenderer>();
-            srMarker.color = isEvolution ? new Color(1f, 0.95f, 0.2f, 0.95f) : new Color(1f, 0.85f, 0.25f, 0.6f);
+            if (srMarker != null)
+            {
+                srMarker.color = isEvolution ? new Color(1f, 0.95f, 0.2f, 0.95f) : new Color(1f, 0.85f, 0.25f, 0.6f);
+            }
             _recastMarkerInstance.transform.localScale = Vector3.one * (isEvolution ? 1.0f : 0.55f);
             _recastMarkerInstance.transform.position = position;
             _recastMarkerInstance.SetActive(true);

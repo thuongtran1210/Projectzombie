@@ -119,8 +119,10 @@ namespace ProjectZombie.Features.Weapons
             Vector2 forwardDir = transform.right;
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
-                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
-                if (player != null) forwardDir = player.FacingVector;
+                if (PlayerProvider.PlayerTransform.TryGetComponent<PlayerController>(out var player))
+                {
+                    forwardDir = player.FacingVector;
+                }
             }
 
             bool isEvolution = WeaponLevel >= MaxLevel;
@@ -170,8 +172,10 @@ namespace ProjectZombie.Features.Weapons
             Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
             if (customAimDirection == Vector2.zero && PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
             {
-                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
-                if (player != null) forwardDir = player.FacingVector;
+                if (PlayerProvider.PlayerTransform.TryGetComponent<PlayerController>(out var player))
+                {
+                    forwardDir = player.FacingVector;
+                }
             }
             Vector2 origin = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null
                 ? (Vector2)PlayerProvider.PlayerTransform.position
