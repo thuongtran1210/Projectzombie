@@ -15,6 +15,7 @@ MonoBehaviour:
   characterId: C004_AnSi
   characterName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
   element: 5
+  rarity: 3
   elementHexColor: '#8A6A3E'
   avatar: {fileID: 21300000, guid: 94e5e37ddc804314b0ce5ebb3df9597c, type: 3}
   playerPrefab: {fileID: 4603747337966706880, guid: 75af532554b34642a8ba8b3f34d28c4d, type: 3}

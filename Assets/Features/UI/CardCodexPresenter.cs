@@ -269,9 +269,9 @@ namespace ProjectZombie.Features.UI
                 charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
             }
 #endif
-            if (charDb != null && charDb.characters != null)
+            if (charDb != null && charDb.Characters != null)
             {
-                foreach (var h in charDb.characters)
+                foreach (var h in charDb.Characters)
                 {
                     if (h != null && !_allHeroes.Contains(h)) _allHeroes.Add(h);
                 }

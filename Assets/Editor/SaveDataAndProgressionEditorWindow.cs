@@ -8,6 +8,7 @@ using ProjectZombie.Core.Save;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.UI;
 
 namespace ProjectZombie.EditorTools

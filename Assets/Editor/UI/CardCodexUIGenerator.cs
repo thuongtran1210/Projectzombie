@@ -361,7 +361,13 @@ namespace ProjectZombie.Editor.UI
             string prefabPath = $"{prefabFolder}/CardCodexUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
 
-            // 9. Auto-wire vào Scene và MetaUIManager
+            // Đồng bộ sang Resources/UI để tiện load dynamic nếu cần
+            string resFolder = "Assets/Resources/UI";
+            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
+            string resPrefabPath = $"{resFolder}/CardCodexUI.prefab";
+            PrefabUtility.SaveAsPrefabAsset(root, resPrefabPath);
+
+            // 9. Auto-wire vào Scene và MetaUIManager nếu đang mở Scene Menu
             var canvas = Object.FindAnyObjectByType<Canvas>();
             if (canvas != null)
             {
@@ -378,9 +384,13 @@ namespace ProjectZombie.Editor.UI
                 if (metaMgr != null)
                 {
                     SerializedObject soMeta = new SerializedObject(metaMgr);
-                    soMeta.FindProperty("_codexScreen").objectReferenceValue = view;
-                    soMeta.ApplyModifiedProperties();
-                    EditorUtility.SetDirty(metaMgr);
+                    var prop = soMeta.FindProperty("_codexScreen");
+                    if (prop != null)
+                    {
+                        prop.objectReferenceValue = view;
+                        soMeta.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(metaMgr);
+                    }
                 }
 
                 Debug.Log($"<color=#00FF88>[CardCodexUIGenerator]</color> Đã tạo Prefab Thư Viện Thần Thẻ & Luyện Khí (Codex) và kết nối MetaUIManager thành công 100%!");
@@ -389,6 +399,9 @@ namespace ProjectZombie.Editor.UI
             {
                 Object.DestroyImmediate(root);
             }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             return savedPrefab;
         }

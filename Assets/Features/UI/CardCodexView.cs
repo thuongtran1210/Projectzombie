@@ -105,11 +105,11 @@ namespace ProjectZombie.Features.UI
 
             if (_tabFusionBg != null) _tabFusionBg.sprite = activeTab == CodexTabType.RelicFusion ? activeSprite : inactiveSprite;
             if (_tabPassivesBg != null) _tabPassivesBg.sprite = activeTab == CodexTabType.Passives ? activeSprite : inactiveSprite;
-            if (_tabComboBg != null) _tabComboBg.sprite = activeTab == CodexTabType.ComboSkills ? activeSprite : inactiveSprite;
+            if (_tabComboBg != null) _tabComboBg.sprite = activeTab == CodexTabType.HeroCards ? activeSprite : inactiveSprite;
 
             if (_tabFusionTxt != null) _tabFusionTxt.color = activeTab == CodexTabType.RelicFusion ? activeCol : inactiveCol;
             if (_tabPassivesTxt != null) _tabPassivesTxt.color = activeTab == CodexTabType.Passives ? activeCol : inactiveCol;
-            if (_tabComboTxt != null) _tabComboTxt.color = activeTab == CodexTabType.ComboSkills ? activeCol : inactiveCol;
+            if (_tabComboTxt != null) _tabComboTxt.color = activeTab == CodexTabType.HeroCards ? activeCol : inactiveCol;
         }
 
         public void DisplayRelicDetail(string cardName, string category, string desc, Sprite icon, int starLevel, int currentShards, int reqShards, int cost, bool canFuse, string fuseBtnLabel)

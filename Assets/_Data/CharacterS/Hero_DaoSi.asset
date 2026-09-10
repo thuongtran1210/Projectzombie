@@ -15,6 +15,7 @@ MonoBehaviour:
   characterId: C002_DaoSi
   characterName: "\u0110\u1EA1o S\u0129"
   element: 2
+  rarity: 1
   elementHexColor: '#9B51E0'
   avatar: {fileID: 21300000, guid: 3910c0563e5e48b6b2e0a3f6b02f7ef0, type: 3}
   playerPrefab: {fileID: 4603747337966706880, guid: 3689df294ea14fc4b94df7d8c930accc, type: 3}

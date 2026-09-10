@@ -15,6 +15,7 @@ MonoBehaviour:
   characterId: C001_ThuSinh
   characterName: "Th\u01B0 Sinh"
   element: 1
+  rarity: 1
   elementHexColor: '#FFD700'
   avatar: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
   playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
