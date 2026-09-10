@@ -235,10 +235,22 @@ namespace ProjectZombie.Features.Enemies
                     facingSign = (_enemy.PlayerTransform.position.x < transform.position.x) ? -1f : 1f;
                 }
                 float angle = facingSign < 0 ? 180f : 0f;
-
-                GameObject vfx = Instantiate(_enemy.Config.attackVfxPrefab, center, Quaternion.Euler(0, 0, angle));
                 float life = _enemy.Config.vfxDuration > 0 ? _enemy.Config.vfxDuration : 0.35f;
-                Destroy(vfx, life);
+
+                if (ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(
+                        _enemy.Config.attackVfxPrefab,
+                        center,
+                        Quaternion.Euler(0, 0, angle),
+                        life
+                    );
+                }
+                else
+                {
+                    GameObject vfx = Instantiate(_enemy.Config.attackVfxPrefab, center, Quaternion.Euler(0, 0, angle));
+                    Destroy(vfx, life);
+                }
             }
 
             DealMeleeDamage();

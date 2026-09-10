@@ -53,6 +53,7 @@ namespace ProjectZombie.Features.Spawners
 
         private Transform _playerTransform;
         private Camera _mainCamera;
+        private static readonly Collider2D[] _spawnObstacleBuffer = new Collider2D[1];
         private readonly List<TimelineEvent> _activeContinuousEvents = new List<TimelineEvent>();
         private readonly Dictionary<TimelineEvent, float> _eventTimers = new Dictionary<TimelineEvent, float>();
         private int _nextEventIndex = 0;
@@ -534,8 +535,8 @@ namespace ProjectZombie.Features.Spawners
                 // 2. Không được dính Obstacle / Tường
                 if (obstacleMask != 0)
                 {
-                    Collider2D hit = Physics2D.OverlapCircle(candidatePos, 0.5f, obstacleMask);
-                    if (hit != null) continue;
+                    int hits = Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask);
+                    if (hits > 0) continue;
                 }
 
                 // 3. Phải nằm ngoài tầm nhìn Camera
@@ -557,7 +558,7 @@ namespace ProjectZombie.Features.Spawners
 
                 if (IsInsideWalkableArea(clampedPos))
                 {
-                    if (obstacleMask != 0 && Physics2D.OverlapCircle(clampedPos, 0.5f, obstacleMask) != null)
+                    if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(clampedPos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)
                         continue;
 
                     return clampedPos;

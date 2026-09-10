@@ -220,7 +220,16 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             // Tự động tìm nạp PlayerContext nếu chưa được inject qua bootstrapper
             if (!_isConstructed || _playerStats == null)
             {
-                var playerObj = PlayerProvider.PlayerGameObject ?? GameObject.FindWithTag("Player");
+                var playerObj = PlayerProvider.PlayerGameObject 
+                    ?? (Player.PlayerController.Instance != null ? Player.PlayerController.Instance.gameObject : null) 
+                    ?? GameObject.FindWithTag("Player");
+
+                if (playerObj == null)
+                {
+                    var foundStats = FindFirstObjectByType<PlayerStats>();
+                    if (foundStats != null) playerObj = foundStats.gameObject;
+                }
+
                 if (playerObj != null)
                 {
                     Construct(
@@ -230,18 +239,6 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
                         playerObj.GetComponent<WeaponManager>(),
                         playerObj.GetComponent<PlayerPassives>()
                     );
-                }
-                else
-                {
-                    var stats = FindObjectOfType<PlayerStats>();
-                    var hp = FindObjectOfType<HealthSystem>();
-                    var exp = FindObjectOfType<PlayerExperience>();
-                    var wm = FindObjectOfType<WeaponManager>();
-                    var passives = FindObjectOfType<PlayerPassives>();
-                    if (stats != null)
-                    {
-                        Construct(stats, hp, exp, wm, passives);
-                    }
                 }
             }
 

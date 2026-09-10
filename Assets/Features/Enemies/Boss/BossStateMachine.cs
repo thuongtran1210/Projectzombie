@@ -129,7 +129,15 @@ namespace ProjectZombie.Features.Enemies.Boss
                 for (int i = 0; i < minionCount; i++)
                 {
                     Vector3 spawnOffset = (Vector3)Random.insideUnitCircle * 3f;
-                    Instantiate(maGiapPrefab, transform.position + spawnOffset, Quaternion.identity);
+                    Vector3 spawnPos = transform.position + spawnOffset;
+                    if (Spawners.EnemyPoolManager.Instance != null)
+                    {
+                        Spawners.EnemyPoolManager.Instance.SpawnEnemy(maGiapPrefab, spawnPos, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Instantiate(maGiapPrefab, spawnPos, Quaternion.identity);
+                    }
                 }
             }
         }

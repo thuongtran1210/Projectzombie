@@ -167,7 +167,14 @@ namespace ProjectZombie.Features.Player.Visuals
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 Quaternion rot = Quaternion.Euler(0f, 0f, angle + 180f); // Phụt ngược hướng lướt
 
-                Instantiate(_dashDustPrefab, transform.position, rot);
+                if (ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_dashDustPrefab, transform.position, rot, 0.5f);
+                }
+                else
+                {
+                    Instantiate(_dashDustPrefab, transform.position, rot);
+                }
             }
         }
 
@@ -175,12 +182,13 @@ namespace ProjectZombie.Features.Player.Visuals
         {
             float elapsed = 0f;
             float dashTime = _playerController != null ? _playerController.DashDuration : 0.2f;
+            var wait = new WaitForSeconds(_ghostSpawnInterval);
 
             while (elapsed < dashTime)
             {
                 SpawnSingleGhost(_ghostColor);
                 elapsed += _ghostSpawnInterval;
-                yield return new WaitForSeconds(_ghostSpawnInterval);
+                yield return wait;
             }
         }
 

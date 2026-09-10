@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Shared
         }
 
         private static readonly RaycastHit2D[] _hitBuffer = new RaycastHit2D[1];
+        private static readonly Collider2D[] _overlapBuffer = new Collider2D[1];
         private static UnityEngine.Tilemaps.Tilemap _cachedGroundTilemap;
         private static UnityEngine.Tilemaps.Tilemap _cachedObstacleTilemap;
         private static bool _searchedTilemap = false;
@@ -134,7 +135,7 @@ namespace ProjectZombie.Features.Shared
             int mask = ObstacleMask;
 
             // 1. Kiểm tra va chạm Collider vật lý (Layers Obstacle / Water / Default nếu có Collider)
-            bool isInsideObstacle = mask != 0 && Physics2D.OverlapCircle(targetPos, bodyRadius, mask) != null;
+            bool isInsideObstacle = mask != 0 && Physics2D.OverlapCircleNonAlloc(targetPos, bodyRadius, _overlapBuffer, mask) > 0;
             bool isFullyGrounded = IsPositionFullyOnGround(targetPos, bodyRadius);
 
             if (!isInsideObstacle && isFullyGrounded)
@@ -149,7 +150,7 @@ namespace ProjectZombie.Features.Shared
             for (float step = 0.2f; step <= maxClampStep; step += 0.2f)
             {
                 Vector3 candidate = targetPos + (Vector3)(fromTargetToOrigin * step);
-                bool candObstacle = mask != 0 && Physics2D.OverlapCircle(candidate, bodyRadius, mask) != null;
+                bool candObstacle = mask != 0 && Physics2D.OverlapCircleNonAlloc(candidate, bodyRadius, _overlapBuffer, mask) > 0;
                 bool candGrounded = IsPositionFullyOnGround(candidate, bodyRadius);
 
                 if (!candObstacle && candGrounded)

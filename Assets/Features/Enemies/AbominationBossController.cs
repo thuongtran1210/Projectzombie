@@ -168,7 +168,14 @@ namespace ProjectZombie.Features.Enemies
             {
                 Vector2 randomCircle = Random.insideUnitCircle.normalized * 3f;
                 Vector3 spawnPos = transform.position + (Vector3)randomCircle;
-                Instantiate(walkerZombiePrefab, spawnPos, Quaternion.identity);
+                if (Spawners.EnemyPoolManager.Instance != null)
+                {
+                    Spawners.EnemyPoolManager.Instance.SpawnEnemy(walkerZombiePrefab, spawnPos, Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(walkerZombiePrefab, spawnPos, Quaternion.identity);
+                }
             }
         }
 
