@@ -115,52 +115,57 @@ namespace ProjectZombie.Features.Spawners
             return pool;
         }
 
+        private static readonly List<GameObject> _tempPrewarmBuffer = new List<GameObject>(16);
+
         public void PrewarmPool(GameObject prefab, int count, string addressKey = null)
         {
             if (prefab == null) return;
             var pool = GetOrCreatePool(prefab, addressKey);
             if (pool == null) return;
             
-            // Giảm số lượng prewarm đồng bộ tối thiểu (ví dụ 6 con) để không làm đơ Game Loop
-            int immediateCount = Mathf.Min(count, 6);
-            var tempObjects = new List<GameObject>(immediateCount);
+            // Khởi tạo trước 2 đối tượng đồng bộ để có sẵn trong pool, không gây nghẽn frame (0 GC Allocation)
+            int immediateCount = Mathf.Min(count, 2);
+            _tempPrewarmBuffer.Clear();
             for (int i = 0; i < immediateCount; i++)
             {
                 GameObject obj = null;
                 try { obj = pool.Get(); } catch { }
-                if (obj != null) tempObjects.Add(obj);
+                if (obj != null) _tempPrewarmBuffer.Add(obj);
             }
-            foreach (var obj in tempObjects)
+            for (int i = 0; i < _tempPrewarmBuffer.Count; i++)
             {
+                var obj = _tempPrewarmBuffer[i];
                 if (obj != null) pool.Release(obj);
             }
+            _tempPrewarmBuffer.Clear();
 
-            // Số lượng còn lại phân bổ qua Coroutine để giữ vững 60 FPS
+            // Số lượng còn lại phân bổ dần qua Coroutine (1-2 item/frame) để giữ mượt mà 60 FPS
             int remaining = count - immediateCount;
             if (remaining > 0 && gameObject.activeInHierarchy)
             {
-                StartCoroutine(RoutinePrewarmSlice(pool, remaining));
+                StartCoroutine(RoutinePrewarmSlice(pool, remaining, 2));
             }
         }
 
-        private System.Collections.IEnumerator RoutinePrewarmSlice(UnityEngine.Pool.ObjectPool<GameObject> pool, int remainingCount, int itemsPerFrame = 3)
+        private System.Collections.IEnumerator RoutinePrewarmSlice(UnityEngine.Pool.ObjectPool<GameObject> pool, int remainingCount, int itemsPerFrame = 2)
         {
-            var tempObjects = new List<GameObject>(itemsPerFrame);
             while (remainingCount > 0)
             {
                 yield return null; // Chờ sang frame tiếp theo
                 int batch = Mathf.Min(remainingCount, itemsPerFrame);
-                tempObjects.Clear();
+                _tempPrewarmBuffer.Clear();
                 for (int i = 0; i < batch; i++)
                 {
                     GameObject obj = null;
                     try { obj = pool.Get(); } catch { }
-                    if (obj != null) tempObjects.Add(obj);
+                    if (obj != null) _tempPrewarmBuffer.Add(obj);
                 }
-                foreach (var obj in tempObjects)
+                for (int i = 0; i < _tempPrewarmBuffer.Count; i++)
                 {
+                    var obj = _tempPrewarmBuffer[i];
                     if (obj != null) pool.Release(obj);
                 }
+                _tempPrewarmBuffer.Clear();
                 remainingCount -= batch;
             }
         }

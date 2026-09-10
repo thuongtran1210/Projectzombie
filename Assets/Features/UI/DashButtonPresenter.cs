@@ -64,6 +64,9 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        private int _lastFormattedTenths = -1;
+        private string _lastFormattedCooldownStr = string.Empty;
+
         private void Update()
         {
             if (_playerStats == null || _playerController == null)
@@ -76,8 +79,14 @@ namespace ProjectZombie.Features.UI
             float timePassed = Time.time - _lastDashTime;
             float remaining = Mathf.Max(0f, _dashCooldown - timePassed);
 
-            string formattedText = remaining > 0f ? $"{remaining:F1}s" : string.Empty;
-            _view.SetCooldown(remaining, _dashCooldown, formattedText);
+            int currentTenths = Mathf.CeilToInt(remaining * 10f);
+            if (currentTenths != _lastFormattedTenths)
+            {
+                _lastFormattedTenths = currentTenths;
+                _lastFormattedCooldownStr = remaining > 0f ? $"{remaining:F1}s" : string.Empty;
+            }
+
+            _view.SetCooldown(remaining, _dashCooldown, _lastFormattedCooldownStr);
 
             bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
             _view.SetInteractable(!isEditMode && remaining <= 0f);

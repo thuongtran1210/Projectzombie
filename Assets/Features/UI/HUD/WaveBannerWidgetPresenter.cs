@@ -127,17 +127,31 @@ namespace ProjectZombie.Features.UI.HUD
             UpdateProgressView(matchTime, maxDuration, progress);
         }
 
+        private int _lastCachedSecond = -1;
+        private int _lastCachedProgressPercent = -1;
+        private string _lastCachedTimeStr = string.Empty;
+
         private void UpdateProgressView(float matchTime, float maxDuration, float progress)
         {
             if (_view == null) return;
 
-            int curMin = Mathf.FloorToInt(matchTime / 60f);
-            int curSec = Mathf.FloorToInt(matchTime % 60f);
-            int maxMin = Mathf.FloorToInt(maxDuration / 60f);
-            int maxSec = Mathf.FloorToInt(maxDuration % 60f);
+            int curSec = Mathf.FloorToInt(matchTime);
+            int curPercent = Mathf.FloorToInt(progress * 100f);
 
-            string progressTimeStr = $"{curMin:D2}:{curSec:D2} / {maxMin:D2}:{maxSec:D2} ({progress * 100f:F0}%)";
-            _view.UpdateStageProgress(progress, progressTimeStr, _lastWaveDesc);
+            if (curSec != _lastCachedSecond || curPercent != _lastCachedProgressPercent)
+            {
+                _lastCachedSecond = curSec;
+                _lastCachedProgressPercent = curPercent;
+
+                int curMin = curSec / 60;
+                int remSec = curSec % 60;
+                int maxMin = Mathf.FloorToInt(maxDuration / 60f);
+                int maxSec = Mathf.FloorToInt(maxDuration % 60f);
+
+                _lastCachedTimeStr = $"{curMin:D2}:{remSec:D2} / {maxMin:D2}:{maxSec:D2} ({curPercent}%)";
+            }
+
+            _view.UpdateStageProgress(progress, _lastCachedTimeStr, _lastWaveDesc);
             _view.UpdateMarkerStatus(matchTime, progress);
         }
 
