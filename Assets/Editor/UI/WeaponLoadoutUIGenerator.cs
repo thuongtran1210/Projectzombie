@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -58,40 +59,37 @@ namespace ProjectZombie.Editor.UI
             modalRT.anchorMax = new Vector2(0.5f, 0.5f);
             modalRT.pivot = new Vector2(0.5f, 0.5f);
             modalRT.sizeDelta = new Vector2(1760, 960);
-            modalRT.anchoredPosition = Vector2.zero;
-            var modalImg = modal.AddComponent<Image>();
-            modalImg.color = Color.white;
-            modalImg.type = Image.Type.Sliced;
-            Sprite modalFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Modal_TangBaoCac_9Slice.png");
-            if (modalFrame != null) modalImg.sprite = modalFrame;
 
-            // 4. Header Section
+            // Gắn Khung Gỗ Mun + Trúc Cổ
+            var modalImg = modal.AddComponent<Image>();
+            modalImg.color = ColorModalBg;
+            Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Panel_Modal_Frame_Wood.png");
+            if (bgSprite != null)
+            {
+                modalImg.sprite = bgSprite;
+                modalImg.type = Image.Type.Sliced;
+            }
+
+            // 4. Header (Avatar Tướng + Tên Tướng + Hệ + Nút Đóng)
             BuildHeader(modal.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out Button backBtn);
 
-            // 5. Body Section - 2 Cột Đối Xứng Cân Đối
-            GameObject bodyObj = CreateUIElement("Container_Body2Cols", modal.transform);
+            // 5. Thân Modal: Chia 2 Cột Đối Xứng Hoàn Hảo (Cột Trái 830px, Cột Phải 830px)
+            GameObject bodyObj = CreateUIElement("Body_Container", modal.transform);
             RectTransform bodyRT = bodyObj.GetComponent<RectTransform>();
             bodyRT.anchorMin = new Vector2(0, 0);
             bodyRT.anchorMax = new Vector2(1, 1);
-            bodyRT.offsetMin = new Vector2(36, 28);
-            bodyRT.offsetMax = new Vector2(-36, -88); // 88px cho Header Băng Rôn
+            bodyRT.pivot = new Vector2(0.5f, 0.5f);
+            bodyRT.anchoredPosition = new Vector2(0, -35);
+            bodyRT.sizeDelta = new Vector2(-60, -110);
 
-            var bodyHlg = bodyObj.AddComponent<HorizontalLayoutGroup>();
-            bodyHlg.spacing = 28;
-            bodyHlg.childAlignment = TextAnchor.UpperCenter;
-            bodyHlg.childControlWidth = true;
-            bodyHlg.childControlHeight = true;
-            bodyHlg.childForceExpandWidth = true;
-            bodyHlg.childForceExpandHeight = true;
-
-            // Cột Trái: Kho Đồ Dạng Grid 20 Ô Pháp Bảo (Width 50%)
+            // CỘT TRÁI: Kho Pháp Bảo 12 Ô (Có 2 Tab Vũ Khí / Pháp Bảo)
             BuildLeftInventoryColumn(bodyObj.transform, vietFont, 
                 out Button tabPriBtn, out Button tabRelBtn, 
                 out Image tabPriBg, out Image tabRelBg, 
                 out TextMeshProUGUI tabPriTxt, out TextMeshProUGUI tabRelTxt, 
                 out Transform inventoryGrid);
 
-            // Cột Phải: Trang Bị Đã Chọn + Soi Chi Tiết + Nút Xuất Trận (Width 50%)
+            // CỘT PHẢI: Pháp Bảo Xuất Trận + Bảng Soi Chi Tiết Pháp Bảo
             BuildRightLoadoutColumn(bodyObj.transform, vietFont,
                 out Image priSlotIcon, out TextMeshProUGUI priSlotName,
                 out Image[] relicIcons, out TextMeshProUGUI[] relicNames,
@@ -143,31 +141,30 @@ namespace ProjectZombie.Editor.UI
 
             // 7. Wire Presenter
             SerializedObject soPresenter = new SerializedObject(presenter);
-            soPresenter.FindProperty("_view").objectReferenceValue = view;
+            var viewProp = soPresenter.FindProperty("_view");
+            if (viewProp != null) viewProp.objectReferenceValue = view;
 
             // Wire Sprites cho Android Runtime
-            soPresenter.FindProperty("_slotWoodSprite").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
-            soPresenter.FindProperty("_slotSelectedSprite").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
-            soPresenter.FindProperty("_badgeEquippedSprite").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png");
-            soPresenter.FindProperty("_badgeElementKim").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
-            soPresenter.FindProperty("_badgeElementMoc").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
-            soPresenter.FindProperty("_badgeElementThuy").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
-            soPresenter.FindProperty("_badgeElementHoa").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
-            soPresenter.FindProperty("_badgeElementTho").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
+            SetSerializedProp(soPresenter, "_slotWoodSprite", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png"));
+            SetSerializedProp(soPresenter, "_slotSelectedSprite", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png"));
+            SetSerializedProp(soPresenter, "_badgeEquippedSprite", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Level_Chibi_Star.png"));
+            SetSerializedProp(soPresenter, "_badgeElementKim", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png"));
+            SetSerializedProp(soPresenter, "_badgeElementMoc", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png"));
+            SetSerializedProp(soPresenter, "_badgeElementThuy", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png"));
+            SetSerializedProp(soPresenter, "_badgeElementHoa", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png"));
+            SetSerializedProp(soPresenter, "_badgeElementTho", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png"));
 
             soPresenter.ApplyModifiedProperties();
 
             // 8. Lưu Prefab
             string prefabPath = $"{prefabFolder}/WeaponLoadoutUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+
+            // Đồng bộ sang Resources/UI
+            string resFolder = "Assets/Resources/UI";
+            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
+            string resPrefabPath = $"{resFolder}/WeaponLoadoutUI.prefab";
+            PrefabUtility.SaveAsPrefabAsset(root, resPrefabPath);
 
             // 9. Auto-wire vào Scene nếu có Canvas_MetaMenu
             var canvas = Object.FindAnyObjectByType<Canvas>();
@@ -191,12 +188,15 @@ namespace ProjectZombie.Editor.UI
                     EditorUtility.SetDirty(metaMgr);
                 }
 
-                Debug.Log($"<color=#00FF88>[WeaponLoadoutUIGenerator]</color> Đã tạo Prefab Tàng Bảo Các Mobile Landscape (1760x960) chuẩn ảnh thiết kế và kết nối thành công!");
+                Debug.Log($"<color=#00FF88>[WeaponLoadoutUIGenerator]</color> Đã tạo Prefab Tàng Bảo Các Mobile Landscape (1760x960) chuẩn ScrollView chống tràn và kết nối thành công!");
             }
             else
             {
                 Object.DestroyImmediate(root);
             }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private static void BuildHeader(Transform parent, TMP_FontAsset font, out TextMeshProUGUI heroName, out TextMeshProUGUI heroElem, out Image heroAvatar, out Button backBtn)
@@ -305,20 +305,50 @@ namespace ProjectZombie.Editor.UI
             tabRelTxt = new GameObject().AddComponent<TextMeshProUGUI>();
             tabContainer.SetActive(false);
 
-            // 2. Grid 20 Ô Pháp Bảo (4x5)
-            GameObject gridObj = CreateUIElement("Grid_Inventory12Slots", innerObj.transform);
+            // 2. ScrollView Kho Pháp Bảo (ScrollRect + Viewport RectMask2D)
+            GameObject scrollObj = CreateUIElement("ScrollView_Inventory", innerObj.transform);
+            RectTransform scRT = scrollObj.GetComponent<RectTransform>();
+            scRT.anchorMin = Vector2.zero;
+            scRT.anchorMax = Vector2.one;
+            scRT.offsetMin = Vector2.zero;
+            scRT.offsetMax = Vector2.zero;
+
+            var scrollRect = scrollObj.AddComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Elastic;
+            scrollRect.elasticity = 0.1f;
+            scrollRect.inertia = true;
+            scrollRect.decelerationRate = 0.135f;
+            scrollRect.scrollSensitivity = 25f;
+
+            // Viewport với RectMask2D cắt gọn không bị tràn ra ngoài Panel
+            GameObject viewPort = CreateUIElement("Viewport", scrollObj.transform);
+            SetStretchAnchor(viewPort.GetComponent<RectTransform>());
+            viewPort.AddComponent<RectMask2D>();
+            scrollRect.viewport = viewPort.GetComponent<RectTransform>();
+
+            // Content Grid 20 Ô Pháp Bảo (4x5)
+            GameObject gridObj = CreateUIElement("Grid_Inventory12Slots", viewPort.transform);
             RectTransform gRT = gridObj.GetComponent<RectTransform>();
-            gRT.anchorMin = new Vector2(0, 0);
+            gRT.anchorMin = new Vector2(0, 1);
             gRT.anchorMax = new Vector2(1, 1);
-            gRT.offsetMin = new Vector2(8, 8);
-            gRT.offsetMax = new Vector2(-8, -8);
+            gRT.pivot = new Vector2(0.5f, 1);
+            gRT.anchoredPosition = Vector2.zero;
+            gRT.sizeDelta = new Vector2(0, 600);
 
             var glg = gridObj.AddComponent<GridLayoutGroup>();
             glg.cellSize = new Vector2(140, 160);
             glg.spacing = new Vector2(14, 14);
+            glg.padding = new RectOffset(10, 10, 10, 10);
             glg.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             glg.constraintCount = 4;
             glg.childAlignment = TextAnchor.UpperCenter;
+
+            var csf = gridObj.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            scrollRect.content = gRT;
+
             inventoryGrid = gridObj.transform;
         }
 
@@ -722,6 +752,15 @@ namespace ProjectZombie.Editor.UI
             btTMP.fontStyle = FontStyles.Bold;
             btTMP.alignment = TextAlignmentOptions.Center;
             btTMP.color = new Color(1f, 0.95f, 0.80f, 1f);
+        }
+
+        private static void SetSerializedProp(SerializedObject so, string propName, Object value)
+        {
+            var prop = so.FindProperty(propName);
+            if (prop != null)
+            {
+                prop.objectReferenceValue = value;
+            }
         }
 
         private static GameObject CreateUIElement(string name, Transform parent)
