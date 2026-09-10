@@ -74,6 +74,7 @@ namespace ProjectZombie.Editor
             soThuSinh.characterId = "C001_ThuSinh";
             soThuSinh.characterName = "Thư Sinh";
             soThuSinh.element = ElementType.Kim;
+            soThuSinh.rarity = ItemRarity.Rare;
             soThuSinh.elementHexColor = "#FFD700";
             soThuSinh.avatar = avatarThuSinh;
             soThuSinh.description = "Được anh linh liệt tổ & Đức Thánh Trần điểm hóa. Tay cầm bút lệnh khí thiêng sông núi phán định tà ma.";
@@ -113,6 +114,7 @@ namespace ProjectZombie.Editor
             soDaoSi.characterId = "C002_DaoSi";
             soDaoSi.characterName = "Đạo Sĩ";
             soDaoSi.element = ElementType.Moc;
+            soDaoSi.rarity = ItemRarity.Rare;
             soDaoSi.elementHexColor = "#9B51E0";
             soDaoSi.avatar = avatarDaoSi;
             soDaoSi.description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).";
@@ -152,6 +154,7 @@ namespace ProjectZombie.Editor
             soThanhDong.characterId = "C003_ThanhDong";
             soThanhDong.characterName = "Thanh Đồng";
             soThanhDong.element = ElementType.Moc;
+            soThanhDong.rarity = ItemRarity.Epic;
             soThanhDong.elementHexColor = "#4C7A3D";
             soThanhDong.avatar = avatarThanhDong;
             soThanhDong.description = "Cô Đồng / Thầy Pháp Đạo Mẫu Tứ Phủ (Thiên, Nhạc, Thoải, Địa). Tay mang Chuỗi Linh Phù Tứ Phủ hộ thân trừ tà.";
@@ -190,6 +193,7 @@ namespace ProjectZombie.Editor
             soAnSi.characterId = "C004_AnSi";
             soAnSi.characterName = "Ẩn Sĩ Sơn Lâm";
             soAnSi.element = ElementType.Tho;
+            soAnSi.rarity = ItemRarity.Legendary;
             soAnSi.elementHexColor = "#8A6A3E";
             soAnSi.avatar = avatarAnSi;
             soAnSi.description = "Kỳ nhân tự tu nội lực chốn thâm sơn, hòa hợp làm một với núi rừng bản địa. Dồn lực bộc phát địa khí.";

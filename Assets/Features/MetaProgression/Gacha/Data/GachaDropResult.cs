@@ -9,6 +9,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Data
     [Serializable]
     public struct GachaDropResult
     {
+        public GachaDropType dropType;
         public string relicId;
         public string relicName;
         public ItemRarity rarity;

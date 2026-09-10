@@ -100,6 +100,47 @@ namespace ProjectZombie.Features.MetaProgression
             }
         }
 
+        [Tooltip("Danh sách tiến trình thẻ mảnh & cấp sao của tướng / nhân vật.")]
+        public System.Collections.Generic.List<CharacterProgressEntry> characterProgressList = new System.Collections.Generic.List<CharacterProgressEntry>();
+
+        public int GetCharacterShards(string characterId)
+        {
+            if (string.IsNullOrEmpty(characterId) || characterProgressList == null) return 0;
+            var entry = characterProgressList.Find(x => x.characterId == characterId);
+            return entry.characterId != null ? entry.shardCount : 0;
+        }
+
+        public int GetCharacterStarLevel(string characterId)
+        {
+            if (string.IsNullOrEmpty(characterId) || characterProgressList == null) return 0;
+            var entry = characterProgressList.Find(x => x.characterId == characterId);
+            return entry.characterId != null ? entry.starLevel : 0;
+        }
+
+        public void SetCharacterProgress(string characterId, int shardCount, int starLevel)
+        {
+            if (string.IsNullOrEmpty(characterId)) return;
+            if (characterProgressList == null) characterProgressList = new System.Collections.Generic.List<CharacterProgressEntry>();
+
+            int idx = characterProgressList.FindIndex(x => x.characterId == characterId);
+            if (idx >= 0)
+            {
+                var entry = characterProgressList[idx];
+                entry.shardCount = Mathf.Max(0, shardCount);
+                entry.starLevel = Mathf.Clamp(starLevel, 0, 5);
+                characterProgressList[idx] = entry;
+            }
+            else
+            {
+                characterProgressList.Add(new CharacterProgressEntry
+                {
+                    characterId = characterId,
+                    shardCount = Mathf.Max(0, shardCount),
+                    starLevel = Mathf.Clamp(starLevel, 0, 5)
+                });
+            }
+        }
+
         public int GetUpgradeLevel(int nodeIndex)
         {
             if (upgradeNodeLevels == null || nodeIndex < 0 || nodeIndex >= upgradeNodeLevels.Length) return 0;
@@ -121,6 +162,17 @@ namespace ProjectZombie.Features.MetaProgression
             }
             upgradeNodeLevels[nodeIndex] = level;
         }
+    }
+
+    /// <summary>
+    /// Bản ghi lưu trữ số thẻ mảnh (Shards) và cấp sao (0..5★) của một tướng / nhân vật.
+    /// </summary>
+    [Serializable]
+    public struct CharacterProgressEntry
+    {
+        public string characterId;
+        public int shardCount;
+        public int starLevel;
     }
 
     /// <summary>

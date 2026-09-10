@@ -273,9 +273,8 @@ namespace ProjectZombie.EditorTools
         private void DrawHeroesSection()
         {
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("🧙 QUYỀN SỞ HỮU ANH HÙNG (HERO UNLOCKS)", EditorStyles.boldLabel);
-
-            var unlockedList = new List<string>(_cachedSaveData.unlockedCharacters ?? new string[0]);
+            EditorGUILayout.LabelField("🧙 QUYỀN SỞ HỮU & THẺ MẢNH ANH HÙNG (HERO PROGRESSION +/-)", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("Tướng đạt từ 1★ trở lên được tính là ĐÃ CHIÊU MỘ. 0★ là Chưa Sở Hữu (có thể gộp đủ mảnh để thức tỉnh).", MessageType.None);
 
             if (_allHeroes.Count == 0)
             {
@@ -286,78 +285,102 @@ namespace ProjectZombie.EditorTools
             {
                 if (hero == null) continue;
                 string heroId = hero.characterId;
-                bool isUnlocked = unlockedList.Contains(heroId) || heroId == "default" || heroId == "C001_ThuSinh";
+                int currentShards = _cachedSaveData.GetCharacterShards(heroId);
+                int currentStar = _cachedSaveData.GetCharacterStarLevel(heroId);
+                bool isUnlocked = currentStar >= 1 || heroId == "default" || heroId == "C001_ThuSinh";
 
-                EditorGUILayout.BeginHorizontal("box");
+                EditorGUILayout.BeginVertical("box");
+                EditorGUILayout.BeginHorizontal();
                 
-                string statusColor = isUnlocked ? "#00FF88" : "#FF5555";
-                string statusText = isUnlocked ? "ĐÃ SỞ HỮU" : "ĐANG KHÓA";
-                EditorGUILayout.LabelField($"[{heroId}] <b>{hero.characterName}</b> (Hệ {hero.element}) -> <color={statusColor}><b>{statusText}</b></color>", new GUIStyle(EditorStyles.label) { richText = true }, GUILayout.Width(360));
+                string starLabel = currentStar == 0 ? "<color=#888888>[Chưa Sở Hữu - 0★]</color>" : $"<color=#FFD700><b>[{currentStar}★]</b></color>";
+                string rarityTag = $"<color={hero.rarity.GetHexColor()}>[{hero.rarity.GetDisplayName()}]</color>";
+                EditorGUILayout.LabelField($"[{heroId}] {rarityTag} <b>{hero.characterName}</b> ({hero.element}) {starLabel}", new GUIStyle(EditorStyles.label) { richText = true }, GUILayout.Width(340));
 
-                if (heroId == "default" || heroId == "C001_ThuSinh")
+                EditorGUILayout.LabelField($"Mảnh: <b>{currentShards}</b>", new GUIStyle(EditorStyles.label) { richText = true }, GUILayout.Width(70));
+
+                // Nút +/- Thẻ Mảnh Tướng
+                if (GUILayout.Button($"-10", GUILayout.Width(45)))
                 {
-                    GUI.enabled = false;
-                    GUILayout.Button("Mặc Định Luôn Mở", GUILayout.Width(180));
-                    GUI.enabled = true;
+                    ModifyHeroShards(heroId, -10);
                 }
-                else
+                if (GUILayout.Button($"+10", GUILayout.Width(45)))
                 {
-                    if (isUnlocked)
-                    {
-                        if (GUILayout.Button("🔒 Đặt Thành KHÓA (-)", GUILayout.Width(180)))
-                        {
-                            SetHeroLockState(heroId, false);
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("🔓 MỞ KHÓA NGAY (+)", GUILayout.Width(180)))
-                        {
-                            SetHeroLockState(heroId, true);
-                        }
-                    }
+                    ModifyHeroShards(heroId, 10);
+                }
+
+                // Nút +/- Cấp Sao
+                if (GUILayout.Button("★ -", GUILayout.Width(40)))
+                {
+                    SetHeroStar(heroId, Mathf.Max(0, currentStar - 1));
+                }
+                if (GUILayout.Button("★ +", GUILayout.Width(40)))
+                {
+                    SetHeroStar(heroId, Mathf.Min(5, currentStar + 1));
                 }
 
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndVertical();
             }
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("🔓 Mở Khóa Tất Cả Tướng"))
+            if (GUILayout.Button("⭐ Mở Khóa Tất Cả Tướng (1★)"))
             {
                 foreach (var h in _allHeroes)
                 {
-                    if (h != null && !unlockedList.Contains(h.characterId))
-                    {
-                        unlockedList.Add(h.characterId);
-                    }
+                    if (h != null) SetHeroStar(h.characterId, 1);
                 }
-                _cachedSaveData.unlockedCharacters = unlockedList.ToArray();
-                SaveData();
             }
-            if (GUILayout.Button("🔒 Khóa Toàn Bộ (Chỉ chừa Thư Sinh)"))
+            if (GUILayout.Button("⭐⭐⭐⭐⭐ Max Toàn Bộ Tướng (5★)"))
             {
-                _cachedSaveData.unlockedCharacters = new string[] { "default", "C001_ThuSinh" };
-                SaveData();
+                foreach (var h in _allHeroes)
+                {
+                    if (h != null) SetHeroStar(h.characterId, 5);
+                }
+            }
+            if (GUILayout.Button("+20 Mảnh Cho Tất Cả Tướng"))
+            {
+                foreach (var h in _allHeroes)
+                {
+                    if (h != null) ModifyHeroShards(h.characterId, 20);
+                }
             }
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
         }
 
-        private void SetHeroLockState(string heroId, bool unlock)
+        private void ModifyHeroShards(string heroId, int delta)
         {
-            if (Application.isPlaying && MetaCurrencyManager.Instance != null)
+            if (Application.isPlaying && CharacterProgressionManager.Instance != null)
             {
-                MetaCurrencyManager.Instance.SetCharacterLock(heroId, unlock);
-                _cachedSaveData = MetaCurrencyManager.Instance.GetSaveData();
+                if (delta > 0) CharacterProgressionManager.Instance.AddCharacterShards(heroId, delta);
+                else
+                {
+                    int cur = _cachedSaveData.GetCharacterShards(heroId);
+                    int star = _cachedSaveData.GetCharacterStarLevel(heroId);
+                    _cachedSaveData.SetCharacterProgress(heroId, Mathf.Max(0, cur + delta), star);
+                }
             }
             else
             {
-                var list = new List<string>(_cachedSaveData.unlockedCharacters ?? new string[0]);
-                if (unlock && !list.Contains(heroId)) list.Add(heroId);
-                else if (!unlock && list.Contains(heroId)) list.Remove(heroId);
-                _cachedSaveData.unlockedCharacters = list.ToArray();
+                int cur = _cachedSaveData.GetCharacterShards(heroId);
+                int star = _cachedSaveData.GetCharacterStarLevel(heroId);
+                _cachedSaveData.SetCharacterProgress(heroId, Mathf.Max(0, cur + delta), star);
             }
+            SaveData();
+        }
+
+        private void SetHeroStar(string heroId, int star)
+        {
+            star = Mathf.Clamp(star, 0, 5);
+            int curShards = _cachedSaveData.GetCharacterShards(heroId);
+            _cachedSaveData.SetCharacterProgress(heroId, curShards, star);
+
+            var list = new List<string>(_cachedSaveData.unlockedCharacters ?? new string[0]);
+            if (star >= 1 && !list.Contains(heroId)) list.Add(heroId);
+            else if (star == 0 && list.Contains(heroId) && heroId != "default" && heroId != "C001_ThuSinh") list.Remove(heroId);
+            _cachedSaveData.unlockedCharacters = list.ToArray();
+
             SaveData();
         }
 

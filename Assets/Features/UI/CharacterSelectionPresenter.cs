@@ -166,8 +166,13 @@ namespace ProjectZombie.Features.UI
         private bool IsHeroUnlocked(string heroId)
         {
             if (string.IsNullOrEmpty(heroId)) return true;
-            // Tướng khởi đầu mặc định luôn mở
             if (heroId == "default" || heroId == "C001_ThuSinh") return true;
+
+            if (CharacterProgressionManager.Instance != null)
+            {
+                return CharacterProgressionManager.Instance.IsCharacterUnlocked(heroId);
+            }
+
             if (MetaCurrencyManager.Instance != null)
             {
                 return MetaCurrencyManager.Instance.IsCharacterUnlocked(heroId);

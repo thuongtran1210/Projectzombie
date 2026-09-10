@@ -4,11 +4,12 @@ using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.MetaProgression;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí (Mô hình Clean MVP).
+    /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí / Tướng (Mô hình Clean MVP).
     /// </summary>
     public class CardCodexPresenter : MonoBehaviour
     {
@@ -29,14 +30,17 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Sprite _badgeElementTho;
 
         private readonly List<WeaponData> _allWeapons = new List<WeaponData>();
+        private readonly List<CharacterDataSO> _allHeroes = new List<CharacterDataSO>();
         private readonly List<UpgradeData> _allUpgrades = new List<UpgradeData>();
         private readonly List<FusionUpgradeData> _allFusionUpgrades = new List<FusionUpgradeData>();
 
         private readonly Dictionary<WeaponData, CodexSlotItemView> _relicSlotViewMap = new Dictionary<WeaponData, CodexSlotItemView>();
+        private readonly Dictionary<CharacterDataSO, CodexSlotItemView> _heroSlotViewMap = new Dictionary<CharacterDataSO, CodexSlotItemView>();
         private readonly Dictionary<UpgradeData, CodexSlotItemView> _upgradeSlotViewMap = new Dictionary<UpgradeData, CodexSlotItemView>();
 
         private CodexTabType _currentTab = CodexTabType.RelicFusion;
         private WeaponData _selectedRelic;
+        private CharacterDataSO _selectedHero;
         private UpgradeData _selectedUpgrade;
 
         private void Awake()
@@ -102,6 +106,14 @@ namespace ProjectZombie.Features.UI
                 RelicInventoryManager.Instance.OnRelicStarUpgraded += HandleRelicDataChanged;
             }
 
+            if (CharacterProgressionManager.Instance != null)
+            {
+                CharacterProgressionManager.Instance.OnCharacterShardsChanged -= HandleHeroDataChanged;
+                CharacterProgressionManager.Instance.OnCharacterShardsChanged += HandleHeroDataChanged;
+                CharacterProgressionManager.Instance.OnCharacterStarUpgraded -= HandleHeroDataChanged;
+                CharacterProgressionManager.Instance.OnCharacterStarUpgraded += HandleHeroDataChanged;
+            }
+
             if (MetaCurrencyManager.Instance != null)
             {
                 MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
@@ -117,6 +129,12 @@ namespace ProjectZombie.Features.UI
                 RelicInventoryManager.Instance.OnRelicStarUpgraded -= HandleRelicDataChanged;
             }
 
+            if (CharacterProgressionManager.Instance != null)
+            {
+                CharacterProgressionManager.Instance.OnCharacterShardsChanged -= HandleHeroDataChanged;
+                CharacterProgressionManager.Instance.OnCharacterStarUpgraded -= HandleHeroDataChanged;
+            }
+
             if (MetaCurrencyManager.Instance != null)
             {
                 MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
@@ -125,7 +143,12 @@ namespace ProjectZombie.Features.UI
 
         private void HandleRelicDataChanged(string relicId, int val)
         {
-            RefreshUI();
+            if (_currentTab == CodexTabType.RelicFusion) RefreshUI();
+        }
+
+        private void HandleHeroDataChanged(string heroId, int val)
+        {
+            if (_currentTab == CodexTabType.HeroCards) RefreshUI();
         }
 
         private void HandleCurrencyChanged(int newBalance)
@@ -134,6 +157,10 @@ namespace ProjectZombie.Features.UI
             if (_selectedRelic != null && _currentTab == CodexTabType.RelicFusion)
             {
                 SelectRelic(_selectedRelic);
+            }
+            else if (_selectedHero != null && _currentTab == CodexTabType.HeroCards)
+            {
+                SelectHero(_selectedHero);
             }
         }
 
@@ -146,6 +173,10 @@ namespace ProjectZombie.Features.UI
             {
                 SelectRelic(_selectedRelic);
             }
+            else if (_selectedHero != null && _currentTab == CodexTabType.HeroCards)
+            {
+                SelectHero(_selectedHero);
+            }
         }
 
         public void LoadAllData()
@@ -153,6 +184,7 @@ namespace ProjectZombie.Features.UI
             _allUpgrades.Clear();
             _allFusionUpgrades.Clear();
             _allWeapons.Clear();
+            _allHeroes.Clear();
 
             var seenUpgradeIds = new HashSet<string>();
             var seenWeaponIds = new HashSet<string>();
@@ -228,6 +260,44 @@ namespace ProjectZombie.Features.UI
                 }
             }
 #endif
+
+            // 3. Load Heroes
+            var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+            if (charDb == null)
+            {
+                charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+            }
+#endif
+            if (charDb != null && charDb.characters != null)
+            {
+                foreach (var h in charDb.characters)
+                {
+                    if (h != null && !_allHeroes.Contains(h)) _allHeroes.Add(h);
+                }
+            }
+
+            var loadedHeroes = Resources.LoadAll<CharacterDataSO>("Characters");
+            if (loadedHeroes != null)
+            {
+                foreach (var h in loadedHeroes)
+                {
+                    if (h != null && !_allHeroes.Contains(h)) _allHeroes.Add(h);
+                }
+            }
+
+#if UNITY_EDITOR
+            if (_allHeroes.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:CharacterDataSO");
+                foreach (var guid in guids)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var h = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDataSO>(path);
+                    if (h != null && !_allHeroes.Contains(h)) _allHeroes.Add(h);
+                }
+            }
+#endif
         }
 
         private void RefreshCurrency()
@@ -250,6 +320,7 @@ namespace ProjectZombie.Features.UI
 
             _view.ClearGrid();
             _relicSlotViewMap.Clear();
+            _heroSlotViewMap.Clear();
             _upgradeSlotViewMap.Clear();
 
             if (tab == CodexTabType.RelicFusion)
@@ -304,17 +375,62 @@ namespace ProjectZombie.Features.UI
                     _view.DisplayCardDetail("Chưa Có Thần Binh", "", "Đang cập nhật...", null, false);
                 }
             }
-            else
+            else if (tab == CodexTabType.HeroCards)
             {
-                List<UpgradeData> filterList = new List<UpgradeData>();
-                if (tab == CodexTabType.Passives)
+                if (_allHeroes.Count > 0)
                 {
-                    filterList.AddRange(_allUpgrades.FindAll(u => u.upgradeType == UpgradeType.CommonUpgrade || u.upgradeType == UpgradeType.RareUpgrade));
+                    var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+
+                    for (int i = 0; i < _allHeroes.Count; i++)
+                    {
+                        var hero = _allHeroes[i];
+                        int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
+                        int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
+                        var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
+                        int reqShards = nextStep != null ? nextStep.requiredShards : 10;
+                        bool isUnlocked = star > 0;
+                        bool isSelected = _selectedHero == hero;
+
+                        var slotItem = _view.CreateSlotItem();
+                        var vm = new HeroSlotViewModel
+                        {
+                            CharacterId = hero.characterId,
+                            CharacterName = hero.characterName,
+                            Avatar = hero.avatar,
+                            Rarity = hero.rarity,
+                            ElementBadge = GetElementBadgeSprite(hero.element),
+                            NameColor = GetElementColor(hero.element),
+                            StarLevel = star,
+                            ShardCount = shards,
+                            ReqShards = reqShards,
+                            IsUnlocked = isUnlocked,
+                            IsSelected = isSelected
+                        };
+
+                        slotItem.BindHero(vm, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
+                        {
+                            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                            SelectHero(hero);
+                        });
+
+                        _heroSlotViewMap[hero] = slotItem;
+                    }
+
+                    if (_selectedHero == null || !_allHeroes.Contains(_selectedHero))
+                    {
+                        _selectedHero = _allHeroes[0];
+                    }
+                    SelectHero(_selectedHero);
                 }
                 else
                 {
-                    filterList.AddRange(_allUpgrades.FindAll(u => u.upgradeType == UpgradeType.ComboAugment || u.upgradeType == UpgradeType.DashTrait || u.upgradeType == UpgradeType.BreakthroughUltimate));
+                    _view.DisplayCardDetail("Chưa Có Anh Hùng", "", "Đang cập nhật dữ liệu tướng...", null, false);
                 }
+            }
+            else
+            {
+                List<UpgradeData> filterList = new List<UpgradeData>();
+                filterList.AddRange(_allUpgrades.FindAll(u => u.upgradeType == UpgradeType.CommonUpgrade || u.upgradeType == UpgradeType.RareUpgrade || u.upgradeType == UpgradeType.ComboAugment || u.upgradeType == UpgradeType.DashTrait || u.upgradeType == UpgradeType.BreakthroughUltimate));
 
                 if (filterList.Count > 0)
                 {
@@ -365,6 +481,22 @@ namespace ProjectZombie.Features.UI
                     bool isUnlocked = star > 0;
 
                     slotView.SetSelected(isSelected, isUnlocked, GetElementColor(weapon.elementType), weapon.weaponName);
+                }
+            }
+            else if (_currentTab == CodexTabType.HeroCards)
+            {
+                var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+                foreach (var kvp in _heroSlotViewMap)
+                {
+                    var hero = kvp.Key;
+                    var slotView = kvp.Value;
+                    if (slotView == null) continue;
+
+                    bool isSelected = hero == _selectedHero;
+                    int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
+                    bool isUnlocked = star > 0;
+
+                    slotView.SetSelected(isSelected, isUnlocked, GetElementColor(hero.element), hero.characterName);
                 }
             }
             else
@@ -425,6 +557,52 @@ namespace ProjectZombie.Features.UI
             _view.DisplayRelicDetail(weapon.weaponName, category, desc, weapon.icon, star, shards, reqShards, cost, canFuse, btnLabel);
         }
 
+        private void SelectHero(CharacterDataSO hero)
+        {
+            if (hero == null) return;
+            _selectedHero = hero;
+
+            UpdateSelectionVisuals();
+
+            var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+            int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
+            int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
+            var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
+
+            int reqShards = nextStep != null ? nextStep.requiredShards : 10;
+            int cost = nextStep != null ? nextStep.coTienCost : 0;
+
+            bool canUpgrade = heroMgr != null && heroMgr.CanUpgradeCharacter(hero.characterId, out _);
+
+            string btnLabel;
+            if (star == 0)
+            {
+                btnLabel = $"CHIÊU MỘ ANH HÙNG ({shards}/{reqShards} Mảnh)";
+            }
+            else if (star < 5)
+            {
+                btnLabel = cost > 0 ? $"THĂNG SAO ({reqShards} Mảnh + {cost:N0} Cổ Tiền)" : $"THĂNG SAO ({reqShards} Mảnh)";
+            }
+            else
+            {
+                btnLabel = "THẦN THOẠI ĐẠI THÀNH (5 SAO)";
+            }
+
+            string rarityTag = $"<color={hero.rarity.GetHexColor()}>[{hero.rarity.GetDisplayName()}]</color>";
+            string elementTag = $"<color={hero.elementHexColor}>[{hero.element}]</color>";
+            string category = $"{rarityTag} {elementTag} [ANH HÙNG]";
+            string desc = $"<b>Kỹ Năng:</b> {hero.signatureSkillName} - {hero.signatureSkillDesc}\n" +
+                          $"<b>Nội Tại:</b> {hero.passiveTraitName} - {hero.passiveTraitDesc}\n\n" +
+                          $"<color=#D1D5DB>{hero.description}</color>\n\n";
+
+            if (nextStep != null)
+            {
+                desc += $"<color=#00FF88>Cảnh Giới Kế Tiếp ({nextStep.targetStar} Sao):</color> {nextStep.perkDescription}";
+            }
+
+            _view.DisplayRelicDetail(hero.characterName, category, desc, hero.avatar, star, shards, reqShards, cost, canUpgrade, btnLabel);
+        }
+
         private void SelectUpgrade(UpgradeData data)
         {
             if (data == null) return;
@@ -440,21 +618,44 @@ namespace ProjectZombie.Features.UI
 
         private void HandleFusionClicked()
         {
-            if (_selectedRelic == null) return;
-
-            var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
-            if (relicMgr == null) return;
-
-            if (relicMgr.TryFuseRelic(_selectedRelic.weaponId))
+            if (_currentTab == CodexTabType.RelicFusion)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
-                RefreshCurrency();
-                PopulateGridForTab(_currentTab);
-                SelectRelic(_selectedRelic);
+                if (_selectedRelic == null) return;
+
+                var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
+                if (relicMgr == null) return;
+
+                if (relicMgr.TryFuseRelic(_selectedRelic.weaponId))
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    RefreshCurrency();
+                    PopulateGridForTab(_currentTab);
+                    SelectRelic(_selectedRelic);
+                }
+                else
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                }
             }
-            else
+            else if (_currentTab == CodexTabType.HeroCards)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                if (_selectedHero == null) return;
+
+                var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+                if (heroMgr == null) return;
+
+                var result = heroMgr.TryUpgradeCharacterStar(_selectedHero.characterId);
+                if (result == UpgradeCharacterResult.Success)
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    RefreshCurrency();
+                    PopulateGridForTab(_currentTab);
+                    SelectHero(_selectedHero);
+                }
+                else
+                {
+                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                }
             }
         }
 

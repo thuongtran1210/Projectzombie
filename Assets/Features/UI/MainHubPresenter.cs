@@ -25,7 +25,6 @@ namespace ProjectZombie.Features.UI
         private void Awake()
         {
             if (_view == null) _view = GetComponent<MainHubView>();
-            if (_currencyManager == null) _currencyManager = FindObjectOfType<MetaCurrencyManager>();
             if (_metaUIManager == null) _metaUIManager = GetComponentInParent<MetaUIManager>() ?? MetaUIManager.Instance;
         }
 
@@ -55,18 +54,19 @@ namespace ProjectZombie.Features.UI
                 _view.OnSettingsClicked += HandleSettingsClicked;
             }
 
-            if (_currencyManager != null)
-            {
-                _currencyManager.OnCurrencyChanged += UpdateCurrencyDisplay;
-            }
-
-            UpdateCurrencyDisplay();
+            SubscribeCurrencyManager();
             RefreshHubState();
         }
 
         private void OnEnable()
         {
+            SubscribeCurrencyManager();
             RefreshHubState();
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeCurrencyManager();
         }
 
         private void OnDestroy()
@@ -83,9 +83,23 @@ namespace ProjectZombie.Features.UI
                 _view.OnSettingsClicked -= HandleSettingsClicked;
             }
 
-            if (_currencyManager != null)
+            UnsubscribeCurrencyManager();
+        }
+
+        private void SubscribeCurrencyManager()
+        {
+            if (MetaCurrencyManager.Instance != null)
             {
-                _currencyManager.OnCurrencyChanged -= UpdateCurrencyDisplay;
+                MetaCurrencyManager.Instance.OnCurrencyChanged -= UpdateCurrencyDisplay;
+                MetaCurrencyManager.Instance.OnCurrencyChanged += UpdateCurrencyDisplay;
+            }
+        }
+
+        private void UnsubscribeCurrencyManager()
+        {
+            if (MetaCurrencyManager.HasInstance)
+            {
+                MetaCurrencyManager.Instance.OnCurrencyChanged -= UpdateCurrencyDisplay;
             }
         }
 
@@ -101,7 +115,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_view != null)
             {
-                int balance = amount >= 0 ? amount : (_currencyManager != null ? _currencyManager.TotalCurrency : 0);
+                int balance = amount >= 0 ? amount : (MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0);
                 _view.SetCoTienBalance($"<color=#FFD700>{balance:N0}</color>");
                 _view.SetLinhHonBalance("<color=#B388FF>0</color>");
             }

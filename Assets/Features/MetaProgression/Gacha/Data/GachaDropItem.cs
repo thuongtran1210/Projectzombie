@@ -4,16 +4,25 @@ using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha.Data
 {
+    public enum GachaDropType
+    {
+        RelicShard,     // Mảnh Pháp Bảo / Thần Binh
+        CharacterShard  // Mảnh Thẻ Tướng / Anh Hùng
+    }
+
     /// <summary>
-    /// Định nghĩa 1 phần thưởng trong Pool Gacha Rương Pháp Bảo.
+    /// Định nghĩa 1 phần thưởng trong Pool Gacha Rương (Pháp Bảo hoặc Tướng).
     /// </summary>
     [Serializable]
     public class GachaDropItem
     {
-        [Tooltip("Mã định danh của Pháp Bảo (khớp với weaponId trong WeaponData).")]
+        [Tooltip("Loại phần thưởng: Mảnh Pháp Bảo hoặc Mảnh Tướng")]
+        public GachaDropType dropType = GachaDropType.RelicShard;
+
+        [Tooltip("Mã định danh của Pháp Bảo (khớp với weaponId trong WeaponData) hoặc characterId của Tướng.")]
         public string relicId;
 
-        [Tooltip("Tên Pháp Bảo (hiển thị / debug).")]
+        [Tooltip("Tên hiển thị của Vật Phẩm / Tướng.")]
         public string relicName;
 
         [Tooltip("Độ hiếm của Pháp Bảo.")]

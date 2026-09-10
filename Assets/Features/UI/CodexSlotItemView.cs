@@ -20,6 +20,21 @@ namespace ProjectZombie.Features.UI
         public bool IsSelected;
     }
 
+    public struct HeroSlotViewModel
+    {
+        public string CharacterId;
+        public string CharacterName;
+        public Sprite Avatar;
+        public ProjectZombie.Features.Shared.ItemRarity Rarity;
+        public Sprite ElementBadge;
+        public Color NameColor;
+        public int StarLevel;
+        public int ShardCount;
+        public int ReqShards;
+        public bool IsUnlocked;
+        public bool IsSelected;
+    }
+
     public struct UpgradeSlotViewModel
     {
         public string UpgradeId;
@@ -29,7 +44,7 @@ namespace ProjectZombie.Features.UI
     }
 
     /// <summary>
-    /// Passive View quản lý hiển thị một ô Thần Thẻ / Pháp Bảo trong Grid Bách Bảo Các.
+    /// Passive View quản lý hiển thị một ô Thần Thẻ / Pháp Bảo / Thẻ Tướng trong Grid Bách Bảo Các.
     /// Chuẩn MVP: Không chứa logic nghiệp vụ hay truy xuất Model.
     /// </summary>
     public class CodexSlotItemView : MonoBehaviour
@@ -144,6 +159,81 @@ namespace ProjectZombie.Features.UI
                 {
                     string nameColorHex = vm.IsSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(vm.NameColor);
                     _nameText.text = $"<color=#{nameColorHex}>{vm.WeaponName}</color>";
+                }
+            }
+        }
+
+        public void BindHero(HeroSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
+        {
+            _onClickedCallback = onClicked;
+            _normalSlotSprite = normalSlot;
+            _selectedSlotSprite = selectedSlot;
+            EnsureButtonListener();
+
+            // 1. Box State
+            UpdateBoxVisual(vm.IsSelected, vm.IsUnlocked);
+
+            // 2. Avatar
+            if (_iconImage != null)
+            {
+                _iconImage.sprite = vm.Avatar;
+                _iconImage.enabled = vm.Avatar != null;
+                _iconImage.color = vm.IsUnlocked ? Color.white : new Color(0.35f, 0.30f, 0.35f, 0.45f);
+            }
+
+            // 3. Element Badge
+            if (_elementBadgeImage != null)
+            {
+                if (vm.IsUnlocked && vm.ElementBadge != null)
+                {
+                    _elementBadgeImage.sprite = vm.ElementBadge;
+                    _elementBadgeImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _elementBadgeImage.gameObject.SetActive(false);
+                }
+            }
+
+            // 4. Star Badge
+            if (_starText != null)
+            {
+                if (vm.StarLevel > 0)
+                {
+                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel} Sao</b></color>";
+                    _starText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _starText.gameObject.SetActive(false);
+                }
+            }
+
+            // 5. Shards Progress
+            if (_shardProgressText != null)
+            {
+                if (vm.StarLevel >= 5)
+                {
+                    _shardProgressText.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
+                }
+                else
+                {
+                    string colorHex = vm.ShardCount >= vm.ReqShards ? "00FF88" : "FFAA00";
+                    _shardProgressText.text = $"<color=#{colorHex}><b>{vm.ShardCount}/{vm.ReqShards}</b></color>";
+                }
+            }
+
+            // 6. Label Name
+            if (_nameText != null)
+            {
+                if (!vm.IsUnlocked)
+                {
+                    _nameText.text = vm.IsSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
+                }
+                else
+                {
+                    string nameColorHex = vm.IsSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(vm.NameColor);
+                    _nameText.text = $"<color=#{nameColorHex}>{vm.CharacterName}</color>";
                 }
             }
         }

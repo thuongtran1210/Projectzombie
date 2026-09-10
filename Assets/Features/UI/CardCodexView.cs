@@ -9,8 +9,8 @@ namespace ProjectZombie.Features.UI
     public enum CodexTabType
     {
         RelicFusion, // Thần Binh & Pháp Bảo (Gộp thẻ mở khóa & tăng sao)
-        Passives,    // Thần Thẻ Bị Động
-        ComboSkills  // Bí Kíp Đòn Chém
+        HeroCards,   // Thẻ Tướng & Anh Hùng (Gộp thẻ mở khóa & tăng sao)
+        Passives     // Thần Thẻ Bị Động
     }
 
     /// <summary>
@@ -64,8 +64,8 @@ namespace ProjectZombie.Features.UI
             if (_dimBackgroundButton != null) _dimBackgroundButton.onClick.AddListener(() => OnBackClicked?.Invoke());
 
             if (_tabFusionButton != null) _tabFusionButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.RelicFusion));
+            if (_tabComboButton != null) _tabComboButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.HeroCards));
             if (_tabPassivesButton != null) _tabPassivesButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.Passives));
-            if (_tabComboButton != null) _tabComboButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.ComboSkills));
 
             if (_alchemyFusionButton != null) _alchemyFusionButton.onClick.AddListener(() => OnAlchemyFusionClicked?.Invoke());
         }
@@ -83,6 +83,18 @@ namespace ProjectZombie.Features.UI
 
         public void SetCoTienBalance(string formattedText)
         {
+            if (_coTienText == null)
+            {
+                foreach (var tmp in GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    if (tmp.transform.parent != null && (tmp.transform.parent.name == "Box_CoTien" || tmp.transform.parent.name.Contains("CoTien")))
+                    {
+                        _coTienText = tmp;
+                        break;
+                    }
+                }
+            }
+
             if (_coTienText != null) _coTienText.text = formattedText;
         }
 

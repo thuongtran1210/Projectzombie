@@ -68,11 +68,35 @@ namespace ProjectZombie.Features.UI
 
         public void SetCoTienBalance(string formattedText)
         {
+            if (_coTienText == null)
+            {
+                foreach (var tmp in GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    if (tmp.transform.parent != null && tmp.transform.parent.name == "Box_CoTien")
+                    {
+                        _coTienText = tmp;
+                        break;
+                    }
+                }
+            }
+
             if (_coTienText != null) _coTienText.text = formattedText;
         }
 
         public void SetLinhHonBalance(string formattedText)
         {
+            if (_linhHonText == null)
+            {
+                foreach (var tmp in GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    if (tmp.transform.parent != null && (tmp.transform.parent.name == "Box_LinhHon" || tmp.transform.parent.name.Contains("LinhHon")))
+                    {
+                        _linhHonText = tmp;
+                        break;
+                    }
+                }
+            }
+
             if (_linhHonText != null) _linhHonText.text = formattedText;
         }
 

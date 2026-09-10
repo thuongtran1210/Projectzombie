@@ -143,19 +143,31 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             for (int i = 0; i < count; i++)
             {
                 var drop = CalculateSingleDrop(_activeBanner);
-                
-                // Kiểm tra trạng thái cấp sao hiện tại
-                int currentStar = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicStarLevel(drop.relicId) : 1;
-                bool isMaxStar = currentStar >= 5;
-                bool isNew = RelicInventoryManager.Instance != null && !RelicInventoryManager.Instance.IsRelicUnlocked(drop.relicId);
+                bool isHero = drop.dropType == GachaDropType.CharacterShard;
+                int currentStar = 0;
+                bool isMaxStar = false;
+                bool isNew = false;
+                int totalShards = 0;
+
+                if (isHero)
+                {
+                    currentStar = CharacterProgressionManager.Instance != null ? CharacterProgressionManager.Instance.GetCharacterStarLevel(drop.relicId) : 0;
+                    isMaxStar = currentStar >= 5;
+                    isNew = CharacterProgressionManager.Instance != null && !CharacterProgressionManager.Instance.IsCharacterUnlocked(drop.relicId);
+                }
+                else
+                {
+                    currentStar = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicStarLevel(drop.relicId) : 0;
+                    isMaxStar = currentStar >= 5;
+                    isNew = RelicInventoryManager.Instance != null && !RelicInventoryManager.Instance.IsRelicUnlocked(drop.relicId);
+                }
                 
                 bool isConverted = false;
                 int convertedCoins = 0;
 
                 if (isMaxStar)
                 {
-                    // Pháp bảo đã đạt tối đa 5 sao -> Tự động quy đổi mảnh thành Cổ Tiền
-                    // Tỷ lệ: Phổ Thông = 20/mảnh, Bảo Phẩm = 40/mảnh, Cực Phẩm = 80/mảnh, Thần Binh = 200/mảnh
+                    // Đã đạt tối đa 5 sao -> Tự động quy đổi mảnh thành Cổ Tiền
                     int ratePerShard = drop.rarity switch
                     {
                         ItemRarity.Common => 20,
@@ -175,17 +187,35 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
                 }
                 else
                 {
-                    // Chưa đạt max sao -> Thêm mảnh vào kho
-                    if (RelicInventoryManager.Instance != null)
+                    // Chưa đạt max sao -> Thêm mảnh vào kho tương ứng
+                    if (isHero)
                     {
-                        RelicInventoryManager.Instance.AddRelicShards(drop.relicId, drop.shardAmount);
+                        if (CharacterProgressionManager.Instance != null)
+                        {
+                            CharacterProgressionManager.Instance.AddCharacterShards(drop.relicId, drop.shardAmount);
+                        }
+                    }
+                    else
+                    {
+                        if (RelicInventoryManager.Instance != null)
+                        {
+                            RelicInventoryManager.Instance.AddRelicShards(drop.relicId, drop.shardAmount);
+                        }
                     }
                 }
 
-                int totalShards = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicShardCount(drop.relicId) : drop.shardAmount;
+                if (isHero)
+                {
+                    totalShards = CharacterProgressionManager.Instance != null ? CharacterProgressionManager.Instance.GetCharacterShardCount(drop.relicId) : drop.shardAmount;
+                }
+                else
+                {
+                    totalShards = RelicInventoryManager.Instance != null ? RelicInventoryManager.Instance.GetRelicShardCount(drop.relicId) : drop.shardAmount;
+                }
 
                 results.Add(new GachaDropResult
                 {
+                    dropType = drop.dropType,
                     relicId = drop.relicId,
                     relicName = drop.relicName,
                     rarity = drop.rarity,

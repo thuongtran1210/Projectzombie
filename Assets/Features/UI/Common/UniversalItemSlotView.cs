@@ -39,8 +39,19 @@ namespace ProjectZombie.Features.UI.Common
 
         private void Awake()
         {
+            EnsureButtonListener();
+        }
+
+        public void EnsureButtonListener()
+        {
+            if (_clickButton == null)
+            {
+                _clickButton = GetComponentInChildren<Button>(true);
+            }
+
             if (_clickButton != null)
             {
+                _clickButton.onClick.RemoveListener(HandleClick);
                 _clickButton.onClick.AddListener(HandleClick);
             }
         }
@@ -57,6 +68,7 @@ namespace ProjectZombie.Features.UI.Common
         {
             _currentVM = vm;
             _onClickedCallback = onClicked;
+            EnsureButtonListener();
             if (normalSlot != null) _normalSlotWoodSprite = normalSlot;
             if (selectedSlot != null) _selectedSlotGlowSprite = selectedSlot;
 
@@ -310,6 +322,8 @@ namespace ProjectZombie.Features.UI.Common
             lblTMP.overflowMode = TextOverflowModes.Ellipsis;
             lblTMP.raycastTarget = false;
 
+            boxBtn.targetGraphic = boxImg;
+
             // Attach Component
             var slotView = slotObj.AddComponent<UniversalItemSlotView>();
             slotView._boxBorderImage = boxImg;
@@ -322,6 +336,7 @@ namespace ProjectZombie.Features.UI.Common
             slotView._bottomProgressText = shardTMP;
             slotView._nameText = lblTMP;
             slotView._clickButton = boxBtn;
+            slotView.EnsureButtonListener();
 
             return slotView;
         }

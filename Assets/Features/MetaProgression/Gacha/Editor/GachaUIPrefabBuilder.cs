@@ -429,7 +429,16 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 isSelected: true, isUnlocked: true,
                 chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
 
-            // 2. Rương Huyền Thiết (Bạc - KHÓA)
+            // 2. Gương Chiêu Mộ Anh Hùng (Thẻ Tướng - KHẢ DỤNG)
+            CreateChestSelectionItem(
+                contentGo.transform, font, "Item_Chest_Hero",
+                "Gương Anh Hùng",
+                "Chiêu Mộ Tướng - 200 Cổ Tiền/lượt",
+                "<color=#00FF88>ĐANG MỞ</color>",
+                isSelected: false, isUnlocked: true,
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+
+            // 3. Rương Huyền Thiết (Bạc - KHÓA)
             CreateChestSelectionItem(
                 contentGo.transform, font, "Item_Chest_Silver",
                 "Bảo Rương Bạc",

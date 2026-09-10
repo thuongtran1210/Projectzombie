@@ -91,6 +91,18 @@ namespace ProjectZombie.Features.UI.Gacha
 
         public void SetCurrencyBalance(string formattedBalance)
         {
+            if (_currencyBalanceText == null)
+            {
+                foreach (var tmp in GetComponentsInChildren<TextMeshProUGUI>(true))
+                {
+                    if (tmp.transform.parent != null && (tmp.transform.parent.name == "Box_CoTien" || tmp.transform.parent.name.Contains("CoTien") || tmp.name.Contains("Currency")))
+                    {
+                        _currencyBalanceText = tmp;
+                        break;
+                    }
+                }
+            }
+
             if (_currencyBalanceText != null) _currencyBalanceText.text = formattedBalance;
         }
 

@@ -23,6 +23,9 @@ namespace ProjectZombie.Features.Player
         [Tooltip("Hệ Ngũ Hành (Kim / Mộc / Thủy / Hỏa / Thổ)")]
         public ElementType element = ElementType.Kim;
 
+        [Tooltip("Độ hiếm / Phẩm cấp Tướng (Phổ Thông, Bảo Phẩm, Cực Phẩm, Thần Binh)")]
+        public ItemRarity rarity = ItemRarity.Rare;
+
         [Tooltip("Màu Hex hiển thị của Hệ (VD: #FFD700)")]
         public string elementHexColor = "#FFD700";
 

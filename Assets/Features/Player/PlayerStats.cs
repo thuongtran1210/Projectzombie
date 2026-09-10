@@ -79,6 +79,7 @@ namespace ProjectZombie.Features.Player
             InitializeBaseConfig();
             InitStats();
             ApplyPermanentUpgrades();
+            ApplyCharacterStarProgression();
             SyncHealthWithSystem(true);
         }
 
@@ -213,6 +214,42 @@ namespace ProjectZombie.Features.Player
 
             RecalculateAllStats();
             SyncHealthWithSystem(true);
+        }
+
+        /// <summary>
+        /// Nạp bonus chỉ số từ Cấp Sao (1★ - 5★) của nhân vật đang được chọn vào trận.
+        /// </summary>
+        public void ApplyCharacterStarProgression()
+        {
+            var selectedChar = RunLoadoutState.SelectedCharacter;
+            if (selectedChar == null || string.IsNullOrEmpty(selectedChar.characterId)) return;
+
+            var heroMgr = CharacterProgressionManager.Instance;
+            int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(selectedChar.characterId) : 1;
+            if (star <= 1) return;
+
+            var configSO = heroMgr != null ? heroMgr.ProgressionConfig : null;
+            if (configSO == null)
+            {
+                configSO = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+            }
+
+            if (configSO != null && configSO.StarSteps != null)
+            {
+                for (int s = 2; s <= star; s++)
+                {
+                    var step = configSO.GetStepConfig(s);
+                    if (step != null)
+                    {
+                        if (step.healthMultiplierBonus > 0f) _baseMaxHealth *= (1f + step.healthMultiplierBonus);
+                        if (step.damageMultiplierBonus > 0f) _baseDamage *= (1f + step.damageMultiplierBonus);
+                        if (step.moveSpeedMultiplierBonus > 0f) _baseMoveSpeed *= (1f + step.moveSpeedMultiplierBonus);
+                        if (step.cooldownReductionBonus > 0f) _baseDashCooldown = Mathf.Max(0.5f, _baseDashCooldown * (1f - step.cooldownReductionBonus));
+                    }
+                }
+            }
+
+            RecalculateAllStats();
         }
 
         private void ApplyCharacterPassives()

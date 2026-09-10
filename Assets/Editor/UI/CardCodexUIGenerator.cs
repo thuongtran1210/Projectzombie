@@ -162,12 +162,12 @@ namespace ProjectZombie.Editor.UI
             tbHlg.childControlWidth = true;
             tbHlg.childControlHeight = true;
 
-            // Tab 1: Luyện Hóa
-            GameObject t1 = CreateTabBtn("Tab_Fusion", "LUYỆN HÓA THẦN BINH", tabBar.transform, font, tabWoodActive, out Button tab1Btn, out Image tab1Bg, out TextMeshProUGUI tab1Txt);
-            // Tab 2: Thần Thẻ Bị Động
+            // Tab 1: Luyện Hóa Thần Binh
+            GameObject t1 = CreateTabBtn("Tab_Fusion", "THẦN BINH & PHÁP BẢO", tabBar.transform, font, tabWoodActive, out Button tab1Btn, out Image tab1Bg, out TextMeshProUGUI tab1Txt);
+            // Tab 2: Thần Tướng Anh Hùng
+            GameObject t3 = CreateTabBtn("Tab_Combo", "THẦN TƯỚNG ANH HÙNG", tabBar.transform, font, tabWoodInactive, out Button tab3Btn, out Image tab3Bg, out TextMeshProUGUI tab3Txt);
+            // Tab 3: Thần Thẻ Bị Động
             GameObject t2 = CreateTabBtn("Tab_Passives", "THẦN THẺ BỊ ĐỘNG", tabBar.transform, font, tabWoodInactive, out Button tab2Btn, out Image tab2Bg, out TextMeshProUGUI tab2Txt);
-            // Tab 3: Bí Kíp Đòn Chém
-            GameObject t3 = CreateTabBtn("Tab_Combo", "BÍ KÍP ĐÒN CHÉM", tabBar.transform, font, tabWoodInactive, out Button tab3Btn, out Image tab3Bg, out TextMeshProUGUI tab3Txt);
 
             // ScrollView Thẻ Bài
             GameObject scrollObj = CreateUIElement("ScrollView_Cards", leftCol.transform);
