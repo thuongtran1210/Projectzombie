@@ -325,7 +325,8 @@ namespace ProjectZombie.Features.Spawners
             string stageName = timelineConfig != null ? timelineConfig.levelName : "Chiến Trường";
             int totalEvents = timelineConfig != null && timelineConfig.events != null ? timelineConfig.events.Count : 1;
             int currentWave = Mathf.Min(_nextEventIndex + 1, totalEvents);
-            OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds));
+            Sprite waveIcon = evt.GetIcon();
+            OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds, waveIcon));
 
             switch (evt.eventType)
             {

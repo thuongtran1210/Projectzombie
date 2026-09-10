@@ -1,3 +1,4 @@
+using UnityEngine;
 using ProjectZombie.Features.Spawners;
 
 namespace ProjectZombie.Features.UI.HUD
@@ -15,8 +16,9 @@ namespace ProjectZombie.Features.UI.HUD
         public int totalWaves;
         public TimelineEventType eventType;
         public float timestampSeconds;
+        public Sprite eventIcon;
 
-        public WaveInfo(string stageName, string waveTitle, int currentWaveIndex, int totalWaves, TimelineEventType eventType, float timestampSeconds)
+        public WaveInfo(string stageName, string waveTitle, int currentWaveIndex, int totalWaves, TimelineEventType eventType, float timestampSeconds, Sprite eventIcon = null)
         {
             this.stageName = stageName;
             this.waveTitle = waveTitle;
@@ -24,6 +26,7 @@ namespace ProjectZombie.Features.UI.HUD
             this.totalWaves = totalWaves;
             this.eventType = eventType;
             this.timestampSeconds = timestampSeconds;
+            this.eventIcon = eventIcon;
         }
     }
 }

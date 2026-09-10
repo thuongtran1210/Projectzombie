@@ -110,8 +110,8 @@ namespace ProjectZombie.Features.UI.HUD
             string bannerTitle = info.waveTitle.ToUpper();
             string bannerSubText = GetSubTextForEventType(info.eventType);
 
-            // Kích hoạt hoạt ảnh Banner ở giữa màn hình
-            _view.PlayWaveTransitionBanner(bannerTag, bannerTitle, bannerSubText, info.eventType);
+            // Kích hoạt hoạt ảnh Banner ở giữa màn hình (Ưu tiên lấy icon quái/Boss có sẵn của Wave)
+            _view.PlayWaveTransitionBanner(bannerTag, bannerTitle, bannerSubText, info.eventType, info.eventIcon);
         }
 
         private void HandleTimelineProgressUpdated(float matchTime, float maxDuration, float progress)

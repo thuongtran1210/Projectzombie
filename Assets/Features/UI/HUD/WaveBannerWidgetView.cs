@@ -455,9 +455,9 @@ namespace ProjectZombie.Features.UI.HUD
 
         /// <summary>
         /// Kích hoạt hoạt ảnh hiển thị Đại Banner Thông Báo Đột Phá ở chính giữa màn hình.
-        /// Hoạt ảnh 3 giai đoạn: Va đập (Impact) -> Lưu giữ & Tỏa sáng (Hold) -> Phân rã bốc hơi (Vanish).
+        /// Tự động sử dụng trực tiếp Icon có sẵn của Đợt quái / Boss từ Wave Timeline Config.
         /// </summary>
-        public void PlayWaveTransitionBanner(string tagText, string title, string subTitle, TimelineEventType eventType, float displayDuration = 2.0f)
+        public void PlayWaveTransitionBanner(string tagText, string title, string subTitle, TimelineEventType eventType, Sprite waveIcon = null, float displayDuration = 2.0f)
         {
             if (_bannerCanvasGroup == null || _bannerContainer == null) return;
 
@@ -484,30 +484,35 @@ namespace ProjectZombie.Features.UI.HUD
                 _bannerSubText.color = new Color(0.95f, 0.92f, 0.88f);
             }
 
-            // Gán Icon Badge tương ứng
+            // Gán Icon Badge: Ưu tiên 100% icon quái/Boss có sẵn của đợt quái hiện tại
             if (_bannerIconBadge != null)
             {
-                Sprite badgeSp = null;
-                switch (eventType)
+                Sprite badgeSp = waveIcon;
+
+                // Fallback nếu đợt quái không gán icon riêng
+                if (badgeSp == null)
                 {
-                    case TimelineEventType.BossSpawn:
-                        badgeSp = _finalBossBadgeSprite ?? _eliteBadgeSprite;
-                        break;
-                    case TimelineEventType.BurstWave:
-                        badgeSp = _swarmBadgeSprite;
-                        break;
-                    case TimelineEventType.SpawnPillar:
-                        badgeSp = _eliteBadgeSprite;
-                        break;
-                    default:
-                        badgeSp = _playerIndicatorSprite;
-                        break;
+                    switch (eventType)
+                    {
+                        case TimelineEventType.BossSpawn:
+                            badgeSp = _finalBossBadgeSprite ?? _eliteBadgeSprite;
+                            break;
+                        case TimelineEventType.BurstWave:
+                            badgeSp = _swarmBadgeSprite;
+                            break;
+                        case TimelineEventType.SpawnPillar:
+                            badgeSp = _eliteBadgeSprite;
+                            break;
+                        default:
+                            badgeSp = _playerIndicatorSprite;
+                            break;
+                    }
                 }
 
                 if (badgeSp != null)
                 {
                     _bannerIconBadge.sprite = badgeSp;
-                    _bannerIconBadge.color = themeColor;
+                    _bannerIconBadge.color = (waveIcon != null) ? Color.white : themeColor; // Giữ nguyên màu thật của icon quái
                     _bannerIconBadge.gameObject.SetActive(true);
                 }
                 else
