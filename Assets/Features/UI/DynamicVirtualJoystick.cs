@@ -65,7 +65,14 @@ namespace ProjectZombie.Features.UI
 
         protected override void OnEnable()
         {
-            base.OnEnable();
+            try
+            {
+                base.OnEnable();
+            }
+            catch (System.Exception)
+            {
+                // Bỏ qua lỗi cảnh báo Binding Resolution của OnScreenControl khi Gamepad ảo chưa sẵn sàng
+            }
             Instance = this;
             AutoResolveReferences();
         }
@@ -266,7 +273,14 @@ namespace ProjectZombie.Features.UI
         protected override void OnDisable()
         {
             ResetJoystick();
-            base.OnDisable();
+            try
+            {
+                base.OnDisable();
+            }
+            catch (System.Exception)
+            {
+                // Bỏ qua lỗi nội bộ của New Input System khi OnScreenControl hủy đăng ký control
+            }
         }
 
         private void OnApplicationFocus(bool hasFocus)
@@ -292,7 +306,14 @@ namespace ProjectZombie.Features.UI
                 _joystickCanvasGroup.alpha = 0f;
             }
 
-            SendValueToControl(Vector2.zero);
+            try
+            {
+                SendValueToControl(Vector2.zero);
+            }
+            catch (System.Exception)
+            {
+                // Bỏ qua lỗi gửi value khi control chưa được resolve
+            }
         }
 
         public void OnPointerUp(PointerEventData eventData)
