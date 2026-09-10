@@ -122,7 +122,7 @@ namespace ProjectZombie.EditorTools
             bTagTMP.fontSize = 17;
             bTagTMP.fontStyle = FontStyles.Bold;
             bTagTMP.alignment = TextAlignmentOptions.Center;
-            bTagTMP.text = "✦ HỒI THỨ 03 / 10 ✦";
+            bTagTMP.text = "HỒI THỨ 03 / 10";
             bTagTMP.color = new Color(1f, 0.88f, 0.5f);
 
             // Tiêu Đề Lớn

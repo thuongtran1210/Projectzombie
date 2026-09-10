@@ -1,22 +1,16 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.Layouts;
-using UnityEngine.InputSystem.OnScreen;
 
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
     /// Dynamic Virtual Joystick cho màn hình cảm ứng di động Android.
-    /// Tích hợp trực tiếp với Unity New Input System (OnScreenControl), phát dữ liệu vào controlPath <Gamepad>/leftStick.
+    /// Cung cấp dữ liệu Vector2 (InputVector) trực tiếp cho PlayerInputReader.
     /// Cho phép tự động xuất hiện tại vị trí chạm tay của người chơi.
     /// </summary>
-    public class DynamicVirtualJoystick : OnScreenControl, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    public class DynamicVirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
         public static DynamicVirtualJoystick Instance { get; private set; }
-
-        [Header("New Input System Binding")]
-        [InputControl(layout = "Vector2")]
-        [SerializeField] private string _controlPath = "<Gamepad>/leftStick";
 
         [Header("Joystick Mode")]
         [Tooltip("Nếu tích chọn: Joystick sẽ nhảy đến điểm chạm tay. Nếu bỏ tích: Joystick đứng yên tại vị trí đã đặt.")]
@@ -52,27 +46,13 @@ namespace ProjectZombie.Features.UI
             _defaultPosition = newPos;
         }
 
-        protected override string controlPathInternal
-        {
-            get => _controlPath;
-            set => _controlPath = value;
-        }
-
         private void Awake()
         {
             Instance = this;
         }
 
-        protected override void OnEnable()
+        private void OnEnable()
         {
-            try
-            {
-                base.OnEnable();
-            }
-            catch (System.Exception)
-            {
-                // Bỏ qua lỗi cảnh báo Binding Resolution của OnScreenControl khi Gamepad ảo chưa sẵn sàng
-            }
             Instance = this;
             AutoResolveReferences();
         }
@@ -265,22 +245,11 @@ namespace ProjectZombie.Features.UI
             // Cập nhật vị trí hiển thị của cần gạt (Knob / Handle)
             Vector2 clampedHandlePos = (distance > handleRange) ? (position / distance) * handleRange : position;
             handleRect.anchoredPosition = clampedHandlePos;
-
-            // Gửi trực tiếp giá trị vào Unity New Input System
-            SendValueToControl(_inputVector);
         }
 
-        protected override void OnDisable()
+        private void OnDisable()
         {
             ResetJoystick();
-            try
-            {
-                base.OnDisable();
-            }
-            catch (System.Exception)
-            {
-                // Bỏ qua lỗi nội bộ của New Input System khi OnScreenControl hủy đăng ký control
-            }
         }
 
         private void OnApplicationFocus(bool hasFocus)
@@ -304,15 +273,6 @@ namespace ProjectZombie.Features.UI
             if (_hideWhenInactive && _joystickCanvasGroup != null)
             {
                 _joystickCanvasGroup.alpha = 0f;
-            }
-
-            try
-            {
-                SendValueToControl(Vector2.zero);
-            }
-            catch (System.Exception)
-            {
-                // Bỏ qua lỗi gửi value khi control chưa được resolve
             }
         }
 

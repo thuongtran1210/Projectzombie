@@ -106,7 +106,7 @@ namespace ProjectZombie.Features.UI.HUD
             }
 
             // 2. Format tiêu đề và phụ đề cho Banner Pop-up chuyển Wave
-            string bannerTag = $"✦ HỒI THỨ {info.currentWaveIndex:D2} / {info.totalWaves:D2} ✦";
+            string bannerTag = $"HỒI THỨ {info.currentWaveIndex:D2} / {info.totalWaves:D2}";
             string bannerTitle = info.waveTitle.ToUpper();
             string bannerSubText = GetSubTextForEventType(info.eventType);
 
