@@ -526,7 +526,7 @@ namespace ProjectZombie.Features.UI.HUD
 
             // Đặt trạng thái ban đầu cho Container & Backdrop
             _bannerContainer.localScale = new Vector3(1.35f, 1.35f, 1f);
-            _bannerContainer.anchoredPosition = new Vector2(0f, 60f);
+            _bannerContainer.anchoredPosition = new Vector2(0f, 0f);
 
             if (_bannerDimBackdrop != null)
             {
@@ -539,7 +539,7 @@ namespace ProjectZombie.Features.UI.HUD
             _bannerSequence.Append(_bannerCanvasGroup.DOFade(1f, 0.22f));
             if (_bannerDimBackdrop != null)
             {
-                _bannerSequence.Join(_bannerDimBackdrop.DOFade(0.38f, 0.25f));
+                _bannerSequence.Join(_bannerDimBackdrop.DOFade(0.45f, 0.25f));
             }
             _bannerSequence.Join(_bannerContainer.DOScale(1f, 0.32f).SetEase(Ease.OutBack));
 
@@ -558,7 +558,7 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 _bannerSequence.Join(_bannerDimBackdrop.DOFade(0f, 0.25f));
             }
-            _bannerSequence.Join(_bannerContainer.DOAnchorPosY(120f, 0.3f).SetEase(Ease.InQuad));
+            _bannerSequence.Join(_bannerContainer.DOAnchorPosY(80f, 0.3f).SetEase(Ease.InQuad));
             _bannerSequence.Join(_bannerContainer.DOScale(1.08f, 0.3f).SetEase(Ease.InQuad));
 
             _bannerSequence.OnComplete(() =>
