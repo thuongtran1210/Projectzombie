@@ -42,12 +42,14 @@ namespace ProjectZombie.EditorTools
 
             Undo.RegisterFullObjectHierarchyUndo(gameplayRoot.gameObject, "Setup Epic Center Wave Transition Banner");
 
-            // 2. Load Resources (Font & Sprite Cổ Phong)
+            // 2. Load Resources (Font & Sprite Cổ Phong của người dùng)
             TMP_FontAsset vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Art/Font/GameFont_Vietnamese_SD.asset");
             if (vietFont == null) vietFont = Resources.Load<TMP_FontAsset>("Fonts/GameFont_Vietnamese_SD");
 
-            Sprite badgePillSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Upgrade_Pill_Wood_9Slice.png");
-            Sprite timerBoxSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_HUD_Timer_Kill_Wood.png");
+            Sprite customBannerSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Frames/Frame_Wave_Transition_Banner_9Slice.png");
+            if (customBannerSprite == null) customBannerSprite = Resources.Load<Sprite>("UI/Frames/Frame_Wave_Transition_Banner_9Slice");
+            if (customBannerSprite == null) customBannerSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_HUD_Timer_Kill_Wood.png");
+            if (customBannerSprite == null) customBannerSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Badge_Upgrade_Pill_Wood_9Slice.png");
 
             // 3. TẠO HOẶC TÁI SỬ DỤNG DUY NHẤT NODE: Center_WaveTransitionBanner TRỰC TIẾP DƯỚI Canvas_Gameplay
             // (TUYỆT ĐỐI KHÔNG TÌM HAY CAN THIỆP VÀO TopCenter_WaveBannerWidget / MiniBadge_Bamboo)
@@ -85,17 +87,16 @@ namespace ProjectZombie.EditorTools
             cRT.anchoredPosition = new Vector2(0, 0);
             cRT.sizeDelta = new Vector2(960, 220);
 
-            // Nền Khung Gỗ Mun Viền Đồng
+            // Nền Khung Banner Gỗ Mun Viền Đồng Của Người Dùng (Frame_Wave_Transition_Banner_9Slice)
             Transform bannerBgTrans = GetOrCreateChild(containerTrans, "Img_BannerBg");
             RectTransform bbgRT = EnsureComponent<RectTransform>(bannerBgTrans.gameObject);
             bbgRT.anchorMin = Vector2.zero;
             bbgRT.anchorMax = Vector2.one;
             bbgRT.sizeDelta = Vector2.zero;
             Image bbgImg = EnsureComponent<Image>(bannerBgTrans.gameObject);
-            bbgImg.color = new Color(0.10f, 0.08f, 0.07f, 0.98f);
+            bbgImg.color = Color.white; // Giữ nguyên màu gốc tinh xảo của ảnh người dùng cung cấp
             bbgImg.type = Image.Type.Sliced;
-            if (timerBoxSprite != null) bbgImg.sprite = timerBoxSprite;
-            else if (badgePillSprite != null) bbgImg.sprite = badgePillSprite;
+            if (customBannerSprite != null) bbgImg.sprite = customBannerSprite;
 
             // Icon Huy Hiệu
             Transform badgeTrans = GetOrCreateChild(containerTrans, "Icon_EventBadge");
