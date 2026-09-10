@@ -77,6 +77,8 @@ namespace ProjectZombie.Features.UI.HUD
             if (_bannerCanvasGroup != null)
             {
                 _bannerCanvasGroup.alpha = 0f;
+                _bannerCanvasGroup.blocksRaycasts = false;
+                _bannerCanvasGroup.interactable = false;
                 _bannerCanvasGroup.gameObject.SetActive(false);
             }
         }
@@ -542,6 +544,16 @@ namespace ProjectZombie.Features.UI.HUD
 
             _bannerCanvasGroup.gameObject.SetActive(true);
             _bannerCanvasGroup.alpha = 0f;
+            _bannerCanvasGroup.blocksRaycasts = false;
+            _bannerCanvasGroup.interactable = false;
+
+            // Đảm bảo tuyệt đối không thành phần nào trong Banner nhận Raycast chặn ngón tay người chơi
+            if (_bannerDimBackdrop != null) _bannerDimBackdrop.raycastTarget = false;
+            if (_bannerFrameImage != null) _bannerFrameImage.raycastTarget = false;
+            if (_bannerIconBadge != null) _bannerIconBadge.raycastTarget = false;
+            if (_bannerTagText != null) _bannerTagText.raycastTarget = false;
+            if (_bannerTitleText != null) _bannerTitleText.raycastTarget = false;
+            if (_bannerSubText != null) _bannerSubText.raycastTarget = false;
 
             // Đặt trạng thái ban đầu cho Container & Backdrop
             _bannerContainer.localScale = new Vector3(1.35f, 1.35f, 1f);

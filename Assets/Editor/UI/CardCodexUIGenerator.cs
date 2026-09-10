@@ -299,6 +299,7 @@ namespace ProjectZombie.Editor.UI
             abImg.type = Image.Type.Sliced;
             if (btnAmber != null) abImg.sprite = btnAmber;
             var alchemyBtn = alchemyBtnObj.AddComponent<Button>();
+            var alchemyCG = alchemyBtnObj.AddComponent<CanvasGroup>();
 
             var abTxt = CreateTextMeshPro(CreateUIElement("Text", alchemyBtnObj.transform), font);
             SetStretchAnchor(abTxt.GetComponent<RectTransform>());

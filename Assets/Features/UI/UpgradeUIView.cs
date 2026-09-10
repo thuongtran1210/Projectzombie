@@ -55,6 +55,12 @@ namespace ProjectZombie.Features.UI
 
         private void EnsureControlsFound()
         {
+            if (_upgradePanel == null)
+            {
+                Transform panelTrans = transform.Find("Panel_Upgrade") ?? transform.Find("Upgrade_Panel") ?? transform.Find("Modal_Upgrade") ?? transform;
+                _upgradePanel = panelTrans.gameObject;
+            }
+
             if (_rerollButton == null || _skipButton == null)
             {
                 Button[] allButtons = GetComponentsInChildren<Button>(true);
@@ -256,9 +262,18 @@ namespace ProjectZombie.Features.UI
 
         public void SetActive(bool isActive)
         {
+            EnsureControlsFound();
+
             if (_upgradePanel != null)
             {
                 _upgradePanel.SetActive(isActive);
+
+                var cg = _upgradePanel.GetComponent<CanvasGroup>();
+                if (cg != null)
+                {
+                    cg.blocksRaycasts = isActive;
+                    cg.interactable = isActive;
+                }
             }
             else
             {

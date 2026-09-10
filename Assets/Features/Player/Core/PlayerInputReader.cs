@@ -94,14 +94,14 @@ namespace ProjectZombie.Features.Player.Input
             }
 
             // 2. Fallback: Mobile Dynamic Virtual Joystick
-            if (rawInput == Vector2.zero && UI.DynamicVirtualJoystick.Instance != null)
+            if (rawInput.sqrMagnitude < 0.001f && UI.DynamicVirtualJoystick.Instance != null)
             {
                 rawInput = UI.DynamicVirtualJoystick.Instance.InputVector;
             }
 
             // 3. Fallback: PC Keyboard
 #if ENABLE_INPUT_SYSTEM
-            if (rawInput == Vector2.zero && Keyboard.current != null)
+            if (rawInput.sqrMagnitude < 0.001f && Keyboard.current != null)
             {
                 var kb = Keyboard.current;
                 float h = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
@@ -112,7 +112,7 @@ namespace ProjectZombie.Features.Player.Input
                 }
             }
 #elif ENABLE_LEGACY_INPUT_MANAGER
-            if (rawInput == Vector2.zero)
+            if (rawInput.sqrMagnitude < 0.001f)
             {
                 float h = Input.GetAxisRaw("Horizontal");
                 float v = Input.GetAxisRaw("Vertical");

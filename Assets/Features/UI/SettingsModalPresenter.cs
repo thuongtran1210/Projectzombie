@@ -127,6 +127,15 @@ namespace ProjectZombie.Features.UI
             {
                 gameObject.SetActive(false);
             }
+
+            // Nếu đang trong trận: Khôi phục lại cụm điều khiển Mobile Controls nếu GameState là Playing
+            if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.Playing)
+            {
+                if (GameplayUIManager.Instance != null)
+                {
+                    GameplayUIManager.Instance.SetMobileControlsActive(true);
+                }
+            }
         }
 
         private void LoadAndApplyInitialSettings()

@@ -169,11 +169,25 @@ namespace ProjectZombie.Features.UI
             {
                 _alchemyFusionButton.gameObject.SetActive(true);
                 _alchemyFusionButton.interactable = canFuse;
+
+                // Tự động làm mờ trực quan (Visual Feedback) qua CanvasGroup và màu nền khi không đủ điều kiện gộp thẻ
+                var cg = _alchemyFusionButton.GetComponent<CanvasGroup>();
+                if (cg == null) cg = _alchemyFusionButton.gameObject.AddComponent<CanvasGroup>();
+                cg.alpha = canFuse ? 1.0f : 0.45f;
+                cg.interactable = canFuse;
+                cg.blocksRaycasts = canFuse;
+
+                var btnImg = _alchemyFusionButton.GetComponent<Image>();
+                if (btnImg != null)
+                {
+                    btnImg.color = canFuse ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.85f);
+                }
             }
 
             if (_fusionButtonText != null)
             {
                 _fusionButtonText.text = fuseBtnLabel;
+                _fusionButtonText.color = canFuse ? new Color(1f, 0.95f, 0.80f, 1f) : new Color(0.75f, 0.75f, 0.75f, 0.75f);
             }
         }
 

@@ -66,6 +66,8 @@ namespace ProjectZombie.EditorTools
 
             CanvasGroup bnCG = EnsureComponent<CanvasGroup>(bannerTrans.gameObject);
             bnCG.alpha = 0f;
+            bnCG.blocksRaycasts = false;
+            bnCG.interactable = false;
             bannerTrans.gameObject.SetActive(false);
 
             // 4.1. Lớp Phủ Nền Đen Khói (Backdrop)
@@ -97,6 +99,7 @@ namespace ProjectZombie.EditorTools
             Image bbgImg = EnsureComponent<Image>(bannerBgTrans.gameObject);
             bbgImg.color = Color.white; // Giữ nguyên màu gốc tinh xảo của ảnh người dùng cung cấp
             bbgImg.type = Image.Type.Sliced;
+            bbgImg.raycastTarget = false;
             if (customBannerSprite != null) bbgImg.sprite = customBannerSprite;
 
             // Icon Huy Hiệu
@@ -109,6 +112,7 @@ namespace ProjectZombie.EditorTools
             bIconRT.sizeDelta = new Vector2(52, 52);
             Image bIconImg = EnsureComponent<Image>(badgeTrans.gameObject);
             bIconImg.preserveAspect = true;
+            bIconImg.raycastTarget = false;
             bIconImg.color = new Color(1f, 0.72f, 0.15f);
 
             // Tag Hồi Text

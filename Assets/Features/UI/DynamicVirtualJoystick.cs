@@ -37,6 +37,10 @@ namespace ProjectZombie.Features.UI
         public Vector2 InputVector => _inputVector;
 
         private Vector2 _defaultPosition;
+        private int _activePointerId = -999;
+        private bool _isPointerDown = false;
+
+        public bool IsPointerDown => _isPointerDown;
 
         /// <summary>
         /// Cập nhật toạ độ mặc định (Home/Default Position) khi thay đổi qua trình tùy biến UI.
@@ -178,6 +182,12 @@ namespace ProjectZombie.Features.UI
             if (!isActiveAndEnabled || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             if (containerRect == null || handleRect == null) return;
 
+            // Đa điểm chạm (Multi-touch Isolation): Nếu Joystick đã có ngón tay điều khiển thì bỏ qua ngón tay khác
+            if (_isPointerDown) return;
+
+            _activePointerId = eventData.pointerId;
+            _isPointerDown = true;
+
             // Chế độ Floating Joystick: Chỉ nhảy container khi được cấu hình rõ ràng
             if (_isFloatingJoystick)
             {
@@ -203,6 +213,7 @@ namespace ProjectZombie.Features.UI
         public void OnDrag(PointerEventData eventData)
         {
             if (!isActiveAndEnabled || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
+            if (!_isPointerDown || eventData.pointerId != _activePointerId) return;
             if (containerRect == null || handleRect == null) return;
 
             // Tính vị trí ngón tay so với tâm của containerRect
@@ -262,6 +273,8 @@ namespace ProjectZombie.Features.UI
 
         public void ResetJoystick()
         {
+            _activePointerId = -999;
+            _isPointerDown = false;
             _inputVector = Vector2.zero;
             if (handleRect != null) handleRect.anchoredPosition = Vector2.zero;
 
@@ -278,6 +291,7 @@ namespace ProjectZombie.Features.UI
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            if (eventData.pointerId != _activePointerId) return;
             ResetJoystick();
         }
     }

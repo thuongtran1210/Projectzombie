@@ -17,7 +17,7 @@ namespace ProjectZombie.Features.Shared
         /// Single Source of Truth kiểm tra xem trò chơi có đang trong trạng thái chiến đấu hoạt động hay không.
         /// Trả về false khi đang Pause, LevelUp Modal, GameOver hoặc ở MainMenu.
         /// </summary>
-        public static bool IsPlaying => (Instance != null && Instance.CurrentState == GameState.Playing) && Time.timeScale > 0f;
+        public static bool IsPlaying => (Instance == null || Instance.CurrentState == GameState.Playing) && Time.timeScale > 0f;
 
         /// <summary>
         /// Kích hoạt khi trạng thái trò chơi thay đổi.

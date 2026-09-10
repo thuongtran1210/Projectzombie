@@ -26,6 +26,8 @@ namespace ProjectZombie.Features.UI.Controls
         private bool _isAimActive;
         private bool _isInteractable = true;
         private Coroutine _holdCoroutine;
+        private int _activePointerId = -999;
+        private bool _isPointerDown = false;
 
         public bool IsDragging => _isDragging;
         public bool RequireHoldOrDrag
@@ -43,7 +45,7 @@ namespace ProjectZombie.Features.UI.Controls
         public void SetInteractable(bool interactable)
         {
             _isInteractable = interactable;
-            if (!interactable && _isAimActive)
+            if (!interactable && (_isAimActive || _isPointerDown))
             {
                 CancelAim();
             }
@@ -52,6 +54,12 @@ namespace ProjectZombie.Features.UI.Controls
         public void OnPointerDown(PointerEventData eventData)
         {
             if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
+
+            // Đa điểm chạm: Nếu nút đang được đè/kéo bởi 1 ngón tay, bỏ qua ngón tay khác
+            if (_isPointerDown) return;
+
+            _activePointerId = eventData.pointerId;
+            _isPointerDown = true;
 
             _pointerDownPos = eventData.position;
             _currentPointerPos = eventData.position;
@@ -73,7 +81,7 @@ namespace ProjectZombie.Features.UI.Controls
         private IEnumerator RoutineCheckHold()
         {
             yield return new WaitForSecondsRealtime(_holdDurationThreshold);
-            if (!_isAimActive)
+            if (!_isAimActive && _isPointerDown)
             {
                 TriggerAimStarted();
             }
@@ -90,6 +98,7 @@ namespace ProjectZombie.Features.UI.Controls
         public void OnDrag(PointerEventData eventData)
         {
             if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
+            if (!_isPointerDown || eventData.pointerId != _activePointerId) return;
 
             _currentPointerPos = eventData.position;
             Vector2 delta = _currentPointerPos - _pointerDownPos;
@@ -126,6 +135,7 @@ namespace ProjectZombie.Features.UI.Controls
         public void OnPointerUp(PointerEventData eventData)
         {
             if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
+            if (eventData.pointerId != _activePointerId) return;
 
             if (_holdCoroutine != null)
             {
@@ -158,6 +168,8 @@ namespace ProjectZombie.Features.UI.Controls
                 OnAimDetailedReleased?.Invoke(finalDirection, pullPercent, isQuickTap);
             }
 
+            _activePointerId = -999;
+            _isPointerDown = false;
             _isDragging = false;
             _isAimActive = false;
         }
@@ -182,6 +194,8 @@ namespace ProjectZombie.Features.UI.Controls
                 StopCoroutine(_holdCoroutine);
                 _holdCoroutine = null;
             }
+            _activePointerId = -999;
+            _isPointerDown = false;
             _isDragging = false;
             _isAimActive = false;
             UICancelSkillZone.Instance?.SetVisible(false);
