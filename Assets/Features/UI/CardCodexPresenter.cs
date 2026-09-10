@@ -46,6 +46,7 @@ namespace ProjectZombie.Features.UI
         private void Awake()
         {
             if (_view == null) _view = GetComponent<CardCodexView>();
+            EnsureVisualSprites();
             LoadAllData();
 
             if (_view != null)
@@ -57,6 +58,21 @@ namespace ProjectZombie.Features.UI
             }
 
             SubscribeManagers();
+        }
+
+        private void EnsureVisualSprites()
+        {
+            if (_tabActiveSprite == null) _tabActiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Active") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Active");
+            if (_tabInactiveSprite == null) _tabInactiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Inactive") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Inactive");
+            if (_cardSlotWoodSprite == null) _cardSlotWoodSprite = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
+            if (_cardSlotSelectedSprite == null) _cardSlotSelectedSprite = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
+
+#if UNITY_EDITOR
+            if (_tabActiveSprite == null) _tabActiveSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Active.png");
+            if (_tabInactiveSprite == null) _tabInactiveSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Inactive.png");
+            if (_cardSlotWoodSprite == null) _cardSlotWoodSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
+            if (_cardSlotSelectedSprite == null) _cardSlotSelectedSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
+#endif
         }
 
         private void Start()

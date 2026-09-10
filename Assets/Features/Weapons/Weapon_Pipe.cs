@@ -248,6 +248,9 @@ namespace ProjectZombie.Features.Weapons
         }
         #endregion
 
+        private static readonly WaitForSeconds _wait04 = new WaitForSeconds(0.4f);
+        private static readonly WaitForSeconds _wait05 = new WaitForSeconds(0.5f);
+
         #region SMOKE COROUTINES (WALL & CIRCLE PHYSICS HIT DETECTION)
         private IEnumerator RoutineSmokeWall(Vector2 wallCenter, float wallLength, float wallThickness, float wallAngle, Vector2 forwardDir, float duration, bool isEvolution)
         {
@@ -307,7 +310,7 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
 
-                yield return new WaitForSeconds(0.4f);
+                yield return _wait04;
             }
         }
 
@@ -342,7 +345,7 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
 
-                yield return new WaitForSeconds(0.5f);
+                yield return _wait05;
             }
         }
         #endregion

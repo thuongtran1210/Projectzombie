@@ -103,9 +103,21 @@ namespace ProjectZombie.Features.UI
             Color activeCol = new Color(0.98f, 0.88f, 0.50f, 1f);
             Color inactiveCol = new Color(0.85f, 0.78f, 0.65f, 1f);
 
-            if (_tabFusionBg != null) _tabFusionBg.sprite = activeTab == CodexTabType.RelicFusion ? activeSprite : inactiveSprite;
-            if (_tabPassivesBg != null) _tabPassivesBg.sprite = activeTab == CodexTabType.Passives ? activeSprite : inactiveSprite;
-            if (_tabComboBg != null) _tabComboBg.sprite = activeTab == CodexTabType.HeroCards ? activeSprite : inactiveSprite;
+            if (_tabFusionBg != null)
+            {
+                var targetSprite = activeTab == CodexTabType.RelicFusion ? activeSprite : inactiveSprite;
+                if (targetSprite != null) _tabFusionBg.sprite = targetSprite;
+            }
+            if (_tabPassivesBg != null)
+            {
+                var targetSprite = activeTab == CodexTabType.Passives ? activeSprite : inactiveSprite;
+                if (targetSprite != null) _tabPassivesBg.sprite = targetSprite;
+            }
+            if (_tabComboBg != null)
+            {
+                var targetSprite = activeTab == CodexTabType.HeroCards ? activeSprite : inactiveSprite;
+                if (targetSprite != null) _tabComboBg.sprite = targetSprite;
+            }
 
             if (_tabFusionTxt != null) _tabFusionTxt.color = activeTab == CodexTabType.RelicFusion ? activeCol : inactiveCol;
             if (_tabPassivesTxt != null) _tabPassivesTxt.color = activeTab == CodexTabType.Passives ? activeCol : inactiveCol;

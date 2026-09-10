@@ -193,6 +193,7 @@ namespace ProjectZombie.Features.UI.HUD
 
             Image pinImg = pinObj.GetComponent<Image>();
             pinImg.preserveAspect = true;
+            pinImg.raycastTarget = false;
             if (_playerIndicatorSprite != null) pinImg.sprite = _playerIndicatorSprite;
             else pinImg.color = new Color(0.3f, 0.95f, 0.7f, 1f); // Xanh ngọc phát sáng
 
@@ -300,6 +301,7 @@ namespace ProjectZombie.Features.UI.HUD
                 }
 
                 bgImg.color = GetColorForEventType(evt.eventType);
+                bgImg.raycastTarget = false;
 
                 // Icon quái
                 GameObject iconObj = new GameObject("Img_MonsterIcon", typeof(RectTransform), typeof(Image));
@@ -310,6 +312,7 @@ namespace ProjectZombie.Features.UI.HUD
                 iconRT.sizeDelta = Vector2.zero;
                 Image iconImg = iconObj.GetComponent<Image>();
                 iconImg.preserveAspect = true;
+                iconImg.raycastTarget = false;
 
                 if (iconSprite != null)
                 {
@@ -350,6 +353,7 @@ namespace ProjectZombie.Features.UI.HUD
 
             Image divImg = divObj.GetComponent<Image>();
             divImg.preserveAspect = true;
+            divImg.raycastTarget = false;
             if (_phaseDividerSprite != null) divImg.sprite = _phaseDividerSprite;
             else divImg.color = new Color(0.85f, 0.7f, 0.3f, 0.85f); // Trụ đồng
 
