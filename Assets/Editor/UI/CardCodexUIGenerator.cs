@@ -447,6 +447,47 @@ namespace ProjectZombie.Editor.UI
             if (font != null) tmp.font = font;
             return tmp;
         }
+
+        [MenuItem("Tools/ProjectZombie/UI/⚡ Cập Nhật Panel_CardCodex Từ Scene Sang Prefab Gốc", priority = 16)]
+        public static void SaveSceneCardCodexToPrefab()
+        {
+            GameObject sceneObj = GameObject.Find("Panel_CardCodex");
+            if (sceneObj == null)
+            {
+                var allPanels = Resources.FindObjectsOfTypeAll<CardCodexView>();
+                foreach (var p in allPanels)
+                {
+                    if (p.gameObject.scene.isLoaded)
+                    {
+                        sceneObj = p.gameObject;
+                        break;
+                    }
+                }
+            }
+
+            if (sceneObj == null)
+            {
+                EditorUtility.DisplayDialog("Thông báo", "Không tìm thấy GameObject 'Panel_CardCodex' đang mở trong Scene hiện tại!", "OK");
+                return;
+            }
+
+            string prefabsDir = "Assets/_Prefabs/UI";
+            string resourcesDir = "Assets/Resources/UI";
+            if (!Directory.Exists(prefabsDir)) Directory.CreateDirectory(prefabsDir);
+            if (!Directory.Exists(resourcesDir)) Directory.CreateDirectory(resourcesDir);
+
+            string path1 = $"{prefabsDir}/CardCodexUI.prefab";
+            string path2 = $"{resourcesDir}/CardCodexUI.prefab";
+
+            PrefabUtility.SaveAsPrefabAssetAndConnect(sceneObj, path1, InteractionMode.UserAction);
+            PrefabUtility.SaveAsPrefabAsset(sceneObj, path2);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"<color=#00FF88>[CardCodexUIGenerator]</color> ĐÃ CẬP NHẬT THÀNH CÔNG Panel_CardCodex từ Scene vào cả 2 Prefab:\n- {path1}\n- {path2}");
+            EditorUtility.DisplayDialog("Hoàn tất", "Đã cập nhật toàn bộ thiết lập Panel_CardCodex từ Scene vào Prefab gốc thành công!", "Tuyệt vời");
+        }
     }
 }
 #endif
