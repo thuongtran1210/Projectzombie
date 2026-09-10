@@ -23,357 +23,408 @@ MonoBehaviour:
   softPityRatePerRoll: 0.05
   epicGuaranteedEvery: 10
   _dropPool:
-  - relicId: W001
+  - dropType: 0
+    relicId: W001
     relicName: "N\u1ECF Th\u1EA7n"
-    rarity: 3
+    rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W002
+  - dropType: 0
+    relicId: W002
     relicName: "B\xFAt Ph\xE1n Quan"
-    rarity: 3
+    rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 824c29e8b2914531b7f8c888bca56fe1, type: 3}
-  - relicId: W003
+  - dropType: 0
+    relicId: W003
     relicName: "B\xF9a Tr\u1EA5n Y\xEAu"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: c85055b2904a48e18e2ee58568e61ab0, type: 3}
-  - relicId: W004
+  - dropType: 0
+    relicId: W004
     relicName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
-    rarity: 3
+    rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W005
+  - dropType: 0
+    relicId: W005
     relicName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
-  - relicId: W006
+  - dropType: 0
+    relicId: W006
     relicName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 0}
-  - relicId: W007
+  - dropType: 0
+    relicId: W007
     relicName: "Cung Th\u1EA1ch Sanh"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W008
+  - dropType: 0
+    relicId: W008
     relicName: "\u0110ao C\u1EEDu V\u0129"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: dd96b89cdb604841925c81c03de51b81, type: 3}
-  - relicId: W009
+  - dropType: 0
+    relicId: W009
     relicName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
     rarity: 0
     element: 3
     shardAmount: 5
     weight: 120
     icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W010
+  - dropType: 0
+    relicId: W010
     relicName: "Linh Ph\xF9 Ma Da"
     rarity: 0
     element: 3
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
-  - relicId: W011
+  - dropType: 0
+    relicId: W011
     relicName: "N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 1015382363, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W012
+  - dropType: 0
+    relicId: W012
     relicName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: de14356655dc4c1fb7510fe87ac5f37f, type: 3}
-  - relicId: R007
+  - dropType: 0
+    relicId: R007
     relicName: "Chi\u1EBFu Tr\u1EA3i Ho\xE0ng Tuy\u1EC1n"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 8751e1c29ecf4155b6039ce6f6c02f26, type: 3}
-  - relicId: R008
+  - dropType: 0
+    relicId: R008
     relicName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
-  - relicId: W_PIPE
+  - dropType: 0
+    relicId: W_PIPE
     relicName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
-  - relicId: W_POT
+  - dropType: 0
+    relicId: W_POT
     relicName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
-  - relicId: W_SLIPPER
+  - dropType: 0
+    relicId: W_SLIPPER
     relicName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
-  - relicId: W001
+  - dropType: 0
+    relicId: W001
     relicName: "N\u1ECF Th\u1EA7n"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W002
+  - dropType: 0
+    relicId: W002
     relicName: "B\xFAt Ph\xE1n Quan"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 824c29e8b2914531b7f8c888bca56fe1, type: 3}
-  - relicId: W003
+  - dropType: 0
+    relicId: W003
     relicName: "B\xF9a Tr\u1EA5n Y\xEAu"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: c85055b2904a48e18e2ee58568e61ab0, type: 3}
-  - relicId: W004
+  - dropType: 0
+    relicId: W004
     relicName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W005
+  - dropType: 0
+    relicId: W005
     relicName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
-  - relicId: W006
+  - dropType: 0
+    relicId: W006
     relicName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
-    rarity: 0
+    rarity: 1
     element: 4
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 0}
-  - relicId: W007
+  - dropType: 0
+    relicId: W007
     relicName: "Cung Th\u1EA1ch Sanh"
-    rarity: 0
+    rarity: 1
     element: 1
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W008
+  - dropType: 0
+    relicId: W008
     relicName: "\u0110ao C\u1EEDu V\u0129"
-    rarity: 0
+    rarity: 1
     element: 4
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 21300000, guid: dd96b89cdb604841925c81c03de51b81, type: 3}
-  - relicId: W009
+  - dropType: 0
+    relicId: W009
     relicName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
-    rarity: 0
+    rarity: 1
     element: 3
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W010
+  - dropType: 0
+    relicId: W010
     relicName: "Linh Ph\xF9 Ma Da"
-    rarity: 0
+    rarity: 1
     element: 3
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
-  - relicId: W011
+  - dropType: 0
+    relicId: W011
     relicName: "N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
-    rarity: 0
+    rarity: 1
     element: 5
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 1015382363, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W012
+  - dropType: 0
+    relicId: W012
     relicName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
-    rarity: 0
+    rarity: 1
     element: 2
-    shardAmount: 5
-    weight: 120
+    shardAmount: 8
+    weight: 40
     icon: {fileID: 21300000, guid: de14356655dc4c1fb7510fe87ac5f37f, type: 3}
-  - relicId: R007
+  - dropType: 0
+    relicId: R007
     relicName: "Chi\u1EBFu Tr\u1EA3i Ho\xE0ng Tuy\u1EC1n"
-    rarity: 0
+    rarity: 2
     element: 2
-    shardAmount: 5
-    weight: 120
+    shardAmount: 12
+    weight: 15
     icon: {fileID: 21300000, guid: 8751e1c29ecf4155b6039ce6f6c02f26, type: 3}
-  - relicId: R008
+  - dropType: 0
+    relicId: R008
     relicName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
-    rarity: 0
+    rarity: 2
     element: 1
-    shardAmount: 5
-    weight: 120
+    shardAmount: 12
+    weight: 15
     icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
-  - relicId: W_PIPE
+  - dropType: 0
+    relicId: W_PIPE
     relicName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
-    rarity: 0
+    rarity: 2
     element: 4
-    shardAmount: 5
-    weight: 120
+    shardAmount: 12
+    weight: 15
     icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
-  - relicId: W_POT
+  - dropType: 0
+    relicId: W_POT
     relicName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
-    rarity: 0
+    rarity: 2
     element: 5
-    shardAmount: 5
-    weight: 120
+    shardAmount: 12
+    weight: 15
     icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
-  - relicId: W_SLIPPER
+  - dropType: 0
+    relicId: W_SLIPPER
     relicName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
-    rarity: 0
+    rarity: 2
     element: 1
-    shardAmount: 5
-    weight: 120
+    shardAmount: 12
+    weight: 15
     icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
-  - relicId: W001
+  - dropType: 0
+    relicId: W001
     relicName: "N\u1ECF Th\u1EA7n"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W002
+  - dropType: 0
+    relicId: W002
     relicName: "B\xFAt Ph\xE1n Quan"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 824c29e8b2914531b7f8c888bca56fe1, type: 3}
-  - relicId: W003
+  - dropType: 0
+    relicId: W003
     relicName: "B\xF9a Tr\u1EA5n Y\xEAu"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: c85055b2904a48e18e2ee58568e61ab0, type: 3}
-  - relicId: W004
+  - dropType: 0
+    relicId: W004
     relicName: "C\u1EEDu V\u0129 H\u1ED3 Tr\u1EA3o"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: -19086080, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W005
+  - dropType: 0
+    relicId: W005
     relicName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0ecd23b4af1b4a34a91ece4c7f762ca8, type: 3}
-  - relicId: W006
+  - dropType: 0
+    relicId: W006
     relicName: "L\u1EF1u \u0110\u1EA1n Th\u1EA7n Sa"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 0}
-  - relicId: W007
+  - dropType: 0
+    relicId: W007
     relicName: "Cung Th\u1EA1ch Sanh"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W008
+  - dropType: 0
+    relicId: W008
     relicName: "\u0110ao C\u1EEDu V\u0129"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: dd96b89cdb604841925c81c03de51b81, type: 3}
-  - relicId: W009
+  - dropType: 0
+    relicId: W009
     relicName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
     rarity: 0
     element: 3
     shardAmount: 5
     weight: 120
     icon: {fileID: -277190010, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W010
+  - dropType: 0
+    relicId: W010
     relicName: "Linh Ph\xF9 Ma Da"
     rarity: 0
     element: 3
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 4cdd70b40a786e74cbaa8d3e0073f742, type: 3}
-  - relicId: W011
+  - dropType: 0
+    relicId: W011
     relicName: "N\u01B0\u1EDBc Th\xE1nh Ch\xF9a H\u01B0\u01A1ng"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 1015382363, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - relicId: W012
+  - dropType: 0
+    relicId: W012
     relicName: "Phi Ti\xEAu B\xE1t Qu\xE1i"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: de14356655dc4c1fb7510fe87ac5f37f, type: 3}
-  - relicId: R007
+  - dropType: 0
+    relicId: R007
     relicName: "Chi\u1EBFu Tr\u1EA3i Ho\xE0ng Tuy\u1EC1n"
     rarity: 0
     element: 2
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 8751e1c29ecf4155b6039ce6f6c02f26, type: 3}
-  - relicId: R008
+  - dropType: 0
+    relicId: R008
     relicName: "Ch\u1ED5i L\xF4ng G\xE0 Gia Truy\u1EC1n"
     rarity: 0
     element: 1
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: fc46e1d77b9b4f66a90c5875e957cb0a, type: 3}
-  - relicId: W_PIPE
+  - dropType: 0
+    relicId: W_PIPE
     relicName: "\u0110i\u1EBFu C\xE0y C\u1EEDu U"
     rarity: 0
     element: 4
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
-  - relicId: W_POT
+  - dropType: 0
+    relicId: W_POT
     relicName: "N\u1ED3i C\u01A1m Th\u1EA1ch Sanh"
     rarity: 0
     element: 5
     shardAmount: 5
     weight: 120
     icon: {fileID: 21300000, guid: 0a1687fcd9e9470fab95ae72e905cad1, type: 3}
-  - relicId: W_SLIPPER
+  - dropType: 0
+    relicId: W_SLIPPER
     relicName: "D\xE9p T\u1ED5 Ong Th\u1EA7n Sa"
     rarity: 0
     element: 1

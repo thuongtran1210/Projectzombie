@@ -83,13 +83,16 @@ namespace ProjectZombie.EditorTools.BuildSync
         {
             if (!Directory.Exists(rule.SourcePath)) return;
             string[] srcFiles = Directory.GetFiles(rule.SourcePath, rule.SearchPattern ?? "*.*", SearchOption.AllDirectories);
-            int srcCount = 0;
-            foreach (var f in srcFiles)
+
+            int outOfSyncCount = 0;
+            List<string> outOfSyncFiles = new List<string>();
+
+            foreach (var srcFile in srcFiles)
             {
-                if (f.EndsWith(".meta")) continue;
+                if (srcFile.EndsWith(".meta")) continue;
                 if (rule.AllowedExtensions != null)
                 {
-                    string ext = Path.GetExtension(f).ToLower();
+                    string ext = Path.GetExtension(srcFile).ToLower();
                     bool allowed = false;
                     foreach (var ve in rule.AllowedExtensions)
                     {
@@ -97,38 +100,39 @@ namespace ProjectZombie.EditorTools.BuildSync
                     }
                     if (!allowed) continue;
                 }
-                srcCount++;
-            }
 
-            int resCount = 0;
-            if (Directory.Exists(rule.TargetPath))
-            {
-                string[] resFiles = Directory.GetFiles(rule.TargetPath, rule.SearchPattern ?? "*.*", SearchOption.AllDirectories);
-                foreach (var f in resFiles)
+                string fileName = Path.GetFileName(srcFile);
+                string destFile = Path.Combine(rule.TargetPath, fileName);
+
+                if (!File.Exists(destFile))
                 {
-                    if (f.EndsWith(".meta")) continue;
-                    if (rule.AllowedExtensions != null)
+                    outOfSyncCount++;
+                    outOfSyncFiles.Add(fileName);
+                }
+                else
+                {
+                    var srcInfo = new FileInfo(srcFile);
+                    var destInfo = new FileInfo(destFile);
+                    if (srcInfo.Length != destInfo.Length || Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) > 2)
                     {
-                        string ext = Path.GetExtension(f).ToLower();
-                        bool allowed = false;
-                        foreach (var ve in rule.AllowedExtensions)
-                        {
-                            if (ext == ve) { allowed = true; break; }
-                        }
-                        if (!allowed) continue;
+                        outOfSyncCount++;
+                        outOfSyncFiles.Add(fileName);
                     }
-                    resCount++;
                 }
             }
 
-            if (resCount < srcCount)
+            if (outOfSyncCount > 0)
             {
+                string sampleNames = outOfSyncFiles.Count <= 3 
+                    ? string.Join(", ", outOfSyncFiles) 
+                    : $"{outOfSyncFiles[0]}, {outOfSyncFiles[1]}... (+{outOfSyncFiles.Count - 2} files khác)";
+
                 issues.Add(new AuditItem
                 {
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Chưa đồng bộ đầy đủ {rule.Name}",
-                    Description = $"Thư mục gốc có {srcCount} files nhưng Resources chỉ có {resCount} files.",
-                    Recommendation = $"Nhấn nút bên dưới để đồng bộ riêng {rule.Name} vào Resources.",
+                    Description = $"Có {outOfSyncCount} file(s) ({sampleNames}) khác biệt về nội dung hoặc chưa được copy vào Resources.",
+                    Recommendation = $"Nhấn nút bên dưới để đồng bộ cập nhật {rule.Name} vào Resources.",
                     ActionType = AuditItem.FixActionType.SyncDirectory,
                     Rule = rule,
                     FixButtonText = $"⚡ Đồng Bộ Riêng {rule.Name}"
