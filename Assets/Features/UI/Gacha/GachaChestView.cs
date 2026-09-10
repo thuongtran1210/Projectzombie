@@ -37,9 +37,16 @@ namespace ProjectZombie.Features.UI.Gacha
         [SerializeField] private Transform _cardsContainer;
         [SerializeField] private GachaCardRewardView _cardPrefab;
 
+        [Header("Chest Selection Buttons")]
+        [SerializeField] private Button _chestBronzeButton;
+        [SerializeField] private Button _chestHeroButton;
+        [SerializeField] private GameObject _glowBronze;
+        [SerializeField] private GameObject _glowHero;
+
         public event Action OnSingleRollClicked;
         public event Action OnMultiRollClicked;
         public event Action OnCloseResultClicked;
+        public event Action<string> OnChestSelected; // "banner_standard" hoặc "banner_hero"
 
         private readonly List<GachaCardRewardView> _spawnedCards = new List<GachaCardRewardView>();
         private bool _isRolling = false;
@@ -74,10 +81,27 @@ namespace ProjectZombie.Features.UI.Gacha
             });
             if (_closeResultButton != null) _closeResultButton.onClick.AddListener(() => OnCloseResultClicked?.Invoke());
 
+            if (_chestBronzeButton != null) _chestBronzeButton.onClick.AddListener(() => {
+                if (_isRolling) return;
+                OnChestSelected?.Invoke("banner_standard");
+            });
+
+            if (_chestHeroButton != null) _chestHeroButton.onClick.AddListener(() => {
+                if (_isRolling) return;
+                OnChestSelected?.Invoke("banner_hero");
+            });
+
             if (_resultPopupPanel != null)
             {
                 _resultPopupPanel.SetActive(false);
             }
+        }
+
+        public void SetSelectedChestVisuals(string activeBannerId)
+        {
+            bool isStandard = activeBannerId == "banner_standard";
+            if (_glowBronze != null) _glowBronze.SetActive(isStandard);
+            if (_glowHero != null) _glowHero.SetActive(!isStandard);
         }
 
         private void Update()

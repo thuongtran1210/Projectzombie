@@ -17,9 +17,10 @@ namespace ProjectZombie.Editor.Tools
         {
             Debug.Log("<color=#00FFFF>[HeroCardAndCodexUIGenerator]</color> Bắt đầu quy trình tạo mới & đồng bộ UI Thẻ Tướng...");
 
-            // 1. Tự động đồng bộ Data ScriptableObjects của 4 vị tướng (Không đụng vào logic runtime)
+            // 1. Tự động đồng bộ Data ScriptableObjects của 4 vị tướng & Banner Gacha Anh Hùng
             CharacterDataAssetGenerator.GenerateCharacterAssets();
-            Debug.Log("<color=#00FF88>[HeroCardAndCodexUIGenerator]</color> 1/3: Đã cập nhật & nạp ScriptableObject 4 Tướng.");
+            GachaDataGenerator.GenerateDefaultGachaBanner();
+            Debug.Log("<color=#00FF88>[HeroCardAndCodexUIGenerator]</color> 1/3: Đã cập nhật & nạp ScriptableObject 4 Tướng và Banner Gacha Anh Hùng.");
 
             // 2. Tạo Prefab Thư Viện Thần Thẻ & Thần Tướng (Card Codex UI)
             GameObject codexPrefab = CardCodexUIGenerator.GenerateCardCodexPrefab();

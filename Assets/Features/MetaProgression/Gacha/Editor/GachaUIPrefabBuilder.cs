@@ -421,22 +421,22 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             Sprite chestBronzeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Gacha/Chest_Frame_01.png");
 
             // 1. Rương Đồng (Bảo Rương Vạn Cổ - KHẢ DỤNG)
-            CreateChestSelectionItem(
+            GameObject itemBronzeGo = CreateChestSelectionItem(
                 contentGo.transform, font, "Item_Chest_Bronze",
                 "Bảo Rương Đồng",
                 "Bảo Rương Vạn Cổ - 100 Cổ Tiền/lượt",
                 "<color=#00FF88>ĐANG MỞ</color>",
                 isSelected: true, isUnlocked: true,
-                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite, out GameObject glowBronzeGo);
 
             // 2. Gương Chiêu Mộ Anh Hùng (Thẻ Tướng - KHẢ DỤNG)
-            CreateChestSelectionItem(
+            GameObject itemHeroGo = CreateChestSelectionItem(
                 contentGo.transform, font, "Item_Chest_Hero",
                 "Gương Anh Hùng",
                 "Chiêu Mộ Tướng - 200 Cổ Tiền/lượt",
                 "<color=#00FF88>ĐANG MỞ</color>",
                 isSelected: false, isUnlocked: true,
-                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite, out GameObject glowHeroGo);
 
             // 3. Rương Huyền Thiết (Bạc - KHÓA)
             CreateChestSelectionItem(
@@ -445,7 +445,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 "<color=#888888>Mở tại Cảnh Giới Trúc Cơ (Tầng 2)</color>",
                 "<color=#FFAA00>CHƯA MỞ</color>",
                 isSelected: false, isUnlocked: false,
-                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite, out _);
 
             // 3. Rương Hoàng Kim (Vàng - KHÓA)
             CreateChestSelectionItem(
@@ -454,7 +454,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 "<color=#888888>Mở khi vượt Ải Vong Xuyên Hà</color>",
                 "<color=#FFAA00>CHƯA MỞ</color>",
                 isSelected: false, isUnlocked: false,
-                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite, out _);
 
             // 4. Rương Tiên Ngọc (Ngọc - KHÓA)
             CreateChestSelectionItem(
@@ -463,7 +463,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 "<color=#888888>Sự Kiện Đặc Biệt (Sắp Ra Mắt)</color>",
                 "<color=#FFAA00>CHƯA MỞ</color>",
                 isSelected: false, isUnlocked: false,
-                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite);
+                chestBronzeSprite, slotBgSprite, selectedGlowSprite, badgePillSprite, out _);
 
             // 5.2. Cột Phải: Vùng Rương Bát Quái & Hào Quang & Pity
             var rightColGo = new GameObject("Col_Right_ChestStage", typeof(RectTransform), typeof(Image));
@@ -657,6 +657,10 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             vSo.FindProperty("_singleRollButton").objectReferenceValue = btn1;
             vSo.FindProperty("_multiRollButton").objectReferenceValue = btn10;
             vSo.FindProperty("_closeResultButton").objectReferenceValue = closeResultBtnGo.GetComponent<Button>();
+            vSo.FindProperty("_chestBronzeButton").objectReferenceValue = itemBronzeGo.GetComponent<Button>();
+            vSo.FindProperty("_chestHeroButton").objectReferenceValue = itemHeroGo.GetComponent<Button>();
+            vSo.FindProperty("_glowBronze").objectReferenceValue = glowBronzeGo;
+            vSo.FindProperty("_glowHero").objectReferenceValue = glowHeroGo;
             vSo.FindProperty("_chestAnimator").objectReferenceValue = cAnim;
             vSo.FindProperty("_sunburstTransform").objectReferenceValue = sunRect;
             vSo.FindProperty("_sunburstImage").objectReferenceValue = sunImg;
@@ -682,7 +686,8 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             Sprite chestIcon,
             Sprite slotBg,
             Sprite selectedGlow,
-            Sprite badgePill)
+            Sprite badgePill,
+            out GameObject glowGo)
         {
             var itemGo = new GameObject(itemName, typeof(RectTransform), typeof(Image), typeof(Button));
             itemGo.transform.SetParent(parent, false);
@@ -698,9 +703,10 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             btn.interactable = isUnlocked;
 
             // Viền sáng vàng khi được chọn (Selected Glow)
-            if (isSelected && selectedGlow != null)
+            glowGo = null;
+            if (selectedGlow != null)
             {
-                var glowGo = new GameObject("Selected_Glow", typeof(RectTransform), typeof(Image));
+                glowGo = new GameObject("Selected_Glow", typeof(RectTransform), typeof(Image));
                 glowGo.transform.SetParent(itemGo.transform, false);
                 var gRect = glowGo.GetComponent<RectTransform>();
                 gRect.anchorMin = Vector2.zero;
@@ -710,6 +716,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
                 gImg.type = Image.Type.Sliced;
                 gImg.sprite = selectedGlow;
                 gImg.raycastTarget = false;
+                glowGo.SetActive(isSelected);
             }
 
             // Icon Rương bên trái

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 174c24198c2b83b468fc6ca7984ce1a4, type: 3}
+  m_Name: banner_hero
+  m_EditorClassIdentifier: 
+  bannerId: banner_hero
+  bannerName: "G\u01B0\u01A1ng Chi\xEAu M\u1ED9 Anh H\xF9ng"
+  bannerDescription: "M\u1EDF g\u01B0\u01A1ng th\u1EA7n chi\xEAu m\u1ED9 M\u1EA3nh
+    Th\u1EA7n T\u01B0\u1EDBng V\u1EA1n C\u1ED5, quy t\u1EE5 anh ki\u1EC7t c\u1EE9u
+    nh\xE2n \u0111\u1ED9 th\u1EBF."
+  singleRollCost: 200
+  multiRollCost: 1800
+  hardPityLegendary: 50
+  softPityStart: 40
+  softPityRatePerRoll: 0.05
+  epicGuaranteedEvery: 10
+  _dropPool:
+  - dropType: 1
+    relicId: C004_AnSi
+    relicName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
+    rarity: 3
+    element: 5
+    shardAmount: 15
+    weight: 5
+    icon: {fileID: 21300000, guid: 94e5e37ddc804314b0ce5ebb3df9597c, type: 3}
+  - dropType: 1
+    relicId: C002_DaoSi
+    relicName: "\u0110\u1EA1o S\u0129"
+    rarity: 1
+    element: 2
+    shardAmount: 5
+    weight: 50
+    icon: {fileID: 21300000, guid: 3910c0563e5e48b6b2e0a3f6b02f7ef0, type: 3}
+  - dropType: 1
+    relicId: C003_ThanhDong
+    relicName: "Thanh \u0110\u1ED3ng"
+    rarity: 2
+    element: 2
+    shardAmount: 10
+    weight: 20
+    icon: {fileID: 21300000, guid: 55c7e077af724f5298e8b752f108dfe5, type: 3}
+  - dropType: 1
+    relicId: C001_ThuSinh
+    relicName: "Th\u01B0 Sinh"
+    rarity: 1
+    element: 1
+    shardAmount: 5
+    weight: 50
+    icon: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}

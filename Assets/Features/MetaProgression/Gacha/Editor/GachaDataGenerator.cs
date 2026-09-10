@@ -95,6 +95,90 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
 
             Debug.Log($"[GachaDataGenerator] Đã tạo thành công Banner '{banner.bannerName}' tại '{assetPath}' với {dropList.Count} Pháp Bảo.");
             Selection.activeObject = banner;
+
+            GenerateHeroGachaBanner();
+        }
+
+        [MenuItem("ProjectZombie/Gacha/Generate Hero Gacha Banner SO", priority = 201)]
+        public static void GenerateHeroGachaBanner()
+        {
+            string outputDir = "Assets/Resources/Gacha";
+            if (!Directory.Exists(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+
+            string assetPath = $"{outputDir}/banner_hero.asset";
+            var banner = AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>(assetPath);
+
+            if (banner == null)
+            {
+                banner = ScriptableObject.CreateInstance<GachaBannerConfigSO>();
+                AssetDatabase.CreateAsset(banner, assetPath);
+            }
+
+            banner.bannerId = "banner_hero";
+            banner.bannerName = "Gương Chiêu Mộ Anh Hùng";
+            banner.bannerDescription = "Mở gương thần chiêu mộ Mảnh Thần Tướng Vạn Cổ, quy tụ anh kiệt cứu nhân độ thế.";
+            banner.singleRollCost = 200;
+            banner.multiRollCost = 1800;
+            banner.hardPityLegendary = 50;
+            banner.softPityStart = 40;
+            banner.softPityRatePerRoll = 0.05f;
+            banner.epicGuaranteedEvery = 10;
+
+            var dropList = new List<GachaDropItem>();
+
+            // Quét toàn bộ CharacterDataSO trong dự án
+            string[] guids = AssetDatabase.FindAssets("t:CharacterDataSO");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var hero = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>(path);
+                if (hero == null || string.IsNullOrEmpty(hero.characterId)) continue;
+
+                float weight = 100f;
+                int shardAmount = 5;
+
+                switch (hero.rarity)
+                {
+                    case ItemRarity.Common:
+                        weight = 120f;
+                        shardAmount = 5;
+                        break;
+                    case ItemRarity.Rare:
+                        weight = 50f;
+                        shardAmount = 5;
+                        break;
+                    case ItemRarity.Epic:
+                        weight = 20f;
+                        shardAmount = 10;
+                        break;
+                    case ItemRarity.Legendary:
+                        weight = 5f;
+                        shardAmount = 15;
+                        break;
+                }
+
+                dropList.Add(new GachaDropItem
+                {
+                    dropType = GachaDropType.CharacterShard,
+                    relicId = hero.characterId,
+                    relicName = hero.characterName,
+                    rarity = hero.rarity,
+                    element = hero.element,
+                    shardAmount = shardAmount,
+                    weight = weight,
+                    icon = hero.avatar
+                });
+            }
+
+            banner.SetDropPool(dropList);
+            EditorUtility.SetDirty(banner);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"[GachaDataGenerator] Đã tạo thành công Banner Anh Hùng '{banner.bannerName}' tại '{assetPath}' với {dropList.Count} Vị Tướng.");
         }
     }
 }

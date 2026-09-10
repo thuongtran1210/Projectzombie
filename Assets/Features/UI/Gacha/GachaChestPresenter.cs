@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.UI.Gacha
                 _view.OnSingleRollClicked += HandleSingleRoll;
                 _view.OnMultiRollClicked += HandleMultiRoll;
                 _view.OnCloseResultClicked += HandleCloseResult;
+                _view.OnChestSelected += HandleChestSelected;
             }
         }
 
@@ -68,6 +69,7 @@ namespace ProjectZombie.Features.UI.Gacha
                 _view.OnSingleRollClicked -= HandleSingleRoll;
                 _view.OnMultiRollClicked -= HandleMultiRoll;
                 _view.OnCloseResultClicked -= HandleCloseResult;
+                _view.OnChestSelected -= HandleChestSelected;
             }
         }
 
@@ -85,6 +87,7 @@ namespace ProjectZombie.Features.UI.Gacha
             {
                 _view.SetBannerInfo($"<color=#FFD700>[ {banner.bannerName} ]</color>", banner.bannerDescription);
                 _view.SetCosts($"Quay 1x\n<color=#FFD700>{banner.singleRollCost:N0} Cổ Tiền</color>", $"Quay 10x\n<color=#00FF88>{banner.multiRollCost:N0} Cổ Tiền</color>");
+                _view.SetSelectedChestVisuals(banner.bannerId);
 
                 // 3. Pity counters
                 int curLegendary = RelicGachaManager.Instance.PityLegendary;
@@ -94,6 +97,26 @@ namespace ProjectZombie.Features.UI.Gacha
             else
             {
                 _view.SetCosts("100 Cổ Tiền", "900 Cổ Tiền");
+            }
+        }
+
+        private void HandleChestSelected(string bannerId)
+        {
+            if (RelicGachaManager.Instance != null)
+            {
+                var targetBanner = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}");
+#if UNITY_EDITOR
+                if (targetBanner == null)
+                {
+                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset");
+                }
+#endif
+                if (targetBanner != null)
+                {
+                    RelicGachaManager.Instance.SetActiveBanner(targetBanner);
+                    RefreshAllUI();
+                    global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                }
             }
         }
 
