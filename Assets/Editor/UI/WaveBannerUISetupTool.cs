@@ -7,14 +7,11 @@ using ProjectZombie.Features.UI.HUD;
 namespace ProjectZombie.EditorTools
 {
     /// <summary>
-    /// Tool độc lập tạo và cấu hình Cụm Wave Banner Widget (Thẻ Tre Top-Center, Thanh tiến trình quái giai đoạn & Banner Pop-up chuyển Wave).
-    /// ĐẢM BẢO TÁI SỬ DỤNG 100% CÁC GAME OBJECT CŨ, dọn dẹp các node trùng lặp, không sinh thêm đối tượng rác.
-    /// HOÀN TOÀN ĐỘC LẬP: Chỉ can thiệp vào node TopCenter_WaveBannerWidget, không làm ảnh hưởng đến các UI khác.
-    /// Không chứa emoji trong mã nguồn và giao diện.
+    /// Tool thiết lập toàn bộ cụm Top HUD Wave (Thẻ tre MiniBadge + Thanh tiến trình quái).
     /// </summary>
     public static class WaveBannerUISetupTool
     {
-        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2. Thiết Lập Wave Banner (Top Center)", priority = 22)]
+        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2.2. Thiết Lập Thẻ Tre & Thanh Tiến Trình (Top-Center HUD)", priority = 24)]
         public static void SetupWaveBannerUI()
         {
             // 1. Tìm RunHUD Root

@@ -55,7 +55,7 @@ namespace ProjectZombie.EditorTools
 
             if (GUILayout.Button("🏮 Cập Nhật Đại Banner Đột Phá Chuyển Wave (Center Panel)", GUILayout.Height(30)))
             {
-                WaveBannerUISetupTool.SetupWaveBannerUI();
+                EpicWaveTransitionBannerSetupTool.SetupEpicWaveTransitionBannerOnly();
             }
 
             if (GUILayout.Button("🃏 Cập Nhật Bảng Chọn Thẻ Level Up (Upgrade Modal)", GUILayout.Height(30)))
