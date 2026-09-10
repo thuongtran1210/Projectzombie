@@ -35,12 +35,15 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private Sprite _eliteBadgeSprite;         // Badge đầu trâu
         [SerializeField] private Sprite _finalBossBadgeSprite;     // Badge Rồng Lửa Diêm Vương
 
-        [Header("Center Transition Banner")]
+        [Header("Center Transition Banner (Epic Center Panel)")]
         [SerializeField] private CanvasGroup _bannerCanvasGroup;
         [SerializeField] private RectTransform _bannerContainer;
+        [SerializeField] private Image _bannerDimBackdrop;          // Lớp phủ mờ nền tối chiến trường
         [SerializeField] private Image _bannerFrameImage;
-        [SerializeField] private TextMeshProUGUI _bannerTitleText;   // Ví dụ: "DOT 3: BAY QUY XUONG BAO VAY!"
-        [SerializeField] private TextMeshProUGUI _bannerSubText;     // Ví dụ: "BOC PHAT (BURST WAVE)"
+        [SerializeField] private Image _bannerIconBadge;           // Huy hiệu biểu tượng sự kiện (Song kiếm / Đầu quỷ / Trụ đá)
+        [SerializeField] private TextMeshProUGUI _bannerTagText;    // Ví dụ: "✦ HỒI THỨ BA ✦"
+        [SerializeField] private TextMeshProUGUI _bannerTitleText;  // Ví dụ: "BẦY QUỶ XƯƠNG BAO VÂY!"
+        [SerializeField] private TextMeshProUGUI _bannerSubText;    // Ví dụ: "⚠ BỘC PHÁT (BURST WAVE) - QUÁI TĂNG TỐC"
 
         [Header("Visual Theme Colors")]
         [SerializeField] private Color _normalWaveColor = new Color(1f, 0.63f, 0f);      // Vàng Hổ Phách (#FFA000)
@@ -451,14 +454,23 @@ namespace ProjectZombie.Features.UI.HUD
         }
 
         /// <summary>
-        /// Kích hoạt hoạt ảnh hiển thị Banner Đột Phá ở giữa màn hình.
+        /// Kích hoạt hoạt ảnh hiển thị Đại Banner Thông Báo Đột Phá ở chính giữa màn hình.
+        /// Hoạt ảnh 3 giai đoạn: Va đập (Impact) -> Lưu giữ & Tỏa sáng (Hold) -> Phân rã bốc hơi (Vanish).
         /// </summary>
-        public void PlayWaveTransitionBanner(string title, string subTitle, TimelineEventType eventType, float displayDuration = 1.8f)
+        public void PlayWaveTransitionBanner(string tagText, string title, string subTitle, TimelineEventType eventType, float displayDuration = 2.0f)
         {
             if (_bannerCanvasGroup == null || _bannerContainer == null) return;
 
+            EnsureSpritesLoaded();
+
             // Xác định màu sắc chủ đạo theo loại sự kiện
             Color themeColor = GetColorForEventType(eventType);
+
+            if (_bannerTagText != null)
+            {
+                _bannerTagText.text = tagText;
+                _bannerTagText.color = new Color(1f, 0.88f, 0.5f); // Vàng Sớ Kim
+            }
 
             if (_bannerTitleText != null)
             {
@@ -469,7 +481,39 @@ namespace ProjectZombie.Features.UI.HUD
             if (_bannerSubText != null)
             {
                 _bannerSubText.text = subTitle;
-                _bannerSubText.color = themeColor;
+                _bannerSubText.color = new Color(0.95f, 0.92f, 0.88f);
+            }
+
+            // Gán Icon Badge tương ứng
+            if (_bannerIconBadge != null)
+            {
+                Sprite badgeSp = null;
+                switch (eventType)
+                {
+                    case TimelineEventType.BossSpawn:
+                        badgeSp = _finalBossBadgeSprite ?? _eliteBadgeSprite;
+                        break;
+                    case TimelineEventType.BurstWave:
+                        badgeSp = _swarmBadgeSprite;
+                        break;
+                    case TimelineEventType.SpawnPillar:
+                        badgeSp = _eliteBadgeSprite;
+                        break;
+                    default:
+                        badgeSp = _playerIndicatorSprite;
+                        break;
+                }
+
+                if (badgeSp != null)
+                {
+                    _bannerIconBadge.sprite = badgeSp;
+                    _bannerIconBadge.color = themeColor;
+                    _bannerIconBadge.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _bannerIconBadge.gameObject.SetActive(false);
+                }
             }
 
             // Hủy sequence hoạt ảnh cũ nếu đang chạy
@@ -479,24 +523,43 @@ namespace ProjectZombie.Features.UI.HUD
 
             _bannerCanvasGroup.gameObject.SetActive(true);
             _bannerCanvasGroup.alpha = 0f;
-            _bannerContainer.localScale = new Vector3(0.7f, 0.7f, 1f);
 
-            // 1. Phóng to mượt mà + Fade In
-            _bannerSequence.Append(_bannerCanvasGroup.DOFade(1f, 0.25f));
-            _bannerSequence.Join(_bannerContainer.DOScale(1f, 0.35f).SetEase(Ease.OutBack));
+            // Đặt trạng thái ban đầu cho Container & Backdrop
+            _bannerContainer.localScale = new Vector3(1.35f, 1.35f, 1f);
+            _bannerContainer.anchoredPosition = new Vector2(0f, 60f);
 
-            // Nếu là Boss, tạo rung lắc nhẹ (Shake) tạo cảm giác uy lực
-            if (eventType == TimelineEventType.BossSpawn)
+            if (_bannerDimBackdrop != null)
             {
-                _bannerSequence.Append(_bannerContainer.DOShakePosition(0.4f, 15f, 20, 90, false, true));
+                Color bdCol = _bannerDimBackdrop.color;
+                bdCol.a = 0f;
+                _bannerDimBackdrop.color = bdCol;
             }
 
-            // 2. Giữ nguyên trên màn hình cho người chơi đọc
+            // GIAI ĐOẠN 1: KHỞI PHÁT & VA ĐẬP (IMPACT)
+            _bannerSequence.Append(_bannerCanvasGroup.DOFade(1f, 0.22f));
+            if (_bannerDimBackdrop != null)
+            {
+                _bannerSequence.Join(_bannerDimBackdrop.DOFade(0.38f, 0.25f));
+            }
+            _bannerSequence.Join(_bannerContainer.DOScale(1f, 0.32f).SetEase(Ease.OutBack));
+
+            // Nếu là Boss, tạo chấn động rung lắc dữ dội
+            if (eventType == TimelineEventType.BossSpawn)
+            {
+                _bannerSequence.Append(_bannerContainer.DOShakePosition(0.45f, 20f, 25, 90, false, true));
+            }
+
+            // GIAI ĐOẠN 2: LƯU GIỮ & TỎA SÁNG (HOLD & PULSE)
             _bannerSequence.AppendInterval(displayDuration);
 
-            // 3. Fade Out và trượt nhẹ lên trên
+            // GIAI ĐOẠN 3: BỐC HƠI & GIẢI TỎA CHIẾN TRẬN (FADE & FLOAT UP)
             _bannerSequence.Append(_bannerCanvasGroup.DOFade(0f, 0.3f));
-            _bannerSequence.Join(_bannerContainer.DOScale(1.1f, 0.3f).SetEase(Ease.InQuad));
+            if (_bannerDimBackdrop != null)
+            {
+                _bannerSequence.Join(_bannerDimBackdrop.DOFade(0f, 0.25f));
+            }
+            _bannerSequence.Join(_bannerContainer.DOAnchorPosY(120f, 0.3f).SetEase(Ease.InQuad));
+            _bannerSequence.Join(_bannerContainer.DOScale(1.08f, 0.3f).SetEase(Ease.InQuad));
 
             _bannerSequence.OnComplete(() =>
             {

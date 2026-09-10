@@ -106,11 +106,12 @@ namespace ProjectZombie.Features.UI.HUD
             }
 
             // 2. Format tiêu đề và phụ đề cho Banner Pop-up chuyển Wave
-            string bannerTitle = $"DOT {info.currentWaveIndex}: {info.waveTitle.ToUpper()}";
+            string bannerTag = $"✦ HỒI THỨ {info.currentWaveIndex:D2} / {info.totalWaves:D2} ✦";
+            string bannerTitle = info.waveTitle.ToUpper();
             string bannerSubText = GetSubTextForEventType(info.eventType);
 
             // Kích hoạt hoạt ảnh Banner ở giữa màn hình
-            _view.PlayWaveTransitionBanner(bannerTitle, bannerSubText, info.eventType);
+            _view.PlayWaveTransitionBanner(bannerTag, bannerTitle, bannerSubText, info.eventType);
         }
 
         private void HandleTimelineProgressUpdated(float matchTime, float maxDuration, float progress)
@@ -137,14 +138,14 @@ namespace ProjectZombie.Features.UI.HUD
             switch (eventType)
             {
                 case TimelineEventType.BurstWave:
-                    return "BAY QUAI BAO VAY (BURST WAVE)";
+                    return "BẦY QUÁI BỘC PHÁT (BURST WAVE)";
                 case TimelineEventType.BossSpawn:
-                    return "MA VUONG XUAT HIEN (BOSS SPAWN)";
+                    return "MA VƯƠNG XUẤT THẾ (BOSS SPAWN)";
                 case TimelineEventType.SpawnPillar:
-                    return "TRU MA THACH XUAT THE";
+                    return "TRỤ MA THẠCH XUẤT THẾ";
                 case TimelineEventType.Continuous:
                 default:
-                    return "TIEN VAO TRAN DIA";
+                    return "TIẾN VÀO TRẬN ĐỊA";
             }
         }
     }

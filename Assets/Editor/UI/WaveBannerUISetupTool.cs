@@ -260,72 +260,120 @@ namespace ProjectZombie.EditorTools
             ptTMP.color = new Color(1f, 0.88f, 0.5f);
 
             // -----------------------------------------------------------------
-            // 6. DỰNG BANNER ĐỘT PHÁ CHUYỂN WAVE (CENTER POPUP BANNER)
+            // 6. DỰNG ĐẠI BANNER ĐỘT PHÁ CHUYỂN WAVE (EPIC CENTER TRANSITION BANNER)
             // -----------------------------------------------------------------
             Transform bannerTrans = GetOrCreateChild(widgetTrans, "Center_WaveTransitionBanner");
             RectTransform bnRT = EnsureComponent<RectTransform>(bannerTrans.gameObject);
-            bnRT.anchorMin = new Vector2(0.5f, 0.5f);
-            bnRT.anchorMax = new Vector2(0.5f, 0.5f);
+            bnRT.anchorMin = Vector2.zero;
+            bnRT.anchorMax = Vector2.one;
             bnRT.pivot = new Vector2(0.5f, 0.5f);
-            bnRT.anchoredPosition = new Vector2(0, 160);
-            bnRT.sizeDelta = new Vector2(580, 120);
+            bnRT.offsetMin = Vector2.zero;
+            bnRT.offsetMax = Vector2.zero;
 
             CanvasGroup bnCG = EnsureComponent<CanvasGroup>(bannerTrans.gameObject);
             bnCG.alpha = 0f;
             bannerTrans.gameObject.SetActive(false);
 
-            // Khung Banner Background
-            Transform bannerBgTrans = GetOrCreateChild(bannerTrans, "Img_BannerBg");
+            // 6.1. Backdrop mờ nền tối chiến trường
+            Transform dimTrans = GetOrCreateChild(bannerTrans, "Img_DimBackdrop");
+            RectTransform dimRT = EnsureComponent<RectTransform>(dimTrans.gameObject);
+            dimRT.anchorMin = Vector2.zero;
+            dimRT.anchorMax = Vector2.one;
+            dimRT.offsetMin = Vector2.zero;
+            dimRT.offsetMax = Vector2.zero;
+            Image dimImg = EnsureComponent<Image>(dimTrans.gameObject);
+            dimImg.color = new Color(0.04f, 0.03f, 0.06f, 0.38f); // Đen khói tối
+            dimImg.raycastTarget = false;
+
+            // 6.2. Khung Nội Dung Trung Tâm (Panel Content Container)
+            Transform containerTrans = GetOrCreateChild(bannerTrans, "Container_EpicPanel");
+            RectTransform cRT = EnsureComponent<RectTransform>(containerTrans.gameObject);
+            cRT.anchorMin = new Vector2(0.5f, 0.5f);
+            cRT.anchorMax = new Vector2(0.5f, 0.5f);
+            cRT.pivot = new Vector2(0.5f, 0.5f);
+            cRT.anchoredPosition = new Vector2(0, 60);
+            cRT.sizeDelta = new Vector2(740, 180);
+
+            // Khung Banner Nền Gỗ Mun Viền Đồng
+            Transform bannerBgTrans = GetOrCreateChild(containerTrans, "Img_BannerBg");
             RectTransform bbgRT = EnsureComponent<RectTransform>(bannerBgTrans.gameObject);
             bbgRT.anchorMin = Vector2.zero;
             bbgRT.anchorMax = Vector2.one;
             bbgRT.sizeDelta = Vector2.zero;
             Image bbgImg = EnsureComponent<Image>(bannerBgTrans.gameObject);
-            bbgImg.color = new Color(0.12f, 0.09f, 0.08f, 0.92f); // Gỗ mun sẫm
+            bbgImg.color = new Color(0.12f, 0.09f, 0.08f, 0.95f); // Gỗ mun sẫm
             bbgImg.type = Image.Type.Sliced;
-            if (badgePillSprite != null) bbgImg.sprite = badgePillSprite;
-            else if (timerBoxSprite != null) bbgImg.sprite = timerBoxSprite;
+            if (timerBoxSprite != null) bbgImg.sprite = timerBoxSprite;
+            else if (badgePillSprite != null) bbgImg.sprite = badgePillSprite;
 
-            // Banner Title Text
-            Transform bTitleTrans = GetOrCreateChild(bannerTrans, "Txt_BannerTitle");
+            // Icon Huy Hiệu Sự Kiện (Bên trái / Trên)
+            Transform badgeTrans = GetOrCreateChild(containerTrans, "Icon_EventBadge");
+            RectTransform bIconRT = EnsureComponent<RectTransform>(badgeTrans.gameObject);
+            bIconRT.anchorMin = new Vector2(0.5f, 1f);
+            bIconRT.anchorMax = new Vector2(0.5f, 1f);
+            bIconRT.pivot = new Vector2(0.5f, 0.5f);
+            bIconRT.anchoredPosition = new Vector2(0, -10);
+            bIconRT.sizeDelta = new Vector2(44, 44);
+            Image bIconImg = EnsureComponent<Image>(badgeTrans.gameObject);
+            bIconImg.preserveAspect = true;
+            bIconImg.color = new Color(1f, 0.72f, 0.15f);
+
+            // Banner Tag Text (✦ HỒI THỨ 03 / 10 ✦)
+            Transform bTagTrans = GetOrCreateChild(containerTrans, "Txt_BannerTag");
+            RectTransform btagRT = EnsureComponent<RectTransform>(bTagTrans.gameObject);
+            btagRT.anchorMin = new Vector2(0, 0.65f);
+            btagRT.anchorMax = new Vector2(1, 0.92f);
+            btagRT.offsetMin = new Vector2(24, 0);
+            btagRT.offsetMax = new Vector2(-24, 0);
+            TextMeshProUGUI bTagTMP = EnsureComponent<TextMeshProUGUI>(bTagTrans.gameObject);
+            if (vietFont != null) bTagTMP.font = vietFont;
+            bTagTMP.fontSize = 15;
+            bTagTMP.fontStyle = FontStyles.Bold;
+            bTagTMP.alignment = TextAlignmentOptions.Center;
+            bTagTMP.text = "✦ HỒI THỨ 03 / 10 ✦";
+            bTagTMP.color = new Color(1f, 0.88f, 0.5f); // Vàng Sớ Kim
+
+            // Banner Main Title Text
+            Transform bTitleTrans = GetOrCreateChild(containerTrans, "Txt_BannerTitle");
             RectTransform btRT = EnsureComponent<RectTransform>(bTitleTrans.gameObject);
-            btRT.anchorMin = new Vector2(0, 0.45f);
-            btRT.anchorMax = new Vector2(1, 1);
-            btRT.offsetMin = new Vector2(20, 0);
-            btRT.offsetMax = new Vector2(-20, -10);
+            btRT.anchorMin = new Vector2(0, 0.32f);
+            btRT.anchorMax = new Vector2(1, 0.68f);
+            btRT.offsetMin = new Vector2(24, 0);
+            btRT.offsetMax = new Vector2(-24, 0);
             TextMeshProUGUI bTitleTMP = EnsureComponent<TextMeshProUGUI>(bTitleTrans.gameObject);
             if (vietFont != null) bTitleTMP.font = vietFont;
-            bTitleTMP.fontSize = 24;
+            bTitleTMP.fontSize = 28;
             bTitleTMP.fontStyle = FontStyles.Bold;
             bTitleTMP.alignment = TextAlignmentOptions.Center;
-            bTitleTMP.text = "DOT 03: BAY QUY XUONG BAO VAY!";
+            bTitleTMP.text = "BẦY QUỶ XƯƠNG BAO VÂY!";
             bTitleTMP.color = new Color(1f, 0.63f, 0f); // Vàng Hổ Phách
 
             // Banner Subtitle Text
-            Transform bSubTrans = GetOrCreateChild(bannerTrans, "Txt_BannerSub");
+            Transform bSubTrans = GetOrCreateChild(containerTrans, "Txt_BannerSub");
             RectTransform bsRT = EnsureComponent<RectTransform>(bSubTrans.gameObject);
-            bsRT.anchorMin = new Vector2(0, 0);
-            bsRT.anchorMax = new Vector2(1, 0.45f);
-            bsRT.offsetMin = new Vector2(20, 10);
-            bsRT.offsetMax = new Vector2(-20, 0);
+            bsRT.anchorMin = new Vector2(0, 0.08f);
+            bsRT.anchorMax = new Vector2(1, 0.34f);
+            bsRT.offsetMin = new Vector2(24, 0);
+            bsRT.offsetMax = new Vector2(-24, 0);
             TextMeshProUGUI bSubTMP = EnsureComponent<TextMeshProUGUI>(bSubTrans.gameObject);
             if (vietFont != null) bSubTMP.font = vietFont;
-            bSubTMP.fontSize = 16;
+            bSubTMP.fontSize = 15;
             bSubTMP.fontStyle = FontStyles.Bold;
             bSubTMP.alignment = TextAlignmentOptions.Center;
-            bSubTMP.text = "BAY QUAI BAO VAY (BURST WAVE)";
-            bSubTMP.color = new Color(0.3f, 0.93f, 0.92f); // Xanh Phong Lôi
+            bSubTMP.text = "BẦY QUÁI BỘC PHÁT (BURST WAVE)";
+            bSubTMP.color = new Color(0.92f, 0.88f, 0.82f); // Trắng Ngà
 
             // -----------------------------------------------------------------
-            // 5. DỌN DẸP CÁC NODE TRÙNG LẶP NẾU CÓ
+            // 7. DỌN DẸP CÁC NODE TRÙNG LẶP NẾU CÓ
             // -----------------------------------------------------------------
             CleanupDuplicateChildren(headerRowTrans);
             CleanupDuplicateChildren(miniBadgeTrans);
             CleanupDuplicateChildren(progBarTrans);
+            CleanupDuplicateChildren(containerTrans);
             CleanupDuplicateChildren(bannerTrans);
 
             // -----------------------------------------------------------------
-            // 6. SERIALIZE VIEW & PRESENTER FIELDS
+            // 8. SERIALIZE VIEW & PRESENTER FIELDS
             // -----------------------------------------------------------------
             SerializedObject soView = new SerializedObject(view);
             soView.FindProperty("_miniBadgeCanvasGroup").objectReferenceValue = mbCG;
@@ -340,8 +388,11 @@ namespace ProjectZombie.EditorTools
             soView.FindProperty("_timelineMarkersContainer").objectReferenceValue = mcRT;
 
             soView.FindProperty("_bannerCanvasGroup").objectReferenceValue = bnCG;
-            soView.FindProperty("_bannerContainer").objectReferenceValue = bnRT;
+            soView.FindProperty("_bannerContainer").objectReferenceValue = cRT;
+            soView.FindProperty("_bannerDimBackdrop").objectReferenceValue = dimImg;
             soView.FindProperty("_bannerFrameImage").objectReferenceValue = bbgImg;
+            soView.FindProperty("_bannerIconBadge").objectReferenceValue = bIconImg;
+            soView.FindProperty("_bannerTagText").objectReferenceValue = bTagTMP;
             soView.FindProperty("_bannerTitleText").objectReferenceValue = bTitleTMP;
             soView.FindProperty("_bannerSubText").objectReferenceValue = bSubTMP;
             soView.ApplyModifiedProperties();
@@ -351,7 +402,7 @@ namespace ProjectZombie.EditorTools
             soPresenter.ApplyModifiedProperties();
 
             EditorUtility.SetDirty(widgetTrans.gameObject);
-            Debug.Log("<color=#4DEEEA><b>[WaveBannerUISetupTool]</b> Da tai su dung va cau hinh thanh cong Wave Banner Widget ma khong tao trung lap Game Object!</color>");
+            Debug.Log("<color=#4DEEEA><b>[WaveBannerUISetupTool]</b> Đã nâng cấp thành công Đại Banner Đột Phá chuyển Wave nằm giữa màn hình!</color>");
         }
 
         private static Transform GetOrCreateChild(Transform parent, string childName)
