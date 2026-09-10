@@ -31,11 +31,12 @@ namespace ProjectZombie.EditorTools.BuildSync
             AllowedExtensions = allowedExtensions;
         }
 
-        public static SyncRule ForSingleAsset(string name, string sourcePath, string targetPath)
+        public static SyncRule ForSingleAsset(string name, string sourcePath, string targetPath, Action fallbackGenerator = null)
         {
             return new SyncRule(name, sourcePath, targetPath)
             {
-                Type = RuleType.SingleAsset
+                Type = RuleType.SingleAsset,
+                FallbackGenerator = fallbackGenerator
             };
         }
 

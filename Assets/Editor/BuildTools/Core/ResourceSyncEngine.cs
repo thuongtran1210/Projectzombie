@@ -82,6 +82,19 @@ namespace ProjectZombie.EditorTools.BuildSync
             string src = rule.SourcePath;
             string dest = rule.TargetPath;
 
+            if (!File.Exists(src) && !File.Exists(dest))
+            {
+                try
+                {
+                    rule.FallbackGenerator?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[ResourceSyncEngine] Không thể khởi tạo tự động {rule.Name}: {e.Message}");
+                }
+                return;
+            }
+
             if (File.Exists(src))
             {
                 EnsureDirectory(Path.GetDirectoryName(dest));

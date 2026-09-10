@@ -22,10 +22,10 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         public static readonly List<SyncRule> SingleAssetRules = new List<SyncRule>
         {
-            SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset"),
-            SyncRule.ForSingleAsset("CharacterStarProgressionConfig (Cấu Hình Nâng Sao Tướng)", "Assets/_Data/CharacterStarProgressionConfig.asset", "Assets/Resources/CharacterStarProgressionConfig.asset"),
+            SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterAssets()),
+            SyncRule.ForSingleAsset("CharacterStarProgressionConfig (Cấu Hình Nâng Sao Tướng)", "Assets/_Data/CharacterStarProgressionConfig.asset", "Assets/Resources/CharacterStarProgressionConfig.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterStarProgressionConfig()),
             SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset"),
-            SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset")
+            SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaDataGenerator.GenerateDefaultGachaBanner())
         };
 
         public static readonly List<SyncRule> UIPrefabRules = new List<SyncRule>

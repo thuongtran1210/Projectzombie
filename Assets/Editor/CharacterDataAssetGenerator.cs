@@ -234,11 +234,28 @@ namespace ProjectZombie.Editor
             database.SetCharacters(listSO);
             EditorUtility.SetDirty(database);
 
+            // 4. Tạo hoặc cập nhật file CharacterStarProgressionConfig.asset (Bảng Cấu Hình Nâng Sao Tướng)
+            GenerateCharacterStarProgressionConfig();
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
             Debug.Log($"<color=#00FF88>[CharacterDataAssetGenerator]</color> Đã tạo thành công 4 file CharacterDataSO tại '{charactersFolder}' và liên kết vào '{dbPath}'!");
-            EditorUtility.DisplayDialog("Character Database Generator", "Đã tạo thành công 4 file ScriptableObject độc lập cho từng tướng trong thư mục 'Assets/_Data/Characters/'!\n\nBạn có thể mở từng file để tinh chỉnh chỉ số hoặc kéo thả thêm tướng mới vào 'Assets/_Data/CharacterDatabase.asset'.", "Đã hiểu!");
+            EditorUtility.DisplayDialog("Character Database Generator", "Đã tạo thành công 4 file ScriptableObject độc lập cho từng tướng trong thư mục 'Assets/_Data/Characters/' cùng file 'CharacterStarProgressionConfig.asset'!\n\nBạn có thể mở từng file để tinh chỉnh chỉ số hoặc kéo thả thêm tướng mới vào 'Assets/_Data/CharacterDatabase.asset'.", "Đã hiểu!");
+        }
+
+        public static void GenerateCharacterStarProgressionConfig()
+        {
+            string cfgPath = "Assets/_Data/CharacterStarProgressionConfig.asset";
+            var config = GetOrCreateSO<ProjectZombie.Features.MetaProgression.CharacterStarProgressionSO>(cfgPath);
+            EditorUtility.SetDirty(config);
+
+            string resFolder = "Assets/Resources";
+            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
+            string resPath = $"{resFolder}/CharacterStarProgressionConfig.asset";
+            AssetDatabase.CopyAsset(cfgPath, resPath);
+
+            Debug.Log($"<color=#00FF88>[CharacterDataAssetGenerator]</color> Đã tạo và đồng bộ CharacterStarProgressionConfig.asset thành công tại:\n- {cfgPath}\n- {resPath}");
         }
 
         private static Sprite LoadFirstSprite(string texturePath)

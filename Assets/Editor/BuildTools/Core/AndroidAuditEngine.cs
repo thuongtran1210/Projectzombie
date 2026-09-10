@@ -148,8 +148,10 @@ namespace ProjectZombie.EditorTools.BuildSync
                     Severity = AuditItem.SeverityLevel.Warning,
                     Title = $"Thiếu Asset: {rule.Name}",
                     Description = $"Không tìm thấy asset tại {rule.SourcePath} hoặc {rule.TargetPath}.",
-                    Recommendation = "Kiểm tra lại asset trong project.",
-                    ActionType = AuditItem.FixActionType.None
+                    Recommendation = rule.FallbackGenerator != null ? "Nhấn nút bên dưới để tự động khởi tạo asset cấu hình này." : "Kiểm tra lại asset trong project.",
+                    ActionType = rule.FallbackGenerator != null ? AuditItem.FixActionType.SyncSingleAsset : AuditItem.FixActionType.None,
+                    Rule = rule,
+                    FixButtonText = rule.FallbackGenerator != null ? $"🛠️ Tạo Mới {rule.Name}" : ""
                 });
             }
             else if (hasSrc && !hasTarget)
