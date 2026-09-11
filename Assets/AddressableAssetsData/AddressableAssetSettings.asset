@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 8bcad728379ae974b8c7f921c22fb1ec
   m_currentHash:
     serializedVersion: 2
-    Hash: 2e289a4edf580e7eb145c2d3ba84f23c
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -100,6 +100,8 @@ MonoBehaviour:
     - default
     - UpgradeData
     - Map
+    - RemoteDLC
+    - MetaConfigs
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 439833ed15f0b454cbcccc19411c44b1, type: 2}

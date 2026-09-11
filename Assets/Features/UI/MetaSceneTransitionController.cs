@@ -87,7 +87,18 @@ namespace ProjectZombie.Features.UI
         {
             if (_currentInstantiatedMap != null)
             {
-                Destroy(_currentInstantiatedMap);
+                // Giải phóng an toàn qua Addressables nếu đối tượng được sinh từ Addressables
+                bool releasedByAddressables = false;
+                try
+                {
+                    releasedByAddressables = UnityEngine.AddressableAssets.Addressables.ReleaseInstance(_currentInstantiatedMap);
+                }
+                catch { }
+
+                if (!releasedByAddressables && _currentInstantiatedMap != null)
+                {
+                    Destroy(_currentInstantiatedMap);
+                }
                 _currentInstantiatedMap = null;
             }
 

@@ -91,7 +91,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
                 packageId = "META_CONFIGS",
                 title = "Dữ Liệu Thẻ Kỹ Năng & Cấu Hình Cập Nhật Nóng",
                 description = "Các thẻ nâng cấp vũ khí, cây kỹ năng Tứ Bất Tử và cấu hình banner Gacha mới nhất.",
-                addressableKey = "WorldStageDatabase",
+                addressableKey = "PermanentUpgradeTree",
                 estimatedSizeMb = 0.5f
             });
 

@@ -148,7 +148,9 @@ namespace ProjectZombie.Core.Services.Addressables
                 // Kiểm tra dung lượng các dependencies cần tải về máy
                 // Lấy tất cả ResourceLocations thuộc Addressables Catalog thay vì hardcode key 'default'
                 long totalSize = 0;
-                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
+                // Danh sách các Label DLC cần kiểm tra dung lượng từ CDN
+                var dlcLabels = new object[] { "RemoteDLC", "MetaConfigs", "UpgradeData", "Map", "default", "preload" };
+                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)dlcLabels, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
                 await locHandle.Task;
 
                 if (locHandle.Status == AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
@@ -237,7 +239,8 @@ namespace ProjectZombie.Core.Services.Addressables
                 }
                 else
                 {
-                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
+                    var dlcLabels = new object[] { "RemoteDLC", "MetaConfigs", "UpgradeData", "Map", "default", "preload" };
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)dlcLabels, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
                     await locHandle.Task;
                     if (locHandle.Status == AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
                     {
@@ -245,7 +248,7 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                     else
                     {
-                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
+                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync((IEnumerable<object>)dlcLabels, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
                     }
                 }
 
