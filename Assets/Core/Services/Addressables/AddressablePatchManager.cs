@@ -285,6 +285,14 @@ namespace ProjectZombie.Core.Services.Addressables
             {
                 await UnityEngine.AddressableAssets.Addressables.InitializeAsync().Task;
 
+                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(key);
+                var locations = await locHandle.Task;
+                if (locations == null || locations.Count == 0)
+                {
+                    // Key chưa có trong Catalog hiện tại -> Báo cần tải
+                    return (true, 0);
+                }
+
                 var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(key);
                 long bytes = await sizeHandle.Task;
                 return (bytes > 0, bytes);

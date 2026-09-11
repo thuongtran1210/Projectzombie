@@ -124,10 +124,15 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (!isDlcDownloaded && !string.IsNullOrEmpty(currentStage.mapPrefabAddress))
             {
                 var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
-                // Nếu DownloadSize == 0 byte -> Đã tải sẵn trong Cache máy!
-                isDlcDownloaded = !status.NeedsDownload;
-                if (status.DownloadSizeBytes > 0)
+                
+                // Nếu không cần tải hoặc dung lượng cần tải == 0 byte (đã nằm trong cache máy) -> ĐÃ TẢI!
+                if (!status.NeedsDownload || status.DownloadSizeBytes == 0)
                 {
+                    isDlcDownloaded = true;
+                }
+                else
+                {
+                    isDlcDownloaded = false;
                     actualDownloadSizeMb = status.DownloadSizeBytes / 1048576f;
                 }
             }
