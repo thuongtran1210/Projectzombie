@@ -120,6 +120,7 @@ namespace ProjectZombie.Editor.UI
             slider.minValue = 0f;
             slider.maxValue = 1f;
             slider.value = 0f;
+            slider.interactable = false; // Khóa kéo bằng tay trên cảm ứng Android
 
             GameObject fillArea = CreateUIObject("Fill_Area", progressObj.transform);
             SetStretch(fillArea.GetComponent<RectTransform>());

@@ -54,6 +54,11 @@ namespace ProjectZombie.Core.Services.Addressables
         public long TotalDownloadSize => _totalDownloadSize;
         public bool HasUpdate => _totalDownloadSize > 0 || _catalogsToUpdate.Count > 0;
 
+        // Trạng thái theo dõi tải nền (Background Download Persistence)
+        public bool IsDownloading { get; private set; } = false;
+        public object CurrentDownloadingKey { get; private set; } = null;
+        public PatchProgress CurrentProgress { get; private set; } = default;
+
         /// <summary>
         /// 1. Khởi tạo Addressables và kiểm tra xem trên CDN có Catalog bản vá mới không.
         /// </summary>
@@ -131,6 +136,17 @@ namespace ProjectZombie.Core.Services.Addressables
         {
             try
             {
+                IsDownloading = true;
+                if (keys != null)
+                {
+                    using var enumerator = keys.GetEnumerator();
+                    if (enumerator.MoveNext()) CurrentDownloadingKey = enumerator.Current;
+                }
+                else
+                {
+                    CurrentDownloadingKey = "ALL_PATCH";
+                }
+
                 NotifyProgress(PatchState.Downloading, 0f, 0, _totalDownloadSize, "Đang kết nối CDN...");
 
                 AsyncOperationHandle downloadHandle;
@@ -171,6 +187,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                     else
                     {
+                        IsDownloading = false;
+                        CurrentDownloadingKey = null;
                         NotifyProgress(PatchState.Completed, 1f, 0, 0, "Không có nội dung cần tải.");
                         OnPatchCompleted?.Invoke();
                         return true;
@@ -184,6 +202,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     if (cancellationToken.IsCancellationRequested)
                     {
                         UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
+                        IsDownloading = false;
+                        CurrentDownloadingKey = null;
                         NotifyProgress(PatchState.Failed, 0f, 0, targetExpectedSize, "Đã hủy tải bản vá.");
                         return false;
                     }
@@ -215,6 +235,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
                     _totalDownloadSize = 0;
                     _catalogsToUpdate.Clear();
+                    IsDownloading = false;
+                    CurrentDownloadingKey = null;
 
                     NotifyProgress(PatchState.Completed, 1f, _totalDownloadSize, _totalDownloadSize, "Cập nhật thành công!");
                     OnPatchCompleted?.Invoke();
@@ -225,6 +247,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     string error = $"Tải bản vá thất bại. Status: {downloadHandle.Status}";
                     Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
                     UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
+                    IsDownloading = false;
+                    CurrentDownloadingKey = null;
                     NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
                     OnPatchFailed?.Invoke(error);
                     return false;
@@ -234,6 +258,8 @@ namespace ProjectZombie.Core.Services.Addressables
             {
                 string error = $"Ngoại lệ khi tải CDN: {ex.Message}";
                 Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
+                IsDownloading = false;
+                CurrentDownloadingKey = null;
                 NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
                 OnPatchFailed?.Invoke(error);
                 return false;
@@ -269,7 +295,7 @@ namespace ProjectZombie.Core.Services.Addressables
 
         private void NotifyProgress(PatchState state, float percent, long downloadedBytes, long totalBytes, string statusMessage)
         {
-            var p = new PatchProgress
+            CurrentProgress = new PatchProgress
             {
                 State = state,
                 Percent = percent,
@@ -277,7 +303,7 @@ namespace ProjectZombie.Core.Services.Addressables
                 TotalBytes = totalBytes,
                 StatusMessage = statusMessage
             };
-            OnPatchProgressChanged?.Invoke(p);
+            OnPatchProgressChanged?.Invoke(CurrentProgress);
         }
     }
 }

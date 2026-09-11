@@ -91,7 +91,11 @@ namespace ProjectZombie.Features.UI.StageSelect
                 if (_dlcSizeText != null) _dlcSizeText.text = $"Tải Màn Chơi ({stage.estimatedDlcSizeMb:0.0} MB)";
             }
 
-            if (_downloadProgressBar != null) _downloadProgressBar.gameObject.SetActive(false);
+            if (_downloadProgressBar != null)
+            {
+                _downloadProgressBar.interactable = false; // Khóa không cho người dùng kéo trượt bằng tay
+                _downloadProgressBar.gameObject.SetActive(false);
+            }
 
             if (_prevStageButton != null) _prevStageButton.interactable = isPreviousAvailable;
             if (_nextStageButton != null) _nextStageButton.interactable = isNextAvailable;
@@ -101,9 +105,11 @@ namespace ProjectZombie.Features.UI.StageSelect
         {
             if (_downloadProgressBar != null)
             {
+                _downloadProgressBar.interactable = false;
                 _downloadProgressBar.gameObject.SetActive(true);
                 _downloadProgressBar.value = percent;
             }
+            if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(false);
             if (_downloadDlcButton != null) _downloadDlcButton.gameObject.SetActive(false);
             if (_downloadStatusText != null) _downloadStatusText.text = statusText;
         }

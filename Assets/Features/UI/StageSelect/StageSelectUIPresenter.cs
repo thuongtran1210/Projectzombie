@@ -132,6 +132,17 @@ namespace ProjectZombie.Features.UI.StageSelect
             bool isNextAvailable = _currentStageIndex < _stageList.Count - 1;
 
             _view.RenderStageInfo(currentStage, isDlcDownloaded, isPrevAvailable, isNextAvailable);
+
+            // Nếu ải này đang trong quá trình tải ngầm (người chơi chuyển tab hoặc thoát rồi quay lại), khôi phục ngay thanh %
+            if (_patchManager != null && _patchManager.IsDownloading)
+            {
+                var downloadingKey = _patchManager.CurrentDownloadingKey?.ToString();
+                if (downloadingKey == currentStage.mapPrefabAddress || downloadingKey == "ALL_PATCH")
+                {
+                    var p = _patchManager.CurrentProgress;
+                    _view.UpdateDownloadProgress(p.Percent, string.IsNullOrEmpty(p.StatusMessage) ? "Đang tiếp tục tải tài nguyên..." : p.StatusMessage);
+                }
+            }
         }
 
         private void HandlePrevStage()
@@ -170,7 +181,15 @@ namespace ProjectZombie.Features.UI.StageSelect
         {
             if (_view != null && progress.State == PatchState.Downloading)
             {
-                _view.UpdateDownloadProgress(progress.Percent, progress.FormattedProgress);
+                if (_currentStageIndex >= 0 && _currentStageIndex < _stageList.Count)
+                {
+                    var currentStage = _stageList[_currentStageIndex];
+                    var downloadingKey = _patchManager.CurrentDownloadingKey?.ToString();
+                    if (downloadingKey == currentStage.mapPrefabAddress || downloadingKey == "ALL_PATCH")
+                    {
+                        _view.UpdateDownloadProgress(progress.Percent, progress.FormattedProgress);
+                    }
+                }
             }
         }
 
