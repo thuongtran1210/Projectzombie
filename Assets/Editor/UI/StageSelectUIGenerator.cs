@@ -107,6 +107,38 @@ namespace ProjectZombie.Editor.UI
             var dlcBtn = CreateButton("Btn_DownloadDLC", panelObj.transform, vietFont, "Tải Màn Chơi (12.4 MB)", new Vector2(0f, -180f), new Vector2(260f, 60f), new Color(0.15f, 0.6f, 0.85f));
             var dlcSizeTMP = dlcBtn.GetComponentInChildren<TextMeshProUGUI>();
 
+            // Download Progress Bar (Slider & Text)
+            GameObject progressObj = CreateUIObject("Slider_DownloadProgress", panelObj.transform);
+            var progressRect = progressObj.GetComponent<RectTransform>();
+            progressRect.anchoredPosition = new Vector2(0f, -180f);
+            progressRect.sizeDelta = new Vector2(280f, 32f);
+
+            var sliderBg = progressObj.AddComponent<Image>();
+            sliderBg.color = new Color(0.08f, 0.1f, 0.14f, 1f);
+
+            var slider = progressObj.AddComponent<Slider>();
+            slider.minValue = 0f;
+            slider.maxValue = 1f;
+            slider.value = 0f;
+
+            GameObject fillArea = CreateUIObject("Fill_Area", progressObj.transform);
+            SetStretch(fillArea.GetComponent<RectTransform>());
+
+            GameObject fillObj = CreateUIObject("Fill", fillArea.transform);
+            var fillRect = fillObj.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.sizeDelta = Vector2.zero;
+            var fillImg = fillObj.AddComponent<Image>();
+            fillImg.color = new Color(0.15f, 0.75f, 0.95f, 1f);
+
+            slider.fillRect = fillRect;
+            slider.targetGraphic = fillImg;
+
+            var progressStatusText = CreateTMPText("Text_DownloadStatus", progressObj.transform, vietFont, "Đang tải DLC... (0%)", 16, TextAlignmentOptions.Center, Color.white);
+            SetStretch(progressStatusText.GetComponent<RectTransform>());
+            progressObj.SetActive(false);
+
             // Close / Back Button
             var backBtn = CreateButton("Btn_Back", root.transform, vietFont, "ĐÓNG", new Vector2(0f, -320f), new Vector2(160f, 50f), new Color(0.4f, 0.4f, 0.4f));
 
@@ -121,6 +153,8 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_startBattleButton").objectReferenceValue = startBtn;
             soView.FindProperty("_downloadDlcButton").objectReferenceValue = dlcBtn;
             soView.FindProperty("_dlcSizeText").objectReferenceValue = dlcSizeTMP;
+            soView.FindProperty("_downloadProgressBar").objectReferenceValue = slider;
+            soView.FindProperty("_downloadStatusText").objectReferenceValue = progressStatusText;
             soView.FindProperty("_prevStageButton").objectReferenceValue = prevBtn;
             soView.FindProperty("_nextStageButton").objectReferenceValue = nextBtn;
             soView.FindProperty("_backButton").objectReferenceValue = backBtn;

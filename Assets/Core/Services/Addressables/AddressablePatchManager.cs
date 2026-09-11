@@ -136,7 +136,21 @@ namespace ProjectZombie.Core.Services.Addressables
                 AsyncOperationHandle downloadHandle;
                 if (keys != null)
                 {
-                    downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
+                    // 1. Kiểm tra xem các keys này có tồn tại trong Addressables Catalog không trước khi tải
+                    var checkLocHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
+                    await checkLocHandle.Task;
+
+                    if (checkLocHandle.Status == AsyncOperationStatus.Succeeded && checkLocHandle.Result != null && checkLocHandle.Result.Count > 0)
+                    {
+                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(checkLocHandle.Result, false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[AddressablePatchManager] Các Key tải DLC không tồn tại trong Catalog Addressables. Giả lập hoàn tất tải để sử dụng fallback.");
+                        NotifyProgress(PatchState.Completed, 1f, 0, 0, "Dữ liệu đã sẵn sàng!");
+                        OnPatchCompleted?.Invoke();
+                        return true;
+                    }
                 }
                 else
                 {
