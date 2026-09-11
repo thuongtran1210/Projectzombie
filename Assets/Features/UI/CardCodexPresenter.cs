@@ -278,7 +278,7 @@ namespace ProjectZombie.Features.UI
 #endif
 
             // 3. Load Heroes qua GameDataService
-            var charDb = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+            var charDb = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase").GetAwaiter().GetResult();
             if (charDb != null && charDb.Characters != null)
             {
                 foreach (var h in charDb.Characters)

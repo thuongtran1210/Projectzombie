@@ -150,6 +150,22 @@ namespace ProjectZombie.Features.UI
                     }
                     _view.SetupHeroTabAvatars(tabAvatars);
                 }
+
+                // Tự động tìm và focus đúng tướng đã chọn trong SaveData của GameManager
+                string savedHeroId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
+                if (!string.IsNullOrEmpty(savedHeroId))
+                {
+                    for (int i = 0; i < _characters.Length; i++)
+                    {
+                        if (_characters[i].characterId == savedHeroId)
+                        {
+                            _currentIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                RenderCurrentCharacter();
                 return;
             }
 
@@ -252,6 +268,14 @@ namespace ProjectZombie.Features.UI
                     {
                         RunLoadoutState.SetLoadout(entry, primaryW, relics);
                     }
+
+                    // Lưu trạng thái Anh Hùng đã chọn vào SaveData của GameManager
+                    if (ProjectZombie.Core.Save.GameManager.Instance != null && ProjectZombie.Core.Save.GameManager.Instance.SaveData != null)
+                    {
+                        ProjectZombie.Core.Save.GameManager.Instance.SaveData.selectedHeroId = entry.characterId;
+                        ProjectZombie.Core.Save.GameManager.Instance.SaveGame();
+                    }
+
                     OnCharacterSelected?.Invoke(chosenPrefab);
                 }
             }

@@ -62,19 +62,19 @@ namespace ProjectZombie.Core.Services.Data
             {
                 // 3. Tầng 2: Nạp từ Addressables CDN (Hot Update)
                 // Đảm bảo Addressables đã khởi tạo trước khi gọi LoadAssetAsync
-                var locHandle = Addressables.LoadResourceLocationsAsync(key);
+                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(key);
                 await locHandle.Task;
 
                 if (locHandle.Status == AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
                 {
-                    var handle = Addressables.LoadAssetAsync<T>(key);
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(key);
                     _handles[key] = handle;
                     result = await handle.Task;
                 }
                 else
                 {
                     // Giải phóng handle location nếu không tìm thấy key trong catalog
-                    if (locHandle.IsValid()) Addressables.Release(locHandle);
+                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
             }
             catch (Exception ex)
@@ -142,7 +142,7 @@ namespace ProjectZombie.Core.Services.Data
             {
                 if (handle.IsValid())
                 {
-                    Addressables.Release(handle);
+                    UnityEngine.AddressableAssets.Addressables.Release(handle);
                 }
                 _handles.Remove(key);
             }
@@ -159,7 +159,7 @@ namespace ProjectZombie.Core.Services.Data
             {
                 if (handle.IsValid())
                 {
-                    Addressables.Release(handle);
+                    UnityEngine.AddressableAssets.Addressables.Release(handle);
                 }
             }
             _handles.Clear();

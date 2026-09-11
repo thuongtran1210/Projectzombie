@@ -28,7 +28,10 @@ namespace ProjectZombie.Features.MetaProgression
         public int[] upgradeNodeLevels = new int[0];
 
         [Tooltip("Danh sách ID nhân vật đã mở khóa (luôn bao gồm nhân vật mặc định).")]
-        public string[] unlockedCharacters = new string[] { "default" };
+        public string[] unlockedCharacters = new string[] { "default", "C001_ThuSinh" };
+
+        [Tooltip("ID của Anh Hùng đang được chọn sử dụng.")]
+        public string selectedHeroId = "C001_ThuSinh";
 
         [Tooltip("Tổng số run đã chơi (dùng cho thành tựu và analytics).")]
         public int totalRunsPlayed = 0;

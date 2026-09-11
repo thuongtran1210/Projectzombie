@@ -128,19 +128,32 @@ namespace ProjectZombie.Features.UI
             CharacterEntry hero = RunLoadoutState.SelectedCharacter;
             if (hero == null)
             {
-                var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-                #if UNITY_EDITOR
-                if (characterDatabase == null)
-                {
-                    characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-                }
-                #endif
+                // Ưu tiên nạp đúng tướng đã lưu trong GameManager.SaveData qua GameDataService
+                string savedId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
+                var characterDatabase = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase").GetAwaiter().GetResult();
 
-                if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0 && characterDatabase.Characters[0] != null)
+                if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
                 {
-                    var so = characterDatabase.Characters[0];
-                    hero = so.ToEntry();
-                    RunLoadoutState.SetCharacter(hero);
+                    CharacterDataSO targetSo = null;
+                    if (!string.IsNullOrEmpty(savedId))
+                    {
+                        for (int c = 0; c < characterDatabase.Characters.Count; c++)
+                        {
+                            var charItem = characterDatabase.Characters[c];
+                            if (charItem != null && charItem.characterId == savedId)
+                            {
+                                targetSo = charItem;
+                                break;
+                            }
+                        }
+                    }
+                    if (targetSo == null) targetSo = characterDatabase.Characters[0];
+
+                    if (targetSo != null)
+                    {
+                        hero = targetSo.ToEntry();
+                        RunLoadoutState.SetCharacter(hero);
+                    }
                 }
             }
 
