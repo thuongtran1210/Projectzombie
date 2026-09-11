@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95fb4d43aec56044ea6dd90a3edee0c9, type: 3}
+  m_Name: Stage_01_BambooForest
+  m_EditorClassIdentifier: 
+  stageId: STAGE_01
+  stageName: "R\u1EEBng Tr\xFAc \xC2m Ty"
+  description: "N\u01A1i \xE2m kh\xED t\xEDch t\u1EE5 ng\xE0n n\u0103m d\u01B0\u1EDBi
+    nh\u1EEFng r\u1EB7ng tre ma, \u0111\xE0n th\u1EE7y qu\xE1i v\xE0 c\u01B0\u01A1ng
+    thi b\u1EAFt \u0111\u1EA7u tr\u1ED7i d\u1EADy."
+  stageThumbnail: {fileID: 0}
+  environmentType: 0
+  recommendedLevel: 1
+  mapPrefabAddress: Map_BambooForest
+  bgmAddress: BGM_BambooForest
+  estimatedDlcSizeMb: 0
+  timelineConfig: {fileID: 11400000, guid: 592ebb9e16325104291165bb0f670f02, type: 2}
+  stageDurationSeconds: 600
+  baseRewardCoins: 500
+  baseRewardExp: 250
+  dropUnlockWeaponIds: []
