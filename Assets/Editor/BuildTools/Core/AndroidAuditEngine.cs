@@ -212,11 +212,12 @@ namespace ProjectZombie.EditorTools.BuildSync
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64; // Tối ưu chỉ build ARM64 để giảm dung lượng file APK
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
+            PlayerSettings.Android.forceInternetPermission = true; // Bắt buộc mở quyền Internet cho CDN Addressables & Firebase
             PlayerSettings.colorSpace = ColorSpace.Linear;
             PlayerSettings.SetManagedStrippingLevel(BuildTargetGroup.Android, ManagedStrippingLevel.Low);
 
-            Debug.Log("<color=#00FF88>[AndroidAuditEngine] Đã tự động cấu hình Player Settings chuẩn Android (IL2CPP, ARM64 Optimized, Auto API, Linear, Code Stripping Low)!</color>");
-            EditorUtility.DisplayDialog("Cấu Hình Thành Công", "Đã cập nhật cấu hình Android Player Settings:\n- Scripting Backend: IL2CPP\n- Target Architectures: ARM64 (Tối ưu APK nhẹ)\n- Color Space: Linear\n- Managed Stripping Level: Low", "OK");
+            Debug.Log("<color=#00FF88>[AndroidAuditEngine] Đã tự động cấu hình Player Settings chuẩn Android (IL2CPP, ARM64 Optimized, Internet Permission Enabled, Auto API, Linear, Code Stripping Low)!</color>");
+            EditorUtility.DisplayDialog("Cấu Hình Thành Công", "Đã cập nhật cấu hình Android Player Settings:\n- Scripting Backend: IL2CPP\n- Target Architectures: ARM64 (Tối ưu APK nhẹ)\n- Internet Permission: Bắt buộc (Enabled)\n- Color Space: Linear\n- Managed Stripping Level: Low", "OK");
         }
 
         public static void OptimizeTexturesAndAudios()
