@@ -12,8 +12,10 @@ namespace ProjectZombie.Features.UI.StageSelect
     /// Giao diện Chọn Ải / Màn chơi (Stage Selection View) - Chuẩn MVP Pattern.
     /// Hiển thị danh sách ải, ảnh minh họa, thông tin phần thưởng và trạng thái DLC.
     /// </summary>
-    public class StageSelectUIView : MonoBehaviour
+    public class StageSelectUIView : BaseMetaScreenView
     {
+        public override MetaScreenType ScreenType => MetaScreenType.StageSelect;
+
         [Header("Stage Info UI")]
         [SerializeField] private TextMeshProUGUI _stageTitleText;
         [SerializeField] private TextMeshProUGUI _stageDescText;
@@ -42,13 +44,19 @@ namespace ProjectZombie.Features.UI.StageSelect
         public event Action OnNextStageClicked;
         public event Action OnBackClicked;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_startBattleButton != null) _startBattleButton.onClick.AddListener(() => OnStartBattleClicked?.Invoke());
             if (_downloadDlcButton != null) _downloadDlcButton.onClick.AddListener(() => OnDownloadDlcClicked?.Invoke());
             if (_prevStageButton != null) _prevStageButton.onClick.AddListener(() => OnPrevStageClicked?.Invoke());
             if (_nextStageButton != null) _nextStageButton.onClick.AddListener(() => OnNextStageClicked?.Invoke());
             if (_backButton != null) _backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+        }
+
+        public override void OnBackPressed()
+        {
+            OnBackClicked?.Invoke();
         }
 
         public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable)

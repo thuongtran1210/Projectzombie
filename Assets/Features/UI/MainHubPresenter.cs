@@ -211,24 +211,17 @@ namespace ProjectZombie.Features.UI
         private void HandleStartRunClicked()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
-            Debug.Log("<color=#00FF88>[MainHubPresenter]</color> Bắt đầu xuất trận với Tướng & Loadout đã lưu!");
-
-            OnStartRunRequested?.Invoke();
-
-            if (MetaSceneTransitionController.Instance != null)
+            var metaManager = GetMetaUIManager();
+            if (metaManager != null)
             {
-                MetaSceneTransitionController.Instance.StartRun();
+                metaManager.OpenScreen(MetaScreenType.StageSelect);
             }
             else
             {
-                var transitionCtrl = FindObjectOfType<MetaSceneTransitionController>();
-                if (transitionCtrl != null)
+                // Fallback nếu không có MetaUIManager
+                if (MetaSceneTransitionController.Instance != null)
                 {
-                    transitionCtrl.StartRun();
-                }
-                else if (MetaUIManager.Instance != null)
-                {
-                    MetaUIManager.Instance.SetMetaCanvasActive(false);
+                    MetaSceneTransitionController.Instance.StartRun();
                 }
             }
         }

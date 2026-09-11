@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private BaseMetaScreenView _codexScreen;
         [SerializeField] private BaseMetaScreenView _settingsScreen;
         [SerializeField] private BaseMetaScreenView _gachaShopScreen;
+        [SerializeField] private BaseMetaScreenView _stageSelectScreen;
 
         [Header("Persistent Backdrop")]
         [Tooltip("Ảnh nền cố định che 100% Tilemap và Player bên dưới khi ở trong Menu")]
@@ -60,6 +61,7 @@ namespace ProjectZombie.Features.UI
             if (_codexScreen != null) _codexScreen.Hide();
             if (_settingsScreen != null) _settingsScreen.Hide();
             if (_gachaShopScreen != null) _gachaShopScreen.Hide();
+            if (_stageSelectScreen != null) _stageSelectScreen.Hide();
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
             if (_mainHubScreen != null)
@@ -184,6 +186,7 @@ namespace ProjectZombie.Features.UI
             if (_codexScreen == null) _codexScreen = GetComponentInChildren<CardCodexView>(true);
             if (_settingsScreen == null) _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
             if (_gachaShopScreen == null) _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
+            if (_stageSelectScreen == null) _stageSelectScreen = GetComponentInChildren<StageSelect.StageSelectUIView>(true);
         }
 
         public void OpenScreen(MetaScreenType screenType)
@@ -213,6 +216,38 @@ namespace ProjectZombie.Features.UI
                 case MetaScreenType.Settings:
                     if (_settingsScreen == null) AutoResolveMissingScreens();
                     PushScreen(_settingsScreen);
+                    break;
+                case MetaScreenType.StageSelect:
+                    if (_stageSelectScreen == null)
+                    {
+                        AutoResolveMissingScreens();
+                        if (_stageSelectScreen == null)
+                        {
+                            var stagePrefab = Resources.Load<GameObject>("UI/StageSelect_Screen") ?? Resources.Load<GameObject>("StageSelect_Screen");
+#if UNITY_EDITOR
+                            if (stagePrefab == null)
+                            {
+                                stagePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/StageSelect_Screen.prefab");
+                            }
+#endif
+                            if (stagePrefab != null)
+                            {
+                                var instance = Instantiate(stagePrefab, transform);
+                                instance.name = "Screen_StageSelect";
+                                _stageSelectScreen = instance.GetComponent<StageSelect.StageSelectUIView>();
+                            }
+                        }
+                    }
+
+                    if (_stageSelectScreen != null)
+                    {
+                        PushScreen(_stageSelectScreen);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[MetaUIManager] Không tìm thấy StageSelect_Screen trong Scene/Prefab. Tự động chuyển thẳng vào trận đấu!");
+                        MetaSceneTransitionController.Instance?.StartRun();
+                    }
                     break;
                 case MetaScreenType.GachaShop:
                     if (_gachaShopScreen == null)

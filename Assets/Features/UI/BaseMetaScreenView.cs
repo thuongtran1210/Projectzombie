@@ -12,7 +12,8 @@ namespace ProjectZombie.Features.UI
         SanctuaryTree,
         Codex,
         Settings,
-        GachaShop
+        GachaShop,
+        StageSelect
     }
 
     /// <summary>

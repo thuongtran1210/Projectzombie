@@ -185,6 +185,19 @@ namespace ProjectZombie.Features.Spawners
         }
 
         /// <summary>
+        /// Làm mới tham chiếu Tilemap & ranh giới sàn đấu khi nạp một Map mới từ Addressables.
+        /// </summary>
+        public void RefreshMapReferences()
+        {
+            groundTilemap = null;
+            _obstacleTilemap = null;
+            walkableAreaCollider = null;
+            _hasCalculatedBounds = false;
+            MovementPhysicsUtility.ResetTilemapCache();
+            EnsureDependencies();
+        }
+
+        /// <summary>
         /// Tự động tính toán hình chữ nhật sàn đấu an toàn (Safe Map Bounds) để Clamping O(1)
         /// </summary>
         private void CalculateSafeMapBounds()

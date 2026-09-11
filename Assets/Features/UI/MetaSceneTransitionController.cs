@@ -136,9 +136,28 @@ namespace ProjectZombie.Features.UI
 
                 LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                 {
-                    // 1. (20%) Khởi tạo thực thể Player & Camera
+                    // 1. (20%) Khởi tạo hoặc tải Map Tilemap từ Addressables
                     string stageMsg = _selectedStage != null ? $"Đang khai mở {_selectedStage.stageName}..." : "Đang triệu hồi chân thân Tướng...";
                     reportProgress?.Invoke(0.2f, stageMsg);
+
+                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành nạp động qua Addressables
+                    if (_selectedStage != null && !string.IsNullOrEmpty(_selectedStage.mapPrefabAddress))
+                    {
+                        try
+                        {
+                            var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
+                            await handle.Task;
+                            if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                            {
+                                Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debug.LogWarning($"[MetaSceneTransitionController] Không thể tải Addressable Map '{_selectedStage.mapPrefabAddress}', sử dụng Tilemap mặc định trong Scene: {ex.Message}");
+                        }
+                    }
+
                     if (_gameplayBootstrapper != null)
                     {
                         _gameplayBootstrapper.StartMatchFlow();
