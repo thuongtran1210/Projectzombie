@@ -36,36 +36,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         private async void EnsureStageDatabaseLoaded()
         {
-            WorldStageDatabaseSO db = null;
-
-            // 1. Ưu tiên nạp phiên bản Hot Update mới nhất từ Addressables CDN
-            try
-            {
-                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("WorldStageDatabase");
-                await locHandle.Task;
-                if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
-                {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
-                    db = await handle.Task;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[{nameof(StageSelectUIPresenter)}] Không nạp được WorldStageDatabase từ Addressables: {ex.Message}");
-            }
-
-            // 2. Fallback nạp từ Resources cục bộ trong APK (khi offline)
-            if (db == null)
-            {
-                db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase");
-            }
-
-#if UNITY_EDITOR
-            if (db == null)
-            {
-                db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
-            }
-#endif
+            var db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
             if (db != null && db.Stages != null && db.Stages.Count > 0)
             {
                 _stageList = new List<StageDefinitionSO>(db.Stages);

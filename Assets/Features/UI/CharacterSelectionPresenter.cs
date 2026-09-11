@@ -86,18 +86,12 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void InitCharacterData()
+        private async void InitCharacterData()
         {
-            // 1. Ưu tiên nạp từ CharacterDatabaseSO (Chuẩn Drag & Drop)
+            // 1. Nạp từ GameDataService (Tự động CDN Hot Update -> Cache -> Resources Fallback)
             if (_characterDatabase == null)
             {
-                _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-#if UNITY_EDITOR
-                if (_characterDatabase == null)
-                {
-                    _characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-                }
-#endif
+                _characterDatabase = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
             }
 
             if (_characterDatabase != null && _characterDatabase.Characters != null && _characterDatabase.Characters.Count > 0)

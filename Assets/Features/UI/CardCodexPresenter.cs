@@ -277,14 +277,8 @@ namespace ProjectZombie.Features.UI
             }
 #endif
 
-            // 3. Load Heroes
-            var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-#if UNITY_EDITOR
-            if (charDb == null)
-            {
-                charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-            }
-#endif
+            // 3. Load Heroes qua GameDataService
+            var charDb = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
             if (charDb != null && charDb.Characters != null)
             {
                 foreach (var h in charDb.Characters)
