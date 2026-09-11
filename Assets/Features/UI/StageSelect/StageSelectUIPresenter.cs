@@ -87,14 +87,25 @@ namespace ProjectZombie.Features.UI.StageSelect
             }
         }
 
-        private void RefreshView()
+        private async void RefreshView()
         {
             if (_stageList == null || _stageList.Count == 0 || _view == null) return;
 
-            var currentStage = _stageList[_currentStageIndex];
-            
-            // Kiểm tra xem Stage này đã tải Asset về máy chưa (hoặc là màn 1 đã có sẵn trong APK)
-            bool isDlcDownloaded = _currentStageIndex == 0 || AddressableAssetManager.Instance.IsAssetLoaded(currentStage.mapPrefabAddress);
+            int requestedIndex = _currentStageIndex;
+            var currentStage = _stageList[requestedIndex];
+
+            // 1. Màn 1 luôn có sẵn trong APK -> true
+            // 2. Các màn sau: Kiểm tra xem trong Cache đã có chưa bằng GetDownloadSizeAsync
+            bool isDlcDownloaded = requestedIndex == 0;
+            if (!isDlcDownloaded && !string.IsNullOrEmpty(currentStage.mapPrefabAddress))
+            {
+                var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
+                // Nếu DownloadSize == 0 byte -> Đã tải sẵn trong Cache máy!
+                isDlcDownloaded = !status.NeedsDownload;
+            }
+
+            // Đảm bảo không bị race condition khi người chơi bấm Next/Prev nhanh
+            if (requestedIndex != _currentStageIndex) return;
 
             bool isPrevAvailable = _currentStageIndex > 0;
             bool isNextAvailable = _currentStageIndex < _stageList.Count - 1;
