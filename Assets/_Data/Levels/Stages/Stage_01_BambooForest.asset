@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "N\u01A1i \xE2m kh\xED t\xEDch t\u1EE5 ng\xE0n n\u0103m d\u01B0\u1EDBi
     nh\u1EEFng r\u1EB7ng tre ma, \u0111\xE0n th\u1EE7y qu\xE1i v\xE0 c\u01B0\u01A1ng
     thi b\u1EAFt \u0111\u1EA7u tr\u1ED7i d\u1EADy."
-  stageThumbnail: {fileID: 0}
+  stageThumbnail: {fileID: 21300000, guid: f81f6ca76dd64ed594e68fe9644f6e22, type: 3}
   environmentType: 0
   recommendedLevel: 1
   mapPrefabAddress: Map_BambooForest
