@@ -127,17 +127,20 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
                 // Kiểm tra trạng thái thực tế từ Addressables
                 var status = await _patchManager.CheckAssetStatusAsync(pkg.addressableKey);
-                pkg.isDownloaded = !status.NeedsDownload;
-                pkg.actualDownloadSizeBytes = status.DownloadSizeBytes;
-
-                if (pkg.isDownloaded)
+                
+                // Nếu không cần tải hoặc dung lượng cần tải == 0 byte (đã nằm trong cache máy) -> ĐÃ TẢI!
+                if (!status.NeedsDownload || status.DownloadSizeBytes == 0)
                 {
+                    pkg.isDownloaded = true;
+                    pkg.actualDownloadSizeBytes = 0;
                     totalCachedMb += pkg.estimatedSizeMb;
                 }
                 else
                 {
-                    float missing = status.DownloadSizeBytes > 0 ? status.DownloadSizeBytes / 1048576f : pkg.estimatedSizeMb;
-                    totalMissingMb += missing;
+                    pkg.isDownloaded = false;
+                    pkg.actualDownloadSizeBytes = status.DownloadSizeBytes;
+                    float missing = status.DownloadSizeBytes / 1048576f;
+                    totalMissingMb += (missing > 0.01f ? missing : pkg.estimatedSizeMb);
                 }
 
                 if (_viewMap.TryGetValue(pkg.addressableKey, out var itemView) && itemView != null)
