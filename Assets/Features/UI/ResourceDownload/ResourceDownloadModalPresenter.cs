@@ -85,17 +85,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
                 estimatedSizeMb = 14.2f
             });
 
-            // 3. Gói Âm Thanh & BGM Chất Lượng Cao
-            _packages.Add(new ResourcePackageItemData
-            {
-                packageId = "AUDIO_DLC",
-                title = "Nhạc Nền & Âm Thanh Không Gian (BGM DLC)",
-                description = "Nhạc nền cổ phong Ải 2, Ải 3 và hiệu ứng âm thanh kỹ năng mở rộng.",
-                addressableKey = "BGM_AncientCitadel",
-                estimatedSizeMb = 8.6f
-            });
-
-            // 4. Gói Dữ Liệu Cập Nhật Nóng (Live-Ops Configs & Upgrades)
+            // 3. Gói Dữ Liệu Cập Nhật Nóng (Live-Ops Configs & Upgrades)
             _packages.Add(new ResourcePackageItemData
             {
                 packageId = "META_CONFIGS",
@@ -103,6 +93,16 @@ namespace ProjectZombie.Features.UI.ResourceDownload
                 description = "Các thẻ nâng cấp vũ khí, cây kỹ năng Tứ Bất Tử và cấu hình banner Gacha mới nhất.",
                 addressableKey = "WorldStageDatabase",
                 estimatedSizeMb = 0.5f
+            });
+
+            // 4. Gói Cấu Hình Nâng Sao Tướng (Character Meta DLC)
+            _packages.Add(new ResourcePackageItemData
+            {
+                packageId = "HERO_CONFIGS",
+                title = "Cấu Hình Tướng & Thần Thẻ Mở Rộng",
+                description = "Dữ liệu nâng cấp sao tướng và các thần thẻ bảo vật bổ sung qua CDN.",
+                addressableKey = "CharacterStarProgressionConfig",
+                estimatedSizeMb = 1.2f
             });
         }
 

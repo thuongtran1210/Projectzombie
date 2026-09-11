@@ -23,6 +23,12 @@ namespace ProjectZombie.Editor.UI
             GenerateResourceDownloadPrefab();
         }
 
+        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/Gắn Nút Tải Tài Nguyên Vào Header (Chỉ Làm Đúng 1 Việc)", priority = 17)]
+        public static void InjectOnlyHeaderDownloadButton()
+        {
+            InjectButtonToActiveSceneHeader();
+        }
+
         public static void GenerateResourceDownloadPrefab()
         {
             // 1. Load Assets & Fonts
@@ -499,6 +505,160 @@ namespace ProjectZombie.Editor.UI
                 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
                 Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> Đã liên kết thành công Modal_ResourceDownload vào Canvas Sảnh Chính!");
             }
+        }
+
+        public static void InjectButtonToActiveSceneHeader()
+        {
+            var mainHubView = Object.FindObjectOfType<MainHubView>(true);
+            if (mainHubView == null)
+            {
+                Debug.LogError("<color=#FF4444>[ResourceDownloadUIGenerator]</color> Không tìm thấy MainHubView trong Scene hiện tại!");
+                return;
+            }
+
+            Transform headerTransform = mainHubView.transform.Find("Header_TopBar");
+            if (headerTransform == null)
+            {
+                // Tìm kiếm sâu trong các cấp con
+                foreach (var t in mainHubView.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.name == "Header_TopBar")
+                    {
+                        headerTransform = t;
+                        break;
+                    }
+                }
+            }
+
+            if (headerTransform == null)
+            {
+                Debug.LogError("<color=#FF4444>[ResourceDownloadUIGenerator]</color> Không tìm thấy Header_TopBar bên trong MainHubView!");
+                return;
+            }
+
+            Transform rightGroup = headerTransform.Find("Right_Currencies");
+            if (rightGroup == null)
+            {
+                foreach (var t in headerTransform.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.name == "Right_Currencies")
+                    {
+                        rightGroup = t;
+                        break;
+                    }
+                }
+            }
+
+            if (rightGroup == null)
+            {
+                Debug.LogError("<color=#FF4444>[ResourceDownloadUIGenerator]</color> Không tìm thấy Right_Currencies trong Header_TopBar!");
+                return;
+            }
+
+            // Mở rộng width của Right_Currencies để không bị tràn
+            var rRT = rightGroup.GetComponent<RectTransform>();
+            if (rRT != null && rRT.sizeDelta.x < 500f)
+            {
+                rRT.sizeDelta = new Vector2(520, rRT.sizeDelta.y);
+            }
+
+            Transform existingBtn = rightGroup.Find("Btn_ResourceDownload");
+            Button resourceDlBtn = null;
+
+            if (existingBtn != null)
+            {
+                resourceDlBtn = existingBtn.GetComponent<Button>();
+                Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> Đã tìm thấy nút Btn_ResourceDownload có sẵn trên Header!");
+            }
+            else
+            {
+                Sprite pillWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITES_PATH + "Pill_Currency_Wood.png");
+                Sprite downloadIconSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+                if (downloadIconSprite == null) downloadIconSprite = pillWoodSprite;
+
+                GameObject btnDlObj = CreateUIElement("Btn_ResourceDownload", rightGroup);
+                btnDlObj.GetComponent<RectTransform>().sizeDelta = new Vector2(44, 44);
+
+                var dlImg = btnDlObj.AddComponent<Image>();
+                dlImg.color = Color.white;
+                if (pillWoodSprite != null)
+                {
+                    dlImg.sprite = pillWoodSprite;
+                    dlImg.type = Image.Type.Sliced;
+                }
+
+                resourceDlBtn = btnDlObj.AddComponent<Button>();
+                var btnColors = resourceDlBtn.colors;
+                btnColors.highlightedColor = new Color(1.2f, 1.2f, 1.2f);
+                btnColors.pressedColor = new Color(0.8f, 0.8f, 0.8f);
+                resourceDlBtn.colors = btnColors;
+
+                // Icon Tải Về / Đám Mây bên trong nút
+                GameObject iconDlChild = CreateUIElement("Icon", btnDlObj.transform);
+                RectTransform idcRT = iconDlChild.GetComponent<RectTransform>();
+                idcRT.anchorMin = new Vector2(0.5f, 0.5f);
+                idcRT.anchorMax = new Vector2(0.5f, 0.5f);
+                idcRT.pivot = new Vector2(0.5f, 0.5f);
+                idcRT.sizeDelta = new Vector2(28, 28);
+                var idcImg = iconDlChild.AddComponent<Image>();
+                idcImg.sprite = downloadIconSprite;
+                idcImg.preserveAspect = true;
+                idcImg.raycastTarget = false;
+
+                // Đặt nút nằm trước nút Cài Đặt (Btn_Settings)
+                Transform settingsBtnTransform = rightGroup.Find("Btn_Settings");
+                if (settingsBtnTransform != null)
+                {
+                    int settingsIndex = settingsBtnTransform.GetSiblingIndex();
+                    btnDlObj.transform.SetSiblingIndex(settingsIndex);
+                }
+
+                Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> Đã tạo mới nút Btn_ResourceDownload vào Header_TopBar thành công!");
+            }
+
+            // Gắn reference vào MainHubView mà KHÔNG làm thay đổi bất kỳ thành phần nào khác
+            SerializedObject soView = new SerializedObject(mainHubView);
+            var prop = soView.FindProperty("_resourceDownloadButton");
+            if (prop != null)
+            {
+                prop.objectReferenceValue = resourceDlBtn;
+                soView.ApplyModifiedProperties();
+                EditorUtility.SetDirty(mainHubView);
+            }
+
+            // Đảm bảo Modal_ResourceDownload cũng đã được liên kết
+            var metaManager = Object.FindObjectOfType<MetaUIManager>(true);
+            if (metaManager != null)
+            {
+                var modalView = metaManager.GetComponentInChildren<ResourceDownloadModalView>(true);
+                if (modalView == null)
+                {
+                    string modalPrefabPath = $"{PREFAB_OUTPUT_FOLDER}/ResourceDownloadModalUI.prefab";
+                    GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(modalPrefabPath);
+                    if (prefab != null)
+                    {
+                        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, metaManager.transform);
+                        instance.name = "Modal_ResourceDownload";
+                        instance.SetActive(false);
+                        modalView = instance.GetComponent<ResourceDownloadModalView>();
+                    }
+                }
+
+                if (modalView != null)
+                {
+                    SerializedObject soMeta = new SerializedObject(metaManager);
+                    var metaProp = soMeta.FindProperty("_resourceDownloadScreen");
+                    if (metaProp != null)
+                    {
+                        metaProp.objectReferenceValue = modalView;
+                        soMeta.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(metaManager);
+                    }
+                }
+            }
+
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainHubView.gameObject.scene);
+            Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> HOÀN TẤT: Đã gắn đúng nút Tải Tài Nguyên vào Header_TopBar mà KHÔNG ảnh hưởng bất kỳ đối tượng nào khác!");
         }
 
         private static GameObject CreateUIElement(string name, Transform parent)
