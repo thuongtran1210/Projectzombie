@@ -147,7 +147,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     CurrentDownloadingKey = "ALL_PATCH";
                 }
 
-                NotifyProgress(PatchState.Downloading, 0f, 0, _totalDownloadSize, "Đang kết nối CDN...");
+                // Đảm bảo Addressables Runtime đã được Initialize
+                await UnityEngine.AddressableAssets.Addressables.InitializeAsync().Task;
 
                 AsyncOperationHandle downloadHandle;
                 long targetExpectedSize = _totalDownloadSize;
@@ -163,19 +164,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                     catch { }
 
-                    // 1. Kiểm tra xem các keys này có tồn tại trong Addressables Catalog không trước khi tải
-                    var checkLocHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
-                    await checkLocHandle.Task;
-
-                    if (checkLocHandle.Status == AsyncOperationStatus.Succeeded && checkLocHandle.Result != null && checkLocHandle.Result.Count > 0)
-                    {
-                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(checkLocHandle.Result, false);
-                    }
-                    else
-                    {
-                        // Fallback: Thử truyền trực tiếp keys vào DownloadDependenciesAsync
-                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
-                    }
+                    // 1. Tải Dependencies trực tiếp cho keys
+                    downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
                 }
                 else
                 {
@@ -187,11 +177,7 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                     else
                     {
-                        IsDownloading = false;
-                        CurrentDownloadingKey = null;
-                        NotifyProgress(PatchState.Completed, 1f, 0, 0, "Không có nội dung cần tải.");
-                        OnPatchCompleted?.Invoke();
-                        return true;
+                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
                     }
                 }
 
@@ -297,14 +283,7 @@ namespace ProjectZombie.Core.Services.Addressables
         {
             try
             {
-                // Kiểm tra xem Key có tồn tại trong ResourceLocations của Addressables Catalog không
-                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(key);
-                var locations = await locHandle.Task;
-                if (locations == null || locations.Count == 0)
-                {
-                    // Nếu chưa có trong Catalog -> Cần tải Catalog hoặc cần tải gói này
-                    return (true, 0);
-                }
+                await UnityEngine.AddressableAssets.Addressables.InitializeAsync().Task;
 
                 var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(key);
                 long bytes = await sizeHandle.Task;
