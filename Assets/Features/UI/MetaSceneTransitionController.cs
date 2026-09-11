@@ -80,6 +80,23 @@ namespace ProjectZombie.Features.UI
         }
 
         private Maps.StageDefinitionSO _selectedStage;
+        private GameObject _currentInstantiatedMap;
+
+        private void DestroyCurrentMapInstance()
+        {
+            if (_currentInstantiatedMap != null)
+            {
+                Destroy(_currentInstantiatedMap);
+                _currentInstantiatedMap = null;
+            }
+
+            // Dọn dẹp cả các map cũ do tool dựng sẵn trong Scene nếu có
+            var existingSanDinh = GameObject.Find("Environment_SanDinhLangCo");
+            if (existingSanDinh != null) Destroy(existingSanDinh);
+
+            var existingBamboo = GameObject.Find("Map_BambooForest");
+            if (existingBamboo != null) Destroy(existingBamboo);
+        }
 
         public void TransitionToCombat(Maps.StageDefinitionSO stage = null)
         {
@@ -128,11 +145,14 @@ namespace ProjectZombie.Features.UI
                     string stageMsg = _selectedStage != null ? $"Đang khai mở {_selectedStage.stageName}..." : "Đang triệu hồi chân thân Tướng...";
                     reportProgress?.Invoke(0.2f, stageMsg);
 
-                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành nạp động qua Addressables
+                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành dọn map cũ và nạp map mới qua Addressables
                     if (_selectedStage != null && !string.IsNullOrEmpty(_selectedStage.mapPrefabAddress))
                     {
                         try
                         {
+                            // 1. Dọn dẹp map cũ trước đó nếu có
+                            DestroyCurrentMapInstance();
+
                             var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(_selectedStage.mapPrefabAddress);
                             await locHandle.Task;
                             if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
@@ -141,6 +161,7 @@ namespace ProjectZombie.Features.UI
                                 await handle.Task;
                                 if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                                 {
+                                    _currentInstantiatedMap = handle.Result;
                                     Spawners.SpawnManager.Instance?.RefreshMapReferences();
                                 }
                             }
