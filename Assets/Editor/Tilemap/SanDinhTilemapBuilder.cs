@@ -32,9 +32,16 @@ namespace Projectzombie.Editor.TilemapTools
 
             GUILayout.Space(6);
             GUI.backgroundColor = new Color(0.4f, 0.9f, 0.5f);
-            if (GUILayout.Button("2. Build Complete 36x36 Arena in Scene (1-Click)", GUILayout.Height(45)))
+            if (GUILayout.Button("2. Build Complete 36x36 Arena in Scene", GUILayout.Height(36)))
             {
                 BuildCompleteArenaInScene();
+            }
+
+            GUILayout.Space(6);
+            GUI.backgroundColor = new Color(0.2f, 0.8f, 1f);
+            if (GUILayout.Button("3. Save as Addressable Prefab (Map_SanDinhLangCo)", GUILayout.Height(42)))
+            {
+                SaveAsAddressablePrefab();
             }
             GUI.backgroundColor = Color.white;
         }
@@ -322,6 +329,53 @@ namespace Projectzombie.Editor.TilemapTools
             Tile tile = ScriptableObject.CreateInstance<Tile>();
             tile.sprite = sprite;
             return tile;
+        }
+
+        public static void SaveAsAddressablePrefab()
+        {
+            const string prefabDir = "Assets/_Prefabs/Maps";
+            const string prefabPath = "Assets/_Prefabs/Maps/Map_SanDinhLangCo.prefab";
+            const string addressKey = "Map_SanDinhLangCo";
+
+            if (!Directory.Exists(prefabDir))
+            {
+                Directory.CreateDirectory(prefabDir);
+                AssetDatabase.Refresh();
+            }
+
+            // Tìm đối tượng trong Scene hoặc build mới
+            GameObject gridObj = GameObject.Find("Environment_SanDinhLangCo");
+            if (gridObj == null)
+            {
+                BuildCompleteArenaInScene();
+                gridObj = GameObject.Find("Environment_SanDinhLangCo");
+            }
+
+            if (gridObj == null) return;
+
+            // Đổi tên root cho khớp Addressable Key
+            gridObj.name = addressKey;
+
+            // Lưu thành Prefab
+            GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(gridObj, prefabPath);
+
+            // Đăng ký Addressable Key
+            var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+            if (settings != null)
+            {
+                string guid = AssetDatabase.AssetPathToGUID(prefabPath);
+                var group = settings.FindGroup("Group_Core_Preload") ?? settings.DefaultGroup;
+                var entry = settings.CreateOrMoveEntry(guid, group, false, false);
+                entry.address = addressKey;
+                entry.SetLabel("Map", true, true);
+                EditorUtility.SetDirty(settings);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Selection.activeObject = savedPrefab;
+            Debug.Log($"<color=#00FF88>[SanDinhTilemapBuilder]</color> Đã tạo Prefab '{prefabPath}' và đăng ký Addressable Key '{addressKey}' thành công!");
         }
     }
 }
