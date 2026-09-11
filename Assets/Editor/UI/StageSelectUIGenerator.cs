@@ -97,11 +97,11 @@ namespace ProjectZombie.Editor.UI
             expRect.sizeDelta = new Vector2(200f, 30f);
 
             // Navigation Buttons (Prev / Next)
-            var prevBtn = CreateButton("Btn_PrevStage", panelObj.transform, vietFont, "◀", new Vector2(-320f, 60f), new Vector2(50f, 80f), new Color(0.2f, 0.3f, 0.4f));
-            var nextBtn = CreateButton("Btn_NextStage", panelObj.transform, vietFont, "▶", new Vector2(320f, 60f), new Vector2(50f, 80f), new Color(0.2f, 0.3f, 0.4f));
+            var prevBtn = CreateButton("Btn_PrevStage", panelObj.transform, vietFont, "<", new Vector2(-320f, 60f), new Vector2(50f, 80f), new Color(0.2f, 0.3f, 0.4f));
+            var nextBtn = CreateButton("Btn_NextStage", panelObj.transform, vietFont, ">", new Vector2(320f, 60f), new Vector2(50f, 80f), new Color(0.2f, 0.3f, 0.4f));
 
-            // Start Battle Button (Xuất Trận)
-            var startBtn = CreateButton("Btn_StartBattle", panelObj.transform, vietFont, "⚔️ XUẤT TRẬN", new Vector2(0f, -180f), new Vector2(240f, 60f), new Color(0.85f, 0.3f, 0.15f));
+            // Start Battle Button (Xuất Trận - Tuân thủ quy chuẩn mục 12.9: CẤM hard-code Emoji Unicode)
+            var startBtn = CreateButton("Btn_StartBattle", panelObj.transform, vietFont, "XUẤT TRẬN", new Vector2(0f, -180f), new Vector2(240f, 60f), new Color(0.85f, 0.3f, 0.15f));
             
             // Download DLC Button
             var dlcBtn = CreateButton("Btn_DownloadDLC", panelObj.transform, vietFont, "Tải Màn Chơi (12.4 MB)", new Vector2(0f, -180f), new Vector2(260f, 60f), new Color(0.15f, 0.6f, 0.85f));
