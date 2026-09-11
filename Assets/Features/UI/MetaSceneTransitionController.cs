@@ -91,12 +91,15 @@ namespace ProjectZombie.Features.UI
                 _currentInstantiatedMap = null;
             }
 
-            // Dọn dẹp cả các map cũ do tool dựng sẵn trong Scene nếu có
-            var existingSanDinh = GameObject.Find("Environment_SanDinhLangCo");
-            if (existingSanDinh != null) Destroy(existingSanDinh);
-
-            var existingBamboo = GameObject.Find("Map_BambooForest");
-            if (existingBamboo != null) Destroy(existingBamboo);
+            // Dọn dẹp cả các map cũ do tool dựng sẵn hoặc spawn trước đó trong Scene nếu có
+            string[] mapNames = new string[] { "Environment_SanDinhLangCo", "Map_SanDinhLangCo", "Map_BambooForest", "Map_AncientCitadel", "Map_CinnabarSwamp" };
+            foreach (var mName in mapNames)
+            {
+                var existing = GameObject.Find(mName);
+                if (existing != null) Destroy(existing);
+                var existingClone = GameObject.Find(mName + "(Clone)");
+                if (existingClone != null) Destroy(existingClone);
+            }
         }
 
         public void TransitionToCombat(Maps.StageDefinitionSO stage = null)

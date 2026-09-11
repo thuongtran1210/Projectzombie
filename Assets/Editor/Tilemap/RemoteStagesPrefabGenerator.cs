@@ -37,15 +37,16 @@ namespace Projectzombie.Editor.TilemapTools
                 return;
             }
 
-            // Sinh 3 bản đồ chi tiết
+            // Sinh 4 bản đồ chi tiết (bao gồm cả Map_SanDinhLangCo mặc định)
+            BuildSanDinhLangCoMap(spriteDict);
             BuildBambooForestMap(spriteDict);
             BuildAncientCitadelMap(spriteDict);
             BuildCinnabarSwampMap(spriteDict);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("<color=#00FF88>[RemoteStagesPrefabGenerator] HOÀN TẤT NÂNG CẤP MỸ THUẬT 3 BẢN ĐỒ TILEMAP 2.5D!</color>");
-            EditorUtility.DisplayDialog("Nâng Cấp Tilemap Thành Công", "Đã kiến tạo lại 3 bản đồ (Rừng Trúc, Cổ Thành, Đầm Lầy) với đầy đủ 4 tầng Sorting Layer, hoa văn gạch, ao sen, tường rêu và ranh giới chiến đấu!", "OK");
+            Debug.Log("<color=#00FF88>[RemoteStagesPrefabGenerator] HOÀN TẤT NÂNG CẤP MỸ THUẬT TOÀN BỘ BẢN ĐỒ TILEMAP 2.5D!</color>");
+            EditorUtility.DisplayDialog("Nâng Cấp Tilemap Thành Công", "Đã kiến tạo lại toàn bộ bản đồ (Sân Đình Làng Cổ, Rừng Trúc, Cổ Thành, Đầm Lầy) với đầy đủ thảm cỏ xanh, hồ sen ngọc bích, tường thành đá và ranh giới chiến đấu!", "OK");
         }
 
         private static Dictionary<string, Sprite> LoadTilesetSprites(string path)
@@ -70,14 +71,86 @@ namespace Projectzombie.Editor.TilemapTools
             return it.MoveNext() ? it.Current : null;
         }
 
-        private static Tile CreateTile(Sprite sprite, Color? color = null)
+        private static Tile CreateTile(Sprite sprite)
         {
             if (sprite == null) return null;
             Tile tile = ScriptableObject.CreateInstance<Tile>();
             tile.sprite = sprite;
-            if (color.HasValue) tile.color = color.Value;
+            tile.color = Color.white; // Luôn giữ nguyên vẹn 100% màu sắc gốc của Texture Atlas
             return tile;
         }
+
+        #region --- BẢN ĐỒ MẶC ĐỊNH: SÂN ĐÌNH LÀNG CỔ (SAN DINH LANG CO) ---
+        private static void BuildSanDinhLangCoMap(Dictionary<string, Sprite> sprites)
+        {
+            string mapName = "Map_SanDinhLangCo";
+            var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
+
+            var tGrassOuter = CreateTile(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ xanh sẫm nền ngoài
+            var tBrickCourtyard = CreateTile(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng ở giữa
+            var tBrickPattern = CreateTile(GetSprite(sprites, "Tile_1_0")); // Gạch nung rêu phong điểm xuyết
+            var tWaterPond = CreateTile(GetSprite(sprites, "Tile_4_0")); // Nước ao sen xanh ngọc
+            var tLotusDecal = CreateTile(GetSprite(sprites, "Tile_5_0")); // Hoa sen & lá sen
+            var tWallStone = CreateTile(GetSprite(sprites, "Tile_0_2")); // Tường thành đá cổ
+            var tPillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn
+
+            int halfSize = 24;
+            for (int x = -halfSize; x <= halfSize; x++)
+            {
+                for (int y = -halfSize; y <= halfSize; y++)
+                {
+                    // Vùng ngoài là thảm cỏ xanh đêm
+                    ground.SetTile(new Vector3Int(x, y, 0), tGrassOuter);
+
+                    // Sân Đình Gạch Cổ Bát Tràng ở trung tâm (-10 đến 10)
+                    if (Mathf.Abs(x) <= 10 && Mathf.Abs(y) <= 10)
+                    {
+                        var brickTile = ((x + y) % 3 == 0) ? tBrickPattern : tBrickCourtyard;
+                        ground.SetTile(new Vector3Int(x, y, 0), brickTile);
+                    }
+
+                    // 2 Ao sen xanh ngọc bích ở 2 góc sân
+                    float distTopLeft = Vector2.Distance(new Vector2(x, y), new Vector2(-15, 15));
+                    float distBottomRight = Vector2.Distance(new Vector2(x, y), new Vector2(15, -15));
+                    if (distTopLeft < 4.5f || distBottomRight < 4.5f)
+                    {
+                        ground.SetTile(new Vector3Int(x, y, 0), tWaterPond);
+                        if ((x * 3 + y * 7) % 2 == 0)
+                        {
+                            decals.SetTile(new Vector3Int(x, y, 0), tLotusDecal);
+                        }
+                    }
+                }
+            }
+
+            // Tường thành đá phòng thủ ngắt quãng bảo vệ sân đình
+            for (int x = -11; x <= 11; x++)
+            {
+                if (Mathf.Abs(x) >= 4 && Mathf.Abs(x) <= 9)
+                {
+                    obstacles.SetTile(new Vector3Int(x, 11, 0), tWallStone);
+                    obstacles.SetTile(new Vector3Int(x, -11, 0), tWallStone);
+                }
+            }
+            for (int y = -11; y <= 11; y++)
+            {
+                if (Mathf.Abs(y) >= 4 && Mathf.Abs(y) <= 9)
+                {
+                    obstacles.SetTile(new Vector3Int(11, y, 0), tWallStone);
+                    obstacles.SetTile(new Vector3Int(-11, y, 0), tWallStone);
+                }
+            }
+
+            // 4 Trụ đá trấn yểm 4 góc sân đình
+            obstacles.SetTile(new Vector3Int(-7, 7, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(7, 7, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(-7, -7, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(7, -7, 0), tPillar);
+
+            CreateMapBoundaryColliders(root, 48f, 48f);
+            SaveAndRegisterPrefab(root, mapName, "Group_Core_Preload");
+        }
+        #endregion
 
         #region --- ẢI 1: RỪNG TRÚC ÂM TY (BAMBOO FOREST) ---
         private static void BuildBambooForestMap(Dictionary<string, Sprite> sprites)
@@ -85,39 +158,49 @@ namespace Projectzombie.Editor.TilemapTools
             string mapName = "Map_BambooForest";
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
-            var tGrass = CreateTile(GetSprite(sprites, "Tile_0_0"), new Color(0.35f, 0.52f, 0.32f, 1f));
-            var tPath = CreateTile(GetSprite(sprites, "Tile_1_0"), new Color(0.55f, 0.48f, 0.38f, 1f));
-            var tMoss = CreateTile(GetSprite(sprites, "Tile_2_0"), new Color(0.25f, 0.45f, 0.25f, 0.85f));
-            var tRock = CreateTile(GetSprite(sprites, "Tile_0_2"), new Color(0.40f, 0.45f, 0.38f, 1f));
+            // Nền đất cỏ sẫm tự nhiên (Hàng 6 & 7: y=64 và y=0 trong Atlas)
+            var tGrassDark1 = CreateTile(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm 1
+            var tGrassDark2 = CreateTile(GetSprite(sprites, "Tile_5_7")); // Cỏ xanh sẫm 2
+            var tDirtGround = CreateTile(GetSprite(sprites, "Tile_0_7")); // Đất bùn nâu
+            var tGravelPath = CreateTile(GetSprite(sprites, "Tile_1_7")); // Lối mòn đất sỏi
+            var tDecalFlora = CreateTile(GetSprite(sprites, "Tile_6_7")); // Cỏ hoa dại điểm xuyết
+            var tObstacleBushes = CreateTile(GetSprite(sprites, "Tile_1_6")); // Bụi cây rậm / đá rêu
+            var tStonePillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn cổ
 
-            int halfSize = 24;
-            // 1. Nền cỏ rậm rạp
+            int halfSize = 22;
             for (int x = -halfSize; x <= halfSize; x++)
             {
                 for (int y = -halfSize; y <= halfSize; y++)
                 {
-                    ground.SetTile(new Vector3Int(x, y, 0), tGrass);
+                    // Đan xen nền cỏ xanh sẫm tự nhiên
+                    var baseGrass = ((x + y) % 2 == 0) ? tGrassDark1 : tGrassDark2;
+                    ground.SetTile(new Vector3Int(x, y, 0), baseGrass);
 
-                    // Con đường mòn đất ở giữa hình chữ thập
+                    // Con đường mòn đất sỏi uốn lượn hình chữ thập xuyên qua rừng trúc
                     if (Mathf.Abs(x) <= 2 || Mathf.Abs(y) <= 2)
                     {
-                        ground.SetTile(new Vector3Int(x, y, 0), tPath);
+                        ground.SetTile(new Vector3Int(x, y, 0), tGravelPath);
                     }
-                    // Các vệt rêu ngẫu nhiên
-                    else if ((x * 7 + y * 13) % 5 == 0)
+                    else if ((x * 7 + y * 13) % 9 == 0)
                     {
-                        decals.SetTile(new Vector3Int(x, y, 0), tMoss);
+                        // Những khoảnh đất nâu loang lổ tự nhiên
+                        ground.SetTile(new Vector3Int(x, y, 0), tDirtGround);
+                    }
+                    // Rải hoa cỏ dại lên lớp Decal
+                    else if ((x * 3 + y * 11) % 5 == 0)
+                    {
+                        decals.SetTile(new Vector3Int(x, y, 0), tDecalFlora);
                     }
                 }
             }
 
-            // 2. Chướng ngại vật: Các bụi đá & rặng tre cổ quanh 4 góc
+            // Chướng ngại vật: Bụi cây rậm và cụm đá phong ấn ở 4 góc và rải rác
             int[,] rockClusters = new int[,]
             {
-                { -12, 10 }, { -11, 10 }, { -12, 9 },
-                { 12, 10 }, { 11, 10 }, { 12, 9 },
-                { -12, -10 }, { -11, -10 }, { -12, -9 },
-                { 12, -10 }, { 11, -10 }, { 12, -9 },
+                { -10, 8 }, { -9, 8 }, { -10, 7 },
+                { 10, 8 }, { 9, 8 }, { 10, 7 },
+                { -10, -8 }, { -9, -8 }, { -10, -7 },
+                { 10, -8 }, { 9, -8 }, { 10, -7 },
                 { -6, -6 }, { 6, 6 }, { -6, 6 }, { 6, -6 }
             };
 
@@ -125,10 +208,16 @@ namespace Projectzombie.Editor.TilemapTools
             {
                 int rx = rockClusters[i, 0];
                 int ry = rockClusters[i, 1];
-                obstacles.SetTile(new Vector3Int(rx, ry, 0), tRock);
+                obstacles.SetTile(new Vector3Int(rx, ry, 0), tObstacleBushes);
             }
 
-            CreateMapBoundaryColliders(root, 48f, 48f);
+            // 4 Trụ đá cổ trấn giữ
+            obstacles.SetTile(new Vector3Int(-8, 0, 0), tStonePillar);
+            obstacles.SetTile(new Vector3Int(8, 0, 0), tStonePillar);
+            obstacles.SetTile(new Vector3Int(0, -8, 0), tStonePillar);
+            obstacles.SetTile(new Vector3Int(0, 8, 0), tStonePillar);
+
+            CreateMapBoundaryColliders(root, 44f, 44f);
             SaveAndRegisterPrefab(root, mapName, "Group_DLC_Stages_Remote");
         }
         #endregion
@@ -139,59 +228,62 @@ namespace Projectzombie.Editor.TilemapTools
             string mapName = "Map_AncientCitadel";
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
-            var tBrick = CreateTile(GetSprite(sprites, "Tile_0_0"), new Color(0.72f, 0.38f, 0.28f, 1f)); // Gạch nung Bát Tràng
-            var tCourtyard = CreateTile(GetSprite(sprites, "Tile_1_0"), new Color(0.85f, 0.65f, 0.42f, 1f)); // Sân đại điện
-            var tCrackDecal = CreateTile(GetSprite(sprites, "Tile_3_0"), new Color(0.35f, 0.20f, 0.15f, 0.75f)); // Vết nứt thời gian
-            var tCitadelWall = CreateTile(GetSprite(sprites, "Tile_0_2"), new Color(0.45f, 0.38f, 0.32f, 1f)); // Tường thành đá cổ
-            var tJadeStatue = CreateTile(GetSprite(sprites, "Tile_1_2"), new Color(0.30f, 0.55f, 0.45f, 1f)); // Trụ đá phong ấn
+            // Phối cảnh: Vùng ngoài là nền cỏ xanh sẫm + bờ bao đá, ở giữa là Sân Đình Gạch Đỏ Bát Tràng tráng lệ
+            var tGrassOuter = CreateTile(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm nền ngoài
+            var tBrickCourtyard = CreateTile(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng
+            var tBrickPattern = CreateTile(GetSprite(sprites, "Tile_1_0")); // Gạch nung có hoa văn điểm nhấn
+            var tWallStone = CreateTile(GetSprite(sprites, "Tile_0_2")); // Tường thành đá
+            var tPillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Bia đá / trụ đá cổ
+            var tDecalMoss = CreateTile(GetSprite(sprites, "Tile_6_7")); // Rêu xanh viền chân thành
 
-            int halfSize = 25;
+            int halfSize = 24;
             for (int x = -halfSize; x <= halfSize; x++)
             {
                 for (int y = -halfSize; y <= halfSize; y++)
                 {
-                    // Nền gạch ngoài
-                    ground.SetTile(new Vector3Int(x, y, 0), tBrick);
+                    // Mặc định bên ngoài là thảm cỏ thành quách
+                    ground.SetTile(new Vector3Int(x, y, 0), tGrassOuter);
 
-                    // Đại điện trung tâm (Hình vuông 14x14)
-                    if (Mathf.Abs(x) <= 7 && Mathf.Abs(y) <= 7)
+                    // Sân Đình Gạch Cổ ở trung tâm thành (Khu vực -12 đến 12)
+                    if (Mathf.Abs(x) <= 12 && Mathf.Abs(y) <= 12)
                     {
-                        ground.SetTile(new Vector3Int(x, y, 0), tCourtyard);
+                        var brickTile = ((x + y) % 3 == 0) ? tBrickPattern : tBrickCourtyard;
+                        ground.SetTile(new Vector3Int(x, y, 0), brickTile);
 
-                        // Hoa văn nứt gạch cổ kính
-                        if ((x * 3 + y * 5) % 4 == 0)
+                        // Viền rêu mốc quanh mép sân gạch
+                        if (Mathf.Abs(x) == 12 || Mathf.Abs(y) == 12)
                         {
-                            decals.SetTile(new Vector3Int(x, y, 0), tCrackDecal);
+                            decals.SetTile(new Vector3Int(x, y, 0), tDecalMoss);
                         }
                     }
                 }
             }
 
-            // Tường thành ngắt quãng phòng thủ (Citadel Walls)
-            for (int x = -16; x <= 16; x++)
+            // Tường thành đá phòng thủ ngắt quãng bao bọc quanh sân đình
+            for (int x = -13; x <= 13; x++)
             {
-                if (Mathf.Abs(x) > 3 && Mathf.Abs(x) < 14)
+                if (Mathf.Abs(x) >= 4 && Mathf.Abs(x) <= 10)
                 {
-                    obstacles.SetTile(new Vector3Int(x, 14, 0), tCitadelWall);
-                    obstacles.SetTile(new Vector3Int(x, -14, 0), tCitadelWall);
+                    obstacles.SetTile(new Vector3Int(x, 13, 0), tWallStone);
+                    obstacles.SetTile(new Vector3Int(x, -13, 0), tWallStone);
                 }
             }
-            for (int y = -14; y <= 14; y++)
+            for (int y = -13; y <= 13; y++)
             {
-                if (Mathf.Abs(y) > 3 && Mathf.Abs(y) < 12)
+                if (Mathf.Abs(y) >= 4 && Mathf.Abs(y) <= 10)
                 {
-                    obstacles.SetTile(new Vector3Int(16, y, 0), tCitadelWall);
-                    obstacles.SetTile(new Vector3Int(-16, y, 0), tCitadelWall);
+                    obstacles.SetTile(new Vector3Int(13, y, 0), tWallStone);
+                    obstacles.SetTile(new Vector3Int(-13, y, 0), tWallStone);
                 }
             }
 
-            // 4 Trụ đá phong ấn bảo vệ 4 góc
-            obstacles.SetTile(new Vector3Int(-7, 7, 0), tJadeStatue);
-            obstacles.SetTile(new Vector3Int(7, 7, 0), tJadeStatue);
-            obstacles.SetTile(new Vector3Int(-7, -7, 0), tJadeStatue);
-            obstacles.SetTile(new Vector3Int(7, -7, 0), tJadeStatue);
+            // 4 Trụ đá phong ấn trấn yểm 4 góc quảng trường
+            obstacles.SetTile(new Vector3Int(-8, 8, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(8, 8, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(-8, -8, 0), tPillar);
+            obstacles.SetTile(new Vector3Int(8, -8, 0), tPillar);
 
-            CreateMapBoundaryColliders(root, 50f, 50f);
+            CreateMapBoundaryColliders(root, 48f, 48f);
             SaveAndRegisterPrefab(root, mapName, "Group_DLC_Stages_Remote");
         }
         #endregion
@@ -202,50 +294,59 @@ namespace Projectzombie.Editor.TilemapTools
             string mapName = "Map_CinnabarSwamp";
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
-            var tMud = CreateTile(GetSprite(sprites, "Tile_0_0"), new Color(0.22f, 0.28f, 0.20f, 1f)); // Bùn lầy u ám
-            var tWater = CreateTile(GetSprite(sprites, "Tile_1_0"), new Color(0.12f, 0.35f, 0.38f, 1f)); // Ao nước ngọc độc
-            var tLotusDecal = CreateTile(GetSprite(sprites, "Tile_2_0"), new Color(0.85f, 0.40f, 0.55f, 0.90f)); // Lá sen & hoa sen hồng
-            var tSwampRock = CreateTile(GetSprite(sprites, "Tile_0_2"), new Color(0.20f, 0.30f, 0.24f, 1f)); // Đá rêu ngập nước
+            // Nền đầm lầy: Đất bùn nâu sẫm + ao nước xanh ngọc sâu + lá sen hồng
+            var tMudGround = CreateTile(GetSprite(sprites, "Tile_0_7")); // Đất bùn đầm lầy
+            var tWaterPond = CreateTile(GetSprite(sprites, "Tile_4_0")); // Nước ao xanh ngọc (y=448, x=256)
+            var tLotusDecal = CreateTile(GetSprite(sprites, "Tile_5_0")); // Lá sen hồng trên mặt nước (y=448, x=320)
+            var tGrassPatch = CreateTile(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ rêu quanh bờ ao
+            var tObstacleRock = CreateTile(GetSprite(sprites, "Tile_0_2")); // Bãi đá trơn trượt
 
-            int halfSize = 25;
+            int halfSize = 24;
             for (int x = -halfSize; x <= halfSize; x++)
             {
                 for (int y = -halfSize; y <= halfSize; y++)
                 {
-                    // Nền bùn lầy
-                    ground.SetTile(new Vector3Int(x, y, 0), tMud);
+                    // Nền đầm lầy đất bùn ẩm ướt
+                    ground.SetTile(new Vector3Int(x, y, 0), tMudGround);
 
-                    // 4 Vùng ao sen tự nhiên ở 4 góc
-                    float distTopLeft = Vector2.Distance(new Vector2(x, y), new Vector2(-12, 12));
-                    float distBottomRight = Vector2.Distance(new Vector2(x, y), new Vector2(12, -12));
-                    float distCenterPond = Vector2.Distance(new Vector2(x, y), Vector2.zero);
+                    // 4 Vùng ao sen tự nhiên ở 4 góc và 1 hồ sen nhỏ ở góc dưới
+                    float distTopLeft = Vector2.Distance(new Vector2(x, y), new Vector2(-11, 11));
+                    float distBottomRight = Vector2.Distance(new Vector2(x, y), new Vector2(11, -11));
+                    float distTopRight = Vector2.Distance(new Vector2(x, y), new Vector2(12, 12));
 
-                    if (distTopLeft < 5.5f || distBottomRight < 5.5f || (distCenterPond > 7f && distCenterPond < 10f && (x + y) % 3 == 0))
+                    if (distTopLeft < 5.5f || distBottomRight < 5.5f || distTopRight < 4.5f)
                     {
-                        ground.SetTile(new Vector3Int(x, y, 0), tWater);
-                        if ((x * 2 + y * 7) % 3 == 0)
+                        // Mặt hồ nước ngọc bích
+                        ground.SetTile(new Vector3Int(x, y, 0), tWaterPond);
+
+                        // Thả lá sen và hoa sen bồng bềnh
+                        if ((x * 3 + y * 7) % 2 == 0)
                         {
                             decals.SetTile(new Vector3Int(x, y, 0), tLotusDecal);
                         }
                     }
+                    else if (distTopLeft < 7.0f || distBottomRight < 7.0f || distTopRight < 6.0f)
+                    {
+                        // Bờ cỏ rêu bao bọc quanh hồ nước
+                        ground.SetTile(new Vector3Int(x, y, 0), tGrassPatch);
+                    }
                 }
             }
 
-            // Chướng ngại vật: Bãi đá rêu phong bao quanh bờ hồ
+            // Chướng ngại vật: Bãi đá cổ bao quanh mép hồ đầm lầy
             Vector2Int[] rockPositions = new Vector2Int[]
             {
-                new(-16, 12), new(-15, 13), new(-14, 15), new(-10, 16),
-                new(16, -12), new(15, -13), new(14, -15), new(10, -16),
-                new(-5, 0), new(5, 0), new(0, -5), new(0, 5),
-                new(-8, -8), new(8, 8)
+                new(-14, 11), new(-13, 12), new(-12, 14), new(-9, 14),
+                new(14, -11), new(13, -12), new(12, -14), new(9, -14),
+                new(-5, 0), new(5, 0), new(0, -5), new(0, 5)
             };
 
             foreach (var pos in rockPositions)
             {
-                obstacles.SetTile(new Vector3Int(pos.x, pos.y, 0), tSwampRock);
+                obstacles.SetTile(new Vector3Int(pos.x, pos.y, 0), tObstacleRock);
             }
 
-            CreateMapBoundaryColliders(root, 50f, 50f);
+            CreateMapBoundaryColliders(root, 48f, 48f);
             SaveAndRegisterPrefab(root, mapName, "Group_DLC_Stages_Remote");
         }
         #endregion

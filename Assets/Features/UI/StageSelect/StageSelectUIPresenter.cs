@@ -117,11 +117,10 @@ namespace ProjectZombie.Features.UI.StageSelect
             int requestedIndex = _currentStageIndex;
             var currentStage = _stageList[requestedIndex];
 
-            // 1. Màn 1 luôn có sẵn trong APK -> true
-            // 2. Các màn sau: Kiểm tra xem trong Cache đã có chưa bằng GetDownloadSizeAsync
-            bool isDlcDownloaded = requestedIndex == 0;
+            // Kiểm tra xem trong Cache đã có bản đồ mới nhất chưa bằng GetDownloadSizeAsync
+            bool isDlcDownloaded = false;
             float actualDownloadSizeMb = 0f;
-            if (!isDlcDownloaded && !string.IsNullOrEmpty(currentStage.mapPrefabAddress))
+            if (!string.IsNullOrEmpty(currentStage.mapPrefabAddress))
             {
                 var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
                 
