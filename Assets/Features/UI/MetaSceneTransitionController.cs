@@ -133,16 +133,25 @@ namespace ProjectZombie.Features.UI
                     {
                         try
                         {
-                            var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
-                            await handle.Task;
-                            if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                            var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(_selectedStage.mapPrefabAddress);
+                            await locHandle.Task;
+                            if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
                             {
-                                Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                                var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
+                                await handle.Task;
+                                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                                {
+                                    Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                                }
+                            }
+                            else
+                            {
+                                Debug.Log($"[MetaSceneTransitionController] Không tìm thấy Addressable Map '{_selectedStage.mapPrefabAddress}', sử dụng Tilemap mặc định có sẵn trong Scene.");
                             }
                         }
                         catch (System.Exception ex)
                         {
-                            Debug.LogWarning($"[MetaSceneTransitionController] Không thể tải Addressable Map '{_selectedStage.mapPrefabAddress}', sử dụng Tilemap mặc định trong Scene: {ex.Message}");
+                            Debug.LogWarning($"[MetaSceneTransitionController] Addressable Map '{_selectedStage.mapPrefabAddress}' không khả dụng: {ex.Message}. Sử dụng Tilemap có sẵn.");
                         }
                     }
 

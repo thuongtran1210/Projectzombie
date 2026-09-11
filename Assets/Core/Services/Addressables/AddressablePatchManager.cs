@@ -178,6 +178,33 @@ namespace ProjectZombie.Core.Services.Addressables
             }
         }
 
+        /// <summary>
+        /// 3. Kiểm tra trạng thái đồng bộ của một Asset cụ thể (Key / Label).
+        /// Trả về (isNeedsUpdate: true nếu chưa tải hoặc cần update, downloadSizeBytes: dung lượng cần tải).
+        /// </summary>
+        public async Task<(bool NeedsDownload, long DownloadSizeBytes)> CheckAssetStatusAsync(object key)
+        {
+            try
+            {
+                var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(key);
+                long bytes = await sizeHandle.Task;
+                return (bytes > 0, bytes);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[{nameof(AddressablePatchManager)}] Không thể kiểm tra dung lượng cho key '{key}': {ex.Message}");
+                return (false, 0);
+            }
+        }
+
+        /// <summary>
+        /// Xóa cache của một key hoặc toàn bộ cache để tải lại từ CDN.
+        /// </summary>
+        public void ClearAssetCache(object key)
+        {
+            UnityEngine.AddressableAssets.Addressables.ClearDependencyCacheAsync(key, true);
+        }
+
         private void NotifyProgress(PatchState state, float percent, long downloadedBytes, long totalBytes, string statusMessage)
         {
             var p = new PatchProgress
