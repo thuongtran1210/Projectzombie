@@ -24,17 +24,23 @@ namespace ProjectZombie.EditorTools.BuildSync
         {
             SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterAssets()),
             SyncRule.ForSingleAsset("CharacterStarProgressionConfig (Cấu Hình Nâng Sao Tướng)", "Assets/_Data/CharacterStarProgressionConfig.asset", "Assets/Resources/CharacterStarProgressionConfig.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterStarProgressionConfig()),
+            SyncRule.ForSingleAsset("WorldStageDatabase (Danh Sách Màn Chơi / Ải)", "Assets/_Data/Levels/WorldStageDatabase.asset", "Assets/Resources/WorldStageDatabase.asset", () => ProjectZombie.Editor.Maps.StageDataGeneratorTool.GenerateDefaultStages()),
             SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset"),
             SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaDataGenerator.GenerateDefaultGachaBanner())
         };
 
         public static readonly List<SyncRule> UIPrefabRules = new List<SyncRule>
         {
+            SyncRule.ForUIPrefab("MainHubUI", () => ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubPrefab()),
+            SyncRule.ForUIPrefab("CharacterSelectionUI", () => ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab()),
+            SyncRule.ForUIPrefab("SanctuaryTreeUI", () => ProjectZombie.Editor.UI.SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab()),
             SyncRule.ForUIPrefab("SettingsModalUI", () => ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal()),
             SyncRule.ForUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI()),
             SyncRule.ForUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI()),
             SyncRule.ForUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab()),
             SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab()),
+            SyncRule.ForUIPrefab("StageSelect_Screen", () => ProjectZombie.Editor.UI.StageSelectUIGenerator.GenerateStageSelectUI()),
+            SyncRule.ForUIPrefab("LoadingScreenUI", () => ProjectZombie.Editor.UI.LoadingScreenSetupTool.CreateOrUpdateLoadingPrefab()),
             new SyncRule("GachaShopPanel", "Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab", "Assets/Resources/UI/Gacha/GachaShopPanel.prefab", "*.prefab")
             {
                 Type = RuleType.UIPrefab,

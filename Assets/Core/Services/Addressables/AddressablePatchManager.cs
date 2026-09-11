@@ -134,8 +134,19 @@ namespace ProjectZombie.Core.Services.Addressables
                 NotifyProgress(PatchState.Downloading, 0f, 0, _totalDownloadSize, "Đang kết nối CDN...");
 
                 AsyncOperationHandle downloadHandle;
+                long targetExpectedSize = _totalDownloadSize;
+
                 if (keys != null)
                 {
+                    // Lấy dung lượng dự kiến của keys này để tính % mượt mà
+                    try
+                    {
+                        var sizeCheck = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(keys);
+                        long kSize = await sizeCheck.Task;
+                        if (kSize > 0) targetExpectedSize = kSize;
+                    }
+                    catch { }
+
                     // 1. Kiểm tra xem các keys này có tồn tại trong Addressables Catalog không trước khi tải
                     var checkLocHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
                     await checkLocHandle.Task;
@@ -146,10 +157,8 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                     else
                     {
-                        Debug.LogWarning($"[AddressablePatchManager] Các Key tải DLC không tồn tại trong Catalog Addressables. Giả lập hoàn tất tải để sử dụng fallback.");
-                        NotifyProgress(PatchState.Completed, 1f, 0, 0, "Dữ liệu đã sẵn sàng!");
-                        OnPatchCompleted?.Invoke();
-                        return true;
+                        // Fallback: Thử truyền trực tiếp keys vào DownloadDependenciesAsync
+                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
                     }
                 }
                 else
@@ -169,21 +178,34 @@ namespace ProjectZombie.Core.Services.Addressables
                 }
 
                 // Theo dõi tiến trình tải % liên tục (Non-blocking loop)
+                float lastPercent = 0f;
                 while (!downloadHandle.IsDone)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
                         UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
-                        NotifyProgress(PatchState.Failed, 0f, 0, _totalDownloadSize, "Đã hủy tải bản vá.");
+                        NotifyProgress(PatchState.Failed, 0f, 0, targetExpectedSize, "Đã hủy tải bản vá.");
                         return false;
                     }
 
                     var status = downloadHandle.GetDownloadStatus();
                     float percent = status.Percent;
                     long downloaded = status.DownloadedBytes;
-                    long total = status.TotalBytes > 0 ? status.TotalBytes : _totalDownloadSize;
+                    long total = status.TotalBytes > 0 ? status.TotalBytes : targetExpectedSize;
 
-                    NotifyProgress(PatchState.Downloading, percent, downloaded, total, $"Đang tải tài nguyên... ({percent * 100f:0}%)");
+                    // Nếu status.TotalBytes chưa kịp trả về từ CDN, tính % dựa trên downloaded/targetExpectedSize
+                    if (percent <= 0f && total > 0 && downloaded > 0)
+                    {
+                        percent = Mathf.Clamp01((float)downloaded / total);
+                    }
+
+                    if (percent > lastPercent) lastPercent = percent;
+
+                    string progressText = total > 0 
+                        ? $"Đang tải ({downloaded / 1048576f:0.1} / {total / 1048576f:0.1} MB - {lastPercent * 100f:0}%)"
+                        : $"Đang tải tài nguyên... ({lastPercent * 100f:0}%)";
+
+                    NotifyProgress(PatchState.Downloading, lastPercent, downloaded, total, progressText);
 
                     await Task.Yield();
                 }
