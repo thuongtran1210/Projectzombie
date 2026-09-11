@@ -1,125 +1,80 @@
-# Hướng Dẫn Tích Hợp Firebase Hosting CDN Cho Unity Addressables (Android)
+# Hướng Dẫn Tích Hợp Firebase Storage CDN Cho Unity Addressables (Dễ Nhất - Kéo Thả Trực Quan)
 
-Tài liệu này mô tả chi tiết quy trình thiết lập, đóng gói và vận hành hệ thống **Content Delivery Network (CDN) & Downloadable Content (DLC)** bằng **Firebase Hosting / Storage** cho dự án di động **Projectzombie** (Unity 2022).
-
----
-
-## 1. Tại Sao Chọn Firebase Hosting Cho Unity Addressables?
-
-1. **Miễn Phí & Tốc Độ Cao (Google Global CDN Edge Network)**:
-   - Miễn phí 10 GB lưu trữ.
-   - Miễn phí 360 MB/ngày truyền tải (đối với gói Spark miễn phí) hoặc tính tiền theo mức dùng cực rẻ ($0.15/GB đối với gói Blaze).
-   - Tự động cấp chứng chỉ bảo mật HTTPS bắt buộc trên Android.
-2. **Cập Nhật 0 Giây (Instant Invalidation)**:
-   - Khi bạn deploy bundle mới bằng lệnh `firebase deploy`, toàn bộ mạng lưới CDN của Google cập nhật dữ liệu trong vòng vài giây trên toàn cầu.
-3. **Không cần code Server backend**:
-   - Máy client Android chỉ cần gọi các URL tĩnh (`https://<project-id>.web.app/Android/...`).
+Tài liệu này hướng dẫn cách sử dụng **Firebase Storage** làm **CDN / DLC** cho Unity Addressables theo phương pháp **100% Giao Diện Web Trực Quan — Không Cần Cài Đặt Node.js, Không Cần Dòng Lệnh**.
 
 ---
 
-## 2. Quy Trình Cài Đặt Firebase CLI (1 Lần Duy Nhất)
+## 1. Ưu Điểm Của Phương Pháp Kéo & Thả Firebase Storage
 
-### Bước 1: Cài đặt Node.js & Firebase Tools
-Mở PowerShell trên máy tính và chạy lệnh:
-```bash
-npm install -g firebase-tools
-```
-
-### Bước 2: Đăng nhập Firebase
-```bash
-firebase login
-```
-
-### Bước 3: Khởi tạo thư mục CDN cho Unity
-1. Tạo một thư mục riêng bên ngoài dự án Unity, ví dụ: `D:/Projectzombie_CDN/`
-2. Mở terminal tại thư mục đó và chạy:
-```bash
-firebase init hosting
-```
-* Chọn dự án Firebase của bạn (VD: `projectzombie-app`).
-* Chọn thư mục public: `public` (Mặc định).
-* Configure as a single-page app? Chọn **`N`** (No).
-* Set up automatic builds with GitHub? Chọn **`N`** (No).
-
-File cấu hình `firebase.json` tạo ra sẽ có dạng:
-```json
-{
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "headers": [
-      {
-        "source": "**/*.@(bundle|hash|json)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=3600"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+* **0 Cài Đặt**: Không cần cài Node.js, không cần gõ lệnh Terminal/PowerShell.
+* **0 Xung Đột Code**: Không cần import thêm SDK Firebase vào Unity, tránh lỗi Gradle khi build Android APK.
+* **Trực Quan**: Thấy rõ từng file `.bundle` dung lượng bao nhiêu MB trực tiếp trên trình duyệt.
+* **Miễn Phí**: Google tặng sẵn 5 GB lưu trữ và 1 GB tải về mỗi ngày (đầy đủ cho nhu cầu phát triển & thử nghiệm).
 
 ---
 
-## 3. Cấu Hình Unity Addressables Profile Trỏ Vào Firebase
+## 2. Quy Trình 3 Bước Thực Hiện
 
-Trong cửa sổ Unity: `Window > Asset Management > Addressables > Profiles`:
+### BƯỚC 1: Tạo Thư Mục Trên Firebase Console (1 Lần Duy Nhất)
 
-1. Tạo một Profile mới đặt tên: **`Firebase_Production`**
-2. Cấu hình các biến đường dẫn:
-   * **`Remote.BuildPath`**: `ServerData/[BuildTarget]` (Thư mục Unity xuất file bundle)
-   * **`Remote.LoadPath`**: `https://<your-firebase-project-id>.web.app/[BuildTarget]`
-
-> [!TIP]
-> Biến `[BuildTarget]` trong Unity sẽ tự động thay bằng `Android` khi bạn chuyển nền tảng sang Android, hoặc `StandaloneWindows64` khi ở PC.
-
----
-
-## 4. Phân Nhóm Asset (Addressables Groups Architecture)
-
-Trong `Addressables Groups`, tổ chức các nhóm như sau:
-
-| Tên Nhóm (Group Name) | Build & Load Path | Chứa Tài Nguyên Gì? | Mục Đích |
-| :--- | :--- | :--- | :--- |
-| **`Local_Core`** | `Local.BuildPath`<br>`Local.LoadPath` | Core UI, Splash, Font TMP, Màn 1 (Chapter 1), Hero Cơ Bản. | Nằm sẵn trong file cài APK, mở game chơi được ngay không cần mạng. |
-| **`Remote_Chapters`** | `Remote.BuildPath`<br>`Remote.LoadPath` | Bản đồ Màn 2, 3, 4 (Tilemaps, BGM, Decor Props). | Chỉ tải về khi người chơi vượt qua Màn 1. |
-| **`Remote_Enemies`** | `Remote.BuildPath`<br>`Remote.LoadPath` | Quái tinh anh, Boss các Chapter sau, Âm thanh gầm rú. | Tiết kiệm 40% dung lượng bộ nhớ cho người chơi mới. |
-| **`Remote_VFX_Weapons`**| `Remote.BuildPath`<br>`Remote.LoadPath` | Vũ khí đặc biệt, Skin Pháp Bảo cao cấp, Hào quang. | Cập nhật cân bằng VFX từ xa không cần nộp lại Google Play. |
+1. Mở trình duyệt và truy cập: [Firebase Console](https://console.firebase.google.com/).
+2. Chọn Project của bạn (hoặc bấm **Add project** để tạo mới).
+3. Ở thanh menu bên trái, chọn **Build > Storage** -> Bấm **Get started**.
+4. Chọn chế độ bảo mật:
+   - Trong tab **Rules** của Storage, cho phép đọc công khai (để game Android tải được file):
+     ```javascript
+     rules_version = '2';
+     service firebase.storage {
+       match /b/{bucket}/o {
+         match /{allPaths=**} {
+           allow read: if true; // Cho phép game tải file không cần đăng nhập
+           allow write: if false;
+         }
+       }
+     }
+     ```
+   - Bấm **Publish** để lưu luật bảo mật.
+5. Quay lại tab **Files**, bấm **Create folder** và đặt tên là: **`Android`**.
 
 ---
 
-## 5. Quy Trình Xuất Bản & Deploy Asset (Build Pipeline)
+### BƯỚC 2: Cấu Hình Unity Addressables Profile
 
-Mỗi khi thêm quái mới, map mới hoặc sửa hiệu ứng VFX:
-
-1. **Build Bundles trong Unity**:
-   * Mở `Window > Asset Management > Addressables > Groups`.
-   * Chọn `Build > New Build > Default Build Script`.
-   * Unity sẽ xuất các file `.bundle`, `catalog.json`, `catalog.hash` vào thư mục `ServerData/Android/`.
-2. **Copy file vào thư mục Firebase**:
-   * Copy toàn bộ thư mục `ServerData/Android` vào `D:/Projectzombie_CDN/public/Android/`.
-3. **Đẩy lên CDN toàn cầu**:
-   ```bash
-   cd D:/Projectzombie_CDN/
-   firebase deploy --only hosting
-   ```
-4. **Kết quả**: Tất cả thiết bị Android của người chơi khi mở game sẽ tự động nhận diện `catalog.hash` mới và cập nhật nội dung tức thì!
+1. Trong Unity Editor, mở: `Window > Asset Management > Addressables > Profiles`.
+2. Chọn Profile (hoặc tạo mới Profile đặt tên `Firebase_Web`):
+   - **`Remote.BuildPath`**: Giữ nguyên mặc định là `ServerData/[BuildTarget]`
+   - **`Remote.LoadPath`**: Dán đường link URL của thư mục Firebase Storage vào:
+     ```text
+     https://firebasestorage.googleapis.com/v0/b/<tên-project-của-bạn>.appspot.com/o/Android%2F{0}?alt=media
+     ```
+     *(Thay `<tên-project-của-bạn>` bằng ID dự án trên Firebase của bạn)*
 
 ---
 
-## 6. Xử Lý Bộ Nhớ Đệm & Offline Mode Trên Android
+### BƯỚC 3: Xuất File Bundle & Kéo Thả Lên Web
 
-* Khi tải về từ Firebase CDN, Addressables tự động lưu vào thư mục Cache trên điện thoại:
-  `Application.persistentDataPath/com.unity.addressables/`
-* Nếu người chơi không có mạng (Offline), hệ thống sẽ tự động dùng dữ liệu đã cache trong máy để tiếp tục chơi bình thường.
+Mỗi khi bạn muốn cập nhật bản đồ mới, quái vật mới hoặc hiệu ứng VFX:
+
+1. **Build trong Unity**:
+   - Mở `Window > Asset Management > Addressables > Groups`.
+   - Bấm nút **Build > New Build > Default Build Script**.
+   - Unity sẽ nén và xuất các file vào thư mục: `Projectzombie/ServerData/Android/`.
+2. **Kéo Thả Lên Web**:
+   - Mở thư mục `ServerData/Android/` trên máy tính (sẽ có các file `.bundle`, `catalog.json`, `catalog.hash`).
+   - Mở trình duyệt vào thư mục `Android` trên **Firebase Storage**.
+   - **Kéo thả toàn bộ các file đó vào trình duyệt**.
+3. **Hoàn Tất!** 
+   - Mọi máy điện thoại Android khi mở game sẽ tự động đọc `catalog.hash` mới nhất và tải các gói màn chơi mới về máy.
+
+---
+
+## 3. Cách Phân Chia Nhóm Asset (Local vs Remote)
+
+Trong bảng `Addressables Groups`:
+
+* **Nhóm `Local_Core` (Nằm sẵn trong APK)**: 
+  - UI cơ bản, Menu chính, Âm thanh nút bấm, Màn 1 (Chapter 1), Nhân vật mặc định.
+  - Cấu hình nhóm: `Build & Load Paths` chọn **`Local`**.
+* **Nhóm `Remote_DLC` (Tải từ Firebase về máy)**:
+  - Bản đồ Màn 2, 3, 4; Quái vật cấp cao; Skin đặc biệt.
+  - Cấu hình nhóm: `Build & Load Paths` chọn **`Remote`**.

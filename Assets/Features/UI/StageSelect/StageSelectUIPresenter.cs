@@ -114,7 +114,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         private void HandlePatchCompleted()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayLevelUp();
+            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm(1.2f);
             RefreshView();
         }
 

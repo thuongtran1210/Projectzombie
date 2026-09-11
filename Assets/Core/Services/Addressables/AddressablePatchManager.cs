@@ -154,7 +154,7 @@ namespace ProjectZombie.Core.Services.Addressables
                     _totalDownloadSize = 0;
                     _catalogsToUpdate.Clear();
 
-                    NotifyProgress(PatchState.Completed, 1f, total: _totalDownloadSize, downloadedBytes: _totalDownloadSize, statusMessage: "Cập nhật thành công!");
+                    NotifyProgress(PatchState.Completed, 1f, _totalDownloadSize, _totalDownloadSize, "Cập nhật thành công!");
                     OnPatchCompleted?.Invoke();
                     return true;
                 }
