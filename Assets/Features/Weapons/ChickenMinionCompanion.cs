@@ -366,9 +366,38 @@ namespace ProjectZombie.Features.Weapons
         }
         #endregion
 
+        #region OBJECT POOLING
+        private static readonly Queue<ChickenMinionCompanion> _minionPool = new Queue<ChickenMinionCompanion>();
+
+        public static GameObject SpawnFromPool(GameObject prefab, Vector3 spawnPos)
+        {
+            ChickenMinionCompanion minion = null;
+            while (_minionPool.Count > 0 && minion == null)
+            {
+                minion = _minionPool.Dequeue();
+            }
+
+            if (minion == null)
+            {
+                GameObject newObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+                minion = newObj.GetComponent<ChickenMinionCompanion>() ?? newObj.AddComponent<ChickenMinionCompanion>();
+            }
+            else
+            {
+                minion.transform.position = spawnPos;
+                minion.gameObject.SetActive(true);
+            }
+
+            return minion.gameObject;
+        }
+
         private void Despawn()
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            _targetEnemy = null;
+            _isAttacking = false;
+            _minionPool.Enqueue(this);
         }
+        #endregion
     }
 }

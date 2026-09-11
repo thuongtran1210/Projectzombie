@@ -324,8 +324,16 @@ namespace ProjectZombie.Features.Weapons
             if (stampedePrefab != null)
             {
                 float angle = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;
-                GameObject stampedeObj = Instantiate(stampedePrefab, endPos, Quaternion.Euler(0f, 0f, angle));
-                Destroy(stampedeObj, 1.2f);
+                Quaternion rot = Quaternion.Euler(0f, 0f, angle);
+                if (ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(stampedePrefab, endPos, rot, 1.2f);
+                }
+                else
+                {
+                    GameObject stampedeObj = Instantiate(stampedePrefab, endPos, rot);
+                    Destroy(stampedeObj, 1.2f);
+                }
             }
 
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.12f, 0.15f);
@@ -381,8 +389,11 @@ namespace ProjectZombie.Features.Weapons
 
                 if (_activeMinions.Count < maxMinions)
                 {
-                    GameObject minion = Instantiate(chickenMinionPrefab, spawnPos, Quaternion.identity);
-                    _activeMinions.Add(minion);
+                    GameObject minion = ChickenMinionCompanion.SpawnFromPool(chickenMinionPrefab, spawnPos);
+                    if (minion != null)
+                    {
+                        _activeMinions.Add(minion);
+                    }
 
                     // Âm thanh xuất hiện
                     global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(spawnPos);

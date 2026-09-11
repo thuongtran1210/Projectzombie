@@ -548,20 +548,18 @@ namespace ProjectZombie.Features.Player
                 float offsetAngle = count > 1 ? (i - (count - 1) / 2f) * (spread / (count - 1)) : 0f;
                 Vector2 boltDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
 
-                GameObject projObj = Instantiate(attackConfig.projectilePrefab, spawnPos, Quaternion.Euler(0, 0, Mathf.Atan2(boltDir.y, boltDir.x) * Mathf.Rad2Deg));
-                
-                // Gán vận tốc và thông số nếu có Rigidbody2D
-                if (projObj.TryGetComponent<Rigidbody2D>(out var rb))
-                {
-                    rb.velocity = boltDir * attackConfig.projectileSpeed;
-                }
-
-                if (projObj.TryGetComponent<SimpleProjectile>(out var simpleProj))
-                {
-                    simpleProj.Initialize(damageData, gameObject, attackConfig.knockbackForce);
-                }
-
-                Destroy(projObj, attackConfig.projectileLifetime);
+                Quaternion rot = Quaternion.Euler(0, 0, Mathf.Atan2(boltDir.y, boltDir.x) * Mathf.Rad2Deg);
+                SimpleProjectile.Spawn(
+                    attackConfig.projectilePrefab,
+                    spawnPos,
+                    rot,
+                    damageData,
+                    gameObject,
+                    attackConfig.knockbackForce,
+                    attackConfig.projectileSpeed,
+                    boltDir,
+                    attackConfig.projectileLifetime
+                );
             }
         }
 

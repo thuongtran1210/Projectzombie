@@ -230,7 +230,14 @@ namespace ProjectZombie.Features.Player.Mechanics
             // Spawn hiệu ứng sóng xung kích Phán Truyền bộc phát
             if (_oracleShockwavePrefab != null)
             {
-                Instantiate(_oracleShockwavePrefab, transform.position, Quaternion.identity);
+                if (ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_oracleShockwavePrefab, transform.position, Quaternion.identity, 0.8f);
+                }
+                else
+                {
+                    Instantiate(_oracleShockwavePrefab, transform.position, Quaternion.identity);
+                }
             }
 
             // Quét và áp dụng Choáng (Stun 2.0s) + Đẩy lùi (6.0) qua AreaEffectCaster tập trung (Decoupled & Zero GC)

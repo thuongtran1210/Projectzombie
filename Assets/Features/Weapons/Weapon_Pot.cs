@@ -265,17 +265,8 @@ namespace ProjectZombie.Features.Weapons
             GameObject potDropVisual = null;
             if (potSprite != null)
             {
-                potDropVisual = new GameObject("Giant_Pot_Drop_Visual");
-                potDropVisual.transform.position = center + Vector2.up * 3.5f;
-                var srPot = potDropVisual.AddComponent<SpriteRenderer>();
-                srPot.sprite = potSprite;
-                srPot.sortingLayerName = "Skill";
-                srPot.sortingOrder = 14;
-                srPot.color = isEvolution ? new Color(1f, 0.95f, 0.5f, 1f) : Color.white;
+                potDropVisual = GetOrCreatePotDropVisual(center, isEvolution);
                 float potTargetScale = isEvolution ? 1.4f : 0.95f;
-                potDropVisual.transform.localScale = Vector3.one * potTargetScale;
-
-                // Animation Nồi rơi từ trên trời xuống cắm đất
                 StartCoroutine(RoutineAnimatePotDrop(potDropVisual, center, potTargetScale));
             }
 
@@ -398,7 +389,7 @@ namespace ProjectZombie.Features.Weapons
             if (potDropVisual != null)
             {
                 yield return new WaitForSeconds(0.4f);
-                Destroy(potDropVisual);
+                RecyclePotDropVisual(potDropVisual);
             }
         }
 
@@ -435,6 +426,84 @@ namespace ProjectZombie.Features.Weapons
             if (potObj != null) potObj.transform.localScale = Vector3.one * targetScale;
         }
 
+        private static readonly Queue<GameObject> _potDropVisualPool = new Queue<GameObject>();
+
+        private GameObject GetOrCreatePotDropVisual(Vector2 center, bool isEvolution)
+        {
+            GameObject potObj = null;
+            while (_potDropVisualPool.Count > 0 && potObj == null)
+            {
+                potObj = _potDropVisualPool.Dequeue();
+            }
+
+            if (potObj == null)
+            {
+                potObj = new GameObject("Giant_Pot_Drop_Visual");
+                var srPot = potObj.AddComponent<SpriteRenderer>();
+                srPot.sprite = potSprite;
+                srPot.sortingLayerName = "Skill";
+                srPot.sortingOrder = 14;
+            }
+
+            potObj.transform.position = center + Vector2.up * 3.5f;
+            var spriteRenderer = potObj.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = potSprite;
+                spriteRenderer.color = isEvolution ? new Color(1f, 0.95f, 0.5f, 1f) : Color.white;
+            }
+            float potTargetScale = isEvolution ? 1.4f : 0.95f;
+            potObj.transform.localScale = Vector3.one * potTargetScale;
+            potObj.SetActive(true);
+
+            return potObj;
+        }
+
+        private void RecyclePotDropVisual(GameObject potObj)
+        {
+            if (potObj == null) return;
+            potObj.SetActive(false);
+            _potDropVisualPool.Enqueue(potObj);
+        }
+
+        private static readonly Queue<GameObject> _ringPool = new Queue<GameObject>();
+
+        private GameObject GetOrCreateRing(Vector2 center, Sprite sprite, string sortingLayer, int sortingOrder, Color color)
+        {
+            GameObject ring = null;
+            while (_ringPool.Count > 0 && ring == null)
+            {
+                ring = _ringPool.Dequeue();
+            }
+
+            if (ring == null)
+            {
+                ring = new GameObject("Shockwave_Ring_VFX");
+                var sr = ring.AddComponent<SpriteRenderer>();
+                sr.sortingLayerName = sortingLayer;
+                sr.sortingOrder = sortingOrder;
+            }
+
+            ring.transform.position = center;
+            var spriteRenderer = ring.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = sprite;
+                spriteRenderer.sortingLayerName = sortingLayer;
+                spriteRenderer.sortingOrder = sortingOrder;
+                spriteRenderer.color = color;
+            }
+            ring.SetActive(true);
+            return ring;
+        }
+
+        private void RecycleRing(GameObject ring)
+        {
+            if (ring == null) return;
+            ring.SetActive(false);
+            _ringPool.Enqueue(ring);
+        }
+
         private IEnumerator RoutineSpawnInwardSuctionRings(Vector2 center, float startRadius, bool isEvolution)
         {
             Sprite ringSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
@@ -446,16 +515,11 @@ namespace ProjectZombie.Features.Weapons
             if (ringSprite == null) yield break;
 
             int ringWaves = isEvolution ? 4 : 2;
+            Color ringColor = isEvolution ? new Color(1f, 0.95f, 0.4f, 0.9f) : new Color(1f, 0.8f, 0.3f, 0.7f);
+
             for (int wave = 0; wave < ringWaves; wave++)
             {
-                GameObject inwardRing = new GameObject("Inward_Suction_Ring");
-                inwardRing.transform.position = center;
-                var sr = inwardRing.AddComponent<SpriteRenderer>();
-                sr.sprite = ringSprite;
-                sr.sortingLayerName = "Skill";
-                sr.sortingOrder = 11;
-                sr.color = isEvolution ? new Color(1f, 0.95f, 0.4f, 0.9f) : new Color(1f, 0.8f, 0.3f, 0.7f);
-
+                GameObject inwardRing = GetOrCreateRing(center, ringSprite, "Skill", 11, ringColor);
                 StartCoroutine(RoutineAnimateInwardRing(inwardRing, startRadius, 0.32f));
                 yield return new WaitForSeconds(0.12f);
             }
@@ -470,7 +534,7 @@ namespace ProjectZombie.Features.Weapons
 
             while (elapsed < duration)
             {
-                if (ringObj == null) yield break;
+                if (ringObj == null || !ringObj.activeInHierarchy) yield break;
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
                 float curRadius = Mathf.Lerp(startRadius, 0.2f, t);
@@ -484,7 +548,7 @@ namespace ProjectZombie.Features.Weapons
                 yield return null;
             }
 
-            if (ringObj != null) Destroy(ringObj);
+            RecycleRing(ringObj);
         }
 
         private IEnumerator RoutineSpawnExpandingRing(Vector2 center, float duration, float maxRadius, Color color)
@@ -497,18 +561,13 @@ namespace ProjectZombie.Features.Weapons
 #endif
             if (ringSprite == null) yield break;
 
-            GameObject expRing = new GameObject("Expanding_Shockwave_Ring");
-            expRing.transform.position = center;
-            var sr = expRing.AddComponent<SpriteRenderer>();
-            sr.sprite = ringSprite;
-            sr.sortingLayerName = "Skill";
-            sr.sortingOrder = 13;
-            sr.color = color;
+            GameObject expRing = GetOrCreateRing(center, ringSprite, "Skill", 13, color);
 
             float elapsed = 0f;
+            var sr = expRing.GetComponent<SpriteRenderer>();
             while (elapsed < duration)
             {
-                if (expRing == null) yield break;
+                if (expRing == null || !expRing.activeInHierarchy) yield break;
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / duration);
                 float curScale = Mathf.Lerp(0.3f, maxRadius * 2.0f, Mathf.Sqrt(t));
@@ -521,11 +580,50 @@ namespace ProjectZombie.Features.Weapons
                 yield return null;
             }
 
-            if (expRing != null) Destroy(expRing);
+            RecycleRing(expRing);
         }
         #endregion
 
-        #region INTERACTIVE COLLECTIBLE RICE BALLS
+        #region INTERACTIVE COLLECTIBLE RICE BALLS (OBJECT POOLED)
+        private static readonly Queue<GameObject> _riceBallPool = new Queue<GameObject>();
+
+        private GameObject GetOrCreateRiceBall(Vector2 pos, bool isEvolution)
+        {
+            GameObject riceObj = null;
+            while (_riceBallPool.Count > 0 && riceObj == null)
+            {
+                riceObj = _riceBallPool.Dequeue();
+            }
+
+            if (riceObj == null)
+            {
+                riceObj = new GameObject("RiceBall_Item");
+                var sr = riceObj.AddComponent<SpriteRenderer>();
+                sr.sprite = riceBallSprite;
+                sr.sortingLayerName = "Item";
+                sr.sortingOrder = 5;
+            }
+
+            riceObj.transform.position = pos;
+            var spriteRenderer = riceObj.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = riceBallSprite;
+                spriteRenderer.color = isEvolution ? new Color(1f, 0.95f, 0.7f, 1f) : Color.white;
+            }
+            riceObj.transform.localScale = Vector3.one * (isEvolution ? 0.6f : 0.4f);
+            riceObj.SetActive(true);
+
+            return riceObj;
+        }
+
+        private void RecycleRiceBall(GameObject riceObj)
+        {
+            if (riceObj == null) return;
+            riceObj.SetActive(false);
+            _riceBallPool.Enqueue(riceObj);
+        }
+
         private void SpawnCollectibleRiceBalls(Vector2 center, int count, bool isEvolution)
         {
             for (int i = 0; i < count; i++)
@@ -535,20 +633,7 @@ namespace ProjectZombie.Features.Weapons
                 float flingDist = Random.Range(1.2f, 2.5f);
                 Vector2 landPos = center + flingDir * flingDist;
 
-                GameObject riceObj = new GameObject("RiceBall_Item");
-                riceObj.transform.position = spawnPos;
-
-                var sr = riceObj.AddComponent<SpriteRenderer>();
-                sr.sprite = riceBallSprite;
-                sr.sortingLayerName = "Item";
-                sr.sortingOrder = 5;
-                riceObj.transform.localScale = Vector3.one * (isEvolution ? 0.6f : 0.4f);
-
-                if (isEvolution)
-                {
-                    sr.color = new Color(1f, 0.95f, 0.7f, 1f);
-                }
-
+                GameObject riceObj = GetOrCreateRiceBall(spawnPos, isEvolution);
                 StartCoroutine(RoutineRiceBallBehavior(riceObj, spawnPos, landPos, isEvolution));
             }
         }
@@ -562,7 +647,7 @@ namespace ProjectZombie.Features.Weapons
             float elapsed = 0f;
             while (elapsed < bounceDuration)
             {
-                if (riceObj == null) yield break;
+                if (riceObj == null || !riceObj.activeInHierarchy) yield break;
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / bounceDuration);
                 float height = Mathf.Sin(t * Mathf.PI) * 0.8f;
@@ -578,7 +663,7 @@ namespace ProjectZombie.Features.Weapons
 
             while (lifetime > 0f && !isCollected)
             {
-                if (riceObj == null) yield break;
+                if (riceObj == null || !riceObj.activeInHierarchy) yield break;
                 lifetime -= Time.deltaTime;
 
                 if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
@@ -593,7 +678,7 @@ namespace ProjectZombie.Features.Weapons
                         Vector3 pullStart = riceObj.transform.position;
                         while (pullElapsed < 0.2f)
                         {
-                            if (riceObj == null || hero == null) yield break;
+                            if (riceObj == null || hero == null || !riceObj.activeInHierarchy) yield break;
                             pullElapsed += Time.deltaTime;
                             float pt = Mathf.Clamp01(pullElapsed / 0.2f);
                             riceObj.transform.position = Vector3.Lerp(pullStart, hero.position, pt * pt);
@@ -616,10 +701,7 @@ namespace ProjectZombie.Features.Weapons
                 yield return null;
             }
 
-            if (riceObj != null)
-            {
-                Destroy(riceObj);
-            }
+            RecycleRiceBall(riceObj);
         }
         #endregion
     }

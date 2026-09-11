@@ -595,63 +595,7 @@ namespace ProjectZombie.Features.Weapons
             DamageData dmg = CreateDamageData();
             dmg = new DamageData(dmg.Amount * dmgMult, dmg.IsCritical, ElementType.Kim, dmg.IsCounter, this);
 
-            GameObject slipperVisual = new GameObject(isEvolution ? "Giant_Golden_Slipper_Visual" : "Slipper_Projectile_Visual");
-            var sr = slipperVisual.AddComponent<SpriteRenderer>();
-            sr.sprite = slipperProjectileSprite;
-            sr.sortingLayerName = "Skill";
-            sr.sortingOrder = 13;
-            float scaleMultiplier = isEvolution ? 0.9f : (0.28f + WeaponLevel * 0.035f);
-            slipperVisual.transform.localScale = Vector3.one * scaleMultiplier;
-            slipperVisual.transform.position = startPos;
-            if (isEvolution) sr.color = new Color(1f, 0.95f, 0.45f, 1f);
-
-            // [MỚI] Hào Quang Hoàng Kim (Golden Aura Glow Sprite) bọc quanh thân dép
-            GameObject auraObj = new GameObject("Aura_Glow");
-            auraObj.transform.SetParent(slipperVisual.transform, false);
-            var srAura = auraObj.AddComponent<SpriteRenderer>();
-            srAura.sprite = recastMarkerCircleSprite != null ? recastMarkerCircleSprite : slipperProjectileSprite;
-            srAura.color = isEvolution ? new Color(1f, 0.85f, 0.2f, 0.55f) : new Color(1f, 0.9f, 0.4f, 0.35f);
-            srAura.sortingLayerName = "Skill";
-            srAura.sortingOrder = 12;
-            auraObj.transform.localScale = Vector3.one * (isEvolution ? 1.5f : 1.25f);
-
-            var trailRenderer = slipperVisual.AddComponent<TrailRenderer>();
-            trailRenderer.time = isEvolution ? 0.42f : 0.18f;
-            trailRenderer.startWidth = isEvolution ? 0.95f : 0.22f;
-            trailRenderer.endWidth = 0.02f;
-            trailRenderer.minVertexDistance = 0.035f;
-            trailRenderer.autodestruct = false;
-            trailRenderer.sortingLayerName = "Skill";
-            trailRenderer.sortingOrder = 11;
-            trailRenderer.colorGradient = GetOrCreateTrailGradient();
-            if (trailMaterial != null) trailRenderer.material = trailMaterial;
-
-            GameObject trailObj = new GameObject("Sparks");
-            trailObj.transform.SetParent(slipperVisual.transform, false);
-            var psTrail = trailObj.AddComponent<ParticleSystem>();
-            psTrail.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            
-            var mainT = psTrail.main;
-            mainT.playOnAwake = false;
-            mainT.duration = 1.0f;
-            mainT.loop = true;
-            mainT.startLifetime = isEvolution ? 0.45f : 0.15f;
-            mainT.startSpeed = isEvolution ? 3.0f : 0.6f;
-            mainT.startSize = new ParticleSystem.MinMaxCurve(isEvolution ? 0.5f : 0.15f, isEvolution ? 1.0f : 0.3f);
-            mainT.simulationSpace = ParticleSystemSimulationSpace.World;
-
-            var emissT = psTrail.emission;
-            emissT.rateOverTime = isEvolution ? 80 : 15;
-
-            var colT = psTrail.colorOverLifetime;
-            colT.enabled = true;
-            colT.color = GetOrCreateTrailGradient();
-
-            var rendT = trailObj.GetComponent<ParticleSystemRenderer>();
-            if (dropsParticleMaterial != null) rendT.material = dropsParticleMaterial;
-            rendT.sortingLayerName = "Skill";
-            rendT.sortingOrder = 11;
-            psTrail.Play();
+            GameObject slipperVisual = GetOrCreateSlipperVisual(startPos, isEvolution);
 
             Vector2 perpendicular = new Vector2(-dir.y, dir.x);
             float arcOffset = isEvolution ? 1.6f : 1.0f;
@@ -696,7 +640,7 @@ namespace ProjectZombie.Features.Weapons
                 DealConvergenceShockwave(returnTargetPos, dmg);
             }
 
-            Destroy(slipperVisual);
+            RecycleSlipperVisual(slipperVisual);
         }
 
         private void DealConvergenceShockwave(Vector2 center, DamageData baseDmg)
@@ -704,15 +648,7 @@ namespace ProjectZombie.Features.Weapons
             // Sinh Visual Sóng Kích Hội Tụ Hoàng Kim bùng nổ (Golden Shockwave Ring & Core Burst)
             if (recastMarkerCircleSprite != null)
             {
-                GameObject slamVfx = new GameObject("VFX_Convergence_Slam_Burst");
-                slamVfx.transform.position = center;
-                var sr = slamVfx.AddComponent<SpriteRenderer>();
-                sr.sprite = recastMarkerCircleSprite;
-                sr.color = new Color(1f, 0.95f, 0.4f, 0.95f);
-                sr.sortingLayerName = "Skill";
-                sr.sortingOrder = 15;
-                slamVfx.transform.localScale = Vector3.one * 0.4f;
-
+                GameObject slamVfx = GetOrCreateSlamBurst(center);
                 StartCoroutine(RoutineAnimateWhirlwindVisual(slamVfx, 0.4f, 4.5f));
             }
 
@@ -827,8 +763,162 @@ namespace ProjectZombie.Features.Weapons
 
             if (vfxObj != null)
             {
-                Destroy(vfxObj);
+                RecycleSlamBurst(vfxObj);
             }
+        }
+        #endregion
+
+        #region OBJECT POOLING FOR SLIPPER VISUALS & BURST
+        private static readonly Queue<GameObject> _slipperVisualPool = new Queue<GameObject>();
+        private static readonly Queue<GameObject> _slamBurstPool = new Queue<GameObject>();
+
+        private GameObject GetOrCreateSlipperVisual(Vector2 startPos, bool isEvolution)
+        {
+            GameObject slipperVisual = null;
+            while (_slipperVisualPool.Count > 0 && slipperVisual == null)
+            {
+                slipperVisual = _slipperVisualPool.Dequeue();
+            }
+
+            if (slipperVisual == null)
+            {
+                slipperVisual = new GameObject("Slipper_Projectile_Visual");
+                var sr = slipperVisual.AddComponent<SpriteRenderer>();
+                sr.sprite = slipperProjectileSprite;
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 13;
+
+                GameObject auraObj = new GameObject("Aura_Glow");
+                auraObj.transform.SetParent(slipperVisual.transform, false);
+                var srAura = auraObj.AddComponent<SpriteRenderer>();
+                srAura.sprite = recastMarkerCircleSprite != null ? recastMarkerCircleSprite : slipperProjectileSprite;
+                srAura.sortingLayerName = "Skill";
+                srAura.sortingOrder = 12;
+
+                var trailRenderer = slipperVisual.AddComponent<TrailRenderer>();
+                trailRenderer.minVertexDistance = 0.035f;
+                trailRenderer.autodestruct = false;
+                trailRenderer.sortingLayerName = "Skill";
+                trailRenderer.sortingOrder = 11;
+                trailRenderer.colorGradient = GetOrCreateTrailGradient();
+                if (trailMaterial != null) trailRenderer.material = trailMaterial;
+
+                GameObject trailObj = new GameObject("Sparks");
+                trailObj.transform.SetParent(slipperVisual.transform, false);
+                var psTrail = trailObj.AddComponent<ParticleSystem>();
+                psTrail.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                
+                var mainT = psTrail.main;
+                mainT.playOnAwake = false;
+                mainT.duration = 1.0f;
+                mainT.loop = true;
+                mainT.simulationSpace = ParticleSystemSimulationSpace.World;
+
+                var emissT = psTrail.emission;
+                emissT.rateOverTime = 15;
+
+                var colT = psTrail.colorOverLifetime;
+                colT.enabled = true;
+                colT.color = GetOrCreateTrailGradient();
+
+                var rendT = trailObj.GetComponent<ParticleSystemRenderer>();
+                if (dropsParticleMaterial != null) rendT.material = dropsParticleMaterial;
+                rendT.sortingLayerName = "Skill";
+                rendT.sortingOrder = 11;
+            }
+
+            slipperVisual.transform.position = startPos;
+            slipperVisual.name = isEvolution ? "Giant_Golden_Slipper_Visual" : "Slipper_Projectile_Visual";
+
+            var spriteRenderer = slipperVisual.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = slipperProjectileSprite;
+                spriteRenderer.color = isEvolution ? new Color(1f, 0.95f, 0.45f, 1f) : Color.white;
+            }
+
+            float scaleMultiplier = isEvolution ? 0.9f : (0.28f + WeaponLevel * 0.035f);
+            slipperVisual.transform.localScale = Vector3.one * scaleMultiplier;
+
+            var auraTransform = slipperVisual.transform.Find("Aura_Glow");
+            if (auraTransform != null)
+            {
+                var srAura = auraTransform.GetComponent<SpriteRenderer>();
+                if (srAura != null)
+                {
+                    srAura.sprite = recastMarkerCircleSprite != null ? recastMarkerCircleSprite : slipperProjectileSprite;
+                    srAura.color = isEvolution ? new Color(1f, 0.85f, 0.2f, 0.55f) : new Color(1f, 0.9f, 0.4f, 0.35f);
+                }
+                auraTransform.localScale = Vector3.one * (isEvolution ? 1.5f : 1.25f);
+            }
+
+            var trail = slipperVisual.GetComponent<TrailRenderer>();
+            if (trail != null)
+            {
+                trail.Clear();
+                trail.time = isEvolution ? 0.42f : 0.18f;
+                trail.startWidth = isEvolution ? 0.95f : 0.22f;
+                trail.endWidth = 0.02f;
+            }
+
+            var sparksTransform = slipperVisual.transform.Find("Sparks");
+            if (sparksTransform != null && sparksTransform.TryGetComponent<ParticleSystem>(out var ps))
+            {
+                var main = ps.main;
+                main.startLifetime = isEvolution ? 0.45f : 0.15f;
+                main.startSpeed = isEvolution ? 3.0f : 0.6f;
+                main.startSize = new ParticleSystem.MinMaxCurve(isEvolution ? 0.5f : 0.15f, isEvolution ? 1.0f : 0.3f);
+                var emission = ps.emission;
+                emission.rateOverTime = isEvolution ? 80 : 15;
+                ps.Play();
+            }
+
+            slipperVisual.SetActive(true);
+            return slipperVisual;
+        }
+
+        private void RecycleSlipperVisual(GameObject slipperVisual)
+        {
+            if (slipperVisual == null) return;
+            var trail = slipperVisual.GetComponent<TrailRenderer>();
+            if (trail != null) trail.Clear();
+            slipperVisual.SetActive(false);
+            _slipperVisualPool.Enqueue(slipperVisual);
+        }
+
+        private GameObject GetOrCreateSlamBurst(Vector2 center)
+        {
+            GameObject slamVfx = null;
+            while (_slamBurstPool.Count > 0 && slamVfx == null)
+            {
+                slamVfx = _slamBurstPool.Dequeue();
+            }
+
+            if (slamVfx == null)
+            {
+                slamVfx = new GameObject("VFX_Convergence_Slam_Burst");
+                var sr = slamVfx.AddComponent<SpriteRenderer>();
+                sr.sortingLayerName = "Skill";
+                sr.sortingOrder = 15;
+            }
+
+            slamVfx.transform.position = center;
+            var spriteRenderer = slamVfx.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = recastMarkerCircleSprite;
+                spriteRenderer.color = new Color(1f, 0.95f, 0.4f, 0.95f);
+            }
+            slamVfx.transform.localScale = Vector3.one * 0.4f;
+            slamVfx.SetActive(true);
+            return slamVfx;
+        }
+
+        private void RecycleSlamBurst(GameObject slamVfx)
+        {
+            if (slamVfx == null) return;
+            slamVfx.SetActive(false);
+            _slamBurstPool.Enqueue(slamVfx);
         }
         #endregion
     }

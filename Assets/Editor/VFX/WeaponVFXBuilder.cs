@@ -507,7 +507,7 @@ namespace ProjectZombie.Editor.VFX
 
         private static void WireW004ProjectilePrefab(GameObject clawsAsset)
         {
-            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W004_HoTrao.prefab";
+            string projPath = $"{PROJECTILES_PREFAB_FOLDER}/Proj_W004_CuuViHoTrao.prefab";
             GameObject projPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
             if (projPrefab == null || clawsAsset == null) return;
 
