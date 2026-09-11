@@ -64,25 +64,13 @@ namespace ProjectZombie.Features.UI
             if (_spawnManager == null) _spawnManager = SpawnManager.Instance ?? FindObjectOfType<SpawnManager>(true);
             if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
 
-            // Đăng ký lắng nghe sự kiện Xuất Trận từ Presenter
-            if (_mainHubPresenter != null)
-            {
-                _mainHubPresenter.OnStartRunRequested -= StartRun;
-                _mainHubPresenter.OnStartRunRequested += StartRun;
-            }
-
-            // Đăng ký lắng nghe sự kiện Chọn Ải từ StageSelectUIPresenter
+            // Đăng ký lắng nghe sự kiện Chọn Ải từ StageSelectUIPresenter để bắt đầu trận đấu
             StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
             StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle += HandleStageSelectedForBattle;
         }
 
         private void OnDestroy()
         {
-            if (_mainHubPresenter != null)
-            {
-                _mainHubPresenter.OnStartRunRequested -= StartRun;
-            }
-
             StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
         }
 

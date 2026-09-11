@@ -211,6 +211,8 @@ namespace ProjectZombie.Features.UI
         private void HandleStartRunClicked()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            OnStartRunRequested?.Invoke();
+
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {

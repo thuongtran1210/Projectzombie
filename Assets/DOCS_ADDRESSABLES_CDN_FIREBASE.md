@@ -68,13 +68,33 @@ Mỗi khi bạn muốn cập nhật bản đồ mới, quái vật mới hoặc 
 
 ---
 
-## 3. Cách Phân Chia Nhóm Asset (Local vs Remote)
+## 3. Kiến Trúc Phân Chia Nhóm Asset (Local Core vs Remote CDN Groups)
 
-Trong bảng `Addressables Groups`:
+Trong bảng `Addressables Groups` (`Window > Asset Management > Addressables > Groups`), toàn bộ tài nguyên trong dự án được tổ chức thành **6 Nhóm Chiến Lược** như sau:
 
-* **Nhóm `Local_Core` (Nằm sẵn trong APK)**: 
-  - UI cơ bản, Menu chính, Âm thanh nút bấm, Màn 1 (Chapter 1), Nhân vật mặc định.
-  - Cấu hình nhóm: `Build & Load Paths` chọn **`Local`**.
-* **Nhóm `Remote_DLC` (Tải từ Firebase về máy)**:
-  - Bản đồ Màn 2, 3, 4; Quái vật cấp cao; Skin đặc biệt.
-  - Cấu hình nhóm: `Build & Load Paths` chọn **`Remote`**.
+| Tên Nhóm (Group Name) | Build & Load Paths | Bundle Mode | Mục đích & Danh mục Asset chứa bên trong |
+|---|---|---|---|
+| **`Group_Core_Preload`** | **`Local`** (Trong APK) | Pack Together | UI Sảnh chính, Font Chữ TMP, Hệ thống Bootstrapper, Âm thanh UI cơ bản, Đạo Sĩ mặc định. |
+| **`Group_Enemies_Stage1`** | **`Local`** (Trong APK) | Pack Together | Quái vật Màn 1 (Cương thi thường, Thủy quái cơ bản, Chuột ma) để người chơi vào game là chơi được ngay. |
+| **`Group_Weapons_Tier1`** | **`Local`** (Trong APK) | Pack Together | Bộ 4 vũ khí khởi đầu & đạn cơ bản (Bình Bát, Dép Tổ Ong, Chổi Lông Gà, Trảo Cửu Vĩ). |
+| **`Group_DLC_Stages_Remote`** | **`Remote`** (CDN Firebase) | **Pack Separately** (Từng Asset) | Tilemap Prefab các màn nâng cao (`Map_AncientCitadel`, `Map_CinnabarSwamp`, `Map_UnderworldGate`). |
+| **`Group_DLC_Enemies_Remote`**| **`Remote`** (CDN Firebase) | Pack Together | Quái vật cấp cao Màn 2-3-4, Quỷ tướng tinh anh, Boss các chương sau. |
+| **`Group_DLC_Audio_Remote`**  | **`Remote`** (CDN Firebase) | Pack Separately (Từng Asset) | Nhạc nền BGM chất lượng cao của từng Ải (`BGM_AncientCitadel.mp3`, `BGM_CinnabarSwamp.mp3`). |
+
+---
+
+## 4. Bảng Quy Chuẩn Cấu Hình Nhóm Trong Inspector
+
+Khi chọn một Group trong Addressables Groups Window:
+
+### A. Với các nhóm `Local_*`:
+- **`Build & Load Paths`**: Chọn **`Local`** (Mặc định `[UnityEngine.AddressableAssets.Addressables.BuildPath]`).
+- **`Bundle Mode`**: `Pack Together` (Gom chung thành 1 file .bundle duy nhất để nén dung lượng APK).
+- **`Compression`**: `LZ4` (Tối ưu tốc độ giải nén siêu tốc trên Android).
+
+### B. Với các nhóm `Group_DLC_*_Remote`:
+- **`Build & Load Paths`**: Chọn **`Remote`** (Trỏ về Profile `Firebase_Web`).
+- **`Bundle Mode`**: 
+  - Chọn **`Pack Separately`** cho Map & BGM để **tải riêng từng ải theo nhu cầu** (Chơi ải nào tải ải đó, không bắt người chơi tải cả cụm 100MB).
+  - Chọn **`Pack Together`** cho Quái vật theo từng Chapter.
+- **`Compression`**: `LZ4` hoặc `LZMA` (LZMA giúp file tải trên mạng nhẹ nhất có thể).
