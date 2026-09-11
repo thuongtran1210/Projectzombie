@@ -88,11 +88,24 @@ namespace ProjectZombie.Features.UI.ResourceDownload
             }
             else
             {
-                // CHƯA TẢI: Ưu tiên dung lượng ước tính nếu downloadSizeBytes = 0 hoặc bất thường (< 0.05MB)
-                float sizeMb = (downloadSizeBytes > 50000) ? (downloadSizeBytes / 1048576f) : (_data?.estimatedSizeMb ?? 0f);
-                if (sizeMb <= 0.05f && _data != null && _data.estimatedSizeMb > 0.05f)
+                // CHƯA TẢI: Tính toán chuỗi dung lượng thông minh (KB hoặc MB)
+                string sizeStr = "";
+                if (downloadSizeBytes > 0)
                 {
-                    sizeMb = _data.estimatedSizeMb;
+                    float sizeMb = downloadSizeBytes / 1048576f;
+                    if (sizeMb >= 0.1f)
+                    {
+                        sizeStr = $" ({sizeMb:0.0} MB)";
+                    }
+                    else
+                    {
+                        float sizeKb = downloadSizeBytes / 1024f;
+                        sizeStr = $" ({sizeKb:0.0} KB)";
+                    }
+                }
+                else if (_data != null && _data.estimatedSizeMb > 0f)
+                {
+                    sizeStr = $" ({_data.estimatedSizeMb:0.0} MB)";
                 }
 
                 if (_statusText != null) _statusText.text = $"<color=#FFAA00>[CHƯA TẢI]</color>";
@@ -101,7 +114,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
                     _downloadButton.gameObject.SetActive(true);
                     if (_downloadButtonText != null)
                     {
-                        _downloadButtonText.text = sizeMb > 0f ? $"TẢI VỀ ({sizeMb:0.0} MB)" : "TẢI VỀ";
+                        _downloadButtonText.text = $"TẢI VỀ{sizeStr}";
                     }
                 }
                 if (_deleteButton != null) _deleteButton.gameObject.SetActive(false); // Chưa tải thì KHÔNG CÓ nút Xóa

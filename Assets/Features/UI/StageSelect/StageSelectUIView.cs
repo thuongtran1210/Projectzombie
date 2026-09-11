@@ -90,8 +90,25 @@ namespace ProjectZombie.Features.UI.StageSelect
                 _downloadDlcButton.gameObject.SetActive(!isDlcDownloaded);
                 if (_dlcSizeText != null)
                 {
-                    float displayMb = actualDownloadSizeMb > 0.01f ? actualDownloadSizeMb : stage.estimatedDlcSizeMb;
-                    _dlcSizeText.text = displayMb > 0.01f ? $"Tải Màn Chơi ({displayMb:0.0} MB)" : "Tải Màn Chơi";
+                    string sizeStr = "";
+                    if (actualDownloadSizeMb > 0f)
+                    {
+                        if (actualDownloadSizeMb >= 0.1f)
+                        {
+                            sizeStr = $" ({actualDownloadSizeMb:0.0} MB)";
+                        }
+                        else
+                        {
+                            float sizeKb = actualDownloadSizeMb * 1024f;
+                            sizeStr = $" ({sizeKb:0.0} KB)";
+                        }
+                    }
+                    else if (stage.estimatedDlcSizeMb > 0f)
+                    {
+                        sizeStr = $" ({stage.estimatedDlcSizeMb:0.0} MB)";
+                    }
+
+                    _dlcSizeText.text = $"Tải Màn Chơi{sizeStr}";
                 }
             }
 

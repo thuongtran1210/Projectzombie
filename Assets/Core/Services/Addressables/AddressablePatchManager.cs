@@ -32,7 +32,24 @@ namespace ProjectZombie.Core.Services.Addressables
         public long TotalBytes;
         public string StatusMessage;
 
-        public string FormattedProgress => $"{DownloadedBytes / 1048576f:0.0}MB / {TotalBytes / 1048576f:0.0}MB ({(Percent * 100f):0}%)";
+        public string FormattedProgress
+        {
+            get
+            {
+                if (TotalBytes > 100000)
+                {
+                    return $"{DownloadedBytes / 1048576f:0.0}MB / {TotalBytes / 1048576f:0.0}MB ({(Percent * 100f):0}%)";
+                }
+                else if (TotalBytes > 0)
+                {
+                    return $"{DownloadedBytes / 1024f:0.0}KB / {TotalBytes / 1024f:0.0}KB ({(Percent * 100f):0}%)";
+                }
+                else
+                {
+                    return $"{(Percent * 100f):0}%";
+                }
+            }
+        }
     }
 
     /// <summary>
