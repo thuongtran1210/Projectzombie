@@ -1,0 +1,194 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+
+namespace ProjectZombie.Core.Services.Addressables
+{
+    /// <summary>
+    /// Trạng thái của quá trình tải bản vá DLC / Addressables Patch.
+    /// </summary>
+    public enum PatchState
+    {
+        CheckingForUpdates,
+        UpdateAvailable,
+        UpToDate,
+        Downloading,
+        Completed,
+        Failed
+    }
+
+    /// <summary>
+    /// DTO chứa thông tin tiến độ tải tài nguyên từ CDN.
+    /// </summary>
+    public struct PatchProgress
+    {
+        public PatchState State;
+        public float Percent; // 0.0f -> 1.0f
+        public long DownloadedBytes;
+        public long TotalBytes;
+        public string StatusMessage;
+
+        public string FormattedProgress => $"{DownloadedBytes / 1048576f:0.0}MB / {TotalBytes / 1048576f:0.0}MB ({(Percent * 100f):0}%)";
+    }
+
+    /// <summary>
+    /// Service điều phối kiểm tra phiên bản trên Firebase CDN, tính dung lượng patch và tải gói DLC bất đồng bộ.
+    /// Tuân thủ quy chuẩn Event-Driven và Non-blocking cho nền tảng Android.
+    /// </summary>
+    public class AddressablePatchManager
+    {
+        private static AddressablePatchManager _instance;
+        public static AddressablePatchManager Instance => _instance ??= new AddressablePatchManager();
+
+        public event Action<PatchProgress> OnPatchProgressChanged;
+        public event Action OnPatchCompleted;
+        public event Action<string> OnPatchFailed;
+
+        private List<string> _catalogsToUpdate = new();
+        private long _totalDownloadSize = 0;
+
+        public long TotalDownloadSize => _totalDownloadSize;
+        public bool HasUpdate => _totalDownloadSize > 0 || _catalogsToUpdate.Count > 0;
+
+        /// <summary>
+        /// 1. Khởi tạo Addressables và kiểm tra xem trên CDN có Catalog bản vá mới không.
+        /// </summary>
+        public async Task<bool> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                NotifyProgress(PatchState.CheckingForUpdates, 0f, 0, 0, "Đang kiểm tra dữ liệu máy chủ...");
+
+                // Khởi tạo Addressables Runtime
+                var initHandle = UnityEngine.AddressableAssets.Addressables.InitializeAsync();
+                await initHandle.Task;
+
+                if (cancellationToken.IsCancellationRequested) return false;
+
+                // Kiểm tra danh sách Catalogs có bản update
+                var checkHandle = UnityEngine.AddressableAssets.Addressables.CheckForCatalogUpdates(false);
+                var catalogs = await checkHandle.Task;
+
+                if (cancellationToken.IsCancellationRequested) return false;
+
+                _catalogsToUpdate.Clear();
+                if (catalogs != null && catalogs.Count > 0)
+                {
+                    _catalogsToUpdate.AddRange(catalogs);
+                }
+
+                // Cập nhật Catalogs nếu có
+                if (_catalogsToUpdate.Count > 0)
+                {
+                    NotifyProgress(PatchState.CheckingForUpdates, 0.5f, 0, 0, "Đang đồng bộ danh mục tài nguyên mới...");
+                    var updateHandle = UnityEngine.AddressableAssets.Addressables.UpdateCatalogs(_catalogsToUpdate, false);
+                    await updateHandle.Task;
+                }
+
+                // Kiểm tra dung lượng các dependencies cần tải về máy
+                var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync((IEnumerable<object>)new object[] { "default" });
+                _totalDownloadSize = await sizeHandle.Task;
+
+                if (_totalDownloadSize > 0)
+                {
+                    NotifyProgress(PatchState.UpdateAvailable, 0f, 0, _totalDownloadSize, $"Có bản vá mới: {_totalDownloadSize / 1048576f:0.0} MB");
+                    return true;
+                }
+                else
+                {
+                    NotifyProgress(PatchState.UpToDate, 1f, 0, 0, "Dữ liệu trò chơi đã là mới nhất!");
+                    OnPatchCompleted?.Invoke();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                string error = $"Lỗi kiểm tra bản vá CDN: {ex.Message}";
+                Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
+                NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
+                OnPatchFailed?.Invoke(error);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 2. Bắt đầu tải các gói AssetBundle từ Firebase CDN về bộ nhớ Cache điện thoại.
+        /// </summary>
+        public async Task<bool> DownloadPatchAsync(IEnumerable<object> keys = null, CancellationToken cancellationToken = default)
+        {
+            keys ??= new object[] { "default" };
+
+            try
+            {
+                NotifyProgress(PatchState.Downloading, 0f, 0, _totalDownloadSize, "Đang kết nối CDN...");
+
+                var downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
+
+                // Theo dõi tiến trình tải % liên tục (Non-blocking loop)
+                while (!downloadHandle.IsDone)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
+                        NotifyProgress(PatchState.Failed, 0f, 0, _totalDownloadSize, "Đã hủy tải bản vá.");
+                        return false;
+                    }
+
+                    var status = downloadHandle.GetDownloadStatus();
+                    float percent = status.Percent;
+                    long downloaded = status.DownloadedBytes;
+                    long total = status.TotalBytes > 0 ? status.TotalBytes : _totalDownloadSize;
+
+                    NotifyProgress(PatchState.Downloading, percent, downloaded, total, $"Đang tải tài nguyên... ({percent * 100f:0}%)");
+
+                    await Task.Yield();
+                }
+
+                if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
+                    _totalDownloadSize = 0;
+                    _catalogsToUpdate.Clear();
+
+                    NotifyProgress(PatchState.Completed, 1f, total: _totalDownloadSize, downloadedBytes: _totalDownloadSize, statusMessage: "Cập nhật thành công!");
+                    OnPatchCompleted?.Invoke();
+                    return true;
+                }
+                else
+                {
+                    string error = $"Tải bản vá thất bại. Status: {downloadHandle.Status}";
+                    Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
+                    UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
+                    NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
+                    OnPatchFailed?.Invoke(error);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                string error = $"Ngoại lệ khi tải CDN: {ex.Message}";
+                Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
+                NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
+                OnPatchFailed?.Invoke(error);
+                return false;
+            }
+        }
+
+        private void NotifyProgress(PatchState state, float percent, long downloadedBytes, long totalBytes, string statusMessage)
+        {
+            var p = new PatchProgress
+            {
+                State = state,
+                Percent = percent,
+                DownloadedBytes = downloadedBytes,
+                TotalBytes = totalBytes,
+                StatusMessage = statusMessage
+            };
+            OnPatchProgressChanged?.Invoke(p);
+        }
+    }
+}
