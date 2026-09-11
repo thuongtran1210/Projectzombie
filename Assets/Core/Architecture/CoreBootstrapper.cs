@@ -46,6 +46,9 @@ namespace ProjectZombie.Core.Architecture
                 gachaMgr.Initialize(gameMgr.SaveData);
             }
 
+            // Bước 2.5: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
+            coreRoot.AddComponent<ProjectZombie.Features.Startup.GameStartupFlowController>();
+
             Debug.Log("<color=#00FF88>[CoreBootstrapper]</color> Đã khởi tạo hoàn tất toàn bộ Core Services trong '--- APP CORE SERVICES ---'!");
         }
     }

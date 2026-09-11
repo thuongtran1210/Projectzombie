@@ -112,9 +112,24 @@ Bạn không cần tạo thủ công từng nhóm trong Editor:
 
 ---
 
-## 5. Quy Chuẩn Đóng Gói (Best Practices)
+---
 
-1. **Tại sao nên để Upgrades & Meta Configs ở Remote Group?**
-   - **Hot Balance (Cân bằng không cần build lại APK)**: Chỉnh sửa tỷ lệ quay Banner Gacha, giá mở node Miếu Cổ, hoặc điều chỉnh chỉ số thẻ nâng cấp chỉ bằng 1 thao tác xuất bundle và kéo thả lên Firebase.
-2. **Tại sao Map & BGM dùng `Pack Separately`?**
-   - Giúp chia nhỏ dung lượng tải. Người chơi chỉ cần tải đúng **12 MB** của màn sắp chơi thay vì phải tải cả gói khổng lồ.
+## 6. Công Cụ Đối Chiếu & Kiểm Toán Dữ Liệu CDN (Audit & Comparator Tool)
+
+Hệ thống cung cấp một Editor Tool trực quan để so sánh chi tiết trạng thái từng tài nguyên giữa bộ nhớ máy (Android/PC Cache) và máy chủ Firebase CDN:
+
+* **Đường dẫn mở**: `Tools > ProjectZombie > Addressables > CDN Content Comparator & Audit Tool`
+* **Tính năng chính**:
+  1. **Audit Toàn Bộ Asset**: Tự động kết nối và liệt kê rõ từng Asset thuộc nhóm `[Trong APK]`, `[Đã Đồng Bộ / Mới Nhất]` (0 B Cached) hoặc `[Cần Cập Nhật / Chưa Tải]` kèm số MB cần tải.
+  2. **Kiểm Tra Catalog Updates**: So sánh trực tiếp file `catalog.hash` giữa Local và CDN.
+  3. **Tải Trước / Xóa Cache Từng Key**: Thử nghiệm tải lẻ một bản đồ hoặc quái vật cụ thể ngay trong Editor.
+  4. **Xóa Toàn Bộ Local Cache**: Giả lập tức thì một máy Android mới tải game chưa có dữ liệu DLC.
+
+---
+
+## 7. Luồng Khởi Động Tự Động Bản Vá (Cold Start Auto-Patch)
+
+Trò chơi đã được tích hợp component `GameStartupFlowController` trong `CoreBootstrapper`:
+* Khi mở game trên Android $\rightarrow$ Game tự động kết nối Firebase CDN để kiểm tra `catalog.hash`.
+* Nếu phát hiện có nội dung cập nhật mới $\rightarrow$ Màn hình Loading (`LoadingScreenPresenter`) sẽ hiển thị tiến trình tải mượt mà trước khi mở Sảnh chính (Main Hub).
+* Nếu người chơi ở chế độ Offline (không có internet) $\rightarrow$ Tự động chuyển thẳng vào Sảnh chính sau 4 giây timeout để chơi các nội dung Offline có sẵn trong APK.
