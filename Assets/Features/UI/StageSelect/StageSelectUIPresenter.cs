@@ -34,11 +34,31 @@ namespace ProjectZombie.Features.UI.StageSelect
             RefreshView();
         }
 
-        private void EnsureStageDatabaseLoaded()
+        private async void EnsureStageDatabaseLoaded()
         {
             if (_stageList == null || _stageList.Count == 0)
             {
-                var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase");
+                WorldStageDatabaseSO db = null;
+
+                // 1. Ưu tiên nạp phiên bản Hot Update mới nhất từ Addressables CDN
+                try
+                {
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("WorldStageDatabase");
+                    await locHandle.Task;
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result.Count > 0)
+                    {
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
+                        db = await handle.Task;
+                    }
+                }
+                catch { }
+
+                // 2. Fallback nạp từ Resources cục bộ trong APK (khi offline)
+                if (db == null)
+                {
+                    db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase");
+                }
+
 #if UNITY_EDITOR
                 if (db == null)
                 {
@@ -48,6 +68,7 @@ namespace ProjectZombie.Features.UI.StageSelect
                 if (db != null && db.Stages != null)
                 {
                     _stageList = new List<StageDefinitionSO>(db.Stages);
+                    RefreshView();
                 }
             }
         }

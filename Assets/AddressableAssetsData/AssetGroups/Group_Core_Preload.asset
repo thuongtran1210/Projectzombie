@@ -42,19 +42,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ae65768a14cc70f4b839c3d00b7bb729
-    m_Address: Map_BambooForest
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c81b31421814b8742a1136999ecdbf01
     m_Address: CharacterDatabase
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c9e1a869fe5d24f49b37614c1024e502
-    m_Address: WorldStageDatabase
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

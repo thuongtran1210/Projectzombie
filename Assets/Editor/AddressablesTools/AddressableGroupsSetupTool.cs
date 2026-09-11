@@ -53,9 +53,23 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddressableAssetGroup groupUpgradesRemote,
             AddressableAssetGroup groupMetaConfigsRemote)
         {
-            // 1. Core Database
-            AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/WorldStageDatabase.asset", "WorldStageDatabase");
+            // 1. Core Database & World Stages (Hỗ trợ LiveOps Hot Update)
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Levels/WorldStageDatabase.asset", "WorldStageDatabase", "Map");
             AddAssetToGroup(settings, groupCore, "Assets/_Data/CharacterDatabase.asset", "CharacterDatabase");
+
+            // 1.1 Đăng ký từng StageDefinitionSO vào Remote DLC
+            string[] stageGuids = AssetDatabase.FindAssets("t:StageDefinitionSO", new[] { "Assets/_Data/Levels/Stages" });
+            foreach (string guid in stageGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                AddAssetToGroup(settings, groupMetaConfigsRemote, path, fileName, "Map");
+            }
+
+            // 1.2 Đăng ký Prefab Màn 1 vào Group_DLC_Stages_Remote (để hỗ trợ cập nhật Map Màn 1 nóng)
+            AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_BambooForest.prefab", "Map_BambooForest", "Map");
+            AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_AncientCitadel.prefab", "Map_AncientCitadel", "Map");
+            AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_CinnabarSwamp.prefab", "Map_CinnabarSwamp", "Map");
 
             // 2. Toàn bộ 12 Pháp Bảo & Vũ Khí Khởi Đầu (Weapons & Relics)
             AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W_POT.prefab", "Weapon_W_POT");

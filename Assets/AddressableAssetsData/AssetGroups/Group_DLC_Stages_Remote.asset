@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Map
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae65768a14cc70f4b839c3d00b7bb729
+    m_Address: Map_BambooForest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b38cb223e8596de43ba1cf80a4d62455
     m_Address: Map_AncientCitadel
     m_ReadOnly: 0
