@@ -70,6 +70,10 @@ namespace ProjectZombie.Features.UI
                 _mainHubPresenter.OnStartRunRequested -= StartRun;
                 _mainHubPresenter.OnStartRunRequested += StartRun;
             }
+
+            // Đăng ký lắng nghe sự kiện Chọn Ải từ StageSelectUIPresenter
+            StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
+            StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle += HandleStageSelectedForBattle;
         }
 
         private void OnDestroy()
@@ -78,15 +82,30 @@ namespace ProjectZombie.Features.UI
             {
                 _mainHubPresenter.OnStartRunRequested -= StartRun;
             }
+
+            StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
         }
 
-        public void StartRun()
+        private void HandleStageSelectedForBattle(Maps.StageDefinitionSO stage)
         {
+            TransitionToCombat(stage);
+        }
+
+        private Maps.StageDefinitionSO _selectedStage;
+
+        public void TransitionToCombat(Maps.StageDefinitionSO stage = null)
+        {
+            _selectedStage = stage;
             if (UnityEngine.EventSystems.EventSystem.current != null)
             {
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             }
             StartCoroutine(TransitionToCombatRoutine());
+        }
+
+        public void StartRun()
+        {
+            TransitionToCombat(null);
         }
 
         public void ReturnToMetaHub()
@@ -102,6 +121,15 @@ namespace ProjectZombie.Features.UI
         {
             Time.timeScale = 1f;
 
+            // Nếu có cấu hình ải được chọn, gán Timeline cho SpawnManager
+            if (_selectedStage != null && _selectedStage.timelineConfig != null)
+            {
+                if (Spawners.SpawnManager.Instance != null)
+                {
+                    Spawners.SpawnManager.Instance.SetTimelineConfig(_selectedStage.timelineConfig);
+                }
+            }
+
             if (LoadingScreenPresenter.Instance != null)
             {
                 bool loadingFinished = false;
@@ -109,7 +137,8 @@ namespace ProjectZombie.Features.UI
                 LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                 {
                     // 1. (20%) Khởi tạo thực thể Player & Camera
-                    reportProgress?.Invoke(0.2f, "Đang triệu hồi chân thân Tướng...");
+                    string stageMsg = _selectedStage != null ? $"Đang khai mở {_selectedStage.stageName}..." : "Đang triệu hồi chân thân Tướng...";
+                    reportProgress?.Invoke(0.2f, stageMsg);
                     if (_gameplayBootstrapper != null)
                     {
                         _gameplayBootstrapper.StartMatchFlow();

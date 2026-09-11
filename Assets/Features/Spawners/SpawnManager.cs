@@ -26,6 +26,17 @@ namespace ProjectZombie.Features.Spawners
         [Header("Timeline Configuration")]
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
+        /// <summary>
+        /// Gán cấu hình Timeline từ Ải được chọn (StageDefinitionSO).
+        /// </summary>
+        public void SetTimelineConfig(LevelTimelineConfig config)
+        {
+            if (config != null)
+            {
+                timelineConfig = config;
+            }
+        }
+
         [Header("Spawn Settings & Limits")]
         [Header("Spawn Settings & Limits")]
         [SerializeField] private int maxEnemyCap = 50; // Khống chế 30-50 quái cho không gian Combo & Dash (GDD v5.0 Action RPG)
