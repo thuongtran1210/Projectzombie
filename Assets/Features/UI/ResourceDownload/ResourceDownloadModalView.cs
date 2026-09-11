@@ -66,7 +66,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
             if (_clearAllCacheButton != null)
             {
-                _clearAllCacheButton.gameObject.SetActive(localCachedMb > 0.05f);
+                _clearAllCacheButton.gameObject.SetActive(true);
             }
         }
 

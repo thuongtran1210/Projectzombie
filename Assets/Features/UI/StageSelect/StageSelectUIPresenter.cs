@@ -86,6 +86,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 
             _patchManager.OnPatchProgressChanged += HandlePatchProgress;
             _patchManager.OnPatchCompleted += HandlePatchCompleted;
+            _patchManager.OnPatchFailed += HandlePatchFailed;
 
             RefreshView();
         }
@@ -105,6 +106,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             {
                 _patchManager.OnPatchProgressChanged -= HandlePatchProgress;
                 _patchManager.OnPatchCompleted -= HandlePatchCompleted;
+                _patchManager.OnPatchFailed -= HandlePatchFailed;
             }
         }
 
@@ -196,6 +198,12 @@ namespace ProjectZombie.Features.UI.StageSelect
         private void HandlePatchCompleted()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm(1.2f);
+            RefreshView();
+        }
+
+        private void HandlePatchFailed(string error)
+        {
+            Debug.LogWarning($"[StageSelectUIPresenter] Tải DLC thất bại: {error}");
             RefreshView();
         }
 

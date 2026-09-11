@@ -195,16 +195,21 @@ namespace ProjectZombie.Core.Services.Addressables
                     }
                 }
 
-                // Theo dõi tiến trình tải % liên tục (Non-blocking loop)
+                // Theo dõi tiến trình tải % liên tục (Non-blocking loop) có Timeout bảo vệ
                 float lastPercent = 0f;
+                float downloadStartTime = Time.realtimeSinceStartup;
+                const float DOWNLOAD_TIMEOUT_SECONDS = 30f; // Timeout 30 giây nếu kẹt kết nối
+
                 while (!downloadHandle.IsDone)
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    if (cancellationToken.IsCancellationRequested || (Time.realtimeSinceStartup - downloadStartTime > DOWNLOAD_TIMEOUT_SECONDS && lastPercent <= 0f))
                     {
                         UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
                         IsDownloading = false;
                         CurrentDownloadingKey = null;
-                        NotifyProgress(PatchState.Failed, 0f, 0, targetExpectedSize, "Đã hủy tải bản vá.");
+                        string timeoutMsg = cancellationToken.IsCancellationRequested ? "Đã hủy tải bản vá." : "Quá thời gian kết nối CDN (Timeout).";
+                        NotifyProgress(PatchState.Failed, 0f, 0, targetExpectedSize, timeoutMsg);
+                        OnPatchFailed?.Invoke(timeoutMsg);
                         return false;
                     }
 
@@ -224,7 +229,11 @@ namespace ProjectZombie.Core.Services.Addressables
                         percent = Mathf.Clamp01((float)downloaded / total);
                     }
 
-                    if (percent > lastPercent) lastPercent = percent;
+                    if (percent > lastPercent)
+                    {
+                        lastPercent = percent;
+                        downloadStartTime = Time.realtimeSinceStartup; // Reset timer nếu có byte mới tải về
+                    }
 
                     float downMb = downloaded / 1048576f;
                     float totalMb = total > 0 ? total / 1048576f : (targetExpectedSize > 0 ? targetExpectedSize / 1048576f : 0f);
@@ -293,7 +302,8 @@ namespace ProjectZombie.Core.Services.Addressables
                 var locations = await locHandle.Task;
                 if (locations == null || locations.Count == 0)
                 {
-                    return (false, 0);
+                    // Nếu chưa có trong Catalog -> Cần tải Catalog hoặc cần tải gói này
+                    return (true, 0);
                 }
 
                 var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(key);
@@ -303,7 +313,7 @@ namespace ProjectZombie.Core.Services.Addressables
             catch (Exception ex)
             {
                 Debug.LogWarning($"[{nameof(AddressablePatchManager)}] Không thể kiểm tra dung lượng cho key '{key}': {ex.Message}");
-                return (false, 0);
+                return (true, 0);
             }
         }
 
