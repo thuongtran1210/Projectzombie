@@ -20,7 +20,7 @@ MonoBehaviour:
   stageThumbnail: {fileID: 0}
   environmentType: 0
   recommendedLevel: 1
-  mapPrefabAddress: 
+  mapPrefabAddress: Map_BambooForest
   bgmAddress: 
   estimatedDlcSizeMb: 0
   timelineConfig: {fileID: 11400000, guid: 592ebb9e16325104291165bb0f670f02, type: 2}
