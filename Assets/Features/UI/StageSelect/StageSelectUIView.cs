@@ -56,7 +56,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         public override void OnBackPressed()
         {
-            OnBackClicked?.Invoke();
+            base.OnBackPressed(); // Gọi MetaUIManager.PopScreen() chuẩn từ BaseMetaScreenView
         }
 
         public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable)

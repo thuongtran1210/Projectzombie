@@ -170,8 +170,14 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         private void HandleBack()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
-            gameObject.SetActive(false);
+            if (MetaUIManager.Instance != null)
+            {
+                MetaUIManager.Instance.PopScreen();
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }
