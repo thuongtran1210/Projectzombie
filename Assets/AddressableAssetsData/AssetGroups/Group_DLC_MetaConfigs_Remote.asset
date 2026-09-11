@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Group_DLC_MetaConfigs_Remote
+  m_EditorClassIdentifier: 
+  m_GroupName: Group_DLC_MetaConfigs_Remote
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 14660993d3259f549968b62d2d2a4ad9
+  m_SerializeEntries:
+  - m_GUID: 31fa273824bf2cb4a81b598ce719306e
+    m_Address: CharacterStarProgressionConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62dcdd7e0647de845a69f83e10be1236
+    m_Address: banner_standard
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d35c27b9e0b86b54fad24b926ec99a41
+    m_Address: PermanentUpgradeTree
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 93e5a6dfe64f63249aa945239575dfff, type: 2}
+    - {fileID: 11400000, guid: 567587a6a45823a4d8dfb511ef474387, type: 2}

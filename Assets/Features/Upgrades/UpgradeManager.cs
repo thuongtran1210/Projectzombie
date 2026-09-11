@@ -128,19 +128,44 @@ namespace ProjectZombie.Features.Upgrades
             UnityEditor.EditorUtility.SetDirty(this);
             Debug.Log($"[UpgradeManager] Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ dự án.");
 #else
-            var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
-            if (loadedUpgrades == null || loadedUpgrades.Length == 0)
+            // 1. Ưu tiên nạp danh sách Thẻ Nâng Cấp từ Addressables Label "UpgradeData"
+            try
             {
-                loadedUpgrades = Resources.LoadAll<UpgradeData>("");
-            }
-            foreach (var u in loadedUpgrades)
-            {
-                if (u != null && !(u is FallbackRewardUpgradeData))
+                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", (u) =>
                 {
-                    _allAvailableUpgrades.Add(u);
+                    if (u != null && !_allAvailableUpgrades.Contains(u) && !(u is FallbackRewardUpgradeData))
+                    {
+                        _allAvailableUpgrades.Add(u);
+                    }
+                });
+                handle.WaitForCompletion();
+                if (_allAvailableUpgrades.Count > 0)
+                {
+                    Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData từ Addressables.");
                 }
             }
-            Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources.");
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[UpgradeManager] Không thể nạp thẻ từ Addressables: {ex.Message}. Fallback sang Resources...");
+            }
+
+            // 2. Fallback sang Resources nếu chưa có gói Addressables
+            if (_allAvailableUpgrades.Count == 0)
+            {
+                var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+                if (loadedUpgrades == null || loadedUpgrades.Length == 0)
+                {
+                    loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+                }
+                foreach (var u in loadedUpgrades)
+                {
+                    if (u != null && !(u is FallbackRewardUpgradeData))
+                    {
+                        _allAvailableUpgrades.Add(u);
+                    }
+                }
+                Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources.");
+            }
 #endif
             _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
         }

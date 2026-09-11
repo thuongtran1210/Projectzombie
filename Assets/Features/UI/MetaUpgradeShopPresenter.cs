@@ -25,7 +25,21 @@ namespace ProjectZombie.Features.UI
 
             if (_treeData == null)
             {
-                _treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        _treeData = handle.Result;
+                    }
+                }
+                catch (System.Exception) { }
+
+                if (_treeData == null)
+                {
+                    _treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                }
 #if UNITY_EDITOR
                 if (_treeData == null)
                 {

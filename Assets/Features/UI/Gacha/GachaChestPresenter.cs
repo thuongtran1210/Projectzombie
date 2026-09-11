@@ -100,15 +100,36 @@ namespace ProjectZombie.Features.UI.Gacha
             }
         }
 
-        private void HandleChestSelected(string bannerId)
+        private async void HandleChestSelected(string bannerId)
         {
             if (RelicGachaManager.Instance != null)
             {
-                var targetBanner = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}");
+                GachaBannerConfigSO targetBanner = null;
+
+                // 1. Nạp từ Addressables nếu có
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GachaBannerConfigSO>(bannerId);
+                    await handle.Task;
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        targetBanner = handle.Result;
+                    }
+                }
+                catch (System.Exception) { }
+
+                // 2. Fallback sang Resources
+                if (targetBanner == null)
+                {
+                    targetBanner = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}") ??
+                                   Resources.Load<GachaBannerConfigSO>(bannerId);
+                }
+
 #if UNITY_EDITOR
                 if (targetBanner == null)
                 {
-                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset");
+                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset") ??
+                                   UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset");
                 }
 #endif
                 if (targetBanner != null)

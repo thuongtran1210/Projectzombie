@@ -16,7 +16,142 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 0e775f822654cd6459d1046379c1e3c6
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 09b4e48d3ee686148a9b8e0397b2d8c1
+    m_Address: Weapon_W006_LuuDanThanSa
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19cdee20c89f3014ba5714a4d76dde7a
+    m_Address: Weapon_W011_NuocThanhChuaHuong
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 210f2aac78a358f468c32337cb9e42e5
+    m_Address: Proj_W008_DaoCuuVi
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21e968617e10ae4489a8919886606822
+    m_Address: Weapon_W002_ButPhanQuan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a0c493ade5e27a48a47f9c8e61b3ce8
+    m_Address: Proj_W010_LinhPhuMaDa
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 377ab103817394b4380fc599ef9bc0b4
+    m_Address: Weapon_W010_LinhPhuMaDa
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38ba898b9ee477448be4157bf577c022
+    m_Address: Weapon_W007_CungThachSanh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3af183ec83a5ed74e90b5e32a49d50a8
+    m_Address: Weapon_W012_PhiTieuBatQuai
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e07f73aa728abb4c81c8c0fb7419cb3
+    m_Address: Proj_W003_BuaTranYeu
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45492216bb2d303488dd7291a950bd70
+    m_Address: Proj_W007_CungThachSanh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64a54fcf708529143a80596c41c3ad6e
+    m_Address: Proj_W012_PhiTieuBatQuai
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f0a518d172da2e4c9a5825e7599740f
+    m_Address: Weapon_W_SLIPPER
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b4fb896510b81a4784119a9f8caac78
+    m_Address: Proj_W009_TruongLongVuong
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 805eac5426294a0448eab1764b4af676
+    m_Address: Proj_W006_LuuDanThanSa
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93b1f7e36d03907449e3e8e623b1fe03
+    m_Address: Proj_W005_TrongDongDongSon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 979ab6ba5a5025a4e90e04bdacf41ec0
+    m_Address: Weapon_W003_BuaTranYeu
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa6beef611432c9498c2331416f171e2
+    m_Address: Proj_W001_NoThan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4e20858a963ae341b688874c521a84e
+    m_Address: Weapon_W008_DaoCuuVi
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c886942421aec064db2a865c80dee974
+    m_Address: Weapon_W004_CuuViHoTrao
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8a31b71fd5efae4bab4eeb16a9946e5
+    m_Address: Proj_W002_ButPhanQuan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e07c74aa882f1f440974909d804f6e8c
+    m_Address: Weapon_W009_TruongLongVuong
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e11a2b3c4d5e6f7a8b9c0d1e2f3a4b5c
+    m_Address: Proj_W011_NuocThanhChuaHuong
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4ae9942588dae249a83093f8b3cff80
+    m_Address: Proj_W004_CuuViHoTrao
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9f474cb9bb167d42a492b2eb3b84cad
+    m_Address: Weapon_W_POT
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee182c7e5cd949446942f9b7968c120d
+    m_Address: Weapon_W001_NoThan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f45d613da3cd67b458b6fc256d438f50
+    m_Address: Weapon_W_PIPE
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc61047bf4b0f7e49bc987091988e04b
+    m_Address: Weapon_W005_TrongDongDongSon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:

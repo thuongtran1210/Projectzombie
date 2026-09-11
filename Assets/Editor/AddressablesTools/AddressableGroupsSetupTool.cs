@@ -23,20 +23,105 @@ namespace ProjectZombie.Editor.AddressablesTools
             }
 
             // 1. Nhóm Local (Nằm trong APK)
-            CreateOrConfigureGroup(settings, "Group_Core_Preload", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
-            CreateOrConfigureGroup(settings, "Group_Enemies_Stage1", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
-            CreateOrConfigureGroup(settings, "Group_Weapons_Tier1", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            var groupCore = CreateOrConfigureGroup(settings, "Group_Core_Preload", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            var groupEnemiesStage1 = CreateOrConfigureGroup(settings, "Group_Enemies_Stage1", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            var groupWeapons = CreateOrConfigureGroup(settings, "Group_Weapons_Tier1", false, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
 
             // 2. Nhóm Remote (DLC Firebase Storage CDN)
-            CreateOrConfigureGroup(settings, "Group_DLC_Stages_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackSeparately);
-            CreateOrConfigureGroup(settings, "Group_DLC_Enemies_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
-            CreateOrConfigureGroup(settings, "Group_DLC_Audio_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackSeparately);
+            var groupStages = CreateOrConfigureGroup(settings, "Group_DLC_Stages_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackSeparately);
+            var groupEnemiesRemote = CreateOrConfigureGroup(settings, "Group_DLC_Enemies_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            var groupAudioRemote = CreateOrConfigureGroup(settings, "Group_DLC_Audio_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackSeparately);
+            var groupUpgradesRemote = CreateOrConfigureGroup(settings, "Group_DLC_Upgrades_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            var groupMetaConfigsRemote = CreateOrConfigureGroup(settings, "Group_DLC_MetaConfigs_Remote", true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+
+            // 3. Tự động thêm các Prefab Vũ Khí, Quái Màn 1, Thẻ Nâng Cấp & Cấu Hình Meta vào Groups
+            AutoPopulateDefaultEntries(settings, groupCore, groupEnemiesStage1, groupWeapons, groupStages, groupUpgradesRemote, groupMetaConfigsRemote);
 
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("<color=#00FF88>[AddressableGroupsSetupTool]</color> Đã thiết lập thành công 6 Nhóm Addressables (3 Local + 3 Remote DLC CDN)!");
+            Debug.Log("<color=#00FF88>[AddressableGroupsSetupTool]</color> Đã thiết lập thành công 8 Nhóm Addressables (3 Local + 5 Remote DLC CDN)!");
+        }
+
+        private static void AutoPopulateDefaultEntries(
+            AddressableAssetSettings settings,
+            AddressableAssetGroup groupCore,
+            AddressableAssetGroup groupEnemiesStage1,
+            AddressableAssetGroup groupWeapons,
+            AddressableAssetGroup groupStages,
+            AddressableAssetGroup groupUpgradesRemote,
+            AddressableAssetGroup groupMetaConfigsRemote)
+        {
+            // 1. Core Database
+            AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/WorldStageDatabase.asset", "WorldStageDatabase");
+            AddAssetToGroup(settings, groupCore, "Assets/_Data/CharacterDatabase.asset", "CharacterDatabase");
+
+            // 2. Toàn bộ 12 Pháp Bảo & Vũ Khí Khởi Đầu (Weapons & Relics)
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W_POT.prefab", "Weapon_W_POT");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W_SLIPPER.prefab", "Weapon_W_SLIPPER");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W_PIPE.prefab", "Weapon_W_PIPE");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W001_NoThan.prefab", "Weapon_W001_NoThan");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W002_ButPhanQuan.prefab", "Weapon_W002_ButPhanQuan");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W003_BuaTranYeu.prefab", "Weapon_W003_BuaTranYeu");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W004_CuuViHoTrao.prefab", "Weapon_W004_CuuViHoTrao");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W005_TrongDongDongSon.prefab", "Weapon_W005_TrongDongDongSon");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W006_LuuDanThanSa.prefab", "Weapon_W006_LuuDanThanSa");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W007_CungThachSanh.prefab", "Weapon_W007_CungThachSanh");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W008_DaoCuuVi.prefab", "Weapon_W008_DaoCuuVi");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W009_TruongLongVuong.prefab", "Weapon_W009_TruongLongVuong");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W010_LinhPhuMaDa.prefab", "Weapon_W010_LinhPhuMaDa");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W011_NuocThanhChuaHuong.prefab", "Weapon_W011_NuocThanhChuaHuong");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Weapons/Weapon_W012_PhiTieuBatQuai.prefab", "Weapon_W012_PhiTieuBatQuai");
+
+            // 3. Toàn bộ Projectiles tương ứng
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W001_NoThan.prefab", "Proj_W001_NoThan");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W002_ButPhanQuan.prefab", "Proj_W002_ButPhanQuan");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W003_BuaTranYeu.prefab", "Proj_W003_BuaTranYeu");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W004_CuuViHoTrao.prefab", "Proj_W004_CuuViHoTrao");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W005_TrongDongDongSon.prefab", "Proj_W005_TrongDongDongSon");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W006_LuuDanThanSa.prefab", "Proj_W006_LuuDanThanSa");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W007_CungThachSanh.prefab", "Proj_W007_CungThachSanh");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W008_DaoCuuVi.prefab", "Proj_W008_DaoCuuVi");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W009_TruongLongVuong.prefab", "Proj_W009_TruongLongVuong");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W010_LinhPhuMaDa.prefab", "Proj_W010_LinhPhuMaDa");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W011_NuocThanhChuaHuong.prefab", "Proj_W011_NuocThanhChuaHuong");
+            AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W012_PhiTieuBatQuai.prefab", "Proj_W012_PhiTieuBatQuai");
+
+            // 4. Gán Quái Màn 1
+            AddAssetToGroup(settings, groupEnemiesStage1, "Assets/_Prefabs/Characters/Enemies/Zombie_Basic.prefab", "Zombie_Basic");
+
+            // 5. Toàn bộ Thẻ Nâng Cấp Upgrades (Remote DLC Update)
+            string[] upgradeGuids = AssetDatabase.FindAssets("t:UpgradeData", new[] { "Assets/_Data/Upgrades" });
+            foreach (string guid in upgradeGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                AddAssetToGroup(settings, groupUpgradesRemote, path, fileName, "UpgradeData");
+            }
+
+            // 6. Cấu hình Meta & LiveOps (Remote DLC Meta Configs)
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Gacha/banner_standard.asset", "banner_standard");
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Meta/PermanentUpgradeTree.asset", "PermanentUpgradeTree");
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/CharacterStarProgressionConfig.asset", "CharacterStarProgressionConfig");
+        }
+
+        private static void AddAssetToGroup(AddressableAssetSettings settings, AddressableAssetGroup group, string assetPath, string address, string label = null)
+        {
+            string guid = AssetDatabase.AssetPathToGUID(assetPath);
+            if (!string.IsNullOrEmpty(guid))
+            {
+                var entry = settings.CreateOrMoveEntry(guid, group, false, false);
+                if (entry != null)
+                {
+                    if (!string.IsNullOrEmpty(address)) entry.address = address;
+                    if (!string.IsNullOrEmpty(label))
+                    {
+                        settings.AddLabel(label);
+                        entry.SetLabel(label, true, true);
+                    }
+                }
+            }
         }
 
         private static AddressableAssetGroup CreateOrConfigureGroup(

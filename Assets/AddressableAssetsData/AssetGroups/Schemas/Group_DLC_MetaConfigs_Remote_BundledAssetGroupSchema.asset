@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5d17a21594effb4e9591490b009e7aa, type: 3}
-  m_Name: Group_DLC_Enemies_Remote_BundledAssetGroupSchema
+  m_Name: Group_DLC_MetaConfigs_Remote_BundledAssetGroupSchema
   m_EditorClassIdentifier: 
-  m_Group: {fileID: 11400000, guid: d9593a449d77941478206cf4fa1fb73e, type: 2}
+  m_Group: {fileID: 11400000, guid: 17554d4dd0ed8734083c6bda1066fa8f, type: 2}
   m_InternalBundleIdMode: 1
   m_Compression: 1
   m_IncludeAddressInCatalog: 1
@@ -34,9 +34,9 @@ MonoBehaviour:
   m_RedirectLimit: -1
   m_RetryCount: 0
   m_BuildPath:
-    m_Id: e28945c3b7099724ba268b1d32b374a9
+    m_Id: 912e533038b42314780d6b974ccdaa43
   m_LoadPath:
-    m_Id: 281e956496a9505489eaca3e2fc75f20
+    m_Id: 1790ae0d13671004d88d401643c79c55
   m_BundleMode: 0
   m_AssetBundleProviderType:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
