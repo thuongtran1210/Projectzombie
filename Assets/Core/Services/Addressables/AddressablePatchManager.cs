@@ -90,8 +90,17 @@ namespace ProjectZombie.Core.Services.Addressables
                 }
 
                 // Kiểm tra dung lượng các dependencies cần tải về máy
-                var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync((IEnumerable<object>)new object[] { "default" });
-                _totalDownloadSize = await sizeHandle.Task;
+                // Lấy tất cả ResourceLocations thuộc Addressables Catalog thay vì hardcode key 'default'
+                long totalSize = 0;
+                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
+                await locHandle.Task;
+
+                if (locHandle.Status == AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
+                {
+                    var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(locHandle.Result);
+                    totalSize = await sizeHandle.Task;
+                }
+                _totalDownloadSize = totalSize;
 
                 if (_totalDownloadSize > 0)
                 {
@@ -108,9 +117,9 @@ namespace ProjectZombie.Core.Services.Addressables
             catch (Exception ex)
             {
                 string error = $"Lỗi kiểm tra bản vá CDN: {ex.Message}";
-                Debug.LogError($"[{nameof(AddressablePatchManager)}] {error}");
-                NotifyProgress(PatchState.Failed, 0f, 0, 0, error);
-                OnPatchFailed?.Invoke(error);
+                Debug.LogWarning($"[{nameof(AddressablePatchManager)}] {error}. Tự động bỏ qua và vào Sảnh.");
+                NotifyProgress(PatchState.UpToDate, 1f, 0, 0, "Dữ liệu trò chơi đã sẵn sàng!");
+                OnPatchCompleted?.Invoke();
                 return false;
             }
         }
@@ -120,13 +129,30 @@ namespace ProjectZombie.Core.Services.Addressables
         /// </summary>
         public async Task<bool> DownloadPatchAsync(IEnumerable<object> keys = null, CancellationToken cancellationToken = default)
         {
-            keys ??= new object[] { "default" };
-
             try
             {
                 NotifyProgress(PatchState.Downloading, 0f, 0, _totalDownloadSize, "Đang kết nối CDN...");
 
-                var downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
+                AsyncOperationHandle downloadHandle;
+                if (keys != null)
+                {
+                    downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(keys, UnityEngine.AddressableAssets.Addressables.MergeMode.Union, false);
+                }
+                else
+                {
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync((IEnumerable<object>)new object[] { "default", "preload", "Map", "UpgradeData" }, UnityEngine.AddressableAssets.Addressables.MergeMode.Union);
+                    await locHandle.Task;
+                    if (locHandle.Status == AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
+                    {
+                        downloadHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(locHandle.Result, false);
+                    }
+                    else
+                    {
+                        NotifyProgress(PatchState.Completed, 1f, 0, 0, "Không có nội dung cần tải.");
+                        OnPatchCompleted?.Invoke();
+                        return true;
+                    }
+                }
 
                 // Theo dõi tiến trình tải % liên tục (Non-blocking loop)
                 while (!downloadHandle.IsDone)

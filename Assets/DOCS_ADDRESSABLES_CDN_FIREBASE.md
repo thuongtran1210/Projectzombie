@@ -114,6 +114,33 @@ Bạn không cần tạo thủ công từng nhóm trong Editor:
 
 ---
 
+## 5. Quy Trình Chuẩn 4 Bước Cập Nhật & Kiểm Toán CDN (Update & Audit Lifecycle)
+
+Mỗi khi chỉnh sửa Prefab bản đồ, thêm quái vật, cân bằng thẻ nâng cấp hoặc thay đổi sự kiện Gacha, hãy tuân theo đúng **quy trình 4 bước khép kín** sau:
+
+```mermaid
+graph LR
+    A["1. Chỉnh sửa<br/>Prefab/Data"] --> B["2. Build Addressables<br/>(Default Build Script)"]
+    B --> C["3. Kéo thả ServerData/Android<br/>lên Firebase Storage Web"]
+    C --> D["4. Mở Tool Audit<br/>Kiểm tra & Test Tải CDN"]
+```
+
+### Chi Tiết Từng Bước:
+1. **Bước 1: Chỉnh sửa tài nguyên**: Thay đổi cấu trúc Tilemap, thêm quái mới, chỉnh ScriptableObject trong Unity.
+2. **Bước 2: Build Addressables trong Unity**:
+   - Mở cửa sổ `Window > Asset Management > Addressables > Groups`.
+   - Chọn menu **`Build > New Build > Default Build Script`** *(hoặc `Update a Previous Build` khi chỉ cập nhật bản vá nhỏ)*.
+   - Unity sẽ xuất các file bundle mới vào thư mục `Projectzombie/ServerData/Android/`.
+3. **Bước 3: Kéo thả lên Firebase Console**:
+   - Truy cập trình duyệt web: [Firebase Console Storage](https://console.firebase.google.com/) $\rightarrow$ Mở thư mục **`Android`**.
+   - Mở thư mục `ServerData/Android/` trên máy tính $\rightarrow$ **Kéo thả toàn bộ các file `.bundle`, `catalog.json`, `catalog.hash` vào web để ghi đè**.
+4. **Bước 4: Mở Tool Audit để kiểm tra**:
+   - Mở menu: **`Tools > ProjectZombie > Addressables > CDN Content Comparator & Audit Tool`**.
+   - Bấm **"Kiểm Tra & So Sánh Toàn Bộ Asset (Audit CDN)"** $\rightarrow$ Hệ thống sẽ kết nối trực tiếp Firebase CDN và đánh dấu trạng thái `[Cần Cập Nhật / Chưa Tải]` kèm dung lượng tải.
+   - Bấm **"Tải Ngay"** để kiểm thử tải về máy $\rightarrow$ Trạng thái chuyển thành `[Đã Đồng Bộ / Mới Nhất] (0 B Cached)`.
+
+---
+
 ## 6. Công Cụ Đối Chiếu & Kiểm Toán Dữ Liệu CDN (Audit & Comparator Tool)
 
 Hệ thống cung cấp một Editor Tool trực quan để so sánh chi tiết trạng thái từng tài nguyên giữa bộ nhớ máy (Android/PC Cache) và máy chủ Firebase CDN:
@@ -133,3 +160,13 @@ Trò chơi đã được tích hợp component `GameStartupFlowController` trong
 * Khi mở game trên Android $\rightarrow$ Game tự động kết nối Firebase CDN để kiểm tra `catalog.hash`.
 * Nếu phát hiện có nội dung cập nhật mới $\rightarrow$ Màn hình Loading (`LoadingScreenPresenter`) sẽ hiển thị tiến trình tải mượt mà trước khi mở Sảnh chính (Main Hub).
 * Nếu người chơi ở chế độ Offline (không có internet) $\rightarrow$ Tự động chuyển thẳng vào Sảnh chính sau 4 giây timeout để chơi các nội dung Offline có sẵn trong APK.
+
+---
+
+## 8. Cơ Chế Nạp Bản Đồ Động Khi Chọn Màn Chơi (Dynamic Map Loading)
+
+Trò chơi sử dụng kiến trúc nạp Map độc lập theo từng Ải qua `MetaSceneTransitionController`:
+1. Khi người chơi chọn Ải (ví dụ: `Stage_01_BambooForest` hoặc `Stage_02_AncientCitadel`) và bấm **"Khởi Trận"**:
+   - `MetaSceneTransitionController` tự động dọn dẹp Map cũ (`DestroyCurrentMapInstance`).
+   - Gọi `Addressables.InstantiateAsync(stageData.mapPrefabAddress)` để sinh Map mới vào Scene.
+2. `SpawnManager.Instance.RefreshMapReferences()` tự động nhận diện lại `Tilemap_Ground`, `Tilemap_Obstacles` và tính toán lại `Safe Bounds` để điều phối AI & quái vật ngoài tầm nhìn Camera một cách chính xác 100%.
