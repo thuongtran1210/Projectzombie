@@ -206,7 +206,7 @@ namespace ProjectZombie.Features.UI.Gacha
         {
             if (_view != null)
             {
-                _view.ShowStatusMessage($"<color=#FF4444>⚠️ {error}</color>");
+                _view.ShowStatusMessage($"<color=#FF4444>[Lỗi] {error}</color>");
             }
         }
 
