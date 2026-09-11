@@ -17,6 +17,27 @@ namespace ProjectZombie.Core.Architecture
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeCoreServices()
         {
+            // Thiết lập chuyển đổi URL Firebase Storage cho Addressables sớm nhất có thể
+            UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
+            {
+                if (string.IsNullOrEmpty(location.InternalId)) return location.InternalId;
+
+                if (location.InternalId.Contains("firebasestorage.googleapis.com") || location.InternalId.Contains("vongxuyen.firebasestorage.app"))
+                {
+                    string rawUrl = location.InternalId;
+                    
+                    // Tìm file .bundle hoặc .json hoặc .hash trong chuỗi URL
+                    var match = System.Text.RegularExpressions.Regex.Match(rawUrl, @"(?<filename>[\w\-\._]+\.(bundle|hash|json))", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    if (match.Success)
+                    {
+                        string fileName = match.Groups["filename"].Value;
+                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+                        return correctedUrl;
+                    }
+                }
+                return location.InternalId;
+            };
+
             // Kiểm tra xem trong Scene đã có sẵn Core Root chưa (tránh tạo thừa)
             var existingRoot = GameObject.Find(CORE_ROOT_NAME);
             if (existingRoot != null) return;

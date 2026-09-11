@@ -68,6 +68,40 @@ namespace ProjectZombie.Core.Services.Addressables
         private List<string> _catalogsToUpdate = new();
         private long _totalDownloadSize = 0;
 
+        public AddressablePatchManager()
+        {
+            SetupInternalIdTransform();
+        }
+
+        /// <summary>
+        /// Chuẩn hóa URL khi tải từ Firebase Storage CDN.
+        /// Tránh lỗi Addressables tự động chèn /tên_file vào sau query param '?alt=media'.
+        /// </summary>
+        private void SetupInternalIdTransform()
+        {
+            UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
+            {
+                if (string.IsNullOrEmpty(location.InternalId)) return location.InternalId;
+
+                // Kiểm tra nếu là URL Firebase Storage
+                if (location.InternalId.Contains("firebasestorage.googleapis.com") || location.InternalId.Contains("vongxuyen.firebasestorage.app"))
+                {
+                    string rawUrl = location.InternalId;
+                    
+                    // Tìm file .bundle hoặc .json hoặc .hash trong chuỗi URL
+                    var match = System.Text.RegularExpressions.Regex.Match(rawUrl, @"(?<filename>[\w\-\._]+\.(bundle|hash|json))", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    if (match.Success)
+                    {
+                        string fileName = match.Groups["filename"].Value;
+                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+                        return correctedUrl;
+                    }
+                }
+
+                return location.InternalId;
+            };
+        }
+
         public long TotalDownloadSize => _totalDownloadSize;
         public bool HasUpdate => _totalDownloadSize > 0 || _catalogsToUpdate.Count > 0;
 
@@ -167,6 +201,23 @@ namespace ProjectZombie.Core.Services.Addressables
                 // Đảm bảo Addressables Runtime đã được Initialize
                 await UnityEngine.AddressableAssets.Addressables.InitializeAsync().Task;
 
+                // Tự động kiểm tra và cập nhật Catalog mới nhất từ Firebase CDN nếu có
+                try
+                {
+                    var checkHandle = UnityEngine.AddressableAssets.Addressables.CheckForCatalogUpdates(false);
+                    var catalogs = await checkHandle.Task;
+                    if (catalogs != null && catalogs.Count > 0)
+                    {
+                        var updateHandle = UnityEngine.AddressableAssets.Addressables.UpdateCatalogs(catalogs, false);
+                        await updateHandle.Task;
+                        Debug.Log("<color=#00FF88>[AddressablePatchManager]</color> Đã cập nhật Catalog mới nhất từ Firebase CDN!");
+                    }
+                }
+                catch (Exception catEx)
+                {
+                    Debug.LogWarning($"[{nameof(AddressablePatchManager)}] Không thể kiểm tra Catalog Update: {catEx.Message}");
+                }
+
                 AsyncOperationHandle downloadHandle;
                 long targetExpectedSize = _totalDownloadSize;
 
@@ -201,7 +252,7 @@ namespace ProjectZombie.Core.Services.Addressables
                 // Theo dõi tiến trình tải % liên tục (Non-blocking loop) có Timeout bảo vệ
                 float lastPercent = 0f;
                 float downloadStartTime = Time.realtimeSinceStartup;
-                const float DOWNLOAD_TIMEOUT_SECONDS = 30f; // Timeout 30 giây nếu kẹt kết nối
+                const float DOWNLOAD_TIMEOUT_SECONDS = 45f; // Timeout 45 giây nếu kẹt kết nối
 
                 while (!downloadHandle.IsDone)
                 {
@@ -238,26 +289,17 @@ namespace ProjectZombie.Core.Services.Addressables
                         downloadStartTime = Time.realtimeSinceStartup; // Reset timer nếu có byte mới tải về
                     }
 
-                    float downMb = downloaded / 1048576f;
-                    float totalMb = total > 0 ? total / 1048576f : (targetExpectedSize > 0 ? targetExpectedSize / 1048576f : 0f);
-
-                    string progressText;
-                    if (totalMb > 0.05f)
-                    {
-                        progressText = $"{downMb:0.0} MB / {totalMb:0.0} MB ({lastPercent * 100f:0}%)";
-                    }
-                    else
-                    {
-                        progressText = $"Đang tải tài nguyên... ({lastPercent * 100f:0}%)";
-                    }
-
-                    NotifyProgress(PatchState.Downloading, lastPercent, downloaded, total, progressText);
+                    NotifyProgress(PatchState.Downloading, lastPercent, downloaded, total, CurrentProgress.FormattedProgress);
 
                     await Task.Yield();
                 }
 
+                // Đợi hoàn tất tác vụ ngầm
+                await downloadHandle.Task;
+
                 if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
+                    Debug.Log($"<color=#00FF88>[AddressablePatchManager]</color> TẢI THÀNH CÔNG GÓI: {CurrentDownloadingKey}");
                     UnityEngine.AddressableAssets.Addressables.Release(downloadHandle);
                     _totalDownloadSize = 0;
                     _catalogsToUpdate.Clear();
@@ -306,8 +348,27 @@ namespace ProjectZombie.Core.Services.Addressables
                 var locations = await locHandle.Task;
                 if (locations == null || locations.Count == 0)
                 {
-                    // Key chưa có trong Catalog hiện tại -> Báo cần tải
-                    return (true, 0);
+                    // Thử cập nhật Catalog từ Firebase CDN nếu key chưa có
+                    try
+                    {
+                        var checkHandle = UnityEngine.AddressableAssets.Addressables.CheckForCatalogUpdates(false);
+                        var catalogs = await checkHandle.Task;
+                        if (catalogs != null && catalogs.Count > 0)
+                        {
+                            var updateHandle = UnityEngine.AddressableAssets.Addressables.UpdateCatalogs(catalogs, false);
+                            await updateHandle.Task;
+
+                            var retryLoc = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(key);
+                            locations = await retryLoc.Task;
+                        }
+                    }
+                    catch { }
+
+                    if (locations == null || locations.Count == 0)
+                    {
+                        // Vẫn chưa tìm thấy sau khi update catalog -> Báo cần tải
+                        return (true, 0);
+                    }
                 }
 
                 var sizeHandle = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(key);

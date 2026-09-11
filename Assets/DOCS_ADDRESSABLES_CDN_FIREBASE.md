@@ -38,16 +38,22 @@ Tài liệu này hướng dẫn cách sử dụng **Firebase Storage** làm **CD
 
 ---
 
-### BƯỚC 2: Cấu Hình Unity Addressables Profile
+### BƯỚC 2: Cấu Hình Unity Addressables Profile & Cơ Chế Transform URL Động
 
 1. Trong Unity Editor, mở: `Window > Asset Management > Addressables > Profiles`.
-2. Chọn Profile (hoặc tạo mới Profile đặt tên `Firebase_Web`):
+2. Chọn Profile (hoặc tạo mới Profile đặt tên `Default` / `Firebase_Web`):
    - **`Remote.BuildPath`**: Giữ nguyên mặc định là `ServerData/[BuildTarget]`
    - **`Remote.LoadPath`**: Dán đường link URL của thư mục Firebase Storage vào:
      ```text
-     https://firebasestorage.googleapis.com/v0/b/<tên-project-của-bạn>.appspot.com/o/Android%2F{0}?alt=media
+     https://firebasestorage.googleapis.com/v0/b/<tên-project-của-bạn>.firebasestorage.app/o/Android%2F{0}?alt=media
      ```
-     *(Thay `<tên-project-của-bạn>` bằng ID dự án trên Firebase của bạn)*
+     *(Thay `<tên-project-của-bạn>` bằng ID dự án trên Firebase của bạn, ví dụ `vongxuyen`)*
+
+> [!IMPORTANT]
+> **Cơ Chế Tự Động Sửa URL Firebase Storage (InternalIdTransformFunc)**:
+> Unity Addressables mặc định khi ghép chuỗi URL sẽ nối file vào sau query string (`.../Android%2F0?alt=media/catalog.hash` hoặc `.../Android/Android/0?alt=media`) gây ra lỗi `HTTP 404 / 400 Bad Request` trên CDN.
+> Trò chơi đã tích hợp sẵn cơ chế **`Addressables.InternalIdTransformFunc`** trong `CoreBootstrapper.cs` (chạy tại `[RuntimeInitializeOnLoadMethod(BeforeSceneLoad)]`) và `AddressablePatchManager.cs`. Hệ thống sẽ tự động bóc tách tên file `.bundle`, `.hash`, `.json` bằng Regex và chuẩn hóa 100% về format REST API chuẩn của Firebase:
+> `https://firebasestorage.googleapis.com/v0/b/<bucket>/o/Android%2F<tên_file>?alt=media`
 
 ---
 

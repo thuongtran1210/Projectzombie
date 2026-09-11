@@ -11,6 +11,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 4. [Nhóm Lỗi UI Layout & Màn Hình Cảm Ứng (Customizer, Modal, Safe Area)](#4-nhóm-lỗi-ui-layout--màn-hình-cảm-ứng-customizer-modal-safe-area)
 5. [Quy Trình Chuẩn Chuẩn Bị Trước Khi Build APK (Checklist 1-Click)](#5-quy-trình-chuẩn-chuẩn-bị-trước-khi-build-apk-checklist-1-click)
 6. [Cơ Chế Bảo Trì & Khóa Nóng Tính Năng/Vũ Khí Khi Đã Lên CH Play (Live-Ops Feature Flag)](#6-cơ-chế-bảo-trì--khóa-nóng-tính-năngvũ-khí-khi-đã-lên-ch-play-live-ops-feature-flag)
+7. [Nhóm Lỗi Addressables & Firebase Storage CDN (DLC / Map Download)](#7-nhóm-lỗi-addressables--firebase-storage-cdn-dlc--map-download)
 
 ---
 
@@ -357,4 +358,52 @@ public class RemoteConfigManager : MonoBehaviour
       _btnCodex.interactable = false; // Tạm khóa mở Thư viện Thần Thẻ
   }
   ```
+
+---
+
+## 7. Nhóm Lỗi Addressables & Firebase Storage CDN (DLC / Map Download)
+
+### ❌ Lỗi 7.1: Bấm "Tải Màn Chơi" nháy % rồi quay lại nút "Tải Màn Chơi" (`HTTP 400 Bad Request` / `404 Not Found`)
+- **Hiện tượng**:
+  - Trên Android, người chơi mở màn hình Chọn Ải hoặc Modal Quản Lý Dữ Liệu Tải Về, bấm **Tải Màn Chơi (hoặc Tải Về)**.
+  - Thanh tiến trình nháy lên `0MB / 0MB (0%)` rồi lập tức đóng lại, nút quay về trạng thái **"Tải Màn Chơi"** thay vì **"XUẤT TRẬN"**.
+  - Logcat ADB xuất hiện lỗi:
+    ```text
+    TextDataProvider : unable to load from url : https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F0?alt=media/catalog_1.0.hash
+    UnityWebRequest result : ProtocolError : HTTP/1.1 404 Not Found
+    url : https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android/Android/0?alt=media
+    HTTP/1.1 400 Bad Request
+    ```
+- **Nguyên nhân gốc rễ**:
+  1. **Lỗi nối chuỗi URL của Unity Addressables**:
+     - Khi cấu hình `Remote.LoadPath` có tham số query `.../o/Android%2F{0}?alt=media` hoặc `.../o/Android/[BuildTarget]`.
+     - Unity Addressables coi URL là thư mục tĩnh và nối tên file bundle vào cuối chuỗi URL:
+       $$\rightarrow \text{https://.../Android\%2F0?alt=media/catalog\_1.0.hash}$$
+     - Firebase Storage REST API không hỗ trợ nhận tên file đặt sau query param `?alt=media` nên trả về `HTTP 404 / 400 Bad Request`.
+  2. **Thứ tự khởi tạo Runtime**:
+     - Nếu hàm xử lý URL chỉ được gán khi khởi tạo `AddressablePatchManager` thì các thao tác kiểm tra Catalog ban đầu của Addressables sẽ vẫn dùng URL lỗi trước đó.
+- **Cách khắc phục chuẩn**:
+  1. **Đăng ký `Addressables.InternalIdTransformFunc` tại tầng khởi động sớm nhất** (`BeforeSceneLoad`) trong `CoreBootstrapper.cs` và `AddressablePatchManager.cs`.
+  2. Sử dụng Regex bóc tách chính xác tên file `.bundle`, `.hash`, `.json` và tái tạo URL REST API Firebase hợp lệ:
+     ```csharp
+     UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
+     {
+         if (string.IsNullOrEmpty(location.InternalId)) return location.InternalId;
+
+         if (location.InternalId.Contains("firebasestorage.googleapis.com") || location.InternalId.Contains("vongxuyen.firebasestorage.app"))
+         {
+             string rawUrl = location.InternalId;
+             
+             // Bóc tách tên file từ bất kỳ URL biến dạng nào
+             var match = System.Text.RegularExpressions.Regex.Match(rawUrl, @"(?<filename>[\w\-\._]+\.(bundle|hash|json))", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+             if (match.Success)
+             {
+                 string fileName = match.Groups["filename"].Value;
+                 return $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+             }
+         }
+         return location.InternalId;
+     };
+     ```
+
 
