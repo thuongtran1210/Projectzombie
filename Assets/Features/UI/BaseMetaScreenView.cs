@@ -13,7 +13,8 @@ namespace ProjectZombie.Features.UI
         Codex,
         Settings,
         GachaShop,
-        StageSelect
+        StageSelect,
+        ResourceDownload
     }
 
     /// <summary>

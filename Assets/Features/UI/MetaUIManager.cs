@@ -23,6 +23,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private BaseMetaScreenView _settingsScreen;
         [SerializeField] private BaseMetaScreenView _gachaShopScreen;
         [SerializeField] private BaseMetaScreenView _stageSelectScreen;
+        [SerializeField] private BaseMetaScreenView _resourceDownloadScreen;
 
         [Header("Persistent Backdrop")]
         [Tooltip("Ảnh nền cố định che 100% Tilemap và Player bên dưới khi ở trong Menu")]
@@ -62,6 +63,7 @@ namespace ProjectZombie.Features.UI
             if (_settingsScreen != null) _settingsScreen.Hide();
             if (_gachaShopScreen != null) _gachaShopScreen.Hide();
             if (_stageSelectScreen != null) _stageSelectScreen.Hide();
+            if (_resourceDownloadScreen != null) _resourceDownloadScreen.Hide();
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
             if (_mainHubScreen != null)
@@ -187,6 +189,7 @@ namespace ProjectZombie.Features.UI
             if (_settingsScreen == null) _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
             if (_gachaShopScreen == null) _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
             if (_stageSelectScreen == null) _stageSelectScreen = GetComponentInChildren<StageSelect.StageSelectUIView>(true);
+            if (_resourceDownloadScreen == null) _resourceDownloadScreen = GetComponentInChildren<ResourceDownload.ResourceDownloadModalView>(true);
         }
 
         public void OpenScreen(MetaScreenType screenType)
@@ -272,6 +275,32 @@ namespace ProjectZombie.Features.UI
                         }
                     }
                     PushScreen(_gachaShopScreen);
+                    break;
+                case MetaScreenType.ResourceDownload:
+                    if (_resourceDownloadScreen == null)
+                    {
+                        AutoResolveMissingScreens();
+                        if (_resourceDownloadScreen == null)
+                        {
+                            var resPrefab = Resources.Load<GameObject>("UI/ResourceDownloadModalUI") ?? Resources.Load<GameObject>("ResourceDownloadModalUI");
+#if UNITY_EDITOR
+                            if (resPrefab == null)
+                            {
+                                resPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab");
+                            }
+#endif
+                            if (resPrefab != null)
+                            {
+                                var instance = Instantiate(resPrefab, transform);
+                                instance.name = "Modal_ResourceDownload";
+                                _resourceDownloadScreen = instance.GetComponent<ResourceDownload.ResourceDownloadModalView>();
+                            }
+                        }
+                    }
+                    if (_resourceDownloadScreen != null)
+                    {
+                        PushScreen(_resourceDownloadScreen);
+                    }
                     break;
             }
         }

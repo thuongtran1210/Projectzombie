@@ -18,6 +18,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private TextMeshProUGUI _coTienText;
         [SerializeField] private TextMeshProUGUI _linhHonText;
         [SerializeField] private Button _settingsButton;
+        [SerializeField] private Button _resourceDownloadButton;
 
         [Header("Main Action")]
         [SerializeField] private Button _startRunButton;
@@ -50,6 +51,7 @@ namespace ProjectZombie.Features.UI
         public event Action OnSanctuaryTreeClicked;
         public event Action OnCodexClicked;
         public event Action OnSettingsClicked;
+        public event Action OnResourceDownloadClicked;
 
         protected override void Awake()
         {
@@ -59,11 +61,12 @@ namespace ProjectZombie.Features.UI
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_gachaButton != null) _gachaButton.onClick.AddListener(() => OnGachaClicked?.Invoke());
-            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
-            if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => (OnDeckCardsClicked ?? OnCodexClicked)?.Invoke());
+            if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => OnDeckCardsClicked?.Invoke());
+            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());
             if (_codexButton != null) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_settingsButton != null) _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());
+            if (_resourceDownloadButton != null) _resourceDownloadButton.onClick.AddListener(() => OnResourceDownloadClicked?.Invoke());
         }
 
         public void SetCoTienBalance(string formattedText)

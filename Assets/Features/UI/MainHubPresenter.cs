@@ -52,6 +52,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnSanctuaryTreeClicked += HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked += HandleCodexClicked;
                 _view.OnSettingsClicked += HandleSettingsClicked;
+                _view.OnResourceDownloadClicked += HandleResourceDownloadClicked;
             }
 
             SubscribeCurrencyManager();
@@ -81,6 +82,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnSanctuaryTreeClicked -= HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked -= HandleCodexClicked;
                 _view.OnSettingsClicked -= HandleSettingsClicked;
+                _view.OnResourceDownloadClicked -= HandleResourceDownloadClicked;
             }
 
             UnsubscribeCurrencyManager();
@@ -285,6 +287,16 @@ namespace ProjectZombie.Features.UI
             if (metaManager != null)
             {
                 metaManager.OpenScreen(MetaScreenType.Settings);
+            }
+        }
+
+        private void HandleResourceDownloadClicked()
+        {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            var metaManager = GetMetaUIManager();
+            if (metaManager != null)
+            {
+                metaManager.OpenScreen(MetaScreenType.ResourceDownload);
             }
         }
     }

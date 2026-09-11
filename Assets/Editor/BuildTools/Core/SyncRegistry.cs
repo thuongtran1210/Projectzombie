@@ -41,6 +41,7 @@ namespace ProjectZombie.EditorTools.BuildSync
             SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab()),
             SyncRule.ForUIPrefab("StageSelect_Screen", () => ProjectZombie.Editor.UI.StageSelectUIGenerator.GenerateStageSelectUI()),
             SyncRule.ForUIPrefab("LoadingScreenUI", () => ProjectZombie.Editor.UI.LoadingScreenSetupTool.CreateOrUpdateLoadingPrefab()),
+            SyncRule.ForUIPrefab("ResourceDownloadModalUI", () => ProjectZombie.Editor.UI.ResourceDownloadUIGenerator.GenerateResourceDownloadPrefab()),
             new SyncRule("GachaShopPanel", "Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab", "Assets/Resources/UI/Gacha/GachaShopPanel.prefab", "*.prefab")
             {
                 Type = RuleType.UIPrefab,

@@ -170,3 +170,18 @@ Trò chơi sử dụng kiến trúc nạp Map độc lập theo từng Ải qua 
    - `MetaSceneTransitionController` tự động dọn dẹp Map cũ (`DestroyCurrentMapInstance`).
    - Gọi `Addressables.InstantiateAsync(stageData.mapPrefabAddress)` để sinh Map mới vào Scene.
 2. `SpawnManager.Instance.RefreshMapReferences()` tự động nhận diện lại `Tilemap_Ground`, `Tilemap_Obstacles` và tính toán lại `Safe Bounds` để điều phối AI & quái vật ngoài tầm nhìn Camera một cách chính xác 100%.
+
+---
+
+## 9. Trung Tâm Quản Lý Dữ Liệu Tải Về Trong Game (In-Game Resource & DLC Manager)
+
+Người chơi có thể chủ động kiểm tra dung lượng máy và quản lý tải/xóa từng gói tài nguyên trực tiếp tại Sảnh Vọng Xuyên:
+1. **Vị trí**: Nút icon tải về nằm trên thanh `Header_TopBar` góc trên cùng bên phải màn hình Sảnh Chính.
+2. **Quy tắc hiển thị trạng thái**:
+   - **`[ĐÃ TẢI]`**: Hiển thị nút **`[XÓA]`** màu đỏ để người chơi giải phóng bộ nhớ khi cần. Nút `[TẢI VỀ]` tự động ẩn.
+   - **`[CHƯA TẢI]`**: Hiển thị nút **`[TẢI VỀ]`** màu vàng kèm dung lượng (MB). **Nút `[XÓA]` bị ẩn hoàn toàn**.
+   - **`[ĐANG TẢI]`**: Hiển thị thanh tiến trình **Slider %** + Text chi tiết, ẩn cả nút Tải và nút Xóa.
+3. **Thao tác nhanh**:
+   - **`[TẢI TẤT CẢ]`**: Tải đồng loạt các gói còn thiếu về máy.
+   - **`[DỌN DẸP TOÀN BỘ CACHE]`**: Giải phóng toàn bộ bộ nhớ tạm của các gói DLC.
+

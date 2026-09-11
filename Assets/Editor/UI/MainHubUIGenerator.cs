@@ -36,12 +36,13 @@ namespace ProjectZombie.Editor.UI
 
             GenerateMainHubPrefab();
             SettingsUIGenerator.GenerateSettingsModal();
+            ResourceDownloadUIGenerator.GenerateResourceDownloadPrefab();
             CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab();
             SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab();
             CardCodexUIGenerator.GenerateCardCodexPrefab();
             GameOverUIGenerator.RebuildGameOverUI();
-            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, THƯ VIỆN THẦN THẺ (CODEX), CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
+            Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, TẢI TÀI NGUYÊN DLC, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, THƯ VIỆN THẦN THẺ (CODEX), CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
         }
 
         [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/1. Tạo Prefab Sảnh Chính (Main Hub UI)", priority = 11)]
@@ -78,7 +79,7 @@ namespace ProjectZombie.Editor.UI
             if (bgForestSprite != null) bgImg.sprite = bgForestSprite;
 
             // 3. Top Header Bar (Khung Gỗ Chạm Khắc Đỉnh Màn Hình)
-            BuildTopHeader(root.transform, vietFont, out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn);
+            BuildTopHeader(root.transform, vietFont, out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn, out Button resourceDlBtn);
 
             // 4. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ)
             BuildHeroStage(root.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
@@ -94,6 +95,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_coTienText").objectReferenceValue = coTienTMP;
             soView.FindProperty("_linhHonText").objectReferenceValue = linhHonTMP;
             soView.FindProperty("_settingsButton").objectReferenceValue = settingsBtn;
+            soView.FindProperty("_resourceDownloadButton").objectReferenceValue = resourceDlBtn;
 
             soView.FindProperty("_currentHeroNameText").objectReferenceValue = heroNameTMP;
             soView.FindProperty("_currentHeroElementText").objectReferenceValue = heroElemTMP;
@@ -165,7 +167,7 @@ namespace ProjectZombie.Editor.UI
 
                 EditorUtility.SetDirty(root);
                 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(targetCanvas.gameObject.scene);
-                Debug.Log($"<color=#00FF88>[MainHubUIGenerator]</color> Đã tạo Prefab Sảnh Hoàng Tuyền khớp 100% thiết kế tham khảo và đồng bộ vào Scene!");
+                Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> Đã tạo Prefab Sảnh Hoàng Tuyền khớp 100% thiết kế tham khảo và đồng bộ vào Scene!");
             }
             else
             {
@@ -174,7 +176,7 @@ namespace ProjectZombie.Editor.UI
         }
 
         private static void BuildTopHeader(Transform parent, TMP_FontAsset font, 
-            out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn)
+            out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn, out Button resourceDlBtn)
         {
             GameObject header = CreateUIElement("Header_TopBar", parent);
             RectTransform hRT = header.GetComponent<RectTransform>();
@@ -209,17 +211,17 @@ namespace ProjectZombie.Editor.UI
             lTMP.fontStyle = FontStyles.Bold;
             lTMP.color = new Color(0.98f, 0.88f, 0.60f, 1f);
 
-            // 2. Khung Tiền Tệ & Cài Đặt (Góc Phải)
+            // 2. Khung Tiền Tệ & Cài Đặt & Tải Tài Nguyên (Góc Phải)
             GameObject rightGroup = CreateUIElement("Right_Currencies", header.transform);
             RectTransform rRT = rightGroup.GetComponent<RectTransform>();
             rRT.anchorMin = new Vector2(1, 0.5f);
             rRT.anchorMax = new Vector2(1, 0.5f);
             rRT.pivot = new Vector2(1, 0.5f);
             rRT.anchoredPosition = new Vector2(-24, 0);
-            rRT.sizeDelta = new Vector2(460, 46);
+            rRT.sizeDelta = new Vector2(520, 46);
 
             var rHlg = rightGroup.AddComponent<HorizontalLayoutGroup>();
-            rHlg.spacing = 16;
+            rHlg.spacing = 14;
             rHlg.childAlignment = TextAnchor.MiddleRight;
             rHlg.childControlWidth = false;
             rHlg.childControlHeight = false;
@@ -297,6 +299,32 @@ namespace ProjectZombie.Editor.UI
             linhHonTMP.fontStyle = FontStyles.Bold;
             linhHonTMP.alignment = TextAlignmentOptions.Right;
             linhHonTMP.color = new Color(0.70f, 0.95f, 1f);
+
+            // Nút Tải Tài Nguyên (Btn_ResourceDownload)
+            Sprite downloadIconSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
+            if (downloadIconSprite == null) downloadIconSprite = pillWoodSprite;
+            GameObject btnDlObj = CreateUIElement("Btn_ResourceDownload", rightGroup.transform);
+            btnDlObj.GetComponent<RectTransform>().sizeDelta = new Vector2(44, 44);
+            var dlImg = btnDlObj.AddComponent<Image>();
+            dlImg.color = Color.white;
+            if (pillWoodSprite != null)
+            {
+                dlImg.sprite = pillWoodSprite;
+                dlImg.type = Image.Type.Sliced;
+            }
+            resourceDlBtn = btnDlObj.AddComponent<Button>();
+
+            // Icon Tải Về / Đám Mây bên trong nút
+            GameObject iconDlChild = CreateUIElement("Icon", btnDlObj.transform);
+            RectTransform idcRT = iconDlChild.GetComponent<RectTransform>();
+            idcRT.anchorMin = new Vector2(0.5f, 0.5f);
+            idcRT.anchorMax = new Vector2(0.5f, 0.5f);
+            idcRT.pivot = new Vector2(0.5f, 0.5f);
+            idcRT.sizeDelta = new Vector2(28, 28);
+            var idcImg = iconDlChild.AddComponent<Image>();
+            idcImg.sprite = downloadIconSprite;
+            idcImg.preserveAspect = true;
+            idcImg.raycastTarget = false;
 
             // Nút Bánh Răng Cài Đặt (Btn_Settings)
             Sprite gearSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Settings_Gear_Wood.png");
