@@ -104,6 +104,7 @@ namespace ProjectZombie.Editor.UI
 
             soView.FindProperty("_deckCardsButton").objectReferenceValue = deckCardsBtn;
             soView.FindProperty("_loadoutCardButton").objectReferenceValue = loadoutBtn;
+            soView.FindProperty("_codexButton").objectReferenceValue = deckCardsBtn;
             soView.FindProperty("_primaryWeaponNameText").objectReferenceValue = priNameTMP;
             soView.FindProperty("_primaryWeaponIcon").objectReferenceValue = priIconImg;
 
