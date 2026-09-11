@@ -30,7 +30,7 @@ namespace ProjectZombie.Editor.Maps
 
             var createdStages = new List<StageDefinitionSO>();
 
-            // 1. Stage 1: Rừng Trúc Âm Ty (Local Core)
+            // 1. Stage 1: Rừng Trúc Âm Ty (Local Core - Dùng Tilemap có sẵn trong Scene)
             var stage1 = CreateOrUpdateStage(
                 "Stage_01_BambooForest",
                 "STAGE_01",
@@ -38,8 +38,8 @@ namespace ProjectZombie.Editor.Maps
                 "Nơi âm khí tích tụ ngàn năm dưới những rặng tre ma, đàn thủy quái và cương thi bắt đầu trỗi dậy.",
                 MapEnvironmentType.BambooForest,
                 1,
-                "Map_BambooForest",
-                "BGM_BambooForest",
+                "", // Trống để dùng Tilemap có sẵn trong Scene
+                "", // BGM mặc định
                 0f, // 0 MB vì nằm sẵn trong Local Core
                 level1Timeline,
                 600f,

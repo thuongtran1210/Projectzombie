@@ -22,6 +22,36 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         public static event Action<StageDefinitionSO> OnStageSelectedForBattle;
 
+        private void Awake()
+        {
+            if (_view == null) _view = GetComponent<StageSelectUIView>();
+            EnsureStageDatabaseLoaded();
+        }
+
+        private void OnEnable()
+        {
+            EnsureStageDatabaseLoaded();
+            RefreshView();
+        }
+
+        private void EnsureStageDatabaseLoaded()
+        {
+            if (_stageList == null || _stageList.Count == 0)
+            {
+                var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase");
+#if UNITY_EDITOR
+                if (db == null)
+                {
+                    db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
+                }
+#endif
+                if (db != null && db.Stages != null)
+                {
+                    _stageList = new List<StageDefinitionSO>(db.Stages);
+                }
+            }
+        }
+
         private void Start()
         {
             if (_view != null)
