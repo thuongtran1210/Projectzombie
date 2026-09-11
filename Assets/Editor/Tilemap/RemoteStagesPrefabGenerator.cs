@@ -37,6 +37,14 @@ namespace Projectzombie.Editor.TilemapTools
                 return;
             }
 
+            // Đảm bảo tất cả Tile Assets tồn tại bền vững trên đĩa trước khi gán vào Prefab
+            foreach (var kvp in spriteDict)
+            {
+                GetOrCreateTileAsset(kvp.Value);
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
             // Sinh 4 bản đồ chi tiết (bao gồm cả Map_SanDinhLangCo mặc định)
             BuildSanDinhLangCoMap(spriteDict);
             BuildBambooForestMap(spriteDict);
@@ -48,6 +56,8 @@ namespace Projectzombie.Editor.TilemapTools
             Debug.Log("<color=#00FF88>[RemoteStagesPrefabGenerator] HOÀN TẤT NÂNG CẤP MỸ THUẬT TOÀN BỘ BẢN ĐỒ TILEMAP 2.5D!</color>");
             EditorUtility.DisplayDialog("Nâng Cấp Tilemap Thành Công", "Đã kiến tạo lại toàn bộ bản đồ (Sân Đình Làng Cổ, Rừng Trúc, Cổ Thành, Đầm Lầy) với đầy đủ thảm cỏ xanh, hồ sen ngọc bích, tường thành đá và ranh giới chiến đấu!", "OK");
         }
+
+        private const string TILES_ASSET_DIR = "Assets/Art/Tilemaps/Tiles";
 
         private static Dictionary<string, Sprite> LoadTilesetSprites(string path)
         {
@@ -71,12 +81,29 @@ namespace Projectzombie.Editor.TilemapTools
             return it.MoveNext() ? it.Current : null;
         }
 
-        private static Tile CreateTile(Sprite sprite)
+        private static Tile GetOrCreateTileAsset(Sprite sprite)
         {
             if (sprite == null) return null;
-            Tile tile = ScriptableObject.CreateInstance<Tile>();
-            tile.sprite = sprite;
-            tile.color = Color.white; // Luôn giữ nguyên vẹn 100% màu sắc gốc của Texture Atlas
+            if (!Directory.Exists(TILES_ASSET_DIR))
+            {
+                Directory.CreateDirectory(TILES_ASSET_DIR);
+            }
+
+            string tileAssetPath = $"{TILES_ASSET_DIR}/{sprite.name}.asset";
+            Tile tile = AssetDatabase.LoadAssetAtPath<Tile>(tileAssetPath);
+            if (tile == null)
+            {
+                tile = ScriptableObject.CreateInstance<Tile>();
+                tile.sprite = sprite;
+                tile.color = Color.white;
+                AssetDatabase.CreateAsset(tile, tileAssetPath);
+            }
+            else
+            {
+                tile.sprite = sprite;
+                tile.color = Color.white;
+                EditorUtility.SetDirty(tile);
+            }
             return tile;
         }
 
@@ -86,13 +113,13 @@ namespace Projectzombie.Editor.TilemapTools
             string mapName = "Map_SanDinhLangCo";
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
-            var tGrassOuter = CreateTile(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ xanh sẫm nền ngoài
-            var tBrickCourtyard = CreateTile(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng ở giữa
-            var tBrickPattern = CreateTile(GetSprite(sprites, "Tile_1_0")); // Gạch nung rêu phong điểm xuyết
-            var tWaterPond = CreateTile(GetSprite(sprites, "Tile_4_0")); // Nước ao sen xanh ngọc
-            var tLotusDecal = CreateTile(GetSprite(sprites, "Tile_5_0")); // Hoa sen & lá sen
-            var tWallStone = CreateTile(GetSprite(sprites, "Tile_0_2")); // Tường thành đá cổ
-            var tPillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn
+            var tGrassOuter = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ xanh sẫm nền ngoài
+            var tBrickCourtyard = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng ở giữa
+            var tBrickPattern = GetOrCreateTileAsset(GetSprite(sprites, "Tile_1_0")); // Gạch nung rêu phong điểm xuyết
+            var tWaterPond = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_0")); // Nước ao sen xanh ngọc
+            var tLotusDecal = GetOrCreateTileAsset(GetSprite(sprites, "Tile_5_0")); // Hoa sen & lá sen
+            var tWallStone = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_2")); // Tường thành đá cổ
+            var tPillar = GetOrCreateTileAsset(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn
 
             int halfSize = 24;
             for (int x = -halfSize; x <= halfSize; x++)
@@ -159,13 +186,13 @@ namespace Projectzombie.Editor.TilemapTools
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
             // Nền đất cỏ sẫm tự nhiên (Hàng 6 & 7: y=64 và y=0 trong Atlas)
-            var tGrassDark1 = CreateTile(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm 1
-            var tGrassDark2 = CreateTile(GetSprite(sprites, "Tile_5_7")); // Cỏ xanh sẫm 2
-            var tDirtGround = CreateTile(GetSprite(sprites, "Tile_0_7")); // Đất bùn nâu
-            var tGravelPath = CreateTile(GetSprite(sprites, "Tile_1_7")); // Lối mòn đất sỏi
-            var tDecalFlora = CreateTile(GetSprite(sprites, "Tile_6_7")); // Cỏ hoa dại điểm xuyết
-            var tObstacleBushes = CreateTile(GetSprite(sprites, "Tile_1_6")); // Bụi cây rậm / đá rêu
-            var tStonePillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn cổ
+            var tGrassDark1 = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm 1
+            var tGrassDark2 = GetOrCreateTileAsset(GetSprite(sprites, "Tile_5_7")); // Cỏ xanh sẫm 2
+            var tDirtGround = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_7")); // Đất bùn nâu
+            var tGravelPath = GetOrCreateTileAsset(GetSprite(sprites, "Tile_1_7")); // Lối mòn đất sỏi
+            var tDecalFlora = GetOrCreateTileAsset(GetSprite(sprites, "Tile_6_7")); // Cỏ hoa dại điểm xuyết
+            var tObstacleBushes = GetOrCreateTileAsset(GetSprite(sprites, "Tile_1_6")); // Bụi cây rậm / đá rêu
+            var tStonePillar = GetOrCreateTileAsset(GetSprite(sprites, "Tile_2_2")); // Trụ đá phong ấn cổ
 
             int halfSize = 22;
             for (int x = -halfSize; x <= halfSize; x++)
@@ -229,12 +256,12 @@ namespace Projectzombie.Editor.TilemapTools
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
             // Phối cảnh: Vùng ngoài là nền cỏ xanh sẫm + bờ bao đá, ở giữa là Sân Đình Gạch Đỏ Bát Tràng tráng lệ
-            var tGrassOuter = CreateTile(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm nền ngoài
-            var tBrickCourtyard = CreateTile(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng
-            var tBrickPattern = CreateTile(GetSprite(sprites, "Tile_1_0")); // Gạch nung có hoa văn điểm nhấn
-            var tWallStone = CreateTile(GetSprite(sprites, "Tile_0_2")); // Tường thành đá
-            var tPillar = CreateTile(GetSprite(sprites, "Tile_2_2")); // Bia đá / trụ đá cổ
-            var tDecalMoss = CreateTile(GetSprite(sprites, "Tile_6_7")); // Rêu xanh viền chân thành
+            var tGrassOuter = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_7")); // Cỏ xanh sẫm nền ngoài
+            var tBrickCourtyard = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_0")); // Sân gạch nung Bát Tràng
+            var tBrickPattern = GetOrCreateTileAsset(GetSprite(sprites, "Tile_1_0")); // Gạch nung có hoa văn điểm nhấn
+            var tWallStone = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_2")); // Tường thành đá
+            var tPillar = GetOrCreateTileAsset(GetSprite(sprites, "Tile_2_2")); // Bia đá / trụ đá cổ
+            var tDecalMoss = GetOrCreateTileAsset(GetSprite(sprites, "Tile_6_7")); // Rêu xanh viền chân thành
 
             int halfSize = 24;
             for (int x = -halfSize; x <= halfSize; x++)
@@ -295,11 +322,11 @@ namespace Projectzombie.Editor.TilemapTools
             var (root, ground, decals, obstacles) = CreateMapHierarchy(mapName);
 
             // Nền đầm lầy: Đất bùn nâu sẫm + ao nước xanh ngọc sâu + lá sen hồng
-            var tMudGround = CreateTile(GetSprite(sprites, "Tile_0_7")); // Đất bùn đầm lầy
-            var tWaterPond = CreateTile(GetSprite(sprites, "Tile_4_0")); // Nước ao xanh ngọc (y=448, x=256)
-            var tLotusDecal = CreateTile(GetSprite(sprites, "Tile_5_0")); // Lá sen hồng trên mặt nước (y=448, x=320)
-            var tGrassPatch = CreateTile(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ rêu quanh bờ ao
-            var tObstacleRock = CreateTile(GetSprite(sprites, "Tile_0_2")); // Bãi đá trơn trượt
+            var tMudGround = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_7")); // Đất bùn đầm lầy
+            var tWaterPond = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_0")); // Nước ao xanh ngọc (y=448, x=256)
+            var tLotusDecal = GetOrCreateTileAsset(GetSprite(sprites, "Tile_5_0")); // Lá sen hồng trên mặt nước (y=448, x=320)
+            var tGrassPatch = GetOrCreateTileAsset(GetSprite(sprites, "Tile_4_7")); // Thảm cỏ rêu quanh bờ ao
+            var tObstacleRock = GetOrCreateTileAsset(GetSprite(sprites, "Tile_0_2")); // Bãi đá trơn trượt
 
             int halfSize = 24;
             for (int x = -halfSize; x <= halfSize; x++)
@@ -437,6 +464,13 @@ namespace Projectzombie.Editor.TilemapTools
         {
             string prefabPath = $"{PREFAB_DIR}/{addressKey}.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(rootObj, prefabPath);
+
+            // Tự động sao chép sang Assets/Resources/Maps để đảm bảo 100% hiển thị & có va chạm khi build APK chạy offline
+            const string resMapDir = "Assets/Resources/Maps";
+            if (!Directory.Exists(resMapDir)) Directory.CreateDirectory(resMapDir);
+            string resPrefabPath = $"{resMapDir}/{addressKey}.prefab";
+            PrefabUtility.SaveAsPrefabAsset(rootObj, resPrefabPath);
+
             Object.DestroyImmediate(rootObj);
 
             var settings = AddressableAssetSettingsDefaultObject.Settings;

@@ -149,7 +149,7 @@ namespace ProjectZombie.Features.UI
                     string stageMsg = _selectedStage != null ? $"Đang khai mở {_selectedStage.stageName}..." : "Đang triệu hồi chân thân Tướng...";
                     reportProgress?.Invoke(0.2f, stageMsg);
 
-                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành dọn map cũ và nạp map mới qua Addressables
+                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành dọn map cũ và nạp map mới qua Addressables hoặc Resources
                     if (_selectedStage != null && !string.IsNullOrEmpty(_selectedStage.mapPrefabAddress))
                     {
                         try
@@ -157,26 +157,48 @@ namespace ProjectZombie.Features.UI
                             // 1. Dọn dẹp map cũ trước đó nếu có
                             DestroyCurrentMapInstance();
 
-                            var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(_selectedStage.mapPrefabAddress);
-                            await locHandle.Task;
-                            if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
+                            bool loadedFromAddressables = false;
+                            try
                             {
-                                var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
-                                await handle.Task;
-                                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(_selectedStage.mapPrefabAddress);
+                                await locHandle.Task;
+                                if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
                                 {
-                                    _currentInstantiatedMap = handle.Result;
-                                    Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                                    var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
+                                    await handle.Task;
+                                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                                    {
+                                        _currentInstantiatedMap = handle.Result;
+                                        Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                                        loadedFromAddressables = true;
+                                    }
                                 }
                             }
-                            else
+                            catch (System.Exception ex)
                             {
-                                Debug.Log($"[MetaSceneTransitionController] Không tìm thấy Addressable Map '{_selectedStage.mapPrefabAddress}', sử dụng Tilemap mặc định có sẵn trong Scene.");
+                                Debug.LogWarning($"[MetaSceneTransitionController] Addressable load failed: {ex.Message}");
+                            }
+
+                            // 2. Fallback sang Resources nội bộ trong APK nếu Addressables chưa tải hoặc chạy Offline trên Android
+                            if (!loadedFromAddressables)
+                            {
+                                var mapPrefab = Resources.Load<GameObject>($"Maps/{_selectedStage.mapPrefabAddress}");
+                                if (mapPrefab != null)
+                                {
+                                    _currentInstantiatedMap = Instantiate(mapPrefab);
+                                    _currentInstantiatedMap.name = _selectedStage.mapPrefabAddress;
+                                    Spawners.SpawnManager.Instance?.RefreshMapReferences();
+                                    Debug.Log($"<color=#00FF88>[MetaSceneTransitionController] Đã nạp thành công Map '{_selectedStage.mapPrefabAddress}' từ Resources!</color>");
+                                }
+                                else
+                                {
+                                    Debug.Log($"[MetaSceneTransitionController] Không tìm thấy Map '{_selectedStage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định có sẵn trong Scene.");
+                                }
                             }
                         }
                         catch (System.Exception ex)
                         {
-                            Debug.LogWarning($"[MetaSceneTransitionController] Addressable Map '{_selectedStage.mapPrefabAddress}' không khả dụng: {ex.Message}. Sử dụng Tilemap có sẵn.");
+                            Debug.LogWarning($"[MetaSceneTransitionController] Map '{_selectedStage.mapPrefabAddress}' không khả dụng: {ex.Message}.");
                         }
                     }
 
