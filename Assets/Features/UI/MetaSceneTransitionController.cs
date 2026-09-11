@@ -80,6 +80,7 @@ namespace ProjectZombie.Features.UI
         }
 
         private Maps.StageDefinitionSO _selectedStage;
+        public Maps.StageDefinitionSO SelectedStage => _selectedStage;
         private GameObject _currentInstantiatedMap;
 
         private void DestroyCurrentMapInstance()

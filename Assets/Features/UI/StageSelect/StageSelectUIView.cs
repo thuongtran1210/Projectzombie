@@ -75,7 +75,15 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_coinsRewardText != null) _coinsRewardText.text = $"<color=#FFD700>Cổ Tiền:</color> {stage.baseRewardCoins:N0}";
             if (_expRewardText != null) _expRewardText.text = $"<color=#00E5FF>Kinh Nghiệm:</color> {stage.baseRewardExp:N0}";
 
-            // Toggle giữa nút Xuất Trận và nút Tải DLC
+            // Hiển thị trạng thái Đã Vượt Ải từ Save Data
+            bool isCompleted = ProjectZombie.Core.Save.GameManager.Instance != null &&
+                               ProjectZombie.Core.Save.GameManager.Instance.SaveData != null &&
+                               ProjectZombie.Core.Save.GameManager.Instance.SaveData.IsStageCompleted(stage.stageId);
+
+            if (isCompleted && _stageTitleText != null)
+            {
+                _stageTitleText.text = $"{stage.stageName} <color=#FFD700>[ĐÃ VƯỢT ẢI]</color>";
+            }
             if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(isDlcDownloaded);
             if (_downloadDlcButton != null)
             {

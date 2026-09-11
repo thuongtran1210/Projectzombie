@@ -269,9 +269,13 @@ namespace ProjectZombie.Features.UI
 
             // Tính toán Currency nhận được & Ghi nhận tiến trình lưu game
             _currencyEarned = tracker.CalculateMetaCurrency(isVictory);
+            string currentStageId = MetaSceneTransitionController.Instance != null && MetaSceneTransitionController.Instance.SelectedStage != null
+                ? MetaSceneTransitionController.Instance.SelectedStage.stageId
+                : "STAGE_01";
+
             if (ProjectZombie.Core.Save.GameManager.Instance != null)
             {
-                ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(tracker.ElapsedTime, tracker.KillCount, _currencyEarned);
+                ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(tracker.ElapsedTime, tracker.KillCount, _currencyEarned, currentStageId, isVictory);
             }
             else if (MetaCurrencyManager.Instance != null)
             {

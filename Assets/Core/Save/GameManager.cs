@@ -80,11 +80,16 @@ namespace ProjectZombie.Core.Save
         /// <summary>
         /// Cập nhật kết quả sau một lượt chơi (Run) và tự động lưu.
         /// </summary>
-        public void OnRunCompleted(float runTime, int killCount, int currencyEarned)
+        public void OnRunCompleted(float runTime, int killCount, int currencyEarned, string stageId = null, bool isVictory = false)
         {
             if (SaveData == null) SaveData = new MetaProgressionSaveData();
 
             SaveData.UpdateBestStats(runTime, killCount);
+
+            if (isVictory && !string.IsNullOrEmpty(stageId))
+            {
+                SaveData.MarkStageCompleted(stageId, runTime, 3);
+            }
 
             if (MetaCurrencyManager.Instance != null)
             {

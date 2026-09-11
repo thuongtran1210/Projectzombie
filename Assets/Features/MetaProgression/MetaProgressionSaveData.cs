@@ -39,6 +39,13 @@ namespace ProjectZombie.Features.MetaProgression
         [Tooltip("Số kill cao nhất trong một run.")]
         public int bestKillCount = 0;
 
+        [Header("Stage Progression")]
+        [Tooltip("Danh sách ID các Ải đã hoàn thành (Ví dụ: 'STAGE_01', 'STAGE_02').")]
+        public System.Collections.Generic.List<string> completedStages = new System.Collections.Generic.List<string>();
+
+        [Tooltip("Danh sách thành tích kỷ lục của từng Ải (Thời gian tốt nhất, số sao đạt được).")]
+        public System.Collections.Generic.List<StageRecordEntry> stageRecords = new System.Collections.Generic.List<StageRecordEntry>();
+
         [Tooltip("Danh sách tiến trình thẻ mảnh & cấp sao của vũ khí / pháp bảo.")]
         public System.Collections.Generic.List<RelicProgressEntry> relicProgressList = new System.Collections.Generic.List<RelicProgressEntry>();
 
@@ -162,6 +169,62 @@ namespace ProjectZombie.Features.MetaProgression
             }
             upgradeNodeLevels[nodeIndex] = level;
         }
+
+        public bool IsStageCompleted(string stageId)
+        {
+            if (string.IsNullOrEmpty(stageId) || completedStages == null) return false;
+            return completedStages.Contains(stageId);
+        }
+
+        public void MarkStageCompleted(string stageId, float clearTime, int stars = 3)
+        {
+            if (string.IsNullOrEmpty(stageId)) return;
+            if (completedStages == null) completedStages = new System.Collections.Generic.List<string>();
+            if (!completedStages.Contains(stageId))
+            {
+                completedStages.Add(stageId);
+            }
+
+            if (stageRecords == null) stageRecords = new System.Collections.Generic.List<StageRecordEntry>();
+            int idx = stageRecords.FindIndex(x => x.stageId == stageId);
+            if (idx >= 0)
+            {
+                var entry = stageRecords[idx];
+                entry.isCompleted = true;
+                if (clearTime < entry.bestClearTime || entry.bestClearTime <= 0) entry.bestClearTime = clearTime;
+                if (stars > entry.starRating) entry.starRating = Mathf.Clamp(stars, 1, 3);
+                stageRecords[idx] = entry;
+            }
+            else
+            {
+                stageRecords.Add(new StageRecordEntry
+                {
+                    stageId = stageId,
+                    isCompleted = true,
+                    bestClearTime = clearTime,
+                    starRating = Mathf.Clamp(stars, 1, 3)
+                });
+            }
+        }
+
+        public StageRecordEntry GetStageRecord(string stageId)
+        {
+            if (string.IsNullOrEmpty(stageId) || stageRecords == null) return default;
+            var entry = stageRecords.Find(x => x.stageId == stageId);
+            return entry;
+        }
+    }
+
+    /// <summary>
+    /// Bản ghi lưu trữ thành tích vượt Ải của người chơi.
+    /// </summary>
+    [Serializable]
+    public struct StageRecordEntry
+    {
+        public string stageId;
+        public bool isCompleted;
+        public float bestClearTime;
+        public int starRating; // 1..3 sao
     }
 
     /// <summary>
