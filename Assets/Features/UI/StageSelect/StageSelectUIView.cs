@@ -59,7 +59,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             base.OnBackPressed(); // Gọi MetaUIManager.PopScreen() chuẩn từ BaseMetaScreenView
         }
 
-        public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable)
+        public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable, float actualDownloadSizeMb = 0f)
         {
             if (stage == null) return;
 
@@ -88,7 +88,11 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_downloadDlcButton != null)
             {
                 _downloadDlcButton.gameObject.SetActive(!isDlcDownloaded);
-                if (_dlcSizeText != null) _dlcSizeText.text = $"Tải Màn Chơi ({stage.estimatedDlcSizeMb:0.0} MB)";
+                if (_dlcSizeText != null)
+                {
+                    float displayMb = actualDownloadSizeMb > 0.01f ? actualDownloadSizeMb : stage.estimatedDlcSizeMb;
+                    _dlcSizeText.text = displayMb > 0.01f ? $"Tải Màn Chơi ({displayMb:0.0} MB)" : "Tải Màn Chơi";
+                }
             }
 
             if (_downloadProgressBar != null)

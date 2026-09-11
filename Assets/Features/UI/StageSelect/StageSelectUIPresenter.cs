@@ -120,11 +120,16 @@ namespace ProjectZombie.Features.UI.StageSelect
             // 1. Màn 1 luôn có sẵn trong APK -> true
             // 2. Các màn sau: Kiểm tra xem trong Cache đã có chưa bằng GetDownloadSizeAsync
             bool isDlcDownloaded = requestedIndex == 0;
+            float actualDownloadSizeMb = 0f;
             if (!isDlcDownloaded && !string.IsNullOrEmpty(currentStage.mapPrefabAddress))
             {
                 var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
                 // Nếu DownloadSize == 0 byte -> Đã tải sẵn trong Cache máy!
                 isDlcDownloaded = !status.NeedsDownload;
+                if (status.DownloadSizeBytes > 0)
+                {
+                    actualDownloadSizeMb = status.DownloadSizeBytes / 1048576f;
+                }
             }
 
             // Đảm bảo không bị race condition khi người chơi bấm Next/Prev nhanh
@@ -133,7 +138,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             bool isPrevAvailable = _currentStageIndex > 0;
             bool isNextAvailable = _currentStageIndex < _stageList.Count - 1;
 
-            _view.RenderStageInfo(currentStage, isDlcDownloaded, isPrevAvailable, isNextAvailable);
+            _view.RenderStageInfo(currentStage, isDlcDownloaded, isPrevAvailable, isNextAvailable, actualDownloadSizeMb);
 
             // Nếu ải này đang trong quá trình tải ngầm (người chơi chuyển tab hoặc thoát rồi quay lại), khôi phục ngay thanh %
             if (_patchManager != null && _patchManager.IsDownloading)
