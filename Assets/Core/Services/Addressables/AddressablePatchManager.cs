@@ -296,9 +296,32 @@ namespace ProjectZombie.Core.Services.Addressables
         /// <summary>
         /// Xóa cache của một key hoặc toàn bộ cache để tải lại từ CDN.
         /// </summary>
-        public void ClearAssetCache(object key)
+        public async Task ClearAssetCacheAsync(object key)
         {
-            UnityEngine.AddressableAssets.Addressables.ClearDependencyCacheAsync(key, true);
+            try
+            {
+                var handle = UnityEngine.AddressableAssets.Addressables.ClearDependencyCacheAsync(key, true);
+                await handle.Task;
+                UnityEngine.AddressableAssets.Addressables.Release(handle);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[{nameof(AddressablePatchManager)}] Lỗi xóa cache cho key '{key}': {ex.Message}");
+            }
+        }
+
+        public async Task ClearAllCacheAsync()
+        {
+            try
+            {
+                Caching.ClearCache();
+                UnityEngine.AddressableAssets.Addressables.CleanBundleCache();
+                await Task.Yield();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[{nameof(AddressablePatchManager)}] Lỗi xóa toàn bộ cache: {ex.Message}");
+            }
         }
 
         private void NotifyProgress(PatchState state, float percent, long downloadedBytes, long totalBytes, string statusMessage)

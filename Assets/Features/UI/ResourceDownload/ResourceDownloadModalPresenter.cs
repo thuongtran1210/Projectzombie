@@ -163,14 +163,14 @@ namespace ProjectZombie.Features.UI.ResourceDownload
             await _patchManager.DownloadPatchAsync(new object[] { data.addressableKey });
         }
 
-        private void HandleDeleteSingleItem(ResourcePackageItemData data)
+        private async void HandleDeleteSingleItem(ResourcePackageItemData data)
         {
             if (data == null || string.IsNullOrEmpty(data.addressableKey)) return;
 
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
 
-            // Xóa cache của key này
-            _patchManager.ClearAssetCache(data.addressableKey);
+            // Xóa cache bất đồng bộ của key này và chờ hoàn tất
+            await _patchManager.ClearAssetCacheAsync(data.addressableKey);
             Debug.Log($"<color=#FFD700>[ResourceDownloadModal]</color> Đã xóa cache của gói: {data.title}");
 
             RefreshAllStatuses();
@@ -195,13 +195,14 @@ namespace ProjectZombie.Features.UI.ResourceDownload
             }
         }
 
-        private void HandleClearAllCache()
+        private async void HandleClearAllCache()
         {
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
 
+            await _patchManager.ClearAllCacheAsync();
             foreach (var pkg in _packages)
             {
-                _patchManager.ClearAssetCache(pkg.addressableKey);
+                await _patchManager.ClearAssetCacheAsync(pkg.addressableKey);
             }
 
             Debug.Log("<color=#FFD700>[ResourceDownloadModal]</color> Đã xóa toàn bộ cache DLC!");
