@@ -137,6 +137,30 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 
 ---
 
+### ❌ Lỗi 2.5: Xung Đột Dữ Liệu Addressables Giữa Editor & Android Build (Play Mode Script)
+- **Hiện tượng**: Trên Editor luôn hiện `[ĐÃ TẢI]` kèm nút `[XÓA]`, không test được luồng tải file từ CDN; trong khi trên Android báo `[CHƯA TẢI]`.
+- **Nguyên nhân**: Editor mặc định dùng chế độ `Use Asset Database (fastest)` nên bỏ qua cache mạng, `GetDownloadSizeAsync` luôn trả về 0 bytes.
+- **Cách khắc phục**:
+  1. Trong cửa sổ `Window > Asset Management > Addressables > Groups`, chuyển **Play Mode Script** sang **Use Existing Build (requires built groups)** để Editor đọc đúng Cache giống thiết bị thật.
+  2. Mở `Tools > ProjectZombie > Addressables > CDN Content Comparator & Audit Tool`, bấm **Xóa Toàn Bộ Local Cache** để giả lập thiết bị mới cài game.
+
+---
+
+### ❌ Lỗi 2.6: Lỗi Hiển Thị Đè Chữ (Text Overlap) Trên Item Của `Modal_ResourceDownload`
+- **Hiện tượng**: Dòng chữ trạng thái `[CHƯA TẢI - 0.1 MB]` bị đè chồng lên nút `[TẢI VỀ]`.
+- **Nguyên nhân**: Cả `Txt_Status` và `Btn_Download` cùng hiển thị nội dung dung lượng và kích thước vùng neo bị chồng chéo.
+- **Cách khắc phục**:
+  1. Tách biệt rõ: `Txt_Status` chỉ hiện nhãn trạng thái `[CHƯA TẢI]`, còn nút `Btn_Download` chịu trách nhiệm hiển thị dung lượng tải `TẢI VỀ (XX.X MB)`.
+  2. Mở rộng chiều cao item lên `92px` và phân bổ vùng layout độc lập cho Text và Button.
+
+---
+
+### ❌ Lỗi 2.7: Dung Lượng Các Ải Bị Sai Lệch (Hiển Thị 0.1 MB Thay Vì 12.4 MB)
+- **Hiện tượng**: Thanh tải Màn 2 / 3 chỉ báo 0.1 MB hoặc 0% do Catalog trên CDN chưa có AssetBundle hoàn chỉnh.
+- **Cách khắc phục**:
+  1. Tích hợp cơ chế tự động Fallback lấy `estimatedSizeMb` từ cấu hình `StageDefinitionSO` khi dung lượng mạng trả về $\le 0.05\text{ MB}$.
+  2. Sử dụng công cụ **`Tools > ProjectZombie > Addressables > 🔨 Build Addressables Content Bundles`** để đóng gói toàn bộ và kéo thả lên Firebase Storage CDN.
+
 ## 3. Nhóm Lỗi Cảm Ứng Mobile, Phím Ảo (Joystick & Action Buttons)
 
 ### ❌ Lỗi 3.1: Joystick Báo Cảnh Báo Thiếu Reference (`containerRect` / `handleRect`)

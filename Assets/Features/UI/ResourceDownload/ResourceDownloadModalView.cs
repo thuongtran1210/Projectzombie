@@ -85,6 +85,19 @@ namespace ProjectZombie.Features.UI.ResourceDownload
             }
             _spawnedItemViews.Clear();
 
+            if (_itemPrefab == null)
+            {
+                var loaded = Resources.Load<GameObject>("UI/ResourcePackageItem_Prefab");
+                if (loaded != null) _itemPrefab = loaded.GetComponent<ResourcePackageItemView>();
+#if UNITY_EDITOR
+                if (_itemPrefab == null)
+                {
+                    var editorPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/ResourcePackageItem_Prefab.prefab");
+                    if (editorPrefab != null) _itemPrefab = editorPrefab.GetComponent<ResourcePackageItemView>();
+                }
+#endif
+            }
+
             if (_itemsContainer == null || _itemPrefab == null || dataList == null) return _spawnedItemViews;
 
             foreach (var itemData in dataList)

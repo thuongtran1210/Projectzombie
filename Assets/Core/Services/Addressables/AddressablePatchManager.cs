@@ -211,9 +211,14 @@ namespace ProjectZombie.Core.Services.Addressables
                     var status = downloadHandle.GetDownloadStatus();
                     float percent = status.Percent;
                     long downloaded = status.DownloadedBytes;
-                    long total = status.TotalBytes > 0 ? status.TotalBytes : targetExpectedSize;
+                    long total = status.TotalBytes;
 
-                    // Nếu status.TotalBytes chưa kịp trả về từ CDN, tính % dựa trên downloaded/targetExpectedSize
+                    if (total <= 0 && targetExpectedSize > 0)
+                    {
+                        total = targetExpectedSize;
+                    }
+
+                    // Nếu status.TotalBytes chưa kịp trả về từ CDN, tính % dựa trên downloaded/total
                     if (percent <= 0f && total > 0 && downloaded > 0)
                     {
                         percent = Mathf.Clamp01((float)downloaded / total);
@@ -221,9 +226,18 @@ namespace ProjectZombie.Core.Services.Addressables
 
                     if (percent > lastPercent) lastPercent = percent;
 
-                    string progressText = total > 0 
-                        ? $"Đang tải ({downloaded / 1048576f:0.1} / {total / 1048576f:0.1} MB - {lastPercent * 100f:0}%)"
-                        : $"Đang tải tài nguyên... ({lastPercent * 100f:0}%)";
+                    float downMb = downloaded / 1048576f;
+                    float totalMb = total > 0 ? total / 1048576f : (targetExpectedSize > 0 ? targetExpectedSize / 1048576f : 0f);
+
+                    string progressText;
+                    if (totalMb > 0.05f)
+                    {
+                        progressText = $"{downMb:0.0} MB / {totalMb:0.0} MB ({lastPercent * 100f:0}%)";
+                    }
+                    else
+                    {
+                        progressText = $"Đang tải tài nguyên... ({lastPercent * 100f:0}%)";
+                    }
 
                     NotifyProgress(PatchState.Downloading, lastPercent, downloaded, total, progressText);
 
@@ -300,9 +314,12 @@ namespace ProjectZombie.Core.Services.Addressables
         {
             try
             {
+                // Khi autoRelease = true (mặc định), Unity Addressables sẽ tự động Release handle khi hoàn tất, không được gọi Addressables.Release thủ công.
                 var handle = UnityEngine.AddressableAssets.Addressables.ClearDependencyCacheAsync(key, true);
-                await handle.Task;
-                UnityEngine.AddressableAssets.Addressables.Release(handle);
+                if (handle.IsValid())
+                {
+                    await handle.Task;
+                }
             }
             catch (Exception ex)
             {

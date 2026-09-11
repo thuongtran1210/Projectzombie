@@ -307,41 +307,48 @@ namespace ProjectZombie.Editor.UI
 
         private static GameObject BuildItemPrefab(TMP_FontAsset font, Sprite pillBg, Sprite track, Sprite fill, Sprite btnAmber, Sprite btnDark)
         {
-            GameObject item = new GameObject("ResourcePackageItem_Prefab", typeof(RectTransform), typeof(Image), typeof(ResourcePackageItemView));
+            GameObject item = new GameObject("ResourcePackageItem_Prefab", typeof(RectTransform), typeof(Image), typeof(LayoutElement), typeof(ResourcePackageItemView));
             RectTransform itemRT = item.GetComponent<RectTransform>();
-            itemRT.sizeDelta = new Vector2(580, 84);
+            itemRT.sizeDelta = new Vector2(580, 92);
+
+            var le = item.GetComponent<LayoutElement>();
+            le.minHeight = 92;
+            le.preferredHeight = 92;
+            le.flexibleWidth = 1;
 
             var imgBg = item.GetComponent<Image>();
             imgBg.color = new Color(0.20f, 0.14f, 0.11f, 0.95f);
             imgBg.type = Image.Type.Sliced;
             if (pillBg != null) imgBg.sprite = pillBg;
 
-            // Title & Status Line
+            // Title Line (Co giãn theo chiều ngang)
             GameObject titleObj = CreateUIElement("Txt_Title", item.transform);
             RectTransform tRT = titleObj.GetComponent<RectTransform>();
             tRT.anchorMin = new Vector2(0, 1);
-            tRT.anchorMax = new Vector2(0, 1);
+            tRT.anchorMax = new Vector2(1, 1);
             tRT.pivot = new Vector2(0, 1);
-            tRT.anchoredPosition = new Vector2(16, -10);
-            tRT.sizeDelta = new Vector2(380, 24);
+            tRT.offsetMin = new Vector2(16, -34);
+            tRT.offsetMax = new Vector2(-170, -10);
             var titleTMP = CreateTextMeshPro(titleObj, font);
             titleTMP.fontSize = 15;
             titleTMP.fontStyle = FontStyles.Bold;
             titleTMP.text = "Tên Gói Tài Nguyên";
             titleTMP.color = new Color(0.98f, 0.90f, 0.75f);
+            titleTMP.overflowMode = TextOverflowModes.Ellipsis;
 
-            // Description Line
+            // Description Line (Co giãn tự động)
             GameObject descObj = CreateUIElement("Txt_Description", item.transform);
             RectTransform dRT = descObj.GetComponent<RectTransform>();
             dRT.anchorMin = new Vector2(0, 0);
-            dRT.anchorMax = new Vector2(0, 0);
+            dRT.anchorMax = new Vector2(1, 0);
             dRT.pivot = new Vector2(0, 0);
-            dRT.anchoredPosition = new Vector2(16, 12);
-            dRT.sizeDelta = new Vector2(380, 36);
+            dRT.offsetMin = new Vector2(16, 10);
+            dRT.offsetMax = new Vector2(-170, 52);
             var descTMP = CreateTextMeshPro(descObj, font);
             descTMP.fontSize = 11.5f;
             descTMP.text = "Mô tả chi tiết nội dung gói tài nguyên...";
             descTMP.color = new Color(0.80f, 0.75f, 0.70f);
+            descTMP.enableWordWrapping = true;
 
             // Status Tag (ĐÃ TẢI / CHƯA TẢI)
             GameObject statusObj = CreateUIElement("Txt_Status", item.transform);
@@ -350,7 +357,7 @@ namespace ProjectZombie.Editor.UI
             stRT.anchorMax = new Vector2(1, 1);
             stRT.pivot = new Vector2(1, 1);
             stRT.anchoredPosition = new Vector2(-16, -10);
-            stRT.sizeDelta = new Vector2(160, 22);
+            stRT.sizeDelta = new Vector2(145, 24);
             var statusTMP = CreateTextMeshPro(statusObj, font);
             statusTMP.fontSize = 12.5f;
             statusTMP.fontStyle = FontStyles.Bold;
@@ -364,7 +371,7 @@ namespace ProjectZombie.Editor.UI
             bdlRT.anchorMax = new Vector2(1, 0);
             bdlRT.pivot = new Vector2(1, 0);
             bdlRT.anchoredPosition = new Vector2(-16, 10);
-            bdlRT.sizeDelta = new Vector2(150, 36);
+            bdlRT.sizeDelta = new Vector2(145, 36);
             var dlImg = btnDlObj.AddComponent<Image>();
             dlImg.color = Color.white;
             dlImg.type = Image.Type.Sliced;
@@ -409,7 +416,7 @@ namespace ProjectZombie.Editor.UI
             pRT.anchorMax = new Vector2(1, 0);
             pRT.pivot = new Vector2(1, 0);
             pRT.anchoredPosition = new Vector2(-16, 12);
-            pRT.sizeDelta = new Vector2(160, 22);
+            pRT.sizeDelta = new Vector2(145, 22);
 
             var trackImg = progObj.AddComponent<Image>();
             trackImg.color = Color.white;
@@ -657,8 +664,18 @@ namespace ProjectZombie.Editor.UI
                 }
             }
 
+            // Tự động lưu Prefab Sảnh hiện tại vào _Prefabs/UI và Resources/UI để khi build Android đồng bộ 100%
+            string hubPrefabPath = $"{PREFAB_OUTPUT_FOLDER}/MainHubUI.prefab";
+            string hubResourcesPath = $"{RESOURCES_OUTPUT_FOLDER}/MainHubUI.prefab";
+            PrefabUtility.SaveAsPrefabAssetAndConnect(mainHubView.gameObject, hubPrefabPath, InteractionMode.AutomatedAction);
+            if (System.IO.File.Exists(hubPrefabPath))
+            {
+                System.IO.File.Copy(hubPrefabPath, hubResourcesPath, true);
+                AssetDatabase.ImportAsset(hubResourcesPath, ImportAssetOptions.ForceUpdate);
+            }
+
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainHubView.gameObject.scene);
-            Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> HOÀN TẤT: Đã gắn đúng nút Tải Tài Nguyên vào Header_TopBar mà KHÔNG ảnh hưởng bất kỳ đối tượng nào khác!");
+            Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> HOÀN TẤT: Đã gắn nút vào Header VÀ đồng bộ trực tiếp sang Resources/UI/MainHubUI.prefab cho Android!");
         }
 
         private static GameObject CreateUIElement(string name, Transform parent)

@@ -119,6 +119,12 @@ namespace ProjectZombie.EditorTools
                 AndroidAuditEngine.OptimizeTexturesAndAudios();
                 RunDiagnosticScan();
             }
+
+            GUI.backgroundColor = new Color(0.6f, 0.4f, 1f);
+            if (GUILayout.Button("🌐 Đóng Gói Addressables Bundles (CDN)", GUILayout.Height(28)))
+            {
+                ProjectZombie.Editor.AddressablesTools.AddressableGroupsSetupTool.BuildAddressablesBundles();
+            }
             GUI.backgroundColor = Color.white;
             EditorGUILayout.EndHorizontal();
         }

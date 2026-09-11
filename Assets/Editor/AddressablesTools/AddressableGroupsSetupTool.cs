@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
@@ -42,6 +43,24 @@ namespace ProjectZombie.Editor.AddressablesTools
             AssetDatabase.Refresh();
 
             Debug.Log("<color=#00FF88>[AddressableGroupsSetupTool]</color> Đã thiết lập thành công 8 Nhóm Addressables (3 Local + 5 Remote DLC CDN)!");
+        }
+
+        [MenuItem("Tools/ProjectZombie/Addressables/🔨 Build Addressables Content Bundles", priority = 101)]
+        public static void BuildAddressablesBundles()
+        {
+            SetupStandardGroups();
+            Debug.Log("<color=#FFAA00>[AddressableGroupsSetupTool]</color> Bắt đầu đóng gói Addressables Content Bundles...");
+            AddressableAssetSettings.BuildPlayerContent(out UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult result);
+            if (string.IsNullOrEmpty(result.Error))
+            {
+                Debug.Log($"<color=#00FF88>[AddressableGroupsSetupTool] BUILD BUNDLE THÀNH CÔNG!</color> File đã xuất ra thư mục ServerData/Android/");
+                EditorUtility.DisplayDialog("Addressables Build Thành Công", $"Đã đóng gói hoàn tất các AssetBundle và Catalog!\n\nBạn có thể vào thư mục ServerData/Android/ và kéo thả lên Firebase Storage CDN.", "OK");
+            }
+            else
+            {
+                Debug.LogError($"[AddressableGroupsSetupTool] Build Bundle thất bại: {result.Error}");
+                EditorUtility.DisplayDialog("Lỗi Build Addressables", $"Build thất bại: {result.Error}", "Đóng");
+            }
         }
 
         private static void AutoPopulateDefaultEntries(

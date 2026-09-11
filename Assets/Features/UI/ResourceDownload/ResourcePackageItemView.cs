@@ -81,20 +81,28 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
             if (isDownloaded)
             {
-                // ĐÃ TẢI: Hiện trạng thái Đã tải + Nút XÓA, Ẩn nút Tải
+                // ĐÃ TẢI: Hiện nhãn Đã tải + Nút XÓA, Ẩn nút Tải
                 if (_statusText != null) _statusText.text = "<color=#00FF88>[ĐÃ TẢI]</color>";
                 if (_downloadButton != null) _downloadButton.gameObject.SetActive(false);
                 if (_deleteButton != null) _deleteButton.gameObject.SetActive(true);
             }
             else
             {
-                // CHƯA TẢI: Hiện trạng thái Chưa tải + Nút TẢI VỀ, ẨN NÚT XÓA
-                float sizeMb = downloadSizeBytes > 0 ? downloadSizeBytes / 1048576f : (_data?.estimatedSizeMb ?? 0f);
-                if (_statusText != null) _statusText.text = $"<color=#FFAA00>[CHƯA TẢI - {sizeMb:0.0} MB]</color>";
+                // CHƯA TẢI: Ưu tiên dung lượng ước tính nếu downloadSizeBytes = 0 hoặc bất thường (< 0.05MB)
+                float sizeMb = (downloadSizeBytes > 50000) ? (downloadSizeBytes / 1048576f) : (_data?.estimatedSizeMb ?? 0f);
+                if (sizeMb <= 0.05f && _data != null && _data.estimatedSizeMb > 0.05f)
+                {
+                    sizeMb = _data.estimatedSizeMb;
+                }
+
+                if (_statusText != null) _statusText.text = $"<color=#FFAA00>[CHƯA TẢI]</color>";
                 if (_downloadButton != null)
                 {
                     _downloadButton.gameObject.SetActive(true);
-                    if (_downloadButtonText != null) _downloadButtonText.text = $"TẢI VỀ ({sizeMb:0.0} MB)";
+                    if (_downloadButtonText != null)
+                    {
+                        _downloadButtonText.text = sizeMb > 0f ? $"TẢI VỀ ({sizeMb:0.0} MB)" : "TẢI VỀ";
+                    }
                 }
                 if (_deleteButton != null) _deleteButton.gameObject.SetActive(false); // Chưa tải thì KHÔNG CÓ nút Xóa
             }
