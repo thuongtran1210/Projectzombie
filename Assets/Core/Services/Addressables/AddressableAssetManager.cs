@@ -87,18 +87,6 @@ namespace ProjectZombie.Core.Services.Addressables
             {
                 var asyncHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(address);
 
-                // Lắng nghe cancellation nếu có
-                if (cancellationToken.CanBeCanceled)
-                {
-                    cancellationToken.Register(() =>
-                    {
-                        if (!asyncHandle.IsDone && asyncHandle.IsValid())
-                        {
-                            UnityEngine.AddressableAssets.Addressables.Release(asyncHandle);
-                        }
-                    });
-                }
-
                 await asyncHandle.Task;
 
                 if (cancellationToken.IsCancellationRequested)

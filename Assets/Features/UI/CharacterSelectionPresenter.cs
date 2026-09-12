@@ -171,6 +171,7 @@ namespace ProjectZombie.Features.UI
 
             Debug.LogWarning($"[{nameof(CharacterSelectionPresenter)}] Chưa gán Database Nhân Vật! Kiểm tra Inspector.");
             _characters = new CharacterInfo[0];
+            RenderCurrentCharacter();
         }
 
         private bool IsHeroUnlocked(string heroId)

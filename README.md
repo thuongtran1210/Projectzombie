@@ -4,10 +4,11 @@
 [![Platform](https://img.shields.io/badge/Platform-Android%20Mobile-green.svg)](https://play.google.com/)
 [![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-URP%202D-orange.svg)](https://unity.com/srp/universal-render-pipeline)
 [![Architecture](https://img.shields.io/badge/Architecture-SOLID%20%7C%20MVP%20%7C%20Event--Driven-purple.svg)](#-kiến-trúc--kỹ-thuật)
+[![CDN & DLC](https://img.shields.io/badge/CDN%20%26%20DLC-Addressables%20%7C%20Firebase%20Storage-yellow.svg)](#-kiến-trúc-tài-nguyên-addressables--firebase-cdn)
 [![Audio](https://img.shields.io/badge/Audio-Audio%20Master%20DNA%20(0ms%20Latency)-teal.svg)](#-hệ-thống-âm-thanh-chuẩn-cổ-phong)
 [![Performance](https://img.shields.io/badge/Performance-60%20FPS%20%7C%200%20GC%20Alloc-brightgreen.svg)](#-tối-ưu-hiệu-năng-di-động-mobile-performance--optimization)
 
-> **Vong Xuyên** là dự án game hành động sinh tồn di động (**Top-down Survival Roguelite / Survivor-like**) lấy cảm hứng từ bối cảnh thần thoại, văn hóa dân gian Việt Nam và triết lý Đông Phương (**Ngũ Hành & Cán Cân Âm Dương**). Game được thiết kế chuyên biệt cho hệ máy Android với hiệu năng tối ưu cao (60 FPS mượt mà, Zero GC Allocation trong combat loop, Offline-First).
+> **Vong Xuyên** là dự án game hành động sinh tồn di động (**Top-down Survival Roguelite / Survivor-like**) lấy cảm hứng từ bối cảnh thần thoại, văn hóa dân gian Việt Nam và triết lý Đông Phương (**Ngũ Hành Tương Sinh Tương Khắc & Cán Cân Âm Dương**). Game được thiết kế chuyên biệt cho hệ máy Android với hiệu năng tối ưu cao (60 FPS mượt mà, Zero GC Allocation trong combat loop, Offline-First kết hợp Live-Ops DLC từ Firebase CDN).
 
 ---
 
@@ -15,13 +16,14 @@
 1. [🌟 Điểm Nổi Bật (Unique Selling Points)](#-điểm-nổi-bật-unique-selling-points)
 2. [🎮 Vòng Lặp Trò Chơi (Core Gameplay Loop)](#-vòng-lặp-trò-chơi-core-gameplay-loop)
 3. [☯️ Hệ Thống Cơ Chế Cốt Lõi (Core Mechanics)](#️-hệ-thống-cơ-chế-cốt-lõi-core-mechanics)
-4. [🔊 Hệ Thống Âm Thanh Chuẩn Cổ Phong (Audio Master DNA)](#-hệ-thống-âm-thanh-chuẩn-cổ-phong-audio-master-dna)
-5. [🛡️ Kiến Trúc Đóng Băng & Kiểm Soát Trận Đấu (Pause Guard Architecture)](#️-kiến-trúc-đóng-băng--kiểm-soát-trận-đấu-pause-guard-architecture)
-6. [📐 Kiến Trúc Kỹ Thuật (Architecture & Engineering)](#-kiến-trúc-kỹ-thuật-architecture--engineering)
-7. [📁 Cấu Trúc Thư Mục Dự Án (Folder Structure)](#-cấu-trúc-thư-mục-dự-án-folder-structure)
-8. [⚡ Tối Ưu Hiệu Năng Di Động (Mobile Performance & Optimization)](#-tối-ưu-hiệu-năng-di-động-mobile-performance--optimization)
-9. [🛠️ Yêu Cầu Môi Trường & Thiết Lập (Getting Started)](#️-yêu-cầu-môi-trường--thiết-lập-getting-started)
-10. [📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation)](#-tài-liệu-tham-chiếu-chi-tiết-documentation)
+4. [🌐 Kiến Trúc Tài Nguyên: Addressables & Firebase CDN](#-kiến-trúc-tài-nguyên-addressables--firebase-cdn)
+5. [🔊 Hệ Thống Âm Thanh Chuẩn Cổ Phong (Audio Master DNA)](#-hệ-thống-âm-thanh-chuẩn-cổ-phong-audio-master-dna)
+6. [🛡️ Kiến Trúc Đóng Băng & Kiểm Soát Trận Đấu (Pause Guard Architecture)](#️-kiến-trúc-đóng-băng--kiểm-soát-trận-đấu-pause-guard-architecture)
+7. [📐 Kiến Trúc Kỹ Thuật (Architecture & Engineering)](#-kiến-trúc-kỹ-thuật-architecture--engineering)
+8. [📁 Cấu Trúc Thư Mục Dự Án (Folder Structure)](#-cấu-trúc-thư-mục-dự-án-folder-structure)
+9. [⚡ Tối Ưu Hiệu Năng Di Động (Mobile Performance & Optimization)](#-tối-ưu-hiệu-năng-di-động-mobile-performance--optimization)
+10. [🛠️ Yêu Cầu Môi Trường & Thiết Lập (Getting Started)](#️-yêu-cầu-môi-trường--thiết-lập-getting-started)
+11. [📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation Hub)](#-tài-liệu-tham-chiếu-chi-tiết-documentation-hub)
 
 ---
 
@@ -33,6 +35,7 @@
   - **Tương Sinh:** Giảm **-20% Cooldown** cho vũ khí khi kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
 - ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Thanh Đồng):** Trục nội tại riêng biệt luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
 - 🗡️ **Kho Pháp Bảo & Yêu Ma Đậm Chất Thần Thoại:** Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng, Điếu Cày Cửu U, Dép Tổ Ong, Đao Cửu Vĩ đối đầu Ma Giáp, Quỷ Nhập Tràng, Ma Da, Ma Trơi, Ngưu Đầu Mã Diện.
+- ☁️ **Kiến Trúc Live-Ops DLC qua Firebase Storage CDN:** Cho phép cập nhật nóng bản đồ ải mới, quái vật, cân bằng thẻ nâng cấp và banner Gacha mà không cần phát hành lại file APK lên Google Play.
 - ⚡ **Zero Garbage Collection (0 GC) & Object Pooling:** Triệt tiêu hoàn toàn hiện tượng sụt FPS/giật lag trên Android khi spawn hàng trăm quái vật và đạn cùng lúc.
 - 🎵 **Hệ Thống Âm Thanh Cổ Phong Thuần Khiết (0ms Latency):** Thiết kế tỉ mỉ từng tiếng gõ Mõ Gỗ, Khánh Ngọc, tiếng vung kiếm, nổ bộc phá và khúc Đàn Tranh Sáo Trúc ngoài Sảnh.
 
@@ -76,6 +79,34 @@ graph TD
 
 ---
 
+## 🌐 Kiến Trúc Tài Nguyên: Addressables & Firebase CDN
+
+Dự án áp dụng mô hình nạp tài nguyên **Hybrid (Offline-First kết hợp Remote DLC CDN)**:
+
+```mermaid
+flowchart TD
+    subgraph LOCAL_APK [1. NẰM TRONG BẢN CÀI APK (OFFLINE-FIRST)]
+        G1[Group_Core_Preload: UI Sảnh, Font chữ, Database cơ bản]
+        G2[Group_Enemies_Stage1: Quái vật Chương 1]
+        G3[Group_Weapons_Tier1: 12 Pháp Bảo & Đạn khởi đầu]
+    end
+
+    subgraph REMOTE_CDN [2. REMOTE DLC (TẢI TỪ FIREBASE STORAGE CDN)]
+        G4[Group_DLC_Stages_Remote: Tilemap Màn 2, 3, 4]
+        G5[Group_DLC_Enemies_Remote: Quái & Boss nâng cao]
+        G6[Group_DLC_Audio_Remote: Nhạc nền BGM từng ải]
+        G7[Group_DLC_Upgrades_Remote: Thẻ Nâng Cấp Upgrades]
+        G8[Group_DLC_MetaConfigs_Remote: Cây Miếu Cổ, Banner Gacha]
+    end
+```
+
+### 3 Cơ Chế Nạp Tài Nguyên Trong Game:
+1. **`Resources.Load<T>()`**: Dùng riêng cho các UI View hệ thống cốt lõi nạp ngay frame đầu (`LoadingScreen`, `SettingsModalUI`) và làm fallback an toàn.
+2. **Addressables (Local trong APK)**: Nạp bất đồng bộ không block main thread cho Màn 1, Tướng khởi đầu và 12 Pháp Bảo để người chơi vừa cài game là chơi được ngay không cần kết nối mạng.
+3. **Addressables (Remote CDN)**: Tải động các bản đồ Màn 2+, Thẻ nâng cấp cân bằng meta và cấu hình Gacha từ máy chủ Firebase Storage qua URL chuẩn hóa `Addressables.InternalIdTransformFunc`.
+
+---
+
 ## 🔊 Hệ Thống Âm Thanh Chuẩn Cổ Phong (Audio Master DNA)
 
 Hệ thống âm thanh được xây dựng theo chuẩn **44.1kHz 16-bit PCM Mono, 0ms Delay**, tối ưu hóa qua `AudioSourcePool` và tự động điều khiển âm lượng độc lập qua `PlayerPrefs`:
@@ -111,7 +142,7 @@ Dự án áp dụng các nguyên tắc kỹ thuật chuẩn mực cho game Unity
 - **SOLID & Clean Architecture:** Tách biệt module độc lập, giao tiếp thông qua Interfaces (`IDamageable`, `IDamageDealer`, `IUpgradeFilter`, `ICharacterStats`, `ISignatureSkill`).
 - **Mô Hình MVP (Model-View-Presenter) Cho UI:**
   - **Model:** Quản lý dữ liệu logic, phát Event (`PlayerStats`, `RunStatsTracker`, `PlayerExperience`).
-  - **View:** Thụ động (`Passive View`), chỉ nhận render dữ liệu thô, không can thiệp logic.
+  - **View:** Thụ động (`Passive View`), chỉ nhận render dữ liệu string đã định dạng, không can thiệp logic.
   - **Presenter:** Lắng nghe Model, định dạng dữ liệu và cập nhật View.
 - **Event-Driven Decoupling:** Giao tiếp lỏng lẻo thông qua `GameEventBus` và C# Actions, triệt tiêu hoàn toàn phụ thuộc vòng.
 - **Data-Driven Design:** Lưu trữ toàn bộ chỉ số nhân vật, quái vật, vũ khí, đạn đạo và thẻ nâng cấp trong `ScriptableObject` (`WeaponData`, `EnemyConfig`, `ProjectileData`, `UpgradeData`).
@@ -129,29 +160,26 @@ Assets/
 │   ├── Juice/                 # Game Feel, Hit Flash, Damage Text Manager
 │   ├── Pooling/               # Generic Object Pooling (Zero GC Allocation)
 │   ├── Save/                  # SaveSystem (Offline-first Local JSON Persistence)
-│   └── Services/              # Service Locators & Bootstrapper
+│   └── Services/              # AddressablePatchManager, Bootstrapper, Service Locators
 │
 ├── Features/                  # Triển khai tính năng (Feature-based Modular)
 │   ├── Boss/                  # Boss State Machine, Skills (Ground Slam, Bull Dash) & Elements
 │   ├── Collectibles/          # Hạt EXP (ExpGem Homing), Nam Châm (Magnet), Rương Kho Báu, Cổ Tiền
 │   ├── Enemies/               # Quái vật AI FSM, Status Controller, Movement & Attack Strategies
-│   ├── MetaProgression/       # Cây kỹ năng vĩnh viễn Miếu Cổ, Talent Tree, Shop
+│   ├── Maps/                  # MapTilemapController, StageDefinitionSO, Safe Bounds
+│   ├── MetaProgression/       # Cây kỹ năng vĩnh viễn Miếu Cổ, Talent Tree, Gacha Relics
 │   ├── Player/                # Player Movement, Character Combat, Health, Signature Skills
 │   ├── Projectiles/           # Đạn bay Data-Driven, Pool Spawner, Collision & Behaviors
 │   ├── Spawners/              # Master-Worker Wave Spawner, Swarm Events
-│   ├── UI/                    # MVP UI Panels (HUD, LevelUp, Pause, GameOver, Loadout, Joystick)
+│   ├── UI/                    # MVP UI Panels (HUD, LevelUp, Pause, ResourceDownload, Gacha)
 │   ├── Upgrades/              # Hệ thống thẻ Gacha, Filter Âm Dương & Tiến Hóa Pháp Bảo
 │   ├── Weapons/               # 15+ Pháp bảo, Melee/Ranged Base Classes & Relics
 │   └── YinYang/               # Quản lý Cán cân Âm Dương & Vòng Tương Sinh (ElementCycleManager)
 │
-├── _Data/                     # ScriptableObjects cấu hình Game
-│   ├── Audios/                # Audio Clips & AudioConfigSO Assets
-│   ├── Enemies/               # Chỉ số yêu ma, HP, MoveSpeed, Element
-│   ├── Weapons/               # Dữ liệu pháp bảo, Damage, Cooldown, Evolution
-│   └── Upgrades/              # Danh mục thẻ nâng cấp
-│
-├── _Prefabs/                  # Prefabs nhân vật, quái vật, UI, VFX
+├── _Data/                     # ScriptableObjects cấu hình Game (Weapons, Enemies, Upgrades, Stages)
+├── _Prefabs/                  # Prefabs nhân vật, quái vật, UI, VFX, Maps
 ├── Art/ & _ART/               # Sprites 2D Pixel Art Cổ Phong, Animation Clips, Controllers
+├── Editor/                    # Bộ công cụ Editor Automation (Addressables, Build Sync, Tilemap)
 ├── Shader/ & VFX/             # Shader Graph URP, Particle Systems, Slash & Trail VFX
 └── Scenes/                    # MainMenu, GamePlay_BendoVongXuyen, Bootstrapper
 ```
@@ -167,7 +195,8 @@ Nhằm đảm bảo trải nghiệm **60 FPS ổn định** trên thiết bị A
    - Lọc va chạm thông qua Bitwise `LayerMask` ở tầng C++ Physics.
 3. **TryGetComponent & Caching:** Loại bỏ triệt để `GetComponent` trong `Update()` và chu kỳ va chạm vật lý.
 4. **Sprite Batching & Sorting Layers:** Chuẩn hóa 10 Sorting Layers và Y-Sorting (`Transparency Sort Axis (0, 1, 0)`) cho góc nhìn Frontal Top-Down 2.5D.
-5. **TextMeshProUGUI:** Bắt buộc sử dụng TMPro tương thích bộ font thuần Việt (`BeVietnamPro-Regular SDF`) để tối ưu Draw Call và độ sắc nét.
+5. **UI EventSystem CPU Offloading:** Tắt `raycastTarget = false` trên toàn bộ Image/Text trang trí, tách riêng Canvas tĩnh và Canvas động (HUD).
+6. **TextMeshProUGUI:** Bắt buộc sử dụng TMPro tương thích bộ font thuần Việt (`NotoSerif`, `BeVietnamPro`) để tối ưu Draw Call và độ sắc nét.
 
 ---
 
@@ -209,8 +238,9 @@ Hệ thống tài liệu dự án được cấu trúc bài bản và phân lo�
 - 🖼️ [Kim Chỉ Nam Thiết Kế UI/UX Di Động](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/GAME_UI_STYLE_GUIDE.md) — 7 Trụ cột UI, HUD In-game, Joystick ảo, Bảng nâng cấp.
 - 🤖 [Sổ Tay Prompt AI Sinh Asset UI](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md) — Prompt chuẩn 9-Slice, Panel hoa văn Đông Sơn.
 
-### 🔊 Âm Thanh & Dịch Vụ Kỹ Thuật
+### 🔊 Âm Thanh, Dịch Vụ Kỹ Thuật & CDN
 - 🔊 [Đặc Tả Hệ Thống Âm Thanh Cổ Phong](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md) — Mõ gỗ, Khánh ngọc, AudioSource Pooling 0 GC.
+- 🌐 [Hướng Dẫn Addressables & Firebase CDN DLC](file:///c:/Users/thuon/Unity/Projectzombie/Assets/DOCS_ADDRESSABLES_CDN_FIREBASE.md) — Cơ chế 8 nhóm, URL Transform, Hot-update Live-Ops.
 - 💰 [Đặc Tả Kiếm Tiền & Quảng Cáo AdMob](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ADMOB_MONETIZATION_SPEC.md) — Rewarded Video, Interstitial, Collapsible Banner.
 - ☁️ [Đặc Tả Lưu Trữ Đám Mây (Cloud Save)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md) — Offline-first, Google Play Games Services, Conflict Resolution.
 - ⚡ [Báo Cáo Tối Ưu Hiệu Năng & Zero Freeze Spikes](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md) — Triệt tiêu giật lag, 60 FPS Mobile.

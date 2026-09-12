@@ -93,7 +93,14 @@ namespace ProjectZombie.Core.Services.Addressables
                     if (match.Success)
                     {
                         string fileName = match.Groups["filename"].Value;
-                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+#if UNITY_ANDROID
+                        string platformFolder = "Android";
+#elif UNITY_IOS
+                        string platformFolder = "iOS";
+#else
+                        string platformFolder = "StandaloneWindows64";
+#endif
+                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/{platformFolder}%2F{fileName}?alt=media";
                         return correctedUrl;
                     }
                 }
@@ -118,6 +125,15 @@ namespace ProjectZombie.Core.Services.Addressables
             try
             {
                 NotifyProgress(PatchState.CheckingForUpdates, 0f, 0, 0, "Đang kiểm tra dữ liệu máy chủ...");
+
+                // Kiểm tra kết nối mạng Offline
+                if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+                    Debug.Log($"[{nameof(AddressablePatchManager)}] Thiết bị đang Offline, sử dụng Asset nội bộ máy.");
+                    NotifyProgress(PatchState.UpToDate, 1f, 0, 0, "Đang ở chế độ Ngoại Tuyến (Offline)");
+                    OnPatchCompleted?.Invoke();
+                    return false;
+                }
 
                 // Khởi tạo Addressables Runtime
                 var initHandle = UnityEngine.AddressableAssets.Addressables.InitializeAsync();

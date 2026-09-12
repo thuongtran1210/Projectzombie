@@ -31,7 +31,14 @@ namespace ProjectZombie.Core.Architecture
                     if (match.Success)
                     {
                         string fileName = match.Groups["filename"].Value;
-                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+#if UNITY_ANDROID
+                        string platformFolder = "Android";
+#elif UNITY_IOS
+                        string platformFolder = "iOS";
+#else
+                        string platformFolder = "StandaloneWindows64";
+#endif
+                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/{platformFolder}%2F{fileName}?alt=media";
                         return correctedUrl;
                     }
                 }
