@@ -21,7 +21,6 @@ namespace ProjectZombie.Features.UI
         public static bool IsDamageNumbersEnabled => PlayerPrefs.GetInt(PREF_DAMAGE_NUMBERS, 1) == 1;
         public static bool Is60FPSEnabled => PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ApplyGlobalSettingsOnBoot()
         {
             bool fps60 = PlayerPrefs.GetInt(PREF_TARGET_60FPS, 1) == 1;
@@ -42,6 +41,7 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            ApplyGlobalSettingsOnBoot();
             EnsureViewAndEvents();
         }
 

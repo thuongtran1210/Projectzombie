@@ -14,11 +14,13 @@ namespace ProjectZombie.Features.Startup
     /// </summary>
     public class GameStartupFlowController : MonoBehaviour
     {
+#pragma warning disable CS0414
         [Header("Settings")]
         [Tooltip("Có tự động kiểm tra bản vá CDN khi khởi động hay không")]
         [SerializeField] private bool _autoCheckCdnOnStart = true;
         [Tooltip("Thời gian chờ tối đa (giây) khi kiểm tra kết nối CDN tránh bị treo nếu offline")]
         [SerializeField] private float _networkTimeoutSeconds = 4f;
+#pragma warning restore CS0414
 
         private void Start()
         {
@@ -30,60 +32,58 @@ namespace ProjectZombie.Features.Startup
             // Đảm bảo TimeScale hoạt động
             Time.timeScale = 1f;
 
+#if !UNITY_EDITOR
+            // Trên thiết bị thực tế (Android / Mobile) nếu có bật kiểm tra CDN
             if (_autoCheckCdnOnStart)
             {
                 bool isDone = false;
-                string currentStatus = "Đang kiểm tra dữ liệu máy chủ...";
-                float currentPercent = 0f;
 
-                // Subscribe sự kiện tiến trình từ AddressablePatchManager
-                Action<PatchProgress> onProgress = (p) =>
-                {
-                    currentStatus = p.StatusMessage;
-                    currentPercent = p.Percent;
-                };
-                AddressablePatchManager.Instance.OnPatchProgressChanged += onProgress;
-
-                // Sử dụng LoadingScreenPresenter để hiển thị tiến trình mượt mà
                 if (LoadingScreenPresenter.Instance != null)
                 {
                     LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                     {
-                        reportProgress?.Invoke(0.1f, "Đang kết nối cổng Hoàng Tuyền...");
-                        
-                        // Kiểm tra catalog & tính dung lượng
-                        var checkTask = AddressablePatchManager.Instance.CheckForUpdatesAsync();
-                        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(_networkTimeoutSeconds));
+                        try
+                        {
+                            reportProgress?.Invoke(0.1f, "Đang kết nối cổng Hoàng Tuyền...");
 
-                        var completedTask = await Task.WhenAny(checkTask, timeoutTask);
-                        if (completedTask == checkTask && checkTask.Result)
-                        {
-                            reportProgress?.Invoke(0.3f, $"Tìm thấy bản vá ({AddressablePatchManager.Instance.TotalDownloadSize / 1048576f:0.0} MB). Đang tải...");
-                            await AddressablePatchManager.Instance.DownloadPatchAsync();
+                            var checkTask = AddressablePatchManager.Instance.CheckForUpdatesAsync();
+                            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(_networkTimeoutSeconds));
+
+                            var completedTask = await Task.WhenAny(checkTask, timeoutTask);
+                            if (completedTask == checkTask && checkTask.Result)
+                            {
+                                reportProgress?.Invoke(0.3f, $"Tìm thấy bản vá ({AddressablePatchManager.Instance.TotalDownloadSize / 1048576f:0.0} MB). Đang tải...");
+                                await AddressablePatchManager.Instance.DownloadPatchAsync();
+                            }
+                            else
+                            {
+                                reportProgress?.Invoke(0.5f, "Dữ liệu trò chơi đã sẵn sàng!");
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            reportProgress?.Invoke(0.5f, "Dữ liệu trò chơi đã sẵn sàng!");
+                            Debug.LogWarning($"[{nameof(GameStartupFlowController)}] Bỏ qua kiểm tra CDN do lỗi: {ex.Message}");
                         }
 
                         reportProgress?.Invoke(1.0f, "Đang mở sảnh chính...");
-                        await Task.Delay(150);
+                        await Task.Delay(100);
                     }, () =>
                     {
                         isDone = true;
                     }, "Đang đồng bộ dữ liệu cõi âm...");
 
-                    while (!isDone) yield return null;
+                    float maxWait = _networkTimeoutSeconds + 2f;
+                    float elapsed = 0f;
+                    while (!isDone && elapsed < maxWait)
+                    {
+                        elapsed += Time.unscaledDeltaTime;
+                        yield return null;
+                    }
                 }
-                else
-                {
-                    // Fallback chạy ngầm nếu chưa có LoadingScreenPresenter
-                    var task = AddressablePatchManager.Instance.CheckForUpdatesAsync();
-                    while (!task.IsCompleted) yield return null;
-                }
-
-                AddressablePatchManager.Instance.OnPatchProgressChanged -= onProgress;
             }
+#else
+            yield return null;
+#endif
 
             // Chuyển sang Sảnh chính (Main Hub)
             if (MetaUIManager.Instance != null)

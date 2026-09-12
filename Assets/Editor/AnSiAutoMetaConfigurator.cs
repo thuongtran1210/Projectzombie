@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace ProjectZombie.Editor.Tools
 {
-    [InitializeOnLoad]
     public static class AnSiAutoMetaConfigurator
     {
         [MenuItem("ProjectZombie/Art/Configure AnSi Meta & Clips Now")]

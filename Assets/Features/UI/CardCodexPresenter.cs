@@ -231,12 +231,6 @@ namespace ProjectZombie.Features.UI
             {
                 foreach (var u in loadedUpgrades) TryAddUpgrade(u);
             }
-            var rootUpgrades = Resources.LoadAll<UpgradeData>("");
-            if (rootUpgrades != null)
-            {
-                foreach (var u in rootUpgrades) TryAddUpgrade(u);
-            }
-
             // 2. Load Weapons across all Resources folders
             var loadedWeapons1 = Resources.LoadAll<WeaponData>("Weapons");
             if (loadedWeapons1 != null)
@@ -247,11 +241,6 @@ namespace ProjectZombie.Features.UI
             if (loadedWeapons2 != null)
             {
                 foreach (var w in loadedWeapons2) TryAddWeapon(w);
-            }
-            var rootWeapons = Resources.LoadAll<WeaponData>("");
-            if (rootWeapons != null)
-            {
-                foreach (var w in rootWeapons) TryAddWeapon(w);
             }
 
 #if UNITY_EDITOR
@@ -277,8 +266,15 @@ namespace ProjectZombie.Features.UI
             }
 #endif
 
-            // 3. Load Heroes qua GameDataService
-            var charDb = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase").GetAwaiter().GetResult();
+            // 3. Load Heroes
+            var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+            if (charDb == null)
+            {
+                charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/Resources/CharacterDatabase.asset")
+                      ?? UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+            }
+#endif
             if (charDb != null && charDb.Characters != null)
             {
                 foreach (var h in charDb.Characters)

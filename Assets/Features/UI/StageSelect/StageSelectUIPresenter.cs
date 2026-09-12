@@ -36,7 +36,20 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         private async void EnsureStageDatabaseLoaded()
         {
-            var db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
+            var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
+                  ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
+#if UNITY_EDITOR
+            if (db == null)
+            {
+                db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/WorldStageDatabase.asset")
+                  ?? UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/Levels/WorldStageDatabase.asset");
+            }
+#endif
+            if (db == null)
+            {
+                db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
+            }
+
             if (db != null && db.Stages != null && db.Stages.Count > 0)
             {
                 _stageList = new List<StageDefinitionSO>(db.Stages);

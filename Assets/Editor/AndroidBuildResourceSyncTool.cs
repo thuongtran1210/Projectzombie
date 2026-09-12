@@ -165,7 +165,6 @@ namespace ProjectZombie.EditorTools
                         if (GUILayout.Button(btnText, GUILayout.Height(24), GUILayout.MinWidth(180)))
                         {
                             ExecuteIndividualFix(issue);
-                            GUIUtility.ExitGUI();
                         }
                         GUI.backgroundColor = Color.white;
                         EditorGUILayout.EndHorizontal();

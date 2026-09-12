@@ -53,6 +53,14 @@ namespace ProjectZombie.Core.Services.Data
                 return pendingResult as T;
             }
 
+            // 2.5. Kiểm tra Resources cục bộ trước (0ms, không phụ thuộc mạng / catalog)
+            var localRes = Resources.Load<T>(key);
+            if (localRes != null)
+            {
+                _cache[key] = localRes;
+                return localRes;
+            }
+
             var tcs = new TaskCompletionSource<object>();
             _inFlight[key] = tcs.Task;
 

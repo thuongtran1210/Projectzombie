@@ -11,14 +11,21 @@ namespace ProjectZombie.Core
         private float tickInterval = 0.5f;
         private float _nextTickTime;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Initialize()
+        public static TickManager Instance
         {
-            if (_instance == null)
+            get
             {
-                GameObject go = new GameObject("[TickManager]");
-                _instance = go.AddComponent<TickManager>();
-                DontDestroyOnLoad(go);
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<TickManager>();
+                    if (_instance == null && Application.isPlaying)
+                    {
+                        GameObject go = new GameObject("[TickManager]");
+                        _instance = go.AddComponent<TickManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                return _instance;
             }
         }
 

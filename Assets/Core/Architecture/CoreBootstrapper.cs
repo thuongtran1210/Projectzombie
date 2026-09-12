@@ -14,10 +14,13 @@ namespace ProjectZombie.Core.Architecture
     {
         private const string CORE_ROOT_NAME = "--- APP CORE SERVICES ---";
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#if !UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+#endif
         private static void InitializeCoreServices()
         {
-            // Thiết lập chuyển đổi URL Firebase Storage cho Addressables sớm nhất có thể
+#if !UNITY_EDITOR
+            // Thiết lập chuyển đổi URL Firebase Storage cho Addressables sớm nhất có thể trên thiết bị di động
             UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
             {
                 if (string.IsNullOrEmpty(location.InternalId)) return location.InternalId;
@@ -44,10 +47,13 @@ namespace ProjectZombie.Core.Architecture
                 }
                 return location.InternalId;
             };
+#endif
 
-            // Kiểm tra xem trong Scene đã có sẵn Core Root chưa (tránh tạo thừa)
-            var existingRoot = GameObject.Find(CORE_ROOT_NAME);
-            if (existingRoot != null) return;
+            // Kiểm tra xem trong Scene đã có sẵn Manager Root chưa (tránh tạo thừa và xung đột Singleton)
+            if (GameManager.HasInstance || GameObject.Find(CORE_ROOT_NAME) != null || GameObject.Find("--- GAME MANAGER ---") != null)
+            {
+                return;
+            }
 
             // 1. Tạo GameObject Container tập trung
             var coreRoot = new GameObject(CORE_ROOT_NAME);

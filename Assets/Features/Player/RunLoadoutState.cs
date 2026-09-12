@@ -67,7 +67,6 @@ namespace ProjectZombie.Features.Player
 
         public static bool HasCustomLoadout => _selectedCharacter != null || _selectedPrimaryWeapon != null || (_selectedRelics != null && _selectedRelics.Count > 0);
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void EnsureInitialized()
         {
             if (_isInitialized && _selectedCharacter != null && _selectedPrimaryWeapon != null) return;
@@ -86,7 +85,7 @@ namespace ProjectZombie.Features.Player
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Character/CharacterDatabase");
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
             #if UNITY_EDITOR
-            if (characterDatabase == null)
+            if (characterDatabase == null && !Application.isPlaying)
             {
                 characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
             }
@@ -284,17 +283,8 @@ namespace ProjectZombie.Features.Player
                 }
             }
 
-            var loaded3 = Resources.LoadAll<WeaponData>("");
-            if (loaded3 != null && loaded3.Length > 0)
-            {
-                foreach (var w in loaded3)
-                {
-                    if (w != null && !list.Contains(w)) list.Add(w);
-                }
-            }
-
             #if UNITY_EDITOR
-            if (list.Count == 0)
+            if (list.Count == 0 && !Application.isPlaying)
             {
                 string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
                 foreach (var guid in guids)
