@@ -28,6 +28,13 @@ namespace ProjectZombie.Features.Startup
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 60;
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+            // Đảm bảo xoay linh hoạt 2 hướng ngang theo cảm biến máy (không xoay dọc)
+            Screen.autorotateToPortrait = false;
+            Screen.autorotateToPortraitUpsideDown = false;
+            Screen.autorotateToLandscapeLeft = true;
+            Screen.autorotateToLandscapeRight = true;
+            Screen.orientation = ScreenOrientation.AutoRotation;
         }
 
         private void Start()

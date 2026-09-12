@@ -97,7 +97,9 @@ namespace ProjectZombie.Core.Services.Addressables
 #else
                         string platformFolder = "StandaloneWindows64";
 #endif
-                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/{platformFolder}%2F{fileName}?alt=media";
+                        // Sử dụng endpoint chuẩn Google Firebase Storage Query Param: /o?name=Android%2F<file>&alt=media
+                        // Tránh triệt để việc UnityWebRequest/System.Uri trên Android tự động decode '%2F' thành '/' trong Path gây lỗi HTTP 400
+                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o?name={platformFolder}%2F{fileName}&alt=media";
                         return correctedUrl;
                     }
                 }

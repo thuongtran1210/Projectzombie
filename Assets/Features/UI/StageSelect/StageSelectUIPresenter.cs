@@ -106,17 +106,26 @@ namespace ProjectZombie.Features.UI.StageSelect
             float actualDownloadSizeMb = 0f;
             if (!string.IsNullOrEmpty(currentStage.mapPrefabAddress))
             {
-                var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
-                
-                // Nếu không cần tải hoặc dung lượng cần tải == 0 byte (đã nằm trong cache máy) -> ĐÃ TẢI!
-                if (!status.NeedsDownload || status.DownloadSizeBytes == 0)
+                // Kiểm tra ưu tiên 1: Bản đồ có sẵn trong APK (Resources nội bộ) -> Chơi được ngay Offline!
+                var localMap = Resources.Load<GameObject>($"Maps/{currentStage.mapPrefabAddress}");
+                if (localMap != null)
                 {
                     isDlcDownloaded = true;
                 }
                 else
                 {
-                    isDlcDownloaded = false;
-                    actualDownloadSizeMb = status.DownloadSizeBytes / 1048576f;
+                    var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
+                    
+                    // Nếu không cần tải hoặc dung lượng cần tải == 0 byte (đã nằm trong cache máy) -> ĐÃ TẢI!
+                    if (!status.NeedsDownload || status.DownloadSizeBytes == 0)
+                    {
+                        isDlcDownloaded = true;
+                    }
+                    else
+                    {
+                        isDlcDownloaded = false;
+                        actualDownloadSizeMb = status.DownloadSizeBytes / 1048576f;
+                    }
                 }
             }
 
@@ -197,7 +206,20 @@ namespace ProjectZombie.Features.UI.StageSelect
         private void HandlePatchFailed(string error)
         {
             Debug.LogWarning($"[StageSelectUIPresenter] Tải DLC thất bại: {error}");
-            RefreshView();
+
+            string friendlyMsg = "Lỗi kết nối máy chủ CDN";
+            if (error.Contains("404")) friendlyMsg = "Tài nguyên chưa có trên máy chủ (404)";
+            else if (error.Contains("400")) friendlyMsg = "Yêu cầu sai cấu hình URL (400)";
+            else if (error.Contains("Timeout")) friendlyMsg = "Mạng yếu / Hết thời gian chờ";
+
+            if (_view != null)
+            {
+                _view.ShowDownloadError(friendlyMsg, () => HandleDownloadDlc());
+            }
+            else
+            {
+                RefreshView();
+            }
         }
 
         private void HandleStartBattle()

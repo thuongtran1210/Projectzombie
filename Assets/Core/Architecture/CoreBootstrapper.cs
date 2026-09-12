@@ -15,10 +15,22 @@ namespace ProjectZombie.Core.Architecture
         private const string CORE_ROOT_NAME = "--- APP CORE SERVICES ---";
 
 #if !UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 #endif
         private static void InitializeCoreServices()
         {
+            // Ghim cứng 60 FPS và giữ màn hình luôn sáng, chống tự động khóa máy khi chơi game
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+            // Cơ chế tự động xoay màn hình theo 2 hướng ngang (LandscapeLeft & LandscapeRight) dựa trên cảm biến điện thoại
+            Screen.autorotateToPortrait = false;
+            Screen.autorotateToPortraitUpsideDown = false;
+            Screen.autorotateToLandscapeLeft = true;
+            Screen.autorotateToLandscapeRight = true;
+            Screen.orientation = ScreenOrientation.AutoRotation;
+
 #if !UNITY_EDITOR
             // Thiết lập chuyển đổi URL Firebase Storage cho Addressables sớm nhất có thể trên thiết bị di động
             UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>

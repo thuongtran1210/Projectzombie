@@ -134,5 +134,24 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_downloadDlcButton != null) _downloadDlcButton.gameObject.SetActive(false);
             if (_downloadStatusText != null) _downloadStatusText.text = statusText;
         }
+
+        public void ShowDownloadError(string errorMessage, Action onRetryClicked)
+        {
+            if (_downloadProgressBar != null) _downloadProgressBar.gameObject.SetActive(false);
+            if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(false);
+            if (_downloadDlcButton != null)
+            {
+                _downloadDlcButton.gameObject.SetActive(true);
+                _downloadDlcButton.interactable = true;
+                if (_dlcSizeText != null)
+                {
+                    _dlcSizeText.text = $"<color=#FF5555>Lỗi Tải: {errorMessage}</color>\n<size=80%><b>[Chạm Để Thử Lại]</b></size>";
+                }
+            }
+            if (_downloadStatusText != null)
+            {
+                _downloadStatusText.text = $"<color=#FF5555>{errorMessage}</color>";
+            }
+        }
     }
 }
