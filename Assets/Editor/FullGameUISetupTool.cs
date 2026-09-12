@@ -93,6 +93,11 @@ namespace ProjectZombie.EditorTools
                 SaveDataAndProgressionEditorWindow.ShowWindow();
             }
 
+            if (GUILayout.Button("📱 Bảng Điều Khiển & Test ADB Từ Xa (Remote Debugger, Hack Live)", GUILayout.Height(30)))
+            {
+                AndroidADBToolsWindow.ShowWindow();
+            }
+
             EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("2. THIẾT LẬP TOÀN DIỆN (FULL 1-CLICK)", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("Chỉ bấm nút này khi bạn muốn khởi tạo mới lại toàn bộ Canvas từ đầu.", MessageType.Warning);

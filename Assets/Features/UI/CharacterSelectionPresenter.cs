@@ -88,6 +88,17 @@ namespace ProjectZombie.Features.UI
 
         private async void InitCharacterData()
         {
+            if (_characterDatabase == null)
+            {
+                _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+                if (_characterDatabase == null)
+                {
+                    _characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                }
+#endif
+            }
+
             // 1. Nạp từ GameDataService (Tự động CDN Hot Update -> Cache -> Resources Fallback)
             if (_characterDatabase == null)
             {

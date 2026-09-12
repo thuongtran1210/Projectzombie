@@ -79,6 +79,7 @@ namespace ProjectZombie.Features.UI
             _previewCamera.orthographicSize = 1.45f;
             _previewCamera.nearClipPlane = 0.1f;
             _previewCamera.farClipPlane = 50f;
+            _previewCamera.depth = -50;
             _previewCamera.targetTexture = _renderTexture;
 
             if (_modelSpawnPoint == null)

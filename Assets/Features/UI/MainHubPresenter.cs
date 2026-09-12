@@ -128,10 +128,14 @@ namespace ProjectZombie.Features.UI
             CharacterEntry hero = RunLoadoutState.SelectedCharacter;
             if (hero == null)
             {
-                // Ưu tiên nạp đúng tướng đã lưu trong GameManager.SaveData qua GameDataService
                 string savedId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
-                var characterDatabase = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase").GetAwaiter().GetResult();
-
+                var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+                if (characterDatabase == null)
+                {
+                    characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                }
+#endif
                 if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
                 {
                     CharacterDataSO targetSo = null;
