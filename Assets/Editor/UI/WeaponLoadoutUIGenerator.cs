@@ -82,6 +82,14 @@ namespace ProjectZombie.Editor.UI
             bodyRT.anchoredPosition = new Vector2(0, -35);
             bodyRT.sizeDelta = new Vector2(-60, -110);
 
+            var bodyHlg = bodyObj.AddComponent<HorizontalLayoutGroup>();
+            bodyHlg.spacing = 24;
+            bodyHlg.childAlignment = TextAnchor.MiddleCenter;
+            bodyHlg.childControlWidth = true;
+            bodyHlg.childControlHeight = true;
+            bodyHlg.childForceExpandWidth = true;
+            bodyHlg.childForceExpandHeight = true;
+
             // CỘT TRÁI: Kho Pháp Bảo 12 Ô (Có 2 Tab Vũ Khí / Pháp Bảo)
             BuildLeftInventoryColumn(bodyObj.transform, vietFont, 
                 out Button tabPriBtn, out Button tabRelBtn, 
@@ -100,6 +108,7 @@ namespace ProjectZombie.Editor.UI
 
             // 6. Wire Properties to View
             SerializedObject soView = new SerializedObject(view);
+            soView.FindProperty("_screenCanvasGroup").objectReferenceValue = root.GetComponent<CanvasGroup>();
             soView.FindProperty("_heroAvatarImage").objectReferenceValue = heroAvatarImg;
             soView.FindProperty("_heroNameText").objectReferenceValue = heroNameTMP;
             soView.FindProperty("_heroElementText").objectReferenceValue = heroElemTMP;
@@ -170,14 +179,18 @@ namespace ProjectZombie.Editor.UI
             var canvas = Object.FindAnyObjectByType<Canvas>();
             if (canvas != null)
             {
-                var oldUI = GameObject.Find("Panel_WeaponLoadout");
-                if (oldUI != null && oldUI != root) Object.DestroyImmediate(oldUI);
+                var oldUIs = Object.FindObjectsOfType<WeaponLoadoutView>(true);
+                foreach (var old in oldUIs)
+                {
+                    if (old != null && old.gameObject != root) Object.DestroyImmediate(old.gameObject);
+                }
 
                 var metaCanvas = GameObject.Find("Canvas_MetaMenu");
                 Transform targetParent = metaCanvas != null ? metaCanvas.transform : canvas.transform;
 
                 root.transform.SetParent(targetParent, false);
                 SetStretchAnchor(rootRT);
+                root.SetActive(false); // Đảm bảo màn hình phụ mặc định ẩn lúc đầu
 
                 var metaMgr = Object.FindAnyObjectByType<MetaUIManager>();
                 if (metaMgr != null)
@@ -282,9 +295,16 @@ namespace ProjectZombie.Editor.UI
             out Transform inventoryGrid)
         {
             GameObject col = CreateUIElement("Col_LeftInventory", parent);
+            var colLE = col.AddComponent<LayoutElement>();
+            colLE.minWidth = 820;
+            colLE.preferredWidth = 830;
+            colLE.flexibleWidth = 1;
+
             var img = col.AddComponent<Image>();
             img.color = new Color(0.16f, 0.11f, 0.08f, 0.70f); // Nền gỗ tối bên trái
             img.type = Image.Type.Sliced;
+            Sprite woodFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Parchment_Detail_9Slice.png");
+            if (woodFrame != null) img.sprite = woodFrame;
 
             // Container Nội Dung Bên Trong
             GameObject innerObj = CreateUIElement("Inner_Content", col.transform);
@@ -299,10 +319,10 @@ namespace ProjectZombie.Editor.UI
             tabPriBg = tabContainer.AddComponent<Image>();
             tabPriBg.enabled = false;
             tabPriBtn = tabContainer.AddComponent<Button>();
-            tabPriTxt = new GameObject().AddComponent<TextMeshProUGUI>();
-            tabRelBg = new GameObject().AddComponent<Image>();
-            tabRelBtn = new GameObject().AddComponent<Button>();
-            tabRelTxt = new GameObject().AddComponent<TextMeshProUGUI>();
+            tabPriTxt = CreateUIElement("Txt_Pri", tabContainer.transform).AddComponent<TextMeshProUGUI>();
+            tabRelBg = CreateUIElement("Bg_Rel", tabContainer.transform).AddComponent<Image>();
+            tabRelBtn = CreateUIElement("Btn_Rel", tabContainer.transform).AddComponent<Button>();
+            tabRelTxt = CreateUIElement("Txt_Rel", tabContainer.transform).AddComponent<TextMeshProUGUI>();
             tabContainer.SetActive(false);
 
             // 2. ScrollView Kho Pháp Bảo (ScrollRect + Viewport RectMask2D)
@@ -361,6 +381,11 @@ namespace ProjectZombie.Editor.UI
             out Button startBattleBtn)
         {
             GameObject col = CreateUIElement("Col_RightLoadout", parent);
+            var colLE = col.AddComponent<LayoutElement>();
+            colLE.minWidth = 820;
+            colLE.preferredWidth = 830;
+            colLE.flexibleWidth = 1;
+
             var img = col.AddComponent<Image>();
             img.color = Color.white;
             img.type = Image.Type.Sliced;
@@ -416,7 +441,7 @@ namespace ProjectZombie.Editor.UI
 
             // Ô 1: Vũ Khí Bản Mệnh
             GameObject pSlot = CreateUIElement("Slot_PrimaryHex", slotsRow.transform);
-            pSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(280, 136);
+            pSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(340, 136);
 
             GameObject pTag = CreateUIElement("Txt_Tag", pSlot.transform);
             RectTransform ptRT = pTag.GetComponent<RectTransform>();
@@ -481,7 +506,7 @@ namespace ProjectZombie.Editor.UI
             relicNames = new TextMeshProUGUI[3];
 
             GameObject rSlot = CreateUIElement("Slot_Relic_1", slotsRow.transform);
-            rSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(280, 136);
+            rSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(340, 136);
 
             GameObject rTag = CreateUIElement("Txt_Tag", rSlot.transform);
             RectTransform rtRT = rTag.GetComponent<RectTransform>();
@@ -532,7 +557,13 @@ namespace ProjectZombie.Editor.UI
             relicNames[0].alignment = TextAlignmentOptions.Center;
             relicNames[0].color = new Color(0.90f, 0.85f, 0.78f, 1f);
 
-            for (int i = 1; i < 3; i++) { relicIcons[i] = new GameObject().AddComponent<Image>(); relicNames[i] = new GameObject().AddComponent<TextMeshProUGUI>(); }
+            for (int i = 1; i < 3; i++)
+            {
+                relicIcons[i] = CreateUIElement($"DummyRelicIcon_{i}", s1.transform).AddComponent<Image>();
+                relicIcons[i].enabled = false;
+                relicNames[i] = CreateUIElement($"DummyRelicName_{i}", s1.transform).AddComponent<TextMeshProUGUI>();
+                relicNames[i].enabled = false;
+            }
 
             // ================= SECTION 2: SOI CHI TIẾT PHÁP BẢO (Giấy Da Cao Cấp - Cao 430px) =================
             GameObject s2 = CreateUIElement("Section_Detail", innerObj.transform);

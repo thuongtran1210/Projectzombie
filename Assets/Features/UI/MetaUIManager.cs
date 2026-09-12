@@ -62,19 +62,27 @@ namespace ProjectZombie.Features.UI
 
             AutoResolveMissingScreens();
 
-            // Mặc định ẩn tất cả màn hình phụ ngay trong Awake
-            if (_characterSelectScreen != null) _characterSelectScreen.Hide();
-            if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.Hide();
-            if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.Hide();
-            if (_codexScreen != null) _codexScreen.Hide();
-            if (_settingsScreen != null) _settingsScreen.Hide();
-            if (_gachaShopScreen != null) _gachaShopScreen.Hide();
-            if (_stageSelectScreen != null) _stageSelectScreen.Hide();
-            if (_resourceDownloadScreen != null) _resourceDownloadScreen.Hide();
+            // Mặc định ẩn và tắt toàn bộ màn hình phụ ngay trong Awake
+            foreach (Transform child in transform)
+            {
+                if (child.name == "Persistent_MetaBackdrop") continue;
+                if (_mainHubScreen != null && child == _mainHubScreen.transform) continue;
+                child.gameObject.SetActive(false);
+            }
+
+            if (_characterSelectScreen != null) _characterSelectScreen.gameObject.SetActive(false);
+            if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.gameObject.SetActive(false);
+            if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.gameObject.SetActive(false);
+            if (_codexScreen != null) _codexScreen.gameObject.SetActive(false);
+            if (_settingsScreen != null) _settingsScreen.gameObject.SetActive(false);
+            if (_gachaShopScreen != null) _gachaShopScreen.gameObject.SetActive(false);
+            if (_stageSelectScreen != null) _stageSelectScreen.gameObject.SetActive(false);
+            if (_resourceDownloadScreen != null) _resourceDownloadScreen.gameObject.SetActive(false);
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
             if (_mainHubScreen != null)
             {
+                _mainHubScreen.gameObject.SetActive(true);
                 PushScreen(_mainHubScreen);
             }
         }
@@ -159,15 +167,29 @@ namespace ProjectZombie.Features.UI
 
             Debug.Log($"[MetaUIManager] PushScreen: Đang hiển thị {screen.gameObject.name} (ScreenType: {screen.ScreenType})");
 
-            if (_screenStack.Count > 0)
+            // Tắt tất cả các màn hình khác để triệt tiêu hiện tượng đè giao diện
+            var allScreens = new BaseMetaScreenView[]
             {
-                var currentTop = _screenStack.Peek();
-                if (currentTop == screen) return; // Đang ở màn hình này rồi
-                Debug.Log($"[MetaUIManager] Ẩn màn hình cũ: {currentTop.gameObject.name}");
-                currentTop.Hide();
+                _mainHubScreen, _characterSelectScreen, _weaponLoadoutScreen,
+                _sanctuaryTreeScreen, _codexScreen, _settingsScreen,
+                _gachaShopScreen, _stageSelectScreen, _resourceDownloadScreen
+            };
+
+            foreach (var s in allScreens)
+            {
+                if (s != null && s != screen)
+                {
+                    s.Hide();
+                    s.gameObject.SetActive(false);
+                }
             }
 
-            _screenStack.Push(screen);
+            if (_screenStack.Count == 0 || _screenStack.Peek() != screen)
+            {
+                _screenStack.Push(screen);
+            }
+
+            screen.gameObject.SetActive(true);
             screen.Show();
         }
 
@@ -176,13 +198,23 @@ namespace ProjectZombie.Features.UI
             if (_screenStack.Count > 1) // Giữ lại màn hình gốc (Main Hub)
             {
                 var poppedScreen = _screenStack.Pop();
-                poppedScreen.Hide();
+                if (poppedScreen != null)
+                {
+                    poppedScreen.Hide();
+                    poppedScreen.gameObject.SetActive(false);
+                }
 
                 var previousScreen = _screenStack.Peek();
                 if (previousScreen != null)
                 {
+                    previousScreen.gameObject.SetActive(true);
                     previousScreen.Show();
                 }
+            }
+            else if (_screenStack.Count == 1 && _mainHubScreen != null)
+            {
+                _mainHubScreen.gameObject.SetActive(true);
+                _mainHubScreen.Show();
             }
         }
 
@@ -326,6 +358,17 @@ namespace ProjectZombie.Features.UI
 
         public void OpenScreen(MetaScreenType screenType)
         {
+            // Tự động đóng sub-screen đang mở trước khi chuyển sang màn hình mới
+            while (_screenStack.Count > 1)
+            {
+                var popped = _screenStack.Pop();
+                if (popped != null)
+                {
+                    popped.Hide();
+                    popped.gameObject.SetActive(false);
+                }
+            }
+
             switch (screenType)
             {
                 case MetaScreenType.MainHub:
