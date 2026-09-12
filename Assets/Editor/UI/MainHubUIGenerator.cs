@@ -135,10 +135,12 @@ namespace ProjectZombie.Editor.UI
             string prefabPath = $"{prefabFolder}/MainHubUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
 
-            // 9. Cập nhật vào Scene nếu có Canvas
+            // 9. Cập nhật vào Scene nếu có Canvas hoặc Canvas_MetaMenu
             var metaCanvasObj = GameObject.Find("Canvas_MetaMenu");
-            Canvas targetCanvas = metaCanvasObj != null ? metaCanvasObj.GetComponent<Canvas>() : Object.FindAnyObjectByType<Canvas>();
-            if (targetCanvas != null)
+            var mainCanvas = Object.FindAnyObjectByType<Canvas>();
+            Transform targetParent = metaCanvasObj != null ? metaCanvasObj.transform : (mainCanvas != null ? mainCanvas.transform : null);
+
+            if (targetParent != null)
             {
                 var oldUI1 = GameObject.Find("Panel_MainHub");
                 if (oldUI1 != null && oldUI1 != root) Object.DestroyImmediate(oldUI1);
@@ -153,7 +155,7 @@ namespace ProjectZombie.Editor.UI
                     if (ch2 != null && ch2.gameObject != root) Object.DestroyImmediate(ch2.gameObject);
                 }
 
-                root.transform.SetParent(targetCanvas.transform, false);
+                root.transform.SetParent(targetParent, false);
                 SetStretchAnchor(rootRT);
                 root.transform.SetAsFirstSibling(); // MainHub nằm dưới các Modal popup
 
@@ -167,7 +169,7 @@ namespace ProjectZombie.Editor.UI
                 }
 
                 EditorUtility.SetDirty(root);
-                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(targetCanvas.gameObject.scene);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(targetParent.gameObject.scene);
                 Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> Đã tạo Prefab Sảnh Hoàng Tuyền khớp 100% thiết kế tham khảo và đồng bộ vào Scene!");
             }
             else

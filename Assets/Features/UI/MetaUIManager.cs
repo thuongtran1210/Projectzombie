@@ -51,6 +51,13 @@ namespace ProjectZombie.Features.UI
                 _metaCanvasGroup = GetComponent<CanvasGroup>();
             }
 
+            if (_metaCanvasGroup != null)
+            {
+                _metaCanvasGroup.alpha = 1f;
+                _metaCanvasGroup.interactable = true;
+                _metaCanvasGroup.blocksRaycasts = true;
+            }
+
             EnsurePersistentBackdrop();
 
             AutoResolveMissingScreens();
@@ -83,20 +90,6 @@ namespace ProjectZombie.Features.UI
                 }
                 else
                 {
-                    GameObject backdropObj = new GameObject("Persistent_MetaBackdrop", typeof(RectTransform), typeof(UnityEngine.UI.Image));
-                    backdropObj.transform.SetParent(transform, false);
-                    backdropObj.transform.SetAsFirstSibling();
-
-                    RectTransform rt = backdropObj.GetComponent<RectTransform>();
-                    rt.anchorMin = Vector2.zero;
-                    rt.anchorMax = Vector2.one;
-                    rt.sizeDelta = Vector2.zero;
-                    rt.anchoredPosition = Vector2.zero;
-
-                    var img = backdropObj.GetComponent<UnityEngine.UI.Image>();
-                    img.color = Color.white;
-                    img.raycastTarget = false;
-
                     Sprite bgForest = Resources.Load<Sprite>("UI/VongXuyen/BG_VongXuyen_Forest_Hub") 
                                    ?? Resources.Load<Sprite>("BG_VongXuyen_Forest_Hub");
 #if UNITY_EDITOR
@@ -105,13 +98,22 @@ namespace ProjectZombie.Features.UI
 #endif
                     if (bgForest != null)
                     {
+                        GameObject backdropObj = new GameObject("Persistent_MetaBackdrop", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+                        backdropObj.transform.SetParent(transform, false);
+                        backdropObj.transform.SetAsFirstSibling();
+
+                        RectTransform rt = backdropObj.GetComponent<RectTransform>();
+                        rt.anchorMin = Vector2.zero;
+                        rt.anchorMax = Vector2.one;
+                        rt.sizeDelta = Vector2.zero;
+                        rt.anchoredPosition = Vector2.zero;
+
+                        var img = backdropObj.GetComponent<UnityEngine.UI.Image>();
+                        img.color = Color.white;
+                        img.raycastTarget = false;
                         img.sprite = bgForest;
+                        _persistentBackdrop = backdropObj;
                     }
-                    else
-                    {
-                        img.color = new Color(0.08f, 0.08f, 0.12f, 1.0f);
-                    }
-                    _persistentBackdrop = backdropObj;
                 }
             }
 
@@ -186,15 +188,140 @@ namespace ProjectZombie.Features.UI
 
         private void AutoResolveMissingScreens()
         {
-            if (_mainHubScreen == null) _mainHubScreen = GetComponentInChildren<MainHubView>(true);
-            if (_characterSelectScreen == null) _characterSelectScreen = GetComponentInChildren<CharacterSelectionView>(true);
-            if (_weaponLoadoutScreen == null) _weaponLoadoutScreen = GetComponentInChildren<WeaponLoadoutView>(true);
-            if (_sanctuaryTreeScreen == null) _sanctuaryTreeScreen = GetComponentInChildren<MetaUpgradeShopView>(true);
-            if (_codexScreen == null) _codexScreen = GetComponentInChildren<CardCodexView>(true);
-            if (_settingsScreen == null) _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
-            if (_gachaShopScreen == null) _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
-            if (_stageSelectScreen == null) _stageSelectScreen = GetComponentInChildren<StageSelect.StageSelectUIView>(true);
-            if (_resourceDownloadScreen == null) _resourceDownloadScreen = GetComponentInChildren<ResourceDownload.ResourceDownloadModalView>(true);
+            if (_mainHubScreen == null)
+            {
+                _mainHubScreen = GetComponentInChildren<MainHubView>(true);
+                if (_mainHubScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/MainHubUI") ?? Resources.Load<GameObject>("MainHubUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_MainHub";
+                        _mainHubScreen = inst.GetComponent<MainHubView>();
+                    }
+                }
+            }
+
+            if (_characterSelectScreen == null)
+            {
+                _characterSelectScreen = GetComponentInChildren<CharacterSelectionView>(true);
+                if (_characterSelectScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/CharacterSelectionUI") ?? Resources.Load<GameObject>("CharacterSelectionUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_CharacterSelect";
+                        _characterSelectScreen = inst.GetComponent<CharacterSelectionView>();
+                    }
+                }
+            }
+
+            if (_weaponLoadoutScreen == null)
+            {
+                _weaponLoadoutScreen = GetComponentInChildren<WeaponLoadoutView>(true);
+                if (_weaponLoadoutScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/WeaponLoadoutUI") ?? Resources.Load<GameObject>("WeaponLoadoutUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_WeaponLoadout";
+                        _weaponLoadoutScreen = inst.GetComponent<WeaponLoadoutView>();
+                    }
+                }
+            }
+
+            if (_sanctuaryTreeScreen == null)
+            {
+                _sanctuaryTreeScreen = GetComponentInChildren<MetaUpgradeShopView>(true);
+                if (_sanctuaryTreeScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/SanctuaryTreeUI") ?? Resources.Load<GameObject>("SanctuaryTreeUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_SanctuaryTree";
+                        _sanctuaryTreeScreen = inst.GetComponent<MetaUpgradeShopView>();
+                    }
+                }
+            }
+
+            if (_codexScreen == null)
+            {
+                _codexScreen = GetComponentInChildren<CardCodexView>(true);
+                if (_codexScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/CardCodexUI") ?? Resources.Load<GameObject>("CardCodexUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_CardCodex";
+                        _codexScreen = inst.GetComponent<CardCodexView>();
+                    }
+                }
+            }
+
+            if (_settingsScreen == null)
+            {
+                _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
+                if (_settingsScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/SettingsModalUI") ?? Resources.Load<GameObject>("SettingsModalUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Modal_Settings";
+                        _settingsScreen = inst.GetComponent<SettingsModalView>();
+                    }
+                }
+            }
+
+            if (_gachaShopScreen == null)
+            {
+                _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
+                if (_gachaShopScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/Gacha/GachaShopPanel") ?? Resources.Load<GameObject>("GachaShopPanel");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Panel_GachaShop";
+                        _gachaShopScreen = inst.GetComponent<ProjectZombie.Features.UI.Gacha.GachaChestView>();
+                    }
+                }
+            }
+
+            if (_stageSelectScreen == null)
+            {
+                _stageSelectScreen = GetComponentInChildren<StageSelect.StageSelectUIView>(true);
+                if (_stageSelectScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/StageSelect_Screen") ?? Resources.Load<GameObject>("StageSelect_Screen");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Screen_StageSelect";
+                        _stageSelectScreen = inst.GetComponent<StageSelect.StageSelectUIView>();
+                    }
+                }
+            }
+
+            if (_resourceDownloadScreen == null)
+            {
+                _resourceDownloadScreen = GetComponentInChildren<ResourceDownload.ResourceDownloadModalView>(true);
+                if (_resourceDownloadScreen == null)
+                {
+                    var p = Resources.Load<GameObject>("UI/ResourceDownloadModalUI") ?? Resources.Load<GameObject>("ResourceDownloadModalUI");
+                    if (p != null)
+                    {
+                        var inst = Instantiate(p, transform);
+                        inst.name = "Modal_ResourceDownload";
+                        _resourceDownloadScreen = inst.GetComponent<ResourceDownload.ResourceDownloadModalView>();
+                    }
+                }
+            }
         }
 
         public void OpenScreen(MetaScreenType screenType)
