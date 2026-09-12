@@ -22,6 +22,14 @@ namespace ProjectZombie.Features.Startup
         [SerializeField] private float _networkTimeoutSeconds = 4f;
 #pragma warning restore CS0414
 
+        private void Awake()
+        {
+            // Thiết lập chuẩn 60 FPS mượt mà và giữ màn hình luôn sáng trên Android
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        }
+
         private void Start()
         {
             StartCoroutine(StartupRoutine());

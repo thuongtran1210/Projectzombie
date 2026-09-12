@@ -70,14 +70,11 @@ namespace ProjectZombie.Core.Services.Addressables
 
         public AddressablePatchManager()
         {
-            SetupInternalIdTransform();
+            SetupInternalIdTransformStatic();
         }
 
-        /// <summary>
-        /// Chuẩn hóa URL khi tải từ Firebase Storage CDN.
-        /// Tránh lỗi Addressables tự động chèn /tên_file vào sau query param '?alt=media'.
-        /// </summary>
-        private void SetupInternalIdTransform()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void SetupInternalIdTransformStatic()
         {
             UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
             {
