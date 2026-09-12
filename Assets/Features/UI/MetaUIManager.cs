@@ -94,10 +94,11 @@ namespace ProjectZombie.Features.UI
                     rt.anchoredPosition = Vector2.zero;
 
                     var img = backdropObj.GetComponent<UnityEngine.UI.Image>();
-                    img.color = new Color(0.05f, 0.04f, 0.08f, 1.0f); // Tối sang trọng 100% không xuyên thấu
-                    img.raycastTarget = true; // Chặn click lọt xuống map
+                    img.color = Color.white;
+                    img.raycastTarget = false;
 
-                    Sprite bgForest = Resources.Load<Sprite>("UI/VongXuyen/BG_VongXuyen_Forest_Hub") ?? Resources.Load<Sprite>("BG_VongXuyen_Forest_Hub");
+                    Sprite bgForest = Resources.Load<Sprite>("UI/VongXuyen/BG_VongXuyen_Forest_Hub") 
+                                   ?? Resources.Load<Sprite>("BG_VongXuyen_Forest_Hub");
 #if UNITY_EDITOR
                     if (bgForest == null)
                         bgForest = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
@@ -105,7 +106,10 @@ namespace ProjectZombie.Features.UI
                     if (bgForest != null)
                     {
                         img.sprite = bgForest;
-                        img.color = Color.white;
+                    }
+                    else
+                    {
+                        img.color = new Color(0.08f, 0.08f, 0.12f, 1.0f);
                     }
                     _persistentBackdrop = backdropObj;
                 }
@@ -120,6 +124,7 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
+            AutoResolveMissingScreens();
             if (_mainHubScreen != null && (_screenStack.Count == 0 || _screenStack.Peek() != _mainHubScreen))
             {
                 PushScreen(_mainHubScreen);

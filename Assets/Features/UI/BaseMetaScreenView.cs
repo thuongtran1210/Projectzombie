@@ -87,6 +87,12 @@ namespace ProjectZombie.Features.UI
 
         public virtual void Show()
         {
+            if (_animCoroutine != null)
+            {
+                StopCoroutine(_animCoroutine);
+                _animCoroutine = null;
+            }
+
             gameObject.SetActive(true);
 
             if (_screenCanvas != null) _screenCanvas.enabled = true;
@@ -106,7 +112,6 @@ namespace ProjectZombie.Features.UI
 
             if (gameObject.activeInHierarchy)
             {
-                if (_animCoroutine != null) StopCoroutine(_animCoroutine);
                 _animCoroutine = StartCoroutine(PlayOpenAnimationRoutine());
             }
         }

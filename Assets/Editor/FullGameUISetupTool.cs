@@ -293,13 +293,16 @@ namespace ProjectZombie.EditorTools
             StretchRect(backdropTrans.GetComponent<RectTransform>());
             backdropTrans.SetAsFirstSibling();
             var backdropImg = backdropTrans.GetComponent<Image>();
-            backdropImg.color = new Color(0.05f, 0.04f, 0.08f, 1.0f);
-            backdropImg.raycastTarget = true;
+            backdropImg.raycastTarget = false;
             Sprite bgForest = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
             if (bgForest != null)
             {
                 backdropImg.sprite = bgForest;
                 backdropImg.color = Color.white;
+            }
+            else
+            {
+                backdropImg.color = new Color(0.08f, 0.08f, 0.12f, 1.0f);
             }
             
             // Dọn dẹp các instance MainHub cũ nếu có để tránh nhân bản
