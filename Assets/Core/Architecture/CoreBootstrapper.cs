@@ -31,35 +31,9 @@ namespace ProjectZombie.Core.Architecture
             Screen.autorotateToLandscapeRight = true;
             Screen.orientation = ScreenOrientation.AutoRotation;
 
-#if !UNITY_EDITOR
-            // Thiết lập chuyển đổi URL Firebase Storage cho Addressables sớm nhất có thể trên thiết bị di động
-            UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
-            {
-                if (string.IsNullOrEmpty(location.InternalId)) return location.InternalId;
+            // Thiết lập chuyển đổi URL Firebase Storage duy nhất qua AddressablePatchManager
+            ProjectZombie.Core.Services.Addressables.AddressablePatchManager.SetupInternalIdTransformStatic();
 
-                if (location.InternalId.Contains("firebasestorage.googleapis.com") || location.InternalId.Contains("vongxuyen.firebasestorage.app"))
-                {
-                    string rawUrl = location.InternalId;
-                    
-                    // Tìm file .bundle hoặc .json hoặc .hash trong chuỗi URL
-                    var match = System.Text.RegularExpressions.Regex.Match(rawUrl, @"(?<filename>[\w\-\._]+\.(bundle|hash|json))", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    if (match.Success)
-                    {
-                        string fileName = match.Groups["filename"].Value;
-#if UNITY_ANDROID
-                        string platformFolder = "Android";
-#elif UNITY_IOS
-                        string platformFolder = "iOS";
-#else
-                        string platformFolder = "StandaloneWindows64";
-#endif
-                        string correctedUrl = $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/{platformFolder}%2F{fileName}?alt=media";
-                        return correctedUrl;
-                    }
-                }
-                return location.InternalId;
-            };
-#endif
 
             // Kiểm tra xem trong Scene đã có sẵn Manager Root chưa (tránh tạo thừa và xung đột Singleton)
             if (GameManager.HasInstance || GameObject.Find(CORE_ROOT_NAME) != null || GameObject.Find("--- GAME MANAGER ---") != null)

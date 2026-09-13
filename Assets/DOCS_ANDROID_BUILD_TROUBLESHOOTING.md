@@ -383,8 +383,10 @@ public class RemoteConfigManager : MonoBehaviour
   2. **Thứ tự khởi tạo Runtime**:
      - Nếu hàm xử lý URL chỉ được gán khi khởi tạo `AddressablePatchManager` thì các thao tác kiểm tra Catalog ban đầu của Addressables sẽ vẫn dùng URL lỗi trước đó.
 - **Cách khắc phục chuẩn**:
-  1. **Đăng ký `Addressables.InternalIdTransformFunc` tại tầng khởi động sớm nhất** (`BeforeSceneLoad`) trong `CoreBootstrapper.cs` và `AddressablePatchManager.cs`.
-  2. Sử dụng Regex bóc tách chính xác tên file `.bundle`, `.hash`, `.json` và tái tạo URL REST API Firebase hợp lệ:
+  1. **Đăng ký `Addressables.InternalIdTransformFunc` tại nguồn tin duy nhất (Single Source of Truth)**:
+     - Đặt tại `AddressablePatchManager.SetupInternalIdTransformStatic()` với thuộc tính `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]`.
+     - Trong `CoreBootstrapper.cs` chỉ gọi ủy quyền sang `AddressablePatchManager.SetupInternalIdTransformStatic()`, tránh phân mảnh và ghi đè chéo logic.
+  2. Sử dụng Regex bóc tách chính xác tên file `.bundle`, `.hash`, `.json` và tái tạo URL REST API Firebase chuẩn query param `/o?name=...` (ngăn chặn lỗi unescape `%2F` thành `/` trên Android):
      ```csharp
      UnityEngine.AddressableAssets.Addressables.InternalIdTransformFunc = location =>
      {
@@ -399,11 +401,27 @@ public class RemoteConfigManager : MonoBehaviour
              if (match.Success)
              {
                  string fileName = match.Groups["filename"].Value;
-                 return $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o/Android%2F{fileName}?alt=media";
+                 string platformFolder = "Android";
+                 return $"https://firebasestorage.googleapis.com/v0/b/vongxuyen.firebasestorage.app/o?name={platformFolder}%2F{fileName}&alt=media";
              }
          }
          return location.InternalId;
      };
      ```
 
-
+### ❌ Lỗi 7.2: Quy Chuẩn Vòng Đời Đồng Bộ Giữa `Modal_ResourceDownload` và `Screen_StageSelect` Khi Xóa Bản Đồ
+- **Nguyên lý thiết kế & Luồng dữ liệu (Data Flow)**:
+  1. **Hành động Xóa Cache**: Khi người chơi nhấn nút `[XÓA]` trên gói bản đồ DLC (ví dụ: Ải 2 `Map_AncientCitadel` hoặc Ải 3 `Map_CinnabarSwamp`), `ResourceDownloadModalPresenter` sẽ gọi:
+     ```csharp
+     await _patchManager.ClearAssetCacheAsync(data.addressableKey);
+     ```
+     Toàn bộ file AssetBundle lưu trong persistent cache của máy bị dọn sạch.
+  2. **Đồng bộ tự động khi chuyển màn hình**:
+     - Khi người chơi đóng modal tải và quay lại giao diện chọn ải `Screen_StageSelect`, vòng đời `OnEnable()` của `StageSelectUIPresenter` sẽ tự động chạy `RefreshView()`.
+     - Phương thức `_patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress)` kiểm tra lại bộ nhớ và phát hiện `NeedsDownload = true` (Dung lượng tải $> 0$).
+  3. **Quy tắc hiển thị nút trên View (`StageSelectUIView`)**:
+     - **Ải 1 (Mặc định)**: Nằm trong APK gốc (`Resources/Maps`) $\rightarrow$ Nút `[XUẤT TRẬN]` luôn luôn sáng (`isDlcDownloaded = true`), chơi offline bình thường.
+     - **Ải 2 / Ải 3 (DLC vừa bị xóa)**: `isDlcDownloaded = false` $\rightarrow$ Nút `[XUẤT TRẬN]` tự động ẩn đi (`SetActive(false)`), thay bằng nút `[TẢI MÀN CHƠI (XX KB/MB)]` (`SetActive(true)`).
+     - Định dạng dung lượng thông minh: Tự động hiển thị `KB` nếu $< 0.1\text{ MB}$ và `MB` nếu $\ge 0.1\text{ MB}$.
+  4. **Cơ chế Fallback an toàn (Defensive Fallback)**:
+     - Trong trường hợp bất khả kháng (lỗi mạng hoặc mất kết nối đột ngột khi vừa bấm xuất trận), `MetaSceneTransitionController` sẽ tự động fallback sang Tilemap mặc định của Scene (Rừng Vọng Xuyên) để **triệt tiêu 100% nguy cơ crash app hoặc màn hình đen**.
