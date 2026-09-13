@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
 using ProjectZombie.Features.UI;
+using ProjectZombie.Features.UI.Common;
 
 namespace ProjectZombie.Editor.Tools
 {
@@ -149,6 +150,45 @@ namespace ProjectZombie.Editor.Tools
                     CreateDefaultMobileControlsHierarchy();
                 }
                 return;
+            }
+
+            // 2b. Đảm bảo cấu trúc Safe Area Container cho Mobile Controls (Phương án 1)
+            Transform safeContainerTrans = mobilePanel.transform.Find("SafeArea_ControlsContainer");
+            if (safeContainerTrans == null)
+            {
+                GameObject safeObj = new GameObject("SafeArea_ControlsContainer", typeof(RectTransform));
+                safeObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform safeRT = safeObj.GetComponent<RectTransform>();
+                safeRT.anchorMin = Vector2.zero;
+                safeRT.anchorMax = Vector2.one;
+                safeRT.offsetMin = Vector2.zero;
+                safeRT.offsetMax = Vector2.zero;
+
+                var fitter = safeObj.AddComponent<SafeAreaFitter>();
+                fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
+
+                // Di chuyển tất cả các nút hiện tại của mobilePanel vào trong safeContainerTrans
+                var childrenToMove = new System.Collections.Generic.List<Transform>();
+                for (int i = 0; i < mobilePanel.transform.childCount; i++)
+                {
+                    Transform child = mobilePanel.transform.GetChild(i);
+                    if (child != safeObj.transform)
+                    {
+                        childrenToMove.Add(child);
+                    }
+                }
+                foreach (var child in childrenToMove)
+                {
+                    child.SetParent(safeObj.transform, true);
+                }
+
+                safeContainerTrans = safeObj.transform;
+            }
+            else
+            {
+                var fitter = safeContainerTrans.GetComponent<SafeAreaFitter>();
+                if (fitter == null) fitter = safeContainerTrans.gameObject.AddComponent<SafeAreaFitter>();
+                fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
             }
 
             int wiredCount = 0;
@@ -831,9 +871,21 @@ namespace ProjectZombie.Editor.Tools
             panelRect.anchorMax = Vector2.one;
             panelRect.sizeDelta = Vector2.zero;
 
+            // 0. Safe Area Container (Phương án 1: Tránh thanh Gesture Bar đáy và viền bo cong 2 bên)
+            GameObject safeObj = new GameObject("SafeArea_ControlsContainer", typeof(RectTransform));
+            safeObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform safeRT = safeObj.GetComponent<RectTransform>();
+            safeRT.anchorMin = Vector2.zero;
+            safeRT.anchorMax = Vector2.one;
+            safeRT.offsetMin = Vector2.zero;
+            safeRT.offsetMax = Vector2.zero;
+
+            var fitter = safeObj.AddComponent<SafeAreaFitter>();
+            fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
+
             // 1. Joystick
             GameObject joyObj = new GameObject("DynamicVirtualJoystick", typeof(RectTransform), typeof(Image), typeof(DynamicVirtualJoystick));
-            joyObj.transform.SetParent(mobilePanel.transform, false);
+            joyObj.transform.SetParent(safeObj.transform, false);
             RectTransform joyRect = joyObj.GetComponent<RectTransform>();
             joyRect.anchorMin = new Vector2(0f, 0f);
             joyRect.anchorMax = new Vector2(0f, 0f);

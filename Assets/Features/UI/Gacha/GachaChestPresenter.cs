@@ -106,14 +106,25 @@ namespace ProjectZombie.Features.UI.Gacha
             {
                 GachaBannerConfigSO targetBanner = null;
 
-                // 1. Nạp từ Addressables nếu có
+                // 1. Nạp từ Addressables nếu có trong Catalog
                 try
                 {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GachaBannerConfigSO>(bannerId);
-                    await handle.Task;
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(bannerId);
+                    await locHandle.Task;
+
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded &&
+                        locHandle.Result != null && locHandle.Result.Count > 0)
                     {
-                        targetBanner = handle.Result;
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GachaBannerConfigSO>(bannerId);
+                        await handle.Task;
+                        if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                        {
+                            targetBanner = handle.Result;
+                        }
+                    }
+                    else
+                    {
+                        if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                     }
                 }
                 catch (System.Exception) { }
@@ -128,8 +139,8 @@ namespace ProjectZombie.Features.UI.Gacha
 #if UNITY_EDITOR
                 if (targetBanner == null)
                 {
-                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset") ??
-                                   UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset");
+                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset") ??
+                                   UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset");
                 }
 #endif
                 if (targetBanner != null)

@@ -18,6 +18,15 @@ namespace ProjectZombie.Features.UI.Common
         [SerializeField] private bool _applyTop = true;
         [SerializeField] private bool _applyBottom = true;
 
+        public void ConfigureEdges(bool left, bool right, bool top, bool bottom)
+        {
+            _applyLeft = left;
+            _applyRight = right;
+            _applyTop = top;
+            _applyBottom = bottom;
+            ApplySafeArea();
+        }
+
 #if UNITY_EDITOR
         public enum EditorSimType
         {
@@ -141,6 +150,14 @@ namespace ProjectZombie.Features.UI.Common
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            // Tránh gọi set anchor trực tiếp bên trong OnValidate vì Unity cấm SendMessage (OnRectTransformDimensionsChange) lúc này
+            UnityEditor.EditorApplication.delayCall -= DelayedApplySafeArea;
+            UnityEditor.EditorApplication.delayCall += DelayedApplySafeArea;
+        }
+
+        private void DelayedApplySafeArea()
+        {
+            if (this == null) return;
             if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
             ApplySafeArea();
         }
