@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using ProjectZombie.Features.Upgrades.Filters;
 using ProjectZombie.Features.Weapons;
@@ -89,6 +90,8 @@ namespace ProjectZombie.Features.Upgrades
         }
 
         private static List<UpgradeData> _cachedMasterUpgrades;
+        private static UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<IList<UpgradeData>>? _addressablesHandle;
+        private Task _loadingTask;
 
         public void AutoPopulateUpgradesIfEmpty()
         {
@@ -99,7 +102,35 @@ namespace ProjectZombie.Features.Upgrades
                     _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
                     return;
                 }
+#if UNITY_EDITOR
                 PopulateAllAvailableUpgrades();
+#else
+                if (_loadingTask == null || _loadingTask.IsCompleted)
+                {
+                    _loadingTask = PopulateAllAvailableUpgradesAsync();
+                }
+#endif
+            }
+        }
+
+        public async Task AutoPopulateUpgradesIfEmptyAsync()
+        {
+            if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0)
+            {
+                if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
+                {
+                    _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
+                    return;
+                }
+
+                if (_loadingTask != null && !_loadingTask.IsCompleted)
+                {
+                    await _loadingTask;
+                    return;
+                }
+
+                _loadingTask = PopulateAllAvailableUpgradesAsync();
+                await _loadingTask;
             }
         }
 
@@ -127,8 +158,28 @@ namespace ProjectZombie.Features.Upgrades
             }
             UnityEditor.EditorUtility.SetDirty(this);
             Debug.Log($"[UpgradeManager] Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ dự án.");
+            _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
 #else
-            // 1. Ưu tiên nạp danh sách Thẻ Nâng Cấp từ Addressables Label "UpgradeData"
+            // Fallback sang async task nếu gọi từ sync context trên non-editor
+            _ = PopulateAllAvailableUpgradesAsync();
+#endif
+        }
+
+        public async Task PopulateAllAvailableUpgradesAsync()
+        {
+            _allAvailableUpgrades.Clear();
+
+            if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
+            {
+                _allAvailableUpgrades.AddRange(_cachedMasterUpgrades);
+                return;
+            }
+
+#if UNITY_EDITOR
+            PopulateAllAvailableUpgrades();
+            await Task.Yield();
+#else
+            // 1. Ưu tiên nạp danh sách Thẻ Nâng Cấp từ Addressables Label "UpgradeData" (Bất đồng bộ - 0 Hitch)
             try
             {
                 var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", (u) =>
@@ -138,10 +189,13 @@ namespace ProjectZombie.Features.Upgrades
                         _allAvailableUpgrades.Add(u);
                     }
                 });
-                handle.WaitForCompletion();
+
+                _addressablesHandle = handle;
+                await handle.Task;
+
                 if (_allAvailableUpgrades.Count > 0)
                 {
-                    Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData từ Addressables.");
+                    Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData từ Addressables (Async).");
                 }
             }
             catch (System.Exception ex)
@@ -152,22 +206,38 @@ namespace ProjectZombie.Features.Upgrades
             // 2. Fallback sang Resources nếu chưa có gói Addressables
             if (_allAvailableUpgrades.Count == 0)
             {
-                var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+                var request = Resources.LoadAllAsync<UpgradeData>("Upgrades");
+                await AwaitResourceRequest(request);
+
+                var loadedUpgrades = request.allAssets;
                 if (loadedUpgrades == null || loadedUpgrades.Length == 0)
                 {
-                    loadedUpgrades = Resources.LoadAll<UpgradeData>("");
+                    var fallbackReq = Resources.LoadAllAsync<UpgradeData>("");
+                    await AwaitResourceRequest(fallbackReq);
+                    loadedUpgrades = fallbackReq.allAssets;
                 }
-                foreach (var u in loadedUpgrades)
+
+                if (loadedUpgrades != null)
                 {
-                    if (u != null && !(u is FallbackRewardUpgradeData))
+                    foreach (var asset in loadedUpgrades)
                     {
-                        _allAvailableUpgrades.Add(u);
+                        if (asset is UpgradeData u && !(u is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(u))
+                        {
+                            _allAvailableUpgrades.Add(u);
+                        }
                     }
                 }
-                Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources.");
+                Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources (Async).");
             }
 #endif
             _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
+        }
+
+        private static Task AwaitResourceRequest(ResourceRequest request)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            request.completed += _ => tcs.TrySetResult(true);
+            return tcs.Task;
         }
 
         public void BanUpgrade(UpgradeData upgrade)
@@ -250,6 +320,8 @@ namespace ProjectZombie.Features.Upgrades
         /// </summary>
         public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
         {
+            AutoPopulateUpgradesIfEmpty();
+
             var weaponManager = player != null ? player.GetComponent<WeaponManager>() : null;
             var playerPassives = player != null ? player.GetComponent<PlayerPassives>() : null;
 

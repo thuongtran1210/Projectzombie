@@ -64,7 +64,10 @@ namespace ProjectZombie.Features.MatchFlow
             // BƯỚC 5: Nạp Thẻ Nâng Cấp & Chuẩn Bị Âm Thanh Trận Đấu
             // -------------------------------------------------------------
             reportProgress?.Invoke(0.85f, "Đang ngưng tụ linh khí ngũ hành...");
-            UpgradeManager.Instance?.AutoPopulateUpgradesIfEmpty();
+            if (UpgradeManager.Instance != null)
+            {
+                await UpgradeManager.Instance.AutoPopulateUpgradesIfEmptyAsync();
+            }
 
             var phaseAudio = UnityEngine.Object.FindObjectOfType<global::Core.Audio.PhaseAudioController>();
             if (phaseAudio != null)
