@@ -1,13 +1,21 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Spawners.Core;
+using ProjectZombie.Features.Spawners.Spatial;
+using ProjectZombie.Features.Spawners.Strategies;
 
 namespace ProjectZombie.Features.Spawners
 {
     /// <summary>
-    /// Manager tập trung duy nhất quản lý toàn bộ nhịp độ Spawn, Timeline trận đấu và kiểm soát Enemy Cap.
+    /// Facade & Nhạc trưởng điều phối toàn bộ vòng đời trận đấu (Timeline Director).
+    /// Ủy quyền xử lý Không gian cho ArenaBoundaryContext,
+    /// Thuật toán vị trí cho CameraAwareSpawnLocator,
+    /// Sĩ số & Pacing cho EnemyPopulationTracker,
+    /// Và các kiểu spawn cho ISpawnPatternStrategy.
     /// </summary>
     public class SpawnManager : MonoBehaviour
     {
@@ -16,30 +24,18 @@ namespace ProjectZombie.Features.Spawners
         /// <summary>
         /// Sự kiện phát ra khi một đợt quái / mốc Timeline mới được kích hoạt.
         /// </summary>
-        public static event System.Action<ProjectZombie.Features.UI.HUD.WaveInfo> OnWaveTriggered;
+        public static event Action<ProjectZombie.Features.UI.HUD.WaveInfo> OnWaveTriggered;
 
         /// <summary>
         /// Sự kiện cập nhật tiến trình thời gian của trận đấu (matchTime, maxDuration, progress 0..1).
         /// </summary>
-        public static event System.Action<float, float, float> OnTimelineProgressUpdated;
+        public static event Action<float, float, float> OnTimelineProgressUpdated;
 
         [Header("Timeline Configuration")]
         [SerializeField] private LevelTimelineConfig timelineConfig;
 
-        /// <summary>
-        /// Gán cấu hình Timeline từ Ải được chọn (StageDefinitionSO).
-        /// </summary>
-        public void SetTimelineConfig(LevelTimelineConfig config)
-        {
-            if (config != null)
-            {
-                timelineConfig = config;
-            }
-        }
-
         [Header("Spawn Settings & Limits")]
-        [Header("Spawn Settings & Limits")]
-        [SerializeField] private int maxEnemyCap = 50; // Khống chế 30-50 quái cho không gian Combo & Dash (GDD v5.0 Action RPG)
+        [SerializeField] private int maxEnemyCap = 50;
         [Tooltip("Số lượng quái tối thiểu cần duy trì trên sàn đấu để tránh khoảng lặng khi người chơi quét sạch quái")]
         [SerializeField] private int minEnemyFloor = 8;
         [Tooltip("Hệ số gia tốc spawn bù quái khi số quái trên sân thấp hơn minEnemyFloor")]
@@ -60,20 +56,28 @@ namespace ProjectZombie.Features.Spawners
         [Header("Debug Info")]
         [SerializeField] private float matchTime = 0f;
         [SerializeField] private bool isMatchActive = false;
-        [SerializeField] private int currentEnemyCount = 0;
+
+        [Header("Auto Start (For Quick Play / Testing)")]
+        [Tooltip("Chỉ tự động bắt đầu trận khi test riêng lẻ trong Unity Editor và GameState là Playing")]
+        [SerializeField] private bool autoStartOnPlay = false;
+
+        // Sub-modules (Tách biệt đơn trách nhiệm)
+        private ArenaBoundaryContext _boundaryContext;
+        private ISpawnPositionLocator _spawnLocator;
+        private IEnemyPopulationTracker _populationTracker;
+        private readonly Dictionary<TimelineEventType, ISpawnPatternStrategy> _strategies = new Dictionary<TimelineEventType, ISpawnPatternStrategy>();
 
         private Transform _playerTransform;
         private Camera _mainCamera;
-        private static readonly Collider2D[] _spawnObstacleBuffer = new Collider2D[1];
-        private readonly List<TimelineEvent> _activeContinuousEvents = new List<TimelineEvent>();
-        private readonly Dictionary<TimelineEvent, float> _eventTimers = new Dictionary<TimelineEvent, float>();
+        private WavePreloader _wavePreloader;
         private int _nextEventIndex = 0;
 
+        // Public Properties giữ 100% tương thích ngược
         public float MatchTime => matchTime;
-        public int CurrentEnemyCount => currentEnemyCount;
+        public int CurrentEnemyCount => _populationTracker != null ? _populationTracker.CurrentEnemyCount : 0;
         public bool IsMatchActive => isMatchActive;
         public LevelTimelineConfig TimelineConfig => timelineConfig;
-        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 900f; // 15 phút (900 giây)
+        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 900f;
         public float MatchProgress => Mathf.Clamp01(matchTime / Mathf.Max(1f, LevelDuration));
         public int CurrentWaveIndex => Mathf.Max(1, _nextEventIndex);
         public int TotalWaves => (timelineConfig != null && timelineConfig.events != null) ? Mathf.Max(1, timelineConfig.events.Count) : 1;
@@ -87,9 +91,42 @@ namespace ProjectZombie.Features.Spawners
             else Destroy(gameObject);
 
             _mainCamera = Camera.main;
+            InitializeSubModules();
         }
 
-        private WavePreloader _wavePreloader;
+        private void InitializeSubModules()
+        {
+            if (_boundaryContext == null)
+            {
+                _boundaryContext = new ArenaBoundaryContext(walkableAreaCollider, groundTilemap, null, autoFindGroundTilemap, 1.0f);
+            }
+
+            if (_spawnLocator == null)
+            {
+                _spawnLocator = new CameraAwareSpawnLocator(_boundaryContext, _mainCamera, cameraPadding);
+            }
+
+            if (_populationTracker == null)
+            {
+                _populationTracker = new EnemyPopulationTracker(maxEnemyCap, minEnemyFloor);
+            }
+
+            if (_strategies.Count == 0)
+            {
+                RegisterStrategy(new ContinuousSpawnStrategy());
+                RegisterStrategy(new BurstWaveSpawnStrategy());
+                RegisterStrategy(new BossEncounterStrategy());
+                RegisterStrategy(new PillarSpawnStrategy());
+            }
+        }
+
+        public void RegisterStrategy(ISpawnPatternStrategy strategy)
+        {
+            if (strategy != null)
+            {
+                _strategies[strategy.HandledType] = strategy;
+            }
+        }
 
         private void OnEnable()
         {
@@ -113,13 +150,8 @@ namespace ProjectZombie.Features.Spawners
             _playerTransform = null;
         }
 
-        [Header("Auto Start (For Quick Play / Testing)")]
-        [Tooltip("Chỉ tự động bắt đầu trận khi test riêng lẻ trong Unity Editor và GameState là Playing")]
-        [SerializeField] private bool autoStartOnPlay = false;
-
         private void Start()
         {
-            // Chỉ cho phép tự chạy nếu ở Editor và GameState không phải MainMenu (dành cho chế độ chạy thử Scene độc lập)
             bool isSandboxTesting = Application.isEditor && 
                                     (Shared.GameStateManager.Instance == null || Shared.GameStateManager.Instance.CurrentState == Shared.GameState.Playing);
 
@@ -129,13 +161,18 @@ namespace ProjectZombie.Features.Spawners
             }
         }
 
-
-        private Tilemap _obstacleTilemap;
-        private Bounds _safeMapBounds;
-        private bool _hasCalculatedBounds = false;
+        public void SetTimelineConfig(LevelTimelineConfig config)
+        {
+            if (config != null)
+            {
+                timelineConfig = config;
+            }
+        }
 
         private void EnsureDependencies()
         {
+            InitializeSubModules();
+
             if (_wavePreloader == null)
             {
                 _wavePreloader = GetComponent<WavePreloader>() ?? gameObject.AddComponent<WavePreloader>();
@@ -166,27 +203,7 @@ namespace ProjectZombie.Features.Spawners
                 }
             }
 
-            if (autoFindGroundTilemap && groundTilemap == null && walkableAreaCollider == null)
-            {
-                var groundObj = GameObject.Find("Tilemap_Ground");
-                if (groundObj != null)
-                {
-                    groundTilemap = groundObj.GetComponent<Tilemap>();
-                }
-                else
-                {
-                    groundTilemap = FindObjectOfType<Tilemap>();
-                }
-            }
-
-            // Tự động tìm Tilemap_Obstacles nội bộ để tránh spawn quái trên nóc tường
-            if (_obstacleTilemap == null)
-            {
-                var obsObj = GameObject.Find("Tilemap_Obstacles");
-                if (obsObj != null) _obstacleTilemap = obsObj.GetComponent<Tilemap>();
-            }
-
-            CalculateSafeMapBounds();
+            _boundaryContext.EnsureDependencies();
         }
 
         /// <summary>
@@ -195,68 +212,42 @@ namespace ProjectZombie.Features.Spawners
         public void RefreshMapReferences()
         {
             groundTilemap = null;
-            _obstacleTilemap = null;
             walkableAreaCollider = null;
-            _hasCalculatedBounds = false;
-            MovementPhysicsUtility.ResetTilemapCache();
+            if (_boundaryContext != null)
+            {
+                _boundaryContext.RefreshMapReferences();
+            }
             EnsureDependencies();
         }
 
-        /// <summary>
-        /// Tự động tính toán hình chữ nhật sàn đấu an toàn (Safe Map Bounds) để Clamping O(1)
-        /// </summary>
-        private void CalculateSafeMapBounds()
-        {
-            if (_hasCalculatedBounds) return;
-
-            float margin = 1.0f; // Thụt lề an toàn cách mép vực/tường 1 mét
-
-            if (walkableAreaCollider != null)
-            {
-                _safeMapBounds = walkableAreaCollider.bounds;
-                _safeMapBounds.Expand(-margin * 2f);
-                _hasCalculatedBounds = true;
-                return;
-            }
-
-            if (groundTilemap != null)
-            {
-                groundTilemap.CompressBounds();
-                Bounds localB = groundTilemap.localBounds;
-                Vector3 worldMin = groundTilemap.transform.TransformPoint(localB.min);
-                Vector3 worldMax = groundTilemap.transform.TransformPoint(localB.max);
-
-                Vector3 center = (worldMin + worldMax) * 0.5f;
-                Vector3 size = new Vector3(Mathf.Max(2f, (worldMax.x - worldMin.x) - margin * 2f), Mathf.Max(2f, (worldMax.y - worldMin.y) - margin * 2f), 10f);
-
-                _safeMapBounds = new Bounds(center, size);
-                _hasCalculatedBounds = true;
-                return;
-            }
-
-            // Fallback nếu không có Tilemap: Khung 20x20 tiêu chuẩn
-            _safeMapBounds = new Bounds(Vector3.zero, new Vector3(20f, 20f, 10f));
-            _hasCalculatedBounds = true;
-        }
-
-        public async System.Threading.Tasks.Task StartMatchAsync()
+        public async Task StartMatchAsync()
         {
             EnsureDependencies();
             matchTime = 0f;
             _nextEventIndex = 0;
-            _activeContinuousEvents.Clear();
-            _eventTimers.Clear();
+
+            if (_populationTracker != null)
+            {
+                _populationTracker.MaxEnemyCap = maxEnemyCap;
+                _populationTracker.MinEnemyFloor = minEnemyFloor;
+                _populationTracker.ResetCount();
+            }
+
+            foreach (var strategy in _strategies.Values)
+            {
+                strategy.ResetStrategy();
+            }
 
             isMatchActive = true;
 
-            // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader (chạy ngầm không block isMatchActive)
+            // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader
             if (timelineConfig != null && _wavePreloader != null)
             {
                 try
                 {
                     await _wavePreloader.PreloadTimelineAssetsAsync(timelineConfig);
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Debug.LogWarning($"[SpawnManager] Preload assets warning: {ex.Message}");
                 }
@@ -271,22 +262,29 @@ namespace ProjectZombie.Features.Spawners
             _ = StartMatchAsync();
         }
 
-
         public void StopMatch()
         {
             isMatchActive = false;
         }
 
         /// <summary>
-        /// Dừng trận đấu và dọn sạch toàn bộ quái vật, boss, minion còn sót lại trên bản đồ.
+        /// Dừng trận đấu và dọn sạch toàn bộ quái vật, boss, minion, tiền và ngọc rơi trên bản đồ.
         /// </summary>
         public void StopMatchAndClearAllEnemies()
         {
             isMatchActive = false;
             matchTime = 0f;
             _nextEventIndex = 0;
-            _activeContinuousEvents.Clear();
-            _eventTimers.Clear();
+
+            if (_populationTracker != null)
+            {
+                _populationTracker.ResetCount();
+            }
+
+            foreach (var strategy in _strategies.Values)
+            {
+                strategy.ResetStrategy();
+            }
 
             var allEnemies = FindObjectsOfType<Enemies.Enemy>();
             for (int i = 0; i < allEnemies.Length; i++)
@@ -297,7 +295,6 @@ namespace ProjectZombie.Features.Spawners
                 }
             }
 
-            // Dọn sạch tiền và ngọc EXP còn sót lại trên sàn
             var allCoins = FindObjectsOfType<Collectibles.CoinDrop>();
             for (int i = 0; i < allCoins.Length; i++)
             {
@@ -328,8 +325,13 @@ namespace ProjectZombie.Features.Spawners
             // 2. Kiểm tra kích hoạt Timeline Event mới
             CheckTimelineEvents();
 
-            // 3. Chạy các Continuous Spawn Event
-            HandleContinuousSpawns();
+            // 3. Chạy cập nhật các Strategy đang kích hoạt
+            float timeMultiplier = _populationTracker != null ? _populationTracker.CalculateAdaptiveMultiplier(adaptiveCatchupRate) : 1f;
+
+            foreach (var strategy in _strategies.Values)
+            {
+                strategy.OnUpdate(Time.deltaTime, timeMultiplier, _spawnLocator, _populationTracker, _playerTransform, SpawnAtPosition);
+            }
         }
 
         private void CheckTimelineEvents()
@@ -347,9 +349,7 @@ namespace ProjectZombie.Features.Spawners
         {
             if (evt == null) return;
 
-            GameObject prefab = evt.GetPrefabOrLoad();
-            string poolKey = evt.GetPoolKey();
-            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {poolKey}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
+            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {evt.GetPoolKey()}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
 
             // Phát sự kiện cho tầng UI (Wave Banner Widget) cập nhật
             string stageName = timelineConfig != null ? timelineConfig.levelName : "Chiến Trường";
@@ -358,110 +358,18 @@ namespace ProjectZombie.Features.Spawners
             Sprite waveIcon = evt.GetIcon();
             OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds, waveIcon));
 
-            switch (evt.eventType)
+            // Chuyển giao thực thi cho Strategy tương ứng
+            if (_strategies.TryGetValue(evt.eventType, out var strategy))
             {
-                case TimelineEventType.Continuous:
-                    if (!_activeContinuousEvents.Contains(evt))
-                    {
-                        _activeContinuousEvents.Add(evt);
-                        _eventTimers[evt] = 0f;
-                        // Spawn tức thì đợt quái đầu tiên ngay khi kích hoạt sự kiện
-                        for (int s = 0; s < Mathf.Max(1, evt.spawnCount); s++)
-                        {
-                            SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
-                        }
-                    }
-                    break;
-
-                case TimelineEventType.BurstWave:
-                    SpawnBurstWave(prefab, evt.spawnCount, poolKey);
-                    break;
-
-                case TimelineEventType.BossSpawn:
-                    ClearSmallEnemiesAround(20f); // Dọn sạch quái nhỏ trong bán kính 20m khi Boss xuất hiện
-                    SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
-                    break;
-
-                case TimelineEventType.SpawnPillar:
-                    if (prefab != null)
-                    {
-                        SpawnPillar(prefab);
-                    }
-                    break;
+                strategy.OnEventTriggered(evt, _spawnLocator, _populationTracker, _playerTransform, SpawnAtPosition);
+            }
+            else
+            {
+                Debug.LogWarning($"[SpawnManager] Chưa có strategy cho loại TimelineEventType: {evt.eventType}");
             }
         }
 
-        /// <summary>
-        /// Phương thức hỗ trợ Spawn Trụ (Debug UI hoặc Timeline Event).
-        /// </summary>
-        public void SpawnPillar(PillarConfig config)
-        {
-            if (config.pillarPrefab == null) return;
-            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
-            GameObject pillarObj = Instantiate(config.pillarPrefab, spawnPos, Quaternion.identity);
-
-            SpawnPillar pillar = pillarObj.GetComponent<SpawnPillar>();
-            if (pillar != null)
-            {
-                pillar.Initialize(config);
-            }
-        }
-
-        public void SpawnPillar(GameObject pillarPrefab)
-        {
-            if (pillarPrefab == null) return;
-            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
-            Instantiate(pillarPrefab, spawnPos, Quaternion.identity);
-        }
-
-
-        private void HandleContinuousSpawns()
-        {
-            if (currentEnemyCount >= maxEnemyCap || _activeContinuousEvents.Count == 0) return;
-
-            // Cơ chế Adaptive Pressure: Nếu người chơi quá mạnh dọn sạch sàn đấu (quái < minEnemyFloor),
-            // tăng tốc độ đếm nhịp spawn gấp adaptiveCatchupRate lần để bù quái tức thì, loại bỏ 100% khoảng lặng.
-            float timeMultiplier = 1.0f;
-            if (currentEnemyCount < minEnemyFloor)
-            {
-                // Khi quái = 0 thì tốc độ catch-up đạt tối đa (3x - 4x)
-                float deficitRatio = 1f - ((float)currentEnemyCount / Mathf.Max(1, minEnemyFloor));
-                timeMultiplier += deficitRatio * adaptiveCatchupRate;
-            }
-
-            for (int i = 0; i < _activeContinuousEvents.Count; i++)
-            {
-                var evt = _activeContinuousEvents[i];
-                _eventTimers[evt] += Time.deltaTime * timeMultiplier;
-
-                if (_eventTimers[evt] >= evt.spawnInterval)
-                {
-                    _eventTimers[evt] = 0f;
-                    if (currentEnemyCount < maxEnemyCap)
-                    {
-                        // Spawn từ 1 đến nhiều quái theo batch của event
-                        int spawnBatch = Mathf.Clamp(evt.spawnCount > 0 ? evt.spawnCount : 1, 1, maxEnemyCap - currentEnemyCount);
-                        GameObject prefab = evt.GetPrefabOrLoad();
-                        string poolKey = evt.GetPoolKey();
-                        for (int b = 0; b < spawnBatch; b++)
-                        {
-                            SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
-                        }
-                    }
-                }
-            }
-        }
-
-        public void SpawnBurstWave(GameObject prefab, int count, string poolKey = null)
-        {
-            int actualSpawn = Mathf.Min(count, maxEnemyCap - currentEnemyCount);
-            for (int i = 0; i < actualSpawn; i++)
-            {
-                SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
-            }
-        }
-
-        private GameObject SpawnAtPosition(GameObject prefab, Vector3 position, string poolKey = null)
+        public GameObject SpawnAtPosition(GameObject prefab, Vector3 position, string poolKey = null)
         {
             GameObject enemy = null;
 
@@ -489,163 +397,57 @@ namespace ProjectZombie.Features.Spawners
 
             if (enemy != null)
             {
-                currentEnemyCount++;
+                _populationTracker?.RegisterSpawn(1);
                 enemy.SetActive(true);
             }
             return enemy;
         }
 
-
+        /// <summary>
+        /// Đồng bộ giảm sĩ số quái vật khi có quái bị tiêu diệt hoặc trả về Pool.
+        /// </summary>
         public void OnEnemyDied()
         {
-            currentEnemyCount = Mathf.Max(0, currentEnemyCount - 1);
+            _populationTracker?.OnEnemyDied(1);
         }
 
-        private static readonly Collider2D[] _clearEnemiesBuffer = new Collider2D[64];
-
-        private void ClearSmallEnemiesAround(float radius)
-        {
-            if (_playerTransform == null) return;
-            int hitCount = Physics2D.OverlapCircleNonAlloc(_playerTransform.position, radius, _clearEnemiesBuffer);
-            for (int i = 0; i < hitCount; i++)
-            {
-                var hit = _clearEnemiesBuffer[i];
-                if (hit != null && hit.CompareTag("Enemy") && !hit.name.Contains("Boss"))
-                {
-                    hit.gameObject.SetActive(false);
-                    OnEnemyDied();
-                }
-            }
-        }
-
+        /// <summary>
+        /// Tiện ích lấy tọa độ ngoài camera cho các hệ thống ngoại vi (vd: Spawn Trụ tế đàn).
+        /// </summary>
         public Vector3 GetSpawnPositionOutsideCamera()
         {
-            if (_playerTransform == null)
-            {
-                if (Player.PlayerProvider.HasPlayer) _playerTransform = Player.PlayerProvider.PlayerTransform;
-                else
-                {
-                    var playerObj = GameObject.FindGameObjectWithTag("Player");
-                    if (playerObj != null) _playerTransform = playerObj.transform;
-                }
-            }
-
-            Vector3 center = _playerTransform != null ? _playerTransform.position : Vector3.zero;
-            int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
-            if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
-
-            if (_mainCamera == null) _mainCamera = Camera.main;
-
-            float effectiveMin = minSpawnRadius > 0 ? minSpawnRadius : 8f;
-            float effectiveMax = maxSpawnRadius > effectiveMin ? maxSpawnRadius : effectiveMin + 6f;
-
-            // Tự động thích ứng bán kính theo kích thước Camera nếu có
-            if (_mainCamera != null && _mainCamera.orthographic)
-            {
-                float camHalfH = _mainCamera.orthographicSize + cameraPadding;
-                float camHalfW = _mainCamera.orthographicSize * _mainCamera.aspect + cameraPadding;
-                float camDiagonal = Mathf.Sqrt(camHalfW * camHalfW + camHalfH * camHalfH);
-
-                effectiveMin = Mathf.Min(minSpawnRadius, camDiagonal);
-                effectiveMax = Mathf.Max(effectiveMin + 2f, maxSpawnRadius);
-            }
-
-            // Giai đoạn 1: Lấy mẫu vị trí (Vừa ngoài Camera, vừa nằm trong Safe Bounds và có sàn hợp lệ)
-            for (int i = 0; i < 16; i++)
-            {
-                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-                float distance = Random.Range(effectiveMin, effectiveMax);
-                Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
-
-                // 1. Phải nằm trong Safe Bounds và sàn gạch Walkable
-                if (!IsInsideWalkableArea(candidatePos))
-                    continue;
-
-                // 2. Không được dính Obstacle / Tường
-                if (obstacleMask != 0)
-                {
-                    int hits = Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask);
-                    if (hits > 0) continue;
-                }
-
-                // 3. Phải nằm ngoài tầm nhìn Camera
-                if (!IsOutsideCameraViewport(candidatePos))
-                    continue;
-
-                return candidatePos;
-            }
-
-            // Giai đoạn 2: Smart Math Clamping Fallback (Khi Player đứng sát góc chết mép tường)
-            // Lấy ngẫu nhiên các điểm ngoài Camera rồi ép trực tiếp (Clamp) vào trong Safe Map Bounds
-            for (int i = 0; i < 8; i++)
-            {
-                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-                float distance = Random.Range(effectiveMin, effectiveMax);
-                Vector3 rawPos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
-
-                Vector3 clampedPos = ClampToSafeBounds(rawPos);
-
-                if (IsInsideWalkableArea(clampedPos))
-                {
-                    if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(clampedPos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)
-                        continue;
-
-                    return clampedPos;
-                }
-            }
-
-            // Fallback cuối cùng: Clamp điểm quanh Player về mép an toàn bên trong sàn đấu
-            Vector3 finalFallback = ClampToSafeBounds(center + (Vector3)(Random.insideUnitCircle.normalized * effectiveMin));
-            return finalFallback;
+            if (_spawnLocator == null) EnsureDependencies();
+            return _spawnLocator.GetSpawnPosition(_playerTransform, minSpawnRadius, maxSpawnRadius);
         }
 
-        private Vector3 ClampToSafeBounds(Vector3 targetPos)
+        public void SpawnBurstWave(GameObject prefab, int count, string poolKey = null)
         {
-            if (!_hasCalculatedBounds) CalculateSafeMapBounds();
-
-            float clampedX = Mathf.Clamp(targetPos.x, _safeMapBounds.min.x, _safeMapBounds.max.x);
-            float clampedY = Mathf.Clamp(targetPos.y, _safeMapBounds.min.y, _safeMapBounds.max.y);
-            return new Vector3(clampedX, clampedY, 0f);
+            int actualSpawn = Mathf.Min(count, _populationTracker != null ? _populationTracker.MaxEnemyCap - _populationTracker.CurrentEnemyCount : count);
+            for (int i = 0; i < actualSpawn; i++)
+            {
+                if (_populationTracker != null && !_populationTracker.CanSpawnMore) break;
+                SpawnAtPosition(prefab, GetSpawnPositionOutsideCamera(), poolKey);
+            }
         }
 
-        private bool IsInsideWalkableArea(Vector3 position)
+        public void SpawnPillar(PillarConfig config)
         {
-            // 1. Bắt buộc phải nằm trong Safe Bounds của sàn đấu
-            if (_hasCalculatedBounds && !_safeMapBounds.Contains(position))
-            {
-                return false;
-            }
+            if (config.pillarPrefab == null) return;
+            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
+            GameObject pillarObj = Instantiate(config.pillarPrefab, spawnPos, Quaternion.identity);
 
-            if (walkableAreaCollider != null)
+            SpawnPillar pillar = pillarObj.GetComponent<SpawnPillar>();
+            if (pillar != null)
             {
-                if (!walkableAreaCollider.gameObject.name.Contains("Obstacle") && !walkableAreaCollider.OverlapPoint(position))
-                {
-                    return false;
-                }
+                pillar.Initialize(config);
             }
-
-            // 2. Bắt buộc phải có sàn gạch trên Ground Tilemap
-            if (groundTilemap != null)
-            {
-                Vector3Int cellPos = groundTilemap.WorldToCell(position);
-                if (!groundTilemap.HasTile(cellPos)) return false;
-            }
-
-            // 3. Tuyệt đối không được trùng với ô tường trên Obstacle Tilemap
-            if (_obstacleTilemap != null)
-            {
-                Vector3Int obsCell = _obstacleTilemap.WorldToCell(position);
-                if (_obstacleTilemap.HasTile(obsCell)) return false;
-            }
-
-            return true;
         }
 
-        private bool IsOutsideCameraViewport(Vector3 position)
+        public void SpawnPillar(GameObject pillarPrefab)
         {
-            if (_mainCamera == null) return true;
-            Vector3 vp = _mainCamera.WorldToViewportPoint(position);
-            return vp.x < -0.05f || vp.x > 1.05f || vp.y < -0.05f || vp.y > 1.05f;
+            if (pillarPrefab == null) return;
+            Vector3 spawnPos = GetSpawnPositionOutsideCamera();
+            Instantiate(pillarPrefab, spawnPos, Quaternion.identity);
         }
 
         private void OnDrawGizmosSelected()
@@ -662,6 +464,11 @@ namespace ProjectZombie.Features.Spawners
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireCube(walkableAreaCollider.bounds.center, walkableAreaCollider.bounds.size);
+            }
+            else if (_boundaryContext != null)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(_boundaryContext.SafeMapBounds.center, _boundaryContext.SafeMapBounds.size);
             }
         }
     }
