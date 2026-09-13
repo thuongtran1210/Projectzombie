@@ -85,33 +85,9 @@ namespace ProjectZombie.Features.UI
 
         private void DestroyCurrentMapInstance()
         {
-            if (_currentInstantiatedMap != null)
-            {
-                // Giải phóng an toàn qua Addressables nếu đối tượng được sinh từ Addressables
-                bool releasedByAddressables = false;
-                try
-                {
-                    releasedByAddressables = UnityEngine.AddressableAssets.Addressables.ReleaseInstance(_currentInstantiatedMap);
-                }
-                catch { }
-
-                if (!releasedByAddressables && _currentInstantiatedMap != null)
-                {
-                    Destroy(_currentInstantiatedMap);
-                }
-                _currentInstantiatedMap = null;
-            }
-
-            // Dọn dẹp cả các map cũ do tool dựng sẵn hoặc spawn trước đó trong Scene nếu có
-            string[] mapNames = new string[] { "Environment_SanDinhLangCo", "Map_SanDinhLangCo", "Map_BambooForest", "Map_AncientCitadel", "Map_CinnabarSwamp" };
-            foreach (var mName in mapNames)
-            {
-                var existing = GameObject.Find(mName);
-                if (existing != null) Destroy(existing);
-                var existingClone = GameObject.Find(mName + "(Clone)");
-                if (existingClone != null) Destroy(existingClone);
-            }
+            MatchFlow.MatchFlowOrchestrator.DestroyCurrentMapInstance();
         }
+
 
         public void TransitionToCombat(Maps.StageDefinitionSO stage = null)
         {
@@ -156,95 +132,8 @@ namespace ProjectZombie.Features.UI
 
                 LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                 {
-                    // 1. (20%) Khởi tạo hoặc tải Map Tilemap từ Addressables
-                    string stageMsg = _selectedStage != null ? $"Đang khai mở {_selectedStage.stageName}..." : "Đang triệu hồi chân thân Tướng...";
-                    reportProgress?.Invoke(0.2f, stageMsg);
-
-                    // Nếu có chỉ định Addressables Map Key cho Ải, tiến hành dọn map cũ và nạp map mới qua Addressables hoặc Resources
-                    if (_selectedStage != null && !string.IsNullOrEmpty(_selectedStage.mapPrefabAddress))
-                    {
-                        try
-                        {
-                            // 1. Dọn dẹp map cũ trước đó nếu có
-                            DestroyCurrentMapInstance();
-
-                            bool loadedFromAddressables = false;
-                            try
-                            {
-                                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(_selectedStage.mapPrefabAddress);
-                                await locHandle.Task;
-                                if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locHandle.Result != null && locHandle.Result.Count > 0)
-                                {
-                                    var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_selectedStage.mapPrefabAddress);
-                                    await handle.Task;
-                                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                                    {
-                                        _currentInstantiatedMap = handle.Result;
-                                        Spawners.SpawnManager.Instance?.RefreshMapReferences();
-                                        loadedFromAddressables = true;
-                                    }
-                                }
-                            }
-                            catch (System.Exception ex)
-                            {
-                                Debug.LogWarning($"[MetaSceneTransitionController] Addressable load failed: {ex.Message}");
-                            }
-
-                            // 2. Fallback sang Resources nội bộ trong APK nếu Addressables chưa tải hoặc chạy Offline trên Android
-                            if (!loadedFromAddressables)
-                            {
-                                var mapPrefab = Resources.Load<GameObject>($"Maps/{_selectedStage.mapPrefabAddress}");
-                                if (mapPrefab != null)
-                                {
-                                    _currentInstantiatedMap = Instantiate(mapPrefab);
-                                    _currentInstantiatedMap.name = _selectedStage.mapPrefabAddress;
-                                    Spawners.SpawnManager.Instance?.RefreshMapReferences();
-                                    Debug.Log($"<color=#00FF88>[MetaSceneTransitionController] Đã nạp thành công Map '{_selectedStage.mapPrefabAddress}' từ Resources!</color>");
-                                }
-                                else
-                                {
-                                    Debug.Log($"[MetaSceneTransitionController] Không tìm thấy Map '{_selectedStage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định có sẵn trong Scene.");
-                                }
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debug.LogWarning($"[MetaSceneTransitionController] Map '{_selectedStage.mapPrefabAddress}' không khả dụng: {ex.Message}.");
-                        }
-                    }
-
-                    if (_gameplayBootstrapper != null)
-                    {
-                        _gameplayBootstrapper.StartMatchFlow();
-                    }
-                    await System.Threading.Tasks.Task.Yield();
-
-                    // 2. (50%) Preload Quái vật & Khởi tạo Object Pool ngầm
-                    reportProgress?.Invoke(0.5f, "Đang nạp dữ liệu quái vật cõi âm...");
-                    if (Spawners.SpawnManager.Instance != null)
-                    {
-                        await Spawners.SpawnManager.Instance.StartMatchAsync();
-                    }
-                    await System.Threading.Tasks.Task.Yield();
-
-                    // 3. (80%) Nạp sẵn Database Thẻ Nâng Cấp, VFX & Nhạc Trận Đấu
-                    reportProgress?.Invoke(0.8f, "Đang ngưng tụ linh khí ngũ hành...");
-                    Upgrades.UpgradeManager.Instance?.AutoPopulateUpgradesIfEmpty();
-                    
-                    // Phát trước BGM Trận Đấu ngầm trong Loading Screen để tránh LoadFMODSound lúc vào trận
-                    var phaseAudio = FindObjectOfType<global::Core.Audio.PhaseAudioController>();
-                    if (phaseAudio != null)
-                    {
-                        phaseAudio.ForceInitialPhaseAudio();
-                    }
-                    await System.Threading.Tasks.Task.Yield();
-
-                    // 4. (100%) Chuyển trạng thái Game sang Playing
-                    reportProgress?.Invoke(1.0f, "Chiến trường đã sẵn sàng!");
-                    if (GameStateManager.Instance != null)
-                    {
-                        GameStateManager.Instance.ChangeState(GameState.Playing);
-                    }
+                    // Ủy quyền toàn bộ luồng nạp Map, Preload Quái, Khởi tạo Player và Chuyển State cho MatchFlowOrchestrator
+                    await MatchFlow.MatchFlowOrchestrator.ExecuteCombatPreparationAsync(_selectedStage, _gameplayBootstrapper, reportProgress);
                 }, () =>
                 {
                     ApplyStateVisuals(false);
@@ -253,6 +142,7 @@ namespace ProjectZombie.Features.UI
 
                 while (!loadingFinished) yield return null;
             }
+
             else
             {
                 // 1. Fade Out tối dần

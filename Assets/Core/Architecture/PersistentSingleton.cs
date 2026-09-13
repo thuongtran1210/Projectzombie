@@ -30,13 +30,12 @@ namespace ProjectZombie.Core.Architecture
                         _instance = FindObjectOfType<T>();
                         if (_instance == null && Application.isPlaying)
                         {
-                            var go = new GameObject($"[{typeof(T).Name}]");
-                            _instance = go.AddComponent<T>();
-                            DontDestroyOnLoad(go);
+                            Debug.LogWarning($"<color=#FFAA00>[PersistentSingleton<{typeof(T).Name}>]</color> Truy xuất Instance nhưng chưa tìm thấy trong Scene. Đảm bảo CoreBootstrapper đã khởi tạo dịch vụ này trước.");
                         }
                     }
                     return _instance;
                 }
+
             }
         }
 

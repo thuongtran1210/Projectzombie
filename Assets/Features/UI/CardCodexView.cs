@@ -219,25 +219,61 @@ namespace ProjectZombie.Features.UI
         public Transform CardsGridContainer => _cardsGridContainer;
         public Transform RecipeIngredientsContainer => _recipeIngredientsContainer;
 
+        private int _activeSlotIndex = 0;
+
         /// <summary>
-        /// Dọn dẹp toàn bộ slot item cũ trong Grid Container.
+        /// Tạo trước một số lượng slot nhất định trong grid để tránh bị khựng CPU khi người chơi bấm mở tab lần đầu.
         /// </summary>
-        public void ClearGrid()
+        public void PrewarmSlots(int count)
         {
             if (_cardsGridContainer == null) return;
-            for (int i = _cardsGridContainer.childCount - 1; i >= 0; i--)
+            int existing = _cardsGridContainer.childCount;
+            for (int i = existing; i < count; i++)
             {
-                Destroy(_cardsGridContainer.GetChild(i).gameObject);
+                var slot = CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+                slot.gameObject.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Tạo một slot item mới trong grid.
+        /// Chuẩn bị danh sách slot, ẩn các slot thừa thay vì Destroy liên tục gây khựng CPU.
+        /// </summary>
+        public void ClearGrid()
+        {
+            _activeSlotIndex = 0;
+            if (_cardsGridContainer == null) return;
+            for (int i = 0; i < _cardsGridContainer.childCount; i++)
+            {
+                _cardsGridContainer.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Lấy slot có sẵn trong hierarchy để tái sử dụng, hoặc chỉ tạo mới nếu thiếu.
         /// </summary>
         public CodexSlotItemView CreateSlotItem()
         {
-            return CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+            if (_cardsGridContainer == null) return null;
+
+            CodexSlotItemView slotView = null;
+            if (_activeSlotIndex < _cardsGridContainer.childCount)
+            {
+                var child = _cardsGridContainer.GetChild(_activeSlotIndex);
+                slotView = child.GetComponent<CodexSlotItemView>();
+                if (slotView != null)
+                {
+                    child.gameObject.SetActive(true);
+                    _activeSlotIndex++;
+                    return slotView;
+                }
+            }
+
+            slotView = CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+            slotView.gameObject.SetActive(true);
+            _activeSlotIndex++;
+            return slotView;
         }
     }
 }
+
 

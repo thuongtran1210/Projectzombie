@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ProjectZombie.Features.UI
+{
+    /// <summary>
+    /// Factory chuyên trách khởi tạo và quản lý vòng đời bộ nhớ cache của các màn hình Meta UI (Lazy Loading).
+    /// Giúp phân tách triệt để việc Instantiate đối tượng ra khỏi Navigation Stack của MetaUIManager.
+    /// </summary>
+    public class UIScreenFactory
+    {
+        private readonly UIRegistrySO _uiRegistry;
+        private readonly Transform _container;
+        private readonly Dictionary<MetaScreenType, BaseMetaScreenView> _instantiatedScreens = new Dictionary<MetaScreenType, BaseMetaScreenView>();
+
+        public UIScreenFactory(UIRegistrySO uiRegistry, Transform container)
+        {
+            _uiRegistry = uiRegistry;
+            _container = container;
+        }
+
+        /// <summary>
+        /// Đăng ký trước một màn hình đã có sẵn trong Scene (nếu có).
+        /// </summary>
+        public void RegisterExistingScreen(BaseMetaScreenView screen)
+        {
+            if (screen == null) return;
+            _instantiatedScreens[screen.ScreenType] = screen;
+        }
+
+        /// <summary>
+        /// Lấy màn hình từ cache, nếu chưa có sẽ nạp Prefab từ UIRegistry và instantiate vào Scene (Lazy Loading).
+        /// </summary>
+        public BaseMetaScreenView GetOrCreateScreen(MetaScreenType screenType)
+        {
+            // 1. Kiểm tra cache đối tượng đã sinh trước đó
+            if (_instantiatedScreens.TryGetValue(screenType, out var existingScreen) && existingScreen != null)
+            {
+                return existingScreen;
+            }
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            // 2. Tra cứu cấu hình trong UIRegistrySO (kèm tự động fallback Resources nếu null)
+            var registry = _uiRegistry ?? Resources.Load<UIRegistrySO>("UI/UIRegistry");
+            if (registry == null)
+            {
+                Debug.LogError($"[UIScreenFactory] Không thể tạo màn hình '{screenType}' vì UIRegistrySO chưa được gán và không tìm thấy tại 'Resources/UI/UIRegistry'!");
+                return null;
+            }
+
+            if (!registry.TryGetScreenEntry(screenType, out var entry) || entry.screenPrefab == null)
+            {
+                Debug.LogError($"[UIScreenFactory] Không tìm thấy Prefab cho '{screenType}' trong UIRegistrySO!");
+                return null;
+            }
+
+            // 3. Tiến hành Instantiate đối tượng làm con của Root Container (Canvas)
+            var newScreen = UnityEngine.Object.Instantiate(entry.screenPrefab, _container);
+            string finalName = !string.IsNullOrEmpty(entry.screenHierarchyName) 
+                ? entry.screenHierarchyName 
+                : $"Screen_{screenType}";
+            newScreen.name = finalName;
+
+            // Đảm bảo ban đầu ở trạng thái ẩn an toàn
+            newScreen.gameObject.SetActive(false);
+
+            // Lưu vào cache tái sử dụng O(1)
+            _instantiatedScreens[screenType] = newScreen;
+
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[UIScreenFactory]</color> Đã nạp thành công màn hình '{finalName}' (Lazy Loaded) trong: {sw.ElapsedMilliseconds} ms.");
+            return newScreen;
+        }
+
+        /// <summary>
+        /// Kiểm tra xem màn hình đã được instantiate vào bộ nhớ chưa.
+        /// </summary>
+        public bool IsScreenLoaded(MetaScreenType screenType)
+        {
+            return _instantiatedScreens.ContainsKey(screenType) && _instantiatedScreens[screenType] != null;
+        }
+
+        /// <summary>
+        /// Lấy toàn bộ danh sách các màn hình đang hoạt động trong Scene.
+        /// </summary>
+        public IEnumerable<BaseMetaScreenView> GetAllLoadedScreens()
+        {
+            return _instantiatedScreens.Values;
+        }
+    }
+}

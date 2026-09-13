@@ -114,16 +114,21 @@ namespace ProjectZombie.Features.Spawners
         }
 
         [Header("Auto Start (For Quick Play / Testing)")]
-        [Tooltip("Tự động bắt đầu trận đấu khi vào Scene nếu không có UI Meta điều phối")]
-        [SerializeField] private bool autoStartOnPlay = true;
+        [Tooltip("Chỉ tự động bắt đầu trận khi test riêng lẻ trong Unity Editor và GameState là Playing")]
+        [SerializeField] private bool autoStartOnPlay = false;
 
         private void Start()
         {
-            if (autoStartOnPlay && !isMatchActive)
+            // Chỉ cho phép tự chạy nếu ở Editor và GameState không phải MainMenu (dành cho chế độ chạy thử Scene độc lập)
+            bool isSandboxTesting = Application.isEditor && 
+                                    (Shared.GameStateManager.Instance == null || Shared.GameStateManager.Instance.CurrentState == Shared.GameState.Playing);
+
+            if (autoStartOnPlay && isSandboxTesting && !isMatchActive)
             {
                 StartMatch();
             }
         }
+
 
         private Tilemap _obstacleTilemap;
         private Bounds _safeMapBounds;

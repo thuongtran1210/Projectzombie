@@ -14,9 +14,7 @@ namespace ProjectZombie.Core.Architecture
     {
         private const string CORE_ROOT_NAME = "--- APP CORE SERVICES ---";
 
-#if !UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         private static void InitializeCoreServices()
         {
             // Ghim cứng 60 FPS và giữ màn hình luôn sáng, chống tự động khóa máy khi chơi game
@@ -58,18 +56,42 @@ namespace ProjectZombie.Core.Architecture
             // Bước 2.4: RelicGachaManager (quản lý rương gacha & pity)
             var gachaMgr = coreRoot.AddComponent<RelicGachaManager>();
 
+            // Bước 2.5: CharacterProgressionManager (quản lý nâng sao và tăng chỉ số tướng)
+            var charProgMgr = coreRoot.AddComponent<CharacterProgressionManager>();
+
             // 3. Khởi tạo liên kết dữ liệu giữa GameManager và các Domain Services
             if (gameMgr.SaveData != null)
             {
                 currencyMgr.Initialize(gameMgr.SaveData);
                 relicMgr.Initialize(gameMgr.SaveData);
                 gachaMgr.Initialize(gameMgr.SaveData);
+                charProgMgr.Initialize(gameMgr.SaveData);
             }
 
-            // Bước 2.5: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
+            // Bước 2.6: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
             coreRoot.AddComponent<ProjectZombie.Features.Startup.GameStartupFlowController>();
 
+            AppBootGate.SetReady();
             Debug.Log("<color=#00FF88>[CoreBootstrapper]</color> Đã khởi tạo hoàn tất toàn bộ Core Services trong '--- APP CORE SERVICES ---'!");
+        }
+
+    }
+
+    /// <summary>
+    /// Cổng kiểm soát trạng thái sẵn sàng của toàn bộ Core Services trong trò chơi (Boot Gate).
+    /// Các Presenter / UI / Subsystems có thể kiểm tra hoặc subscribe sự kiện này để đảm bảo không gọi dịch vụ trước khi nạp xong.
+    /// </summary>
+    public static class AppBootGate
+    {
+        public static bool IsCoreReady { get; private set; } = false;
+        public static event System.Action OnCoreReady;
+
+        internal static void SetReady()
+        {
+            if (IsCoreReady) return;
+            IsCoreReady = true;
+            OnCoreReady?.Invoke();
         }
     }
 }
+

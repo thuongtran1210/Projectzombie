@@ -20,10 +20,10 @@ namespace ProjectZombie.Core.Save
         {
             base.Awake();
 
-            // Nạp dữ liệu Save khi game khởi động
+            // Nạp dữ liệu Save khi game khởi động (chỉ load raw data, không vội inject vào manager con lúc Awake)
             if (SaveData == null)
             {
-                LoadGame();
+                SaveData = SaveSystem.Load();
             }
         }
 
@@ -32,7 +32,7 @@ namespace ProjectZombie.Core.Save
             InitializeAllManagers();
         }
 
-        private void InitializeAllManagers()
+        public void InitializeAllManagers()
         {
             if (SaveData == null) return;
 
@@ -48,6 +48,10 @@ namespace ProjectZombie.Core.Save
             {
                 RelicGachaManager.Instance.Initialize(SaveData);
             }
+            if (CharacterProgressionManager.Instance != null)
+            {
+                CharacterProgressionManager.Instance.Initialize(SaveData);
+            }
         }
 
         /// <summary>
@@ -58,6 +62,7 @@ namespace ProjectZombie.Core.Save
             SaveData = SaveSystem.Load();
             InitializeAllManagers();
         }
+
 
         /// <summary>
         /// Lưu tiến trình hiện tại xuống đĩa.

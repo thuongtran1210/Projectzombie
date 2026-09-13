@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af8d45b37ec37404891160e82bbd5720, type: 3}
+  m_Name: UIRegistry
+  m_EditorClassIdentifier: 
+  _screens:
+  - screenType: 0
+    screenPrefab: {fileID: 8744177420571266499, guid: 21c4ae15df7e89c4eb2c16d9774bf674, type: 3}
+    screenHierarchyName: Panel_MainHub
+  - screenType: 1
+    screenPrefab: {fileID: 1703207058055660316, guid: 2fb62caed38f43349873e0b32228e44a, type: 3}
+    screenHierarchyName: Panel_CharacterSelect
+  - screenType: 2
+    screenPrefab: {fileID: 6011009980767583319, guid: 8da341d1311ca3e46b50233a98f3210a, type: 3}
+    screenHierarchyName: Panel_WeaponLoadout
+  - screenType: 3
+    screenPrefab: {fileID: 1249154169894984072, guid: fa1014d0c4fa5354fb1f7145ed2ce728, type: 3}
+    screenHierarchyName: Panel_SanctuaryTree
+  - screenType: 4
+    screenPrefab: {fileID: 5269677429597461861, guid: 744cdde2757587146ab359864e8e6ae2, type: 3}
+    screenHierarchyName: Panel_CardCodex
+  - screenType: 5
+    screenPrefab: {fileID: 6340144566631493060, guid: 0405aac2427a4cc88df1436fbac11456, type: 3}
+    screenHierarchyName: Modal_Settings
+  - screenType: 6
+    screenPrefab: {fileID: 5015797603870433675, guid: 7eead13f7c8501e41a2b308675c5189a, type: 3}
+    screenHierarchyName: Panel_GachaShop
+  - screenType: 7
+    screenPrefab: {fileID: 6296933648091845686, guid: 22310e45ce0f84f40b72db2396a5ccc7, type: 3}
+    screenHierarchyName: Screen_StageSelect
+  - screenType: 8
+    screenPrefab: {fileID: 7787032622829340102, guid: 3d8a88263f4262844aa43ee634789516, type: 3}
+    screenHierarchyName: Modal_ResourceDownload

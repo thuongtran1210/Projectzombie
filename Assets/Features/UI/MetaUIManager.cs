@@ -14,25 +14,22 @@ namespace ProjectZombie.Features.UI
         [Header("Root Meta Canvas")]
         [SerializeField] private CanvasGroup _metaCanvasGroup;
 
-        [Header("Registered Screens")]
-        [SerializeField] private BaseMetaScreenView _mainHubScreen;
-        [SerializeField] private BaseMetaScreenView _characterSelectScreen;
-        [SerializeField] private BaseMetaScreenView _weaponLoadoutScreen;
-        [SerializeField] private BaseMetaScreenView _sanctuaryTreeScreen;
-        [SerializeField] private BaseMetaScreenView _codexScreen;
-        [SerializeField] private BaseMetaScreenView _settingsScreen;
-        [SerializeField] private BaseMetaScreenView _gachaShopScreen;
-        [SerializeField] private BaseMetaScreenView _stageSelectScreen;
-        [SerializeField] private BaseMetaScreenView _resourceDownloadScreen;
+        [Header("Data-Driven UI Registry")]
+        [Tooltip("Bảng đăng ký Prefab màn hình tập trung")]
+        [SerializeField] private UIRegistrySO _uiRegistry;
 
         [Header("Persistent Backdrop")]
         [Tooltip("Ảnh nền cố định che 100% Tilemap và Player bên dưới khi ở trong Menu")]
         [SerializeField] private GameObject _persistentBackdrop;
 
+        [Header("Cached Scene Screens (Optional - Pre-baked in Scene)")]
+        [SerializeField] private BaseMetaScreenView _mainHubScreen;
+
         private readonly Stack<BaseMetaScreenView> _screenStack = new Stack<BaseMetaScreenView>();
+        private UIScreenFactory _screenFactory;
 
         public bool IsInMetaMenu => _metaCanvasGroup != null && _metaCanvasGroup.gameObject.activeSelf;
-        public BaseMetaScreenView WeaponLoadoutScreen => _weaponLoadoutScreen;
+        public BaseMetaScreenView WeaponLoadoutScreen => _screenFactory != null ? _screenFactory.GetOrCreateScreen(MetaScreenType.WeaponLoadout) : null;
 
         private void Awake()
         {
@@ -58,28 +55,44 @@ namespace ProjectZombie.Features.UI
                 _metaCanvasGroup.blocksRaycasts = true;
             }
 
-            EnsurePersistentBackdrop();
-
-            AutoResolveMissingScreens();
-
-            // Mặc định ẩn và tắt toàn bộ màn hình phụ ngay trong Awake
-            foreach (Transform child in transform)
+            // Tự động fallback nạp UIRegistry từ Resources nếu Inspector chưa được kéo thả
+            if (_uiRegistry == null)
             {
-                if (child.name == "Persistent_MetaBackdrop") continue;
-                if (_mainHubScreen != null && child == _mainHubScreen.transform) continue;
-                child.gameObject.SetActive(false);
+                _uiRegistry = Resources.Load<UIRegistrySO>("UI/UIRegistry");
             }
 
-            if (_characterSelectScreen != null) _characterSelectScreen.gameObject.SetActive(false);
-            if (_weaponLoadoutScreen != null) _weaponLoadoutScreen.gameObject.SetActive(false);
-            if (_sanctuaryTreeScreen != null) _sanctuaryTreeScreen.gameObject.SetActive(false);
-            if (_codexScreen != null) _codexScreen.gameObject.SetActive(false);
-            if (_settingsScreen != null) _settingsScreen.gameObject.SetActive(false);
-            if (_gachaShopScreen != null) _gachaShopScreen.gameObject.SetActive(false);
-            if (_stageSelectScreen != null) _stageSelectScreen.gameObject.SetActive(false);
-            if (_resourceDownloadScreen != null) _resourceDownloadScreen.gameObject.SetActive(false);
+            // Khởi tạo UIScreenFactory chuyên trách nạp và quản lý vòng đời màn hình
+            _screenFactory = new UIScreenFactory(_uiRegistry, transform);
+
+
+            // Đăng ký các màn hình đã có sẵn trong Hierarchy của Scene vào Factory
+            var existingInScene = GetComponentsInChildren<BaseMetaScreenView>(true);
+            foreach (var scr in existingInScene)
+            {
+                _screenFactory.RegisterExistingScreen(scr);
+                if (scr.ScreenType == MetaScreenType.MainHub)
+                {
+                    _mainHubScreen = scr;
+                }
+                else
+                {
+                    scr.gameObject.SetActive(false);
+                }
+            }
+
+            // Đảm bảo backdrop hiển thị ở lớp dưới cùng
+            if (_persistentBackdrop != null)
+            {
+                _persistentBackdrop.transform.SetAsFirstSibling();
+                _persistentBackdrop.SetActive(true);
+            }
 
             // Mở màn hình Sảnh Chính (Main Hub) đầu tiên
+            if (_mainHubScreen == null)
+            {
+                _mainHubScreen = _screenFactory.GetOrCreateScreen(MetaScreenType.MainHub);
+            }
+
             if (_mainHubScreen != null)
             {
                 _mainHubScreen.gameObject.SetActive(true);
@@ -87,54 +100,8 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void EnsurePersistentBackdrop()
-        {
-            if (_persistentBackdrop == null)
-            {
-                var existing = transform.Find("Persistent_MetaBackdrop");
-                if (existing != null)
-                {
-                    _persistentBackdrop = existing.gameObject;
-                }
-                else
-                {
-                    Sprite bgForest = Resources.Load<Sprite>("UI/VongXuyen/BG_VongXuyen_Forest_Hub") 
-                                   ?? Resources.Load<Sprite>("BG_VongXuyen_Forest_Hub");
-#if UNITY_EDITOR
-                    if (bgForest == null)
-                        bgForest = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
-#endif
-                    if (bgForest != null)
-                    {
-                        GameObject backdropObj = new GameObject("Persistent_MetaBackdrop", typeof(RectTransform), typeof(UnityEngine.UI.Image));
-                        backdropObj.transform.SetParent(transform, false);
-                        backdropObj.transform.SetAsFirstSibling();
-
-                        RectTransform rt = backdropObj.GetComponent<RectTransform>();
-                        rt.anchorMin = Vector2.zero;
-                        rt.anchorMax = Vector2.one;
-                        rt.sizeDelta = Vector2.zero;
-                        rt.anchoredPosition = Vector2.zero;
-
-                        var img = backdropObj.GetComponent<UnityEngine.UI.Image>();
-                        img.color = Color.white;
-                        img.raycastTarget = false;
-                        img.sprite = bgForest;
-                        _persistentBackdrop = backdropObj;
-                    }
-                }
-            }
-
-            if (_persistentBackdrop != null)
-            {
-                _persistentBackdrop.transform.SetAsFirstSibling();
-                _persistentBackdrop.SetActive(true);
-            }
-        }
-
         private void Start()
         {
-            AutoResolveMissingScreens();
             if (_mainHubScreen != null && (_screenStack.Count == 0 || _screenStack.Peek() != _mainHubScreen))
             {
                 PushScreen(_mainHubScreen);
@@ -167,20 +134,16 @@ namespace ProjectZombie.Features.UI
 
             Debug.Log($"[MetaUIManager] PushScreen: Đang hiển thị {screen.gameObject.name} (ScreenType: {screen.ScreenType})");
 
-            // Tắt tất cả các màn hình khác để triệt tiêu hiện tượng đè giao diện
-            var allScreens = new BaseMetaScreenView[]
+            // Tắt tất cả các màn hình đã nạp khác để triệt tiêu hiện tượng đè giao diện
+            if (_screenFactory != null)
             {
-                _mainHubScreen, _characterSelectScreen, _weaponLoadoutScreen,
-                _sanctuaryTreeScreen, _codexScreen, _settingsScreen,
-                _gachaShopScreen, _stageSelectScreen, _resourceDownloadScreen
-            };
-
-            foreach (var s in allScreens)
-            {
-                if (s != null && s != screen)
+                foreach (var s in _screenFactory.GetAllLoadedScreens())
                 {
-                    s.Hide();
-                    s.gameObject.SetActive(false);
+                    if (s != null && s != screen && s.gameObject.activeSelf)
+                    {
+                        s.Hide();
+                        s.gameObject.SetActive(false);
+                    }
                 }
             }
 
@@ -218,146 +181,13 @@ namespace ProjectZombie.Features.UI
             }
         }
 
-        private void AutoResolveMissingScreens()
-        {
-            if (_mainHubScreen == null)
-            {
-                _mainHubScreen = GetComponentInChildren<MainHubView>(true);
-                if (_mainHubScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/MainHubUI") ?? Resources.Load<GameObject>("MainHubUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_MainHub";
-                        _mainHubScreen = inst.GetComponent<MainHubView>();
-                    }
-                }
-            }
-
-            if (_characterSelectScreen == null)
-            {
-                _characterSelectScreen = GetComponentInChildren<CharacterSelectionView>(true);
-                if (_characterSelectScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/CharacterSelectionUI") ?? Resources.Load<GameObject>("CharacterSelectionUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_CharacterSelect";
-                        _characterSelectScreen = inst.GetComponent<CharacterSelectionView>();
-                    }
-                }
-            }
-
-            if (_weaponLoadoutScreen == null)
-            {
-                _weaponLoadoutScreen = GetComponentInChildren<WeaponLoadoutView>(true);
-                if (_weaponLoadoutScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/WeaponLoadoutUI") ?? Resources.Load<GameObject>("WeaponLoadoutUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_WeaponLoadout";
-                        _weaponLoadoutScreen = inst.GetComponent<WeaponLoadoutView>();
-                    }
-                }
-            }
-
-            if (_sanctuaryTreeScreen == null)
-            {
-                _sanctuaryTreeScreen = GetComponentInChildren<MetaUpgradeShopView>(true);
-                if (_sanctuaryTreeScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/SanctuaryTreeUI") ?? Resources.Load<GameObject>("SanctuaryTreeUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_SanctuaryTree";
-                        _sanctuaryTreeScreen = inst.GetComponent<MetaUpgradeShopView>();
-                    }
-                }
-            }
-
-            if (_codexScreen == null)
-            {
-                _codexScreen = GetComponentInChildren<CardCodexView>(true);
-                if (_codexScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/CardCodexUI") ?? Resources.Load<GameObject>("CardCodexUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_CardCodex";
-                        _codexScreen = inst.GetComponent<CardCodexView>();
-                    }
-                }
-            }
-
-            if (_settingsScreen == null)
-            {
-                _settingsScreen = GetComponentInChildren<SettingsModalView>(true);
-                if (_settingsScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/SettingsModalUI") ?? Resources.Load<GameObject>("SettingsModalUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Modal_Settings";
-                        _settingsScreen = inst.GetComponent<SettingsModalView>();
-                    }
-                }
-            }
-
-            if (_gachaShopScreen == null)
-            {
-                _gachaShopScreen = GetComponentInChildren<ProjectZombie.Features.UI.Gacha.GachaChestView>(true);
-                if (_gachaShopScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/Gacha/GachaShopPanel") ?? Resources.Load<GameObject>("GachaShopPanel");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Panel_GachaShop";
-                        _gachaShopScreen = inst.GetComponent<ProjectZombie.Features.UI.Gacha.GachaChestView>();
-                    }
-                }
-            }
-
-            if (_stageSelectScreen == null)
-            {
-                _stageSelectScreen = GetComponentInChildren<StageSelect.StageSelectUIView>(true);
-                if (_stageSelectScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/StageSelect_Screen") ?? Resources.Load<GameObject>("StageSelect_Screen");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Screen_StageSelect";
-                        _stageSelectScreen = inst.GetComponent<StageSelect.StageSelectUIView>();
-                    }
-                }
-            }
-
-            if (_resourceDownloadScreen == null)
-            {
-                _resourceDownloadScreen = GetComponentInChildren<ResourceDownload.ResourceDownloadModalView>(true);
-                if (_resourceDownloadScreen == null)
-                {
-                    var p = Resources.Load<GameObject>("UI/ResourceDownloadModalUI") ?? Resources.Load<GameObject>("ResourceDownloadModalUI");
-                    if (p != null)
-                    {
-                        var inst = Instantiate(p, transform);
-                        inst.name = "Modal_ResourceDownload";
-                        _resourceDownloadScreen = inst.GetComponent<ResourceDownload.ResourceDownloadModalView>();
-                    }
-                }
-            }
-        }
-
+        /// <summary>
+        /// Mở màn hình theo ScreenType thông qua UIScreenFactory (Hỗ trợ Lazy Loading mượt mà).
+        /// </summary>
         public void OpenScreen(MetaScreenType screenType)
         {
+            var totalSw = System.Diagnostics.Stopwatch.StartNew();
+
             // Tự động đóng sub-screen đang mở trước khi chuyển sang màn hình mới
             while (_screenStack.Count > 1)
             {
@@ -369,118 +199,41 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            switch (screenType)
+            if (_screenFactory == null)
             {
-                case MetaScreenType.MainHub:
-                    if (_mainHubScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_mainHubScreen);
-                    break;
-                case MetaScreenType.CharacterSelect:
-                    if (_characterSelectScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_characterSelectScreen);
-                    break;
-                case MetaScreenType.WeaponLoadout:
-                    if (_weaponLoadoutScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_weaponLoadoutScreen);
-                    break;
-                case MetaScreenType.SanctuaryTree:
-                    if (_sanctuaryTreeScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_sanctuaryTreeScreen);
-                    break;
-                case MetaScreenType.Codex:
-                    if (_codexScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_codexScreen);
-                    break;
-                case MetaScreenType.Settings:
-                    if (_settingsScreen == null) AutoResolveMissingScreens();
-                    PushScreen(_settingsScreen);
-                    break;
-                case MetaScreenType.StageSelect:
-                    if (_stageSelectScreen == null)
-                    {
-                        AutoResolveMissingScreens();
-                        if (_stageSelectScreen == null)
-                        {
-                            var stagePrefab = Resources.Load<GameObject>("UI/StageSelect_Screen") ?? Resources.Load<GameObject>("StageSelect_Screen");
-#if UNITY_EDITOR
-                            if (stagePrefab == null)
-                            {
-                                stagePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/StageSelect_Screen.prefab");
-                            }
-#endif
-                            if (stagePrefab != null)
-                            {
-                                var instance = Instantiate(stagePrefab, transform);
-                                instance.name = "Screen_StageSelect";
-                                _stageSelectScreen = instance.GetComponent<StageSelect.StageSelectUIView>();
-                            }
-                        }
-                    }
+                _screenFactory = new UIScreenFactory(_uiRegistry, transform);
+            }
 
-                    if (_stageSelectScreen != null)
-                    {
-                        PushScreen(_stageSelectScreen);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("[MetaUIManager] Không tìm thấy StageSelect_Screen trong Scene/Prefab. Tự động chuyển thẳng vào trận đấu!");
-                        MetaSceneTransitionController.Instance?.StartRun();
-                    }
-                    break;
-                case MetaScreenType.GachaShop:
-                    if (_gachaShopScreen == null)
-                    {
-                        AutoResolveMissingScreens();
-                        if (_gachaShopScreen == null)
-                        {
-                            // Tự động nạp Prefab nếu trong Scene chưa có sẵn
-                            var gachaPrefab = Resources.Load<GameObject>("UI/Gacha/GachaShopPanel") ?? Resources.Load<GameObject>("GachaShopPanel");
-#if UNITY_EDITOR
-                            if (gachaPrefab == null)
-                            {
-                                gachaPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab");
-                            }
-#endif
-                            if (gachaPrefab != null)
-                            {
-                                var instance = Instantiate(gachaPrefab, transform);
-                                instance.name = "Panel_GachaShop";
-                                _gachaShopScreen = instance.GetComponent<ProjectZombie.Features.UI.Gacha.GachaChestView>();
-                            }
-                        }
-                    }
-                    PushScreen(_gachaShopScreen);
-                    break;
-                case MetaScreenType.ResourceDownload:
-                    if (_resourceDownloadScreen == null)
-                    {
-                        AutoResolveMissingScreens();
-                        if (_resourceDownloadScreen == null)
-                        {
-                            var resPrefab = Resources.Load<GameObject>("UI/ResourceDownloadModalUI") ?? Resources.Load<GameObject>("ResourceDownloadModalUI");
-#if UNITY_EDITOR
-                            if (resPrefab == null)
-                            {
-                                resPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab");
-                            }
-#endif
-                            if (resPrefab != null)
-                            {
-                                var instance = Instantiate(resPrefab, transform);
-                                instance.name = "Modal_ResourceDownload";
-                                _resourceDownloadScreen = instance.GetComponent<ResourceDownload.ResourceDownloadModalView>();
-                            }
-                        }
-                    }
-                    if (_resourceDownloadScreen != null)
-                    {
-                        PushScreen(_resourceDownloadScreen);
-                    }
-                    break;
+            var targetScreen = _screenFactory.GetOrCreateScreen(screenType);
+            if (targetScreen != null)
+            {
+                PushScreen(targetScreen);
+                totalSw.Stop();
+                Debug.Log($"<color=#FFFF00>[MetaUIManager.OpenScreen] TỔNG THỜI GIAN MỞ '{screenType}': {totalSw.ElapsedMilliseconds} ms (Bao gồm Factory, Awake, OnEnable, Render Grid)</color>");
+            }
+            else
+            {
+                totalSw.Stop();
+                Debug.LogError($"[MetaUIManager] Không tìm thấy hoặc không thể nạp màn hình: {screenType}! (Thất bại sau {totalSw.ElapsedMilliseconds} ms)");
             }
         }
 
+#if UNITY_EDITOR
+        [ContextMenu("Editor Tool: Tự động phát hiện và liên kết màn hình vào Scene")]
+        public void AutoResolveMissingScreensInEditor()
+        {
+            Debug.Log("<color=#00FF88>[MetaUIManager]</color> Đang quét và kiểm tra các màn hình trong Scene...");
+            var screens = GetComponentsInChildren<BaseMetaScreenView>(true);
+            foreach (var s in screens)
+            {
+                Debug.Log($"-> Phát hiện màn hình: {s.name} ({s.ScreenType})");
+            }
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
+
         public void HandleHardwareBackPressed()
+
         {
             if (!IsInMetaMenu) return;
 
