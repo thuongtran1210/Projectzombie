@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using ProjectZombie.Features.UI;
+using ProjectZombie.Features.UI.Common;
 using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Editor.UI
@@ -70,7 +71,7 @@ namespace ProjectZombie.Editor.UI
             var view = root.GetComponent<MainHubView>();
             var presenter = root.GetComponent<MainHubPresenter>();
 
-            // 2. Background Scenery Overlay (Bức Tranh Nền Rừng Thiêng Vọng Xuyên)
+            // 2. Background Scenery Overlay (Bức Tranh Nền Rừng Thiêng Vọng Xuyên - Tràn 100% màn hình)
             GameObject bgOverlay = CreateUIElement("Scenery_Overlay", root.transform);
             SetStretchAnchor(bgOverlay.GetComponent<RectTransform>());
             var bgImg = bgOverlay.AddComponent<Image>();
@@ -78,19 +79,29 @@ namespace ProjectZombie.Editor.UI
             Sprite bgForestSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/BG_VongXuyen_Forest_Hub.png");
             if (bgForestSprite != null) bgImg.sprite = bgForestSprite;
 
-            // 3. Top Header Bar (Khung Gỗ Chạm Khắc Đỉnh Màn Hình)
-            BuildTopHeader(root.transform, vietFont, out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn, out Button resourceDlBtn);
+            // 3. Thanh Nền Xà Gỗ Chạm Khắc Đỉnh Màn Hình (Bám sát mép đỉnh 100% không để hở viền)
+            BuildTopHeaderWoodBar(root.transform);
 
-            // 4. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ)
-            BuildHeroStage(root.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
+            // 4. Safe Area Container (Tự động co giãn theo Notch, Camera Punch-hole, và Thanh Điều Hướng Đáy)
+            GameObject safeAreaContent = CreateUIElement("SafeArea_Content", root.transform);
+            SetStretchAnchor(safeAreaContent.GetComponent<RectTransform>());
+            var safeFitter = safeAreaContent.AddComponent<SafeAreaFitter>();
+            safeFitter.ApplySafeArea();
 
-            // 5. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 4 Nút Thẻ Gỗ, Nút Xuất Trận Lục Giác Ngọc Hổ Phách)
-            BuildBottomHUDRow(root.transform, vietFont,
+            // 5. Nội dung tương tác Header (Logo Vọng Xuyên, Hộp Tiền Tệ, Nút Cài Đặt, Nút Tải Tài Nguyên) nằm trong SafeArea
+            BuildTopHeaderInteractiveContent(safeAreaContent.transform, vietFont, 
+                out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn, out Button resourceDlBtn);
+
+            // 6. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ) nằm trong SafeArea
+            BuildHeroStage(safeAreaContent.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
+
+            // 7. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 4 Nút Thẻ Gỗ, Nút Xuất Trận) nằm trong SafeArea
+            BuildBottomHUDRow(safeAreaContent.transform, vietFont,
                 out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priNameTMP, out Image priIconImg, out Image[] relicIcons,
                 out Button heroBtn, out Button armoryBtn, out Button gachaBtn, out Button sanctuaryBtn,
                 out Button startRunBtn);
 
-            // 6. Wire Properties to MainHubView
+            // 8. Wire Properties to MainHubView
             SerializedObject soView = new SerializedObject(view);
             soView.FindProperty("_coTienText").objectReferenceValue = coTienTMP;
             soView.FindProperty("_linhHonText").objectReferenceValue = linhHonTMP;
@@ -178,10 +189,32 @@ namespace ProjectZombie.Editor.UI
             }
         }
 
-        private static void BuildTopHeader(Transform parent, TMP_FontAsset font, 
+        private static void BuildTopHeaderWoodBar(Transform parent)
+        {
+            GameObject headerBg = CreateUIElement("Header_Wood_Bar", parent);
+            RectTransform hRT = headerBg.GetComponent<RectTransform>();
+            hRT.anchorMin = new Vector2(0, 1);
+            hRT.anchorMax = new Vector2(1, 1);
+            hRT.pivot = new Vector2(0.5f, 1);
+            hRT.anchoredPosition = new Vector2(0, 0);
+            hRT.sizeDelta = new Vector2(0, 78);
+
+            // Thanh Khung Gỗ Chạm Khắc Đỉnh Màn Hình (Thanh xà chữ nhật bám sát đỉnh 100% không để hở viền)
+            Sprite headerWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Header_Wood_Bar_VongXuyen.png");
+            if (headerWoodSprite != null)
+            {
+                var hImg = headerBg.AddComponent<Image>();
+                hImg.sprite = headerWoodSprite;
+                hImg.type = Image.Type.Simple;
+                hImg.color = Color.white;
+                hImg.raycastTarget = false; // Tối ưu CPU, không chặn raycast
+            }
+        }
+
+        private static void BuildTopHeaderInteractiveContent(Transform parent, TMP_FontAsset font, 
             out TextMeshProUGUI coTienTMP, out TextMeshProUGUI linhHonTMP, out Button settingsBtn, out Button resourceDlBtn)
         {
-            GameObject header = CreateUIElement("Header_TopBar", parent);
+            GameObject header = CreateUIElement("Header_InteractiveContent", parent);
             RectTransform hRT = header.GetComponent<RectTransform>();
             hRT.anchorMin = new Vector2(0, 1);
             hRT.anchorMax = new Vector2(1, 1);
@@ -189,23 +222,13 @@ namespace ProjectZombie.Editor.UI
             hRT.anchoredPosition = new Vector2(0, 0);
             hRT.sizeDelta = new Vector2(0, 78);
 
-            // Thanh Khung Gỗ Chạm Khắc Đỉnh Màn Hình (Thanh xà chữ nhật chuẩn phẳng)
-            Sprite headerWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Header_Wood_Bar_VongXuyen.png");
-            if (headerWoodSprite != null)
-            {
-                var hImg = header.AddComponent<Image>();
-                hImg.sprite = headerWoodSprite;
-                hImg.type = Image.Type.Simple;
-                hImg.color = Color.white;
-            }
-
-            // 1. Chữ "VONG XUYÊN" (Góc Trái)
+            // 1. Chữ "VONG XUYÊN" (Góc Trái - trong Safe Area)
             GameObject logoObj = CreateUIElement("Logo_VongXuyen", header.transform);
             RectTransform lRT = logoObj.GetComponent<RectTransform>();
             lRT.anchorMin = new Vector2(0, 0.5f);
             lRT.anchorMax = new Vector2(0, 0.5f);
             lRT.pivot = new Vector2(0, 0.5f);
-            lRT.anchoredPosition = new Vector2(36, 2);
+            lRT.anchoredPosition = new Vector2(24, 2);
             lRT.sizeDelta = new Vector2(280, 50);
 
             var lTMP = CreateTextMeshPro(logoObj, font);
@@ -214,13 +237,13 @@ namespace ProjectZombie.Editor.UI
             lTMP.fontStyle = FontStyles.Bold;
             lTMP.color = new Color(0.98f, 0.88f, 0.60f, 1f);
 
-            // 2. Khung Tiền Tệ & Cài Đặt & Tải Tài Nguyên (Góc Phải)
+            // 2. Khung Tiền Tệ & Cài Đặt & Tải Tài Nguyên (Góc Phải - trong Safe Area)
             GameObject rightGroup = CreateUIElement("Right_Currencies", header.transform);
             RectTransform rRT = rightGroup.GetComponent<RectTransform>();
             rRT.anchorMin = new Vector2(1, 0.5f);
             rRT.anchorMax = new Vector2(1, 0.5f);
             rRT.pivot = new Vector2(1, 0.5f);
-            rRT.anchoredPosition = new Vector2(-24, 0);
+            rRT.anchoredPosition = new Vector2(-20, 0);
             rRT.sizeDelta = new Vector2(520, 46);
 
             var rHlg = rightGroup.AddComponent<HorizontalLayoutGroup>();
