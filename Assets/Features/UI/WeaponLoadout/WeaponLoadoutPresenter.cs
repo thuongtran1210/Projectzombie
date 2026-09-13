@@ -26,6 +26,9 @@ namespace ProjectZombie.Features.UI
         [Header("Weapon Database")]
         [SerializeField] private List<WeaponData> _allWeapons = new List<WeaponData>();
 
+        private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
+        private static bool _isWeaponsLoaded = false;
+
         [Header("UI Sprites & Badges")]
         [SerializeField] private Sprite _slotWoodSprite;
         [SerializeField] private Sprite _slotSelectedSprite;
@@ -45,6 +48,7 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             if (_view == null)
             {
                 _view = GetComponent<WeaponLoadoutView>();
@@ -59,12 +63,18 @@ namespace ProjectZombie.Features.UI
                 _view.OnTabRelicsClicked += () => SetTab(LoadoutInventoryTab.Relics);
                 _view.OnStartBattleClicked += HandleStartBattle;
                 _view.OnBackClicked += HandleBack;
+
+                // Prewarm sẵn 15 slots để triệt tiêu độ trễ khi vẽ grid
+                _view.PrewarmSlots(15);
             }
+
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] Awake hoàn tất trong: {sw.ElapsedMilliseconds} ms (Prewarm 15 slots)</color>");
         }
 
         private void Start()
         {
-            RefreshUI();
+            // Không gọi RefreshUI() tại Start() nữa vì OnEnable() đã nạp đầy đủ khi Show()
         }
 
         private void OnDestroy()
@@ -78,6 +88,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnEnable()
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             LoadAllWeaponsIfEmpty();
 
             if (RunLoadoutState.SelectedCharacter != null)
@@ -96,55 +107,60 @@ namespace ProjectZombie.Features.UI
                     RefreshUI();
                 }
             }
+
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] OnEnable hoàn tất trong: {sw.ElapsedMilliseconds} ms</color>");
         }
 
         public void LoadAllWeaponsIfEmpty()
         {
-            if (_allWeapons == null || _allWeapons.Count == 0)
+            if (_isWeaponsLoaded && _cachedWeapons.Count > 0)
             {
-                _allWeapons = new List<WeaponData>();
-                var seenIds = new HashSet<string>();
+                _allWeapons = _cachedWeapons;
+                return;
+            }
 
-                void TryAddWeapon(WeaponData w)
-                {
-                    if (w == null || string.IsNullOrEmpty(w.weaponId)) return;
-                    if (seenIds.Add(w.weaponId))
-                    {
-                        _allWeapons.Add(w);
-                    }
-                }
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            _cachedWeapons.Clear();
+            var seenIds = new HashSet<string>();
 
-                var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-                if (loaded1 != null && loaded1.Length > 0)
+            void TryAddWeapon(WeaponData w)
+            {
+                if (w == null || string.IsNullOrEmpty(w.weaponId)) return;
+                if (seenIds.Add(w.weaponId))
                 {
-                    foreach (var w in loaded1) TryAddWeapon(w);
+                    _cachedWeapons.Add(w);
                 }
+            }
 
-                var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
-                if (loaded2 != null && loaded2.Length > 0)
-                {
-                    foreach (var w in loaded2) TryAddWeapon(w);
-                }
+            var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
+            if (loaded1 != null && loaded1.Length > 0)
+            {
+                foreach (var w in loaded1) TryAddWeapon(w);
+            }
 
-                var loaded3 = Resources.LoadAll<WeaponData>("");
-                if (loaded3 != null && loaded3.Length > 0)
-                {
-                    foreach (var w in loaded3) TryAddWeapon(w);
-                }
+            var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
+            if (loaded2 != null && loaded2.Length > 0)
+            {
+                foreach (var w in loaded2) TryAddWeapon(w);
+            }
 
 #if UNITY_EDITOR
-                if (_allWeapons.Count == 0)
+            if (_cachedWeapons.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons", "Assets/Resources/Weapons" });
+                foreach (var guid in guids)
                 {
-                    string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons", "Assets/Resources/Weapons" });
-                    foreach (var guid in guids)
-                    {
-                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                        var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                        TryAddWeapon(wd);
-                    }
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                    TryAddWeapon(wd);
                 }
-#endif
             }
+#endif
+            _allWeapons = _cachedWeapons;
+            _isWeaponsLoaded = true;
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] LoadAllWeaponsIfEmpty: Đã nạp {_cachedWeapons.Count} vũ khí vào Cache trong: {sw.ElapsedMilliseconds} ms</color>");
         }
 
         public bool IsRelicOwned(WeaponData relic)
@@ -385,6 +401,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null || _view.InventoryGridContainer == null) return;
 
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             _view.ClearGrid();
             _slotViewMap.Clear();
 
@@ -443,6 +460,9 @@ namespace ProjectZombie.Features.UI
 
                 _slotViewMap[weapon] = slotItem;
             }
+
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] PopulateInventoryGrid hoàn tất trong: {sw.ElapsedMilliseconds} ms ({targetList.Count} slots)</color>");
         }
 
         private Sprite GetElementBadgeSprite(ElementType element)

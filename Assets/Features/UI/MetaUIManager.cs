@@ -106,6 +106,44 @@ namespace ProjectZombie.Features.UI
             {
                 PushScreen(_mainHubScreen);
             }
+
+            // Prewarm ngầm các màn hình phụ qua từng frame để khi người chơi click thì đã có sẵn trong RAM (0 ms latency)
+            StartCoroutine(PrewarmScreensInBackground());
+        }
+
+        /// <summary>
+        /// Chuẩn 60 FPS Mobile: Phân bổ nạp trước các màn hình chính (WeaponLoadout, Codex, CharacterSelect)
+        /// qua từng frame ngầm bằng Coroutine (yield return null), triệt tiêu Frame Freeze > 50ms khi click.
+        /// </summary>
+        private System.Collections.IEnumerator PrewarmScreensInBackground()
+        {
+            // Đợi 2 frame sau khi Main Hub render xong xuôi
+            yield return null;
+            yield return null;
+
+            MetaScreenType[] screensToPrewarm = new MetaScreenType[]
+            {
+                MetaScreenType.WeaponLoadout,
+                MetaScreenType.Codex,
+                MetaScreenType.CharacterSelect,
+                MetaScreenType.GachaShop
+            };
+
+            for (int i = 0; i < screensToPrewarm.Length; i++)
+            {
+                var type = screensToPrewarm[i];
+                if (_screenFactory != null && !_screenFactory.IsScreenLoaded(type))
+                {
+                    var screen = _screenFactory.GetOrCreateScreen(type);
+                    if (screen != null)
+                    {
+                        screen.gameObject.SetActive(false);
+                    }
+                    yield return null; // Nhường frame cho Main Thread để đảm bảo luôn mượt mà 60 FPS
+                }
+            }
+
+            Debug.Log("<color=#00FF88>[MetaUIManager] Non-blocking Background Prewarm hoàn tất cho tất cả màn hình chính!</color>");
         }
 
         private void Update()

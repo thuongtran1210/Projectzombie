@@ -12,6 +12,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 5. [Quy Trình Chuẩn Chuẩn Bị Trước Khi Build APK (Checklist 1-Click)](#5-quy-trình-chuẩn-chuẩn-bị-trước-khi-build-apk-checklist-1-click)
 6. [Cơ Chế Bảo Trì & Khóa Nóng Tính Năng/Vũ Khí Khi Đã Lên CH Play (Live-Ops Feature Flag)](#6-cơ-chế-bảo-trì--khóa-nóng-tính-năngvũ-khí-khi-đã-lên-ch-play-live-ops-feature-flag)
 7. [Nhóm Lỗi Addressables & Firebase Storage CDN (DLC / Map Download)](#7-nhóm-lỗi-addressables--firebase-storage-cdn-dlc--map-download)
+8. [Nhóm Tối Ưu Độ Trễ UI & Khắc Phục Khựng Lần Đầu Mở Màn Hình (UI Freeze Spike Optimization)](#8-nhóm-tối-ưu-độ-trễ-ui--khắc-phục-khựng-lần-đầu-mở-màn-hình-ui-freeze-spike-optimization)
 
 ---
 
@@ -425,3 +426,86 @@ public class RemoteConfigManager : MonoBehaviour
      - Định dạng dung lượng thông minh: Tự động hiển thị `KB` nếu $< 0.1\text{ MB}$ và `MB` nếu $\ge 0.1\text{ MB}$.
   4. **Cơ chế Fallback an toàn (Defensive Fallback)**:
      - Trong trường hợp bất khả kháng (lỗi mạng hoặc mất kết nối đột ngột khi vừa bấm xuất trận), `MetaSceneTransitionController` sẽ tự động fallback sang Tilemap mặc định của Scene (Rừng Vọng Xuyên) để **triệt tiêu 100% nguy cơ crash app hoặc màn hình đen**.
+
+---
+
+## 8. Nhóm Tối Ưu Độ Trễ UI & Khắc Phục Khựng Lần Đầu Mở Màn Hình (UI Freeze Spike Optimization)
+
+### ❌ Lỗi 8.1: Bấm Nút Mở Màn Hình UI Lần Đầu Bị Khựng Khung Hình (Freeze Spike ~350ms - 500ms)
+- **Hiện tượng**:
+  - Khi người chơi bấm vào các nút chức năng ở Sảnh Chính (Main Hub) như **"Tàng Bảo Các" (WeaponLoadout)** hoặc **"Bách Bảo Các / Thần Thẻ" (CardCodex)**:
+    - **Lần đầu tiên bấm**: Màn hình bị đứng/khựng rõ rệt khoảng `350ms - 500ms` trước khi giao diện mở ra.
+    - **Lần thứ hai trở đi**: Mở mượt mà, phản hồi tức thì dưới `50ms`.
+  - Log đo lường thời gian thực tế:
+    ```text
+    [MetaUIManager.OpenScreen] TỔNG THỜI GIAN MỞ 'WeaponLoadout': 358 ms (Bao gồm Factory, Awake, OnEnable, Render Grid) cho lần 1. Lần 2: 47 ms
+    ```
+- **Nguyên nhân gốc rễ**:
+  1. **Lazy Instantiate Prefab UI**: UI Screen không nằm sẵn trên Canvas mà được tạo theo nhu cầu (`UIScreenFactory.GetOrCreateScreen`). Lần đầu mở, Unity phải tải GameObject Prefab lớn và Instantiate cây Hierarchy phức tạp.
+  2. **I/O Disk Đọc Tài Nguyên Đồng Bộ Trên Main Thread**: Trong `Awake()` hoặc `OnEnable()`, Presenter gọi `Resources.LoadAll<WeaponData>`, `Resources.Load<Sprite>` hàng chục lần mà không có bộ nhớ đệm (Cache tĩnh).
+  3. **Tạo Mới Hàng Loạt GameObject Item UI Khi Render Grid**: Khi hiển thị danh sách vũ khí/thần thẻ, View gọi `GameObject.Instantiate()` hoặc tạo mới thủ công từ 15 đến 30 slot item (`UniversalItemSlotView` / `CodexSlotItemView`), khiến Unity phải cấp phát bộ nhớ, thêm component, ép Canvas Re-batching gây nghẽn CPU.
+  4. **Render Grid Trùng Lặp 2 Lần**: Cả `Awake/Start()` và `OnEnable()` đều kích hoạt hàm populate danh sách khiến grid bị dựng lại 2 lần liên tiếp trong cùng một khung hình.
+
+- **Giải pháp xử lý chuẩn & Triệt tiêu hoàn toàn độ trễ**:
+  1. **Tái Sử Dụng & Prewarm Slot Object Pool trong View (`PrewarmSlots`)**:
+     - Thay vì `Instantiate()` và `Destroy()` các slot item, View lưu trữ và tái sử dụng các Transform con có sẵn trong Grid Container:
+     ```csharp
+     // Trong WeaponLoadoutView.cs / CardCodexView.cs:
+     public void PrewarmSlots(int count)
+     {
+         if (_inventoryGridContainer == null) return;
+         int existing = _inventoryGridContainer.childCount;
+         for (int i = existing; i < count; i++)
+         {
+             var slot = UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+             slot.gameObject.SetActive(false);
+         }
+     }
+
+     public void ClearGrid()
+     {
+         _activeSlotIndex = 0;
+         for (int i = 0; i < _inventoryGridContainer.childCount; i++)
+             _inventoryGridContainer.GetChild(i).gameObject.SetActive(false); // Ẩn thay vì Destroy
+     }
+
+     public UniversalItemSlotView CreateSlotItem()
+     {
+         if (_activeSlotIndex < _inventoryGridContainer.childCount)
+         {
+             var child = _inventoryGridContainer.GetChild(_activeSlotIndex++);
+             child.gameObject.SetActive(true);
+             return child.GetComponent<UniversalItemSlotView>();
+         }
+         // Chỉ tạo mới nếu vượt quá số lượng đã prewarm
+         var newSlot = UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+         newSlot.gameObject.SetActive(true);
+         _activeSlotIndex++;
+         return newSlot;
+     }
+     ```
+  2. **Tĩnh Hóa Bộ Nhớ Đệm ScriptableObject (Static In-Memory Cache)**:
+     - Dữ liệu `Resources.LoadAll` chỉ nạp một lần duy nhất vào bộ nhớ RAM (`static readonly List<T>`):
+     ```csharp
+     private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
+     private static bool _isWeaponsLoaded = false;
+
+     public void LoadAllWeaponsIfEmpty()
+     {
+         if (_isWeaponsLoaded && _cachedWeapons.Count > 0)
+         {
+             _allWeapons = _cachedWeapons;
+             return; // Trả về ngay lập tức 0ms
+         }
+         // Nạp Resources.LoadAll...
+         _allWeapons = _cachedWeapons;
+         _isWeaponsLoaded = true;
+     }
+     ```
+  3. **Khởi Tạo Trước Slot UI Ngay Trong `Awake()`**:
+     - Gọi `PrewarmSlots(15)` ngay trong `Awake()` của Presenter khi màn hình vừa được instantiate lần đầu.
+  4. **Tách Biệt Hàm Cập Nhật Trực Quan Nhẹ (Update Visuals Only)**:
+     - Khi người chơi click chọn hoặc trang bị vật phẩm, **CẤM** gọi lại toàn bộ `PopulateInventoryGrid()` (sẽ duyệt và dựng lại toàn bộ slot).
+     - Thay vào đó, gọi `UpdateSelectionDetailsOnly()` / `UpdateGridItemStates()` chỉ cập nhật viền sáng và dữ liệu của các slot đã lưu trong `Dictionary<Item, SlotView>`.
+  5. **Loại Bỏ Gọi Trùng Lặp Giữa `Start()` và `OnEnable()`**:
+     - Bỏ lệnh dựng UI trong `Start()` nếu `OnEnable()` đã đảm nhiệm việc nạp dữ liệu khi màn hình hiển thị.

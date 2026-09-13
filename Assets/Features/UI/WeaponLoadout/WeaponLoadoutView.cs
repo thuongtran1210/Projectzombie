@@ -255,25 +255,58 @@ namespace ProjectZombie.Features.UI
 
         public Transform InventoryGridContainer => _inventoryGridContainer;
 
+        private int _activeSlotIndex = 0;
+
         /// <summary>
-        /// Xóa sạch các slot item cũ trong Grid Container.
+        /// Tạo trước một số lượng slot nhất định trong grid để tránh bị khựng CPU khi người chơi bấm mở tab lần đầu.
         /// </summary>
-        public void ClearGrid()
+        public void PrewarmSlots(int count)
         {
             if (_inventoryGridContainer == null) return;
-            for (int i = _inventoryGridContainer.childCount - 1; i >= 0; i--)
+            int existing = _inventoryGridContainer.childCount;
+            for (int i = existing; i < count; i++)
             {
-                Destroy(_inventoryGridContainer.GetChild(i).gameObject);
+                var slot = ProjectZombie.Features.UI.Common.UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+                slot.gameObject.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Tạo một UniversalItemSlotView chuẩn trong Grid Container.
+        /// Chuẩn bị danh sách slot, ẩn các slot thừa thay vì Destroy liên tục gây khựng CPU.
+        /// </summary>
+        public void ClearGrid()
+        {
+            _activeSlotIndex = 0;
+            if (_inventoryGridContainer == null) return;
+            for (int i = 0; i < _inventoryGridContainer.childCount; i++)
+            {
+                _inventoryGridContainer.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Lấy slot có sẵn trong hierarchy để tái sử dụng, hoặc chỉ tạo mới nếu thiếu.
         /// </summary>
         public ProjectZombie.Features.UI.Common.UniversalItemSlotView CreateSlotItem()
         {
             if (_inventoryGridContainer == null) return null;
-            return ProjectZombie.Features.UI.Common.UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+
+            if (_activeSlotIndex < _inventoryGridContainer.childCount)
+            {
+                var child = _inventoryGridContainer.GetChild(_activeSlotIndex);
+                var slotView = child.GetComponent<ProjectZombie.Features.UI.Common.UniversalItemSlotView>();
+                if (slotView != null)
+                {
+                    child.gameObject.SetActive(true);
+                    _activeSlotIndex++;
+                    return slotView;
+                }
+            }
+
+            var newSlot = ProjectZombie.Features.UI.Common.UniversalItemSlotView.CreateDynamicSlot(_inventoryGridContainer);
+            newSlot.gameObject.SetActive(true);
+            _activeSlotIndex++;
+            return newSlot;
         }
     }
 }
