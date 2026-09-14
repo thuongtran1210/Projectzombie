@@ -20,6 +20,9 @@ namespace ProjectZombie.Features.Weapons
         [Tooltip("Transform chứa các vũ khí được sinh ra (Nếu để trống sẽ dùng transform của Player)")]
         [SerializeField] private Transform weaponHolder;
 
+        [Tooltip("Prefab dự phòng an toàn nếu WeaponData bị thiếu weaponPrefab (Tránh crash game trên mobile)")]
+        [SerializeField] private WeaponBase defaultFallbackWeaponPrefab;
+
         public const int MAX_WEAPONS = 1; // Tối đa 1 Pháp bảo hộ thân mang vào trận
 
         private PlayerStats _playerStats;
@@ -206,24 +209,23 @@ namespace ProjectZombie.Features.Weapons
             Transform parent = weaponHolder != null ? weaponHolder : transform;
             WeaponBase newWeapon = null;
 
-            // 1. Khởi tạo từ Prefab nếu có
+            // 1. Khởi tạo chuẩn Data-Driven từ Prefab
             if (data.weaponPrefab != null)
             {
                 newWeapon = Instantiate(data.weaponPrefab, parent);
             }
             else
             {
-                // 2. Tự động Fallback: Tìm script tương ứng theo ID để gắn component động
-                System.Type weaponType = GetWeaponTypeById(data.weaponId);
-                if (weaponType != null)
+                // 2. Fallback phòng vệ (Defensive Fallback)
+                Debug.LogError($"<color=#FF4444>[WeaponManager] LỖI CẤU HÌNH:</color> WeaponData '<b>{data.weaponName}</b>' (ID: {data.weaponId}) chưa được gán weaponPrefab!");
+                
+                if (defaultFallbackWeaponPrefab != null)
                 {
-                    GameObject weaponObj = new GameObject($"Weapon_{data.weaponId}");
-                    weaponObj.transform.SetParent(parent, false);
-                    newWeapon = weaponObj.AddComponent(weaponType) as WeaponBase;
+                    Debug.LogWarning($"[WeaponManager] Đang sử dụng defaultFallbackWeaponPrefab cho '{data.weaponName}' để bảo đảm trận đấu không bị crash.");
+                    newWeapon = Instantiate(defaultFallbackWeaponPrefab, parent);
                 }
                 else
                 {
-                    Debug.LogWarning($"[WeaponManager] WeaponData '{data.weaponName}' (ID: {data.weaponId}) chưa được gán weaponPrefab hoặc Script tương ứng!");
                     return;
                 }
             }
@@ -244,69 +246,6 @@ namespace ProjectZombie.Features.Weapons
                 
                 AddWeapon(newWeapon);
             }
-        }
-
-        private static readonly Dictionary<string, System.Type> _weaponTypeRegistry = new Dictionary<string, System.Type>(System.StringComparer.OrdinalIgnoreCase)
-        {
-            { "W_SLIPPER", typeof(Weapon_Slipper) },
-            { "W_POT", typeof(Weapon_Pot) },
-            { "W_PIPE", typeof(Weapon_Pipe) },
-            { "R007", typeof(Relic_SleepingMat) },
-            { "R008", typeof(Relic_ChickenFeatherBroom) },
-            { "W001", typeof(Weapon_Crossbow) },
-            { "W002", typeof(Weapon_Targeted) },
-            { "W003", typeof(Weapon_Boomerang) },
-            { "W004", typeof(Weapon_Flamethrower) },
-            { "W005", typeof(Weapon_Orbit) },
-            { "W006", typeof(Weapon_GrenadeLauncher) },
-            { "W007", typeof(Weapon_DirectionalTorch) },
-            { "W008", typeof(Weapon_DualSlash) },
-            { "W009", typeof(Weapon_LightningOrb) },
-            { "W010", typeof(Weapon_PoisonDrone) },
-            { "W011", typeof(Weapon_HolyWater) },
-            { "W012", typeof(Weapon_RandomProjectile) }
-        };
-
-        /// <summary>
-        /// Đăng ký Type vũ khí mới vào Registry động (phục vụ mở rộng từ plugin / DLC / modding).
-        /// </summary>
-        public static void RegisterWeaponType(string weaponId, System.Type weaponType)
-        {
-            if (!string.IsNullOrEmpty(weaponId) && weaponType != null)
-            {
-                _weaponTypeRegistry[weaponId] = weaponType;
-            }
-        }
-
-        private System.Type GetWeaponTypeById(string weaponId)
-        {
-            if (string.IsNullOrEmpty(weaponId)) return null;
-
-            // 1. Tìm trong Registry đã đăng ký
-            if (_weaponTypeRegistry.TryGetValue(weaponId, out var registeredType))
-            {
-                return registeredType;
-            }
-
-            // 2. Tự động suy luận Type qua Reflection (Auto-Discovery)
-            string[] candidateTypeNames = new[]
-            {
-                $"ProjectZombie.Features.Weapons.Weapon_{weaponId}, Assembly-CSharp",
-                $"ProjectZombie.Features.Weapons.Relic_{weaponId}, Assembly-CSharp",
-                $"ProjectZombie.Features.Weapons.{weaponId}, Assembly-CSharp"
-            };
-
-            foreach (var typeName in candidateTypeNames)
-            {
-                var foundType = System.Type.GetType(typeName, false, true);
-                if (foundType != null && typeof(WeaponBase).IsAssignableFrom(foundType))
-                {
-                    _weaponTypeRegistry[weaponId] = foundType;
-                    return foundType;
-                }
-            }
-
-            return null;
         }
 
         public void AddWeapon(WeaponBase weapon)

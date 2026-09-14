@@ -191,18 +191,14 @@ namespace ProjectZombie.EditorTools
                 }
             }
 
-            if (foundData != null)
+            if (foundData != null && foundData.weaponPrefab != null)
             {
                 weaponMgr.EquipWeaponFromData(foundData, isPrimary: false);
             }
             else
             {
-                // Fallback tạo WeaponData runtime
-                var runtimeData = ScriptableObject.CreateInstance<WeaponData>();
-                runtimeData.weaponId = targetScriptId;
-                runtimeData.weaponName = weaponId;
-                runtimeData.isPassiveRelic = false; // Mặc định hỗ trợ nút bấm chủ động để test
-                weaponMgr.EquipWeaponFromData(runtimeData, isPrimary: false);
+                Debug.LogWarning($"<color=#FFAA00>[Tester]</color> Không tìm thấy WeaponData hoặc weaponPrefab cho ID '{weaponId}' (ScriptID: {targetScriptId}). Hãy bảo đảm file WeaponData.asset đã được cấu hình weaponPrefab.");
+                return;
             }
 
             // Tìm weapon vừa gắn và set Level (nếu là Evolution thì đặt max level 6 + buff sức mạnh)
