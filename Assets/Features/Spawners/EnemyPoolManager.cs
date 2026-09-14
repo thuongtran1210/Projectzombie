@@ -84,7 +84,10 @@ namespace ProjectZombie.Features.Spawners
             pool = new UnityEngine.Pool.ObjectPool<GameObject>(
                 createFunc: () => {
                     if (prefab == null) return null;
+                    bool originalState = prefab.activeSelf;
+                    prefab.SetActive(false);
                     GameObject obj = Instantiate(prefab, parentTransform);
+                    prefab.SetActive(originalState);
                     if (!obj.TryGetComponent<EnemyPoolConfig>(out var config))
                     {
                         config = obj.AddComponent<EnemyPoolConfig>();
@@ -93,7 +96,7 @@ namespace ProjectZombie.Features.Spawners
                     return obj;
                 },
                 actionOnGet: (obj) => {
-                    if (obj != null) obj.SetActive(true);
+                    // Cố ý để trống: SetActive(true) sẽ do SpawnEnemy đảm nhận sau khi đã gán vị trí position
                 },
                 actionOnRelease: (obj) => {
                     if (obj != null) obj.SetActive(false);
@@ -119,14 +122,17 @@ namespace ProjectZombie.Features.Spawners
             var pool = GetOrCreatePool(prefab, addressKey);
             if (pool == null) return;
             
-            // Khởi tạo trước 2 đối tượng đồng bộ để có sẵn trong pool, không gây nghẽn frame (0 GC Allocation)
-            int immediateCount = Mathf.Min(count, 2);
+            // Khởi tạo trước các đối tượng ngầm vào Pool mà không kích hoạt SetActive(true)
             _tempPrewarmBuffer.Clear();
-            for (int i = 0; i < immediateCount; i++)
+            for (int i = 0; i < count; i++)
             {
                 GameObject obj = null;
                 try { obj = pool.Get(); } catch { }
-                if (obj != null) _tempPrewarmBuffer.Add(obj);
+                if (obj != null)
+                {
+                    obj.SetActive(false);
+                    _tempPrewarmBuffer.Add(obj);
+                }
             }
             for (int i = 0; i < _tempPrewarmBuffer.Count; i++)
             {
@@ -134,36 +140,6 @@ namespace ProjectZombie.Features.Spawners
                 if (obj != null) pool.Release(obj);
             }
             _tempPrewarmBuffer.Clear();
-
-            // Số lượng còn lại phân bổ dần qua Coroutine (1-2 item/frame) để giữ mượt mà 60 FPS
-            int remaining = count - immediateCount;
-            if (remaining > 0 && gameObject.activeInHierarchy)
-            {
-                StartCoroutine(RoutinePrewarmSlice(pool, remaining, 2));
-            }
-        }
-
-        private System.Collections.IEnumerator RoutinePrewarmSlice(UnityEngine.Pool.ObjectPool<GameObject> pool, int remainingCount, int itemsPerFrame = 2)
-        {
-            while (remainingCount > 0)
-            {
-                yield return null; // Chờ sang frame tiếp theo
-                int batch = Mathf.Min(remainingCount, itemsPerFrame);
-                _tempPrewarmBuffer.Clear();
-                for (int i = 0; i < batch; i++)
-                {
-                    GameObject obj = null;
-                    try { obj = pool.Get(); } catch { }
-                    if (obj != null) _tempPrewarmBuffer.Add(obj);
-                }
-                for (int i = 0; i < _tempPrewarmBuffer.Count; i++)
-                {
-                    var obj = _tempPrewarmBuffer[i];
-                    if (obj != null) pool.Release(obj);
-                }
-                _tempPrewarmBuffer.Clear();
-                remainingCount -= batch;
-            }
         }
 
         public GameObject SpawnEnemy(GameObject prefab, Vector3 position, Quaternion rotation)
