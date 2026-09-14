@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95fb4d43aec56044ea6dd90a3edee0c9, type: 3}
+  m_Name: Stage_02_AncientCitadel
+  m_EditorClassIdentifier: 
+  stageId: STAGE_02
+  stageName: "C\u1ED5 Th\xE0nh \u0110\xF4ng S\u01A1n"
+  description: "Th\xE0nh qu\xE1ch c\u1ED5 x\u01B0a ch\xECm trong kh\xF3i l\u1EEDa
+    ma qu\xE1i, n\u01A1i l\u0169 y\xEAu qu\xE1i gi\xE1p s\u1EAFt ho\xE0nh h\xE0nh."
+  stageThumbnail: {fileID: 0}
+  environmentType: 1
+  recommendedLevel: 5
+  mapPrefabAddress: Map_AncientCitadel
+  bgmAddress: BGM_AncientCitadel
+  estimatedDlcSizeMb: 12.4
+  timelineConfig: {fileID: 11400000, guid: 592ebb9e16325104291165bb0f670f02, type: 2}
+  stageDurationSeconds: 720
+  baseRewardCoins: 1200
+  baseRewardExp: 600
+  dropUnlockWeaponIds: []

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351e3faf5b123d241ac234b4c4a4ef13, type: 3}
+  m_Name: Fusion_FUSION_POT_IMMORTAL
+  m_EditorClassIdentifier: 
+  id: FUSION_POT_IMMORTAL
+  upgradeName: "N\u1ED3i Th\u1EA7n C\xE0n Kh\xF4n B\u1EA5t T\u1EED"
+  description: "N\xE2ng c\u1EA5p N\u1ED3i C\u01A1m Th\u1EA1ch Sanh: L\u1EF1c h\xFAt
+    h\u1ED1 \u0111en t\u0103ng g\u1EA5p \u0111\xF4i, sau khi n\u1ED5 gi\u1EA3i ph\xF3ng
+    C\u01A1m Ti\xEAn h\u1ED3i 30% M\xE1u v\xE0 t\u1EA1o khi\xEAn v\xF4 \u0111\u1ECBch
+    3 gi\xE2y."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 1
+  maxLevel: 1
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  recipe:
+    fusionId: FUSION_POT_IMMORTAL
+    displayName: "N\u1ED3i Th\u1EA7n C\xE0n Kh\xF4n B\u1EA5t T\u1EED"
+    requiredBaseWeaponId: W_POT
+    requiredBaseWeaponLevel: 5
+    requiredPassiveIds:
+    - P005
+    - P003
+    resultRelicPrefab: {fileID: 0}
+    description: "N\xE2ng c\u1EA5p N\u1ED3i C\u01A1m Th\u1EA1ch Sanh: L\u1EF1c h\xFAt
+      h\u1ED1 \u0111en t\u0103ng g\u1EA5p \u0111\xF4i, sau khi n\u1ED5 gi\u1EA3i
+      ph\xF3ng C\u01A1m Ti\xEAn h\u1ED3i 30% M\xE1u v\xE0 t\u1EA1o khi\xEAn v\xF4
+      \u0111\u1ECBch 3 gi\xE2y."

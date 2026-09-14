@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351e3faf5b123d241ac234b4c4a4ef13, type: 3}
+  m_Name: Fusion_FUSION_SLIPPER_FIRE
+  m_EditorClassIdentifier: 
+  id: FUSION_SLIPPER_FIRE
+  upgradeName: "V\u1EA1n D\xE9p B\xE1t Qu\xE1i Th\u1EA7n H\u1ECFa"
+  description: "N\xE2ng c\u1EA5p D\xE9p T\u1ED5 Ong th\xE0nh Th\u1EA7n Binh: Ph\xF3ng
+    8 \u0111\xF4i d\xE9p h\u1ECFa di\u1EC7m xoay tr\xF2n, Phase 2 l\u01B0\u1EDBt
+    \u0111\u1EA1p Shockwave g\xE2y s\xE1t th\u01B0\u01A1ng thi\xEAu \u0111\u1ED1t
+    to\xE0n b\u1EA3n \u0111\u1ED3."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 1
+  maxLevel: 1
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  recipe:
+    fusionId: FUSION_SLIPPER_FIRE
+    displayName: "V\u1EA1n D\xE9p B\xE1t Qu\xE1i Th\u1EA7n H\u1ECFa"
+    requiredBaseWeaponId: W_SLIPPER
+    requiredBaseWeaponLevel: 5
+    requiredPassiveIds:
+    - P001
+    - P006
+    resultRelicPrefab: {fileID: 0}
+    description: "N\xE2ng c\u1EA5p D\xE9p T\u1ED5 Ong th\xE0nh Th\u1EA7n Binh: Ph\xF3ng
+      8 \u0111\xF4i d\xE9p h\u1ECFa di\u1EC7m xoay tr\xF2n, Phase 2 l\u01B0\u1EDBt
+      \u0111\u1EA1p Shockwave g\xE2y s\xE1t th\u01B0\u01A1ng thi\xEAu \u0111\u1ED1t
+      to\xE0n b\u1EA3n \u0111\u1ED3."

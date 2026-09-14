@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351e3faf5b123d241ac234b4c4a4ef13, type: 3}
+  m_Name: Fusion_FUSION_PIPE_DRAGON
+  m_EditorClassIdentifier: 
+  id: FUSION_PIPE_DRAGON
+  upgradeName: "C\u1EEDu U H\u1ECFa Long Kh\xF3i"
+  description: "N\xE2ng c\u1EA5p \u0110i\u1EBFu C\xE0y C\u1EEDu U: Phun H\u1ECFa
+    Long kh\xF3i thi\xEAu r\u1EE5i ph\u1EA1m vi c\u1EF1c \u0111\u1EA1i, qu\xE1i tr\xFAng
+    ph\u1EA3i b\u1ECB c\xE2m l\u1EB7ng, m\xF9 l\xF2a v\xE0 r\xFAt m\xE1u li\xEAn
+    t\u1EE5c."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 1
+  maxLevel: 1
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  recipe:
+    fusionId: FUSION_PIPE_DRAGON
+    displayName: "C\u1EEDu U H\u1ECFa Long Kh\xF3i"
+    requiredBaseWeaponId: W_PIPE
+    requiredBaseWeaponLevel: 5
+    requiredPassiveIds:
+    - P004
+    - P008
+    resultRelicPrefab: {fileID: 0}
+    description: "N\xE2ng c\u1EA5p \u0110i\u1EBFu C\xE0y C\u1EEDu U: Phun H\u1ECFa
+      Long kh\xF3i thi\xEAu r\u1EE5i ph\u1EA1m vi c\u1EF1c \u0111\u1EA1i, qu\xE1i
+      tr\xFAng ph\u1EA3i b\u1ECB c\xE2m l\u1EB7ng, m\xF9 l\xF2a v\xE0 r\xFAt m\xE1u
+      li\xEAn t\u1EE5c."

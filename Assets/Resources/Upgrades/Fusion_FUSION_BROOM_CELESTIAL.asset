@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351e3faf5b123d241ac234b4c4a4ef13, type: 3}
+  m_Name: Fusion_FUSION_BROOM_CELESTIAL
+  m_EditorClassIdentifier: 
+  id: FUSION_BROOM_CELESTIAL
+  upgradeName: "Thi\xEAn Binh Th\u1EA7n Ch\u1ED5i Qu\xE9t"
+  description: "N\xE2ng c\u1EA5p Ch\u1ED5i L\xF4ng G\xE0: M\u1ED7i \u0111\xF2n Finisher
+    Hit 3 tri\u1EC7u h\u1ED3i 3 Ch\u1ED5i Th\u1EA7n kh\u1ED5ng l\u1ED3 qu\xE9t s\u1EADp
+    tr\u1EADn \u0111\u1ECBa, \u0111\u1EA9y v\u0103ng to\xE0n b\u1ED9 Boss v\xE0 Qu\xE1i
+    tinh anh."
+  icon: {fileID: 0}
+  upgradeType: 6
+  spawnWeight: 1
+  maxLevel: 1
+  requiredYinYangState: 1
+  checkYinYangState: 0
+  element: 1
+  recipe:
+    fusionId: FUSION_BROOM_CELESTIAL
+    displayName: "Thi\xEAn Binh Th\u1EA7n Ch\u1ED5i Qu\xE9t"
+    requiredBaseWeaponId: R008
+    requiredBaseWeaponLevel: 5
+    requiredPassiveIds:
+    - P001
+    - P007
+    resultRelicPrefab: {fileID: 0}
+    description: "N\xE2ng c\u1EA5p Ch\u1ED5i L\xF4ng G\xE0: M\u1ED7i \u0111\xF2n
+      Finisher Hit 3 tri\u1EC7u h\u1ED3i 3 Ch\u1ED5i Th\u1EA7n kh\u1ED5ng l\u1ED3
+      qu\xE9t s\u1EADp tr\u1EADn \u0111\u1ECBa, \u0111\u1EA9y v\u0103ng to\xE0n b\u1ED9
+      Boss v\xE0 Qu\xE1i tinh anh."
