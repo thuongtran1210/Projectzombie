@@ -133,7 +133,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 return;
             }
 
-            // Fallback nếu chưa nạp Tilemap/Collider: Khung 100x100 rộng rãi
+            // Fallback nếu chưa nạp Tilemap/Collider: Cảnh báo ra Console và dùng khung 100x100 rộng rãi
+            Debug.LogWarning("[ArenaBoundaryContext] CẢNH BÁO: Chưa tìm thấy Ground Tilemap hoặc Walkable Collider trên Map! Đang dùng khung SafeBounds mặc định (100x100). Hãy kiểm tra lại Map Prefab hoặc SpawnManager ConfigureMapInstance.");
             _safeMapBounds = new Bounds(Vector3.zero, new Vector3(100f, 100f, 10f));
             _hasCalculatedBounds = true;
         }
