@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,6 +125,51 @@ namespace ProjectZombie.Core.Services.Addressables
             finally
             {
                 _inFlightTasks.Remove(address);
+            }
+        }
+
+        public async Task<IList<T>> LoadAllAsync<T>(string label, CancellationToken cancellationToken = default) where T : UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(label) || cancellationToken.IsCancellationRequested)
+            {
+                return new List<T>();
+            }
+
+            string cacheKey = $"label:{label}";
+            if (_completedHandles.TryGetValue(cacheKey, out AsyncOperationHandle handle))
+            {
+                if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    return (IList<T>)handle.Result;
+                }
+            }
+
+            try
+            {
+                var asyncHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<T>(label, null);
+                await asyncHandle.Task;
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    if (asyncHandle.IsValid())
+                    {
+                        UnityEngine.AddressableAssets.Addressables.Release(asyncHandle);
+                    }
+                    return new List<T>();
+                }
+
+                if (asyncHandle.Status == AsyncOperationStatus.Succeeded && asyncHandle.Result != null)
+                {
+                    _completedHandles[cacheKey] = asyncHandle;
+                    return asyncHandle.Result;
+                }
+
+                return new List<T>();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[{nameof(AddressableAssetManager)}] Lỗi khi nạp tài nguyên theo label '{label}': {ex.Message}");
+                return new List<T>();
             }
         }
 

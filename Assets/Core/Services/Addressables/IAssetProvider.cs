@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -17,6 +17,11 @@ namespace ProjectZombie.Core.Services.Addressables
         /// <param name="cancellationToken">Token hỗ trợ hủy tác vụ bất đồng bộ khi đổi Scene/Destroy.</param>
         /// <returns>Đối tượng Asset đã nạp thành công hoặc null nếu thất bại.</returns>
         Task<T> LoadAssetAsync<T>(string address, CancellationToken cancellationToken = default) where T : UnityEngine.Object;
+
+        /// <summary>
+        /// Tải bất đồng bộ danh sách các Asset gắn nhãn (Label) vào bộ nhớ RAM.
+        /// </summary>
+        Task<System.Collections.Generic.IList<T>> LoadAllAsync<T>(string label, CancellationToken cancellationToken = default) where T : UnityEngine.Object;
 
         /// <summary>
         /// Khởi tạo trực tiếp một GameObject từ địa chỉ Addressable.

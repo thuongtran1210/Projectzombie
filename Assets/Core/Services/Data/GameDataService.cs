@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,6 +15,7 @@ namespace ProjectZombie.Core.Services.Data
     public interface IGameDataService
     {
         Task<T> GetAsync<T>(string key) where T : UnityEngine.Object;
+        Task<IList<T>> LoadAllAsync<T>(string label) where T : UnityEngine.Object;
         void InvalidateCache(string key = null);
         void ReleaseAsset(string key);
         void ReleaseAll();
@@ -22,6 +23,7 @@ namespace ProjectZombie.Core.Services.Data
 
     /// <summary>
     /// Implementation chuẩn hóa của IGameDataService.
+    /// Triết lý Addressables-First: RAM Cache -> Addressables CDN/Local Catalog -> Resources Fallback -> Error Log.
     /// Ngăn chặn Race Condition, In-Flight Duplication và Memory Leak trên Android.
     /// </summary>
     public class GameDataService : IGameDataService
@@ -34,7 +36,7 @@ namespace ProjectZombie.Core.Services.Data
         private readonly Dictionary<string, AsyncOperationHandle> _handles = new();
 
         /// <summary>
-        /// Nạp tài nguyên Generic với cơ chế Deduplication & 3-Tier Fallback.
+        /// Nạp tài nguyên Generic với cơ chế Deduplication & Addressables-First Fallback.
         /// </summary>
         public async Task<T> GetAsync<T>(string key) where T : UnityEngine.Object
         {
@@ -53,14 +55,6 @@ namespace ProjectZombie.Core.Services.Data
                 return pendingResult as T;
             }
 
-            // 2.5. Kiểm tra Resources cục bộ trước (0ms, không phụ thuộc mạng / catalog)
-            var localRes = Resources.Load<T>(key);
-            if (localRes != null)
-            {
-                _cache[key] = localRes;
-                return localRes;
-            }
-
             var tcs = new TaskCompletionSource<object>();
             _inFlight[key] = tcs.Task;
 
@@ -68,8 +62,7 @@ namespace ProjectZombie.Core.Services.Data
 
             try
             {
-                // 3. Tầng 2: Nạp từ Addressables CDN (Hot Update)
-                // Đảm bảo Addressables đã khởi tạo trước khi gọi LoadAssetAsync
+                // 3. Tầng 2: Nạp từ Addressables Catalog (Hot Update / Asset Bundles)
                 var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(key);
                 await locHandle.Task;
 
@@ -81,7 +74,6 @@ namespace ProjectZombie.Core.Services.Data
                 }
                 else
                 {
-                    // Giải phóng handle location nếu không tìm thấy key trong catalog
                     if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
             }
@@ -90,28 +82,15 @@ namespace ProjectZombie.Core.Services.Data
                 Debug.LogWarning($"[GameDataService] Addressables load failed for '{key}': {ex.Message}. Falling back to Resources.");
             }
 
-            // 4. Tầng 3: Fallback nạp từ Resources cục bộ trong APK (Khi Offline / CDN lỗi)
+            // 4. Tầng 3: Fallback nạp từ Resources cục bộ trong APK (Khi Offline / Chặn fallback CDN)
             if (result == null)
             {
                 result = Resources.Load<T>(key);
             }
 
-#if UNITY_EDITOR
-            // 5. Editor Fallback: Tìm trong AssetDatabase nếu đang test trong Unity Editor
             if (result == null)
             {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets($"{key} t:{typeof(T).Name}");
-                if (guids != null && guids.Length > 0)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-                    result = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-                }
-            }
-#endif
-
-            if (result == null)
-            {
-                Debug.LogError($"[GameDataService] '{key}' không tồn tại trong cả Addressables và Resources!");
+                Debug.LogError($"[GameDataService] Asset key '{key}' (Loại: {typeof(T).Name}) không tồn tại trong Addressables Catalog và Resources!");
             }
             else
             {
@@ -122,6 +101,33 @@ namespace ProjectZombie.Core.Services.Data
             tcs.SetResult(result);
 
             return result;
+        }
+
+        /// <summary>
+        /// Nạp tất cả tài nguyên theo Label/Tag cụ thể thông qua Addressables. Fallback sang Resources.LoadAll nếu rỗng.
+        /// </summary>
+        public async Task<IList<T>> LoadAllAsync<T>(string label) where T : UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(label)) return new List<T>();
+
+            try
+            {
+                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<T>(label, null);
+                var results = await handle.Task;
+                if (results != null && results.Count > 0)
+                {
+                    _handles[$"label:{label}"] = handle;
+                    return results;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[GameDataService] Addressables LoadAllAsync failed for label '{label}': {ex.Message}. Falling back to Resources.LoadAll.");
+            }
+
+            // Fallback sang Resources.LoadAll
+            T[] resList = Resources.LoadAll<T>(label);
+            return new List<T>(resList);
         }
 
         /// <summary>

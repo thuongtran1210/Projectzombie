@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using ProjectZombie.Core.Save;
 using ProjectZombie.Core.Architecture;
@@ -59,13 +59,19 @@ namespace ProjectZombie.Features.MetaProgression
 
             if (_progressionConfig == null)
             {
+                LoadProgressionConfigAsync();
+            }
+        }
+
+        private async void LoadProgressionConfigAsync()
+        {
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                _progressionConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+            }
+            if (_progressionConfig == null)
+            {
                 _progressionConfig = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-#if UNITY_EDITOR
-                if (_progressionConfig == null)
-                {
-                    _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
-                }
-#endif
             }
         }
 

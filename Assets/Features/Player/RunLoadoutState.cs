@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
@@ -81,15 +81,16 @@ namespace ProjectZombie.Features.Player
             _isInitialized = true;
 
             // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO (Single Source of Truth)
-            var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+            CharacterDatabaseSO characterDatabase = null;
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null && Application.isPlaying)
+            {
+                var dbTask = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                if (dbTask.IsCompleted) characterDatabase = dbTask.Result;
+            }
+
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Character/CharacterDatabase");
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
-            #if UNITY_EDITOR
-            if (characterDatabase == null && !Application.isPlaying)
-            {
-                characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-            }
-            #endif
 
             // 2. Nạp Database Vũ Khí
             var allWeapons = LoadAllWeaponsDatabase();

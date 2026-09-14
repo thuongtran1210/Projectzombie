@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -79,53 +79,39 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        private void EnsureAssets()
+        private async void EnsureAssets()
         {
+            if (potVfxPrefab == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                potVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Pot_Suction");
+            }
             if (potVfxPrefab == null)
             {
                 potVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Pot_Suction");
-#if UNITY_EDITOR
-                if (potVfxPrefab == null)
-                {
-                    potVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pot_Suction.prefab");
-                }
-#endif
             }
 
+            if (potSprite == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                potSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Pot_Projectile") ??
+                            await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_POT");
+            }
             if (potSprite == null)
             {
                 potSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Pot_Projectile") ??
                             Resources.Load<Sprite>("Weapons/Icon_W_POT") ??
                             Resources.Load<Sprite>("Icon_W_POT");
-#if UNITY_EDITOR
-                if (potSprite == null)
-                {
-                    potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Pot_Projectile.png");
-                    if (potSprite == null) potSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_POT.png");
-                }
-#endif
             }
+
             if (riceBallSprite == null)
             {
                 riceBallSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Rice_Collectible") ??
                                  Resources.Load<Sprite>("Tex_Rice_Collectible");
-#if UNITY_EDITOR
-                if (riceBallSprite == null)
-                {
-                    riceBallSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png");
-                }
-#endif
             }
+
             if (suctionMaterial == null)
             {
                 suctionMaterial = Resources.Load<Material>("Materials/MAT_VFX_Pot_Suction") ??
                                   Resources.Load<Material>("MAT_VFX_Pot_Suction");
-#if UNITY_EDITOR
-                if (suctionMaterial == null)
-                {
-                    suctionMaterial = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/VFX/SkillLibrary/Materials/MAT_VFX_Pot_Suction.mat");
-                }
-#endif
             }
         }
 

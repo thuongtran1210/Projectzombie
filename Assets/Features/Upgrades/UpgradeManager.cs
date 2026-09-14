@@ -192,59 +192,25 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
 
-#if UNITY_EDITOR
-            PopulateAllAvailableUpgrades();
-            await Task.Yield();
-#else
-            // 1. Ưu tiên nạp danh sách Thẻ Nâng Cấp từ Addressables Label "UpgradeData" (Bất đồng bộ - 0 Hitch)
-            try
+            // Nạp từ GameDataService (Addressables Label "UpgradeData" -> Fallback Resources)
+            var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
+            if (loadedList != null && loadedList.Count > 0)
             {
-                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", (u) =>
+                foreach (var item in loadedList)
                 {
-                    if (u != null && !_allAvailableUpgrades.Contains(u) && !(u is FallbackRewardUpgradeData))
+                    if (item != null && !(item is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(item))
                     {
-                        _allAvailableUpgrades.Add(u);
+                        _allAvailableUpgrades.Add(item);
                     }
-                });
-
-                _addressablesHandle = handle;
-                await handle.Task;
-
-                if (_allAvailableUpgrades.Count > 0)
-                {
-                    Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData từ Addressables (Async).");
                 }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogWarning($"[UpgradeManager] Không thể nạp thẻ từ Addressables: {ex.Message}. Fallback sang Resources...");
+                Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData qua GameDataService.");
             }
 
-            // 2. Fallback sang Resources nếu chưa có gói Addressables
+#if UNITY_EDITOR
             if (_allAvailableUpgrades.Count == 0)
             {
-                var request = Resources.LoadAllAsync<UpgradeData>("Upgrades");
-                await AwaitResourceRequest(request);
-
-                var loadedUpgrades = request.allAssets;
-                if (loadedUpgrades == null || loadedUpgrades.Length == 0)
-                {
-                    var fallbackReq = Resources.LoadAllAsync<UpgradeData>("");
-                    await AwaitResourceRequest(fallbackReq);
-                    loadedUpgrades = fallbackReq.allAssets;
-                }
-
-                if (loadedUpgrades != null)
-                {
-                    foreach (var asset in loadedUpgrades)
-                    {
-                        if (asset is UpgradeData u && !(u is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(u))
-                        {
-                            _allAvailableUpgrades.Add(u);
-                        }
-                    }
-                }
-                Debug.Log($"[UpgradeManager] Load {_allAvailableUpgrades.Count} thẻ UpgradeData từ Resources (Async).");
+                Debug.LogWarning("[UpgradeManager] Không tìm thấy UpgradeData trong Addressables/Resources. Fallback sang Editor AssetDatabase.");
+                PopulateAllAvailableUpgrades();
             }
 #endif
             _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);

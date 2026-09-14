@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
@@ -91,21 +91,14 @@ namespace ProjectZombie.Features.UI
 
         private async void InitCharacterData()
         {
+            if (_characterDatabase == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                _characterDatabase = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+            }
+
             if (_characterDatabase == null)
             {
                 _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-#if UNITY_EDITOR
-                if (_characterDatabase == null)
-                {
-                    _characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-                }
-#endif
-            }
-
-            // 1. Nạp từ GameDataService (Tự động CDN Hot Update -> Cache -> Resources Fallback)
-            if (_characterDatabase == null)
-            {
-                _characterDatabase = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
             }
 
             if (_characterDatabase != null && _characterDatabase.Characters != null && _characterDatabase.Characters.Count > 0)
