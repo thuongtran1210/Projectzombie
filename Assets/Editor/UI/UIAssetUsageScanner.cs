@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.IO;
@@ -9,7 +9,7 @@ namespace ProjectZombie.EditorTools
 {
     public static class UIAssetUsageScanner
     {
-        [MenuItem("Tools/Vong Xuyen/Analysis/Scan UI Images Usage", priority = 100)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/10. Scan UI Images Usage", priority = 171)]
         public static void ScanUIImages()
         {
             string uiRoot = "Assets/Art/UI";

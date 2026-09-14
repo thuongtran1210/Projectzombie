@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +19,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorMutedText = new Color(0.85f, 0.82f, 0.78f, 1f);
         private static readonly Color ColorValueText = new Color(1.0f, 0.95f, 0.8f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/5. Tạo Màn Hình Kết Thúc Trận (GameOver UI)", priority = 25)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/6. Tạo Màn Hình GameOver", priority = 126)]
         public static void RebuildGameOverUI()
         {
             Canvas mainCanvas = Object.FindAnyObjectByType<Canvas>();

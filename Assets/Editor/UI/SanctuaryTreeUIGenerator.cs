@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
@@ -10,7 +10,7 @@ namespace ProjectZombie.Editor.UI
 {
     public static class SanctuaryTreeUIGenerator
     {
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/4. Tạo Miếu Tứ Bất Tử (Sanctuary Tree UI)", priority = 14)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/5. Tạo Miếu Tứ Bất Tử (Sanctuary Tree UI)", priority = 106)]
         public static GameObject GenerateSanctuaryTreePrefab()
         {
             // 1. Sinh Tree Data trước nếu chưa có

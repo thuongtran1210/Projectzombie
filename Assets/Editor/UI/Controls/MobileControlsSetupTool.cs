@@ -1,0 +1,1086 @@
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.UI;
+using TMPro;
+using ProjectZombie.Features.UI;
+using ProjectZombie.Features.UI.Common;
+
+namespace ProjectZombie.Editor.Tools
+{
+    /// <summary>
+    /// Editor Tool giúp tự động quét, chuẩn hóa và gắn kết (Auto-Wire) các thành phần Mobile Controls Canvas:
+    /// - DynamicVirtualJoystick
+    /// - SignatureSkillButtonView & SignatureSkillPresenter
+    /// - DashButtonView
+    /// Tuân thủ quy chuẩn UI Art Guide & MVP Pattern.
+    /// </summary>
+    public class MobileControlsSetupTool : EditorWindow
+    {
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/3. Điều Khiển Mobile/1. Cấu Hình Virtual Joystick & Nút Skill (1-Click)", priority = 140)]
+        public static void QuickSetupMobileControls()
+        {
+            SetupAndWireControlsInScene();
+        }
+
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/3. Điều Khiển Mobile/2. Window Thiết Lập Control & Joystick", priority = 141)]
+        public static void ShowWindow()
+        {
+            var window = GetWindow<MobileControlsSetupTool>("Mobile Controls Setup");
+            window.minSize = new Vector2(420, 480);
+        }
+
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/3. Điều Khiển Mobile/3. Áp Dụng Sprite Nút Bấm 2D Flat", priority = 142)]
+        public static void RefreshAndApplyControlsSprites()
+        {
+            ConfigureControlSpriteImporters();
+            SetupAndWireControlsInScene();
+        }
+
+        public static void ConfigureControlSpriteImporters()
+        {
+            string[] paths = new string[]
+            {
+                "Assets/Art/UI/Joystick/Joystick_Base_DongSon.png",
+                "Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Attack.png",
+                "Assets/Art/UI/Skills/Btn_Dash_PhiVan.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png",
+                "Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png",
+                "Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png"
+            };
+
+            foreach (var path in paths)
+            {
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer != null)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    importer.alphaIsTransparency = true;
+                    importer.mipmapEnabled = false;
+                    importer.wrapMode = TextureWrapMode.Clamp;
+                    importer.filterMode = FilterMode.Bilinear;
+                    importer.SaveAndReimport();
+                }
+            }
+            AssetDatabase.Refresh();
+            Debug.Log("<color=#00FF88>[MobileControlsSetupTool]</color> Đã cấu hình và re-import toàn bộ Sprite Controls 2D Flat thành công!");
+        }
+
+        private void OnGUI()
+        {
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("🎮 Mobile Controls Setup & Auto-Wire", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "Tool này sẽ tìm kiếm 'Panel_MobileControls' (hoặc Canvas hiện có) trong Scene đang mở để:\n" +
+                "1. Tự động kiểm tra và gắn các Script MVP còn thiếu.\n" +
+                "2. Tự động liên kết (Wire) các biến SerializedField (Image, TextMeshProUGUI, Button, CanvasGroup).\n" +
+                "3. Chuẩn hóa Canvas Scaler (1920x1080 Match 0.5) và Anchors mà không làm mất các Sprite đã kéo.",
+                MessageType.Info
+            );
+
+            EditorGUILayout.Space(15);
+
+            if (GUILayout.Button("🎨 Re-import & Áp Dụng Bộ Sprite 2D Flat Mới", GUILayout.Height(35)))
+            {
+                RefreshAndApplyControlsSprites();
+            }
+
+            EditorGUILayout.Space(5);
+
+            if (GUILayout.Button("⚡ Tự Động Quét & Chuẩn Hóa Scene Hiện Tại", GUILayout.Height(40)))
+            {
+                SetupAndWireControlsInScene();
+            }
+
+            EditorGUILayout.Space(10);
+
+            if (GUILayout.Button("🛠️ Tạo Mới Panel_MobileControls (Nếu Chưa Có)", GUILayout.Height(30)))
+            {
+                CreateDefaultMobileControlsHierarchy();
+            }
+        }
+
+        public static void SetupAndWireControlsInScene()
+        {
+            // 1. Tìm hoặc kiểm tra Canvas
+            Canvas canvas = FindObjectOfType<Canvas>();
+            if (canvas == null)
+            {
+                EditorUtility.DisplayDialog("Lỗi", "Không tìm thấy Canvas nào trong Scene! Vui lòng tạo Canvas trước.", "OK");
+                return;
+            }
+
+            Undo.RegisterFullObjectHierarchyUndo(canvas.gameObject, "Setup Mobile Controls");
+
+            // Đảm bảo Canvas Scaler chuẩn 1920x1080 Match 0.5
+            var scaler = canvas.GetComponent<CanvasScaler>();
+            if (scaler != null)
+            {
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920, 1080);
+                scaler.matchWidthOrHeight = 0.5f;
+                EditorUtility.SetDirty(scaler);
+            }
+
+            // 2. Tìm Panel_MobileControls hoặc root phù hợp
+            GameObject mobilePanel = GameObject.Find("Panel_MobileControls");
+            if (mobilePanel == null)
+            {
+                // Tìm kiếm theo tên gần đúng
+                foreach (var t in canvas.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.name.ToLower().Contains("mobilecontrol") || t.name.ToLower().Contains("touchcontrol"))
+                    {
+                        mobilePanel = t.gameObject;
+                        break;
+                    }
+                }
+            }
+
+            if (mobilePanel == null)
+            {
+                bool createNew = EditorUtility.DisplayDialog(
+                    "Không tìm thấy Panel_MobileControls",
+                    "Chưa tìm thấy 'Panel_MobileControls' trong Scene. Bạn có muốn Tool tự tạo cấu trúc chuẩn ngay bây giờ?",
+                    "Tạo Mới", "Hủy"
+                );
+                if (createNew)
+                {
+                    CreateDefaultMobileControlsHierarchy();
+                }
+                return;
+            }
+
+            // 2b. Đảm bảo cấu trúc Safe Area Container cho Mobile Controls (Phương án 1)
+            Transform safeContainerTrans = mobilePanel.transform.Find("SafeArea_ControlsContainer");
+            if (safeContainerTrans == null)
+            {
+                GameObject safeObj = new GameObject("SafeArea_ControlsContainer", typeof(RectTransform));
+                safeObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform safeRT = safeObj.GetComponent<RectTransform>();
+                safeRT.anchorMin = Vector2.zero;
+                safeRT.anchorMax = Vector2.one;
+                safeRT.offsetMin = Vector2.zero;
+                safeRT.offsetMax = Vector2.zero;
+
+                var fitter = safeObj.AddComponent<SafeAreaFitter>();
+                fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
+
+                // Di chuyển tất cả các nút hiện tại của mobilePanel vào trong safeContainerTrans
+                var childrenToMove = new System.Collections.Generic.List<Transform>();
+                for (int i = 0; i < mobilePanel.transform.childCount; i++)
+                {
+                    Transform child = mobilePanel.transform.GetChild(i);
+                    if (child != safeObj.transform)
+                    {
+                        childrenToMove.Add(child);
+                    }
+                }
+                foreach (var child in childrenToMove)
+                {
+                    child.SetParent(safeObj.transform, true);
+                }
+
+                safeContainerTrans = safeObj.transform;
+            }
+            else
+            {
+                var fitter = safeContainerTrans.GetComponent<SafeAreaFitter>();
+                if (fitter == null) fitter = safeContainerTrans.gameObject.AddComponent<SafeAreaFitter>();
+                fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
+            }
+
+            int wiredCount = 0;
+
+            // 3. Chuẩn hóa & Wire DynamicVirtualJoystick (Cố định góc dưới trái, không dịch chuyển container)
+            Transform joyZoneTrans = FindChildRecursive(mobilePanel.transform, "TouchZone_Left");
+            if (joyZoneTrans != null)
+            {
+                // Nếu TouchZone_Left có gắn DynamicVirtualJoystick thừa, xóa đi để tránh xung đột singleton
+                var excessJoystick = joyZoneTrans.GetComponent<DynamicVirtualJoystick>();
+                if (excessJoystick != null)
+                {
+                    DestroyImmediate(excessJoystick);
+                }
+            }
+
+            DynamicVirtualJoystick joystick = mobilePanel.GetComponentInChildren<DynamicVirtualJoystick>(true);
+
+            if (joystick == null)
+            {
+                // Tạo mới cụm DynamicVirtualJoystick cố định chuẩn
+                GameObject joyObj = new GameObject("DynamicVirtualJoystick", typeof(RectTransform), typeof(Image), typeof(DynamicVirtualJoystick), typeof(CanvasGroup));
+                joyObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform joyRect = joyObj.GetComponent<RectTransform>();
+                joyRect.anchorMin = new Vector2(0f, 0f);
+                joyRect.anchorMax = new Vector2(0f, 0f);
+                joyRect.pivot = new Vector2(0.5f, 0.5f);
+                joyRect.anchoredPosition = new Vector2(250, 250);
+                joyRect.sizeDelta = new Vector2(240, 240);
+
+                Image joyBg = joyObj.GetComponent<Image>();
+                joyBg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
+                joyBg.color = Color.white;
+                joyBg.raycastTarget = true;
+
+                GameObject handleObj = new GameObject("JoystickHandle", typeof(RectTransform), typeof(Image));
+                handleObj.transform.SetParent(joyObj.transform, false);
+                RectTransform handleRect = handleObj.GetComponent<RectTransform>();
+                handleRect.sizeDelta = new Vector2(100, 100);
+                Image handleImg = handleObj.GetComponent<Image>();
+                handleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
+                handleImg.color = Color.white;
+                handleImg.raycastTarget = false;
+
+                joystick = joyObj.GetComponent<DynamicVirtualJoystick>();
+            }
+
+            WireJoystick(joystick);
+            wiredCount++;
+
+            // 4. Chuẩn hóa & Wire SignatureSkillButtonView & Presenter
+            SignatureSkillButtonView skillView = mobilePanel.GetComponentInChildren<SignatureSkillButtonView>(true);
+            Transform skillTransform = skillView != null ? skillView.transform : FindChildRecursive(mobilePanel.transform, "Skill");
+            if (skillTransform != null)
+            {
+                if (skillView == null) skillView = skillTransform.gameObject.AddComponent<SignatureSkillButtonView>();
+                var presenter = skillTransform.GetComponent<SignatureSkillPresenter>();
+                if (presenter == null) presenter = skillTransform.gameObject.AddComponent<SignatureSkillPresenter>();
+
+                WireSignatureSkill(skillView, presenter);
+                wiredCount++;
+            }
+
+            // 4b. Chuẩn hóa & Wire RelicSkillButtonView & RelicSkillPresenter (Hybrid Relics v6.0)
+            RelicSkillButtonView relicView = mobilePanel.GetComponentInChildren<RelicSkillButtonView>(true);
+            Transform relicTransform = relicView != null ? relicView.transform : FindChildRecursive(mobilePanel.transform, "Relic");
+            if (relicTransform == null)
+            {
+                // Tự động tạo Btn_RelicSkill nếu Panel_MobileControls cũ chưa có
+                GameObject relicObj = new GameObject("Btn_RelicSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(RelicSkillButtonView), typeof(RelicSkillPresenter));
+                relicObj.transform.SetParent(mobilePanel.transform, false);
+                RectTransform relicRect = relicObj.GetComponent<RectTransform>();
+                relicRect.anchorMin = new Vector2(1f, 0f);
+                relicRect.anchorMax = new Vector2(1f, 0f);
+                relicRect.pivot = new Vector2(0.5f, 0.5f);
+                relicRect.anchoredPosition = new Vector2(-270, 270);
+                relicRect.sizeDelta = new Vector2(90, 90);
+                Image relicBg = relicObj.GetComponent<Image>();
+                relicBg.color = new Color(0.18f, 0.22f, 0.28f, 0.92f);
+
+                GameObject relicIconObj = new GameObject("Icon_Relic", typeof(RectTransform), typeof(Image));
+                relicIconObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicIconRect = relicIconObj.GetComponent<RectTransform>();
+                relicIconRect.anchorMin = new Vector2(0.15f, 0.15f);
+                relicIconRect.anchorMax = new Vector2(0.85f, 0.85f);
+                relicIconRect.sizeDelta = Vector2.zero;
+                Image relicIconImg = relicIconObj.GetComponent<Image>();
+                relicIconImg.color = Color.white;
+
+                GameObject relicFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+                relicFillObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicFillRect = relicFillObj.GetComponent<RectTransform>();
+                relicFillRect.anchorMin = Vector2.zero;
+                relicFillRect.anchorMax = Vector2.one;
+                relicFillRect.sizeDelta = Vector2.zero;
+                Image relicFillImg = relicFillObj.GetComponent<Image>();
+                relicFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+                relicFillImg.type = Image.Type.Filled;
+                relicFillImg.fillMethod = Image.FillMethod.Radial360;
+
+                GameObject relicTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+                relicTextObj.transform.SetParent(relicObj.transform, false);
+                RectTransform relicTextRect = relicTextObj.GetComponent<RectTransform>();
+                relicTextRect.anchorMin = Vector2.zero;
+                relicTextRect.anchorMax = Vector2.one;
+                relicTextRect.sizeDelta = Vector2.zero;
+                TextMeshProUGUI relicText = relicTextObj.GetComponent<TextMeshProUGUI>();
+                relicText.alignment = TextAlignmentOptions.Center;
+                relicText.fontSize = 24;
+
+                relicTransform = relicObj.transform;
+                relicView = relicObj.GetComponent<RelicSkillButtonView>();
+            }
+
+            if (relicTransform != null)
+            {
+                if (relicView == null) relicView = relicTransform.gameObject.AddComponent<RelicSkillButtonView>();
+                var relicPresenter = relicTransform.GetComponent<RelicSkillPresenter>();
+                if (relicPresenter == null) relicPresenter = relicTransform.gameObject.AddComponent<RelicSkillPresenter>();
+
+                WireRelicSkill(relicView, relicPresenter);
+                wiredCount++;
+            }
+
+            // 5. Chuẩn hóa & Wire DashButtonView & DashButtonPresenter
+            DashButtonView dashView = mobilePanel.GetComponentInChildren<DashButtonView>(true);
+            Transform dashTransform = dashView != null ? dashView.transform : FindChildRecursive(mobilePanel.transform, "Dash");
+            if (dashTransform != null)
+            {
+                if (dashView == null) dashView = dashTransform.gameObject.AddComponent<DashButtonView>();
+                var dashPresenter = dashTransform.GetComponent<DashButtonPresenter>();
+                if (dashPresenter == null) dashPresenter = dashTransform.gameObject.AddComponent<DashButtonPresenter>();
+
+                WireDashButton(dashView, dashPresenter);
+                wiredCount++;
+            }
+
+            // 6. Chuẩn hóa & Wire AttackButtonView & AttackButtonPresenter
+            AttackButtonView attackView = mobilePanel.GetComponentInChildren<AttackButtonView>(true);
+            Transform attackTransform = attackView != null ? attackView.transform : FindChildRecursive(mobilePanel.transform, "Attack");
+            if (attackTransform != null)
+            {
+                if (attackView == null) attackView = attackTransform.gameObject.AddComponent<AttackButtonView>();
+                var attackPresenter = attackTransform.GetComponent<AttackButtonPresenter>();
+                if (attackPresenter == null) attackPresenter = attackTransform.gameObject.AddComponent<AttackButtonPresenter>();
+
+                WireAttackButton(attackView, attackPresenter);
+                wiredCount++;
+            }
+
+            // 7. Chuẩn hóa & Wire Skill Aim Indicator Controller & UI Cancel Skill Zone (MOBA Smart Drag-Aim)
+            SetupAimingIndicatorsAndCancelZone(canvas, mobilePanel);
+            wiredCount += 2;
+
+            // 8. Tự động gắn CustomizableControlButton & Khởi tạo MobileControlsLayoutManager (Hệ thống Tùy Biến Bố Cục)
+            SetupCustomizableControlsAndLayoutManager(mobilePanel);
+
+            EditorUtility.SetDirty(mobilePanel);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mobilePanel.scene);
+
+            EditorUtility.DisplayDialog(
+                "Hoàn Tất",
+                $"Đã hoàn tất quét và Auto-Wire các thành phần Mobile Controls, MOBA Hit-And-Run System & Mobile Layout Customizer!\nSố cụm được cấu hình: {wiredCount}",
+                "OK"
+            );
+        }
+
+        private static void SetupCustomizableControlsAndLayoutManager(GameObject mobilePanel)
+        {
+            // Đảm bảo MobileControlsLayoutManager tồn tại trong Scene
+            var layoutMgr = Object.FindObjectOfType<Features.UI.Controls.Customization.MobileControlsLayoutManager>();
+            if (layoutMgr == null)
+            {
+                GameObject mgrObj = new GameObject("MobileControlsLayoutManager", typeof(Features.UI.Controls.Customization.MobileControlsLayoutManager));
+                mgrObj.transform.SetParent(mobilePanel.transform.parent, false);
+                Undo.RegisterCreatedObjectUndo(mgrObj, "Create MobileControlsLayoutManager");
+            }
+
+            // Gắn CustomizableControlButton theo Component View và Tên
+            AttachCustomizableByComponent<AttackButtonView>(mobilePanel, "Btn_Attack", "Đánh Thường", 0.7f, 1.5f);
+            AttachCustomizableByComponent<SignatureSkillButtonView>(mobilePanel, "Btn_SignatureSkill", "Tuyệt Kỹ", 0.7f, 1.5f);
+            AttachCustomizableByComponent<RelicSkillButtonView>(mobilePanel, "Btn_RelicSkill", "Pháp Bảo", 0.7f, 1.5f);
+            AttachCustomizableByComponent<DashButtonView>(mobilePanel, "Btn_Dash", "Lướt Phi Vân", 0.7f, 1.5f);
+            
+            // Cần Gạt Di Chuyển (hỗ trợ cả Component lẫn tên UI_VirtualJoystick, DynamicVirtualJoystick, Joystick_Visual)
+            AttachCustomizableByComponent<Features.UI.DynamicVirtualJoystick>(mobilePanel, "UI_VirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "UI_VirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "DynamicVirtualJoystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Joystick_Visual", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+            AttachCustomizableButton(mobilePanel, "Joystick", "Cần Gạt Di Chuyển", 0.7f, 1.5f);
+        }
+
+        private static void AttachCustomizableByComponent<T>(GameObject root, string fallbackName, string displayName, float minScale, float maxScale) where T : Component
+        {
+            T comp = root.GetComponentInChildren<T>(true);
+            Transform t = comp != null ? comp.transform : FindChildRecursive(root.transform, fallbackName);
+            if (t != null)
+            {
+                // Đảm bảo có Graphic để nhận Raycast cho chế độ tùy chỉnh
+                var img = t.GetComponent<Image>();
+                if (img == null)
+                {
+                    img = t.gameObject.AddComponent<Image>();
+                    img.color = Color.clear;
+                    img.raycastTarget = true;
+                }
+
+                var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+                if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+
+                var so = new SerializedObject(customBtn);
+                so.FindProperty("_controlId").stringValue = t.name;
+                so.FindProperty("_displayName").stringValue = displayName;
+                so.FindProperty("_minScale").floatValue = minScale;
+                so.FindProperty("_maxScale").floatValue = maxScale;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(customBtn);
+            }
+        }
+
+        private static void AttachCustomizableButton(GameObject root, string targetName, string displayName, float minScale, float maxScale)
+        {
+            Transform t = FindChildRecursive(root.transform, targetName);
+            if (t != null)
+            {
+                // Đảm bảo có Graphic để nhận Raycast cho chế độ tùy chỉnh
+                var img = t.GetComponent<Image>();
+                if (img == null)
+                {
+                    img = t.gameObject.AddComponent<Image>();
+                    img.color = Color.clear;
+                    img.raycastTarget = true;
+                }
+
+                var customBtn = t.GetComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+                if (customBtn == null) customBtn = t.gameObject.AddComponent<Features.UI.Controls.Customization.CustomizableControlButton>();
+
+                var so = new SerializedObject(customBtn);
+                so.FindProperty("_controlId").stringValue = t.name;
+                so.FindProperty("_displayName").stringValue = displayName;
+                so.FindProperty("_minScale").floatValue = minScale;
+                so.FindProperty("_maxScale").floatValue = maxScale;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(customBtn);
+            }
+        }
+
+        private static void SetupAimingIndicatorsAndCancelZone(Canvas canvas, GameObject mobilePanel)
+        {
+            // A. Đảm bảo UICancelSkillZone tồn tại trong Canvas
+            var cancelZone = canvas.GetComponentInChildren<Features.UI.Controls.UICancelSkillZone>(true);
+            if (cancelZone == null)
+            {
+                GameObject cancelObj = new GameObject("Zone_CancelSkill", typeof(RectTransform), typeof(CanvasGroup), typeof(Image), typeof(Features.UI.Controls.UICancelSkillZone));
+                cancelObj.transform.SetParent(mobilePanel.transform, false);
+
+                RectTransform rect = cancelObj.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0.5f, 0.75f);
+                rect.anchorMax = new Vector2(0.5f, 0.75f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = new Vector2(160, 160);
+
+                Image bgImage = cancelObj.GetComponent<Image>();
+                bgImage.color = new Color(0.85f, 0.15f, 0.15f, 0.45f);
+
+                GameObject textObj = new GameObject("Txt_Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+                textObj.transform.SetParent(cancelObj.transform, false);
+                RectTransform textRect = textObj.GetComponent<RectTransform>();
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.sizeDelta = Vector2.zero;
+
+                TextMeshProUGUI text = textObj.GetComponent<TextMeshProUGUI>();
+                text.text = "KÉO ĐÂY\nĐỂ HỦY";
+                text.alignment = TextAlignmentOptions.Center;
+                text.fontSize = 20;
+                text.color = Color.white;
+
+                cancelZone = cancelObj.GetComponent<Features.UI.Controls.UICancelSkillZone>();
+                cancelObj.SetActive(false);
+            }
+
+            // B. Đảm bảo SkillAimIndicatorController tồn tại trong Scene
+            var aimController = Object.FindObjectOfType<Features.Combat.Aiming.SkillAimIndicatorController>();
+            if (aimController == null)
+            {
+                GameObject aimObj = new GameObject("SkillAimIndicatorController", typeof(Features.Combat.Aiming.SkillAimIndicatorController));
+                Undo.RegisterCreatedObjectUndo(aimObj, "Create SkillAimIndicatorController");
+            }
+        }
+
+        private static void WireJoystick(DynamicVirtualJoystick joystick)
+        {
+            var so = new SerializedObject(joystick);
+            RectTransform container = joystick.GetComponent<RectTransform>();
+            RectTransform handle = null;
+
+            foreach (RectTransform child in container)
+            {
+                if (child.name.ToLower().Contains("handle") || child.name.ToLower().Contains("knob") || child.name.ToLower().Contains("point"))
+                {
+                    handle = child;
+                    break;
+                }
+            }
+
+            if (handle == null && container.childCount > 0)
+            {
+                handle = container.GetChild(0) as RectTransform;
+            }
+
+            so.FindProperty("containerRect").objectReferenceValue = container;
+            so.FindProperty("handleRect").objectReferenceValue = handle;
+            
+            // Cố định Joystick tại góc dưới trái (Fixed Mode), chỉ di chuyển núm kéo (Knob/Handle)
+            var floatProp = so.FindProperty("_isFloatingJoystick");
+            if (floatProp != null) floatProp.boolValue = false;
+
+            var followProp = so.FindProperty("_dynamicFollowDrag");
+            if (followProp != null) followProp.boolValue = false;
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(joystick);
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire Joystick: {joystick.name} (Handle: {(handle != null ? handle.name : "None")}, Fixed Mode: True)");
+        }
+
+        private static void WireTouchZoneJoystick(DynamicVirtualJoystick zoneJoystick, RectTransform visualContainer)
+        {
+            var so = new SerializedObject(zoneJoystick);
+            RectTransform handle = null;
+
+            if (visualContainer != null)
+            {
+                foreach (RectTransform child in visualContainer)
+                {
+                    if (child.name.ToLower().Contains("handle") || child.name.ToLower().Contains("knob") || child.name.ToLower().Contains("point"))
+                    {
+                        handle = child;
+                        break;
+                    }
+                }
+                if (handle == null && visualContainer.childCount > 0)
+                {
+                    handle = visualContainer.GetChild(0) as RectTransform;
+                }
+            }
+
+            so.FindProperty("containerRect").objectReferenceValue = visualContainer;
+            so.FindProperty("handleRect").objectReferenceValue = handle;
+
+            var floatProp = so.FindProperty("_isFloatingJoystick");
+            if (floatProp != null) floatProp.boolValue = false;
+
+            var followProp = so.FindProperty("_dynamicFollowDrag");
+            if (followProp != null) followProp.boolValue = false;
+
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(zoneJoystick);
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire TouchZone Joystick: {zoneJoystick.name} -> Visual: {(visualContainer != null ? visualContainer.name : "None")}");
+        }
+
+        private static void WireSignatureSkill(SignatureSkillButtonView view, SignatureSkillPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            // Gán Sprite Cổ Phong mới cho Background của Nút Tuyệt Kỹ
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png");
+                if (skillBtnSprite == null) skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png");
+                if (skillBtnSprite != null)
+                {
+                    bgImg.sprite = skillBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
+            // Tìm Button
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_skillButton").objectReferenceValue = btn;
+
+            // Tìm Cooldown Image Fill (Image có ImageType = Filled)
+            Image fillImage = null;
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                    break;
+                }
+            }
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+                
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            // Tìm TextMeshProUGUI
+            TextMeshProUGUI cdText = view.GetComponentInChildren<TextMeshProUGUI>(true);
+            soView.FindProperty("_cooldownText").objectReferenceValue = cdText;
+
+            // Tìm CanvasGroup
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            // Wire Presenter
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_buttonView").objectReferenceValue = view;
+            
+            // Tìm ThuSinh Overlay nếu có trong Canvas
+            var overlay = FindObjectOfType<ThuSinhElementPickerOverlayView>();
+            if (overlay != null)
+            {
+                soPresenter.FindProperty("_elementPickerOverlayView").objectReferenceValue = overlay;
+            }
+
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire SignatureSkill: {view.name}");
+        }
+
+        private static void WireRelicSkill(RelicSkillButtonView view, RelicSkillPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            // Gán Sprite Cổ Phong mới cho Background của Nút Pháp Bảo
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite relicBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Relic.png");
+                if (relicBtnSprite != null)
+                {
+                    bgImg.sprite = relicBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_relicButton").objectReferenceValue = btn;
+
+            Image fillImage = null;
+            Image iconImage = null;
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                }
+                else if (img.name.ToLower().Contains("icon") || img.name.ToLower().Contains("relic") || img.name.ToLower().Contains("art"))
+                {
+                    iconImage = img;
+                }
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            if (iconImage != null)
+            {
+                // Nếu chưa có sprite, ẩn Image để không bị hiện khối vuông màu xám
+                if (iconImage.sprite == null)
+                {
+                    iconImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    iconImage.color = Color.white;
+                }
+                soView.FindProperty("_iconImage").objectReferenceValue = iconImage;
+            }
+
+            TextMeshProUGUI cdText = view.GetComponentInChildren<TextMeshProUGUI>(true);
+            soView.FindProperty("_cooldownText").objectReferenceValue = cdText;
+
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_buttonView").objectReferenceValue = view;
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire RelicSkill: {view.name}");
+        }
+
+        private static void WireDashButton(DashButtonView view, DashButtonPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            // Gán Sprite Cổ Phong mới cho Background của Nút Lướt
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Dash_PhiVan.png");
+                if (dashBtnSprite == null) dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png");
+                if (dashBtnSprite != null)
+                {
+                    bgImg.sprite = dashBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_dashButton").objectReferenceValue = btn;
+
+            Image fillImage = null;
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                    break;
+                }
+            }
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            TextMeshProUGUI cdText = view.GetComponentInChildren<TextMeshProUGUI>(true);
+            soView.FindProperty("_cooldownText").objectReferenceValue = cdText;
+
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_view").objectReferenceValue = view;
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire DashButton: {view.name}");
+        }
+
+        private static void WireAttackButton(AttackButtonView view, AttackButtonPresenter presenter)
+        {
+            var soView = new SerializedObject(view);
+
+            // Gán Sprite Cổ Phong mới cho Background của Nút Đánh
+            Image bgImg = view.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                Sprite atkBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Attack.png");
+                if (atkBtnSprite != null)
+                {
+                    bgImg.sprite = atkBtnSprite;
+                    bgImg.color = Color.white;
+                }
+            }
+
+            Button btn = view.GetComponent<Button>();
+            if (btn == null) btn = view.GetComponentInChildren<Button>(true);
+            soView.FindProperty("_attackButton").objectReferenceValue = btn;
+
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            Image fillImage = null;
+            Image iconImage = null;
+
+            foreach (var img in images)
+            {
+                if (img.gameObject == view.gameObject && images.Length > 1) continue;
+                if (img.type == Image.Type.Filled || img.name.ToLower().Contains("cooldown") || img.name.ToLower().Contains("fill") || img.name.ToLower().Contains("radial"))
+                {
+                    fillImage = img;
+                }
+                else if (img.name.ToLower().Contains("icon") || img.name.ToLower().Contains("weapon") || img.name.ToLower().Contains("art"))
+                {
+                    iconImage = img;
+                }
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                
+                Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+                if (circleMask != null) fillImage.sprite = circleMask;
+
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            if (fillImage != null)
+            {
+                fillImage.type = Image.Type.Filled;
+                fillImage.fillMethod = Image.FillMethod.Radial360;
+                fillImage.fillOrigin = (int)Image.Origin360.Top;
+                fillImage.fillClockwise = false;
+                soView.FindProperty("_cooldownRadialFill").objectReferenceValue = fillImage;
+            }
+
+            if (iconImage != null)
+            {
+                soView.FindProperty("_iconImage").objectReferenceValue = iconImage;
+            }
+
+            CanvasGroup cg = view.GetComponent<CanvasGroup>();
+            if (cg == null) cg = view.gameObject.AddComponent<CanvasGroup>();
+            soView.FindProperty("_canvasGroup").objectReferenceValue = cg;
+
+            soView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(view);
+
+            var soPresenter = new SerializedObject(presenter);
+            soPresenter.FindProperty("_view").objectReferenceValue = view;
+            soPresenter.ApplyModifiedProperties();
+            EditorUtility.SetDirty(presenter);
+
+            Debug.Log($"[MobileControlsSetupTool] Đã Auto-Wire AttackButton: {view.name}");
+        }
+
+        private static void CreateDefaultMobileControlsHierarchy()
+        {
+            Canvas canvas = FindObjectOfType<Canvas>();
+            if (canvas == null)
+            {
+                GameObject canvasObj = new GameObject("Canvas_Gameplay", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                canvas = canvasObj.GetComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                var s = canvasObj.GetComponent<CanvasScaler>();
+                s.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                s.referenceResolution = new Vector2(1920, 1080);
+                s.matchWidthOrHeight = 0.5f;
+            }
+
+            GameObject mobilePanel = new GameObject("Panel_MobileControls", typeof(RectTransform));
+            mobilePanel.transform.SetParent(canvas.transform, false);
+            RectTransform panelRect = mobilePanel.GetComponent<RectTransform>();
+            panelRect.anchorMin = Vector2.zero;
+            panelRect.anchorMax = Vector2.one;
+            panelRect.sizeDelta = Vector2.zero;
+
+            // 0. Safe Area Container (Phương án 1: Tránh thanh Gesture Bar đáy và viền bo cong 2 bên)
+            GameObject safeObj = new GameObject("SafeArea_ControlsContainer", typeof(RectTransform));
+            safeObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform safeRT = safeObj.GetComponent<RectTransform>();
+            safeRT.anchorMin = Vector2.zero;
+            safeRT.anchorMax = Vector2.one;
+            safeRT.offsetMin = Vector2.zero;
+            safeRT.offsetMax = Vector2.zero;
+
+            var fitter = safeObj.AddComponent<SafeAreaFitter>();
+            fitter.ConfigureEdges(left: true, right: true, top: false, bottom: true);
+
+            // 1. Joystick
+            GameObject joyObj = new GameObject("DynamicVirtualJoystick", typeof(RectTransform), typeof(Image), typeof(DynamicVirtualJoystick));
+            joyObj.transform.SetParent(safeObj.transform, false);
+            RectTransform joyRect = joyObj.GetComponent<RectTransform>();
+            joyRect.anchorMin = new Vector2(0f, 0f);
+            joyRect.anchorMax = new Vector2(0f, 0f);
+            joyRect.pivot = new Vector2(0.5f, 0.5f);
+            joyRect.anchoredPosition = new Vector2(250, 250);
+            joyRect.sizeDelta = new Vector2(240, 240);
+            Image joyBg = joyObj.GetComponent<Image>();
+            joyBg.color = Color.white;
+            Sprite joyBaseSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Base_DongSon.png");
+            if (joyBaseSprite != null) joyBg.sprite = joyBaseSprite;
+
+            GameObject handleObj = new GameObject("JoystickHandle", typeof(RectTransform), typeof(Image));
+            handleObj.transform.SetParent(joyObj.transform, false);
+            RectTransform handleRect = handleObj.GetComponent<RectTransform>();
+            handleRect.sizeDelta = new Vector2(100, 100);
+            Image handleImg = handleObj.GetComponent<Image>();
+            handleImg.color = Color.white;
+            Sprite joyKnobSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Joystick/Joystick_Knob_Taiji.png");
+            if (joyKnobSprite != null) handleImg.sprite = joyKnobSprite;
+
+            // 2. Attack Button (Nút Đánh Chính - Đỏ Chu Sa Đông Sơn)
+            GameObject attackObj = new GameObject("Btn_Attack", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(AttackButtonView), typeof(AttackButtonPresenter));
+            attackObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform attackRect = attackObj.GetComponent<RectTransform>();
+            attackRect.anchorMin = new Vector2(1f, 0f);
+            attackRect.anchorMax = new Vector2(1f, 0f);
+            attackRect.pivot = new Vector2(0.5f, 0.5f);
+            attackRect.anchoredPosition = new Vector2(-150, 150);
+            attackRect.sizeDelta = new Vector2(140, 140);
+            Image attackBg = attackObj.GetComponent<Image>();
+            attackBg.color = Color.white;
+            Sprite atkBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Attack.png");
+            if (atkBtnSprite != null) attackBg.sprite = atkBtnSprite;
+
+            GameObject attackIconObj = new GameObject("Icon_Weapon", typeof(RectTransform), typeof(Image));
+            attackIconObj.transform.SetParent(attackObj.transform, false);
+            RectTransform attackIconRect = attackIconObj.GetComponent<RectTransform>();
+            attackIconRect.anchorMin = new Vector2(0.2f, 0.2f);
+            attackIconRect.anchorMax = new Vector2(0.8f, 0.8f);
+            attackIconRect.sizeDelta = Vector2.zero;
+            Image attackIconImg = attackIconObj.GetComponent<Image>();
+            attackIconImg.color = Color.white;
+            Sprite defaultAtkSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Icon_Atk_ThuSinh_Brush.png");
+            if (defaultAtkSprite != null) attackIconImg.sprite = defaultAtkSprite;
+
+            Sprite circleMask = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Mask_Circle_Solid.png");
+
+            GameObject attackFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            attackFillObj.transform.SetParent(attackObj.transform, false);
+            RectTransform attackFillRect = attackFillObj.GetComponent<RectTransform>();
+            attackFillRect.anchorMin = Vector2.zero;
+            attackFillRect.anchorMax = Vector2.one;
+            attackFillRect.sizeDelta = Vector2.zero;
+            Image attackFillImg = attackFillObj.GetComponent<Image>();
+            if (circleMask != null) attackFillImg.sprite = circleMask;
+            attackFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            attackFillImg.type = Image.Type.Filled;
+            attackFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            // 3. Skill Button (Nút Tuyệt Kỹ Trấn Phái Bát Giác / Tím Khói Mực)
+            GameObject skillObj = new GameObject("Btn_SignatureSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(SignatureSkillButtonView), typeof(SignatureSkillPresenter));
+            skillObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform skillRect = skillObj.GetComponent<RectTransform>();
+            skillRect.anchorMin = new Vector2(1f, 0f);
+            skillRect.anchorMax = new Vector2(1f, 0f);
+            skillRect.pivot = new Vector2(0.5f, 0.5f);
+            skillRect.anchoredPosition = new Vector2(-150, 310);
+            skillRect.sizeDelta = new Vector2(110, 110);
+            Image skillBg = skillObj.GetComponent<Image>();
+            skillBg.color = Color.white;
+            Sprite skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Signature_Skill_PhanQuan.png");
+            if (skillBtnSprite == null) skillBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Skill_Base.png");
+            if (skillBtnSprite != null) skillBg.sprite = skillBtnSprite;
+
+            GameObject skillFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            skillFillObj.transform.SetParent(skillObj.transform, false);
+            RectTransform skillFillRect = skillFillObj.GetComponent<RectTransform>();
+            skillFillRect.anchorMin = Vector2.zero;
+            skillFillRect.anchorMax = Vector2.one;
+            skillFillRect.sizeDelta = Vector2.zero;
+            Image skillFillImg = skillFillObj.GetComponent<Image>();
+            if (circleMask != null) skillFillImg.sprite = circleMask;
+            skillFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            skillFillImg.type = Image.Type.Filled;
+            skillFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            GameObject skillTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+            skillTextObj.transform.SetParent(skillObj.transform, false);
+            RectTransform skillTextRect = skillTextObj.GetComponent<RectTransform>();
+            skillTextRect.anchorMin = Vector2.zero;
+            skillTextRect.anchorMax = Vector2.one;
+            skillTextRect.sizeDelta = Vector2.zero;
+            TextMeshProUGUI skillText = skillTextObj.GetComponent<TextMeshProUGUI>();
+            skillText.alignment = TextAlignmentOptions.Center;
+            skillText.fontSize = 28;
+
+            // 3b. Relic Skill Button (Nút Kỹ Năng Pháp Bảo - Hắc Thạch Lam Ngọc)
+            GameObject relicObj = new GameObject("Btn_RelicSkill", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(RelicSkillButtonView), typeof(RelicSkillPresenter));
+            relicObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform relicRect = relicObj.GetComponent<RectTransform>();
+            relicRect.anchorMin = new Vector2(1f, 0f);
+            relicRect.anchorMax = new Vector2(1f, 0f);
+            relicRect.pivot = new Vector2(0.5f, 0.5f);
+            relicRect.anchoredPosition = new Vector2(-270, 270);
+            relicRect.sizeDelta = new Vector2(95, 95);
+            Image relicBg = relicObj.GetComponent<Image>();
+            relicBg.color = Color.white;
+            Sprite relicBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Relic.png");
+            if (relicBtnSprite != null) relicBg.sprite = relicBtnSprite;
+
+            GameObject relicIconObj = new GameObject("Icon_Relic", typeof(RectTransform), typeof(Image));
+            relicIconObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicIconRect = relicIconObj.GetComponent<RectTransform>();
+            relicIconRect.anchorMin = new Vector2(0.2f, 0.2f);
+            relicIconRect.anchorMax = new Vector2(0.8f, 0.8f);
+            relicIconRect.sizeDelta = Vector2.zero;
+            Image relicIconImg = relicIconObj.GetComponent<Image>();
+            relicIconImg.color = Color.white;
+            relicIconObj.SetActive(false); // Ẩn mặc định khi chưa trang bị pháp bảo, RelicSkillPresenter sẽ tự bật khi nhặt được pháp bảo chủ động
+
+            GameObject relicFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            relicFillObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicFillRect = relicFillObj.GetComponent<RectTransform>();
+            relicFillRect.anchorMin = Vector2.zero;
+            relicFillRect.anchorMax = Vector2.one;
+            relicFillRect.sizeDelta = Vector2.zero;
+            Image relicFillImg = relicFillObj.GetComponent<Image>();
+            if (circleMask != null) relicFillImg.sprite = circleMask;
+            relicFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            relicFillImg.type = Image.Type.Filled;
+            relicFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            GameObject relicTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+            relicTextObj.transform.SetParent(relicObj.transform, false);
+            RectTransform relicTextRect = relicTextObj.GetComponent<RectTransform>();
+            relicTextRect.anchorMin = Vector2.zero;
+            relicTextRect.anchorMax = Vector2.one;
+            relicTextRect.sizeDelta = Vector2.zero;
+            TextMeshProUGUI relicText = relicTextObj.GetComponent<TextMeshProUGUI>();
+            relicText.alignment = TextAlignmentOptions.Center;
+            relicText.fontSize = 24;
+
+            // 4. Dash Button (Nút Lướt Phi Vân)
+            GameObject dashObj = new GameObject("Btn_Dash", typeof(RectTransform), typeof(Image), typeof(Button), typeof(DashButtonView), typeof(DashButtonPresenter));
+            dashObj.transform.SetParent(mobilePanel.transform, false);
+            RectTransform dashRect = dashObj.GetComponent<RectTransform>();
+            dashRect.anchorMin = new Vector2(1f, 0f);
+            dashRect.anchorMax = new Vector2(1f, 0f);
+            dashRect.pivot = new Vector2(0.5f, 0.5f);
+            dashRect.anchoredPosition = new Vector2(-310, 150);
+            dashRect.sizeDelta = new Vector2(90, 90);
+            Image dashBg = dashObj.GetComponent<Image>();
+            dashBg.color = Color.white;
+            Sprite dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Skills/Btn_Dash_PhiVan.png");
+            if (dashBtnSprite == null) dashBtnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_Circle_Dash_Base.png");
+            if (dashBtnSprite != null) dashBg.sprite = dashBtnSprite;
+
+            GameObject dashFillObj = new GameObject("CooldownFill", typeof(RectTransform), typeof(Image));
+            dashFillObj.transform.SetParent(dashObj.transform, false);
+            RectTransform dashFillRect = dashFillObj.GetComponent<RectTransform>();
+            dashFillRect.anchorMin = Vector2.zero;
+            dashFillRect.anchorMax = Vector2.one;
+            dashFillRect.sizeDelta = Vector2.zero;
+            Image dashFillImg = dashFillObj.GetComponent<Image>();
+            if (circleMask != null) dashFillImg.sprite = circleMask;
+            dashFillImg.color = new Color(0f, 0f, 0f, 0.65f);
+            dashFillImg.type = Image.Type.Filled;
+            dashFillImg.fillMethod = Image.FillMethod.Radial360;
+
+            GameObject dashTextObj = new GameObject("Txt_Cooldown", typeof(RectTransform), typeof(TextMeshProUGUI));
+            dashTextObj.transform.SetParent(dashObj.transform, false);
+            RectTransform dashTextRect = dashTextObj.GetComponent<RectTransform>();
+            dashTextRect.anchorMin = Vector2.zero;
+            dashTextRect.anchorMax = Vector2.one;
+            dashTextRect.sizeDelta = Vector2.zero;
+            TextMeshProUGUI dashText = dashTextObj.GetComponent<TextMeshProUGUI>();
+            dashText.alignment = TextAlignmentOptions.Center;
+            dashText.fontSize = 24;
+
+            SetupAndWireControlsInScene();
+        }
+
+        private static Transform FindChildRecursive(Transform parent, string nameContains)
+        {
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform child = parent.GetChild(i);
+                if (child.name.ToLower().Contains(nameContains.ToLower()))
+                {
+                    return child;
+                }
+                Transform found = FindChildRecursive(child, nameContains);
+                if (found != null) return found;
+            }
+            return null;
+        }
+    }
+}

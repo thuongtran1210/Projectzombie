@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace ProjectZombie.Editor.UI
         private int atlasPadding = 4;
         private bool enableTightPacking = false; // Luôn false cho UI 9-slice để không bị lỗi stretch viền
 
-        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/4. Quản Lý Sprite Atlas & Sao Lưu UI", priority = 44)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/9. Quản Lý Sprite Atlas & Sao Lưu UI", priority = 170)]
         public static void ShowWindow()
         {
             var window = GetWindow<SpriteAtlasAndBackupTool>("UI Atlas & Backup");

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -15,13 +15,13 @@ namespace ProjectZombie.Editor.UI
     /// </summary>
     public static class UIRaycastOptimizer
     {
-        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/1. Tắt Raycast Target Toàn Bộ UI Prefabs", priority = 41)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/1. Tắt Raycast Target Toàn Bộ UI Prefabs", priority = 160)]
         public static void OptimizeRaycastsAllPrefabs()
         {
             OptimizeAllPrefabs();
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/Tối Ưu & Tiện Ích (Optimization)/2. Tắt Raycast Target UI (Scene Hiện Tại)", priority = 42)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/2. Tắt Raycast Target UI (Scene Hiện Tại)", priority = 161)]
         public static void OptimizeRaycastsActiveScene()
         {
             OptimizeActiveScene();

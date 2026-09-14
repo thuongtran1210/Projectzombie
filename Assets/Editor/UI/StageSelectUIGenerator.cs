@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +16,7 @@ namespace ProjectZombie.Editor.UI
     {
         private const string PREFAB_PATH = "Assets/_Prefabs/UI/StageSelect_Screen.prefab";
 
-        [MenuItem("Tools/ProjectZombie/UI/Generate Stage Select Screen", priority = 150)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/11. Generate Stage Select Screen", priority = 114)]
         public static void GenerateStageSelectUI()
         {
             var vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/NotoSerif-Bold SDF.asset")

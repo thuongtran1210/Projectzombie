@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -11,7 +11,7 @@ namespace ProjectZombie.Editor.UI
 {
     public static class MetaUIHierarchyCleaner
     {
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/0. Dọn Dẹp & Đồng Bộ Canvas_MetaMenu (Clean & Fix All)", priority = 0)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/0. Dọn Dẹp & Đồng Bộ Canvas_MetaMenu", priority = 100)]
         public static void CleanAndSyncMetaMenu()
         {
             var metaCanvasObj = GameObject.Find("Canvas_MetaMenu");

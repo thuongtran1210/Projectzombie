@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
@@ -12,8 +12,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class EpicWaveTransitionBannerSetupTool
     {
-        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2.1. Thiết Lập Đại Banner Chuyển Wave (Giữa Màn Hình)", priority = 23)]
-        [MenuItem("ProjectZombie/UI/2.1. Thiết Lập Đại Banner Chuyển Wave (Giữa Màn Hình)", priority = 23)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/4. Thiết Lập Banner Chuyển Wave", priority = 124)]
         public static void SetupEpicWaveTransitionBannerOnly()
         {
             // 1. Tìm Canvas_Gameplay trực tiếp từ Scene

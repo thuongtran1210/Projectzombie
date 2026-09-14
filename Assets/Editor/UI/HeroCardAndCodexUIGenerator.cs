@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Editor.UI;
@@ -12,7 +12,7 @@ namespace ProjectZombie.Editor.Tools
     /// </summary>
     public static class HeroCardAndCodexUIGenerator
     {
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Tạo Mới UI Thẻ Tướng & Bách Bảo Các (Hero Cards & Codex)", priority = 10)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/9. Tạo UI Thẻ Tướng & Bách Bảo Các (Hero Cards & Codex)", priority = 110)]
         public static void GenerateAllHeroCardAndCodexUIs()
         {
             Debug.Log("<color=#00FFFF>[HeroCardAndCodexUIGenerator]</color> Bắt đầu quy trình tạo mới & đồng bộ UI Thẻ Tướng...");
@@ -43,7 +43,7 @@ namespace ProjectZombie.Editor.Tools
             );
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Tạo Riêng Màn Hình Codex Thẻ Tướng (Codex Only)", priority = 11)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/9.1 Tạo Riêng Màn Hình Codex Thẻ Tướng (Codex Only)", priority = 111)]
         public static void GenerateCodexOnly()
         {
             CardCodexUIGenerator.GenerateCardCodexPrefab();

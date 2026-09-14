@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
@@ -10,7 +10,6 @@ namespace ProjectZombie.Editor.UI
 {
     public static class PlayerStatsMenuUIGenerator
     {
-        [MenuItem("ProjectZombie/UI/Generate In-Game Character Stats Menu")]
         public static GameObject GeneratePlayerStatsMenuPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -653,7 +652,7 @@ namespace ProjectZombie.Editor.UI
             return btnObj;
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/4. Bảng Thông Số & Tạm Dừng (Pause & Stats Menu)", priority = 24)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/5. Bảng Thông Số & Tạm Dừng (Pause & Stats Menu)", priority = 125)]
         public static void RebuildPlayerStatsMenuUI()
         {
             GameObject prefab = GeneratePlayerStatsMenuPrefab();

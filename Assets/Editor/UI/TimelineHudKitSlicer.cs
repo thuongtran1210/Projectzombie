@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class TimelineHudKitSlicer
     {
-        [MenuItem("Tools/Vong Xuyen/Slice & Integrate Timeline HUD Kit", priority = 25)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/7. Slice & Integrate Timeline HUD Kit", priority = 127)]
         public static void SliceAndIntegrateHudKit()
         {
             string texturePath = "Assets/Art/UI/HUD/Timeline_HUD_Kit.png";

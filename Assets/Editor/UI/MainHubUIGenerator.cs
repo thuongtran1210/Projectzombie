@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +24,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorDragonGold = new Color(0.98f, 0.75f, 0.25f, 1f);
         private static readonly Color ColorMutedText = new Color(0.85f, 0.82f, 0.78f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/1. ⚡ Đồng Bộ Toàn Bộ Menu Sảnh Vọng Xuyên (1-Click)", priority = 1)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/1. ⚡ Đồng Bộ Toàn Bộ Menu Sảnh (1-Click)", priority = 102)]
         public static void RebuildAllMenuUI()
         {
             var previewStage = Object.FindAnyObjectByType<CharacterPreviewStage>();
@@ -46,7 +46,7 @@ namespace ProjectZombie.Editor.UI
             Debug.Log("<color=#00FF88>[MainHubUIGenerator]</color> ĐÃ ĐỒNG BỘ VÀ TÁI TẠO TOÀN BỘ SẢNH CHÍNH, TẢI TÀI NGUYÊN DLC, CHỌN TƯỚNG, TÀNG BẢO CÁC, MIẾU TỨ BẤT TỬ, THƯ VIỆN THẦN THẺ (CODEX), CÀI ĐẶT & GAME OVER THÀNH CÔNG 100%!");
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/1. Tạo Prefab Sảnh Chính (Main Hub UI)", priority = 11)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/2. Tạo Prefab Sảnh Chính (Main Hub UI)", priority = 103)]
         public static void GenerateMainHubUI()
         {
             GenerateMainHubPrefab();

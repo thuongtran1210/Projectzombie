@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
@@ -15,7 +15,7 @@ namespace ProjectZombie.Editor.UI
         private const string SPRITES_PATH = "Assets/Art/UI/VongXuyen/";
         private const string PREFAB_OUTPUT_PATH = "Assets/_Prefabs/UI/MobileControlsCustomizerUI.prefab";
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Generate Mobile Controls Customizer UI", false, 110)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/3. Điều Khiển Mobile/4. Generate Customizer UI", false, 143)]
         public static void GenerateCustomizerUI()
         {
             // 1. Tải Resources

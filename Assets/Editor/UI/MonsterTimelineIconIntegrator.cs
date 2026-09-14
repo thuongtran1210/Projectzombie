@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class MonsterTimelineIconIntegrator
     {
-        [MenuItem("Tools/Vong Xuyen/Integrate Monster Icons into Level 1 Timeline", priority = 20)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/8. Integrate Monster Icons into Level 1 Timeline", priority = 128)]
         public static void IntegrateMonsterIcons()
         {
             string texturePath = "Assets/Art/UI/Icons/Monsters/Level1_MonsterIcons_Sheet.png";

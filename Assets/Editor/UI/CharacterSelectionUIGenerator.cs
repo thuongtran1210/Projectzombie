@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +15,7 @@ namespace ProjectZombie.Editor.UI
     /// </summary>
     public static class CharacterSelectionUIGenerator
     {
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/2. Tạo Màn Hình Chọn Tướng (Character Selection UI)", priority = 12)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/3. Tạo Màn Hình Chọn Tướng (Character Selection UI)", priority = 104)]
         public static void GenerateCharacterSelectionPrefab()
         {
             // Tắt Unity Remote kiểm tra adb khi không kết nối thiết bị để tránh CommandInvokationFailure

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
@@ -17,13 +17,13 @@ namespace ProjectZombie.Editor.UI
         private const string PREFAB_OUTPUT_FOLDER = "Assets/_Prefabs/UI";
         private const string RESOURCES_OUTPUT_FOLDER = "Assets/Resources/UI";
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/6. Tạo Modal Tải Tài Nguyên (Resource Download Modal UI)", priority = 16)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/7. Tạo Modal Tải Tài Nguyên (Resource Download Modal UI)", priority = 108)]
         public static void RebuildResourceDownloadUI()
         {
             GenerateResourceDownloadPrefab();
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/Gắn Nút Tải Tài Nguyên Vào Header (Chỉ Làm Đúng 1 Việc)", priority = 17)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/8. Gắn Nút Tải Tài Nguyên Vào Header", priority = 109)]
         public static void InjectOnlyHeaderDownloadButton()
         {
             InjectButtonToActiveSceneHeader();

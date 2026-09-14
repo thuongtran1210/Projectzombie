@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
@@ -16,7 +16,7 @@ namespace ProjectZombie.Editor.UI
         private const string SPRITES_PATH = "Assets/Art/UI/VongXuyen/";
         private const string PREFAB_OUTPUT_PATH = "Assets/_Prefabs/UI/SettingsModalUI.prefab";
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/5. Tạo Modal Cài Đặt (Settings Modal UI)", priority = 15)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/6. Tạo Modal Cài Đặt (Settings Modal UI)", priority = 107)]
         public static void RebuildSettingsUI()
         {
             GenerateSettingsModal();

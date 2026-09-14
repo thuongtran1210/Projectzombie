@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
@@ -16,8 +16,7 @@ namespace ProjectZombie.Editor.UI
     {
         private const string PREFAB_PATH = "Assets/_Prefabs/UI/LoadingScreenUI.prefab";
 
-        [MenuItem("ProjectZombie/UI/Setup Loading Screen UI in Scene", priority = 10)]
-        [MenuItem("Tools/ProjectZombie/Setup Loading Screen UI", priority = 10)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/0. Setup Loading Screen UI", priority = 101)]
         public static void SetupLoadingScreen()
         {
             // 1. Tạo Prefab LoadingScreenUI

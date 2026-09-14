@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +17,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorBgOverlay = new Color(0.04f, 0.03f, 0.06f, 0.90f);
         private static readonly Color ColorBambooFrame = new Color(0.42f, 0.28f, 0.16f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/5. Tạo Thư Viện Thần Thẻ (Card Codex UI)", priority = 15)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/10. Tạo Thư Viện Thần Thẻ (Card Codex UI)", priority = 112)]
         public static GameObject GenerateCardCodexPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
@@ -449,7 +449,7 @@ namespace ProjectZombie.Editor.UI
             return tmp;
         }
 
-        [MenuItem("Tools/ProjectZombie/UI/⚡ Cập Nhật Panel_CardCodex Từ Scene Sang Prefab Gốc", priority = 16)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/10.1 Cập Nhật Panel_CardCodex Từ Scene Sang Prefab Gốc", priority = 113)]
         public static void SaveSceneCardCodexToPrefab()
         {
             GameObject sceneObj = GameObject.Find("Panel_CardCodex");

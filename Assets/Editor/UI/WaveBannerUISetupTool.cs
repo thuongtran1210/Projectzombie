@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
@@ -11,7 +11,7 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class WaveBannerUISetupTool
     {
-        [MenuItem("Tools/ProjectZombie/UI/Trong Trận (In-Game Gameplay)/2.2. Thiết Lập Thẻ Tre & Thanh Tiến Trình (Top-Center HUD)", priority = 24)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/2. Trong Trận (In-Game)/3. Thiết Lập Thẻ Tre & Top Progress HUD", priority = 123)]
         public static void SetupWaveBannerUI()
         {
             // 1. Tìm RunHUD Root

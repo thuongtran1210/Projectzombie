@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +26,7 @@ namespace ProjectZombie.Editor.UI
         private static readonly Color ColorJadeCyan = new Color(0.25f, 0.85f, 0.82f, 1f);
         private static readonly Color ColorMutedText = new Color(0.80f, 0.80f, 0.85f, 1f);
 
-        [MenuItem("Tools/ProjectZombie/UI/Sảnh Chính (Meta Menu)/3. Tạo Kho Pháp Bảo (Weapon Loadout UI)", priority = 13)]
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/4. Tạo Kho Pháp Bảo (Weapon Loadout UI)", priority = 105)]
         public static void GenerateWeaponLoadoutPrefab()
         {
             string prefabFolder = "Assets/_Prefabs/UI";
