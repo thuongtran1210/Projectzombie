@@ -40,6 +40,8 @@ namespace ProjectZombie.Features.UI
         [Tooltip("Database nhân vật chuẩn hóa dạng kéo thả từng file CharacterDataSO")]
         [SerializeField] private CharacterDatabaseSO _characterDatabase;
 
+        public static CharacterSelectionPresenter Instance { get; private set; }
+
         public event System.Action<GameObject> OnCharacterSelected;
 
         private CharacterInfo[] _characters;
@@ -47,6 +49,7 @@ namespace ProjectZombie.Features.UI
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null)
             {
                 _view = GetComponent<CharacterSelectionView>();
@@ -324,7 +327,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Cập nhật Sảnh Hoàng Tuyền
-            var mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
+            var mainHubPresenter = MainHubPresenter.Instance;
             if (mainHubPresenter != null)
             {
                 mainHubPresenter.RefreshHubState();

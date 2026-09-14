@@ -9,6 +9,8 @@ namespace ProjectZombie.Features.UI.Controls.Customization
     /// </summary>
     public class MobileControlsCustomizerPresenter : MonoBehaviour
     {
+        public static MobileControlsCustomizerPresenter Instance { get; private set; }
+
         [SerializeField] private MobileControlsCustomizerView _view;
 
         private CustomizableControlButton _currentSelectedControl;
@@ -19,6 +21,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null) _view = GetComponent<MobileControlsCustomizerView>();
         }
 
@@ -36,6 +39,8 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
+
             if (_view != null)
             {
                 _view.OnScaleChanged -= HandleScaleChanged;
@@ -64,7 +69,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
             _backupBeforeEdit.Clear();
             var controls = MobileControlsLayoutManager.Instance != null 
                 ? MobileControlsLayoutManager.Instance.RegisteredControls 
-                : FindObjectsOfType<CustomizableControlButton>(true);
+                : System.Array.Empty<CustomizableControlButton>();
 
             foreach (var c in controls)
             {
@@ -106,7 +111,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
             var controls = MobileControlsLayoutManager.Instance != null 
                 ? MobileControlsLayoutManager.Instance.RegisteredControls 
-                : FindObjectsOfType<CustomizableControlButton>(true);
+                : System.Array.Empty<CustomizableControlButton>();
 
             foreach (var c in controls)
             {

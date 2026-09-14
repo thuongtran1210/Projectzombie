@@ -39,6 +39,13 @@ namespace ProjectZombie.Features.UI
             RefreshUIState();
         }
 
+        public static SignatureSkillPresenter Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
         private void Start()
         {
             if (_skillManager == null)
@@ -50,7 +57,7 @@ namespace ProjectZombie.Features.UI
                 }
                 else
                 {
-                    var player = GameObject.FindGameObjectWithTag("Player");
+                    var player = PlayerProvider.PlayerGameObject;
                     if (player != null)
                     {
                         Bind(player.GetComponent<SignatureSkillManager>());
@@ -77,6 +84,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             if (_skillManager != null)
             {
                 _skillManager.OnCooldownUpdated -= OnCooldownUpdated;

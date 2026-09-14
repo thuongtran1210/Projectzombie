@@ -20,7 +20,19 @@ namespace Core.Audio
         [Header("Phase Audio Configurations")]
         [SerializeField] private PhaseAudioData[] _phaseAudioList;
 
+        public static PhaseAudioController Instance { get; private set; }
+
         private int _currentPhaseIndex = -1;
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 
         public void ForceInitialPhaseAudio()
         {

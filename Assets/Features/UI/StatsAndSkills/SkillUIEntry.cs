@@ -31,7 +31,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             
             _skillName = name;
             _skillDescription = description;
-            _tooltip = tooltip != null ? tooltip : Object.FindAnyObjectByType<TooltipUI>();
+            _tooltip = tooltip != null ? tooltip : TooltipUI.Instance;
         }
 
         public void OnPointerEnter(PointerEventData eventData)

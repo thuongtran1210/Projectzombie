@@ -69,7 +69,7 @@ namespace ProjectZombie.Features.MatchFlow
                 await UpgradeManager.Instance.AutoPopulateUpgradesIfEmptyAsync();
             }
 
-            var phaseAudio = UnityEngine.Object.FindObjectOfType<global::Core.Audio.PhaseAudioController>();
+            var phaseAudio = global::Core.Audio.PhaseAudioController.Instance;
             if (phaseAudio != null)
             {
                 phaseAudio.ForceInitialPhaseAudio();
@@ -106,7 +106,7 @@ namespace ProjectZombie.Features.MatchFlow
                     if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                     {
                         _currentMapInstance = handle.Result;
-                        SpawnManager.Instance?.RefreshMapReferences();
+                        SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
                         loadedFromAddressables = true;
                     }
                 }
@@ -124,7 +124,7 @@ namespace ProjectZombie.Features.MatchFlow
                 {
                     _currentMapInstance = UnityEngine.Object.Instantiate(mapPrefab);
                     _currentMapInstance.name = stage.mapPrefabAddress;
-                    SpawnManager.Instance?.RefreshMapReferences();
+                    SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
                     Debug.Log($"<color=#00FF88>[MatchFlowOrchestrator] Đã nạp thành công Map '{stage.mapPrefabAddress}' từ Resources!</color>");
                 }
                 else
@@ -150,16 +150,6 @@ namespace ProjectZombie.Features.MatchFlow
                     UnityEngine.Object.Destroy(_currentMapInstance);
                 }
                 _currentMapInstance = null;
-            }
-
-            // Dọn dẹp các instance tàn dư nếu có
-            string[] mapNames = new string[] { "Environment_SanDinhLangCo", "Map_SanDinhLangCo", "Map_BambooForest", "Map_AncientCitadel", "Map_CinnabarSwamp" };
-            foreach (var mName in mapNames)
-            {
-                var existing = GameObject.Find(mName);
-                if (existing != null) UnityEngine.Object.Destroy(existing);
-                var existingClone = GameObject.Find(mName + "(Clone)");
-                if (existingClone != null) UnityEngine.Object.Destroy(existingClone);
             }
         }
     }

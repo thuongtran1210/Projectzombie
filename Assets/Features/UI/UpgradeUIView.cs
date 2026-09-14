@@ -26,6 +26,9 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Button _skipButton;
         [SerializeField] private TextMeshProUGUI _rerollCountText;
 
+        [Header("Controls Cache")]
+        [SerializeField] private GameObject _cachedMobileControlsPanel;
+
         private readonly List<UpgradeCardView> _cardPool = new List<UpgradeCardView>();
         private System.Action _onRerollClicked;
         private System.Action _onSkipClicked;
@@ -287,10 +290,9 @@ namespace ProjectZombie.Features.UI
                 {
                     GameplayUIManager.Instance.SetMobileControlsActive(false);
                 }
-                else
+                else if (_cachedMobileControlsPanel != null)
                 {
-                    var mobileControls = GameObject.Find("Panel_MobileControls");
-                    if (mobileControls != null) mobileControls.SetActive(false);
+                    _cachedMobileControlsPanel.SetActive(false);
                 }
 
                 // Thu hồi mọi chỉ dấu đang vẽ trên màn hình
@@ -307,10 +309,9 @@ namespace ProjectZombie.Features.UI
                     {
                         GameplayUIManager.Instance.SetMobileControlsActive(true);
                     }
-                    else
+                    else if (_cachedMobileControlsPanel != null)
                     {
-                        var mobileControls = GameObject.Find("Panel_MobileControls");
-                        if (mobileControls != null) mobileControls.SetActive(true);
+                        _cachedMobileControlsPanel.SetActive(true);
                     }
                 }
             }

@@ -25,12 +25,15 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private int _defaultChoiceCount = 3;
         [SerializeField] private int _maxRerollsPerRun = 3;
 
-        private int _currentRerolls;
         private bool _isConstructed = false;
+        private int _currentRerolls;
         private readonly IUpgradeStatFormatter _statFormatter = new UpgradeStatFormatter();
+
+        public static UpgradeUIPresenter Instance { get; private set; }
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             _currentRerolls = CalculateMaxRerolls();
             if (_view == null)
             {
@@ -127,6 +130,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             UnsubscribeEvents();
 
             if (GameStateManager.Instance != null)

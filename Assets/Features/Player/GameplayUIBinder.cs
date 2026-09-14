@@ -52,6 +52,18 @@ namespace ProjectZombie.Features.Player
 
         private void EnsureReferences()
         {
+            if (_runHUDPresenter == null) _runHUDPresenter = RunHUDPresenter.Instance;
+            if (_overheadStatusPresenter == null) _overheadStatusPresenter = OverheadStatusPresenter.Instance;
+            if (_playerInfoUIPresenter == null) _playerInfoUIPresenter = PlayerInfoUIPresenter.Instance;
+            if (_upgradeUIPresenter == null) _upgradeUIPresenter = UpgradeUIPresenter.Instance;
+            if (_gameOverScreenPresenter == null) _gameOverScreenPresenter = GameOverScreenPresenter.Instance;
+            if (_characterGaugeWidgetPresenter == null) _characterGaugeWidgetPresenter = CharacterGaugeWidgetPresenter.Instance;
+            if (_signatureSkillPresenter == null) _signatureSkillPresenter = SignatureSkillPresenter.Instance;
+            if (_relicSkillPresenter == null) _relicSkillPresenter = RelicSkillPresenter.Instance;
+            if (_attackButtonPresenter == null) _attackButtonPresenter = AttackButtonPresenter.Instance;
+            if (_dashButtonPresenter == null) _dashButtonPresenter = DashButtonPresenter.Instance;
+
+#if UNITY_EDITOR
             if (_runHUDPresenter == null) _runHUDPresenter = UnityEngine.Object.FindObjectOfType<RunHUDPresenter>(true);
             if (_overheadStatusPresenter == null) _overheadStatusPresenter = UnityEngine.Object.FindObjectOfType<OverheadStatusPresenter>(true);
             if (_playerInfoUIPresenter == null) _playerInfoUIPresenter = UnityEngine.Object.FindObjectOfType<PlayerInfoUIPresenter>(true);
@@ -62,6 +74,7 @@ namespace ProjectZombie.Features.Player
             if (_relicSkillPresenter == null) _relicSkillPresenter = UnityEngine.Object.FindObjectOfType<RelicSkillPresenter>(true);
             if (_attackButtonPresenter == null) _attackButtonPresenter = UnityEngine.Object.FindObjectOfType<AttackButtonPresenter>(true);
             if (_dashButtonPresenter == null) _dashButtonPresenter = UnityEngine.Object.FindObjectOfType<DashButtonPresenter>(true);
+#endif
         }
 
         public void BindAll(PlayerContext context)

@@ -7,6 +7,11 @@ namespace ProjectZombie.EditorTools.BuildSync
     {
         public static readonly List<SyncRule> DirectoryRules = new List<SyncRule>
         {
+            // Các nhóm tài nguyên lớn đã có trong Addressables (Local_Packed hoặc Remote_DLC)
+            // Không copy sang Resources để tránh nhân đôi dung lượng file APK
+            new SyncRule("Bản Đồ Màn Chơi (Map Prefabs)", "Assets/_Prefabs/Maps", "Assets/Resources/Maps", "*.prefab", null, isAddressableManaged: true),
+            
+            // Các nhóm tài nguyên offline phục vụ khởi động và gameplay
             new SyncRule("Thẻ Nâng Cấp (Upgrades)", "Assets/_Data/Upgrades", "Assets/Resources/Upgrades", "*.asset"),
             new SyncRule("Âm thanh (Audios)", "Assets/_Data/Audios", "Assets/Resources/Audios", "*.*", new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" }),
             new SyncRule("Pháp Bảo (Weapons)", "Assets/_Data/Weapons", "Assets/Resources/Weapons", "*.asset"),
@@ -18,7 +23,6 @@ namespace ProjectZombie.EditorTools.BuildSync
             new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png"),
             new SyncRule("UI Gacha Sprites & Art", "Assets/Art/UI/Gacha", "Assets/Resources/UI/Gacha", "*.*", new[] { ".png", ".jpg", ".asset" }),
             new SyncRule("Gacha Banner Configs", "Assets/_Data/Gacha", "Assets/Resources/Gacha", "*.asset"),
-            new SyncRule("Bản Đồ Màn Chơi (Map Prefabs)", "Assets/_Prefabs/Maps", "Assets/Resources/Maps", "*.prefab"),
             new SyncRule("Tilemap Assets (Tiles)", "Assets/Art/Tilemaps/Tiles", "Assets/Resources/Tiles", "*.asset")
         };
 

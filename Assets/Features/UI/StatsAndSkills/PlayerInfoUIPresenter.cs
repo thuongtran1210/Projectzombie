@@ -32,10 +32,14 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         private bool _isMenuOpen = false;
         private bool _isConstructed = false;
 
+        public static PlayerInfoUIPresenter Instance { get; private set; }
+
         public bool IsMenuOpen => _isMenuOpen;
+        public PlayerStatsMenuUIView StatsMenuView => _statsMenuView;
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             _inputActions = new PlayerInputActions();
             _inputActions.UI.TogglePauseMenu.performed += OnToggleMenuPressed;
 
@@ -113,6 +117,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             UnsubscribeEvents();
             if (_inputActions != null)
             {
@@ -221,14 +226,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (!_isConstructed || _playerStats == null)
             {
                 var playerObj = PlayerProvider.PlayerGameObject 
-                    ?? (Player.PlayerController.Instance != null ? Player.PlayerController.Instance.gameObject : null) 
-                    ?? GameObject.FindWithTag("Player");
-
-                if (playerObj == null)
-                {
-                    var foundStats = FindFirstObjectByType<PlayerStats>();
-                    if (foundStats != null) playerObj = foundStats.gameObject;
-                }
+                    ?? (Player.PlayerController.Instance != null ? Player.PlayerController.Instance.gameObject : null);
 
                 if (playerObj != null)
                 {
@@ -286,7 +284,13 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             var canvas = GetComponentInParent<Canvas>();
             Transform canvasTransform = canvas != null ? canvas.transform : transform.root;
 
-            var settingsPresenter = FindObjectOfType<SettingsModalPresenter>(true);
+            var settingsPresenter = SettingsModalPresenter.Instance;
+            if (settingsPresenter == null)
+            {
+#if UNITY_EDITOR
+                settingsPresenter = FindObjectOfType<SettingsModalPresenter>(true);
+#endif
+            }
             if (settingsPresenter == null)
             {
                 // Thử tìm trong Resources / Prefab

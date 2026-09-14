@@ -20,8 +20,11 @@ namespace ProjectZombie.Features.UI
         private float _bufferedAttackTime;
         private const float TAP_BUFFER_WINDOW = 0.18f;
 
+        public static AttackButtonPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null) _view = GetComponent<AttackButtonView>();
         }
 
@@ -41,6 +44,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             if (_view != null)
             {
                 _view.OnButtonPressed -= OnAttackButtonPressed;

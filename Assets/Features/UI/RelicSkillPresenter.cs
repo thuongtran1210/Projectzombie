@@ -36,6 +36,13 @@ namespace ProjectZombie.Features.UI
             RefreshRelicBinding();
         }
 
+        public static RelicSkillPresenter Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+        }
+
         private void Start()
         {
             if (_buttonView == null)
@@ -61,7 +68,7 @@ namespace ProjectZombie.Features.UI
                 }
                 else
                 {
-                    var player = GameObject.FindGameObjectWithTag("Player");
+                    var player = PlayerProvider.PlayerGameObject;
                     if (player != null)
                     {
                         Bind(player.GetComponent<WeaponManager>());
@@ -76,6 +83,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             if (_weaponManager != null)
             {
                 _weaponManager.OnWeaponsChanged -= HandleWeaponsChanged;

@@ -66,9 +66,11 @@ namespace ProjectZombie.Features.UI.HUD
             }
         }
 
-        // ====================================================================
+        public static RunHUDPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null)
             {
                 _view = GetComponent<RunHUDView>();
@@ -123,7 +125,7 @@ namespace ProjectZombie.Features.UI.HUD
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayUIClick();
-            var presenter = FindObjectOfType<ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter>(true);
+            var presenter = ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter.Instance;
             if (presenter == null)
             {
                 // Fallback cứu hộ: Tự động tải từ Resources nếu Scene chưa có
@@ -157,6 +159,7 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             UnsubscribeEvents();
 
             if (RunStatsTracker.Instance != null)

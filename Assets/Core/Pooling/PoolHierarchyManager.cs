@@ -16,12 +16,8 @@ namespace ProjectZombie.Core.Pooling
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<PoolHierarchyManager>();
-                    if (_instance == null)
-                    {
-                        var go = new GameObject("--- [POOL_HIERARCHY_ROOT] ---");
-                        _instance = go.AddComponent<PoolHierarchyManager>();
-                    }
+                    var go = new GameObject("--- [POOL_HIERARCHY_ROOT] ---");
+                    _instance = go.AddComponent<PoolHierarchyManager>();
                 }
                 return _instance;
             }

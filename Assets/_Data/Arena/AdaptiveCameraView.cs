@@ -49,7 +49,10 @@ namespace ProjectZombie.Features.Arena
         {
             if (_virtualCamera == null)
             {
-                _virtualCamera = GetComponent<CinemachineVirtualCamera>() ?? FindObjectOfType<CinemachineVirtualCamera>(true);
+                _virtualCamera = GetComponent<CinemachineVirtualCamera>();
+#if UNITY_EDITOR
+                if (_virtualCamera == null) _virtualCamera = FindObjectOfType<CinemachineVirtualCamera>(true);
+#endif
             }
 
             if (_targetCamera == null)

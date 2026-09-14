@@ -327,7 +327,7 @@ namespace ProjectZombie.Features.UI
 
         private void RefreshCurrency()
         {
-            var curMgr = RelicInventoryManager.Instance != null ? MetaCurrencyManager.Instance : FindObjectOfType<MetaCurrencyManager>();
+            var curMgr = MetaCurrencyManager.Instance;
             int coins = curMgr != null ? curMgr.TotalCurrency : 0;
             if (_view != null) _view.SetCoTienBalance($"<color=#FFD700>{coins:N0}</color>");
         }
@@ -353,7 +353,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_cachedWeapons.Count > 0)
                 {
-                    var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
+                    var relicMgr = RelicInventoryManager.Instance;
 
                     for (int i = 0; i < _cachedWeapons.Count; i++)
                     {
@@ -405,7 +405,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_cachedHeroes.Count > 0)
                 {
-                    var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+                    var heroMgr = CharacterProgressionManager.Instance;
 
                     for (int i = 0; i < _cachedHeroes.Count; i++)
                     {
@@ -498,7 +498,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_currentTab == CodexTabType.RelicFusion)
             {
-                var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
+                var relicMgr = RelicInventoryManager.Instance;
                 foreach (var kvp in _relicSlotViewMap)
                 {
                     var weapon = kvp.Key;
@@ -514,7 +514,7 @@ namespace ProjectZombie.Features.UI
             }
             else if (_currentTab == CodexTabType.HeroCards)
             {
-                var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+                var heroMgr = CharacterProgressionManager.Instance;
                 foreach (var kvp in _heroSlotViewMap)
                 {
                     var hero = kvp.Key;
@@ -549,7 +549,7 @@ namespace ProjectZombie.Features.UI
 
             UpdateSelectionVisuals();
 
-            var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
+            var relicMgr = RelicInventoryManager.Instance;
             int star = relicMgr != null ? relicMgr.GetRelicStarLevel(weapon.weaponId) : 0;
             int shards = relicMgr != null ? relicMgr.GetRelicShardCount(weapon.weaponId) : 0;
             var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
@@ -593,7 +593,7 @@ namespace ProjectZombie.Features.UI
 
             UpdateSelectionVisuals();
 
-            var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+            var heroMgr = CharacterProgressionManager.Instance;
             int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
             int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
             var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
@@ -651,7 +651,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_selectedRelic == null) return;
 
-                var relicMgr = RelicInventoryManager.Instance ?? FindObjectOfType<RelicInventoryManager>();
+                var relicMgr = RelicInventoryManager.Instance;
                 if (relicMgr == null) return;
 
                 if (relicMgr.TryFuseRelic(_selectedRelic.weaponId))
@@ -670,7 +670,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_selectedHero == null) return;
 
-                var heroMgr = CharacterProgressionManager.Instance ?? FindObjectOfType<CharacterProgressionManager>();
+                var heroMgr = CharacterProgressionManager.Instance;
                 if (heroMgr == null) return;
 
                 var result = heroMgr.TryUpgradeCharacterStar(_selectedHero.characterId);

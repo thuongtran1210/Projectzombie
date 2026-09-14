@@ -52,20 +52,16 @@ namespace ProjectZombie.Core.Pooling
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<VFXPoolManager>();
-                    if (_instance == null)
-                    {
-                        Transform parent = PoolHierarchyManager.Instance != null 
-                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.VFX) 
-                            : null;
+                    Transform parent = PoolHierarchyManager.Instance != null 
+                        ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.VFX) 
+                        : null;
 
-                        GameObject go = new GameObject("[VFXPoolManager]");
-                        if (parent != null)
-                        {
-                            go.transform.SetParent(parent);
-                        }
-                        _instance = go.AddComponent<VFXPoolManager>();
+                    GameObject go = new GameObject("[VFXPoolManager]");
+                    if (parent != null)
+                    {
+                        go.transform.SetParent(parent);
                     }
+                    _instance = go.AddComponent<VFXPoolManager>();
                 }
                 return _instance;
             }

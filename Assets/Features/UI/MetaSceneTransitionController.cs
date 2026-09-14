@@ -58,11 +58,11 @@ namespace ProjectZombie.Features.UI
 
         private void EnsureReferences()
         {
-            if (_metaUIManager == null) _metaUIManager = MetaUIManager.Instance ?? FindObjectOfType<MetaUIManager>(true);
-            if (_gameplayUIManager == null) _gameplayUIManager = GameplayUIManager.Instance ?? FindObjectOfType<GameplayUIManager>(true);
-            if (_mainHubPresenter == null) _mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
-            if (_spawnManager == null) _spawnManager = SpawnManager.Instance ?? FindObjectOfType<SpawnManager>(true);
-            if (_gameplayBootstrapper == null) _gameplayBootstrapper = FindObjectOfType<GameplayBootstrapper>(true);
+            if (_metaUIManager == null) _metaUIManager = MetaUIManager.Instance;
+            if (_gameplayUIManager == null) _gameplayUIManager = GameplayUIManager.Instance;
+            if (_mainHubPresenter == null) _mainHubPresenter = MainHubPresenter.Instance;
+            if (_spawnManager == null) _spawnManager = SpawnManager.Instance;
+            if (_gameplayBootstrapper == null) _gameplayBootstrapper = GameplayBootstrapper.Instance;
 
             // Đăng ký lắng nghe sự kiện Chọn Ải từ StageSelectUIPresenter để bắt đầu trận đấu
             StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
@@ -191,11 +191,7 @@ namespace ProjectZombie.Features.UI
             ProjectZombie.Core.Pooling.VFXPoolManager.ClearPools();
 
             // Dọn sạch các vùng Trận Đồ / Zone Decals còn sót lại
-            var allZones = FindObjectsOfType<ProjectZombie.Features.Skills.Zones.BatQuaiTranZone>();
-            for (int i = 0; i < allZones.Length; i++)
-            {
-                if (allZones[i] != null && allZones[i].gameObject != null) Destroy(allZones[i].gameObject);
-            }
+            ProjectZombie.Features.Skills.Zones.BatQuaiTranZone.ClearAllZones();
 
             if (_gameplayBootstrapper != null)
             {

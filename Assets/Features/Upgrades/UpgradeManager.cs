@@ -14,9 +14,23 @@ namespace ProjectZombie.Features.Upgrades
     /// Cung cấp các lựa chọn ngẫu nhiên khi người chơi lên cấp thông qua hệ thống Filter Strategy Pattern
     /// và Dynamic Synergy Weight Pipeline (Ưu tiên nâng cấp đồ đang sở hữu + Tương sinh Ngũ Hành).
     /// </summary>
-    public class UpgradeManager : MonoBehaviour
+    public class UpgradeManager : MonoBehaviour, IUpgradeService, ProjectZombie.Core.Architecture.IResettableStatic
     {
         public static UpgradeManager Instance { get; private set; }
+
+        public void ResetStaticState()
+        {
+            Instance = null;
+            _cachedMasterUpgrades = null;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
 
         [Header("Upgrade Pool")]
         [SerializeField] private List<UpgradeData> _allAvailableUpgrades = new List<UpgradeData>();
@@ -393,6 +407,12 @@ namespace ProjectZombie.Features.Upgrades
             }
 
             return selectedUpgrades;
+        }
+
+        public List<UpgradeData> GetRandomUpgrades(int count)
+        {
+            var player = Player.PlayerProvider.HasPlayer ? Player.PlayerProvider.PlayerGameObject : null;
+            return GetRandomUpgrades(count, player);
         }
     }
 }

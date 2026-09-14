@@ -25,8 +25,11 @@ namespace ProjectZombie.Features.UI.Overhead
 
         private bool _isConstructed = false;
 
+        public static OverheadStatusPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null)
             {
                 _view = GetComponent<OverheadStatusView>();
@@ -93,6 +96,7 @@ namespace ProjectZombie.Features.UI.Overhead
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             UnsubscribeEvents();
         }
 

@@ -43,8 +43,11 @@ namespace ProjectZombie.Features.Player
         private GameplayUIBinder _uiBinder;
         private CharacterSelectionPresenter _characterSelectionPresenter;
 
+        public static GameplayBootstrapper Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             _uiBinder = new GameplayUIBinder(
                 runHUDPresenter,
                 playerInfoUIPresenter,
@@ -57,7 +60,7 @@ namespace ProjectZombie.Features.Player
         private void Start()
         {
             // 1. Đăng ký lắng nghe sự kiện đổi tướng từ UI trong Scene
-            _characterSelectionPresenter = FindObjectOfType<CharacterSelectionPresenter>(true);
+            _characterSelectionPresenter = CharacterSelectionPresenter.Instance;
             if (_characterSelectionPresenter != null)
             {
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
@@ -77,6 +80,7 @@ namespace ProjectZombie.Features.Player
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             if (_characterSelectionPresenter != null)
             {
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
@@ -194,7 +198,10 @@ namespace ProjectZombie.Features.Player
         {
             if (cameraFollow == null)
             {
-                cameraFollow = FindObjectOfType<CameraFollow>();
+                cameraFollow = CameraFollow.Instance;
+#if UNITY_EDITOR
+                if (cameraFollow == null) cameraFollow = FindObjectOfType<CameraFollow>();
+#endif
             }
 
             if (cameraFollow != null)

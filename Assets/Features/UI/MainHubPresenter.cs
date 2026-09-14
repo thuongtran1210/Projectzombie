@@ -20,10 +20,13 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private MetaCurrencyManager _currencyManager;
         [SerializeField] private MetaUIManager _metaUIManager;
 
+        public static MainHubPresenter Instance { get; private set; }
+
         public event System.Action OnStartRunRequested;
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null) _view = GetComponent<MainHubView>();
             if (_metaUIManager == null) _metaUIManager = GetComponentInParent<MetaUIManager>() ?? MetaUIManager.Instance;
         }

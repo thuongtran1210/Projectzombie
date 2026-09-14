@@ -17,12 +17,8 @@ namespace Core.Audio
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<AudioManager>();
-                    if (_instance == null)
-                    {
-                        var go = new GameObject("AudioManager");
-                        _instance = go.AddComponent<AudioManager>();
-                    }
+                    var go = new GameObject("AudioManager");
+                    _instance = go.AddComponent<AudioManager>();
                 }
                 return _instance;
             }
@@ -87,13 +83,13 @@ namespace Core.Audio
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
+            _instance = this;
             if (transform.parent != null)
             {
                 transform.SetParent(null);

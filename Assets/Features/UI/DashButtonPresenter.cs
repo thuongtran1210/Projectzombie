@@ -19,8 +19,11 @@ namespace ProjectZombie.Features.UI
         private float _lastDashTime;
         private float _dashCooldown;
 
+        public static DashButtonPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null) _view = GetComponent<DashButtonView>();
         }
 
@@ -53,6 +56,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             if (_view != null)
             {
                 _view.OnButtonClicked -= OnButtonClicked;

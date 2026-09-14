@@ -81,6 +81,7 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         private static void AuditDirectory(SyncRule rule, List<AuditItem> issues)
         {
+            if (rule.IsAddressableManaged) return;
             if (!Directory.Exists(rule.SourcePath)) return;
             string[] srcFiles = Directory.GetFiles(rule.SourcePath, rule.SearchPattern ?? "*.*", SearchOption.AllDirectories);
 

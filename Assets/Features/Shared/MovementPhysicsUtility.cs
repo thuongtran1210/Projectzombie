@@ -56,6 +56,7 @@ namespace ProjectZombie.Features.Shared
         {
             if (_searchedTilemap && _cachedGroundTilemap != null) return;
 
+#if UNITY_EDITOR
             var objGround = GameObject.Find("Tilemap_Ground");
             if (objGround != null) _cachedGroundTilemap = objGround.GetComponent<UnityEngine.Tilemaps.Tilemap>();
 
@@ -82,6 +83,14 @@ namespace ProjectZombie.Features.Shared
             }
 
             if (_cachedGroundTilemap == null) _cachedGroundTilemap = Object.FindObjectOfType<UnityEngine.Tilemaps.Tilemap>();
+#endif
+            _searchedTilemap = true;
+        }
+
+        public static void SetTilemaps(UnityEngine.Tilemaps.Tilemap ground, UnityEngine.Tilemaps.Tilemap obstacle)
+        {
+            _cachedGroundTilemap = ground;
+            _cachedObstacleTilemap = obstacle;
             _searchedTilemap = true;
         }
 

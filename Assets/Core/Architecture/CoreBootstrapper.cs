@@ -14,6 +14,15 @@ namespace ProjectZombie.Core.Architecture
     {
         private const string CORE_ROOT_NAME = "--- APP CORE SERVICES ---";
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticDomainState()
+        {
+            AppBootGate.ResetState();
+            _isCoreServicesInitialized = false;
+        }
+
+        private static bool _isCoreServicesInitialized = false;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeCoreServices()
         {
@@ -34,10 +43,11 @@ namespace ProjectZombie.Core.Architecture
 
 
             // Kiểm tra xem trong Scene đã có sẵn Manager Root chưa (tránh tạo thừa và xung đột Singleton)
-            if (GameManager.HasInstance || GameObject.Find(CORE_ROOT_NAME) != null || GameObject.Find("--- GAME MANAGER ---") != null)
+            if (_isCoreServicesInitialized || GameManager.HasInstance)
             {
                 return;
             }
+            _isCoreServicesInitialized = true;
 
             // 1. Tạo GameObject Container tập trung
             var coreRoot = new GameObject(CORE_ROOT_NAME);
@@ -85,6 +95,12 @@ namespace ProjectZombie.Core.Architecture
     {
         public static bool IsCoreReady { get; private set; } = false;
         public static event System.Action OnCoreReady;
+
+        public static void ResetState()
+        {
+            IsCoreReady = false;
+            OnCoreReady = null;
+        }
 
         internal static void SetReady()
         {

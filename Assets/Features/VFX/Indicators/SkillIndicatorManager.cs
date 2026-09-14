@@ -20,14 +20,10 @@ namespace ProjectZombie.Features.VFX.Indicators
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<SkillIndicatorManager>();
-                    if (_instance == null)
-                    {
-                        GameObject go = new GameObject("SkillIndicatorManager");
-                        _instance = go.AddComponent<SkillIndicatorManager>();
-                        if (go.transform.parent != null) go.transform.SetParent(null);
-                        DontDestroyOnLoad(go);
-                    }
+                    GameObject go = new GameObject("SkillIndicatorManager");
+                    _instance = go.AddComponent<SkillIndicatorManager>();
+                    if (go.transform.parent != null) go.transform.SetParent(null);
+                    DontDestroyOnLoad(go);
                 }
                 return _instance;
             }

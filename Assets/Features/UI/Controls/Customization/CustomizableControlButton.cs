@@ -77,6 +77,11 @@ namespace ProjectZombie.Features.UI.Controls.Customization
             }
 
             CreateSelectionHighlight();
+
+            if (MobileControlsLayoutManager.Instance != null)
+            {
+                MobileControlsLayoutManager.Instance.RegisterControl(this);
+            }
         }
 
         private void CreateSelectionHighlight()
@@ -179,6 +184,11 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void OnDestroy()
         {
+            if (MobileControlsLayoutManager.Instance != null)
+            {
+                MobileControlsLayoutManager.Instance.UnregisterControl(this);
+            }
+
             if (_isEditMode)
             {
                 _isEditMode = false;

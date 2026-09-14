@@ -18,6 +18,12 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         public static int SyncDirectory(SyncRule rule)
         {
+            if (rule.IsAddressableManaged)
+            {
+                Debug.Log($"<color=#00E5FF>[ResourceSyncEngine]</color> Bỏ qua đồng bộ '{rule.Name}' vào Resources vì đã chuyển sang quản lý bằng Addressables.");
+                return 0;
+            }
+
             if (!Directory.Exists(rule.SourcePath)) return 0;
             EnsureDirectory(rule.TargetPath);
 

@@ -17,9 +17,26 @@ namespace ProjectZombie.Features.Spawners
     /// Sĩ số & Pacing cho EnemyPopulationTracker,
     /// Và các kiểu spawn cho ISpawnPatternStrategy.
     /// </summary>
-    public class SpawnManager : MonoBehaviour
+    public class SpawnManager : MonoBehaviour, ProjectZombie.Core.Architecture.IResettableStatic
     {
         public static SpawnManager Instance { get; private set; }
+
+        public void ResetStaticState()
+        {
+            Instance = null;
+            OnWaveTriggered = null;
+            OnTimelineProgressUpdated = null;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+            OnWaveTriggered = null;
+            OnTimelineProgressUpdated = null;
+        }
 
         /// <summary>
         /// Sự kiện phát ra khi một đợt quái / mốc Timeline mới được kích hoạt.
@@ -190,20 +207,48 @@ namespace ProjectZombie.Features.Spawners
 #endif
             }
 
-            if (_playerTransform == null)
+            if (_playerTransform == null && Player.PlayerProvider.HasPlayer)
             {
-                if (Player.PlayerProvider.HasPlayer)
-                {
-                    _playerTransform = Player.PlayerProvider.PlayerTransform;
-                }
-                else
-                {
-                    var playerObj = GameObject.FindGameObjectWithTag("Player") ?? GameObject.Find("Player");
-                    if (playerObj != null) _playerTransform = playerObj.transform;
-                }
+                _playerTransform = Player.PlayerProvider.PlayerTransform;
             }
 
             _boundaryContext.EnsureDependencies();
+        }
+
+        /// <summary>
+        /// Cấu hình trực tiếp Map Instance vừa sinh ra từ MatchFlowOrchestrator, triệt tiêu hoàn toàn Find trong runtime.
+        /// </summary>
+        public void ConfigureMapInstance(GameObject mapInstance)
+        {
+            if (mapInstance == null) return;
+
+            Tilemap gTilemap = null;
+            Tilemap oTilemap = null;
+            Collider2D wCollider = mapInstance.GetComponentInChildren<Collider2D>();
+
+            var tilemaps = mapInstance.GetComponentsInChildren<Tilemap>();
+            foreach (var tm in tilemaps)
+            {
+                string lname = tm.name.ToLower();
+                if (gTilemap == null && (lname.Contains("ground") || lname.Contains("floor")))
+                {
+                    gTilemap = tm;
+                }
+                else if (oTilemap == null && (lname.Contains("obstacle") || lname.Contains("wall")))
+                {
+                    oTilemap = tm;
+                }
+            }
+
+            if (gTilemap == null && tilemaps.Length > 0) gTilemap = tilemaps[0];
+
+            groundTilemap = gTilemap;
+            walkableAreaCollider = wCollider;
+
+            if (_boundaryContext != null)
+            {
+                _boundaryContext.AssignExplicitTilemaps(gTilemap, oTilemap, wCollider);
+            }
         }
 
         /// <summary>
@@ -286,26 +331,16 @@ namespace ProjectZombie.Features.Spawners
                 strategy.ResetStrategy();
             }
 
-            var allEnemies = FindObjectsOfType<Enemies.Enemy>();
-            for (int i = 0; i < allEnemies.Length; i++)
+            // Dọn sạch toàn bộ Enenies qua ActiveEnemies registry O(1)
+            var activeEnemies = new System.Collections.Generic.List<Enemies.Enemy>(Enemies.Enemy.ActiveEnemies);
+            for (int i = 0; i < activeEnemies.Count; i++)
             {
-                if (allEnemies[i] != null && allEnemies[i].gameObject != null)
+                if (activeEnemies[i] != null && activeEnemies[i].gameObject != null)
                 {
-                    Destroy(allEnemies[i].gameObject);
+                    Destroy(activeEnemies[i].gameObject);
                 }
             }
-
-            var allCoins = FindObjectsOfType<Collectibles.CoinDrop>();
-            for (int i = 0; i < allCoins.Length; i++)
-            {
-                if (allCoins[i] != null && allCoins[i].gameObject != null) Destroy(allCoins[i].gameObject);
-            }
-
-            var allGems = FindObjectsOfType<Collectibles.ExpGem>();
-            for (int i = 0; i < allGems.Length; i++)
-            {
-                if (allGems[i] != null && allGems[i].gameObject != null) Destroy(allGems[i].gameObject);
-            }
+            Enemies.Enemy.ActiveEnemies.Clear();
 
             Collectibles.CoinPoolManager.Instance?.ClearPools();
             Collectibles.ExpGemPoolManager.Instance?.ClearPools();

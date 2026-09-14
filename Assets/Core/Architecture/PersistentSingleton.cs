@@ -27,7 +27,9 @@ namespace ProjectZombie.Core.Architecture
                 {
                     if (_instance == null)
                     {
+#if UNITY_EDITOR
                         _instance = FindObjectOfType<T>();
+#endif
                         if (_instance == null && Application.isPlaying)
                         {
                             Debug.LogWarning($"<color=#FFAA00>[PersistentSingleton<{typeof(T).Name}>]</color> Truy xuất Instance nhưng chưa tìm thấy trong Scene. Đảm bảo CoreBootstrapper đã khởi tạo dịch vụ này trước.");

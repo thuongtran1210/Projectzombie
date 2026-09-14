@@ -15,17 +15,26 @@ namespace ProjectZombie.Core
         {
             get
             {
-                if (_instance == null)
+                if (_instance == null && Application.isPlaying)
                 {
-                    _instance = FindObjectOfType<TickManager>();
-                    if (_instance == null && Application.isPlaying)
-                    {
-                        GameObject go = new GameObject("[TickManager]");
-                        _instance = go.AddComponent<TickManager>();
-                        DontDestroyOnLoad(go);
-                    }
+                    GameObject go = new GameObject("[TickManager]");
+                    _instance = go.AddComponent<TickManager>();
+                    DontDestroyOnLoad(go);
                 }
                 return _instance;
+            }
+        }
+
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else if (_instance != this)
+            {
+                Destroy(gameObject);
             }
         }
 

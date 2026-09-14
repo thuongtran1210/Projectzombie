@@ -23,6 +23,21 @@ namespace ProjectZombie.Features.Skills.Zones
         [SerializeField] private float _rotationSpeed = 35f;
 
         private static readonly Collider2D[] _hitBuffer = new Collider2D[60];
+        private static readonly System.Collections.Generic.List<BatQuaiTranZone> _activeZones = new System.Collections.Generic.List<BatQuaiTranZone>();
+        public static System.Collections.Generic.IReadOnlyList<BatQuaiTranZone> ActiveZones => _activeZones;
+
+        public static void ClearAllZones()
+        {
+            for (int i = _activeZones.Count - 1; i >= 0; i--)
+            {
+                if (_activeZones[i] != null && _activeZones[i].gameObject != null)
+                {
+                    Destroy(_activeZones[i].gameObject);
+                }
+            }
+            _activeZones.Clear();
+        }
+
         private float _spawnTime;
         private bool _isActive;
         private Vector3 _targetScale;
@@ -32,7 +47,16 @@ namespace ProjectZombie.Features.Skills.Zones
 
         private void Awake()
         {
+            if (!_activeZones.Contains(this))
+            {
+                _activeZones.Add(this);
+            }
             FetchComponents();
+        }
+
+        private void OnDestroy()
+        {
+            _activeZones.Remove(this);
         }
 
         private void FetchComponents()

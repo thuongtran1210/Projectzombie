@@ -23,20 +23,16 @@ namespace ProjectZombie.Features.Collectibles
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<TManager>();
-                    if (_instance == null)
-                    {
-                        Transform parent = PoolHierarchyManager.Instance != null 
-                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles) 
-                            : null;
+                    Transform parent = PoolHierarchyManager.Instance != null 
+                        ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Collectibles) 
+                        : null;
 
-                        GameObject go = new GameObject($"[{typeof(TManager).Name}]");
-                        if (parent != null)
-                        {
-                            go.transform.SetParent(parent);
-                        }
-                        _instance = go.AddComponent<TManager>();
+                    GameObject go = new GameObject($"[{typeof(TManager).Name}]");
+                    if (parent != null)
+                    {
+                        go.transform.SetParent(parent);
                     }
+                    _instance = go.AddComponent<TManager>();
                 }
                 return _instance;
             }
@@ -94,12 +90,20 @@ namespace ProjectZombie.Features.Collectibles
 
         public virtual void ClearPools()
         {
+            for (int i = 0; i < ActiveItems.Count; i++)
+            {
+                if (ActiveItems[i] != null && ActiveItems[i].gameObject != null)
+                {
+                    Destroy(ActiveItems[i].gameObject);
+                }
+            }
+            ActiveItems.Clear();
+
             foreach (var pool in PrefabToPoolMap.Values)
             {
                 pool.Clear();
             }
             PrefabToPoolMap.Clear();
-            ActiveItems.Clear();
         }
 
         public virtual IObjectPool<GameObject> GetOrCreatePool(GameObject prefab)

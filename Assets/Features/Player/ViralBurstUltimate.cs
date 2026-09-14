@@ -19,6 +19,9 @@ namespace ProjectZombie.Features.Player
         private PlayerStats _playerStats;
         private float _lastUsedTime = -999f; // Sẵn sàng ngay từ đầu
 
+        private static readonly Collider2D[] _hitBuffer = new Collider2D[100];
+        private static int _enemyLayerMask = -1;
+
         // ====================================================================
         // PUBLIC API — Cho phép Upgrade System buff Skill tại runtime
         // ====================================================================
@@ -41,6 +44,11 @@ namespace ProjectZombie.Features.Player
         {
             _healthSystem = GetComponent<HealthSystem>();
             _playerStats = GetComponent<PlayerStats>();
+            if (_enemyLayerMask == -1)
+            {
+                _enemyLayerMask = LayerMask.GetMask("Enemy", "Enemies");
+                if (_enemyLayerMask == 0) _enemyLayerMask = ~0; // Fallback toàn bộ layer nếu chưa set layer Enemy
+            }
         }
 
         private void OnEnable()
@@ -74,12 +82,12 @@ namespace ProjectZombie.Features.Player
         {
             Debug.Log("[ViralBurst] Kích hoạt Ultimate: VIRAL BURST!");
 
-            // 1. Gây sát thương toàn màn hình
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-            foreach (var enemy in enemies)
+            // 1. Gây sát thương diện rộng toàn màn hình (NonAlloc 0-GC)
+            int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, 30f, _hitBuffer, _enemyLayerMask);
+            for (int i = 0; i < hitCount; i++)
             {
-                var enemyHealth = enemy.GetComponent<HealthSystem>();
-                if (enemyHealth != null)
+                var hit = _hitBuffer[i];
+                if (hit != null && hit.TryGetComponent<HealthSystem>(out var enemyHealth))
                 {
                     enemyHealth.TakeDamage(damageAmount);
                 }

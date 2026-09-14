@@ -58,8 +58,11 @@ namespace ProjectZombie.Features.UI
             _isConstructed = true;
         }
 
+        public static GameOverScreenPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (view == null)
             {
                 view = GetComponent<GameOverScreenView>();
@@ -202,7 +205,7 @@ namespace ProjectZombie.Features.UI
             _lastIsVictory = isVictory;
 
             // Đóng khẩn cấp bảng Upgrade nếu đang mở dở khi tử trận
-            var upgradePresenter = FindObjectOfType<UpgradeUIPresenter>();
+            var upgradePresenter = UpgradeUIPresenter.Instance;
             if (upgradePresenter != null)
             {
                 var upgradeView = upgradePresenter.GetComponent<UpgradeUIView>();

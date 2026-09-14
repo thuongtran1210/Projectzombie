@@ -14,20 +14,16 @@ namespace ProjectZombie.Features.Spawners
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<EnemyPoolManager>();
-                    if (_instance == null)
-                    {
-                        Transform parent = PoolHierarchyManager.Instance != null 
-                            ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Enemies) 
-                            : null;
+                    Transform parent = PoolHierarchyManager.Instance != null 
+                        ? PoolHierarchyManager.Instance.GetCategoryRoot(PoolHierarchyManager.PoolCategory.Enemies) 
+                        : null;
 
-                        GameObject go = new GameObject("[EnemyPoolManager]");
-                        if (parent != null)
-                        {
-                            go.transform.SetParent(parent);
-                        }
-                        _instance = go.AddComponent<EnemyPoolManager>();
+                    GameObject go = new GameObject("[EnemyPoolManager]");
+                    if (parent != null)
+                    {
+                        go.transform.SetParent(parent);
                     }
+                    _instance = go.AddComponent<EnemyPoolManager>();
                 }
                 return _instance;
             }

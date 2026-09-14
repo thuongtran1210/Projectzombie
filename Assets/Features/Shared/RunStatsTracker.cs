@@ -8,12 +8,28 @@ namespace ProjectZombie.Features.Shared
     /// Reset tự động khi scene được load lại.
     /// Được HUD, GameOverScreen và GameManager đọc để hiển thị kết quả và tính Currency Meta.
     /// </summary>
-    public class RunStatsTracker : MonoBehaviour
+    public class RunStatsTracker : MonoBehaviour, ProjectZombie.Core.Architecture.IResettableStatic
     {
         // ====================================================================
         // SINGLETON
         // ====================================================================
         public static RunStatsTracker Instance { get; private set; }
+
+        public void ResetStaticState()
+        {
+            Instance = null;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+            OnKillCountChanged = null;
+            OnCoinsChanged = null;
+            OnTimerTick = null;
+        }
 
         // ====================================================================
         // THỐNG KÊ TRONG RUN

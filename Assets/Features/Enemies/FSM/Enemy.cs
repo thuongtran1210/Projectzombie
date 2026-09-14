@@ -210,6 +210,7 @@ namespace ProjectZombie.Features.Enemies
 
         private void OnEnable()
         {
+            ActiveEnemies.Add(this);
             OnSpawn();
 
             PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
@@ -223,6 +224,7 @@ namespace ProjectZombie.Features.Enemies
 
         private void OnDisable()
         {
+            ActiveEnemies.Remove(this);
             OnDespawn();
 
             PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
@@ -284,6 +286,8 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public static readonly System.Collections.Generic.HashSet<Enemy> ActiveEnemies = new System.Collections.Generic.HashSet<Enemy>();
+
         public void FindPlayer()
         {
             if (PlayerTransform != null) return;
@@ -295,7 +299,7 @@ namespace ProjectZombie.Features.Enemies
                 return;
             }
 
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            var player = PlayerProvider.PlayerGameObject;
             if (player != null)
             {
                 PlayerTransform = player.transform;

@@ -37,12 +37,20 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         public void ScanAndRegisterControls()
         {
-            _registeredControls.Clear();
-            var found = FindObjectsOfType<CustomizableControlButton>(true);
-            if (found != null)
+            // Loại bỏ các control đã bị hủy khỏi danh sách đã tự đăng ký
+            _registeredControls.RemoveAll(c => c == null);
+
+#if UNITY_EDITOR
+            // Fallback trong Editor khi designer chưa chạy scene hoặc test trong Editor
+            if (_registeredControls.Count == 0)
             {
-                _registeredControls.AddRange(found);
+                var found = FindObjectsOfType<CustomizableControlButton>(true);
+                if (found != null)
+                {
+                    _registeredControls.AddRange(found);
+                }
             }
+#endif
         }
 
         public void RegisterControl(CustomizableControlButton control)

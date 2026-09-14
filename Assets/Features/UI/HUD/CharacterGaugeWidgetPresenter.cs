@@ -16,8 +16,11 @@ namespace ProjectZombie.Features.UI.HUD
 
         private ICharacterGaugeProvider _currentProvider;
 
+        public static CharacterGaugeWidgetPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             if (_view == null)
             {
                 _view = GetComponent<CharacterGaugeWidgetView>();
@@ -42,7 +45,7 @@ namespace ProjectZombie.Features.UI.HUD
                 }
                 else
                 {
-                    var player = GameObject.FindGameObjectWithTag("Player");
+                    var player = PlayerProvider.PlayerGameObject;
                     if (player != null)
                     {
                         var pComp = player.GetComponent<ICharacterGaugeProvider>();
@@ -65,6 +68,7 @@ namespace ProjectZombie.Features.UI.HUD
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
             Unbind();
         }
 

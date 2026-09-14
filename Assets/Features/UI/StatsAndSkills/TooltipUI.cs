@@ -5,6 +5,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 {
     public class TooltipUI : MonoBehaviour
     {
+        public static TooltipUI Instance { get; private set; }
+
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _descriptionText;
         [SerializeField] private RectTransform _backgroundRect;
@@ -16,8 +18,14 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             _rectTransform = GetComponent<RectTransform>();
             Hide();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         public void Show(string title, string description)

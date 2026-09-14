@@ -47,6 +47,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
         /// </summary>
         public void EnsureDependencies()
         {
+#if UNITY_EDITOR
             if (_autoFindGroundTilemap && _groundTilemap == null && _walkableAreaCollider == null)
             {
                 var groundObj = GameObject.Find("Tilemap_Ground");
@@ -68,7 +69,21 @@ namespace ProjectZombie.Features.Spawners.Spatial
                     _obstacleTilemap = obsObj.GetComponent<Tilemap>();
                 }
             }
+#endif
 
+            CalculateSafeMapBounds();
+        }
+
+        /// <summary>
+        /// Gán trực tiếp tham chiếu Tilemap từ Map Instance vừa sinh ra, triệt tiêu hoàn toàn Find trong runtime.
+        /// </summary>
+        public void AssignExplicitTilemaps(Tilemap ground, Tilemap obstacle, Collider2D walkable = null)
+        {
+            _groundTilemap = ground;
+            _obstacleTilemap = obstacle;
+            _walkableAreaCollider = walkable;
+            _hasCalculatedBounds = false;
+            ProjectZombie.Features.Shared.MovementPhysicsUtility.SetTilemaps(ground, obstacle);
             CalculateSafeMapBounds();
         }
 

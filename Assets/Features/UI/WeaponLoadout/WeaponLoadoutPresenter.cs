@@ -499,17 +499,9 @@ namespace ProjectZombie.Features.UI
             {
                 MetaSceneTransitionController.Instance.StartRun();
             }
-            else
+            else if (MetaUIManager.Instance != null)
             {
-                var transitionCtrl = FindObjectOfType<MetaSceneTransitionController>();
-                if (transitionCtrl != null)
-                {
-                    transitionCtrl.StartRun();
-                }
-                else if (MetaUIManager.Instance != null)
-                {
-                    MetaUIManager.Instance.SetMetaCanvasActive(false);
-                }
+                MetaUIManager.Instance.SetMetaCanvasActive(false);
             }
         }
 
@@ -517,7 +509,7 @@ namespace ProjectZombie.Features.UI
         {
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
 
-            var mainHubPresenter = FindObjectOfType<MainHubPresenter>(true);
+            var mainHubPresenter = MainHubPresenter.Instance;
             if (mainHubPresenter != null)
             {
                 mainHubPresenter.RefreshHubState();
