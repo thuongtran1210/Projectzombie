@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Enemies
+﻿namespace ProjectZombie.Features.Enemies
 {
     public abstract class EnemyState
     {

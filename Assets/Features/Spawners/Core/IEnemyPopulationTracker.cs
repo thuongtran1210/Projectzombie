@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Spawners.Core
+﻿namespace ProjectZombie.Features.Spawners.Core
 {
     /// <summary>
     /// Giao diện theo dõi sĩ số quái vật và điều phối áp lực (Pacing / Adaptive Catchup).

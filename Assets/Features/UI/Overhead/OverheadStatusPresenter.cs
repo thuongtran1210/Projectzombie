@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // FILE: OverheadStatusPresenter.cs — TẦNG PRESENTER (MVP)
 // Trách nhiệm: Lắng nghe Model events (HealthSystem, PlayerExperience),
 // đẩy dữ liệu sang OverheadStatusView để render.

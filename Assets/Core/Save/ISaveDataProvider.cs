@@ -1,4 +1,4 @@
-using ProjectZombie.Features.MetaProgression;
+﻿using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Core.Save
 {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.HUD;

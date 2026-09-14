@@ -17,7 +17,7 @@ namespace ProjectZombie.Features.Spawners
     /// Sĩ số & Pacing cho EnemyPopulationTracker,
     /// Và các kiểu spawn cho ISpawnPatternStrategy.
     /// </summary>
-    public class SpawnManager : MonoBehaviour, ProjectZombie.Core.Architecture.IResettableStatic
+    public class SpawnManager : MonoBehaviour, ISpawnService, ProjectZombie.Core.Architecture.IResettableStatic
     {
         public static SpawnManager Instance { get; private set; }
 
@@ -26,6 +26,7 @@ namespace ProjectZombie.Features.Spawners
             Instance = null;
             OnWaveTriggered = null;
             OnTimelineProgressUpdated = null;
+            ProjectZombie.Core.Architecture.ServiceContext.Unregister<ISpawnService>();
         }
 
         private void OnDestroy()
@@ -36,6 +37,7 @@ namespace ProjectZombie.Features.Spawners
             }
             OnWaveTriggered = null;
             OnTimelineProgressUpdated = null;
+            ProjectZombie.Core.Architecture.ServiceContext.Unregister<ISpawnService>();
         }
 
         /// <summary>
@@ -70,9 +72,7 @@ namespace ProjectZombie.Features.Spawners
         [Tooltip("Khoảng cách đệm ngoài rìa Camera")]
         [SerializeField] private float cameraPadding = 1.5f;
 
-        [Header("Debug Info")]
-        [SerializeField] private float matchTime = 0f;
-        [SerializeField] private bool isMatchActive = false;
+
 
         [Header("Auto Start (For Quick Play / Testing)")]
         [Tooltip("Chỉ tự động bắt đầu trận khi test riêng lẻ trong Unity Editor và GameState là Playing")]
@@ -82,31 +82,32 @@ namespace ProjectZombie.Features.Spawners
         private ArenaBoundaryContext _boundaryContext;
         private ISpawnPositionLocator _spawnLocator;
         private IEnemyPopulationTracker _populationTracker;
+        private readonly WaveScheduler _waveScheduler = new WaveScheduler();
         private readonly Dictionary<TimelineEventType, ISpawnPatternStrategy> _strategies = new Dictionary<TimelineEventType, ISpawnPatternStrategy>();
 
         private Transform _playerTransform;
         private Camera _mainCamera;
         private WavePreloader _wavePreloader;
-        private int _nextEventIndex = 0;
 
-        // Public Properties giữ 100% tương thích ngược
-        public float MatchTime => matchTime;
+        // Public Properties giữ 100% tương thích ngược qua WaveScheduler sub-module
+        public float MatchTime => _waveScheduler.MatchTime;
         public int CurrentEnemyCount => _populationTracker != null ? _populationTracker.CurrentEnemyCount : 0;
-        public bool IsMatchActive => isMatchActive;
+        public bool IsMatchActive => _waveScheduler.IsMatchActive;
         public LevelTimelineConfig TimelineConfig => timelineConfig;
-        public float LevelDuration => (timelineConfig != null && timelineConfig.maxLevelDuration > 0) ? timelineConfig.maxLevelDuration : 900f;
-        public float MatchProgress => Mathf.Clamp01(matchTime / Mathf.Max(1f, LevelDuration));
-        public int CurrentWaveIndex => Mathf.Max(1, _nextEventIndex);
-        public int TotalWaves => (timelineConfig != null && timelineConfig.events != null) ? Mathf.Max(1, timelineConfig.events.Count) : 1;
-        public string CurrentStageName => (timelineConfig != null && !string.IsNullOrEmpty(timelineConfig.levelName)) ? timelineConfig.levelName : "Man 1: U Minh Gioi";
-        public TimelineEvent CurrentActiveEvent => (timelineConfig != null && timelineConfig.events != null && _nextEventIndex > 0 && _nextEventIndex <= timelineConfig.events.Count) ? timelineConfig.events[_nextEventIndex - 1] : null;
-        public TimelineEvent NextUpcomingEvent => (timelineConfig != null && timelineConfig.events != null && _nextEventIndex < timelineConfig.events.Count) ? timelineConfig.events[_nextEventIndex] : null;
+        public float LevelDuration => _waveScheduler.LevelDuration;
+        public float MatchProgress => _waveScheduler.MatchProgress;
+        public int CurrentWaveIndex => _waveScheduler.CurrentWaveIndex;
+        public int TotalWaves => _waveScheduler.TotalWaves;
+        public string CurrentStageName => (timelineConfig != null && !string.IsNullOrEmpty(timelineConfig.levelName)) ? timelineConfig.levelName : "Màn 1: U Minh Giới";
+        public TimelineEvent CurrentActiveEvent => (timelineConfig != null && timelineConfig.events != null && _waveScheduler.NextEventIndex > 0 && _waveScheduler.NextEventIndex <= timelineConfig.events.Count) ? timelineConfig.events[_waveScheduler.NextEventIndex - 1] : null;
+        public TimelineEvent NextUpcomingEvent => (timelineConfig != null && timelineConfig.events != null && _waveScheduler.NextEventIndex < timelineConfig.events.Count) ? timelineConfig.events[_waveScheduler.NextEventIndex] : null;
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
 
+            ProjectZombie.Core.Architecture.ServiceContext.Register<ISpawnService>(this);
             _mainCamera = Camera.main;
             InitializeSubModules();
         }
@@ -172,7 +173,7 @@ namespace ProjectZombie.Features.Spawners
             bool isSandboxTesting = Application.isEditor && 
                                     (Shared.GameStateManager.Instance == null || Shared.GameStateManager.Instance.CurrentState == Shared.GameState.Playing);
 
-            if (autoStartOnPlay && isSandboxTesting && !isMatchActive)
+            if (autoStartOnPlay && isSandboxTesting && !IsMatchActive)
             {
                 StartMatch();
             }
@@ -268,8 +269,7 @@ namespace ProjectZombie.Features.Spawners
         public async Task StartMatchAsync()
         {
             EnsureDependencies();
-            matchTime = 0f;
-            _nextEventIndex = 0;
+            _waveScheduler.Initialize(timelineConfig);
 
             if (_populationTracker != null)
             {
@@ -283,7 +283,7 @@ namespace ProjectZombie.Features.Spawners
                 strategy.ResetStrategy();
             }
 
-            isMatchActive = true;
+            _waveScheduler.StartMatch();
 
             // 1. Tự động Async Preload tất cả Prefabs trong Timeline qua WavePreloader
             if (timelineConfig != null && _wavePreloader != null)
@@ -299,7 +299,7 @@ namespace ProjectZombie.Features.Spawners
             }
 
             // Kích hoạt ngay sự kiện ban đầu ở giây thứ 0s
-            CheckTimelineEvents();
+            ProcessDueEvents(_waveScheduler.Tick(0f, out _));
         }
 
         public void StartMatch()
@@ -309,7 +309,7 @@ namespace ProjectZombie.Features.Spawners
 
         public void StopMatch()
         {
-            isMatchActive = false;
+            _waveScheduler.StopMatch();
         }
 
         /// <summary>
@@ -317,9 +317,7 @@ namespace ProjectZombie.Features.Spawners
         /// </summary>
         public void StopMatchAndClearAllEnemies()
         {
-            isMatchActive = false;
-            matchTime = 0f;
-            _nextEventIndex = 0;
+            _waveScheduler.StopMatch();
 
             if (_populationTracker != null)
             {
@@ -331,7 +329,7 @@ namespace ProjectZombie.Features.Spawners
                 strategy.ResetStrategy();
             }
 
-            // Dọn sạch toàn bộ Enenies qua ActiveEnemies registry O(1)
+            // Dọn sạch toàn bộ Enemies qua ActiveEnemies registry O(1)
             var activeEnemies = new System.Collections.Generic.List<Enemies.Enemy>(Enemies.Enemy.ActiveEnemies);
             for (int i = 0; i < activeEnemies.Count; i++)
             {
@@ -348,19 +346,18 @@ namespace ProjectZombie.Features.Spawners
 
         private void Update()
         {
-            if (!isMatchActive || timelineConfig == null) return;
+            if (!_waveScheduler.IsMatchActive || timelineConfig == null) return;
 
-            matchTime += Time.deltaTime;
+            // 1. Cập nhật thời gian và nhận danh sách các sự kiện wave đến hạn
+            var dueEvents = _waveScheduler.Tick(Time.deltaTime, out _);
 
-            // 1. Cập nhật tiến trình thời gian cho HUD / Wave Banner
-            float maxDuration = LevelDuration;
-            float progress = Mathf.Clamp01(matchTime / Mathf.Max(1f, maxDuration));
-            OnTimelineProgressUpdated?.Invoke(matchTime, maxDuration, progress);
+            // 2. Phát sự kiện tiến trình cho HUD / Wave Banner
+            OnTimelineProgressUpdated?.Invoke(_waveScheduler.MatchTime, _waveScheduler.LevelDuration, _waveScheduler.MatchProgress);
 
-            // 2. Kiểm tra kích hoạt Timeline Event mới
-            CheckTimelineEvents();
+            // 3. Kích hoạt các wave event
+            ProcessDueEvents(dueEvents);
 
-            // 3. Chạy cập nhật các Strategy đang kích hoạt
+            // 4. Chạy cập nhật các Strategy đang kích hoạt
             float timeMultiplier = _populationTracker != null ? _populationTracker.CalculateAdaptiveMultiplier(adaptiveCatchupRate) : 1f;
 
             foreach (var strategy in _strategies.Values)
@@ -369,14 +366,12 @@ namespace ProjectZombie.Features.Spawners
             }
         }
 
-        private void CheckTimelineEvents()
+        private void ProcessDueEvents(List<TimelineEvent> dueEvents)
         {
-            var events = timelineConfig.events;
-            while (_nextEventIndex < events.Count && matchTime >= events[_nextEventIndex].timestampSeconds)
+            if (dueEvents == null) return;
+            for (int i = 0; i < dueEvents.Count; i++)
             {
-                TimelineEvent evt = events[_nextEventIndex];
-                TriggerEvent(evt);
-                _nextEventIndex++;
+                TriggerEvent(dueEvents[i]);
             }
         }
 
@@ -384,12 +379,12 @@ namespace ProjectZombie.Features.Spawners
         {
             if (evt == null) return;
 
-            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {evt.GetPoolKey()}, Type: {evt.eventType}) tại phút {(matchTime / 60f):F2}");
+            Debug.Log($"[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {evt.GetPoolKey()}, Type: {evt.eventType}) tại phút {(MatchTime / 60f):F2}");
 
             // Phát sự kiện cho tầng UI (Wave Banner Widget) cập nhật
             string stageName = timelineConfig != null ? timelineConfig.levelName : "Chiến Trường";
-            int totalEvents = timelineConfig != null && timelineConfig.events != null ? timelineConfig.events.Count : 1;
-            int currentWave = Mathf.Min(_nextEventIndex + 1, totalEvents);
+            int totalEvents = TotalWaves;
+            int currentWave = CurrentWaveIndex;
             Sprite waveIcon = evt.GetIcon();
             OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds, waveIcon));
 

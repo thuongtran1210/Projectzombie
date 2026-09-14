@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Core.Events;
 using ProjectZombie.Core.Pooling;

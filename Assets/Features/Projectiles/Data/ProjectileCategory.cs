@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Projectiles.Data
+﻿namespace ProjectZombie.Features.Projectiles.Data
 {
     public enum ProjectileCategory
     {

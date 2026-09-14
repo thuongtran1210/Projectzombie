@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI

@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Player.Mechanics
+﻿namespace ProjectZombie.Features.Player.Mechanics
 {
     /// <summary>
     /// Giao diện chuẩn cho các hệ thống theo dõi và cung cấp chỉ số thanh cơ chế đặc thù nhân vật

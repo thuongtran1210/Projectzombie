@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;

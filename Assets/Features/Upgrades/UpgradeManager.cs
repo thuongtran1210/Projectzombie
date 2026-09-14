@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.Upgrades
         {
             Instance = null;
             _cachedMasterUpgrades = null;
+            ProjectZombie.Core.Architecture.ServiceContext.Unregister<IUpgradeService>();
         }
 
         private void OnDestroy()
@@ -30,6 +31,7 @@ namespace ProjectZombie.Features.Upgrades
             {
                 Instance = null;
             }
+            ProjectZombie.Core.Architecture.ServiceContext.Unregister<IUpgradeService>();
         }
 
         [Header("Upgrade Pool")]
@@ -49,6 +51,7 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
             Instance = this;
+            ProjectZombie.Core.Architecture.ServiceContext.Register<IUpgradeService>(this);
 
             InitDefaultFilters();
             InitDefaultFallbackRewards();
@@ -287,126 +290,12 @@ namespace ProjectZombie.Features.Upgrades
         }
 
         /// <summary>
-        /// Tính toán trọng số xuất hiện động (Dynamic Synergy Weight):
-        /// - Đồ đang có trong ba lô: Nhân 2.5x
-        /// - Thẻ Tiến Hóa: Nhân 4.0x
-        /// - Cùng hệ hoặc Tương Sinh Ngũ Hành: Thêm +35%
-        /// </summary>
-        private float CalculateEffectiveWeight(
-            UpgradeData upgrade, 
-            GameObject player, 
-            WeaponManager weaponManager, 
-            PlayerPassives playerPassives,
-            HashSet<ElementType> activeElements)
-        {
-            float weight = Mathf.Max(1f, upgrade.spawnWeight);
-
-            // 1. Phân loại trọng số động theo từng loại thẻ (Polymorphic Dynamic Multiplier)
-            weight *= upgrade.GetDynamicWeightMultiplier(player);
-
-            // 2. Cộng hưởng Ngũ Hành (Element Synergy Bonus)
-            if (upgrade.element != ElementType.None && activeElements != null && activeElements.Count > 0)
-            {
-                if (activeElements.Contains(upgrade.element))
-                {
-                    // Đồng Hệ (Cùng nguyên tố) -> +35%
-                    weight *= 1.35f;
-                }
-                else
-                {
-                    // Tương Sinh (Thủy sinh Mộc, Mộc sinh Hỏa,...)
-                    foreach (var activeElem in activeElements)
-                    {
-                        if (ProjectZombie.Features.UI.Helpers.ElementVisualHelper.IsElementGenerative(activeElem, upgrade.element))
-                        {
-                            weight *= 1.25f;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return weight;
-        }
-
-        /// <summary>
-        /// Trả về danh sách nâng cấp ngẫu nhiên đã qua thuật toán cân bằng thông minh.
+        /// Trả về danh sách nâng cấp ngẫu nhiên qua thuật toán UpgradeSelector.
         /// </summary>
         public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
         {
             AutoPopulateUpgradesIfEmpty();
-
-            var weaponManager = player != null ? player.GetComponent<WeaponManager>() : null;
-            var playerPassives = player != null ? player.GetComponent<PlayerPassives>() : null;
-
-            // Thu thập các nguyên tố Ngũ Hành mà người chơi đang sở hữu
-            var activeElements = new HashSet<ElementType>();
-            if (weaponManager != null)
-            {
-                for (int i = 0; i < weaponManager.ActiveWeapons.Count; i++)
-                {
-                    var w = weaponManager.ActiveWeapons[i];
-                    if (w != null && w.element != ElementType.None)
-                    {
-                        activeElements.Add(w.element);
-                    }
-                }
-            }
-
-            var validUpgrades = new List<UpgradeData>();
-            var weights = new List<float>();
-            float totalWeight = 0f;
-
-            // 1. Lọc thẻ hợp lệ & tính trọng số động
-            for (int i = 0; i < _allAvailableUpgrades.Count; i++)
-            {
-                var u = _allAvailableUpgrades[i];
-                if (IsUpgradeAllowed(u, player))
-                {
-                    float effectiveWeight = CalculateEffectiveWeight(u, player, weaponManager, playerPassives, activeElements);
-                    validUpgrades.Add(u);
-                    weights.Add(effectiveWeight);
-                    totalWeight += effectiveWeight;
-                }
-            }
-
-            var selectedUpgrades = new List<UpgradeData>();
-
-            // 2. Thuật toán Weighted Random tiêu chuẩn
-            while (selectedUpgrades.Count < count && validUpgrades.Count > 0 && totalWeight > 0f)
-            {
-                float randomValue = Random.Range(0f, totalWeight);
-                float currentSum = 0f;
-
-                for (int i = 0; i < validUpgrades.Count; i++)
-                {
-                    currentSum += weights[i];
-                    if (currentSum >= randomValue || i == validUpgrades.Count - 1)
-                    {
-                        var chosen = validUpgrades[i];
-                        selectedUpgrades.Add(chosen);
-                        totalWeight -= weights[i];
-
-                        validUpgrades.RemoveAt(i);
-                        weights.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-
-            // 3. Fallback Buffer (Bảo hiểm chống cạn pool khi Max Level toàn bộ)
-            int fallbackIndex = 0;
-            while (selectedUpgrades.Count < count && _fallbackRewards != null && _fallbackRewards.Count > 0)
-            {
-                var fallback = _fallbackRewards[fallbackIndex % _fallbackRewards.Count];
-                if (!selectedUpgrades.Contains(fallback))
-                {
-                    selectedUpgrades.Add(fallback);
-                }
-                fallbackIndex++;
-            }
-
-            return selectedUpgrades;
+            return UpgradeSelector.SelectUpgrades(count, player, _allAvailableUpgrades, _filters, _fallbackRewards);
         }
 
         public List<UpgradeData> GetRandomUpgrades(int count)

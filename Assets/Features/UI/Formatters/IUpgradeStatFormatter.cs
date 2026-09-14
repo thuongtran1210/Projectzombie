@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.UI.Formatters
+﻿namespace ProjectZombie.Features.UI.Formatters
 {
     using ProjectZombie.Features.Upgrades;
 

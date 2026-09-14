@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.VFX.Indicators;
 
 namespace ProjectZombie.Features.Enemies

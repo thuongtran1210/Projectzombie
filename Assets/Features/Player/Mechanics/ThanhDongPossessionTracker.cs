@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Collectibles;
 using ProjectZombie.Features.Player.Mechanics;

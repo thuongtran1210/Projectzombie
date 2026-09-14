@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // FILE: RunHUDView.cs — TẦNG VIEW (MVP)
 // Trách nhiệm DUY NHẤT: Cập nhật các phần tử UI trên màn hình HUD trong trận.
 // KHÔNG chứa logic nghiệp vụ. KHÔNG biết PlayerStats, RunStatsTracker tồn tại.

@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Shared
+﻿namespace ProjectZombie.Features.Shared
 {
     /// <summary>
     /// Các trạng thái vòng đời của trò chơi.

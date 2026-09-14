@@ -297,6 +297,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b97c3ca2979f842ba25301f8b0c04c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableObstacleAvoidance: 1
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lookAheadDistance: 0.9
+  whiskerAngle: 35
+  avoidanceWeight: 1.2
+  bodyRadius: 0.35
 --- !u!114 &8027569350556653980
 MonoBehaviour:
   m_ObjectHideFlags: 0

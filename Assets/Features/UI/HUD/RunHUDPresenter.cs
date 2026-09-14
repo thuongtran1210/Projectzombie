@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // FILE: RunHUDPresenter.cs — TẦNG PRESENTER (MVP)
 // Trách nhiệm: Subscribe Model events, format dữ liệu, gọi View để render.
 // KHÔNG tự render UI. KHÔNG chứa dữ liệu game.

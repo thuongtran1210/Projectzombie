@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha.Data

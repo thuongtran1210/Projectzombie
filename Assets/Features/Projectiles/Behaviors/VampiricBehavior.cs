@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
 using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Shared;

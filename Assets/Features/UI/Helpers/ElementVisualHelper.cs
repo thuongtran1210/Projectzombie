@@ -57,15 +57,7 @@ namespace ProjectZombie.Features.UI.Helpers
         /// </summary>
         public static bool IsElementGenerative(ElementType parent, ElementType child)
         {
-            switch (parent)
-            {
-                case ElementType.Kim: return child == ElementType.Thuy;
-                case ElementType.Thuy: return child == ElementType.Moc;
-                case ElementType.Moc: return child == ElementType.Hoa;
-                case ElementType.Hoa: return child == ElementType.Tho;
-                case ElementType.Tho: return child == ElementType.Kim;
-                default: return false;
-            }
+            return ElementSynergyRules.IsElementGenerative(parent, child);
         }
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ProjectZombie.Features.Spawners.Core
 {

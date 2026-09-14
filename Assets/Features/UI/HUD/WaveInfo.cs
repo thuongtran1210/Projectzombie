@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Spawners;
 
 namespace ProjectZombie.Features.UI.HUD

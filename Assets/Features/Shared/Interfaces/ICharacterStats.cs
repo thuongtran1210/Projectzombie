@@ -1,4 +1,4 @@
-using ProjectZombie.Features.Shared;
+﻿using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Shared.Interfaces
 {

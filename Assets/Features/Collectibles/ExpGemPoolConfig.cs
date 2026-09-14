@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Pool;
 
 namespace ProjectZombie.Features.Collectibles

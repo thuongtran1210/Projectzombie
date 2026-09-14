@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI.Formatters

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Boss;
 
 namespace ProjectZombie.Features.Enemies.Boss.Skills

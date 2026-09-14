@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
 
 namespace ProjectZombie.Features.Projectiles.Data

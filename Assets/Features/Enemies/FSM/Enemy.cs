@@ -1,4 +1,4 @@
-using ProjectZombie.Core.Pooling;
+﻿using ProjectZombie.Core.Pooling;
 using ProjectZombie.Core.ScriptableObjects;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;

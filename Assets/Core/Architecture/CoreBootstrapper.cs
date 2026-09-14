@@ -81,6 +81,9 @@ namespace ProjectZombie.Core.Architecture
             // Bước 2.6: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
             coreRoot.AddComponent<ProjectZombie.Features.Startup.GameStartupFlowController>();
 
+            // 4. Đăng ký GameDataService vào ServiceContext
+            ServiceContext.Register<ProjectZombie.Core.Services.Data.IGameDataService>(ProjectZombie.Core.Services.Data.GameDataService.Instance);
+
             AppBootGate.SetReady();
             Debug.Log("<color=#00FF88>[CoreBootstrapper]</color> Đã khởi tạo hoàn tất toàn bộ Core Services trong '--- APP CORE SERVICES ---'!");
         }

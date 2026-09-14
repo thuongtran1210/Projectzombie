@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Core.Audio;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;

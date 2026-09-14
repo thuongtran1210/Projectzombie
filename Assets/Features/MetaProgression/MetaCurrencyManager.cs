@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Architecture;

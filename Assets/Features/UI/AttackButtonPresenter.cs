@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 

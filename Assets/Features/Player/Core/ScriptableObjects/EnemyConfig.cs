@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Core.ScriptableObjects

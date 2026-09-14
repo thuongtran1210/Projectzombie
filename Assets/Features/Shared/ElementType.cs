@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.Shared
+﻿namespace ProjectZombie.Features.Shared
 {
     /// <summary>
     /// Các hệ thuộc tính Ngũ Hành theo GDD v4.0.

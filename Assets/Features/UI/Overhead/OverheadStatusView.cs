@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // FILE: OverheadStatusView.cs — TẦNG VIEW (MVP)
 // Trách nhiệm: Render thanh máu, vệt máu trễ (Delay Bar), Level Text trên đầu nhân vật.
 // KHÔNG xử lý logic gameplay hay trực tiếp truy cập Model.

@@ -1,4 +1,4 @@
-namespace ProjectZombie.Core.Pooling
+﻿namespace ProjectZombie.Core.Pooling
 {
     /// <summary>
     /// Giao diện chuẩn cho tất cả các GameObject/Component được quản lý bởi Object Pool.

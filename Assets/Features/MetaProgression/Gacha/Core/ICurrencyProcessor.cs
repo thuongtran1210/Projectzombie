@@ -1,4 +1,4 @@
-namespace ProjectZombie.Features.MetaProgression.Gacha.Core
+﻿namespace ProjectZombie.Features.MetaProgression.Gacha.Core
 {
     /// <summary>
     /// Các loại đơn vị tiền tệ có thể sử dụng để quay Gacha.

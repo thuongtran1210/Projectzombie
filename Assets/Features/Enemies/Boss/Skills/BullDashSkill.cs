@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.VFX.Indicators;
 using ProjectZombie.Features.Boss;

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using Cinemachine;
 using ProjectZombie.Core.Juice;
