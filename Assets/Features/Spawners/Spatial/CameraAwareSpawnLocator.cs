@@ -43,21 +43,20 @@ namespace ProjectZombie.Features.Spawners.Spatial
 
                 // Bán kính spawn tối thiểu phải lớn hơn hoặc bằng đường chéo nửa màn hình để chắc chắn nằm ngoài tầm nhìn
                 effectiveMin = Mathf.Max(camDiagonal, effectiveMin);
-                effectiveMax = Mathf.Max(effectiveMin + 6f, maxRadius);
+                effectiveMax = Mathf.Max(effectiveMin + 8f, maxRadius);
             }
 
             var registry = Player.PlayerProvider.Registry;
             var activePlayers = registry != null ? registry.ActivePlayers : null;
             Bounds safeBounds = _boundaryContext != null ? _boundaryContext.SafeMapBounds : new Bounds(Vector3.zero, new Vector3(100f, 100f, 10f));
 
-            // Giai đoạn 1: Lấy mẫu Polar 360 độ ngoài tầm nhìn tất cả Players (24 lần thử)
-            for (int i = 0; i < 24; i++)
+            // GIAI ĐOẠN 1: Lấy mẫu Polar 360 độ quanh Player (32 lần thử)
+            for (int i = 0; i < 32; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(effectiveMin, effectiveMax);
                 Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
-                // Điểm candidate PHẢI nằm trọn vẹn trong sàn đấu an toàn (Không tự tiện clamp ép giật lùi vào màn hình)
                 if (!safeBounds.Contains(candidatePos))
                     continue;
 
@@ -73,17 +72,20 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 return candidatePos;
             }
 
-            // Giai đoạn 2: Hướng về tâm bản đồ / vùng mở (Center-Biased Inward Sampling) khi Player đứng sát góc/mép tường
+            // GIAI ĐOẠN 2: Hướng vào vùng mở của bản đồ (Inward Cone Sampling khi Player đứng gần góc/tường)
             Vector3 mapCenter = safeBounds.center;
             Vector2 dirToCenter = ((Vector2)(mapCenter - center)).normalized;
             if (dirToCenter.sqrMagnitude < 0.01f) dirToCenter = Vector2.up;
             float baseAngle = Mathf.Atan2(dirToCenter.y, dirToCenter.x) * Mathf.Rad2Deg;
 
-            for (int i = 0; i < 24; i++)
+            float distToCenter = Vector3.Distance(center, mapCenter);
+            float coneMaxDist = Mathf.Max(effectiveMax, distToCenter + 15f);
+
+            for (int i = 0; i < 32; i++)
             {
-                float offsetAngle = Random.Range(-75f, 75f);
+                float offsetAngle = Random.Range(-80f, 80f);
                 float angle = (baseAngle + offsetAngle) * Mathf.Deg2Rad;
-                float distance = Random.Range(effectiveMin, Mathf.Min(effectiveMax, Vector3.Distance(center, mapCenter) + 20f));
+                float distance = Random.Range(effectiveMin, coneMaxDist);
                 Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
                 if (!safeBounds.Contains(candidatePos))
@@ -101,54 +103,57 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 return candidatePos;
             }
 
-            // Giai đoạn 3: Fallback an toàn tuyệt đối - Lựa chọn điểm biên map xa Player nhất & ngoài tầm nhìn
-            Vector3[] cornerCandidates = new Vector3[]
+            // GIAI ĐOẠN 3: Lấy mẫu ngẫu nhiên trên toàn bộ sàn đấu (Global Arena Uniform Sampling)
+            // Tìm bất kỳ điểm hợp lệ nào trên bản đồ nằm ngoài màn hình Camera và xa Player
+            for (int i = 0; i < 32; i++)
             {
-                new Vector3(safeBounds.min.x + 1f, safeBounds.min.y + 1f, 0f),
-                new Vector3(safeBounds.max.x - 1f, safeBounds.min.y + 1f, 0f),
-                new Vector3(safeBounds.min.x + 1f, safeBounds.max.y - 1f, 0f),
-                new Vector3(safeBounds.max.x - 1f, safeBounds.max.y - 1f, 0f),
-                new Vector3(safeBounds.center.x, safeBounds.min.y + 1f, 0f),
-                new Vector3(safeBounds.center.x, safeBounds.max.y - 1f, 0f),
-                new Vector3(safeBounds.min.x + 1f, safeBounds.center.y, 0f),
-                new Vector3(safeBounds.max.x - 1f, safeBounds.center.y, 0f)
+                float rx = Random.Range(safeBounds.min.x + 1.5f, safeBounds.max.x - 1.5f);
+                float ry = Random.Range(safeBounds.min.y + 1.5f, safeBounds.max.y - 1.5f);
+                Vector3 candidatePos = new Vector3(rx, ry, 0f);
+
+                if (_boundaryContext != null && !_boundaryContext.IsInsideWalkableArea(candidatePos))
+                    continue;
+
+                if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)
+                    continue;
+
+                if (!IsFarFromAllPlayers(candidatePos, activePlayers, cam))
+                    continue;
+
+                return candidatePos;
+            }
+
+            // GIAI ĐOẠN 4: Fallback - Chọn góc xa nhất của sàn đấu so với Player
+            Vector3[] corners = new Vector3[]
+            {
+                new Vector3(safeBounds.min.x + 2f, safeBounds.min.y + 2f, 0f),
+                new Vector3(safeBounds.max.x - 2f, safeBounds.min.y + 2f, 0f),
+                new Vector3(safeBounds.min.x + 2f, safeBounds.max.y - 2f, 0f),
+                new Vector3(safeBounds.max.x - 2f, safeBounds.max.y - 2f, 0f),
+                new Vector3(safeBounds.center.x, safeBounds.max.y - 2f, 0f),
+                new Vector3(safeBounds.center.x, safeBounds.min.y + 2f, 0f),
+                new Vector3(safeBounds.min.x + 2f, safeBounds.center.y, 0f),
+                new Vector3(safeBounds.max.x - 2f, safeBounds.center.y, 0f)
             };
 
-            Vector3 bestPos = center + Vector3.up * effectiveMin;
-            float maxPlayerDist = -1f;
+            Vector3 bestCorner = center + Vector3.up * effectiveMin;
+            float maxDist = -1f;
 
-            for (int i = 0; i < cornerCandidates.Length; i++)
+            for (int i = 0; i < corners.Length; i++)
             {
-                Vector3 p = cornerCandidates[i];
-                if (_boundaryContext != null && !_boundaryContext.IsInsideWalkableArea(p))
-                    continue;
+                Vector3 p = corners[i];
+                if (_boundaryContext != null && !_boundaryContext.IsInsideWalkableArea(p)) continue;
+                if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(p, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0) continue;
 
-                if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(p, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)
-                    continue;
-
-                float dist = Vector3.Distance(p, center);
-                bool isFar = IsFarFromAllPlayers(p, activePlayers, cam);
-
-                if (isFar && dist > maxPlayerDist)
+                float d = Vector3.Distance(p, center);
+                if (d > maxDist)
                 {
-                    maxPlayerDist = dist;
-                    bestPos = p;
+                    maxDist = d;
+                    bestCorner = p;
                 }
             }
 
-            if (maxPlayerDist > 0f)
-            {
-                return bestPos;
-            }
-
-            // Fallback cuối cùng: Hướng xa nhất từ Player
-            Vector3 fallbackPos = center + (Vector3)(-dirToCenter * effectiveMin);
-            if (_boundaryContext != null)
-            {
-                return _boundaryContext.ClampToSafeBounds(fallbackPos);
-            }
-
-            return fallbackPos;
+            return bestCorner;
         }
 
         private bool IsFarFromAllPlayers(Vector3 position, System.Collections.Generic.IReadOnlyList<Player.PlayerContext> players, Camera cam)
@@ -167,7 +172,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
                     var p = players[i];
                     if (p != null && p.Transform != null && p.IsAlive)
                     {
-                        if (Vector2.Distance(position, p.Transform.position) < 11.0f)
+                        if (Vector2.Distance(position, p.Transform.position) < 11.5f)
                         {
                             return false; // Quá gần 1 người chơi -> Loại bỏ
                         }
@@ -182,7 +187,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
         {
             if (cam == null) return true;
             Vector3 vp = cam.WorldToViewportPoint(position);
-            return vp.x < -0.05f || vp.x > 1.05f || vp.y < -0.05f || vp.y > 1.05f;
+            // Mở rộng viewport threshold ra -0.08f .. 1.08f để quái sinh hoàn toàn ngoài mép màn hình
+            return vp.x < -0.08f || vp.x > 1.08f || vp.y < -0.08f || vp.y > 1.08f;
         }
     }
 }

@@ -274,8 +274,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 }
             }
 
-            // 4. Phải có sàn gạch trên Ground Tilemap (nếu đã cấu hình)
-            if (_groundTilemap != null)
+            // 4. Nếu không có Map_Boundaries xác định sàn thì mới fallback kiểm tra từng ô trên Ground Tilemap
+            if ((_boundaryColliders == null || _boundaryColliders.Length == 0) && _groundTilemap != null)
             {
                 Vector3Int cellPos = _groundTilemap.WorldToCell(position);
                 if (!_groundTilemap.HasTile(cellPos)) return false;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Core.Events;
 using ProjectZombie.Core.Pooling;
@@ -31,10 +31,10 @@ namespace ProjectZombie.Features.Collectibles
         [SerializeField] private float flyAcceleration = 60f;
 
         [Header("Visual Tier Colors")]
-        [SerializeField] private Color tier1Color = new Color(0.3f, 0.93f, 0.92f, 1f); // Cyan Lam Ngọc (< 30)
-        [SerializeField] private Color tier2Color = new Color(0.31f, 0.89f, 0.76f, 1f); // Emerald Lục Bảo (30-99)
-        [SerializeField] private Color tier3Color = new Color(0.61f, 0.32f, 0.88f, 1f); // Purple Tím U Minh (100-249)
-        [SerializeField] private Color tier4Color = new Color(1f, 0.84f, 0f, 1f); // Gold Hoàng Kim (>= 250)
+        [SerializeField] private Color tier1Color = new Color(0.2f, 0.85f, 1.0f, 1f); // Tier 1: Cyan Lam Băng (< 30 EXP)
+        [SerializeField] private Color tier2Color = new Color(0.15f, 1.0f, 0.35f, 1f); // Tier 2: Emerald Lục Bảo (30-99 EXP - Xanh lá cây tươi sáng)
+        [SerializeField] private Color tier3Color = new Color(0.85f, 0.25f, 1.0f, 1f); // Tier 3: Purple Tím Neon (100-249 EXP)
+        [SerializeField] private Color tier4Color = new Color(1.0f, 0.85f, 0.05f, 1f); // Tier 4: Gold Hoàng Kim (>= 250 EXP)
 
         [Header("Scale Settings")]
         [SerializeField] private float baseScaleMultiplier = 0.35f;

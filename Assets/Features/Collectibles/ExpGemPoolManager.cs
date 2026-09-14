@@ -98,19 +98,29 @@ namespace ProjectZombie.Features.Collectibles
                 }
             }
 
-            // Gộp furthest2 vào furthest1
+            // Xác định viên ngọc ĐÍCH (Target) và viên NGUỒN (Source)
+            // BẮT BUỘC: Ưu tiên giữ lại viên có EXP lớn hơn để viên Tím/Vàng không bị xóa nhầm biến mất khỏi tầm mắt người chơi
             if (furthest1 != null && furthest2 != null && furthest1 != furthest2)
             {
-                furthest1.MergeExp(furthest2.ExpAmount);
+                ExpGem targetGem = furthest1;
+                ExpGem sourceGem = furthest2;
 
-                // Thu hồi furthest2 về Pool
-                if (furthest2.TryGetComponent<ExpGemPoolConfig>(out var poolConfig))
+                if (furthest2.ExpAmount > furthest1.ExpAmount)
+                {
+                    targetGem = furthest2;
+                    sourceGem = furthest1;
+                }
+
+                targetGem.MergeExp(sourceGem.ExpAmount);
+
+                // Thu hồi viên nguồn về Pool
+                if (sourceGem.TryGetComponent<ExpGemPoolConfig>(out var poolConfig))
                 {
                     poolConfig.ReturnToPool();
                 }
                 else
                 {
-                    Destroy(furthest2.gameObject);
+                    Destroy(sourceGem.gameObject);
                 }
             }
         }

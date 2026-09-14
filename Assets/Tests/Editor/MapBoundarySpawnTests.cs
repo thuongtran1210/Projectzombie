@@ -89,27 +89,29 @@ namespace ProjectZombie.Tests.Editor
         }
 
         [Test]
-        public void CameraAwareSpawnLocator_PlayerNearCorner_DoesNotSpawnAdjacentToPlayer()
+        public void CameraAwareSpawnLocator_SpawnsDispersed_NotSingleFixedPoint()
         {
             var context = new ArenaBoundaryContext(safeMargin: 1.0f);
             context.AssignMapInstance(_mapInstance);
 
             var locator = new CameraAwareSpawnLocator(context, camera: null, cameraPadding: 2.0f);
 
-            var playerObj = new GameObject("PlayerCorner");
-            // Đặt Player sát góc trên bên phải (23, 13)
-            playerObj.transform.position = new Vector3(23f, 13f, 0f);
+            var playerObj = new GameObject("PlayerCornerBottomLeft");
+            playerObj.transform.position = new Vector3(-20f, -10f, 0f);
 
             try
             {
-                for (int i = 0; i < 10; i++)
+                var spawnPositions = new System.Collections.Generic.HashSet<Vector3>();
+                for (int i = 0; i < 20; i++)
                 {
-                    Vector3 spawnPos = locator.GetSpawnPosition(playerObj.transform, 12f, 22f);
-
-                    Assert.IsTrue(context.SafeMapBounds.Contains(spawnPos), $"Điểm {spawnPos} vượt ra ngoài SafeMapBounds!");
-                    float dist = Vector3.Distance(spawnPos, playerObj.transform.position);
-                    Assert.GreaterOrEqual(dist, 10f, $"Điểm {spawnPos} spawn quá sát Player ở góc (dist = {dist})!");
+                    Vector3 p = locator.GetSpawnPosition(playerObj.transform, 12f, 25f);
+                    Assert.IsTrue(context.SafeMapBounds.Contains(p), $"Điểm {p} vượt ra ngoài SafeMapBounds!");
+                    Assert.GreaterOrEqual(Vector3.Distance(p, playerObj.transform.position), 11.0f);
+                    spawnPositions.Add(p);
                 }
+
+                // Phải có nhiều điểm spawn khác nhau, không bị dồn 1 chỗ cố định
+                Assert.Greater(spawnPositions.Count, 3, "Quái bị dồn spawn vào cùng 1 điểm duy nhất!");
             }
             finally
             {
