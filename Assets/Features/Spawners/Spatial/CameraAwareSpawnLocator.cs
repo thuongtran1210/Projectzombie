@@ -26,7 +26,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
         public Vector3 GetSpawnPosition(Transform centerTarget, float minRadius, float maxRadius)
         {
             Vector3 center = centerTarget != null ? centerTarget.position : Vector3.zero;
-            Camera cam = _camera != null ? _camera : Camera.main;
+            Camera cam = (_camera != null && _camera.isActiveAndEnabled) ? _camera : Camera.main;
 
             int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
             if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
@@ -69,7 +69,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
             }
 
             // Giai đoạn 2: Smart Math Clamping Fallback (Khi Player đứng sát góc chết mép tường)
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 16; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(effectiveMin, effectiveMax);
@@ -77,8 +77,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
 
                 Vector3 clampedPos = _boundaryContext != null ? _boundaryContext.ClampToSafeBounds(rawPos) : rawPos;
 
-                // Đảm bảo sau khi Clamp không bị ép ngược lại sát sạt Player
-                if (Vector3.Distance(clampedPos, center) < 6.5f)
+                // Đảm bảo sau khi Clamp không bị ép ngược lại sát sạt Player hoặc trong viewport camera
+                if (Vector3.Distance(clampedPos, center) < 8.5f || !IsOutsideCameraViewport(cam, clampedPos))
                     continue;
 
                 if (_boundaryContext != null && _boundaryContext.IsInsideWalkableArea(clampedPos))
@@ -90,8 +90,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 }
             }
 
-            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu với Player
-            float fallbackDist = Mathf.Max(effectiveMin, 8.5f);
+            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu 10m với Player
+            float fallbackDist = Mathf.Max(effectiveMin, 11f);
             Vector2 randomDir = Random.insideUnitCircle.normalized;
             if (randomDir.sqrMagnitude < 0.01f) randomDir = Vector2.up;
             Vector3 fallbackPos = center + (Vector3)(randomDir * fallbackDist);
@@ -99,8 +99,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
             if (_boundaryContext != null)
             {
                 Vector3 clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
-                // Nếu clamped ép vào quá gần Player (ví dụ Player ở góc tường), đảo hướng 180 độ
-                if (Vector3.Distance(clamped, center) < 6.0f)
+                if (Vector3.Distance(clamped, center) < 8.5f)
                 {
                     fallbackPos = center - (Vector3)(randomDir * fallbackDist);
                     clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
