@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player.Mechanics;
@@ -26,10 +26,17 @@ namespace ProjectZombie.Features.Player
         public PlayerController Controller { get; }
         public PlayerInputReader InputReader { get; }
 
-        public PlayerContext(GameObject playerObject)
+        public PlayerLogic Logic { get; }
+        public bool IsLocal { get; set; } = true;
+        public int PlayerId { get; set; } = 0;
+        public bool IsAlive => Health != null && Health.CurrentHealth > 0;
+
+        public PlayerContext(GameObject playerObject, bool isLocal = true, int playerId = 0)
         {
             GameObject = playerObject;
             Transform = playerObject != null ? playerObject.transform : null;
+            IsLocal = isLocal;
+            PlayerId = playerId;
 
             if (playerObject != null)
             {
@@ -43,14 +50,15 @@ namespace ProjectZombie.Features.Player
                 Combat = playerObject.GetComponent<CharacterCombat>();
                 Controller = playerObject.GetComponent<PlayerController>();
                 InputReader = playerObject.GetComponent<PlayerInputReader>();
+                Logic = playerObject.GetComponent<PlayerLogic>();
 
                 ValidateComponents();
             }
         }
 
-        public static PlayerContext Create(GameObject playerObject)
+        public static PlayerContext Create(GameObject playerObject, bool isLocal = true, int playerId = 0)
         {
-            return new PlayerContext(playerObject);
+            return new PlayerContext(playerObject, isLocal, playerId);
         }
 
         private void ValidateComponents()

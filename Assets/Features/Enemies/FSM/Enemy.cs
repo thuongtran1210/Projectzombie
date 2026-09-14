@@ -1,4 +1,4 @@
-﻿using ProjectZombie.Core.Pooling;
+using ProjectZombie.Core.Pooling;
 using ProjectZombie.Core.ScriptableObjects;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -289,24 +289,40 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public ITargetSelector TargetSelector { get; set; } = Behaviors.ProximityTargetSelector.SharedInstance;
+        private float _nextTargetScanTime;
+        private const float TARGET_SCAN_INTERVAL = 0.5f;
+
         public static readonly System.Collections.Generic.HashSet<Enemy> ActiveEnemies = new System.Collections.Generic.HashSet<Enemy>();
 
         public void FindPlayer()
         {
-            if (PlayerTransform != null) return;
+            UpdateTarget(force: true);
+        }
 
-            if (PlayerProvider.HasPlayer)
+        public void UpdateTarget(bool force = false)
+        {
+            if (!force && Time.time < _nextTargetScanTime && PlayerTransform != null && PlayerHealthSystem != null && PlayerHealthSystem.CurrentHealth > 0)
             {
-                PlayerTransform = PlayerProvider.PlayerTransform;
-                PlayerHealthSystem = PlayerProvider.PlayerHealth;
                 return;
             }
 
-            var player = PlayerProvider.PlayerGameObject;
-            if (player != null)
+            _nextTargetScanTime = Time.time + TARGET_SCAN_INTERVAL;
+
+            var registry = PlayerProvider.Registry;
+            if (registry != null && TargetSelector != null)
             {
-                PlayerTransform = player.transform;
-                PlayerHealthSystem = player.GetComponent<HealthSystem>();
+                var targetContext = TargetSelector.SelectTarget(transform.position, registry);
+                if (targetContext != null && targetContext.Transform != null)
+                {
+                    SetPlayer(targetContext.Transform, targetContext.Health);
+                    return;
+                }
+            }
+
+            if (PlayerProvider.HasPlayer)
+            {
+                SetPlayer(PlayerProvider.PlayerTransform, PlayerProvider.PlayerHealth);
             }
         }
 
@@ -315,6 +331,9 @@ namespace ProjectZombie.Features.Enemies
         private void Update()
         {
             if (!GameStateManager.IsPlaying) return;
+
+            // Kiểm tra cập nhật mục tiêu định kỳ (0-GC) hoặc khi mục tiêu cũ đã chết
+            UpdateTarget(force: false);
 
             // Distance Throttling: Quái ngoài màn hình (> 14m) chỉ cập nhật FSM 1 lần mỗi 4 frames
             if (!IsBoss && PlayerTransform != null)

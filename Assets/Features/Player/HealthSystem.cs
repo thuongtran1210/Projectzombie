@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Shared
@@ -58,6 +58,19 @@ namespace ProjectZombie.Features.Shared
                 _currentHealth = maxHealth;
             }
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+        }
+
+        /// <summary>
+        /// Gán giá trị máu hiện tại trực tiếp (dùng cho Network Synchronization & Testing).
+        /// </summary>
+        public void SetCurrentHealth(float health)
+        {
+            _currentHealth = Mathf.Clamp(health, 0f, maxHealth);
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+            if (_currentHealth <= 0f)
+            {
+                Die();
+            }
         }
 
         /// <summary>

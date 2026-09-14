@@ -48,6 +48,13 @@ namespace ProjectZombie.Features.Player
         private void Awake()
         {
             if (Instance == null) Instance = this;
+            
+            // Đảm bảo IPlayerRegistry luôn có sẵn (mặc định SinglePlayerRegistry nếu chơi Solo/Offline)
+            if (!ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Player.Core.IPlayerRegistry>(out _))
+            {
+                ProjectZombie.Core.Architecture.ServiceContext.Register<ProjectZombie.Features.Player.Core.IPlayerRegistry>(new ProjectZombie.Features.Player.Core.SinglePlayerRegistry());
+            }
+
             _uiBinder = new GameplayUIBinder(
                 runHUDPresenter,
                 playerInfoUIPresenter,

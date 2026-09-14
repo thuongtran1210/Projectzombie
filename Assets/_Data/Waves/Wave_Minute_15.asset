@@ -17,5 +17,5 @@ MonoBehaviour:
   baseSpawnCount: 1
   spawnInterval: 0
   isEliteWave: 0
-  isBossWave: 1
+  isBossWave: 0
   hpMultiplierOverride: 12

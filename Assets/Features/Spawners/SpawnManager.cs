@@ -357,13 +357,33 @@ namespace ProjectZombie.Features.Spawners
             // 3. Kích hoạt các wave event
             ProcessDueEvents(dueEvents);
 
-            // 4. Chạy cập nhật các Strategy đang kích hoạt
+            // 4. Chạy cập nhật các Strategy đang kích hoạt (Luân phiên phân bổ quái quanh các người chơi còn sống)
             float timeMultiplier = _populationTracker != null ? _populationTracker.CalculateAdaptiveMultiplier(adaptiveCatchupRate) : 1f;
+            Transform activeTarget = GetTargetPlayerTransform();
 
             foreach (var strategy in _strategies.Values)
             {
-                strategy.OnUpdate(Time.deltaTime, timeMultiplier, _spawnLocator, _populationTracker, _playerTransform, SpawnAtPosition);
+                strategy.OnUpdate(Time.deltaTime, timeMultiplier, _spawnLocator, _populationTracker, activeTarget, SpawnAtPosition);
             }
+        }
+
+        private Transform GetTargetPlayerTransform()
+        {
+            var registry = Player.PlayerProvider.Registry;
+            if (registry != null && registry.ActivePlayers.Count > 0)
+            {
+                int count = registry.ActivePlayers.Count;
+                int startIndex = UnityEngine.Random.Range(0, count);
+                for (int i = 0; i < count; i++)
+                {
+                    var p = registry.ActivePlayers[(startIndex + i) % count];
+                    if (p != null && p.Transform != null && p.IsAlive)
+                    {
+                        return p.Transform;
+                    }
+                }
+            }
+            return _playerTransform != null ? _playerTransform : Player.PlayerProvider.PlayerTransform;
         }
 
         private void ProcessDueEvents(List<TimelineEvent> dueEvents)

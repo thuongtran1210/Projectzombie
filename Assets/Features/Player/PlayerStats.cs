@@ -1,4 +1,4 @@
-﻿using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player.Stats;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Core.Save;
@@ -165,9 +165,9 @@ namespace ProjectZombie.Features.Player
                 {
                     saveData = MetaCurrencyManager.Instance.GetSaveData();
                 }
-                else if (Core.Save.GameManager.Instance != null && Core.Save.GameManager.Instance.SaveData != null)
+                else if (ProjectZombie.Core.Save.GameManager.Instance != null && ProjectZombie.Core.Save.GameManager.Instance.SaveData != null)
                 {
-                    saveData = Core.Save.GameManager.Instance.SaveData;
+                    saveData = ProjectZombie.Core.Save.GameManager.Instance.SaveData;
                 }
                 else
                 {

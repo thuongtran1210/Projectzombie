@@ -1,23 +1,52 @@
-﻿using System;
+using System;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Player.Core;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.Player
 {
     /// <summary>
-    /// Service trung tâm cung cấp tham chiếu Player tập trung theo chuẩn Event-Driven (Mục 4 AGENTS.md).
-    /// Loại bỏ hoàn toàn chi phí quét chuỗi và race condition của GameObject.FindGameObjectWithTag("Player").
+    /// Facade Adapter tương thích ngược (Backward Compatible) cung cấp tham chiếu Player.
+    /// Ủy quyền toàn bộ truy vấn sang IPlayerRegistry đăng ký trong ServiceContext (Mục 3.2 & 3.3 AGENTS.md).
     /// </summary>
     public static class PlayerProvider
     {
-        public static Transform PlayerTransform { get; private set; }
-        public static HealthSystem PlayerHealth { get; private set; }
-        public static GameObject PlayerGameObject => PlayerTransform != null ? PlayerTransform.gameObject : null;
+        private static IPlayerRegistry _cachedRegistry;
 
-        public static bool HasPlayer => PlayerTransform != null && PlayerHealth != null;
+        public static IPlayerRegistry Registry
+        {
+            get
+            {
+                if (_cachedRegistry == null)
+                {
+                    _cachedRegistry = ServiceContext.Get<IPlayerRegistry>();
+                    if (_cachedRegistry == null)
+                    {
+                        _cachedRegistry = new SinglePlayerRegistry();
+                        ServiceContext.Register<IPlayerRegistry>(_cachedRegistry);
+                    }
+                }
+                return _cachedRegistry;
+            }
+        }
+
+        public static Transform PlayerTransform => Registry.LocalPlayer?.Transform;
+        public static HealthSystem PlayerHealth => Registry.LocalPlayer?.Health;
+        public static GameObject PlayerGameObject => Registry.LocalPlayer?.GameObject;
+
+        public static bool HasPlayer => Registry.HasAnyPlayer && Registry.LocalPlayer?.Transform != null;
 
         public static event Action<Transform, HealthSystem> OnPlayerSpawned;
         public static event Action OnPlayerDespawned;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        public static void ResetStaticState()
+        {
+            _cachedRegistry = null;
+            OnPlayerSpawned = null;
+            OnPlayerDespawned = null;
+        }
 
         /// <summary>
         /// Đăng ký thực thể người chơi mới sinh ra từ GameplayBootstrapper.
@@ -30,10 +59,10 @@ namespace ProjectZombie.Features.Player
                 return;
             }
 
-            PlayerTransform = playerInstance.transform;
-            PlayerHealth = playerInstance.GetComponent<HealthSystem>();
+            var context = PlayerContext.Create(playerInstance, isLocal: true);
+            Registry.Register(context);
 
-            OnPlayerSpawned?.Invoke(PlayerTransform, PlayerHealth);
+            OnPlayerSpawned?.Invoke(context.Transform, context.Health);
         }
 
         /// <summary>
@@ -50,8 +79,7 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public static void ClearPlayer()
         {
-            PlayerTransform = null;
-            PlayerHealth = null;
+            Registry.Clear();
             OnPlayerDespawned?.Invoke();
         }
     }
