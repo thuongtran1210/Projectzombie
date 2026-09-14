@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 using ProjectZombie.Core.Pooling;
@@ -163,5 +163,33 @@ namespace ProjectZombie.Features.Collectibles
         /// Thuật toán nén 2 vật phẩm ở xa người chơi nhất khi số lượng trên sàn vượt maxGroundItems.
         /// </summary>
         protected abstract void CompressDistantItems();
+
+        /// <summary>
+        /// Tính toán khoảng cách bình phương nhỏ nhất từ vật phẩm tới người chơi gần nhất (hỗ trợ cả Solo & Co-op).
+        /// </summary>
+        protected float GetMinDistanceSqToPlayers(Vector3 itemPos)
+        {
+            var registry = Player.PlayerProvider.Registry;
+            if (registry != null && registry.ActivePlayers.Count > 0)
+            {
+                float minSq = float.MaxValue;
+                for (int i = 0; i < registry.ActivePlayers.Count; i++)
+                {
+                    var p = registry.ActivePlayers[i];
+                    if (p != null && p.Transform != null && p.IsAlive)
+                    {
+                        float sq = ((Vector2)itemPos - (Vector2)p.Transform.position).sqrMagnitude;
+                        if (sq < minSq) minSq = sq;
+                    }
+                }
+                if (minSq < float.MaxValue) return minSq;
+            }
+
+            if (Player.PlayerProvider.HasPlayer)
+            {
+                return ((Vector2)itemPos - (Vector2)Player.PlayerProvider.PlayerTransform.position).sqrMagnitude;
+            }
+            return 0f;
+        }
     }
 }

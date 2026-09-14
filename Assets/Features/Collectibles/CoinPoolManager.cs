@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Pool;
 using ProjectZombie.Core.Pooling;
 
@@ -77,12 +77,6 @@ namespace ProjectZombie.Features.Collectibles
         {
             if (ActiveItems.Count < 2) return;
 
-            Vector3 playerPos = Vector3.zero;
-            if (Player.PlayerController.Instance != null)
-            {
-                playerPos = Player.PlayerController.Instance.transform.position;
-            }
-
             CoinDrop furthest1 = null;
             CoinDrop furthest2 = null;
             float maxDistSq1 = -1f;
@@ -93,7 +87,7 @@ namespace ProjectZombie.Features.Collectibles
                 var coin = ActiveItems[i];
                 if (coin == null || !coin.IsIdle) continue;
 
-                float distSq = (coin.transform.position - playerPos).sqrMagnitude;
+                float distSq = GetMinDistanceSqToPlayers(coin.transform.position);
 
                 if (distSq > maxDistSq1)
                 {

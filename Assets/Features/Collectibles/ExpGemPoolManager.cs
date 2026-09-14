@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Pool;
 using ProjectZombie.Core.Pooling;
 
@@ -71,12 +71,6 @@ namespace ProjectZombie.Features.Collectibles
         {
             if (ActiveItems.Count < 2) return;
 
-            Vector3 playerPos = Vector3.zero;
-            if (Player.PlayerController.Instance != null)
-            {
-                playerPos = Player.PlayerController.Instance.transform.position;
-            }
-
             ExpGem furthest1 = null;
             ExpGem furthest2 = null;
             float maxDistSq1 = -1f;
@@ -87,7 +81,7 @@ namespace ProjectZombie.Features.Collectibles
                 var gem = ActiveItems[i];
                 if (gem == null || !gem.IsIdle) continue;
 
-                float distSq = (gem.transform.position - playerPos).sqrMagnitude;
+                float distSq = GetMinDistanceSqToPlayers(gem.transform.position);
 
                 if (distSq > maxDistSq1)
                 {

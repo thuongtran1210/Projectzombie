@@ -273,7 +273,10 @@ namespace ProjectZombie.Features.Spawners
 
             if (_populationTracker != null)
             {
-                _populationTracker.MaxEnemyCap = maxEnemyCap;
+                int playerCount = Player.PlayerProvider.Registry != null ? Mathf.Max(1, Player.PlayerProvider.Registry.ActivePlayers.Count) : 1;
+                int scaledCap = Mathf.RoundToInt(maxEnemyCap * (1f + (playerCount - 1) * 0.5f));
+
+                _populationTracker.MaxEnemyCap = scaledCap;
                 _populationTracker.MinEnemyFloor = minEnemyFloor;
                 _populationTracker.ResetCount();
             }
@@ -408,6 +411,10 @@ namespace ProjectZombie.Features.Spawners
             Sprite waveIcon = evt.GetIcon();
             OnWaveTriggered?.Invoke(new ProjectZombie.Features.UI.HUD.WaveInfo(stageName, evt.eventName, currentWave, totalEvents, evt.eventType, evt.timestampSeconds, waveIcon));
 
+            // Dọn dẹp quái cũ ở xa khi chuyển Wave hoặc dọn sân khi Boss xuất hiện
+            bool isBossWave = evt.eventType == TimelineEventType.BossSpawn;
+            CullDistantEnemies(maxDistance: isBossWave ? 18f : 24f, cullAllDistant: isBossWave);
+
             // Chuyển giao thực thi cho Strategy tương ứng
             if (_strategies.TryGetValue(evt.eventType, out var strategy))
             {
@@ -416,6 +423,71 @@ namespace ProjectZombie.Features.Spawners
             else
             {
                 Debug.LogWarning($"[SpawnManager] Chưa có strategy cho loại TimelineEventType: {evt.eventType}");
+            }
+        }
+
+        /// <summary>
+        /// Thu hồi các quái vật ở quá xa người chơi về Pool khi chuyển Wave để chống nghẽn sĩ số và tụt FPS.
+        /// </summary>
+        public void CullDistantEnemies(float maxDistance = 24f, bool cullAllDistant = false)
+        {
+            if (Enemies.Enemy.ActiveEnemies == null || Enemies.Enemy.ActiveEnemies.Count == 0) return;
+
+            var registry = Player.PlayerProvider.Registry;
+            var activePlayers = registry != null ? registry.ActivePlayers : null;
+            float maxDistSq = maxDistance * maxDistance;
+
+            var toRemove = new List<Enemies.Enemy>();
+
+            foreach (var enemy in Enemies.Enemy.ActiveEnemies)
+            {
+                if (enemy == null || enemy.IsBoss) continue;
+
+                // Kiểm tra xem quái có nằm quá xa TẤT CẢ người chơi không
+                bool isFarFromAll = true;
+                if (activePlayers != null && activePlayers.Count > 0)
+                {
+                    for (int i = 0; i < activePlayers.Count; i++)
+                    {
+                        var p = activePlayers[i];
+                        if (p != null && p.Transform != null && p.IsAlive)
+                        {
+                            if (((Vector2)enemy.transform.position - (Vector2)p.Transform.position).sqrMagnitude <= maxDistSq)
+                            {
+                                isFarFromAll = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (_playerTransform != null)
+                {
+                    if (((Vector2)enemy.transform.position - (Vector2)_playerTransform.position).sqrMagnitude <= maxDistSq)
+                    {
+                        isFarFromAll = false;
+                    }
+                }
+
+                if (isFarFromAll || (cullAllDistant && UnityEngine.Random.value > 0.4f))
+                {
+                    toRemove.Add(enemy);
+                }
+            }
+
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                var e = toRemove[i];
+                if (e != null && e.gameObject != null)
+                {
+                    if (e.TryGetComponent<EnemyPoolConfig>(out var pc) && pc.Pool != null)
+                    {
+                        pc.ReturnToPool();
+                    }
+                    else
+                    {
+                        Destroy(e.gameObject);
+                    }
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Spawners.Core;
 
 namespace ProjectZombie.Features.Spawners.Spatial
@@ -46,15 +46,23 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 effectiveMax = Mathf.Max(effectiveMin + 4f, maxRadius);
             }
 
-            // Giai đoạn 1: Lấy mẫu Polar ngoài Camera (16 lần thử)
+            // Giai đoạn 1: Lấy mẫu Polar ngoài tầm nhìn tất cả Players (16 lần thử)
+            var registry = Player.PlayerProvider.Registry;
+            var activePlayers = registry != null ? registry.ActivePlayers : null;
+
             for (int i = 0; i < 16; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(effectiveMin, effectiveMax);
                 Vector3 candidatePos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
-                if (_boundaryContext != null && !_boundaryContext.IsInsideWalkableArea(candidatePos))
-                    continue;
+                // Ép luôn nằm trong Safe Map Bounds
+                if (_boundaryContext != null)
+                {
+                    candidatePos = _boundaryContext.ClampToSafeBounds(candidatePos);
+                    if (!_boundaryContext.IsInsideWalkableArea(candidatePos))
+                        continue;
+                }
 
                 if (obstacleMask != 0)
                 {
@@ -62,7 +70,7 @@ namespace ProjectZombie.Features.Spawners.Spatial
                     if (hits > 0) continue;
                 }
 
-                if (!IsOutsideCameraViewport(cam, candidatePos))
+                if (!IsFarFromAllPlayers(candidatePos, activePlayers, cam))
                     continue;
 
                 return candidatePos;
@@ -77,8 +85,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
 
                 Vector3 clampedPos = _boundaryContext != null ? _boundaryContext.ClampToSafeBounds(rawPos) : rawPos;
 
-                // Đảm bảo sau khi Clamp không bị ép ngược lại sát sạt Player hoặc trong viewport camera
-                if (Vector3.Distance(clampedPos, center) < 8.5f || !IsOutsideCameraViewport(cam, clampedPos))
+                // Đảm bảo sau khi Clamp không bị ép ngược lại sát sạt Player hoặc trong tầm nhìn người chơi
+                if (Vector3.Distance(clampedPos, center) < 8.0f || !IsFarFromAllPlayers(clampedPos, activePlayers, cam))
                     continue;
 
                 if (_boundaryContext != null && _boundaryContext.IsInsideWalkableArea(clampedPos))
@@ -90,30 +98,45 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 }
             }
 
-            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu 12m với Player
-            float fallbackDist = Mathf.Max(effectiveMin, 12f);
+            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách và LUÔN CLAMP VÀO MAP BOUNDS
+            float fallbackDist = Mathf.Max(effectiveMin, 10f);
             Vector2 randomDir = Random.insideUnitCircle.normalized;
             if (randomDir.sqrMagnitude < 0.01f) randomDir = Vector2.up;
             Vector3 fallbackPos = center + (Vector3)(randomDir * fallbackDist);
 
             if (_boundaryContext != null)
             {
-                Vector3 clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
-                if (Vector3.Distance(clamped, center) < 10.0f)
-                {
-                    // Nếu clamped bị giới hạn gần Player, cố gắng đẩy ra xa theo hướng ngược lại
-                    fallbackPos = center - (Vector3)(randomDir * fallbackDist);
-                    clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
-                    if (Vector3.Distance(clamped, center) < 10.0f)
-                    {
-                        // Nếu cả 2 phía đều hẹp, trả về tọa độ cách Player đúng 12m không clamp
-                        return center + (Vector3)(randomDir * fallbackDist);
-                    }
-                }
-                return clamped;
+                return _boundaryContext.ClampToSafeBounds(fallbackPos);
             }
 
             return fallbackPos;
+        }
+
+        private bool IsFarFromAllPlayers(Vector3 position, System.Collections.Generic.IReadOnlyList<Player.PlayerContext> players, Camera cam)
+        {
+            // 1. Kiểm tra Viewport của Camera Host
+            if (cam != null && !IsOutsideCameraViewport(cam, position))
+            {
+                return false;
+            }
+
+            // 2. Kiểm tra cự ly với tất cả người chơi trong phòng (Né màn hình Client)
+            if (players != null && players.Count > 0)
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    var p = players[i];
+                    if (p != null && p.Transform != null && p.IsAlive)
+                    {
+                        if (Vector2.Distance(position, p.Transform.position) < 9.5f)
+                        {
+                            return false; // Quá gần 1 người chơi -> Loại bỏ
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         private bool IsOutsideCameraViewport(Camera cam, Vector3 position)
