@@ -1,8 +1,7 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Upgrades;
-using ProjectZombie.Features.YinYang;
 using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.Upgrades.Editor

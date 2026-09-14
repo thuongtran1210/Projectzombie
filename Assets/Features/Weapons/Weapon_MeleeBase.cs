@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Core.Juice;
@@ -110,9 +110,9 @@ namespace ProjectZombie.Features.Weapons
                     }
 
                     // Kích hoạt Vòng Tương Sinh (Element Generation)
-                    if (damageData.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                    if (damageData.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
                     {
-                        YinYang.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
+                        Elements.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
                     }
 
                     // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật

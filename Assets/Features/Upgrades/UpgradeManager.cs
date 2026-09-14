@@ -63,7 +63,6 @@ namespace ProjectZombie.Features.Upgrades
             _filters.Clear();
             _filters.Add(new BannedUpgradeFilter(_bannedUpgrades));
             _filters.Add(new AvailabilityUpgradeFilter());
-            _filters.Add(new YinYangUpgradeFilter());
         }
 
         private void InitDefaultFallbackRewards()

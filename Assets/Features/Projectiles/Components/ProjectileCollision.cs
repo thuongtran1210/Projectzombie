@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Projectiles.Components
@@ -162,10 +162,10 @@ namespace ProjectZombie.Features.Projectiles.Components
                 }
 
                 // Kích hoạt Vòng Tương Sinh (Element Generation)
-                if (_controller.Damage.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                if (_controller.Damage.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
                 {
                     var weapon = _controller.Damage.SourceWeapon as Weapons.WeaponBase;
-                    YinYang.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
+                    Elements.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
                 }
             }
 

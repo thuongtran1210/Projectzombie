@@ -1,7 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.YinYang;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Core.Juice;
 
@@ -51,13 +50,7 @@ namespace ProjectZombie.Features.Player.Skills
             // 2. Quét Sát Thương Diện Rộng, Hất Văng và Choáng quái
             ExecuteEarthquakeImpact(playerObj, center);
 
-            // 3. Tác động Cán cân Âm Dương: Cộng thẳng +25 điểm Dương
-            if (YinYangManager.Instance != null)
-            {
-                YinYangManager.Instance.AdjustValue(25f);
-            }
-
-            // 4. Callback hệ Thổ
+            // 3. Callback hệ Thổ
             onElementSelectedCallback?.Invoke(ElementType.Tho);
 
             // 5. Rung Camera Mạnh

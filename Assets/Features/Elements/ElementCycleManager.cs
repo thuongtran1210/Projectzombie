@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Weapons;
 
-namespace ProjectZombie.Features.YinYang
+namespace ProjectZombie.Features.Elements
 {
     public struct ElementHitEntry
     {

@@ -1,6 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
-using ProjectZombie.Features.YinYang;
 using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Skills.Zones

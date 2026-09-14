@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
 using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Projectiles.Core;
@@ -94,10 +94,10 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                     }
 
                     // 3. Tương Sinh Ngũ Hành
-                    if (_controller.Damage.Element != ElementType.None && YinYang.ElementCycleManager.Instance != null)
+                    if (_controller.Damage.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
                     {
                         var weapon = _controller.Damage.SourceWeapon as Weapons.WeaponBase;
-                        YinYang.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
+                        Elements.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
                     }
                 }
             }
