@@ -133,8 +133,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 return;
             }
 
-            // Fallback nếu không có Tilemap: Khung 20x20 tiêu chuẩn
-            _safeMapBounds = new Bounds(Vector3.zero, new Vector3(20f, 20f, 10f));
+            // Fallback nếu chưa nạp Tilemap/Collider: Khung 100x100 rộng rãi
+            _safeMapBounds = new Bounds(Vector3.zero, new Vector3(100f, 100f, 10f));
             _hasCalculatedBounds = true;
         }
 

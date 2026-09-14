@@ -90,8 +90,8 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 }
             }
 
-            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu 10m với Player
-            float fallbackDist = Mathf.Max(effectiveMin, 11f);
+            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu 12m với Player
+            float fallbackDist = Mathf.Max(effectiveMin, 12f);
             Vector2 randomDir = Random.insideUnitCircle.normalized;
             if (randomDir.sqrMagnitude < 0.01f) randomDir = Vector2.up;
             Vector3 fallbackPos = center + (Vector3)(randomDir * fallbackDist);
@@ -99,10 +99,16 @@ namespace ProjectZombie.Features.Spawners.Spatial
             if (_boundaryContext != null)
             {
                 Vector3 clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
-                if (Vector3.Distance(clamped, center) < 8.5f)
+                if (Vector3.Distance(clamped, center) < 10.0f)
                 {
+                    // Nếu clamped bị giới hạn gần Player, cố gắng đẩy ra xa theo hướng ngược lại
                     fallbackPos = center - (Vector3)(randomDir * fallbackDist);
                     clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
+                    if (Vector3.Distance(clamped, center) < 10.0f)
+                    {
+                        // Nếu cả 2 phía đều hẹp, trả về tọa độ cách Player đúng 12m không clamp
+                        return center + (Vector3)(randomDir * fallbackDist);
+                    }
                 }
                 return clamped;
             }
