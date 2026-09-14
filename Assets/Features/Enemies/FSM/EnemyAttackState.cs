@@ -12,6 +12,14 @@ namespace ProjectZombie.Features.Enemies
         {
         }
 
+        /// <summary>
+        /// Đặt độ trễ tấn công tối thiểu (dùng khi quái vừa được spawn ra từ Object Pool).
+        /// </summary>
+        public void SetAttackCooldownDelay(float delay)
+        {
+            _lastAttackTime = Time.time + delay;
+        }
+
         public override void Enter()
         {
             _enemy.Rb.velocity = Vector2.zero;

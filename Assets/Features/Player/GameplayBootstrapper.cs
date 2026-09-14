@@ -276,13 +276,19 @@ namespace ProjectZombie.Features.Player
             // Khôi phục Player
             ResetOrRespawnPlayer();
 
+            // Cấp 3 giây bất tử mở màn (Grace Period) để Player định hình vị trí, không thể bị chém chết ngay frame 0
+            if (_activePlayerInstance != null && _activePlayerInstance.TryGetComponent<HealthSystem>(out var playerHp))
+            {
+                playerHp.TriggerInvulnerability(3.0f);
+            }
+
             if (RunStatsTracker.Instance != null)
             {
                 RunStatsTracker.Instance.StartTracking();
                 Debug.Log("[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00.");
             }
 
-            if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null)
+            if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
             {
                 ProjectZombie.Features.Spawners.SpawnManager.Instance.StartMatch();
                 Debug.Log("[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu.");

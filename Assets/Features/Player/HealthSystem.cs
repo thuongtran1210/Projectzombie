@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.Shared
         }
 
         private float _currentHealth;
+        private float _invulnerableUntilTime = 0f;
 
         // Bắn sự kiện ra ngoài (Event-Driven) thay vì tự gọi script khác
         public event Action<float, float> OnHealthChanged;
@@ -34,6 +35,15 @@ namespace ProjectZombie.Features.Shared
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => maxHealth;
         public bool IsAlive => _currentHealth > 0;
+        public bool IsInvulnerable => Time.time < _invulnerableUntilTime;
+
+        /// <summary>
+        /// Kích hoạt trạng thái bất tử tạm thời (Spawn Shield / Grace Period / Dash I-Frame).
+        /// </summary>
+        public void TriggerInvulnerability(float duration)
+        {
+            _invulnerableUntilTime = Mathf.Max(_invulnerableUntilTime, Time.time + duration);
+        }
 
         private void OnEnable()
         {
@@ -56,6 +66,7 @@ namespace ProjectZombie.Features.Shared
         public void ResetHealth()
         {
             _currentHealth = maxHealth;
+            _invulnerableUntilTime = 0f;
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
         }
 
@@ -79,7 +90,7 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(float amount)
         {
-            if (_currentHealth <= 0) return; 
+            if (_currentHealth <= 0 || IsInvulnerable) return; 
 
             _currentHealth -= amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
@@ -104,7 +115,7 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(DamageData damageData)
         {
-            if (_currentHealth <= 0) return;
+            if (_currentHealth <= 0 || IsInvulnerable) return;
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);

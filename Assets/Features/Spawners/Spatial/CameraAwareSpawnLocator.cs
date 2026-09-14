@@ -31,18 +31,19 @@ namespace ProjectZombie.Features.Spawners.Spatial
             int obstacleMask = LayerMask.GetMask("Obstacle", "Water");
             if (obstacleMask == 0) obstacleMask = LayerMask.GetMask("Obstacle");
 
-            float effectiveMin = minRadius > 0 ? minRadius : 8f;
+            float effectiveMin = minRadius > 0 ? minRadius : 10f;
             float effectiveMax = maxRadius > effectiveMin ? maxRadius : effectiveMin + 6f;
 
             // Thích ứng bán kính theo kích thước Camera orthographic
             if (cam != null && cam.orthographic)
             {
                 float camHalfH = cam.orthographicSize + _cameraPadding;
-                float camHalfW = cam.orthographicSize * cam.aspect + _cameraPadding;
-                float camDiagonal = Mathf.Sqrt(camHalfW * camHalfW + camHalfH * camHalfH);
+                float camHalfW = (cam.orthographicSize * cam.aspect) + _cameraPadding;
+                float camDiagonal = Mathf.Sqrt((camHalfW * camHalfW) + (camHalfH * camHalfH));
 
-                effectiveMin = Mathf.Min(minRadius, camDiagonal);
-                effectiveMax = Mathf.Max(effectiveMin + 2f, maxRadius);
+                // Bán kính spawn tối thiểu phải lớn hơn hoặc bằng đường chéo nửa màn hình để nằm ngoài tầm nhìn
+                effectiveMin = Mathf.Max(camDiagonal, effectiveMin);
+                effectiveMax = Mathf.Max(effectiveMin + 4f, maxRadius);
             }
 
             // Giai đoạn 1: Lấy mẫu Polar ngoài Camera (16 lần thử)
@@ -68,13 +69,17 @@ namespace ProjectZombie.Features.Spawners.Spatial
             }
 
             // Giai đoạn 2: Smart Math Clamping Fallback (Khi Player đứng sát góc chết mép tường)
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 12; i++)
             {
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(effectiveMin, effectiveMax);
                 Vector3 rawPos = center + new Vector3(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance, 0f);
 
                 Vector3 clampedPos = _boundaryContext != null ? _boundaryContext.ClampToSafeBounds(rawPos) : rawPos;
+
+                // Đảm bảo sau khi Clamp không bị ép ngược lại sát sạt Player
+                if (Vector3.Distance(clampedPos, center) < 6.5f)
+                    continue;
 
                 if (_boundaryContext != null && _boundaryContext.IsInsideWalkableArea(clampedPos))
                 {
@@ -85,9 +90,25 @@ namespace ProjectZombie.Features.Spawners.Spatial
                 }
             }
 
-            // Giai đoạn 3: Fallback cuối cùng đưa về mép an toàn quanh tâm
-            Vector3 fallbackRaw = center + (Vector3)(Random.insideUnitCircle.normalized * effectiveMin);
-            return _boundaryContext != null ? _boundaryContext.ClampToSafeBounds(fallbackRaw) : fallbackRaw;
+            // Giai đoạn 3: Fallback an toàn tuyệt đối - Giữ khoảng cách an toàn tối thiểu với Player
+            float fallbackDist = Mathf.Max(effectiveMin, 8.5f);
+            Vector2 randomDir = Random.insideUnitCircle.normalized;
+            if (randomDir.sqrMagnitude < 0.01f) randomDir = Vector2.up;
+            Vector3 fallbackPos = center + (Vector3)(randomDir * fallbackDist);
+
+            if (_boundaryContext != null)
+            {
+                Vector3 clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
+                // Nếu clamped ép vào quá gần Player (ví dụ Player ở góc tường), đảo hướng 180 độ
+                if (Vector3.Distance(clamped, center) < 6.0f)
+                {
+                    fallbackPos = center - (Vector3)(randomDir * fallbackDist);
+                    clamped = _boundaryContext.ClampToSafeBounds(fallbackPos);
+                }
+                return clamped;
+            }
+
+            return fallbackPos;
         }
 
         private bool IsOutsideCameraViewport(Camera cam, Vector3 position)

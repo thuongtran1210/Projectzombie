@@ -54,7 +54,7 @@ namespace ProjectZombie.Features.MatchFlow
             // BƯỚC 4: Preload Quái Vật & Khởi Tạo Pool Ngầm
             // -------------------------------------------------------------
             reportProgress?.Invoke(0.6f, "Đang nạp dữ liệu quái vật cõi âm...");
-            if (SpawnManager.Instance != null)
+            if (SpawnManager.Instance != null && !SpawnManager.Instance.IsMatchActive)
             {
                 await SpawnManager.Instance.StartMatchAsync();
             }

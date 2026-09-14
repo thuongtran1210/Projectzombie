@@ -177,6 +177,9 @@ namespace ProjectZombie.Features.Enemies
                 StateMachine.Initialize(ChaseState);
             }
 
+            // Đặt độ trễ tấn công ban đầu (1.2s - 1.8s) để quái không vung kiếm chém ngay frame 0 vừa spawn
+            AttackState?.SetAttackCooldownDelay(Random.Range(1.2f, 1.8f));
+
             // Triệt tiêu lực cản đẩy nhau giữa Player và Enemy & Gán PhysicsMaterial2D không ma sát
             Collider2D enemyCol = GetComponent<Collider2D>();
             if (enemyCol != null)
