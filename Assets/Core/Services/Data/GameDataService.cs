@@ -72,9 +72,10 @@ namespace ProjectZombie.Core.Services.Data
                     _handles[key] = handle;
                     result = await handle.Task;
                 }
-                else
+
+                if (locHandle.IsValid())
                 {
-                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
+                    UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
             }
             catch (Exception ex)
@@ -110,13 +111,15 @@ namespace ProjectZombie.Core.Services.Data
         {
             if (string.IsNullOrEmpty(label)) return new List<T>();
 
+            string labelKey = $"label:{label}";
             try
             {
                 var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<T>(label, null);
                 var results = await handle.Task;
                 if (results != null && results.Count > 0)
                 {
-                    _handles[$"label:{label}"] = handle;
+                    _handles[labelKey] = handle;
+                    _handles[label] = handle; // Lưu cả 2 key để tương thích khi release
                     return results;
                 }
             }
@@ -146,11 +149,13 @@ namespace ProjectZombie.Core.Services.Data
         }
 
         /// <summary>
-        /// Giải phóng AsyncOperationHandle của một Asset cụ thể để giảm Ref-Count.
+        /// Giải phóng AsyncOperationHandle của một Asset hoặc Label cụ thể để giảm Ref-Count.
         /// </summary>
         public void ReleaseAsset(string key)
         {
             if (string.IsNullOrEmpty(key)) return;
+
+            string labelKey = key.StartsWith("label:") ? key : $"label:{key}";
 
             if (_handles.TryGetValue(key, out var handle))
             {
@@ -161,7 +166,17 @@ namespace ProjectZombie.Core.Services.Data
                 _handles.Remove(key);
             }
 
+            if (_handles.TryGetValue(labelKey, out var labelHandle))
+            {
+                if (labelHandle.IsValid())
+                {
+                    UnityEngine.AddressableAssets.Addressables.Release(labelHandle);
+                }
+                _handles.Remove(labelKey);
+            }
+
             _cache.Remove(key);
+            _cache.Remove(labelKey);
         }
 
         /// <summary>

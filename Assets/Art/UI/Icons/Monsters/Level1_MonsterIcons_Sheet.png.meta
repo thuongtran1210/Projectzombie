@@ -349,15 +349,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Icon_Monster_MaGiap: 4951109404168921002
-      Icon_Monster_MaDa: 48799176676763939
-      Icon_Monster_MaTroi: 6824302259244931010
+      Icon_Monster_DiemVuong: 6889845902964837195
       Icon_Monster_HoLyTinh: -7598605706414661151
-      Icon_Monster_QuyNhapTrang: 7673597929921603940
+      Icon_Monster_MaDa: 48799176676763939
       Icon_Monster_MaDoiNo: 2300207099776836425
       Icon_Monster_MaDoiNo_Left: 1549832049182390123
+      Icon_Monster_MaGiap: 4951109404168921002
+      Icon_Monster_MaTroi: 6824302259244931010
       Icon_Monster_NguuDauMaDien: -7964961199430536366
-      Icon_Monster_DiemVuong: 6889845902964837195
+      Icon_Monster_QuyNhapTrang: 7673597929921603940
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

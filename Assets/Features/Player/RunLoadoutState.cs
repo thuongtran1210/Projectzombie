@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
 
@@ -73,14 +74,45 @@ namespace ProjectZombie.Features.Player
             LoadFromSaveOrDefaults();
         }
 
+        public static async Task EnsureInitializedAsync()
+        {
+            if (_isInitialized && _selectedCharacter != null && _selectedPrimaryWeapon != null) return;
+            await LoadFromSaveOrDefaultsAsync();
+        }
+
         /// <summary>
-        /// Nạp dữ liệu đã lưu từ bộ nhớ, nếu chưa có sẽ nạp bộ mặc định của tướng đầu tiên.
+        /// Nạp dữ liệu đã lưu từ bộ nhớ (Async), sử dụng GameDataService Addressables làm nguồn chính.
+        /// </summary>
+        public static async Task LoadFromSaveOrDefaultsAsync()
+        {
+            _isInitialized = true;
+
+            // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO (Single Source of Truth)
+            CharacterDatabaseSO characterDatabase = null;
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null && Application.isPlaying)
+            {
+                characterDatabase = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+            }
+
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Character/CharacterDatabase");
+            if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
+
+            // 2. Nạp Database Vũ Khí
+            var allWeapons = await LoadAllWeaponsDatabaseAsync();
+
+            // 3. Phục hồi cấu hình từ PlayerPrefs
+            ApplySavedLoadout(characterDatabase, allWeapons);
+        }
+
+        /// <summary>
+        /// Nạp dữ liệu đã lưu từ bộ nhớ (Synchronous Fallback nếu đã cached).
         /// </summary>
         public static void LoadFromSaveOrDefaults()
         {
             _isInitialized = true;
 
-            // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO (Single Source of Truth)
+            // 1. Nạp Database Nhân Vật từ CharacterDatabaseSO
             CharacterDatabaseSO characterDatabase = null;
             if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null && Application.isPlaying)
             {
@@ -95,7 +127,12 @@ namespace ProjectZombie.Features.Player
             // 2. Nạp Database Vũ Khí
             var allWeapons = LoadAllWeaponsDatabase();
 
-            // 3. Đọc từ PlayerPrefs
+            // 3. Phục hồi cấu hình từ PlayerPrefs
+            ApplySavedLoadout(characterDatabase, allWeapons);
+        }
+
+        private static void ApplySavedLoadout(CharacterDatabaseSO characterDatabase, List<WeaponData> allWeapons)
+        {
             string savedHeroId = PlayerPrefs.GetString(KEY_HERO_ID, string.Empty);
             string savedPrimaryId = PlayerPrefs.GetString(KEY_PRIMARY_ID, string.Empty);
             string savedRelicsCsv = PlayerPrefs.GetString(KEY_RELICS_CSV, string.Empty);
@@ -266,6 +303,23 @@ namespace ProjectZombie.Features.Player
             }
 
             PlayerPrefs.Save();
+        }
+
+        public static async Task<List<WeaponData>> LoadAllWeaponsDatabaseAsync()
+        {
+            var list = new List<WeaponData>();
+
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null && Application.isPlaying)
+            {
+                var addressableWeapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>("WeaponData");
+                if (addressableWeapons != null && addressableWeapons.Count > 0)
+                {
+                    list.AddRange(addressableWeapons);
+                    return list;
+                }
+            }
+
+            return LoadAllWeaponsDatabase();
         }
 
         public static List<WeaponData> LoadAllWeaponsDatabase()

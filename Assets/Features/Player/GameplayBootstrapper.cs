@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.HUD;
 using ProjectZombie.Features.UI.StatsAndSkills;
@@ -57,8 +57,11 @@ namespace ProjectZombie.Features.Player
             );
         }
 
-        private void Start()
+        private async void Start()
         {
+            // 0. Đảm bảo Loadout được nạp Async hoàn chỉnh từ Addressables/Save
+            await RunLoadoutState.EnsureInitializedAsync();
+
             // 1. Đăng ký lắng nghe sự kiện đổi tướng từ UI trong Scene
             _characterSelectionPresenter = CharacterSelectionPresenter.Instance;
             if (_characterSelectionPresenter != null)
@@ -120,15 +123,15 @@ namespace ProjectZombie.Features.Player
             }
 
             // Ưu tiên 2: Lấy tướng đầu tiên từ CharacterDatabaseSO
+            if (characterDatabase == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                var dbTask = ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                if (dbTask.IsCompleted) characterDatabase = dbTask.Result;
+            }
+
             if (characterDatabase == null)
             {
                 characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-                #if UNITY_EDITOR
-                if (characterDatabase == null)
-                {
-                    characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-                }
-                #endif
             }
             if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
             {

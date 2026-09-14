@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
@@ -133,30 +133,12 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-            if (loaded1 != null && loaded1.Length > 0)
+            var loadedWeapons = RunLoadoutState.LoadAllWeaponsDatabase();
+            if (loadedWeapons != null && loadedWeapons.Count > 0)
             {
-                foreach (var w in loaded1) TryAddWeapon(w);
+                foreach (var w in loadedWeapons) TryAddWeapon(w);
             }
 
-            var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
-            if (loaded2 != null && loaded2.Length > 0)
-            {
-                foreach (var w in loaded2) TryAddWeapon(w);
-            }
-
-#if UNITY_EDITOR
-            if (_cachedWeapons.Count == 0)
-            {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons", "Assets/Resources/Weapons" });
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    TryAddWeapon(wd);
-                }
-            }
-#endif
             _allWeapons = _cachedWeapons;
             _isWeaponsLoaded = true;
             sw.Stop();

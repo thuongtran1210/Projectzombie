@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -109,6 +109,11 @@ namespace ProjectZombie.Features.MatchFlow
                         SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
                         loadedFromAddressables = true;
                     }
+                }
+
+                if (locHandle.IsValid())
+                {
+                    UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
             }
             catch (Exception ex)

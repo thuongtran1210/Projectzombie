@@ -119,14 +119,11 @@ namespace ProjectZombie.Features.Upgrades
                     _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
                     return;
                 }
-#if UNITY_EDITOR
-                PopulateAllAvailableUpgrades();
-#else
+
                 if (_loadingTask == null || _loadingTask.IsCompleted)
                 {
                     _loadingTask = PopulateAllAvailableUpgradesAsync();
                 }
-#endif
             }
         }
 
@@ -151,7 +148,7 @@ namespace ProjectZombie.Features.Upgrades
             }
         }
 
-        [ContextMenu("Populate All Upgrades")]
+        [ContextMenu("Populate All Upgrades (Editor Tool Only)")]
         public void PopulateAllAvailableUpgrades()
         {
             _allAvailableUpgrades.Clear();
@@ -163,23 +160,26 @@ namespace ProjectZombie.Features.Upgrades
             }
 
 #if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
-            foreach (string guid in guids)
+            if (!Application.isPlaying)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var upgrade = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                if (upgrade != null && !_allAvailableUpgrades.Contains(upgrade) && !(upgrade is FallbackRewardUpgradeData))
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
+                foreach (string guid in guids)
                 {
-                    _allAvailableUpgrades.Add(upgrade);
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var upgrade = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
+                    if (upgrade != null && !_allAvailableUpgrades.Contains(upgrade) && !(upgrade is FallbackRewardUpgradeData))
+                    {
+                        _allAvailableUpgrades.Add(upgrade);
+                    }
                 }
+                UnityEditor.EditorUtility.SetDirty(this);
+                Debug.Log($"[UpgradeManager] Editor Tool: Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ AssetDatabase.");
+                _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
+                return;
             }
-            UnityEditor.EditorUtility.SetDirty(this);
-            Debug.Log($"[UpgradeManager] Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ dự án.");
-            _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
-#else
-            // Fallback sang async task nếu gọi từ sync context trên non-editor
-            _ = PopulateAllAvailableUpgradesAsync();
 #endif
+
+            _ = PopulateAllAvailableUpgradesAsync();
         }
 
         public async Task PopulateAllAvailableUpgradesAsync()
