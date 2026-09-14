@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using ProjectZombie.Core.Save;
 using ProjectZombie.Core.Architecture;
@@ -34,6 +34,23 @@ namespace ProjectZombie.Features.MetaProgression
 
         public void EnsureInitialized()
         {
+            if (_progressionConfig == null)
+            {
+                _progressionConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig") ??
+                                     Resources.Load<RelicStarProgressionSO>("Progression/RelicStarProgressionConfig");
+#if UNITY_EDITOR
+                if (_progressionConfig == null)
+                {
+                    _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset") ??
+                                         UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/Resources/RelicStarProgressionConfig.asset");
+                }
+#endif
+                if (_progressionConfig == null)
+                {
+                    _progressionConfig = ScriptableObject.CreateInstance<RelicStarProgressionSO>();
+                }
+            }
+
             if (_saveData == null)
             {
                 var gm = GameManager.Instance;
@@ -50,6 +67,11 @@ namespace ProjectZombie.Features.MetaProgression
 
         public void Initialize(MetaProgressionSaveData saveData)
         {
+            if (_progressionConfig == null)
+            {
+                EnsureInitialized();
+            }
+
             _saveData = saveData ?? new MetaProgressionSaveData();
 
             // Đảm bảo vũ khí khởi đầu luôn đạt tối thiểu 1 sao nếu chưa từng tạo save

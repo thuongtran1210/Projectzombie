@@ -248,7 +248,7 @@ namespace ProjectZombie.Features.Spawners
 
             if (_boundaryContext != null)
             {
-                _boundaryContext.AssignExplicitTilemaps(gTilemap, oTilemap, wCollider);
+                _boundaryContext.AssignMapInstance(mapInstance, gTilemap, oTilemap);
             }
         }
 

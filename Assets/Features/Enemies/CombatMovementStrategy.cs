@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Enemies
 {
@@ -34,10 +34,10 @@ namespace ProjectZombie.Features.Enemies
 
             if (obstacleLayerMask.value == 0)
             {
-                obstacleLayerMask = LayerMask.GetMask("Obstacle", "Default");
+                obstacleLayerMask = LayerMask.GetMask("Obstacle", "Water");
                 if (obstacleLayerMask.value == 0)
                 {
-                    obstacleLayerMask = (1 << 3) | (1 << 0); // Fallback: Layer 3 (Obstacle) & Layer 0 (Default)
+                    obstacleLayerMask = 1 << LayerMask.NameToLayer("Obstacle");
                 }
             }
 

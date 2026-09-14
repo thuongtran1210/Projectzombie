@@ -90,8 +90,9 @@ namespace ProjectZombie.Features.MatchFlow
         {
             if (stage == null || string.IsNullOrEmpty(stage.mapPrefabAddress)) return;
 
-            // 1. Dọn dẹp map cũ
+            // 1. Dọn dẹp map cũ và vô hiệu hóa các môi trường tĩnh có sẵn trong Scene để tránh trùng lặp Collider
             DestroyCurrentMapInstance();
+            DisableStaticSceneEnvironments();
 
             bool loadedFromAddressables = false;
             try
@@ -135,6 +136,29 @@ namespace ProjectZombie.Features.MatchFlow
                 else
                 {
                     Debug.Log($"[MatchFlowOrchestrator] Không tìm thấy Map '{stage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định trong Scene.");
+                    EnableStaticSceneEnvironments();
+                }
+            }
+        }
+
+        private static void DisableStaticSceneEnvironments()
+        {
+            var staticSanDinh = GameObject.Find("Environment_SanDinhLangCo");
+            if (staticSanDinh != null)
+            {
+                staticSanDinh.SetActive(false);
+            }
+        }
+
+        private static void EnableStaticSceneEnvironments()
+        {
+            // Tìm cả inactive object
+            var grids = UnityEngine.Object.FindObjectsOfType<Grid>(true);
+            foreach (var grid in grids)
+            {
+                if (grid.gameObject.name.Contains("SanDinh") || grid.gameObject.name.Contains("Environment"))
+                {
+                    grid.gameObject.SetActive(true);
                 }
             }
         }
