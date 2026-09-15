@@ -2,120 +2,76 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Upgrades.Filters;
+using ProjectZombie.Features.Upgrades.Weighting;
+using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.Upgrades
 {
     /// <summary>
     /// Thuật toán pure C# tính toán trọng số và lựa chọn ngẫu nhiên các thẻ nâng cấp (UpgradeData).
-    /// Tách rời hoàn toàn khỏi MonoBehaviour để hỗ trợ Unit Testing và tuân thủ SRP.
+    /// Tách rời hoàn toàn khỏi MonoBehaviour, tích hợp UpgradeWeightPipeline và tái sử dụng Static Buffers (0 GC).
     /// </summary>
     public static class UpgradeSelector
     {
-        /// <summary>
-        /// Tính toán trọng số xuất hiện động (Dynamic Synergy Weight):
-        /// - Đồ đang có trong ba lô / Thẻ Tiến Hóa: Dynamic multiplier
-        /// - Cùng hệ hoặc Tương Sinh Ngũ Hành: Thêm +35% / +25%
-        /// </summary>
-        public static float CalculateEffectiveWeight(
-            UpgradeData upgrade, 
-            GameObject player, 
-            HashSet<ElementType> activeElements)
-        {
-            if (upgrade == null) return 0f;
-
-            float weight = Mathf.Max(1f, upgrade.spawnWeight);
-
-            // 1. Phân loại trọng số động theo từng loại thẻ (Polymorphic Dynamic Multiplier)
-            weight *= upgrade.GetDynamicWeightMultiplier(player);
-
-            // 2. Cộng hưởng Ngũ Hành (Element Synergy Bonus qua ElementSynergyRules)
-            if (upgrade.element != ElementType.None && activeElements != null && activeElements.Count > 0)
-            {
-                if (activeElements.Contains(upgrade.element))
-                {
-                    // Đồng Hệ (Cùng nguyên tố) -> +35%
-                    weight *= 1.35f;
-                }
-                else
-                {
-                    // Tương Sinh (Thủy sinh Mộc, Mộc sinh Hỏa,...)
-                    foreach (var activeElem in activeElements)
-                    {
-                        if (ElementSynergyRules.IsElementGenerative(activeElem, upgrade.element))
-                        {
-                            weight *= 1.25f;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return weight;
-        }
+        // Reusable Buffers để triệt tiêu 100% GC Allocations trong Gacha selection loop
+        private static readonly List<UpgradeData> _validBuffer = new List<UpgradeData>(64);
+        private static readonly List<float> _weightsBuffer = new List<float>(64);
 
         /// <summary>
-        /// Thuật toán Weighted Random chọn ngẫu nhiên danh sách thẻ nâng cấp từ pool khả dụng.
+        /// Thuật toán Weighted Random chọn ngẫu nhiên danh sách thẻ nâng cấp qua PlayerContext & Pipeline.
         /// </summary>
         public static List<UpgradeData> SelectUpgrades(
             int count,
-            GameObject player,
+            PlayerContext context,
             IReadOnlyList<UpgradeData> availableUpgrades,
             IReadOnlyList<IUpgradeFilter> filters,
+            UpgradeWeightPipeline weightPipeline,
             IReadOnlyList<UpgradeData> fallbackRewards)
         {
-            var weaponManager = player != null ? player.GetComponent<WeaponManager>() : null;
-
-            // Thu thập các nguyên tố Ngũ Hành mà người chơi đang sở hữu
-            var activeElements = new HashSet<ElementType>();
-            if (weaponManager != null)
-            {
-                for (int i = 0; i < weaponManager.ActiveWeapons.Count; i++)
-                {
-                    var w = weaponManager.ActiveWeapons[i];
-                    if (w != null && w.element != ElementType.None)
-                    {
-                        activeElements.Add(w.element);
-                    }
-                }
-            }
-
-            var validUpgrades = new List<UpgradeData>();
-            var weights = new List<float>();
+            _validBuffer.Clear();
+            _weightsBuffer.Clear();
             float totalWeight = 0f;
 
-            // 1. Lọc thẻ hợp lệ & tính trọng số động
+            var playerGo = context?.GameObject;
+
+            // 1. Lọc thẻ hợp lệ & tính trọng số qua Pipeline
             for (int i = 0; i < availableUpgrades.Count; i++)
             {
                 var u = availableUpgrades[i];
-                if (IsUpgradeAllowed(u, player, filters))
+                if (IsUpgradeAllowed(u, playerGo, filters))
                 {
-                    float effectiveWeight = CalculateEffectiveWeight(u, player, activeElements);
-                    validUpgrades.Add(u);
-                    weights.Add(effectiveWeight);
+                    float effectiveWeight = weightPipeline != null && context != null
+                        ? weightPipeline.CalculateFinalWeight(u, context)
+                        : Mathf.Max(0.1f, u.spawnWeight);
+
+                    _validBuffer.Add(u);
+                    _weightsBuffer.Add(effectiveWeight);
                     totalWeight += effectiveWeight;
                 }
             }
 
-            var selectedUpgrades = new List<UpgradeData>();
+            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_SELECTOR]</color> SelectUpgrades(count={count}) - availableInput: {availableUpgrades.Count}, validPassed: {_validBuffer.Count}, totalWeight: {totalWeight}");
+
+            var selectedUpgrades = new List<UpgradeData>(count);
 
             // 2. Thuật toán Weighted Random tiêu chuẩn
-            while (selectedUpgrades.Count < count && validUpgrades.Count > 0 && totalWeight > 0f)
+            while (selectedUpgrades.Count < count && _validBuffer.Count > 0 && totalWeight > 0f)
             {
                 float randomValue = Random.Range(0f, totalWeight);
                 float currentSum = 0f;
 
-                for (int i = 0; i < validUpgrades.Count; i++)
+                for (int i = 0; i < _validBuffer.Count; i++)
                 {
-                    currentSum += weights[i];
-                    if (currentSum >= randomValue || i == validUpgrades.Count - 1)
+                    currentSum += _weightsBuffer[i];
+                    if (currentSum >= randomValue || i == _validBuffer.Count - 1)
                     {
-                        var chosen = validUpgrades[i];
+                        var chosen = _validBuffer[i];
                         selectedUpgrades.Add(chosen);
-                        totalWeight -= weights[i];
+                        totalWeight -= _weightsBuffer[i];
 
-                        validUpgrades.RemoveAt(i);
-                        weights.RemoveAt(i);
+                        _validBuffer.RemoveAt(i);
+                        _weightsBuffer.RemoveAt(i);
                         break;
                     }
                 }
@@ -133,7 +89,27 @@ namespace ProjectZombie.Features.Upgrades
                 fallbackIndex++;
             }
 
+            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_SELECTOR]</color> SelectUpgrades trả về: {selectedUpgrades.Count} thẻ");
             return selectedUpgrades;
+        }
+
+        /// <summary>
+        /// Overload tương thích ngược cho GameObject player.
+        /// </summary>
+        public static List<UpgradeData> SelectUpgrades(
+            int count,
+            GameObject player,
+            IReadOnlyList<UpgradeData> availableUpgrades,
+            IReadOnlyList<IUpgradeFilter> filters,
+            IReadOnlyList<UpgradeData> fallbackRewards)
+        {
+            var context = player != null ? new PlayerContext(player) : null;
+            var pipeline = new UpgradeWeightPipeline();
+            pipeline.RegisterWeighter(new ArchetypeSynergyWeighter());
+            pipeline.RegisterWeighter(new ElementSynergyWeighter());
+            pipeline.RegisterWeighter(new OwnedWeaponPriorityWeighter());
+
+            return SelectUpgrades(count, context, availableUpgrades, filters, pipeline, fallbackRewards);
         }
 
         private static bool IsUpgradeAllowed(UpgradeData upgrade, GameObject player, IReadOnlyList<IUpgradeFilter> filters)

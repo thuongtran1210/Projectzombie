@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -138,6 +138,7 @@ namespace ProjectZombie.Features.UI
                 {
                     ApplyStateVisuals(false);
                     loadingFinished = true;
+                    CheckAndPromptInitialMythicCore();
                 }, "Đang khai mở cửa Hoàng Tuyền...");
 
                 while (!loadingFinished) yield return null;
@@ -167,6 +168,32 @@ namespace ProjectZombie.Features.UI
 
                 // 4. Fade In sáng lại
                 yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
+
+                // 5. Mở bảng chọn Lõi Thần Thoại sau khi màn hình sáng lại
+                CheckAndPromptInitialMythicCore();
+            }
+        }
+
+        private void CheckAndPromptInitialMythicCore()
+        {
+            var player = PlayerProvider.HasPlayer ? PlayerProvider.PlayerGameObject : null;
+            PlayerMythicManager mythicMgr = null;
+            bool hasMythicMgr = player != null && player.TryGetComponent(out mythicMgr);
+            var archetype = mythicMgr != null ? mythicMgr.CurrentArchetype : Upgrades.MythicArchetype.None;
+
+            Debug.Log($"<color=#FFD700>[DIAG_TRANSITION]</color> CheckAndPromptInitialMythicCore: player = {(player != null ? player.name : "NULL")}, hasMythicMgr = {hasMythicMgr}, archetype = {archetype}");
+
+            if (player != null && hasMythicMgr && archetype == Upgrades.MythicArchetype.None)
+            {
+                if (GameStateManager.Instance != null)
+                {
+                    Debug.Log("<color=#FFD700>[MetaSceneTransitionController]</color> Khởi đầu trận đấu: Mở bảng chọn 3 Đại Lõi Thần Thoại (Nhập Đạo Arena)!");
+                    GameStateManager.Instance.ChangeState(GameState.LevelUpSelection);
+                }
+                else
+                {
+                    Debug.LogError("<color=#FFD700>[DIAG_TRANSITION]</color> GameStateManager.Instance is NULL!");
+                }
             }
         }
 

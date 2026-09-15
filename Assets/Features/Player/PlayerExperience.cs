@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using ProjectZombie.Features.Shared;
 
@@ -62,6 +62,15 @@ namespace ProjectZombie.Features.Player
             CurrentLevel++;
             MaxExp = CalculateMaxExp(CurrentLevel);
             OnLevelUp?.Invoke(CurrentLevel);
+        }
+
+        public void ResetExperience()
+        {
+            CurrentLevel = 1;
+            CurrentExp = 0f;
+            MaxExp = CalculateMaxExp(1);
+            OnExpChanged?.Invoke(0f, MaxExp);
+            Debug.Log("[PlayerExperience] Đã reset Level và EXP về cấp 1.");
         }
 
         private float CalculateMaxExp(int level)

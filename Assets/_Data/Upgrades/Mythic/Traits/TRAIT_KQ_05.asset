@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6694faccf8322e547a9bf2fd52b52f47, type: 3}
+  m_Name: TRAIT_KQ_05
+  m_EditorClassIdentifier: 
+  id: TRAIT_KQ_05
+  upgradeName: "C\u01A1 Quan T\u1ED1c X\u1EA1"
+  description: "T\u0103ng +35% T\u1ED1c \u0111\u1ED9 t\u1EA5n c\xF4ng c\u1EE7a t\u1EA5t
+    c\u1EA3 v\u0169 kh\xED t\u1EA7m xa."
+  icon: {fileID: 0}
+  upgradeType: 1
+  spawnWeight: 1
+  maxLevel: 3
+  element: 1
+  requiredArchetype: 2
+  playerStatModifier:
+    maxHealthBonus: 0
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0.35
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

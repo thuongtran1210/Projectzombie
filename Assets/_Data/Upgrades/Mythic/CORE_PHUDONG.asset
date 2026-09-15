@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 295da93c94b34dc4590d1614db535678, type: 3}
+  m_Name: CORE_PHUDONG
+  m_EditorClassIdentifier: 
+  id: CORE_PHUDONG
+  upgradeName: "Ph\xF9 \u0110\u1ED5ng Thi\xEAn Uy"
+  description: "Di\u1EC7t 50 qu\xE1i <color=#FF7700>ph\xF3ng to 10% k\xEDch th\u01B0\u1EDBc</color>
+    v\xE0 +50 HP (Max 200%). L\u01B0\u1EDBt c\u01B0\u1EE1i Ng\u1EF1a S\u1EAFt phun
+    l\u1EEDa c\xE0n qu\xE9t. H\u1ED3i sinh gi\xE1ng s\xE9t d\u1ECDn map 10m."
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 1
+  maxLevel: 1
+  element: 4
+  archetype: 1
+  mythicTitle: "PH\xD9 \u0110\u1ED4NG TH\u1EA6N T\u01AF\u1EDANG"
+  runtimePrefab: {fileID: 6601374152272952111, guid: d2f8b9878cd9f6744bceb496296c4486, type: 3}

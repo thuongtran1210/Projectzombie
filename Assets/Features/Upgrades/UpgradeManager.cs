@@ -42,6 +42,9 @@ namespace ProjectZombie.Features.Upgrades
 
         private readonly HashSet<UpgradeData> _bannedUpgrades = new HashSet<UpgradeData>();
         private readonly List<IUpgradeFilter> _filters = new List<IUpgradeFilter>();
+        private readonly ProjectZombie.Features.Upgrades.Weighting.UpgradeWeightPipeline _weightPipeline = new ProjectZombie.Features.Upgrades.Weighting.UpgradeWeightPipeline();
+
+        public ProjectZombie.Features.Upgrades.Weighting.UpgradeWeightPipeline WeightPipeline => _weightPipeline;
 
         private void Awake()
         {
@@ -54,6 +57,7 @@ namespace ProjectZombie.Features.Upgrades
             ProjectZombie.Core.Architecture.ServiceContext.Register<IUpgradeService>(this);
 
             InitDefaultFilters();
+            InitDefaultWeightPipeline();
             InitDefaultFallbackRewards();
             AutoPopulateUpgradesIfEmpty();
         }
@@ -63,6 +67,15 @@ namespace ProjectZombie.Features.Upgrades
             _filters.Clear();
             _filters.Add(new BannedUpgradeFilter(_bannedUpgrades));
             _filters.Add(new AvailabilityUpgradeFilter());
+            _filters.Add(new ArchetypeExclusionFilter());
+        }
+
+        private void InitDefaultWeightPipeline()
+        {
+            _weightPipeline.ClearWeighters();
+            _weightPipeline.RegisterWeighter(new ProjectZombie.Features.Upgrades.Weighting.ArchetypeSynergyWeighter());
+            _weightPipeline.RegisterWeighter(new ProjectZombie.Features.Upgrades.Weighting.ElementSynergyWeighter());
+            _weightPipeline.RegisterWeighter(new ProjectZombie.Features.Upgrades.Weighting.OwnedWeaponPriorityWeighter());
         }
 
         private void InitDefaultFallbackRewards()
@@ -111,11 +124,21 @@ namespace ProjectZombie.Features.Upgrades
 
         public void AutoPopulateUpgradesIfEmpty()
         {
+            _allAvailableUpgrades?.RemoveAll(u => u == null);
+
             if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0)
             {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    PopulateAllAvailableUpgrades();
+                    return;
+                }
+#endif
                 if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
                 {
                     _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
+                    _allAvailableUpgrades.RemoveAll(u => u == null);
                     return;
                 }
 
@@ -128,11 +151,14 @@ namespace ProjectZombie.Features.Upgrades
 
         public async Task AutoPopulateUpgradesIfEmptyAsync()
         {
+            _allAvailableUpgrades?.RemoveAll(u => u == null);
+
             if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0)
             {
                 if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
                 {
                     _allAvailableUpgrades = new List<UpgradeData>(_cachedMasterUpgrades);
+                    _allAvailableUpgrades.RemoveAll(u => u == null);
                     return;
                 }
 
@@ -151,12 +177,7 @@ namespace ProjectZombie.Features.Upgrades
         public void PopulateAllAvailableUpgrades()
         {
             _allAvailableUpgrades.Clear();
-
-            if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
-            {
-                _allAvailableUpgrades.AddRange(_cachedMasterUpgrades);
-                return;
-            }
+            _cachedMasterUpgrades = null;
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -172,7 +193,7 @@ namespace ProjectZombie.Features.Upgrades
                     }
                 }
                 UnityEditor.EditorUtility.SetDirty(this);
-                Debug.Log($"[UpgradeManager] Editor Tool: Tự động nạp {_allAvailableUpgrades.Count} thẻ UpgradeData từ AssetDatabase.");
+                Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp {_allAvailableUpgrades.Count} thẻ UpgradeData hợp lệ từ AssetDatabase.");
                 _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
                 return;
             }
@@ -188,6 +209,7 @@ namespace ProjectZombie.Features.Upgrades
             if (_cachedMasterUpgrades != null && _cachedMasterUpgrades.Count > 0)
             {
                 _allAvailableUpgrades.AddRange(_cachedMasterUpgrades);
+                _allAvailableUpgrades.RemoveAll(u => u == null);
                 return;
             }
 
@@ -255,18 +277,36 @@ namespace ProjectZombie.Features.Upgrades
         }
 
         /// <summary>
-        /// Trả về danh sách nâng cấp ngẫu nhiên qua thuật toán UpgradeSelector.
+        /// Trả về danh sách nâng cấp ngẫu nhiên qua thuật toán UpgradeSelector & PlayerContext.
         /// </summary>
-        public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
+        public List<UpgradeData> GetRandomUpgrades(int count, Player.PlayerContext context)
         {
             AutoPopulateUpgradesIfEmpty();
-            return UpgradeSelector.SelectUpgrades(count, player, _allAvailableUpgrades, _filters, _fallbackRewards);
+            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_MANAGER]</color> GetRandomUpgrades(count={count}) - TotalAvailable: {_allAvailableUpgrades.Count}");
+            return UpgradeSelector.SelectUpgrades(count, context, _allAvailableUpgrades, _filters, _weightPipeline, _fallbackRewards);
+        }
+
+        public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
+        {
+            var context = player != null ? new Player.PlayerContext(player) : null;
+            return GetRandomUpgrades(count, context);
         }
 
         public List<UpgradeData> GetRandomUpgrades(int count)
         {
             var player = Player.PlayerProvider.HasPlayer ? Player.PlayerProvider.PlayerGameObject : null;
             return GetRandomUpgrades(count, player);
+        }
+
+        /// <summary>
+        /// Trả về danh sách các Đại Lõi Thần Thoại khả dụng (dùng cho Level 1 khởi đầu trận đấu).
+        /// </summary>
+        public List<UpgradeData> GetMythicCoreChoices(int count, Player.PlayerContext context)
+        {
+            AutoPopulateUpgradesIfEmpty();
+            var mythicPool = _allAvailableUpgrades.FindAll(u => u is MythicCoreUpgradeData);
+            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_MANAGER]</color> GetMythicCoreChoices(count={count}) - TotalAvailable: {_allAvailableUpgrades.Count}, MythicInPool: {mythicPool.Count}");
+            return UpgradeSelector.SelectUpgrades(count, context, mythicPool, _filters, _weightPipeline, _fallbackRewards);
         }
     }
 }

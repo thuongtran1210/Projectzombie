@@ -1,96 +1,241 @@
-# Hệ Thống Nâng Cấp (Upgrades System) - Tài liệu cho Developer
+# Hệ Thống Nâng Cấp Trận Đấu (In-Match Upgrades & Mythic Cores System)
 
-Tài liệu này mô tả chi tiết kiến trúc kỹ thuật của hệ thống Nâng Cấp (Upgrades) trong **ProjectZombie**, sau khi đã được refactor sang mô hình Đa Hình (Polymorphism) và Strategy Pattern.
-
----
-
-## 1. Kiến trúc Cốt Lõi (Core Architecture)
-
-Hệ thống Nâng cấp không còn phụ thuộc vào một "God Object" (đối tượng chứa mọi thứ) hay các lệnh `switch-case` lồng nhau. Thay vào đó, nó tận dụng **Kế thừa (Inheritance)** từ lớp trừu tượng `UpgradeData`.
-
-### Lớp gốc: `UpgradeData` (Abstract Class)
-Tất cả các thẻ nâng cấp trong game đều kế thừa từ lớp này (`ScriptableObject`).
-Lớp này định nghĩa các thuộc tính Ngũ Hành và 2 phương thức ảo (abstract methods) cực kỳ quan trọng:
-- **`element` (`ElementType`)**: Thuộc tính Ngũ Hành của thẻ.
-- **`spawnWeight` (`float`)**: Trọng số xuất hiện cơ bản khi quay gacha thẻ nâng cấp.
-
-1. `bool IsAvailable(GameObject player)`: Mỗi loại thẻ tự quyết định xem nó có được phép xuất hiện trong danh sách bốc thăm (Gacha) của người chơi hay không (kiểm tra level vũ khí, thẻ bị động liên kết, điều kiện mở khóa).
-2. `void ApplyUpgrade(GameObject player)`: Mỗi loại thẻ tự định nghĩa cách nó sẽ tác động lên người chơi (cộng máu, cộng dame, thay đổi vũ khí...) khi được chọn.
+Tài liệu này mô tả chi tiết toàn bộ kiến trúc kỹ thuật của hệ thống Nâng Cấp trong trận đấu (**In-Match Upgrades**) cho dự án **Projectzombie** (Unity 2022 - Top-down Survival Roguelite phong cách Cổ Phong Thần Thoại Việt Nam).
 
 ---
 
-## 2. Các Lớp Nâng Cấp Tích Hợp Sẵn (Built-in Subclasses)
+## 1. Kiến Trúc Cốt Lõi (Core Architecture)
 
-Hiện tại hệ thống có 3 loại thẻ Nâng cấp chính:
+Hệ thống được thiết kế theo 5 tầng phân lập độc lập, triệt tiêu hoàn toàn `GetComponent` trong gameplay loop và bảo đảm **0 GC Allocation** trên thiết bị di động Android 60 FPS:
 
-### 2.1. `CommonUpgradeData`
-*   **Mục đích**: Tăng các chỉ số bị động (Passive) cho bản thân nhân vật (Máu, Tốc độ chạy, Kinh nghiệm...).
-*   **Các biến quan trọng**: `playerStatModifier`, `maxLevel` (0 = Không giới hạn cấp).
-*   **IsAvailable**: Đọc số lần nâng cấp từ `PlayerPassives.GetUpgradeCount(upgradeName)`. Trả về `false` nếu `maxLevel > 0` và `currentCount >= maxLevel`.
-*   **ApplyUpgrade**: Lấy component `PlayerStats` từ player và gọi các hàm `AddMaxHealth()`, `AddMoveSpeed()`... Đồng thời ghi nhận và tăng đếm vào `PlayerPassives`.
+```mermaid
+graph TD
+    subgraph TẦNG 1: DỮ LIỆU CẤU HÌNH (ScriptableObjects)
+        A[UpgradeData] --> B[MythicCoreUpgradeData]
+        A --> C[SynergyTraitUpgradeData]
+        A --> D[WeaponUpgradeData]
+        A --> E[EvolutionUpgradeData]
+    end
 
-### 2.2. `WeaponUpgradeData`
-*   **Mục đích**: Tăng sức mạnh cho một loại vũ khí cụ thể, hoặc mở khóa vũ khí mới.
-*   **Các biến quan trọng**: `weaponId`, `requiredCurrentLevel` (Cấp độ vũ khí hiện tại, 0 = mở khóa), `statModifier`, `overrideProjectilePrefab`.
-*   **IsAvailable**: Query vào `WeaponManager`. Trả về `true` nếu player ĐANG HẾT loại vũ khí đó (nếu thẻ mở khóa), hoặc ĐÃ CÓ và cấp độ khớp với `requiredCurrentLevel`.
-*   **ApplyUpgrade**: Lấy `WeaponBase` thông qua `GetWeaponById()` và gọi hàm `ApplyStatModifier()`.
+    subgraph TẦNG 2: TUYỂN CHỌN & GACHA (Selection & Filter Pipeline)
+        F[UpgradeSelector] --> G[ArchetypeExclusionFilter]
+        F --> H[DynamicSynergyWeighter]
+    end
 
-### 2.3. `EvolutionUpgradeData`
-*   **Mục đích**: Tiến hóa một vũ khí lên dạng tối thượng (`E001`–`E012`).
-*   **Các biến quan trọng**: `weaponId`, `requiredPassiveId`, `requiredCurrentLevel` (mặc định = 5).
-*   **IsAvailable**: Kiểm tra xem vũ khí hiện tại đã max cấp chưa và người chơi có sở hữu thẻ bị động `requiredPassiveId` hay không.
-*   **ApplyUpgrade**: Hủy vũ khí cũ bằng `WeaponManager.RemoveWeapon()`, và Instantiate `weaponPrefab` mới rồi gắn vào `WeaponManager`.
+    subgraph TẦNG 3: COMPOSITION ROOT (PlayerContext)
+        I[PlayerContext] --> J[PlayerStats]
+        I --> K[HealthSystem]
+        I --> L[PlayerCombatEvents]
+        I --> M[PlayerMythicManager]
+    end
 
----
+    subgraph TẦNG 4: THỰC THI RUNTIME & LIFECYCLE (Execution Layer)
+        M --> N[MythicCoreRuntime]
+        N --> O[PhuDongCoreRuntime]
+        N --> P[KimQuyCoreRuntime]
+        N --> Q[SonThanhCoreRuntime]
+        N --> R[ThuyBaCoreRuntime]
+        N --> S[LongTienCoreRuntime]
+    end
 
-## 3. Cơ Chế Roguelite (Reroll / Skip / Ban) & Quy Trình Vận Hành (Workflow)
+    subgraph TẦNG 5: GIAO DIỆN HIỂN THỊ (MVP Pattern)
+        T[UpgradeUIPresenter] --> U[UpgradeCardView]
+    end
+```
 
-1. **Khi Lên Cấp (Level Up):** `PlayerExperience` kích hoạt sự kiện `OnLevelUp`.
-2. **Hiển Thị UI:** `UpgradeUIPresenter` bắt sự kiện và gọi `UpgradeManager.Instance.GetRandomUpgrades(count, playerGameObject)`.
-3. **Lọc Thẻ (Filtering):** `UpgradeManager` duyệt qua pool thẻ, tự động loại bỏ các thẻ đang bị cấm trong `_bannedUpgrades`, các thẻ `!IsAvailable(player)`.
-4. **Bốc Thăm (Weighted Random):** Dựa vào chỉ số `spawnWeight` và trọng số cộng hưởng Ngũ Hành (Cùng hệ +35%, Tương sinh +25%), hệ thống quay Gacha lấy ra `count` thẻ ngẫu nhiên.
-5. **Cơ Chế Reroll / Skip / Ban:**
-   - **Reroll:** Người chơi tiêu 1 lượt Reroll (`_currentRerolls`), hệ thống bốc lại danh sách 3 thẻ mới.
-   - **Skip:** Người chơi bỏ qua lượt nâng cấp, game tiếp tục ngay lập tức (`GameState.Playing`).
-   - **Ban:** Người chơi cấm 1 thẻ cụ thể bằng `UpgradeManager.Instance.BanUpgrade(card)`. Thẻ này sẽ bị cấm xuất hiện trong toàn bộ Run đấu đó.
-6. **Kích Hoạt (Execution):** Khi người chơi chọn thẻ, `OnUpgradeSelected` gọi trực tiếp `selectedUpgrade.ApplyUpgrade(playerGameObject)` và trả lại trạng thái game (`GameState.Playing`). 
+### 1.1. Lớp Dữ Liệu: `UpgradeData` (Abstract ScriptableObject)
+Mọi thẻ bài đều kế thừa từ `UpgradeData`. Điểm cải tiến quan trọng: Phương thức kiểm tra và áp dụng chỉ nhận `PlayerContext` làm tham số (không nhận `GameObject` thô):
 
----
-
-## 4. Hướng Dẫn Mở Rộng: Cách Thêm 1 Loại Thẻ Mới
-
-Với kiến trúc này, việc thêm tính năng mới cực kỳ an toàn vì nó tuân thủ **Open/Closed Principle**. Bạn **KHÔNG CẦN** đụng vào `WeaponManager` hay `UpgradeManager`.
-
-**Ví dụ: Muốn làm thẻ Hào Quang (Aura) rớt thiên thạch xuống quái**
-
-**Bước 1:** Tạo file Script mới `AuraUpgradeData.cs`.
-**Bước 2:** Kế thừa từ `UpgradeData`.
 ```csharp
-[CreateAssetMenu(fileName = "NewAuraUpgrade", menuName = "ProjectZombie/Upgrades/Aura Upgrade")]
-public class AuraUpgradeData : UpgradeData 
+public abstract class UpgradeData : ScriptableObject
 {
-    public float auraRadius = 5f;
-    public float meteorDamage = 100f;
+    public string id;
+    public string upgradeName;
+    [TextArea] public string description;
+    public Sprite icon;
+    public UpgradeType upgradeType;
+    public float spawnWeight = 1f;
+    public ElementType element = ElementType.None;
 
-    public override bool IsAvailable(GameObject player) 
-    {
-        return !player.GetComponent<MeteorAuraLogic>(); // Chỉ xuất hiện nếu chưa có Hào quang này
-    }
-
-    public override void ApplyUpgrade(GameObject player) 
-    {
-        // Gắn một Component mới vào Player để xử lý logic rớt thiên thạch
-        var aura = player.AddComponent<MeteorAuraLogic>();
-        aura.Setup(auraRadius, meteorDamage);
-    }
+    public abstract bool IsAvailable(PlayerContext context);
+    public abstract void ApplyUpgrade(PlayerContext context);
+    public virtual float GetDynamicWeightMultiplier(PlayerContext context) => 1.0f;
 }
 ```
-**Bước 3:** Tạo Scriptable Object bằng cách chuột phải trên Unity `Create -> ProjectZombie -> Upgrades -> Aura Upgrade`.
-Xong! Hệ thống Gacha sẽ tự động bốc trúng thẻ của bạn và thực thi code mà không gây ra bug cho các thẻ cũ.
+
+### 1.2. Hợp Đồng Sự Kiện Chiến Đấu: `CombatEventContracts.cs`
+Sử dụng `readonly struct` truyền qua từ khóa `in` để đạt **0 GC Allocation** và đảm bảo tính mở rộng không làm vỡ các hàm đã subscribe:
+
+```csharp
+public readonly struct DamageDealtEvent
+{
+    public readonly GameObject Attacker;
+    public readonly GameObject Target;
+    public readonly float Damage;
+    public readonly Vector2 HitPosition;
+    public readonly bool IsCrit;
+    public readonly ElementType Element;
+}
+
+public readonly struct KillEvent
+{
+    public readonly GameObject Killer;
+    public readonly GameObject Enemy;
+    public readonly Vector2 Position;
+    public readonly bool IsCrit;
+    public readonly ElementType Element;
+}
+
+public readonly struct DashEvent
+{
+    public readonly GameObject Instigator;
+    public readonly Vector2 StartPosition;
+    public readonly Vector2 EndPosition;
+    public readonly Vector2 DashDirection;
+}
+
+public readonly struct HealEvent
+{
+    public readonly GameObject Target;
+    public readonly float HealAmount;
+    public readonly float CurrentHealth;
+    public readonly float MaxHealth;
+}
+
+public readonly struct ReviveEvent
+{
+    public readonly GameObject Player;
+    public readonly float HealthPercent;
+    public readonly float InvulnerableDuration;
+    public readonly string Source;
+}
+```
 
 ---
 
-## 5. Tools & Tiện ích (Editor Tools)
+## 2. Phác Thảo Cây Thẻ 5 Đại Lõi Thần Thoại Việt Nam (Mythic Core Trees)
 
-- Do sử dụng Đa Hình, **Inspector của Unity sẽ tự động ẩn/hiện biến rất mượt**. Đừng viết Custom Editor UI nếu không thực sự cần thiết.
-- Nếu cần sinh data hàng loạt cho test, hãy sử dụng đoạn script ở `Assets/Features/Upgrades/Editor/UpgradeGeneratorTool.cs`. Tool này đã được thiết kế sẵn để Instantiate đúng các Subclass (`WeaponUpgradeData`, v.v...).
+Trận đấu được xây dựng quanh **5 Đại Lõi Thần Thoại Cổ Phong**, mỗi Lõi sở hữu một nhánh cây kỹ năng gồm **1 Lõi Gốc (Kim Cương) + 2 Thẻ Vàng (Cơ Chế) + 3 Thẻ Bạc (Chỉ Số)**:
+
+### Cây 1: PHÙ ĐỔNG THIÊN UY (Hệ Hỏa - Thể Tu Khổng Lồ, Càn Quét)
+```mermaid
+graph LR
+    PD[💎 PHÙ ĐỔNG THẦN TƯỚNG<br/>Phóng to 200%, Max HP+, Quét chém văng quái]
+    PD --> PD_Y1[🥇 Hỏa Ký Đạp Lôi<br/>Dash cưỡi Ngựa Sắt phun lửa & Giật sét]
+    PD --> PD_Y2[🥇 Nhổ Tre Đánh Giặc<br/>Combo chém 3 làm gãy giáp & Choáng quái]
+    PD --> PD_S1[🥈 Huyết Khí Thần Đồng<br/>Mỗi 100 HP -> +2% Tốc đánh +1% Dame]
+    PD --> PD_S2[🥈 Thiết Giáp Bất Phá<br/>Giảm 20% sát thương khi to > 130%]
+    PD --> PD_S3[🥈 Phù Đổng Nộ Hống<br/>Bị đánh đau tự gầm đẩy quái & Hồi thể lực]
+```
+
+### Cây 2: KIM QUY THẦN CƠ (Hệ Kim - Xạ Kích Vạn Tiễn, Đạn Nảy Xuyên Phá)
+```mermaid
+graph LR
+    KQ[💎 NHẤT TIỄN VẠN TIỄN<br/>+3 Tia đạn, Đạn trúng quái nảy sang 2 mục tiêu]
+    KQ --> KQ_Y1[🥇 Linh Quy Hộ Quốc Trận<br/>Đứng yên 1s tạo Mai Rùa chặn & Phản xạ đạn]
+    KQ --> KQ_Y2[🥇 Mũi Tên Đồng Cổ Loa<br/>Đạn nảy từ mục tiêu 2 chắc chắn 100% Bạo Kích]
+    KQ --> KQ_S1[🥈 Mắt Thần Xuyên Tâm<br/>+40% Tầm bắn, +30% Tốc đạn, +2 Xuyên]
+    KQ --> KQ_S2[🥈 Kim Quy Trợ Lực<br/>Mỗi 10% Crit -> Chuyển thành +15% Tốc chạy]
+    KQ --> KQ_S3[🥈 Cơ Quan Tốc Xạ<br/>Bắn trúng 5 hit liên tiếp -> +50% Tốc bắn 3s]
+```
+
+### Cây 3: TẢN VIÊN SƠN THÁNH (Hệ Thổ - Bất Tử Địa Trận, Đè Bẹp Quái)
+```mermaid
+graph LR
+    ST[💎 BẠT SƠN DỜI LŨY<br/>Giáp Đá 100% HP, Đứng yên mọc 4 Thạch Trụ đè quái]
+    ST --> ST_Y1[🥇 Chấn Địa Nham Thạch<br/>Dash / Nhận dame tạo Động Đất hất tung quái]
+    ST --> ST_Y2[🥇 Thần Thổ Dưỡng Khí<br/>Thạch Trụ mọc/vỡ hồi 5% Max HP cho Player]
+    ST --> ST_S1[🥈 Kim Cương Nham Bì<br/>Giảm cố định 20 sát thương từ đòn đánh quái]
+    ST --> ST_S2[🥈 Địa Chấn Phản Phách<br/>Phản 50% sát thương quái đánh theo hình nón]
+    ST --> ST_S3[🥈 Sơn Thần Uy Áp<br/>Quái đứng gần 6m bị giảm 40% Tốc chạy]
+```
+
+### Cây 4: THỦY BÁ CUỒNG NỘ (Hệ Thủy - Sóng Thần Cuốn Trôi, Băng Tê Liệt)
+```mermaid
+graph LR
+    TT[💎 HÔ PHONG HOÁN VŨ<br/>Mưa bão toàn map, Quái bị Ẩm Ướt, 6s Sóng Thần gom quái]
+    TT --> TT_Y1[🥇 Băng Phong Vạn Lý<br/>Đánh quái Ẩm Ướt có 30% Đóng Băng & Nổ 6 mảnh băng]
+    TT --> TT_Y2[🥇 Thủy Long Cuộn Trào<br/>Dash hóa Rồng Nước bất tử & Hút quái theo đường lướt]
+    TT --> TT_S1[🥈 Thủy Triều Dâng Cao<br/>+30% Tốc chạy & +20% Tầm nhặt đồ trong trời mưa]
+    TT --> TT_S2[🥈 Hàn Khí Thấu Xương<br/>Quái bị Đóng Băng nhận thêm +40% Sát thương]
+    TT --> TT_S3[🥈 Thủy Lưu Hồi Chuyển<br/>Đóng Băng quái giảm 0.2s hồi chiêu Lướt]
+```
+
+### Cây 5: LONG TIÊN HUYẾT MẠCH (Hệ Âm Dương - Chuyển Đổi Rồng/Tiên, Miễn Tử)
+```mermaid
+graph LR
+    LT[💎 THÁI CỰC LONG TIÊN BIẾN<br/>Chém liên tục hóa Rồng Dame+, Thả tay hóa Tiên Hồi Máu]
+    LT --> LT_Y1[🥇 Bách Noãn Hộ Thể<br/>1 Mạng Hồi Sinh Miễn Phí + 3 Trứng hộ thể phát nổ]
+    LT --> LT_Y2[🥇 Âm Dương Giao Hòa<br/>Chuyển dạng Rồng/Tiên phóng Sóng Thái Cực xóa đạn]
+    LT --> LT_S1[🥈 Hồng Bàng Khí Vận<br/>+35% EXP và +35% Vàng rơi ra từ quái vật]
+    LT --> LT_S2[🥈 Long Uy Phấn Chấn<br/>Dạng Rồng tăng thêm +50% Tốc độ đánh]
+    LT --> LT_S3[🥈 Tiên Âm Dưỡng Hồn<br/>Dạng Tiên tăng +50% Bán kính hào quang & +25% Giáp]
+```
+
+---
+
+## 3. Quy Hoạch Kho Thẻ Toàn Diện (60 Thẻ)
+
+| Nhóm Thẻ | Số Lượng | Cơ Chế Xuất Hiện |
+|---|:---:|---|
+| **Đại Lõi Thần Thoại (Prismatic Core)** | **5 Thẻ** | Chỉ xuất hiện tại **Level 1** (Khởi đầu trận). |
+| **Thẻ Nhánh Độc Quyền (Synergy Traits)** | **25 Thẻ** | Mỗi Lõi có 5 thẻ con. Tự động tăng +50% tỉ lệ ra khi mang đúng Lõi. |
+| **Thẻ Bổ Trợ Dùng Chung (Universal Passives)** | **15 Thẻ** | Xuất hiện tự do cho mọi Lõi (Máu, Giáp, Tốc chạy, Crit, Exp, Nam châm...). |
+| **Thẻ Nâng Cấp & Tiến Hóa Vũ Khí** | **13 Thẻ** | Nâng cấp vũ khí (`W001-W012`) và mở khóa Thần Binh Tối Thượng (`E001-E012`). |
+| **Thẻ Cứu Cánh (Fallback Rewards)** | **2 Thẻ** | Tiên Đan Hồi Máu (40% HP) & Túi Vàng (+150 Vàng) khi cạn pool thẻ. |
+| **TỔNG CỘNG** | **60 THẺ** | **Đáp ứng chuẩn quy mô Roguelite Mobile 60 FPS.** |
+
+---
+
+## 4. Dòng Thời Gian Trận Đấu & Cơ Chế Tuyển Chọn (Game Flow)
+
+```
+[Bắt đầu ván] ──► [MỐC 1: NHẬP ĐẠO (Level 1)]       ──► Bốc 1 trong 3 ĐẠI LÕI KIM CƯƠNG
+                        │
+                        ▼ (Các Level 2, 3, 4, 5: Bốc Thẻ Bạc/Vàng bổ trợ cho Lõi)
+[Giữa trận]    ──► [MỐC 2: CƯỜNG HÓA (Level 6)]      ──► Bốc 1 trong 3 LÕI VÀNG / HYBRID
+                        │
+                        ▼ (Các Level 7-11: Nâng cấp vũ khí & Tiến hóa Thần Binh E001-E012)
+[Cuối trận]    ──► [MỐC 3: ĐỘT PHÁ TỐI THƯỢNG (Lv 12)] ──► Mở khóa Tuyệt Kỹ Thần Minh trước Boss
+```
+
+### Cơ chế Tăng Trọng Số Cộng Hưởng (Dynamic Synergy Weight):
+*   Khi người chơi chọn Lõi **A**, `UpgradeSelector` tự động tăng **+50% trọng số xuất hiện** cho 5 thẻ nhánh của Lõi **A** và các thẻ cùng Hệ Ngũ Hành.
+*   Bộ lọc `ArchetypeExclusionFilter` tự động chặn hoàn toàn các Đại Lõi khác xuất hiện ở các level sau.
+
+---
+
+## 5. Giải Quyết Xung Đột & Quản Lý Vòng Đời (Lifecycle & Conflict Resolution)
+
+### 5.1. Xử Lý Xung Đột Chỉ Số (Layered Stat Pipeline)
+Chỉ số nhân vật được tính toán qua 3 tầng rõ ràng, tránh xung đột giữa thẻ cộng % và thẻ khóa giá trị (như Khóa 1 HP):
+$$\text{FinalStat} = (\text{Base} + \sum \text{FlatBonus}) \times (1 + \sum \text{PercentBonus})$$
+*(Nếu có modifier dạng `Override/Clamp`, giá trị Override sẽ có quyền ưu tiên cao nhất).*
+
+### 5.2. Quản Lý Vòng Đời Runtimes (Lifecycle Contract)
+`MythicCoreRuntime` tuân thủ vòng đời nghiêm ngặt với cờ bảo vệ `_isDisposed`:
+*   **Initialize:** Đăng ký lắng nghe `CombatEvents`, tạo Aura VFX.
+*   **Teardown (Idempotent):** Hủy đăng ký tất cả Event, thu hồi VFX, hoàn trả chỉ số.
+*   **4 Kịch Bản Hủy:**
+    1. *Core Replaced:* `PlayerMythicManager` gọi `Teardown()` trước khi `Instantiate` Core mới.
+    2. *Player Destroyed:* `OnDestroy()` tự động kích hoạt `Teardown()`.
+    3. *Run Restarted:* `ResetState()` giải phóng toàn bộ Runtime và reset về `None`.
+    4. *Scene Changed:* Unity hủy scene, `_isDisposed` ngăn chặn `NullReferenceException`.
+
+### 5.3. Cơ Chế Soft Death & Hồi Sinh (Revive Flow)
+*   Khi Máu về 0, Player **KHÔNG BỊ DESTROY** mà chuyển sang trạng thái **Hấp Hối (Incapacitated)** trong 5 giây.
+*   Nếu hồi sinh (qua Ads, Linh Đan, hoặc Nội tại Miễn Tử của Long Tiên):
+    *   Phát sự kiện `PlayerCombatEvents.PublishPlayerRevived(new ReviveEvent(...))`.
+    *   `MythicCoreRuntime` bắt sự kiện và kích hoạt hiệu ứng Thần Thoại (Phù Đổng giáng sét dọn map, Sơn Tinh hồi giáp đá, v.v.).
+    *   Player tiếp tục chơi mượt mà, không tốn chi phí nạp lại dữ liệu.
+*   Nếu từ chối hồi sinh / hết giờ -> Kích hoạt **Hard Death (GameOver)** và dọn dẹp bộ nhớ sạch sẽ.
+
+---
+
+## 6. Hướng Dẫn Mở Rộng Thẻ Mới (Extensibility Guide)
+
+### Cách tạo thêm 1 Lõi Thần Thoại mới:
+1. **Bước 1:** Khai báo Archetype mới trong `MythicArchetype` enum.
+2. **Bước 2:** Tạo Runtime Controller kế thừa từ `MythicCoreRuntime` (ví dụ: `LieuHanhCoreRuntime.cs`), override `SubscribeCombatEvents()` và `UnsubscribeCombatEvents()`.
+3. **Bước 3:** Tạo ScriptableObject `MythicCoreUpgradeData`, gán Prefab chứa Runtime vừa tạo.
+4. **Bước 4:** Xong! Hệ thống Gacha và Filter sẽ tự động nhận diện và vận hành mà không cần sửa bất kỳ file quản lý nào.

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95fb4d43aec56044ea6dd90a3edee0c9, type: 3}
+  m_Name: Stage_03_CinnabarSwamp
+  m_EditorClassIdentifier: 
+  stageId: STAGE_03
+  stageName: "\u0110\u1EA7m L\u1EA7y Th\u1EA7n Sa"
+  description: "V\xF9ng \u0111\u1EA7m l\u1EA7y \u0111\u1ED9c \u0111\u1ECBa ch\u1EE9a
+    \u0111\u1EA7y \u0111\u1ED9c kh\xED v\xE0 c\u1ED5 tr\xF9ng hung b\u1EA1o, th\u1EED
+    th\xE1ch \xFD ch\xED sinh t\u1ED3n c\u1EF1c \u0111\u1EA1i."
+  stageThumbnail: {fileID: 0}
+  environmentType: 2
+  recommendedLevel: 10
+  mapPrefabAddress: Map_CinnabarSwamp
+  bgmAddress: BGM_CinnabarSwamp
+  estimatedDlcSizeMb: 16.8
+  timelineConfig: {fileID: 11400000, guid: 592ebb9e16325104291165bb0f670f02, type: 2}
+  stageDurationSeconds: 900
+  baseRewardCoins: 2500
+  baseRewardExp: 1500
+  dropUnlockWeaponIds: []

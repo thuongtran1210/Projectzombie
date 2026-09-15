@@ -4,19 +4,23 @@ namespace ProjectZombie.Features.Upgrades
 {
     public enum UpgradeType
     {
-        WeaponUpgrade,
-        SignatureSkillUpgrade,
-        CommonUpgrade,
-        FactionCounterUpgrade,
-        RareUpgrade,
-        EvolutionUpgrade,
+        // --- Nhóm Thần Thoại & Lõi (Mythic & Cores) ---
+        MythicCore,          // Đại Lõi Thần Thoại (Khởi đầu trận Level 1)
+        SynergyTrait,        // Thần Binh Thuật / Thẻ Nhánh Độc Quyền của Lõi
+        BreakthroughUltimate,// Bí tịch đột phá tuyệt kỹ (Mốc Level 6 & 12)
+
+        // --- Nhóm Vũ Khí & Tiến Hóa (Weapons & Evolutions) ---
+        WeaponUpgrade,       // Nâng cấp chỉ số / Mở khóa vũ khí
+        EvolutionUpgrade,    // Tiến hóa vũ khí thành Thần Binh Tối Thượng (E001-E012)
         RelicFusion,         // Luyện hóa & Gộp thẻ tạo Pháp bảo Thần Binh
-        // --- Nhóm Thẻ Action RPG Roguelite (GDD v5.0) ---
+
+        // --- Nhóm Bổ Trợ & Thao Tác (Passives & Action RPG) ---
+        CommonUpgrade,       // Bổ trợ chỉ số cơ bản (Máu, Tốc chạy, Hút đồ...)
+        RareUpgrade,         // Bổ trợ hiếm / Chuyển đổi chỉ số
         ComboAugment,        // Bí kíp biến hóa chuỗi đòn chém (Combo 1-2-3)
-        RelicAwakening,      // Thức tỉnh & cường hóa Pháp bảo hộ thân đã mang theo
-        DashTrait,           // Cường hóa kỹ năng Lướt (Dash Cancel, Tàn ảnh, Parry)
+        DashTrait,           // Cường hóa kỹ năng Lướt (Tàn ảnh, Đốt cháy, Kháng đòn)
         ConditionalPassive,  // Nội tại tình huống (Trảm hậu, Cuồng nộ, Hành quyết)
-        BreakthroughUltimate // Bí tịch đột phá tuyệt kỹ (Mốc Level 5 & 10)
+        RelicAwakening       // Thức tỉnh Pháp bảo hộ thân
     }
 
     [System.Serializable]
@@ -50,6 +54,7 @@ namespace ProjectZombie.Features.Upgrades
 
     /// <summary>
     /// Base class cho tất cả các loại thẻ nâng cấp.
+    /// Hỗ trợ cả PlayerContext (chuẩn Clean Architecture mới) và GameObject (tương thích ngược).
     /// </summary>
     public abstract class UpgradeData : ScriptableObject
     {
@@ -69,19 +74,47 @@ namespace ProjectZombie.Features.Upgrades
         [Tooltip("Cấp độ tối đa của nâng cấp này (0 = Không giới hạn cấp)")]
         public int maxLevel = 0;
 
-
         [Tooltip("Hệ Ngũ Hành của thẻ nâng cấp này (nếu có)")]
         public ProjectZombie.Features.Shared.ElementType element = ProjectZombie.Features.Shared.ElementType.None;
 
         /// <summary>
-        /// Kiểm tra xem thẻ này có đủ điều kiện để xuất hiện trong lượt roll hiện tại không.
+        /// Kiểm tra xem thẻ này có đủ điều kiện xuất hiện qua PlayerContext (Khuyên dùng - 0 GetComponent).
         /// </summary>
-        public abstract bool IsAvailable(GameObject player);
+        public virtual bool IsAvailable(ProjectZombie.Features.Player.PlayerContext context)
+        {
+            return context != null && IsAvailable(context.GameObject);
+        }
 
         /// <summary>
-        /// Thực thi hiệu ứng của thẻ khi người chơi chọn.
+        /// Thực thi hiệu ứng thẻ qua PlayerContext (Khuyên dùng - 0 GetComponent).
         /// </summary>
-        public abstract void ApplyUpgrade(GameObject player);
+        public virtual void ApplyUpgrade(ProjectZombie.Features.Player.PlayerContext context)
+        {
+            if (context != null)
+            {
+                ApplyUpgrade(context.GameObject);
+            }
+        }
+
+        /// <summary>
+        /// Kiểm tra tương thích ngược với GameObject thô.
+        /// </summary>
+        public virtual bool IsAvailable(GameObject player)
+        {
+            if (player == null) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Thực thi tương thích ngược với GameObject thô.
+        /// </summary>
+        public virtual void ApplyUpgrade(GameObject player)
+        {
+            if (player != null)
+            {
+                ApplyUpgrade(ProjectZombie.Features.Player.PlayerContext.Create(player));
+            }
+        }
 
         /// <summary>
         /// Trả về chuỗi hiển thị Thể Loại thẻ trên UI (VD: [THẦN PHÁP], [BÍ KÍP ĐÒN CHÉM],...)
@@ -97,6 +130,14 @@ namespace ProjectZombie.Features.Upgrades
         public virtual string GetLevelDisplayName(GameObject player)
         {
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Hệ số nhân trọng số xuất hiện động qua PlayerContext.
+        /// </summary>
+        public virtual float GetDynamicWeightMultiplier(ProjectZombie.Features.Player.PlayerContext context)
+        {
+            return context != null ? GetDynamicWeightMultiplier(context.GameObject) : 1.0f;
         }
 
         /// <summary>

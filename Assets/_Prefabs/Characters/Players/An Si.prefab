@@ -282,6 +282,8 @@ GameObject:
   - component: {fileID: 4297362168769072215}
   - component: {fileID: 922402464292840618}
   - component: {fileID: -59334050579850593}
+  - component: {fileID: 8787318233909292671}
+  - component: {fileID: 4527409657479600487}
   m_Layer: 6
   m_Name: An Si
   m_TagString: Player
@@ -482,6 +484,7 @@ MonoBehaviour:
   startingLoadout:
   - {fileID: 11400000, guid: 85245508c49d2df43b319d98f1e91cf9, type: 2}
   weaponHolder: {fileID: 7995893817643065132}
+  defaultFallbackWeaponPrefab: {fileID: 0}
 --- !u!114 &7402922671366627933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,6 +578,30 @@ MonoBehaviour:
   _speedBuffGhostColor: {r: 1, g: 0.85, b: 0.2, a: 0.5}
   _speedBuffInterval: 0.08
   _dashDustPrefab: {fileID: 3203817794752175492, guid: f67a98adf572bb64ba9fd315b6f97f48, type: 3}
+--- !u!114 &8787318233909292671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4adf281f0365ded45aa0dc15c8f31dcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4527409657479600487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28338abffb721cb48802a65c8d468036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4883057756553739455
 GameObject:
   m_ObjectHideFlags: 0
@@ -1110,7 +1137,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 419231923
   m_SortingOrder: 100

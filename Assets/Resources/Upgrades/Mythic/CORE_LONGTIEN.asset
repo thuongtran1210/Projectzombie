@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 295da93c94b34dc4590d1614db535678, type: 3}
+  m_Name: CORE_LONGTIEN
+  m_EditorClassIdentifier: 
+  id: CORE_LONGTIEN
+  upgradeName: "Long Ti\xEAn Huy\u1EBFt M\u1EA1ch"
+  description: "Chuy\u1EC3n \u0111\u1ED5i 2 d\u1EA1ng R\u1ED3ng (D\u01B0\u01A1ng
+    - <color=#FF00E5>+100% S\xE1t th\u01B0\u01A1ng</color>) v\xE0 Ti\xEAn (\xC2m
+    - H\u1ED3i 2% HP/s). S\u1EDF h\u1EEFu <color=#FFD700>1 M\u1EA1ng Mi\u1EC5n T\u1EED</color>
+    ch\u1EB7n ch\u1EBFt!"
+  icon: {fileID: 0}
+  upgradeType: 0
+  spawnWeight: 1
+  maxLevel: 1
+  element: 0
+  archetype: 5
+  mythicTitle: "TH\xC1I C\u1EF0C LONG TI\xCAN BI\u1EBEN"
+  runtimePrefab: {fileID: 4894799399975617205, guid: 55146c3916006fa46b4b48dfd6ed0df3, type: 3}

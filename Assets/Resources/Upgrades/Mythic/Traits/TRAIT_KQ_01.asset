@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6694faccf8322e547a9bf2fd52b52f47, type: 3}
+  m_Name: TRAIT_KQ_01
+  m_EditorClassIdentifier: 
+  id: TRAIT_KQ_01
+  upgradeName: "Linh Quy H\u1ED9 Qu\u1ED1c Tr\u1EADn"
+  description: "T\u0103ng +80 M\xE1u t\u1ED1i \u0111a v\xE0 +1.0m B\xE1n k\xEDnh
+    nh\u1EB7t v\u1EADt ph\u1EA9m."
+  icon: {fileID: 0}
+  upgradeType: 1
+  spawnWeight: 1
+  maxLevel: 3
+  element: 1
+  requiredArchetype: 2
+  playerStatModifier:
+    maxHealthBonus: 80
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 1
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

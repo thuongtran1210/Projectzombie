@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Spawners
@@ -14,31 +14,31 @@ namespace ProjectZombie.Features.Spawners
     [System.Serializable]
     public class TimelineEvent
     {
-        [Tooltip("Mô tả sự kiện (Ví dụ: Wave 1 - Quỷ Xương xuất hiện).")]
+        [Tooltip("Tên gợi nhớ đợt sóng (VD: Phút 03:00 - Bầy Ma Da tràn lên bao vây). Hiển thị trên log và cảnh báo UI.")]
         public string eventName = "Wave Event";
 
-        [Tooltip("Mốc thời gian kích hoạt tính từ đầu trận (tính bằng giây, ví dụ: 60s, 600s).")]
+        [Tooltip("Thời điểm kích hoạt tính bằng GIÂY từ lúc bắt đầu trận (VD: 180s = Phút 03:00).")]
         public float timestampSeconds = 0f;
 
-        [Tooltip("Loại sự kiện spawn.")]
+        [Tooltip("Kiểu sinh quái: Continuous (Rải rác liên tục), BurstWave (Dồn dập dồn ép), BossSpawn (Trùm xuất hiện), hoặc SpecialPillar (Trụ kỹ năng).")]
         public TimelineEventType eventType = TimelineEventType.Continuous;
 
-        [Tooltip("Prefab quái / Boss / Trụ sẽ spawn (Direct reference fallback).")]
+        [Tooltip("[Dự phòng/Test Editor] Kéo thả trực tiếp Prefab quái vào đây. Dùng làm phương án dự phòng khi chạy Test nhanh trên Editor.")]
         public GameObject spawnPrefab;
 
-        [Tooltip("Địa chỉ Addressable của Prefab quái (Ví dụ: Enemies/Zombie_Walker). Dùng để load bất đồng bộ tối ưu RAM.")]
+        [Tooltip("[Khuyên dùng Android] Mã ID / Key Addressables (VD: E_MADA). Giúp nạp ngầm bất đồng bộ trước trận đấu để tối ưu RAM và tránh giật lag.")]
         public string enemyAddress;
 
-        [Tooltip("AssetReferenceGameObject của Addressable (nếu cấu hình từ Inspector).")]
+        [Tooltip("[Addressables Inspector] Tham chiếu kéo thả AssetReference (Tùy chọn, ưu tiên sử dụng enemyAddress bên trên).")]
         public UnityEngine.AddressableAssets.AssetReferenceGameObject spawnPrefabRef;
 
-        [Tooltip("Số lượng quái tối đa hoặc số quái spawn trong đợt burst.")]
+        [Tooltip("Tổng số lượng quái sẽ được sinh ra trong đợt sóng này.")]
         public int spawnCount = 10;
 
-        [Tooltip("Khoảng thời gian giữa các lần spawn (dành cho Continuous/Pillar).")]
+        [Tooltip("Khoảng thời gian giãn cách giữa mỗi lần sinh 1 con quái (tính bằng Giây). VD: 0.1s = sinh dồn dập 10 con trong 1 giây.")]
         public float spawnInterval = 2f;
 
-        [Tooltip("Icon đại diện quái / sự kiện hiển thị trên thanh tiến trình Timeline (Tùy chọn, nếu để trống sẽ tự động lấy từ Prefab).")]
+        [Tooltip("Icon đại diện hiển thị trên thanh Timeline / Cảnh báo UI (Nếu để trống sẽ tự động lấy Icon từ Prefab quái).")]
         public Sprite eventIcon;
 
         /// <summary>

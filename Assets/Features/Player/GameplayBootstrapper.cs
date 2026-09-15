@@ -6,6 +6,7 @@ using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Arena;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player.Input;
+using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.Player
 {
@@ -242,6 +243,12 @@ namespace ProjectZombie.Features.Player
                 if (_activePlayerInstance.TryGetComponent<Collider2D>(out var col)) col.enabled = true;
                 if (_activePlayerInstance.TryGetComponent<PlayerAnimator>(out var anim)) anim.ChangeAnimationState(PlayerAnimationState.Idle);
 
+                // Reset các hệ thống Gameplay Roguelite để bắt đầu Run sạch
+                if (_activePlayerInstance.TryGetComponent<PlayerMythicManager>(out var mythicMgr)) mythicMgr.ResetState();
+                if (_activePlayerInstance.TryGetComponent<PlayerExperience>(out var exp)) exp.ResetExperience();
+                if (_activePlayerInstance.TryGetComponent<PlayerPassives>(out var passives)) passives.ResetPassives();
+                if (_activePlayerInstance.TryGetComponent<PlayerStats>(out var stats)) stats.ResetStats();
+
                 if (spawnPoint != null)
                 {
                     _activePlayerInstance.transform.position = spawnPoint.position;
@@ -252,6 +259,9 @@ namespace ProjectZombie.Features.Player
                     wm.enabled = true;
                     wm.ReloadEquippedWeapons();
                 }
+
+                // Reset danh sách thẻ nâng cấp đã bị cấm từ trận trước
+                UpgradeManager.Instance?.ResetBannedUpgrades();
 
                 PlayerProvider.RegisterPlayer(_activePlayerInstance);
                 SetupCameraFollow(_activePlayerInstance.transform);

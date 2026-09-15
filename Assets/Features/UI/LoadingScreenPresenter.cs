@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -135,22 +135,14 @@ namespace ProjectZombie.Features.UI
                 yield return null;
             }
 
-            while (currentProgress < 1f)
-            {
-                currentProgress = Mathf.MoveTowards(currentProgress, 1f, Time.unscaledDeltaTime * 3.5f);
-                if (Mathf.Abs(currentProgress - lastSentProgress) > 0.005f)
-                {
-                    lastSentProgress = currentProgress;
-                    _view.SetProgress(currentProgress);
-                }
-                yield return null;
-            }
-
-            _view.SetProgress(1f);
+                  _view.SetProgress(1f);
             yield return new WaitForSecondsRealtime(0.12f);
 
+            bool fadeOutDone = false;
+            _view.FadeOut(0.25f, () => fadeOutDone = true);
+            while (!fadeOutDone) yield return null;
+
             onComplete?.Invoke();
-            _view.FadeOut(0.25f);
         }
 
         private IEnumerator RoutineSimulatedLoading(float duration, Action onComplete, string statusMessage)
@@ -191,11 +183,13 @@ namespace ProjectZombie.Features.UI
             _view.SetProgress(1f);
             yield return new WaitForSecondsRealtime(0.15f);
 
-            // 4. Gọi Callback hoàn tất
-            onComplete?.Invoke();
+            // 4. Fade Out biến mất hoàn toàn
+            bool fadeOutDone = false;
+            _view.FadeOut(0.25f, () => fadeOutDone = true);
+            while (!fadeOutDone) yield return null;
 
-            // 5. Fade Out biến mất
-            _view.FadeOut(0.25f);
+            // 5. Gọi Callback hoàn tất sau khi màn hình loading đã tắt
+            onComplete?.Invoke();
         }
 
         private IEnumerator RoutineAsyncLoading(AsyncOperation asyncOp, Action onComplete, string statusMessage)
@@ -217,10 +211,13 @@ namespace ProjectZombie.Features.UI
             }
 
             _view.SetProgress(1f);
-            yield return new WaitForSecondsRealtime(0.1f);
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            bool fadeOutDone = false;
+            _view.FadeOut(0.25f, () => fadeOutDone = true);
+            while (!fadeOutDone) yield return null;
 
             onComplete?.Invoke();
-            _view.FadeOut(0.25f);
         }
 
         private void RefreshRandomTip()

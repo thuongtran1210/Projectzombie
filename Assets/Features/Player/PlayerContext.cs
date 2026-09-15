@@ -4,6 +4,8 @@ using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player.Mechanics;
 using ProjectZombie.Features.Player.Skills;
 using ProjectZombie.Features.Player.Input;
+using ProjectZombie.Features.Combat;
+using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.Player
 {
@@ -27,6 +29,9 @@ namespace ProjectZombie.Features.Player
         public PlayerInputReader InputReader { get; }
 
         public PlayerLogic Logic { get; }
+        public ProjectZombie.Features.Combat.PlayerCombatEvents CombatEvents { get; }
+        public PlayerMythicManager MythicManager { get; }
+
         public bool IsLocal { get; set; } = true;
         public int PlayerId { get; set; } = 0;
         public bool IsAlive => Health != null && Health.CurrentHealth > 0;
@@ -51,6 +56,13 @@ namespace ProjectZombie.Features.Player
                 Controller = playerObject.GetComponent<PlayerController>();
                 InputReader = playerObject.GetComponent<PlayerInputReader>();
                 Logic = playerObject.GetComponent<PlayerLogic>();
+                CombatEvents = playerObject.GetComponent<ProjectZombie.Features.Combat.PlayerCombatEvents>();
+                MythicManager = playerObject.GetComponent<PlayerMythicManager>();
+
+                if (MythicManager != null)
+                {
+                    MythicManager.Construct(this);
+                }
 
                 ValidateComponents();
             }

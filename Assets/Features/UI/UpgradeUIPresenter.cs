@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Player;
@@ -37,12 +37,14 @@ namespace ProjectZombie.Features.UI
             _currentRerolls = CalculateMaxRerolls();
             if (_view == null)
             {
-                _view = GetComponent<UpgradeUIView>();
+                _view = GetComponent<UpgradeUIView>() ?? GetComponentInChildren<UpgradeUIView>(true);
             }
         }
 
         public void Construct(PlayerExperience experience, WeaponManager weaponManager)
         {
+            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Construct() được gọi! Exp: {(experience != null ? experience.name : "NULL")}, WeaponMgr: {(weaponManager != null ? weaponManager.name : "NULL")}");
+
             if (_isConstructed)
             {
                 UnsubscribeEvents();
@@ -50,7 +52,7 @@ namespace ProjectZombie.Features.UI
 
             if (_view == null)
             {
-                _view = GetComponent<UpgradeUIView>();
+                _view = GetComponent<UpgradeUIView>() ?? GetComponentInChildren<UpgradeUIView>(true);
             }
 
             _playerExperience = experience;
@@ -66,6 +68,12 @@ namespace ProjectZombie.Features.UI
             SubscribeEvents();
 
             _isConstructed = true;
+
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+            {
+                Debug.Log("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Construct: Phát hiện GameState đang là LevelUpSelection -> Lập tức mở bảng nâng cấp!");
+                HandleStateChanged(GameState.LevelUpSelection);
+            }
         }
 
         private int CalculateMaxRerolls()
@@ -102,7 +110,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null)
             {
-                _view = GetComponent<UpgradeUIView>();
+                _view = GetComponent<UpgradeUIView>() ?? GetComponentInChildren<UpgradeUIView>(true);
             }
 
             if (_currentRerolls <= 0)
@@ -124,7 +132,15 @@ namespace ProjectZombie.Features.UI
 
             if (GameStateManager.Instance != null)
             {
+                GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+                Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Start: Đã xác nhận subscribe GameStateManager.OnStateChanged (CurrentState: {GameStateManager.Instance.CurrentState})");
+
+                if (GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+                {
+                    Debug.Log("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Start: Phát hiện GameState đang là LevelUpSelection -> Lập tức kích hoạt bảng nâng cấp!");
+                    HandleStateChanged(GameState.LevelUpSelection);
+                }
             }
         }
 
@@ -157,6 +173,8 @@ namespace ProjectZombie.Features.UI
 
         private void HandleLevelUp(int newLevel)
         {
+            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> HandleLevelUp(newLevel: {newLevel})!");
+
             // Bảo vệ xung đột: Tuyệt đối không mở bảng nâng cấp nếu Game Over hoặc nhân vật đã tử trận
             if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu))
             {
@@ -186,30 +204,66 @@ namespace ProjectZombie.Features.UI
 
         private void HandleStateChanged(GameState newState)
         {
+            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> HandleStateChanged(newState: {newState})! _view is {(_view != null ? _view.gameObject.name : "NULL")}");
+
             if (newState == GameState.LevelUpSelection)
             {
-                _view.SetActive(true);
+                if (_view != null)
+                {
+                    _view.SetActive(true);
+                }
+                else
+                {
+                    _view = GetComponent<UpgradeUIView>() ?? GetComponentInChildren<UpgradeUIView>(true) ?? transform.parent?.GetComponentInChildren<UpgradeUIView>(true);
+                    if (_view != null) _view.SetActive(true);
+                }
                 PopulateUpgradeScreen();
             }
             else
             {
-                _view.SetActive(false);
+                if (_view != null)
+                {
+                    _view.SetActive(false);
+                }
             }
         }
 
         private void PopulateUpgradeScreen()
         {
-            if (_view == null) return;
+            Debug.Log("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> PopulateUpgradeScreen() ĐANG CHẠY...");
+
+            if (_view == null)
+            {
+                _view = GetComponent<UpgradeUIView>() ?? GetComponentInChildren<UpgradeUIView>(true) ?? transform.parent?.GetComponentInChildren<UpgradeUIView>(true);
+            }
+            if (_view == null)
+            {
+                Debug.LogError("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> LỖI: _view is null!");
+                return;
+            }
 
             if (UpgradeManager.Instance == null)
             {
-                Debug.LogError("[UpgradeUIPresenter] UpgradeManager.Instance is null!");
+                Debug.LogError("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> LỖI: UpgradeManager.Instance is null!");
                 return;
             }
 
             if (_playerWeaponManager == null)
             {
-                Debug.LogError("[UpgradeUIPresenter] _playerWeaponManager is null!");
+                if (PlayerProvider.HasPlayer)
+                {
+                    _playerWeaponManager = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+                }
+                else
+                {
+                    var p = GameObject.FindWithTag("Player");
+                    if (p != null) _playerWeaponManager = p.GetComponent<WeaponManager>();
+                }
+            }
+
+            if (_playerWeaponManager == null)
+            {
+                Debug.LogError("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> LỖI: _playerWeaponManager is null!");
                 return;
             }
 
@@ -217,8 +271,38 @@ namespace ProjectZombie.Features.UI
             _view.SetRerollInteractable(_currentRerolls > 0);
 
             int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
-            List<UpgradeData> choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
-            IReadOnlyList<UpgradeCardView> cardViews = _view.GetOrCreateCardViews(choices.Count);
+            List<UpgradeData> choices;
+            var mythicMgr = _playerWeaponManager != null ? _playerWeaponManager.GetComponent<PlayerMythicManager>() : null;
+            
+            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> mythicMgr: {(mythicMgr != null ? mythicMgr.CurrentArchetype.ToString() : "NULL")}");
+
+            if (mythicMgr != null && mythicMgr.CurrentArchetype == MythicArchetype.None)
+            {
+                // Khởi đầu trận đấu: Ưu tiên bốc 3 Đại Lõi Thần Thoại (Nhập Đạo)
+                choices = UpgradeManager.Instance.GetMythicCoreChoices(choiceCount, new Player.PlayerContext(_playerWeaponManager.gameObject));
+                Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> GetMythicCoreChoices trả về {choices?.Count ?? 0} thẻ.");
+                if (choices == null || choices.Count == 0)
+                {
+                    choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
+                    Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Fallback GetRandomUpgrades trả về {choices?.Count ?? 0} thẻ.");
+                }
+            }
+            else
+            {
+                choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
+                Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> GetRandomUpgrades thường trả về {choices?.Count ?? 0} thẻ.");
+            }
+
+            if (choices != null)
+            {
+                for (int c = 0; c < choices.Count; c++)
+                {
+                    Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Choice [{c}]: {choices[c]?.upgradeName} ({choices[c]?.GetType().Name})");
+                }
+            }
+
+            IReadOnlyList<UpgradeCardView> cardViews = _view.GetOrCreateCardViews(choices != null ? choices.Count : 0);
+            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> cardViews trả về: {cardViews?.Count ?? 0} views.");
 
             for (int i = 0; i < cardViews.Count; i++)
             {
@@ -249,11 +333,19 @@ namespace ProjectZombie.Features.UI
 
                     cardView.SetElementBadge(elementBadge);
 
-                    // Xử lý Huy hiệu Duyên Phận & Chế độ Thần Khí Tiến Hóa
-                    bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade || upgradeData.upgradeType == UpgradeType.BreakthroughUltimate;
-                    bool hasSynergy = false;
+                    // Xử lý Huy hiệu Duyên Phận & Chế độ Thần Khí Tiến Hóa / Đại Lõi Thần Thoại
+                    bool isMythic = upgradeData is MythicCoreUpgradeData || upgradeData.upgradeType == UpgradeType.MythicCore;
+                    bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade || upgradeData.upgradeType == UpgradeType.BreakthroughUltimate || isMythic;
+                    bool hasSynergy = upgradeData is SynergyTraitUpgradeData || upgradeData.upgradeType == UpgradeType.SynergyTrait;
 
-                    if (isEvolution)
+                    if (isMythic)
+                    {
+                        var mythicCore = upgradeData as MythicCoreUpgradeData;
+                        string title = mythicCore != null && !string.IsNullOrEmpty(mythicCore.mythicTitle) ? mythicCore.mythicTitle : "ĐẠI LÕI KHỞI ĐẦU";
+                        cardView.SetEvolutionMode(true);
+                        cardView.SetSynergyInfo(null, $"<color=#FFD700><b>✦ {title} ✦</b></color>");
+                    }
+                    else if (isEvolution)
                     {
                         cardView.SetEvolutionMode(true);
                         cardView.SetSynergyInfo(null, "<color=#A33418><b>CÔNG THỨC DUNG HỢP HOÀN TẤT</b></color>");
@@ -273,11 +365,14 @@ namespace ProjectZombie.Features.UI
 
         private void OnUpgradeSelected(UpgradeData selectedUpgrade)
         {
+            if (selectedUpgrade == null) return;
+
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
 
-            if (_playerWeaponManager != null && selectedUpgrade != null)
+            if (_playerWeaponManager != null)
             {
-                selectedUpgrade.ApplyUpgrade(_playerWeaponManager.gameObject);
+                var context = PlayerContext.Create(_playerWeaponManager.gameObject);
+                selectedUpgrade.ApplyUpgrade(context);
             }
 
             ResumeGameplay();

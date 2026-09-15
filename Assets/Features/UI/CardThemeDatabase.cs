@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI
@@ -63,19 +63,18 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public Sprite GetFrameSprite(UpgradeType upgradeType, bool isEvolution, bool hasSynergy)
         {
-            if (isEvolution || upgradeType == UpgradeType.BreakthroughUltimate || upgradeType == UpgradeType.EvolutionUpgrade)
+            if (isEvolution || upgradeType == UpgradeType.MythicCore || upgradeType == UpgradeType.BreakthroughUltimate || upgradeType == UpgradeType.EvolutionUpgrade)
             {
                 return _frameEvolutionGold != null ? _frameEvolutionGold : _frameCommonWood;
             }
-            if (hasSynergy)
+            if (hasSynergy || upgradeType == UpgradeType.SynergyTrait)
             {
                 return _frameSynergyAmber != null ? _frameSynergyAmber : _frameRareJade;
             }
             if (upgradeType == UpgradeType.RareUpgrade ||
                 upgradeType == UpgradeType.ComboAugment ||
                 upgradeType == UpgradeType.DashTrait ||
-                upgradeType == UpgradeType.ConditionalPassive ||
-                upgradeType == UpgradeType.SignatureSkillUpgrade)
+                upgradeType == UpgradeType.ConditionalPassive)
             {
                 return _frameRareJade != null ? _frameRareJade : _frameCommonWood;
             }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -152,7 +152,21 @@ namespace ProjectZombie.Features.UI
         {
             _cardPool.Clear();
 
-            // 1. Quét các thẻ con đã có sẵn trong _cardsContainer
+            // 1. Tự động tìm _cardsContainer nếu chưa gán
+            if (_cardsContainer == null && _upgradePanel != null)
+            {
+                Transform found = _upgradePanel.transform.Find("Cards_Container") ??
+                                  _upgradePanel.transform.Find("CardsContainer") ??
+                                  _upgradePanel.transform.Find("Content_Cards") ??
+                                  _upgradePanel.transform.Find("Panel_Cards") ??
+                                  _upgradePanel.transform.Find("Layout_Cards");
+                if (found != null)
+                {
+                    _cardsContainer = found;
+                }
+            }
+
+            // 2. Quét các thẻ con đã có sẵn trong _cardsContainer
             if (_cardsContainer != null)
             {
                 UpgradeCardView[] existingInContainer = _cardsContainer.GetComponentsInChildren<UpgradeCardView>(true);
@@ -162,7 +176,18 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // 2. Tương thích ngược: Nếu chưa có thẻ nào trong pool nhưng có kéo mảng _upgradeCards
+            // 3. Quét toàn bộ thẻ trong _upgradePanel hoặc component con nếu pool vẫn rỗng
+            if (_cardPool.Count == 0)
+            {
+                var searchRoot = _upgradePanel != null ? _upgradePanel.transform : transform;
+                UpgradeCardView[] allNested = searchRoot.GetComponentsInChildren<UpgradeCardView>(true);
+                if (allNested != null && allNested.Length > 0)
+                {
+                    _cardPool.AddRange(allNested);
+                }
+            }
+
+            // 4. Tương thích ngược: Nếu chưa có thẻ nào trong pool nhưng có kéo mảng _upgradeCards
             if (_cardPool.Count == 0 && _upgradeCards != null && _upgradeCards.Length > 0)
             {
                 foreach (var card in _upgradeCards)
@@ -174,17 +199,19 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // 3. Nếu chưa gán _cardPrefab nhưng đã có thẻ mẫu trong scene, lấy thẻ đầu tiên làm template
-            if (_cardPrefab == null && _cardPool.Count > 0)
+            // 5. Nếu chưa gán _cardPrefab nhưng đã có thẻ mẫu trong scene, lấy thẻ đầu tiên làm template
+            if (_cardPrefab == null && _cardPool.Count > 0 && _cardPool[0] != null)
             {
                 _cardPrefab = _cardPool[0];
             }
 
-            // 4. Nếu chưa gán _cardsContainer nhưng có card trong pool, lấy parent của nó làm container
+            // 6. Nếu chưa gán _cardsContainer nhưng có card trong pool, lấy parent của nó làm container
             if (_cardsContainer == null && _cardPool.Count > 0 && _cardPool[0] != null)
             {
                 _cardsContainer = _cardPool[0].transform.parent;
             }
+
+            Debug.Log($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> InitializeCardPool: _cardsContainer = {(_cardsContainer != null ? _cardsContainer.name : "NULL")}, _cardPrefab = {(_cardPrefab != null ? _cardPrefab.name : "NULL")}, PoolCount = {_cardPool.Count}");
         }
 
         /// <summary>
@@ -193,6 +220,8 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public IReadOnlyList<UpgradeCardView> GetOrCreateCardViews(int requiredCount)
         {
+            Debug.Log($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> GetOrCreateCardViews(requiredCount: {requiredCount}) - Hiện có {_cardPool.Count} cards trong pool");
+
             if (requiredCount <= 0)
             {
                 for (int i = 0; i < _cardPool.Count; i++)
@@ -202,11 +231,16 @@ namespace ProjectZombie.Features.UI
                 return System.Array.Empty<UpgradeCardView>();
             }
 
+            if (_cardPool.Count == 0)
+            {
+                InitializeCardPool();
+            }
+
             while (_cardPool.Count < requiredCount)
             {
                 if (_cardPrefab == null || _cardsContainer == null)
                 {
-                    Debug.LogWarning($"[{nameof(UpgradeUIView)}] Không thể sinh thêm thẻ do thiếu _cardPrefab hoặc _cardsContainer.");
+                    Debug.LogWarning($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> CẢNH BÁO: Không thể sinh thêm thẻ do thiếu _cardPrefab ({_cardPrefab != null}) hoặc _cardsContainer ({_cardsContainer != null}).");
                     break;
                 }
 
@@ -232,6 +266,7 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
+            Debug.Log($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> GetOrCreateCardViews hoàn tất: trả về {result.Count} cards");
             return result;
         }
 
@@ -266,21 +301,31 @@ namespace ProjectZombie.Features.UI
         public void SetActive(bool isActive)
         {
             EnsureControlsFound();
+            if (_cardPool.Count == 0)
+            {
+                InitializeCardPool();
+            }
+
+            Debug.Log($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> SetActive({isActive}) - _upgradePanel: {(_upgradePanel != null ? _upgradePanel.name : "NULL")}, Root: {gameObject.name}");
 
             if (_upgradePanel != null)
             {
                 _upgradePanel.SetActive(isActive);
+                transform.SetAsLastSibling();
+                _upgradePanel.transform.SetAsLastSibling();
 
                 var cg = _upgradePanel.GetComponent<CanvasGroup>();
                 if (cg != null)
                 {
+                    cg.alpha = isActive ? 1f : 0f;
                     cg.blocksRaycasts = isActive;
                     cg.interactable = isActive;
                 }
+                Debug.Log($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> _upgradePanel.activeSelf = {_upgradePanel.activeSelf}, CanvasGroup Alpha = {(cg != null ? cg.alpha.ToString() : "NoCG")}");
             }
             else
             {
-                Debug.LogWarning($"[{nameof(UpgradeUIView)}] _upgradePanel chưa được gán trong Inspector.");
+                Debug.LogWarning($"<color=#FF00FF>[DIAG_UPGRADE_VIEW]</color> _upgradePanel chưa được gán trong Inspector.");
             }
 
             // Đồng bộ an toàn: Khi mở bảng nâng cấp, bắt buộc ẩn cụm phím điều khiển và thu hồi toàn bộ chỉ dấu

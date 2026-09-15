@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using UnityEditor;
@@ -49,9 +49,11 @@ namespace ProjectZombie.EditorTools.BuildSync
                     if (!allowed) continue;
                 }
 
-                string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(rule.TargetPath, fileName).Replace('\\', '/');
+                string relPath = file.Substring(rule.SourcePath.Length).TrimStart('/', '\\');
+                string destFile = Path.Combine(rule.TargetPath, relPath).Replace('\\', '/');
                 string srcFile = file.Replace('\\', '/');
+
+                EnsureDirectory(Path.GetDirectoryName(destFile));
 
                 if (File.Exists(destFile))
                 {

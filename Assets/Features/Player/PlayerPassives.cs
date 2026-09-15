@@ -1,4 +1,4 @@
-﻿using ProjectZombie.Features.Upgrades;
+using ProjectZombie.Features.Upgrades;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -89,6 +89,17 @@ namespace ProjectZombie.Features.Player
                 _upgradeCounters[key]++;
             else
                 _upgradeCounters[key] = 1;
+        }
+
+        /// <summary>Reset toàn bộ danh sách bùa chú khi vào trận mới hoặc về sảnh.</summary>
+        public void ResetPassives()
+        {
+            _activePassives.Clear();
+            _distinctPassiveIds.Clear();
+            _upgradeCounters.Clear();
+            _passiveDataMap.Clear();
+            OnPassivesChanged?.Invoke();
+            Debug.Log("[PlayerPassives] Đã reset toàn bộ Passives.");
         }
     }
 }

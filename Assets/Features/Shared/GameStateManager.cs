@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 namespace ProjectZombie.Features.Shared
@@ -7,6 +7,7 @@ namespace ProjectZombie.Features.Shared
     /// Bộ quản lý trạng thái trò chơi (FSM Model).
     /// Quản lý việc chuyển trạng thái, điều phối Time.timeScale tương ứng và phát tín hiệu cho toàn hệ thống.
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public class GameStateManager : MonoBehaviour
     {
         public static GameStateManager Instance { get; private set; }

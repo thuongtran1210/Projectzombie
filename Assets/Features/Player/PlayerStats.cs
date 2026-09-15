@@ -88,6 +88,21 @@ namespace ProjectZombie.Features.Player
             ApplyCharacterPassives();
         }
 
+        /// <summary>
+        /// Khôi phục toàn bộ chỉ số về trạng thái sạch ban đầu khi vào trận mới hoặc về sảnh.
+        /// </summary>
+        public void ResetStats()
+        {
+            _statModifiers.Clear();
+            InitStats();
+            ApplyPermanentUpgrades();
+            ApplyCharacterStarProgression();
+            ApplyCharacterPassives();
+            SyncHealthWithSystem(true);
+            OnStatsUpdated?.Invoke();
+            Debug.Log("[PlayerStats] Đã reset toàn bộ Stats về mặc định.");
+        }
+
         private void InitializeBaseConfig()
         {
             if (baseStatsConfig == null)
