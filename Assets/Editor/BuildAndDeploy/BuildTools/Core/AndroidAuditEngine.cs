@@ -173,6 +173,39 @@ namespace ProjectZombie.EditorTools.BuildSync
                     FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
                 });
             }
+            else if (!hasSrc && hasTarget)
+            {
+                issues.Add(new AuditItem
+                {
+                    Severity = AuditItem.SeverityLevel.Warning,
+                    Title = $"Chưa sao lưu Nguồn: {rule.Name}",
+                    Description = $"Asset có tại Resources/ nhưng chưa có tại nguồn ({rule.SourcePath}).",
+                    Recommendation = $"Nhấn nút bên dưới để copy {rule.Name} về {rule.SourcePath}.",
+                    ActionType = AuditItem.FixActionType.SyncSingleAsset,
+                    Rule = rule,
+                    FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
+                });
+            }
+            else if (hasSrc && hasTarget)
+            {
+                var srcInfo = new FileInfo(rule.SourcePath);
+                var destInfo = new FileInfo(rule.TargetPath);
+
+                if (srcInfo.Length != destInfo.Length || Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) > 2)
+                {
+                    string newer = srcInfo.LastWriteTimeUtc > destInfo.LastWriteTimeUtc ? "Nguồn mới hơn" : "Resources mới hơn";
+                    issues.Add(new AuditItem
+                    {
+                        Severity = AuditItem.SeverityLevel.Warning,
+                        Title = $"Lệch phiên bản Asset: {rule.Name} ({newer})",
+                        Description = $"Asset tại {rule.SourcePath} và {rule.TargetPath} khác nhau về dung lượng ({srcInfo.Length}B vs {destInfo.Length}B) hoặc thời gian cập nhật.",
+                        Recommendation = $"Nhấn nút bên dưới để đồng bộ {rule.Name}.",
+                        ActionType = AuditItem.FixActionType.SyncSingleAsset,
+                        Rule = rule,
+                        FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
+                    });
+                }
+            }
         }
 
         private static void AuditUIPrefab(SyncRule rule, List<AuditItem> issues)
@@ -205,6 +238,39 @@ namespace ProjectZombie.EditorTools.BuildSync
                     Rule = rule,
                     FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
                 });
+            }
+            else if (!hasMaster && hasRes)
+            {
+                issues.Add(new AuditItem
+                {
+                    Severity = AuditItem.SeverityLevel.Warning,
+                    Title = $"Chưa sao lưu Master UI: {rule.Name}",
+                    Description = $"Prefab có tại Resources/UI/{rule.Name}.prefab nhưng chưa có tại Assets/_Prefabs/UI/.",
+                    Recommendation = $"Nhấn nút bên dưới để đồng bộ {rule.Name} về Assets/_Prefabs/UI/.",
+                    ActionType = AuditItem.FixActionType.SyncUIPrefab,
+                    Rule = rule,
+                    FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
+                });
+            }
+            else if (hasMaster && hasRes)
+            {
+                var masterInfo = new FileInfo(rule.SourcePath);
+                var resInfo = new FileInfo(rule.TargetPath);
+
+                if (masterInfo.Length != resInfo.Length || Math.Abs((masterInfo.LastWriteTimeUtc - resInfo.LastWriteTimeUtc).TotalSeconds) > 2)
+                {
+                    string newer = masterInfo.LastWriteTimeUtc > resInfo.LastWriteTimeUtc ? "Master (_Prefabs) mới hơn" : "Runtime (Resources) mới hơn";
+                    issues.Add(new AuditItem
+                    {
+                        Severity = AuditItem.SeverityLevel.Warning,
+                        Title = $"Lệch nội dung UI: {rule.Name} ({newer})",
+                        Description = $"Prefab tại {rule.SourcePath} và {rule.TargetPath} khác nhau về dung lượng ({masterInfo.Length}B vs {resInfo.Length}B) hoặc thời gian cập nhật.",
+                        Recommendation = $"Nhấn nút bên dưới để đồng bộ phiên bản mới nhất của {rule.Name}.",
+                        ActionType = AuditItem.FixActionType.SyncUIPrefab,
+                        Rule = rule,
+                        FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
+                    });
+                }
             }
         }
 

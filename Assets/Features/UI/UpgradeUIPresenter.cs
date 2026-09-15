@@ -345,13 +345,13 @@ namespace ProjectZombie.Features.UI
                         var mythicCore = upgradeData as MythicCoreUpgradeData;
                         string title = mythicCore != null && !string.IsNullOrEmpty(mythicCore.mythicTitle) ? mythicCore.mythicTitle : "ĐẠI LÕI KHỞI ĐẦU";
                         cardView.SetEvolutionMode(true);
-                        cardView.SetSynergyInfo(null, $"<color=#FFD700><b>✦ {title} ✦</b></color>");
+                        cardView.SetSynergyInfo(null, $"<color=#FFD700><b>[ {title} ]</b></color>");
                     }
                     else if (isMutationAugment)
                     {
                         var mut = upgradeData as MutationAugmentUpgradeData;
                         cardView.SetEvolutionMode(true);
-                        cardView.SetSynergyInfo(null, mut != null ? mut.GetCategoryDisplayName() : "<color=#FFD700><b>✦ LÕI ĐỘT BIẾN ✦</b></color>");
+                        cardView.SetSynergyInfo(null, mut != null ? mut.GetCategoryDisplayName() : "<color=#FFD700><b>[LÕI ĐỘT BIẾN]</b></color>");
                     }
                     else if (isEvolution)
                     {
@@ -361,14 +361,14 @@ namespace ProjectZombie.Features.UI
                     else if (isBreakthrough)
                     {
                         cardView.SetEvolutionMode(true);
-                        cardView.SetSynergyInfo(null, "<color=#FF7700><b>✦ ĐỘT PHÁ TUYỆT KỸ ✦</b></color>");
+                        cardView.SetSynergyInfo(null, "<color=#FF7700><b>[ĐỘT PHÁ TUYỆT KỸ]</b></color>");
                     }
                     else if (isSynergyTrait)
                     {
                         var traitData = upgradeData as SynergyTraitUpgradeData;
                         string archetypeName = traitData != null ? traitData.requiredArchetype.GetDisplayName() : "LÕI";
                         cardView.SetEvolutionMode(false);
-                        cardView.SetSynergyInfo(null, $"<color=#00E5FF><b>✦ THẦN BINH THUẬT: {archetypeName.ToUpper()} ✦</b></color>");
+                        cardView.SetSynergyInfo(null, $"<color=#00E5FF><b>[THẦN BINH THUẬT: {archetypeName.ToUpper()}]</b></color>");
                     }
                     else
                     {

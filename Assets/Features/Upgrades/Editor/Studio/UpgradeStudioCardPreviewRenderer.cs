@@ -189,7 +189,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
             {
                 var core = data as MythicCoreUpgradeData;
                 string title = core != null && !string.IsNullOrEmpty(core.mythicTitle) ? core.mythicTitle : "ĐẠI LÕI KHỞI ĐẦU";
-                GUILayout.Label($"<color=#FFD700><b>✦ {title} ✦</b></color>", _bannerStyle);
+                GUILayout.Label($"<color=#FFD700><b>[ {title} ]</b></color>", _bannerStyle);
             }
             else if (isAugment)
             {
@@ -200,13 +200,13 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                     AugmentTier.Gold => "#FFD700",
                     _ => "#C0C0C0"
                 };
-                GUILayout.Label($"<color={bannerColor}><b>✦ MỐC ĐỘT BIẾN [{aug.tier.ToString().ToUpper()}] ✦</b></color>", _bannerStyle);
+                GUILayout.Label($"<color={bannerColor}><b>[MỐC ĐỘT BIẾN {aug.tier.ToString().ToUpper()}]</b></color>", _bannerStyle);
             }
             else if (isMicroStat)
             {
                 var micro = (StatMicroUpgradeData)data;
                 string sum = !string.IsNullOrEmpty(micro.oneLineSummary) ? micro.oneLineSummary : "+Chỉ Số Nền Tảng";
-                GUILayout.Label($"<color=#00FF88><size=13><b>⚡ {sum}</b></size></color>", _bannerStyle);
+                GUILayout.Label($"<color=#00FF88><size=13><b>[{sum}]</b></size></color>", _bannerStyle);
             }
             else if (isEvolution)
             {
@@ -214,13 +214,13 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
             }
             else if (isBreakthrough)
             {
-                GUILayout.Label("<color=#FF7700><b>✦ ĐỘT PHÁ TUYỆT KỸ ✦</b></color>", _bannerStyle);
+                GUILayout.Label("<color=#FF7700><b>[ĐỘT PHÁ TUYỆT KỸ]</b></color>", _bannerStyle);
             }
             else if (isSynergy)
             {
                 var trait = data as SynergyTraitUpgradeData;
                 string arcName = trait != null ? trait.requiredArchetype.GetDisplayName() : "LÕI";
-                GUILayout.Label($"<color=#00E5FF><b>✦ THẦN BINH THUẬT: {arcName.ToUpper()} ✦</b></color>", _bannerStyle);
+                GUILayout.Label($"<color=#00E5FF><b>[THẦN BINH THUẬT: {arcName.ToUpper()}]</b></color>", _bannerStyle);
             }
 
             GUILayout.Space(6);

@@ -143,7 +143,24 @@ namespace ProjectZombie.Features.Upgrades.DebugTools
             GUILayout.Space(6);
 
             GUILayout.Label("<b>2. Cơ Chế Chỉ Định Đại Lõi:</b>", new GUIStyle(GUI.skin.label) { richText = true });
+#if UNITY_EDITOR
             _forceArchetype = (MythicArchetype)UnityEditor.EditorGUILayout.EnumPopup(_forceArchetype);
+#else
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"Lõi: {_forceArchetype}");
+            if (GUILayout.Button("◀", GUILayout.Width(30)))
+            {
+                int val = (int)_forceArchetype - 1;
+                if (val < 0) val = 4;
+                _forceArchetype = (MythicArchetype)val;
+            }
+            if (GUILayout.Button("▶", GUILayout.Width(30)))
+            {
+                int val = ((int)_forceArchetype + 1) % 5;
+                _forceArchetype = (MythicArchetype)val;
+            }
+            GUILayout.EndHorizontal();
+#endif
             if (GUILayout.Button("👑 Ép Kích Hoạt Lõi Này", GUILayout.Height(28)))
             {
                 ForceEquipArchetype();

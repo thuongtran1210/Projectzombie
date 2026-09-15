@@ -29,6 +29,9 @@ namespace ProjectZombie.Editor.Build
         {
             if (report.summary.platform == BuildTarget.Android)
             {
+                Debug.Log("<color=#00FF88>[AndroidBuildAssetValidator]</color> Tự động đồng bộ toàn bộ Resources (UI/Upgrades/Audios/Weapons) trước khi Build Android...");
+                ProjectZombie.EditorTools.BuildSync.ResourceSyncEngine.PerformFullSync();
+
                 Debug.Log("<color=#00FF88>[AndroidBuildAssetValidator]</color> Bắt đầu kiểm tra tính hợp lệ của Asset trước khi Build Android...");
                 bool passed = RunFullValidation(isBuildPipeline: true);
                 if (!passed)
