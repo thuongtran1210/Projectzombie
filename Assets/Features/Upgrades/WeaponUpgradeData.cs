@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using System.Linq;
 
@@ -20,6 +20,11 @@ namespace ProjectZombie.Features.Upgrades
         
         [Tooltip("Prefab đạn mới sẽ thay thế đạn gốc khi nhận nâng cấp này. Bỏ trống nếu không thay đổi.")]
         public GameObject overrideProjectilePrefab;
+
+        public WeaponUpgradeData()
+        {
+            upgradeType = UpgradeType.WeaponUpgrade;
+        }
 
         public override bool IsAvailable(GameObject player)
         {

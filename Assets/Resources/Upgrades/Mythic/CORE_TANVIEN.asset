@@ -18,7 +18,7 @@ MonoBehaviour:
     100% Max HP</color> (h\u1ED3i sau 8s). \u0110\u1EE9ng y\xEAn 2.5s tri\u1EC7u
     h\u1ED3i 4 Th\u1EA1ch Tr\u1EE5 \u0111\xE8 b\u1EB9p qu\xE1i v\u1EADt xung quanh."
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 3
   spawnWeight: 1
   maxLevel: 1
   element: 5

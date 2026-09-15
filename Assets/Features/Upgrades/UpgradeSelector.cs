@@ -55,7 +55,46 @@ namespace ProjectZombie.Features.Upgrades
 
             var selectedUpgrades = new List<UpgradeData>(count);
 
-            // 2. Thuật toán Weighted Random tiêu chuẩn
+            // 2.1. Bảo hiểm nhánh Lõi (Guaranteed Synergy Slot): Luôn ưu tiên xuất hiện ít nhất 1 Thần Binh Thuật nếu đang mang Lõi
+            var activeArchetype = context?.MythicManager != null ? context.MythicManager.CurrentArchetype : MythicArchetype.None;
+            if (activeArchetype != MythicArchetype.None && selectedUpgrades.Count < count)
+            {
+                // Tìm tất cả các thẻ Synergy Trait hợp lệ trong buffer
+                List<int> synergyIndices = new List<int>();
+                float synergyWeightSum = 0f;
+
+                for (int i = 0; i < _validBuffer.Count; i++)
+                {
+                    if (_validBuffer[i] is SynergyTraitUpgradeData trait && trait.requiredArchetype == activeArchetype)
+                    {
+                        synergyIndices.Add(i);
+                        synergyWeightSum += _weightsBuffer[i];
+                    }
+                }
+
+                if (synergyIndices.Count > 0 && synergyWeightSum > 0f)
+                {
+                    float rnd = Random.Range(0f, synergyWeightSum);
+                    float cur = 0f;
+                    for (int s = 0; s < synergyIndices.Count; s++)
+                    {
+                        int targetIdx = synergyIndices[s];
+                        cur += _weightsBuffer[targetIdx];
+                        if (cur >= rnd || s == synergyIndices.Count - 1)
+                        {
+                            var chosenSynergy = _validBuffer[targetIdx];
+                            selectedUpgrades.Add(chosenSynergy);
+                            totalWeight -= _weightsBuffer[targetIdx];
+
+                            _validBuffer.RemoveAt(targetIdx);
+                            _weightsBuffer.RemoveAt(targetIdx);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // 2.2. Thuật toán Weighted Random tiêu chuẩn cho các slot còn lại
             while (selectedUpgrades.Count < count && _validBuffer.Count > 0 && totalWeight > 0f)
             {
                 float randomValue = Random.Range(0f, totalWeight);

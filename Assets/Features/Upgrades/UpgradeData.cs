@@ -4,23 +4,23 @@ namespace ProjectZombie.Features.Upgrades
 {
     public enum UpgradeType
     {
-        // --- Nhóm Thần Thoại & Lõi (Mythic & Cores) ---
-        MythicCore,          // Đại Lõi Thần Thoại (Khởi đầu trận Level 1)
-        SynergyTrait,        // Thần Binh Thuật / Thẻ Nhánh Độc Quyền của Lõi
-        BreakthroughUltimate,// Bí tịch đột phá tuyệt kỹ (Mốc Level 6 & 12)
+        // --- Nhóm Vũ Khí & Khí Vận (Khớp với Asset YAML 0, 1, 2) ---
+        WeaponUpgrade = 0,        // Vũ khí cơ bản (W001-W012)
+        SynergyTrait = 1,         // Thần Binh Thuật / Thẻ Nhánh Độc Quyền của Lõi (TRAIT_PD_...)
+        CommonUpgrade = 2,        // Bổ trợ chỉ số cơ bản / Khí Vận (P001-P012)
 
-        // --- Nhóm Vũ Khí & Tiến Hóa (Weapons & Evolutions) ---
-        WeaponUpgrade,       // Nâng cấp chỉ số / Mở khóa vũ khí
-        EvolutionUpgrade,    // Tiến hóa vũ khí thành Thần Binh Tối Thượng (E001-E012)
-        RelicFusion,         // Luyện hóa & Gộp thẻ tạo Pháp bảo Thần Binh
+        // --- Nhóm Thần Thoại & Tuyệt Kỹ ---
+        MythicCore = 3,           // Đại Lõi Thần Thoại (Khởi đầu trận Level 1)
+        RareUpgrade = 4,          // Bổ trợ hiếm / Chuyển đổi chỉ số
+        EvolutionUpgrade = 5,     // Tiến hóa vũ khí thành Thần Binh Tối Thượng (E001-E012)
+        RelicFusion = 6,          // Luyện hóa & Gộp thẻ tạo Pháp bảo Thần Binh
+        BreakthroughUltimate = 7, // Bí tịch đột phá tuyệt kỹ (Mốc Level 6 & 12)
 
-        // --- Nhóm Bổ Trợ & Thao Tác (Passives & Action RPG) ---
-        CommonUpgrade,       // Bổ trợ chỉ số cơ bản (Máu, Tốc chạy, Hút đồ...)
-        RareUpgrade,         // Bổ trợ hiếm / Chuyển đổi chỉ số
-        ComboAugment,        // Bí kíp biến hóa chuỗi đòn chém (Combo 1-2-3)
-        DashTrait,           // Cường hóa kỹ năng Lướt (Tàn ảnh, Đốt cháy, Kháng đòn)
-        ConditionalPassive,  // Nội tại tình huống (Trảm hậu, Cuồng nộ, Hành quyết)
-        RelicAwakening       // Thức tỉnh Pháp bảo hộ thân
+        // --- Nhóm Bổ Trợ & Thao Tác (Action RPG) ---
+        ComboAugment = 8,         // Bí kíp biến hóa chuỗi đòn chém (Combo 1-2-3)
+        DashTrait = 9,            // Cường hóa kỹ năng Lướt (Tàn ảnh, Đốt cháy, Kháng đòn)
+        ConditionalPassive = 10,  // Nội tại tình huống (Trảm hậu, Cuồng nộ, Hành quyết)
+        RelicAwakening = 11       // Thức tỉnh Pháp bảo hộ thân
     }
 
     [System.Serializable]

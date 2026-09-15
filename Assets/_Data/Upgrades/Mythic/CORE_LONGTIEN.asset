@@ -19,7 +19,7 @@ MonoBehaviour:
     - H\u1ED3i 2% HP/s). S\u1EDF h\u1EEFu <color=#FFD700>1 M\u1EA1ng Mi\u1EC5n T\u1EED</color>
     ch\u1EB7n ch\u1EBFt!"
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 3
   spawnWeight: 1
   maxLevel: 1
   element: 0

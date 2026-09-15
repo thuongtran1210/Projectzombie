@@ -18,7 +18,7 @@ MonoBehaviour:
     v\xE0 +50 HP (Max 200%). L\u01B0\u1EDBt c\u01B0\u1EE1i Ng\u1EF1a S\u1EAFt phun
     l\u1EEDa c\xE0n qu\xE9t. H\u1ED3i sinh gi\xE1ng s\xE9t d\u1ECDn map 10m."
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 3
   spawnWeight: 1
   maxLevel: 1
   element: 4

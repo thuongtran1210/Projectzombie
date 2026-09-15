@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Upgrades
@@ -8,6 +8,11 @@ namespace ProjectZombie.Features.Upgrades
     {
         [Header("Player Passives")]
         public PlayerStatModifier playerStatModifier;
+
+        public CommonUpgradeData()
+        {
+            upgradeType = UpgradeType.CommonUpgrade;
+        }
 
         public override bool IsAvailable(GameObject player)
         {

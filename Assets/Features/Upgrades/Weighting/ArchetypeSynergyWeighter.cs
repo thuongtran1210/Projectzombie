@@ -3,11 +3,11 @@ using ProjectZombie.Features.Player;
 namespace ProjectZombie.Features.Upgrades.Weighting
 {
     /// <summary>
-    /// Tự động tăng +50% trọng số xuất hiện cho các thẻ nhánh tương thích với Đại Lõi Thần Thoại đang mang.
+    /// Tự động tăng +200% (3.0x) trọng số xuất hiện cho các thẻ nhánh tương thích với Đại Lõi Thần Thoại đang mang.
     /// </summary>
     public class ArchetypeSynergyWeighter : IUpgradeWeighter
     {
-        private const float SYNERGY_MULTIPLIER = 1.50f; // +50%
+        private const float SYNERGY_MULTIPLIER = 3.0f; // +200% (3.0x)
 
         public float CalculateMultiplier(UpgradeData upgrade, PlayerContext context)
         {

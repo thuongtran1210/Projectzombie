@@ -19,7 +19,7 @@ MonoBehaviour:
     1s k\xEDch ho\u1EA1t Mai R\xF9a gi\u1EA3m 50% s\xE1t th\u01B0\u01A1ng. H\u1ED3i
     sinh b\u1EA5t t\u1EED 4s."
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 3
   spawnWeight: 1
   maxLevel: 1
   element: 1

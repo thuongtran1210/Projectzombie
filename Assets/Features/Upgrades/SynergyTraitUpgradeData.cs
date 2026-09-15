@@ -87,7 +87,8 @@ namespace ProjectZombie.Features.Upgrades
 
         public override string GetCategoryDisplayName()
         {
-            return $"<color=#00E5FF><b>[THẦN BÍNH THỦẬT: {requiredArchetype}]</b></color>";
+            string archetypeName = requiredArchetype != MythicArchetype.None ? requiredArchetype.GetDisplayName() : "LÕI";
+            return $"<color=#00E5FF><b>[THẦN BINH THUẬT: {archetypeName.ToUpper()}]</b></color>";
         }
     }
 }

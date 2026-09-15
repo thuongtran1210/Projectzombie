@@ -333,10 +333,12 @@ namespace ProjectZombie.Features.UI
 
                     cardView.SetElementBadge(elementBadge);
 
-                    // Xử lý Huy hiệu Duyên Phận & Chế độ Thần Khí Tiến Hóa / Đại Lõi Thần Thoại
+                    // Xử lý Huy hiệu Duyên Phận & Phân loại giao diện Thẻ Nâng Cấp
                     bool isMythic = upgradeData is MythicCoreUpgradeData || upgradeData.upgradeType == UpgradeType.MythicCore;
-                    bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade || upgradeData.upgradeType == UpgradeType.BreakthroughUltimate || isMythic;
-                    bool hasSynergy = upgradeData is SynergyTraitUpgradeData || upgradeData.upgradeType == UpgradeType.SynergyTrait;
+                    bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade;
+                    bool isBreakthrough = upgradeData.upgradeType == UpgradeType.BreakthroughUltimate;
+                    bool isSynergyTrait = upgradeData is SynergyTraitUpgradeData || upgradeData.upgradeType == UpgradeType.SynergyTrait;
+                    bool hasSynergy = isSynergyTrait;
 
                     if (isMythic)
                     {
@@ -350,15 +352,28 @@ namespace ProjectZombie.Features.UI
                         cardView.SetEvolutionMode(true);
                         cardView.SetSynergyInfo(null, "<color=#A33418><b>CÔNG THỨC DUNG HỢP HOÀN TẤT</b></color>");
                     }
+                    else if (isBreakthrough)
+                    {
+                        cardView.SetEvolutionMode(true);
+                        cardView.SetSynergyInfo(null, "<color=#FF7700><b>✦ ĐỘT PHÁ TUYỆT KỸ ✦</b></color>");
+                    }
+                    else if (isSynergyTrait)
+                    {
+                        var traitData = upgradeData as SynergyTraitUpgradeData;
+                        string archetypeName = traitData != null ? traitData.requiredArchetype.GetDisplayName() : "LÕI";
+                        cardView.SetEvolutionMode(false);
+                        cardView.SetSynergyInfo(null, $"<color=#00E5FF><b>✦ THẦN BINH THUẬT: {archetypeName.ToUpper()} ✦</b></color>");
+                    }
                     else
                     {
+                        cardView.SetEvolutionMode(false);
                         UpgradeSynergyFormatter.FormatSynergyInfo(upgradeData, _playerWeaponManager, out Sprite synIcon, out string synText);
                         hasSynergy = synIcon != null || !string.IsNullOrEmpty(synText);
                         cardView.SetSynergyInfo(synIcon, synText);
                     }
 
                     // Tự động phân cấp màu khung thẻ (Gỗ Mun / Ngọc Bích / Hoàng Kim / Hổ Phách)
-                    cardView.SetCardTier(upgradeData.upgradeType, isEvolution, hasSynergy);
+                    cardView.SetCardTier(upgradeData.upgradeType, isEvolution || isMythic || isBreakthrough, hasSynergy);
                 }
             }
         }

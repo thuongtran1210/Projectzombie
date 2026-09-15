@@ -19,7 +19,7 @@ MonoBehaviour:
     1 \u0111\u1EE3t S\xF3ng Th\u1EA7n gom qu\xE1i. 30% \u0110\xF3ng B\u0103ng & n\u1ED5
     m\u1EA3nh v\u1EE5n."
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 3
   spawnWeight: 1
   maxLevel: 1
   element: 3

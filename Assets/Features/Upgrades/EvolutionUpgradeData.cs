@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 using System.Linq;
@@ -20,6 +20,11 @@ namespace ProjectZombie.Features.Upgrades
 
         [Tooltip("Prefab vũ khí Tiến hóa sẽ thay thế vũ khí cũ")]
         public GameObject weaponPrefab;
+
+        public EvolutionUpgradeData()
+        {
+            upgradeType = UpgradeType.EvolutionUpgrade;
+        }
 
         public override bool IsAvailable(GameObject player)
         {
