@@ -1,241 +1,105 @@
-# Hệ Thống Nâng Cấp Trận Đấu (In-Match Upgrades & Mythic Cores System)
+# Thiết Kế Hệ Thống Tiến Trình & Nâng Cấp Kỹ Năng (Game Progression System)
 
-Tài liệu này mô tả chi tiết toàn bộ kiến trúc kỹ thuật của hệ thống Nâng Cấp trong trận đấu (**In-Match Upgrades**) cho dự án **Projectzombie** (Unity 2022 - Top-down Survival Roguelite phong cách Cổ Phong Thần Thoại Việt Nam).
+> **Tài liệu chuẩn hóa (Single Source of Truth)** cho toàn bộ hệ thống Nâng Cấp & Tiến Trình Trận Đấu dự án **Projectzombie** (Unity 2022 - Top-down Survival Roguelite phong cách Thần Thoại Cổ Phong Việt Nam).
 
 ---
 
-## 1. Kiến Trúc Cốt Lõi (Core Architecture)
+## 1. Hành Trình Trận Đấu (Logarithmic Progression)
 
-Hệ thống được thiết kế theo 5 tầng phân lập độc lập, triệt tiêu hoàn toàn `GetComponent` trong gameplay loop và bảo đảm **0 GC Allocation** trên thiết bị di động Android 60 FPS:
+Hành trình trải qua **4 giai đoạn tiến hóa** từ sơ nhập đến Thần Tướng Tối Thượng:
 
-```mermaid
-graph TD
-    subgraph TẦNG 1: DỮ LIỆU CẤU HÌNH (ScriptableObjects)
-        A[UpgradeData] --> B[MythicCoreUpgradeData]
-        A --> C[SynergyTraitUpgradeData]
-        A --> D[WeaponUpgradeData]
-        A --> E[EvolutionUpgradeData]
-    end
-
-    subgraph TẦNG 2: TUYỂN CHỌN & GACHA (Selection & Filter Pipeline)
-        F[UpgradeSelector] --> G[ArchetypeExclusionFilter]
-        F --> H[DynamicSynergyWeighter]
-    end
-
-    subgraph TẦNG 3: COMPOSITION ROOT (PlayerContext)
-        I[PlayerContext] --> J[PlayerStats]
-        I --> K[HealthSystem]
-        I --> L[PlayerCombatEvents]
-        I --> M[PlayerMythicManager]
-    end
-
-    subgraph TẦNG 4: THỰC THI RUNTIME & LIFECYCLE (Execution Layer)
-        M --> N[MythicCoreRuntime]
-        N --> O[PhuDongCoreRuntime]
-        N --> P[KimQuyCoreRuntime]
-        N --> Q[SonThanhCoreRuntime]
-        N --> R[ThuyBaCoreRuntime]
-        N --> S[LongTienCoreRuntime]
-    end
-
-    subgraph TẦNG 5: GIAO DIỆN HIỂN THỊ (MVP Pattern)
-        T[UpgradeUIPresenter] --> U[UpgradeCardView]
-    end
-```
-
-### 1.1. Lớp Dữ Liệu: `UpgradeData` (Abstract ScriptableObject)
-Mọi thẻ bài đều kế thừa từ `UpgradeData`. Điểm cải tiến quan trọng: Phương thức kiểm tra và áp dụng chỉ nhận `PlayerContext` làm tham số (không nhận `GameObject` thô):
-
-```csharp
-public abstract class UpgradeData : ScriptableObject
-{
-    public string id;
-    public string upgradeName;
-    [TextArea] public string description;
-    public Sprite icon;
-    public UpgradeType upgradeType;
-    public float spawnWeight = 1f;
-    public ElementType element = ElementType.None;
-
-    public abstract bool IsAvailable(PlayerContext context);
-    public abstract void ApplyUpgrade(PlayerContext context);
-    public virtual float GetDynamicWeightMultiplier(PlayerContext context) => 1.0f;
-}
-```
-
-### 1.2. Hợp Đồng Sự Kiện Chiến Đấu: `CombatEventContracts.cs`
-Sử dụng `readonly struct` truyền qua từ khóa `in` để đạt **0 GC Allocation** và đảm bảo tính mở rộng không làm vỡ các hàm đã subscribe:
-
-```csharp
-public readonly struct DamageDealtEvent
-{
-    public readonly GameObject Attacker;
-    public readonly GameObject Target;
-    public readonly float Damage;
-    public readonly Vector2 HitPosition;
-    public readonly bool IsCrit;
-    public readonly ElementType Element;
-}
-
-public readonly struct KillEvent
-{
-    public readonly GameObject Killer;
-    public readonly GameObject Enemy;
-    public readonly Vector2 Position;
-    public readonly bool IsCrit;
-    public readonly ElementType Element;
-}
-
-public readonly struct DashEvent
-{
-    public readonly GameObject Instigator;
-    public readonly Vector2 StartPosition;
-    public readonly Vector2 EndPosition;
-    public readonly Vector2 DashDirection;
-}
-
-public readonly struct HealEvent
-{
-    public readonly GameObject Target;
-    public readonly float HealAmount;
-    public readonly float CurrentHealth;
-    public readonly float MaxHealth;
-}
-
-public readonly struct ReviveEvent
-{
-    public readonly GameObject Player;
-    public readonly float HealthPercent;
-    public readonly float InvulnerableDuration;
-    public readonly string Source;
-}
+```text
+[ 00:00 - BẮT ĐẦU TRẬN ] 
+       │
+       ▼
+ 🌟 CẤP 1: ĐẠI LÕI KHỞI NGUYÊN (Khóa Archetype & Lọc Kho Thẻ Sạch)
+    └─ Chọn 1 trong 5 Đại Lõi Thần Thoại để định hình lối chơi và kích hoạt Clean Pool.
+       │
+       ▼
+ ⚙️ LEVEL THƯỜNG (Lv. 2–4, 6–14, 16–29): BỒI ĐẮP CHỈ SỐ NỀN TẢNG
+    └─ Bốc nhanh thẻ chỉ số thô (SMCK, Tốc đánh, Tầm bắn, Máu, Giáp) thay thế hoàn toàn Shop đồ.
+    └─ Thiết kế 1 dòng đọc < 1 giây, giữ trọn nhịp càn quét không ngắt quãng.
+       │
+       ▼
+ ⚡ MỐC ĐỘT BIẾN (Lv. 5 ➔ Lv. 15 ➔ Lv. 30): LÕI BIẾN DỊ QUY TẮC (TFT / Arena Style)
+    └─ Bốc 1 trong 3 Lõi đột biến (Bạc / Vàng / Kim Cương) bẻ gãy cơ chế vận hành.
+    └─ Cung cấp 2 Lượt Reroll xúc xắc chuyên dụng để người chơi chủ động tìm kiếm mảnh ghép.
+       │
+       ▼
+ 👑 PHÚT 12+ (Lv. 30+): QUYẾT CHIẾN BOSS SÀN ĐẤU
+    └─ Bộ Build đạt ngưỡng thần hóa tối đa, bước vào giao tranh sinh tử với Boss cuối.
 ```
 
 ---
 
-## 2. Phác Thảo Cây Thẻ 5 Đại Lõi Thần Thoại Việt Nam (Mythic Core Trees)
+## 2. Chi Tiết Các Tầng Nâng Cấp
 
-Trận đấu được xây dựng quanh **5 Đại Lõi Thần Thoại Cổ Phong**, mỗi Lõi sở hữu một nhánh cây kỹ năng gồm **1 Lõi Gốc (Kim Cương) + 2 Thẻ Vàng (Cơ Chế) + 3 Thẻ Bạc (Chỉ Số)**:
+### 2.1. Tầng 1: Đại Lõi Cấp 1 (Class Archetype)
 
-### Cây 1: PHÙ ĐỔNG THIÊN UY (Hệ Hỏa - Thể Tu Khổng Lồ, Càn Quét)
-```mermaid
-graph LR
-    PD[💎 PHÙ ĐỔNG THẦN TƯỚNG<br/>Phóng to 200%, Max HP+, Quét chém văng quái]
-    PD --> PD_Y1[🥇 Hỏa Ký Đạp Lôi<br/>Dash cưỡi Ngựa Sắt phun lửa & Giật sét]
-    PD --> PD_Y2[🥇 Nhổ Tre Đánh Giặc<br/>Combo chém 3 làm gãy giáp & Choáng quái]
-    PD --> PD_S1[🥈 Huyết Khí Thần Đồng<br/>Mỗi 100 HP -> +2% Tốc đánh +1% Dame]
-    PD --> PD_S2[🥈 Thiết Giáp Bất Phá<br/>Giảm 20% sát thương khi to > 130%]
-    PD --> PD_S3[🥈 Phù Đổng Nộ Hống<br/>Bị đánh đau tự gầm đẩy quái & Hồi thể lực]
-```
+> **Thời điểm kích hoạt:** Chọn ngay khi bước vào trận đấu (Level 1).  
+> **Cơ chế cốt lõi:** Cung cấp bộ khung chiến đấu độc bản và kích hoạt cơ chế **Kho Thẻ Sạch (Clean Pool)** — loại bỏ hoàn toàn các thẻ không tương thích để người chơi không bao giờ bốc phải thẻ vô dụng.
 
-### Cây 2: KIM QUY THẦN CƠ (Hệ Kim - Xạ Kích Vạn Tiễn, Đạn Nảy Xuyên Phá)
-```mermaid
-graph LR
-    KQ[💎 NHẤT TIỄN VẠN TIỄN<br/>+3 Tia đạn, Đạn trúng quái nảy sang 2 mục tiêu]
-    KQ --> KQ_Y1[🥇 Linh Quy Hộ Quốc Trận<br/>Đứng yên 1s tạo Mai Rùa chặn & Phản xạ đạn]
-    KQ --> KQ_Y2[🥇 Mũi Tên Đồng Cổ Loa<br/>Đạn nảy từ mục tiêu 2 chắc chắn 100% Bạo Kích]
-    KQ --> KQ_S1[🥈 Mắt Thần Xuyên Tâm<br/>+40% Tầm bắn, +30% Tốc đạn, +2 Xuyên]
-    KQ --> KQ_S2[🥈 Kim Quy Trợ Lực<br/>Mỗi 10% Crit -> Chuyển thành +15% Tốc chạy]
-    KQ --> KQ_S3[🥈 Cơ Quan Tốc Xạ<br/>Bắn trúng 5 hit liên tiếp -> +50% Tốc bắn 3s]
-```
+* 🔥 **Phù Đổng Thiên Uy (Hệ Hỏa — Thể Tu Khổng Lồ, Càn Quét):**
+  * Càng hạ nhiều quái vật, thân thể càng phóng to (`+10% kích thước` sau mỗi mốc hạ gục tích lũy).
+  * Đòn chém quét sở hữu phạm vi cực rộng.
+  * Kỹ năng lướt (*Dash*) biến thành **Ngựa Sắt phun lửa**, thiêu rụi toàn bộ kẻ địch trên đường càn quét.
 
-### Cây 3: TẢN VIÊN SƠN THÁNH (Hệ Thổ - Bất Tử Địa Trận, Đè Bẹp Quái)
-```mermaid
-graph LR
-    ST[💎 BẠT SƠN DỜI LŨY<br/>Giáp Đá 100% HP, Đứng yên mọc 4 Thạch Trụ đè quái]
-    ST --> ST_Y1[🥇 Chấn Địa Nham Thạch<br/>Dash / Nhận dame tạo Động Đất hất tung quái]
-    ST --> ST_Y2[🥇 Thần Thổ Dưỡng Khí<br/>Thạch Trụ mọc/vỡ hồi 5% Max HP cho Player]
-    ST --> ST_S1[🥈 Kim Cương Nham Bì<br/>Giảm cố định 20 sát thương từ đòn đánh quái]
-    ST --> ST_S2[🥈 Địa Chấn Phản Phách<br/>Phản 50% sát thương quái đánh theo hình nón]
-    ST --> ST_S3[🥈 Sơn Thần Uy Áp<br/>Quái đứng gần 6m bị giảm 40% Tốc chạy]
-```
+* ✨ **Kim Quy Thần Cơ (Hệ Kim — Mưa Tên & Bẫy Phản Xạ):**
+  * Đòn đánh tự động bắn nảy sang các mục tiêu lân cận.
+  * Tỷ lệ bạo kích đạt `100%` khi người chơi thực hiện thao tác thả diều (kiting).
+  * Khi đứng yên, tự động kích hoạt **Mai Rùa Thần Cơ**: miễn nhiễm hoàn toàn sát thương tầm xa từ phía trước và phản xạ đòn đánh.
 
-### Cây 4: THỦY BÁ CUỒNG NỘ (Hệ Thủy - Sóng Thần Cuốn Trôi, Băng Tê Liệt)
-```mermaid
-graph LR
-    TT[💎 HÔ PHONG HOÁN VŨ<br/>Mưa bão toàn map, Quái bị Ẩm Ướt, 6s Sóng Thần gom quái]
-    TT --> TT_Y1[🥇 Băng Phong Vạn Lý<br/>Đánh quái Ẩm Ướt có 30% Đóng Băng & Nổ 6 mảnh băng]
-    TT --> TT_Y2[🥇 Thủy Long Cuộn Trào<br/>Dash hóa Rồng Nước bất tử & Hút quái theo đường lướt]
-    TT --> TT_S1[🥈 Thủy Triều Dâng Cao<br/>+30% Tốc chạy & +20% Tầm nhặt đồ trong trời mưa]
-    TT --> TT_S2[🥈 Hàn Khí Thấu Xương<br/>Quái bị Đóng Băng nhận thêm +40% Sát thương]
-    TT --> TT_S3[🥈 Thủy Lưu Hồi Chuyển<br/>Đóng Băng quái giảm 0.2s hồi chiêu Lướt]
-```
+* ⛰️ **Tản Viên Sơn Thánh (Hệ Thổ — Pháo Đài Địa Chấn):**
+  * Tích lũy lớp **Giáp Hoàng Thổ** dày đặc theo thời gian.
+  * Khi đứng yên hoặc nhận sát thương, mặt đất mọc lên **Thạch Trụ** đè bẹp quái vật và kích hoạt phát nổ địa chấn diện rộng.
 
-### Cây 5: LONG TIÊN HUYẾT MẠCH (Hệ Âm Dương - Chuyển Đổi Rồng/Tiên, Miễn Tử)
-```mermaid
-graph LR
-    LT[💎 THÁI CỰC LONG TIÊN BIẾN<br/>Chém liên tục hóa Rồng Dame+, Thả tay hóa Tiên Hồi Máu]
-    LT --> LT_Y1[🥇 Bách Noãn Hộ Thể<br/>1 Mạng Hồi Sinh Miễn Phí + 3 Trứng hộ thể phát nổ]
-    LT --> LT_Y2[🥇 Âm Dương Giao Hòa<br/>Chuyển dạng Rồng/Tiên phóng Sóng Thái Cực xóa đạn]
-    LT --> LT_S1[🥈 Hồng Bàng Khí Vận<br/>+35% EXP và +35% Vàng rơi ra từ quái vật]
-    LT --> LT_S2[🥈 Long Uy Phấn Chấn<br/>Dạng Rồng tăng thêm +50% Tốc độ đánh]
-    LT --> LT_S3[🥈 Tiên Âm Dưỡng Hồn<br/>Dạng Tiên tăng +50% Bán kính hào quang & +25% Giáp]
-```
+* 🌊 **Thủy Bá Cuồng Nộ (Hệ Thủy — Sóng Thần & Khống Chế):**
+  * Khả năng gọi mưa bão gom toàn bộ quái vật trên bản đồ lại một điểm cố định.
+  * Kỹ năng gây trạng thái **Ẩm Ướt ➔ Đóng Băng** hoàn toàn mục tiêu.
+  * Kỹ năng lướt (*Dash*) hóa thành **Thủy Long** càn quét dữ dội trên chiến trường.
+
+* ☯️ **Long Tiên Huyết Mạch (Hệ Âm Dương — Song Hình & Hồi Sinh):**
+  * **Hóa Long:** Kích hoạt khi tấn công liên tục (tăng vọt SMCK và Tốc độ đánh).
+  * **Hóa Tiên:** Kích hoạt khi tạm ngừng tay (tỏa hào quang hồi máu liên tục cho bản thân).
+  * Sở hữu `1 mạng Miễn Tử`: khi nhận đòn chí tử sẽ kích hoạt vụ nổ xóa sổ toàn màn hình, dọn sạch quái vật xung quanh và hồi 50% HP.
 
 ---
 
-## 3. Quy Hoạch Kho Thẻ Toàn Diện (60 Thẻ)
+### 2.2. Tầng 2: Thẻ Level Thường (Sub-Upgrades — Thay Thế Shop Đồ)
 
-| Nhóm Thẻ | Số Lượng | Cơ Chế Xuất Hiện |
-|---|:---:|---|
-| **Đại Lõi Thần Thoại (Prismatic Core)** | **5 Thẻ** | Chỉ xuất hiện tại **Level 1** (Khởi đầu trận). |
-| **Thẻ Nhánh Độc Quyền (Synergy Traits)** | **25 Thẻ** | Mỗi Lõi có 5 thẻ con. Tự động tăng +50% tỉ lệ ra khi mang đúng Lõi. |
-| **Thẻ Bổ Trợ Dùng Chung (Universal Passives)** | **15 Thẻ** | Xuất hiện tự do cho mọi Lõi (Máu, Giáp, Tốc chạy, Crit, Exp, Nam châm...). |
-| **Thẻ Nâng Cấp & Tiến Hóa Vũ Khí** | **13 Thẻ** | Nâng cấp vũ khí (`W001-W012`) và mở khóa Thần Binh Tối Thượng (`E001-E012`). |
-| **Thẻ Cứu Cánh (Fallback Rewards)** | **2 Thẻ** | Tiên Đan Hồi Máu (40% HP) & Túi Vàng (+150 Vàng) khi cạn pool thẻ. |
-| **TỔNG CỘNG** | **60 THẺ** | **Đáp ứng chuẩn quy mô Roguelite Mobile 60 FPS.** |
-
----
-
-## 4. Dòng Thời Gian Trận Đấu & Cơ Chế Tuyển Chọn (Game Flow)
-
-```
-[Bắt đầu ván] ──► [MỐC 1: NHẬP ĐẠO (Level 1)]       ──► Bốc 1 trong 3 ĐẠI LÕI KIM CƯƠNG
-                        │
-                        ▼ (Các Level 2, 3, 4, 5: Bốc Thẻ Bạc/Vàng bổ trợ cho Lõi)
-[Giữa trận]    ──► [MỐC 2: CƯỜNG HÓA (Level 6)]      ──► Bốc 1 trong 3 LÕI VÀNG / HYBRID
-                        │
-                        ▼ (Các Level 7-11: Nâng cấp vũ khí & Tiến hóa Thần Binh E001-E012)
-[Cuối trận]    ──► [MỐC 3: ĐỘT PHÁ TỐI THƯỢNG (Lv 12)] ──► Mở khóa Tuyệt Kỹ Thần Minh trước Boss
-```
-
-### Cơ chế Tăng Trọng Số Cộng Hưởng (Dynamic Synergy Weight):
-*   Khi người chơi chọn Lõi **A**, `UpgradeSelector` tự động tăng **+50% trọng số xuất hiện** cho 5 thẻ nhánh của Lõi **A** và các thẻ cùng Hệ Ngũ Hành.
-*   Bộ lọc `ArchetypeExclusionFilter` tự động chặn hoàn toàn các Đại Lõi khác xuất hiện ở các level sau.
+* **Phạm vi xuất hiện:** Tại các mốc Level `2–4`, `6–14`, và `16–29`.
+* **Thiết kế UX/UI tối giản:**
+  * Icon trực quan đi kèm đúng 1 dòng mô tả ngắn gọn *(Ví dụ: `+15% Tốc Đánh`, `+20% Tầm Đánh`, `+120 Máu Tối Đa`)*.
+* **Tốc độ xử lý:**
+  * Thời gian đọc hiểu dưới 1 giây, người chơi chạm/click là lập tức quay lại chiến đấu, đảm bảo không làm ngắt quãng nhịp độ càn quét quái vật 60 FPS.
+* **Bộ lọc thông minh (Clean Pool):**
+  * Kho thẻ tự động lọc theo Đại Lõi đã lựa chọn ở Lv. 1 *(Ví dụ: chọn Phù Đổng ưu tiên Máu / Giáp / Phạm vi ảnh hưởng; chọn Kim Quy ưu tiên Tốc đánh / Xuyên giáp)*.
 
 ---
 
-## 5. Giải Quyết Xung Đột & Quản Lý Vòng Đời (Lifecycle & Conflict Resolution)
+### 2.3. Tầng 3: 3 Cột Mốc Lõi Đột Biến (Lv. 5 – Lv. 15 – Lv. 30)
 
-### 5.1. Xử Lý Xung Đột Chỉ Số (Layered Stat Pipeline)
-Chỉ số nhân vật được tính toán qua 3 tầng rõ ràng, tránh xung đột giữa thẻ cộng % và thẻ khóa giá trị (như Khóa 1 HP):
-$$\text{FinalStat} = (\text{Base} + \sum \text{FlatBonus}) \times (1 + \sum \text{PercentBonus})$$
-*(Nếu có modifier dạng `Override/Clamp`, giá trị Override sẽ có quyền ưu tiên cao nhất).*
+> **Cơ chế:** Khi đạt đến các mốc cấp độ này, hệ thống sẽ tạm dừng trận đấu và hiển thị giao diện **Hoàng Kim / Kim Cương** đặc biệt để người chơi tính toán chiến thuật chuyên sâu.
 
-### 5.2. Quản Lý Vòng Đời Runtimes (Lifecycle Contract)
-`MythicCoreRuntime` tuân thủ vòng đời nghiêm ngặt với cờ bảo vệ `_isDisposed`:
-*   **Initialize:** Đăng ký lắng nghe `CombatEvents`, tạo Aura VFX.
-*   **Teardown (Idempotent):** Hủy đăng ký tất cả Event, thu hồi VFX, hoàn trả chỉ số.
-*   **4 Kịch Bản Hủy:**
-    1. *Core Replaced:* `PlayerMythicManager` gọi `Teardown()` trước khi `Instantiate` Core mới.
-    2. *Player Destroyed:* `OnDestroy()` tự động kích hoạt `Teardown()`.
-    3. *Run Restarted:* `ResetState()` giải phóng toàn bộ Runtime và reset về `None`.
-    4. *Scene Changed:* Unity hủy scene, `_isDisposed` ngăn chặn `NullReferenceException`.
-
-### 5.3. Cơ Chế Soft Death & Hồi Sinh (Revive Flow)
-*   Khi Máu về 0, Player **KHÔNG BỊ DESTROY** mà chuyển sang trạng thái **Hấp Hối (Incapacitated)** trong 5 giây.
-*   Nếu hồi sinh (qua Ads, Linh Đan, hoặc Nội tại Miễn Tử của Long Tiên):
-    *   Phát sự kiện `PlayerCombatEvents.PublishPlayerRevived(new ReviveEvent(...))`.
-    *   `MythicCoreRuntime` bắt sự kiện và kích hoạt hiệu ứng Thần Thoại (Phù Đổng giáng sét dọn map, Sơn Tinh hồi giáp đá, v.v.).
-    *   Player tiếp tục chơi mượt mà, không tốn chi phí nạp lại dữ liệu.
-*   Nếu từ chối hồi sinh / hết giờ -> Kích hoạt **Hard Death (GameOver)** và dọn dẹp bộ nhớ sạch sẽ.
+| Cột Mốc | Bậc Phẩm | Thời Điểm | Vai Trò Trong Trận | Ví Dụ Minh Họa |
+| :--- | :--- | :--- | :--- | :--- |
+| **Lv. 5** | **Bạc / Vàng** | Phút 02:00 – 03:00 | **Cú hích sơ khởi:** Bổ sung cơ chế tiện ích & chuyển hóa chỉ số nền tảng nhằm dọn sạch đợt quái tinh anh đầu tiên. | **Huyết Khí Đồng Quy:** Mỗi 10% máu tối đa cộng thêm từ thẻ thường chuyển hóa thành 5% sát thương kỹ năng và 3% kích thước cơ thể. |
+| **Lv. 15** | **Vàng / Kim Cương** | Phút 06:30 – 07:30 | **Bước ngoặt giữa trận:** Tạo đột biến tương tác chiêu thức diện rộng khi mật độ quái vật bắt đầu áp đảo toàn bản đồ. | **Thạch Phá Thiên Kinh:** Gây hiệu ứng khống chế cứng lên quái sẽ kích nổ chấn động gây sát thương bằng 200% Giáp hiện có lên toàn bộ mục tiêu lân cận. |
+| **Lv. 30** | **Kim Cương** | Phút 10:30 – 11:30 | **Thần Hóa Tối Thượng:** Phá vỡ hoàn toàn logic vận hành thông thường, hoàn thiện bộ Build để đối đầu trực diện Boss sàn đấu. | **Vạn Kiếp Luân Hồi:** Toàn bộ sát thương diện rộng và đòn đánh của Đại Lõi có thể nổ Chí Mạng 175%; nhận thêm 1 lần dùng chiêu thức chủ động không tiêu hao thời gian hồi chiêu. |
 
 ---
 
-## 6. Hướng Dẫn Mở Rộng Thẻ Mới (Extensibility Guide)
+## 3. Cơ Chế Bổ Trợ & Quy Luật Vận Hành
 
-### Cách tạo thêm 1 Lõi Thần Thoại mới:
-1. **Bước 1:** Khai báo Archetype mới trong `MythicArchetype` enum.
-2. **Bước 2:** Tạo Runtime Controller kế thừa từ `MythicCoreRuntime` (ví dụ: `LieuHanhCoreRuntime.cs`), override `SubscribeCombatEvents()` và `UnsubscribeCombatEvents()`.
-3. **Bước 3:** Tạo ScriptableObject `MythicCoreUpgradeData`, gán Prefab chứa Runtime vừa tạo.
-4. **Bước 4:** Xong! Hệ thống Gacha và Filter sẽ tự động nhận diện và vận hành mà không cần sửa bất kỳ file quản lý nào.
+1. **Lượt Đổi Khí Vận (Reroll Token):**
+   * Mỗi người chơi nhận cố định **2 lượt Reroll** cho toàn bộ trận đấu.
+   * Lượt đổi chỉ áp dụng riêng cho 3 mốc Lõi Đột Biến (`Lv. 5`, `Lv. 15`, `Lv. 30`), không hỗ trợ cho các đợt lên level thường để tránh làm loãng nhịp độ.
+
+2. **Cơ Chế Bổ Trợ Ngầm (Smart Synergy):**
+   * Khi người chơi chọn Lõi Đột Biến tại `Lv. 5` hoặc `Lv. 15`, hệ thống tự động mở khóa thêm **2–3 thẻ thường độc quyền** mang hiệu ứng cộng hưởng vào danh sách bốc thẻ ở các level thường tiếp theo.
+
+3. **Nhịp Độ Bùng Nổ Sức Mạnh (Pacing Curve):**
+   * Sức mạnh của người chơi không tăng theo dạng tuyến tính đều đặn mà trải qua **3 bậc thang đột biến rõ rệt**:
+     * **Bậc 1 (Phút thứ 3):** Ứng phó mật độ lính tinh anh xuất hiện đợt đầu.
+     * **Bậc 2 (Phút thứ 7):** Đối phó các đợt quái số lượng lớn áp đảo.
+     * **Bậc 3 (Phút thứ 12+):** Thần hóa bộ kỹ năng để nghênh chiến Boss tối thượng.

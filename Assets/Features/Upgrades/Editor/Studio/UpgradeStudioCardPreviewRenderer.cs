@@ -88,14 +88,40 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
             string tierName = "THƯỜNG (GỖ MUN)";
 
             bool isMythic = data is MythicCoreUpgradeData || data.upgradeType == UpgradeType.MythicCore;
+            bool isAugment = data is MutationAugmentUpgradeData;
+            bool isMicroStat = data is StatMicroUpgradeData;
             bool isEvolution = data is EvolutionUpgradeData || data.upgradeType == UpgradeType.EvolutionUpgrade;
-            bool isBreakthrough = data.upgradeType == UpgradeType.BreakthroughUltimate;
+            bool isBreakthrough = data.upgradeType == UpgradeType.BreakthroughUltimate && !isAugment;
             bool isSynergy = data is SynergyTraitUpgradeData || data.upgradeType == UpgradeType.SynergyTrait;
 
             if (isMythic)
             {
                 borderColor = new Color(1f, 0.84f, 0f); // Vàng Hoàng Kim
                 tierName = "THẦN THOẠI (HOÀNG KIM)";
+            }
+            else if (isAugment)
+            {
+                var aug = (MutationAugmentUpgradeData)data;
+                switch (aug.tier)
+                {
+                    case AugmentTier.Silver:
+                        borderColor = new Color(0.75f, 0.75f, 0.8f);
+                        tierName = "LÕI BẠC (CHỈ SỐ & TIỆN ÍCH)";
+                        break;
+                    case AugmentTier.Gold:
+                        borderColor = new Color(1f, 0.85f, 0.2f);
+                        tierName = "LÕI VÀNG (CƯỜNG HÓA GIAO TRANH)";
+                        break;
+                    case AugmentTier.Prismatic:
+                        borderColor = new Color(0.0f, 0.9f, 1f);
+                        tierName = "LÕI KIM CƯƠNG (BẺ GÃY QUY TẮC)";
+                        break;
+                }
+            }
+            else if (isMicroStat)
+            {
+                borderColor = new Color(0.1f, 0.8f, 0.45f); // Xanh Lục Bảo Micro-Card
+                tierName = "CHỈ SỐ NỀN TẢNG (1 DÒNG)";
             }
             else if (isEvolution || isBreakthrough)
             {
@@ -158,12 +184,29 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
 
             GUILayout.Space(4);
 
-            // 4. Banner Đặc Biệt (Nếu là Mythic / Evolution / Trait)
+            // 4. Banner Đặc Biệt (Nếu là Mythic / Augment / MicroStat / Evolution / Trait)
             if (isMythic)
             {
                 var core = data as MythicCoreUpgradeData;
                 string title = core != null && !string.IsNullOrEmpty(core.mythicTitle) ? core.mythicTitle : "ĐẠI LÕI KHỞI ĐẦU";
                 GUILayout.Label($"<color=#FFD700><b>✦ {title} ✦</b></color>", _bannerStyle);
+            }
+            else if (isAugment)
+            {
+                var aug = (MutationAugmentUpgradeData)data;
+                string bannerColor = aug.tier switch
+                {
+                    AugmentTier.Prismatic => "#00E5FF",
+                    AugmentTier.Gold => "#FFD700",
+                    _ => "#C0C0C0"
+                };
+                GUILayout.Label($"<color={bannerColor}><b>✦ MỐC ĐỘT BIẾN [{aug.tier.ToString().ToUpper()}] ✦</b></color>", _bannerStyle);
+            }
+            else if (isMicroStat)
+            {
+                var micro = (StatMicroUpgradeData)data;
+                string sum = !string.IsNullOrEmpty(micro.oneLineSummary) ? micro.oneLineSummary : "+Chỉ Số Nền Tảng";
+                GUILayout.Label($"<color=#00FF88><size=13><b>⚡ {sum}</b></size></color>", _bannerStyle);
             }
             else if (isEvolution)
             {

@@ -25,6 +25,9 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                 case UpgradeType.SynergyTrait:
                     return CreateSynergyTraitTemplate();
 
+                case UpgradeType.BreakthroughUltimate:
+                    return CreateMutationAugmentTemplate(AugmentTier.Silver);
+
                 case UpgradeType.WeaponUpgrade:
                     return CreateWeaponUpgradeTemplate();
 
@@ -34,14 +37,66 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                 case UpgradeType.CommonUpgrade:
                 case UpgradeType.RareUpgrade:
                 case UpgradeType.ConditionalPassive:
-                    return CreateCommonUpgradeTemplate();
+                    return CreateStatMicroTemplate();
 
                 case UpgradeType.RelicFusion:
                     return CreateFusionUpgradeTemplate();
 
                 default:
-                    return CreateCommonUpgradeTemplate();
+                    return CreateStatMicroTemplate();
             }
+        }
+
+        public static MutationAugmentUpgradeData CreateMutationAugmentTemplate(AugmentTier tier)
+        {
+            string folder = $"{BASE_DIR}/MutationAugments";
+            EnsureDirectoryExists(folder);
+
+            string tierName = tier.ToString();
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/AUGMENT_{tierName.ToUpper()}_NEW.asset");
+            var asset = ScriptableObject.CreateInstance<MutationAugmentUpgradeData>();
+            asset.id = $"AUG_{tierName.Substring(0, 1).ToUpper()}_NEW";
+            asset.upgradeName = $"Lõi Đột Biến [{tierName}] Mới";
+            asset.description = "Hiệu ứng bẻ gãy quy tắc hoặc cường hóa giao tranh bùng nổ...";
+            asset.tier = tier;
+            asset.upgradeType = UpgradeType.BreakthroughUltimate;
+            asset.spawnWeight = tier switch
+            {
+                AugmentTier.Silver => 60f,
+                AugmentTier.Gold => 30f,
+                AugmentTier.Prismatic => 10f,
+                _ => 30f
+            };
+            asset.maxLevel = 1;
+
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.SaveAssets();
+            return asset;
+        }
+
+        public static StatMicroUpgradeData CreateStatMicroTemplate()
+        {
+            string folder = $"{BASE_DIR}/MicroStats";
+            EnsureDirectoryExists(folder);
+
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/MICRO_STAT_NEW.asset");
+            var asset = ScriptableObject.CreateInstance<StatMicroUpgradeData>();
+            asset.id = "STAT_MICRO_NEW";
+            asset.upgradeName = "Tên Thẻ Chỉ Số";
+            asset.oneLineSummary = "+15% Tốc Đánh & +5% Sát Thương";
+            asset.description = "Tăng cường năng lực nền tảng cho nhân vật, thay thế trang bị.";
+            asset.upgradeType = UpgradeType.CommonUpgrade;
+            asset.spawnWeight = 60f;
+            asset.maxLevel = 5;
+            asset.statModifier = new PlayerStatModifier
+            {
+                attackSpeedBonus = 0.15f,
+                baseDamageBonus = 5f
+            };
+
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.SaveAssets();
+            return asset;
         }
 
         private static MythicCoreUpgradeData CreateMythicCoreTemplate()

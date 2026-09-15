@@ -267,31 +267,24 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            _view.SetRerollCountText($"Lắc Lại ({_currentRerolls})");
-            _view.SetRerollInteractable(_currentRerolls > 0);
+            int currentLevel = _playerExperience != null ? _playerExperience.CurrentLevel : 2;
+            bool isMutation = UpgradeManager.Instance != null && UpgradeManager.Instance.IsMutationLevel(currentLevel);
 
-            int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
-            List<UpgradeData> choices;
-            var mythicMgr = _playerWeaponManager != null ? _playerWeaponManager.GetComponent<PlayerMythicManager>() : null;
-            
-            Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> mythicMgr: {(mythicMgr != null ? mythicMgr.CurrentArchetype.ToString() : "NULL")}");
-
-            if (mythicMgr != null && mythicMgr.CurrentArchetype == MythicArchetype.None)
+            if (isMutation && UpgradeManager.Instance != null)
             {
-                // Khởi đầu trận đấu: Ưu tiên bốc 3 Đại Lõi Thần Thoại (Nhập Đạo)
-                choices = UpgradeManager.Instance.GetMythicCoreChoices(choiceCount, new Player.PlayerContext(_playerWeaponManager.gameObject));
-                Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> GetMythicCoreChoices trả về {choices?.Count ?? 0} thẻ.");
-                if (choices == null || choices.Count == 0)
-                {
-                    choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
-                    Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Fallback GetRandomUpgrades trả về {choices?.Count ?? 0} thẻ.");
-                }
+                _view.SetRerollCountText($"Lắc Lại ({UpgradeManager.Instance.CurrentRerollTokens}/2)");
+                _view.SetRerollInteractable(UpgradeManager.Instance.CurrentRerollTokens > 0);
             }
             else
             {
-                choices = UpgradeManager.Instance.GetRandomUpgrades(choiceCount, _playerWeaponManager.gameObject);
-                Debug.Log($"<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> GetRandomUpgrades thường trả về {choices?.Count ?? 0} thẻ.");
+                // Level thường: Khóa nút Reroll để người chơi chọn nhanh dưới 1s
+                _view.SetRerollCountText("Lắc Lại (0)");
+                _view.SetRerollInteractable(false);
             }
+
+            int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
+            var context = Player.PlayerContext.Create(_playerWeaponManager.gameObject);
+            List<UpgradeData> choices = UpgradeManager.Instance.GetProgressionUpgrades(choiceCount, currentLevel, context);
 
             if (choices != null)
             {
@@ -319,11 +312,17 @@ namespace ProjectZombie.Features.UI
                     string statDiff = _statFormatter.FormatStatDiff(upgradeData);
                     string elementBadge = FormatElementAndSynergyBadge(upgradeData);
 
+                    string desc = upgradeData.description;
+                    if (upgradeData is StatMicroUpgradeData micro && !string.IsNullOrEmpty(micro.oneLineSummary))
+                    {
+                        desc = $"<color=#00FF88><b>{micro.oneLineSummary}</b></color>";
+                    }
+
                     // Thiết lập card với dữ liệu đã định dạng và callback
                     cardView.Setup(
                         upgradeData.icon,
                         upgradeData.upgradeName,
-                        upgradeData.description,
+                        desc,
                         category,
                         level,
                         statDiff,
@@ -336,6 +335,7 @@ namespace ProjectZombie.Features.UI
                     // Xử lý Huy hiệu Duyên Phận & Phân loại giao diện Thẻ Nâng Cấp
                     bool isMythic = upgradeData is MythicCoreUpgradeData || upgradeData.upgradeType == UpgradeType.MythicCore;
                     bool isEvolution = upgradeData is EvolutionUpgradeData || upgradeData.upgradeType == UpgradeType.EvolutionUpgrade;
+                    bool isMutationAugment = upgradeData is MutationAugmentUpgradeData;
                     bool isBreakthrough = upgradeData.upgradeType == UpgradeType.BreakthroughUltimate;
                     bool isSynergyTrait = upgradeData is SynergyTraitUpgradeData || upgradeData.upgradeType == UpgradeType.SynergyTrait;
                     bool hasSynergy = isSynergyTrait;
@@ -346,6 +346,12 @@ namespace ProjectZombie.Features.UI
                         string title = mythicCore != null && !string.IsNullOrEmpty(mythicCore.mythicTitle) ? mythicCore.mythicTitle : "ĐẠI LÕI KHỞI ĐẦU";
                         cardView.SetEvolutionMode(true);
                         cardView.SetSynergyInfo(null, $"<color=#FFD700><b>✦ {title} ✦</b></color>");
+                    }
+                    else if (isMutationAugment)
+                    {
+                        var mut = upgradeData as MutationAugmentUpgradeData;
+                        cardView.SetEvolutionMode(true);
+                        cardView.SetSynergyInfo(null, mut != null ? mut.GetCategoryDisplayName() : "<color=#FFD700><b>✦ LÕI ĐỘT BIẾN ✦</b></color>");
                     }
                     else if (isEvolution)
                     {
@@ -395,17 +401,15 @@ namespace ProjectZombie.Features.UI
 
         private void OnRerollClicked()
         {
-            Debug.Log($"<color=#00FF88>[UpgradeUIPresenter]</color> OnRerollClicked! Lượt còn lại: {_currentRerolls}");
-            if (_currentRerolls > 0)
+            if (UpgradeManager.Instance != null && UpgradeManager.Instance.TryConsumeRerollToken())
             {
-                _currentRerolls--;
                 global::Core.Audio.AudioManager.Instance?.PlayUIClick();
                 PopulateUpgradeScreen();
             }
             else
             {
                 global::Core.Audio.AudioManager.Instance?.PlayUIError();
-                Debug.LogWarning("[UpgradeUIPresenter] Đã hết số lần Lắc Lại trong lượt chạy!");
+                Debug.LogWarning("[UpgradeUIPresenter] Đã hết lượt Reroll Token trong trận đấu!");
             }
         }
 

@@ -98,6 +98,20 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 mythic.mythicTitle = EditorGUILayout.TextField("Danh Hiệu Thần Thoại:", mythic.mythicTitle);
                 mythic.runtimePrefab = (MythicCoreRuntime)EditorGUILayout.ObjectField("Runtime Prefab:", mythic.runtimePrefab, typeof(MythicCoreRuntime), false);
             }
+            else if (selectedUpgrade is MutationAugmentUpgradeData augment)
+            {
+                augment.tier = (AugmentTier)EditorGUILayout.EnumPopup("Phẩm Cấp Lõi Đột Biến:", augment.tier);
+                augment.synergyTag = EditorGUILayout.TextField("Smart Synergy Tag:", augment.synergyTag);
+                augment.mechanicRuntimePrefab = (GameObject)EditorGUILayout.ObjectField("Mechanic Prefab (Bẻ Quy Tắc):", augment.mechanicRuntimePrefab, typeof(GameObject), false);
+                DrawPlayerStatModifierEditor(ref augment.statModifier);
+            }
+            else if (selectedUpgrade is StatMicroUpgradeData micro)
+            {
+                micro.oneLineSummary = EditorGUILayout.TextField("Tóm Tắt 1 Dòng (< 1s):", micro.oneLineSummary);
+                micro.preferredArchetype = (MythicArchetype)EditorGUILayout.EnumPopup("Archetype Ưu Tiên:", micro.preferredArchetype);
+                micro.synergyTag = EditorGUILayout.TextField("Smart Synergy Tag:", micro.synergyTag);
+                DrawPlayerStatModifierEditor(ref micro.statModifier);
+            }
             else if (selectedUpgrade is SynergyTraitUpgradeData trait)
             {
                 trait.requiredArchetype = (MythicArchetype)EditorGUILayout.EnumPopup("Yêu Cầu Đại Lõi:", trait.requiredArchetype);

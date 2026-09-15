@@ -9,8 +9,8 @@ using ProjectZombie.Features.Shared;
 namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 {
     /// <summary>
-    /// Panel chuyên trách giả lập bốc thẻ Roguelite:
-    /// 1. Chế độ Giả Lập Tương Tác Ván Chơi (Interactive Run Sandbox): Bốc ngẫu nhiên từng level hoặc chỉ định ép thẻ.
+    /// Panel chuyên trách giả lập bốc thẻ Roguelite theo Tiến trình Logarithmic 4 giai đoạn:
+    /// 1. Chế độ Giả Lập Tương Tác Ván Chơi (Interactive Run Sandbox): Mốc Lv.1 Đại Lõi, Mốc Lv.5/15/30 Lõi Đột Biến (+2 Reroll Tokens), Level Thường (Micro-Stats Clean Pool).
     /// 2. Chế độ Phân Tích Thống Kê Monte Carlo (500 - 5000 lượt).
     /// </summary>
     public class StudioSimulatorPanel
@@ -19,6 +19,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
         // --- Interactive Run State ---
         private int _currentRunLevel = 1;
+        private int _rerollTokens = 2;
         private MythicArchetype _activeRunArchetype = MythicArchetype.None;
         private MythicCoreUpgradeData _activeCoreData;
         private readonly List<UpgradeData> _runInventory = new List<UpgradeData>();
@@ -39,7 +40,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
             // 1. Sub-Tab Switcher
             GUILayout.BeginHorizontal();
-            string[] subTabs = new[] { "🎮 Giả Lập Ván Chơi Tương Tác (Interactive Sandbox)", "📊 Phân Tích Thống Kê Monte Carlo (Bulk Roll)" };
+            string[] subTabs = new[] { "🎮 Giả Lập Tiến Trình Ván Đấu (Interactive Progression)", "📊 Phân Tích Thống Kê Monte Carlo (Bulk Roll)" };
             _simSubTab = GUILayout.Toolbar(_simSubTab, subTabs, EditorStyles.toolbarButton, GUILayout.Height(26));
             GUILayout.EndHorizontal();
 
@@ -62,14 +63,16 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
         {
             // 1. Run Header & Global Controls
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
-            GUILayout.Label($"<b>CẤP ĐỘ HIỆN TẠI: <color=#00FF88>Lv.{_currentRunLevel}</color></b>", new GUIStyle(EditorStyles.boldLabel) { richText = true });
-            
+            string levelPhaseInfo = GetProgressionPhaseTitle(_currentRunLevel);
+            GUILayout.Label($"<b>CẤP ĐỘ HIỆN TẠI: <color=#00FF88>Lv.{_currentRunLevel}</color></b> - <i>{levelPhaseInfo}</i>", new GUIStyle(EditorStyles.boldLabel) { richText = true });
+
             string coreName = _activeRunArchetype != MythicArchetype.None ? _activeRunArchetype.GetDisplayName() : "<color=#FF4444>Chưa chọn</color>";
             GUILayout.Label($" | Đại Lõi: <b>{coreName}</b>", new GUIStyle(EditorStyles.label) { richText = true });
+            GUILayout.Label($" | Reroll Token: <color=#FFD700><b>{_rerollTokens}/2</b></color>", new GUIStyle(EditorStyles.label) { richText = true });
 
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("🔄 Reset Ván Chơi Mới (Lv.1)", EditorStyles.toolbarButton))
+            if (GUILayout.Button("🔄 Bắt Đầu Lại (Lv.1)", EditorStyles.toolbarButton))
             {
                 ResetRun(allUpgrades);
             }
@@ -94,27 +97,58 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             GUILayout.EndHorizontal();
         }
 
+        private string GetProgressionPhaseTitle(int level)
+        {
+            if (level == 1) return "<color=#FFD700>Giai Đoạn 1: Đại Lõi Khởi Nguyên</color>";
+            if (level == 5) return "<color=#FFD700>⭐ MỐC ĐỘT BIẾN 1 (Lõi Bạc / Vàng)</color>";
+            if (level == 15) return "<color=#00E5FF>⭐⭐ MỐC ĐỘT BIẾN 2 (Lõi Vàng / Kim Cương)</color>";
+            if (level == 30) return "<color=#FF3300>⭐⭐⭐ MỐC ĐỘT BIẾN 3 (Lõi Kim Cương Tối Thượng)</color>";
+            if (level > 30) return "<color=#FF4444>👑 Phút 12+: Quyết Chiến Boss Sàn Đấu</color>";
+            return "<color=#00FF88>Giai Đoạn 2: Bồi Đắp Chỉ Số Nền Tảng (Clean Pool)</color>";
+        }
+
+        private bool IsMutationMilestone(int level) => level == 5 || level == 15 || level == 30;
+
         private void DrawLevelUpRollArea(List<UpgradeData> allUpgrades)
         {
+            bool isMutation = IsMutationMilestone(_currentRunLevel);
+
             // Toolbar Hành Động
             GUILayout.BeginHorizontal();
 
             if (_activeRunArchetype == MythicArchetype.None)
             {
-                GUILayout.Label("<b>⭐ GIAI ĐOẠN 1: CHỌN ĐẠI LÕI KHỞI ĐẦU (LEVEL 1)</b>", EditorStyles.boldLabel);
+                GUILayout.Label("<b>⭐ GIAI ĐOẠN 1: CHỌN ĐẠI LÕI KHỞI NGUYÊN (LEVEL 1)</b>", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("🎲 Roll 3 Đại Lõi Ngẫu Nhiên", EditorStyles.miniButton, GUILayout.Height(24)))
                 {
                     RollLevel1Cores(allUpgrades);
                 }
             }
+            else if (isMutation)
+            {
+                GUILayout.Label($"<b>⚡ MỐC ĐỘT BIẾN LÕI QUY TẮC (Lv.{_currentRunLevel})</b>", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+                if (_rerollTokens > 0)
+                {
+                    if (GUILayout.Button($"🎲 Dùng 1 Reroll Token ({_rerollTokens}/2)", EditorStyles.miniButtonLeft, GUILayout.Height(24)))
+                    {
+                        _rerollTokens--;
+                        RollProgressionLevel(allUpgrades);
+                    }
+                }
+                if (GUILayout.Button("Lên Cấp Ngẫu Nhiên", EditorStyles.miniButtonRight, GUILayout.Height(24)))
+                {
+                    RollProgressionLevel(allUpgrades);
+                }
+            }
             else
             {
-                GUILayout.Label($"<b>⚡ GIAI ĐOẠN 2: LÊN CẤP VÀ PHÁT TRIỂN NHÁNH (Lv.{_currentRunLevel})</b>", EditorStyles.boldLabel);
+                GUILayout.Label($"<b>⚙️ LEVEL THƯỜNG: BỒI ĐẮP CHỈ SỐ (Lv.{_currentRunLevel})</b>", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("🎲 Lên Cấp Ngẫu Nhiên (+1 Level)", EditorStyles.miniButton, GUILayout.Height(24)))
+                if (GUILayout.Button("🎲 +1 Level Nhanh (<1s)", EditorStyles.miniButton, GUILayout.Height(24)))
                 {
-                    RollNextLevelRandom(allUpgrades);
+                    RollProgressionLevel(allUpgrades);
                 }
             }
 
@@ -137,12 +171,9 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 }
             }
 
-            if (_activeRunArchetype != MythicArchetype.None)
+            if (GUILayout.Button("🚀 Fast Sim to Lv.30", GUILayout.Width(130)))
             {
-                if (GUILayout.Button("⚡ Ép Đủ 5 Thần Binh Thuật", GUILayout.Width(165)))
-                {
-                    InjectAllArchetypeTraits(allUpgrades);
-                }
+                FastSimToLevel30(allUpgrades);
             }
 
             GUILayout.EndHorizontal();
@@ -157,7 +188,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             {
                 EditorGUILayout.HelpBox(_activeRunArchetype == MythicArchetype.None
                     ? "Bấm '🎲 Roll 3 Đại Lõi Ngẫu Nhiên' hoặc chọn Đại Lõi trực tiếp bên dưới để bắt đầu ván đấu."
-                    : "Bấm '🎲 Lên Cấp Ngẫu Nhiên (+1 Level)' hoặc sử dụng công cụ '🎯 Chỉ Định Ép Thẻ' để thử nghiệm build.", MessageType.Info);
+                    : "Bấm '🎲 +1 Level Nhanh' để tiếp tục tiến trình.", MessageType.Info);
 
                 if (_activeRunArchetype == MythicArchetype.None)
                 {
@@ -171,7 +202,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Chọn Lõi Này", GUILayout.Width(110)))
                         {
-                            SelectCoreDirectly(core);
+                            SelectCoreDirectly(core, allUpgrades);
                         }
                         GUILayout.EndHorizontal();
                     }
@@ -191,24 +222,24 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                     // Icon
                     if (card.icon != null && card.icon.texture != null)
                     {
-                        GUILayout.Label(new GUIContent(card.icon.texture), GUILayout.Width(36), GUILayout.Height(36));
+                        GUILayout.Label(new GUIContent(card.icon.texture), GUILayout.Width(32), GUILayout.Height(32));
                     }
                     else
                     {
-                        GUILayout.Box("?", GUILayout.Width(36), GUILayout.Height(36));
+                        GUILayout.Box("?", GUILayout.Width(32), GUILayout.Height(32));
                     }
 
                     GUILayout.BeginVertical();
                     GUILayout.Label($"<b>{card.id}</b> - {card.upgradeName}", EditorStyles.boldLabel);
-                    GUILayout.Label($"[{card.upgradeType}] | Hệ: {card.element} | W: {card.spawnWeight}", EditorStyles.miniLabel);
+                    GUILayout.Label(card.GetCategoryDisplayName(), new GUIStyle(EditorStyles.miniLabel) { richText = true });
                     GUILayout.EndVertical();
 
                     GUILayout.FlexibleSpace();
 
                     // Nút CHỌN
                     var prevBg = GUI.backgroundColor;
-                    GUI.backgroundColor = new Color(0.2f, 0.8f, 0.2f, 1f);
-                    if (GUILayout.Button("✔ CHỌN THẺ NÀY", GUILayout.Width(130), GUILayout.Height(36)))
+                    GUI.backgroundColor = isMutation ? new Color(1f, 0.84f, 0f, 1f) : new Color(0.2f, 0.8f, 0.2f, 1f);
+                    if (GUILayout.Button("✔ CHỌN THẺ NÀY", GUILayout.Width(130), GUILayout.Height(32)))
                     {
                         GUI.backgroundColor = prevBg;
                         ApplyCardSelection(card, allUpgrades);
@@ -218,9 +249,14 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
                     GUILayout.EndHorizontal();
 
-                    // Mô tả
+                    // Mô tả ngắn gọn (Micro 1 dòng nếu có)
                     GUILayout.Space(2);
-                    GUILayout.Label(card.description, new GUIStyle(EditorStyles.wordWrappedMiniLabel) { richText = true });
+                    string desc = card.description;
+                    if (card is StatMicroUpgradeData micro && !string.IsNullOrEmpty(micro.oneLineSummary))
+                    {
+                        desc = $"<color=#00FF88><b>⚡ {micro.oneLineSummary}</b></color>";
+                    }
+                    GUILayout.Label(desc, new GUIStyle(EditorStyles.wordWrappedMiniLabel) { richText = true });
 
                     GUILayout.EndVertical();
                     GUILayout.Space(4);
@@ -231,14 +267,14 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
         private void DrawRunInventoryAndStatsArea(List<UpgradeData> allUpgrades)
         {
-            GUILayout.Label("<b>🎒 KHO ĐỒ & BUILD HIỆN TẠI</b>", EditorStyles.boldLabel);
+            GUILayout.Label("<b>🎒 KHO ĐỒ & TIẾN TRÌNH BUILD</b>", EditorStyles.boldLabel);
             GUILayout.Space(4);
 
             _inventoryScroll = GUILayout.BeginScrollView(_inventoryScroll);
 
             // 1. Đại Lõi Đang Mang
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("<b>👑 ĐẠI LÕI ĐANG MANG:</b>", EditorStyles.miniBoldLabel);
+            GUILayout.Label("<b>👑 ĐẠI LÕI KHỞI NGUYÊN:</b>", EditorStyles.miniBoldLabel);
             if (_activeCoreData != null)
             {
                 GUILayout.Label($"<color=#FFD700><b>{_activeCoreData.mythicTitle}</b></color> ({_activeCoreData.id})", new GUIStyle(EditorStyles.label) { richText = true });
@@ -251,9 +287,23 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
             GUILayout.Space(4);
 
-            // 2. Danh sách Thẻ đã nhặt
+            // 2. Danh sách Lõi Đột Biến
+            var mutationCards = _runInventory.OfType<MutationAugmentUpgradeData>().ToList();
+            if (mutationCards.Count > 0)
+            {
+                GUILayout.BeginVertical(EditorStyles.helpBox);
+                GUILayout.Label($"<b>⚡ LÕI ĐỘT BIẾN ĐÃ CHỌN ({mutationCards.Count}/3):</b>", EditorStyles.miniBoldLabel);
+                foreach (var mut in mutationCards)
+                {
+                    GUILayout.Label($"• [{mut.tier}] <b>{mut.upgradeName}</b>", EditorStyles.miniLabel);
+                }
+                GUILayout.EndVertical();
+                GUILayout.Space(4);
+            }
+
+            // 3. Thẻ Chỉ Số Nền Tảng
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label($"<b>📜 CÁC NÂNG CẤP ĐÃ CHỌN ({_runInventory.Count}):</b>", EditorStyles.miniBoldLabel);
+            GUILayout.Label($"<b>📜 CÁC THẺ ĐÃ NHẶT ({_runInventory.Count}):</b>", EditorStyles.miniBoldLabel);
             if (_runInventory.Count == 0)
             {
                 GUILayout.Label("<color=#888888>Chưa nhặt thẻ nào</color>", new GUIStyle(EditorStyles.label) { richText = true });
@@ -278,7 +328,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
             GUILayout.Space(6);
 
-            // 3. Tổng Hợp Chỉ Số Modifier
+            // 4. Tổng Hợp Chỉ Số Modifier
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("<b>⚡ TỔNG HỢP CHỈ SỐ BUILD CỘNG DỒN:</b>", EditorStyles.miniBoldLabel);
             DrawAccumulatedStats();
@@ -293,7 +343,27 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
             foreach (var u in _runInventory)
             {
-                if (u is SynergyTraitUpgradeData trait)
+                if (u is StatMicroUpgradeData micro)
+                {
+                    dmg += micro.statModifier.baseDamageBonus;
+                    crit += micro.statModifier.critChanceBonus;
+                    hp += micro.statModifier.maxHealthBonus;
+                    spd += micro.statModifier.moveSpeedBonus;
+                    atkSpd += micro.statModifier.attackSpeedBonus;
+                    fireDmg += micro.statModifier.fireDamageBonus;
+                    aoe += micro.statModifier.areaScaleBonus;
+                }
+                else if (u is MutationAugmentUpgradeData mut)
+                {
+                    dmg += mut.statModifier.baseDamageBonus;
+                    crit += mut.statModifier.critChanceBonus;
+                    hp += mut.statModifier.maxHealthBonus;
+                    spd += mut.statModifier.moveSpeedBonus;
+                    atkSpd += mut.statModifier.attackSpeedBonus;
+                    fireDmg += mut.statModifier.fireDamageBonus;
+                    aoe += mut.statModifier.areaScaleBonus;
+                }
+                else if (u is SynergyTraitUpgradeData trait)
                 {
                     dmg += trait.playerStatModifier.baseDamageBonus;
                     crit += trait.playerStatModifier.critChanceBonus;
@@ -324,10 +394,11 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             GUILayout.Label($"- Phạm vi AoE (%): <color=#00E5FF>+{aoe:F1}%</color>", new GUIStyle(EditorStyles.miniLabel) { richText = true });
         }
 
-        #region Interactive Run Actions
+        #region Progression Interactive Actions
         private void ResetRun(List<UpgradeData> allUpgrades)
         {
             _currentRunLevel = 1;
+            _rerollTokens = 2;
             _activeRunArchetype = MythicArchetype.None;
             _activeCoreData = null;
             _runInventory.Clear();
@@ -338,108 +409,50 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
         private void RollLevel1Cores(List<UpgradeData> allUpgrades)
         {
             _currentRolledChoices.Clear();
-            var cores = allUpgrades.OfType<MythicCoreUpgradeData>().ToList();
-            if (cores.Count == 0) return;
-
-            // Lấy 3 core ngẫu nhiên
-            var shuffled = cores.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
-            _currentRolledChoices.AddRange(shuffled);
+            _currentRolledChoices = UpgradeSelector.SelectArchetypeCores(3, allUpgrades);
         }
 
-        private void SelectCoreDirectly(MythicCoreUpgradeData core)
+        private void SelectCoreDirectly(MythicCoreUpgradeData core, List<UpgradeData> allUpgrades)
         {
             _activeCoreData = core;
             _activeRunArchetype = core.archetype;
             _currentRunLevel = 2;
-            _currentRolledChoices.Clear();
+            RollProgressionLevel(allUpgrades);
         }
 
         private void ApplyCardSelection(UpgradeData card, List<UpgradeData> allUpgrades)
         {
             if (card is MythicCoreUpgradeData core)
             {
-                SelectCoreDirectly(core);
-                RollNextLevelRandom(allUpgrades);
+                SelectCoreDirectly(core, allUpgrades);
             }
             else
             {
                 _runInventory.Add(card);
                 _currentRunLevel++;
-                RollNextLevelRandom(allUpgrades);
+                RollProgressionLevel(allUpgrades);
             }
         }
 
-        private void RollNextLevelRandom(List<UpgradeData> allUpgrades)
+        private void RollProgressionLevel(List<UpgradeData> allUpgrades)
         {
             _currentRolledChoices.Clear();
 
-            // Lọc các thẻ hợp lệ
-            var candidatePool = allUpgrades.Where(u =>
+            if (_currentRunLevel == 1 || _activeRunArchetype == MythicArchetype.None)
             {
-                if (u == null) return false;
-                if (u is MythicCoreUpgradeData) return false; // Không ra lại Core
-
-                // Nếu là SynergyTrait, chỉ cho phép đúng Archetype
-                if (u is SynergyTraitUpgradeData trait && trait.requiredArchetype != _activeRunArchetype)
-                {
-                    return false;
-                }
-
-                // Không ra thẻ đã max level (giả định max 1 cho demo)
-                if (_runInventory.Contains(u)) return false;
-
-                return true;
-            }).ToList();
-
-            if (candidatePool.Count == 0) return;
-
-            // Tính Effective Weights với x3 cho Synergy Trait
-            var weights = candidatePool.Select(u =>
-            {
-                float w = Mathf.Max(1f, u.spawnWeight);
-                if (u is SynergyTraitUpgradeData trait && trait.requiredArchetype == _activeRunArchetype)
-                {
-                    w *= 3.0f; // x3.0 Archetype Synergy
-                }
-                return w;
-            }).ToList();
-
-            float totalWeight = weights.Sum();
-            int choicesToPick = Mathf.Min(3, candidatePool.Count);
-
-            // Guaranteed Synergy Slot
-            var synergyTraits = candidatePool.OfType<SynergyTraitUpgradeData>().Where(t => t.requiredArchetype == _activeRunArchetype).ToList();
-            if (synergyTraits.Count > 0)
-            {
-                var chosenSynergy = synergyTraits[UnityEngine.Random.Range(0, synergyTraits.Count)];
-                _currentRolledChoices.Add(chosenSynergy);
-                int idx = candidatePool.IndexOf(chosenSynergy);
-                if (idx >= 0)
-                {
-                    totalWeight -= weights[idx];
-                    candidatePool.RemoveAt(idx);
-                    weights.RemoveAt(idx);
-                }
+                RollLevel1Cores(allUpgrades);
+                return;
             }
 
-            // Weighted Random cho các slot còn lại
-            while (_currentRolledChoices.Count < choicesToPick && candidatePool.Count > 0 && totalWeight > 0f)
+            if (IsMutationMilestone(_currentRunLevel))
             {
-                float rnd = UnityEngine.Random.Range(0f, totalWeight);
-                float cur = 0f;
-                for (int i = 0; i < candidatePool.Count; i++)
-                {
-                    cur += weights[i];
-                    if (cur >= rnd || i == candidatePool.Count - 1)
-                    {
-                        var chosen = candidatePool[i];
-                        _currentRolledChoices.Add(chosen);
-                        totalWeight -= weights[i];
-                        candidatePool.RemoveAt(i);
-                        weights.RemoveAt(i);
-                        break;
-                    }
-                }
+                // Mốc Đột Biến: Bốc Lõi Bạc / Vàng / Kim Cương
+                _currentRolledChoices = UpgradeSelector.SelectMutationAugments(3, _currentRunLevel, null, allUpgrades);
+            }
+            else
+            {
+                // Level thường: Bốc Thẻ Chỉ Số Nền Tảng (Clean Pool)
+                _currentRolledChoices = UpgradeSelector.SelectMicroStats(3, null, allUpgrades, null);
             }
         }
 
@@ -448,7 +461,8 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             if (card == null) return;
             if (card is MythicCoreUpgradeData core)
             {
-                SelectCoreDirectly(core);
+                _activeCoreData = core;
+                _activeRunArchetype = core.archetype;
             }
             else
             {
@@ -460,19 +474,23 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             }
         }
 
-        private void InjectAllArchetypeTraits(List<UpgradeData> allUpgrades)
+        private void FastSimToLevel30(List<UpgradeData> allUpgrades)
         {
-            if (_activeRunArchetype == MythicArchetype.None) return;
-
-            var traits = allUpgrades.OfType<SynergyTraitUpgradeData>().Where(t => t.requiredArchetype == _activeRunArchetype).ToList();
-            foreach (var t in traits)
+            while (_currentRunLevel < 30)
             {
-                if (!_runInventory.Contains(t))
+                RollProgressionLevel(allUpgrades);
+                if (_currentRolledChoices.Count > 0)
                 {
-                    _runInventory.Add(t);
+                    var picked = _currentRolledChoices[0];
+                    _runInventory.Add(picked);
+                    _currentRunLevel++;
+                }
+                else
+                {
                     _currentRunLevel++;
                 }
             }
+            RollProgressionLevel(allUpgrades);
         }
         #endregion
         #endregion

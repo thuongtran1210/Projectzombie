@@ -276,14 +276,56 @@ namespace ProjectZombie.Features.Upgrades
             return true;
         }
 
+        [Header("Progression & Reroll Token")]
+        [SerializeField] private int _defaultRerollTokensPerRun = 2;
+        private int _currentRerollTokens = 2;
+
+        public int CurrentRerollTokens => _currentRerollTokens;
+
+        public void ResetRerollTokens()
+        {
+            _currentRerollTokens = _defaultRerollTokensPerRun;
+        }
+
+        public bool TryConsumeRerollToken()
+        {
+            if (_currentRerollTokens > 0)
+            {
+                _currentRerollTokens--;
+                Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã dùng 1 Reroll Token! Còn lại: {_currentRerollTokens}");
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Kiểm tra xem cấp độ hiện tại có phải là Mốc Đột Biến (Lv.5, Lv.15, Lv.30) hay không.
+        /// </summary>
+        public bool IsMutationLevel(int level)
+        {
+            return level == 5 || level == 15 || level == 30;
+        }
+
+        /// <summary>
+        /// Trả về danh sách nâng cấp theo đúng Tiến trình Logarithmic 4 giai đoạn:
+        /// - Lv.1: Đại Lõi Khởi Nguyên.
+        /// - Lv.5, 15, 30: Lõi Đột Biến Bạc/Vàng/Kim Cương.
+        /// - Level Thường: Thẻ Chỉ Số Nền Tảng (Clean Pool).
+        /// </summary>
+        public List<UpgradeData> GetProgressionUpgrades(int count, int playerLevel, Player.PlayerContext context)
+        {
+            AutoPopulateUpgradesIfEmpty();
+            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_MANAGER]</color> GetProgressionUpgrades(Lv.{playerLevel}, count={count}) - TotalAvailable: {_allAvailableUpgrades.Count}");
+            return UpgradeSelector.SelectUpgradesByProgression(count, playerLevel, context, _allAvailableUpgrades, _fallbackRewards);
+        }
+
         /// <summary>
         /// Trả về danh sách nâng cấp ngẫu nhiên qua thuật toán UpgradeSelector & PlayerContext.
         /// </summary>
         public List<UpgradeData> GetRandomUpgrades(int count, Player.PlayerContext context)
         {
-            AutoPopulateUpgradesIfEmpty();
-            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_MANAGER]</color> GetRandomUpgrades(count={count}) - TotalAvailable: {_allAvailableUpgrades.Count}");
-            return UpgradeSelector.SelectUpgrades(count, context, _allAvailableUpgrades, _filters, _weightPipeline, _fallbackRewards);
+            int currentLvl = context?.PlayerExperience != null ? context.PlayerExperience.CurrentLevel : 2;
+            return GetProgressionUpgrades(count, currentLvl, context);
         }
 
         public List<UpgradeData> GetRandomUpgrades(int count, GameObject player)
@@ -304,9 +346,7 @@ namespace ProjectZombie.Features.Upgrades
         public List<UpgradeData> GetMythicCoreChoices(int count, Player.PlayerContext context)
         {
             AutoPopulateUpgradesIfEmpty();
-            var mythicPool = _allAvailableUpgrades.FindAll(u => u is MythicCoreUpgradeData);
-            Debug.Log($"<color=#FFFF00>[DIAG_UPGRADE_MANAGER]</color> GetMythicCoreChoices(count={count}) - TotalAvailable: {_allAvailableUpgrades.Count}, MythicInPool: {mythicPool.Count}");
-            return UpgradeSelector.SelectUpgrades(count, context, mythicPool, _filters, _weightPipeline, _fallbackRewards);
+            return UpgradeSelector.SelectArchetypeCores(count, _allAvailableUpgrades);
         }
     }
 }
