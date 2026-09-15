@@ -26,7 +26,7 @@ namespace ProjectZombie.Editor.VFX
         [MenuItem("ProjectZombie/VFX/🎨 Bổ Sung URP Shaders Vào Always Included Shaders (Fix Pink VFX)", priority = 350)]
         public static void AddRequiredShaders()
         {
-            GraphicsSettings graphicsSettings = GraphicsSettings.GetGraphicsSettings();
+            GraphicsSettings graphicsSettings = GraphicsSettings.GetGraphicsSettings() as GraphicsSettings ?? AssetDatabase.LoadAssetAtPath<GraphicsSettings>("ProjectSettings/GraphicsSettings.asset");
             if (graphicsSettings == null)
             {
                 Debug.LogError("[AlwaysIncludedShaders] Không thể lấy GraphicsSettings từ Editor!");
