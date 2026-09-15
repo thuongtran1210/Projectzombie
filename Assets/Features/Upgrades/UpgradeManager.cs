@@ -59,7 +59,36 @@ namespace ProjectZombie.Features.Upgrades
             InitDefaultFilters();
             InitDefaultWeightPipeline();
             InitDefaultFallbackRewards();
+
+            // Tự động lọc sạch trùng lặp từ Scene Serialization cũ
+            DeduplicateAvailableUpgrades();
             AutoPopulateUpgradesIfEmpty();
+        }
+
+        private void DeduplicateAvailableUpgrades()
+        {
+            if (_allAvailableUpgrades == null || _allAvailableUpgrades.Count == 0) return;
+
+            var uniqueList = new List<UpgradeData>(_allAvailableUpgrades.Count);
+            var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < _allAvailableUpgrades.Count; i++)
+            {
+                var u = _allAvailableUpgrades[i];
+                if (u == null || u is FallbackRewardUpgradeData) continue;
+
+                string key = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                if (loadedIds.Add(key))
+                {
+                    uniqueList.Add(u);
+                }
+            }
+
+            if (uniqueList.Count != _allAvailableUpgrades.Count)
+            {
+                Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã tự động loại bỏ {_allAvailableUpgrades.Count - uniqueList.Count} thẻ trùng lặp từ Scene Serialization. Còn lại: {uniqueList.Count} thẻ duy nhất.");
+                _allAvailableUpgrades = uniqueList;
+            }
         }
 
         private void InitDefaultFilters()
@@ -201,7 +230,7 @@ namespace ProjectZombie.Features.Upgrades
             _allAvailableUpgrades.Clear();
             _cachedMasterUpgrades = null;
 
-            string[] searchFolders = new[] { "Assets/_Data/Upgrades", "Assets/Resources/Upgrades" };
+            string[] searchFolders = new[] { "Assets/_Data/Upgrades" };
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData", searchFolders);
             var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
 
@@ -218,8 +247,10 @@ namespace ProjectZombie.Features.Upgrades
                     }
                 }
             }
+
+            _allAvailableUpgrades.Sort((a, b) => string.Compare(a.id, b.id, System.StringComparison.OrdinalIgnoreCase));
             UnityEditor.EditorUtility.SetDirty(this);
-            Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp {_allAvailableUpgrades.Count} thẻ UpgradeData hợp lệ.");
+            Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp chính xác {_allAvailableUpgrades.Count} thẻ UpgradeData Master duy nhất.");
             _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
         }
 #else
