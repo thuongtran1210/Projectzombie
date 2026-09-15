@@ -194,13 +194,13 @@ namespace ProjectZombie.Features.Upgrades
             }
         }
 
+#if UNITY_EDITOR
         [ContextMenu("Populate All Upgrades (Editor Tool Only)")]
         public void PopulateAllAvailableUpgrades()
         {
             _allAvailableUpgrades.Clear();
             _cachedMasterUpgrades = null;
 
-#if UNITY_EDITOR
             string[] searchFolders = new[] { "Assets/_Data/Upgrades", "Assets/Resources/Upgrades" };
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData", searchFolders);
             var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
@@ -221,10 +221,13 @@ namespace ProjectZombie.Features.Upgrades
             UnityEditor.EditorUtility.SetDirty(this);
             Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp {_allAvailableUpgrades.Count} thẻ UpgradeData hợp lệ.");
             _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
-            return;
-#endif
+        }
+#else
+        public void PopulateAllAvailableUpgrades()
+        {
             _ = PopulateAllAvailableUpgradesAsync();
         }
+#endif
 
         public async Task PopulateAllAvailableUpgradesAsync()
         {
