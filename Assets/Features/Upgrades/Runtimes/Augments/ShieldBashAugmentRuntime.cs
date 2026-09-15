@@ -16,6 +16,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _pulseDamage = 60f;
         [SerializeField] private float _pulseRadius = 4.5f;
         [SerializeField] private float _knockbackForce = 10f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _shieldVfxPrefab;
 
         private float _nextPulseTime = 0f;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[24];
@@ -37,6 +39,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         private void TriggerShieldPulse()
         {
             Vector2 origin = transform.position;
+
+            if (_shieldVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_shieldVfxPrefab, origin, Quaternion.identity, 0.6f);
+            }
+
             int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _pulseRadius, _hitBuffer);
 
             for (int i = 0; i < hitCount; i++)

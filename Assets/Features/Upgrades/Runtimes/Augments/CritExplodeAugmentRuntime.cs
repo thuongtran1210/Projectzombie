@@ -13,7 +13,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
     {
         [Header("Settings")]
         [SerializeField] private float _explosionDamage = 50f;
-        [SerializeField] private float _explosionRadius = 3.5f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _critVfxPrefab;
 
         private static readonly Collider2D[] _hitBuffer = new Collider2D[24];
 
@@ -32,6 +33,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
             if (!e.IsCrit || e.Target == null) return;
 
             Vector2 center = e.HitPosition;
+
+            if (_critVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_critVfxPrefab, center, Quaternion.identity, 0.5f);
+            }
+
             int hitCount = Physics2D.OverlapCircleNonAlloc(center, _explosionRadius, _hitBuffer);
 
             for (int i = 0; i < hitCount; i++)

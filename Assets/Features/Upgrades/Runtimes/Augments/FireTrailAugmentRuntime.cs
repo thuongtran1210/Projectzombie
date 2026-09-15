@@ -16,7 +16,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _fireDamage = 35f;
         [SerializeField] private float _trailDuration = 4f;
         [SerializeField] private float _damageInterval = 0.5f;
-        [SerializeField] private float _hitRadius = 1.5f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _fireVfxPrefab;
 
         private static readonly Collider2D[] _hitBuffer = new Collider2D[24];
 
@@ -56,6 +57,11 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
                     ExpiryTime = now + _trailDuration,
                     NextDamageTime = now
                 });
+
+                if (_fireVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_fireVfxPrefab, pos, Quaternion.identity, _trailDuration);
+                }
             }
         }
 

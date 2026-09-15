@@ -17,6 +17,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _burstDamage = 150f;
         [SerializeField] private float _burstRadius = 8.0f;
         [SerializeField] private float _cooldown = 60f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _pillarBurstVfxPrefab;
 
         private float _nextAvailableTime = 0f;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[32];
@@ -38,6 +40,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         private void TriggerImmortalBurst()
         {
             Vector2 center = transform.position;
+
+            if (_pillarBurstVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_pillarBurstVfxPrefab, center, Quaternion.identity, 1.2f);
+            }
+
             int hitCount = Physics2D.OverlapCircleNonAlloc(center, _burstRadius, _hitBuffer);
 
             for (int i = 0; i < hitCount; i++)

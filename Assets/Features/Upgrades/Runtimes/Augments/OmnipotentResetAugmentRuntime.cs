@@ -14,6 +14,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private int _killsRequired = 10;
         [SerializeField] private float _speedBonus = 0.40f;
         [SerializeField] private float _speedDuration = 2.5f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _dashResetVfxPrefab;
 
         private int _killCounter = 0;
         private float _speedBuffEndTime = 0f;
@@ -47,6 +49,11 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
             {
                 _isSpeedBuffActive = true;
                 Context.Stats.AddMoveSpeed(_speedBonus);
+            }
+
+            if (_dashResetVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null && Context?.Transform != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_dashResetVfxPrefab, Context.Transform.position, Quaternion.identity, 0.6f);
             }
 
             Debug.Log("<color=#00E5FF>[Thần Hành Tối Thượng] Reset Thần Pháp Di Chuyển & Tăng tốc bứt phá!</color>");

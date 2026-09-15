@@ -14,6 +14,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _healPercentPerKill = 0.01f;
         [SerializeField] private float _frenzyAttackSpeedBonus = 0.25f;
         [SerializeField] private float _frenzyDuration = 3.0f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _vampiricAuraVfxPrefab;
 
         private float _frenzyEndTime = 0f;
         private bool _isFrenzyActive = false;
@@ -42,6 +44,11 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
             {
                 _isFrenzyActive = true;
                 Context.Stats.AddAttackSpeed(_frenzyAttackSpeedBonus);
+
+                if (_vampiricAuraVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null && Context?.Transform != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffectAttached(_vampiricAuraVfxPrefab, Context.Transform, _frenzyDuration);
+                }
             }
         }
 

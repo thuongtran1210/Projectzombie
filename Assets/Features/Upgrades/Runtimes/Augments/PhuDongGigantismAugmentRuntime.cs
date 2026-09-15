@@ -16,6 +16,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _quakeDamage = 80f;
         [SerializeField] private float _quakeRadius = 5.0f;
         [SerializeField] private float _knockbackForce = 12f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _quakeVfxPrefab;
 
         private float _originalScale = 1f;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[32];
@@ -53,6 +55,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
 
             // Kích hoạt sóng địa chấn hất tung quái vật xung quanh
             Vector2 center = e.HitPosition;
+
+            if (_quakeVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_quakeVfxPrefab, center, Quaternion.identity, 0.5f);
+            }
+
             int hitCount = Physics2D.OverlapCircleNonAlloc(center, _quakeRadius, _hitBuffer);
 
             for (int i = 0; i < hitCount; i++)

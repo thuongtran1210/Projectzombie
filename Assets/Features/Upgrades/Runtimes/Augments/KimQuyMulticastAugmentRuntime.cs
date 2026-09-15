@@ -14,6 +14,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _arrowDamage = 75f;
         [SerializeField] private float _scanRadius = 12f;
         [SerializeField] private int _targetCount = 6;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _arrowVfxPrefab;
 
         private float _nextVolleyTime = 0f;
         private static readonly Collider2D[] _scanBuffer = new Collider2D[32];
@@ -46,6 +48,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
                 if (col.CompareTag("Enemy") && col.TryGetComponent<IDamageable>(out var damageable))
                 {
                     damageable.TakeDamage(new DamageData(_arrowDamage, isCritical: true, element: ElementType.Kim));
+
+                    if (_arrowVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                    {
+                        ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_arrowVfxPrefab, col.transform.position, Quaternion.identity, 0.4f);
+                    }
+
                     fired++;
                 }
             }

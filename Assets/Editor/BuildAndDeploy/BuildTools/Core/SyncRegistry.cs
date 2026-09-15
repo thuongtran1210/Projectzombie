@@ -23,7 +23,8 @@ namespace ProjectZombie.EditorTools.BuildSync
             new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png"),
             new SyncRule("UI Gacha Sprites & Art", "Assets/Art/UI/Gacha", "Assets/Resources/UI/Gacha", "*.*", new[] { ".png", ".jpg", ".asset" }),
             new SyncRule("Gacha Banner Configs", "Assets/_Data/Gacha", "Assets/Resources/Gacha", "*.asset"),
-            new SyncRule("Tilemap Assets (Tiles)", "Assets/Art/Tilemaps/Tiles", "Assets/Resources/Tiles", "*.asset")
+            new SyncRule("Tilemap Assets (Tiles)", "Assets/Art/Tilemaps/Tiles", "Assets/Resources/Tiles", "*.asset"),
+            new SyncRule("Hiệu Ứng VFX (VFX Prefabs)", "Assets/_Prefabs/VFX", "Assets/Resources/VFX", "*.prefab")
         };
 
         public static readonly List<SyncRule> SingleAssetRules = new List<SyncRule>

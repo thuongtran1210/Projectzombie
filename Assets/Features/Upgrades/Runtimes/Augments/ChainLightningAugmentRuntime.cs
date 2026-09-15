@@ -15,7 +15,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _triggerChance = 0.35f;
         [SerializeField] private float _lightningDamage = 40f;
         [SerializeField] private float _chainRadius = 5f;
-        [SerializeField] private int _maxBounces = 3;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _lightningVfxPrefab;
 
         private static readonly Collider2D[] _bounceBuffer = new Collider2D[16];
 
@@ -46,6 +47,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
                 if (col.CompareTag("Enemy") && col.TryGetComponent<IDamageable>(out var damageable))
                 {
                     damageable.TakeDamage(new DamageData(_lightningDamage, isCritical: false, element: ElementType.Kim));
+
+                    if (_lightningVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                    {
+                        ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_lightningVfxPrefab, col.transform.position, Quaternion.identity, 0.3f);
+                    }
+
                     bounces++;
                 }
             }

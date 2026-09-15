@@ -12,6 +12,9 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _phaseDuration = 8.0f;
         [SerializeField] private float _yangDamageBonus = 0.50f;
         [SerializeField] private float _yinHealPerSec = 15f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _yangAuraVfxPrefab;
+        [SerializeField] private GameObject _yinAuraVfxPrefab;
 
         private bool _isYangPhase = true; // True = Dương (Damage), False = Âm (Heal)
         private float _nextPhaseTime = 0f;
@@ -45,11 +48,23 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
             if (_isYangPhase)
             {
                 Context.Stats.AddBaseDamage(_yangDamageBonus);
+
+                if (_yangAuraVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null && Context?.Transform != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffectAttached(_yangAuraVfxPrefab, Context.Transform, _phaseDuration);
+                }
+
                 Debug.Log("<color=#FF7700>[Âm Dương Lưỡng Cực] Chuyển thể THÁI DƯƠNG (+50% Sát thương)!</color>");
             }
             else
             {
                 Context.Stats.AddBaseDamage(-_yangDamageBonus);
+
+                if (_yinAuraVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null && Context?.Transform != null)
+                {
+                    ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffectAttached(_yinAuraVfxPrefab, Context.Transform, _phaseDuration);
+                }
+
                 Debug.Log("<color=#00E5FF>[Âm Dương Lưỡng Cực] Chuyển thể THÁI ÂM (Hào quang dưỡng sinh)!</color>");
             }
         }

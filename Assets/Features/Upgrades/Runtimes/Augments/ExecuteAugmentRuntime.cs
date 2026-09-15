@@ -14,6 +14,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [Header("Settings")]
         [SerializeField] private float _executeThreshold = 0.20f; // Dưới 20% máu
         [SerializeField] private float _executeDamage = 9999f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _executeVfxPrefab;
 
         protected override void SubscribeCombatEvents(PlayerCombatEvents events)
         {
@@ -37,6 +39,11 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
                     if (e.Target.TryGetComponent<IDamageable>(out var damageable))
                     {
                         damageable.TakeDamage(new DamageData(_executeDamage, isCritical: true, element: ElementType.Kim));
+
+                        if (_executeVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+                        {
+                            ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_executeVfxPrefab, e.Target.transform.position, Quaternion.identity, 0.4f);
+                        }
                     }
                 }
             }

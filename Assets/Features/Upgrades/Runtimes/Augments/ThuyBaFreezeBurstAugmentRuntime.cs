@@ -13,6 +13,8 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _burstInterval = 7.0f;
         [SerializeField] private float _freezeDamage = 110f;
         [SerializeField] private float _freezeRadius = 8.0f;
+        [Header("VFX Settings")]
+        [SerializeField] private GameObject _freezeBurstVfxPrefab;
 
         private float _nextBurstTime = 0f;
         private static readonly Collider2D[] _hitBuffer = new Collider2D[32];
@@ -34,6 +36,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         private void TriggerFreezeBurst()
         {
             Vector2 origin = transform.position;
+
+            if (_freezeBurstVfxPrefab != null && ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance != null)
+            {
+                ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance.PlayEffect(_freezeBurstVfxPrefab, origin, Quaternion.identity, 1.0f);
+            }
+
             int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _freezeRadius, _hitBuffer);
 
             for (int i = 0; i < hitCount; i++)

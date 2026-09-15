@@ -65,9 +65,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "K\u1EF9 n\u0103ng ch\u1EE7 \u0111\u1ED9ng (LineArrow 14m): Khai h\u1ECFa
-    3 \u0111\u1EE3t b\xE3o Linh Ti\u1EC5n xuy\xEAn th\u1EA5u 100% qu\xE1i v\xE0 \u0111\u1EA9y
-    l\xF9i 8m d\u1ECDn s\u1EA1ch \u0111\u01B0\u1EDDng \u0111i."
+  m_text: "T\u0103ng tr\u1EF1c ti\u1EBFp s\xE1t th\u01B0\u01A1ng \u0111\xF2n \u0111\xE1nh
+    c\u0103n b\u1EA3n cho m\u1ECDi v\u0169 kh\xED."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -201,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "N\u1ECF Th\u1EA7n"
+  m_text: "C\u01B0\u1EDDng L\u1EF1c B\u1ED9i T\u0103ng"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -288,7 +287,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1660186086519313910
 RectTransform:
   m_ObjectHideFlags: 0
@@ -307,7 +306,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125.99999, y: 498.75}
+  m_AnchoredPosition: {x: 322.00003, y: 571.74994}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412
