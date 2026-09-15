@@ -49,3 +49,4 @@ MonoBehaviour:
   _burstDamage: 150
   _burstRadius: 8
   _cooldown: 60
+  _pillarBurstVfxPrefab: {fileID: 1661291010307957332, guid: 1e660ee4fb7cad244abd7671de31bf0d, type: 3}

@@ -47,3 +47,5 @@ MonoBehaviour:
   _phaseDuration: 8
   _yangDamageBonus: 0.5
   _yinHealPerSec: 15
+  _yangAuraVfxPrefab: {fileID: 4922415056123952383, guid: 69ee1098727f4154797f0ac50d7a4663, type: 3}
+  _yinAuraVfxPrefab: {fileID: 5492693820737229479, guid: 33dcd3e1e96814c4296e45f648e11e2f, type: 3}

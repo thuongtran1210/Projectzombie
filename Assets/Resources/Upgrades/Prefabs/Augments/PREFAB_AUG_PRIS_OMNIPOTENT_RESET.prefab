@@ -47,3 +47,4 @@ MonoBehaviour:
   _killsRequired: 10
   _speedBonus: 0.4
   _speedDuration: 2.5
+  _dashResetVfxPrefab: {fileID: 2888107666954657876, guid: f6afcbe82a7b5f94aa7e219f0905e4b3, type: 3}

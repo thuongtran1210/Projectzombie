@@ -48,3 +48,4 @@ MonoBehaviour:
   _trailDuration: 4
   _damageInterval: 0.5
   _hitRadius: 1.5
+  _fireVfxPrefab: {fileID: 1407103182052949249, guid: 446d694b1254c8743811ece5c8f205a6, type: 3}

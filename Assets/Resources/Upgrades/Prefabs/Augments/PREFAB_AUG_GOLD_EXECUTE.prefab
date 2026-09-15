@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _executeThreshold: 0.2
   _executeDamage: 9999
+  _executeVfxPrefab: {fileID: 4231350929214158730, guid: 3d671084fb29480488db37b1206a5254, type: 3}

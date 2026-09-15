@@ -48,3 +48,4 @@ MonoBehaviour:
   _lightningDamage: 40
   _chainRadius: 5
   _maxBounces: 3
+  _lightningVfxPrefab: {fileID: 5190025180840730007, guid: 80285f44f8764f24bbcf3c66cd55f94b, type: 3}

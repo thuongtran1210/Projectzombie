@@ -47,3 +47,4 @@ MonoBehaviour:
   _burstInterval: 7
   _freezeDamage: 110
   _freezeRadius: 8
+  _freezeBurstVfxPrefab: {fileID: 1316158718342514364, guid: 3c868b3e1422d0d48b5db9335d84b59b, type: 3}

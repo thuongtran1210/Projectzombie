@@ -48,3 +48,4 @@ MonoBehaviour:
   _arrowDamage: 75
   _scanRadius: 12
   _targetCount: 6
+  _arrowVfxPrefab: {fileID: 6148275524566000824, guid: c8380a9ec7b2818408c9ce1b56348bd8, type: 3}

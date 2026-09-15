@@ -47,3 +47,4 @@ MonoBehaviour:
   _healPercentPerKill: 0.01
   _frenzyAttackSpeedBonus: 0.25
   _frenzyDuration: 3
+  _vampiricAuraVfxPrefab: {fileID: 2960210587532776808, guid: 065c727b99118b24db8dcecac5c64a16, type: 3}

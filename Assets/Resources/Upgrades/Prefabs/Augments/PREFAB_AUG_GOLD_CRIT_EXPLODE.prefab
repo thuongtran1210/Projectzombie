@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _explosionDamage: 50
   _explosionRadius: 3.5
+  _critVfxPrefab: {fileID: 3890551198975557296, guid: ac87119de27163049be41abe1073d793, type: 3}

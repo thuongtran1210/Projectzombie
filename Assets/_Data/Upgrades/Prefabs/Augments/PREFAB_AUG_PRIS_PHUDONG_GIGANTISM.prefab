@@ -48,3 +48,4 @@ MonoBehaviour:
   _quakeDamage: 80
   _quakeRadius: 5
   _knockbackForce: 12
+  _quakeVfxPrefab: {fileID: 212461393072151816, guid: 37167c3fae7161c4db7ec2296c52eaad, type: 3}
