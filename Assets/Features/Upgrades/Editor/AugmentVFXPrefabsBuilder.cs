@@ -71,8 +71,44 @@ namespace ProjectZombie.Features.Upgrades.Editor
         private static GameObject CreateParticleVFX(string prefabName, Color color, float duration, float emissionRate)
         {
             string path = $"{VFX_PREFAB_DIR}/{prefabName}.prefab";
+            string matDir = $"{VFX_PREFAB_DIR}/Materials";
+            if (!Directory.Exists(matDir))
+            {
+                Directory.CreateDirectory(matDir);
+                AssetDatabase.Refresh();
+            }
+
+            string matPath = $"{matDir}/MAT_{prefabName}.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            if (mat == null)
+            {
+                Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default");
+                if (particleShader != null)
+                {
+                    mat = new Material(particleShader);
+                    Sprite knobSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+                    Texture defaultTex = knobSprite != null ? knobSprite.texture : Texture2D.whiteTexture;
+                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", defaultTex);
+                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", defaultTex);
+                    mat.color = color;
+                    AssetDatabase.CreateAsset(mat, matPath);
+                }
+            }
+
             GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (existing != null) return existing;
+            if (existing != null)
+            {
+                var contents = PrefabUtility.LoadPrefabContents(path);
+                var rend = contents.GetComponent<ParticleSystemRenderer>();
+                if (rend != null && mat != null)
+                {
+                    rend.sortingLayerName = "Skill";
+                    rend.sharedMaterial = mat;
+                }
+                PrefabUtility.SaveAsPrefabAsset(contents, path);
+                PrefabUtility.UnloadPrefabContents(contents);
+                return AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            }
 
             var go = new GameObject(prefabName);
             var ps = go.AddComponent<ParticleSystem>();
@@ -104,19 +140,10 @@ namespace ProjectZombie.Features.Upgrades.Editor
             colorOverLifetime.color = grad;
 
             var renderer = go.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            if (renderer != null && mat != null)
             {
                 renderer.sortingLayerName = "Skill";
-                Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default");
-                if (particleShader != null)
-                {
-                    Material mat = new Material(particleShader);
-                    Sprite knobSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-                    Texture defaultTex = knobSprite != null ? knobSprite.texture : Texture2D.whiteTexture;
-                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", defaultTex);
-                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", defaultTex);
-                    renderer.material = mat;
-                }
+                renderer.sharedMaterial = mat;
             }
 
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAsset(go, path);
