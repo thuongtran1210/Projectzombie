@@ -9,7 +9,7 @@ using ProjectZombie.Features.Shared;
 namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 {
     /// <summary>
-    /// Panel chuyên trách quản lý Sidebar danh sách thẻ, tìm kiếm, bộ lọc phân loại và Cây Hệ Sinh Thái Đại Lõi.
+    /// Panel chuyên trách Sidebar: Danh sách Flat View và Cây Hệ Sinh Thái Đại Lõi Trực Quan (Archetype Build Tree Visualizer).
     /// </summary>
     public class StudioSidebarPanel
     {
@@ -20,7 +20,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
         private int _selectedCategoryFilter = 0;
         private ElementType _selectedElementFilter = ElementType.None;
         private bool _filterByElement = false;
-        private int _sidebarViewMode = 0; // 0 = Phân Loại, 1 = Cây Đại Lõi
+        private int _sidebarViewMode = 1; // Mặc định mở 1 = Cây Đại Lõi trực quan
         private readonly Dictionary<string, bool> _foldoutStates = new Dictionary<string, bool>();
         private Vector2 _scrollPos;
 
@@ -37,7 +37,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             // 1. Header & New Template Button
             GUILayout.BeginHorizontal();
             var filtered = FilterUpgrades(allUpgrades);
-            GUILayout.Label($"<b>DANH SÁCH THẺ ({filtered.Count}/{allUpgrades.Count})</b>", EditorStyles.boldLabel);
+            GUILayout.Label($"<b>HỆ THỐNG NÂNG CẤP ({filtered.Count}/{allUpgrades.Count})</b>", EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("+ Tạo Mới", EditorStyles.miniButtonRight, GUILayout.Width(75)))
             {
@@ -48,8 +48,9 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             GUILayout.Space(4);
 
             // 2. Chế Độ Xem Toolbar
-            string[] viewModes = new[] { "📋 Phân Loại", "🌳 Cây Đại Lõi" };
-            _sidebarViewMode = GUILayout.Toolbar(_sidebarViewMode, viewModes, EditorStyles.toolbarButton);
+            string[] viewModes = new[] { "🌳 Cây Đại Lõi (Build Tree)", "📋 Danh Sách (Flat)" };
+            int newViewMode = GUILayout.Toolbar(_sidebarViewMode == 1 ? 0 : 1, viewModes, EditorStyles.toolbarButton);
+            _sidebarViewMode = newViewMode == 0 ? 1 : 0;
 
             GUILayout.Space(4);
 
@@ -61,6 +62,8 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 _searchQuery = string.Empty;
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.Space(4);
 
             if (_sidebarViewMode == 0)
             {
@@ -74,6 +77,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             GUILayout.EndVertical();
         }
 
+        #region Flat List View
         private void DrawFlatListView(List<UpgradeData> filtered, UpgradeData selectedUpgrade)
         {
             // Category Filter Dropdown
@@ -94,7 +98,6 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
 
             GUILayout.Space(6);
 
-            // List View
             _scrollPos = GUILayout.BeginScrollView(_scrollPos);
             for (int i = 0; i < filtered.Count; i++)
             {
@@ -102,142 +105,303 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             }
             GUILayout.EndScrollView();
         }
+        #endregion
 
+        #region Archetype Tree View (Trực Quan Hóa Cây Đại Lõi)
         private void DrawArchetypeTreeView(List<UpgradeData> allUpgrades, UpgradeData selectedUpgrade)
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Bung Tất Cả", EditorStyles.miniButtonLeft)) SetAllFoldouts(true);
-            if (GUILayout.Button("Thu Gọn", EditorStyles.miniButtonRight)) SetAllFoldouts(false);
+            if (GUILayout.Button("📂 Mở Tất Cả", EditorStyles.miniButtonLeft)) SetAllFoldouts(true);
+            if (GUILayout.Button("📁 Thu Gọn", EditorStyles.miniButtonRight)) SetAllFoldouts(false);
             GUILayout.EndHorizontal();
 
-            GUILayout.Space(6);
+            GUILayout.Space(4);
 
             _scrollPos = GUILayout.BeginScrollView(_scrollPos);
 
-            DrawArchetypeGroup(allUpgrades, selectedUpgrade, "🌟 Phù Đổng Thiên Uy (Hệ Hỏa)", MythicArchetype.PhuDongThienUy, new[] { "W006", "W008" });
-            DrawArchetypeGroup(allUpgrades, selectedUpgrade, "🌟 Kim Quy Thần Cơ (Hệ Kim)", MythicArchetype.KimQuyThanCo, new[] { "W001", "W007" });
-            DrawArchetypeGroup(allUpgrades, selectedUpgrade, "🌟 Tản Viên Sơn Thánh (Hệ Thổ)", MythicArchetype.TanVienSonThanh, new[] { "W005" });
-            DrawArchetypeGroup(allUpgrades, selectedUpgrade, "🌟 Thủy Bá Cuồng Nộ (Hệ Thủy)", MythicArchetype.ThuyBaCuongNo, new[] { "W009", "W010", "W011" });
-            DrawArchetypeGroup(allUpgrades, selectedUpgrade, "🌟 Long Tiên Huyết Mạch (Âm Dương)", MythicArchetype.LongTienHuyetMach, new[] { "W002", "W003", "W004", "W012" });
+            // 1. Phù Đổng Thiên Uy (Hỏa)
+            DrawArchetypeSection(
+                allUpgrades, selectedUpgrade,
+                MythicArchetype.PhuDongThienUy,
+                "🔥 PHÙ ĐỔNG THIÊN UY",
+                "Hệ Hỏa • Sát Thương Bùng Nổ & Cháy Lan",
+                new Color(1f, 0.35f, 0.2f),
+                new[] { "W006", "W008" }
+            );
 
-            DrawSharedPassivesGroup(allUpgrades, selectedUpgrade);
-            DrawSlapstickAndFusionsGroup(allUpgrades, selectedUpgrade);
+            // 2. Kim Quy Thần Cơ (Kim)
+            DrawArchetypeSection(
+                allUpgrades, selectedUpgrade,
+                MythicArchetype.KimQuyThanCo,
+                "✨ KIM QUY THẦN CƠ",
+                "Hệ Kim • Đạn Liên Hoàn, Nỏ Thần & Cơ Quan",
+                new Color(1f, 0.85f, 0.2f),
+                new[] { "W001", "W007" }
+            );
+
+            // 3. Tản Viên Sơn Thánh (Thổ)
+            DrawArchetypeSection(
+                allUpgrades, selectedUpgrade,
+                MythicArchetype.TanVienSonThanh,
+                "⛰️ TẢN VIÊN SƠN THÁNH",
+                "Hệ Thổ • Phòng Ngự Cương Thể & Địa Chấn",
+                new Color(0.85f, 0.65f, 0.3f),
+                new[] { "W005" }
+            );
+
+            // 4. Thủy Bá Cuồng Nộ (Thủy)
+            DrawArchetypeSection(
+                allUpgrades, selectedUpgrade,
+                MythicArchetype.ThuyBaCuongNo,
+                "🌊 THỦY BÁ CUỒNG NỘ",
+                "Hệ Thủy • Triều Dâng, Đóng Băng & Làm Chậm",
+                new Color(0.2f, 0.75f, 1f),
+                new[] { "W009", "W010", "W011" }
+            );
+
+            // 5. Long Tiên Huyết Mạch (Âm Dương)
+            DrawArchetypeSection(
+                allUpgrades, selectedUpgrade,
+                MythicArchetype.LongTienHuyetMach,
+                "☯️ LONG TIÊN HUYẾT MẠCH",
+                "Âm Dương Vô Cực • Khí Công, Thần Kiếm & Chấn Động",
+                new Color(0.85f, 0.45f, 1f),
+                new[] { "W002", "W003", "W004", "W012" }
+            );
+
+            // 6. Nhóm Khí Vận Dùng Chung (Passives)
+            DrawSharedPassivesSection(allUpgrades, selectedUpgrade);
+
+            // 7. Nhóm Pháp Bảo Dân Gian & Dung Hợp
+            DrawSlapstickAndFusionsSection(allUpgrades, selectedUpgrade);
 
             GUILayout.EndScrollView();
         }
 
-        private void DrawUpgradeItem(UpgradeData u, UpgradeData selectedUpgrade, int indent)
+        private void DrawArchetypeSection(
+            List<UpgradeData> all,
+            UpgradeData selected,
+            MythicArchetype arc,
+            string title,
+            string subtitle,
+            Color accentColor,
+            string[] relatedWeapons)
+        {
+            string key = $"Arc_{arc}";
+            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = true;
+
+            var prevBg = GUI.backgroundColor;
+            GUI.backgroundColor = Color.Lerp(Color.black, accentColor, 0.25f);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.backgroundColor = prevBg;
+
+            // Header Banner
+            GUILayout.BeginHorizontal();
+            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], $"<b><color=#{ColorUtility.ToHtmlStringRGB(accentColor)}>{title}</color></b>", true, new GUIStyle(EditorStyles.foldout) { richText = true, fontStyle = FontStyle.Bold });
+            GUILayout.FlexibleSpace();
+            GUILayout.Label($"<color=#AAAAAA><size=10>{subtitle}</size></color>", new GUIStyle(EditorStyles.miniLabel) { richText = true });
+            GUILayout.EndHorizontal();
+
+            if (_foldoutStates[key])
+            {
+                GUILayout.Space(4);
+
+                // 1. Root Node: Đại Lõi Khởi Đầu
+                var core = all.OfType<MythicCoreUpgradeData>().FirstOrDefault(c => c.archetype == arc);
+                if (core != null)
+                {
+                    DrawTreeNodeHeader("👑 ĐẠI LÕI KHỞI ĐẦU (LEVEL 1)", accentColor);
+                    DrawUpgradeItem(core, selected, 1, "⭐ [ĐẠI LÕI]");
+                }
+
+                // 2. 5 Thần Binh Thuật Độc Quyền
+                var traits = all.OfType<SynergyTraitUpgradeData>().Where(t => t.requiredArchetype == arc).ToList();
+                if (traits.Count > 0)
+                {
+                    DrawTreeNodeHeader($"⚡ THẦN BINH THUẬT ĐỘC QUYỀN ({traits.Count}/5)", accentColor);
+                    for (int i = 0; i < traits.Count; i++)
+                    {
+                        string prefix = (i == traits.Count - 1) ? "└── " : "├── ";
+                        DrawUpgradeItem(traits[i], selected, 2, $"{prefix}T{i + 1}");
+                    }
+                }
+
+                // 3. Chuỗi Pháp Bảo & Tiến Hóa Thần Binh
+                if (relatedWeapons != null && relatedWeapons.Length > 0)
+                {
+                    DrawTreeNodeHeader("⚔️ CHUỖI TIẾN HÓA PHÁP BẢO ĐỒNG HỆ", accentColor);
+
+                    foreach (var wId in relatedWeapons)
+                    {
+                        var weaponUps = all.OfType<WeaponUpgradeData>().Where(w => string.Equals(w.weaponId, wId, StringComparison.OrdinalIgnoreCase)).ToList();
+                        var evos = all.OfType<EvolutionUpgradeData>().Where(e => string.Equals(e.weaponId, wId, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                        if (weaponUps.Count > 0 || evos.Count > 0)
+                        {
+                            GUILayout.BeginVertical(EditorStyles.helpBox);
+
+                            // Pháp Bảo Gốc
+                            foreach (var w in weaponUps)
+                            {
+                                DrawUpgradeItem(w, selected, 1, "⚔️ [GỐC]");
+                            }
+
+                            // Tiến Hóa
+                            for (int eIdx = 0; eIdx < evos.Count; eIdx++)
+                            {
+                                var evo = evos[eIdx];
+                                string passReq = !string.IsNullOrEmpty(evo.requiredPassiveId) ? $"+ {evo.requiredPassiveId}" : "";
+                                string branchPrefix = (eIdx == evos.Count - 1) ? "  └── 🔥 [TIẾN HÓA] " : "  ├── 🔥 [TIẾN HÓA] ";
+                                DrawUpgradeItem(evo, selected, 2, $"{branchPrefix}{passReq}");
+                            }
+
+                            GUILayout.EndVertical();
+                            GUILayout.Space(2);
+                        }
+                    }
+                }
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.Space(6);
+        }
+
+        private void DrawTreeNodeHeader(string title, Color accentColor)
+        {
+            GUILayout.Space(2);
+            GUILayout.Label($"<b><color=#{ColorUtility.ToHtmlStringRGB(accentColor)}>{title}</color></b>", new GUIStyle(EditorStyles.miniBoldLabel) { richText = true });
+        }
+
+        private void DrawSharedPassivesSection(List<UpgradeData> all, UpgradeData selected)
+        {
+            string key = "Arc_Passives";
+            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = false;
+
+            var prevBg = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(0.2f, 0.35f, 0.45f, 0.5f);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.backgroundColor = prevBg;
+
+            GUILayout.BeginHorizontal();
+            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], "<b>📜 BỔ TRỢ KHÍ VẬN DÙNG CHUNG (P001 - P012)</b>", true, new GUIStyle(EditorStyles.foldout) { richText = true, fontStyle = FontStyle.Bold });
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("<color=#AAAAAA><size=10>Nền tảng ghép Tiến Hóa</size></color>", new GUIStyle(EditorStyles.miniLabel) { richText = true });
+            GUILayout.EndHorizontal();
+
+            if (_foldoutStates[key])
+            {
+                GUILayout.Space(4);
+                var passives = all.OfType<CommonUpgradeData>().ToList();
+                for (int i = 0; i < passives.Count; i++)
+                {
+                    DrawUpgradeItem(passives[i], selected, 1, $"P{i + 1:00}");
+                }
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.Space(6);
+        }
+
+        private void DrawSlapstickAndFusionsSection(List<UpgradeData> all, UpgradeData selected)
+        {
+            string key = "Arc_Slapstick";
+            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = false;
+
+            var prevBg = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(0.4f, 0.25f, 0.45f, 0.5f);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.backgroundColor = prevBg;
+
+            GUILayout.BeginHorizontal();
+            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], "<b>🔮 THẦN KHÍ DUNG HỢP & PHÁP BẢO DÂN GIAN</b>", true, new GUIStyle(EditorStyles.foldout) { richText = true, fontStyle = FontStyle.Bold });
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("<color=#AAAAAA><size=10>Thần Khí & Vũ Khí Ẩn</size></color>", new GUIStyle(EditorStyles.miniLabel) { richText = true });
+            GUILayout.EndHorizontal();
+
+            if (_foldoutStates[key])
+            {
+                GUILayout.Space(4);
+                var fusions = all.OfType<FusionUpgradeData>().ToList();
+                if (fusions.Count > 0)
+                {
+                    GUILayout.Label("<b>🔮 THẦN KHÍ DUNG HỢP (RELIC FUSIONS):</b>", EditorStyles.miniBoldLabel);
+                    foreach (var f in fusions) DrawUpgradeItem(f, selected, 1, "🌟 [HỢP THỂ]");
+                }
+
+                var slapstick = all.Where(u => u.id.StartsWith("UP_SLIPPER") || u.id.StartsWith("UP_POT") || u.id.StartsWith("UP_PIPE") || u.id.StartsWith("UP_R007") || u.id.StartsWith("UP_R008")).ToList();
+                if (slapstick.Count > 0)
+                {
+                    GUILayout.Label("<b>🎭 PHÁP BẢO DÂN GIAN HÀI HƯỚC:</b>", EditorStyles.miniBoldLabel);
+                    foreach (var s in slapstick) DrawUpgradeItem(s, selected, 1, "🎭 [ẨN]");
+                }
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.Space(6);
+        }
+        #endregion
+
+        #region Upgrade Item Rendering
+        private void DrawUpgradeItem(UpgradeData u, UpgradeData selectedUpgrade, int indent, string badge = null)
         {
             if (u == null) return;
 
+            // Kiểm tra tìm kiếm nếu đang ở Tree View
+            if (!string.IsNullOrEmpty(_searchQuery))
+            {
+                bool matchId = !string.IsNullOrEmpty(u.id) && u.id.IndexOf(_searchQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+                bool matchName = !string.IsNullOrEmpty(u.upgradeName) && u.upgradeName.IndexOf(_searchQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+                if (!matchId && !matchName) return;
+            }
+
             bool isSelected = u == selectedUpgrade;
-            var prevColor = GUI.backgroundColor;
-            if (isSelected) GUI.backgroundColor = new Color(0.2f, 0.6f, 1f, 1f);
+            var prevBg = GUI.backgroundColor;
+            if (isSelected) GUI.backgroundColor = new Color(0.15f, 0.6f, 1f, 1f);
 
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
-            GUI.backgroundColor = prevColor;
+            GUI.backgroundColor = prevBg;
 
-            if (indent > 0) GUILayout.Space(indent * 12);
+            if (indent > 0)
+            {
+                GUILayout.Space(indent * 8);
+            }
 
+            // Badge / Tree Branch Prefix
+            if (!string.IsNullOrEmpty(badge))
+            {
+                GUILayout.Label($"<color=#00E5FF><b>{badge}</b></color>", new GUIStyle(EditorStyles.miniLabel) { richText = true }, GUILayout.Width(80));
+            }
+
+            // Mini Icon
             if (u.icon != null && u.icon.texture != null)
             {
-                GUILayout.Label(new GUIContent(u.icon.texture), GUILayout.Width(26), GUILayout.Height(26));
+                GUILayout.Label(new GUIContent(u.icon.texture), GUILayout.Width(22), GUILayout.Height(22));
             }
             else
             {
-                GUILayout.Box("?", GUILayout.Width(26), GUILayout.Height(26));
+                GUILayout.Box("?", GUILayout.Width(22), GUILayout.Height(22));
             }
 
+            // ID & Name
             GUILayout.BeginVertical();
             string displayName = !string.IsNullOrEmpty(u.upgradeName) ? u.upgradeName : "(Chưa đặt tên)";
             GUILayout.Label($"<b>{u.id}</b> - {displayName}", EditorStyles.label);
-            GUILayout.Label($"W: {u.spawnWeight} | Lv: {(u.maxLevel > 0 ? u.maxLevel.ToString() : "∞")}", EditorStyles.miniLabel);
+            GUILayout.Label($"Hệ: {u.element} | W: {u.spawnWeight} | Lv: {(u.maxLevel > 0 ? u.maxLevel.ToString() : "∞")}", EditorStyles.miniLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button(isSelected ? "●" : "Chọn", EditorStyles.miniButton, GUILayout.Width(42), GUILayout.Height(26)))
+            // Select Button
+            if (GUILayout.Button(isSelected ? "●" : "Sửa", EditorStyles.miniButton, GUILayout.Width(38), GUILayout.Height(22)))
             {
                 _onSelectUpgrade?.Invoke(u);
             }
 
             GUILayout.EndHorizontal();
         }
+        #endregion
 
-        private void DrawArchetypeGroup(List<UpgradeData> all, UpgradeData selected, string title, MythicArchetype arc, string[] relatedWeapons)
-        {
-            string key = $"Group_{arc}";
-            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = true;
-
-            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], $"<b>{title}</b>", true, EditorStyles.foldoutHeader);
-            if (!_foldoutStates[key]) return;
-
-            var core = all.OfType<MythicCoreUpgradeData>().FirstOrDefault(c => c.archetype == arc);
-            if (core != null)
-            {
-                GUILayout.Label("  👑 <b>ĐẠI LÕI KHỞI ĐẦU:</b>", EditorStyles.miniBoldLabel);
-                DrawUpgradeItem(core, selected, 1);
-            }
-
-            var traits = all.OfType<SynergyTraitUpgradeData>().Where(t => t.requiredArchetype == arc).ToList();
-            if (traits.Count > 0)
-            {
-                GUILayout.Label($"  ⚡ <b>THẦN BINH THUẬT ĐỘC QUYỀN ({traits.Count}/5):</b>", EditorStyles.miniBoldLabel);
-                foreach (var t in traits) DrawUpgradeItem(t, selected, 2);
-            }
-
-            if (relatedWeapons != null && relatedWeapons.Length > 0)
-            {
-                GUILayout.Label("  ⚔️ <b>PHÁP BẢO & TIẾN HÓA ĐỒNG HỆ:</b>", EditorStyles.miniBoldLabel);
-                foreach (var wId in relatedWeapons)
-                {
-                    var weaponUps = all.OfType<WeaponUpgradeData>().Where(w => string.Equals(w.weaponId, wId, StringComparison.OrdinalIgnoreCase)).ToList();
-                    var evos = all.OfType<EvolutionUpgradeData>().Where(e => string.Equals(e.weaponId, wId, StringComparison.OrdinalIgnoreCase)).ToList();
-                    foreach (var w in weaponUps) DrawUpgradeItem(w, selected, 2);
-                    foreach (var e in evos) DrawUpgradeItem(e, selected, 2);
-                }
-            }
-
-            GUILayout.Space(6);
-        }
-
-        private void DrawSharedPassivesGroup(List<UpgradeData> all, UpgradeData selected)
-        {
-            string key = "Group_Passives";
-            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = true;
-
-            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], "<b>📜 Bổ Trợ Khí Vận Dùng Chung (P001 - P012)</b>", true, EditorStyles.foldoutHeader);
-            if (!_foldoutStates[key]) return;
-
-            var passives = all.OfType<CommonUpgradeData>().ToList();
-            foreach (var p in passives) DrawUpgradeItem(p, selected, 1);
-            GUILayout.Space(6);
-        }
-
-        private void DrawSlapstickAndFusionsGroup(List<UpgradeData> all, UpgradeData selected)
-        {
-            string key = "Group_Slapstick";
-            if (!_foldoutStates.ContainsKey(key)) _foldoutStates[key] = false;
-
-            _foldoutStates[key] = EditorGUILayout.Foldout(_foldoutStates[key], "<b>🔮 Pháp Bảo Dân Gian & Dung Hợp</b>", true, EditorStyles.foldoutHeader);
-            if (!_foldoutStates[key]) return;
-
-            var fusions = all.OfType<FusionUpgradeData>().ToList();
-            if (fusions.Count > 0)
-            {
-                GUILayout.Label("  🔮 <b>THẦN KHÍ DUNG HỢP (RELIC FUSIONS):</b>", EditorStyles.miniBoldLabel);
-                foreach (var f in fusions) DrawUpgradeItem(f, selected, 1);
-            }
-
-            var slapstick = all.Where(u => u.id.StartsWith("UP_SLIPPER") || u.id.StartsWith("UP_POT") || u.id.StartsWith("UP_PIPE") || u.id.StartsWith("UP_R007") || u.id.StartsWith("UP_R008")).ToList();
-            if (slapstick.Count > 0)
-            {
-                GUILayout.Label("  🎭 <b>PHÁP BẢO DÂN GIAN HÀI HƯỚC:</b>", EditorStyles.miniBoldLabel);
-                foreach (var s in slapstick) DrawUpgradeItem(s, selected, 1);
-            }
-            GUILayout.Space(6);
-        }
-
+        #region Helpers
         private List<UpgradeData> FilterUpgrades(List<UpgradeData> all)
         {
             return all.Where(u =>
@@ -284,6 +448,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
             menu.AddItem(new GUIContent("🔮 Dung Hợp Pháp Bảo (Relic Fusion)"), false, () => _onCreateTemplate?.Invoke(UpgradeType.RelicFusion));
             menu.ShowAsContext();
         }
+        #endregion
     }
 }
 #endif
