@@ -45,7 +45,7 @@ namespace ProjectZombie.Features.Upgrades.DebugTools
             var exp = FindObjectOfType<PlayerExperience>();
             if (exp != null)
             {
-                exp.GainExperience(exp.ExperienceToNextLevel - exp.CurrentExperience + 1);
+                exp.AddExp(exp.MaxExp - exp.CurrentExp + 0.1f);
                 Debug.Log("<color=#00FF88>[RuntimeDebug]</color> Đã kích hoạt Level Up ngẫu nhiên qua PlayerExperience!");
             }
             else
