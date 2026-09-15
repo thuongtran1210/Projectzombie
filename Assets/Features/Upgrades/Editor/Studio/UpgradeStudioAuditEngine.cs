@@ -319,10 +319,14 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
             }
 
             int copiedCount = 0;
-            string[] sourceFiles = Directory.GetFiles(SOURCE_DIR, "*.asset", SearchOption.AllDirectories);
+            string[] sourceFiles = Directory.GetFiles(SOURCE_DIR, "*.*", SearchOption.AllDirectories);
 
             foreach (var src in sourceFiles)
             {
+                if (src.EndsWith(".meta")) continue;
+                string ext = Path.GetExtension(src).ToLower();
+                if (ext != ".asset" && ext != ".prefab") continue;
+
                 string relPath = src.Substring(SOURCE_DIR.Length).TrimStart('\\', '/');
                 string dest = Path.Combine(RESOURCES_DIR, relPath);
                 string destDir = Path.GetDirectoryName(dest);
