@@ -158,7 +158,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                             Message = $"Lõi Đột Biến '{mut.upgradeName}' (ID: {mut.id}) HOÀN TOÀN CHƯA HOẠT ĐỘNG (Chỉ số rỗng và chưa có mechanicRuntimePrefab)."
                         });
                     }
-                    else if (!hasPrefab)
+                    else if (!hasPrefab && mut.tier != AugmentTier.Silver)
                     {
                         issues.Add(new AuditIssue
                         {

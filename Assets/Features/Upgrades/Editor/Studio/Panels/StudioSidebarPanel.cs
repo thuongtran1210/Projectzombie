@@ -249,6 +249,14 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 {
                     GUILayout.Label("<i>Chưa có Lõi Đột Biến nào. Nhấn '+ Tạo Mới' để thêm.</i>", EditorStyles.miniLabel);
                 }
+                else
+                {
+                    GUILayout.Space(4);
+                    if (GUILayout.Button("⚡ Sinh/Đồng Bộ 12 Prefabs Cơ Chế (Vàng & Kim Cương)", EditorStyles.miniButton))
+                    {
+                        AugmentPrefabsGenerator.GenerateAllAugmentPrefabs();
+                    }
+                }
             }
 
             GUILayout.EndVertical();
