@@ -37,4 +37,4 @@ MonoBehaviour:
     dashSpeedBonus: 0
     areaScaleBonus: 0.35
     fireDamageBonus: 0
-  mechanicRuntimePrefab: {fileID: 0}
+  mechanicRuntimePrefab: {fileID: 3841455603564965754, guid: 8259280a22a6a0b4a97c0ffc625a4e44, type: 3}
