@@ -324,7 +324,7 @@ namespace ProjectZombie.Features.Upgrades
         /// </summary>
         public List<UpgradeData> GetRandomUpgrades(int count, Player.PlayerContext context)
         {
-            int currentLvl = context?.PlayerExperience != null ? context.PlayerExperience.CurrentLevel : 2;
+            int currentLvl = context?.Experience != null ? context.Experience.CurrentLevel : 2;
             return GetProgressionUpgrades(count, currentLvl, context);
         }
 

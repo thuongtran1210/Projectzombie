@@ -32,7 +32,8 @@ namespace ProjectZombie.Features.Upgrades
         {
             if (context == null) return true;
             // Mỗi Lõi Đột Biến chỉ nhận tối đa 1 lần trong 1 ván đấu
-            return maxLevel <= 1 || GetCurrentLevel(context) < maxLevel;
+            int currentCount = context.Passives != null ? context.Passives.GetUpgradeCount(upgradeName) : 0;
+            return maxLevel <= 0 || currentCount < maxLevel;
         }
 
         public override bool IsAvailable(GameObject player)
@@ -43,9 +44,16 @@ namespace ProjectZombie.Features.Upgrades
 
         public override void ApplyUpgrade(PlayerContext context)
         {
-            if (context?.PlayerStats != null)
+            if (context?.Stats != null)
             {
-                context.PlayerStats.ApplyStatModifier(statModifier);
+                context.Stats.ApplyStatModifier(statModifier);
+            }
+
+            if (context?.Passives != null)
+            {
+                string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+                context.Passives.AddPassive(key, this);
+                context.Passives.IncrementUpgradeCount(upgradeName);
             }
 
             if (mechanicRuntimePrefab != null && context?.GameObject != null)

@@ -35,7 +35,8 @@ namespace ProjectZombie.Features.Upgrades
         public override bool IsAvailable(PlayerContext context)
         {
             if (context == null) return true;
-            return maxLevel <= 0 || GetCurrentLevel(context) < maxLevel;
+            int currentCount = context.Passives != null ? context.Passives.GetUpgradeCount(upgradeName) : 0;
+            return maxLevel <= 0 || currentCount < maxLevel;
         }
 
         public override bool IsAvailable(GameObject player)
@@ -46,9 +47,16 @@ namespace ProjectZombie.Features.Upgrades
 
         public override void ApplyUpgrade(PlayerContext context)
         {
-            if (context?.PlayerStats != null)
+            if (context?.Stats != null)
             {
-                context.PlayerStats.ApplyStatModifier(statModifier);
+                context.Stats.ApplyStatModifier(statModifier);
+            }
+
+            if (context?.Passives != null)
+            {
+                string key = !string.IsNullOrEmpty(id) ? id : upgradeName;
+                context.Passives.AddPassive(key, this);
+                context.Passives.IncrementUpgradeCount(upgradeName);
             }
         }
 

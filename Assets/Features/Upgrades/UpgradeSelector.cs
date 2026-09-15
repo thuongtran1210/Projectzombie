@@ -217,7 +217,7 @@ namespace ProjectZombie.Features.Upgrades
             UpgradeWeightPipeline weightPipeline,
             IReadOnlyList<UpgradeData> fallbackRewards)
         {
-            int currentLvl = context?.PlayerExperience != null ? context.PlayerExperience.CurrentLevel : 2;
+            int currentLvl = context?.Experience != null ? context.Experience.CurrentLevel : 2;
             return SelectUpgradesByProgression(count, currentLvl, context, availableUpgrades, fallbackRewards);
         }
         #endregion
