@@ -57,12 +57,17 @@ namespace ProjectZombie.Features.Player
                 InputReader = playerObject.GetComponent<PlayerInputReader>();
                 Logic = playerObject.GetComponent<PlayerLogic>();
                 CombatEvents = playerObject.GetComponent<ProjectZombie.Features.Combat.PlayerCombatEvents>();
-                MythicManager = playerObject.GetComponent<PlayerMythicManager>();
-
-                if (MythicManager != null)
+                if (CombatEvents == null)
                 {
-                    MythicManager.Construct(this);
+                    CombatEvents = playerObject.AddComponent<ProjectZombie.Features.Combat.PlayerCombatEvents>();
                 }
+
+                MythicManager = playerObject.GetComponent<PlayerMythicManager>();
+                if (MythicManager == null)
+                {
+                    MythicManager = playerObject.AddComponent<PlayerMythicManager>();
+                }
+                MythicManager.Construct(this);
 
                 ValidateComponents();
             }
