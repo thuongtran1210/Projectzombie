@@ -1,5 +1,6 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Upgrades;
@@ -207,6 +208,14 @@ namespace ProjectZombie.Features.Upgrades.Editor
             string[] passiveIds = new string[] { "P001", "P002", "P003", "P004", "P005", "P006", "P007", "P008", "P009", "P010", "P011", "P012" };
             string[] evoIds = new string[] { "E001", "E002", "E003", "E004", "E005", "E006", "E007", "E008", "E009", "E010", "E011", "E012" };
 
+            // Danh sách tên file nhánh chính chuẩn GDD v4.0 (WeaponEvolutionManager)
+            var primaryNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+            {
+                "E001_NỏLiênChâu", "E002_BútSinhTử", "E003_BùaCửuHuyền", "E004_HồLyCửuVĩ",
+                "E005_TrốngTrấnQuốc", "E006_BãoHỏaDiệm", "E007_CungThầnTiễn", "E008_HỏaLongĐao",
+                "E009_LongVươngTrượng", "E010_ThủyCungLinh", "E011_GiếngThiêng", "E012_PhiTiêuCửuCung"
+            };
+
             for (int i = 0; i < evoIds.Length; i++)
             {
                 string evoId = evoIds[i];
@@ -220,14 +229,18 @@ namespace ProjectZombie.Features.Upgrades.Editor
                     var asset = AssetDatabase.LoadAssetAtPath<EvolutionUpgradeData>(path);
                     if (asset != null)
                     {
-                        asset.id = evoId;
+                        string fileName = Path.GetFileNameWithoutExtension(path);
+                        bool isPrimary = primaryNames.Contains(fileName);
+
+                        // Nhánh chính: E001..E012, Nhánh phụ/biến thể: E001_B..E012_B
+                        asset.id = isPrimary ? evoId : $"{evoId}_B";
                         asset.weaponId = wId;
                         asset.requiredPassiveId = pId;
-                        asset.requiredCurrentLevel = 5; // Cần đạt Max Level 5
+                        asset.requiredCurrentLevel = 5;
                         asset.upgradeType = UpgradeType.EvolutionUpgrade;
-                        asset.spawnWeight = 100f; // Trọng số ưu tiên cao khi đã đủ điều kiện tiến hóa
+                        asset.spawnWeight = 100f;
 
-                        // Auto-assign weaponPrefab if missing by searching prefabs
+                        // Auto-assign weaponPrefab if missing
                         if (asset.weaponPrefab == null)
                         {
                             string[] prefabGuids = AssetDatabase.FindAssets($"Weapon_{wId} t:Prefab");

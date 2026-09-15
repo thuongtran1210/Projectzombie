@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E012_B\xE1tQu\xE1iTruTi\xEAnTi\xEAu"
   m_EditorClassIdentifier: 
-  id: E012
+  id: E012_B
   upgradeName: "B\xE1t Qu\xE1i Tru Ti\xEAn Ti\xEAu"
   description: "Ma tr\u1EADn phi ti\xEAu b\xE1t qu\xE1i ch\xE9m n\xE1t m\u1ECDi r\xE0o
     c\u1EA3n."

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13757888e4de645a636271f3cf8d9d, type: 3}
   m_Name: "E003_Thi\xEAnC\u01B0\u01A1ngTr\u1EADn"
   m_EditorClassIdentifier: 
-  id: E003
+  id: E003_B
   upgradeName: "Thi\xEAn C\u01B0\u01A1ng Tr\u1EADn"
   description: "Tri\u1EC7u h\u1ED3i 12 l\xE1 b\xF9a h\u1ED9 m\u1EC7nh bao quanh b\u1EA3o
     v\u1EC7 tuy\u1EC7t \u0111\u1ED1i."
