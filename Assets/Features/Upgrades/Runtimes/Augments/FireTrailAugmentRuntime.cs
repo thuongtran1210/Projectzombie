@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _fireDamage = 35f;
         [SerializeField] private float _trailDuration = 4f;
         [SerializeField] private float _damageInterval = 0.5f;
+        [SerializeField] private float _hitRadius = 1.5f;
         [Header("VFX Settings")]
         [SerializeField] private GameObject _fireVfxPrefab;
 

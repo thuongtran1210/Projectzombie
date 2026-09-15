@@ -13,6 +13,7 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
     {
         [Header("Settings")]
         [SerializeField] private float _explosionDamage = 50f;
+        [SerializeField] private float _explosionRadius = 3.5f;
         [Header("VFX Settings")]
         [SerializeField] private GameObject _critVfxPrefab;
 

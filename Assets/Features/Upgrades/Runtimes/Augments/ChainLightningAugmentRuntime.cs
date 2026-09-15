@@ -15,6 +15,7 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
         [SerializeField] private float _triggerChance = 0.35f;
         [SerializeField] private float _lightningDamage = 40f;
         [SerializeField] private float _chainRadius = 5f;
+        [SerializeField] private int _maxBounces = 3;
         [Header("VFX Settings")]
         [SerializeField] private GameObject _lightningVfxPrefab;
 
