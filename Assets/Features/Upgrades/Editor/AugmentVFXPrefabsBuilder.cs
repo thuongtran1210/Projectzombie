@@ -110,7 +110,12 @@ namespace ProjectZombie.Features.Upgrades.Editor
                 Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default");
                 if (particleShader != null)
                 {
-                    renderer.material = new Material(particleShader);
+                    Material mat = new Material(particleShader);
+                    Sprite knobSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+                    Texture defaultTex = knobSprite != null ? knobSprite.texture : Texture2D.whiteTexture;
+                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", defaultTex);
+                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", defaultTex);
+                    renderer.material = mat;
                 }
             }
 
