@@ -59,7 +59,12 @@ namespace ProjectZombie.Features.Upgrades.Runtimes.Augments
                 }
             }
 
-            Debug.Log("<color=#00E5FF>[Tản Viên Bất Hoại] Kích hoạt Kim Cang Hộ Thể!</color>");
+            if (Context?.Health != null)
+            {
+                Context.Health.TriggerInvulnerability(_invulnerableDuration);
+            }
+
+            Debug.Log($"<color=#00E5FF>[Tản Viên Bất Hoại] Kích hoạt Kim Cang Hộ Thể (Bất tử {_invulnerableDuration}s)!</color>");
         }
     }
 }
