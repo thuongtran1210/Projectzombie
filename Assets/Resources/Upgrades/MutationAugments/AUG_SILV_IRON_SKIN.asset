@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58818e99ad7c84742845d1b4e9cfebee, type: 3}
+  m_Name: AUG_SILV_IRON_SKIN
+  m_EditorClassIdentifier: 
+  id: AUG_SILV_IRON_SKIN
+  upgradeName: "Thi\u1EBFt B\xEC Kim C\u01B0\u01A1ng"
+  description: "Gi\u1EA3m <b>-12% M\u1ECDi Ngu\u1ED3n S\xE1t Th\u01B0\u01A1ng</b>
+    m\xE0 nh\xE2n v\u1EADt ph\u1EA3i g\xE1nh ch\u1ECBu t\u1EEB k\u1EBB \u0111\u1ECBch."
+  icon: {fileID: 0}
+  upgradeType: 7
+  spawnWeight: 60
+  maxLevel: 1
+  element: 0
+  tier: 0
+  synergyTag: TanVien
+  statModifier:
+    maxHealthBonus: 100
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0
+  mechanicRuntimePrefab: {fileID: 0}

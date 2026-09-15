@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16a4cfd334311a143bf947f9fa6730ea, type: 3}
+  m_Name: MICRO_YIN_YANG_POWER
+  m_EditorClassIdentifier: 
+  id: MICRO_YIN_YANG_POWER
+  upgradeName: "V\xF4 C\u1EF1c K\xECnh L\u1EF1c"
+  description: "T\u0103ng c\u01B0\u1EDDng uy l\u1EF1c kh\xED c\xF4ng cho tr\u01B0\u1EDDng
+    ph\xE1i Long Ti\xEAn Huy\u1EBFt M\u1EA1ch."
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 60
+  maxLevel: 5
+  element: 0
+  oneLineSummary: "+10% S\xE1t Th\u01B0\u01A1ng & +5% Ch\xED M\u1EA1ng"
+  preferredArchetype: 5
+  synergyTag: LongTien
+  statModifier:
+    maxHealthBonus: 0
+    moveSpeedBonus: 0
+    critChanceBonus: 0.05
+    baseDamageBonus: 6
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

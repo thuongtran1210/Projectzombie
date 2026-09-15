@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16a4cfd334311a143bf947f9fa6730ea, type: 3}
+  m_Name: MICRO_SLOW_DURATION
+  m_EditorClassIdentifier: 
+  id: MICRO_SLOW_DURATION
+  upgradeName: "H\xE0n B\u0103ng Th\u1EA5u X\u01B0\u01A1ng"
+  description: "T\u0103ng c\u01B0\u1EDDng kh\u1EA3 n\u0103ng kh\u1ED1ng ch\u1EBF
+    di\u1EC7n r\u1ED9ng cho tr\u01B0\u1EDDng ph\xE1i Th\u1EE7y B\xE1."
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 60
+  maxLevel: 5
+  element: 0
+  oneLineSummary: "+25% Hi\u1EC7u Qu\u1EA3 L\xE0m Ch\u1EADm & \u0110\xF3ng B\u0103ng"
+  preferredArchetype: 4
+  synergyTag: ThuyBa
+  statModifier:
+    maxHealthBonus: 0
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 5
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0.1
+    fireDamageBonus: 0

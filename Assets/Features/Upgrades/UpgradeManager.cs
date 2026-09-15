@@ -142,6 +142,27 @@ namespace ProjectZombie.Features.Upgrades
                     return;
                 }
 
+                // Nạp tức thời đồng bộ từ Resources để không bao giờ bị rỗng pool ở frame đầu
+                var resUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+                if (resUpgrades != null && resUpgrades.Length > 0)
+                {
+                    _allAvailableUpgrades ??= new List<UpgradeData>();
+                    var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+                    foreach (var u in resUpgrades)
+                    {
+                        if (u != null && !(u is FallbackRewardUpgradeData))
+                        {
+                            string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                            if (loadedIds.Add(idKey))
+                            {
+                                _allAvailableUpgrades.Add(u);
+                            }
+                        }
+                    }
+                    _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
+                    return;
+                }
+
                 if (_loadingTask == null || _loadingTask.IsCompleted)
                 {
                     _loadingTask = PopulateAllAvailableUpgradesAsync();
@@ -180,25 +201,28 @@ namespace ProjectZombie.Features.Upgrades
             _cachedMasterUpgrades = null;
 
 #if UNITY_EDITOR
-            if (!Application.isPlaying)
+            string[] searchFolders = new[] { "Assets/_Data/Upgrades", "Assets/Resources/Upgrades" };
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData", searchFolders);
+            var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+            foreach (string guid in guids)
             {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
-                foreach (string guid in guids)
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var upgrade = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
+                if (upgrade != null && !(upgrade is FallbackRewardUpgradeData))
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var upgrade = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                    if (upgrade != null && !_allAvailableUpgrades.Contains(upgrade) && !(upgrade is FallbackRewardUpgradeData))
+                    string idKey = !string.IsNullOrEmpty(upgrade.id) ? upgrade.id : upgrade.name;
+                    if (loadedIds.Add(idKey))
                     {
                         _allAvailableUpgrades.Add(upgrade);
                     }
                 }
-                UnityEditor.EditorUtility.SetDirty(this);
-                Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp {_allAvailableUpgrades.Count} thẻ UpgradeData hợp lệ từ AssetDatabase.");
-                _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
-                return;
             }
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp {_allAvailableUpgrades.Count} thẻ UpgradeData hợp lệ.");
+            _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
+            return;
 #endif
-
             _ = PopulateAllAvailableUpgradesAsync();
         }
 
@@ -213,24 +237,45 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
 
-            // Nạp từ GameDataService (Addressables Label "UpgradeData" -> Fallback Resources)
-            var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
-            if (loadedList != null && loadedList.Count > 0)
+            // 1. Nạp từ Resources/Upgrades (Fallback & Direct Runtime Loading)
+            var resUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
+            if (resUpgrades != null && resUpgrades.Length > 0)
             {
-                foreach (var item in loadedList)
+                var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+                foreach (var u in resUpgrades)
                 {
-                    if (item != null && !(item is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(item))
+                    if (u != null && !(u is FallbackRewardUpgradeData))
                     {
-                        _allAvailableUpgrades.Add(item);
+                        string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                        if (loadedIds.Add(idKey))
+                        {
+                            _allAvailableUpgrades.Add(u);
+                        }
                     }
                 }
-                Debug.Log($"[UpgradeManager] Load thành công {_allAvailableUpgrades.Count} thẻ UpgradeData qua GameDataService.");
+                Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã nạp thành công {_allAvailableUpgrades.Count} thẻ từ Resources/Upgrades.");
+            }
+
+            // 2. Nạp bổ sung qua GameDataService nếu có
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
+                if (loadedList != null && loadedList.Count > 0)
+                {
+                    foreach (var item in loadedList)
+                    {
+                        if (item != null && !(item is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(item))
+                        {
+                            _allAvailableUpgrades.Add(item);
+                        }
+                    }
+                }
             }
 
 #if UNITY_EDITOR
             if (_allAvailableUpgrades.Count == 0)
             {
-                Debug.LogWarning("[UpgradeManager] Không tìm thấy UpgradeData trong Addressables/Resources. Fallback sang Editor AssetDatabase.");
+                Debug.LogWarning("[UpgradeManager] Không tìm thấy UpgradeData trong Resources. Fallback sang Editor AssetDatabase.");
                 PopulateAllAvailableUpgrades();
             }
 #endif

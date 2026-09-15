@@ -14,18 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: P010
   upgradeName: "T\xFAi H\xFAt H\u1ED3n"
-  description: "+25% T\u1EA7m h\xFAt v\u1EADt ph\u1EA9m & ng\u1ECDc kinh nghi\u1EC7m"
+  description: "+40% T\u1EA7m h\xFAt v\u1EADt ph\u1EA9m & ng\u1ECDc kinh nghi\u1EC7m"
   icon: {fileID: 21300000, guid: 1b09bd9ed2674a859b7ce033fb5a7e3a, type: 3}
   upgradeType: 2
-  spawnWeight: 10
+  spawnWeight: 60
   maxLevel: 5
-  requiredYinYangState: 1
-  checkYinYangState: 0
   element: 0
   playerStatModifier:
     maxHealthBonus: 0
     moveSpeedBonus: 0
     critChanceBonus: 0
     baseDamageBonus: 0
-    pickupRangeBonus: 1.5
+    pickupRangeBonus: 1.8
     expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

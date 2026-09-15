@@ -18,7 +18,7 @@ MonoBehaviour:
     t\u1ED1c \u0111\u1ED9 xu\u1EA5t chi\xEAu c\u1EADn chi\u1EBFn."
   icon: {fileID: 0}
   upgradeType: 1
-  spawnWeight: 1
+  spawnWeight: 15
   maxLevel: 3
   element: 4
   requiredArchetype: 1

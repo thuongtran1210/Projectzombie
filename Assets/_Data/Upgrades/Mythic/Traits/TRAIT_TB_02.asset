@@ -18,7 +18,7 @@ MonoBehaviour:
     0.4s h\u1ED3i chi\xEAu l\u01B0\u1EDBt."
   icon: {fileID: 0}
   upgradeType: 1
-  spawnWeight: 1
+  spawnWeight: 15
   maxLevel: 3
   element: 3
   requiredArchetype: 4

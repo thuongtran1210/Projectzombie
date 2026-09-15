@@ -34,6 +34,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             EnsureDirectory(TRAITS_DIR);
             EnsureDirectory(AUGMENTS_DIR);
             EnsureDirectory(MICRO_STATS_DIR);
+            AssetDatabase.Refresh();
 
             // 1. Đồng bộ 5 Đại Lõi Thần Thoại (Level 1)
             SynchronizeExistingMythicCores();
@@ -327,11 +328,20 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
         private static T FindAssetById<T>(string id, string folder) where T : UpgradeData
         {
-            string[] guids = AssetDatabase.FindAssets($"{id} t:{typeof(T).Name}", new[] { folder });
-            if (guids.Length > 0)
+            // 1. Kiểm tra trực tiếp file chính xác theo tên ID
+            string directPath = $"{folder}/{id}.asset";
+            var directAsset = AssetDatabase.LoadAssetAtPath<T>(directPath);
+            if (directAsset != null) return directAsset;
+
+            // 2. Tìm kiếm theo GUID nếu thư mục hợp lệ trong AssetDatabase
+            if (AssetDatabase.IsValidFolder(folder))
             {
-                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                return AssetDatabase.LoadAssetAtPath<T>(path);
+                string[] guids = AssetDatabase.FindAssets($"{id} t:{typeof(T).Name}", new[] { folder });
+                if (guids.Length > 0)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    return AssetDatabase.LoadAssetAtPath<T>(path);
+                }
             }
             return null;
         }

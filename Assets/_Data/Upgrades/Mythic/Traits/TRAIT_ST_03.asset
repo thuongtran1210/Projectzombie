@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "T\u0103ng +200 M\xE1u t\u1ED1i \u0111a."
   icon: {fileID: 0}
   upgradeType: 1
-  spawnWeight: 1
+  spawnWeight: 15
   maxLevel: 3
   element: 5
   requiredArchetype: 3

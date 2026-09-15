@@ -14,18 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: P001
   upgradeName: "B\xF9a S\xE1t Th\u01B0\u01A1ng"
-  description: "+10% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 cho nh\xE2n v\u1EADt"
+  description: "+10% S\xE1t th\u01B0\u01A1ng to\xE0n th\u1EC3 cho m\u1ECDi v\u0169
+    kh\xED"
   icon: {fileID: 21300000, guid: 111b28e17f844dbca1f98e4c36781c41, type: 3}
   upgradeType: 2
-  spawnWeight: 10
+  spawnWeight: 60
   maxLevel: 5
-  requiredYinYangState: 1
-  checkYinYangState: 0
   element: 0
   playerStatModifier:
     maxHealthBonus: 0
     moveSpeedBonus: 0
     critChanceBonus: 0
-    baseDamageBonus: 5
+    baseDamageBonus: 4
     pickupRangeBonus: 0
     expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

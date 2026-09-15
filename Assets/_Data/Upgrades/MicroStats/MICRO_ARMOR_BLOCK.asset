@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16a4cfd334311a143bf947f9fa6730ea, type: 3}
+  m_Name: MICRO_ARMOR_BLOCK
+  m_EditorClassIdentifier: 
+  id: MICRO_ARMOR_BLOCK
+  upgradeName: "B\xE0n Th\u1EA1ch H\u1ED9 Th\u1EC3"
+  description: "Gia c\u1ED1 s\u1EE9c b\u1EC1n v\u1EEFng ch\xE3i cho tr\u01B0\u1EDDng
+    ph\xE1i T\u1EA3n Vi\xEAn S\u01A1n Th\xE1nh."
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 60
+  maxLevel: 5
+  element: 0
+  oneLineSummary: "+80 M\xE1u & +10% Kh\xE1ng S\xE1t Th\u01B0\u01A1ng"
+  preferredArchetype: 3
+  synergyTag: TanVien
+  statModifier:
+    maxHealthBonus: 80
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 0
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

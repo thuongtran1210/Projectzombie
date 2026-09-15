@@ -18,7 +18,7 @@ MonoBehaviour:
     c\u1EA3 v\u0169 kh\xED t\u1EA7m xa."
   icon: {fileID: 0}
   upgradeType: 1
-  spawnWeight: 1
+  spawnWeight: 15
   maxLevel: 3
   element: 1
   requiredArchetype: 2

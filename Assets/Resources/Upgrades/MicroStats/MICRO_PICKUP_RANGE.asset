@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16a4cfd334311a143bf947f9fa6730ea, type: 3}
+  m_Name: MICRO_PICKUP_RANGE
+  m_EditorClassIdentifier: 
+  id: MICRO_PICKUP_RANGE
+  upgradeName: "L\u1EF1c H\xFAt V\u1EA1n V\u1EADt"
+  description: "M\u1EDF r\u1ED9ng t\u1EA7m h\xFAt ng\u1ECDc kinh nghi\u1EC7m v\xE0
+    c\u1ED5 ti\u1EC1n t\u1EEB xa."
+  icon: {fileID: 0}
+  upgradeType: 2
+  spawnWeight: 60
+  maxLevel: 5
+  element: 0
+  oneLineSummary: "+40% T\u1EA7m H\xFAt Ng\u1ECDc"
+  preferredArchetype: 0
+  synergyTag: Utility
+  statModifier:
+    maxHealthBonus: 0
+    moveSpeedBonus: 0
+    critChanceBonus: 0
+    baseDamageBonus: 0
+    pickupRangeBonus: 1.8
+    expMultiplierBonus: 0
+    attackSpeedBonus: 0
+    dashCooldownReduction: 0
+    dashSpeedBonus: 0
+    areaScaleBonus: 0
+    fireDamageBonus: 0

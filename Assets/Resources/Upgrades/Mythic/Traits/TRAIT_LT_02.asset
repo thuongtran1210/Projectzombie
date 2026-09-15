@@ -18,7 +18,7 @@ MonoBehaviour:
     +15% Kinh nghi\u1EC7m nh\u1EADn \u0111\u01B0\u1EE3c."
   icon: {fileID: 0}
   upgradeType: 1
-  spawnWeight: 1
+  spawnWeight: 15
   maxLevel: 3
   element: 0
   requiredArchetype: 5
