@@ -243,7 +243,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                         });
                     }
 
-                    if (IsWeaponModifierEmpty(weaponUp.weaponStatModifier))
+                    if (IsWeaponModifierEmpty(weaponUp.statModifier))
                     {
                         issues.Add(new AuditIssue
                         {
