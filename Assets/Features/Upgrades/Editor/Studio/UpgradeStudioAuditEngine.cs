@@ -10,11 +10,12 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
     public enum AuditCategory
     {
         All = 0,
-        Identification = 1, // ID rỗng / Trùng lặp
-        IconMissing = 2,    // Thiếu Icon Sprite
-        SpawnWeight = 3,    // Trọng số <= 0
-        EvolutionLink = 4,  // Liên kết vũ khí / Tiến hóa hỏng
-        TraitArchetype = 5  // Thần Binh Thuật chưa gắn Lõi
+        Identification = 1,     // ID rỗng / Trùng lặp
+        IconMissing = 2,        // Thiếu Icon Sprite
+        SpawnWeight = 3,        // Trọng số <= 0
+        EvolutionLink = 4,      // Liên kết vũ khí / Tiến hóa hỏng
+        TraitArchetype = 5,     // Thần Binh Thuật chưa gắn Lõi
+        MechanicReadiness = 6   // Cơ chế chưa hoạt động / Thiếu Prefab / Rỗng Modifier
     }
 
     public struct AuditIssue
@@ -33,6 +34,33 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
     {
         private const string SOURCE_DIR = "Assets/_Data/Upgrades";
         private const string RESOURCES_DIR = "Assets/Resources/Upgrades";
+
+        private static bool IsStatModifierEmpty(PlayerStatModifier mod)
+        {
+            return Mathf.Approximately(mod.maxHealthBonus, 0f) &&
+                   Mathf.Approximately(mod.moveSpeedBonus, 0f) &&
+                   Mathf.Approximately(mod.critChanceBonus, 0f) &&
+                   Mathf.Approximately(mod.baseDamageBonus, 0f) &&
+                   Mathf.Approximately(mod.pickupRangeBonus, 0f) &&
+                   Mathf.Approximately(mod.expMultiplierBonus, 0f) &&
+                   Mathf.Approximately(mod.attackSpeedBonus, 0f) &&
+                   Mathf.Approximately(mod.dashCooldownReduction, 0f) &&
+                   Mathf.Approximately(mod.dashSpeedBonus, 0f) &&
+                   Mathf.Approximately(mod.areaScaleBonus, 0f) &&
+                   Mathf.Approximately(mod.fireDamageBonus, 0f);
+        }
+
+        private static bool IsWeaponModifierEmpty(WeaponStatModifier mod)
+        {
+            return Mathf.Approximately(mod.damageBonus, 0f) &&
+                   Mathf.Approximately(mod.attackSpeedBonus, 0f) &&
+                   mod.projectileCountBonus == 0 &&
+                   mod.pierceBonus == 0 &&
+                   Mathf.Approximately(mod.scaleBonus, 0f) &&
+                   Mathf.Approximately(mod.critChanceBonus, 0f) &&
+                   Mathf.Approximately(mod.critDamageBonus, 0f) &&
+                   Mathf.Approximately(mod.projectileSpeedBonus, 0f);
+        }
 
         /// <summary>
         /// Quét toàn bộ danh sách thẻ để phát hiện các lỗi cấu hình tiềm ẩn.
@@ -102,7 +130,70 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                 }
 
                 // 4. Kiểm tra chuyên biệt theo từng phân loại
-                if (u is SynergyTraitUpgradeData trait)
+                if (u is MythicCoreUpgradeData core)
+                {
+                    if (core.runtimePrefab == null)
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Error,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Đại Lõi '{core.upgradeName}' (ID: {core.id}) chưa được gán Runtime Prefab (chưa thể hoạt động trong gameplay)."
+                        });
+                    }
+                }
+                else if (u is MutationAugmentUpgradeData mut)
+                {
+                    bool statEmpty = IsStatModifierEmpty(mut.statModifier);
+                    bool hasPrefab = mut.mechanicRuntimePrefab != null;
+
+                    if (statEmpty && !hasPrefab)
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Error,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Lõi Đột Biến '{mut.upgradeName}' (ID: {mut.id}) HOÀN TOÀN CHƯA HOẠT ĐỘNG (Chỉ số rỗng và chưa có mechanicRuntimePrefab)."
+                        });
+                    }
+                    else if (!hasPrefab)
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Warning,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Lõi Đột Biến '{mut.upgradeName}' [{mut.tier}] (ID: {mut.id}) chưa gắn mechanicRuntimePrefab (đang chạy Fallback chỉ cộng chỉ số, chưa có cơ chế thực thể/VFX riêng)."
+                        });
+                    }
+                }
+                else if (u is StatMicroUpgradeData micro)
+                {
+                    if (string.IsNullOrEmpty(micro.oneLineSummary))
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Warning,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Thẻ Micro-Card '{micro.upgradeName}' (ID: {micro.id}) chưa có tóm tắt 1 dòng (oneLineSummary)."
+                        });
+                    }
+
+                    if (IsStatModifierEmpty(micro.statModifier))
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Error,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Thẻ Micro-Card '{micro.upgradeName}' (ID: {micro.id}) không có bất kỳ chỉ số nào trong statModifier (Chưa hoạt động)."
+                        });
+                    }
+                }
+                else if (u is SynergyTraitUpgradeData trait)
                 {
                     if (trait.requiredArchetype == MythicArchetype.None)
                     {
@@ -112,6 +203,17 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                             Category = AuditCategory.TraitArchetype,
                             TargetAsset = u,
                             Message = $"Thần Binh Thuật '{trait.upgradeName}' (ID: {trait.id}) chưa thiết lập Required Archetype (None)."
+                        });
+                    }
+
+                    if (IsStatModifierEmpty(trait.playerStatModifier))
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Warning,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Thần Binh Thuật '{trait.upgradeName}' (ID: {trait.id}) không có bất kỳ chỉ số nào trong playerStatModifier."
                         });
                     }
                 }
@@ -138,6 +240,30 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio
                             Category = AuditCategory.EvolutionLink,
                             TargetAsset = u,
                             Message = $"Thẻ Cường Hóa Pháp Bảo '{weaponUp.upgradeName}' (ID: {weaponUp.id}) chưa cấu hình Weapon ID."
+                        });
+                    }
+
+                    if (IsWeaponModifierEmpty(weaponUp.weaponStatModifier))
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Warning,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Thẻ Cường Hóa Pháp Bảo '{weaponUp.upgradeName}' (ID: {weaponUp.id}) không tăng bất kỳ chỉ số vũ khí nào."
+                        });
+                    }
+                }
+                else if (u is CommonUpgradeData common)
+                {
+                    if (IsStatModifierEmpty(common.playerStatModifier))
+                    {
+                        issues.Add(new AuditIssue
+                        {
+                            Severity = AuditIssue.IssueSeverity.Warning,
+                            Category = AuditCategory.MechanicReadiness,
+                            TargetAsset = u,
+                            Message = $"Thẻ Bị Động '{common.upgradeName}' (ID: {common.id}) không có bất kỳ chỉ số nào trong playerStatModifier."
                         });
                     }
                 }

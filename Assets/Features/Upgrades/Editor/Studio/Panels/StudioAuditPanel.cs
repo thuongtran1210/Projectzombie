@@ -81,6 +81,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 int countWeight = _auditIssues.Count(i => i.Category == AuditCategory.SpawnWeight);
                 int countLink = _auditIssues.Count(i => i.Category == AuditCategory.EvolutionLink);
                 int countTrait = _auditIssues.Count(i => i.Category == AuditCategory.TraitArchetype);
+                int countMechanic = _auditIssues.Count(i => i.Category == AuditCategory.MechanicReadiness);
 
                 if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.All, "Tất Cả", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.All;
                 if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.Identification, $"ID/Trùng ({countId})", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.Identification;
@@ -88,6 +89,7 @@ namespace ProjectZombie.Features.Upgrades.Editor.Studio.Panels
                 if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.SpawnWeight, $"Trọng Số ({countWeight})", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.SpawnWeight;
                 if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.EvolutionLink, $"Vũ Khí/Tiến Hóa ({countLink})", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.EvolutionLink;
                 if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.TraitArchetype, $"Lõi Thần Binh ({countTrait})", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.TraitArchetype;
+                if (GUILayout.Toggle(_auditCategoryFilter == AuditCategory.MechanicReadiness, $"⚙️ Chưa Hoạt Động ({countMechanic})", EditorStyles.miniButton)) _auditCategoryFilter = AuditCategory.MechanicReadiness;
 
                 GUILayout.EndHorizontal();
 
