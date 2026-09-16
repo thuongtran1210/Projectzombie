@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.Player;
@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.UI
             if (_view != null)
             {
                 _view.OnStartRunClicked += HandleStartRunClicked;
+                _view.OnMultiplayerClicked += HandleMultiplayerClicked;
                 _view.OnHeroSelectClicked += HandleHeroSelectClicked;
                 _view.OnArmoryClicked += HandleArmoryClicked;
                 _view.OnGachaClicked += HandleGachaClicked;
@@ -77,6 +78,7 @@ namespace ProjectZombie.Features.UI
             if (_view != null)
             {
                 _view.OnStartRunClicked -= HandleStartRunClicked;
+                _view.OnMultiplayerClicked -= HandleMultiplayerClicked;
                 _view.OnHeroSelectClicked -= HandleHeroSelectClicked;
                 _view.OnArmoryClicked -= HandleArmoryClicked;
                 _view.OnGachaClicked -= HandleGachaClicked;
@@ -245,6 +247,17 @@ namespace ProjectZombie.Features.UI
                 {
                     MetaSceneTransitionController.Instance.StartRun();
                 }
+            }
+        }
+
+        private void HandleMultiplayerClicked()
+        {
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            Debug.Log("<color=#00FF88>[MainHubPresenter]</color> Người chơi đã chọn chế độ Đồng Đội / Nhiều Người Chơi (Multiplayer Co-op)!");
+            var metaManager = GetMetaUIManager();
+            if (metaManager != null)
+            {
+                // Mở giao diện Lobby / Phòng Chờ Co-op khi tích hợp Photon Fusion
             }
         }
 

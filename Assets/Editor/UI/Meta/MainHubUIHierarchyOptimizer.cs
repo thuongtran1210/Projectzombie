@@ -76,7 +76,39 @@ namespace ProjectZombie.EditorTools
                 }
             }
 
-            // 2. Tìm hoặc tối ưu Nút Xuất Trận Lục Giác Ngọc Hổ Phách
+            // 2. Tìm hoặc tối ưu Nút Xuất Trận Lục Giác & Nút Multiplayer
+            Transform btnMpTrans = FindChildRecursive(rootObj.transform, "Btn_Multiplayer");
+            if (btnMpTrans == null) btnMpTrans = FindChildRecursive(rootObj.transform, "MultiplayerButton");
+            if (btnMpTrans != null)
+            {
+                RectTransform rect = btnMpTrans.GetComponent<RectTransform>();
+                if (rect != null)
+                {
+                    rect.anchorMin = new Vector2(1f, 0f);
+                    rect.anchorMax = new Vector2(1f, 0f);
+                    rect.pivot = new Vector2(1f, 0f);
+                    rect.anchoredPosition = new Vector2(-15, 104);
+                    rect.sizeDelta = new Vector2(230, 44);
+                }
+
+                Image img = btnMpTrans.GetComponent<Image>();
+                if (img != null && btnNavWood != null)
+                {
+                    img.sprite = btnNavWood;
+                    img.type = Image.Type.Sliced;
+                    img.color = Color.white;
+                }
+
+                TextMeshProUGUI txt = btnMpTrans.GetComponentInChildren<TextMeshProUGUI>();
+                if (txt != null)
+                {
+                    txt.text = "<color=#FFD700>ĐỒNG ĐỘI (CO-OP)</color>";
+                    txt.fontStyle = FontStyles.Bold;
+                    txt.fontSize = 15;
+                    txt.alignment = TextAlignmentOptions.Center;
+                }
+            }
+
             Transform btnStartTrans = FindChildRecursive(rootObj.transform, "Btn_StartRun");
             if (btnStartTrans == null) btnStartTrans = FindChildRecursive(rootObj.transform, "StartRunButton");
             if (btnStartTrans == null) btnStartTrans = FindChildRecursive(rootObj.transform, "Button_StartRun");
@@ -90,7 +122,7 @@ namespace ProjectZombie.EditorTools
                     rect.anchorMax = new Vector2(1f, 0f);
                     rect.pivot = new Vector2(1f, 0f);
                     rect.anchoredPosition = new Vector2(-15, 6);
-                    rect.sizeDelta = new Vector2(165, 86);
+                    rect.sizeDelta = new Vector2(230, 92);
                 }
 
                 Image img = btnStartTrans.GetComponent<Image>();

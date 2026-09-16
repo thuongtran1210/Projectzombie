@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.UI
 
         [Header("Main Action")]
         [SerializeField] private Button _startRunButton;
+        [SerializeField] private Button _multiplayerButton;
 
         [Header("Navigation Buttons")]
         [SerializeField] private Button _heroSelectButton;
@@ -44,6 +45,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Image[] _relicIcons;
 
         public event Action OnStartRunClicked;
+        public event Action OnMultiplayerClicked;
         public event Action OnHeroSelectClicked;
         public event Action OnArmoryClicked;
         public event Action OnGachaClicked;
@@ -57,6 +59,7 @@ namespace ProjectZombie.Features.UI
             base.Awake();
 
             if (_startRunButton != null) _startRunButton.onClick.AddListener(() => OnStartRunClicked?.Invoke());
+            if (_multiplayerButton != null) _multiplayerButton.onClick.AddListener(() => OnMultiplayerClicked?.Invoke());
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_gachaButton != null) _gachaButton.onClick.AddListener(() => OnGachaClicked?.Invoke());

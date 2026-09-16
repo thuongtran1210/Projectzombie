@@ -95,11 +95,11 @@ namespace ProjectZombie.Editor.UI
             // 6. Hero Stage Info (Bục Đá Lục Giác 2.5D & Tên Đạo Sĩ) nằm trong SafeArea
             BuildHeroStage(safeAreaContent.transform, vietFont, out TextMeshProUGUI heroNameTMP, out TextMeshProUGUI heroElemTMP, out Image heroAvatarImg, out RawImage heroRawImg);
 
-            // 7. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 4 Nút Thẻ Gỗ, Nút Xuất Trận) nằm trong SafeArea
+            // 7. Bottom HUD Row (Bộ Bài Nan Quạt, Khay Loadout, 4 Nút Thẻ Gỗ, Nút Xuất Trận & Nút Đồng Đội) nằm trong SafeArea
             BuildBottomHUDRow(safeAreaContent.transform, vietFont,
                 out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priNameTMP, out Image priIconImg, out Image[] relicIcons,
                 out Button heroBtn, out Button armoryBtn, out Button gachaBtn, out Button sanctuaryBtn,
-                out Button startRunBtn);
+                out Button startRunBtn, out Button multiplayerBtn);
 
             // 8. Wire Properties to MainHubView
             SerializedObject soView = new SerializedObject(view);
@@ -135,6 +135,7 @@ namespace ProjectZombie.Editor.UI
             soView.FindProperty("_gachaButton").objectReferenceValue = gachaBtn;
             soView.FindProperty("_sanctuaryTreeButton").objectReferenceValue = sanctuaryBtn;
             soView.FindProperty("_startRunButton").objectReferenceValue = startRunBtn;
+            soView.FindProperty("_multiplayerButton").objectReferenceValue = multiplayerBtn;
             soView.ApplyModifiedProperties();
 
             // 7. Wire Presenter
@@ -145,6 +146,12 @@ namespace ProjectZombie.Editor.UI
             // 8. Lưu Prefab
             string prefabPath = $"{prefabFolder}/MainHubUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+
+            string resFolder = "Assets/Resources/UI";
+            if (AssetDatabase.IsValidFolder(resFolder))
+            {
+                PrefabUtility.SaveAsPrefabAsset(root, $"{resFolder}/MainHubUI.prefab");
+            }
 
             // 9. Cập nhật vào Scene nếu có Canvas hoặc Canvas_MetaMenu
             var metaCanvasObj = GameObject.Find("Canvas_MetaMenu");
@@ -459,7 +466,7 @@ namespace ProjectZombie.Editor.UI
         private static void BuildBottomHUDRow(Transform parent, TMP_FontAsset font,
             out Button deckCardsBtn, out Button loadoutBtn, out TextMeshProUGUI priName, out Image priIcon, out Image[] relicIcons,
             out Button heroBtn, out Button armoryBtn, out Button gachaBtn, out Button sanctuaryBtn,
-            out Button startRunBtn)
+            out Button startRunBtn, out Button multiplayerBtn)
         {
             GameObject hud = CreateUIElement("Bottom_HUDRow", parent);
             RectTransform hRT = hud.GetComponent<RectTransform>();
@@ -655,7 +662,37 @@ namespace ProjectZombie.Editor.UI
             b3TMP.alignment = TextAlignmentOptions.Center;
             b3TMP.color = new Color(0.96f, 0.90f, 0.72f, 1f);
 
-            // ================= 3. GÓC PHẢI: NÚT XUẤT TRẬN LỤC GIÁC NGỌC HỔ PHÁCH =================
+            // ================= 3. GÓC PHẢI: NÚT ĐỒNG ĐỘI (MULTIPLAYER) & NÚT XUẤT TRẬN LỤC GIÁC =================
+            // Nút Đồng Đội / Multiplayer (Nằm ở TRÊN nút Xuất Trận)
+            GameObject mpObj = CreateUIElement("Btn_Multiplayer", hud.transform);
+            RectTransform mpRT = mpObj.GetComponent<RectTransform>();
+            mpRT.anchorMin = new Vector2(1, 0);
+            mpRT.anchorMax = new Vector2(1, 0);
+            mpRT.pivot = new Vector2(1, 0);
+            mpRT.anchoredPosition = new Vector2(-15, 104);
+            mpRT.sizeDelta = new Vector2(230, 44);
+
+            var mpImg = mpObj.AddComponent<Image>();
+            mpImg.color = Color.white;
+            mpImg.type = Image.Type.Sliced;
+            Sprite btnMpWood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png");
+            if (btnMpWood == null) btnMpWood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Buttons/Btn_GoMun_Dark.png");
+            if (btnMpWood != null) mpImg.sprite = btnMpWood;
+            multiplayerBtn = mpObj.AddComponent<Button>();
+
+            // Text Nút Multiplayer
+            GameObject mpTxt = CreateUIElement("Text", mpObj.transform);
+            SetStretchAnchor(mpTxt.GetComponent<RectTransform>());
+            mpTxt.GetComponent<RectTransform>().offsetMin = new Vector2(16, 4);
+            mpTxt.GetComponent<RectTransform>().offsetMax = new Vector2(-16, -4);
+            var mpTMP = CreateTextMeshPro(mpTxt, font);
+            mpTMP.text = "<color=#FFD700>ĐỒNG ĐỘI (CO-OP)</color>";
+            mpTMP.fontSize = 14.5f;
+            mpTMP.fontStyle = FontStyles.Bold;
+            mpTMP.alignment = TextAlignmentOptions.Center;
+            mpTMP.color = new Color(0.98f, 0.90f, 0.72f, 1f);
+
+            // Nút Xuất Trận Lục Giác Ngọc Hổ Phách
             GameObject startObj = CreateUIElement("Btn_StartRun", hud.transform);
             RectTransform stRT = startObj.GetComponent<RectTransform>();
             stRT.anchorMin = new Vector2(1, 0);
