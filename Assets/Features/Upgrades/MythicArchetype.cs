@@ -6,11 +6,11 @@ namespace ProjectZombie.Features.Upgrades
     public enum MythicArchetype
     {
         None = 0,
-        PhuDongThienUy   = 1, // Thánh Gióng (Hệ Hỏa - Thể Tu Khổng Lồ, Ngựa Sắt Phun Lửa, Càn Quét)
-        KimQuyThanCo     = 2, // Nỏ Thần An Dương Vương (Hệ Kim - Xạ Kích Vạn Tiễn, Đạn Nảy Xuyên Phá, Mai Rùa)
-        TanVienSonThanh  = 3, // Sơn Tinh (Hệ Thổ - Bất Tử Giáp Đá, Thạch Trụ Đè Bẹp Quái, Phản Đòn)
-        ThuyBaCuongNo    = 4, // Thủy Tinh (Hệ Thủy - Mưa Bão Toàn Map, Sóng Thần Cuốn Trôi, Băng Tê Liệt)
-        LongTienHuyetMach = 5 // Lạc Long Quân & Âu Cơ (Hệ Âm Dương - Chuyển Đổi Rồng/Tiên, Miễn Tử Hồi Sinh)
+        KimQuyThanCo      = 1, // An Dương Vương & Kim Quy (Hệ KIM - Xạ Kích Đạn Nảy / Trảm Sát Kiếm Khí Nảy, Mai Rùa Thủ)
+        LongTienHuyetMach = 2, // Lạc Long Quân & Âu Cơ (Hệ MỘC - Âm Dương Thái Cực: Thái Âm Mộc Hút Máu / Thái Dương Dame)
+        ThuyBaCuongNo     = 3, // Thủy Tinh (Hệ THỦY - Băng Hà Ngưng Đọng, Nổ Băng Diện Rộng, Sóng Thần Cuốn Trôi)
+        PhuDongThienUy    = 4, // Thánh Gióng (Hệ HỎA - Càn Quét Khổng Lồ, Ngựa Sắt Vệt Lửa Thiêu Rụi)
+        TanVienSonThanh   = 5  // Sơn Tinh (Hệ THỔ - Sơn Thạch Phản Sát Thương 150%, Mọc Trụ Đá Thần Sơn Chặn Quái)
     }
 
     public static class MythicArchetypeExtensions

@@ -14,10 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: CORE_KIMQUY
   upgradeName: "Kim Quy Th\u1EA7n C\u01A1"
-  description: "T\u1EA5t c\u1EA3 v\u0169 kh\xED <color=#FFD700>b\u1EAFn \u0111\u1EA1n
-    n\u1EA3y ph\xE2n t\xE1ch</color> sang 2 m\u1EE5c ti\xEAu. \u0110\u1EE9ng y\xEAn
-    1s k\xEDch ho\u1EA1t Mai R\xF9a gi\u1EA3m 50% s\xE1t th\u01B0\u01A1ng. H\u1ED3i
-    sinh b\u1EA5t t\u1EED 4s."
+  description: "T\u1EA5t c\u1EA3 \u0111\xF2n \u0111\xE1nh v\xE0 v\u0169 kh\xED <color=#FFD700>b\u1EAFn/ch\xE9m n\u1EA3y ph\xE2n t\xE1ch</color> sang 2 m\u1EE5c ti\xEAu l\xE2n c\u1EADn (60% s\xE1t th\u01B0\u01A1ng)."
   icon: {fileID: 0}
   upgradeType: 3
   spawnWeight: 1

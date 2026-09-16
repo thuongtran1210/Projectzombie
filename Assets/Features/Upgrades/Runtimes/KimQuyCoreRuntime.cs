@@ -5,14 +5,15 @@ using ProjectZombie.Features.Shared;
 namespace ProjectZombie.Features.Upgrades.Runtimes
 {
     /// <summary>
-    /// Runtime thực thi logic chiến đấu của Đại Lõi [KIM QUY THẦN CƠ] (Hệ Kim - Xạ Kích Vạn Tiễn, Đạn Nảy, Mai Rùa).
+    /// Runtime thực thi logic chiến đấu của Đại Lõi [KIM QUY THẦN CƠ] (Hệ KIM - Xạ Kích Mũi Tên Nảy / Cận Chiến Bắn Kiếm Khí Nảy, Mai Rùa Thủ).
+    /// Hỗ trợ hoàn hảo cho CẢ Tay Ngắn (Melee) và Tay Dài (Ranged).
     /// Tuân thủ 0 GC Allocations trong toàn bộ gameplay loop.
     /// </summary>
     public class KimQuyCoreRuntime : MythicCoreRuntime
     {
         public override MythicArchetype Archetype => MythicArchetype.KimQuyThanCo;
 
-        [Header("Settings - Đạn Nảy (Ricochet)")]
+        [Header("Settings - Đạn Nảy / Kiếm Khí Nảy (Kim Ricochet)")]
         [SerializeField] private float _ricochetRadius = 6.0f;
         [SerializeField] private float _ricochetDamagePercent = 0.60f; // 60% sát thương gốc
         [SerializeField] private int _maxRicochetTargets = 2;
@@ -37,10 +38,10 @@ namespace ProjectZombie.Features.Upgrades.Runtimes
                 _isShieldActive = false;
             }
 
-            // Tự động tăng tầm bắn và tốc đạn cho vũ khí
+            // Tự động tăng 10% Tỷ lệ bạo kích khởi đầu cho Hệ Kim
             if (Context?.Stats != null)
             {
-                Context.Stats.AddCritChance(10f); // +10% Crit khởi đầu
+                Context.Stats.AddCritChance(10f);
             }
         }
 
@@ -95,7 +96,9 @@ namespace ProjectZombie.Features.Upgrades.Runtimes
 
         private void HandleDamageDealt(in DamageDealtEvent e)
         {
-            // Cơ chế Đạn Nảy: Khi bắn trúng quái vật, phân tách mũi tên nảy sang các quái xung quanh
+            // Cơ chế Kim Nảy (Ricochet): 
+            // - Với Tay Dài (Ranged): Mũi tên trúng quái phân tách nảy sang quái lân cận.
+            // - Với Tay Ngắn (Melee): Vệt chém trúng quái phóng ra 2 Tia Kiếm Khí Nảy sang quái lân cận.
             if (e.Target == null) return;
 
             Vector2 hitPos = e.HitPosition;
