@@ -1,11 +1,13 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectZombie.Features.Shared.VFX;
 
 namespace ProjectZombie.Core.Pooling
 {
     /// <summary>
     /// Component tự động thu hồi VFX về Pool sau khi hết thời gian sống.
+    /// Duy trì để tương thích ngược với các script hoặc asset cũ.
     /// </summary>
     public class PooledVFXInstance : MonoBehaviour
     {
@@ -41,7 +43,7 @@ namespace ProjectZombie.Core.Pooling
 
     /// <summary>
     /// Hệ thống quản lý Object Pool tập trung cho Particle Systems, Tia lửa va chạm (HitSparks) và Vệt chém VFX.
-    /// Triển khai Zero-GC, tự động tái sử dụng các hiệu ứng ngắn hạn thay vì gọi Instantiate/Destroy liên tục.
+    /// Đã được hợp nhất về GlobalVFXPoolManager để đảm bảo vòng đời thống nhất và ngăn chặn rò rỉ bộ nhớ.
     /// </summary>
     public class VFXPoolManager : MonoBehaviour
     {
@@ -67,8 +69,6 @@ namespace ProjectZombie.Core.Pooling
             }
         }
 
-        private readonly Dictionary<GameObject, Queue<GameObject>> _poolDictionary = new Dictionary<GameObject, Queue<GameObject>>();
-
         private void Awake()
         {
             if (_instance == null)
@@ -86,58 +86,24 @@ namespace ProjectZombie.Core.Pooling
         }
 
         /// <summary>
-        /// Sinh hiệu ứng VFX từ Pool. Tự động kích hoạt ParticleSystem và tự thu hồi về Pool sau `duration` giây.
+        /// Sinh hiệu ứng VFX từ Pool. Chuyển tiếp (delegate) tới GlobalVFXPoolManager.
         /// </summary>
         public static GameObject SpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration = 0.5f, int weaponLevel = 1)
         {
             if (prefab == null) return null;
-            return Instance.InternalSpawnVFX(prefab, position, rotation, duration, weaponLevel);
-        }
 
-        private GameObject InternalSpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration, int weaponLevel = 1)
-        {
-            if (!_poolDictionary.TryGetValue(prefab, out var poolQueue))
+            if (GlobalVFXPoolManager.Instance != null)
             {
-                poolQueue = new Queue<GameObject>();
-                _poolDictionary[prefab] = poolQueue;
+                return GlobalVFXPoolManager.Instance.PlayEffect(prefab, position, rotation, duration, null, weaponLevel);
             }
 
-            GameObject instance = null;
-            while (poolQueue.Count > 0 && instance == null)
-            {
-                instance = poolQueue.Dequeue();
-            }
-
-            if (instance == null)
-            {
-                instance = Instantiate(prefab, transform);
-                if (instance.GetComponent<PooledVFXInstance>() == null)
-                {
-                    instance.AddComponent<PooledVFXInstance>();
-                }
-            }
-
-            instance.transform.SetPositionAndRotation(position, rotation);
-            instance.SetActive(true);
-
-            // Tự động phân cấp hiệu ứng VFX theo cấp độ vũ khí (Lv1-Lv5)
-            if (instance.TryGetComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>(out var levelScaler))
+            // Fallback nếu GlobalVFXPoolManager chưa khởi tạo
+            var instance = Instantiate(prefab, position, rotation);
+            if (instance.TryGetComponent<VFXLevelScaler>(out var levelScaler))
             {
                 levelScaler.ApplyLevelScaling(weaponLevel);
             }
-
-            // Khởi động lại các ParticleSystem nếu có
-            var particleSystems = instance.GetComponentsInChildren<ParticleSystem>(true);
-            for (int i = 0; i < particleSystems.Length; i++)
-            {
-                particleSystems[i].Clear();
-                particleSystems[i].Play();
-            }
-
-            // Đặt lịch tự động trả về Pool
-            var poolHelper = instance.GetComponent<PooledVFXInstance>();
-            poolHelper.StartAutoRelease(prefab, duration);
-
+            Destroy(instance, duration);
             return instance;
         }
 
@@ -147,9 +113,9 @@ namespace ProjectZombie.Core.Pooling
         public static void ReleaseVFX(GameObject prefab, GameObject instance)
         {
             if (prefab == null || instance == null) return;
-            if (_instance != null)
+            if (GlobalVFXPoolManager.Instance != null)
             {
-                _instance.InternalReleaseVFX(prefab, instance);
+                GlobalVFXPoolManager.Instance.ReleaseEffect(instance);
             }
             else
             {
@@ -157,35 +123,14 @@ namespace ProjectZombie.Core.Pooling
             }
         }
 
-        private void InternalReleaseVFX(GameObject prefab, GameObject instance)
-        {
-            if (!_poolDictionary.TryGetValue(prefab, out var poolQueue))
-            {
-                poolQueue = new Queue<GameObject>();
-                _poolDictionary[prefab] = poolQueue;
-            }
-
-            instance.SetActive(false);
-            instance.transform.SetParent(transform, false);
-            poolQueue.Enqueue(instance);
-        }
-
         /// <summary>
-        /// Xóa sạch mọi pool khi chuyển đổi màn chơi lớn nếu cần.
+        /// Xóa sạch mọi VFX đang hoạt động.
         /// </summary>
         public static void ClearPools()
         {
-            if (_instance != null)
+            if (GlobalVFXPoolManager.Instance != null)
             {
-                foreach (var kvp in _instance._poolDictionary)
-                {
-                    while (kvp.Value.Count > 0)
-                    {
-                        var obj = kvp.Value.Dequeue();
-                        if (obj != null) Destroy(obj);
-                    }
-                }
-                _instance._poolDictionary.Clear();
+                GlobalVFXPoolManager.Instance.ClearAllActiveEffects();
             }
         }
     }

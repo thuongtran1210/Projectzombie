@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Projectiles.Core;
@@ -183,8 +183,6 @@ namespace ProjectZombie.Features.Projectiles.Components
 
         public void Despawn()
         {
-            OnDespawn();
-            
             ProjectileSystem.Instance.EventDispatcher.RaiseDespawned(this);
             
             if (_pool != null)
@@ -193,6 +191,7 @@ namespace ProjectZombie.Features.Projectiles.Components
             }
             else
             {
+                OnDespawn();
                 Destroy(gameObject);
             }
         }

@@ -152,10 +152,26 @@ namespace ProjectZombie.Features.Enemies
         {
             _frameOffset = Random.Range(0, 4);
 
+            // Reset máu về MaxHealth khi lấy từ Object Pool
+            if (HealthSystem != null && Config != null)
+            {
+                HealthSystem.SetMaxHealth(Config.maxHealth);
+            }
+
             // Reset trạng thái tấn công cũ nếu có
             if (Attacker != null)
             {
                 Attacker.InterruptAttack();
+            }
+
+            // Hủy toàn bộ hiệu ứng trạng thái còn sót lại
+            StatusController?.ClearAllEffects();
+
+            // Reset vận tốc vật lý
+            if (Rb != null)
+            {
+                Rb.velocity = Vector2.zero;
+                Rb.angularVelocity = 0f;
             }
 
             // Reset kích thước và màu sắc mặc định khi lấy ra từ Object Pool
@@ -207,6 +223,12 @@ namespace ProjectZombie.Features.Enemies
                 Attacker.InterruptAttack();
             }
 
+            if (Rb != null)
+            {
+                Rb.velocity = Vector2.zero;
+                Rb.angularVelocity = 0f;
+            }
+
             // Hủy các hiệu ứng trạng thái còn vướng lại
             StatusController?.ClearAllEffects();
         }
@@ -214,7 +236,6 @@ namespace ProjectZombie.Features.Enemies
         private void OnEnable()
         {
             ActiveEnemies.Add(this);
-            OnSpawn();
 
             PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
             PlayerProvider.OnPlayerDespawned += HandlePlayerDespawned;
@@ -228,7 +249,6 @@ namespace ProjectZombie.Features.Enemies
         private void OnDisable()
         {
             ActiveEnemies.Remove(this);
-            OnDespawn();
 
             PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
             PlayerProvider.OnPlayerDespawned -= HandlePlayerDespawned;

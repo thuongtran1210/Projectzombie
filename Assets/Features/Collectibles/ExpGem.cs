@@ -92,16 +92,6 @@ namespace ProjectZombie.Features.Collectibles
             }
         }
 
-        private void OnEnable()
-        {
-            OnSpawn();
-        }
-
-        private void OnDisable()
-        {
-            OnDespawn();
-        }
-
         private void Update()
         {
             switch (_state)

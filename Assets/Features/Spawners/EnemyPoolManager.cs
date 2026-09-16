@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Core.Pooling;
@@ -96,10 +96,17 @@ namespace ProjectZombie.Features.Spawners
                     return obj;
                 },
                 actionOnGet: (obj) => {
-                    // Cố ý để trống: SetActive(true) sẽ do SpawnEnemy đảm nhận sau khi đã gán vị trí position
+                    // Cố ý để trống: SetActive(true) và OnSpawn sẽ do SpawnEnemy đảm nhận sau khi đã gán vị trí position
                 },
                 actionOnRelease: (obj) => {
-                    if (obj != null) obj.SetActive(false);
+                    if (obj != null)
+                    {
+                        if (obj.TryGetComponent<IPoolable>(out var poolable))
+                        {
+                            poolable.OnDespawn();
+                        }
+                        obj.SetActive(false);
+                    }
                 },
                 actionOnDestroy: (obj) => {
                     if (obj != null) Destroy(obj);
@@ -179,12 +186,10 @@ namespace ProjectZombie.Features.Spawners
                     enemy.transform.rotation = rotation;
                     if (!enemy.activeSelf) enemy.SetActive(true);
 
-                    // Reset health nếu enemy tái sử dụng
-                    var health = enemy.GetComponent<ProjectZombie.Features.Shared.HealthSystem>();
-                    var enemyComp = enemy.GetComponent<Enemy>();
-                    if (health != null && enemyComp != null && enemyComp.Config != null)
+                    // Khởi tạo toàn bộ trạng thái quái vật qua IPoolable.OnSpawn
+                    if (enemy.TryGetComponent<IPoolable>(out var poolable))
                     {
-                        health.SetMaxHealth(enemyComp.Config.maxHealth);
+                        poolable.OnSpawn();
                     }
                 }
                 return enemy;
@@ -214,6 +219,11 @@ namespace ProjectZombie.Features.Spawners
                     enemy.transform.position = position;
                     enemy.transform.rotation = rotation;
                     if (!enemy.activeSelf) enemy.SetActive(true);
+
+                    if (enemy.TryGetComponent<IPoolable>(out var poolable))
+                    {
+                        poolable.OnSpawn();
+                    }
                 }
                 return enemy;
             }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -17,6 +17,9 @@ namespace ProjectZombie.Features.Shared.VFX
 
         private readonly Dictionary<int, ObjectPool<ParticleSystem>> _particlePoolDict = new Dictionary<int, ObjectPool<ParticleSystem>>();
         private readonly Dictionary<int, ObjectPool<GameObject>> _gameObjectPoolDict = new Dictionary<int, ObjectPool<GameObject>>();
+
+        private readonly Dictionary<ParticleSystem, ObjectPool<ParticleSystem>> _activeParticleToPoolMap = new Dictionary<ParticleSystem, ObjectPool<ParticleSystem>>();
+        private readonly Dictionary<GameObject, ObjectPool<GameObject>> _activeGameObjectToPoolMap = new Dictionary<GameObject, ObjectPool<GameObject>>();
 
         private void Awake()
         {
@@ -95,6 +98,8 @@ namespace ProjectZombie.Features.Shared.VFX
             // Đảm bảo toàn bộ Particle System con phát ngay lập tức
             instance.Play(true);
 
+            _activeParticleToPoolMap[instance] = pool;
+
             if (autoReleaseDelay > 0f)
             {
                 StartCoroutine(ReleaseParticleRoutine(pool, instance, autoReleaseDelay));
@@ -106,7 +111,7 @@ namespace ProjectZombie.Features.Shared.VFX
         /// Lấy hoặc tạo mới GameObject Modular VFX (Prefab lồng nhiều Particle + VFXPoolResetter) từ Pool.
         /// Tự động kích hoạt toàn bộ ParticleSystem con và tự thu hồi về Pool sau `autoReleaseDelay` giây.
         /// </summary>
-        public GameObject PlayEffect(GameObject prefab, Vector3 position, Quaternion rotation, float autoReleaseDelay = 0.5f, Vector3? scale = null)
+        public GameObject PlayEffect(GameObject prefab, Vector3 position, Quaternion rotation, float autoReleaseDelay = 0.5f, Vector3? scale = null, int weaponLevel = 1)
         {
             if (prefab == null) return null;
 
@@ -158,6 +163,12 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
+            // Tự động phân cấp hiệu ứng VFX theo cấp độ vũ khí nếu có VFXLevelScaler
+            if (instance.TryGetComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>(out var levelScaler))
+            {
+                levelScaler.ApplyLevelScaling(weaponLevel);
+            }
+
             // Đảm bảo các Particle Systems con được Play và gán Layer chuẩn
             var renderers = instance.GetComponentsInChildren<Renderer>(true);
             foreach (var r in renderers)
@@ -178,6 +189,8 @@ namespace ProjectZombie.Features.Shared.VFX
                 if (ps != null) ps.Play(true);
             }
 
+            _activeGameObjectToPoolMap[instance] = pool;
+
             if (autoReleaseDelay > 0f)
             {
                 StartCoroutine(ReleaseGameObjectRoutine(pool, instance, autoReleaseDelay));
@@ -190,12 +203,12 @@ namespace ProjectZombie.Features.Shared.VFX
         /// Lấy hoặc tạo mới GameObject Modular VFX gắn bám theo một Transform (ví dụ: Player) trong suốt thời gian phát.
         /// Tự động di chuyển theo mục tiêu và reparent về Pool Manager khi thu hồi.
         /// </summary>
-        public GameObject PlayEffectAttached(GameObject prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null)
+        public GameObject PlayEffectAttached(GameObject prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null, int weaponLevel = 1)
         {
             if (prefab == null) return null;
-            if (parent == null) return PlayEffect(prefab, Vector3.zero, Quaternion.identity, autoReleaseDelay, scale);
+            if (parent == null) return PlayEffect(prefab, Vector3.zero, Quaternion.identity, autoReleaseDelay, scale, weaponLevel);
 
-            var instance = PlayEffect(prefab, parent.position, parent.rotation, autoReleaseDelay, scale);
+            var instance = PlayEffect(prefab, parent.position, parent.rotation, autoReleaseDelay, scale, weaponLevel);
             if (instance != null)
             {
                 instance.transform.SetParent(parent, false);
@@ -223,49 +236,93 @@ namespace ProjectZombie.Features.Shared.VFX
             return instance;
         }
 
-        private readonly List<ParticleSystem> _activeParticles = new List<ParticleSystem>();
-        private readonly List<GameObject> _activeGameObjects = new List<GameObject>();
+        /// <summary>
+        /// Thu hồi thủ công một ParticleSystem về pool trước khi hết hạn auto-release.
+        /// </summary>
+        public void ReleaseEffect(ParticleSystem instance)
+        {
+            if (instance == null) return;
+            if (_activeParticleToPoolMap.TryGetValue(instance, out var pool))
+            {
+                _activeParticleToPoolMap.Remove(instance);
+                if (instance.gameObject != null)
+                {
+                    instance.transform.SetParent(transform, false);
+                }
+                pool.Release(instance);
+            }
+            else if (instance.gameObject != null)
+            {
+                instance.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                instance.gameObject.SetActive(false);
+            }
+        }
 
         /// <summary>
-        /// Thu hồi và dọn dẹp toàn bộ hiệu ứng Particle & Modular VFX đang hoạt động trên màn hình.
+        /// Thu hồi thủ công một GameObject Modular VFX về pool trước khi hết hạn auto-release.
+        /// </summary>
+        public void ReleaseEffect(GameObject instance)
+        {
+            if (instance == null) return;
+            if (_activeGameObjectToPoolMap.TryGetValue(instance, out var pool))
+            {
+                _activeGameObjectToPoolMap.Remove(instance);
+                instance.transform.SetParent(transform, false);
+                pool.Release(instance);
+            }
+            else
+            {
+                instance.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Thu hồi và dọn dẹp toàn bộ hiệu ứng Particle & Modular VFX đang hoạt động trên màn hình về ObjectPool tương ứng.
         /// Thường gọi khi thoát trận về Sảnh hoặc bắt đầu trận mới.
         /// </summary>
         public void ClearAllActiveEffects()
         {
             StopAllCoroutines();
 
-            for (int i = _activeParticles.Count - 1; i >= 0; i--)
+            if (_activeParticleToPoolMap.Count > 0)
             {
-                var ps = _activeParticles[i];
-                if (ps != null && ps.gameObject != null)
+                var activePs = new List<KeyValuePair<ParticleSystem, ObjectPool<ParticleSystem>>>(_activeParticleToPoolMap);
+                _activeParticleToPoolMap.Clear();
+                for (int i = 0; i < activePs.Count; i++)
                 {
-                    ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                    ps.gameObject.SetActive(false);
-                    ps.transform.SetParent(transform, false);
+                    var ps = activePs[i].Key;
+                    var pool = activePs[i].Value;
+                    if (ps != null && ps.gameObject != null)
+                    {
+                        ps.transform.SetParent(transform, false);
+                        pool.Release(ps);
+                    }
                 }
             }
-            _activeParticles.Clear();
 
-            for (int i = _activeGameObjects.Count - 1; i >= 0; i--)
+            if (_activeGameObjectToPoolMap.Count > 0)
             {
-                var go = _activeGameObjects[i];
-                if (go != null)
+                var activeGos = new List<KeyValuePair<GameObject, ObjectPool<GameObject>>>(_activeGameObjectToPoolMap);
+                _activeGameObjectToPoolMap.Clear();
+                for (int i = 0; i < activeGos.Count; i++)
                 {
-                    go.SetActive(false);
-                    go.transform.SetParent(transform, false);
+                    var go = activeGos[i].Key;
+                    var pool = activeGos[i].Value;
+                    if (go != null)
+                    {
+                        go.transform.SetParent(transform, false);
+                        pool.Release(go);
+                    }
                 }
             }
-            _activeGameObjects.Clear();
         }
 
         private IEnumerator ReleaseParticleRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
         {
-            if (instance != null && !_activeParticles.Contains(instance)) _activeParticles.Add(instance);
             yield return new WaitForSeconds(delay);
-            if (instance != null)
+            if (instance != null && _activeParticleToPoolMap.Remove(instance))
             {
-                _activeParticles.Remove(instance);
-                if (instance.gameObject.activeSelf)
+                if (instance.gameObject != null && instance.gameObject.activeSelf)
                 {
                     instance.transform.SetParent(transform, false);
                     pool.Release(instance);
@@ -275,11 +332,9 @@ namespace ProjectZombie.Features.Shared.VFX
 
         private IEnumerator ReleaseGameObjectRoutine(ObjectPool<GameObject> pool, GameObject instance, float delay)
         {
-            if (instance != null && !_activeGameObjects.Contains(instance)) _activeGameObjects.Add(instance);
             yield return new WaitForSeconds(delay);
-            if (instance != null)
+            if (instance != null && _activeGameObjectToPoolMap.Remove(instance))
             {
-                _activeGameObjects.Remove(instance);
                 if (instance.activeSelf)
                 {
                     instance.transform.SetParent(transform, false);

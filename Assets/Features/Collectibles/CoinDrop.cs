@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Pooling;
 
@@ -74,16 +74,6 @@ namespace ProjectZombie.Features.Collectibles
             {
                 CoinPoolManager.Instance.UnregisterActiveCoin(this);
             }
-        }
-
-        private void OnEnable()
-        {
-            OnSpawn();
-        }
-
-        private void OnDisable()
-        {
-            OnDespawn();
         }
 
         private void Update()
