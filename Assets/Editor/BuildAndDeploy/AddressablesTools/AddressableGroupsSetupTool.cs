@@ -137,6 +137,12 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Gacha/banner_standard.asset", "banner_standard", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Meta/PermanentUpgradeTree.asset", "PermanentUpgradeTree", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/CharacterStarProgressionConfig.asset", "CharacterStarProgressionConfig", "MetaConfigs", "RemoteDLC");
+
+            // 7. Toàn bộ UI Prefabs Tối Ưu (Local Core Preload)
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/UpgradePanel_Template.prefab", "UpgradePanel_Template", "ui_gameplay");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/UpgradeCard_Template.prefab", "UpgradeCard_Template", "ui_gameplay");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/MainHubUI.prefab", "MainHubUI", "ui_meta");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/CharacterSelectionUI.prefab", "CharacterSelectionUI", "ui_meta");
         }
 
         private static void AddAssetToGroup(AddressableAssetSettings settings, AddressableAssetGroup group, string assetPath, string address, params string[] labels)

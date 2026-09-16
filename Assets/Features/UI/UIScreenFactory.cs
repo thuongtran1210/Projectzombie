@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,14 +50,38 @@ namespace ProjectZombie.Features.UI
                 return null;
             }
 
-            if (!registry.TryGetScreenEntry(screenType, out var entry) || entry.screenPrefab == null)
+            if (!registry.TryGetScreenEntry(screenType, out var entry))
             {
-                Debug.LogError($"[UIScreenFactory] Không tìm thấy Prefab cho '{screenType}' trong UIRegistrySO!");
+                Debug.LogError($"[UIScreenFactory] Không tìm thấy cấu hình cho '{screenType}' trong UIRegistrySO!");
                 return null;
             }
 
             // 3. Tiến hành Instantiate đối tượng làm con của Root Container (Canvas)
-            var newScreen = UnityEngine.Object.Instantiate(entry.screenPrefab, _container);
+            BaseMetaScreenView newScreen = null;
+            if (entry.screenPrefab != null)
+            {
+                newScreen = UnityEngine.Object.Instantiate(entry.screenPrefab, _container);
+            }
+#if UNITY_EDITOR
+            else if (entry.screenPrefabRef != null && entry.screenPrefabRef.editorAsset != null)
+            {
+                var go = UnityEngine.Object.Instantiate(entry.screenPrefabRef.editorAsset as GameObject, _container);
+                newScreen = go != null ? go.GetComponent<BaseMetaScreenView>() : null;
+            }
+#else
+            else if (entry.screenPrefabRef != null && entry.screenPrefabRef.Asset != null)
+            {
+                var go = UnityEngine.Object.Instantiate(entry.screenPrefabRef.Asset as GameObject, _container);
+                newScreen = go != null ? go.GetComponent<BaseMetaScreenView>() : null;
+            }
+#endif
+
+            if (newScreen == null)
+            {
+                Debug.LogError($"[UIScreenFactory] Không thể khởi tạo Prefab cho '{screenType}' từ UIRegistrySO!");
+                return null;
+            }
+
             string finalName = !string.IsNullOrEmpty(entry.screenHierarchyName) 
                 ? entry.screenHierarchyName 
                 : $"Screen_{screenType}";
@@ -72,6 +96,37 @@ namespace ProjectZombie.Features.UI
             sw.Stop();
             Debug.Log($"<color=#00FF88>[UIScreenFactory]</color> Đã nạp thành công màn hình '{finalName}' (Lazy Loaded) trong: {sw.ElapsedMilliseconds} ms.");
             return newScreen;
+        }
+
+        /// <summary>
+        /// Nạp và khởi tạo màn hình bất đồng bộ chuẩn Addressables.
+        /// </summary>
+        public async System.Threading.Tasks.Task<BaseMetaScreenView> GetOrCreateScreenAsync(MetaScreenType screenType)
+        {
+            if (_instantiatedScreens.TryGetValue(screenType, out var existingScreen) && existingScreen != null)
+            {
+                return existingScreen;
+            }
+
+            var registry = _uiRegistry ?? Resources.Load<UIRegistrySO>("UI/UIRegistry");
+            if (registry != null && registry.TryGetScreenEntry(screenType, out var entry))
+            {
+                if (entry.screenPrefabRef != null && entry.screenPrefabRef.RuntimeKeyIsValid())
+                {
+                    var handle = entry.screenPrefabRef.InstantiateAsync(_container);
+                    var go = await handle.Task;
+                    if (go != null && go.TryGetComponent<BaseMetaScreenView>(out var screenView))
+                    {
+                        string finalName = !string.IsNullOrEmpty(entry.screenHierarchyName) ? entry.screenHierarchyName : $"Screen_{screenType}";
+                        screenView.name = finalName;
+                        screenView.gameObject.SetActive(false);
+                        _instantiatedScreens[screenType] = screenView;
+                        return screenView;
+                    }
+                }
+            }
+
+            return GetOrCreateScreen(screenType);
         }
 
         /// <summary>

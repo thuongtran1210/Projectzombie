@@ -141,6 +141,12 @@ namespace ProjectZombie.Features.Player
             {
                 characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
             }
+#if UNITY_EDITOR
+            if (characterDatabase == null)
+            {
+                characterDatabase = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+            }
+#endif
             if (characterDatabase != null && characterDatabase.Characters != null && characterDatabase.Characters.Count > 0)
             {
                 if (characterDatabase.Characters[0] != null && characterDatabase.Characters[0].playerPrefab != null)

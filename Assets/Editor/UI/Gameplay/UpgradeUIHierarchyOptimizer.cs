@@ -75,7 +75,11 @@ namespace ProjectZombie.EditorTools
             if (vietFont == null) vietFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
             if (vietFont == null) vietFont = TMP_Settings.defaultFontAsset;
 
-            // 2. Tìm hoặc chuẩn hóa Upgrade_Panel (Con của UpgradeUI_Root)
+            // 2. Ưu tiên nạp và tôn trọng thiết kế từ Prefab trong Assets/_Prefabs/UI/
+            string prefabPath = "Assets/_Prefabs/UI/UpgradePanel_Template.prefab";
+            GameObject existingPanelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            bool isNewPrefabCreated = false;
+
             Transform panelTrans = rootObj.transform.Find("Upgrade_Panel");
             if (panelTrans == null && rootObj.transform.childCount > 0)
             {
@@ -85,14 +89,24 @@ namespace ProjectZombie.EditorTools
 
             if (panelTrans == null)
             {
-                GameObject newPanel = new GameObject("Upgrade_Panel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                newPanel.transform.SetParent(rootObj.transform, false);
-                panelTrans = newPanel.transform;
+                if (existingPanelPrefab != null)
+                {
+                    GameObject instantiated = (GameObject)PrefabUtility.InstantiatePrefab(existingPanelPrefab, rootObj.transform);
+                    instantiated.name = "Upgrade_Panel";
+                    panelTrans = instantiated.transform;
+                }
+                else
+                {
+                    GameObject newPanel = new GameObject("Upgrade_Panel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    newPanel.transform.SetParent(rootObj.transform, false);
+                    panelTrans = newPanel.transform;
+                    isNewPrefabCreated = true;
+                }
             }
 
-            // Cấu hình Stretch cho Upgrade_Panel
+            // Chỉ đặt giá trị kích thước mặc định nếu là Panel mới khởi tạo
             RectTransform panelRect = panelTrans.GetComponent<RectTransform>();
-            if (panelRect != null)
+            if (panelRect != null && isNewPrefabCreated)
             {
                 panelRect.anchorMin = new Vector2(0.5f, 0.5f);
                 panelRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -102,7 +116,7 @@ namespace ProjectZombie.EditorTools
 
             Image panelBg = panelTrans.GetComponent<Image>();
             if (panelBg == null) panelBg = panelTrans.gameObject.AddComponent<Image>();
-            if (panelBg != null)
+            if (panelBg != null && isNewPrefabCreated)
             {
                 panelBg.color = Color.white;
                 panelBg.type = Image.Type.Sliced;
@@ -350,6 +364,9 @@ namespace ProjectZombie.EditorTools
             var rcProp = soView.FindProperty("_rerollCountText");
             if (rcProp != null) rcProp.objectReferenceValue = rerollText;
 
+            var tProp = soView.FindProperty("_titleText");
+            if (tProp != null) tProp.objectReferenceValue = hText;
+
             if (cardPrefab != null)
             {
                 var cpProp = soView.FindProperty("_cardPrefab");
@@ -363,10 +380,29 @@ namespace ProjectZombie.EditorTools
             if (vProp != null) vProp.objectReferenceValue = uiView;
             soPresenter.ApplyModifiedProperties();
 
+            // 10. Tự động bảo vệ và đồng bộ Prefab
+            if (!System.IO.Directory.Exists("Assets/_Prefabs/UI"))
+            {
+                System.IO.Directory.CreateDirectory("Assets/_Prefabs/UI");
+            }
+            if (!System.IO.Directory.Exists("Assets/Resources/UI"))
+            {
+                System.IO.Directory.CreateDirectory("Assets/Resources/UI");
+            }
+
+            if (isNewPrefabCreated || !System.IO.File.Exists(prefabPath))
+            {
+                PrefabUtility.SaveAsPrefabAssetAndConnect(panelTrans.gameObject, prefabPath, InteractionMode.AutomatedAction);
+                AssetDatabase.CopyAsset(prefabPath, "Assets/Resources/UI/UpgradePanel_Template.prefab");
+                Debug.Log("<color=#FFD700>[UpgradeUIOptimizer] 🚀 ĐÃ TẠO MỚI VÀ ĐỒNG BỘ UPGRADEPANEL_TEMPLATE.PREFAB THÀNH CÔNG!</color>");
+            }
+            else
+            {
+                Debug.Log("<color=#00FF88>[UpgradeUIOptimizer] ✅ ĐÃ BẢO TỒN THIẾT KẾ PREFAB TỪ ASSETS/_PREFABS/UI/UPGRADEPANEL_TEMPLATE.PREFAB!</color>");
+            }
+
             EditorUtility.SetDirty(rootObj);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(rootObj.scene);
-
-            Debug.Log("<color=#FFD700>[UpgradeUIOptimizer] 🚀 ĐÃ ĐỒNG BỘ 100% 3 CARD TRONG SCENE VỚI UPGRADECARD_TEMPLATE PREFAB!</color>");
         }
     }
 }

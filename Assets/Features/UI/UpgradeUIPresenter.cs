@@ -269,6 +269,20 @@ namespace ProjectZombie.Features.UI
 
             int currentLevel = _playerExperience != null ? _playerExperience.CurrentLevel : 2;
             bool isMutation = UpgradeManager.Instance != null && UpgradeManager.Instance.IsMutationLevel(currentLevel);
+            var context = Player.PlayerContext.Create(_playerWeaponManager.gameObject);
+
+            // Cập nhật chế độ trực quan theo mốc tiến trình
+            UpgradeUIVisualMode visualMode = UpgradeUIVisualMode.MicroStats;
+            if (currentLevel <= 1 || (context != null && context.MythicManager != null && context.MythicManager.CurrentArchetype == MythicArchetype.None))
+            {
+                visualMode = UpgradeUIVisualMode.ArchetypeCore;
+            }
+            else if (isMutation)
+            {
+                visualMode = UpgradeUIVisualMode.MutationAugment;
+            }
+
+            _view.SetVisualMode(visualMode, currentLevel);
 
             if (isMutation && UpgradeManager.Instance != null)
             {
@@ -283,7 +297,6 @@ namespace ProjectZombie.Features.UI
             }
 
             int choiceCount = _defaultChoiceCount > 0 ? _defaultChoiceCount : 3;
-            var context = Player.PlayerContext.Create(_playerWeaponManager.gameObject);
             List<UpgradeData> choices = UpgradeManager.Instance.GetProgressionUpgrades(choiceCount, currentLevel, context);
 
             if (choices != null)

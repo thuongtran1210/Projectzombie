@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Button _rerollButton;
         [SerializeField] private Button _skipButton;
         [SerializeField] private TextMeshProUGUI _rerollCountText;
+        [SerializeField] private TextMeshProUGUI _titleText;
 
         [Header("Controls Cache")]
         [SerializeField] private GameObject _cachedMobileControlsPanel;
@@ -298,6 +299,98 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        /// <summary>
+        /// Chuyển đổi trực quan chế độ giao diện và biến đổi Upgrade_Panel theo mốc Level (Cấp 1 Khởi Nguyên, Level Thường, Mốc Đột Biến).
+        /// </summary>
+        public void SetVisualMode(UpgradeUIVisualMode mode, int currentLevel)
+        {
+            EnsureControlsFound();
+
+            if (_titleText == null && _upgradePanel != null)
+            {
+                _titleText = _upgradePanel.GetComponentInChildren<TextMeshProUGUI>(true);
+            }
+
+            RectTransform panelRect = _upgradePanel != null ? _upgradePanel.GetComponent<RectTransform>() : null;
+            Image panelImg = _upgradePanel != null ? _upgradePanel.GetComponent<Image>() : null;
+            HorizontalLayoutGroup containerLayout = _cardsContainer != null ? _cardsContainer.GetComponent<HorizontalLayoutGroup>() : null;
+
+            switch (mode)
+            {
+                case UpgradeUIVisualMode.ArchetypeCore:
+                    // 1. Cấp 1 Khởi Nguyên: Fullscreen Center 1200x660, 100% Opacity
+                    if (panelRect != null)
+                    {
+                        panelRect.sizeDelta = new Vector2(1200, 660);
+                        panelRect.anchoredPosition = Vector2.zero;
+                    }
+                    if (panelImg != null)
+                    {
+                        panelImg.color = new Color(1f, 1f, 1f, 1f);
+                    }
+                    if (containerLayout != null)
+                    {
+                        containerLayout.spacing = 16f;
+                    }
+
+                    if (_titleText != null)
+                    {
+                        _titleText.text = "KHỞI NGUYÊN ĐẠI LÕI\n<size=14><color=#FFD700>[ Kích hoạt Kho Thẻ Sạch (Clean Pool) ]</color></size>";
+                    }
+                    if (_rerollButton != null) _rerollButton.gameObject.SetActive(false);
+                    if (_skipButton != null) _skipButton.gameObject.SetActive(false);
+                    break;
+
+                case UpgradeUIVisualMode.MicroStats:
+                    // 2. Level Thường: Compact Bottom-Sheet Overlay (Position Y: -140, Size: 1020x340, Opacity 75%)
+                    if (panelRect != null)
+                    {
+                        panelRect.sizeDelta = new Vector2(1020, 350);
+                        panelRect.anchoredPosition = new Vector2(0, -140);
+                    }
+                    if (panelImg != null)
+                    {
+                        panelImg.color = new Color(1f, 1f, 1f, 0.75f);
+                    }
+                    if (containerLayout != null)
+                    {
+                        containerLayout.spacing = 24f;
+                    }
+
+                    if (_titleText != null)
+                    {
+                        _titleText.text = $"TĂNG CƯỜNG CHỈ SỐ (CẤP {currentLevel})";
+                    }
+                    if (_rerollButton != null) _rerollButton.gameObject.SetActive(false);
+                    if (_skipButton != null) _skipButton.gameObject.SetActive(true);
+                    break;
+
+                case UpgradeUIVisualMode.MutationAugment:
+                    // 3. Mốc Đột Biến (Lv.5, 15, 30): Fullscreen Center 1100x640, Royal Gold Theme, Opacity 100%
+                    if (panelRect != null)
+                    {
+                        panelRect.sizeDelta = new Vector2(1100, 640);
+                        panelRect.anchoredPosition = Vector2.zero;
+                    }
+                    if (panelImg != null)
+                    {
+                        panelImg.color = new Color(1f, 1f, 1f, 1f);
+                    }
+                    if (containerLayout != null)
+                    {
+                        containerLayout.spacing = 30f;
+                    }
+
+                    if (_titleText != null)
+                    {
+                        _titleText.text = $"ĐỘT BIẾN THẦN THẠCH (CẤP {currentLevel})";
+                    }
+                    if (_rerollButton != null) _rerollButton.gameObject.SetActive(true);
+                    if (_skipButton != null) _skipButton.gameObject.SetActive(false);
+                    break;
+            }
+        }
+
         public void SetActive(bool isActive)
         {
             EnsureControlsFound();
@@ -381,5 +474,15 @@ namespace ProjectZombie.Features.UI
 
             return null;
         }
+    }
+
+    /// <summary>
+    /// Các chế độ hiển thị trực quan của bảng UI nâng cấp.
+    /// </summary>
+    public enum UpgradeUIVisualMode
+    {
+        ArchetypeCore,     // Lv.1: Đại Lõi Khởi Nguyên
+        MicroStats,        // Level Thường (Lv.2-4, 6-14, 16-29)
+        MutationAugment    // Mốc Đột Biến (Lv.5, Lv.15, Lv.30)
     }
 }

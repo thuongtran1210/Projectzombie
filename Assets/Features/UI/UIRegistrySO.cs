@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+using UnityEngine.AddressableAssets;
 
 namespace ProjectZombie.Features.UI
 {
@@ -16,7 +18,10 @@ namespace ProjectZombie.Features.UI
         public struct ScreenEntry
         {
             public MetaScreenType screenType;
+            [Tooltip("Tham chiếu trực tiếp Prefab (Fallback truyền thống)")]
             public BaseMetaScreenView screenPrefab;
+            [Tooltip("Tham chiếu Addressables (Khuyên dùng để tối ưu RAM)")]
+            public AssetReferenceGameObject screenPrefabRef;
             [Tooltip("Tên định danh hiển thị trên Hierarchy khi instantiate")]
             public string screenHierarchyName;
         }

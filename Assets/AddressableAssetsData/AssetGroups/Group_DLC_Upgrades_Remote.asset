@@ -45,8 +45,29 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07a50ccbd76a1164f8e7d387e02d5dce
+    m_Address: TRAIT_KQ_03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0a55e16d8c5080943be13b1605c7f7c1
     m_Address: UP_PIPE_03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0abca9010b3aab04d81bb1ac374b30d5
+    m_Address: MICRO_CRIT_CHANCE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b007e3cae6ff9e41a5148c9847153f5
+    m_Address: MICRO_DAMAGE_RAW
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -66,8 +87,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1020658bbd075f34cbfbd0a27340e7f3
+    m_Address: TRAIT_LT_03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 11b59ea6ed74d2544a3c2bddab765ec2
     m_Address: UP_R007_05
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 13407010febe94341b81ee02414d4179
+    m_Address: AUG_GOLD_SHIELD_BASH
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -94,8 +129,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 183ff2caa08b5834d94f54228a8bdd32
+    m_Address: AUG_GOLD_EXECUTE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1959dbadd8d5d55469543baf07d4f816
     m_Address: UP_R008_06
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1999b072a5f715f4e97c36bacd6d26c1
+    m_Address: AUG_GOLD_VAMPIRIC_FRENZY
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -129,6 +178,13 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e358f637422b0a49a01a006e7bb0773
+    m_Address: AUG_GOLD_FIRE_TRAIL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e4026ed4a76d954ab96c2e64d0eed00
     m_Address: "E006_Thi\xEAnH\u1ECFaTh\u1EA7nSa"
     m_ReadOnly: 0
@@ -150,8 +206,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 225513718ef54ba4dae87131d4aedbd2
+    m_Address: CORE_LONGTIEN
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 22612a03a0008564da52e4f0198791af
     m_Address: "P010_T\xFAiH\xFAtH\u1ED3n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 232777c19e7a50c4293cae5ef50a054e
+    m_Address: MICRO_SLOW_DURATION
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -171,6 +241,13 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29d18496f19ee124fb0b2f20bcb547a0
+    m_Address: AUG_PRIS_LONGTIEN_YIN_YANG
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2dbd70b7f604ea544bdd6701ac32498a
     m_Address: "E009_LongV\u01B0\u01A1ngTr\u01B0\u1EE3ng"
     m_ReadOnly: 0
@@ -185,8 +262,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 315dd11d27e154648a883f2118869469
+    m_Address: TRAIT_LT_05
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 31ef789c9b8c34d4c85066f50b23b57e
     m_Address: "W007_Lv4_CungTh\u1EA1chSanh"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 331c8fde0650fdf428a7c0757ee4f48d
+    m_Address: TRAIT_ST_03
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -290,8 +381,36 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 485d5a8ad4b43b24db49ea96aaf1ccbb
+    m_Address: TRAIT_PD_04
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49ee6ef26354afe46a7d9286954ceba4
+    m_Address: TRAIT_TB_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b95acfe139e0f7439029b8aeff0b3e1
+    m_Address: TRAIT_LT_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e4348c9324756a41b436c20a5e7cf13
     m_Address: "W005_Lv2_Tr\u1ED1ng\u0110\u1ED3ng\u0110\xF4ngS\u01A1n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f1a526c9e73ae040b34d36db32532d0
+    m_Address: AUG_SILV_TITAN_HEALTH
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -304,6 +423,20 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 526e9f26e9a288a40b38791316886b64
+    m_Address: TRAIT_PD_03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5743d9742ba97ca479b9e9d8eb42521d
+    m_Address: AUG_SILV_SWIFT_FEET
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5998a67d91811f444a3e1f9731087ccf
     m_Address: UP_R008_04
     m_ReadOnly: 0
@@ -311,8 +444,29 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bfccd274bc64b44198cde5a9b47891a
+    m_Address: CORE_KIMQUY
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f82ed12fcb49b64a9c8046253a8ac0c
+    m_Address: AUG_PRIS_PHUDONG_GIGANTISM
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6202df1ac339b2d4ead83bc96387101e
     m_Address: "P008_H\u1EA1tT\u1ED1c\u0110\xE1nh"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 644a1f55217b4294d9d6c55b1012fd6a
+    m_Address: AUG_SILV_WAR_DRUM
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -332,8 +486,57 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a58af0431fb0644ab2b31728a5f0c13
+    m_Address: TRAIT_ST_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b4bfe9f6c17a284e8725cd00d52cf3c
+    m_Address: TRAIT_PD_05
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b4d216926827dd4983dd63d5c5e9186
+    m_Address: TRAIT_KQ_05
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b5a9d1a05e928549948e8e63be021f7
+    m_Address: MICRO_YIN_YANG_POWER
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c515e093ccca534cbda5481d6b73c01
+    m_Address: TRAIT_TB_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e92f8377deedc34ead021feeff3908e
     m_Address: "E005_Tr\u1ED1ngTr\u1EA5nQu\u1ED1c"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ffaa514fba2b274d8608180598fb7a9
+    m_Address: AUG_SILV_SWIFT_COOLDOWN
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7042c8149d703fd46a6de02158df6a42
+    m_Address: MICRO_MAX_HP
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -416,6 +619,20 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 864bd98b54a1de24490111bda5ecc78f
+    m_Address: AUG_PRIS_KIMQUY_MULTICAST
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87d388752e48d0a458739e7cf6053cd6
+    m_Address: MICRO_DASH_CD
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b2f82f708a6ed541a46f437da9ae14f
     m_Address: "W006_Lv2_L\u1EF1u\u0110\u1EA1nTh\u1EA7nSa"
     m_ReadOnly: 0
@@ -444,6 +661,13 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 927314deb9b550c49bcc5a0b2b6a733c
+    m_Address: MICRO_PICKUP_RANGE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 929932d2c6b89bf4f977998b3c7a8aae
     m_Address: "W012_Lv5_PhiTi\xEAuB\xE1tQu\xE1i"
     m_ReadOnly: 0
@@ -451,8 +675,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9371ccac54ffc0346a6ec56af9cca54a
+    m_Address: CORE_TANVIEN
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 967167f2094005b45be15f3f871889c6
     m_Address: "W001_Lv2_N\u1ECFTh\u1EA7n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 972fff0d86218ac4cad91cc1307996f5
+    m_Address: TRAIT_TB_03
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -474,6 +712,13 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9bcd0d3fc910fb94ba19575485a63a8e
     m_Address: "W009_Lv4_Tr\u01B0\u1EE3ngLongV\u01B0\u01A1ng"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c2ae892bb959304ab58b68e50770c78
+    m_Address: TRAIT_ST_04
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -514,8 +759,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1ed107545277244cb3eaa0f4a4829f9
+    m_Address: MICRO_ATK_SPEED
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a1f539d2a53b39645b75f288cc1dd474
     m_Address: "W001_Lv4_N\u1ECFTh\u1EA7n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a252a755cc9c2774a8eed8134fe0835c
+    m_Address: TRAIT_ST_05
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -549,6 +808,27 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8d7a0cf949430341a9714c8f34e4be0
+    m_Address: TRAIT_LT_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9e034e9b5d109a418e4d2cb89311e05
+    m_Address: AUG_PRIS_THUYBA_FREEZE_BURST
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aba514ae12f68314e8c23305f800d52f
+    m_Address: AUG_PRIS_OMNIPOTENT_RESET
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: abd35c485da869c40a4866ab5e5d45fe
     m_Address: "W006_Lv4_L\u1EF1u\u0110\u1EA1nTh\u1EA7nSa"
     m_ReadOnly: 0
@@ -570,6 +850,20 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b20e0dd6311e0ae4993a5c2dce4eeba7
+    m_Address: TRAIT_KQ_04
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b46a7a16c3e7b6040a27d5e9470c84a9
+    m_Address: MICRO_FIRE_BURN_RATE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b4e86cda625c346469b5ea3322be57fe
     m_Address: UP_SLIPPER_05
     m_ReadOnly: 0
@@ -586,6 +880,20 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bde0b9ca01f2f0e489ad658ebc98e550
     m_Address: "E002_B\xFAtPh\xE1nQuan\xC2mD\u01B0\u01A1ng"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c151a700f751b7b40a72378fd9a46de2
+    m_Address: TRAIT_ST_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c15a70a154a1077439df26331269792a
+    m_Address: MICRO_MOVE_SPEED
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -626,8 +934,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c961d44ae1c827f4988b02f653aab261
+    m_Address: CORE_PHUDONG
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc5f868064bb28d428de0da1686d6ea9
     m_Address: "W012_Lv2_PhiTi\xEAuB\xE1tQu\xE1i"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc75f13888da7cc42bb312c52ca9c3c6
+    m_Address: TRAIT_LT_04
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -668,6 +990,20 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4eaa82cf1aab634394cef0060bfbed8
+    m_Address: AUG_PRIS_TANVIEN_IMMORTAL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5c3a6f181a84b842a0290db401b6d30
+    m_Address: AUG_SILV_IRON_SKIN
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d7ee5dff150e3d24fb78b1d70ae72a00
     m_Address: "E012_PhiTi\xEAuC\u1EEDuCung"
     m_ReadOnly: 0
@@ -689,8 +1025,29 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcbeba606454015478e87af09587347e
+    m_Address: TRAIT_KQ_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd323b900c01ced47a3d61918aff34e9
     m_Address: UP_SLIPPER_03
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd84cd1169369d0489f727dd78bd14df
+    m_Address: TRAIT_PD_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df27211980cf14c47bc3004546266b33
+    m_Address: CORE_THUYBA
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -712,6 +1069,13 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e47621e4faaa8f34d96f1a3cdca25a2c
     m_Address: Fusion_FUSION_POT_IMMORTAL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5304b1e5e8820e4d9125057cee6e0c8
+    m_Address: TRAIT_PD_01
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -752,8 +1116,22 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb3d56728c3be4245ae6067de890c263
+    m_Address: MICRO_AOE_SCALE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb74fa1b40c2c404fa9ac67733345b83
     m_Address: "W004_Lv5_C\u1EEDuV\u0129H\u1ED3Tr\u1EA3o"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec265ddd54149ed4dbcfb17d9b30f912
+    m_Address: TRAIT_TB_04
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -773,8 +1151,29 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef561d0f8776d474e8ce58af68b23061
+    m_Address: TRAIT_KQ_02
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0afe51765c0ddf41b19acd2f01223fd
     m_Address: "W010_Lv3_LinhPh\xF9MaDa"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f82e45bc2e1c5aa4882ad073283e7391
+    m_Address: MICRO_PIERCE_BONUS
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9472f0053b0eed47bd8954a303d59a6
+    m_Address: TRAIT_TB_05
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC
@@ -794,6 +1193,13 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb3a9454a63f5674ea1eaa827f86576f
+    m_Address: AUG_SILV_MAGNET_COIN
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fbc182f2c64052a41b1c8ccb42f50c40
     m_Address: "E011_Th\xE1nhTh\u1EE7yC\u1EE9uKh\u1ED5"
     m_ReadOnly: 0
@@ -801,8 +1207,29 @@ MonoBehaviour:
     - RemoteDLC
     - UpgradeData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fbebb61a1a7df85489642ae3dec1e1f3
+    m_Address: AUG_GOLD_CHAIN_LIGHTNING
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fd79799b05e41954db40aed93da98389
     m_Address: "P005_Th\xE1pUy\xC1p"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: febc3e5e42dd2f845b35d4162117c0ea
+    m_Address: AUG_GOLD_CRIT_EXPLODE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - RemoteDLC
+    - UpgradeData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff7b4b1742d7130468940c7131305a19
+    m_Address: MICRO_ARMOR_BLOCK
     m_ReadOnly: 0
     m_SerializedLabels:
     - RemoteDLC

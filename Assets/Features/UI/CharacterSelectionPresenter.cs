@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.UI
         public string passiveTraitDesc;
         public Sprite passiveTraitIcon;
         public Sprite avatar;
+        public GameObject characterPrefab;
         public WeaponData primaryWeapon;
         public System.Collections.Generic.List<WeaponData> relics;
         public float atkRatio;
@@ -140,6 +141,7 @@ namespace ProjectZombie.Features.UI
                         passiveTraitDesc = list[i].passiveTraitDesc,
                         passiveTraitIcon = list[i].passiveTraitIcon,
                         avatar = av,
+                        characterPrefab = list[i].playerPrefab,
                         primaryWeapon = list[i].defaultPrimaryWeapon,
                         relics = relicsList,
                         atkRatio = list[i].uiAtkRatio > 0f ? list[i].uiAtkRatio : 0.8f,
@@ -288,13 +290,11 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            if (chosenPrefab == null)
+            if (chosenPrefab == null && _characterDatabase != null && _characterDatabase.Characters != null)
             {
-                string[] heroNames = new string[] { "Thu Sinh", "Dao Si", "Thanh Dong", "An Si" };
-                if (_currentIndex >= 0 && _currentIndex < heroNames.Length)
+                if (_currentIndex >= 0 && _currentIndex < _characterDatabase.Characters.Count && _characterDatabase.Characters[_currentIndex] != null)
                 {
-                    chosenPrefab = Resources.Load<GameObject>($"Players/{heroNames[_currentIndex]}") ??
-                                   Resources.Load<GameObject>(heroNames[_currentIndex]);
+                    chosenPrefab = _characterDatabase.Characters[_currentIndex].playerPrefab;
                 }
             }
 
@@ -374,14 +374,9 @@ namespace ProjectZombie.Features.UI
                 currentPrefab = _characterDatabase.Characters[_currentIndex].playerPrefab;
             }
 
-            if (currentPrefab == null)
+            if (currentPrefab == null && _characters != null && _currentIndex >= 0 && _currentIndex < _characters.Length)
             {
-                string[] heroNames = new string[] { "Thu Sinh", "Dao Si", "Thanh Dong", "An Si" };
-                if (_currentIndex >= 0 && _currentIndex < heroNames.Length)
-                {
-                    currentPrefab = Resources.Load<GameObject>($"Players/{heroNames[_currentIndex]}") ??
-                                    Resources.Load<GameObject>(heroNames[_currentIndex]);
-                }
+                currentPrefab = _characters[_currentIndex].characterPrefab;
             }
 
             #if UNITY_EDITOR

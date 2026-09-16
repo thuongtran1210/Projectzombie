@@ -94,3 +94,36 @@ Hành trình trải qua **4 giai đoạn tiến hóa** từ sơ nhập đến Th
      * **Bậc 1 (Phút thứ 3):** Ứng phó mật độ lính tinh anh xuất hiện đợt đầu.
      * **Bậc 2 (Phút thứ 7):** Đối phó các đợt quái số lượng lớn áp đảo.
      * **Bậc 3 (Phút thứ 12+):** Thần hóa bộ kỹ năng để nghênh chiến Boss tối thượng.
+
+---
+
+## 4. Quy Chuẩn Thiết Kế Giao Diện Trực Quan (Visual UI/UX Guidelines)
+
+Nhằm đảm bảo người chơi phân biệt trực quan tức thì giữa 3 dạng nâng cấp, giao diện UI/UX được chuẩn hóa theo 3 phong cách thiết kế riêng biệt:
+
+### 4.1. Mốc Cấp 1: ĐẠI LÕI KHỞI NGUYÊN (Archetype Selection)
+* **Khung Cảnh & Aura:** Giao diện Thần Thoại toàn màn hình với Vòng Tròn Trận Pháp Ngũ Hành quay dưới chân.
+* **Layout:** 5 Cột Linh Thạch Ngũ Hành (Kim, Mộc, Thủy, Hỏa, Thổ) đứng hình quạt.
+* **Màu Sắc Thuộc Tính:**
+  * 🟡 **Kim Quy:** Vàng Bạch Kim (Ricochet / Kiếm Khí)
+  * 🟢 **Long Tiên:** Xanh Lục Bảo (Hút Máu Mộc Sinh)
+  * 🔵 **Thủy Bá:** Xanh Lam (Đóng Băng Tê Liệt)
+  * 🔴 **Phù Đổng:** Đỏ Cam Hỏa Vân (Thiêu Rụi Hỏa Vực)
+  * 🟤 **Tản Viên:** Nâu Đất Hoàng Thổ (Phản Sát Thương)
+* **Thông Báo Kèm Theo:** Dòng chữ thư pháp *`✦ Kích hoạt Kho Thẻ Sạch (Clean Pool) ✦`*.
+
+### 4.2. Level Thường (Lv. 2–4, 6–14, 16–29): THẺ CHỈ SỐ NỀN TẢNG (Micro-Stats)
+* **Bố Cục:** Compact Overlay 50% ở nửa dưới màn hình (Bottom Sheet HUD). Không che kín trận đấu.
+* **Layout:** 3 Thanh Ngang Chữ Nhật Nằm Ngang (Horizontal Compact Cards).
+* **Trải Nghiệm UX:** Đọc dưới 1 giây, nhấp 1 chạm resume trận đấu ngay lập tức (< 100ms), giữ nguyên nhịp 60 FPS.
+* **Visual Card:** Viền đơn sắc mỏng (Silver/Jade), 1 dòng chỉ số thô ngắn gọn kèm Icon minh họa to bên trái.
+
+### 4.3. Mốc Đột Biến (Lv. 5, 15, 30): LÕI BIẾN DỊ QUY TẮC (Augment Milestones)
+* **Khung Cảnh & Overlay:** Time.timeScale = 0, Background tối mờ sâu (Dark Blur 90%).
+* **Phân Biệt Hào Quang Phẩm Cấp (Tier Frame Coding):**
+  * 🥈 **Lõi Bạc (Silver):** Viền Bạc Trắng mạ kim loại, hiệu ứng sương mờ trắng trôi nhẹ.
+  * 🥇 **Lõi Vàng (Gold):** Viền Vàng Hoàng Kim chạm rồng, hiệu ứng hạt bụi vàng (`Gold Dust Particles`) bốc lên.
+  * 💎 **Lõi Kim Cương (Prismatic):** Viền Pha Lê Ngũ Sắc (Holographic Shader), hiệu ứng vệt sáng ma thuật cuồn cuộn 360 độ.
+* **Bộ Điều Khiển Reroll:**
+  * Nút bấm nổi bật ở chân màn hình: 🎲 **`ĐỔI KHÍ VẬN (REROLL) — [ 2/2 ]`**.
+

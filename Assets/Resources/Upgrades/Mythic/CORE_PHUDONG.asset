@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: CORE_PHUDONG
   upgradeName: "Ph\xF9 \u0110\u1ED5ng Thi\xEAn Uy"
-  description: "Di\u1EC7t 50 qu\xE1i <color=#FF7700>ph\xF3ng to 10% k\xEDch th\u01B0\u1EDBc</color>
-    v\xE0 +50 HP (Max 200%). L\u01B0\u1EDBt c\u01B0\u1EE1i Ng\u1EF1a S\u1EAFt phun
-    l\u1EEDa c\xE0n qu\xE9t. H\u1ED3i sinh gi\xE1ng s\xE9t d\u1ECDn map 10m."
+  description: "T\u1EA5t c\u1EA3 \u0111\xF2n \u0111\xE1nh g\xE2y th\xEAm <color=#FF4444>S\xE1t th\u01B0\u01A1ng H\u1EEFa thi\xEAu r\u1EE5i</color> v\xE0 t\u1EA1o v\u1EC7t l\u1EE5a 360 \u0111\u1ED9 thi\xEAu ch\xE1y k\u1EBB \u0111\u1ECBch xung quanh."
   icon: {fileID: 0}
   upgradeType: 3
   spawnWeight: 1

@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 8bcad728379ae974b8c7f921c22fb1ec
   m_currentHash:
     serializedVersion: 2
-    Hash: 60e332c2011cf78a6a61bcb1f4ed1e03
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -102,6 +102,8 @@ MonoBehaviour:
     - Map
     - RemoteDLC
     - MetaConfigs
+    - ui_gameplay
+    - ui_meta
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 439833ed15f0b454cbcccc19411c44b1, type: 2}

@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: CORE_TANVIEN
   upgradeName: "T\u1EA3n Vi\xEAn S\u01A1n Th\xE1nh"
-  description: "S\u1EDF h\u1EEFu <color=#D4AF37>Gi\xE1p \u0110\xE1 B\u1EA5t Ho\u1EA1i
-    100% Max HP</color> (h\u1ED3i sau 8s). \u0110\u1EE9ng y\xEAn 2.5s tri\u1EC7u
-    h\u1ED3i 4 Th\u1EA1ch Tr\u1EE5 \u0111\xE8 b\u1EB9p qu\xE1i v\u1EADt xung quanh."
+  description: "Ph\u1EA3n l\u1EA1i <color=#D4AF37>150% S\xE1t th\u01B0\u01A1ng nh\u1EADn v\xE0o</color> th\xE0nh v\u1EE5 n\u1ED5 S\u01A1n Th\u1EA1ch g\xE2y s\xE1t th\u01B0\u01A1ng h\u1EC7 Th\u1ED5 xung quanh."
   icon: {fileID: 0}
   upgradeType: 3
   spawnWeight: 1

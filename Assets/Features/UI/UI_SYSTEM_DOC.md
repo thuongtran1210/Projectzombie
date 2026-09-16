@@ -80,17 +80,26 @@ Hệ thống UI được đặt hoàn toàn trong thư mục `Assets/Features/UI
     *   `TooltipUI.cs` — Khung hiển thị mô tả khi di chuột qua kỹ năng.
 *   **Presenter:** `PlayerInfoUIPresenter.cs` — Đồng bộ hóa chỉ số từ `PlayerStats` để cập nhật đồng thời lên HUD và Bảng chỉ số.
 
-### 3.3. Bảng Chọn Thẻ Nâng Cấp (Upgrades UI)
-*   **Thư mục:** `Assets/Features/UI/`
-*   **View:** 
-    *   `UpgradeUIView.cs` — Quản lý bật/tắt Panel nâng cấp và danh sách các thẻ.
-    *   `UpgradeCardView.cs` — Hiển thị thông tin một thẻ nâng cấp (icon, tên, mô tả, level, category).
-*   **Presenter:** `UpgradeUIPresenter.cs` — Lắng nghe sự kiện lên cấp, gọi `UpgradeManager` để lấy các lựa chọn ngẫu nhiên, định dạng thông tin và gán callback click cho từng thẻ.
+### 3.3. Bảng Chọn Thẻ Nâng Cấp (Upgrades UI — 3 Mốc Biến Đổi)
+*   **Thư mục:** `Assets/Features/UI/` & `Assets/_Prefabs/UI/`
+*   **Prefab Template Độc Lập:** [`Assets/_Prefabs/UI/UpgradePanel_Template.prefab`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/_Prefabs/UI/UpgradePanel_Template.prefab)
+*   **View:** `UpgradeUIView.cs` — Hỗ trợ hàm `SetVisualMode(UpgradeUIVisualMode)` tự động điều chỉnh layout, kích thước và độ trong suốt theo 3 mốc:
+    *   **Tier 1 (Cấp 1 - Khởi Nguyên):** Kích thước `1200x660`, 100% Opacity, Quạt 5 Thẻ Ngũ Hành (Kim, Mộc, Thủy, Hỏa, Thổ), ẩn Reroll/Skip.
+    *   **Tier 2 (Level Thường - Micro-Stats):** Kích thước `1020x350`, Vị trí đáy `Y: -140`, 75% Semi-Transparent (nhìn xuyên trận đấu), ẩn Reroll, hiện Skip.
+    *   **Tier 3 (Mốc Đột Biến - Lv. 5, 15, 30):** Kích thước `1100x640`, 100% Opacity (Tối mờ 90% nền game), bật nút **Reroll 🎲**.
+*   **Presenter:** `UpgradeUIPresenter.cs` — Lắng nghe sự kiện lên cấp, tính toán `UpgradeUIVisualMode`, format thông tin thẻ (loại bỏ Unicode emoji gây lỗi ô vuông Android), và gắn callback lựa chọn thẻ.
 
 ### 3.4. Màn Hình Kết Quả (Game Over UI)
 *   **Thư mục:** `Assets/Features/UI/`
 *   **View:** `GameOverScreenView.cs` — Hiển thị kết quả thắng/thua, nút Chơi lại và nút Về Menu chính.
 *   **Presenter:** `GameOverScreenPresenter.cs` — Nhận thông báo kết trận, thu thập dữ liệu tổng hợp từ `RunStatsTracker` để hiển thị và điều phối chuyển cảnh.
+
+### 3.5. Hệ Thống Nạp UI Bất Đồng Bộ Qua Addressables & UIRegistrySO
+*   **Tập tin cốt lõi:** [UIRegistrySO.cs](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/UIRegistrySO.cs) & [UIScreenFactory.cs](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/UIScreenFactory.cs)
+*   **Cơ chế hoạt động:**
+    - Mỗi màn hình UI được định nghĩa trong `UIRegistrySO` với `AssetReferenceGameObject screenPrefabRef`.
+    - `UIScreenFactory.GetOrCreateScreenAsync<T>()` tiến hành tải Prefab bất đồng bộ từ Addressables Bundle (`Group_Core_Preload` hoặc `Group_Remote_Dynamic`).
+    - Hỗ trợ giải phóng bộ nhớ tự động (`ReleaseScreenInstance()`) khi đóng màn hình hoặc đổi Scene.
 
 ---
 

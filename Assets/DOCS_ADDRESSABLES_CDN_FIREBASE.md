@@ -191,3 +191,15 @@ Người chơi có thể chủ động kiểm tra dung lượng máy và quản 
    - **`[TẢI TẤT CẢ]`**: Tải đồng loạt các gói còn thiếu về máy.
    - **`[DỌN DẸP TOÀN BỘ CACHE]`**: Giải phóng toàn bộ bộ nhớ tạm của các gói DLC.
 
+---
+
+## 10. Công Cụ Android Pre-Build Wizard & Resource Sync (1-Click Pre-Flight Check)
+
+Để đảm bảo toàn bộ tài nguyên Runtime đồng bộ 100% trước khi xuất bản APK/AAB cho Android Google Play:
+1. **Menu mở**: `ProjectZombie > 4. 🤖 Android Build & Deploy > 2. Sync Build Resources Wizard` (hoặc `2.1 Quick Sync All Resources (1-Click)`).
+2. **Chức năng chính**:
+   - **Kiểm tra chuẩn Google Play**: Tự động xác minh IL2CPP, kiến trúc ARM64, Target SDK 34.
+   - **Smart Sync 2 Chiều**: Tự động so sánh và cập nhật tài nguyên từ `Assets/_Data` & `Assets/_Prefabs` sang `Assets/Resources/` hoặc Addressables Groups. Bảo tồn 100% các chỉnh sửa UI của Designer.
+   - **Quy tắc Tướng Khởi Đầu (Hero Assets)**: Tất cả Tướng cơ bản trong `CharacterDatabaseSO` sử dụng **Direct Reference (`playerPrefab`)** thuộc `Group_Core_Preload` đóng gói sẵn trong APK. Đảm bảo nhân vật nạp tức thì 0ms, hoạt động offline mượt mà và không bao giờ bị lỗi missing asset hay tàng hình khi mạng chập chờn.
+
+

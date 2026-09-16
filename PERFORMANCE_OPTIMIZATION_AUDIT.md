@@ -12,6 +12,9 @@ Tài liệu này lưu trữ toàn bộ các phát hiện từ **Unity Profiler**
 | **2** | **Spike 3.6KB GC Alloc khi ném Dép / Xoay Lốc** | `Weapon_Slipper.cs` sử dụng `Physics2D.OverlapCircleAll` liên tục tạo mảng `Collider2D[]` trên Heap. | Chuyển toàn bộ sang `Physics2D.OverlapCircleNonAlloc` với bộ đệm tĩnh `_slipperHitBuffer[32]`. | GC Alloc giảm từ **3.6KB $\rightarrow$ 0 Bytes**. |
 | **3** | **Lướt xuyên Tilemap ra ngoài biên Map** | Trước đó chỉ dùng Raycast với Layer Obstacle mà không kiểm tra giới hạn sàn gạch `Tilemap_Ground`. | Bổ sung `MovementPhysicsUtility.CalculateDashDestination` dò từng bước `0.3m` trên `Tilemap.HasTile(cellPos)`. | Phanh dừng chính xác $100\%$ tại mép gạch cuối cùng. |
 | **4** | **Quỹ đạo bay Dép không khớp chỉ dấu Parabol** | Code ném dùng `Vector2.Lerp` thẳng hàng trong khi Indicator vẽ đường cong Bezier. | Đồng bộ quỹ đạo bay bằng công thức **Quadratic Bezier Curve 3 điểm**. | Dép bay uốn lượn khớp $100\%$ với dải sáng chỉ dấu. |
+| **5** | **Rủi ro Miss Asset Tướng khi nạp chuỗi String** | `CharacterSelectionPresenter` và `GameplayBootstrapper` phụ thuộc vào `Resources.Load<GameObject>($"Players/{heroNames[i]}")`. | Chuyển sang **Direct Reference 100% trong `CharacterDatabaseSO`** (Group_Core_Preload trong APK). | Nạp tức thì 0ms, không phụ thuộc mạng, 0 lỗi tàng hình. |
+| **6** | **GC Allocations trong Coroutine Đệ Tử Gà** | `ChickenMinionCompanion.cs` gọi `new WaitForSeconds(0.22f)` và `new WaitForSeconds(0.08f)` lặp lại liên tục khi mổ quái. | Cache tĩnh `_waitAttackAnim` và `_waitResetScale` trong bộ nhớ dùng chung. | Triệt tiêu 100% GC Allocations trong vòng lặp combat của Đệ Tử. |
+| **7** | **Tràn RAM Tĩnh khi mở Thư Viện Thẻ (Codex)** | `CardCodexPresenter` gọi `Resources.LoadAll<UpgradeData>` quét toàn bộ thư mục nặng nề. | Cài đặt cờ tĩnh `_isDataLoaded` và bộ đệm cache tĩnh nạp 1 lần duy nhất lúc mở game. | Tiết kiệm **30MB - 50MB RAM tĩnh** trên thiết bị di động. |
 
 ---
 

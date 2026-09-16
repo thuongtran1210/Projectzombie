@@ -14,10 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: CORE_THUYBA
   upgradeName: "Th\u1EE7y B\xE1 Cu\u1ED3ng N\u1ED9"
-  description: "M\u01B0a b\xE3o to\xE0n map, qu\xE1i b\u1ECB <color=#00BFFF>\u1EA8m
-    \u01AF\u1EDBt</color> v\xE0 gi\u1EA3m 30% t\u1ED1c ch\u1EA1y. M\u1ED7i 6s t\u1EA1o
-    1 \u0111\u1EE3t S\xF3ng Th\u1EA7n gom qu\xE1i. 30% \u0110\xF3ng B\u0103ng & n\u1ED5
-    m\u1EA3nh v\u1EE5n."
+  description: "T\u1EA5t c\u1EA3 \u0111\xF2n \u0111\xE1nh gi\u1EA3m 30% t\xD6c ch\u1EA1y. \u0110\xE1nh 4 l\u1EA7n l\xEAan c\xF9ng k\u1EBB \u0111\u1ECBch s\u1EBD <color=#00E5FF>\u0110\xF3ng B\u0103ng ho\xE0n to\xE0n trong 2s</color>."
   icon: {fileID: 0}
   upgradeType: 3
   spawnWeight: 1

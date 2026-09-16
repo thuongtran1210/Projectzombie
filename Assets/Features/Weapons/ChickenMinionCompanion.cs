@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -59,6 +59,9 @@ namespace ProjectZombie.Features.Weapons
         private static readonly int AnimStateIdle = Animator.StringToHash("Idle");
         private static readonly int AnimStateRun = Animator.StringToHash("Run");
         private static readonly int AnimStateAttack = Animator.StringToHash("Attack");
+
+        private static readonly WaitForSeconds _waitAttackAnim = new WaitForSeconds(0.22f);
+        private static readonly WaitForSeconds _waitResetScale = new WaitForSeconds(0.08f);
 
         private void Awake()
         {
@@ -327,13 +330,13 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineEndAttackAnim()
         {
-            yield return new WaitForSeconds(0.22f);
+            yield return _waitAttackAnim;
             _isAttacking = false;
         }
 
         private IEnumerator RoutineResetScale()
         {
-            yield return new WaitForSeconds(0.08f);
+            yield return _waitResetScale;
             float sign = Mathf.Sign(transform.localScale.x);
             transform.localScale = new Vector3(sign, 1f, 1f);
         }

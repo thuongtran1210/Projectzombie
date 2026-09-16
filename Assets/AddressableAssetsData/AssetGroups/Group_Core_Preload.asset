@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 26eb188e86fa62a49b3a5b8c1867121f
   m_SerializeEntries:
+  - m_GUID: 1634a91af1076b44b88f91adc4cb0388
+    m_Address: CharacterSelectionUI
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ui_meta
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 229d1d4561bf6f943bf922d7642df32d
     m_Address: Collectibles_Atlas
     m_ReadOnly: 0
@@ -37,10 +43,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 711a2df28363cb54185cbf2e1a44b1a4
+    m_Address: UpgradeCard_Template
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ui_gameplay
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f0f276ad71c1b242a630c5a2788f64d
+    m_Address: UpgradePanel_Template
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ui_gameplay
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 911aaf45e6473754a8b6c7a5fa4b9105
     m_Address: spr_blob_shadow
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 993d9d6a82992a74ca49b90beb51ebaf
+    m_Address: MainHubUI
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ui_meta
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c81b31421814b8742a1136999ecdbf01
     m_Address: CharacterDatabase
