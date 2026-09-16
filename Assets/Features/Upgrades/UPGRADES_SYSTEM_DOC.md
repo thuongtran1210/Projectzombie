@@ -39,29 +39,20 @@ Hành trình trải qua **4 giai đoạn tiến hóa** từ sơ nhập đến Th
 > **Thời điểm kích hoạt:** Chọn ngay khi bước vào trận đấu (Level 1).  
 > **Cơ chế cốt lõi:** Cung cấp bộ khung chiến đấu độc bản và kích hoạt cơ chế **Kho Thẻ Sạch (Clean Pool)** — loại bỏ hoàn toàn các thẻ không tương thích để người chơi không bao giờ bốc phải thẻ vô dụng.
 
-* 🔥 **Phù Đổng Thiên Uy (Hệ Hỏa — Thể Tu Khổng Lồ, Càn Quét):**
-  * Càng hạ nhiều quái vật, thân thể càng phóng to (`+10% kích thước` sau mỗi mốc hạ gục tích lũy).
-  * Đòn chém quét sở hữu phạm vi cực rộng.
-  * Kỹ năng lướt (*Dash*) biến thành **Ngựa Sắt phun lửa**, thiêu rụi toàn bộ kẻ địch trên đường càn quét.
+* 🟡 **Kim Quy Thần Cơ (Hệ Kim — Ricochet / Nảy Đạn & Kiếm Khí):**
+  * Tự động phân tách nảy đạn (Ranged) hoặc vệt Kiếm Khí Kim (Melee) sang 2 mục tiêu lân cận (60% sát thương).
 
-* ✨ **Kim Quy Thần Cơ (Hệ Kim — Mưa Tên & Bẫy Phản Xạ):**
-  * Đòn đánh tự động bắn nảy sang các mục tiêu lân cận.
-  * Tỷ lệ bạo kích đạt `100%` khi người chơi thực hiện thao tác thả diều (kiting).
-  * Khi đứng yên, tự động kích hoạt **Mai Rùa Thần Cơ**: miễn nhiễm hoàn toàn sát thương tầm xa từ phía trước và phản xạ đòn đánh.
+* 🟢 **Long Tiên Huyết Mạch (Hệ Mộc — Lifesteal / Hút Máu Mộc Sinh):**
+  * Mọi đòn đánh và vũ khí hút 15% Máu trực tiếp từ kẻ địch để phục hồi sinh lực cho nhân vật.
 
-* ⛰️ **Tản Viên Sơn Thánh (Hệ Thổ — Pháo Đài Địa Chấn):**
-  * Tích lũy lớp **Giáp Hoàng Thổ** dày đặc theo thời gian.
-  * Khi đứng yên hoặc nhận sát thương, mặt đất mọc lên **Thạch Trụ** đè bẹp quái vật và kích hoạt phát nổ địa chấn diện rộng.
+* 🔵 **Thủy Bá Cuồng Nộ (Hệ Thủy — Freeze / Đóng Băng Tê Liệt):**
+  * Giảm 30% tốc chạy của quái. Tích 4 đòn đánh lên cùng mục tiêu sẽ Đóng Băng hoàn toàn trong 2s.
 
-* 🌊 **Thủy Bá Cuồng Nộ (Hệ Thủy — Sóng Thần & Khống Chế):**
-  * Khả năng gọi mưa bão gom toàn bộ quái vật trên bản đồ lại một điểm cố định.
-  * Kỹ năng gây trạng thái **Ẩm Ướt ➔ Đóng Băng** hoàn toàn mục tiêu.
-  * Kỹ năng lướt (*Dash*) hóa thành **Thủy Long** càn quét dữ dội trên chiến trường.
+* 🔴 **Phù Đổng Thiên Uy (Hệ Hỏa — Burn AOE / Thiêu Rụi Hỏa Vực):**
+  * Đòn đánh gây thêm Sát thương Hỏa thiêu rụi và tạo vệt lửa 360 độ thiêu cháy toàn bộ kẻ địch xung quanh.
 
-* ☯️ **Long Tiên Huyết Mạch (Hệ Âm Dương — Song Hình & Hồi Sinh):**
-  * **Hóa Long:** Kích hoạt khi tấn công liên tục (tăng vọt SMCK và Tốc độ đánh).
-  * **Hóa Tiên:** Kích hoạt khi tạm ngừng tay (tỏa hào quang hồi máu liên tục cho bản thân).
-  * Sở hữu `1 mạng Miễn Tử`: khi nhận đòn chí tử sẽ kích hoạt vụ nổ xóa sổ toàn màn hình, dọn sạch quái vật xung quanh và hồi 50% HP.
+* 🟤 **Tản Viên Sơn Thánh (Hệ Thổ — Retaliation / Phản Sát Thương):**
+  * Phản lại 150% Sát thương nhận vào thành vụ nổ Sơn Thạch gây sát thương hệ Thổ ra xung quanh.
 
 ---
 
