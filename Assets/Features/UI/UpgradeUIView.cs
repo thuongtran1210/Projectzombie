@@ -318,21 +318,6 @@ namespace ProjectZombie.Features.UI
             switch (mode)
             {
                 case UpgradeUIVisualMode.ArchetypeCore:
-                    // 1. Cấp 1 Khởi Nguyên: Fullscreen Center 1200x660, 100% Opacity
-                    if (panelRect != null)
-                    {
-                        panelRect.sizeDelta = new Vector2(1200, 660);
-                        panelRect.anchoredPosition = Vector2.zero;
-                    }
-                    if (panelImg != null)
-                    {
-                        panelImg.color = new Color(1f, 1f, 1f, 1f);
-                    }
-                    if (containerLayout != null)
-                    {
-                        containerLayout.spacing = 16f;
-                    }
-
                     if (_titleText != null)
                     {
                         _titleText.text = "KHỞI NGUYÊN ĐẠI LÕI\n<size=14><color=#FFD700>[ Kích hoạt Kho Thẻ Sạch (Clean Pool) ]</color></size>";
@@ -342,21 +327,6 @@ namespace ProjectZombie.Features.UI
                     break;
 
                 case UpgradeUIVisualMode.MicroStats:
-                    // 2. Level Thường: Compact Bottom-Sheet Overlay (Position Y: -140, Size: 1020x340, Opacity 75%)
-                    if (panelRect != null)
-                    {
-                        panelRect.sizeDelta = new Vector2(1020, 350);
-                        panelRect.anchoredPosition = new Vector2(0, -140);
-                    }
-                    if (panelImg != null)
-                    {
-                        panelImg.color = new Color(1f, 1f, 1f, 0.75f);
-                    }
-                    if (containerLayout != null)
-                    {
-                        containerLayout.spacing = 24f;
-                    }
-
                     if (_titleText != null)
                     {
                         _titleText.text = $"TĂNG CƯỜNG CHỈ SỐ (CẤP {currentLevel})";
@@ -366,21 +336,6 @@ namespace ProjectZombie.Features.UI
                     break;
 
                 case UpgradeUIVisualMode.MutationAugment:
-                    // 3. Mốc Đột Biến (Lv.5, 15, 30): Fullscreen Center 1100x640, Royal Gold Theme, Opacity 100%
-                    if (panelRect != null)
-                    {
-                        panelRect.sizeDelta = new Vector2(1100, 640);
-                        panelRect.anchoredPosition = Vector2.zero;
-                    }
-                    if (panelImg != null)
-                    {
-                        panelImg.color = new Color(1f, 1f, 1f, 1f);
-                    }
-                    if (containerLayout != null)
-                    {
-                        containerLayout.spacing = 30f;
-                    }
-
                     if (_titleText != null)
                     {
                         _titleText.text = $"ĐỘT BIẾN THẦN THẠCH (CẤP {currentLevel})";
