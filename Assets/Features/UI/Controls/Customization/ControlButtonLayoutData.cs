@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,8 +38,27 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         public ControlButtonLayoutData FindControl(string id)
         {
-            if (controls == null) return null;
-            return controls.Find(c => c != null && c.controlId == id);
+            if (controls == null || string.IsNullOrEmpty(id)) return null;
+
+            // 1. So khớp chính xác
+            var exact = controls.Find(c => c != null && string.Equals(c.controlId, id, StringComparison.OrdinalIgnoreCase));
+            if (exact != null) return exact;
+
+            // 2. So khớp Alias chuẩn hóa (UI_DashButton <-> Btn_Dash, UI_SignatureSkillButton <-> Btn_SignatureSkill...)
+            string normalized = NormalizeControlId(id);
+            return controls.Find(c => c != null && NormalizeControlId(c.controlId) == normalized);
+        }
+
+        private static string NormalizeControlId(string rawId)
+        {
+            if (string.IsNullOrEmpty(rawId)) return string.Empty;
+            string clean = rawId.ToLowerInvariant().Replace("_", "").Replace("btn", "").Replace("ui", "").Replace("virtual", "");
+            if (clean.Contains("dash") || clean.Contains("luot")) return "dash";
+            if (clean.Contains("signature") || clean.Contains("kynang") || clean.Contains("tuyetky") || clean.Contains("skill")) return "signatureskill";
+            if (clean.Contains("relic") || clean.Contains("phapbao") || clean.Contains("baovay")) return "relicskill";
+            if (clean.Contains("attack") || clean.Contains("danh") || clean.Contains("chem")) return "attack";
+            if (clean.Contains("joystick") || clean.Contains("cangat") || clean.Contains("move")) return "joystick";
+            return clean;
         }
 
         public void SetControl(string id, Vector2 pos, float scale, float opacity)

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Skills;
 using ProjectZombie.Features.Shared;
@@ -162,10 +162,9 @@ namespace ProjectZombie.Features.UI
 
         private void RefreshUIState()
         {
-            if (_skillManager == null || _buttonView == null) return;
+            if (_skillManager == null || _buttonView == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
-            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
-            bool canExecute = !isEditMode && _skillManager.CanExecuteCurrentSkill() && _skillManager.RemainingCooldown <= 0f;
+            bool canExecute = _skillManager.CanExecuteCurrentSkill() && _skillManager.RemainingCooldown <= 0f;
             _buttonView.SetInteractable(canExecute);
 
             float rem = _skillManager.RemainingCooldown;
@@ -176,12 +175,11 @@ namespace ProjectZombie.Features.UI
 
         private void OnCooldownUpdated(float remaining, float max)
         {
-            if (_buttonView == null) return;
+            if (_buttonView == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
             string text = remaining > 0f ? $"{Mathf.CeilToInt(remaining)}s" : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
 
-            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
-            bool canExecute = !isEditMode && _skillManager != null && _skillManager.CanExecuteCurrentSkill() && remaining <= 0f;
+            bool canExecute = _skillManager != null && _skillManager.CanExecuteCurrentSkill() && remaining <= 0f;
             _buttonView.SetInteractable(canExecute);
         }
 

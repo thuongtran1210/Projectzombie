@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -61,12 +61,12 @@ namespace ProjectZombie.Features.UI.Controls.Customization
             {
                 selfImg = gameObject.AddComponent<Image>();
                 selfImg.color = Color.clear;
-                selfImg.raycastTarget = true;
             }
+            selfImg.raycastTarget = true;
 
             _defaultAnchoredPosition = _rectTransform.anchoredPosition;
             _defaultScale = _rectTransform.localScale;
-            _defaultOpacity = _canvasGroup.alpha;
+            _defaultOpacity = _canvasGroup != null ? _canvasGroup.alpha : 1.0f;
 
             _currentScale = _defaultScale;
             _currentOpacity = _defaultOpacity;
@@ -216,12 +216,24 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 _selectionHighlight.gameObject.SetActive(false);
             }
 
+            if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.blocksRaycasts = true;
+                if (enable)
+                {
+                    _canvasGroup.alpha = _currentOpacity;
+                }
+            }
+
             // Đảm bảo Image nền trên chính Root Button nhận Raycast, còn các Graphic con (CooldownFill, Icon, Text) không chặn Raycast
             Image selfImg = GetComponent<Image>();
-            if (selfImg != null)
+            if (selfImg == null)
             {
-                selfImg.raycastTarget = true;
+                selfImg = gameObject.AddComponent<Image>();
+                selfImg.color = Color.clear;
             }
+            selfImg.raycastTarget = true;
 
             var childGraphics = GetComponentsInChildren<Graphic>(true);
             foreach (var g in childGraphics)

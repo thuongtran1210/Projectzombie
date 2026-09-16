@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI
@@ -73,6 +73,11 @@ namespace ProjectZombie.Features.UI
 
         private void Update()
         {
+            if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode)
+            {
+                return;
+            }
+
             if (_playerStats == null || _playerController == null)
             {
                 TryBindPlayer();
@@ -91,9 +96,7 @@ namespace ProjectZombie.Features.UI
             }
 
             _view.SetCooldown(remaining, _dashCooldown, _lastFormattedCooldownStr);
-
-            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
-            _view.SetInteractable(!isEditMode && remaining <= 0f);
+            _view.SetInteractable(remaining <= 0f);
         }
 
         private void TryBindPlayer()

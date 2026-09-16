@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 
@@ -191,12 +191,11 @@ namespace ProjectZombie.Features.UI
 
         private void RefreshUIState()
         {
-            if (_boundActiveRelic == null || _buttonView == null) return;
+            if (_boundActiveRelic == null || _buttonView == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             float rem = _boundActiveRelic.RelicRemainingCooldown;
             float max = _boundActiveRelic.RelicMaxCooldown;
-            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
-            bool isReady = !isEditMode && _boundActiveRelic.IsRelicSkillReady;
+            bool isReady = _boundActiveRelic.IsRelicSkillReady;
             bool isRecast = _boundActiveRelic.IsInRecastWindow;
 
             _buttonView.SetInteractable(isReady);
@@ -208,7 +207,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleRelicStackBadgeUpdated(string badgeText)
         {
-            if (_buttonView != null)
+            if (_buttonView != null && !Controls.Customization.CustomizableControlButton.IsAnyInEditMode)
             {
                 _buttonView.SetStackBadge(badgeText);
             }
@@ -221,12 +220,11 @@ namespace ProjectZombie.Features.UI
 
         private void HandleRelicCooldownUpdated(float remaining, float max)
         {
-            if (_buttonView == null) return;
+            if (_buttonView == null || Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
             string text = remaining > 0f ? RelicSkillButtonView.GetCachedCooldownText(remaining) : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
-            bool isEditMode = Controls.Customization.CustomizableControlButton.IsAnyInEditMode;
-            _buttonView.SetInteractable(!isEditMode && remaining <= 0f);
+            _buttonView.SetInteractable(remaining <= 0f);
         }
 
         private void HandleRelicSkillReady()

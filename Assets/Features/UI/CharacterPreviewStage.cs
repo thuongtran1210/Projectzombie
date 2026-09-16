@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectZombie.Features.UI
@@ -54,11 +54,16 @@ namespace ProjectZombie.Features.UI
                 _renderTexture = new RenderTexture(512, 512, 16, RenderTextureFormat.ARGB32)
                 {
                     name = "RT_CharacterPreview",
-                    antiAliasing = 4,
+                    antiAliasing = 1,
                     filterMode = FilterMode.Bilinear,
                     useMipMap = false,
                     hideFlags = HideFlags.DontSave
                 };
+                _renderTexture.Create();
+            }
+            else if (!_renderTexture.IsCreated())
+            {
+                _renderTexture.Create();
             }
 
             if (_previewCamera == null)
@@ -80,7 +85,26 @@ namespace ProjectZombie.Features.UI
             _previewCamera.nearClipPlane = 0.1f;
             _previewCamera.farClipPlane = 50f;
             _previewCamera.depth = -50;
+            _previewCamera.cullingMask = ~0; // Render mọi Layer
+            _previewCamera.allowHDR = false;
+            _previewCamera.allowMSAA = false;
             _previewCamera.targetTexture = _renderTexture;
+
+            #if UNITY_2019_3_OR_NEWER
+            var additionalData = _previewCamera.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            if (additionalData == null)
+            {
+                additionalData = _previewCamera.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            }
+            if (additionalData != null)
+            {
+                additionalData.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Base;
+                additionalData.renderPostProcessing = false;
+                additionalData.renderShadows = false;
+                additionalData.requiresColorOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off;
+                additionalData.requiresDepthOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off;
+            }
+            #endif
 
             if (_modelSpawnPoint == null)
             {
@@ -107,27 +131,29 @@ namespace ProjectZombie.Features.UI
             ClearCurrentModel();
             if (characterPrefab == null || _modelSpawnPoint == null) return;
 
-            // Tìm con Visual hoặc SpriteRenderer của Prefab mẫu để sinh độc lập
             Transform visualSource = characterPrefab.transform.Find("Visual");
             GameObject instance = null;
-
+            Vector3 baseScale = Vector3.one;
             if (visualSource != null)
             {
                 instance = Instantiate(visualSource.gameObject, _modelSpawnPoint);
                 instance.name = "Preview_Visual";
+                baseScale = visualSource.localScale;
             }
             else
             {
                 instance = Instantiate(characterPrefab, _modelSpawnPoint);
                 instance.name = "Preview_Model";
-                DisableGameplayComponents(instance);
+                baseScale = characterPrefab.transform.localScale;
             }
+
+            DisableGameplayComponents(instance);
 
             instance.tag = "Untagged";
             instance.transform.SetParent(_modelSpawnPoint, false);
             instance.transform.localPosition = Vector3.zero;
             instance.transform.localRotation = Quaternion.identity;
-            instance.transform.localScale = Vector3.one;
+            instance.transform.localScale = baseScale;
 
             _currentModelInstance = instance;
             _currentAnimator = instance.GetComponentInChildren<Animator>();
