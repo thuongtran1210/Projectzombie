@@ -31,6 +31,8 @@ namespace ProjectZombie.Editor.UI
         [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/⚡ Thêm Nút Multiplayer (Bảo Tồn Toàn Bộ Tùy Chỉnh)", priority = 100)]
         public static void AddMultiplayerButtonOnly()
         {
+            if (Application.isPlaying) return;
+
             string prefabPath = "Assets/_Prefabs/UI/MainHubUI.prefab";
             if (!System.IO.File.Exists(prefabPath))
             {
@@ -74,7 +76,10 @@ namespace ProjectZombie.Editor.UI
                 Undo.RegisterFullObjectHierarchyUndo(sceneView.gameObject, "Add Multiplayer Button In Scene");
                 ProcessGameObject(sceneView.gameObject);
                 EditorUtility.SetDirty(sceneView.gameObject);
-                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(sceneView.gameObject.scene);
+                if (!Application.isPlaying)
+                {
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(sceneView.gameObject.scene);
+                }
                 Debug.Log("<color=#00FF88>[AddMultiplayerButtonTool]</color> Đã đồng bộ trực tiếp nút Multiplayer vào Scene hiện tại!");
             }
 
