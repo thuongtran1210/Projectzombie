@@ -554,21 +554,22 @@ namespace ProjectZombie.Features.Player
         }
 
         /// <summary>
-        /// Áp dụng toàn bộ gói chỉ số từ PlayerStatModifier (dùng cho Lõi Đột Biến, Micro-Cards, v.v.).
+        /// Áp dụng toàn bộ gói chỉ số từ PlayerStatModifier (dùng cho Lõi Đột Biến, Micro-Cards, Synergy Traits, v.v.).
+        /// Hỗ trợ cả chỉ số cộng (buff) và chỉ số trừ (debuff / trade-off).
         /// </summary>
         public void ApplyStatModifier(ProjectZombie.Features.Upgrades.PlayerStatModifier mod)
         {
-            if (mod.maxHealthBonus > 0f) AddMaxHealth(mod.maxHealthBonus);
-            if (mod.moveSpeedBonus > 0f) AddMoveSpeed(mod.moveSpeedBonus);
-            if (mod.critChanceBonus > 0f) AddCritChance(mod.critChanceBonus);
-            if (mod.baseDamageBonus > 0f) AddBaseDamage(mod.baseDamageBonus);
-            if (mod.pickupRangeBonus > 0f) AddPickupRange(mod.pickupRangeBonus);
-            if (mod.expMultiplierBonus > 0f) AddExpMultiplier(mod.expMultiplierBonus);
-            if (mod.attackSpeedBonus > 0f) AddAttackSpeed(mod.attackSpeedBonus);
-            if (mod.dashCooldownReduction > 0f) ReduceDashCooldown(mod.dashCooldownReduction);
-            if (mod.dashSpeedBonus > 0f) AddDashSpeedMultiplier(mod.dashSpeedBonus);
-            if (mod.areaScaleBonus > 0f) AddAreaScale(mod.areaScaleBonus);
-            if (mod.fireDamageBonus > 0f) AddFireDamageBonus(mod.fireDamageBonus);
+            if (mod.maxHealthBonus != 0f) AddMaxHealth(mod.maxHealthBonus);
+            if (mod.moveSpeedBonus != 0f) AddMoveSpeed(mod.moveSpeedBonus);
+            if (mod.critChanceBonus != 0f) AddCritChance(mod.critChanceBonus);
+            if (mod.baseDamageBonus != 0f) AddBaseDamage(mod.baseDamageBonus);
+            if (mod.pickupRangeBonus != 0f) AddPickupRange(mod.pickupRangeBonus);
+            if (mod.expMultiplierBonus != 0f) AddExpMultiplier(mod.expMultiplierBonus);
+            if (mod.attackSpeedBonus != 0f) AddAttackSpeed(mod.attackSpeedBonus);
+            if (mod.dashCooldownReduction != 0f) ReduceDashCooldown(mod.dashCooldownReduction);
+            if (mod.dashSpeedBonus != 0f) AddDashSpeedMultiplier(mod.dashSpeedBonus);
+            if (mod.areaScaleBonus != 0f) AddAreaScale(mod.areaScaleBonus);
+            if (mod.fireDamageBonus != 0f) AddFireDamageBonus(mod.fireDamageBonus);
         }
 
         #endregion

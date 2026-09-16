@@ -26,7 +26,9 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
             // 1. Tạo 12 VFX Particle Prefabs
             var fireVfx = CreateParticleVFX("VFX_Augment_FireTrail", new Color(1f, 0.35f, 0.1f), 1.5f, 25);
-            var lightningVfx = CreateParticleVFX("VFX_Augment_ChainLightning", new Color(1f, 0.9f, 0.2f), 0.3f, 40);
+            var lightningBeamVfx = CreateParticleVFX("VFX_Augment_ChainLightning", new Color(1f, 0.95f, 0.3f), 0.3f, 40, "Assets/Art/VFX/Augments/TEX_Augment_ChainLightning_Beam.png");
+            var lightningImpactVfx = CreateParticleVFX("VFX_Augment_ChainLightning_Impact", new Color(1f, 0.85f, 0.2f), 0.4f, 50, "Assets/Art/VFX/Augments/TEX_Augment_ChainLightning_Impact.png");
+            var lightningSparksVfx = CreateParticleVFX("VFX_Augment_ChainLightning_Sparks", new Color(1f, 0.95f, 0.5f), 0.5f, 60, "Assets/Art/VFX/Augments/TEX_Augment_ChainLightning_Sparks.png");
             var critVfx = CreateParticleVFX("VFX_Augment_CritExplode", new Color(1f, 0.4f, 0.1f), 0.5f, 50);
             var executeVfx = CreateParticleVFX("VFX_Augment_ExecuteSlash", new Color(0.9f, 0.1f, 0.1f), 0.4f, 30);
             var shieldVfx = CreateParticleVFX("VFX_Augment_ShieldBashWave", new Color(1f, 0.85f, 0.3f), 0.6f, 35);
@@ -45,7 +47,8 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
             // 2. Gán VFX Prefabs vào 12 Runtime Prefabs
             AssignVfxField<FireTrailAugmentRuntime>("PREFAB_AUG_GOLD_FIRE_TRAIL", "_fireVfxPrefab", fireVfx);
-            AssignVfxField<ChainLightningAugmentRuntime>("PREFAB_AUG_GOLD_CHAIN_LIGHTNING", "_lightningVfxPrefab", lightningVfx);
+            AssignVfxField<ChainLightningAugmentRuntime>("PREFAB_AUG_GOLD_CHAIN_LIGHTNING", "_lightningVfxPrefab", lightningBeamVfx, "_impactVfxPrefab", lightningImpactVfx);
+            AssignVfxField<ChainLightningAugmentRuntime>("PREFAB_AUG_GOLD_CHAIN_LIGHTNING", "_sparksVfxPrefab", lightningSparksVfx);
             AssignVfxField<CritExplodeAugmentRuntime>("PREFAB_AUG_GOLD_CRIT_EXPLODE", "_critVfxPrefab", critVfx);
             AssignVfxField<ExecuteAugmentRuntime>("PREFAB_AUG_GOLD_EXECUTE", "_executeVfxPrefab", executeVfx);
             AssignVfxField<ShieldBashAugmentRuntime>("PREFAB_AUG_GOLD_SHIELD_BASH", "_shieldVfxPrefab", shieldVfx);
@@ -68,7 +71,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             Debug.Log("<color=#00FF88>[AugmentVFXPrefabsBuilder] Đã sinh và gán 12 bộ VFX Particles vào Augment Runtimes thành công!</color>");
         }
 
-        private static GameObject CreateParticleVFX(string prefabName, Color color, float duration, float emissionRate)
+        private static GameObject CreateParticleVFX(string prefabName, Color color, float duration, float emissionRate, string customTexturePath = null)
         {
             string path = $"{VFX_PREFAB_DIR}/{prefabName}.prefab";
             string matDir = $"{VFX_PREFAB_DIR}/Materials";
@@ -80,19 +83,32 @@ namespace ProjectZombie.Features.Upgrades.Editor
 
             string matPath = $"{matDir}/MAT_{prefabName}.mat";
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            Texture tex = !string.IsNullOrEmpty(customTexturePath) ? AssetDatabase.LoadAssetAtPath<Texture>(customTexturePath) : null;
+
             if (mat == null)
             {
                 Shader particleShader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default");
                 if (particleShader != null)
                 {
                     mat = new Material(particleShader);
-                    Sprite knobSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-                    Texture defaultTex = knobSprite != null ? knobSprite.texture : Texture2D.whiteTexture;
-                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", defaultTex);
-                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", defaultTex);
+                    if (tex == null)
+                    {
+                        Sprite knobSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+                        tex = knobSprite != null ? knobSprite.texture : Texture2D.whiteTexture;
+                    }
+
+                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+                    if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
                     mat.color = color;
                     AssetDatabase.CreateAsset(mat, matPath);
                 }
+            }
+            else if (tex != null)
+            {
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+                if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+                mat.color = color;
+                EditorUtility.SetDirty(mat);
             }
 
             GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -117,7 +133,7 @@ namespace ProjectZombie.Features.Upgrades.Editor
             main.duration = duration;
             main.startLifetime = Mathf.Min(duration, 0.8f);
             main.startSpeed = 3f;
-            main.startSize = 0.5f;
+            main.startSize = 0.8f;
             main.startColor = color;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.stopAction = ParticleSystemStopAction.None;

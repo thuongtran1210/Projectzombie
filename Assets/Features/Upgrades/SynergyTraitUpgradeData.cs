@@ -57,15 +57,7 @@ namespace ProjectZombie.Features.Upgrades
             // 1. Áp dụng các chỉ số bổ trợ
             if (context.Stats != null)
             {
-                if (playerStatModifier.maxHealthBonus > 0) context.Stats.AddMaxHealth(playerStatModifier.maxHealthBonus);
-                if (playerStatModifier.moveSpeedBonus > 0) context.Stats.AddMoveSpeed(playerStatModifier.moveSpeedBonus);
-                if (playerStatModifier.critChanceBonus > 0) context.Stats.AddCritChance(playerStatModifier.critChanceBonus);
-                if (playerStatModifier.baseDamageBonus > 0) context.Stats.AddBaseDamage(playerStatModifier.baseDamageBonus);
-                if (playerStatModifier.pickupRangeBonus > 0) context.Stats.AddPickupRange(playerStatModifier.pickupRangeBonus);
-                if (playerStatModifier.expMultiplierBonus > 0) context.Stats.AddExpMultiplier(playerStatModifier.expMultiplierBonus);
-                if (playerStatModifier.attackSpeedBonus > 0) context.Stats.AddAttackSpeed(playerStatModifier.attackSpeedBonus);
-                if (playerStatModifier.dashCooldownReduction > 0) context.Stats.ReduceDashCooldown(playerStatModifier.dashCooldownReduction);
-                if (playerStatModifier.dashSpeedBonus > 0) context.Stats.AddDashSpeedMultiplier(playerStatModifier.dashSpeedBonus);
+                context.Stats.ApplyStatModifier(playerStatModifier);
             }
 
             // 2. Ghi nhận số tầng vào PlayerPassives
