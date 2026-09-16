@@ -86,6 +86,16 @@ Shader "ProjectZombie/Sprite_StatusEffect"
                 float _FrostGlazeSpeed;
             CBUFFER_END
 
+            #ifdef PIXELSNAP_ON
+            inline float4 UnityPixelSnap(float4 pos)
+            {
+                float2 hpos = pos.xy / pos.w;
+                hpos = floor(hpos * _ScreenParams.xy * 0.5 + 0.5) / (_ScreenParams.xy * 0.5);
+                pos.xy = hpos * pos.w;
+                return pos;
+            }
+            #endif
+
             Varyings vert(Attributes input)
             {
                 Varyings output;
@@ -199,6 +209,16 @@ Shader "ProjectZombie/Sprite_StatusEffect"
                 float _FrostRimPower;
                 float _FrostGlazeSpeed;
             CBUFFER_END
+
+            #ifdef PIXELSNAP_ON
+            inline float4 UnityPixelSnap(float4 pos)
+            {
+                float2 hpos = pos.xy / pos.w;
+                hpos = floor(hpos * _ScreenParams.xy * 0.5 + 0.5) / (_ScreenParams.xy * 0.5);
+                pos.xy = hpos * pos.w;
+                return pos;
+            }
+            #endif
 
             Varyings vert(Attributes input)
             {

@@ -76,6 +76,16 @@ Shader "ProjectZombie/Sprite_HitFlash"
                 float4 _Color;
             CBUFFER_END
 
+            #ifdef PIXELSNAP_ON
+            inline float4 UnityPixelSnap(float4 pos)
+            {
+                float2 hpos = pos.xy / pos.w;
+                hpos = floor(hpos * _ScreenParams.xy * 0.5 + 0.5) / (_ScreenParams.xy * 0.5);
+                pos.xy = hpos * pos.w;
+                return pos;
+            }
+            #endif
+
             Varyings vert(Attributes input)
             {
                 Varyings output;
@@ -159,6 +169,16 @@ Shader "ProjectZombie/Sprite_HitFlash"
                 float4 _MainTex_ST;
                 float4 _Color;
             CBUFFER_END
+
+            #ifdef PIXELSNAP_ON
+            inline float4 UnityPixelSnap(float4 pos)
+            {
+                float2 hpos = pos.xy / pos.w;
+                hpos = floor(hpos * _ScreenParams.xy * 0.5 + 0.5) / (_ScreenParams.xy * 0.5);
+                pos.xy = hpos * pos.w;
+                return pos;
+            }
+            #endif
 
             Varyings vert(Attributes input)
             {
