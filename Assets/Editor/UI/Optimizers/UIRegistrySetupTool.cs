@@ -43,7 +43,8 @@ namespace ProjectZombie.Editor.UITools
                 (MetaScreenType.Settings, "Modal_Settings", new[] { "Assets/Prefabs/UI/SettingsModalUI.prefab", "Assets/Resources/UI/SettingsModalUI.prefab", "Assets/_Prefabs/UI/SettingsModalUI.prefab" }),
                 (MetaScreenType.GachaShop, "Panel_GachaShop", new[] { "Assets/Prefabs/UI/Gacha/GachaShopPanel.prefab", "Assets/Resources/UI/Gacha/GachaShopPanel.prefab", "Assets/_Prefabs/UI/GachaShopPanel.prefab" }),
                 (MetaScreenType.StageSelect, "Screen_StageSelect", new[] { "Assets/_Prefabs/UI/StageSelect_Screen.prefab", "Assets/Prefabs/UI/StageSelect_Screen.prefab", "Assets/Resources/UI/StageSelect_Screen.prefab" }),
-                (MetaScreenType.ResourceDownload, "Modal_ResourceDownload", new[] { "Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Resources/UI/ResourceDownloadModalUI.prefab" })
+                (MetaScreenType.ResourceDownload, "Modal_ResourceDownload", new[] { "Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Resources/UI/ResourceDownloadModalUI.prefab" }),
+                (MetaScreenType.Lobby, "Modal_Lobby", new[] { "Assets/Prefabs/UI/LobbyModalUI.prefab", "Assets/Resources/UI/LobbyModalUI.prefab", "Assets/_Prefabs/UI/LobbyModalUI.prefab" })
             };
 
             var serializedObj = new SerializedObject(registry);

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +14,8 @@ namespace ProjectZombie.Features.UI
         Settings,
         GachaShop,
         StageSelect,
-        ResourceDownload
+        ResourceDownload,
+        Lobby
     }
 
     /// <summary>

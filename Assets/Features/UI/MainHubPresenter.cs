@@ -257,7 +257,7 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
-                // Mở giao diện Lobby / Phòng Chờ Co-op khi tích hợp Photon Fusion
+                metaManager.OpenScreen(MetaScreenType.Lobby);
             }
         }
 

@@ -28,6 +28,10 @@ namespace ProjectZombie.Features.Player
         /// Triggered when EXP changes. Useful for updating the EXP bar UI.
         /// </summary>
         public event Action<float, float> OnExpChanged;
+        /// <summary>
+        /// Triggered when raw EXP is gained. Dùng cho hệ thống Co-op phân phối kinh nghiệm.
+        /// </summary>
+        public event Action<float> OnExpGained;
 
         private void Awake()
         {
@@ -44,6 +48,15 @@ namespace ProjectZombie.Features.Player
             // Apply multiplier from stats
             float multiplier = _playerStats != null ? _playerStats.ExpMultiplier : 1f;
             float finalExp = amount * multiplier;
+
+            AddDirectExp(finalExp);
+            OnExpGained?.Invoke(finalExp);
+        }
+
+        public void AddDirectExp(float finalExp)
+        {
+            if (TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0) return;
+            if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu)) return;
 
             CurrentExp += finalExp;
 
