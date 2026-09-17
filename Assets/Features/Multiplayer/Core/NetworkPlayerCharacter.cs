@@ -213,7 +213,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 {
                     if (aimDirection.sqrMagnitude > 0.001f)
                     {
-                        wm.TriggerEquippedRelicSkill(new Combat.Aiming.SkillAimResult { Direction = aimDirection, IsQuickTap = false });
+                        wm.TriggerEquippedRelicSkill(aimDirection);
                     }
                     else
                     {
