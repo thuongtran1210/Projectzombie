@@ -37,6 +37,7 @@ namespace ProjectZombie.Features.Player
 
         private float _slowMultiplier = 1f;
         private Coroutine _slowCoroutine;
+        private bool _useNetworkMovement = false;
 
         public static PlayerController Instance { get; private set; }
         public float DashDuration => dashDuration;
@@ -49,6 +50,15 @@ namespace ProjectZombie.Features.Player
         public float CurrentSlowMultiplier => _slowMultiplier;
         public IPlayerInputProvider InputProvider => _inputProvider;
         public PlayerInputReader InputReader => _inputProvider as PlayerInputReader;
+        public bool UseNetworkMovement => _useNetworkMovement;
+
+        /// <summary>
+        /// Bật/Tắt chế độ di chuyển qua mô phỏng mạng Photon Fusion (FixedUpdateNetwork).
+        /// </summary>
+        public void SetNetworkMovementMode(bool useNetwork)
+        {
+            _useNetworkMovement = useNetwork;
+        }
 
         /// <summary>
         /// Sự kiện phát ra khi nhân vật thực hiện kỹ năng Dash.
@@ -335,6 +345,29 @@ namespace ProjectZombie.Features.Player
 
         private void FixedUpdate()
         {
+            // Trong chế độ Multiplayer, di chuyển do FixedUpdateNetwork của Photon Fusion điều phối
+            if (_useNetworkMovement) return;
+
+            ProcessMovement(_movementInput);
+        }
+
+        /// <summary>
+        /// Áp dụng di chuyển theo luồng Network-Authoritative từ FixedUpdateNetwork của Photon Fusion (Host).
+        /// </summary>
+        public void ApplyNetworkMovement(Vector2 networkMoveInput)
+        {
+            _movementInput = networkMoveInput;
+            ProcessMovement(networkMoveInput);
+        }
+
+        private void ProcessMovement(Vector2 moveInput)
+        {
+            if (!Shared.GameStateManager.IsPlaying)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
             float currentSpeed = _playerStats.MoveSpeed * _slowMultiplier;
 
             if (_isDashing)
@@ -357,12 +390,18 @@ namespace ProjectZombie.Features.Player
                     }
                 }
 
-                _rb.velocity = _movementInput * currentSpeed;
+                _rb.velocity = moveInput * currentSpeed;
+
+                // Xử lý Lật mặt hình ảnh theo hướng di chuyển
+                if (_playerAnimator != null && moveInput.x != 0)
+                {
+                    _playerAnimator.FlipToDirection(moveInput.x);
+                }
 
                 // Xử lý hoạt ảnh Chạy/Đứng im khi không lướt và không chém
                 if (_playerAnimator != null && !_isAttacking)
                 {
-                    if (_movementInput.sqrMagnitude > 0.01f)
+                    if (moveInput.sqrMagnitude > 0.01f)
                     {
                         _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
                         float baseSpeed = 5.0f;

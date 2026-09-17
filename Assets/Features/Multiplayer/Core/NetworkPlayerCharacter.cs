@@ -44,6 +44,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 registry.Register(_playerContext);
             }
 
+            if (_controller != null)
+            {
+                _controller.SetNetworkMovementMode(true);
+            }
+
             if (isLocal)
             {
                 // 1. TỰ ĐỘNG CHUYỂN GIAO DIỆN SANG GAMEPLAY HUD CHO CLIENT
@@ -99,6 +104,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
+            if (_controller != null)
+            {
+                _controller.SetNetworkMovementMode(false);
+            }
+
             if (ServiceContext.TryGet<IPlayerRegistry>(out var registry) && _playerContext != null)
             {
                 registry.Unregister(_playerContext);
@@ -107,12 +117,24 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void FixedUpdateNetwork()
         {
-            // Đọc Input mạng từ Photon Runner và nạp vào NetworkInputBridge
+            // Điều phối di chuyển Network-Authoritative trên State Authority (Host)
             if (GetInput<NetworkInputData>(out var networkInput))
             {
+                if (Object.HasStateAuthority && _controller != null)
+                {
+                    _controller.ApplyNetworkMovement(networkInput.MoveDirection);
+                }
+
                 if (_networkInputBridge != null && _networkInputBridge.enabled)
                 {
                     _networkInputBridge.ApplyNetworkInput(networkInput);
+                }
+            }
+            else
+            {
+                if (Object.HasStateAuthority && _controller != null)
+                {
+                    _controller.ApplyNetworkMovement(Vector2.zero);
                 }
             }
         }
