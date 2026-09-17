@@ -216,7 +216,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             // 2. Gửi tín hiệu Reliable bắt đầu trận đấu tới tất cả các Client khác
             byte[] startSignal = new byte[] { 1 }; // Mã 1: Bắt đầu trận đấu (Match Start)
-            var msgKey = ReliableKey.FromInt(1);
+            var msgKey = ReliableKey.FromInts(1, 0, 0, 0);
             foreach (var player in _activeRunner.ActivePlayers)
             {
                 if (player != _activeRunner.LocalPlayer)
