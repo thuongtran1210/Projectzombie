@@ -12,22 +12,17 @@ namespace ProjectZombie.Features.Player
     /// </summary>
     public static class PlayerProvider
     {
-        private static IPlayerRegistry _cachedRegistry;
-
         public static IPlayerRegistry Registry
         {
             get
             {
-                if (_cachedRegistry == null)
+                var registry = ServiceContext.Get<IPlayerRegistry>();
+                if (registry == null)
                 {
-                    _cachedRegistry = ServiceContext.Get<IPlayerRegistry>();
-                    if (_cachedRegistry == null)
-                    {
-                        _cachedRegistry = new SinglePlayerRegistry();
-                        ServiceContext.Register<IPlayerRegistry>(_cachedRegistry);
-                    }
+                    registry = new SinglePlayerRegistry();
+                    ServiceContext.Register<IPlayerRegistry>(registry);
                 }
-                return _cachedRegistry;
+                return registry;
             }
         }
 
@@ -43,7 +38,6 @@ namespace ProjectZombie.Features.Player
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void ResetStaticState()
         {
-            _cachedRegistry = null;
             OnPlayerSpawned = null;
             OnPlayerDespawned = null;
         }

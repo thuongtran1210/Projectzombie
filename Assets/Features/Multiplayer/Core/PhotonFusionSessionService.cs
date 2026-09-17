@@ -273,13 +273,36 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
             var inputData = new NetworkInputData();
+            Vector2 moveDir = Vector2.zero;
 
-            // Đọc Input từ PlayerInputReader của Local Player
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerInputReader>(out var inputReader))
+            // 1. Ưu tiên đọc trực tiếp từ Mobile Virtual Joystick
+            if (ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance != null && ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance.InputVector.sqrMagnitude > 0.001f)
             {
-                inputData.MoveDirection = inputReader.MovementInput;
+                moveDir = ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance.InputVector;
+            }
+            // 2. Đọc từ PlayerInputReader của Local Player
+            else if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerInputReader>(out var inputReader))
+            {
+                moveDir = inputReader.MovementInput;
+            }
+            // 3. Fallback: Đọc từ New Input System Keyboard khi chạy trong Unity Editor hoặc Standalone
+            else
+            {
+#if ENABLE_INPUT_SYSTEM
+                if (UnityEngine.InputSystem.Keyboard.current != null)
+                {
+                    var kb = UnityEngine.InputSystem.Keyboard.current;
+                    float h = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
+                    float v = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f) - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
+                    if (h != 0 || v != 0)
+                    {
+                        moveDir = new Vector2(h, v);
+                    }
+                }
+#endif
             }
 
+            inputData.MoveDirection = moveDir.sqrMagnitude > 1f ? moveDir.normalized : moveDir;
             input.Set(inputData);
         }
 
