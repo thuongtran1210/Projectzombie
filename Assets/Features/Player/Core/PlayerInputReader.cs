@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectZombie.Features.Shared;
@@ -9,7 +9,7 @@ namespace ProjectZombie.Features.Player.Input
     /// Service quản lý và tập trung toàn bộ nguồn Input (New Input System, Legacy Input, Mobile Joystick, UI Buttons).
     /// Đóng vai trò Single Source of Truth cho việc tương tác của người chơi, ngăn chặn việc phân tán input check.
     /// </summary>
-    public class PlayerInputReader : MonoBehaviour
+    public class PlayerInputReader : MonoBehaviour, IPlayerInputProvider
     {
         [Header("Input Action References")]
         [Tooltip("Input Action cho di chuyển (Vector2)")]

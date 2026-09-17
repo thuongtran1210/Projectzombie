@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -88,8 +88,8 @@ namespace ProjectZombie.Features.Weapons
 
         private Vector2 CalculateTargetPosition(Vector2 aimDir, float maxDist)
         {
-            Vector2 origin = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null 
-                ? (Vector2)PlayerProvider.PlayerTransform.position 
+            Vector2 origin = OwnerTransform != null 
+                ? (Vector2)OwnerTransform.position 
                 : (Vector2)transform.position;
 
             if (aimDir == Vector2.zero)
@@ -216,8 +216,8 @@ namespace ProjectZombie.Features.Weapons
             HashSet<Collider2D> sleptEnemies = new HashSet<Collider2D>();
             Dictionary<Collider2D, float> ramCooldowns = new Dictionary<Collider2D, float>();
 
-            Vector2 lastPlayerPos = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null 
-                ? (Vector2)PlayerProvider.PlayerTransform.position 
+            Vector2 lastPlayerPos = OwnerTransform != null 
+                ? (Vector2)OwnerTransform.position 
                 : matCenter;
 
             while (elapsed < duration)
@@ -241,9 +241,9 @@ namespace ProjectZombie.Features.Weapons
                 }
 
                 // 2. Quét người chơi bước/lướt lên chiếu -> Kích tốc trượt ván
-                if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+                if (OwnerTransform != null)
                 {
-                    Vector2 playerPos = PlayerProvider.PlayerTransform.position;
+                    Vector2 playerPos = OwnerTransform.position;
                     bool isInsideMat = Mathf.Abs(playerPos.x - matCenter.x) <= matSize.x * 0.6f &&
                                        Mathf.Abs(playerPos.y - matCenter.y) <= matSize.y * 0.6f;
 

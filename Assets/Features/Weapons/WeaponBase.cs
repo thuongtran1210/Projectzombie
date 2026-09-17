@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Pool;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -61,6 +61,25 @@ namespace ProjectZombie.Features.Weapons
 
         protected ICharacterStats CharacterStats;
         private float _lastAttackTime;
+
+        /// <summary>
+        /// Transform của chủ sở hữu vũ khí (Người chơi hoặc Đệ tử/Đồng đội).
+        /// Loại bỏ phụ thuộc cứng vào PlayerProvider static singleton.
+        /// </summary>
+        public Transform OwnerTransform
+        {
+            get
+            {
+                if (CharacterStats is MonoBehaviour mb && mb != null) return mb.transform;
+                if (transform.parent != null) return transform.parent;
+                return transform;
+            }
+        }
+
+        /// <summary>
+        /// GameObject của chủ sở hữu vũ khí.
+        /// </summary>
+        public GameObject OwnerGameObject => OwnerTransform != null ? OwnerTransform.gameObject : gameObject;
 
         public virtual void Initialize(ICharacterStats stats)
         {

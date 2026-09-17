@@ -47,9 +47,9 @@ namespace ProjectZombie.Features.Weapons
             if (activeCooldown <= 0f || activeCooldown == 8.0f) activeCooldown = 12.0f;
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Hút Chân Không & Tiên Cơm";
 
-            if (PlayerProvider.HasPlayer)
+            _heroTransform = OwnerTransform;
+            if (_heroTransform != null)
             {
-                _heroTransform = PlayerProvider.PlayerTransform;
                 SpawnPotFollower();
             }
         }
@@ -145,7 +145,7 @@ namespace ProjectZombie.Features.Weapons
         {
             if (_potFollowerInstance == null)
             {
-                if (_heroTransform == null && PlayerProvider.HasPlayer) _heroTransform = PlayerProvider.PlayerTransform;
+                if (_heroTransform == null) _heroTransform = OwnerTransform;
                 if (_heroTransform != null) SpawnPotFollower();
                 return;
             }
@@ -226,7 +226,7 @@ namespace ProjectZombie.Features.Weapons
         public override void OnHeroHitEnemy(DamageData heroDamage, Collider2D enemyHit)
         {
             // Cung cấp hiệu ứng giảm sát thương thụ động cho Hero khi đạt Tiến Hóa (E_POT)
-            if (WeaponLevel >= MaxLevel && PlayerProvider.HasPlayer)
+            if (WeaponLevel >= MaxLevel && OwnerTransform != null)
             {
                 // Thổ Giáp Kim Cang: Tăng cường phòng hộ
             }
@@ -652,9 +652,9 @@ namespace ProjectZombie.Features.Weapons
                 if (riceObj == null || !riceObj.activeInHierarchy) yield break;
                 lifetime -= Time.deltaTime;
 
-                if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+                Transform hero = OwnerTransform;
+                if (hero != null)
                 {
-                    Transform hero = PlayerProvider.PlayerTransform;
                     float dist = Vector2.Distance(riceObj.transform.position, hero.position);
 
                     if (dist <= pickupRadius)

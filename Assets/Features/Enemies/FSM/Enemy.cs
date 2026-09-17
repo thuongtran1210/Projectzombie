@@ -329,7 +329,12 @@ namespace ProjectZombie.Features.Enemies
 
             _nextTargetScanTime = Time.time + TARGET_SCAN_INTERVAL;
 
-            var registry = PlayerProvider.Registry;
+            ProjectZombie.Features.Player.Core.IPlayerRegistry registry = null;
+            if (!ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Player.Core.IPlayerRegistry>(out registry))
+            {
+                registry = PlayerProvider.Registry;
+            }
+
             if (registry != null && TargetSelector != null)
             {
                 var targetContext = TargetSelector.SelectTarget(transform.position, registry);

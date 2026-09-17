@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectZombie.Features.Player.Input;
 
@@ -21,7 +21,7 @@ namespace ProjectZombie.Features.Player
 
         private Rigidbody2D _rb;
         private PlayerStats _playerStats;
-        private PlayerInputReader _inputReader;
+        private IPlayerInputProvider _inputProvider;
         private PlayerAnimator _playerAnimator;
         private Skills.SignatureSkillManager _signatureSkillManager;
         private Weapons.WeaponManager _weaponManager;
@@ -47,7 +47,8 @@ namespace ProjectZombie.Features.Player
         public float FacingDirection => _playerAnimator != null ? _playerAnimator.FacingDirection : (transform.localScale.x >= 0 ? 1f : -1f);
         public Vector2 FacingVector => new Vector2(FacingDirection, 0f);
         public float CurrentSlowMultiplier => _slowMultiplier;
-        public PlayerInputReader InputReader => _inputReader;
+        public IPlayerInputProvider InputProvider => _inputProvider;
+        public PlayerInputReader InputReader => _inputProvider as PlayerInputReader;
 
         /// <summary>
         /// Sự kiện phát ra khi nhân vật thực hiện kỹ năng Dash.
@@ -65,15 +66,17 @@ namespace ProjectZombie.Features.Player
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
             _weaponManager = GetComponent<Weapons.WeaponManager>();
 
-            // Khởi tạo InputReader tập trung
-            _inputReader = GetComponent<PlayerInputReader>();
-            if (_inputReader == null)
+            // Khởi tạo InputProvider tập trung (Mặc định là PlayerInputReader cho Local Player)
+            var reader = GetComponent<PlayerInputReader>();
+            if (reader == null)
             {
-                _inputReader = gameObject.AddComponent<PlayerInputReader>();
+                reader = gameObject.AddComponent<PlayerInputReader>();
             }
 
-            if (moveAction != null) _inputReader.SetMoveAction(moveAction);
-            if (dashAction != null) _inputReader.SetDashAction(dashAction);
+            if (moveAction != null) reader.SetMoveAction(moveAction);
+            if (dashAction != null) reader.SetDashAction(dashAction);
+
+            SetInputProvider(reader);
 
             if (GetComponent<Visuals.PlayerStatusVisuals>() == null)
             {
@@ -91,13 +94,35 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+        /// <summary>
+        /// Gán nguồn Input tùy biến (Local Hardware Reader hoặc Network Input Stream).
+        /// </summary>
+        public void SetInputProvider(IPlayerInputProvider provider)
+        {
+            if (_inputProvider != null)
+            {
+                _inputProvider.OnDashTriggered -= HandleDashTriggered;
+                _inputProvider.OnSignatureSkillTriggered -= HandleSignatureSkillTriggered;
+                _inputProvider.OnRelicSkillTriggered -= HandleRelicSkillTriggered;
+            }
+
+            _inputProvider = provider;
+
+            if (_inputProvider != null && enabled)
+            {
+                _inputProvider.OnDashTriggered += HandleDashTriggered;
+                _inputProvider.OnSignatureSkillTriggered += HandleSignatureSkillTriggered;
+                _inputProvider.OnRelicSkillTriggered += HandleRelicSkillTriggered;
+            }
+        }
+
         private void OnEnable()
         {
-            if (_inputReader != null)
+            if (_inputProvider != null)
             {
-                _inputReader.OnDashTriggered += HandleDashTriggered;
-                _inputReader.OnSignatureSkillTriggered += HandleSignatureSkillTriggered;
-                _inputReader.OnRelicSkillTriggered += HandleRelicSkillTriggered;
+                _inputProvider.OnDashTriggered += HandleDashTriggered;
+                _inputProvider.OnSignatureSkillTriggered += HandleSignatureSkillTriggered;
+                _inputProvider.OnRelicSkillTriggered += HandleRelicSkillTriggered;
             }
 
             if (_signatureSkillManager != null)
@@ -108,11 +133,11 @@ namespace ProjectZombie.Features.Player
 
         private void OnDisable()
         {
-            if (_inputReader != null)
+            if (_inputProvider != null)
             {
-                _inputReader.OnDashTriggered -= HandleDashTriggered;
-                _inputReader.OnSignatureSkillTriggered -= HandleSignatureSkillTriggered;
-                _inputReader.OnRelicSkillTriggered -= HandleRelicSkillTriggered;
+                _inputProvider.OnDashTriggered -= HandleDashTriggered;
+                _inputProvider.OnSignatureSkillTriggered -= HandleSignatureSkillTriggered;
+                _inputProvider.OnRelicSkillTriggered -= HandleRelicSkillTriggered;
             }
 
             if (_signatureSkillManager != null)
@@ -165,8 +190,8 @@ namespace ProjectZombie.Features.Player
                 return; // Khi đang lướt thì không nhận input di chuyển mới
             }
 
-            // Đọc Input di chuyển từ PlayerInputReader
-            _movementInput = _inputReader != null ? _inputReader.MovementInput : Vector2.zero;
+            // Đọc Input di chuyển từ IPlayerInputProvider
+            _movementInput = _inputProvider != null ? _inputProvider.MovementInput : Vector2.zero;
 
             // Xử lý Lật mặt hình ảnh theo hướng di chuyển
             if (_playerAnimator != null && _movementInput.x != 0)

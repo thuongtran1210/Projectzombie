@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -97,7 +97,7 @@ namespace ProjectZombie.Features.Weapons
         {
             if (_pipeFollowerObj == null) return;
 
-            Transform p = PlayerProvider.HasPlayer ? PlayerProvider.PlayerTransform : transform;
+            Transform p = OwnerTransform != null ? OwnerTransform : transform;
             if (p == null) return;
 
             // Lơ lửng lệch vai trái Hero với dao động nhấp nhô khói thuốc
@@ -117,12 +117,9 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformAttack()
         {
             Vector2 forwardDir = transform.right;
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            if (OwnerTransform != null && OwnerTransform.TryGetComponent<PlayerController>(out var player))
             {
-                if (PlayerProvider.PlayerTransform.TryGetComponent<PlayerController>(out var player))
-                {
-                    forwardDir = player.FacingVector;
-                }
+                forwardDir = player.FacingVector;
             }
 
             bool isEvolution = WeaponLevel >= MaxLevel;
@@ -170,15 +167,12 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             Vector2 forwardDir = customAimDirection != Vector2.zero ? customAimDirection : (Vector2)transform.right;
-            if (customAimDirection == Vector2.zero && PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            if (customAimDirection == Vector2.zero && OwnerTransform != null && OwnerTransform.TryGetComponent<PlayerController>(out var player))
             {
-                if (PlayerProvider.PlayerTransform.TryGetComponent<PlayerController>(out var player))
-                {
-                    forwardDir = player.FacingVector;
-                }
+                forwardDir = player.FacingVector;
             }
-            Vector2 origin = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null
-                ? (Vector2)PlayerProvider.PlayerTransform.position
+            Vector2 origin = OwnerTransform != null
+                ? (Vector2)OwnerTransform.position
                 : (Vector2)transform.position;
             PerformActiveRelicSkill(Combat.Aiming.AimResult.FromDirection(forwardDir, origin, ActiveAimDistance));
         }

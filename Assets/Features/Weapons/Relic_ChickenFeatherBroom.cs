@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -145,7 +145,7 @@ namespace ProjectZombie.Features.Weapons
         {
             if (_broomFollowerObj == null) return;
 
-            Transform p = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null ? PlayerProvider.PlayerTransform : transform;
+            Transform p = OwnerTransform != null ? OwnerTransform : transform;
             if (p == null) return;
 
             float bobbing = Mathf.Sin(Time.time * 3f) * 0.12f;
@@ -174,13 +174,13 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             Vector2 aimDir = customAimDirection != Vector2.zero ? customAimDirection.normalized : (Vector2)transform.right;
-            if (customAimDirection == Vector2.zero && PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            if (customAimDirection == Vector2.zero && OwnerTransform != null)
             {
-                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
+                var player = OwnerTransform.GetComponent<PlayerController>();
                 if (player != null) aimDir = player.FacingVector;
             }
 
-            Vector3 startPos = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null ? PlayerProvider.PlayerTransform.position : transform.position;
+            Vector3 startPos = OwnerTransform != null ? OwnerTransform.position : transform.position;
             bool isEvolution = WeaponLevel >= MaxLevel;
 
             StartCoroutine(RoutineLaunchBroomSalvo(startPos, aimDir, isEvolution));
@@ -192,13 +192,13 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformAttack()
         {
             Vector2 forwardDir = transform.right;
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+            if (OwnerTransform != null)
             {
-                var player = PlayerProvider.PlayerTransform.GetComponent<PlayerController>();
+                var player = OwnerTransform.GetComponent<PlayerController>();
                 if (player != null) forwardDir = player.FacingVector;
             }
 
-            Vector3 startPos = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null ? PlayerProvider.PlayerTransform.position : transform.position;
+            Vector3 startPos = OwnerTransform != null ? OwnerTransform.position : transform.position;
             bool isEvolution = WeaponLevel >= MaxLevel;
 
             StartCoroutine(RoutineLaunchBroomSalvo(startPos, forwardDir, isEvolution));
@@ -361,8 +361,8 @@ namespace ProjectZombie.Features.Weapons
             {
                 _collectedFeathers -= feathersRequiredPerMinion;
 
-                Vector3 spawnPos = PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null 
-                    ? PlayerProvider.PlayerTransform.position + (Vector3)Random.insideUnitCircle.normalized * 0.8f 
+                Vector3 spawnPos = OwnerTransform != null 
+                    ? OwnerTransform.position + (Vector3)Random.insideUnitCircle.normalized * 0.8f 
                     : transform.position;
 
                 SpawnChickenMinionCompanion(spawnPos);
@@ -389,7 +389,7 @@ namespace ProjectZombie.Features.Weapons
 
                 if (_activeMinions.Count < maxMinions)
                 {
-                    GameObject minion = ChickenMinionCompanion.SpawnFromPool(chickenMinionPrefab, spawnPos);
+                    GameObject minion = ChickenMinionCompanion.SpawnFromPool(chickenMinionPrefab, spawnPos, OwnerTransform);
                     if (minion != null)
                     {
                         _activeMinions.Add(minion);

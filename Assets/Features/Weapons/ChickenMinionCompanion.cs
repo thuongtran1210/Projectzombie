@@ -42,6 +42,7 @@ namespace ProjectZombie.Features.Weapons
 
         private SpriteRenderer _sr;
         private Transform _targetEnemy;
+        private Transform _ownerTransform;
         private float _lastPeckTime;
         private float _spawnTime;
         private bool _isAttacking;
@@ -109,7 +110,7 @@ namespace ProjectZombie.Features.Weapons
                 return;
             }
 
-            Transform playerTf = PlayerProvider.HasPlayer ? PlayerProvider.PlayerTransform : null;
+            Transform playerTf = _ownerTransform != null ? _ownerTransform : (PlayerProvider.HasPlayer ? PlayerProvider.PlayerTransform : null);
             if (playerTf == null) return;
 
             // 1. Quét tìm quái vật ưu tiên
@@ -372,7 +373,12 @@ namespace ProjectZombie.Features.Weapons
         #region OBJECT POOLING
         private static readonly Queue<ChickenMinionCompanion> _minionPool = new Queue<ChickenMinionCompanion>();
 
-        public static GameObject SpawnFromPool(GameObject prefab, Vector3 spawnPos)
+        public void SetOwner(Transform owner)
+        {
+            _ownerTransform = owner;
+        }
+
+        public static GameObject SpawnFromPool(GameObject prefab, Vector3 spawnPos, Transform owner = null)
         {
             ChickenMinionCompanion minion = null;
             while (_minionPool.Count > 0 && minion == null)
@@ -389,6 +395,11 @@ namespace ProjectZombie.Features.Weapons
             {
                 minion.transform.position = spawnPos;
                 minion.gameObject.SetActive(true);
+            }
+
+            if (minion != null)
+            {
+                minion.SetOwner(owner);
             }
 
             return minion.gameObject;
