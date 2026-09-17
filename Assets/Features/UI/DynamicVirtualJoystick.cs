@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ProjectZombie.Features.UI
@@ -53,6 +53,14 @@ namespace ProjectZombie.Features.UI
         private void Awake()
         {
             Instance = this;
+
+            // Đảm bảo GameObject luôn có Graphic nhận diện Touch Event của EventSystem
+            if (!TryGetComponent<UnityEngine.UI.Image>(out var touchGraphic))
+            {
+                touchGraphic = gameObject.AddComponent<UnityEngine.UI.Image>();
+                touchGraphic.color = new Color(0, 0, 0, 0); // Trong suốt hoàn toàn
+            }
+            touchGraphic.raycastTarget = true; // Bắt buộc phải bật để nhận Touch/Drag từ màn hình cảm ứng
         }
 
         private void OnEnable()
@@ -69,6 +77,12 @@ namespace ProjectZombie.Features.UI
         private void Start()
         {
             AutoResolveReferences();
+
+            // Đảm bảo đối tượng Graphic luôn bật raycastTarget
+            if (TryGetComponent<UnityEngine.UI.Image>(out var touchImg))
+            {
+                touchImg.raycastTarget = true;
+            }
 
             if (_joystickCanvasGroup == null)
             {
@@ -89,10 +103,17 @@ namespace ProjectZombie.Features.UI
                 _joystickCanvasGroup.alpha = 0f;
             }
 
-            // Kiểm tra EventSystem trong Scene
+            // Tự động kiểm tra hoặc khởi tạo EventSystem trong Scene nếu chưa có
             if (EventSystem.current == null)
             {
-                Debug.LogError($"[{nameof(DynamicVirtualJoystick)}] Thiếu GameObject 'EventSystem' trong Scene! Vui lòng tạo EventSystem (GameObject > UI > Event System) để nhận sự kiện chạm/click.");
+                var esObj = new GameObject("EventSystem");
+                esObj.AddComponent<EventSystem>();
+#if ENABLE_INPUT_SYSTEM
+                esObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+#else
+                esObj.AddComponent<StandaloneInputModule>();
+#endif
+                Debug.Log($"<color=#00FF88>[{nameof(DynamicVirtualJoystick)}]</color> Đã tự động khởi tạo EventSystem kèm InputSystemUIInputModule cho Scene.");
             }
 
             if (containerRect == null || handleRect == null)

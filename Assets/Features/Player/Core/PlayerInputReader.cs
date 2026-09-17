@@ -87,19 +87,19 @@ namespace ProjectZombie.Features.Player.Input
         {
             Vector2 rawInput = Vector2.zero;
 
-            // 1. New Input System Action
-            if (moveAction != null && moveAction.action != null && moveAction.action.enabled)
-            {
-                rawInput = moveAction.action.ReadValue<Vector2>();
-            }
-
-            // 2. Fallback: Mobile Dynamic Virtual Joystick
-            if (rawInput.sqrMagnitude < 0.001f && UI.DynamicVirtualJoystick.Instance != null)
+            // 1. Ưu tiên Mobile Dynamic Virtual Joystick khi người chơi đang kéo cần trên màn hình cảm ứng
+            if (UI.DynamicVirtualJoystick.Instance != null && UI.DynamicVirtualJoystick.Instance.InputVector.sqrMagnitude > 0.001f)
             {
                 rawInput = UI.DynamicVirtualJoystick.Instance.InputVector;
             }
 
-            // 3. Fallback: PC Keyboard
+            // 2. New Input System Action (Gamepads, Touch Controls hoặc Hardware Joysticks)
+            if (rawInput.sqrMagnitude < 0.001f && moveAction != null && moveAction.action != null && moveAction.action.enabled)
+            {
+                rawInput = moveAction.action.ReadValue<Vector2>();
+            }
+
+            // 3. Fallback: PC Keyboard (WASD / Mũi tên)
 #if ENABLE_INPUT_SYSTEM
             if (rawInput.sqrMagnitude < 0.001f && Keyboard.current != null)
             {
