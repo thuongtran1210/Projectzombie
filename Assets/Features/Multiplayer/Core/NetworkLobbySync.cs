@@ -181,10 +181,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private int GetLivePing(PlayerRef player)
         {
-            if (_runner == null) return 15;
-            double rtt = _runner.GetPlayerRtt(player);
-            if (rtt <= 0) return _isHost ? 8 : 25;
-            return Mathf.Clamp(Mathf.RoundToInt((float)(rtt * 1000.0)), 1, 999);
+            if (_runner == null || !_runner.IsRunning) return _isHost ? 8 : 25;
+            try
+            {
+                double rtt = _runner.GetPlayerRtt(player);
+                if (rtt <= 0) return _isHost ? 8 : 25;
+                return Mathf.Clamp(Mathf.RoundToInt((float)(rtt * 1000.0)), 1, 999);
+            }
+            catch
+            {
+                return _isHost ? 8 : 25;
+            }
         }
 
         // =========================================================================
