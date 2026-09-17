@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI
 {
@@ -102,6 +103,13 @@ namespace ProjectZombie.Features.UI
 
         private void Start()
         {
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.OnStateChanged -= HandleGameStateChanged;
+                GameStateManager.Instance.OnStateChanged += HandleGameStateChanged;
+                HandleGameStateChanged(GameStateManager.Instance.CurrentState);
+            }
+
             if (_mainHubScreen != null && (_screenStack.Count == 0 || _screenStack.Peek() != _mainHubScreen))
             {
                 PushScreen(_mainHubScreen);
@@ -109,6 +117,27 @@ namespace ProjectZombie.Features.UI
 
             // Prewarm ngầm các màn hình phụ qua từng frame để khi người chơi click thì đã có sẵn trong RAM (0 ms latency)
             StartCoroutine(PrewarmScreensInBackground());
+        }
+
+        private void OnDestroy()
+        {
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.OnStateChanged -= HandleGameStateChanged;
+            }
+        }
+
+        private void HandleGameStateChanged(GameState state)
+        {
+            if (state == GameState.MainMenu)
+            {
+                SetMetaCanvasActive(true);
+            }
+            else
+            {
+                // Khi đang trong trận đấu (Playing, Paused, LevelUpSelection, GameOver), ẩn toàn bộ Meta Menu Canvas
+                SetMetaCanvasActive(false);
+            }
         }
 
         /// <summary>

@@ -214,14 +214,34 @@ namespace ProjectZombie.Features.UI.Lobby
             if (_view != null)
             {
                 _view.SetStatusMessage("<color=#00FF88>Trận đấu bắt đầu! Đang tải bản đồ...</color>");
+                _view.Hide();
+                _view.gameObject.SetActive(false);
             }
 
             OnMatchStartedTransition?.Invoke();
 
-            // Nếu GameplayBootstrapper có sẵn trong scene, chuyển trạng thái sang Playing
-            if (Player.GameplayBootstrapper.Instance != null)
+            // 1. Nếu có MetaSceneTransitionController, chuyển cảnh mượt mà
+            if (MetaSceneTransitionController.Instance != null)
             {
-                Player.GameplayBootstrapper.Instance.StartMatchFlow();
+                MetaSceneTransitionController.Instance.TransitionToCombat(null);
+            }
+            else
+            {
+                // Fallback: Ẩn Meta Canvas và mở Gameplay Canvas
+                if (MetaUIManager.Instance != null)
+                {
+                    MetaUIManager.Instance.SetMetaCanvasActive(false);
+                }
+                if (GameplayUIManager.Instance != null)
+                {
+                    GameplayUIManager.Instance.SetGameplayCanvasActive(true);
+                }
+
+                // Nếu GameplayBootstrapper có sẵn trong scene, chuyển trạng thái sang Playing
+                if (Player.GameplayBootstrapper.Instance != null)
+                {
+                    Player.GameplayBootstrapper.Instance.StartMatchFlow();
+                }
             }
         }
 
