@@ -84,7 +84,7 @@ namespace ProjectZombie.Features.Weapons
         #region PIPE FOLLOWER VISUAL (CHIẾC ĐIẾU CÀY BAY TRÊN VAI TƯỚNG)
         private void CreatePipeFollower()
         {
-            if (transform.root.name.Contains("Preview") || GetComponentInParent<CharacterPreviewStage>() != null) return;
+            if (transform.root.name.Contains("Preview") || transform.root.name.Contains("Stage")) return;
             if (_pipeFollowerObj != null || pipeFollowerSprite == null) return;
 
             _pipeFollowerObj = new GameObject("Pipe_Orbital_Follower");

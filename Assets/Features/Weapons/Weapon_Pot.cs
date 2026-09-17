@@ -123,7 +123,7 @@ namespace ProjectZombie.Features.Weapons
         #region POT FOLLOWER VISUAL (LƠ LỬNG SAU LƯNG HERO)
         private void SpawnPotFollower()
         {
-            if (transform.root.name.Contains("Preview") || GetComponentInParent<CharacterPreviewStage>() != null) return;
+            if (transform.root.name.Contains("Preview") || transform.root.name.Contains("Stage")) return;
             if (_potFollowerInstance != null) return;
 
             _potFollowerInstance = new GameObject("Pot_Orbital_Follower");
