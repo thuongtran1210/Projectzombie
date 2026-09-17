@@ -72,7 +72,7 @@ TextureImporter:
     cramFormat: 0
     cramTextureCompression: 1
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_Internal: 0
   spriteSheet:
