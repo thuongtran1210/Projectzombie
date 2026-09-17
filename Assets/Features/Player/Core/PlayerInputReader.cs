@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Player.Input
         [Header("State")]
         [SerializeField] private bool isInputBlocked = false;
 
+        private byte _pendingButtonBitmask = 0;
+
         public bool IsInputBlocked
         {
             get => isInputBlocked;
@@ -36,6 +38,18 @@ namespace ProjectZombie.Features.Player.Input
 
         public void SetMoveAction(InputActionReference action) => moveAction = action;
         public void SetDashAction(InputActionReference action) => dashAction = action;
+
+        public void QueueButton(Multiplayer.Core.NetworkInputButtons button)
+        {
+            _pendingButtonBitmask |= (byte)button;
+        }
+
+        public Multiplayer.Core.NetworkInputButtons ConsumePendingButtons()
+        {
+            var buttons = (Multiplayer.Core.NetworkInputButtons)_pendingButtonBitmask;
+            _pendingButtonBitmask = 0;
+            return buttons;
+        }
 
         private void OnEnable()
         {
@@ -189,24 +203,28 @@ namespace ProjectZombie.Features.Player.Input
         public void TriggerDash()
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
+            QueueButton(Multiplayer.Core.NetworkInputButtons.Dash);
             OnDashTriggered?.Invoke();
         }
 
         public void TriggerAttack()
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
+            QueueButton(Multiplayer.Core.NetworkInputButtons.Attack);
             OnAttackTriggered?.Invoke();
         }
 
         public void TriggerSignatureSkill()
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
+            QueueButton(Multiplayer.Core.NetworkInputButtons.SignatureSkill);
             OnSignatureSkillTriggered?.Invoke();
         }
 
         public void TriggerRelicSkill()
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
+            QueueButton(Multiplayer.Core.NetworkInputButtons.RelicSkill);
             OnRelicSkillTriggered?.Invoke();
         }
     }

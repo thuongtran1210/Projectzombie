@@ -274,19 +274,23 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             var inputData = new NetworkInputData();
             Vector2 moveDir = Vector2.zero;
+            NetworkInputButtons buttons = NetworkInputButtons.None;
 
-            // 1. Ưu tiên đọc trực tiếp từ Mobile Virtual Joystick
+            // 1. Đọc từ PlayerInputReader của Local Player
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerInputReader>(out var inputReader))
+            {
+                moveDir = inputReader.MovementInput;
+                buttons = inputReader.ConsumePendingButtons();
+            }
+
+            // 2. Ưu tiên ghi đè moveDir từ Mobile Virtual Joystick nếu có thao tác chạm thực tế
             if (ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance != null && ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance.InputVector.sqrMagnitude > 0.001f)
             {
                 moveDir = ProjectZombie.Features.UI.DynamicVirtualJoystick.Instance.InputVector;
             }
-            // 2. Đọc từ PlayerInputReader của Local Player
-            else if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerInputReader>(out var inputReader))
-            {
-                moveDir = inputReader.MovementInput;
-            }
+
             // 3. Fallback: Đọc từ New Input System Keyboard khi chạy trong Unity Editor hoặc Standalone
-            else
+            if (moveDir.sqrMagnitude < 0.001f)
             {
 #if ENABLE_INPUT_SYSTEM
                 if (UnityEngine.InputSystem.Keyboard.current != null)
@@ -303,6 +307,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
 
             inputData.MoveDirection = moveDir.sqrMagnitude > 1f ? moveDir.normalized : moveDir;
+            inputData.Buttons = buttons;
             input.Set(inputData);
         }
 

@@ -115,14 +115,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
         }
 
+        private NetworkInputButtons _previousButtons = NetworkInputButtons.None;
+
         public override void FixedUpdateNetwork()
         {
-            // Điều phối di chuyển Network-Authoritative trên State Authority (Host)
+            // Điều phối di chuyển và hành động Network-Authoritative trên State Authority (Host)
             if (GetInput<NetworkInputData>(out var networkInput))
             {
-                if (Object.HasStateAuthority && _controller != null)
+                if (Object.HasStateAuthority)
                 {
-                    _controller.ApplyNetworkMovement(networkInput.MoveDirection);
+                    if (_controller != null)
+                    {
+                        _controller.ApplyNetworkMovement(networkInput.MoveDirection);
+                    }
+
+                    ProcessNetworkActions(networkInput.Buttons);
                 }
 
                 if (_networkInputBridge != null && _networkInputBridge.enabled)
@@ -132,11 +139,52 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
             else
             {
-                if (Object.HasStateAuthority && _controller != null)
+                if (Object.HasStateAuthority)
                 {
-                    _controller.ApplyNetworkMovement(Vector2.zero);
+                    if (_controller != null)
+                    {
+                        _controller.ApplyNetworkMovement(Vector2.zero);
+                    }
+                    _previousButtons = NetworkInputButtons.None;
                 }
             }
+        }
+
+        private void ProcessNetworkActions(NetworkInputButtons currentButtons)
+        {
+            // Phát hiện Rising Edge (Cạnh lên: 0 -> 1) để kích hoạt đòn đánh / skill / lướt 1 lần duy nhất
+            if ((currentButtons & NetworkInputButtons.Dash) != 0 && (_previousButtons & NetworkInputButtons.Dash) == 0)
+            {
+                if (_controller != null) _controller.PerformDash();
+            }
+
+            if ((currentButtons & NetworkInputButtons.Attack) != 0 && (_previousButtons & NetworkInputButtons.Attack) == 0)
+            {
+                var combat = GetComponent<Weapons.CharacterCombat>();
+                if (combat != null)
+                {
+                    combat.TriggerAttack();
+                }
+                else
+                {
+                    var wm = GetComponent<Weapons.WeaponManager>();
+                    if (wm != null) wm.TriggerPrimaryAttack();
+                }
+            }
+
+            if ((currentButtons & NetworkInputButtons.SignatureSkill) != 0 && (_previousButtons & NetworkInputButtons.SignatureSkill) == 0)
+            {
+                var sig = GetComponent<Skills.SignatureSkillManager>();
+                if (sig != null) sig.TryExecuteSkill();
+            }
+
+            if ((currentButtons & NetworkInputButtons.RelicSkill) != 0 && (_previousButtons & NetworkInputButtons.RelicSkill) == 0)
+            {
+                var wm = GetComponent<Weapons.WeaponManager>();
+                if (wm != null) wm.TriggerEquippedRelicSkill();
+            }
+
+            _previousButtons = currentButtons;
         }
     }
 }
