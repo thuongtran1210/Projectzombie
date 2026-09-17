@@ -95,6 +95,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 // Chuyển đổi PlayerRegistry sang chế độ Multiplayer
                 ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new MultiplayerPlayerRegistry());
 
+                // Dọn dẹp thực thể nhân vật Offline/Singleplayer trong Scene
+                GameplayBootstrapper.Instance?.DespawnActivePlayer();
+
                 OnRoomUpdated?.Invoke(_currentRoom);
                 return true;
             }
@@ -162,6 +165,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 // Chuyển đổi PlayerRegistry sang chế độ Multiplayer
                 ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new MultiplayerPlayerRegistry());
 
+                // Dọn dẹp thực thể nhân vật Offline/Singleplayer trong Scene
+                GameplayBootstrapper.Instance?.DespawnActivePlayer();
+
                 OnRoomUpdated?.Invoke(_currentRoom);
                 return true;
             }
@@ -191,6 +197,10 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             _currentRoom = null;
             _isHost = false;
+
+            // Khôi phục nhân vật Offline/Singleplayer cho Sảnh nếu quay về Menu chính
+            GameplayBootstrapper.Instance?.SpawnPlayerForActiveHero();
+
             OnRoomUpdated?.Invoke(null);
         }
 

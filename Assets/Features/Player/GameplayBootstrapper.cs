@@ -158,6 +158,15 @@ namespace ProjectZombie.Features.Player
             return defaultPlayerPrefab;
         }
 
+        public void DespawnActivePlayer()
+        {
+            if (_activePlayerInstance != null)
+            {
+                Destroy(_activePlayerInstance);
+                _activePlayerInstance = null;
+            }
+        }
+
         private void SpawnPlayer(GameObject playerPrefab)
         {
             if (_activePlayerInstance != null)
