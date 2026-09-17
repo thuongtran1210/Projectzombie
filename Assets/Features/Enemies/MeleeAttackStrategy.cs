@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Boss;
 
@@ -118,6 +118,7 @@ namespace ProjectZombie.Features.Enemies
 
         private void DealMeleeDamage()
         {
+            if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
             if (_enemy == null || _enemy.Config == null) return;
             if (_enemy.StatusController != null && !_enemy.StatusController.CanAttack) return;
             if (_hasDealtDamageThisAttack) return; // Khóa chống lặp sát thương trong 1 nhịp chém

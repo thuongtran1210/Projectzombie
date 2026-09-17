@@ -104,6 +104,7 @@ namespace ProjectZombie.Features.Shared
         public void TakeDamage(float amount)
         {
             if (_currentHealth <= 0 || IsInvulnerable) return; 
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing) return;
 
             _currentHealth -= amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
@@ -129,6 +130,7 @@ namespace ProjectZombie.Features.Shared
         public void TakeDamage(DamageData damageData)
         {
             if (_currentHealth <= 0 || IsInvulnerable) return;
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing) return;
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);

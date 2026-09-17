@@ -74,7 +74,20 @@ namespace ProjectZombie.Features.Combat.Coop
 
         private bool HandleTryDie()
         {
-            // Trong chế độ Co-op, chặn cái chết mặc định và chuyển sang Downed
+            // Chỉ kích hoạt trạng thái Downed (Gục ngã chờ cứu) khi:
+            // 1. Đang trong trận chiến đấu (GameState.Playing).
+            // 2. Đang trong phòng Multiplayer Co-op có nhiều hơn 1 người chơi.
+            bool isPlaying = GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.Playing;
+            bool isMultiplayerMatch = ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && 
+                                      session.IsInRoom && 
+                                      session.CurrentRoom != null && 
+                                      session.CurrentRoom.Players.Count > 1;
+
+            if (!isPlaying || !isMultiplayerMatch)
+            {
+                return false; // Chơi Solo / Offline / Ở Sảnh: Cho phép HealthSystem xử lý chết/GameOver thông thường
+            }
+
             EnterDownedState();
             return true; // Chặn cái chết để HealthSystem không disable GameObject
         }
