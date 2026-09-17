@@ -23,6 +23,36 @@ namespace ProjectZombie.Features.MatchFlow
             GameplayBootstrapper gameplayBootstrapper,
             Action<float, string> reportProgress = null)
         {
+            // Tự động resolve stage mặc định nếu chưa chọn
+            if (stage == null)
+            {
+                var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
+                         ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
+#if UNITY_EDITOR
+                if (db == null)
+                {
+                    db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/WorldStageDatabase.asset")
+                         ?? UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
+                }
+#endif
+                if (db != null && db.Stages != null && db.Stages.Count > 0)
+                {
+                    stage = db.Stages[0];
+                }
+                else
+                {
+                    stage = Resources.Load<StageDefinitionSO>("Levels/Stage_01_BambooForest")
+                            ?? Resources.Load<StageDefinitionSO>("Levels/Stages/Stage_01_BambooForest");
+#if UNITY_EDITOR
+                    if (stage == null)
+                    {
+                        stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset")
+                                ?? UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/Resources/Levels/Stage_01_BambooForest.asset");
+                    }
+#endif
+                }
+            }
+
             // -------------------------------------------------------------
             // BƯỚC 1: Cấu hình Timeline Ải
             // -------------------------------------------------------------
@@ -88,7 +118,11 @@ namespace ProjectZombie.Features.MatchFlow
 
         private static async Task LoadMapAsync(StageDefinitionSO stage)
         {
-            if (stage == null || string.IsNullOrEmpty(stage.mapPrefabAddress)) return;
+            if (stage == null || string.IsNullOrEmpty(stage.mapPrefabAddress))
+            {
+                EnableStaticSceneEnvironments();
+                return;
+            }
 
             // 1. Dọn dẹp map cũ và vô hiệu hóa các môi trường tĩnh có sẵn trong Scene để tránh trùng lặp Collider
             DestroyCurrentMapInstance();
@@ -107,6 +141,8 @@ namespace ProjectZombie.Features.MatchFlow
                     if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                     {
                         _currentMapInstance = handle.Result;
+                        _currentMapInstance.transform.position = Vector3.zero;
+                        _currentMapInstance.SetActive(true);
                         SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
                         loadedFromAddressables = true;
                     }
@@ -125,17 +161,26 @@ namespace ProjectZombie.Features.MatchFlow
             // 2. Fallback sang Resources nếu offline hoặc Addressables chưa build
             if (!loadedFromAddressables)
             {
-                var mapPrefab = Resources.Load<GameObject>($"Maps/{stage.mapPrefabAddress}");
+                var mapPrefab = Resources.Load<GameObject>($"Maps/{stage.mapPrefabAddress}")
+                                ?? Resources.Load<GameObject>(stage.mapPrefabAddress);
+#if UNITY_EDITOR
+                if (mapPrefab == null)
+                {
+                    mapPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Prefabs/Maps/{stage.mapPrefabAddress}.prefab")
+                                ?? UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Resources/Maps/{stage.mapPrefabAddress}.prefab");
+                }
+#endif
                 if (mapPrefab != null)
                 {
-                    _currentMapInstance = UnityEngine.Object.Instantiate(mapPrefab);
+                    _currentMapInstance = UnityEngine.Object.Instantiate(mapPrefab, Vector3.zero, Quaternion.identity);
                     _currentMapInstance.name = stage.mapPrefabAddress;
+                    _currentMapInstance.SetActive(true);
                     SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
-                    Debug.Log($"<color=#00FF88>[MatchFlowOrchestrator] Đã nạp thành công Map '{stage.mapPrefabAddress}' từ Resources!</color>");
+                    Debug.Log($"<color=#00FF88>[MatchFlowOrchestrator] Đã nạp thành công Map '{stage.mapPrefabAddress}'!</color>");
                 }
                 else
                 {
-                    Debug.Log($"[MatchFlowOrchestrator] Không tìm thấy Map '{stage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định trong Scene.");
+                    Debug.LogWarning($"[MatchFlowOrchestrator] Không tìm thấy Map '{stage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định trong Scene.");
                     EnableStaticSceneEnvironments();
                 }
             }
