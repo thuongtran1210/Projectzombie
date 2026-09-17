@@ -351,6 +351,15 @@ namespace ProjectZombie.Features.Spawners
         {
             if (!_waveScheduler.IsMatchActive || timelineConfig == null) return;
 
+            // Trong Multiplayer: Chỉ có Chủ Phòng (Host) mới được quyền chạy nhịp sinh quái vật
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session))
+            {
+                if (session.IsInRoom && !session.IsHost)
+                {
+                    return; // Client không tự chạy spawner tránh lệch nhịp quái
+                }
+            }
+
             // 1. Cập nhật thời gian và nhận danh sách các sự kiện wave đến hạn
             var dueEvents = _waveScheduler.Tick(Time.deltaTime, out _);
 

@@ -197,7 +197,11 @@ namespace ProjectZombie.Features.UI
                 {
                     _view.SetActive(true);
                 }
-                Time.timeScale = 0f;
+                bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+                if (!isMultiplayer)
+                {
+                    Time.timeScale = 0f;
+                }
                 PopulateUpgradeScreen();
             }
         }
@@ -231,6 +235,16 @@ namespace ProjectZombie.Features.UI
         private void PopulateUpgradeScreen()
         {
             Debug.Log("<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> PopulateUpgradeScreen() ĐANG CHẠY...");
+
+            // Cấp khiên bất tử tạm thời trong chế độ Co-op để bảo vệ người chơi khi đang chọn thẻ
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject.TryGetComponent<HealthSystem>(out var hp))
+            {
+                bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+                if (isMultiplayer)
+                {
+                    hp.TriggerInvulnerability(6.0f);
+                }
+            }
 
             if (_view == null)
             {

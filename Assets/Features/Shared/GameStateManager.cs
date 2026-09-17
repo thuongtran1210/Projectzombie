@@ -54,8 +54,12 @@ namespace ProjectZombie.Features.Shared
                 case GameState.Playing:
                     Time.timeScale = 1f;
                     break;
-                case GameState.Paused:
                 case GameState.LevelUpSelection:
+                    // Trong Multiplayer Co-op: KHÔNG dừng Time.timeScale để đảm bảo nhịp tick mạng liên tục
+                    bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+                    Time.timeScale = isMultiplayer ? 1f : 0f;
+                    break;
+                case GameState.Paused:
                 case GameState.GameOver:
                     Time.timeScale = 0f;
                     break;

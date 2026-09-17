@@ -21,7 +21,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
     /// Chuẩn hóa sẵn sàng tương thích với Photon Fusion INetworkInput hoặc bất kỳ Network Transport nào.
     /// </summary>
     [System.Serializable]
-    public struct NetworkInputData
+    public struct NetworkInputData : Fusion.INetworkInput
     {
         /// <summary>
         /// Hướng di chuyển của người chơi (Normalized Vector2).
