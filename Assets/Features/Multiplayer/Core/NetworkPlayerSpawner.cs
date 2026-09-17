@@ -27,6 +27,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (Runner.IsServer)
             {
+                if (_spawnedCharacters.TryGetValue(player, out var existing) && existing != null)
+                {
+                    return;
+                }
+
                 Vector3 spawnPos = GetSpawnPosition(player.PlayerId);
                 Quaternion spawnRot = Quaternion.identity;
 
