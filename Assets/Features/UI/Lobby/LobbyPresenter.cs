@@ -21,24 +21,14 @@ namespace ProjectZombie.Features.UI.Lobby
 
         private void Start()
         {
-            // Lấy Session Service từ ServiceContext hoặc tìm PhotonFusionSessionService, fallback sang Mock
+            // Khởi tạo PhotonFusionSessionService cho kết nối mạng thực tế qua Photon Cloud
             if (!ServiceContext.TryGet(out _sessionService))
             {
                 var photonService = GetComponent<PhotonFusionSessionService>();
-                if (photonService == null)
-                {
-                    photonService = FindObjectOfType<PhotonFusionSessionService>();
-                }
+                if (photonService == null) photonService = FindObjectOfType<PhotonFusionSessionService>();
+                if (photonService == null) photonService = gameObject.AddComponent<PhotonFusionSessionService>();
 
-                if (photonService != null)
-                {
-                    _sessionService = photonService;
-                }
-                else
-                {
-                    _sessionService = new MockNetworkSessionService();
-                }
-
+                _sessionService = photonService;
                 ServiceContext.Register(_sessionService);
             }
 

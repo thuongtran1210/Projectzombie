@@ -86,7 +86,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Modal_ResourceDownload
   - screenType: 9
-    screenPrefab: {fileID: 3021659932987336254, guid: ba1bd2de7d80c5f459e770b8c143d4fe, type: 3}
+    screenPrefab: {fileID: 8756101074302200701, guid: ba1bd2de7d80c5f459e770b8c143d4fe, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 

@@ -31,10 +31,27 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 Quaternion spawnRot = Quaternion.identity;
 
                 // Host sinh thực thể trên mạng và cấp Input Authority cho Client tương ứng
-                NetworkObject playerObject = Runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
-                _spawnedCharacters.Add(player, playerObject);
+                NetworkObject playerObject = null;
+                if (_networkPlayerPrefab.IsValid)
+                {
+                    playerObject = Runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
+                }
+                else
+                {
+                    var fallbackPrefab = Resources.Load<GameObject>("Players/Dao Si")
+                                         ?? Resources.Load<GameObject>("Players/DaoSi")
+                                         ?? Resources.Load<GameObject>("Players/Thu Sinh");
+                    if (fallbackPrefab != null && fallbackPrefab.TryGetComponent<NetworkObject>(out var netObj))
+                    {
+                        playerObject = Runner.Spawn(netObj, spawnPos, spawnRot, player);
+                    }
+                }
 
-                Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Host đã spawn nhân vật cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                if (playerObject != null)
+                {
+                    _spawnedCharacters[player] = playerObject;
+                    Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Host đã spawn nhân vật cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                }
             }
         }
 

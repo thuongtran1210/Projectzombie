@@ -46,7 +46,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (isLocal)
             {
-                // 1. CẤU HÌNH CHO NGƯỜI CHƠI CỤC BỘ (LOCAL PLAYER)
+                // 1. TỰ ĐỘNG CHUYỂN GIAO DIỆN SANG GAMEPLAY HUD CHO CLIENT
+                if (ProjectZombie.Features.UI.MetaUIManager.Instance != null)
+                {
+                    ProjectZombie.Features.UI.MetaUIManager.Instance.SetMetaCanvasActive(false);
+                }
+                if (ProjectZombie.Features.UI.GameplayUIManager.Instance != null)
+                {
+                    ProjectZombie.Features.UI.GameplayUIManager.Instance.SetGameplayCanvasActive(true);
+                }
+                if (ProjectZombie.Features.Shared.GameStateManager.Instance != null)
+                {
+                    ProjectZombie.Features.Shared.GameStateManager.Instance.ChangeState(ProjectZombie.Features.Shared.GameState.Playing);
+                }
+
+                // 2. CẤU HÌNH CHO NGƯỜI CHƠI CỤC BỘ (LOCAL PLAYER)
                 if (_localInputReader != null)
                 {
                     _localInputReader.enabled = true;
@@ -66,7 +80,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 // Đăng ký PlayerProvider toàn cục
                 PlayerProvider.RegisterPlayer(gameObject);
 
-                Debug.Log($"<color=#00FF88>[NetworkPlayerCharacter]</color> Khởi tạo Local Player thành công (PlayerId #{playerId}).");
+                Debug.Log($"<color=#00FF88>[NetworkPlayerCharacter]</color> Khởi tạo Local Player thành công (PlayerId #{playerId}) và đã chuyển sang Gameplay HUD.");
             }
             else
             {
