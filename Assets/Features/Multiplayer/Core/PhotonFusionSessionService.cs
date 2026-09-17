@@ -176,6 +176,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (_activeRunner != null)
             {
+                if (_activeRunner.TryGetComponent<NetworkPlayerSpawner>(out var spawner))
+                {
+                    spawner.StopMatch();
+                }
+
                 await _activeRunner.Shutdown();
                 if (_activeRunner != null)
                 {
@@ -201,8 +206,26 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (_activeRunner == null || !_isHost) return;
 
-            await Task.Delay(100);
             if (_currentRoom != null) _currentRoom.IsGameStarted = true;
+
+            // 1. Host kích hoạt Spawner để spawn nhân vật cho tất cả người chơi trong phòng
+            if (_activeRunner.TryGetComponent<NetworkPlayerSpawner>(out var spawner))
+            {
+                spawner.StartMatch();
+            }
+
+            // 2. Gửi tín hiệu Reliable bắt đầu trận đấu tới tất cả các Client khác
+            byte[] startSignal = new byte[] { 1 }; // Mã 1: Bắt đầu trận đấu (Match Start)
+            var msgKey = ReliableKey.FromInt(1);
+            foreach (var player in _activeRunner.ActivePlayers)
+            {
+                if (player != _activeRunner.LocalPlayer)
+                {
+                    _activeRunner.SendReliableDataToPlayer(player, msgKey, startSignal);
+                }
+            }
+
+            await Task.Delay(50);
             OnMatchStarted?.Invoke();
         }
 
@@ -332,6 +355,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            if (runner != null && runner.TryGetComponent<NetworkPlayerSpawner>(out var spawner))
+            {
+                spawner.StopMatch();
+            }
+
             _currentRoom = null;
             _isHost = false;
             OnRoomUpdated?.Invoke(null);
@@ -353,7 +381,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        {
+            if (data.Count > 0 && data.Array != null)
+            {
+                byte msgType = data.Array[data.Offset];
+                if (msgType == 1) // 1: MATCH_START
+                {
+                    Debug.Log("<color=#00FF88>[PhotonFusionSessionService]</color> Client nhận tín hiệu bắt đầu trận đấu từ Host!");
+                    if (_currentRoom != null) _currentRoom.IsGameStarted = true;
+                    OnMatchStarted?.Invoke();
+                }
+            }
+        }
+
         public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
         public void OnSceneLoadDone(NetworkRunner runner) { }
         public void OnSceneLoadStart(NetworkRunner runner) { }
