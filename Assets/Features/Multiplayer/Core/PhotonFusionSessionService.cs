@@ -222,6 +222,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             _activeRunner.AddCallbacks(this);
             _activeRunner.ProvideInput = true;
+
+            if (_activeRunner.GetComponent<NetworkPlayerSpawner>() == null)
+            {
+                _activeRunner.gameObject.AddComponent<NetworkPlayerSpawner>();
+            }
         }
 
         private string GenerateRandomRoomCode()
@@ -242,6 +247,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
+            if (runner.IsServer && runner.TryGetComponent<NetworkPlayerSpawner>(out var spawner))
+            {
+                spawner.PlayerJoined(player);
+            }
+
             if (_currentRoom == null) return;
 
             bool isLocal = player == runner.LocalPlayer;
@@ -263,6 +273,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
+            if (runner.IsServer && runner.TryGetComponent<NetworkPlayerSpawner>(out var spawner))
+            {
+                spawner.PlayerLeft(player);
+            }
+
             if (_currentRoom == null) return;
 
             string pid = player.ToString();

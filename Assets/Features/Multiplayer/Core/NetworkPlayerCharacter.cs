@@ -36,6 +36,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
             int playerId = Object.InputAuthority.PlayerId;
             bool isLocal = Object.HasInputAuthority;
 
+            // Nếu là Scene Object chưa được gán InputAuthority trong phòng Multiplayer (PlayerId #-1)
+            if (Object.InputAuthority == PlayerRef.None && Runner != null && Runner.IsRunning)
+            {
+                Debug.Log($"<color=#AAAAAA>[NetworkPlayerCharacter]</color> Ẩn Scene Object tĩnh (PlayerId #-1) để nhường quyền cho NetworkPlayerSpawner sinh nhân vật có Authority.");
+                gameObject.SetActive(false);
+                return;
+            }
+
             _playerContext = PlayerContext.Create(gameObject, isLocal: isLocal, playerId: playerId);
 
             // Đăng ký vào PlayerRegistry tập trung (MultiplayerPlayerRegistry)
