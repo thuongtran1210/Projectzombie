@@ -254,8 +254,10 @@ namespace ProjectZombie.EditorTools.BuildSync
             }
         }
 
-        public static string GetSyncSummary()
+        public static string PerformFullSync()
         {
+            EnsureDirectory("Assets/Resources");
+
             var sb = new StringBuilder();
             sb.AppendLine($"[THỜI GIAN: {DateTime.Now:HH:mm:ss}]");
 
@@ -282,5 +284,7 @@ namespace ProjectZombie.EditorTools.BuildSync
 
             return sb.ToString();
         }
+
+        public static string GetSyncSummary() => PerformFullSync();
     }
 }
