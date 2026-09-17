@@ -10,10 +10,19 @@ namespace ProjectZombie.Editor.UITools
     /// Công cụ Editor tự động tạo và liên kết các Prefab UI vào UIRegistrySO.
     /// Giúp Designer và Dev không phải kéo thả thủ công từng Prefab.
     /// </summary>
+    [InitializeOnLoad]
     public static class UIRegistrySetupTool
     {
         private const string REGISTRY_PATH = "Assets/Resources/UI/UIRegistry.asset";
         private const string REGISTRY_DIR = "Assets/Resources/UI";
+
+        static UIRegistrySetupTool()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                CreateOrUpdateUIRegistry();
+            };
+        }
 
         [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/8. Setup UIRegistry Asset", priority = 169)]
         public static void CreateOrUpdateUIRegistry()

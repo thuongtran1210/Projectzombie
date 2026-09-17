@@ -66,19 +66,78 @@ namespace ProjectZombie.Features.UI
             else if (entry.screenPrefabRef != null && entry.screenPrefabRef.editorAsset != null)
             {
                 var go = UnityEngine.Object.Instantiate(entry.screenPrefabRef.editorAsset as GameObject, _container);
-                newScreen = go != null ? go.GetComponent<BaseMetaScreenView>() : null;
+                newScreen = go != null ? (go.GetComponent<BaseMetaScreenView>() ?? go.GetComponentInChildren<BaseMetaScreenView>(true)) : null;
             }
 #else
             else if (entry.screenPrefabRef != null && entry.screenPrefabRef.Asset != null)
             {
                 var go = UnityEngine.Object.Instantiate(entry.screenPrefabRef.Asset as GameObject, _container);
-                newScreen = go != null ? go.GetComponent<BaseMetaScreenView>() : null;
+                newScreen = go != null ? (go.GetComponent<BaseMetaScreenView>() ?? go.GetComponentInChildren<BaseMetaScreenView>(true)) : null;
+            }
+#endif
+
+            // Fallback 1: Nạp từ Resources/UI
+            if (newScreen == null)
+            {
+                string[] resourceNames = new[]
+                {
+                    $"UI/{entry.screenHierarchyName}",
+                    $"UI/LobbyModalUI",
+                    $"UI/{screenType}ModalUI",
+                    $"UI/{screenType}UI",
+                    $"UI/{screenType}Panel",
+                    $"UI/{screenType}_Screen",
+                    $"UI/{screenType}"
+                };
+
+                foreach (var resName in resourceNames)
+                {
+                    var prefabGo = Resources.Load<GameObject>(resName);
+                    if (prefabGo != null)
+                    {
+                        var go = UnityEngine.Object.Instantiate(prefabGo, _container);
+                        if (go != null)
+                        {
+                            newScreen = go.GetComponent<BaseMetaScreenView>() ?? go.GetComponentInChildren<BaseMetaScreenView>(true);
+                            if (newScreen != null) break;
+                        }
+                    }
+                }
+            }
+
+#if UNITY_EDITOR
+            // Fallback 2 (Editor Assets): Nạp trực tiếp từ AssetDatabase
+            if (newScreen == null)
+            {
+                string[] editorPaths = new[]
+                {
+                    $"Assets/Resources/UI/LobbyModalUI.prefab",
+                    $"Assets/_Prefabs/UI/LobbyModalUI.prefab",
+                    $"Assets/Resources/UI/{entry.screenHierarchyName}.prefab",
+                    $"Assets/_Prefabs/UI/{entry.screenHierarchyName}.prefab",
+                    $"Assets/Resources/UI/{screenType}UI.prefab",
+                    $"Assets/_Prefabs/UI/{screenType}UI.prefab"
+                };
+
+                foreach (var path in editorPaths)
+                {
+                    var prefabGo = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (prefabGo != null)
+                    {
+                        var go = UnityEngine.Object.Instantiate(prefabGo, _container);
+                        if (go != null)
+                        {
+                            newScreen = go.GetComponent<BaseMetaScreenView>() ?? go.GetComponentInChildren<BaseMetaScreenView>(true);
+                            if (newScreen != null) break;
+                        }
+                    }
+                }
             }
 #endif
 
             if (newScreen == null)
             {
-                Debug.LogError($"[UIScreenFactory] Không thể khởi tạo Prefab cho '{screenType}' từ UIRegistrySO!");
+                Debug.LogError($"[UIScreenFactory] Không thể khởi tạo Prefab cho '{screenType}' từ UIRegistrySO và Resources fallback!");
                 return null;
             }
 
