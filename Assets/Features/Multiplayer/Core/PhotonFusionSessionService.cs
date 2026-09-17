@@ -35,7 +35,10 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
         }
 
         public async Task<bool> CreateHostSessionAsync(string roomCode = null, int maxPlayers = 4)

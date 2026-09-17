@@ -26,7 +26,11 @@ namespace ProjectZombie.Features.UI.Lobby
             {
                 var photonService = GetComponent<PhotonFusionSessionService>();
                 if (photonService == null) photonService = FindObjectOfType<PhotonFusionSessionService>();
-                if (photonService == null) photonService = gameObject.AddComponent<PhotonFusionSessionService>();
+                if (photonService == null)
+                {
+                    var rootServiceObj = new GameObject("[PhotonFusionSessionService]");
+                    photonService = rootServiceObj.AddComponent<PhotonFusionSessionService>();
+                }
 
                 _sessionService = photonService;
                 ServiceContext.Register(_sessionService);
