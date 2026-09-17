@@ -284,6 +284,12 @@ GameObject:
   - component: {fileID: -59334050579850593}
   - component: {fileID: 8787318233909292671}
   - component: {fileID: 4527409657479600487}
+  - component: {fileID: 4527315390582584636}
+  - component: {fileID: 802215011294378236}
+  - component: {fileID: 8173341407463042352}
+  - component: {fileID: 2898182243702938758}
+  - component: {fileID: 2839248329550158433}
+  - component: {fileID: 7236556431604973468}
   m_Layer: 6
   m_Name: An Si
   m_TagString: Player
@@ -600,6 +606,96 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28338abffb721cb48802a65c8d468036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4527315390582584636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1675038290
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 802215011294378236}
+  - {fileID: 2898182243702938758}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &802215011294378236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &8173341407463042352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a736a3e897476ec44979c86bcc616bec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2898182243702938758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d51b8595eb1874da2aa5186e1c3031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2839248329550158433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc6e69ad7ecf58e4fb881f567c8df80a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _reviveRadius: 2.5
+  _reviveDurationRequired: 3
+  _reviveHealthPercentage: 0.35
+  _downedVfx: {fileID: 0}
+  _revivingProgressIndicator: {fileID: 0}
+--- !u!114 &7236556431604973468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7542a583938bbe545ac9dbc98f3c72f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4883057756553739455
