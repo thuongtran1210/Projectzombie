@@ -13,10 +13,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
 {
     /// <summary>
     /// Triển khai kết nối mạng thực tế qua Photon Fusion 2.0 (Host Mode / Relay).
-    /// Quản lý vòng đời NetworkRunner, đồng bộ phòng chơi, danh sách người chơi và nạp Input qua mạng.
+    /// Quản lý vòng đời NetworkRunner, đồng bộ phòng chơi 2 chiều (Reliable Data RPCs), danh sách người chơi và nạp Input qua mạng.
     /// </summary>
     public class PhotonFusionSessionService : MonoBehaviour, INetworkSessionService, INetworkRunnerCallbacks
     {
+        private const byte MSG_MATCH_START = 1;
+        private const byte MSG_ROOM_STATE_SYNC = 2;
+        private const byte MSG_CLIENT_PROFILE_SUBMIT = 3;
+        private const byte MSG_CLIENT_READY_SUBMIT = 4;
+
         [Header("Runner Settings")]
         [SerializeField] private NetworkRunner _runnerPrefab;
 
@@ -24,6 +29,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
         private NetworkRoomInfo _currentRoom;
         private bool _isHost;
         private bool _isStarting = false;
+        private float _lastPingSyncTime;
 
         public NetworkRoomInfo CurrentRoom => _currentRoom;
         public bool IsHost => _isHost;
@@ -38,6 +44,29 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if (transform.parent == null)
             {
                 DontDestroyOnLoad(gameObject);
+            }
+        }
+
+        private void Update()
+        {
+            if (_activeRunner == null || !_activeRunner.IsRunning || _currentRoom == null || _currentRoom.IsGameStarted) return;
+
+            // Định kỳ mỗi 1.5 giây cập nhật lại chỉ số Ping (RTT) thực tế từ Photon
+            if (Time.time - _lastPingSyncTime > 1.5f)
+            {
+                _lastPingSyncTime = Time.time;
+                if (_isHost)
+                {
+                    BroadcastRoomState();
+                }
+                else
+                {
+                    if (_currentRoom.LocalPlayer != null)
+                    {
+                        _currentRoom.LocalPlayer.PingMs = GetLivePing(_activeRunner.LocalPlayer);
+                        OnRoomUpdated?.Invoke(_currentRoom);
+                    }
+                }
             }
         }
 
@@ -71,6 +100,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (startResult.Ok)
             {
+                string heroName = RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterName : "Đạo Sĩ";
                 _currentRoom = new NetworkRoomInfo
                 {
                     RoomCode = code,
@@ -81,12 +111,12 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
                 var localData = new NetworkPlayerData
                 {
-                    PlayerId = _activeRunner.LocalPlayer.ToString(),
+                    PlayerId = _activeRunner.LocalPlayer.PlayerId.ToString(),
                     DisplayName = "Chủ Phòng (Bạn)",
-                    SelectedCharacterId = RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterName : "Đạo Sĩ",
+                    SelectedCharacterId = heroName,
                     IsHost = true,
                     IsReady = true,
-                    PingMs = 15
+                    PingMs = GetLivePing(_activeRunner.LocalPlayer)
                 };
 
                 _currentRoom.Players.Add(localData);
@@ -141,6 +171,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (startResult.Ok)
             {
+                string heroName = RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterName : "Thư Sinh";
+                var localData = new NetworkPlayerData
+                {
+                    PlayerId = _activeRunner.LocalPlayer.PlayerId.ToString(),
+                    DisplayName = "Hiệp Khách",
+                    SelectedCharacterId = heroName,
+                    IsHost = false,
+                    IsReady = false,
+                    PingMs = GetLivePing(_activeRunner.LocalPlayer)
+                };
+
                 _currentRoom = new NetworkRoomInfo
                 {
                     RoomCode = formattedCode,
@@ -149,18 +190,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     IsGameStarted = false
                 };
 
-                var localData = new NetworkPlayerData
-                {
-                    PlayerId = _activeRunner.LocalPlayer.ToString(),
-                    DisplayName = "Hiệp Khách (Bạn)",
-                    SelectedCharacterId = RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterName : "Kiếm Khách",
-                    IsHost = false,
-                    IsReady = false,
-                    PingMs = 30
-                };
-
                 _currentRoom.Players.Add(localData);
                 _currentRoom.LocalPlayer = localData;
+
+                // Gửi thông tin hồ sơ của Client lên Host để đồng bộ
+                SendClientProfileToHost(localData);
 
                 // Chuyển đổi PlayerRegistry sang chế độ Multiplayer
                 ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new MultiplayerPlayerRegistry());
@@ -209,6 +243,26 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if (_currentRoom == null || _currentRoom.LocalPlayer == null) return;
 
             _currentRoom.LocalPlayer.IsReady = isReady;
+
+            if (_isHost)
+            {
+                BroadcastRoomState();
+            }
+            else if (_activeRunner != null && _activeRunner.IsRunning)
+            {
+                // Gửi tín hiệu Ready cập nhật lên Host
+                byte[] payload = new byte[] { MSG_CLIENT_READY_SUBMIT, (byte)(isReady ? 1 : 0) };
+                var key = ReliableKey.FromInts(MSG_CLIENT_READY_SUBMIT, 0, 0, 0);
+                foreach (var p in _activeRunner.ActivePlayers)
+                {
+                    if (p != _activeRunner.LocalPlayer)
+                    {
+                        _activeRunner.SendReliableDataToPlayer(p, key, payload);
+                        break;
+                    }
+                }
+            }
+
             OnRoomUpdated?.Invoke(_currentRoom);
         }
 
@@ -225,8 +279,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
 
             // 2. Gửi tín hiệu Reliable bắt đầu trận đấu tới tất cả các Client khác
-            byte[] startSignal = new byte[] { 1 }; // Mã 1: Bắt đầu trận đấu (Match Start)
-            var msgKey = ReliableKey.FromInts(1, 0, 0, 0);
+            byte[] startSignal = new byte[] { MSG_MATCH_START };
+            var msgKey = ReliableKey.FromInts(MSG_MATCH_START, 0, 0, 0);
             foreach (var player in _activeRunner.ActivePlayers)
             {
                 if (player != _activeRunner.LocalPlayer)
@@ -237,6 +291,71 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             await Task.Delay(50);
             OnMatchStarted?.Invoke();
+        }
+
+        // =========================================================================
+        // NETWORK DATA BROADCAST & SYNC
+        // =========================================================================
+
+        private void BroadcastRoomState()
+        {
+            if (_activeRunner == null || !_isHost || _currentRoom == null) return;
+
+            // Cập nhật chỉ số Ping cho từng người chơi trước khi phát sóng
+            foreach (var p in _currentRoom.Players)
+            {
+                if (int.TryParse(p.PlayerId, out int pid))
+                {
+                    var pRef = PlayerRef.FromIndex(pid);
+                    p.PingMs = GetLivePing(pRef);
+                }
+            }
+
+            string json = JsonUtility.ToJson(_currentRoom);
+            byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(json);
+            byte[] payload = new byte[1 + jsonBytes.Length];
+            payload[0] = MSG_ROOM_STATE_SYNC;
+            Buffer.BlockCopy(jsonBytes, 0, payload, 1, jsonBytes.Length);
+
+            var key = ReliableKey.FromInts(MSG_ROOM_STATE_SYNC, 0, 0, 0);
+            foreach (var player in _activeRunner.ActivePlayers)
+            {
+                if (player != _activeRunner.LocalPlayer)
+                {
+                    _activeRunner.SendReliableDataToPlayer(player, key, payload);
+                }
+            }
+
+            OnRoomUpdated?.Invoke(_currentRoom);
+        }
+
+        private void SendClientProfileToHost(NetworkPlayerData profile)
+        {
+            if (_activeRunner == null || _isHost) return;
+
+            string json = JsonUtility.ToJson(profile);
+            byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(json);
+            byte[] payload = new byte[1 + jsonBytes.Length];
+            payload[0] = MSG_CLIENT_PROFILE_SUBMIT;
+            Buffer.BlockCopy(jsonBytes, 0, payload, 1, jsonBytes.Length);
+
+            var key = ReliableKey.FromInts(MSG_CLIENT_PROFILE_SUBMIT, 0, 0, 0);
+            foreach (var p in _activeRunner.ActivePlayers)
+            {
+                if (p != _activeRunner.LocalPlayer)
+                {
+                    _activeRunner.SendReliableDataToPlayer(p, key, payload);
+                    break;
+                }
+            }
+        }
+
+        private int GetLivePing(PlayerRef player)
+        {
+            if (_activeRunner == null) return 15;
+            double rtt = _activeRunner.GetPlayerRtt(player);
+            if (rtt <= 0) return _isHost ? 8 : 25;
+            return Mathf.Clamp(Mathf.RoundToInt((float)(rtt * 1000.0)), 1, 999);
         }
 
         private void EnsureRunnerInstance()
@@ -288,19 +407,33 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if (_currentRoom == null) return;
 
             bool isLocal = player == runner.LocalPlayer;
-            if (!isLocal)
+            if (_isHost && !isLocal)
             {
-                var remotePlayer = new NetworkPlayerData
+                string pid = player.PlayerId.ToString();
+                var existing = _currentRoom.Players.Find(p => p.PlayerId == pid);
+                if (existing == null)
                 {
-                    PlayerId = player.ToString(),
-                    DisplayName = $"Hiệp Khách #{player.PlayerId}",
-                    SelectedCharacterId = "hero_daosi",
-                    IsHost = false,
-                    IsReady = true,
-                    PingMs = 35
-                };
-                _currentRoom.Players.Add(remotePlayer);
-                OnRoomUpdated?.Invoke(_currentRoom);
+                    var remotePlayer = new NetworkPlayerData
+                    {
+                        PlayerId = pid,
+                        DisplayName = $"Hiệp Khách #{player.PlayerId}",
+                        SelectedCharacterId = "Đang chọn...",
+                        IsHost = false,
+                        IsReady = false,
+                        PingMs = GetLivePing(player)
+                    };
+                    _currentRoom.Players.Add(remotePlayer);
+                }
+
+                BroadcastRoomState();
+            }
+            else if (!isLocal)
+            {
+                // Client cũng chủ động gửi lại Profile khi thấy Host
+                if (_currentRoom.LocalPlayer != null)
+                {
+                    SendClientProfileToHost(_currentRoom.LocalPlayer);
+                }
             }
         }
 
@@ -313,9 +446,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (_currentRoom == null) return;
 
-            string pid = player.ToString();
+            string pid = player.PlayerId.ToString();
             _currentRoom.Players.RemoveAll(p => p.PlayerId == pid);
-            OnRoomUpdated?.Invoke(_currentRoom);
+
+            if (_isHost)
+            {
+                BroadcastRoomState();
+            }
+            else
+            {
+                OnRoomUpdated?.Invoke(_currentRoom);
+            }
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -375,7 +516,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
             OnRoomUpdated?.Invoke(null);
         }
 
-        public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnConnectedToServer(NetworkRunner runner)
+        {
+            if (!_isHost && _currentRoom != null && _currentRoom.LocalPlayer != null)
+            {
+                SendClientProfileToHost(_currentRoom.LocalPlayer);
+            }
+        }
+
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
         {
             OnConnectionError?.Invoke($"Mất kết nối tới máy chủ Photon: {reason}");
@@ -392,16 +540,80 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
 
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef sender, ReliableKey key, ArraySegment<byte> data)
         {
-            if (data.Count > 0 && data.Array != null)
+            if (data.Count == 0 || data.Array == null) return;
+
+            byte msgType = data.Array[data.Offset];
+
+            if (msgType == MSG_MATCH_START)
             {
-                byte msgType = data.Array[data.Offset];
-                if (msgType == 1) // 1: MATCH_START
+                Debug.Log("<color=#00FF88>[PhotonFusionSessionService]</color> Client nhận tín hiệu bắt đầu trận đấu từ Host!");
+                if (_currentRoom != null) _currentRoom.IsGameStarted = true;
+                OnMatchStarted?.Invoke();
+            }
+            else if (msgType == MSG_ROOM_STATE_SYNC)
+            {
+                if (data.Count > 1)
                 {
-                    Debug.Log("<color=#00FF88>[PhotonFusionSessionService]</color> Client nhận tín hiệu bắt đầu trận đấu từ Host!");
-                    if (_currentRoom != null) _currentRoom.IsGameStarted = true;
-                    OnMatchStarted?.Invoke();
+                    string json = System.Text.Encoding.UTF8.GetString(data.Array, data.Offset + 1, data.Count - 1);
+                    var syncedRoom = JsonUtility.FromJson<NetworkRoomInfo>(json);
+                    if (syncedRoom != null)
+                    {
+                        string localPid = runner.LocalPlayer.PlayerId.ToString();
+                        foreach (var p in syncedRoom.Players)
+                        {
+                            if (p.PlayerId == localPid)
+                            {
+                                p.DisplayName = p.IsHost ? "Chủ Phòng (Bạn)" : $"{p.DisplayName} (Bạn)";
+                                p.PingMs = GetLivePing(runner.LocalPlayer);
+                                syncedRoom.LocalPlayer = p;
+                            }
+                        }
+                        _currentRoom = syncedRoom;
+                        OnRoomUpdated?.Invoke(_currentRoom);
+                    }
+                }
+            }
+            else if (msgType == MSG_CLIENT_PROFILE_SUBMIT)
+            {
+                if (_isHost && data.Count > 1 && _currentRoom != null)
+                {
+                    string json = System.Text.Encoding.UTF8.GetString(data.Array, data.Offset + 1, data.Count - 1);
+                    var clientProfile = JsonUtility.FromJson<NetworkPlayerData>(json);
+                    if (clientProfile != null)
+                    {
+                        string senderPid = sender.PlayerId.ToString();
+                        var existing = _currentRoom.Players.Find(p => p.PlayerId == senderPid);
+                        if (existing != null)
+                        {
+                            existing.DisplayName = !string.IsNullOrEmpty(clientProfile.DisplayName) ? clientProfile.DisplayName : $"Hiệp Khách #{sender.PlayerId}";
+                            existing.SelectedCharacterId = clientProfile.SelectedCharacterId;
+                            existing.IsReady = clientProfile.IsReady;
+                        }
+                        else
+                        {
+                            clientProfile.PlayerId = senderPid;
+                            clientProfile.IsHost = false;
+                            _currentRoom.Players.Add(clientProfile);
+                        }
+
+                        BroadcastRoomState();
+                    }
+                }
+            }
+            else if (msgType == MSG_CLIENT_READY_SUBMIT)
+            {
+                if (_isHost && data.Count >= 2 && _currentRoom != null)
+                {
+                    bool isReady = data.Array[data.Offset + 1] == 1;
+                    string senderPid = sender.PlayerId.ToString();
+                    var existing = _currentRoom.Players.Find(p => p.PlayerId == senderPid);
+                    if (existing != null)
+                    {
+                        existing.IsReady = isReady;
+                        BroadcastRoomState();
+                    }
                 }
             }
         }

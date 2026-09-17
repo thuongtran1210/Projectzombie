@@ -96,6 +96,20 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     prefabToSpawn = RunLoadoutState.SelectedCharacter.playerPrefab.GetComponent<NetworkObject>();
                 }
             }
+            else
+            {
+                // Đối với người chơi khác (Client): Tìm tướng họ đã chọn trong dữ liệu phòng (Room Info)
+                if (ServiceContext.TryGet<INetworkSessionService>(out var session) && session.CurrentRoom != null)
+                {
+                    string pid = player.PlayerId.ToString();
+                    var pData = session.CurrentRoom.Players.Find(p => p.PlayerId == pid);
+                    if (pData != null && !string.IsNullOrEmpty(pData.SelectedCharacterId))
+                    {
+                        var loaded = Resources.Load<GameObject>($"Players/{pData.SelectedCharacterId}");
+                        if (loaded != null) prefabToSpawn = loaded.GetComponent<NetworkObject>();
+                    }
+                }
+            }
 
             // 2. Nếu có gán _networkPlayerPrefab qua Inspector
             if (prefabToSpawn == null && _networkPlayerPrefab.IsValid)
