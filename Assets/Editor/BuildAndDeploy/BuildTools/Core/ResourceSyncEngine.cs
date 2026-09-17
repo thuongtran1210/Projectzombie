@@ -42,17 +42,25 @@ namespace ProjectZombie.EditorTools.BuildSync
                 return CompareBinaryFiles(file1, file2);
             }
 
-            // 3. File text / YAML Unity: So sánh nội dung chuẩn hóa line endings
+            // 3. File text / YAML Unity: So sánh nội dung chuẩn hóa line endings và bỏ qua SortKey ngẫu nhiên của Photon Fusion
             try
             {
-                string text1 = File.ReadAllText(file1).Replace("\r\n", "\n").TrimEnd();
-                string text2 = File.ReadAllText(file2).Replace("\r\n", "\n").TrimEnd();
+                string text1 = NormalizeYamlText(File.ReadAllText(file1));
+                string text2 = NormalizeYamlText(File.ReadAllText(file2));
                 return string.Equals(text1, text2, StringComparison.Ordinal);
             }
             catch
             {
                 return false;
             }
+        }
+
+        private static string NormalizeYamlText(string raw)
+        {
+            if (string.IsNullOrEmpty(raw)) return string.Empty;
+            string normalized = raw.Replace("\r\n", "\n").TrimEnd();
+            // Bỏ qua trường SortKey được sinh ngẫu nhiên/riêng biệt bởi Photon Fusion NetworkObject Weaver
+            return System.Text.RegularExpressions.Regex.Replace(normalized, @"SortKey:\s*\d+", "SortKey: 0");
         }
 
         private static bool CompareBinaryFiles(string path1, string path2)
