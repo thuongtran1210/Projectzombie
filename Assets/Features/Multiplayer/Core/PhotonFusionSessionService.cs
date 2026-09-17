@@ -53,16 +53,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             EnsureRunnerInstance();
 
-            var sceneManager = _activeRunner.GetComponent<NetworkSceneManagerDefault>() 
-                               ?? _activeRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
             var startGameArgs = new StartGameArgs
             {
                 GameMode = GameMode.Host,
                 SessionName = code,
-                PlayerCount = maxPlayers,
-                SceneManager = sceneManager,
-                Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex)
+                PlayerCount = maxPlayers
             };
 
             var startResult = await _activeRunner.StartGame(startGameArgs);
@@ -75,9 +70,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
                 // Chuyển đổi PlayerRegistry sang chế độ Multiplayer
                 ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new MultiplayerPlayerRegistry());
-
-                // Dọn dẹp thực thể nhân vật Offline trong Scene
-                GameplayBootstrapper.Instance?.DespawnActivePlayer();
 
                 return true;
             }
@@ -103,14 +95,10 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             EnsureRunnerInstance();
 
-            var sceneManager = _activeRunner.GetComponent<NetworkSceneManagerDefault>() 
-                               ?? _activeRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
             var startGameArgs = new StartGameArgs
             {
                 GameMode = GameMode.Client,
-                SessionName = formattedCode,
-                SceneManager = sceneManager
+                SessionName = formattedCode
             };
 
             var startResult = await _activeRunner.StartGame(startGameArgs);
@@ -123,9 +111,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
                 // Chuyển đổi PlayerRegistry sang chế độ Multiplayer
                 ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new MultiplayerPlayerRegistry());
-
-                // Dọn dẹp thực thể nhân vật Offline trong Scene
-                GameplayBootstrapper.Instance?.DespawnActivePlayer();
 
                 return true;
             }
@@ -150,18 +135,33 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (_activeRunner != null)
             {
-                await _activeRunner.Shutdown();
-                if (_activeRunner != null)
+                var runnerToShutdown = _activeRunner;
+                _activeRunner = null;
+                try
                 {
-                    Destroy(_activeRunner.gameObject);
-                    _activeRunner = null;
+                    await runnerToShutdown.Shutdown();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[PhotonFusionSessionService] Shutdown warning: {ex.Message}");
+                }
+
+                if (runnerToShutdown != null)
+                {
+                    Destroy(runnerToShutdown.gameObject);
                 }
             }
 
             _isHost = false;
 
-            // Khôi phục nhân vật Offline/Singleplayer cho Sảnh nếu quay về Menu chính
-            GameplayBootstrapper.Instance?.SpawnPlayerForActiveHero();
+            // Khôi phục PlayerRegistry về SinglePlayer
+            ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new SinglePlayerRegistry());
+
+            // Khôi phục nhân vật Offline/Singleplayer cho Sảnh nếu chưa có
+            if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
+            {
+                GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
+            }
 
             OnRoomUpdated?.Invoke(null);
         }
@@ -178,13 +178,16 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (_activeRunner == null || !_isHost) return;
 
-            // 1. Kích hoạt Spawner sinh nhân vật cho tất cả người chơi trong phòng
+            // 1. Dọn dẹp nhân vật Offline trước khi vào trận Co-op
+            GameplayBootstrapper.Instance?.DespawnActivePlayer();
+
+            // 2. Kích hoạt Spawner sinh nhân vật cho tất cả người chơi trong phòng
             if (_playerSpawner != null)
             {
                 _playerSpawner.StartMatch();
             }
 
-            // 2. Đồng bộ tín hiệu Match Start qua LobbySync
+            // 3. Đồng bộ tín hiệu Match Start qua LobbySync
             if (_lobbySync != null)
             {
                 _lobbySync.NotifyMatchStarted();
@@ -276,7 +279,12 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
 
             _isHost = false;
-            OnRoomUpdated?.Invoke(null);
+
+            if (_activeRunner != null)
+            {
+                _activeRunner = null;
+                OnRoomUpdated?.Invoke(null);
+            }
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

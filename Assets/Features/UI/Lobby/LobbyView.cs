@@ -111,7 +111,7 @@ namespace ProjectZombie.Features.UI.Lobby
 
             if (_closeXButton != null)
             {
-                _closeXButton.onClick.AddListener(() => OnBackToMenuClicked?.Invoke());
+                _closeXButton.onClick.AddListener(OnBackPressed);
             }
 
             if (_copyCodeButton != null)
@@ -137,15 +137,15 @@ namespace ProjectZombie.Features.UI.Lobby
 
         public void ShowEntryPanel()
         {
-            if (_entryPanel != null) _entryPanel.SetActive(true);
-            if (_roomPanel != null) _roomPanel.SetActive(false);
+            if (_entryPanel != null && !_entryPanel.activeSelf) _entryPanel.SetActive(true);
+            if (_roomPanel != null && _roomPanel.activeSelf) _roomPanel.SetActive(false);
             ClearStatus();
         }
 
         public void ShowRoomPanel()
         {
-            if (_entryPanel != null) _entryPanel.SetActive(false);
-            if (_roomPanel != null) _roomPanel.SetActive(true);
+            if (_entryPanel != null && _entryPanel.activeSelf) _entryPanel.SetActive(false);
+            if (_roomPanel != null && !_roomPanel.activeSelf) _roomPanel.SetActive(true);
             ClearStatus();
         }
 

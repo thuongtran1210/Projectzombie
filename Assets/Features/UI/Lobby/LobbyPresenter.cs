@@ -124,12 +124,28 @@ namespace ProjectZombie.Features.UI.Lobby
             }
         }
 
-        private void HandleBackToMenu()
+        private bool _isLeavingRoom = false;
+
+        private async void HandleBackToMenu()
         {
             if (_sessionService != null && _sessionService.IsInRoom)
             {
-                HandleLeaveRoom();
+                if (_view != null) _view.SetStatusMessage("Đang rời phòng...");
+                _isLeavingRoom = true;
+                try
+                {
+                    await _sessionService.LeaveSessionAsync();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[LobbyPresenter] Lỗi khi rời phòng về menu: {ex.Message}");
+                }
+                finally
+                {
+                    _isLeavingRoom = false;
+                }
             }
+
             if (_view != null)
             {
                 _view.CloseAndReturnToHub();
@@ -162,20 +178,34 @@ namespace ProjectZombie.Features.UI.Lobby
 
         private async void HandleLeaveRoom()
         {
-            if (_sessionService == null) return;
+            if (_sessionService == null || _isLeavingRoom) return;
 
-            await _sessionService.LeaveSessionAsync();
-            _isLocalReady = false;
-            if (_view != null)
+            _isLeavingRoom = true;
+            if (_view != null) _view.SetStatusMessage("Đang rời phòng...");
+
+            try
             {
-                _view.SetReadyButtonState(false);
-                _view.ShowEntryPanel();
+                await _sessionService.LeaveSessionAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LobbyPresenter] Lỗi khi rời phòng: {ex.Message}");
+            }
+            finally
+            {
+                _isLocalReady = false;
+                _isLeavingRoom = false;
+                if (_view != null && _view.gameObject.activeInHierarchy)
+                {
+                    _view.SetReadyButtonState(false);
+                    _view.ShowEntryPanel();
+                }
             }
         }
 
         private void HandleRoomUpdated(NetworkRoomInfo room)
         {
-            if (_view == null) return;
+            if (_view == null || !_view.gameObject.activeInHierarchy) return;
 
             if (room == null)
             {
@@ -200,7 +230,7 @@ namespace ProjectZombie.Features.UI.Lobby
                 }
             }
 
-            _view.SetHostControls(_sessionService.IsHost, canStartGame: allClientsReady);
+            _view.SetHostControls(_sessionService != null && _sessionService.IsHost, canStartGame: allClientsReady);
         }
 
         private void HandleMatchStarted()

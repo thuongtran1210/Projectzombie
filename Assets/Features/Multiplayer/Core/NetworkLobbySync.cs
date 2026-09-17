@@ -84,6 +84,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void ResetRoom()
         {
+            if (_currentRoom == null && !_isHost) return;
             _currentRoom = null;
             _isHost = false;
             OnRoomUpdated?.Invoke(null);
