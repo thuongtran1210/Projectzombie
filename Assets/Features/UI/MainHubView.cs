@@ -58,6 +58,8 @@ namespace ProjectZombie.Features.UI
         {
             base.Awake();
 
+            AutoWireButtonsFallback();
+
             if (_startRunButton != null) _startRunButton.onClick.AddListener(() => OnStartRunClicked?.Invoke());
             if (_multiplayerButton != null) _multiplayerButton.onClick.AddListener(() => OnMultiplayerClicked?.Invoke());
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
@@ -69,6 +71,68 @@ namespace ProjectZombie.Features.UI
             if (_codexButton != null) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_settingsButton != null) _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());
             if (_resourceDownloadButton != null) _resourceDownloadButton.onClick.AddListener(() => OnResourceDownloadClicked?.Invoke());
+        }
+
+        private void AutoWireButtonsFallback()
+        {
+            if (_multiplayerButton == null)
+            {
+                var mp = FindChildRecursive(transform, "Btn_Multiplayer")
+                         ?? FindChildRecursive(transform, "Button_Multiplayer")
+                         ?? FindChildRecursive(transform, "Btn_Coop");
+                if (mp != null) _multiplayerButton = mp.GetComponent<Button>();
+            }
+
+            if (_startRunButton == null)
+            {
+                var sr = FindChildRecursive(transform, "Btn_StartRun")
+                         ?? FindChildRecursive(transform, "StartRunButton")
+                         ?? FindChildRecursive(transform, "Button_StartRun");
+                if (sr != null) _startRunButton = sr.GetComponent<Button>();
+            }
+
+            if (_heroSelectButton == null)
+            {
+                var btn = FindChildRecursive(transform, "Btn_Hero") ?? FindChildRecursive(transform, "Btn_Nav_Hero");
+                if (btn != null) _heroSelectButton = btn.GetComponent<Button>();
+            }
+
+            if (_armoryButton == null)
+            {
+                var btn = FindChildRecursive(transform, "Btn_Inventory") ?? FindChildRecursive(transform, "Btn_Nav_Inventory") ?? FindChildRecursive(transform, "Btn_Nav_Relic");
+                if (btn != null) _armoryButton = btn.GetComponent<Button>();
+            }
+
+            if (_gachaButton == null)
+            {
+                var btn = FindChildRecursive(transform, "Btn_Gacha") ?? FindChildRecursive(transform, "Btn_Nav_Chest");
+                if (btn != null) _gachaButton = btn.GetComponent<Button>();
+            }
+
+            if (_sanctuaryTreeButton == null)
+            {
+                var btn = FindChildRecursive(transform, "Btn_Sanctuary") ?? FindChildRecursive(transform, "Btn_Nav_Sanctuary");
+                if (btn != null) _sanctuaryTreeButton = btn.GetComponent<Button>();
+            }
+
+            if (_codexButton == null)
+            {
+                var btn = FindChildRecursive(transform, "Btn_Codex") ?? FindChildRecursive(transform, "Btn_DeckCards");
+                if (btn != null) _codexButton = btn.GetComponent<Button>();
+            }
+        }
+
+        private static Transform FindChildRecursive(Transform parent, string childName)
+        {
+            if (parent == null) return null;
+            if (parent.name.Equals(childName, StringComparison.OrdinalIgnoreCase)) return parent;
+
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform found = FindChildRecursive(parent.GetChild(i), childName);
+                if (found != null) return found;
+            }
+            return null;
         }
 
         public void SetCoTienBalance(string formattedText)
