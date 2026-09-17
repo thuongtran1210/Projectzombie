@@ -160,7 +160,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if ((currentButtons & NetworkInputButtons.Attack) != 0 && (_previousButtons & NetworkInputButtons.Attack) == 0)
             {
-                var combat = GetComponent<Weapons.CharacterCombat>();
+                var combat = GetComponent<CharacterCombat>();
                 if (combat != null)
                 {
                     combat.TriggerAttack();
@@ -174,7 +174,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if ((currentButtons & NetworkInputButtons.SignatureSkill) != 0 && (_previousButtons & NetworkInputButtons.SignatureSkill) == 0)
             {
-                var sig = GetComponent<Skills.SignatureSkillManager>();
+                var sig = GetComponent<Player.Skills.SignatureSkillManager>();
                 if (sig != null) sig.TryExecuteSkill();
             }
 
