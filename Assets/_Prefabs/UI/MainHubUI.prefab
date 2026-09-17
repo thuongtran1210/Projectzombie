@@ -390,8 +390,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 818306457, guid: ac4f4996f33b5c742bf2b4141b881ec0, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: ca3d1144248c44888cbd67a593158184, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -630,8 +630,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 99be060877b74e9a8e20862b898583d4, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 8e43f0daa3c8fa74bb2b57b819b6970d, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2100,7 +2100,7 @@ MonoBehaviour:
     m_Left: 70
     m_Right: 70
     m_Top: 0
-    m_Bottom: 0
+    m_Bottom: 24
   m_ChildAlignment: 4
   m_Spacing: 4
   m_ChildForceExpandWidth: 1
@@ -2951,7 +2951,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "<color=#FFD700>\u0110\u1ED2NG \u0110\u1ED8I (CO-OP)</color>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
@@ -3054,7 +3054,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 24, y: 2}
+  m_AnchoredPosition: {x: 58, y: 0}
   m_SizeDelta: {x: 280, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1094582545362107356
@@ -3645,8 +3645,8 @@ RectTransform:
   - {fileID: 5290156361999613176}
   m_Father: {fileID: 3611762638766470950}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.055687204, y: 0.053846154}
-  m_AnchorMax: {x: 0.9443128, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
