@@ -111,15 +111,10 @@ namespace ProjectZombie.EditorTools.BuildSync
                     outOfSyncCount++;
                     outOfSyncFiles.Add(fileName);
                 }
-                else
+                else if (!ResourceSyncEngine.AreFilesEqual(srcFile, destFile))
                 {
-                    var srcInfo = new FileInfo(srcFile);
-                    var destInfo = new FileInfo(destFile);
-                    if (srcInfo.Length != destInfo.Length || Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) > 2)
-                    {
-                        outOfSyncCount++;
-                        outOfSyncFiles.Add(fileName);
-                    }
+                    outOfSyncCount++;
+                    outOfSyncFiles.Add(fileName);
                 }
             }
 
@@ -188,17 +183,16 @@ namespace ProjectZombie.EditorTools.BuildSync
             }
             else if (hasSrc && hasTarget)
             {
-                var srcInfo = new FileInfo(rule.SourcePath);
-                var destInfo = new FileInfo(rule.TargetPath);
-
-                if (srcInfo.Length != destInfo.Length || Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) > 2)
+                if (!ResourceSyncEngine.AreFilesEqual(rule.SourcePath, rule.TargetPath))
                 {
+                    var srcInfo = new FileInfo(rule.SourcePath);
+                    var destInfo = new FileInfo(rule.TargetPath);
                     string newer = srcInfo.LastWriteTimeUtc > destInfo.LastWriteTimeUtc ? "Nguồn mới hơn" : "Resources mới hơn";
                     issues.Add(new AuditItem
                     {
                         Severity = AuditItem.SeverityLevel.Warning,
                         Title = $"Lệch phiên bản Asset: {rule.Name} ({newer})",
-                        Description = $"Asset tại {rule.SourcePath} và {rule.TargetPath} khác nhau về dung lượng ({srcInfo.Length}B vs {destInfo.Length}B) hoặc thời gian cập nhật.",
+                        Description = $"Asset tại {rule.SourcePath} và {rule.TargetPath} khác nhau về nội dung hoặc thời gian cập nhật.",
                         Recommendation = $"Nhấn nút bên dưới để đồng bộ {rule.Name}.",
                         ActionType = AuditItem.FixActionType.SyncSingleAsset,
                         Rule = rule,
@@ -254,21 +248,20 @@ namespace ProjectZombie.EditorTools.BuildSync
             }
             else if (hasMaster && hasRes)
             {
-                var masterInfo = new FileInfo(rule.SourcePath);
-                var resInfo = new FileInfo(rule.TargetPath);
-
-                if (masterInfo.Length != resInfo.Length || Math.Abs((masterInfo.LastWriteTimeUtc - resInfo.LastWriteTimeUtc).TotalSeconds) > 2)
+                if (!ResourceSyncEngine.AreFilesEqual(rule.SourcePath, rule.TargetPath))
                 {
+                    var masterInfo = new FileInfo(rule.SourcePath);
+                    var resInfo = new FileInfo(rule.TargetPath);
                     string newer = masterInfo.LastWriteTimeUtc > resInfo.LastWriteTimeUtc ? "Master (_Prefabs) mới hơn" : "Runtime (Resources) mới hơn";
                     issues.Add(new AuditItem
                     {
                         Severity = AuditItem.SeverityLevel.Warning,
                         Title = $"Lệch nội dung UI: {rule.Name} ({newer})",
-                        Description = $"Prefab tại {rule.SourcePath} và {rule.TargetPath} khác nhau về dung lượng ({masterInfo.Length}B vs {resInfo.Length}B) hoặc thời gian cập nhật.",
+                        Description = $"Prefab tại {rule.SourcePath} và {rule.TargetPath} khác nhau về nội dung hoặc thời gian cập nhật.",
                         Recommendation = $"Nhấn nút bên dưới để đồng bộ phiên bản mới nhất của {rule.Name}.",
                         ActionType = AuditItem.FixActionType.SyncUIPrefab,
                         Rule = rule,
-                        FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
+                    FixButtonText = $"⚡ Đồng Bộ {rule.Name}"
                     });
                 }
             }

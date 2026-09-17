@@ -16,6 +16,68 @@ namespace ProjectZombie.EditorTools.BuildSync
             }
         }
 
+        /// <summary>
+        /// So sánh 2 file chuẩn xác: Xử lý cả file nhị phân lẫn file Text/YAML của Unity (bỏ qua khác biệt CRLF/LF do import).
+        /// </summary>
+        public static bool AreFilesEqual(string file1, string file2)
+        {
+            if (!File.Exists(file1) || !File.Exists(file2)) return false;
+
+            var f1 = new FileInfo(file1);
+            var f2 = new FileInfo(file2);
+
+            // 1. Cùng kích thước và thời gian sửa đổi gần nhau -> Khớp 100%
+            if (f1.Length == f2.Length && Math.Abs((f1.LastWriteTimeUtc - f2.LastWriteTimeUtc).TotalSeconds) < 2)
+            {
+                return true;
+            }
+
+            string ext = Path.GetExtension(file1).ToLower();
+            bool isTextOrYaml = ext == ".prefab" || ext == ".asset" || ext == ".mat" || ext == ".json" || ext == ".txt" || ext == ".unity";
+
+            // 2. File nhị phân (ảnh, âm thanh, mixer...)
+            if (!isTextOrYaml)
+            {
+                if (f1.Length != f2.Length) return false;
+                return CompareBinaryFiles(file1, file2);
+            }
+
+            // 3. File text / YAML Unity: So sánh nội dung chuẩn hóa line endings
+            try
+            {
+                string text1 = File.ReadAllText(file1).Replace("\r\n", "\n").TrimEnd();
+                string text2 = File.ReadAllText(file2).Replace("\r\n", "\n").TrimEnd();
+                return string.Equals(text1, text2, StringComparison.Ordinal);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool CompareBinaryFiles(string path1, string path2)
+        {
+            const int bufferSize = 8192;
+            byte[] buffer1 = new byte[bufferSize];
+            byte[] buffer2 = new byte[bufferSize];
+
+            using (var stream1 = File.OpenRead(path1))
+            using (var stream2 = File.OpenRead(path2))
+            {
+                int bytesRead1, bytesRead2;
+                while ((bytesRead1 = stream1.Read(buffer1, 0, bufferSize)) > 0)
+                {
+                    bytesRead2 = stream2.Read(buffer2, 0, bufferSize);
+                    if (bytesRead1 != bytesRead2) return false;
+                    for (int i = 0; i < bytesRead1; i++)
+                    {
+                        if (buffer1[i] != buffer2[i]) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public static int SyncDirectory(SyncRule rule)
         {
             if (rule.IsAddressableManaged)
@@ -57,20 +119,20 @@ namespace ProjectZombie.EditorTools.BuildSync
 
                 if (File.Exists(destFile))
                 {
-                    var srcInfo = new FileInfo(srcFile);
-                    var destInfo = new FileInfo(destFile);
-
-                    // Bỏ qua nếu cùng kích thước và thời gian sửa đổi gần như nhau (trong 2s)
-                    if (srcInfo.Length == destInfo.Length && Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) < 2)
+                    if (AreFilesEqual(srcFile, destFile))
                     {
                         count++;
                         continue;
                     }
 
-                    // Bảo vệ thay đổi của người dùng: Nếu file đích (Resources) mới hơn file nguồn (_Data), đồng bộ ngược lại!
-                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(2))
+                    var srcInfo = new FileInfo(srcFile);
+                    var destInfo = new FileInfo(destFile);
+
+                    // Nếu file đích mới hơn hẳn 5 giây (người dùng sửa trực tiếp trong Resources) -> copy ngược lại
+                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(5))
                     {
                         File.Copy(destFile, srcFile, true);
+                        File.SetLastWriteTimeUtc(srcFile, destInfo.LastWriteTimeUtc);
                         AssetDatabase.ImportAsset(srcFile, ImportAssetOptions.ForceUpdate);
                         count++;
                         continue;
@@ -78,7 +140,10 @@ namespace ProjectZombie.EditorTools.BuildSync
                 }
 
                 File.Copy(srcFile, destFile, true);
+                var srcTime = File.GetLastWriteTimeUtc(srcFile);
+                File.SetLastWriteTimeUtc(destFile, srcTime);
                 AssetDatabase.ImportAsset(destFile, ImportAssetOptions.ForceUpdate);
+                File.SetLastWriteTimeUtc(destFile, srcTime);
                 count++;
             }
 
@@ -109,34 +174,41 @@ namespace ProjectZombie.EditorTools.BuildSync
                 if (!File.Exists(dest))
                 {
                     File.Copy(src, dest, true);
+                    var srcTime = File.GetLastWriteTimeUtc(src);
+                    File.SetLastWriteTimeUtc(dest, srcTime);
                     AssetDatabase.ImportAsset(dest, ImportAssetOptions.ForceUpdate);
+                    File.SetLastWriteTimeUtc(dest, srcTime);
                 }
                 else
                 {
+                    if (AreFilesEqual(src, dest)) return;
+
                     var srcInfo = new FileInfo(src);
                     var destInfo = new FileInfo(dest);
 
-                    if (srcInfo.Length == destInfo.Length && Math.Abs((srcInfo.LastWriteTimeUtc - destInfo.LastWriteTimeUtc).TotalSeconds) < 2)
-                    {
-                        return;
-                    }
-
-                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(2))
+                    if (destInfo.LastWriteTimeUtc > srcInfo.LastWriteTimeUtc.AddSeconds(5))
                     {
                         File.Copy(dest, src, true);
+                        File.SetLastWriteTimeUtc(src, destInfo.LastWriteTimeUtc);
                         AssetDatabase.ImportAsset(src, ImportAssetOptions.ForceUpdate);
                         return;
                     }
 
                     File.Copy(src, dest, true);
+                    var srcTime = File.GetLastWriteTimeUtc(src);
+                    File.SetLastWriteTimeUtc(dest, srcTime);
                     AssetDatabase.ImportAsset(dest, ImportAssetOptions.ForceUpdate);
+                    File.SetLastWriteTimeUtc(dest, srcTime);
                 }
             }
             else if (File.Exists(dest))
             {
                 EnsureDirectory(Path.GetDirectoryName(src));
                 File.Copy(dest, src, true);
+                var destTime = File.GetLastWriteTimeUtc(dest);
+                File.SetLastWriteTimeUtc(src, destTime);
                 AssetDatabase.ImportAsset(src, ImportAssetOptions.ForceUpdate);
+                File.SetLastWriteTimeUtc(src, destTime);
             }
         }
 
@@ -158,46 +230,39 @@ namespace ProjectZombie.EditorTools.BuildSync
                 {
                     Debug.LogWarning($"[ResourceSyncEngine] Không thể sinh fallback cho {rule.Name}: {e.Message}");
                 }
+                return;
             }
-            else if (File.Exists(masterPath) && !File.Exists(resPath))
-            {
-                File.Copy(masterPath, resPath, true);
-                AssetDatabase.ImportAsset(resPath, ImportAssetOptions.ForceUpdate);
-            }
-            else if (!File.Exists(masterPath) && File.Exists(resPath))
-            {
-                File.Copy(resPath, masterPath, true);
-                AssetDatabase.ImportAsset(masterPath, ImportAssetOptions.ForceUpdate);
-            }
-            else if (File.Exists(masterPath) && File.Exists(resPath))
-            {
-                var masterInfo = new FileInfo(masterPath);
-                var resInfo = new FileInfo(resPath);
 
-                if (resInfo.LastWriteTimeUtc > masterInfo.LastWriteTimeUtc.AddSeconds(2))
-                {
-                    File.Copy(resPath, masterPath, true);
-                    AssetDatabase.ImportAsset(masterPath, ImportAssetOptions.ForceUpdate);
-                }
-                else if (masterInfo.LastWriteTimeUtc > resInfo.LastWriteTimeUtc.AddSeconds(2))
+            if (File.Exists(masterPath))
+            {
+                if (!File.Exists(resPath) || !AreFilesEqual(masterPath, resPath))
                 {
                     File.Copy(masterPath, resPath, true);
+                    var masterTime = File.GetLastWriteTimeUtc(masterPath);
+                    File.SetLastWriteTimeUtc(resPath, masterTime);
                     AssetDatabase.ImportAsset(resPath, ImportAssetOptions.ForceUpdate);
+                    File.SetLastWriteTimeUtc(resPath, masterTime);
                 }
+            }
+            else if (File.Exists(resPath))
+            {
+                File.Copy(resPath, masterPath, true);
+                var resTime = File.GetLastWriteTimeUtc(resPath);
+                File.SetLastWriteTimeUtc(masterPath, resTime);
+                AssetDatabase.ImportAsset(masterPath, ImportAssetOptions.ForceUpdate);
+                File.SetLastWriteTimeUtc(masterPath, resTime);
             }
         }
 
-        public static string PerformFullSync()
+        public static string GetSyncSummary()
         {
-            EnsureDirectory("Assets/Resources");
-
             var sb = new StringBuilder();
             sb.AppendLine($"[THỜI GIAN: {DateTime.Now:HH:mm:ss}]");
 
             foreach (var rule in SyncRegistry.DirectoryRules)
             {
-                int count = SyncDirectory(rule);
-                sb.AppendLine($"✓ Đã đồng bộ {count} files vào {rule.TargetPath}");
+                int c = SyncDirectory(rule);
+                sb.AppendLine($"✓ Đã đồng bộ {c} files vào {rule.TargetPath}");
             }
 
             foreach (var rule in SyncRegistry.SingleAssetRules)
