@@ -120,16 +120,6 @@ namespace ProjectZombie.Features.Weapons
             UpdatePotFollowerMotion();
         }
 
-        private void OnDisable()
-        {
-            if (_potFollowerInstance != null) Destroy(_potFollowerInstance);
-        }
-
-        private void OnDestroy()
-        {
-            if (_potFollowerInstance != null) Destroy(_potFollowerInstance);
-        }
-
         #region POT FOLLOWER VISUAL (LƠ LỬNG SAU LƯNG HERO)
         private void SpawnPotFollower()
         {
