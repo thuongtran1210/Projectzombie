@@ -113,6 +113,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             await Task.Delay(50);
             _currentRoom = null;
             _isHost = false;
+            OnMatchEnded?.Invoke();
             OnRoomUpdated?.Invoke(null);
         }
 
