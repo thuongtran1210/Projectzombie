@@ -306,6 +306,19 @@ namespace ProjectZombie.Features.UI
             }
         }
 
+        public void SetStageActive(bool active)
+        {
+            if (!active)
+            {
+                ClearCurrentModel();
+            }
+            if (_previewCamera != null)
+            {
+                _previewCamera.enabled = active;
+            }
+            gameObject.SetActive(active);
+        }
+
         public void ClearCurrentModel()
         {
             if (_currentModelInstance != null)
@@ -333,12 +346,35 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
+            // Quét dọn các Orbital Follower mồ côi nếu có lọt ra ngoài Root Scene
+            if (Application.isPlaying)
+            {
+                var strayFollowers = FindObjectsOfType<SpriteRenderer>(true);
+                foreach (var sr in strayFollowers)
+                {
+                    if (sr != null && sr.gameObject != null && sr.transform.parent == null)
+                    {
+                        string objName = sr.gameObject.name;
+                        if (objName.Contains("Follower") || objName.Contains("Preview_"))
+                        {
+                            Destroy(sr.gameObject);
+                        }
+                    }
+                }
+            }
+
             _timer = 0f;
             _isPlayingAttack = false;
         }
 
+        private void OnDisable()
+        {
+            ClearCurrentModel();
+        }
+
         private void OnDestroy()
         {
+            ClearCurrentModel();
             if (_renderTexture != null)
             {
                 _renderTexture.Release();

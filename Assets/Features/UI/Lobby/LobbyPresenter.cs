@@ -231,6 +231,11 @@ namespace ProjectZombie.Features.UI.Lobby
                     GameplayUIManager.Instance.SetGameplayCanvasActive(true);
                 }
 
+                if (CharacterPreviewStage.Instance != null)
+                {
+                    CharacterPreviewStage.Instance.SetStageActive(false);
+                }
+
                 // Nếu GameplayBootstrapper có sẵn trong scene, chuyển trạng thái sang Playing
                 if (Player.GameplayBootstrapper.Instance != null)
                 {

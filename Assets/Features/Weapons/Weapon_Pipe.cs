@@ -74,11 +74,20 @@ namespace ProjectZombie.Features.Weapons
                 }
 #endif
             }
+        private void OnDisable()
+        {
+            if (_pipeFollowerObj != null) Destroy(_pipeFollowerObj);
+        }
+
+        private void OnDestroy()
+        {
+            if (_pipeFollowerObj != null) Destroy(_pipeFollowerObj);
         }
 
         #region PIPE FOLLOWER VISUAL (CHIẾC ĐIẾU CÀY BAY TRÊN VAI TƯỚNG)
         private void CreatePipeFollower()
         {
+            if (transform.root.name.Contains("Preview") || GetComponentInParent<CharacterPreviewStage>() != null) return;
             if (_pipeFollowerObj != null || pipeFollowerSprite == null) return;
 
             _pipeFollowerObj = new GameObject("Pipe_Orbital_Follower");

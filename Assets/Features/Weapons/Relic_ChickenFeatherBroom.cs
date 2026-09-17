@@ -59,6 +59,11 @@ namespace ProjectZombie.Features.Weapons
             UpdateBroomFollower();
         }
 
+        private void OnDisable()
+        {
+            if (_broomFollowerObj != null) Destroy(_broomFollowerObj);
+        }
+
         private void OnDestroy()
         {
             if (_broomFollowerObj != null) Destroy(_broomFollowerObj);
@@ -127,6 +132,7 @@ namespace ProjectZombie.Features.Weapons
         #region BROOM FOLLOWER VISUAL (CÂY CHỔI BAY SAU LƯNG)
         private void CreateBroomFollower()
         {
+            if (transform.root.name.Contains("Preview") || GetComponentInParent<CharacterPreviewStage>() != null) return;
             if (_broomFollowerObj != null || broomFollowerSprite == null) return;
 
             _broomFollowerObj = new GameObject("ChickenBroom_Orbital_Follower");

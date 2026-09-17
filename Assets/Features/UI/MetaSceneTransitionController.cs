@@ -292,6 +292,12 @@ namespace ProjectZombie.Features.UI
                 _spawnManager.gameObject.SetActive(!isMeta);
             }
 
+            // Quản lý sân khấu xem trước nhân vật: Ẩn và dọn dẹp khi vào trận, bật lại khi về Hub
+            if (CharacterPreviewStage.Instance != null)
+            {
+                CharacterPreviewStage.Instance.SetStageActive(isMeta);
+            }
+
             if (_fadeOverlayCanvasGroup != null)
             {
                 _fadeOverlayCanvasGroup.alpha = 0f;
