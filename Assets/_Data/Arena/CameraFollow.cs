@@ -1,7 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using Cinemachine;
 using ProjectZombie.Core.Juice;
+using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Arena
 {
@@ -67,11 +69,22 @@ namespace ProjectZombie.Features.Arena
         private void OnEnable()
         {
             GameJuiceEvents.OnCameraShakeRequested += TriggerShake;
+            PlayerProvider.OnPlayerSpawned += HandlePlayerSpawned;
         }
 
         private void OnDisable()
         {
             GameJuiceEvents.OnCameraShakeRequested -= TriggerShake;
+            PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawned;
+        }
+
+        private void HandlePlayerSpawned(Transform playerTransform, HealthSystem hp)
+        {
+            if (playerTransform != null)
+            {
+                SetTarget(playerTransform);
+                ResetZoom(0.1f);
+            }
         }
 
         private void LateUpdate()

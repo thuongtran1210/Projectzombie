@@ -151,13 +151,27 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 }
             }
 
-            byte[] payload = LobbyMessageProtocol.EncodeRoomState(_currentRoom);
-            var key = ReliableKey.FromInts(LobbyMessageProtocol.MSG_ROOM_STATE_SYNC, 0, 0, 0);
-            foreach (var player in _runner.ActivePlayers)
+            // Chỉ đóng gói gói tin mạng nếu có Client khác kết nối trong phòng
+            bool hasRemoteClients = false;
+            foreach (var p in _runner.ActivePlayers)
             {
-                if (player != _runner.LocalPlayer)
+                if (p != _runner.LocalPlayer)
                 {
-                    _runner.SendReliableDataToPlayer(player, key, payload);
+                    hasRemoteClients = true;
+                    break;
+                }
+            }
+
+            if (hasRemoteClients)
+            {
+                byte[] payload = LobbyMessageProtocol.EncodeRoomState(_currentRoom);
+                var key = ReliableKey.FromInts(LobbyMessageProtocol.MSG_ROOM_STATE_SYNC, 0, 0, 0);
+                foreach (var player in _runner.ActivePlayers)
+                {
+                    if (player != _runner.LocalPlayer)
+                    {
+                        _runner.SendReliableDataToPlayer(player, key, payload);
+                    }
                 }
             }
 

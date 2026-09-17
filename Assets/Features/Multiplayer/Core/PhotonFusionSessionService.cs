@@ -33,6 +33,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public event Action<NetworkRoomInfo> OnRoomUpdated;
         public event Action OnMatchStarted;
+        public event Action OnMatchEnded;
         public event Action<string> OnConnectionError;
 
         private void Awake()
@@ -163,6 +164,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
             }
 
+            OnMatchEnded?.Invoke();
             OnRoomUpdated?.Invoke(null);
         }
 

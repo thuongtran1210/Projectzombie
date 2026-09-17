@@ -36,6 +36,7 @@ namespace ProjectZombie.Features.Player.Mechanics
 
         /// <summary>
         /// Khi người chơi này nhặt được Exp, phát tín hiệu đồng bộ cho các thành viên khác trong đội.
+        /// CHỈ kích hoạt từ Local Player để tránh việc lặp đệ quy hoặc nhân đôi EXP giữa các máy.
         /// </summary>
         private void HandleLocalExpGained(float amount)
         {
@@ -44,8 +45,20 @@ namespace ProjectZombie.Features.Player.Mechanics
                 return;
             }
 
-            // Nếu chỉ có 1 người chơi thì không cần phân phối
-            if (registry.ActivePlayers.Count <= 1) return;
+            // CHỈ người chơi cục bộ thực tế nhặt ngọc mới có quyền phân phối EXP
+            if (registry.LocalPlayer == null || registry.LocalPlayer.GameObject != gameObject)
+            {
+                return;
+            }
+
+            // Kiểm tra xem có đang thực sự trong trận Multiplayer Co-op nhiều người hay không
+            if (!ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) || 
+                !session.IsInRoom || 
+                session.CurrentRoom == null || 
+                session.CurrentRoom.Players.Count <= 1)
+            {
+                return;
+            }
 
             for (int i = 0; i < registry.ActivePlayers.Count; i++)
             {

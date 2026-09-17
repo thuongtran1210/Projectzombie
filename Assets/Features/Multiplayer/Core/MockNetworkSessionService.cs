@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public event Action<NetworkRoomInfo> OnRoomUpdated;
         public event Action OnMatchStarted;
+        public event Action OnMatchEnded;
         public event Action<string> OnConnectionError;
 
         public async Task<bool> CreateHostSessionAsync(string roomCode = null, int maxPlayers = 4)

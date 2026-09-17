@@ -69,15 +69,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
                 _networkInputBridge.enabled = false;
 
-                // Kết nối Camera theo dõi
-                var cameraFollow = CameraFollow.Instance;
-                if (cameraFollow != null)
-                {
-                    cameraFollow.SetTarget(transform);
-                    cameraFollow.ResetZoom(0.1f);
-                }
-
-                // Đăng ký PlayerProvider toàn cục
+                // Đăng ký PlayerProvider toàn cục (CameraFollow tự động lắng nghe OnPlayerSpawned)
                 PlayerProvider.RegisterPlayer(gameObject);
 
                 Debug.Log($"<color=#00FF88>[NetworkPlayerCharacter]</color> Khởi tạo Local Player thành công (PlayerId #{playerId}).");
@@ -118,6 +110,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private NetworkInputButtons _previousButtons = NetworkInputButtons.None;
 
+        // Command Registry cho các nút bấm mạng (Command Pattern & OCP)
+        private static readonly System.Collections.Generic.KeyValuePair<NetworkInputButtons, Commands.INetworkActionCommand>[] _actionCommands =
+        {
+            new System.Collections.Generic.KeyValuePair<NetworkInputButtons, Commands.INetworkActionCommand>(NetworkInputButtons.Dash, new Commands.DashActionCommand()),
+            new System.Collections.Generic.KeyValuePair<NetworkInputButtons, Commands.INetworkActionCommand>(NetworkInputButtons.Attack, new Commands.AttackActionCommand()),
+            new System.Collections.Generic.KeyValuePair<NetworkInputButtons, Commands.INetworkActionCommand>(NetworkInputButtons.SignatureSkill, new Commands.SignatureSkillActionCommand()),
+            new System.Collections.Generic.KeyValuePair<NetworkInputButtons, Commands.INetworkActionCommand>(NetworkInputButtons.RelicSkill, new Commands.RelicSkillActionCommand()),
+        };
+
         public override void FixedUpdateNetwork()
         {
             // Điều phối di chuyển và hành động Network-Authoritative trên State Authority (Host)
@@ -153,58 +154,13 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private void ProcessNetworkActions(NetworkInputButtons currentButtons, Vector2 aimDirection)
         {
-            // Phát hiện Rising Edge (Cạnh lên: 0 -> 1) để kích hoạt đòn đánh / skill / lướt 1 lần duy nhất trên Host
-            if ((currentButtons & NetworkInputButtons.Dash) != 0 && (_previousButtons & NetworkInputButtons.Dash) == 0)
+            // Duyệt qua Command Registry kiểm tra Rising Edge (0 -> 1) và thực thi (0 GC allocations)
+            for (int i = 0; i < _actionCommands.Length; i++)
             {
-                if (_controller != null) _controller.PerformDash();
-            }
-
-            if ((currentButtons & NetworkInputButtons.Attack) != 0 && (_previousButtons & NetworkInputButtons.Attack) == 0)
-            {
-                var combat = GetComponent<CharacterCombat>();
-                if (combat != null)
+                var kvp = _actionCommands[i];
+                if ((currentButtons & kvp.Key) != 0 && (_previousButtons & kvp.Key) == 0)
                 {
-                    if (aimDirection.sqrMagnitude > 0.001f)
-                    {
-                        combat.TriggerAttack(aimDirection);
-                    }
-                    else
-                    {
-                        combat.TriggerAttack();
-                    }
-                }
-                else
-                {
-                    var wm = GetComponent<Weapons.WeaponManager>();
-                    if (wm != null) wm.TriggerPrimaryAttack();
-                }
-            }
-
-            if ((currentButtons & NetworkInputButtons.SignatureSkill) != 0 && (_previousButtons & NetworkInputButtons.SignatureSkill) == 0)
-            {
-                if (aimDirection.sqrMagnitude > 0.001f)
-                {
-                    var anim = GetComponentInChildren<PlayerAnimator>();
-                    if (anim != null) anim.FlipToDirection(aimDirection.x);
-                }
-
-                var sig = GetComponent<Player.Skills.SignatureSkillManager>();
-                if (sig != null) sig.TryExecuteSkill();
-            }
-
-            if ((currentButtons & NetworkInputButtons.RelicSkill) != 0 && (_previousButtons & NetworkInputButtons.RelicSkill) == 0)
-            {
-                var wm = GetComponent<Weapons.WeaponManager>();
-                if (wm != null)
-                {
-                    if (aimDirection.sqrMagnitude > 0.001f)
-                    {
-                        wm.TriggerEquippedRelicSkill(aimDirection);
-                    }
-                    else
-                    {
-                        wm.TriggerEquippedRelicSkill();
-                    }
+                    kvp.Value.Execute(gameObject, aimDirection);
                 }
             }
 

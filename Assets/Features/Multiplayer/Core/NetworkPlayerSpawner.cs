@@ -35,8 +35,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             IsMatchActive = true;
 
-            // Dọn dẹp thực thể nhân vật Offline/Singleplayer đứng ở Sảnh để nhường chỗ cho nhân vật mạng
-            GameplayBootstrapper.Instance?.DespawnActivePlayer();
+            // Dọn dẹp thực thể nhân vật Offline/Singleplayer để nhường chỗ cho nhân vật mạng
+            PlayerProvider.ClearPlayer();
 
             SpawnAllActivePlayers();
         }
@@ -73,6 +73,26 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
         }
 
+        [Header("Character Database Reference")]
+        [Tooltip("Database toàn bộ Anh Hùng để tra cứu Prefab mạng (Single Source of Truth)")]
+        [SerializeField] private CharacterDatabaseSO _characterDatabase;
+
+        private ICharacterPrefabProvider _prefabProvider;
+
+        public void SetPrefabProvider(ICharacterPrefabProvider provider)
+        {
+            _prefabProvider = provider;
+        }
+
+        private ICharacterPrefabProvider GetPrefabProvider()
+        {
+            if (_prefabProvider == null)
+            {
+                _prefabProvider = new CharacterDatabasePrefabProvider(_characterDatabase);
+            }
+            return _prefabProvider;
+        }
+
         private void SpawnPlayerCharacter(PlayerRef player)
         {
             if (Runner == null || !Runner.IsServer) return;
@@ -84,73 +104,76 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             Vector3 spawnPos = GetSpawnPosition(player.PlayerId);
             Quaternion spawnRot = Quaternion.identity;
-
-            NetworkObject playerObject = null;
             NetworkObject prefabToSpawn = null;
+            var provider = GetPrefabProvider();
 
-            // 1. Ưu tiên lấy đúng tướng đã chọn trong RunLoadoutState cho người chơi cục bộ (Host)
+            // 1. Tìm đúng tướng đã chọn qua ICharacterPrefabProvider (DIP & OCP)
             if (player == Runner.LocalPlayer)
             {
-                if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.playerPrefab != null)
+                string localHeroId = RunLoadoutState.SelectedCharacter?.characterId ?? RunLoadoutState.SelectedCharacter?.characterName;
+                if (!string.IsNullOrEmpty(localHeroId) && provider != null)
                 {
-                    prefabToSpawn = RunLoadoutState.SelectedCharacter.playerPrefab.GetComponent<NetworkObject>();
+                    prefabToSpawn = provider.GetNetworkCharacterPrefab(localHeroId);
                 }
             }
             else
             {
-                // Đối với người chơi khác (Client): Tìm tướng họ đã chọn trong dữ liệu phòng (Room Info)
+                // Đối với khách (Remote Client): Tìm theo mã tướng gửi qua hồ sơ mạng
                 if (ServiceContext.TryGet<INetworkSessionService>(out var session) && session.CurrentRoom != null)
                 {
                     string pid = player.PlayerId.ToString();
                     var pData = session.CurrentRoom.Players.Find(p => p.PlayerId == pid);
-                    if (pData != null && !string.IsNullOrEmpty(pData.SelectedCharacterId))
+                    if (pData != null && !string.IsNullOrEmpty(pData.SelectedCharacterId) && provider != null)
                     {
-                        var loaded = Resources.Load<GameObject>($"Players/{pData.SelectedCharacterId}");
-                        if (loaded != null) prefabToSpawn = loaded.GetComponent<NetworkObject>();
+                        prefabToSpawn = provider.GetNetworkCharacterPrefab(pData.SelectedCharacterId);
                     }
                 }
             }
 
-            // 2. Nếu có gán _networkPlayerPrefab qua Inspector
+            // 2. Fallback 1: Lấy tướng mặc định từ Provider
+            if (prefabToSpawn == null && provider != null)
+            {
+                prefabToSpawn = provider.GetDefaultNetworkCharacterPrefab();
+            }
+
+            // 3. Fallback 2: Sử dụng _networkPlayerPrefab được cấu hình qua Inspector
             if (prefabToSpawn == null && _networkPlayerPrefab.IsValid)
             {
-                playerObject = Runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
+                try
+                {
+                    var playerObj = Runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
+                    if (playerObj != null)
+                    {
+                        _spawnedCharacters[player] = playerObj;
+                        Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Đã spawn nhân vật cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"[NetworkPlayerSpawner] Lỗi spawn fallback: {ex.Message}");
+                }
+                return;
+            }
+
+            if (prefabToSpawn != null)
+            {
+                try
+                {
+                    var playerObj = Runner.Spawn(prefabToSpawn, spawnPos, spawnRot, player);
+                    if (playerObj != null)
+                    {
+                        _spawnedCharacters[player] = playerObj;
+                        Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Host đã spawn nhân vật '{playerObj.name}' cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"[NetworkPlayerSpawner] Không thể spawn nhân vật '{prefabToSpawn.name}': {ex.Message}");
+                }
             }
             else
             {
-                // 3. Fallback tìm theo tên tướng đã chọn trong Resources/Players
-                if (prefabToSpawn == null)
-                {
-                    string heroName = RunLoadoutState.SelectedCharacter?.characterName;
-                    if (!string.IsNullOrEmpty(heroName))
-                    {
-                        var loaded = Resources.Load<GameObject>($"Players/{heroName}");
-                        if (loaded != null) prefabToSpawn = loaded.GetComponent<NetworkObject>();
-                    }
-                }
-
-                // 4. Fallback cuối cùng
-                if (prefabToSpawn == null)
-                {
-                    var fallbackPrefab = Resources.Load<GameObject>("Players/Thanh Dong")
-                                         ?? Resources.Load<GameObject>("Players/Dao Si")
-                                         ?? Resources.Load<GameObject>("Players/Thu Sinh");
-                    if (fallbackPrefab != null)
-                    {
-                        prefabToSpawn = fallbackPrefab.GetComponent<NetworkObject>();
-                    }
-                }
-
-                if (prefabToSpawn != null)
-                {
-                    playerObject = Runner.Spawn(prefabToSpawn, spawnPos, spawnRot, player);
-                }
-            }
-
-            if (playerObject != null)
-            {
-                _spawnedCharacters[player] = playerObject;
-                Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Host đã spawn nhân vật '{playerObject.name}' cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                Debug.LogError($"[NetworkPlayerSpawner] Không tìm thấy Prefab hợp lệ cho PlayerRef #{player.PlayerId}!");
             }
         }
 
