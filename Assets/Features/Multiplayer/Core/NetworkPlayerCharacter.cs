@@ -77,6 +77,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 if (_localInputReader != null)
                 {
                     _localInputReader.enabled = true;
+                    _localInputReader.IsNetworkMode = true;
                     _controller.SetInputProvider(_localInputReader);
                 }
 
@@ -101,6 +102,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 if (_localInputReader != null)
                 {
                     _localInputReader.enabled = false;
+                    _localInputReader.IsNetworkMode = false;
                 }
 
                 _networkInputBridge.enabled = true;
@@ -115,6 +117,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if (_controller != null)
             {
                 _controller.SetNetworkMovementMode(false);
+            }
+
+            if (_localInputReader != null)
+            {
+                _localInputReader.IsNetworkMode = false;
             }
 
             if (ServiceContext.TryGet<IPlayerRegistry>(out var registry) && _playerContext != null)
@@ -137,7 +144,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                         _controller.ApplyNetworkMovement(networkInput.MoveDirection);
                     }
 
-                    ProcessNetworkActions(networkInput.Buttons);
+                    ProcessNetworkActions(networkInput.Buttons, networkInput.AimDirection);
                 }
 
                 if (_networkInputBridge != null && _networkInputBridge.enabled)
@@ -158,9 +165,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
         }
 
-        private void ProcessNetworkActions(NetworkInputButtons currentButtons)
+        private void ProcessNetworkActions(NetworkInputButtons currentButtons, Vector2 aimDirection)
         {
-            // Phát hiện Rising Edge (Cạnh lên: 0 -> 1) để kích hoạt đòn đánh / skill / lướt 1 lần duy nhất
+            // Phát hiện Rising Edge (Cạnh lên: 0 -> 1) để kích hoạt đòn đánh / skill / lướt 1 lần duy nhất trên Host
             if ((currentButtons & NetworkInputButtons.Dash) != 0 && (_previousButtons & NetworkInputButtons.Dash) == 0)
             {
                 if (_controller != null) _controller.PerformDash();
@@ -171,7 +178,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 var combat = GetComponent<CharacterCombat>();
                 if (combat != null)
                 {
-                    combat.TriggerAttack();
+                    if (aimDirection.sqrMagnitude > 0.001f)
+                    {
+                        combat.TriggerAttack(aimDirection);
+                    }
+                    else
+                    {
+                        combat.TriggerAttack();
+                    }
                 }
                 else
                 {
@@ -182,6 +196,12 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if ((currentButtons & NetworkInputButtons.SignatureSkill) != 0 && (_previousButtons & NetworkInputButtons.SignatureSkill) == 0)
             {
+                if (aimDirection.sqrMagnitude > 0.001f)
+                {
+                    var anim = GetComponentInChildren<PlayerAnimator>();
+                    if (anim != null) anim.FlipToDirection(aimDirection.x);
+                }
+
                 var sig = GetComponent<Player.Skills.SignatureSkillManager>();
                 if (sig != null) sig.TryExecuteSkill();
             }
@@ -189,7 +209,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if ((currentButtons & NetworkInputButtons.RelicSkill) != 0 && (_previousButtons & NetworkInputButtons.RelicSkill) == 0)
             {
                 var wm = GetComponent<Weapons.WeaponManager>();
-                if (wm != null) wm.TriggerEquippedRelicSkill();
+                if (wm != null)
+                {
+                    if (aimDirection.sqrMagnitude > 0.001f)
+                    {
+                        wm.TriggerEquippedRelicSkill(new Combat.Aiming.SkillAimResult { Direction = aimDirection, IsQuickTap = false });
+                    }
+                    else
+                    {
+                        wm.TriggerEquippedRelicSkill();
+                    }
+                }
             }
 
             _previousButtons = currentButtons;

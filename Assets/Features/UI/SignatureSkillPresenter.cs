@@ -150,6 +150,13 @@ namespace ProjectZombie.Features.UI
                         }
                     }
 
+                    // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+                    if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+                    {
+                        inputReader.TriggerSignatureSkill(aimResult.Direction);
+                        return;
+                    }
+
                     _skillManager.TryExecuteSkill();
                 }
             }
@@ -204,6 +211,13 @@ namespace ProjectZombie.Features.UI
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+
+            // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+            {
+                inputReader.TriggerSignatureSkill();
+                return;
+            }
 
             // Thi triển trực tiếp kỹ năng (đồng bộ cho cả 4 nhân vật)
             _skillManager.TryExecuteSkill();

@@ -133,6 +133,14 @@ namespace ProjectZombie.Features.UI
                 if (_weaponManager != null && _boundActiveRelic != null && _boundActiveRelic.IsRelicSkillReady)
                 {
                     global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+
+                    // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+                    if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+                    {
+                        inputReader.TriggerRelicSkill(aimResult.Direction);
+                        return;
+                    }
+
                     _weaponManager.TriggerEquippedRelicSkill(aimResult);
                 }
             }
@@ -248,6 +256,14 @@ namespace ProjectZombie.Features.UI
             }
 
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+
+            // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+            {
+                inputReader.TriggerRelicSkill();
+                return;
+            }
+
             _weaponManager.TriggerEquippedRelicSkill();
         }
     }

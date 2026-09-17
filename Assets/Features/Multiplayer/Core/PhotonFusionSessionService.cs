@@ -289,13 +289,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             var inputData = new NetworkInputData();
             Vector2 moveDir = Vector2.zero;
+            Vector2 aimDir = Vector2.zero;
             NetworkInputButtons buttons = NetworkInputButtons.None;
 
             // 1. Đọc từ PlayerInputReader của Local Player
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerInputReader>(out var inputReader))
             {
                 moveDir = inputReader.MovementInput;
-                buttons = inputReader.ConsumePendingButtons();
+                buttons = inputReader.ConsumePendingButtons(out aimDir);
             }
 
             // 2. Ưu tiên ghi đè moveDir từ Mobile Virtual Joystick nếu có thao tác chạm thực tế
@@ -322,6 +323,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
 
             inputData.MoveDirection = moveDir.sqrMagnitude > 1f ? moveDir.normalized : moveDir;
+            inputData.AimDirection = aimDir;
             inputData.Buttons = buttons;
             input.Set(inputData);
         }

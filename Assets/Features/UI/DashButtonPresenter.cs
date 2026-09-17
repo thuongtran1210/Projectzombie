@@ -124,18 +124,26 @@ namespace ProjectZombie.Features.UI
         private void OnButtonClicked()
         {
             if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
+
+            float timePassed = Time.time - _lastDashTime;
+            if (timePassed < _dashCooldown)
+            {
+                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                return;
+            }
+
+            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+
+            // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+            {
+                inputReader.TriggerDash();
+                return;
+            }
+
             if (_playerController != null)
             {
-                float timePassed = Time.time - _lastDashTime;
-                if (timePassed >= _dashCooldown)
-                {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIClick();
-                    _playerController.PerformDash();
-                }
-                else
-                {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
-                }
+                _playerController.PerformDash();
             }
         }
     }

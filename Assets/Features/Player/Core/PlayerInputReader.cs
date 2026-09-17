@@ -22,11 +22,19 @@ namespace ProjectZombie.Features.Player.Input
         [SerializeField] private bool isInputBlocked = false;
 
         private byte _pendingButtonBitmask = 0;
+        private Vector2 _pendingAimDirection = Vector2.zero;
+        private bool _isNetworkMode = false;
 
         public bool IsInputBlocked
         {
             get => isInputBlocked;
             set => isInputBlocked = value;
+        }
+
+        public bool IsNetworkMode
+        {
+            get => _isNetworkMode;
+            set => _isNetworkMode = value;
         }
 
         public Vector2 MovementInput { get; private set; }
@@ -39,16 +47,27 @@ namespace ProjectZombie.Features.Player.Input
         public void SetMoveAction(InputActionReference action) => moveAction = action;
         public void SetDashAction(InputActionReference action) => dashAction = action;
 
-        public void QueueButton(Multiplayer.Core.NetworkInputButtons button)
+        public void QueueButton(Multiplayer.Core.NetworkInputButtons button, Vector2 aimDir = default)
         {
             _pendingButtonBitmask |= (byte)button;
+            if (aimDir.sqrMagnitude > 0.001f)
+            {
+                _pendingAimDirection = aimDir;
+            }
+        }
+
+        public Multiplayer.Core.NetworkInputButtons ConsumePendingButtons(out Vector2 aimDirection)
+        {
+            var buttons = (Multiplayer.Core.NetworkInputButtons)_pendingButtonBitmask;
+            aimDirection = _pendingAimDirection;
+            _pendingButtonBitmask = 0;
+            _pendingAimDirection = Vector2.zero;
+            return buttons;
         }
 
         public Multiplayer.Core.NetworkInputButtons ConsumePendingButtons()
         {
-            var buttons = (Multiplayer.Core.NetworkInputButtons)_pendingButtonBitmask;
-            _pendingButtonBitmask = 0;
-            return buttons;
+            return ConsumePendingButtons(out _);
         }
 
         private void OnEnable()
@@ -203,29 +222,57 @@ namespace ProjectZombie.Features.Player.Input
         public void TriggerDash()
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
-            QueueButton(Multiplayer.Core.NetworkInputButtons.Dash);
-            OnDashTriggered?.Invoke();
+
+            if (_isNetworkMode)
+            {
+                QueueButton(Multiplayer.Core.NetworkInputButtons.Dash);
+            }
+            else
+            {
+                OnDashTriggered?.Invoke();
+            }
         }
 
-        public void TriggerAttack()
+        public void TriggerAttack(Vector2 aimDir = default)
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
-            QueueButton(Multiplayer.Core.NetworkInputButtons.Attack);
-            OnAttackTriggered?.Invoke();
+
+            if (_isNetworkMode)
+            {
+                QueueButton(Multiplayer.Core.NetworkInputButtons.Attack, aimDir);
+            }
+            else
+            {
+                OnAttackTriggered?.Invoke();
+            }
         }
 
-        public void TriggerSignatureSkill()
+        public void TriggerSignatureSkill(Vector2 aimDir = default)
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
-            QueueButton(Multiplayer.Core.NetworkInputButtons.SignatureSkill);
-            OnSignatureSkillTriggered?.Invoke();
+
+            if (_isNetworkMode)
+            {
+                QueueButton(Multiplayer.Core.NetworkInputButtons.SignatureSkill, aimDir);
+            }
+            else
+            {
+                OnSignatureSkillTriggered?.Invoke();
+            }
         }
 
-        public void TriggerRelicSkill()
+        public void TriggerRelicSkill(Vector2 aimDir = default)
         {
             if (isInputBlocked || !GameStateManager.IsPlaying) return;
-            QueueButton(Multiplayer.Core.NetworkInputButtons.RelicSkill);
-            OnRelicSkillTriggered?.Invoke();
+
+            if (_isNetworkMode)
+            {
+                QueueButton(Multiplayer.Core.NetworkInputButtons.RelicSkill, aimDir);
+            }
+            else
+            {
+                OnRelicSkillTriggered?.Invoke();
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 
@@ -85,7 +85,11 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                if (_characterCombat != null)
+                if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+                {
+                    inputReader.TriggerAttack(direction);
+                }
+                else if (_characterCombat != null)
                 {
                     _characterCombat.TriggerAttack(direction);
                 }
@@ -160,28 +164,6 @@ namespace ProjectZombie.Features.UI
 
                 _view.SetCooldown(remainingCd, maxCd);
                 _view.SetInteractable(true);
-
-                // Hỗ trợ phím bấm trực tiếp trên PC (Chuột trái Mouse0, Phím J, hoặc Phím K)
-                bool pcAttackPressed = false;
-#if ENABLE_INPUT_SYSTEM
-                if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame) pcAttackPressed = true;
-                if (UnityEngine.InputSystem.Keyboard.current != null && (UnityEngine.InputSystem.Keyboard.current.jKey.wasPressedThisFrame || UnityEngine.InputSystem.Keyboard.current.kKey.wasPressedThisFrame)) pcAttackPressed = true;
-#elif ENABLE_LEGACY_INPUT_MANAGER
-                if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.K)) pcAttackPressed = true;
-#endif
-
-                if (pcAttackPressed)
-                {
-                    OnAttackButtonPressed();
-                }
-
-                if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
-                {
-                    if (_characterCombat.TriggerAttack())
-                    {
-                        _bufferedAttackTime = 0f;
-                    }
-                }
             }
             // 2. Fallback sang vũ khí chính cũ nếu chưa có CharacterCombat
             else if (_weaponManager != null && _weaponManager.PrimaryWeapon != null)
@@ -193,14 +175,6 @@ namespace ProjectZombie.Features.UI
 
                 _view.SetCooldown(remainingCd, maxCd);
                 _view.SetInteractable(true);
-
-                if (_bufferedAttackTime > 0 && Time.time <= _bufferedAttackTime + TAP_BUFFER_WINDOW)
-                {
-                    if (_weaponManager.TriggerPrimaryAttack())
-                    {
-                        _bufferedAttackTime = 0f;
-                    }
-                }
             }
             else
             {
@@ -260,6 +234,14 @@ namespace ProjectZombie.Features.UI
         private void OnAttackButtonPressed()
         {
             if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
+
+            // Tuyến đường duy nhất (Single Gateway): Gửi Intent qua PlayerInputReader
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+            {
+                inputReader.TriggerAttack();
+                return;
+            }
+
             if (_characterCombat != null)
             {
                 if (!_characterCombat.TriggerAttack())
