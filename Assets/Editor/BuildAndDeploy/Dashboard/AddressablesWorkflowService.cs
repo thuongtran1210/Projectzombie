@@ -20,6 +20,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
     public class AddressablesWorkflowService
     {
         public PrefabIntegrityAuditor.AuditReport AuditReport { get; private set; }
+        public ProjectZombie.EditorTools.AssetSourceConflictDetector.ConflictReport ConflictReport { get; private set; }
         public bool IsAuditing { get; private set; }
         public bool IsBundleOutdated { get; private set; }
         public DateTime LastBundleBuildTime { get; private set; } = DateTime.MinValue;
@@ -36,6 +37,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             try
             {
                 AuditReport = PrefabIntegrityAuditor.AuditPlayerPrefabs();
+                ConflictReport = ProjectZombie.EditorTools.AssetSourceConflictDetector.ScanConflicts();
                 CheckBundleOutdatedState();
             }
             finally
@@ -237,6 +239,13 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             PrefabIntegrityAuditor.FixAllIssues();
             RefreshAll();
             SetStatus("Đã sửa thành công và đồng bộ toàn bộ Player Prefabs!", MessageType.Info);
+        }
+
+        public void CleanDuplicateResources()
+        {
+            ProjectZombie.EditorTools.AssetSourceConflictDetector.CleanDuplicateResources();
+            RefreshAll();
+            SetStatus("Đã hoàn tất rà soát & dọn dẹp các tài nguyên trùng lặp giữa Resources và Addressables.", MessageType.Info);
         }
 
         private void SetStatus(string message, MessageType type)

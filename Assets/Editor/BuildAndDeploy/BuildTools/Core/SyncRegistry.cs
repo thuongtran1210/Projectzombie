@@ -8,14 +8,14 @@ namespace ProjectZombie.EditorTools.BuildSync
         public static readonly List<SyncRule> DirectoryRules = new List<SyncRule>
         {
             // Các nhóm tài nguyên lớn đã có trong Addressables (Local_Packed hoặc Remote_DLC)
-            // Không copy sang Resources để tránh nhân đôi dung lượng file APK
+            // Không copy sang Resources để tránh nhân đôi dung lượng file APK và xung đột Catalog
             new SyncRule("Bản Đồ Màn Chơi (Map Prefabs)", "Assets/_Prefabs/Maps", "Assets/Resources/Maps", "*.prefab", null, isAddressableManaged: true),
+            new SyncRule("Thẻ Nâng Cấp & Prefab Cơ Chế (Upgrades)", "Assets/_Data/Upgrades", "Assets/Resources/Upgrades", "*.*", new[] { ".asset", ".prefab" }, isAddressableManaged: true),
+            new SyncRule("Pháp Bảo (Weapons)", "Assets/_Data/Weapons", "Assets/Resources/Weapons", "*.asset", null, isAddressableManaged: true),
+            new SyncRule("Quái vật (Enemies)", "Assets/_Prefabs/Characters/Enemies", "Assets/Resources/Enemies", "*.prefab", null, isAddressableManaged: true),
             
             // Các nhóm tài nguyên offline phục vụ khởi động và gameplay
-            new SyncRule("Thẻ Nâng Cấp & Prefab Cơ Chế (Upgrades)", "Assets/_Data/Upgrades", "Assets/Resources/Upgrades", "*.*", new[] { ".asset", ".prefab" }),
             new SyncRule("Âm thanh (Audios)", "Assets/_Data/Audios", "Assets/Resources/Audios", "*.*", new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" }),
-            new SyncRule("Pháp Bảo (Weapons)", "Assets/_Data/Weapons", "Assets/Resources/Weapons", "*.asset"),
-            new SyncRule("Quái vật (Enemies)", "Assets/_Prefabs/Characters/Enemies", "Assets/Resources/Enemies", "*.prefab"),
             new SyncRule("Tướng (Players)", "Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab"),
             new SyncRule("Timeline Màn Chơi (Levels)", "Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset"),
             new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab"),

@@ -149,6 +149,29 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             GUI.color = Color.white;
             EditorGUILayout.EndHorizontal();
 
+            // 6. Xung đột Bản Sao Trùng Lặp Resources vs Addressables
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("• Xung Đột Resources / Addressables:", GUILayout.Width(180));
+            if (_service.ConflictReport != null && _service.ConflictReport.HasConflicts)
+            {
+                GUI.color = new Color(1f, 0.4f, 0.2f);
+                EditorGUILayout.LabelField($"⚠️ Có {_service.ConflictReport.TotalDuplicates} Bản Sao Trùng Lặp ({_service.ConflictReport.CriticalInsideResources.Count} Lỗi Nghiêm Trọng)", EditorStyles.boldLabel);
+                GUI.color = Color.white;
+                GUI.backgroundColor = new Color(1f, 0.8f, 0.3f);
+                if (GUILayout.Button("🧹 Dọn Dẹp Bản Sao", GUILayout.Width(140), GUILayout.Height(20)))
+                {
+                    _service.CleanDuplicateResources();
+                }
+                GUI.backgroundColor = Color.white;
+            }
+            else
+            {
+                GUI.color = new Color(0.4f, 1f, 0.4f);
+                EditorGUILayout.LabelField("✅ Hoàn Hảo (0 Bản Sao Trùng Lặp)", EditorStyles.boldLabel);
+                GUI.color = Color.white;
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.EndVertical();
         }
 

@@ -13,26 +13,31 @@ namespace ProjectZombie.EditorTools
     /// </summary>
     public static class AssetSourceConflictDetector
     {
-        [MenuItem("ProjectZombie/3. 🧪 Cheat & Testing/4. Detect Resources vs Addressables Conflicts", priority = 204)]
-        public static void DetectConflicts()
+        public class ConflictReport
         {
-            Debug.Log("<color=#00E5FF>[AssetSourceConflictDetector]</color> Bắt đầu kiểm tra xung đột dữ liệu Resources vs Addressables...");
+            public int TotalResourcesFiles { get; set; }
+            public List<string> CriticalInsideResources { get; } = new List<string>();
+            public List<string> LocalGroupDuplicates { get; } = new List<string>();
+            public List<string> RemoteGroupDuplicates { get; } = new List<string>();
+            public List<string> DuplicateResourcePaths { get; } = new List<string>();
 
+            public int TotalDuplicates => LocalGroupDuplicates.Count + RemoteGroupDuplicates.Count;
+            public bool HasConflicts => CriticalInsideResources.Count > 0 || TotalDuplicates > 0;
+        }
+
+        public static ConflictReport ScanConflicts()
+        {
+            var report = new ConflictReport();
             string resourcesPath = "Assets/Resources";
-            if (!Directory.Exists(resourcesPath))
-            {
-                Debug.LogWarning("[AssetSourceConflictDetector] Thư mục Assets/Resources không tồn tại.");
-                return;
-            }
+            if (!Directory.Exists(resourcesPath)) return report;
 
             string[] resourceFiles = Directory.GetFiles(resourcesPath, "*.*", SearchOption.AllDirectories);
             Dictionary<string, string> resourceAssetMap = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
 
-            int totalResourcesFiles = 0;
             foreach (var file in resourceFiles)
             {
                 if (file.EndsWith(".meta")) continue;
-                totalResourcesFiles++;
+                report.TotalResourcesFiles++;
 
                 string assetName = Path.GetFileNameWithoutExtension(file);
                 if (!resourceAssetMap.ContainsKey(assetName))
@@ -42,15 +47,7 @@ namespace ProjectZombie.EditorTools
             }
 
             var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
-            if (settings == null)
-            {
-                Debug.LogWarning("[AssetSourceConflictDetector] Không tìm thấy AddressableAssetSettings.");
-                return;
-            }
-
-            List<string> criticalInsideResources = new List<string>();
-            List<string> localGroupDuplicates = new List<string>();
-            List<string> remoteGroupDuplicates = new List<string>();
+            if (settings == null) return report;
 
             foreach (var group in settings.groups)
             {
@@ -67,41 +64,56 @@ namespace ProjectZombie.EditorTools
 
                     if (assetPath.StartsWith("Assets/Resources/", System.StringComparison.OrdinalIgnoreCase))
                     {
-                        criticalInsideResources.Add($"[{group.name}] Asset '{entry.address}' ({assetPath}) nằm trực tiếp trong Resources!");
+                        report.CriticalInsideResources.Add($"[{group.name}] '{entry.address}' ({assetPath}) nằm trực tiếp trong Resources!");
                     }
                     else if (resourceAssetMap.TryGetValue(addressableName, out string matchedResPath))
                     {
                         string logMsg = $"[{group.name}] '{addressableName}' (Addressables: {assetPath} <=> Resources: {matchedResPath})";
                         if (isRemote)
                         {
-                            remoteGroupDuplicates.Add(logMsg);
+                            report.RemoteGroupDuplicates.Add(logMsg);
                         }
                         else
                         {
-                            localGroupDuplicates.Add(logMsg);
+                            report.LocalGroupDuplicates.Add(logMsg);
+                        }
+
+                        if (!report.DuplicateResourcePaths.Contains(matchedResPath))
+                        {
+                            report.DuplicateResourcePaths.Add(matchedResPath);
                         }
                     }
                 }
             }
 
-            Debug.Log($"[AssetSourceConflictDetector] Đã quét {totalResourcesFiles} files Resources và {settings.groups.Count} Addressables groups.");
+            return report;
+        }
 
-            if (criticalInsideResources.Count > 0)
+        [MenuItem("ProjectZombie/3. 🧪 Cheat & Testing/4. Detect Resources vs Addressables Conflicts", priority = 204)]
+        public static void DetectConflicts()
+        {
+            Debug.Log("<color=#00E5FF>[AssetSourceConflictDetector]</color> Bắt đầu kiểm tra xung đột dữ liệu Resources vs Addressables...");
+            var report = ScanConflicts();
+            var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+
+            Debug.Log($"[AssetSourceConflictDetector] Đã quét {report.TotalResourcesFiles} files Resources và {(settings != null ? settings.groups.Count : 0)} Addressables groups.");
+
+            if (report.CriticalInsideResources.Count > 0)
             {
-                Debug.LogError($"<color=#FF0000>[NGHIÊM TRỌNG] {criticalInsideResources.Count} asset nằm TRỰC TIẾP trong Resources nhưng vẫn gắn tag Addressable:</color>\n" + string.Join("\n", criticalInsideResources));
+                Debug.LogError($"<color=#FF0000>[NGHIÊM TRỌNG] {report.CriticalInsideResources.Count} asset nằm TRỰC TIẾP trong Resources nhưng vẫn gắn tag Addressable:</color>\n" + string.Join("\n", report.CriticalInsideResources));
             }
 
-            if (localGroupDuplicates.Count > 0)
+            if (report.LocalGroupDuplicates.Count > 0)
             {
-                Debug.LogWarning($"<color=#FFAA00>[BẢN SAO LOCAL_PACKED] {localGroupDuplicates.Count} asset thuộc nhóm Local nhưng bị nhân bản sang Resources (Làm phình dung lượng APK gấp đôi):</color>\n" + string.Join("\n", localGroupDuplicates));
+                Debug.LogWarning($"<color=#FFAA00>[BẢN SAO LOCAL_PACKED] {report.LocalGroupDuplicates.Count} asset thuộc nhóm Local nhưng bị nhân bản sang Resources (Làm phình dung lượng APK gấp đôi):</color>\n" + string.Join("\n", report.LocalGroupDuplicates));
             }
 
-            if (remoteGroupDuplicates.Count > 0)
+            if (report.RemoteGroupDuplicates.Count > 0)
             {
-                Debug.LogWarning($"<color=#00E5FF>[BẢN SAO REMOTE_DLC] {remoteGroupDuplicates.Count} asset thuộc nhóm Remote DLC nhưng lại có bản sao trong Resources (Phá vỡ cơ chế tải DLC sau):</color>\n" + string.Join("\n", remoteGroupDuplicates));
+                Debug.LogWarning($"<color=#00E5FF>[BẢN SAO REMOTE_DLC] {report.RemoteGroupDuplicates.Count} asset thuộc nhóm Remote DLC nhưng lại có bản sao trong Resources (Phá vỡ cơ chế tải DLC sau):</color>\n" + string.Join("\n", report.RemoteGroupDuplicates));
             }
 
-            if (criticalInsideResources.Count == 0 && localGroupDuplicates.Count == 0 && remoteGroupDuplicates.Count == 0)
+            if (!report.HasConflicts)
             {
                 Debug.Log("<color=#00FF88>[AssetSourceConflictDetector] HOÀN HẢO:</color> 0 xung đột giữa Addressables và Resources!");
             }
@@ -110,67 +122,39 @@ namespace ProjectZombie.EditorTools
         [MenuItem("ProjectZombie/3. 🧪 Cheat & Testing/4.1 Clean Duplicate Resources (Addressables-Backed)", priority = 205)]
         public static void CleanDuplicateResources()
         {
-            var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
-            if (settings == null)
-            {
-                Debug.LogWarning("[AssetSourceConflictDetector] Không tìm thấy AddressableAssetSettings.");
-                return;
-            }
+            CleanDuplicateResourcesInternal(interactive: true);
+        }
 
-            string resourcesPath = "Assets/Resources";
-            if (!Directory.Exists(resourcesPath)) return;
+        public static int CleanDuplicateResourcesSilently()
+        {
+            return CleanDuplicateResourcesInternal(interactive: false);
+        }
 
-            string[] resourceFiles = Directory.GetFiles(resourcesPath, "*.*", SearchOption.AllDirectories);
-            Dictionary<string, string> resourceAssetMap = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
-
-            foreach (var file in resourceFiles)
-            {
-                if (file.EndsWith(".meta")) continue;
-                string assetName = Path.GetFileNameWithoutExtension(file);
-                if (!resourceAssetMap.ContainsKey(assetName))
-                {
-                    resourceAssetMap[assetName] = file.Replace('\\', '/');
-                }
-            }
-
-            // Tập hợp các file trong Resources cần dọn dẹp (đặc biệt là Remote DLC để phục hồi tính năng tải DLC)
-            List<string> filesToDelete = new List<string>();
-
-            foreach (var group in settings.groups)
-            {
-                if (group == null) continue;
-
-                foreach (var entry in group.entries)
-                {
-                    if (entry == null) continue;
-                    string assetPath = entry.AssetPath;
-                    string addressableName = Path.GetFileNameWithoutExtension(assetPath);
-
-                    if (!assetPath.StartsWith("Assets/Resources/", System.StringComparison.OrdinalIgnoreCase) &&
-                        resourceAssetMap.TryGetValue(addressableName, out string matchedResPath))
-                    {
-                        if (!filesToDelete.Contains(matchedResPath))
-                        {
-                            filesToDelete.Add(matchedResPath);
-                        }
-                    }
-                }
-            }
+        private static int CleanDuplicateResourcesInternal(bool interactive)
+        {
+            var report = ScanConflicts();
+            var filesToDelete = report.DuplicateResourcePaths;
 
             if (filesToDelete.Count == 0)
             {
-                EditorUtility.DisplayDialog("Dọn Dẹp Resources", "Không phát hiện file bản sao nào trong Resources cần dọn dẹp!", "OK");
-                return;
+                if (interactive)
+                {
+                    EditorUtility.DisplayDialog("Dọn Dẹp Resources", "Không phát hiện file bản sao nào trong Resources cần dọn dẹp!", "OK");
+                }
+                return 0;
             }
 
-            bool confirm = EditorUtility.DisplayDialog(
-                "Xác Nhận Dọn Dẹp Bản Sao Resources",
-                $"Phát hiện {filesToDelete.Count} asset trong Assets/Resources đã có mặt trong Addressables Groups.\n\n" +
-                "Bạn có muốn chuyển các bản sao này vào Thùng Rác (Trash) để khôi phục cơ chế Remote DLC và giảm dung lượng APK không?",
-                "Đồng Ý Xóa Bản Sao",
-                "Hủy Bỏ");
+            if (interactive)
+            {
+                bool confirm = EditorUtility.DisplayDialog(
+                    "Xác Nhận Dọn Dẹp Bản Sao Resources",
+                    $"Phát hiện {filesToDelete.Count} asset trong Assets/Resources đã có mặt trong Addressables Groups.\n\n" +
+                    "Bạn có muốn chuyển các bản sao này vào Thùng Rác (Trash) để triệt tiêu nhân bản và giảm dung lượng APK không?",
+                    "Đồng Ý Xóa Bản Sao",
+                    "Hủy Bỏ");
 
-            if (!confirm) return;
+                if (!confirm) return 0;
+            }
 
             int deletedCount = 0;
             AssetDatabase.StartAssetEditing();
@@ -191,7 +175,12 @@ namespace ProjectZombie.EditorTools
             }
 
             Debug.Log($"<color=#00FF88>[AssetSourceConflictDetector] ĐÃ DỌN DẸP THÀNH CÔNG:</color> Đã chuyển {deletedCount}/{filesToDelete.Count} file bản sao trong Resources vào Thùng Rác!");
-            EditorUtility.DisplayDialog("Hoàn Tất Dọn Dẹp", $"Đã dọn dẹp thành công {deletedCount} file bản sao trong Resources!\nChạy lại Audit để kiểm tra.", "Tuyệt vời");
+            if (interactive)
+            {
+                EditorUtility.DisplayDialog("Hoàn Tất Dọn Dẹp", $"Đã dọn dẹp thành công {deletedCount} file bản sao trong Resources!\nChạy lại Audit để kiểm tra.", "Tuyệt vời");
+            }
+
+            return deletedCount;
         }
     }
 }
