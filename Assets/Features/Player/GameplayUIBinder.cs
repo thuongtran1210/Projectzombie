@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using ProjectZombie.Features.UI;
 using ProjectZombie.Features.UI.HUD;
@@ -103,13 +103,15 @@ namespace ProjectZombie.Features.Player
         {
             if (_runHUDPresenter != null)
             {
+                var downedProvider = context.GameObject != null ? context.GameObject.GetComponent<Combat.Coop.IDownedStateProvider>() : null;
                 _runHUDPresenter.Construct(
                     context.Health,
                     context.Stats,
                     context.Experience,
                     context.WeaponManager,
-                    context.Passives);
-                Debug.Log("[GameplayUIBinder] Đã inject dependencies vào RunHUDPresenter.");
+                    context.Passives,
+                    downedProvider);
+                Debug.Log("[GameplayUIBinder] Đã inject dependencies vào RunHUDPresenter (bao gồm IDownedStateProvider).");
             }
         }
 

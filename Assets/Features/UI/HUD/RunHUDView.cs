@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // FILE: RunHUDView.cs — TẦNG VIEW (MVP)
 // Trách nhiệm DUY NHẤT: Cập nhật các phần tử UI trên màn hình HUD trong trận.
 // KHÔNG chứa logic nghiệp vụ. KHÔNG biết PlayerStats, RunStatsTracker tồn tại.
@@ -125,6 +125,31 @@ namespace ProjectZombie.Features.UI.HUD
                 _hpText.text = isLowHp 
                     ? $"<color=#FF3333><b>{curInt}</b></color> / {maxInt}" 
                     : $"{curInt} / {maxInt}";
+            }
+        }
+
+        /// <summary>Cập nhật trạng thái gục ngã và thanh tiến độ cứu viện trên thanh HUD chính.</summary>
+        public void SetDownedStatus(bool isDowned, float reviveProgress01 = 0f)
+        {
+            if (isDowned)
+            {
+                if (_hpFillImage != null)
+                {
+                    _hpFillImage.color = new Color(0.9f, 0.2f, 0.2f, 1f);
+                }
+
+                if (_hpText != null)
+                {
+                    if (reviveProgress01 > 0f)
+                    {
+                        int percent = Mathf.RoundToInt(reviveProgress01 * 100f);
+                        _hpText.text = $"<color=#00FF88><b>[ĐANG ĐƯỢC CỨU: {percent}%]</b></color>";
+                    }
+                    else
+                    {
+                        _hpText.text = "<color=#FF3333><b>[GỤC NGÃ - CHỜ CỨU]</b></color>";
+                    }
+                }
             }
         }
 

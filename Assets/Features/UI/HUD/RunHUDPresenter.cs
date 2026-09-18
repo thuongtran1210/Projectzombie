@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // FILE: RunHUDPresenter.cs — TẦNG PRESENTER (MVP)
 // Trách nhiệm: Subscribe Model events, format dữ liệu, gọi View để render.
 // KHÔNG tự render UI. KHÔNG chứa dữ liệu game.
@@ -39,10 +39,11 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private PlayerExperience _playerExp;
         [SerializeField] private ProjectZombie.Features.Weapons.WeaponManager _weaponManager;
         [SerializeField] private PlayerPassives _playerPassives;
+        private Combat.Coop.IDownedStateProvider _downedStateProvider;
 
         private bool _isConstructed = false;
 
-        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null)
+        public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null, Combat.Coop.IDownedStateProvider downedProvider = null)
         {
             if (_isConstructed)
             {
@@ -54,6 +55,7 @@ namespace ProjectZombie.Features.UI.HUD
             _playerExp = experience;
             _weaponManager = weaponManager;
             _playerPassives = passives;
+            _downedStateProvider = downedProvider;
 
             SubscribeEvents();
             ForceRefreshAll();
@@ -194,6 +196,12 @@ namespace ProjectZombie.Features.UI.HUD
             {
                 _playerPassives.OnPassivesChanged += OnSkillsOrPassivesChanged;
             }
+
+            if (_downedStateProvider != null)
+            {
+                _downedStateProvider.OnDownedStateChanged += OnDownedStateChanged;
+                _downedStateProvider.OnReviveProgressChanged += OnReviveProgressChanged;
+            }
         }
 
         private void UnsubscribeEvents()
@@ -215,6 +223,12 @@ namespace ProjectZombie.Features.UI.HUD
             if (_playerPassives != null)
             {
                 _playerPassives.OnPassivesChanged -= OnSkillsOrPassivesChanged;
+            }
+
+            if (_downedStateProvider != null)
+            {
+                _downedStateProvider.OnDownedStateChanged -= OnDownedStateChanged;
+                _downedStateProvider.OnReviveProgressChanged -= OnReviveProgressChanged;
             }
         }
 
@@ -265,6 +279,31 @@ namespace ProjectZombie.Features.UI.HUD
         {
             // View nhận giá trị thô — View tự render "75 / 100"
             _view.SetHealth(current, max);
+
+            if (_downedStateProvider != null && _downedStateProvider.IsDowned)
+            {
+                _view.SetDownedStatus(true, _downedStateProvider.ReviveProgressNormalized);
+            }
+        }
+
+        private void OnDownedStateChanged(bool isDowned)
+        {
+            if (_view == null) return;
+            _view.SetDownedStatus(isDowned, _downedStateProvider != null ? _downedStateProvider.ReviveProgressNormalized : 0f);
+
+            if (!isDowned && _playerHealth != null && _playerStats != null)
+            {
+                _view.SetHealth(_playerHealth.CurrentHealth, _playerStats.MaxHealth);
+            }
+        }
+
+        private void OnReviveProgressChanged(float progressNormalized)
+        {
+            if (_view == null) return;
+            if (_downedStateProvider != null && _downedStateProvider.IsDowned)
+            {
+                _view.SetDownedStatus(true, progressNormalized);
+            }
         }
 
         private void OnExpChanged(float current, float max)
