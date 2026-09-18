@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Multiplayer.Core;
 using ProjectZombie.Features.Combat.Coop;

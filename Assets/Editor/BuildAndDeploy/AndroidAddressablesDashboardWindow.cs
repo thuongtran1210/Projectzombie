@@ -165,7 +165,11 @@ namespace ProjectZombie.Editor.BuildAndDeploy
             // 4. Kiểm toán toàn vẹn
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("• Trạng Thái Player Prefabs:", GUILayout.Width(180));
-            if (_auditReport != null)
+            if (_isAuditing)
+            {
+                EditorGUILayout.LabelField("⏳ Đang quét kiểm toán...");
+            }
+            else if (_auditReport != null)
             {
                 if (_auditReport.IsHealthy && _auditReport.Warnings.Count == 0)
                 {
@@ -186,7 +190,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy
             }
             else
             {
-                EditorGUILayout.LabelField("Đang kiểm tra...");
+                EditorGUILayout.LabelField("Chưa quét kiểm toán.");
             }
             EditorGUILayout.EndHorizontal();
 

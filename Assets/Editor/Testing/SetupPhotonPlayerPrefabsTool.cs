@@ -91,9 +91,9 @@ namespace ProjectZombie.Editor.MultiplayerTools
                     }
 
                     // 7. Đảm bảo PlayerInputReader
-                    if (!root.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+                    if (!root.TryGetComponent<ProjectZombie.Features.Player.Input.PlayerInputReader>(out var inputReader))
                     {
-                        inputReader = root.AddComponent<Player.Input.PlayerInputReader>();
+                        inputReader = root.AddComponent<ProjectZombie.Features.Player.Input.PlayerInputReader>();
                     }
 
                     PrefabUtility.SaveAsPrefabAsset(root, path);
