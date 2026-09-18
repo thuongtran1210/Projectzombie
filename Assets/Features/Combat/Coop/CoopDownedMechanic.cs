@@ -32,6 +32,14 @@ namespace ProjectZombie.Features.Combat.Coop
         private HealthSystem _healthSystem;
         private PlayerController _playerController;
         private PlayerAnimator _playerAnimator;
+        private SpriteRenderer _spriteRenderer;
+        private Weapons.WeaponManager _weaponManager;
+        private CharacterCombat _characterCombat;
+        private Rigidbody2D _rb;
+
+        private GameObject _overheadCanvasObj;
+        private TMPro.TextMeshProUGUI _overheadText;
+
         private bool _isDowned = false;
         private float _currentReviveProgress = 0f;
 
@@ -47,6 +55,10 @@ namespace ProjectZombie.Features.Combat.Coop
             _healthSystem = GetComponent<HealthSystem>();
             _playerController = GetComponent<PlayerController>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            _weaponManager = GetComponent<Weapons.WeaponManager>();
+            _characterCombat = GetComponent<CharacterCombat>();
+            _rb = GetComponent<Rigidbody2D>();
         }
 
         private void OnEnable()
@@ -72,24 +84,44 @@ namespace ProjectZombie.Features.Combat.Coop
             CheckTeammateReviving();
         }
 
+        private void LateUpdate()
+        {
+            if (_isDowned && _overheadCanvasObj != null && _overheadCanvasObj.activeSelf)
+            {
+                // Giữ thẳng không bị lật ngược khi nhân vật đổi hướng
+                _overheadCanvasObj.transform.rotation = Quaternion.identity;
+                float signX = transform.lossyScale.x >= 0 ? 1f : -1f;
+                _overheadCanvasObj.transform.localScale = new Vector3(signX * 0.012f, 0.012f, 0.012f);
+            }
+        }
+
         private bool HandleTryDie()
         {
             // Chỉ kích hoạt trạng thái Downed (Gục ngã chờ cứu) khi:
             // 1. Đang trong trận chiến đấu (GameState.Playing).
             // 2. Đang trong phòng Multiplayer Co-op có nhiều hơn 1 người chơi.
             bool isPlaying = GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.Playing;
-            bool isMultiplayerMatch = ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && 
-                                      session.IsInRoom && 
-                                      session.CurrentRoom != null && 
-                                      session.CurrentRoom.Players.Count > 1;
 
-            if (!isPlaying || !isMultiplayerMatch)
+            int activePlayerCount = 1;
+            if (ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom)
             {
-                return false; // Chơi Solo / Offline / Ở Sảnh: Cho phép HealthSystem xử lý chết/GameOver thông thường
+                if (session.CurrentRoom != null && session.CurrentRoom.Players != null)
+                {
+                    activePlayerCount = Mathf.Max(activePlayerCount, session.CurrentRoom.Players.Count);
+                }
+                if (ServiceContext.TryGet<IPlayerRegistry>(out var registry) && registry != null)
+                {
+                    activePlayerCount = Mathf.Max(activePlayerCount, registry.ActivePlayers.Count);
+                }
+
+                if (isPlaying && activePlayerCount > 1)
+                {
+                    EnterDownedState();
+                    return true; // Chặn cái chết để HealthSystem không disable GameObject
+                }
             }
 
-            EnterDownedState();
-            return true; // Chặn cái chết để HealthSystem không disable GameObject
+            return false; // Chơi Solo / Offline / Ở Sảnh: Cho phép HealthSystem xử lý chết/GameOver thông thường
         }
 
         public void EnterDownedState()
@@ -99,18 +131,58 @@ namespace ProjectZombie.Features.Combat.Coop
             _isDowned = true;
             _currentReviveProgress = 0f;
 
-            // Vô hiệu hóa di chuyển và tấn công
-            if (_playerController != null && _playerController.InputProvider != null)
+            // 1. Dừng ngay vận tốc vật lý
+            if (_rb == null) _rb = GetComponent<Rigidbody2D>();
+            if (_rb != null)
             {
-                _playerController.InputProvider.IsInputBlocked = true;
+                _rb.velocity = Vector2.zero;
             }
+
+            // 2. Vô hiệu hóa di chuyển và khóa input
+            if (_playerController != null)
+            {
+                _playerController.enabled = false;
+                if (_playerController.InputProvider != null)
+                {
+                    _playerController.InputProvider.IsInputBlocked = true;
+                }
+            }
+
+            // 3. Vô hiệu hóa tấn công thường và vũ khí tự động
+            if (_characterCombat == null) _characterCombat = GetComponent<CharacterCombat>();
+            if (_characterCombat != null) _characterCombat.enabled = false;
+
+            if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
+            if (_weaponManager != null) _weaponManager.enabled = false;
+
+            // 4. Phát hoạt ảnh Dead / Downed
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dead);
+            }
+
+            // 5. Làm mờ / đổi màu đỏ cảnh báo trên Sprite
+            if (_spriteRenderer == null) _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = new Color(1f, 0.4f, 0.4f, 0.8f);
+            }
+
+            // 6. Hiển thị thông báo giải cứu trên đầu (Built-in Overhead SOS Indicator)
+            ShowOverheadRescueIndicator(true, "CẦN CỨU VIỆN!");
 
             if (_downedVfx != null) _downedVfx.SetActive(true);
             if (_revivingProgressIndicator != null) _revivingProgressIndicator.SetActive(false);
 
+            // 7. Đồng bộ mạng qua NetworkPlayerCharacter nếu có
+            if (TryGetComponent<ProjectZombie.Features.Multiplayer.Core.NetworkPlayerCharacter>(out var netChar))
+            {
+                netChar.SetDownedState(true);
+            }
+
             OnPlayerDowned?.Invoke();
 
-            // Kiểm tra xem tất cả người chơi khác có đều gục ngã hay không
+            // 8. Kiểm tra xem tất cả người chơi khác có đều gục ngã hay không
             CheckTeamWipeCondition();
         }
 
@@ -148,6 +220,9 @@ namespace ProjectZombie.Features.Combat.Coop
                 _currentReviveProgress += Time.deltaTime;
                 if (_revivingProgressIndicator != null) _revivingProgressIndicator.SetActive(true);
 
+                int percent = Mathf.Clamp(Mathf.RoundToInt(ReviveProgress01 * 100f), 0, 100);
+                UpdateOverheadRescueProgress(percent);
+
                 if (_currentReviveProgress >= _reviveDurationRequired)
                 {
                     CompleteRevive();
@@ -159,7 +234,14 @@ namespace ProjectZombie.Features.Combat.Coop
                 if (_currentReviveProgress > 0f)
                 {
                     _currentReviveProgress = Mathf.Max(0f, _currentReviveProgress - Time.deltaTime * 1.5f);
+                    int percent = Mathf.Clamp(Mathf.RoundToInt(ReviveProgress01 * 100f), 0, 100);
+                    UpdateOverheadRescueProgress(percent);
                 }
+                else
+                {
+                    ShowOverheadRescueIndicator(true, "CẦN CỨU VIỆN!");
+                }
+
                 if (_revivingProgressIndicator != null && _currentReviveProgress <= 0f)
                 {
                     _revivingProgressIndicator.SetActive(false);
@@ -172,6 +254,7 @@ namespace ProjectZombie.Features.Combat.Coop
             _isDowned = false;
             _currentReviveProgress = 0f;
 
+            // 1. Hồi phục máu và cấp bất tử ngắn
             if (_healthSystem != null)
             {
                 float reviveHp = _healthSystem.MaxHealth * _reviveHealthPercentage;
@@ -179,15 +262,98 @@ namespace ProjectZombie.Features.Combat.Coop
                 _healthSystem.TriggerInvulnerability(2.5f); // 2.5s bất tử sau khi đứng dậy
             }
 
-            if (_playerController != null && _playerController.InputProvider != null)
+            // 2. Kích hoạt lại PlayerController và mở khóa input
+            if (_playerController != null)
             {
-                _playerController.InputProvider.IsInputBlocked = false;
+                _playerController.enabled = true;
+                if (_playerController.InputProvider != null)
+                {
+                    _playerController.InputProvider.IsInputBlocked = false;
+                }
             }
+
+            // 3. Kích hoạt lại tấn công thường và vũ khí
+            if (_characterCombat != null) _characterCombat.enabled = true;
+            if (_weaponManager != null) _weaponManager.enabled = true;
+
+            // 4. Khôi phục hoạt ảnh Idle
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+            }
+
+            // 5. Khôi phục màu sprite gốc
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = Color.white;
+            }
+
+            // 6. Ẩn thông báo giải cứu
+            ShowOverheadRescueIndicator(false);
 
             if (_downedVfx != null) _downedVfx.SetActive(false);
             if (_revivingProgressIndicator != null) _revivingProgressIndicator.SetActive(false);
 
+            // 7. Đồng bộ mạng
+            if (TryGetComponent<ProjectZombie.Features.Multiplayer.Core.NetworkPlayerCharacter>(out var netChar))
+            {
+                netChar.SetDownedState(false);
+            }
+
             OnPlayerRevived?.Invoke();
+        }
+
+        private void EnsureOverheadRescueUI()
+        {
+            if (_overheadCanvasObj != null) return;
+
+            _overheadCanvasObj = new GameObject("OverheadRescueBadge");
+            _overheadCanvasObj.transform.SetParent(transform, false);
+            _overheadCanvasObj.transform.localPosition = new Vector3(0f, 1.8f, 0f);
+
+            var canvas = _overheadCanvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.sortingLayerName = "UI";
+            canvas.sortingOrder = 100;
+
+            var rect = _overheadCanvasObj.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(300f, 60f);
+            rect.localScale = Vector3.one * 0.012f;
+
+            var textObj = new GameObject("RescueText");
+            textObj.transform.SetParent(_overheadCanvasObj.transform, false);
+            var textRect = textObj.AddComponent<RectTransform>();
+            textRect.sizeDelta = new Vector2(300f, 60f);
+            textRect.anchoredPosition = Vector2.zero;
+
+            _overheadText = textObj.AddComponent<TMPro.TextMeshProUGUI>();
+            _overheadText.alignment = TMPro.TextAlignmentOptions.Center;
+            _overheadText.fontSize = 24;
+            _overheadText.raycastTarget = false;
+            _overheadText.richText = true;
+
+            _overheadCanvasObj.SetActive(false);
+        }
+
+        private void ShowOverheadRescueIndicator(bool show, string message = "")
+        {
+            EnsureOverheadRescueUI();
+            if (_overheadCanvasObj != null)
+            {
+                _overheadCanvasObj.SetActive(show);
+                if (show && _overheadText != null)
+                {
+                    _overheadText.text = $"<color=#FF4444><b>[{message}]</b></color>\n<size=75%><color=#FFFF00>Đứng gần để Cứu</color></size>";
+                }
+            }
+        }
+
+        private void UpdateOverheadRescueProgress(int percent)
+        {
+            if (_overheadText != null && _overheadCanvasObj != null && _overheadCanvasObj.activeSelf)
+            {
+                _overheadText.text = $"<color=#00FF88><b>ĐANG CỨU: {percent}%</b></color>\n<size=70%><color=#AACCFF>Giữ vị trí gần...</color></size>";
+            }
         }
 
         private void CheckTeamWipeCondition()
@@ -195,6 +361,10 @@ namespace ProjectZombie.Features.Combat.Coop
             if (!ServiceContext.TryGet<IPlayerRegistry>(out var registry) || registry == null)
             {
                 OnTeamWipe?.Invoke();
+                if (GameStateManager.Instance != null)
+                {
+                    GameStateManager.Instance.ChangeState(GameState.GameOver);
+                }
                 return;
             }
 
@@ -202,9 +372,14 @@ namespace ProjectZombie.Features.Combat.Coop
             for (int i = 0; i < registry.ActivePlayers.Count; i++)
             {
                 var p = registry.ActivePlayers[i];
-                if (p == null || !p.IsAlive) continue;
+                if (p == null || p.GameObject == null) continue;
 
                 if (p.GameObject.TryGetComponent<CoopDownedMechanic>(out var downed) && downed.IsDowned)
+                {
+                    continue;
+                }
+
+                if (p.Health != null && p.Health.CurrentHealth <= 0)
                 {
                     continue;
                 }
@@ -217,6 +392,11 @@ namespace ProjectZombie.Features.Combat.Coop
             {
                 Debug.Log("<color=#FF4444>[CoopDownedMechanic] Toàn đội đã gục ngã (Team Wipe)! Trận đấu kết thúc.</color>");
                 OnTeamWipe?.Invoke();
+
+                if (GameStateManager.Instance != null)
+                {
+                    GameStateManager.Instance.ChangeState(GameState.GameOver);
+                }
             }
         }
     }

@@ -3,6 +3,8 @@ using Fusion;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Core;
 using ProjectZombie.Features.Player.Input;
+using ProjectZombie.Features.Player.Mechanics;
+using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Arena;
 using ProjectZombie.Core.Architecture;
 
@@ -15,10 +17,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
     [RequireComponent(typeof(NetworkObject))]
     public class NetworkPlayerCharacter : NetworkBehaviour
     {
+        [Networked]
+        public NetworkBool NetworkIsDowned { get; set; }
+
         private PlayerController _controller;
         private PlayerInputReader _localInputReader;
         private NetworkInputBridge _networkInputBridge;
         private PlayerAnimator _playerAnimator;
+        private HealthSystem _healthSystem;
+        private Combat.Coop.CoopDownedMechanic _downedMechanic;
         private PlayerContext _playerContext;
         private Vector3 _lastRenderPosition;
 
@@ -27,10 +34,22 @@ namespace ProjectZombie.Features.Multiplayer.Core
             _controller = GetComponent<PlayerController>();
             _localInputReader = GetComponent<PlayerInputReader>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
+            _healthSystem = GetComponent<HealthSystem>();
+
             _networkInputBridge = GetComponent<NetworkInputBridge>();
             if (_networkInputBridge == null)
             {
                 _networkInputBridge = gameObject.AddComponent<NetworkInputBridge>();
+            }
+
+            if (!TryGetComponent<Combat.Coop.CoopDownedMechanic>(out _downedMechanic))
+            {
+                _downedMechanic = gameObject.AddComponent<Combat.Coop.CoopDownedMechanic>();
+            }
+
+            if (!TryGetComponent<CoopTeamExperience>(out _))
+            {
+                gameObject.AddComponent<CoopTeamExperience>();
             }
         }
 
@@ -124,6 +143,19 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void FixedUpdateNetwork()
         {
+            bool isDowned = (_downedMechanic != null && _downedMechanic.IsDowned) || NetworkIsDowned;
+            bool isDead = _healthSystem != null && !_healthSystem.IsAlive;
+
+            if (isDowned || isDead)
+            {
+                if (_controller != null)
+                {
+                    _controller.ApplyNetworkMovement(Vector2.zero);
+                }
+                _previousButtons = NetworkInputButtons.None;
+                return; // Cấm nhận input, di chuyển, lướt và tấn công khi đã gục ngã hoặc chết
+            }
+
             // Điều phối di chuyển và hành động Network-Authoritative trên State Authority (Host)
             if (GetInput<NetworkInputData>(out var networkInput))
             {
@@ -166,6 +198,26 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void Render()
         {
+            if (NetworkIsDowned)
+            {
+                if (_playerAnimator != null && _playerAnimator.CurrentState != PlayerAnimationState.Dead)
+                {
+                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dead);
+                }
+                if (_downedMechanic != null && !_downedMechanic.IsDowned)
+                {
+                    _downedMechanic.EnterDownedState();
+                }
+                return;
+            }
+            else
+            {
+                if (_downedMechanic != null && _downedMechanic.IsDowned)
+                {
+                    _downedMechanic.CompleteRevive();
+                }
+            }
+
             // Đồng bộ hóa Animation và Hướng quay mặt cho Đồng đội từ xa (Remote Proxy)
             if (!Object.HasInputAuthority && _playerAnimator != null)
             {
@@ -186,6 +238,27 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 else
                 {
                     _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                }
+            }
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RpcSetDownedState(NetworkBool isDowned)
+        {
+            NetworkIsDowned = isDowned;
+        }
+
+        public void SetDownedState(bool isDowned)
+        {
+            if (Object != null && Object.IsValid)
+            {
+                if (Object.HasStateAuthority)
+                {
+                    NetworkIsDowned = isDowned;
+                }
+                else
+                {
+                    RpcSetDownedState(isDowned);
                 }
             }
         }

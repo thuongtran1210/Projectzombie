@@ -360,9 +360,8 @@ namespace ProjectZombie.Features.Player
                 Debug.Log("[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00.");
             }
 
-            // CHỈ SinglePlayer hoặc Host mới kích hoạt Spawner wave
-            bool shouldStartSpawner = !isMultiplayer || (session != null && session.IsHost);
-            if (shouldStartSpawner && ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
+            // Kích hoạt Spawner wave cho cả Singleplayer và Multiplayer (cả Host lẫn Client)
+            if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
             {
                 ProjectZombie.Features.Spawners.SpawnManager.Instance.StartMatch();
                 Debug.Log("[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu.");

@@ -25,6 +25,7 @@ namespace ProjectZombie.Features.Player
         private PlayerAnimator _playerAnimator;
         private Skills.SignatureSkillManager _signatureSkillManager;
         private Weapons.WeaponManager _weaponManager;
+        private Shared.HealthSystem _healthSystem;
 
         private Vector2 _movementInput;
         private float _lastDashTime;
@@ -75,6 +76,7 @@ namespace ProjectZombie.Features.Player
             _playerAnimator = GetComponent<PlayerAnimator>();
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
             _weaponManager = GetComponent<Weapons.WeaponManager>();
+            _healthSystem = GetComponent<Shared.HealthSystem>();
 
             // Khởi tạo InputProvider tập trung (Mặc định là PlayerInputReader cho Local Player)
             var reader = GetComponent<PlayerInputReader>();
@@ -287,6 +289,10 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void PerformDash()
         {
+            if (!enabled || !Shared.GameStateManager.IsPlaying) return;
+            if (_healthSystem != null && !_healthSystem.IsAlive) return;
+            if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned) return;
+
             if (_playerStats == null) return;
 
             if (Time.time >= _lastDashTime + _playerStats.DashCooldown && !_isDashing)
@@ -356,13 +362,43 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void ApplyNetworkMovement(Vector2 networkMoveInput)
         {
+            if (!enabled || !Shared.GameStateManager.IsPlaying)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
+            if (_healthSystem != null && !_healthSystem.IsAlive)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
+            if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
             _movementInput = networkMoveInput;
             ProcessMovement(networkMoveInput);
         }
 
         private void ProcessMovement(Vector2 moveInput)
         {
-            if (!Shared.GameStateManager.IsPlaying)
+            if (!Shared.GameStateManager.IsPlaying || !enabled)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
+            if (_healthSystem != null && !_healthSystem.IsAlive)
+            {
+                _rb.velocity = Vector2.zero;
+                return;
+            }
+
+            if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned)
             {
                 _rb.velocity = Vector2.zero;
                 return;

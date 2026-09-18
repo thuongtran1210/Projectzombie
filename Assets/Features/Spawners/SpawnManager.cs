@@ -268,16 +268,6 @@ namespace ProjectZombie.Features.Spawners
 
         public async Task StartMatchAsync()
         {
-            // Trong Multiplayer: Chỉ có Chủ Phòng (Host) mới được quyền kích hoạt đợt quái
-            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session))
-            {
-                if (session.IsInRoom && !session.IsHost)
-                {
-                    Debug.Log("<color=#888888>[SpawnManager]</color> Bỏ qua StartMatch trên Client (Host là máy chủ điều phối duy nhất).");
-                    return;
-                }
-            }
-
             EnsureDependencies();
             _waveScheduler.Initialize(timelineConfig);
 
@@ -361,15 +351,6 @@ namespace ProjectZombie.Features.Spawners
         {
             if (!_waveScheduler.IsMatchActive || timelineConfig == null) return;
 
-            // Trong Multiplayer: Chỉ có Chủ Phòng (Host) mới được quyền chạy nhịp sinh quái vật
-            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session))
-            {
-                if (session.IsInRoom && !session.IsHost)
-                {
-                    return; // Client không tự chạy spawner tránh lệch nhịp quái
-                }
-            }
-
             // 1. Cập nhật thời gian và nhận danh sách các sự kiện wave đến hạn
             var dueEvents = _waveScheduler.Tick(Time.deltaTime, out _);
 
@@ -434,10 +415,10 @@ namespace ProjectZombie.Features.Spawners
             bool isBossWave = evt.eventType == TimelineEventType.BossSpawn;
             CullDistantEnemies(maxDistance: isBossWave ? 18f : 24f, cullAllDistant: isBossWave);
 
-            // Chuyển giao thực thi cho Strategy tương ứng
+            // Chuyển giao thực thi cho Strategy tương ứng (Tự động nhắm mục tiêu người chơi còn sống)
             if (_strategies.TryGetValue(evt.eventType, out var strategy))
             {
-                strategy.OnEventTriggered(evt, _spawnLocator, _populationTracker, _playerTransform, SpawnAtPosition);
+                strategy.OnEventTriggered(evt, _spawnLocator, _populationTracker, GetTargetPlayerTransform(), SpawnAtPosition);
             }
             else
             {
