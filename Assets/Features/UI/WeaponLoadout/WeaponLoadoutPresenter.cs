@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -28,6 +31,7 @@ namespace ProjectZombie.Features.UI
 
         private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
         private static bool _isWeaponsLoaded = false;
+        private static Task _loadingWeaponsTask = null;
 
         [Header("UI Sprites & Badges")]
         [SerializeField] private Sprite _slotWoodSprite;
@@ -139,10 +143,77 @@ namespace ProjectZombie.Features.UI
                 foreach (var w in loadedWeapons) TryAddWeapon(w);
             }
 
+#if UNITY_EDITOR
+            if (_cachedWeapons.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+                foreach (var guid in guids)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                    TryAddWeapon(wd);
+                }
+            }
+#endif
+
             _allWeapons = _cachedWeapons;
-            _isWeaponsLoaded = true;
+            if (_cachedWeapons.Count > 0)
+            {
+                _isWeaponsLoaded = true;
+            }
+            else
+            {
+                if (_loadingWeaponsTask == null || _loadingWeaponsTask.IsCompleted)
+                {
+                    _loadingWeaponsTask = LoadAllWeaponsAsync();
+                }
+            }
+
             sw.Stop();
             Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] LoadAllWeaponsIfEmpty: Đã nạp {_cachedWeapons.Count} vũ khí vào Cache trong: {sw.ElapsedMilliseconds} ms</color>");
+        }
+
+        public async Task LoadAllWeaponsAsync()
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            bool hasNew = false;
+            var seenIds = new HashSet<string>();
+
+            foreach (var w in _cachedWeapons)
+            {
+                if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenIds.Add(w.weaponId);
+            }
+
+            try
+            {
+                var handle = Addressables.LoadAssetsAsync<WeaponData>("WeaponData", null);
+                await handle.Task;
+                if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
+                {
+                    foreach (var w in handle.Result)
+                    {
+                        if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenIds.Add(w.weaponId))
+                        {
+                            _cachedWeapons.Add(w);
+                            hasNew = true;
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[WeaponLoadoutPresenter] Addressables Load WeaponData warning: {ex.Message}");
+            }
+
+            _allWeapons = _cachedWeapons;
+            _isWeaponsLoaded = _cachedWeapons.Count > 0;
+            sw.Stop();
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] LoadAllWeaponsAsync: Đã nạp {_cachedWeapons.Count} vũ khí trong: {sw.ElapsedMilliseconds} ms</color>");
+
+            if (hasNew && gameObject.activeInHierarchy && _view != null && _view.gameObject.activeInHierarchy)
+            {
+                RefreshUI();
+            }
         }
 
         public bool IsRelicOwned(WeaponData relic)

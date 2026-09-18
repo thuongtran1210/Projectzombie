@@ -353,7 +353,7 @@ namespace ProjectZombie.Features.Player
             }
 
             #if UNITY_EDITOR
-            if (list.Count == 0 && !Application.isPlaying)
+            if (list.Count == 0)
             {
                 string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
                 foreach (var guid in guids)
