@@ -196,7 +196,18 @@ namespace ProjectZombie.Features.Player
             var treeData = customTreeData;
             if (treeData == null)
             {
-                treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        treeData = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (treeData == null) treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
 #if UNITY_EDITOR
                 if (treeData == null)
                 {
@@ -246,7 +257,18 @@ namespace ProjectZombie.Features.Player
             var configSO = heroMgr != null ? heroMgr.ProgressionConfig : null;
             if (configSO == null)
             {
-                configSO = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        configSO = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (configSO == null) configSO = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
             }
 
             if (configSO != null && configSO.StarSteps != null)

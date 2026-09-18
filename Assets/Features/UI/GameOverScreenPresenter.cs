@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
@@ -94,6 +94,10 @@ namespace ProjectZombie.Features.UI
                 GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
 
+            // Lắng nghe sự kiện Team Wipe trong chế độ Multiplayer Co-op
+            Combat.Coop.CoopDownedMechanic.OnTeamWipe -= HandleTeamWipe;
+            Combat.Coop.CoopDownedMechanic.OnTeamWipe += HandleTeamWipe;
+
             // Tương thích ngược: nếu đã kéo thả trong Inspector thì tự động Construct luôn
             if (playerHealth != null)
             {
@@ -113,6 +117,8 @@ namespace ProjectZombie.Features.UI
             {
                 GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
             }
+
+            Combat.Coop.CoopDownedMechanic.OnTeamWipe -= HandleTeamWipe;
 
             PlayerLogic.OnPlayerDeathSequenceCompleted -= HandleDeathSequenceCompleted;
 
@@ -137,18 +143,35 @@ namespace ProjectZombie.Features.UI
 
         private void HandlePlayerDied()
         {
+            // Trong Multiplayer Co-op: Cái chết cá nhân không làm kết thúc game, trận đấu chỉ kết thúc khi Team Wipe (toàn đội cùng gục)
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
+            {
+                return;
+            }
+
             // Nếu Player có PlayerLogic điều phối Death Sequence thì chờ sự kiện OnPlayerDeathSequenceCompleted
             if (playerHealth != null && playerHealth.GetComponent<PlayerLogic>() != null)
             {
                 return;
             }
 
-            // Fallback khi không có PlayerLogic trong entity
+            // Fallback khi không có PlayerLogic trong entity (chế độ Solo thông thường)
+            Show(isVictory: false);
+        }
+
+        private void HandleTeamWipe()
+        {
             Show(isVictory: false);
         }
 
         private void HandleDeathSequenceCompleted()
         {
+            // Trong Multiplayer Co-op, trận đấu chỉ kết thúc qua sự kiện Team Wipe (CoopDownedMechanic)
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
+            {
+                return;
+            }
+
             Show(isVictory: false);
         }
 
@@ -302,6 +325,22 @@ namespace ProjectZombie.Features.UI
             global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
             Time.timeScale = 1f;
             if (view != null) view.SetActive(false);
+
+            // Nếu đang trong phòng Multiplayer Co-op: Host sẽ restart lại match, dọn các prefab cũ
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
+            {
+                var spawner = FindObjectOfType<Multiplayer.Core.NetworkPlayerSpawner>();
+                if (spawner != null)
+                {
+                    spawner.StopMatch();
+                }
+
+                if (netSession.IsHost)
+                {
+                    _ = netSession.StartGameMatchAsync();
+                }
+                return;
+            }
 
             if (MetaSceneTransitionController.Instance != null)
             {

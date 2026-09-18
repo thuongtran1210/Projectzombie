@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public int MaxPlayers = 4;
         public int CurrentPlayerCount => Players.Count;
         public bool IsGameStarted;
+        public string SelectedStageId = "STAGE_01";
         public List<NetworkPlayerData> Players = new List<NetworkPlayerData>();
 
         public NetworkPlayerData LocalPlayer { get; set; }

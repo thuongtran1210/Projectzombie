@@ -17,7 +17,8 @@ namespace ProjectZombie.Features.Shared
         /// <summary>
         /// Single Source of Truth kiểm tra xem trò chơi có đang trong trạng thái chiến đấu hoạt động hay không.
         /// Trả về false khi đang Pause, GameOver hoặc ở MainMenu.
-        /// Trong chế độ Multiplayer Co-op, nếu đang chọn nâng cấp (LevelUpSelection) thì trận đấu vẫn tiếp tục diễn ra thời gian thực.
+        /// Trong chế độ Multiplayer Co-op, nếu đang chọn nâng cấp (LevelUpSelection) hoặc đang mở Cài đặt / Menu nhân vật (Paused)
+        /// thì trận đấu vẫn tiếp tục diễn ra thời gian thực trên mạng.
         /// </summary>
         public static bool IsPlaying
         {
@@ -25,7 +26,7 @@ namespace ProjectZombie.Features.Shared
             {
                 if (Instance == null) return true;
                 if (Instance.CurrentState == GameState.Playing) return Time.timeScale > 0f;
-                if (Instance.CurrentState == GameState.LevelUpSelection)
+                if (Instance.CurrentState == GameState.LevelUpSelection || Instance.CurrentState == GameState.Paused)
                 {
                     bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
                     return isMultiplayer && Time.timeScale > 0f;
@@ -69,11 +70,11 @@ namespace ProjectZombie.Features.Shared
                     Time.timeScale = 1f;
                     break;
                 case GameState.LevelUpSelection:
-                    // Trong Multiplayer Co-op: KHÔNG dừng Time.timeScale để đảm bảo nhịp tick mạng liên tục
+                case GameState.Paused:
+                    // Trong Multiplayer Co-op: KHÔNG dừng Time.timeScale để đảm bảo nhịp tick mạng liên tục và không mất đồng bộ spawn quái
                     bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
                     Time.timeScale = isMultiplayer ? 1f : 0f;
                     break;
-                case GameState.Paused:
                 case GameState.GameOver:
                     Time.timeScale = 0f;
                     break;

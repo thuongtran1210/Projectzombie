@@ -99,7 +99,18 @@ namespace ProjectZombie.Features.UI
 
             if (_characterDatabase == null)
             {
-                _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    await handle.Task;
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        _characterDatabase = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (_characterDatabase == null) _characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
             }
 
             if (_characterDatabase != null && _characterDatabase.Characters != null && _characterDatabase.Characters.Count > 0)

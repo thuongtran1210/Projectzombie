@@ -1,4 +1,4 @@
-﻿# 📦 QUY CHUẨN NỘI DUNG BẢN BUILD APK ĐẦU TIÊN (FIRST PLAYABLE V1.0) & ADDRESSABLES SPECIFICATION
+# 📦 QUY CHUẨN NỘI DUNG BẢN BUILD APK ĐẦU TIÊN (FIRST PLAYABLE V1.0) & ADDRESSABLES SPECIFICATION
 
 Tài liệu này định nghĩa chính thức danh mục tài nguyên đi kèm trong bản cài đặt APK đầu tiên (Day-1 First Playable) và cấu hình Addressables tương ứng để phân tách rạch ròi giữa nội dung cục bộ (Local Packed) và nội dung tải sau (Remote DLC).
 
@@ -51,5 +51,17 @@ Tài liệu này định nghĩa chính thức danh mục tài nguyên đi kèm t
    - `DOTweenSettings.asset`
    - Cấu hình khởi động tối thiểu (nếu có).
 3. **Cơ Chế Nạp Tài Nguyên Runtime:**
-   - Sử dụng `IAssetProvider` (`AddressableAssetManager.Instance.LoadAssetAsync<T>()`) hoặc tham chiếu trực tiếp qua `ScriptableObject`.
-   - Loại bỏ dần các lời gọi `Resources.Load<T>()` đối với Maps, Enemies, Weapons, Upgrades.
+   - Nạp trực tiếp qua `Addressables.LoadAssetAsync<T>()` / `Addressables.InstantiateAsync()`.
+   - Loại bỏ hoàn toàn sự phụ thuộc vào `Resources.Load<T>()` và `#if UNITY_EDITOR AssetDatabase`.
+
+---
+
+## 4. Quy Chuẩn Nạp Tài Nguyên Trong Multiplayer Co-op (Host & Client)
+
+1. **Đồng Bộ Stage ID Qua Mạng:**
+   - Host chọn hoặc mặc định Ải (`Stage_01_BambooForest`). Khi Host bấm bắt đầu trận, gói tin `MSG_MATCH_START` truyền `stageId` sang Client P2.
+2. **Nạp Độc Lập Qua Addressables Trên Từng Máy:**
+   - Cả Host và Client P2 đều sử dụng `WorldStageDatabase` (Local Addressables) để tra cứu `stage.mapPrefabAddress` theo `stageId`.
+   - Mỗi máy tự thực hiện `Addressables.InstantiateAsync(stage.mapPrefabAddress)` để tạo bản đồ Tilemap cục bộ trên máy của mình.
+3. **Đảm Bảo Ải 1 Có Sẵn Trong APK:**
+   - Do `Map_BambooForest` nằm trong `Group_Core_Preload`, máy khách P2 (dù là thiết bị Android mới cài đặt và chưa tải DLC) đều nạp bản đồ thành công 100% ngay khi Host vừa bắt đầu trận.

@@ -36,13 +36,26 @@ namespace ProjectZombie.Features.MetaProgression
         {
             if (_progressionConfig == null)
             {
-                _progressionConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig") ??
-                                     Resources.Load<RelicStarProgressionSO>("Progression/RelicStarProgressionConfig");
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        _progressionConfig = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (_progressionConfig == null)
+                {
+                    _progressionConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig") ??
+                                         Resources.Load<RelicStarProgressionSO>("Progression/RelicStarProgressionConfig");
+                }
 #if UNITY_EDITOR
                 if (_progressionConfig == null)
                 {
-                    _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset") ??
-                                         UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/Resources/RelicStarProgressionConfig.asset");
+                    _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset");
                 }
 #endif
                 if (_progressionConfig == null)

@@ -117,13 +117,22 @@ namespace ProjectZombie.Features.Multiplayer.Core
             OnRoomUpdated?.Invoke(_currentRoom);
         }
 
-        public void NotifyMatchStarted()
+        public void NotifyMatchStarted(string stageId = null)
         {
-            if (_currentRoom != null) _currentRoom.IsGameStarted = true;
+            if (_currentRoom != null)
+            {
+                _currentRoom.IsGameStarted = true;
+                if (!string.IsNullOrEmpty(stageId))
+                {
+                    _currentRoom.SelectedStageId = stageId;
+                }
+            }
+
+            string actualStageId = _currentRoom?.SelectedStageId ?? "STAGE_01";
 
             if (_isHost && _runner != null)
             {
-                byte[] startSignal = LobbyMessageProtocol.EncodeMatchStart();
+                byte[] startSignal = LobbyMessageProtocol.EncodeMatchStart(actualStageId);
                 var msgKey = ReliableKey.FromInts(LobbyMessageProtocol.MSG_MATCH_START, 0, 0, 0);
                 foreach (var player in _runner.ActivePlayers)
                 {
@@ -280,8 +289,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             if (msgType == LobbyMessageProtocol.MSG_MATCH_START)
             {
-                Debug.Log("<color=#00FF88>[NetworkLobbySync]</color> Client nhận tín hiệu bắt đầu trận đấu từ Host!");
-                NotifyMatchStarted();
+                string syncedStageId = LobbyMessageProtocol.DecodeMatchStart(data);
+                Debug.Log($"<color=#00FF88>[NetworkLobbySync]</color> Client nhận tín hiệu bắt đầu trận đấu từ Host! Ải: {syncedStageId}");
+                NotifyMatchStarted(syncedStageId);
             }
             else if (msgType == LobbyMessageProtocol.MSG_ROOM_STATE_SYNC)
             {

@@ -14,14 +14,31 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public CharacterDatabasePrefabProvider(CharacterDatabaseSO database = null)
         {
-            _database = database != null ? database : Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-#if UNITY_EDITOR
-            if (_database == null)
+            if (database != null)
             {
-                _database = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset")
-                            ?? UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/Resources/CharacterDatabase.asset");
+                _database = database;
             }
+            else
+            {
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        _database = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (_database == null) _database = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+                if (_database == null)
+                {
+                    _database = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
+                }
 #endif
+            }
         }
 
         public NetworkObject GetNetworkCharacterPrefab(string characterId)
@@ -51,13 +68,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     var netObj = first.playerPrefab.GetComponent<NetworkObject>();
                     if (netObj != null) return netObj;
                 }
-            }
-
-            // Fallback trực tiếp từ thư mục Resources/Players/
-            var fallbackPrefab = Resources.Load<GameObject>("Players/Thu Sinh");
-            if (fallbackPrefab != null && fallbackPrefab.TryGetComponent<NetworkObject>(out var fallbackNetObj))
-            {
-                return fallbackNetObj;
             }
 
             return null;

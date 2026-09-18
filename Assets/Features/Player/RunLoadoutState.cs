@@ -94,6 +94,20 @@ namespace ProjectZombie.Features.Player
                 characterDatabase = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
             }
 
+            if (characterDatabase == null)
+            {
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    await handle.Task;
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        characterDatabase = handle.Result;
+                    }
+                }
+                catch { }
+            }
+
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Character/CharacterDatabase");
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");

@@ -134,7 +134,19 @@ namespace ProjectZombie.Features.UI
             if (hero == null)
             {
                 string savedId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
-                var characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+                CharacterDatabaseSO characterDatabase = null;
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        characterDatabase = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
 #if UNITY_EDITOR
                 if (characterDatabase == null)
                 {

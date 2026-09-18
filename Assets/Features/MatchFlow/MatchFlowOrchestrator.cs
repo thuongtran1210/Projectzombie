@@ -23,33 +23,69 @@ namespace ProjectZombie.Features.MatchFlow
             GameplayBootstrapper gameplayBootstrapper,
             Action<float, string> reportProgress = null)
         {
-            // Tự động resolve stage mặc định nếu chưa chọn
+            // Tự động resolve stage mặc định nếu chưa chọn bằng Addressables
             if (stage == null)
             {
-                var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
-                         ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
-#if UNITY_EDITOR
-                if (db == null)
+                try
                 {
-                    db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/WorldStageDatabase.asset")
-                         ?? UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
-                }
-#endif
-                if (db != null && db.Stages != null && db.Stages.Count > 0)
-                {
-                    stage = db.Stages[0];
-                }
-                else
-                {
-                    stage = Resources.Load<StageDefinitionSO>("Levels/Stage_01_BambooForest")
-                            ?? Resources.Load<StageDefinitionSO>("Levels/Stages/Stage_01_BambooForest");
-#if UNITY_EDITOR
-                    if (stage == null)
+                    var dbHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
+                    await dbHandle.Task;
+                    if (dbHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded &&
+                        dbHandle.Result != null && dbHandle.Result.Stages != null && dbHandle.Result.Stages.Count > 0)
                     {
-                        stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset")
-                                ?? UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/Resources/Levels/Stage_01_BambooForest.asset");
+                        stage = dbHandle.Result.Stages[0];
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[MatchFlowOrchestrator] Không thể nạp WorldStageDatabase từ Addressables: {ex.Message}");
+                }
+
+                if (stage == null)
+                {
+                    try
+                    {
+                        var stageHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<StageDefinitionSO>("Stage_01_BambooForest");
+                        await stageHandle.Task;
+                        if (stageHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                        {
+                            stage = stageHandle.Result;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"[MatchFlowOrchestrator] Không thể nạp Stage_01_BambooForest từ Addressables: {ex.Message}");
+                    }
+                }
+
+                // Fallback nếu Addressables chưa khởi tạo hoặc chạy test độc lập
+                if (stage == null)
+                {
+                    var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
+                             ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
+#if UNITY_EDITOR
+                    if (db == null)
+                    {
+                        db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/WorldStageDatabase.asset")
+                             ?? UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
                     }
 #endif
+                    if (db != null && db.Stages != null && db.Stages.Count > 0)
+                    {
+                        stage = db.Stages[0];
+                    }
+                    else
+                    {
+                        stage = Resources.Load<StageDefinitionSO>("Levels/Stage_01_BambooForest")
+                                ?? Resources.Load<StageDefinitionSO>("Levels/Stages/Stage_01_BambooForest");
+#if UNITY_EDITOR
+                        if (stage == null)
+                        {
+                            stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset")
+                                    ?? UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/Resources/Levels/Stage_01_BambooForest.asset");
+                        }
+#endif
+                    }
                 }
             }
 

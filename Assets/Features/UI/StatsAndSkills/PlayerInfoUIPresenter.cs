@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
@@ -246,13 +246,24 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             _statsMenuView.Show();
             SetupViewCallbacks();
 
+            bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+
+            // Khóa Input của người chơi cục bộ khi mở Menu trong Multiplayer (để không vô tình di chuyển/tấn công khi bấm nút)
+            if (isMultiplayer && PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
+            {
+                if (PlayerProvider.PlayerGameObject.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var pc) && pc.InputProvider != null)
+                {
+                    pc.InputProvider.IsInputBlocked = true;
+                }
+            }
+
             if (GameStateManager.Instance != null)
             {
                 GameStateManager.Instance.ChangeState(GameState.Paused);
             }
             else
             {
-                Time.timeScale = 0f;
+                Time.timeScale = isMultiplayer ? 1f : 0f;
             }
 
             ForceUpdateAll();
@@ -266,6 +277,15 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
             _isMenuOpen = false;
             _statsMenuView.Hide();
+
+            // Mở khóa lại Input người chơi khi đóng menu
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
+            {
+                if (PlayerProvider.PlayerGameObject.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var pc) && pc.InputProvider != null)
+                {
+                    pc.InputProvider.IsInputBlocked = false;
+                }
+            }
 
             if (GameStateManager.Instance != null)
             {
@@ -378,7 +398,19 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             var hero = RunLoadoutState.SelectedCharacter;
             if (hero == null)
             {
-                var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+                CharacterDatabaseSO charDb = null;
+                try
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    handle.WaitForCompletion();
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        charDb = handle.Result;
+                    }
+                }
+                catch { }
+
+                if (charDb == null) charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
 #if UNITY_EDITOR
                 if (charDb == null)
                 {

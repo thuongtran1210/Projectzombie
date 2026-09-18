@@ -351,6 +351,60 @@ namespace ProjectZombie.Features.Combat.Coop
             OnReviveProgressChanged?.Invoke(0f);
         }
 
+        /// <summary>
+        /// Khôi phục toàn bộ trạng thái sống khỏe mạnh ban đầu khi bắt đầu một hiệp / lượt chơi mới (Reset Run).
+        /// </summary>
+        public void ResetDownedState()
+        {
+            _isDowned = false;
+            _currentReviveProgress = 0f;
+
+            if (_rb == null) _rb = GetComponent<Rigidbody2D>();
+            if (_rb != null) _rb.velocity = Vector2.zero;
+
+            if (_playerController != null)
+            {
+                _playerController.enabled = true;
+                if (_playerController.InputProvider != null)
+                {
+                    _playerController.InputProvider.IsInputBlocked = false;
+                }
+            }
+
+            if (_characterCombat == null) _characterCombat = GetComponent<CharacterCombat>();
+            if (_characterCombat != null) _characterCombat.enabled = true;
+
+            if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
+            if (_weaponManager != null) _weaponManager.enabled = true;
+
+            if (_playerAnimator == null) _playerAnimator = GetComponentInChildren<PlayerAnimator>();
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+            }
+
+            if (_spriteRenderer == null) _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = Color.white;
+            }
+
+            if (_downedVfx != null) _downedVfx.SetActive(false);
+
+            if (_healthSystem != null)
+            {
+                _healthSystem.ResetHealth();
+            }
+
+            if (TryGetComponent<ProjectZombie.Features.Multiplayer.Core.NetworkPlayerCharacter>(out var netChar))
+            {
+                netChar.SetDownedState(false);
+            }
+
+            OnDownedStateChanged?.Invoke(false);
+            OnReviveProgressChanged?.Invoke(0f);
+        }
+
         private void CheckTeamWipeCondition()
         {
             if (!ServiceContext.TryGet<IPlayerRegistry>(out var registry) || registry == null)

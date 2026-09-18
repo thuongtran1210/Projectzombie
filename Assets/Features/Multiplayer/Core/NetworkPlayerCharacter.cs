@@ -79,6 +79,24 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 _controller.SetNetworkMovementMode(true);
             }
 
+            // Đảm bảo nhân vật luôn ở trạng thái sống khỏe mạnh khi Spawn mới (lượt 1 hoặc các lượt chơi tiếp theo)
+            if (Object.HasStateAuthority)
+            {
+                NetworkIsDowned = false;
+            }
+            if (_downedMechanic != null)
+            {
+                _downedMechanic.ResetDownedState();
+            }
+            if (_healthSystem != null)
+            {
+                _healthSystem.ResetHealth();
+            }
+            if (_playerAnimator != null)
+            {
+                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+            }
+
             if (isLocal)
             {
                 // 1. CẤU HÌNH CHO NGƯỜI CHƠI CỤC BỘ (LOCAL PLAYER)

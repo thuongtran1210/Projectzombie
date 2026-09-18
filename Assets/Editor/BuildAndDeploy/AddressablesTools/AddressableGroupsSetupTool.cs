@@ -72,21 +72,25 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddressableAssetGroup groupUpgradesRemote,
             AddressableAssetGroup groupMetaConfigsRemote)
         {
-            // 1. Core Database & World Stages (Hỗ trợ LiveOps Hot Update)
-            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Levels/WorldStageDatabase.asset", "WorldStageDatabase", "Map", "RemoteDLC");
+            // 1. Core Database & World Stages (Ải 1 Local trong APK, Ải 2+ Remote DLC)
+            AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/WorldStageDatabase.asset", "WorldStageDatabase", "Map");
             AddAssetToGroup(settings, groupCore, "Assets/_Data/CharacterDatabase.asset", "CharacterDatabase");
+            AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset", "Stage_01_BambooForest", "Map");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Maps/Map_BambooForest.prefab", "Map_BambooForest", "Map");
 
-            // 1.1 Đăng ký từng StageDefinitionSO vào Remote DLC
+            // 1.1 Đăng ký các StageDefinitionSO mở rộng vào Remote DLC
             string[] stageGuids = AssetDatabase.FindAssets("t:StageDefinitionSO", new[] { "Assets/_Data/Levels/Stages" });
             foreach (string guid in stageGuids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
-                AddAssetToGroup(settings, groupMetaConfigsRemote, path, fileName, "Map", "RemoteDLC");
+                if (fileName != "Stage_01_BambooForest")
+                {
+                    AddAssetToGroup(settings, groupMetaConfigsRemote, path, fileName, "Map", "RemoteDLC");
+                }
             }
 
-            // 1.2 Đăng ký Prefab Màn vào Group_DLC_Stages_Remote
-            AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_BambooForest.prefab", "Map_BambooForest", "Map", "RemoteDLC");
+            // 1.2 Đăng ký Prefab Màn mở rộng vào Group_DLC_Stages_Remote
             AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_AncientCitadel.prefab", "Map_AncientCitadel", "Map", "RemoteDLC");
             AddAssetToGroup(settings, groupStages, "Assets/_Prefabs/Maps/Map_CinnabarSwamp.prefab", "Map_CinnabarSwamp", "Map", "RemoteDLC");
 

@@ -15,9 +15,19 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public const byte MSG_CLIENT_PROFILE_SUBMIT = 3;
         public const byte MSG_CLIENT_READY_SUBMIT = 4;
 
-        public static byte[] EncodeMatchStart()
+        public static byte[] EncodeMatchStart(string stageId = "STAGE_01")
         {
-            return new byte[] { MSG_MATCH_START };
+            byte[] stageBytes = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(stageId) ? "STAGE_01" : stageId);
+            byte[] payload = new byte[1 + stageBytes.Length];
+            payload[0] = MSG_MATCH_START;
+            Buffer.BlockCopy(stageBytes, 0, payload, 1, stageBytes.Length);
+            return payload;
+        }
+
+        public static string DecodeMatchStart(ArraySegment<byte> data)
+        {
+            if (data.Count <= 1 || data.Array == null) return "STAGE_01";
+            return Encoding.UTF8.GetString(data.Array, data.Offset + 1, data.Count - 1);
         }
 
         public static byte[] EncodeRoomState(NetworkRoomInfo room)

@@ -66,6 +66,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - ui_meta
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae65768a14cc70f4b839c3d00b7bb729
+    m_Address: Map_BambooForest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c81b31421814b8742a1136999ecdbf01
     m_Address: CharacterDatabase
     m_ReadOnly: 0
@@ -76,6 +82,30 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9e1a869fe5d24f49b37614c1024e502
+    m_Address: WorldStageDatabase
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e12064e9cecf6914986590730288b6a7
+    m_Address: Stage_01_BambooForest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d35c27b9e0b86b54fad24b926ec99a41
+    m_Address: PermanentUpgradeTree
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MetaConfigs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cc01148cb78fb0439fdff873ef0c3c4
+    m_Address: RelicStarProgressionConfig
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MetaConfigs
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}

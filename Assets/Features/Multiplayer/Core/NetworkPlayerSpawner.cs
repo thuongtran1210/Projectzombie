@@ -56,6 +56,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
             // Dọn dẹp thực thể nhân vật Offline/Singleplayer để nhường chỗ cho nhân vật mạng
             PlayerProvider.ClearPlayer();
 
+            // Dọn dẹp toàn bộ nhân vật mạng cũ còn sót lại từ lượt chơi trước (nếu có)
+            DespawnAllPlayers();
+
             SpawnAllActivePlayers();
         }
 
@@ -236,11 +239,23 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 {
                     if (kvp.Value != null)
                     {
+                        if (ServiceContext.TryGet<IPlayerRegistry>(out var registry))
+                        {
+                            var ctx = registry.GetPlayerById(kvp.Key.PlayerId);
+                            if (ctx != null) registry.Unregister(ctx);
+                        }
+
                         runner.Despawn(kvp.Value);
                     }
                 }
             }
             _spawnedCharacters.Clear();
+
+            // Đảm bảo dọn sạch PlayerRegistry nếu còn sót lại các PlayerContext cũ
+            if (ServiceContext.TryGet<IPlayerRegistry>(out var pRegistry))
+            {
+                pRegistry.Clear();
+            }
         }
 
         private Vector3 GetSpawnPosition(int playerId)

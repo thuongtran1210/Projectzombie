@@ -220,6 +220,19 @@ namespace ProjectZombie.Features.UI
             // Dọn sạch các vùng Trận Đồ / Zone Decals còn sót lại
             ProjectZombie.Features.Skills.Zones.BatQuaiTranZone.ClearAllZones();
 
+            // Nếu đang trong phòng Multiplayer Co-op, dọn dẹp toàn bộ nhân vật mạng của lượt chơi vừa kết thúc
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
+            {
+                if (netSession is Multiplayer.Core.PhotonFusionSessionService fusionService)
+                {
+                    var spawner = FindObjectOfType<Multiplayer.Core.NetworkPlayerSpawner>();
+                    if (spawner != null)
+                    {
+                        spawner.StopMatch();
+                    }
+                }
+            }
+
             if (_gameplayBootstrapper != null)
             {
                 _gameplayBootstrapper.ResetPlayerToHub();

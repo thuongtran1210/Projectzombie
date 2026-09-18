@@ -103,7 +103,12 @@ namespace ProjectZombie.Tests.Editor
                 gsm.ChangeState(GameState.LevelUpSelection);
                 // Trong Multiplayer, timeScale giữ nguyên và IsPlaying vẫn trả về true để trận đấu tiếp diễn
                 Assert.AreEqual(1f, Time.timeScale);
-                Assert.IsTrue(GameStateManager.IsPlaying, "GameStateManager.IsPlaying phải trả về true khi trong phòng Multiplayer Co-op.");
+                Assert.IsTrue(GameStateManager.IsPlaying, "GameStateManager.IsPlaying phải trả về true khi trong phòng Multiplayer Co-op lúc LevelUp.");
+
+                gsm.ChangeState(GameState.Paused);
+                // Trong Multiplayer, khi mở Cài đặt / Pause Menu thì không làm delay/đóng băng game
+                Assert.AreEqual(1f, Time.timeScale, "Time.timeScale phải là 1f khi Paused trong Multiplayer để không làm lệch nhịp spawn quái.");
+                Assert.IsTrue(GameStateManager.IsPlaying, "GameStateManager.IsPlaying phải trả về true khi trong phòng Multiplayer Co-op lúc Paused.");
             }
             finally
             {

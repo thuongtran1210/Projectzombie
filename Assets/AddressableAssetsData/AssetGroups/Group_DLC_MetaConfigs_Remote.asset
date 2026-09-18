@@ -38,27 +38,7 @@ MonoBehaviour:
     - Map
     - RemoteDLC
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c9e1a869fe5d24f49b37614c1024e502
-    m_Address: WorldStageDatabase
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    - RemoteDLC
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d35c27b9e0b86b54fad24b926ec99a41
-    m_Address: PermanentUpgradeTree
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MetaConfigs
-    - RemoteDLC
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e12064e9cecf6914986590730288b6a7
-    m_Address: Stage_01_BambooForest
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    - RemoteDLC
-    FlaggedDuringContentUpdateRestriction: 0
+
   - m_GUID: e21139d7c2b4b2f418107c4edde58b9d
     m_Address: Stage_02_AncientCitadel
     m_ReadOnly: 0
