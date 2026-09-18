@@ -264,6 +264,10 @@ namespace ProjectZombie.Editor.BuildAndDeploy
             }
             else
             {
+                EditorGUILayout.LabelField("Chưa quét kiểm toán.");
+            }
+            EditorGUILayout.EndHorizontal();
+
             // 5. Trạng thái Bundles Mới/Cũ
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("• Addressables Content Bundles:", GUILayout.Width(180));
