@@ -20,11 +20,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
         [Networked]
         public NetworkBool NetworkIsDowned { get; set; }
 
+        [Networked]
+        public float NetworkHealth { get; set; }
+
+        [Networked]
+        public float NetworkMaxHealth { get; set; }
+
+        [Networked]
+        public NetworkString<_32> NetworkEquippedWeaponId { get; set; }
+
         private PlayerController _controller;
         private PlayerInputReader _localInputReader;
         private NetworkInputBridge _networkInputBridge;
         private PlayerAnimator _playerAnimator;
         private HealthSystem _healthSystem;
+        private Weapons.WeaponManager _weaponManager;
         private Combat.Coop.CoopDownedMechanic _downedMechanic;
         private PlayerContext _playerContext;
         private Vector3 _lastRenderPosition;
@@ -35,6 +45,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             _localInputReader = GetComponent<PlayerInputReader>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _healthSystem = GetComponent<HealthSystem>();
+            _weaponManager = GetComponent<Weapons.WeaponManager>();
 
             _networkInputBridge = GetComponent<NetworkInputBridge>();
             if (_networkInputBridge == null)
@@ -83,7 +94,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
             if (Object.HasStateAuthority)
             {
                 NetworkIsDowned = false;
+                if (_healthSystem != null)
+                {
+                    NetworkHealth = _healthSystem.CurrentHealth;
+                    NetworkMaxHealth = _healthSystem.MaxHealth;
+                    _healthSystem.OnHealthChanged += HandleHostHealthChanged;
+                }
             }
+
             if (_downedMechanic != null)
             {
                 _downedMechanic.ResetDownedState();
@@ -112,6 +130,22 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 // Đăng ký PlayerProvider toàn cục (CameraFollow tự động lắng nghe OnPlayerSpawned)
                 PlayerProvider.RegisterPlayer(gameObject);
 
+                // Gửi thông tin vũ khí/pháp bảo của Local Player lên Host
+                string relicId = "";
+                if (RunLoadoutState.SelectedRelic != null && !string.IsNullOrEmpty(RunLoadoutState.SelectedRelic.weaponId))
+                {
+                    relicId = RunLoadoutState.SelectedRelic.weaponId;
+                }
+                else if (_weaponManager != null && _weaponManager.EquippedRelic != null)
+                {
+                    relicId = _weaponManager.EquippedRelic.weaponId;
+                }
+
+                if (!string.IsNullOrEmpty(relicId))
+                {
+                    RpcSetEquippedWeapon(relicId);
+                }
+
                 Debug.Log($"<color=#00FF88>[NetworkPlayerCharacter]</color> Khởi tạo Local Player thành công (PlayerId #{playerId}).");
             }
             else
@@ -130,8 +164,27 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
         }
 
+        private void HandleHostHealthChanged(float current, float max)
+        {
+            if (Object.HasStateAuthority)
+            {
+                NetworkHealth = current;
+                NetworkMaxHealth = max;
+            }
+        }
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+        public void RpcSetEquippedWeapon(string weaponId)
+        {
+            NetworkEquippedWeaponId = weaponId;
+        }
+
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
+            if (Object.HasStateAuthority && _healthSystem != null)
+            {
+                _healthSystem.OnHealthChanged -= HandleHostHealthChanged;
+            }
             if (_controller != null)
             {
                 _controller.SetNetworkMovementMode(false);
@@ -236,26 +289,55 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 }
             }
 
-            // Đồng bộ hóa Animation và Hướng quay mặt cho Đồng đội từ xa (Remote Proxy)
-            if (!Object.HasInputAuthority && _playerAnimator != null)
+            // Đồng bộ hóa Animation, Hướng quay mặt, Máu và Pháp Bảo cho Đồng đội từ xa (Remote Proxy)
+            if (!Object.HasInputAuthority)
             {
-                Vector3 currentPos = transform.position;
-                Vector3 delta = currentPos - _lastRenderPosition;
-                float distSqr = delta.sqrMagnitude;
-                _lastRenderPosition = currentPos;
-
-                // Nếu có dịch chuyển đáng kể trong frame (đang chạy), bật Run và Flip hướng
-                if (distSqr > 0.0001f)
+                if (_healthSystem != null)
                 {
-                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
-                    if (Mathf.Abs(delta.x) > 0.001f)
+                    if (NetworkMaxHealth > 0 && Mathf.Abs(_healthSystem.MaxHealth - NetworkMaxHealth) > 0.5f)
                     {
-                        _playerAnimator.FlipToDirection(delta.x);
+                        _healthSystem.SetMaxHealth(NetworkMaxHealth, fillCurrentHealth: false);
+                    }
+
+                    if (Mathf.Abs(_healthSystem.CurrentHealth - NetworkHealth) > 0.5f)
+                    {
+                        _healthSystem.SetCurrentHealth(NetworkHealth);
                     }
                 }
-                else
+
+                if (_weaponManager != null)
                 {
-                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                    string netWeaponId = NetworkEquippedWeaponId.ToString();
+                    if (!string.IsNullOrEmpty(netWeaponId))
+                    {
+                        var equipped = _weaponManager.EquippedRelic;
+                        if (equipped == null || equipped.weaponId != netWeaponId)
+                        {
+                            _weaponManager.EquipWeaponById(netWeaponId, isPrimary: false);
+                        }
+                    }
+                }
+
+                if (_playerAnimator != null)
+                {
+                    Vector3 currentPos = transform.position;
+                    Vector3 delta = currentPos - _lastRenderPosition;
+                    float distSqr = delta.sqrMagnitude;
+                    _lastRenderPosition = currentPos;
+
+                    // Nếu có dịch chuyển đáng kể trong frame (đang chạy), bật Run và Flip hướng
+                    if (distSqr > 0.0001f)
+                    {
+                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                        if (Mathf.Abs(delta.x) > 0.001f)
+                        {
+                            _playerAnimator.FlipToDirection(delta.x);
+                        }
+                    }
+                    else
+                    {
+                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                    }
                 }
             }
         }

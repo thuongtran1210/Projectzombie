@@ -1,12 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Player;
+using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.Weapons
 {
-    using ProjectZombie.Features.Shared;
-    using ProjectZombie.Features.Upgrades;
-
     /// <summary>
     /// Ba lô chứa vũ khí của Player. Quản lý việc gọi Tick() cho tất cả vũ khí đang sở hữu.
     /// </summary>
@@ -199,6 +198,62 @@ namespace ProjectZombie.Features.Weapons
                         _activeWeapons[i].OnHeroComboFinished(comboStep, forwardDir);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Trang bị vũ khí / pháp bảo dựa trên mã định danh weaponId (hỗ trợ nạp Addressables và Multiplayer sync).
+        /// </summary>
+        public async void EquipWeaponById(string weaponId, bool isPrimary = false)
+        {
+            if (string.IsNullOrEmpty(weaponId)) return;
+
+            // Nếu đã trang bị đúng vũ khí này rồi thì bỏ qua
+            for (int i = 0; i < _activeWeapons.Count; i++)
+            {
+                if (_activeWeapons[i] != null && _activeWeapons[i].weaponId == weaponId) return;
+            }
+
+            WeaponData targetData = null;
+
+            // 1. Thử nạp từ Addressables
+            try
+            {
+                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WeaponData>(weaponId);
+                await handle.Task;
+                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && handle.Result != null)
+                {
+                    targetData = handle.Result;
+                }
+            }
+            catch { }
+
+            // 2. Fallback tìm trong startingLoadout
+            if (targetData == null && startingLoadout != null)
+            {
+                targetData = startingLoadout.Find(w => w != null && w.weaponId == weaponId);
+            }
+
+#if UNITY_EDITOR
+            // 3. Fallback trong Unity Editor
+            if (targetData == null)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets($"t:WeaponData {weaponId}");
+                if (guids.Length > 0)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+                    targetData = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                }
+            }
+#endif
+
+            if (targetData != null)
+            {
+                EquipWeaponFromData(targetData, isPrimary);
+            }
+            else
+            {
+                Debug.LogWarning($"[WeaponManager] Không tìm thấy WeaponData cho weaponId: '{weaponId}'");
             }
         }
 

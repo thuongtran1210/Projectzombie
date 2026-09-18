@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af8d45b37ec37404891160e82bbd5720, type: 3}
+  m_Name: UIRegistry
+  m_EditorClassIdentifier: 
+  _screens:
+  - screenType: 0
+    screenPrefab: {fileID: 8744177420571266499, guid: 993d9d6a82992a74ca49b90beb51ebaf, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_MainHub
+  - screenType: 1
+    screenPrefab: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_CharacterSelect
+  - screenType: 2
+    screenPrefab: {fileID: 6011009980767583319, guid: 82a3b8f8f9c45ae47bb70815dac3dad2, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_WeaponLoadout
+  - screenType: 3
+    screenPrefab: {fileID: 1249154169894984072, guid: 3d7b32b1a2bbea24cbddfc177cf2b5a8, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_SanctuaryTree
+  - screenType: 4
+    screenPrefab: {fileID: 5269677429597461861, guid: 2d6de189e51546a4fa45c6ef69f241fd, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_CardCodex
+  - screenType: 5
+    screenPrefab: {fileID: 6340144566631493060, guid: d46c8d1266ebf9342aa29c37bcd36be0, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Modal_Settings
+  - screenType: 6
+    screenPrefab: {fileID: 5015797603870433675, guid: 926fd02703a13ad458e3f0b9408fa60c, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Panel_GachaShop
+  - screenType: 7
+    screenPrefab: {fileID: 6296933648091845686, guid: 22310e45ce0f84f40b72db2396a5ccc7, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Screen_StageSelect
+  - screenType: 8
+    screenPrefab: {fileID: 7787032622829340102, guid: 3d8a88263f4262844aa43ee634789516, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Modal_ResourceDownload
+  - screenType: 9
+    screenPrefab: {fileID: 8756101074302200701, guid: 91f0fe91d5cb02e43bc6f9c35461004d, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Modal_Lobby

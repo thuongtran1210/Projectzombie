@@ -351,6 +351,12 @@ namespace ProjectZombie.Features.Spawners
         {
             if (!_waveScheduler.IsMatchActive || timelineConfig == null) return;
 
+            // Nếu đang trong phòng Multiplayer Co-op, CHỈ CÓ HOST mới được chạy timeline và spawn quái
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom)
+            {
+                if (!session.IsHost) return;
+            }
+
             // 1. Cập nhật thời gian và nhận danh sách các sự kiện wave đến hạn
             var dueEvents = _waveScheduler.Tick(Time.deltaTime, out _);
 
@@ -495,20 +501,44 @@ namespace ProjectZombie.Features.Spawners
         {
             GameObject enemy = null;
 
-            if (EnemyPoolManager.Instance != null)
+            // 1. Nếu đang trong chế độ Multiplayer Co-op và là Host
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom)
             {
-                if (prefab != null)
+                if (!session.IsHost) return null; // Client không spawn quái
+
+                // Lấy Runner đang hoạt động
+                var runner = Fusion.NetworkRunner.GetRunnerForGameObject(gameObject) ?? FindObjectOfType<Fusion.NetworkRunner>();
+                if (runner != null && runner.IsRunning && prefab != null)
                 {
-                    enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
-                }
-                else if (!string.IsNullOrEmpty(poolKey))
-                {
-                    enemy = EnemyPoolManager.Instance.SpawnEnemy(poolKey, position, Quaternion.identity);
+                    if (prefab.TryGetComponent<Fusion.NetworkObject>(out _))
+                    {
+                        var netObj = runner.Spawn(prefab, position, Quaternion.identity);
+                        if (netObj != null)
+                        {
+                            enemy = netObj.gameObject;
+                        }
+                    }
                 }
             }
-            else if (prefab != null)
+
+            // 2. Chế độ Single Player hoặc fallback Pool thông thường
+            if (enemy == null)
             {
-                enemy = Instantiate(prefab, position, Quaternion.identity);
+                if (EnemyPoolManager.Instance != null)
+                {
+                    if (prefab != null)
+                    {
+                        enemy = EnemyPoolManager.Instance.SpawnEnemy(prefab, position, Quaternion.identity);
+                    }
+                    else if (!string.IsNullOrEmpty(poolKey))
+                    {
+                        enemy = EnemyPoolManager.Instance.SpawnEnemy(poolKey, position, Quaternion.identity);
+                    }
+                }
+                else if (prefab != null)
+                {
+                    enemy = Instantiate(prefab, position, Quaternion.identity);
+                }
             }
 
             if (enemy == null && prefab == null)
