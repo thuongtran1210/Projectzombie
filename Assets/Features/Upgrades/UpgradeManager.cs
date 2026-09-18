@@ -38,6 +38,8 @@ namespace ProjectZombie.Features.Upgrades
         [Header("Upgrade Pool")]
         [SerializeField] private List<UpgradeData> _allAvailableUpgrades = new List<UpgradeData>();
 
+        public IReadOnlyList<UpgradeData> AllAvailableUpgrades => _allAvailableUpgrades;
+
         [Header("Fallback Rewards (Khi cạn pool)")]
         [SerializeField] private List<UpgradeData> _fallbackRewards = new List<UpgradeData>();
 
