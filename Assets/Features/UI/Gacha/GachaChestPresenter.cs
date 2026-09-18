@@ -174,9 +174,9 @@ namespace ProjectZombie.Features.UI.Gacha
 
             var dropList = new List<GachaDropItem>();
             var charDb = Resources.Load<ProjectZombie.Features.Player.CharacterDatabaseSO>("CharacterDatabase");
-            if (charDb != null && charDb.allCharacters != null)
+            if (charDb != null && charDb.Characters != null)
             {
-                foreach (var hero in charDb.allCharacters)
+                foreach (var hero in charDb.Characters)
                 {
                     if (hero == null || string.IsNullOrEmpty(hero.characterId)) continue;
                     float weight = hero.rarity switch
