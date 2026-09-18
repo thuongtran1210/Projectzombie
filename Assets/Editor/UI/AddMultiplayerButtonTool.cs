@@ -55,13 +55,6 @@ namespace ProjectZombie.Editor.UI
                 // 2. Lưu lại Prefab chính
                 PrefabUtility.SaveAsPrefabAsset(prefabRoot, prefabPath);
 
-                // 3. Đồng bộ sang Assets/Resources/UI nếu có
-                string resFolder = "Assets/Resources/UI";
-                if (System.IO.Directory.Exists(resFolder))
-                {
-                    PrefabUtility.SaveAsPrefabAsset(prefabRoot, $"{resFolder}/MainHubUI.prefab");
-                }
-
                 Debug.Log("<color=#00FF88>[AddMultiplayerButtonTool]</color> Đã thêm thành công nút Multiplayer vào Prefab MainHubUI mà KHÔNG làm thay đổi bất kỳ tùy chỉnh nào khác!");
             }
             finally

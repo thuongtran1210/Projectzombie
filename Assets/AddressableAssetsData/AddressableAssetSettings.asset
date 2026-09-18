@@ -104,6 +104,7 @@ MonoBehaviour:
     - MetaConfigs
     - ui_gameplay
     - ui_meta
+    - Character
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 439833ed15f0b454cbcccc19411c44b1, type: 2}

@@ -143,15 +143,9 @@ namespace ProjectZombie.Editor.UI
             soPresenter.FindProperty("_view").objectReferenceValue = view;
             soPresenter.ApplyModifiedProperties();
 
-            // 8. Lưu Prefab
+            // 8. Lưu Prefab Master duy nhất (Addressables SSOT)
             string prefabPath = $"{prefabFolder}/MainHubUI.prefab";
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
-
-            string resFolder = "Assets/Resources/UI";
-            if (AssetDatabase.IsValidFolder(resFolder))
-            {
-                PrefabUtility.SaveAsPrefabAsset(root, $"{resFolder}/MainHubUI.prefab");
-            }
 
             // 9. Cập nhật vào Scene nếu có Canvas hoặc Canvas_MetaMenu
             var metaCanvasObj = GameObject.Find("Canvas_MetaMenu");

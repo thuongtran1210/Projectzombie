@@ -17,21 +17,45 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 26eb188e86fa62a49b3a5b8c1867121f
   m_SerializeEntries:
+  - m_GUID: 12ce05702ae7c3cdd96897666b4265f5
+    m_Address: Thanh Dong
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1634a91af1076b44b88f91adc4cb0388
     m_Address: CharacterSelectionUI
     m_ReadOnly: 0
     m_SerializedLabels:
     - ui_meta
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 176ac12ec7c47dd40a1313ca69e113a7
+    m_Address: Thu Sinh
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 229d1d4561bf6f943bf922d7642df32d
     m_Address: Collectibles_Atlas
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3689df294ea14fc4b94df7d8c930accc
+    m_Address: Dao Si
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a9abe52fa65cdb44831fbe9256ada3a
     m_Address: ExpGem
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cc01148cb78fb0439fdff873ef0c3c4
+    m_Address: RelicStarProgressionConfig
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MetaConfigs
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 53277d525c89b4a4aaef4bd9ff9b86a6
     m_Address: M_Boss_Outline
@@ -48,6 +72,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ui_gameplay
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75af532554b34642a8ba8b3f34d28c4d
+    m_Address: An Si
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f0f276ad71c1b242a630c5a2788f64d
     m_Address: UpgradePanel_Template
@@ -77,12 +107,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fc586c07ce4487745b9382018edaae87
-    m_Address: Map_SanDinhLangCo
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c9e1a869fe5d24f49b37614c1024e502
     m_Address: WorldStageDatabase
     m_ReadOnly: 0
@@ -95,17 +119,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - Map
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d35c27b9e0b86b54fad24b926ec99a41
-    m_Address: PermanentUpgradeTree
+  - m_GUID: fc586c07ce4487745b9382018edaae87
+    m_Address: Map_SanDinhLangCo
     m_ReadOnly: 0
     m_SerializedLabels:
-    - MetaConfigs
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3cc01148cb78fb0439fdff873ef0c3c4
-    m_Address: RelicStarProgressionConfig
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MetaConfigs
+    - Map
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}

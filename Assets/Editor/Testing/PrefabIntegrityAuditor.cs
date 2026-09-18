@@ -16,8 +16,8 @@ namespace ProjectZombie.Editor.Testing
     /// <summary>
     /// Module Kiểm toán Toàn vẹn Tài nguyên (Asset & Prefab Integrity Auditor).
     /// Đơn trách nhiệm:
-    /// 1. Kiểm tra tính toàn vẹn của Prefab nhân vật (đầy đủ các component thiết yếu).
-    /// 2. So sánh và phát hiện độ lệch giữa Nguồn Gốc (Master: Assets/_Prefabs) và Bản Sao (Mirror: Assets/Resources).
+    /// 1. Kiểm tra tính toàn vẹn của Prefab nhân vật gốc tại Assets/_Prefabs/Characters/Players (đầy đủ các component thiết yếu).
+    /// 2. Xác thực việc đăng ký đúng vào Addressables Group_Core_Preload (Chuẩn SSOT).
     /// 3. Cung cấp chức năng kiểm tra và tự sửa chữa an toàn mà không làm mất cấu hình.
     /// </summary>
     public static class PrefabIntegrityAuditor
@@ -39,19 +39,20 @@ namespace ProjectZombie.Editor.Testing
         };
 
         private const string MASTER_PLAYERS_DIR = "Assets/_Prefabs/Characters/Players";
-        private const string MIRROR_PLAYERS_DIR = "Assets/Resources/Players";
 
         /// <summary>
-        /// Chạy kiểm toán toàn diện tính toàn vẹn và độ đồng bộ của Player Prefabs.
+        /// Chạy kiểm toán toàn diện tính toàn vẹn và việc đăng ký Addressables của Player Prefabs.
         /// </summary>
         public static AuditReport AuditPlayerPrefabs()
         {
             var report = new AuditReport();
 
+            var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+            var preloadGroup = settings != null ? settings.FindGroup("Group_Core_Preload") : null;
+
             foreach (var prefabName in PLAYER_PREFAB_NAMES)
             {
                 string masterPath = Path.Combine(MASTER_PLAYERS_DIR, prefabName).Replace('\\', '/');
-                string mirrorPath = Path.Combine(MIRROR_PLAYERS_DIR, prefabName).Replace('\\', '/');
 
                 // 1. Kiểm tra tồn tại file Master
                 if (!File.Exists(masterPath))
@@ -60,18 +61,15 @@ namespace ProjectZombie.Editor.Testing
                     continue;
                 }
 
-                // 2. Kiểm tra tồn tại file Mirror trong Resources
-                if (!File.Exists(mirrorPath))
+                // 2. Kiểm tra việc đăng ký trong Addressables
+                if (settings != null)
                 {
-                    report.Warnings.Add($"[Chưa đồng bộ Mirror] File chưa có trong Resources: {mirrorPath}");
-                    report.DesyncedFiles.Add(prefabName);
-                }
-                else
-                {
-                    // So sánh nội dung/kích thước giữa Master và Mirror
-                    if (!ResourceSyncEngine.AreFilesEqual(masterPath, mirrorPath))
+                    string guid = AssetDatabase.AssetPathToGUID(masterPath);
+                    var entry = settings.FindAssetEntry(guid);
+                    if (entry == null)
                     {
-                        report.Warnings.Add($"[Lệch phiên bản] {prefabName} ở Master và Resources có nội dung khác nhau.");
+                        string entryAddress = Path.GetFileNameWithoutExtension(prefabName);
+                        report.Warnings.Add($"[Chưa có trong Addressables Local] '{entryAddress}' chưa được đăng ký trong Group_Core_Preload.");
                         report.DesyncedFiles.Add(prefabName);
                     }
                 }
@@ -111,11 +109,12 @@ namespace ProjectZombie.Editor.Testing
         }
 
         /// <summary>
-        /// Tự động sửa chữa an toàn: Bổ sung các component còn thiếu và đồng bộ Master -> Mirror.
+        /// Tự động sửa chữa an toàn: Bổ sung các component còn thiếu và đăng ký vào Addressables Local.
         /// </summary>
         public static void FixAllIssues()
         {
             MultiplayerTools.SetupPhotonPlayerPrefabsTool.SetupPlayerPrefabs();
+            ProjectZombie.Editor.AddressablesTools.AddressableGroupsSetupTool.SetupStandardGroups();
         }
     }
 }

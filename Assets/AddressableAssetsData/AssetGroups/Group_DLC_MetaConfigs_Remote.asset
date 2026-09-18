@@ -38,7 +38,13 @@ MonoBehaviour:
     - Map
     - RemoteDLC
     FlaggedDuringContentUpdateRestriction: 0
-
+  - m_GUID: d35c27b9e0b86b54fad24b926ec99a41
+    m_Address: PermanentUpgradeTree
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MetaConfigs
+    - RemoteDLC
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e21139d7c2b4b2f418107c4edde58b9d
     m_Address: Stage_02_AncientCitadel
     m_ReadOnly: 0
@@ -49,6 +55,4 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: 93e5a6dfe64f63249aa945239575dfff, type: 2}
-    - {fileID: 11400000, guid: 567587a6a45823a4d8dfb511ef474387, type: 2}
+    m_Schemas: []

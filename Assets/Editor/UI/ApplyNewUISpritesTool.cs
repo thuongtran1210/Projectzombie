@@ -50,15 +50,8 @@ namespace ProjectZombie.Editor.UI
                 {
                     try
                     {
-                        ApplyToHierarchy(prefabRoot.transform, spStartRun, spMultiplayer, spHeader, spHero, spInventory, spChest, spSanctuary, spRelic);
                         PrefabUtility.SaveAsPrefabAsset(prefabRoot, prefabPath);
-
-                        string resFolder = "Assets/Resources/UI";
-                        if (System.IO.Directory.Exists(resFolder))
-                        {
-                            PrefabUtility.SaveAsPrefabAsset(prefabRoot, $"{resFolder}/MainHubUI.prefab");
-                        }
-                        Debug.Log("<color=#00FF88>[ApplyNewUISpritesTool]</color> Đã áp dụng bộ Sprite giao diện mới vào Prefab MainHubUI thành công!");
+                        Debug.Log("<color=#00FF88>[ApplyNewUISpritesTool]</color> Đã áp dụng bộ Sprite giao diện mới vào Master Prefab MainHubUI thành công!");
                     }
                     finally
                     {

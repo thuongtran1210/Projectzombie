@@ -78,6 +78,12 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset", "Stage_01_BambooForest", "Map");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Maps/Map_BambooForest.prefab", "Map_BambooForest", "Map");
 
+            // 1.0 Đăng ký 4 Tướng Khởi Đầu vào Group_Core_Preload (Local trong APK)
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/Dao Si.prefab", "Dao Si", "Character");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/An Si.prefab", "An Si", "Character");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab", "Thanh Dong", "Character");
+            AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab", "Thu Sinh", "Character");
+
             // 1.1 Đăng ký các StageDefinitionSO mở rộng vào Remote DLC
             string[] stageGuids = AssetDatabase.FindAssets("t:StageDefinitionSO", new[] { "Assets/_Data/Levels/Stages" });
             foreach (string guid in stageGuids)

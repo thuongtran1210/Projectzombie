@@ -664,18 +664,12 @@ namespace ProjectZombie.Editor.UI
                 }
             }
 
-            // Tự động lưu Prefab Sảnh hiện tại vào _Prefabs/UI và Resources/UI để khi build Android đồng bộ 100%
+            // Tự động lưu Prefab Sảnh hiện tại vào _Prefabs/UI (Addressables SSOT)
             string hubPrefabPath = $"{PREFAB_OUTPUT_FOLDER}/MainHubUI.prefab";
-            string hubResourcesPath = $"{RESOURCES_OUTPUT_FOLDER}/MainHubUI.prefab";
             PrefabUtility.SaveAsPrefabAssetAndConnect(mainHubView.gameObject, hubPrefabPath, InteractionMode.AutomatedAction);
-            if (System.IO.File.Exists(hubPrefabPath))
-            {
-                System.IO.File.Copy(hubPrefabPath, hubResourcesPath, true);
-                AssetDatabase.ImportAsset(hubResourcesPath, ImportAssetOptions.ForceUpdate);
-            }
 
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(mainHubView.gameObject.scene);
-            Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> HOÀN TẤT: Đã gắn nút vào Header VÀ đồng bộ trực tiếp sang Resources/UI/MainHubUI.prefab cho Android!");
+            Debug.Log("<color=#00FF88>[ResourceDownloadUIGenerator]</color> HOÀN TẤT: Đã gắn nút vào Header và lưu vào Master Prefab Assets/_Prefabs/UI/MainHubUI.prefab!");
         }
 
         private static GameObject CreateUIElement(string name, Transform parent)

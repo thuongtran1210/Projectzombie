@@ -265,10 +265,11 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // Bước 1
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("1. Đồng Bộ Tài Nguyên Gốc sang Resources (SSOT)", GUILayout.Width(360));
-            if (GUILayout.Button("Chạy Đồng Bộ Ngay", GUILayout.Height(26)))
+            EditorGUILayout.LabelField("1. Chuẩn Hóa Nhóm Addressables (Local & DLC Groups)", GUILayout.Width(360));
+            if (GUILayout.Button("Kiểm Tra & Chuẩn Hóa", GUILayout.Height(26)))
             {
-                _service.ExecuteStep1_SyncResources();
+                ProjectZombie.Editor.AddressablesTools.AddressableGroupsSetupTool.SetupStandardGroups();
+                _service.RefreshAll();
             }
             EditorGUILayout.EndHorizontal();
 
