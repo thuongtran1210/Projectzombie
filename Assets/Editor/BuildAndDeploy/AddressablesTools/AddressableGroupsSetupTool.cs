@@ -131,6 +131,15 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W011_NuocThanhChuaHuong.prefab", "Proj_W011_NuocThanhChuaHuong");
             AddAssetToGroup(settings, groupWeapons, "Assets/_Prefabs/Projectiles/Proj_W012_PhiTieuBatQuai.prefab", "Proj_W012_PhiTieuBatQuai");
 
+            // 3.1 Toàn bộ ScriptableObject Cấu hình Vũ Khí & Pháp Bảo (WeaponData)
+            string[] weaponDataGuids = AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+            foreach (string guid in weaponDataGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                AddAssetToGroup(settings, groupWeapons, path, fileName, "WeaponData", "Relic");
+            }
+
             // 4. Gán Quái Màn 1
             AddAssetToGroup(settings, groupEnemiesStage1, "Assets/_Prefabs/Characters/Enemies/Zombie_Basic.prefab", "Zombie_Basic");
 

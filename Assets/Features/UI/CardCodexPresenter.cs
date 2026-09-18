@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Weapons;
@@ -34,6 +37,7 @@ namespace ProjectZombie.Features.UI
         private static readonly List<UpgradeData> _cachedUpgrades = new List<UpgradeData>();
         private static readonly List<FusionUpgradeData> _cachedFusionUpgrades = new List<FusionUpgradeData>();
         private static bool _isDataLoaded = false;
+        private static Task _loadingDataTask = null;
 
         private readonly Dictionary<WeaponData, CodexSlotItemView> _relicSlotViewMap = new Dictionary<WeaponData, CodexSlotItemView>();
         private readonly Dictionary<CharacterDataSO, CodexSlotItemView> _heroSlotViewMap = new Dictionary<CharacterDataSO, CodexSlotItemView>();
@@ -207,19 +211,59 @@ namespace ProjectZombie.Features.UI
 
         public void LoadAllData()
         {
-            if (_isDataLoaded && _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0)
+            if (_isDataLoaded && _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0 && _cachedUpgrades.Count > 0)
             {
                 return; // Dữ liệu đã được nạp sẵn trong static cache, không đọc lại đĩa tránh khựng khung hình
             }
 
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            _cachedUpgrades.Clear();
-            _cachedFusionUpgrades.Clear();
-            _cachedWeapons.Clear();
-            _cachedHeroes.Clear();
+            // Đồng bộ nhanh từ UpgradeManager nếu có
+            if (UpgradeManager.Instance != null && UpgradeManager.Instance.AllAvailableUpgrades != null && UpgradeManager.Instance.AllAvailableUpgrades.Count > 0)
+            {
+                var seenUpgradeIds = new HashSet<string>();
+                foreach (var u in _cachedUpgrades)
+                {
+                    if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
+                }
+                foreach (var u in UpgradeManager.Instance.AllAvailableUpgrades)
+                {
+                    if (u != null)
+                    {
+                        string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                        if (seenUpgradeIds.Add(upId))
+                        {
+                            _cachedUpgrades.Add(u);
+                            if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
+                        }
+                    }
+                }
+            }
 
+            // 1. Nạp Resources đồng bộ trước
+            LoadDataFromResourcesAndEditor();
+
+            // 2. Kích hoạt bất đồng bộ nạp Addressables nếu còn thiếu dữ liệu
+            if (_cachedWeapons.Count == 0 || _cachedUpgrades.Count == 0 || _cachedHeroes.Count == 0)
+            {
+                if (_loadingDataTask == null || _loadingDataTask.IsCompleted)
+                {
+                    _loadingDataTask = LoadAllDataAsync();
+                }
+            }
+        }
+
+        private void LoadDataFromResourcesAndEditor()
+        {
             var seenUpgradeIds = new HashSet<string>();
             var seenWeaponIds = new HashSet<string>();
+
+            foreach (var u in _cachedUpgrades)
+            {
+                if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
+            }
+            foreach (var w in _cachedWeapons)
+            {
+                if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
+            }
 
             void TryAddUpgrade(UpgradeData u)
             {
@@ -241,13 +285,14 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // 1. Load Upgrades
+            // Nạp Upgrades từ Resources
             var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
             if (loadedUpgrades != null)
             {
                 foreach (var u in loadedUpgrades) TryAddUpgrade(u);
             }
-            // 2. Load Weapons across all Resources folders
+
+            // Nạp Weapons từ Resources
             var loadedWeapons1 = Resources.LoadAll<WeaponData>("Weapons");
             if (loadedWeapons1 != null)
             {
@@ -259,30 +304,7 @@ namespace ProjectZombie.Features.UI
                 foreach (var w in loadedWeapons2) TryAddWeapon(w);
             }
 
-#if UNITY_EDITOR
-            if (_cachedWeapons.Count == 0)
-            {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData");
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    TryAddWeapon(w);
-                }
-            }
-            if (_cachedUpgrades.Count == 0)
-            {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var u = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                    TryAddUpgrade(u);
-                }
-            }
-#endif
-
-            // 3. Load Heroes
+            // Nạp Heroes từ Resources
             var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
 #if UNITY_EDITOR
             if (charDb == null)
@@ -309,6 +331,26 @@ namespace ProjectZombie.Features.UI
             }
 
 #if UNITY_EDITOR
+            if (_cachedWeapons.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData");
+                foreach (var guid in guids)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                    TryAddWeapon(w);
+                }
+            }
+            if (_cachedUpgrades.Count == 0)
+            {
+                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
+                foreach (var guid in guids)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var u = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
+                    TryAddUpgrade(u);
+                }
+            }
             if (_cachedHeroes.Count == 0)
             {
                 string[] guids = UnityEditor.AssetDatabase.FindAssets("t:CharacterDataSO");
@@ -320,9 +362,117 @@ namespace ProjectZombie.Features.UI
                 }
             }
 #endif
-            _isDataLoaded = true;
+            if (_cachedWeapons.Count > 0 && _cachedHeroes.Count > 0 && _cachedUpgrades.Count > 0)
+            {
+                _isDataLoaded = true;
+            }
+        }
+
+        public async Task LoadAllDataAsync()
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            bool hasNewData = false;
+
+            var seenUpgradeIds = new HashSet<string>();
+            var seenWeaponIds = new HashSet<string>();
+
+            foreach (var u in _cachedUpgrades)
+            {
+                if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
+            }
+            foreach (var w in _cachedWeapons)
+            {
+                if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
+            }
+
+            // 1. Nạp Weapons từ Addressables
+            if (_cachedWeapons.Count == 0)
+            {
+                try
+                {
+                    var weaponHandle = Addressables.LoadAssetsAsync<WeaponData>("WeaponData", null);
+                    await weaponHandle.Task;
+                    if (weaponHandle.Status == AsyncOperationStatus.Succeeded && weaponHandle.Result != null)
+                    {
+                        foreach (var w in weaponHandle.Result)
+                        {
+                            if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
+                            {
+                                _cachedWeapons.Add(w);
+                                hasNewData = true;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load WeaponData warning: {ex.Message}");
+                }
+            }
+
+            // 2. Nạp Upgrades từ Addressables
+            if (_cachedUpgrades.Count == 0)
+            {
+                try
+                {
+                    var upgradeHandle = Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", null);
+                    await upgradeHandle.Task;
+                    if (upgradeHandle.Status == AsyncOperationStatus.Succeeded && upgradeHandle.Result != null)
+                    {
+                        foreach (var u in upgradeHandle.Result)
+                        {
+                            if (u != null)
+                            {
+                                string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                                if (seenUpgradeIds.Add(upId))
+                                {
+                                    _cachedUpgrades.Add(u);
+                                    if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
+                                    hasNewData = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load UpgradeData warning: {ex.Message}");
+                }
+            }
+
+            // 3. Nạp Heroes từ Addressables
+            if (_cachedHeroes.Count == 0)
+            {
+                try
+                {
+                    var dbHandle = Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                    await dbHandle.Task;
+                    if (dbHandle.Status == AsyncOperationStatus.Succeeded && dbHandle.Result != null && dbHandle.Result.Characters != null)
+                    {
+                        foreach (var h in dbHandle.Result.Characters)
+                        {
+                            if (h != null && !_cachedHeroes.Contains(h))
+                            {
+                                _cachedHeroes.Add(h);
+                                hasNewData = true;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load CharacterDatabase warning: {ex.Message}");
+                }
+            }
+
+            _isDataLoaded = _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0;
             sw.Stop();
-            Debug.Log($"<color=#00FF88>[CardCodexPresenter] LoadAllData: Đã nạp ({_cachedWeapons.Count} Vũ khí, {_cachedHeroes.Count} Tướng, {_cachedUpgrades.Count} Thẻ) trong {sw.ElapsedMilliseconds} ms.</color>");
+            Debug.Log($"<color=#00FF88>[CardCodexPresenter] LoadAllDataAsync hoàn tất: ({_cachedWeapons.Count} Vũ khí, {_cachedHeroes.Count} Tướng, {_cachedUpgrades.Count} Thẻ) trong {sw.ElapsedMilliseconds} ms.</color>");
+
+            if (hasNewData && gameObject.activeInHierarchy && _view != null && _view.gameObject.activeInHierarchy)
+            {
+                PopulateGridForTab(_currentTab);
+            }
         }
 
         private void RefreshCurrency()
