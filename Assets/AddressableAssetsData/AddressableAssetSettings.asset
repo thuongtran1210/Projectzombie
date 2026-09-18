@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 8bcad728379ae974b8c7f921c22fb1ec
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: a55a81aae5f14381ef49449e2fd8a44e
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -105,6 +105,8 @@ MonoBehaviour:
     - ui_gameplay
     - ui_meta
     - Character
+    - WeaponData
+    - Relic
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 439833ed15f0b454cbcccc19411c44b1, type: 2}

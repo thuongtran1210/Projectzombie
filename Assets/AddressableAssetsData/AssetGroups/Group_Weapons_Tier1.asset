@@ -22,10 +22,38 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c361b8270ab82c4082238371c2a1f25
+    m_Address: "W001_N\u1ECFTh\u1EA7n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14d266fa794aa0b4892d6eb448845919
+    m_Address: Weapon_W_SLIPPER
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 183da92c99260b3488be88c27b2bbacf
+    m_Address: Weapon_W_PIPE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 19cdee20c89f3014ba5714a4d76dde7a
     m_Address: Weapon_W011_NuocThanhChuaHuong
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d7145597ef386c4c9238006479660ec
+    m_Address: "W005_Tr\u1ED1ng\u0110\u1ED3ng\u0110\xF4ngS\u01A1n"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 210f2aac78a358f468c32337cb9e42e5
     m_Address: Proj_W008_DaoCuuVi
@@ -37,10 +65,31 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2299702757c463f43bab82f33181c0c0
+    m_Address: Weapon_R008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2a0c493ade5e27a48a47f9c8e61b3ce8
     m_Address: Proj_W010_LinhPhuMaDa
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2dca71999491f604bbebcf69ec8a6b2d
+    m_Address: "W006_L\u1EF1u\u0110\u1EA1nTh\u1EA7nSa"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30243d02469c10842b5cd9dd3a245a84
+    m_Address: "W012_PhiTi\xEAuB\xE1tQu\xE1i"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 377ab103817394b4380fc599ef9bc0b4
     m_Address: Weapon_W010_LinhPhuMaDa
@@ -52,10 +101,31 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38d878be87fef1741bc0a7e70e0c2f89
+    m_Address: "W010_LinhPh\xF9MaDa"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39442399c6c547c42903b97950010dff
+    m_Address: "W009_Tr\u01B0\u1EE3ngLongV\u01B0\u01A1ng"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3af183ec83a5ed74e90b5e32a49d50a8
     m_Address: Weapon_W012_PhiTieuBatQuai
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d14e1e6da63a1c4aa2250f6f6c05d00
+    m_Address: "W002_B\xFAtPh\xE1nQuan"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3e07f73aa728abb4c81c8c0fb7419cb3
     m_Address: Proj_W003_BuaTranYeu
@@ -66,6 +136,20 @@ MonoBehaviour:
     m_Address: Proj_W007_CungThachSanh
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d0d4bab1599fa242a14f0f8133507de
+    m_Address: Weapon_W_POT
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bba5ae65ebe46b42aec3189f5724023
+    m_Address: Weapon_R007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 64a54fcf708529143a80596c41c3ad6e
     m_Address: Proj_W012_PhiTieuBatQuai
@@ -87,10 +171,24 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85245508c49d2df43b319d98f1e91cf9
+    m_Address: "W003_B\xF9aTr\u1EA5nY\xEAu"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93b1f7e36d03907449e3e8e623b1fe03
     m_Address: Proj_W005_TrongDongDongSon
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94ef46517455cee4da26c9e103fdd505
+    m_Address: "W004_C\u1EEDuV\u0129H\u1ED3Tr\u1EA3o"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 979ab6ba5a5025a4e90e04bdacf41ec0
     m_Address: Weapon_W003_BuaTranYeu
@@ -111,6 +209,20 @@ MonoBehaviour:
     m_Address: Weapon_W004_CuuViHoTrao
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce4ece6a9b60efc48b785f05dd365a93
+    m_Address: "W007_CungTh\u1EA1chSanh"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5e0cd9c22acf1b4abb1f1e3c09b5f26
+    m_Address: "W008_\u0110aoC\u1EEDuV\u0129"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d8a31b71fd5efae4bab4eeb16a9946e5
     m_Address: Proj_W002_ButPhanQuan
@@ -146,6 +258,13 @@ MonoBehaviour:
     m_Address: Weapon_W_PIPE
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4c1d3812932b5746966a44b11e0608a
+    m_Address: "W011_N\u01B0\u1EDBcTh\xE1nhCh\xF9aH\u01B0\u01A1ng"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fc61047bf4b0f7e49bc987091988e04b
     m_Address: Weapon_W005_TrongDongDongSon

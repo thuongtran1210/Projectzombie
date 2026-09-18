@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,6 +60,9 @@ namespace ProjectZombie.Features.UI.Gacha
         {
             base.Awake();
 
+            // Auto-resolve bindings nếu prefab bị mất kết nối serialized references
+            AutoResolveChestBindings();
+
             if (_backButton != null) _backButton.onClick.AddListener(() => {
                 if (_isRolling) return;
                 OnBackClicked?.Invoke();
@@ -94,6 +97,46 @@ namespace ProjectZombie.Features.UI.Gacha
             if (_resultPopupPanel != null)
             {
                 _resultPopupPanel.SetActive(false);
+            }
+        }
+
+        private void AutoResolveChestBindings()
+        {
+            var buttons = GetComponentsInChildren<Button>(true);
+            foreach (var btn in buttons)
+            {
+                if (btn.gameObject.name == "Item_Chest_Bronze")
+                {
+                    if (_chestBronzeButton == null) _chestBronzeButton = btn;
+                    SanitizeItemChildrenRaycasts(btn.transform);
+                    if (_glowBronze == null)
+                    {
+                        var glow = btn.transform.Find("Selected_Glow");
+                        if (glow != null) _glowBronze = glow.gameObject;
+                    }
+                }
+                else if (btn.gameObject.name == "Item_Chest_Hero")
+                {
+                    if (_chestHeroButton == null) _chestHeroButton = btn;
+                    SanitizeItemChildrenRaycasts(btn.transform);
+                    if (_glowHero == null)
+                    {
+                        var glow = btn.transform.Find("Selected_Glow");
+                        if (glow != null) _glowHero = glow.gameObject;
+                    }
+                }
+            }
+        }
+
+        private void SanitizeItemChildrenRaycasts(Transform itemTrans)
+        {
+            var graphics = itemTrans.GetComponentsInChildren<Graphic>(true);
+            foreach (var g in graphics)
+            {
+                if (g.gameObject != itemTrans.gameObject)
+                {
+                    g.raycastTarget = false;
+                }
             }
         }
 

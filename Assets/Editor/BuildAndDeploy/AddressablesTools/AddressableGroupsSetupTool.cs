@@ -154,6 +154,7 @@ namespace ProjectZombie.Editor.AddressablesTools
 
             // 6. Cấu hình Meta & LiveOps (Remote DLC Meta Configs)
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Gacha/banner_standard.asset", "banner_standard", "MetaConfigs", "RemoteDLC");
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Gacha/banner_hero.asset", "banner_hero", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Meta/PermanentUpgradeTree.asset", "PermanentUpgradeTree", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/CharacterStarProgressionConfig.asset", "CharacterStarProgressionConfig", "MetaConfigs", "RemoteDLC");
 

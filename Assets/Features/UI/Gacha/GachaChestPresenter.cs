@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.MetaProgression.Gacha;
@@ -143,6 +143,13 @@ namespace ProjectZombie.Features.UI.Gacha
                                    UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset");
                 }
 #endif
+
+                // 3. Runtime Fallback Generator cho banner_hero nếu chưa load được file asset
+                if (targetBanner == null && bannerId == "banner_hero")
+                {
+                    targetBanner = CreateRuntimeHeroBannerFallback();
+                }
+
                 if (targetBanner != null)
                 {
                     RelicGachaManager.Instance.SetActiveBanner(targetBanner);
@@ -150,6 +157,53 @@ namespace ProjectZombie.Features.UI.Gacha
                     global::Core.Audio.AudioManager.Instance?.PlayUIClick();
                 }
             }
+        }
+
+        private GachaBannerConfigSO CreateRuntimeHeroBannerFallback()
+        {
+            var banner = ScriptableObject.CreateInstance<GachaBannerConfigSO>();
+            banner.bannerId = "banner_hero";
+            banner.bannerName = "Gương Chiêu Mộ Anh Hùng";
+            banner.bannerDescription = "Mở gương thần chiêu mộ Mảnh Thần Tướng Vạn Cổ, quy tụ anh kiệt cứu nhân độ thế.";
+            banner.singleRollCost = 200;
+            banner.multiRollCost = 1800;
+            banner.hardPityLegendary = 50;
+            banner.softPityStart = 40;
+            banner.softPityRatePerRoll = 0.05f;
+            banner.epicGuaranteedEvery = 10;
+
+            var dropList = new List<GachaDropItem>();
+            var charDb = Resources.Load<ProjectZombie.Features.Player.CharacterDatabaseSO>("CharacterDatabase");
+            if (charDb != null && charDb.allCharacters != null)
+            {
+                foreach (var hero in charDb.allCharacters)
+                {
+                    if (hero == null || string.IsNullOrEmpty(hero.characterId)) continue;
+                    float weight = hero.rarity switch
+                    {
+                        ProjectZombie.Features.Shared.ItemRarity.Common => 120f,
+                        ProjectZombie.Features.Shared.ItemRarity.Rare => 50f,
+                        ProjectZombie.Features.Shared.ItemRarity.Epic => 20f,
+                        ProjectZombie.Features.Shared.ItemRarity.Legendary => 5f,
+                        _ => 50f
+                    };
+                    int shardAmt = hero.rarity == ProjectZombie.Features.Shared.ItemRarity.Legendary ? 15 : 5;
+
+                    dropList.Add(new GachaDropItem
+                    {
+                        dropType = GachaDropType.CharacterShard,
+                        relicId = hero.characterId,
+                        relicName = hero.characterName,
+                        rarity = hero.rarity,
+                        element = hero.element,
+                        shardAmount = shardAmt,
+                        weight = weight,
+                        icon = hero.avatar
+                    });
+                }
+            }
+            banner.SetDropPool(dropList);
+            return banner;
         }
 
         private void UpdatePityDisplay(GachaBannerConfigSO banner, int pityLeg, int pityEpic)

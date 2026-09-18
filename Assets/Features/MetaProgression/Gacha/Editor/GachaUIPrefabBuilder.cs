@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -730,6 +730,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             ibRect.sizeDelta = new Vector2(76, 76);
             var ibImg = iconBoxGo.GetComponent<Image>();
             ibImg.color = new Color(0.08f, 0.06f, 0.05f, 0.8f);
+            ibImg.raycastTarget = false;
 
             var iconGo = new GameObject("Chest_Icon", typeof(RectTransform), typeof(Image));
             iconGo.transform.SetParent(iconBoxGo.transform, false);
@@ -767,6 +768,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             tText.fontStyle = FontStyles.Bold;
             tText.alignment = TextAlignmentOptions.MidlineLeft;
             tText.color = isSelected ? new Color(1f, 0.92f, 0.55f, 1f) : (isUnlocked ? new Color(0.9f, 0.85f, 0.75f, 1f) : new Color(0.6f, 0.55f, 0.5f, 1f));
+            tText.raycastTarget = false;
 
             var subGo = new GameObject("Txt_Sub", typeof(RectTransform), typeof(TextMeshProUGUI));
             subGo.transform.SetParent(infoGo.transform, false);
@@ -781,6 +783,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             sText.fontSize = 12.5f;
             sText.alignment = TextAlignmentOptions.MidlineLeft;
             sText.color = isUnlocked ? new Color(0.75f, 0.70f, 0.62f, 1f) : new Color(0.5f, 0.45f, 0.42f, 1f);
+            sText.raycastTarget = false;
 
             // Badge Trạng Thái Bên Phải
             var badgeGo = new GameObject("Badge_Status", typeof(RectTransform), typeof(Image));
@@ -795,6 +798,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             bImg.type = Image.Type.Sliced;
             if (badgePill != null) bImg.sprite = badgePill;
             bImg.color = isUnlocked ? (isSelected ? new Color(0.15f, 0.45f, 0.25f, 0.9f) : new Color(0.2f, 0.15f, 0.12f, 0.8f)) : new Color(0.25f, 0.20f, 0.18f, 0.8f);
+            bImg.raycastTarget = false;
 
             var btGo = new GameObject("Txt_Badge", typeof(RectTransform), typeof(TextMeshProUGUI));
             btGo.transform.SetParent(badgeGo.transform, false);
@@ -808,6 +812,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
             btText.fontSize = 11.5f;
             btText.fontStyle = FontStyles.Bold;
             btText.alignment = TextAlignmentOptions.Center;
+            btText.raycastTarget = false;
 
             return itemGo;
         }

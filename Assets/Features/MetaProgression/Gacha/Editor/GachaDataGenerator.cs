@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -17,7 +17,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
         [MenuItem("ProjectZombie/Gacha/Generate Default Gacha Banner SO", priority = 200)]
         public static void GenerateDefaultGachaBanner()
         {
-            string outputDir = "Assets/Resources/Gacha";
+            string outputDir = "Assets/_Data/Gacha";
             if (!Directory.Exists(outputDir))
             {
                 Directory.CreateDirectory(outputDir);
@@ -102,7 +102,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Editor
         [MenuItem("ProjectZombie/Gacha/Generate Hero Gacha Banner SO", priority = 201)]
         public static void GenerateHeroGachaBanner()
         {
-            string outputDir = "Assets/Resources/Gacha";
+            string outputDir = "Assets/_Data/Gacha";
             if (!Directory.Exists(outputDir))
             {
                 Directory.CreateDirectory(outputDir);
