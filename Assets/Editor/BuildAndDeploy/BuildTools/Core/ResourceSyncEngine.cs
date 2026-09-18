@@ -100,9 +100,32 @@ namespace ProjectZombie.EditorTools.BuildSync
             string[] files = Directory.GetFiles(rule.SourcePath, rule.SearchPattern ?? "*.*", SearchOption.AllDirectories);
             int count = 0;
 
+            var addressablesSettings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+
             foreach (string file in files)
             {
                 if (file.EndsWith(".meta")) continue;
+
+                string fileName = Path.GetFileName(file);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(file);
+
+                // 1. Kiểm tra danh sách loại trừ cấu hình cứng trong rule
+                if (rule.ExcludeFileNames != null && 
+                    (rule.ExcludeFileNames.Contains(fileName) || rule.ExcludeFileNames.Contains(fileNameWithoutExt)))
+                {
+                    continue;
+                }
+
+                // 2. Kiểm tra nếu file đã được đăng ký trong Addressables (ngoại trừ CharacterDatabase bootstrapper)
+                if (addressablesSettings != null && !string.Equals(fileNameWithoutExt, "CharacterDatabase", StringComparison.OrdinalIgnoreCase))
+                {
+                    string guid = AssetDatabase.AssetPathToGUID(file.Replace('\\', '/'));
+                    if (!string.IsNullOrEmpty(guid) && addressablesSettings.FindAssetEntry(guid) != null)
+                    {
+                        // Asset này đã được quản lý bởi Addressables -> không copy sang Resources để tránh xung đột & nhân đôi dung lượng
+                        continue;
+                    }
+                }
 
                 if (rule.AllowedExtensions != null)
                 {
@@ -298,6 +321,13 @@ namespace ProjectZombie.EditorTools.BuildSync
                 SyncUIPrefab(rule);
             }
             sb.AppendLine($"✓ Đã bảo toàn & đồng bộ đầy đủ {SyncRegistry.UIPrefabRules.Count} Prefab UI cốt lõi!");
+
+            // Tự động dọn dẹp mọi tàn dư bản sao trong Resources mà đã được Addressables quản lý
+            int cleanedDuplicates = AssetSourceConflictDetector.CleanDuplicateResourcesSilently();
+            if (cleanedDuplicates > 0)
+            {
+                sb.AppendLine($"✓ Đã tự động dọn dẹp {cleanedDuplicates} file bản sao trùng lặp khỏi Resources!");
+            }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

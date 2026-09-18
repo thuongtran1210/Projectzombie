@@ -21,8 +21,9 @@ namespace ProjectZombie.EditorTools.BuildSync
         public string[] AllowedExtensions;
         public Action FallbackGenerator;
         public bool IsAddressableManaged;
+        public HashSet<string> ExcludeFileNames;
 
-        public SyncRule(string name, string sourcePath, string targetPath, string searchPattern = "*.*", string[] allowedExtensions = null, bool isAddressableManaged = false)
+        public SyncRule(string name, string sourcePath, string targetPath, string searchPattern = "*.*", string[] allowedExtensions = null, bool isAddressableManaged = false, IEnumerable<string> excludeFileNames = null)
         {
             Name = name;
             Type = RuleType.Directory;
@@ -31,6 +32,10 @@ namespace ProjectZombie.EditorTools.BuildSync
             SearchPattern = searchPattern;
             AllowedExtensions = allowedExtensions;
             IsAddressableManaged = isAddressableManaged;
+            if (excludeFileNames != null)
+            {
+                ExcludeFileNames = new HashSet<string>(excludeFileNames, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         public static SyncRule ForSingleAsset(string name, string sourcePath, string targetPath, Action fallbackGenerator = null, bool isAddressableManaged = false)

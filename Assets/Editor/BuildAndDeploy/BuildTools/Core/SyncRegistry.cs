@@ -17,12 +17,14 @@ namespace ProjectZombie.EditorTools.BuildSync
             // Các nhóm tài nguyên offline phục vụ khởi động và gameplay
             new SyncRule("Âm thanh (Audios)", "Assets/_Data/Audios", "Assets/Resources/Audios", "*.*", new[] { ".wav", ".mp3", ".ogg", ".asset", ".mixer" }),
             new SyncRule("Tướng (Players)", "Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab"),
-            new SyncRule("Timeline Màn Chơi (Levels)", "Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset"),
-            new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab"),
+            new SyncRule("Timeline Màn Chơi (Levels)", "Assets/_Data/Levels", "Assets/Resources/Levels", "*.asset", null, isAddressableManaged: false,
+                excludeFileNames: new[] { "WorldStageDatabase.asset", "Stage_01_BambooForest.asset", "Stage_02_AncientCitadel.asset", "Stage_03_CinnabarSwamp.asset" }),
+            new SyncRule("Giao Diện (UI Prefabs)", "Assets/_Prefabs/UI", "Assets/Resources/UI", "*.prefab", null, isAddressableManaged: false,
+                excludeFileNames: new[] { "MainHubUI.prefab", "CharacterSelectionUI.prefab", "UpgradePanel_Template.prefab", "UpgradeCard_Template.prefab" }),
             new SyncRule("UI HUD Sprites (Pins, Badges)", "Assets/Art/UI/HUD", "Assets/Resources/UI/HUD", "*.png"),
             new SyncRule("UI Vọng Xuyên Theme Sprites", "Assets/Art/UI/VongXuyen", "Assets/Resources/UI/VongXuyen", "*.png"),
             new SyncRule("UI Gacha Sprites & Art", "Assets/Art/UI/Gacha", "Assets/Resources/UI/Gacha", "*.*", new[] { ".png", ".jpg", ".asset" }),
-            new SyncRule("Gacha Banner Configs", "Assets/_Data/Gacha", "Assets/Resources/Gacha", "*.asset"),
+            new SyncRule("Gacha Banner Configs", "Assets/_Data/Gacha", "Assets/Resources/Gacha", "*.asset", null, isAddressableManaged: true),
             new SyncRule("Tilemap Assets (Tiles)", "Assets/Art/Tilemaps/Tiles", "Assets/Resources/Tiles", "*.asset"),
             new SyncRule("Hiệu Ứng VFX (VFX Prefabs)", "Assets/_Prefabs/VFX", "Assets/Resources/VFX", "*.prefab")
         };
