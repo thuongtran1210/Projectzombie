@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _screens:
   - screenType: 0
-    screenPrefab: {fileID: 8744177420571266499, guid: 21c4ae15df7e89c4eb2c16d9774bf674, type: 3}
+    screenPrefab: {fileID: 8744177420571266499, guid: 993d9d6a82992a74ca49b90beb51ebaf, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -22,7 +22,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Panel_MainHub
   - screenType: 1
-    screenPrefab: {fileID: 1703207058055660316, guid: 2fb62caed38f43349873e0b32228e44a, type: 3}
+    screenPrefab: {fileID: 1703207058055660316, guid: 1634a91af1076b44b88f91adc4cb0388, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
