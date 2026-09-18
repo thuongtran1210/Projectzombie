@@ -6,6 +6,8 @@ using Fusion;
 using ProjectZombie.Features.Multiplayer.Core;
 using ProjectZombie.Features.Combat.Coop;
 using ProjectZombie.Features.Player.Mechanics;
+using ProjectZombie.Features.Player;
+using ProjectZombie.EditorTools.BuildSync;
 
 namespace ProjectZombie.Editor.MultiplayerTools
 {
@@ -82,6 +84,18 @@ namespace ProjectZombie.Editor.MultiplayerTools
                         teamExp = root.AddComponent<CoopTeamExperience>();
                     }
 
+                    // 6. Đảm bảo CharacterCombat luôn hiện diện cho đòn đánh thường bản thể Tướng (Combo 1-2-3)
+                    if (!root.TryGetComponent<CharacterCombat>(out var combat))
+                    {
+                        combat = root.AddComponent<CharacterCombat>();
+                    }
+
+                    // 7. Đảm bảo PlayerInputReader
+                    if (!root.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
+                    {
+                        inputReader = root.AddComponent<Player.Input.PlayerInputReader>();
+                    }
+
                     PrefabUtility.SaveAsPrefabAsset(root, path);
                     configuredCount++;
                     Debug.Log($"<color=#00FF88>[SetupPhotonPlayerPrefabsTool]</color> Đã cấu hình thành công: {Path.GetFileName(path)}");
@@ -95,7 +109,15 @@ namespace ProjectZombie.Editor.MultiplayerTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"<color=#00FF88>[SetupPhotonPlayerPrefabsTool] HOÀN TẤT!</color> Đã cập nhật thành công {configuredCount}/{PLAYER_PREFAB_PATHS.Length} Player Prefabs sẵn sàng cho Photon Fusion!");
+            // 8. TỰ ĐỘNG ĐỒNG BỘ NGUỒN GỐC SSOT: Sao chép sang Assets/Resources/Players/
+            Debug.Log("<color=#00FF88>[SetupPhotonPlayerPrefabsTool]</color> Bắt đầu đồng bộ tự động sang Assets/Resources/Players/...");
+            var playerSyncRule = new SyncRule("Tướng (Players)", "Assets/_Prefabs/Characters/Players", "Assets/Resources/Players", "*.prefab");
+            int syncedFiles = ResourceSyncEngine.SyncDirectory(playerSyncRule);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"<color=#00FF88>[SetupPhotonPlayerPrefabsTool] HOÀN TẤT!</color> Đã cập nhật {configuredCount}/{PLAYER_PREFAB_PATHS.Length} Player Prefabs và đồng bộ {syncedFiles} files sang Resources!");
         }
     }
 }
