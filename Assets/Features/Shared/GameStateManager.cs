@@ -16,9 +16,23 @@ namespace ProjectZombie.Features.Shared
 
         /// <summary>
         /// Single Source of Truth kiểm tra xem trò chơi có đang trong trạng thái chiến đấu hoạt động hay không.
-        /// Trả về false khi đang Pause, LevelUp Modal, GameOver hoặc ở MainMenu.
+        /// Trả về false khi đang Pause, GameOver hoặc ở MainMenu.
+        /// Trong chế độ Multiplayer Co-op, nếu đang chọn nâng cấp (LevelUpSelection) thì trận đấu vẫn tiếp tục diễn ra thời gian thực.
         /// </summary>
-        public static bool IsPlaying => (Instance == null || Instance.CurrentState == GameState.Playing) && Time.timeScale > 0f;
+        public static bool IsPlaying
+        {
+            get
+            {
+                if (Instance == null) return true;
+                if (Instance.CurrentState == GameState.Playing) return Time.timeScale > 0f;
+                if (Instance.CurrentState == GameState.LevelUpSelection)
+                {
+                    bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+                    return isMultiplayer && Time.timeScale > 0f;
+                }
+                return false;
+            }
+        }
 
         /// <summary>
         /// Kích hoạt khi trạng thái trò chơi thay đổi.

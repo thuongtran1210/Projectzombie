@@ -40,14 +40,42 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     _healthSystem.OnDied += HandleHostDied;
                 }
             }
+            else
+            {
+                // Client: Tắt Enemy FSM & Physics để nhường quyền điều phối chuyển động cho NetworkTransform từ Host
+                if (_enemy != null) _enemy.enabled = false;
+                if (TryGetComponent<Rigidbody2D>(out var rb))
+                {
+                    rb.isKinematic = true;
+                    rb.velocity = Vector2.zero;
+                }
+
+                // Chuyển hướng mọi đòn đánh cục bộ của Client lên Host qua RPC
+                if (_healthSystem != null)
+                {
+                    _healthSystem.CustomDamageInterceptor = (amount, data) =>
+                    {
+                        int attackerId = Runner.LocalPlayer.PlayerId;
+                        RpcApplyDamage(amount, attackerId);
+                        return true;
+                    };
+                }
+            }
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            if (Runner.IsServer && _healthSystem != null)
+            if (_healthSystem != null)
             {
-                _healthSystem.OnHealthChanged -= HandleHostHealthChanged;
-                _healthSystem.OnDied -= HandleHostDied;
+                if (Runner.IsServer)
+                {
+                    _healthSystem.OnHealthChanged -= HandleHostHealthChanged;
+                    _healthSystem.OnDied -= HandleHostDied;
+                }
+                else
+                {
+                    _healthSystem.CustomDamageInterceptor = null;
+                }
             }
         }
 
@@ -59,6 +87,10 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 if (NetworkIsDead && _healthSystem.IsAlive)
                 {
                     _healthSystem.SetCurrentHealth(0f);
+                }
+                else if (Mathf.Abs(_healthSystem.CurrentHealth - NetworkHealth) > 0.5f && NetworkHealth > 0)
+                {
+                    _healthSystem.SetCurrentHealth(NetworkHealth);
                 }
             }
         }

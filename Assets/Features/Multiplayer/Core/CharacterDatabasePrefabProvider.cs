@@ -15,19 +15,30 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public CharacterDatabasePrefabProvider(CharacterDatabaseSO database = null)
         {
             _database = database != null ? database : Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+#if UNITY_EDITOR
+            if (_database == null)
+            {
+                _database = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset")
+                            ?? UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/Resources/CharacterDatabase.asset");
+            }
+#endif
         }
 
         public NetworkObject GetNetworkCharacterPrefab(string characterId)
         {
-            if (_database == null || string.IsNullOrEmpty(characterId)) return null;
+            if (string.IsNullOrEmpty(characterId)) return GetDefaultNetworkCharacterPrefab();
 
-            var charData = _database.GetCharacterById(characterId);
-            if (charData != null && charData.playerPrefab != null)
+            if (_database != null)
             {
-                return charData.playerPrefab.GetComponent<NetworkObject>();
+                var charData = _database.GetCharacterById(characterId);
+                if (charData != null && charData.playerPrefab != null)
+                {
+                    var netObj = charData.playerPrefab.GetComponent<NetworkObject>();
+                    if (netObj != null) return netObj;
+                }
             }
 
-            return null;
+            return GetDefaultNetworkCharacterPrefab();
         }
 
         public NetworkObject GetDefaultNetworkCharacterPrefab()
@@ -37,9 +48,18 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 var first = _database.Characters[0];
                 if (first != null && first.playerPrefab != null)
                 {
-                    return first.playerPrefab.GetComponent<NetworkObject>();
+                    var netObj = first.playerPrefab.GetComponent<NetworkObject>();
+                    if (netObj != null) return netObj;
                 }
             }
+
+            // Fallback trực tiếp từ thư mục Resources/Players/
+            var fallbackPrefab = Resources.Load<GameObject>("Players/Thu Sinh");
+            if (fallbackPrefab != null && fallbackPrefab.TryGetComponent<NetworkObject>(out var fallbackNetObj))
+            {
+                return fallbackNetObj;
+            }
+
             return null;
         }
     }

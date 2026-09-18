@@ -19,6 +19,14 @@ namespace ProjectZombie.Core.Architecture
         }
 
         /// <summary>
+        /// Xóa bỏ toàn bộ các service đã đăng ký (dùng cho Unit Test TearDown & Scene Reset).
+        /// </summary>
+        public static void Clear()
+        {
+            _services.Clear();
+        }
+
+        /// <summary>
         /// Đăng ký một service instance gắn liền với Interface T.
         /// </summary>
         public static void Register<T>(T service) where T : class

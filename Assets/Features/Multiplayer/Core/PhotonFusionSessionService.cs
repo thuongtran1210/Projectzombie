@@ -54,11 +54,18 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             EnsureRunnerInstance();
 
+            var sceneManager = _activeRunner.GetComponent<INetworkSceneManager>() 
+                               ?? _activeRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+            var objectProvider = _activeRunner.GetComponent<INetworkObjectProvider>() 
+                                 ?? _activeRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
+
             var startGameArgs = new StartGameArgs
             {
                 GameMode = GameMode.Host,
                 SessionName = code,
-                PlayerCount = maxPlayers
+                PlayerCount = maxPlayers,
+                SceneManager = sceneManager,
+                ObjectProvider = objectProvider
             };
 
             var startResult = await _activeRunner.StartGame(startGameArgs);
@@ -96,10 +103,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             EnsureRunnerInstance();
 
+            var sceneManager = _activeRunner.GetComponent<INetworkSceneManager>() 
+                               ?? _activeRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+            var objectProvider = _activeRunner.GetComponent<INetworkObjectProvider>() 
+                                 ?? _activeRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
+
             var startGameArgs = new StartGameArgs
             {
                 GameMode = GameMode.Client,
-                SessionName = formattedCode
+                SessionName = formattedCode,
+                SceneManager = sceneManager,
+                ObjectProvider = objectProvider
             };
 
             var startResult = await _activeRunner.StartGame(startGameArgs);
@@ -186,6 +200,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             // 2. Kích hoạt Spawner sinh nhân vật cho tất cả người chơi trong phòng
             if (_playerSpawner != null)
             {
+                _playerSpawner.Initialize(_activeRunner);
                 _playerSpawner.StartMatch();
             }
 
@@ -212,6 +227,16 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 _activeRunner = go.AddComponent<NetworkRunner>();
             }
 
+            // Gắn và cấu hình Scene Manager & Object Provider mặc định của Fusion
+            if (!_activeRunner.TryGetComponent<INetworkSceneManager>(out _))
+            {
+                _activeRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+            }
+            if (!_activeRunner.TryGetComponent<INetworkObjectProvider>(out _))
+            {
+                _activeRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
+            }
+
             // Gắn và đăng ký các Sub-Components chuyên biệt (Đơn trách nhiệm)
             _lobbySync = _activeRunner.GetComponent<NetworkLobbySync>() 
                          ?? _activeRunner.gameObject.AddComponent<NetworkLobbySync>();
@@ -219,6 +244,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
                               ?? _activeRunner.gameObject.AddComponent<FusionNetworkInputCollector>();
             _playerSpawner = _activeRunner.GetComponent<NetworkPlayerSpawner>() 
                              ?? _activeRunner.gameObject.AddComponent<NetworkPlayerSpawner>();
+
+            _playerSpawner.Initialize(_activeRunner);
 
             // Kết nối các Event từ LobbySync
             _lobbySync.OnRoomUpdated -= ForwardRoomUpdated;

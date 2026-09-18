@@ -78,6 +78,10 @@ namespace ProjectZombie.Features.Player
                 _characterSelectionPresenter.OnCharacterSelected += HandleCharacterSelected;
             }
 
+            // Đăng ký lắng nghe sự kiện khi nhân vật mạng được sinh ra để tự động kết nối Camera & UI
+            PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawnedFromProvider;
+            PlayerProvider.OnPlayerSpawned += HandlePlayerSpawnedFromProvider;
+
             // 2. Tự động spawn thực thể nhân vật đứng sẵn ở Sảnh (Hub Stage) ngay khi mở game
             SpawnPlayerForActiveHero();
 
@@ -95,6 +99,21 @@ namespace ProjectZombie.Features.Player
             if (_characterSelectionPresenter != null)
             {
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
+            }
+            PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawnedFromProvider;
+        }
+
+        private void HandlePlayerSpawnedFromProvider(Transform playerTransform, HealthSystem hp)
+        {
+            if (playerTransform != null)
+            {
+                _activePlayerInstance = playerTransform.gameObject;
+                SetupCameraFollow(playerTransform);
+                if (_uiBinder != null)
+                {
+                    var ctx = PlayerProvider.Registry?.LocalPlayer ?? PlayerContext.Create(playerTransform.gameObject);
+                    _uiBinder.BindAll(ctx);
+                }
             }
         }
 
@@ -242,6 +261,22 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         private void ResetOrRespawnPlayer()
         {
+            // Trong Multiplayer Co-op: Tuyệt đối không spawn Offline Player đè lên Network Player
+            bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+            if (isMultiplayer)
+            {
+                if (PlayerProvider.HasPlayer)
+                {
+                    _activePlayerInstance = PlayerProvider.PlayerGameObject;
+                    SetupCameraFollow(_activePlayerInstance.transform);
+                    if (_uiBinder != null && PlayerProvider.Registry != null && PlayerProvider.Registry.LocalPlayer != null)
+                    {
+                        _uiBinder.BindAll(PlayerProvider.Registry.LocalPlayer);
+                    }
+                }
+                return;
+            }
+
             bool needRespawn = _activePlayerInstance == null || 
                                !_activePlayerInstance.activeInHierarchy || 
                                (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hpCheck) && hpCheck.CurrentHealth <= 0);
@@ -302,13 +337,15 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void StartMatchFlow()
         {
+            bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
+
             Time.timeScale = 1f;
 
             // Dọn sạch hiệu ứng / đạn bay tàn dư từ trận trước
             ProjectZombie.Features.Projectiles.Core.ProjectileSystem.Instance?.DespawnAllProjectiles();
             ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance?.ClearAllActiveEffects();
 
-            // Khôi phục Player
+            // Khôi phục Player (chỉ spawn mới nếu là Solo)
             ResetOrRespawnPlayer();
 
             // Cấp 3 giây bất tử mở màn (Grace Period) để Player định hình vị trí, không thể bị chém chết ngay frame 0
@@ -323,7 +360,9 @@ namespace ProjectZombie.Features.Player
                 Debug.Log("[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00.");
             }
 
-            if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
+            // CHỈ SinglePlayer hoặc Host mới kích hoạt Spawner wave
+            bool shouldStartSpawner = !isMultiplayer || (session != null && session.IsHost);
+            if (shouldStartSpawner && ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
             {
                 ProjectZombie.Features.Spawners.SpawnManager.Instance.StartMatch();
                 Debug.Log("[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu.");

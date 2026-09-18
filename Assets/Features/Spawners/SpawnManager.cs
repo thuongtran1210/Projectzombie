@@ -268,6 +268,16 @@ namespace ProjectZombie.Features.Spawners
 
         public async Task StartMatchAsync()
         {
+            // Trong Multiplayer: Chỉ có Chủ Phòng (Host) mới được quyền kích hoạt đợt quái
+            if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session))
+            {
+                if (session.IsInRoom && !session.IsHost)
+                {
+                    Debug.Log("<color=#888888>[SpawnManager]</color> Bỏ qua StartMatch trên Client (Host là máy chủ điều phối duy nhất).");
+                    return;
+                }
+            }
+
             EnsureDependencies();
             _waveScheduler.Initialize(timelineConfig);
 

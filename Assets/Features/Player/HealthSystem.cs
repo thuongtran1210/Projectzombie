@@ -32,6 +32,13 @@ namespace ProjectZombie.Features.Shared
         public delegate bool TryDieHandler();
         public event TryDieHandler OnTryDie;
 
+        /// <summary>
+        /// Delegate can thiệp chuyển hướng xử lý sát thương (dùng cho Network Proxy / RPC Client).
+        /// Trả về true nếu đã can thiệp xử lý xong (không trừ máu cục bộ).
+        /// </summary>
+        public delegate bool DamageInterceptor(float amount, DamageData damageData);
+        public DamageInterceptor CustomDamageInterceptor { get; set; }
+
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => maxHealth;
         public bool IsAlive => _currentHealth > 0;
@@ -104,7 +111,12 @@ namespace ProjectZombie.Features.Shared
         public void TakeDamage(float amount)
         {
             if (_currentHealth <= 0 || IsInvulnerable) return; 
-            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing) return;
+            if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
+
+            if (CustomDamageInterceptor != null && CustomDamageInterceptor.Invoke(amount, new DamageData(amount)))
+            {
+                return;
+            }
 
             _currentHealth -= amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
@@ -130,7 +142,12 @@ namespace ProjectZombie.Features.Shared
         public void TakeDamage(DamageData damageData)
         {
             if (_currentHealth <= 0 || IsInvulnerable) return;
-            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing) return;
+            if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
+
+            if (CustomDamageInterceptor != null && CustomDamageInterceptor.Invoke(damageData.Amount, damageData))
+            {
+                return;
+            }
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);

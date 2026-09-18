@@ -23,6 +23,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private readonly Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
 
+        private NetworkRunner _runner;
+
+        /// <summary>
+        /// Gán thủ công NetworkRunner từ SessionService để không phụ thuộc vào chu kỳ AddGlobal.
+        /// </summary>
+        public void Initialize(NetworkRunner runner)
+        {
+            _runner = runner;
+        }
+
+        /// <summary>
+        /// Lấy NetworkRunner khả dụng (Ưu tiên runner tiêm thủ công, fallback base.Runner).
+        /// </summary>
+        public NetworkRunner ActiveRunner => _runner != null ? _runner : Runner;
+
         /// <summary>
         /// Trạng thái trận đấu đã thực sự bắt đầu hay chưa (false = Đang trong Sảnh Chờ Lobby).
         /// </summary>
@@ -34,6 +49,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public void StartMatch()
         {
             IsMatchActive = true;
+
+            // Đảm bảo RunLoadoutState đã được nạp dữ liệu tướng
+            RunLoadoutState.EnsureInitialized();
 
             // Dọn dẹp thực thể nhân vật Offline/Singleplayer để nhường chỗ cho nhân vật mạng
             PlayerProvider.ClearPlayer();
@@ -55,9 +73,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
         /// </summary>
         public void SpawnAllActivePlayers()
         {
-            if (Runner == null || !Runner.IsServer) return;
+            var runner = ActiveRunner;
+            if (runner == null || !runner.IsServer)
+            {
+                Debug.LogWarning($"<color=#FF9900>[NetworkPlayerSpawner]</color> Bỏ qua spawn: Runner={(runner != null ? runner.name : "NULL")}, IsServer={(runner != null && runner.IsServer)}");
+                return;
+            }
 
-            foreach (var player in Runner.ActivePlayers)
+            Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Bắt đầu spawn nhân vật mạng cho các người chơi trong phòng...");
+            foreach (var player in runner.ActivePlayers)
             {
                 SpawnPlayerCharacter(player);
             }
@@ -67,7 +91,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             // CHỈ spawn nhân vật khi trận đấu đã bắt đầu (IsMatchActive == true, ví dụ Late Join).
             // Khi đang ở trong Sảnh Chờ (Lobby), tuyệt đối không spawn nhân vật vào map để giữ nguyên giao diện phòng chờ.
-            if (Runner != null && Runner.IsServer && IsMatchActive)
+            var runner = ActiveRunner;
+            if (runner != null && runner.IsServer && IsMatchActive)
             {
                 SpawnPlayerCharacter(player);
             }
@@ -95,12 +120,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private void SpawnPlayerCharacter(PlayerRef player)
         {
-            if (Runner == null || !Runner.IsServer) return;
+            var runner = ActiveRunner;
+            if (runner == null || !runner.IsServer) return;
 
             if (_spawnedCharacters.TryGetValue(player, out var existing) && existing != null)
             {
                 return;
             }
+
+            RunLoadoutState.EnsureInitialized();
 
             Vector3 spawnPos = GetSpawnPosition(player.PlayerId);
             Quaternion spawnRot = Quaternion.identity;
@@ -108,7 +136,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             var provider = GetPrefabProvider();
 
             // 1. Tìm đúng tướng đã chọn qua ICharacterPrefabProvider (DIP & OCP)
-            if (player == Runner.LocalPlayer)
+            if (player == runner.LocalPlayer)
             {
                 string localHeroId = RunLoadoutState.SelectedCharacter?.characterId ?? RunLoadoutState.SelectedCharacter?.characterName;
                 if (!string.IsNullOrEmpty(localHeroId) && provider != null)
@@ -141,11 +169,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
             {
                 try
                 {
-                    var playerObj = Runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
+                    var playerObj = runner.Spawn(_networkPlayerPrefab, spawnPos, spawnRot, player);
                     if (playerObj != null)
                     {
                         _spawnedCharacters[player] = playerObj;
-                        Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Đã spawn nhân vật cho PlayerRef #{player.PlayerId} tại {spawnPos}");
+                        Debug.Log($"<color=#00FF88>[NetworkPlayerSpawner]</color> Đã spawn nhân vật fallback cho PlayerRef #{player.PlayerId} tại {spawnPos}");
                     }
                 }
                 catch (System.Exception ex)
@@ -159,7 +187,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             {
                 try
                 {
-                    var playerObj = Runner.Spawn(prefabToSpawn, spawnPos, spawnRot, player);
+                    var playerObj = runner.Spawn(prefabToSpawn, spawnPos, spawnRot, player);
                     if (playerObj != null)
                     {
                         _spawnedCharacters[player] = playerObj;
@@ -179,7 +207,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void PlayerLeft(PlayerRef player)
         {
-            if (Runner != null && Runner.IsServer)
+            var runner = ActiveRunner;
+            if (runner != null && runner.IsServer)
             {
                 if (_spawnedCharacters.TryGetValue(player, out var playerObj))
                 {
@@ -191,7 +220,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
                             if (ctx != null) registry.Unregister(ctx);
                         }
 
-                        Runner.Despawn(playerObj);
+                        runner.Despawn(playerObj);
                     }
                     _spawnedCharacters.Remove(player);
                 }
@@ -200,13 +229,14 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public void DespawnAllPlayers()
         {
-            if (Runner != null && Runner.IsServer)
+            var runner = ActiveRunner;
+            if (runner != null && runner.IsServer)
             {
                 foreach (var kvp in _spawnedCharacters)
                 {
                     if (kvp.Value != null)
                     {
-                        Runner.Despawn(kvp.Value);
+                        runner.Despawn(kvp.Value);
                     }
                 }
             }
@@ -223,7 +253,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     return _spawnPoints[index].position;
                 }
             }
-            return Vector3.zero;
+
+            // Xếp so le nhẹ nếu không có mốc spawn cố định
+            float offsetX = ((playerId % 2 == 0) ? 1.0f : -1.0f) * ((playerId / 2) + 1) * 0.6f;
+            float offsetY = (playerId > 2 ? -0.6f : 0f);
+            return new Vector3(offsetX, offsetY, 0f);
         }
     }
 }

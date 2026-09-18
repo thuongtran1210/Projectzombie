@@ -18,12 +18,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
         private PlayerController _controller;
         private PlayerInputReader _localInputReader;
         private NetworkInputBridge _networkInputBridge;
+        private PlayerAnimator _playerAnimator;
         private PlayerContext _playerContext;
+        private Vector3 _lastRenderPosition;
 
         private void Awake()
         {
             _controller = GetComponent<PlayerController>();
             _localInputReader = GetComponent<PlayerInputReader>();
+            _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _networkInputBridge = GetComponent<NetworkInputBridge>();
             if (_networkInputBridge == null)
             {
@@ -133,6 +136,15 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
                     ProcessNetworkActions(networkInput.Buttons, networkInput.AimDirection);
                 }
+                else if (Object.HasInputAuthority)
+                {
+                    // CLIENT-SIDE PREDICTION:
+                    // Trên máy Client sở hữu nhân vật, áp dụng di chuyển cục bộ ngay lập tức để triệt tiêu độ trễ mạng
+                    if (_controller != null)
+                    {
+                        _controller.ApplyNetworkMovement(networkInput.MoveDirection);
+                    }
+                }
 
                 if (_networkInputBridge != null && _networkInputBridge.enabled)
                 {
@@ -148,6 +160,32 @@ namespace ProjectZombie.Features.Multiplayer.Core
                         _controller.ApplyNetworkMovement(Vector2.zero);
                     }
                     _previousButtons = NetworkInputButtons.None;
+                }
+            }
+        }
+
+        public override void Render()
+        {
+            // Đồng bộ hóa Animation và Hướng quay mặt cho Đồng đội từ xa (Remote Proxy)
+            if (!Object.HasInputAuthority && _playerAnimator != null)
+            {
+                Vector3 currentPos = transform.position;
+                Vector3 delta = currentPos - _lastRenderPosition;
+                float distSqr = delta.sqrMagnitude;
+                _lastRenderPosition = currentPos;
+
+                // Nếu có dịch chuyển đáng kể trong frame (đang chạy), bật Run và Flip hướng
+                if (distSqr > 0.0001f)
+                {
+                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                    if (Mathf.Abs(delta.x) > 0.001f)
+                    {
+                        _playerAnimator.FlipToDirection(delta.x);
+                    }
+                }
+                else
+                {
+                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
                 }
             }
         }
