@@ -864,6 +864,7 @@ GameObject:
   - component: {fileID: 6191690257478283745}
   - component: {fileID: 4784016667607091793}
   - component: {fileID: 5151492039553058240}
+  - component: {fileID: 1227327823656218695}
   m_Layer: 6
   m_Name: Thu Sinh
   m_TagString: Player
@@ -1254,6 +1255,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7542a583938bbe545ac9dbc98f3c72f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1227327823656218695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b99cfb56d5425b14eae9c750fe475719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackConfig:
+    attackType: 0
+    attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
+    attackIcon: {fileID: 0}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 1.8
+    meleeAreaSize: {x: 2.5, y: 2}
+    meleeOffset: 1.2
+    slashVfxPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  firePoint: {fileID: 0}
+  playerAnimator: {fileID: 0}
+  playerController: {fileID: 0}
+  aimIndicator: {fileID: 0}
 --- !u!1 &4736588199040558820
 GameObject:
   m_ObjectHideFlags: 0

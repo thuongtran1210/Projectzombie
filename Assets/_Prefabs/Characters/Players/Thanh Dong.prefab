@@ -665,6 +665,7 @@ GameObject:
   - component: {fileID: 8075308972592108756}
   - component: {fileID: 6780602513329961539}
   - component: {fileID: 8095683448985995743}
+  - component: {fileID: 1421582308786057578}
   m_Layer: 6
   m_Name: Thanh Dong
   m_TagString: Player
@@ -1055,6 +1056,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7542a583938bbe545ac9dbc98f3c72f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1421582308786057578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b99cfb56d5425b14eae9c750fe475719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackConfig:
+    attackType: 0
+    attackName: "\u0110\xF2n \u0110\xE1nh Th\u01B0\u1EDDng"
+    attackIcon: {fileID: 0}
+    element: 0
+    baseDamageMultiplier: 1
+    baseAttackSpeed: 1.8
+    meleeAreaSize: {x: 2.5, y: 2}
+    meleeOffset: 1.2
+    slashVfxPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}
+    projectileSpeed: 12
+    projectileLifetime: 1.5
+    projectileCount: 1
+    spreadAngle: 0
+    windupRatio: 0.15
+    vfxDuration: 0.3
+    maxComboSteps: 3
+    comboResetWindow: 1
+    comboStep2Multiplier: 1.2
+    comboStep3Multiplier: 1.8
+    knockbackForce: 4
+  firePoint: {fileID: 0}
+  playerAnimator: {fileID: 0}
+  playerController: {fileID: 0}
+  aimIndicator: {fileID: 0}
 --- !u!1 &5762485530569688181
 GameObject:
   m_ObjectHideFlags: 0
