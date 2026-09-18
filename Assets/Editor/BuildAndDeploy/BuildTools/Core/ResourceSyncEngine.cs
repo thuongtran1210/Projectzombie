@@ -160,6 +160,12 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         public static void SyncSingleAsset(SyncRule rule)
         {
+            if (rule.IsAddressableManaged)
+            {
+                Debug.Log($"<color=#00E5FF>[ResourceSyncEngine]</color> Bỏ qua Single Asset '{rule.Name}' vào Resources vì đã quản lý bằng Addressables.");
+                return;
+            }
+
             string src = rule.SourcePath;
             string dest = rule.TargetPath;
 
@@ -222,6 +228,12 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         public static void SyncUIPrefab(SyncRule rule)
         {
+            if (rule.IsAddressableManaged)
+            {
+                Debug.Log($"<color=#00E5FF>[ResourceSyncEngine]</color> Bỏ qua UI Prefab '{rule.Name}' vào Resources vì đã quản lý bằng Addressables.");
+                return;
+            }
+
             string resPath = rule.TargetPath;
             string masterPath = rule.SourcePath;
 

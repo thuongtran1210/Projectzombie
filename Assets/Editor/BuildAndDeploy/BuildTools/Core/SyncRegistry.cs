@@ -29,17 +29,17 @@ namespace ProjectZombie.EditorTools.BuildSync
 
         public static readonly List<SyncRule> SingleAssetRules = new List<SyncRule>
         {
-            SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterAssets()),
-            SyncRule.ForSingleAsset("CharacterStarProgressionConfig (Cấu Hình Nâng Sao Tướng)", "Assets/_Data/CharacterStarProgressionConfig.asset", "Assets/Resources/CharacterStarProgressionConfig.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterStarProgressionConfig()),
-            SyncRule.ForSingleAsset("WorldStageDatabase (Danh Sách Màn Chơi / Ải)", "Assets/_Data/Levels/WorldStageDatabase.asset", "Assets/Resources/WorldStageDatabase.asset", () => ProjectZombie.Editor.Maps.StageDataGeneratorTool.GenerateDefaultStages()),
-            SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset"),
-            SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaDataGenerator.GenerateDefaultGachaBanner())
+            SyncRule.ForSingleAsset("CharacterDatabase (Dữ liệu Tướng)", "Assets/_Data/CharacterDatabase.asset", "Assets/Resources/CharacterDatabase.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterAssets(), isAddressableManaged: false),
+            SyncRule.ForSingleAsset("CharacterStarProgressionConfig (Cấu Hình Nâng Sao Tướng)", "Assets/_Data/CharacterStarProgressionConfig.asset", "Assets/Resources/CharacterStarProgressionConfig.asset", () => ProjectZombie.Editor.CharacterDataAssetGenerator.GenerateCharacterStarProgressionConfig(), isAddressableManaged: true),
+            SyncRule.ForSingleAsset("WorldStageDatabase (Danh Sách Màn Chơi / Ải)", "Assets/_Data/Levels/WorldStageDatabase.asset", "Assets/Resources/WorldStageDatabase.asset", () => ProjectZombie.Editor.Maps.StageDataGeneratorTool.GenerateDefaultStages(), isAddressableManaged: true),
+            SyncRule.ForSingleAsset("PermanentUpgradeTree (Cây Nâng Cấp Vĩnh Viễn)", "Assets/_Data/Meta/PermanentUpgradeTree.asset", "Assets/Resources/PermanentUpgradeTree.asset", isAddressableManaged: true),
+            SyncRule.ForSingleAsset("GachaBanner (Banner Gacha Chuẩn)", "Assets/_Data/Gacha/banner_standard.asset", "Assets/Resources/Gacha/banner_standard.asset", () => ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaDataGenerator.GenerateDefaultGachaBanner(), isAddressableManaged: true)
         };
 
         public static readonly List<SyncRule> UIPrefabRules = new List<SyncRule>
         {
-            SyncRule.ForUIPrefab("MainHubUI", () => ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubPrefab()),
-            SyncRule.ForUIPrefab("CharacterSelectionUI", () => ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab()),
+            SyncRule.ForUIPrefab("MainHubUI", () => ProjectZombie.Editor.UI.MainHubUIGenerator.GenerateMainHubPrefab(), isAddressableManaged: true),
+            SyncRule.ForUIPrefab("CharacterSelectionUI", () => ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab(), isAddressableManaged: true),
             SyncRule.ForUIPrefab("SanctuaryTreeUI", () => ProjectZombie.Editor.UI.SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab()),
             SyncRule.ForUIPrefab("SettingsModalUI", () => ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal()),
             SyncRule.ForUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI()),

@@ -110,7 +110,8 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             {
                 for (int i = 0; i < settings.DataBuilders.Count; i++)
                 {
-                    if (settings.DataBuilders[i].name.Contains("AssetDatabase"))
+                    string bName = settings.DataBuilders[i].name;
+                    if (bName.Contains("AssetDatabase") || bName.Contains("FastMode"))
                     {
                         settings.ActivePlayModeDataBuilderIndex = i;
                         EditorUtility.SetDirty(settings);
@@ -120,8 +121,10 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
                 }
             }
 
-            SetStatus("Đã chuyển Addressables sang 'Use Asset Database (fastest)'. Bấm PLAY trên Editor để test ngay!", MessageType.Info);
+            SetStatus("Đã chuyển Addressables sang 'Use Asset Database (Fast Mode)'. Bấm PLAY trên Editor để test ngay!", MessageType.Info);
             RefreshAll();
+            GUI.FocusControl(null);
+            EditorUtility.DisplayDialog("Đã Chuyển Chế Độ Thành Công!", "Đã chuyển Addressables sang: Use Asset Database (Fast Mode).\n\nBạn có thể nhấn nút PLAY trên Unity Editor để chơi thử ngay mà không cần build lại bundle!", "OK");
         }
 
         public void SwitchToAndroidBuildMode()
@@ -136,7 +139,8 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             {
                 for (int i = 0; i < settings.DataBuilders.Count; i++)
                 {
-                    if (settings.DataBuilders[i].name.Contains("ExistingBuild"))
+                    string bName = settings.DataBuilders[i].name;
+                    if (bName.Contains("ExistingBuild") || bName.Contains("PackedPlayMode"))
                     {
                         settings.ActivePlayModeDataBuilderIndex = i;
                         EditorUtility.SetDirty(settings);
@@ -148,6 +152,8 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             SetStatus("Đã chuyển cấu hình sang Android & 'Use Existing Build'. Sẵn sàng đóng gói APK!", MessageType.Info);
             RefreshAll();
+            GUI.FocusControl(null);
+            EditorUtility.DisplayDialog("Đã Chuyển Chế Độ Thành Công!", "Đã thiết lập môi trường:\n • Target Platform: Android\n • Play Mode: Use Existing Build\n\nBạn có thể build APK bằng tool hoặc build bằng cửa sổ Build Settings mặc định của Unity (Ctrl + Shift + B)!", "OK");
         }
 
         public void ExecuteStep1_SyncResources()

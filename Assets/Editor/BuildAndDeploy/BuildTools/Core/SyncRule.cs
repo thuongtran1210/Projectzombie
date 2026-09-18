@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace ProjectZombie.EditorTools.BuildSync
@@ -33,18 +33,18 @@ namespace ProjectZombie.EditorTools.BuildSync
             IsAddressableManaged = isAddressableManaged;
         }
 
-        public static SyncRule ForSingleAsset(string name, string sourcePath, string targetPath, Action fallbackGenerator = null)
+        public static SyncRule ForSingleAsset(string name, string sourcePath, string targetPath, Action fallbackGenerator = null, bool isAddressableManaged = false)
         {
-            return new SyncRule(name, sourcePath, targetPath)
+            return new SyncRule(name, sourcePath, targetPath, isAddressableManaged: isAddressableManaged)
             {
                 Type = RuleType.SingleAsset,
                 FallbackGenerator = fallbackGenerator
             };
         }
 
-        public static SyncRule ForUIPrefab(string prefabName, Action fallbackGenerator = null)
+        public static SyncRule ForUIPrefab(string prefabName, Action fallbackGenerator = null, bool isAddressableManaged = false)
         {
-            return new SyncRule(prefabName, $"Assets/_Prefabs/UI/{prefabName}.prefab", $"Assets/Resources/UI/{prefabName}.prefab", "*.prefab")
+            return new SyncRule(prefabName, $"Assets/_Prefabs/UI/{prefabName}.prefab", $"Assets/Resources/UI/{prefabName}.prefab", "*.prefab", isAddressableManaged: isAddressableManaged)
             {
                 Type = RuleType.UIPrefab,
                 FallbackGenerator = fallbackGenerator

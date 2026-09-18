@@ -68,6 +68,13 @@ namespace ProjectZombie.EditorTools
                     }
                     else if (resourceAssetMap.TryGetValue(addressableName, out string matchedResPath))
                     {
+                        // Ngoại lệ thiết kế: CharacterDatabase bắt buộc phải có trong Resources để game boot đồng bộ tức thì lúc mở app,
+                        // trong khi vẫn đăng ký Addressables để hỗ trợ cập nhật cấu hình tướng qua DLC.
+                        if (string.Equals(addressableName, "CharacterDatabase", System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
                         string logMsg = $"[{group.name}] '{addressableName}' (Addressables: {assetPath} <=> Resources: {matchedResPath})";
                         if (isRemote)
                         {

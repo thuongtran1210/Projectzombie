@@ -35,20 +35,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
         public void DrawStatusSection()
         {
-            EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField("📊 TRẠNG THÁI HỆ THỐNG HIỆN TẠI", EditorStyles.boldLabel);
-            EditorGUILayout.Space(4);
-
-            // 1. Target Platform
-            bool isAndroid = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android;
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Nền Tảng Đang Chọn:", GUILayout.Width(180));
-            GUI.color = isAndroid ? new Color(0.4f, 1f, 0.4f) : new Color(1f, 0.8f, 0.3f);
-            EditorGUILayout.LabelField(isAndroid ? "✅ Android" : $"⚠️ {EditorUserBuildSettings.activeBuildTarget} (Chưa phải Android)", EditorStyles.boldLabel);
-            GUI.color = Color.white;
-            EditorGUILayout.EndHorizontal();
-
-            // 2. Addressables Play Mode
+            // Xác định chế độ hiện tại
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             string currentPlayMode = "Không tìm thấy Addressables";
             bool isAssetDatabaseMode = false;
@@ -59,14 +46,78 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
                 int idx = settings.ActivePlayModeDataBuilderIndex;
                 if (idx >= 0 && idx < settings.DataBuilders.Count)
                 {
-                    currentPlayMode = settings.DataBuilders[idx].name;
-                    isAssetDatabaseMode = currentPlayMode.Contains("AssetDatabase");
-                    isExistingBuildMode = currentPlayMode.Contains("ExistingBuild");
+                    string builderName = settings.DataBuilders[idx].name;
+                    // Trong Addressables:
+                    // 1. BuildScriptFastMode / AssetDatabase = "Use Asset Database (fastest)"
+                    // 2. BuildScriptVirtualMode = "Simulate Groups (advanced)"
+                    // 3. BuildScriptPackedPlayMode / ExistingBuild = "Use Existing Build (requires built groups)"
+                    isAssetDatabaseMode = builderName.Contains("AssetDatabase") || builderName.Contains("FastMode") || builderName.Contains("VirtualMode");
+                    isExistingBuildMode = builderName.Contains("ExistingBuild") || builderName.Contains("PackedPlayMode");
+
+                    if (isAssetDatabaseMode)
+                    {
+                        currentPlayMode = builderName.Contains("FastMode") 
+                            ? "Use Asset Database (Fast Mode)" 
+                            : (builderName.Contains("VirtualMode") ? "Simulate Groups (Virtual Mode)" : "Use Asset Database");
+                    }
+                    else if (isExistingBuildMode)
+                    {
+                        currentPlayMode = "Use Existing Build";
+                    }
+                    else
+                    {
+                        currentPlayMode = builderName;
+                    }
                 }
             }
 
+            bool isAndroid = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android;
+            bool isReadyForAPK = isAndroid && isExistingBuildMode;
+            bool isReadyForEditor = isAssetDatabaseMode;
+
+            // 1. BANNER TRỰC QUAN MÔI TRƯỜNG HIỆN TẠI (CURRENT ACTIVE ENVIRONMENT BADGE)
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            if (isReadyForEditor)
+            {
+                GUI.color = new Color(0.2f, 0.9f, 1f);
+                EditorGUILayout.LabelField($"💻 ĐANG Ở CHẾ ĐỘ: TEST TRÊN UNITY EDITOR ({currentPlayMode.ToUpper()})", EditorStyles.boldLabel);
+                GUI.color = Color.white;
+                EditorGUILayout.LabelField("• Load trực tiếp từ AssetDatabase (nhanh nhất), không cần build bundle trước mỗi lần Play, hỗ trợ hot-reload script & data.", EditorStyles.miniLabel);
+            }
+            else if (isReadyForAPK)
+            {
+                GUI.color = new Color(0.35f, 1f, 0.4f);
+                EditorGUILayout.LabelField("🤖 ĐANG Ở CHẾ ĐỘ: SẴN SÀNG BUILD ANDROID APK (PRODUCTION)", EditorStyles.boldLabel);
+                GUI.color = Color.white;
+                EditorGUILayout.LabelField("• Target: Android | Addressables: Existing Build | Yêu cầu Bundles mới nhất trước khi build APK.", EditorStyles.miniLabel);
+            }
+            else
+            {
+                GUI.color = new Color(1f, 0.85f, 0.2f);
+                EditorGUILayout.LabelField("⚠️ ĐANG Ở CHẾ ĐỘ TRUNG GIAN / CHƯA ĐỒNG BỘ CẤU HÌNH!", EditorStyles.boldLabel);
+                GUI.color = Color.white;
+                EditorGUILayout.LabelField($"• Platform: {EditorUserBuildSettings.activeBuildTarget} | PlayMode: {currentPlayMode}. Hãy bấm 1 trong 2 nút bên dưới để đồng bộ.", EditorStyles.miniLabel);
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(4);
+
+            // 2. BẢNG THÔNG SỐ KỸ THUẬT CHI TIẾT
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("📊 THÔNG SỐ HỆ THỐNG CHI TIẾT", EditorStyles.boldLabel);
+            EditorGUILayout.Space(2);
+
+            // 1. Target Platform
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Chế Độ Addressables PlayMode:", GUILayout.Width(180));
+            EditorGUILayout.LabelField("• Nền Tảng Đang Chọn:", GUILayout.Width(200));
+            GUI.color = isAndroid ? new Color(0.4f, 1f, 0.4f) : new Color(1f, 0.8f, 0.3f);
+            EditorGUILayout.LabelField(isAndroid ? "✅ Android" : $"⚠️ {EditorUserBuildSettings.activeBuildTarget} (Chưa phải Android)", EditorStyles.boldLabel);
+            GUI.color = Color.white;
+            EditorGUILayout.EndHorizontal();
+
+            // 2. Addressables Play Mode
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("• Addressables PlayMode:", GUILayout.Width(200));
             if (isAssetDatabaseMode)
             {
                 GUI.color = new Color(0.3f, 0.85f, 1f);
@@ -89,7 +140,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             var arch = PlayerSettings.Android.targetArchitectures;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Scripting Backend / CPU:", GUILayout.Width(180));
+            EditorGUILayout.LabelField("• Scripting Backend / CPU:", GUILayout.Width(200));
             bool isIL2CPP = backend == ScriptingImplementation.IL2CPP;
             bool hasARM64 = (arch & AndroidArchitecture.ARM64) != 0;
             EditorGUILayout.LabelField($"{(isIL2CPP ? "IL2CPP" : "Mono")} | {(hasARM64 ? "ARM64 (Chuẩn Google Play)" : "ARMv7")}");
@@ -97,7 +148,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // 4. Kiểm toán toàn vẹn
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Trạng Thái Player Prefabs:", GUILayout.Width(180));
+            EditorGUILayout.LabelField("• Trạng Thái Player Prefabs:", GUILayout.Width(200));
             if (_service.IsAuditing)
             {
                 EditorGUILayout.LabelField("⏳ Đang quét kiểm toán...");
@@ -129,7 +180,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // 5. Trạng thái Bundles Mới/Cũ
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Addressables Content Bundles:", GUILayout.Width(180));
+            EditorGUILayout.LabelField("• Addressables Content Bundles:", GUILayout.Width(200));
             if (_service.IsBundleOutdated)
             {
                 GUI.color = new Color(1f, 0.4f, 0.2f);
@@ -151,14 +202,18 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // 6. Xung đột Bản Sao Trùng Lặp Resources vs Addressables
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("• Xung Đột Resources / Addressables:", GUILayout.Width(180));
+            EditorGUILayout.LabelField("• Xung Đột Resources / Addressables:", GUILayout.Width(200));
             if (_service.ConflictReport != null && _service.ConflictReport.HasConflicts)
             {
                 GUI.color = new Color(1f, 0.4f, 0.2f);
-                EditorGUILayout.LabelField($"⚠️ Có {_service.ConflictReport.TotalDuplicates} Bản Sao Trùng Lặp ({_service.ConflictReport.CriticalInsideResources.Count} Lỗi Nghiêm Trọng)", EditorStyles.boldLabel);
+                string namesPreview = string.Join(", ", _service.ConflictReport.DuplicateResourcePaths);
+                if (namesPreview.Length > 45) namesPreview = namesPreview.Substring(0, 42) + "...";
+                string labelText = $"⚠️ Có {_service.ConflictReport.TotalDuplicates} Bản Sao ({namesPreview})";
+
+                EditorGUILayout.LabelField(new GUIContent(labelText, string.Join("\n", _service.ConflictReport.DuplicateResourcePaths)), EditorStyles.boldLabel);
                 GUI.color = Color.white;
                 GUI.backgroundColor = new Color(1f, 0.8f, 0.3f);
-                if (GUILayout.Button("🧹 Dọn Dẹp Bản Sao", GUILayout.Width(140), GUILayout.Height(20)))
+                if (GUILayout.Button("🧹 Dọn Dẹp Bản Sao", GUILayout.Width(130), GUILayout.Height(19)))
                 {
                     _service.CleanDuplicateResources();
                 }
@@ -210,7 +265,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // Bước 1
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("1. Đồng Bộ Tài Nguyên Gốc sang Resources (SSOT)", GUILayout.Width(300));
+            EditorGUILayout.LabelField("1. Đồng Bộ Tài Nguyên Gốc sang Resources (SSOT)", GUILayout.Width(360));
             if (GUILayout.Button("Chạy Đồng Bộ Ngay", GUILayout.Height(26)))
             {
                 _service.ExecuteStep1_SyncResources();
@@ -219,7 +274,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // Bước 2
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("2. Kiểm Tra Tài Nguyên & Shaders Validator", GUILayout.Width(300));
+            EditorGUILayout.LabelField("2. Kiểm Tra Tài Nguyên & Shaders Validator", GUILayout.Width(360));
             if (GUILayout.Button("Kiểm Tra (Validate)", GUILayout.Height(26)))
             {
                 _service.ExecuteStep2_ValidateAssets();
@@ -231,7 +286,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             string step3Label = _service.IsBundleOutdated 
                 ? $"3. Đóng Gói Bundles (⚠️ Có {_service.ModifiedAssetsCount} Asset Cần Build Lại!)" 
                 : "3. Đóng Gói Addressables Content Bundles (✅ Mới Nhất)";
-            EditorGUILayout.LabelField(step3Label, GUILayout.Width(300));
+            EditorGUILayout.LabelField(step3Label, GUILayout.Width(360));
             if (_service.IsBundleOutdated) GUI.backgroundColor = new Color(1f, 0.6f, 0.2f);
             if (GUILayout.Button(_service.IsBundleOutdated ? "⚠️ Build Bundles Ngay" : "Build Bundles", GUILayout.Height(26)))
             {
@@ -242,7 +297,7 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
             // Bước 4
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("4. Xuất File Cài Đặt Android APK", GUILayout.Width(300));
+            EditorGUILayout.LabelField("4. Xuất File Cài Đặt Android APK", GUILayout.Width(360));
             GUI.backgroundColor = new Color(0.4f, 1f, 0.4f);
             if (GUILayout.Button("Bắt Đầu Build APK", GUILayout.Height(26)))
             {
