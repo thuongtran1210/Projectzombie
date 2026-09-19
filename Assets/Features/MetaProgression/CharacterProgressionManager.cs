@@ -73,6 +73,12 @@ namespace ProjectZombie.Features.MetaProgression
             {
                 _progressionConfig = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
             }
+#if UNITY_EDITOR
+            if (_progressionConfig == null)
+            {
+                _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
+            }
+#endif
         }
 
         public void Initialize(MetaProgressionSaveData saveData)

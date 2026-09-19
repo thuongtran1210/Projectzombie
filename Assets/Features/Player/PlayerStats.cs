@@ -198,16 +198,18 @@ namespace ProjectZombie.Features.Player
             {
                 try
                 {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
-                    handle.WaitForCompletion();
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("PermanentUpgradeTree");
+                    var locations = locHandle.WaitForCompletion();
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
                     {
-                        treeData = handle.Result;
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                        treeData = handle.WaitForCompletion();
                     }
+                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
                 catch { }
 
-                if (treeData == null) treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                if (treeData == null) treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree") ?? Resources.Load<PermanentUpgradeTreeData>("Meta/PermanentUpgradeTree");
 #if UNITY_EDITOR
                 if (treeData == null)
                 {
@@ -259,16 +261,24 @@ namespace ProjectZombie.Features.Player
             {
                 try
                 {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-                    handle.WaitForCompletion();
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("CharacterStarProgressionConfig");
+                    var locations = locHandle.WaitForCompletion();
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
                     {
-                        configSO = handle.Result;
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+                        configSO = handle.WaitForCompletion();
                     }
+                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
                 catch { }
 
                 if (configSO == null) configSO = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+#if UNITY_EDITOR
+                if (configSO == null)
+                {
+                    configSO = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
+                }
+#endif
             }
 
             if (configSO != null && configSO.StarSteps != null)

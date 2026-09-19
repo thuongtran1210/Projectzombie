@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.MetaProgression;
 
@@ -27,18 +27,20 @@ namespace ProjectZombie.Features.UI
             {
                 try
                 {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
-                    handle.WaitForCompletion();
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("PermanentUpgradeTree");
+                    var locations = locHandle.WaitForCompletion();
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
                     {
-                        _treeData = handle.Result;
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                        _treeData = handle.WaitForCompletion();
                     }
+                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
                 catch (System.Exception) { }
 
                 if (_treeData == null)
                 {
-                    _treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree");
+                    _treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree") ?? Resources.Load<PermanentUpgradeTreeData>("Meta/PermanentUpgradeTree");
                 }
 #if UNITY_EDITOR
                 if (_treeData == null)
