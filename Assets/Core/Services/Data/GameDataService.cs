@@ -83,15 +83,39 @@ namespace ProjectZombie.Core.Services.Data
                 Debug.LogWarning($"[GameDataService] Addressables load failed for '{key}': {ex.Message}. Falling back to Resources.");
             }
 
+            bool isFromAddressables = (result != null);
+
             // 4. Tầng 3: Fallback nạp từ Resources cục bộ trong APK (Khi Offline / Chặn fallback CDN)
             if (result == null)
             {
                 result = Resources.Load<T>(key);
+                if (result != null)
+                {
+                    Debug.LogWarning($"<color=#FFCC00>[GameDataService - ADDRESSABLES MISSING]</color> Asset key '<b>{key}</b>' (Loại: {typeof(T).Name}) chưa được gán trong Addressables Groups! Đang tạm dùng fallback từ <i>Resources</i>.");
+                }
             }
+
+#if UNITY_EDITOR
+            // 5. Tầng 4 (Chỉ chạy trên Unity Editor): Tìm trực tiếp trong Assets nếu chưa nạp được qua Addressables/Resources
+            if (result == null)
+            {
+                string searchFilter = $"t:{typeof(T).Name} {System.IO.Path.GetFileNameWithoutExtension(key)}";
+                string[] guids = UnityEditor.AssetDatabase.FindAssets(searchFilter);
+                if (guids != null && guids.Length > 0)
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+                    result = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+                    if (result != null)
+                    {
+                        Debug.LogWarning($"<color=#FF8800>[GameDataService - ADDRESSABLES MISSING]</color> Asset key '<b>{key}</b>' (Loại: {typeof(T).Name}) chưa được thêm vào Addressables Groups! Đang tạm nạp trực tiếp từ Editor path: <i>{path}</i>. Vui lòng mở Addressables Groups gán key '<b>{key}</b>' để build APK không bị lỗi!");
+                    }
+                }
+            }
+#endif
 
             if (result == null)
             {
-                Debug.LogError($"[GameDataService] Asset key '{key}' (Loại: {typeof(T).Name}) không tồn tại trong Addressables Catalog và Resources!");
+                Debug.LogError($"<color=#FF4444>[GameDataService - NOT FOUND]</color> Asset key '<b>{key}</b>' (Loại: {typeof(T).Name}) hoàn toàn không tồn tại trong Addressables Catalog, Resources hay Project! Vui lòng kiểm tra lại tên Key.");
             }
             else
             {

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Collectibles;
@@ -249,19 +249,27 @@ namespace ProjectZombie.Features.Weapons
             }
             else
             {
-                sr.sprite = Resources.Load<Sprite>("Textures/Tex_ChickenBroom_SingleFeather_Clean") ??
-                            Resources.Load<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
-#if UNITY_EDITOR
-                if (sr.sprite == null)
+                if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
                 {
-                    sr.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
+                    _ = LoadFeatherSpriteAsync(sr);
                 }
-#endif
             }
             sr.sortingLayerName = "Skill";
             sr.sortingOrder = 12;
             sr.color = new Color(1f, 0.95f, 0.35f, 1f); // Màu Vàng Kim phát sáng
             _markerVisualObj.transform.localScale = Vector3.one * 0.28f;
+        }
+
+        private async System.Threading.Tasks.Task LoadFeatherSpriteAsync(SpriteRenderer sr)
+        {
+            if (sr != null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                var sp = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
+                if (sp != null && sr != null)
+                {
+                    sr.sprite = sp;
+                }
+            }
         }
 
         private void Update()

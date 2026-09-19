@@ -174,27 +174,6 @@ namespace ProjectZombie.Features.Upgrades
                     return;
                 }
 
-                // Nạp tức thời đồng bộ từ Resources để không bao giờ bị rỗng pool ở frame đầu
-                var resUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
-                if (resUpgrades != null && resUpgrades.Length > 0)
-                {
-                    _allAvailableUpgrades ??= new List<UpgradeData>();
-                    var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-                    foreach (var u in resUpgrades)
-                    {
-                        if (u != null && !(u is FallbackRewardUpgradeData))
-                        {
-                            string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                            if (loadedIds.Add(idKey))
-                            {
-                                _allAvailableUpgrades.Add(u);
-                            }
-                        }
-                    }
-                    _cachedMasterUpgrades = new List<UpgradeData>(_allAvailableUpgrades);
-                    return;
-                }
-
                 if (_loadingTask == null || _loadingTask.IsCompleted)
                 {
                     _loadingTask = PopulateAllAvailableUpgradesAsync();
@@ -274,68 +253,32 @@ namespace ProjectZombie.Features.Upgrades
                 return;
             }
 
-            // 1. Nạp qua Addressables theo nhãn "UpgradeData"
-            try
-            {
-                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", null);
-                await handle.Task;
-                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && handle.Result != null && handle.Result.Count > 0)
-                {
-                    var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-                    foreach (var u in handle.Result)
-                    {
-                        if (u != null && !(u is FallbackRewardUpgradeData))
-                        {
-                            string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                            if (loadedIds.Add(idKey))
-                            {
-                                _allAvailableUpgrades.Add(u);
-                            }
-                        }
-                    }
-                    Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã nạp thành công {_allAvailableUpgrades.Count} thẻ từ Addressables ('UpgradeData').");
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[UpgradeManager] Load UpgradeData from Addressables warning: {ex.Message}");
-            }
-
-            // 2. Fallback Resources/Upgrades nếu Addressables chưa nạp
-            if (_allAvailableUpgrades.Count == 0)
-            {
-                var resUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
-                if (resUpgrades != null && resUpgrades.Length > 0)
-                {
-                    var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-                    foreach (var u in resUpgrades)
-                    {
-                        if (u != null && !(u is FallbackRewardUpgradeData))
-                        {
-                            string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                            if (loadedIds.Add(idKey))
-                            {
-                                _allAvailableUpgrades.Add(u);
-                            }
-                        }
-                    }
-                    Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã nạp thành công {_allAvailableUpgrades.Count} thẻ từ Resources/Upgrades.");
-                }
-            }
-
-            // 2. Nạp bổ sung qua GameDataService nếu có
+            // 1. Nạp qua GameDataService tập trung (RAM Cache -> Addressables Label -> Fallback)
             if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
-                if (loadedList != null && loadedList.Count > 0)
+                try
                 {
-                    foreach (var item in loadedList)
+                    var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
+                    if (loadedList != null && loadedList.Count > 0)
                     {
-                        if (item != null && !(item is FallbackRewardUpgradeData) && !_allAvailableUpgrades.Contains(item))
+                        var loadedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+                        foreach (var u in loadedList)
                         {
-                            _allAvailableUpgrades.Add(item);
+                            if (u != null && !(u is FallbackRewardUpgradeData))
+                            {
+                                string idKey = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                                if (loadedIds.Add(idKey))
+                                {
+                                    _allAvailableUpgrades.Add(u);
+                                }
+                            }
                         }
+                        Debug.Log($"<color=#00FF88>[UpgradeManager]</color> Đã nạp thành công {_allAvailableUpgrades.Count} thẻ nâng cấp qua GameDataService.");
                     }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[UpgradeManager] Lỗi nạp UpgradeData qua GameDataService: {ex.Message}");
                 }
             }
 

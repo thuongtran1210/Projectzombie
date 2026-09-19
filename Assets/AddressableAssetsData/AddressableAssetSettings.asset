@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 8bcad728379ae974b8c7f921c22fb1ec
   m_currentHash:
     serializedVersion: 2
-    Hash: 613466bb53d4a1a392a034ebb864955f
+    Hash: 2c619b5e237162f52d9de16f7251fdd7
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -107,6 +107,10 @@ MonoBehaviour:
     - Character
     - WeaponData
     - Relic
+    - Timeline
+    - Enemy
+    - Boss
+    - Stage1
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 439833ed15f0b454cbcccc19411c44b1, type: 2}

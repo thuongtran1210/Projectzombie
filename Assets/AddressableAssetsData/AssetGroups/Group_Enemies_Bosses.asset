@@ -16,17 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 9e4ee123487da8943ba4e76b2e722a11
-  m_SerializeEntries:
-  - m_GUID: 193a344b7a316cd42b5e32fc47df8ba7
-    m_Address: Boss_NguuDauMaDien
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bb55896b976f62a4cb0393430a4d8e0f
-    m_Address: Boss_DiemVuong
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:

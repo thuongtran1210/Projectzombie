@@ -69,63 +69,31 @@ namespace ProjectZombie.Features.Weapons
             if (_broomFollowerObj != null) Destroy(_broomFollowerObj);
         }
 
-        private void EnsureAssets()
+        private async void EnsureAssets()
         {
-            if (whirlwindVfxPrefab == null)
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                whirlwindVfxPrefab = Resources.Load<GameObject>("VFX_Relic_ChickenBroom_Smash");
-#if UNITY_EDITOR
                 if (whirlwindVfxPrefab == null)
                 {
-                    whirlwindVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenBroom_Smash.prefab");
+                    whirlwindVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_ChickenBroom_Smash");
                 }
-#endif
-            }
-
-            if (chickenMinionPrefab == null)
-            {
-                chickenMinionPrefab = Resources.Load<GameObject>("Companion_Chicken_Minion");
-#if UNITY_EDITOR
                 if (chickenMinionPrefab == null)
                 {
-                    chickenMinionPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/Companion_Chicken_Minion.prefab");
+                    chickenMinionPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("Companion_Chicken_Minion");
                 }
-#endif
+                if (featherCollectibleSprite == null)
+                {
+                    featherCollectibleSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
+                }
+                if (featherCollectiblePrefab == null)
+                {
+                    featherCollectiblePrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_ChickenFeather_Collectible");
+                }
             }
 
             if (broomFollowerSprite == null)
             {
                 broomFollowerSprite = icon;
-#if UNITY_EDITOR
-                if (broomFollowerSprite == null)
-                {
-                    broomFollowerSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_Giant_Clean.png");
-                }
-#endif
-            }
-
-            if (featherCollectibleSprite == null)
-            {
-                featherCollectibleSprite = Resources.Load<Sprite>("Textures/Tex_ChickenBroom_SingleFeather_Clean") ??
-                                           Resources.Load<Sprite>("Tex_ChickenBroom_SingleFeather_Clean");
-#if UNITY_EDITOR
-                if (featherCollectibleSprite == null)
-                {
-                    featherCollectibleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png");
-                }
-#endif
-            }
-
-            if (featherCollectiblePrefab == null)
-            {
-                featherCollectiblePrefab = Resources.Load<GameObject>("Prefabs/VFX_Relic_ChickenFeather_Collectible") ??
-                                           Resources.Load<GameObject>("VFX_Relic_ChickenFeather_Collectible");
-#if UNITY_EDITOR
-                if (featherCollectiblePrefab == null)
-                {
-                    featherCollectiblePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenFeather_Collectible.prefab");
-                }
-#endif
             }
         }
 
@@ -318,15 +286,13 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
-        private void TriggerEvolutionStampede(Vector3 endPos, Vector2 forwardDir)
+        private async void TriggerEvolutionStampede(Vector3 endPos, Vector2 forwardDir)
         {
-            GameObject stampedePrefab = Resources.Load<GameObject>("VFX_Relic_Chicken_Stampede");
-#if UNITY_EDITOR
-            if (stampedePrefab == null)
+            GameObject stampedePrefab = null;
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                stampedePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Chicken_Stampede.prefab");
+                stampedePrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Chicken_Stampede");
             }
-#endif
             if (stampedePrefab != null)
             {
                 float angle = Mathf.Atan2(forwardDir.y, forwardDir.x) * Mathf.Rad2Deg;

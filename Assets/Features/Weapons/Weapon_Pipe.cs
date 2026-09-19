@@ -56,28 +56,16 @@ namespace ProjectZombie.Features.Weapons
             if (_pipeFollowerObj != null) Destroy(_pipeFollowerObj);
         }
 
-        private void EnsureVfxPrefab()
+        private async void EnsureVfxPrefab()
         {
-            if (smokeVfxPrefab == null)
+            if (smokeVfxPrefab == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                smokeVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Pipe_DragonSmoke");
-#if UNITY_EDITOR
-                if (smokeVfxPrefab == null)
-                {
-                    smokeVfxPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pipe_DragonSmoke.prefab");
-                }
-#endif
+                smokeVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Pipe_DragonSmoke");
             }
 
             if (pipeFollowerSprite == null)
             {
                 pipeFollowerSprite = icon;
-#if UNITY_EDITOR
-                if (pipeFollowerSprite == null)
-                {
-                    pipeFollowerSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_PIPE.png");
-                }
-#endif
             }
         }
 

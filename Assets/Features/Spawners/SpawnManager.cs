@@ -198,14 +198,10 @@ namespace ProjectZombie.Features.Spawners
 
             if (timelineConfig == null)
             {
-                timelineConfig = Resources.Load<LevelTimelineConfig>("Levels/Level1_Timeline") ??
-                                 Resources.Load<LevelTimelineConfig>("Level1_Timeline");
-#if UNITY_EDITOR
-                if (timelineConfig == null)
+                if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
                 {
-                    timelineConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelTimelineConfig>("Assets/_Data/Levels/Level1_Timeline.asset");
+                    _ = LoadTimelineConfigAsync();
                 }
-#endif
             }
 
             if (_playerTransform == null && Player.PlayerProvider.HasPlayer)
@@ -214,6 +210,15 @@ namespace ProjectZombie.Features.Spawners
             }
 
             _boundaryContext.EnsureDependencies();
+        }
+
+        private async System.Threading.Tasks.Task LoadTimelineConfigAsync()
+        {
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                timelineConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<LevelTimelineConfig>("Level1_Timeline") ??
+                                 await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<LevelTimelineConfig>("Levels/Level1_Timeline");
+            }
         }
 
         /// <summary>

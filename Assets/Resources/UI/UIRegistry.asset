@@ -30,7 +30,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Panel_CharacterSelect
   - screenType: 2
-    screenPrefab: {fileID: 6011009980767583319, guid: 82a3b8f8f9c45ae47bb70815dac3dad2, type: 3}
+    screenPrefab: {fileID: 6011009980767583319, guid: be9705423a9f7e0478315aa2e3b2b659, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -38,7 +38,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Panel_WeaponLoadout
   - screenType: 3
-    screenPrefab: {fileID: 1249154169894984072, guid: 3d7b32b1a2bbea24cbddfc177cf2b5a8, type: 3}
+    screenPrefab: {fileID: 1249154169894984072, guid: d7a373c33f1d05046a18c41d4e89f76f, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -46,7 +46,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Panel_SanctuaryTree
   - screenType: 4
-    screenPrefab: {fileID: 5269677429597461861, guid: 2d6de189e51546a4fa45c6ef69f241fd, type: 3}
+    screenPrefab: {fileID: 5269677429597461861, guid: 5a0bd851a872b7c4aba5050e942a87d7, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -54,7 +54,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Panel_CardCodex
   - screenType: 5
-    screenPrefab: {fileID: 6340144566631493060, guid: d46c8d1266ebf9342aa29c37bcd36be0, type: 3}
+    screenPrefab: {fileID: 6340144566631493060, guid: a39794f6bfc4f734baf85439f7f624d8, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -62,7 +62,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Modal_Settings
   - screenType: 6
-    screenPrefab: {fileID: 5015797603870433675, guid: 926fd02703a13ad458e3f0b9408fa60c, type: 3}
+    screenPrefab: {fileID: 5015797603870433675, guid: 6e745d66554a13c46baef913169ff32f, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 
@@ -86,7 +86,7 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     screenHierarchyName: Modal_ResourceDownload
   - screenType: 9
-    screenPrefab: {fileID: 8756101074302200701, guid: 91f0fe91d5cb02e43bc6f9c35461004d, type: 3}
+    screenPrefab: {fileID: 8756101074302200701, guid: 1f00869d2dea30a4e83cd608ac1ba2a2, type: 3}
     screenPrefabRef:
       m_AssetGUID: 
       m_SubObjectName: 

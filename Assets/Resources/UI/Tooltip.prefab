@@ -65,8 +65,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "T\u0103ng tr\u1EF1c ti\u1EBFp s\xE1t th\u01B0\u01A1ng \u0111\xF2n \u0111\xE1nh
-    c\u0103n b\u1EA3n cho m\u1ECDi v\u0169 kh\xED."
+  m_text: "M\u1ED7i l\u1EA7n th\u1EF1c hi\u1EC7n <b>L\u01B0\u1EDBt (Dash)</b> s\u1EBD
+    h\u1ED3i chi\xEAu t\u1EE9c th\xEC to\xE0n b\u1ED9 v\u0169 kh\xED v\xE0 t\u0103ng
+    <b>+60% T\u1ED1c \u0110\xE1nh</b> trong 2.5 gi\xE2y ti\u1EBFp theo."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -200,7 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "C\u01B0\u1EDDng L\u1EF1c B\u1ED9i T\u0103ng"
+  m_text: "Th\u1EA7n H\xE0nh T\u1ED1i Th\u01B0\u1EE3ng"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -306,7 +307,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 322.00003, y: 571.74994}
+  m_AnchoredPosition: {x: 15, y: -15}
   m_SizeDelta: {x: 234.607, y: 57.403}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &354679049327389412

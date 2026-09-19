@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 174c24198c2b83b468fc6ca7984ce1a4, type: 3}
+  m_Name: banner_hero
+  m_EditorClassIdentifier: 
+  bannerId: banner_hero
+  bannerName: "B\u1EA3o R\u01B0\u01A1ng Anh H\xF9ng"
+  bannerDescription: "T\u0103ng t\u1EF7 l\u1EC7 xu\u1EA5t hi\u1EC7n Ph\xE1p B\u1EA3o Th\u1EA7n Binh v\xE0 M\u1EA3nh T\u01B0\u1EDBng gi\xE1 tr\u1ECB cao."
+  singleRollCost: 150
+  multiRollCost: 1350
+  hardPityLegendary: 40
+  softPityStart: 30
+  softPityRatePerRoll: 0.08
+  epicGuaranteedEvery: 10
+  _dropPool:
+  - dropType: 0
+    relicId: W005
+    relicName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
+    rarity: 2
+    element: 1
+    shardAmount: 10
+    weight: 150
+    icon: {fileID: 21300000, guid: 2f74ae4b830d473489814467362a933f, type: 3}
+  - dropType: 0
+    relicId: W007
+    relicName: "Cung Th\u1EA1ch Sanh"
+    rarity: 2
+    element: 3
+    shardAmount: 10
+    weight: 150
+    icon: {fileID: 21300000, guid: a0e7845318184f4785ee7f311eb495dc, type: 3}
+  - dropType: 0
+    relicId: W009
+    relicName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
+    rarity: 2
+    element: 2
+    shardAmount: 10
+    weight: 150
+    icon: {fileID: 21300000, guid: 6e9874a7cb454c6198f1f7259160ee65, type: 3}
+  - dropType: 0
+    relicId: W001
+    relicName: "N\u1ECF Th\u1EA7n"
+    rarity: 0
+    element: 1
+    shardAmount: 5
+    weight: 100
+    icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
+  - dropType: 0
+    relicId: W003
+    relicName: "B\xF9a Tr\u1EA5n Y\xEAu"
+    rarity: 0
+    element: 2
+    shardAmount: 5
+    weight: 100
+    icon: {fileID: 21300000, guid: c85055b2904a48e18e2ee58568e61ab0, type: 3}

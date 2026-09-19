@@ -108,42 +108,11 @@ namespace ProjectZombie.Features.UI.Gacha
                 GachaBannerConfigSO targetBanner = null;
 
                 // 1. Nạp từ Addressables nếu có trong Catalog
-                try
+                if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
                 {
-                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(bannerId);
-                    await locHandle.Task;
-
-                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded &&
-                        locHandle.Result != null && locHandle.Result.Count > 0)
-                    {
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GachaBannerConfigSO>(bannerId);
-                        await handle.Task;
-                        if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                        {
-                            targetBanner = handle.Result;
-                        }
-                    }
-                    else
-                    {
-                        if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
-                    }
+                    targetBanner = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>(bannerId) ??
+                                   await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>($"Gacha/{bannerId}");
                 }
-                catch (System.Exception) { }
-
-                // 2. Fallback sang Resources
-                if (targetBanner == null)
-                {
-                    targetBanner = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}") ??
-                                   Resources.Load<GachaBannerConfigSO>(bannerId);
-                }
-
-#if UNITY_EDITOR
-                if (targetBanner == null)
-                {
-                    targetBanner = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/Resources/Gacha/{bannerId}.asset") ??
-                                   UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset");
-                }
-#endif
 
                 // 3. Runtime Fallback Generators
                 if (targetBanner == null)
@@ -266,11 +235,11 @@ namespace ProjectZombie.Features.UI.Gacha
             int remainLeg = Mathf.Max(0, banner.hardPityLegendary - pityLeg);
             int remainEpic = Mathf.Max(0, banner.epicGuaranteedEvery - pityEpic);
 
-            string legText = remainLeg == 0 
+            string legText = remainLeg == 0
                 ? "<color=#FBBF24><b>[LƯỢT TIẾP THEO CHẮC CHẮN THẦN BINH!]</b></color>"
                 : $"Còn <color=#FBBF24><b>{remainLeg}</b></color> lượt chắc chắn ra <color=#FBBF24>Thần Binh</color>";
 
-            string epicText = remainEpic == 0 
+            string epicText = remainEpic == 0
                 ? "<color=#C084FC><b>[LƯỢT TIẾP THEO CHẮC CHẮN CỰC PHẨM!]</b></color>"
                 : $"Còn <color=#C084FC><b>{remainEpic}</b></color> lượt chắc chắn ra <color=#C084FC>Cực Phẩm</color>";
 

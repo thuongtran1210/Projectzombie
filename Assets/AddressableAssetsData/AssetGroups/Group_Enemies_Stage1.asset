@@ -20,32 +20,44 @@ MonoBehaviour:
   - m_GUID: 40336bbe99d02974eb09b2c9201ef4c9
     m_Address: E_MATROI
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 88a398719a324b91950e1fa41890e101
     m_Address: E_MADOINO
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 944cc003ebcffde4a8add0899773079a
     m_Address: E_QUYNHAPTRANG
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc60aa0652631604ea95def9ce66ecce
     m_Address: E_MADA
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cfbcec5a64e8e8e45b9fdf7888549503
     m_Address: E_HOALYTINH
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e78d9a5a4396d0a43b442de8fa48afc7
     m_Address: E_MAGIAP
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Enemy
+    - Stage1
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}

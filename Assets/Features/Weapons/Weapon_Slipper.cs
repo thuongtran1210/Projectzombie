@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -43,38 +43,24 @@ namespace ProjectZombie.Features.Weapons
         private float _orbitAngle;
         private float _lastOrbitDamageTime;
 
-        private void EnsureAssetsLoaded()
+        private async void EnsureAssetsLoaded()
         {
             if (slipperProjectileSprite == null)
             {
-                slipperProjectileSprite = Resources.Load<Sprite>("Weapons/Icon_W_SLIPPER") ??
-                                          Resources.Load<Sprite>("Icon_W_SLIPPER");
-#if UNITY_EDITOR
-                if (slipperProjectileSprite == null)
-                    slipperProjectileSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_SLIPPER.png");
-#endif
-                if (slipperProjectileSprite == null && icon != null)
+                if (icon != null)
                 {
                     slipperProjectileSprite = icon;
                 }
+                else if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+                {
+                    slipperProjectileSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_SLIPPER");
+                }
             }
 
-            if (recastMarkerCircleSprite == null)
+            if (recastMarkerCircleSprite == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                recastMarkerCircleSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
-                                           Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring") ??
-                                           Resources.Load<Sprite>("VFX/Tex_VFX_DongSon_SonicWave") ??
-                                           Resources.Load<Sprite>("Tex_VFX_DongSon_SonicWave");
-#if UNITY_EDITOR
-                if (recastMarkerCircleSprite == null)
-                {
-                    recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
-                    if (recastMarkerCircleSprite == null)
-                    {
-                        recastMarkerCircleSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png");
-                    }
-                }
-#endif
+                recastMarkerCircleSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                           await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_DongSon_SonicWave");
             }
 
             if (trailMaterial == null)

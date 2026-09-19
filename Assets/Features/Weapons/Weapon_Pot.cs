@@ -27,6 +27,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private Sprite potSprite;
         [SerializeField] private Sprite riceBallSprite;
         [SerializeField] private Material suctionMaterial;
+        [SerializeField] private Sprite shockwaveRingSprite;
 
         private float _lastTriggerTime;
         private GameObject _potFollowerInstance;
@@ -81,31 +82,28 @@ namespace ProjectZombie.Features.Weapons
 
         private async void EnsureAssets()
         {
-            if (potVfxPrefab == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                potVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Pot_Suction");
-            }
-            if (potVfxPrefab == null)
-            {
-                potVfxPrefab = Resources.Load<GameObject>("VFX/VFX_Relic_Pot_Suction");
-            }
+                if (potVfxPrefab == null)
+                {
+                    potVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Pot_Suction");
+                }
 
-            if (potSprite == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
-            {
-                potSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Pot_Projectile") ??
-                            await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_POT");
-            }
-            if (potSprite == null)
-            {
-                potSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Pot_Projectile") ??
-                            Resources.Load<Sprite>("Weapons/Icon_W_POT") ??
-                            Resources.Load<Sprite>("Icon_W_POT");
-            }
+                if (potSprite == null)
+                {
+                    potSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Pot_Projectile") ??
+                                await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_POT");
+                }
 
-            if (riceBallSprite == null)
-            {
-                riceBallSprite = Resources.Load<Sprite>("Weapons/VFX/Tex_Rice_Collectible") ??
-                                 Resources.Load<Sprite>("Tex_Rice_Collectible");
+                if (riceBallSprite == null)
+                {
+                    riceBallSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Rice_Collectible");
+                }
+
+                if (shockwaveRingSprite == null)
+                {
+                    shockwaveRingSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
+                }
             }
 
             if (suctionMaterial == null)
@@ -493,12 +491,7 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnInwardSuctionRings(Vector2 center, float startRadius, bool isEvolution)
         {
-            Sprite ringSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
-                                Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
-#if UNITY_EDITOR
-            if (ringSprite == null)
-                ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
-#endif
+            Sprite ringSprite = shockwaveRingSprite;
             if (ringSprite == null) yield break;
 
             int ringWaves = isEvolution ? 4 : 2;
@@ -540,12 +533,7 @@ namespace ProjectZombie.Features.Weapons
 
         private IEnumerator RoutineSpawnExpandingRing(Vector2 center, float duration, float maxRadius, Color color)
         {
-            Sprite ringSprite = Resources.Load<Sprite>("VFX/Tex_VFX_Cinnabar_Shockwave_Ring") ??
-                                Resources.Load<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
-#if UNITY_EDITOR
-            if (ringSprite == null)
-                ringSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png");
-#endif
+            Sprite ringSprite = shockwaveRingSprite;
             if (ringSprite == null) yield break;
 
             GameObject expRing = GetOrCreateRing(center, ringSprite, "Skill", 13, color);

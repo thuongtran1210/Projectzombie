@@ -73,11 +73,6 @@ namespace ProjectZombie.Features.UI
 
         private void EnsureVisualSprites()
         {
-            if (_tabActiveSprite == null) _tabActiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Active") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Active");
-            if (_tabInactiveSprite == null) _tabInactiveSprite = Resources.Load<Sprite>("UI/VongXuyen/Btn_Tab_Wood_Inactive") ?? Resources.Load<Sprite>("Btn_Tab_Wood_Inactive");
-            if (_cardSlotWoodSprite == null) _cardSlotWoodSprite = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Wood_9Slice") ?? Resources.Load<Sprite>("Slot_Inventory_Wood_9Slice");
-            if (_cardSlotSelectedSprite == null) _cardSlotSelectedSprite = Resources.Load<Sprite>("UI/VongXuyen/Slot_Inventory_Selected_Glow") ?? Resources.Load<Sprite>("Slot_Inventory_Selected_Glow");
-
 #if UNITY_EDITOR
             if (_tabActiveSprite == null) _tabActiveSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Active.png");
             if (_tabInactiveSprite == null) _tabInactiveSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Inactive.png");
@@ -385,83 +380,83 @@ namespace ProjectZombie.Features.UI
                 if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
             }
 
-            // 1. Nạp Weapons từ Addressables
-            if (_cachedWeapons.Count == 0)
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                try
+                // 1. Nạp Weapons từ GameDataService
+                if (_cachedWeapons.Count == 0)
                 {
-                    var weaponHandle = Addressables.LoadAssetsAsync<WeaponData>("WeaponData", null);
-                    await weaponHandle.Task;
-                    if (weaponHandle.Status == AsyncOperationStatus.Succeeded && weaponHandle.Result != null)
+                    try
                     {
-                        foreach (var w in weaponHandle.Result)
+                        var weapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>("WeaponData");
+                        if (weapons != null)
                         {
-                            if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
+                            foreach (var w in weapons)
                             {
-                                _cachedWeapons.Add(w);
-                                hasNewData = true;
-                            }
-                        }
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load WeaponData warning: {ex.Message}");
-                }
-            }
-
-            // 2. Nạp Upgrades từ Addressables
-            if (_cachedUpgrades.Count == 0)
-            {
-                try
-                {
-                    var upgradeHandle = Addressables.LoadAssetsAsync<UpgradeData>("UpgradeData", null);
-                    await upgradeHandle.Task;
-                    if (upgradeHandle.Status == AsyncOperationStatus.Succeeded && upgradeHandle.Result != null)
-                    {
-                        foreach (var u in upgradeHandle.Result)
-                        {
-                            if (u != null)
-                            {
-                                string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                                if (seenUpgradeIds.Add(upId))
+                                if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
                                 {
-                                    _cachedUpgrades.Add(u);
-                                    if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
+                                    _cachedWeapons.Add(w);
                                     hasNewData = true;
                                 }
                             }
                         }
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load UpgradeData warning: {ex.Message}");
-                }
-            }
-
-            // 3. Nạp Heroes từ Addressables
-            if (_cachedHeroes.Count == 0)
-            {
-                try
-                {
-                    var dbHandle = Addressables.LoadAssetAsync<CharacterDatabaseSO>("CharacterDatabase");
-                    await dbHandle.Task;
-                    if (dbHandle.Status == AsyncOperationStatus.Succeeded && dbHandle.Result != null && dbHandle.Result.Characters != null)
+                    catch (System.Exception ex)
                     {
-                        foreach (var h in dbHandle.Result.Characters)
+                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load WeaponData warning: {ex.Message}");
+                    }
+                }
+
+                // 2. Nạp Upgrades từ GameDataService
+                if (_cachedUpgrades.Count == 0)
+                {
+                    try
+                    {
+                        var upgrades = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
+                        if (upgrades != null)
                         {
-                            if (h != null && !_cachedHeroes.Contains(h))
+                            foreach (var u in upgrades)
                             {
-                                _cachedHeroes.Add(h);
-                                hasNewData = true;
+                                if (u != null)
+                                {
+                                    string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                                    if (seenUpgradeIds.Add(upId))
+                                    {
+                                        _cachedUpgrades.Add(u);
+                                        if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
+                                        hasNewData = true;
+                                    }
+                                }
                             }
                         }
                     }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load UpgradeData warning: {ex.Message}");
+                    }
                 }
-                catch (System.Exception ex)
+
+                // 3. Nạp Heroes từ GameDataService
+                if (_cachedHeroes.Count == 0)
                 {
-                    Debug.LogWarning($"[CardCodexPresenter] Addressables Load CharacterDatabase warning: {ex.Message}");
+                    try
+                    {
+                        var db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                        if (db != null && db.Characters != null)
+                        {
+                            foreach (var h in db.Characters)
+                            {
+                                if (h != null && !_cachedHeroes.Contains(h))
+                                {
+                                    _cachedHeroes.Add(h);
+                                    hasNewData = true;
+                                }
+                            }
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load CharacterDatabase warning: {ex.Message}");
+                    }
                 }
             }
 

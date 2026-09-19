@@ -13,6 +13,7 @@ namespace ProjectZombie.Editor.AddressablesTools
     /// </summary>
     public static class AddressableGroupsSetupTool
     {
+        [MenuItem("Tools/ProjectZombie/Addressables/📦 Setup Default Groups & Auto Assign", priority = 90)]
         [MenuItem("ProjectZombie/4. 🤖 Android Build & Deploy/4. Setup Standard CDN & Local Groups", priority = 305)]
         public static void SetupStandardGroups()
         {
@@ -78,6 +79,8 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset", "Stage_01_BambooForest", "Map");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Maps/Map_BambooForest.prefab", "Map_BambooForest", "Map");
 
+            AddAssetToGroup(settings, groupCore, "Assets/_Data/Levels/Level1_Timeline.asset", "Level1_Timeline", "Timeline");
+
             // 1.0 Đăng ký 4 Tướng Khởi Đầu vào Group_Core_Preload (Local trong APK)
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/Dao Si.prefab", "Dao Si", "Character");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/Characters/Players/An Si.prefab", "An Si", "Character");
@@ -140,8 +143,21 @@ namespace ProjectZombie.Editor.AddressablesTools
                 AddAssetToGroup(settings, groupWeapons, path, fileName, "WeaponData", "Relic");
             }
 
-            // 4. Gán Quái Màn 1
-            AddAssetToGroup(settings, groupEnemiesStage1, "Assets/_Prefabs/Characters/Enemies/Zombie_Basic.prefab", "Zombie_Basic");
+            // 4. Gán Quái Màn 1 & Bosses
+            string[] enemyGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Prefabs/Characters/Enemies" });
+            foreach (string guid in enemyGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+                if (fileName.StartsWith("Boss_"))
+                {
+                    AddAssetToGroup(settings, groupCore, path, fileName, "Enemy", "Boss");
+                }
+                else
+                {
+                    AddAssetToGroup(settings, groupEnemiesStage1, path, fileName, "Enemy", "Stage1");
+                }
+            }
 
             // 5. Toàn bộ Thẻ Nâng Cấp Upgrades (Remote DLC Update)
             string[] upgradeGuids = AssetDatabase.FindAssets("t:UpgradeData", new[] { "Assets/_Data/Upgrades" });
@@ -157,12 +173,27 @@ namespace ProjectZombie.Editor.AddressablesTools
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Gacha/banner_hero.asset", "banner_hero", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/Meta/PermanentUpgradeTree.asset", "PermanentUpgradeTree", "MetaConfigs", "RemoteDLC");
             AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/CharacterStarProgressionConfig.asset", "CharacterStarProgressionConfig", "MetaConfigs", "RemoteDLC");
+            AddAssetToGroup(settings, groupMetaConfigsRemote, "Assets/_Data/RelicStarProgressionConfig.asset", "RelicStarProgressionConfig", "MetaConfigs", "RemoteDLC");
 
             // 7. Toàn bộ UI Prefabs Tối Ưu (Local Core Preload)
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/UpgradePanel_Template.prefab", "UpgradePanel_Template", "ui_gameplay");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/UpgradeCard_Template.prefab", "UpgradeCard_Template", "ui_gameplay");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/MainHubUI.prefab", "MainHubUI", "ui_meta");
             AddAssetToGroup(settings, groupCore, "Assets/_Prefabs/UI/CharacterSelectionUI.prefab", "CharacterSelectionUI", "ui_meta");
+
+            // 8. Toàn bộ VFX Prefabs & Sprites hiệu ứng kỹ năng / Pháp bảo
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenBroom_Smash.prefab", "VFX_Relic_ChickenBroom_Smash", "vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/Companion_Chicken_Minion.prefab", "Companion_Chicken_Minion", "vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_ChickenFeather_Collectible.prefab", "VFX_Relic_ChickenFeather_Collectible", "vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pot_Suction.prefab", "VFX_Relic_Pot_Suction", "vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Pipe_DragonSmoke.prefab", "VFX_Relic_Pipe_DragonSmoke", "vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Prefabs/VFX_Relic_Chicken_Stampede.prefab", "VFX_Relic_Chicken_Stampede", "vfx");
+
+            AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png", "Tex_ChickenBroom_SingleFeather_Clean", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png", "Tex_VFX_Cinnabar_Shockwave_Ring", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_Pot_Projectile.png", "Tex_Pot_Projectile", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_Rice_Collectible.png", "Tex_Rice_Collectible", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png", "Tex_VFX_DongSon_SonicWave", "sprite_vfx");
         }
 
         private static void AddAssetToGroup(AddressableAssetSettings settings, AddressableAssetGroup group, string assetPath, string address, params string[] labels)
