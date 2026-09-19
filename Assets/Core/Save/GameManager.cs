@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Core.Architecture;
+using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Core.Save
 {

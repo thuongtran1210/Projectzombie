@@ -1,3 +1,5 @@
+using ProjectZombie.Features.MetaProgression;
+
 namespace ProjectZombie.Core.Save
 {
     /// <summary>

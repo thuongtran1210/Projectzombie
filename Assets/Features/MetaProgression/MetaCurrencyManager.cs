@@ -53,8 +53,9 @@ namespace ProjectZombie.Features.MetaProgression
             EnsureInitialized();
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             Core.Save.GameManager.OnRunCurrencyEarned -= HandleRunCurrencyEarned;
         }
 
@@ -138,6 +139,14 @@ namespace ProjectZombie.Features.MetaProgression
         {
             if (_saveData == null) return characterId == "default";
             return Array.IndexOf(_saveData.unlockedCharacters, characterId) >= 0;
+        }
+
+        /// <summary>
+        /// Mở khóa trực tiếp nhân vật (dành cho Interface IMetaCurrencyService).
+        /// </summary>
+        public void UnlockCharacter(string characterId)
+        {
+            SetCharacterLock(characterId, true);
         }
 
         /// <summary>
