@@ -145,6 +145,26 @@ namespace ProjectZombie.Features.UI.Gacha
             bool isStandard = activeBannerId == "banner_standard";
             if (_glowBronze != null) _glowBronze.SetActive(isStandard);
             if (_glowHero != null) _glowHero.SetActive(!isStandard);
+
+            UpdateItemVisualColors(_chestBronzeButton, isStandard);
+            UpdateItemVisualColors(_chestHeroButton, !isStandard);
+        }
+
+        private void UpdateItemVisualColors(Button itemBtn, bool isSelected)
+        {
+            if (itemBtn == null) return;
+
+            var titleText = itemBtn.transform.Find("Info_Container/Txt_Title")?.GetComponent<TextMeshProUGUI>();
+            if (titleText != null)
+            {
+                titleText.color = isSelected ? new Color(1f, 0.92f, 0.55f, 1f) : new Color(0.9f, 0.85f, 0.75f, 1f);
+            }
+
+            var badgeImg = itemBtn.transform.Find("Badge_Status")?.GetComponent<Image>();
+            if (badgeImg != null)
+            {
+                badgeImg.color = isSelected ? new Color(0.15f, 0.45f, 0.25f, 0.9f) : new Color(0.2f, 0.15f, 0.12f, 0.8f);
+            }
         }
 
         private void Update()

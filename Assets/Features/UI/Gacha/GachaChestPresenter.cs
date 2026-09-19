@@ -144,10 +144,17 @@ namespace ProjectZombie.Features.UI.Gacha
                 }
 #endif
 
-                // 3. Runtime Fallback Generator cho banner_hero nếu chưa load được file asset
-                if (targetBanner == null && bannerId == "banner_hero")
+                // 3. Runtime Fallback Generators
+                if (targetBanner == null)
                 {
-                    targetBanner = CreateRuntimeHeroBannerFallback();
+                    if (bannerId == "banner_hero")
+                    {
+                        targetBanner = CreateRuntimeHeroBannerFallback();
+                    }
+                    else if (bannerId == "banner_standard")
+                    {
+                        targetBanner = CreateRuntimeStandardBannerFallback();
+                    }
                 }
 
                 if (targetBanner != null)
@@ -157,6 +164,53 @@ namespace ProjectZombie.Features.UI.Gacha
                     global::Core.Audio.AudioManager.Instance?.PlayUIClick();
                 }
             }
+        }
+
+        private GachaBannerConfigSO CreateRuntimeStandardBannerFallback()
+        {
+            var banner = ScriptableObject.CreateInstance<GachaBannerConfigSO>();
+            banner.bannerId = "banner_standard";
+            banner.bannerName = "Bảo Rương Vạn Cổ";
+            banner.bannerDescription = "Mở rương thu thập Mảnh Pháp Bảo Thần Binh viễn cổ, gia tăng uy lực vĩnh viễn.";
+            banner.singleRollCost = 100;
+            banner.multiRollCost = 900;
+            banner.hardPityLegendary = 50;
+            banner.softPityStart = 40;
+            banner.softPityRatePerRoll = 0.05f;
+            banner.epicGuaranteedEvery = 10;
+
+            var dropList = new List<GachaDropItem>();
+            var allWeapons = RunLoadoutState.LoadAllWeaponsDatabase();
+            if (allWeapons != null && allWeapons.Count > 0)
+            {
+                foreach (var weapon in allWeapons)
+                {
+                    if (weapon == null || string.IsNullOrEmpty(weapon.weaponId)) continue;
+                    float weight = weapon.rarity switch
+                    {
+                        ProjectZombie.Features.Shared.ItemRarity.Common => 120f,
+                        ProjectZombie.Features.Shared.ItemRarity.Rare => 40f,
+                        ProjectZombie.Features.Shared.ItemRarity.Epic => 15f,
+                        ProjectZombie.Features.Shared.ItemRarity.Legendary => 3f,
+                        _ => 40f
+                    };
+                    int shardAmt = weapon.rarity == ProjectZombie.Features.Shared.ItemRarity.Legendary ? 20 : (weapon.rarity == ProjectZombie.Features.Shared.ItemRarity.Epic ? 12 : 5);
+
+                    dropList.Add(new GachaDropItem
+                    {
+                        dropType = GachaDropType.RelicShard,
+                        relicId = weapon.weaponId,
+                        relicName = weapon.weaponName,
+                        rarity = weapon.rarity,
+                        element = weapon.elementType,
+                        shardAmount = shardAmt,
+                        weight = weight,
+                        icon = weapon.icon
+                    });
+                }
+            }
+            banner.SetDropPool(dropList);
+            return banner;
         }
 
         private GachaBannerConfigSO CreateRuntimeHeroBannerFallback()
