@@ -20,7 +20,7 @@ namespace ProjectZombie.Features.MetaProgression
     /// Thiết kế chuẩn SOLID, Data-Driven, phát sinh sự kiện để UI Presenter cập nhật phản hồi.
     /// Kế thừa PersistentSingleton<CharacterProgressionManager> chuẩn kiến trúc.
     /// </summary>
-    public class CharacterProgressionManager : PersistentSingleton<CharacterProgressionManager>
+    public class CharacterProgressionManager : PersistentSingleton<CharacterProgressionManager>, ISaveableModule
     {
         [Header("Cấu Hình Progression")]
         [SerializeField] private CharacterStarProgressionSO _progressionConfig;
@@ -30,6 +30,21 @@ namespace ProjectZombie.Features.MetaProgression
         public event Action<string> OnCharacterUnlocked;           // (characterId)
 
         private MetaProgressionSaveData _saveData;
+
+        // ====================================================================
+        // ISaveableModule IMPLEMENTATION
+        // ====================================================================
+
+        public void InitializeFromSave(MetaProgressionSaveData data)
+        {
+            Initialize(data);
+        }
+
+        public void PopulateSaveData(MetaProgressionSaveData data)
+        {
+            // CharacterProgressionManager cập nhật trực tiếp vào characterProgressList khi nâng sao
+            // Không cần đồng bộ thêm ở đây
+        }
 
         protected override void Awake()
         {

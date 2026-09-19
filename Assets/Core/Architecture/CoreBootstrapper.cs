@@ -69,14 +69,14 @@ namespace ProjectZombie.Core.Architecture
             // Bước 2.5: CharacterProgressionManager (quản lý nâng sao và tăng chỉ số tướng)
             var charProgMgr = coreRoot.AddComponent<CharacterProgressionManager>();
 
-            // 3. Khởi tạo liên kết dữ liệu giữa GameManager và các Domain Services
-            if (gameMgr.SaveData != null)
-            {
-                currencyMgr.Initialize(gameMgr.SaveData);
-                relicMgr.Initialize(gameMgr.SaveData);
-                gachaMgr.Initialize(gameMgr.SaveData);
-                charProgMgr.Initialize(gameMgr.SaveData);
-            }
+            // 3. Đăng ký các Domain Services tham gia vòng đời Save/Load của GameManager
+            gameMgr.RegisterModule(currencyMgr);
+            gameMgr.RegisterModule(relicMgr);
+            gameMgr.RegisterModule(gachaMgr);
+            gameMgr.RegisterModule(charProgMgr);
+
+            // Đăng ký IMetaCurrencyService vào ServiceContext
+            ServiceContext.Register<IMetaCurrencyService>(currencyMgr);
 
             // Bước 2.6: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
             coreRoot.AddComponent<ProjectZombie.Features.Startup.GameStartupFlowController>();

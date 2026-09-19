@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Architecture;
@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.MetaProgression
     /// giữa các run. Đồng bộ với GameManager để lưu/tải qua Local Save System.
     /// Kế thừa PersistentSingleton<MetaCurrencyManager> chuẩn kiến trúc.
     /// </summary>
-    public class MetaCurrencyManager : PersistentSingleton<MetaCurrencyManager>
+    public class MetaCurrencyManager : PersistentSingleton<MetaCurrencyManager>, Core.Save.ISaveableModule, IMetaCurrencyService
     {
         // ====================================================================
         // STATE
@@ -25,13 +25,42 @@ namespace ProjectZombie.Features.MetaProgression
         private MetaProgressionSaveData _saveData;
 
         // ====================================================================
+        // ISaveableModule IMPLEMENTATION
+        // ====================================================================
+
+        public void InitializeFromSave(MetaProgressionSaveData data)
+        {
+            Initialize(data);
+        }
+
+        public void PopulateSaveData(MetaProgressionSaveData data)
+        {
+            if (data != null)
+            {
+                data.totalCurrency = TotalCurrency;
+            }
+        }
+
+        // ====================================================================
         // UNITY LIFECYCLE
         // ====================================================================
 
         protected override void Awake()
         {
             base.Awake();
+            Core.Save.GameManager.OnRunCurrencyEarned -= HandleRunCurrencyEarned;
+            Core.Save.GameManager.OnRunCurrencyEarned += HandleRunCurrencyEarned;
             EnsureInitialized();
+        }
+
+        private void OnDestroy()
+        {
+            Core.Save.GameManager.OnRunCurrencyEarned -= HandleRunCurrencyEarned;
+        }
+
+        private void HandleRunCurrencyEarned(int earned)
+        {
+            AddCurrency(earned);
         }
 
         private void Start()

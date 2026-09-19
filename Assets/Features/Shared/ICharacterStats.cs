@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Shared
 {
@@ -11,6 +11,8 @@ namespace ProjectZombie.Features.Shared
         float AttackSpeed { get; }
         float CritChance { get; }
         float AttackRange { get; }
+        float MoveSpeed { get; }
+        float AreaScale { get; }
         float GetTotalDamage();
     }
 }

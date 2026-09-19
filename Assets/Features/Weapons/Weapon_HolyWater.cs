@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Weapons
@@ -83,11 +83,11 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            // Hồi 10% Max HP cho người chơi
-            if (CharacterStats is Player.PlayerStats ps)
+            // Hồi 10% Max HP cho người sở hữu (hoặc thông qua IHealable)
+            var ownerHealth = OwnerGameObject != null ? OwnerGameObject.GetComponent<HealthSystem>() : null;
+            if (ownerHealth != null)
             {
-                var hp = ps.GetComponent<HealthSystem>();
-                if (hp != null) hp.Heal(hp.MaxHealth * 0.10f);
+                ownerHealth.Heal(ownerHealth.MaxHealth * 0.10f);
             }
             else if (transform.root.TryGetComponent<IHealable>(out var healable))
             {

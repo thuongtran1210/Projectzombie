@@ -1,8 +1,6 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using ProjectZombie.Features.MetaProgression;
-using ProjectZombie.Features.MetaProgression.Gacha;
-
 using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Core.Save
@@ -11,10 +9,39 @@ namespace ProjectZombie.Core.Save
     /// GameManager quản lý vòng đời lưu / nạp tiến trình chơi (Save/Load) cho Android.
     /// Tự động nạp dữ liệu khi Start và lưu dữ liệu khi Paused, Quit hoặc kết thúc trận đấu.
     /// Kế thừa PersistentSingleton<GameManager> chuẩn kiến trúc.
+    /// Tuân thủ Dependency Inversion Principle (DIP): Giao tiếp với các Domain Services thông qua ISaveableModule.
     /// </summary>
     public class GameManager : PersistentSingleton<GameManager>
     {
         public MetaProgressionSaveData SaveData { get; private set; }
+
+        private readonly List<ISaveableModule> _saveableModules = new List<ISaveableModule>();
+
+        /// <summary>
+        /// Đăng ký một module nghiệp vụ tham gia vào vòng đời Save/Load.
+        /// </summary>
+        public void RegisterModule(ISaveableModule module)
+        {
+            if (module != null && !_saveableModules.Contains(module))
+            {
+                _saveableModules.Add(module);
+                if (SaveData != null)
+                {
+                    module.InitializeFromSave(SaveData);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hủy đăng ký module khỏi vòng đời Save/Load.
+        /// </summary>
+        public void UnregisterModule(ISaveableModule module)
+        {
+            if (module != null)
+            {
+                _saveableModules.Remove(module);
+            }
+        }
 
         protected override void Awake()
         {
@@ -36,21 +63,9 @@ namespace ProjectZombie.Core.Save
         {
             if (SaveData == null) return;
 
-            if (MetaCurrencyManager.Instance != null)
+            for (int i = 0; i < _saveableModules.Count; i++)
             {
-                MetaCurrencyManager.Instance.Initialize(SaveData);
-            }
-            if (RelicInventoryManager.Instance != null)
-            {
-                RelicInventoryManager.Instance.Initialize(SaveData);
-            }
-            if (RelicGachaManager.Instance != null)
-            {
-                RelicGachaManager.Instance.Initialize(SaveData);
-            }
-            if (CharacterProgressionManager.Instance != null)
-            {
-                CharacterProgressionManager.Instance.Initialize(SaveData);
+                _saveableModules[i]?.InitializeFromSave(SaveData);
             }
         }
 
@@ -63,7 +78,6 @@ namespace ProjectZombie.Core.Save
             InitializeAllManagers();
         }
 
-
         /// <summary>
         /// Lưu tiến trình hiện tại xuống đĩa.
         /// </summary>
@@ -74,13 +88,19 @@ namespace ProjectZombie.Core.Save
                 SaveData = new MetaProgressionSaveData();
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            // Thu thập dữ liệu từ các module đăng ký
+            for (int i = 0; i < _saveableModules.Count; i++)
             {
-                SaveData.totalCurrency = MetaCurrencyManager.Instance.TotalCurrency;
+                _saveableModules[i]?.PopulateSaveData(SaveData);
             }
 
             SaveSystem.Save(SaveData);
         }
+
+        /// <summary>
+        /// Sự kiện phát ra khi kết thúc Run kèm lượng Cổ Tiền nhận được (dành cho MetaCurrencyService lắng nghe).
+        /// </summary>
+        public static event Action<int> OnRunCurrencyEarned;
 
         /// <summary>
         /// Cập nhật kết quả sau một lượt chơi (Run) và tự động lưu.
@@ -96,9 +116,9 @@ namespace ProjectZombie.Core.Save
                 SaveData.MarkStageCompleted(stageId, runTime, 3);
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            if (OnRunCurrencyEarned != null)
             {
-                MetaCurrencyManager.Instance.AddCurrency(currencyEarned);
+                OnRunCurrencyEarned.Invoke(currencyEarned);
             }
             else
             {

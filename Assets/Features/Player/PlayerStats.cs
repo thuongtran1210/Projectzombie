@@ -167,135 +167,26 @@ namespace ProjectZombie.Features.Player
 
         /// <summary>
         /// Nạp toàn bộ chỉ số vĩnh viễn đã nâng cấp tại Miếu Tứ Bất Tử.
-        /// Hỗ trợ fallback 3 tầng (MetaCurrencyManager -> GameManager -> SaveSystem.Load) và mapping theo Node ID.
+        /// Ủy quyền xử lý cho PlayerProgressionApplicator (chuẩn Single Responsibility Principle).
         /// </summary>
         public void ApplyPermanentUpgrades(
             MetaProgressionSaveData customSaveData = null, 
             PermanentUpgradeTreeData customTreeData = null)
         {
-            var saveData = customSaveData;
-            if (saveData == null)
-            {
-                if (MetaCurrencyManager.Instance != null && MetaCurrencyManager.Instance.GetSaveData() != null)
-                {
-                    saveData = MetaCurrencyManager.Instance.GetSaveData();
-                }
-                else if (ProjectZombie.Core.Save.GameManager.Instance != null && ProjectZombie.Core.Save.GameManager.Instance.SaveData != null)
-                {
-                    saveData = ProjectZombie.Core.Save.GameManager.Instance.SaveData;
-                }
-                else
-                {
-                    saveData = SaveSystem.Load();
-                }
-            }
-
-            if (saveData == null || saveData.upgradeNodeLevels == null || saveData.upgradeNodeLevels.Length == 0)
-                return;
-
-            var treeData = customTreeData;
-            if (treeData == null)
-            {
-                try
-                {
-                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("PermanentUpgradeTree");
-                    var locations = locHandle.WaitForCompletion();
-                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
-                    {
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>("PermanentUpgradeTree");
-                        treeData = handle.WaitForCompletion();
-                    }
-                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
-                }
-                catch { }
-
-                if (treeData == null) treeData = Resources.Load<PermanentUpgradeTreeData>("PermanentUpgradeTree") ?? Resources.Load<PermanentUpgradeTreeData>("Meta/PermanentUpgradeTree");
-#if UNITY_EDITOR
-                if (treeData == null)
-                {
-                    treeData = UnityEditor.AssetDatabase.LoadAssetAtPath<PermanentUpgradeTreeData>("Assets/_Data/Meta/PermanentUpgradeTree.asset");
-                }
-#endif
-            }
-
-            if (treeData == null || treeData.nodes == null) return;
-
-            for (int i = 0; i < treeData.nodes.Length; i++)
-            {
-                var node = treeData.nodes[i];
-                if (node == null) continue;
-
-                // Lấy cấp độ theo index hoặc tra cứu nodeId nếu có
-                int level = saveData.GetUpgradeLevel(i);
-                if (level > 0)
-                {
-                    _baseMaxHealth += node.statBonusPerLevel.maxHealthBonus * level;
-                    _baseDamage += node.statBonusPerLevel.baseDamageBonus * level;
-                    _baseMoveSpeed += node.statBonusPerLevel.moveSpeedBonus * level;
-                    _baseCritChance += node.statBonusPerLevel.critChanceBonus * level;
-                    _basePickupRange += node.statBonusPerLevel.pickupRangeBonus * level;
-                    _baseExpMultiplier += node.statBonusPerLevel.expMultiplierBonus * level;
-                    _baseAttackSpeed += node.statBonusPerLevel.attackSpeedBonus * level;
-                    _baseDashCooldown = Mathf.Max(0.4f, _baseDashCooldown - node.statBonusPerLevel.dashCooldownReduction * level);
-                }
-            }
-
+            PlayerProgressionApplicator.ApplyPermanentUpgrades(this, customSaveData, customTreeData);
             RecalculateAllStats();
             SyncHealthWithSystem(true);
         }
 
         /// <summary>
         /// Nạp bonus chỉ số từ Cấp Sao (1★ - 5★) của nhân vật đang được chọn vào trận.
+        /// Ủy quyền xử lý cho PlayerProgressionApplicator (chuẩn Single Responsibility Principle).
         /// </summary>
         public void ApplyCharacterStarProgression()
         {
             var selectedChar = RunLoadoutState.SelectedCharacter;
-            if (selectedChar == null || string.IsNullOrEmpty(selectedChar.characterId)) return;
-
-            var heroMgr = CharacterProgressionManager.Instance;
-            int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(selectedChar.characterId) : 1;
-            if (star <= 1) return;
-
-            var configSO = heroMgr != null ? heroMgr.ProgressionConfig : null;
-            if (configSO == null)
-            {
-                try
-                {
-                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("CharacterStarProgressionConfig");
-                    var locations = locHandle.WaitForCompletion();
-                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
-                    {
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-                        configSO = handle.WaitForCompletion();
-                    }
-                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
-                }
-                catch { }
-
-                if (configSO == null) configSO = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-#if UNITY_EDITOR
-                if (configSO == null)
-                {
-                    configSO = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
-                }
-#endif
-            }
-
-            if (configSO != null && configSO.StarSteps != null)
-            {
-                for (int s = 2; s <= star; s++)
-                {
-                    var step = configSO.GetStepConfig(s);
-                    if (step != null)
-                    {
-                        if (step.healthMultiplierBonus > 0f) _baseMaxHealth *= (1f + step.healthMultiplierBonus);
-                        if (step.damageMultiplierBonus > 0f) _baseDamage *= (1f + step.damageMultiplierBonus);
-                        if (step.moveSpeedMultiplierBonus > 0f) _baseMoveSpeed *= (1f + step.moveSpeedMultiplierBonus);
-                        if (step.cooldownReductionBonus > 0f) _baseDashCooldown = Mathf.Max(0.5f, _baseDashCooldown * (1f - step.cooldownReductionBonus));
-                    }
-                }
-            }
-
+            string heroId = selectedChar != null ? selectedChar.characterId : null;
+            PlayerProgressionApplicator.ApplyCharacterStarProgression(this, heroId);
             RecalculateAllStats();
         }
 

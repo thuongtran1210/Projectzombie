@@ -515,9 +515,9 @@ namespace ProjectZombie.Features.Weapons
         public virtual float GetFinalSpeed()
         {
             float baseSpeed = 10f;
-            if (CharacterStats is ProjectZombie.Features.Player.PlayerStats ps)
+            if (CharacterStats != null)
             {
-                baseSpeed = ps.MoveSpeed; // PlayerStats không có ProjectileSpeed riêng ở root
+                baseSpeed = CharacterStats.MoveSpeed;
             }
             return baseSpeed + localProjectileSpeedBonus;
         }
@@ -525,9 +525,9 @@ namespace ProjectZombie.Features.Weapons
         public virtual float GetFinalAreaScale()
         {
             float scale = 1f;
-            if (CharacterStats is ProjectZombie.Features.Player.PlayerStats ps)
+            if (CharacterStats != null)
             {
-                scale = ps.AreaScale;
+                scale = CharacterStats.AreaScale;
             }
             scale += localScaleBonus;
 

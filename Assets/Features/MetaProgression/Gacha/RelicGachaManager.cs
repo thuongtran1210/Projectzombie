@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Core.Save;
@@ -14,7 +14,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
     /// Áp dụng SOLID, Clean Architecture, Pity Pipeline (Hard/Soft Pity), và tích hợp mượt mà với RelicInventoryManager.
     /// Kế thừa PersistentSingleton<RelicGachaManager> chuẩn kiến trúc.
     /// </summary>
-    public class RelicGachaManager : PersistentSingleton<RelicGachaManager>
+    public class RelicGachaManager : PersistentSingleton<RelicGachaManager>, ISaveableModule
     {
         [Header("Banner Cấu Hình Hiện Tại")]
         [SerializeField] private GachaBannerConfigSO _activeBanner;
@@ -26,6 +26,24 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         private ICurrencyProcessor _currencyProcessor;
         private IGachaDataProvider _dataProvider;
         private MetaProgressionSaveData _saveData;
+
+        // ====================================================================
+        // ISaveableModule IMPLEMENTATION
+        // ====================================================================
+
+        public void InitializeFromSave(MetaProgressionSaveData data)
+        {
+            Initialize(data);
+        }
+
+        public void PopulateSaveData(MetaProgressionSaveData data)
+        {
+            if (data != null && _saveData != null)
+            {
+                data.gachaPityLegendary = _saveData.gachaPityLegendary;
+                data.gachaPityEpic = _saveData.gachaPityEpic;
+            }
+        }
 
         public GachaBannerConfigSO ActiveBanner
         {

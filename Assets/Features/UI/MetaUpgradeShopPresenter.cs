@@ -60,6 +60,18 @@ namespace ProjectZombie.Features.UI
 #endif
         }
 
+        private IMetaCurrencyService _currencyService;
+
+        private IMetaCurrencyService GetCurrencyService()
+        {
+            if (_currencyService == null)
+            {
+                _currencyService = Core.Architecture.ServiceContext.Get<IMetaCurrencyService>() 
+                                ?? MetaCurrencyManager.Instance;
+            }
+            return _currencyService;
+        }
+
         private void Start()
         {
             if (_view != null)
@@ -69,9 +81,11 @@ namespace ProjectZombie.Features.UI
                 _view.OnBuyUpgradeClicked += HandleBuyUpgrade;
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            var service = GetCurrencyService();
+            if (service != null)
             {
-                MetaCurrencyManager.Instance.OnCurrencyChanged += HandleCurrencyChanged;
+                service.OnCurrencyChanged -= HandleCurrencyChanged;
+                service.OnCurrencyChanged += HandleCurrencyChanged;
             }
 
             RenderShop();
@@ -91,9 +105,10 @@ namespace ProjectZombie.Features.UI
                 _view.OnBuyUpgradeClicked -= HandleBuyUpgrade;
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            var service = GetCurrencyService();
+            if (service != null)
             {
-                MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
+                service.OnCurrencyChanged -= HandleCurrencyChanged;
             }
         }
 
@@ -157,9 +172,10 @@ namespace ProjectZombie.Features.UI
             int cost = node.GetCostForLevel(currentLevel);
             if (cost <= 0) return;
 
-            if (MetaCurrencyManager.Instance != null)
+            var service = GetCurrencyService();
+            if (service != null)
             {
-                if (MetaCurrencyManager.Instance.SpendCurrency(cost))
+                if (service.SpendCurrency(cost))
                 {
                     global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
                     saveData.SetUpgradeLevel(nodeIndex, currentLevel + 1);
@@ -176,9 +192,10 @@ namespace ProjectZombie.Features.UI
 
         private MetaProgressionSaveData GetSaveData()
         {
-            if (MetaCurrencyManager.Instance != null && MetaCurrencyManager.Instance.GetSaveData() != null)
+            var service = GetCurrencyService();
+            if (service != null && service.GetSaveData() != null)
             {
-                return MetaCurrencyManager.Instance.GetSaveData();
+                return service.GetSaveData();
             }
             return Core.Save.SaveSystem.Load();
         }
@@ -188,7 +205,8 @@ namespace ProjectZombie.Features.UI
             if (_view == null) return;
 
             // 1. Render Balance
-            int currentBalance = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0;
+            var service = GetCurrencyService();
+            int currentBalance = service != null ? service.TotalCurrency : 0;
             _view.SetCoTienBalance($"<color=#FFD700>{currentBalance:N0}</color> Cổ Tiền");
 
             // 2. Render Tabs

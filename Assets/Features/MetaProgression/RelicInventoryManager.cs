@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.MetaProgression
     /// Thiết kế chuẩn SOLID, Data-Driven, phát sinh sự kiện để UI Presenter cập nhật phản hồi.
     /// Kế thừa PersistentSingleton<RelicInventoryManager> chuẩn kiến trúc.
     /// </summary>
-    public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>
+    public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>, ISaveableModule
     {
         [Header("Cấu Hình Progression")]
         [SerializeField] private RelicStarProgressionSO _progressionConfig;
@@ -20,6 +20,21 @@ namespace ProjectZombie.Features.MetaProgression
         public event Action<string> OnRelicUnlocked;           // (relicId)
 
         private MetaProgressionSaveData _saveData;
+
+        // ====================================================================
+        // ISaveableModule IMPLEMENTATION
+        // ====================================================================
+
+        public void InitializeFromSave(MetaProgressionSaveData data)
+        {
+            Initialize(data);
+        }
+
+        public void PopulateSaveData(MetaProgressionSaveData data)
+        {
+            // RelicInventory cập nhật trực tiếp vào relicProgressList trong quá trình nâng sao / nhặt shard
+            // Không cần đồng bộ gì thêm ở đây
+        }
 
         protected override void Awake()
         {
@@ -36,34 +51,7 @@ namespace ProjectZombie.Features.MetaProgression
         {
             if (_progressionConfig == null)
             {
-                try
-                {
-                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("RelicStarProgressionConfig");
-                    var locations = locHandle.WaitForCompletion();
-                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
-                    {
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
-                        _progressionConfig = handle.WaitForCompletion();
-                    }
-                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
-                }
-                catch { }
-
-                if (_progressionConfig == null)
-                {
-                    _progressionConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig") ??
-                                         Resources.Load<RelicStarProgressionSO>("Progression/RelicStarProgressionConfig");
-                }
-#if UNITY_EDITOR
-                if (_progressionConfig == null)
-                {
-                    _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset");
-                }
-#endif
-                if (_progressionConfig == null)
-                {
-                    _progressionConfig = ScriptableObject.CreateInstance<RelicStarProgressionSO>();
-                }
+                LoadProgressionConfigAsync();
             }
 
             if (_saveData == null)
@@ -71,23 +59,38 @@ namespace ProjectZombie.Features.MetaProgression
                 var gm = GameManager.Instance;
                 if (gm != null && gm.SaveData != null)
                 {
-                    Initialize(gm.SaveData);
+                    _saveData = gm.SaveData;
                 }
                 else
                 {
-                    Initialize(SaveSystem.Load());
+                    _saveData = SaveSystem.Load() ?? new MetaProgressionSaveData();
                 }
+
+                EnsureStarterRelicUnlocked("wp_kiem_truc");
+                Debug.Log($"[RelicInventoryManager] Khởi tạo thành công với {_saveData.relicProgressList?.Count ?? 0} bản ghi pháp bảo.");
+            }
+        }
+
+        private async void LoadProgressionConfigAsync()
+        {
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            {
+                _progressionConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
+            }
+            if (_progressionConfig == null)
+            {
+                _progressionConfig = ScriptableObject.CreateInstance<RelicStarProgressionSO>();
             }
         }
 
         public void Initialize(MetaProgressionSaveData saveData)
         {
+            _saveData = saveData ?? new MetaProgressionSaveData();
+
             if (_progressionConfig == null)
             {
-                EnsureInitialized();
+                LoadProgressionConfigAsync();
             }
-
-            _saveData = saveData ?? new MetaProgressionSaveData();
 
             // Đảm bảo vũ khí khởi đầu luôn đạt tối thiểu 1 sao nếu chưa từng tạo save
             EnsureStarterRelicUnlocked("wp_kiem_truc");
