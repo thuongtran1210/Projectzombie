@@ -3,6 +3,7 @@ using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.MetaProgression.Gacha;
 using ProjectZombie.Features.MetaProgression.Gacha.Data;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI.Gacha
 {
