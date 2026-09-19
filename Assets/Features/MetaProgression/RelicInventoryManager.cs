@@ -38,12 +38,14 @@ namespace ProjectZombie.Features.MetaProgression
             {
                 try
                 {
-                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
-                    handle.WaitForCompletion();
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync("RelicStarProgressionConfig");
+                    var locations = locHandle.WaitForCompletion();
+                    if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && locations != null && locations.Count > 0)
                     {
-                        _progressionConfig = handle.Result;
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
+                        _progressionConfig = handle.WaitForCompletion();
                     }
+                    if (locHandle.IsValid()) UnityEngine.AddressableAssets.Addressables.Release(locHandle);
                 }
                 catch { }
 
