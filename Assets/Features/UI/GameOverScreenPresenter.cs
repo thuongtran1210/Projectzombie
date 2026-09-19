@@ -41,6 +41,7 @@ namespace ProjectZombie.Features.UI
         private bool _animatingCurrency;
         private bool _lastIsVictory;
         private AudioSource _uiAudioSource;
+        private IRunStatsService _runStatsService;
 
         private bool _isConstructed = false;
 
@@ -183,9 +184,10 @@ namespace ProjectZombie.Features.UI
             {
                 view.SetActive(true);
                 
-                if (RunStatsTracker.Instance != null)
+                var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+                if (tracker != null)
                 {
-                    RunStatsTracker.Instance.StopTracking();
+                    tracker.StopTracking();
                 }
 
                 PopulateStats(_lastIsVictory);
@@ -249,9 +251,10 @@ namespace ProjectZombie.Features.UI
                     view.SetActive(true);
                 }
 
-                if (RunStatsTracker.Instance != null)
+                var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+                if (tracker != null)
                 {
-                    RunStatsTracker.Instance.StopTracking();
+                    tracker.StopTracking();
                 }
 
                 PopulateStats(isVictory);
@@ -280,10 +283,10 @@ namespace ProjectZombie.Features.UI
             if (bannerSprite != null) view.SetBanner(bannerSprite);
             #endif
 
-            var tracker = RunStatsTracker.Instance;
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
             if (tracker == null)
             {
-                Debug.LogWarning("[GameOverScreenPresenter] RunStatsTracker.Instance là null — không có dữ liệu thống kê.");
+                Debug.LogWarning("[GameOverScreenPresenter] IRunStatsService/RunStatsTracker không tìm thấy — không có dữ liệu thống kê.");
                 return;
             }
 

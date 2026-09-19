@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Shared
@@ -8,7 +8,7 @@ namespace ProjectZombie.Features.Shared
     /// Reset tự động khi scene được load lại.
     /// Được HUD, GameOverScreen và GameManager đọc để hiển thị kết quả và tính Currency Meta.
     /// </summary>
-    public class RunStatsTracker : MonoBehaviour, ProjectZombie.Core.Architecture.IResettableStatic
+    public class RunStatsTracker : MonoBehaviour, IRunStatsService, ProjectZombie.Core.Architecture.IResettableStatic
     {
         // ====================================================================
         // SINGLETON
@@ -18,6 +18,7 @@ namespace ProjectZombie.Features.Shared
         public void ResetStaticState()
         {
             Instance = null;
+            ProjectZombie.Core.Architecture.ServiceContext.Unregister<IRunStatsService>();
         }
 
         private void OnDestroy()
@@ -25,6 +26,7 @@ namespace ProjectZombie.Features.Shared
             if (Instance == this)
             {
                 Instance = null;
+                ProjectZombie.Core.Architecture.ServiceContext.Unregister<IRunStatsService>();
             }
             OnKillCountChanged = null;
             OnCoinsChanged = null;
@@ -75,6 +77,7 @@ namespace ProjectZombie.Features.Shared
                 return;
             }
             Instance = this;
+            ProjectZombie.Core.Architecture.ServiceContext.Register<IRunStatsService>(this);
         }
 
         private float _timerTickAccumulator = 0f;

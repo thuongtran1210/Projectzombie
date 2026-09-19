@@ -31,6 +31,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
         private PlayerInputActions _inputActions;
         private bool _isMenuOpen = false;
         private bool _isConstructed = false;
+        private IRunStatsService _runStatsService;
 
         public static PlayerInfoUIPresenter Instance { get; private set; }
 
@@ -143,11 +144,12 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (_playerPassives != null)
                 _playerPassives.OnPassivesChanged += HandlePassivesChanged;
 
-            if (RunStatsTracker.Instance != null)
+            _runStatsService = ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (_runStatsService != null)
             {
-                RunStatsTracker.Instance.OnTimerTick += HandleTimerTick;
-                RunStatsTracker.Instance.OnKillCountChanged += HandleKillCountChanged;
-                RunStatsTracker.Instance.OnCoinsChanged += HandleCoinsChanged;
+                _runStatsService.OnTimerTick += HandleTimerTick;
+                _runStatsService.OnKillCountChanged += HandleKillCountChanged;
+                _runStatsService.OnCoinsChanged += HandleCoinsChanged;
             }
         }
 
@@ -168,11 +170,12 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (_playerPassives != null)
                 _playerPassives.OnPassivesChanged -= HandlePassivesChanged;
 
-            if (RunStatsTracker.Instance != null)
+            if (_runStatsService != null)
             {
-                RunStatsTracker.Instance.OnTimerTick -= HandleTimerTick;
-                RunStatsTracker.Instance.OnKillCountChanged -= HandleKillCountChanged;
-                RunStatsTracker.Instance.OnCoinsChanged -= HandleCoinsChanged;
+                _runStatsService.OnTimerTick -= HandleTimerTick;
+                _runStatsService.OnKillCountChanged -= HandleKillCountChanged;
+                _runStatsService.OnCoinsChanged -= HandleCoinsChanged;
+                _runStatsService = null;
             }
         }
 
@@ -189,10 +192,11 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             HandleStatsUpdated();
             HandlePassivesChanged();
 
-            if (RunStatsTracker.Instance != null)
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (tracker != null)
             {
-                HandleTimerTick(RunStatsTracker.Instance.ElapsedTime);
-                HandleKillCountChanged(RunStatsTracker.Instance.KillCount);
+                HandleTimerTick(tracker.ElapsedTime);
+                HandleKillCountChanged(tracker.KillCount);
             }
         }
 
@@ -355,16 +359,25 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             // Kết thúc trận, lưu ngân lượng và về Sảnh Chính
             Time.timeScale = 1f;
 
-            if (RunStatsTracker.Instance != null)
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (tracker != null)
             {
-                int earned = RunStatsTracker.Instance.CalculateMetaCurrency(false);
+                int earned = tracker.CalculateMetaCurrency(false);
                 if (ProjectZombie.Core.Save.GameManager.Instance != null)
                 {
-                    ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(RunStatsTracker.Instance.ElapsedTime, RunStatsTracker.Instance.KillCount, earned);
+                    ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(tracker.ElapsedTime, tracker.KillCount, earned);
                 }
-                else if (MetaCurrencyManager.Instance != null)
+                else
                 {
-                    MetaCurrencyManager.Instance.AddCurrency(earned);
+                    var metaService = ProjectZombie.Core.Architecture.ServiceContext.Get<IMetaCurrencyService>();
+                    if (metaService != null)
+                    {
+                        metaService.AddCurrency(earned);
+                    }
+                    else if (MetaCurrencyManager.Instance != null)
+                    {
+                        MetaCurrencyManager.Instance.AddCurrency(earned);
+                    }
                 }
             }
 
@@ -468,9 +481,10 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             if (_statsMenuView == null) return;
 
             int runGold = 0;
-            if (RunStatsTracker.Instance != null)
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (tracker != null)
             {
-                runGold = RunStatsTracker.Instance.CoinsCollected;
+                runGold = tracker.CoinsCollected;
             }
             _statsMenuView.SetCurrency($"Cổ Tiền: <color=#FFD700>{runGold}</color>");
         }
@@ -566,7 +580,8 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
             int seconds = Mathf.FloorToInt(time % 60f);
             string timerFormatted = $"Thời Gian: <color=#00FF88>{minutes:00}:{seconds:00}</color>";
             
-            int kills = RunStatsTracker.Instance != null ? RunStatsTracker.Instance.KillCount : 0;
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            int kills = tracker != null ? tracker.KillCount : 0;
             string killsFormatted = $"Diệt Quái: <color=#FF5722>{kills}</color>";
 
             _statsMenuView.SetRunStats(timerFormatted, killsFormatted);

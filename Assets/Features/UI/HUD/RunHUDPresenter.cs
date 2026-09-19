@@ -40,6 +40,7 @@ namespace ProjectZombie.Features.UI.HUD
         [SerializeField] private ProjectZombie.Features.Weapons.WeaponManager _weaponManager;
         [SerializeField] private PlayerPassives _playerPassives;
         private Combat.Coop.IDownedStateProvider _downedStateProvider;
+        private IRunStatsService _runStatsService;
 
         private bool _isConstructed = false;
 
@@ -99,15 +100,16 @@ namespace ProjectZombie.Features.UI.HUD
                 _view.SetPauseButtonCallback(OnPauseClicked);
             }
 
-            // RunStatsTracker là Singleton toàn run — subscribe nếu tồn tại
-            if (RunStatsTracker.Instance != null)
+            // Lấy IRunStatsService qua ServiceContext hoặc fallback Singleton
+            _runStatsService = ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (_runStatsService != null)
             {
-                RunStatsTracker.Instance.OnTimerTick        += OnTimerTick;
-                RunStatsTracker.Instance.OnKillCountChanged += OnKillCountChanged;
+                _runStatsService.OnTimerTick        += OnTimerTick;
+                _runStatsService.OnKillCountChanged += OnKillCountChanged;
             }
             else
             {
-                Debug.LogWarning("[RunHUDPresenter] RunStatsTracker.Instance không tìm thấy. Timer/Kill sẽ không cập nhật.");
+                Debug.LogWarning("[RunHUDPresenter] IRunStatsService không tìm thấy. Timer/Kill sẽ không cập nhật.");
             }
 
             // Subscribe trạng thái Game
@@ -164,10 +166,11 @@ namespace ProjectZombie.Features.UI.HUD
             if (Instance == this) Instance = null;
             UnsubscribeEvents();
 
-            if (RunStatsTracker.Instance != null)
+            if (_runStatsService != null)
             {
-                RunStatsTracker.Instance.OnTimerTick        -= OnTimerTick;
-                RunStatsTracker.Instance.OnKillCountChanged -= OnKillCountChanged;
+                _runStatsService.OnTimerTick        -= OnTimerTick;
+                _runStatsService.OnKillCountChanged -= OnKillCountChanged;
+                _runStatsService = null;
             }
 
             if (GameStateManager.Instance != null)
@@ -253,10 +256,11 @@ namespace ProjectZombie.Features.UI.HUD
 
             OnSkillsOrPassivesChanged();
 
-            if (RunStatsTracker.Instance != null)
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (tracker != null)
             {
-                OnTimerTick(RunStatsTracker.Instance.ElapsedTime);
-                OnKillCountChanged(RunStatsTracker.Instance.KillCount);
+                OnTimerTick(tracker.ElapsedTime);
+                OnKillCountChanged(tracker.KillCount);
             }
         }
 
