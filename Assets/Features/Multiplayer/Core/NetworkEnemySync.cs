@@ -20,6 +20,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private HealthSystem _healthSystem;
         private Enemy _enemy;
+        private float _accumulatedDamageBuffer = 0f;
 
         private void Awake()
         {
@@ -29,6 +30,8 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void Spawned()
         {
+            _accumulatedDamageBuffer = 0f;
+
             if (Runner.IsServer)
             {
                 // Host khởi tạo máu mạng ban đầu
@@ -50,16 +53,27 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     rb.velocity = Vector2.zero;
                 }
 
-                // Chuyển hướng mọi đòn đánh cục bộ của Client lên Host qua RPC
+                // Chuyển hướng mọi đòn đánh cục bộ của Client vào bộ đệm gom (Damage Batching)
+                // để tránh spam hàng trăm gói tin RPC/giây khi 4 người cùng xả AOE
                 if (_healthSystem != null)
                 {
                     _healthSystem.CustomDamageInterceptor = (amount, data) =>
                     {
-                        int attackerId = Runner.LocalPlayer.PlayerId;
-                        RpcApplyDamage(amount, attackerId);
+                        _accumulatedDamageBuffer += amount;
                         return true;
                     };
                 }
+            }
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            // Trên máy Client: Nếu có sát thương dồn tích lũy trong tick này, gửi 1 gói duy nhất lên Host
+            if (!Runner.IsServer && _accumulatedDamageBuffer > 0f && Object.IsValid)
+            {
+                int attackerId = Runner.LocalPlayer.PlayerId;
+                RpcApplyDamage(_accumulatedDamageBuffer, attackerId);
+                _accumulatedDamageBuffer = 0f;
             }
         }
 

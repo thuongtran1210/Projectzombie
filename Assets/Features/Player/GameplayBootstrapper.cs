@@ -83,11 +83,22 @@ namespace ProjectZombie.Features.Player
             PlayerProvider.OnPlayerSpawned += HandlePlayerSpawnedFromProvider;
 
             // 2. Tự động spawn thực thể nhân vật đứng sẵn ở Sảnh (Hub Stage) ngay khi mở game
-            SpawnPlayerForActiveHero();
+            // CHỐT AN TOÀN: Nếu đang trong phòng mạng Multiplayer, nhường toàn quyền spawn cho NetworkPlayerSpawner
+            var networkSession = ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>();
+            bool isInNetworkRoom = networkSession != null && networkSession.IsInRoom;
+
+            if (!isInNetworkRoom)
+            {
+                SpawnPlayerForActiveHero();
+            }
+            else
+            {
+                Debug.Log("<color=#00FF88>[GameplayBootstrapper]</color> Phát hiện đang trong phòng Co-op mạng. Bỏ qua spawn Offline để nhường quyền cho NetworkPlayerSpawner.");
+            }
 
             // 3. Nếu đang ở MainMenu (Sảnh), chưa bắt đầu wave quái
             bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
-            if (!isMainMenu)
+            if (!isMainMenu && !isInNetworkRoom)
             {
                 StartMatchFlow();
             }

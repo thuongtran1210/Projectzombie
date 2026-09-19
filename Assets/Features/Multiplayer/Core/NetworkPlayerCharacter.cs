@@ -32,18 +32,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
         private PlayerController _controller;
         private PlayerInputReader _localInputReader;
         private NetworkInputBridge _networkInputBridge;
-        private PlayerAnimator _playerAnimator;
+        private NetworkCharacterAnimatorSync _animatorSync;
         private HealthSystem _healthSystem;
         private Weapons.WeaponManager _weaponManager;
         private Combat.Coop.CoopDownedMechanic _downedMechanic;
         private PlayerContext _playerContext;
-        private Vector3 _lastRenderPosition;
 
         private void Awake()
         {
             _controller = GetComponent<PlayerController>();
             _localInputReader = GetComponent<PlayerInputReader>();
-            _playerAnimator = GetComponentInChildren<PlayerAnimator>();
+            _animatorSync = GetComponent<NetworkCharacterAnimatorSync>();
+            if (_animatorSync == null)
+            {
+                _animatorSync = gameObject.AddComponent<NetworkCharacterAnimatorSync>();
+            }
             _healthSystem = GetComponent<HealthSystem>();
             _weaponManager = GetComponent<Weapons.WeaponManager>();
 
@@ -110,9 +113,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
             {
                 _healthSystem.ResetHealth();
             }
-            if (_playerAnimator != null)
+            if (_animatorSync != null)
             {
-                _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                _animatorSync.ResetToIdle();
             }
 
             if (isLocal)
@@ -271,9 +274,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (NetworkIsDowned)
             {
-                if (_playerAnimator != null && _playerAnimator.CurrentState != PlayerAnimationState.Dead)
+                if (_animatorSync != null)
                 {
-                    _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dead);
+                    _animatorSync.ForceDeadAnimation();
                 }
                 if (_downedMechanic != null && !_downedMechanic.IsDowned)
                 {
@@ -318,26 +321,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     }
                 }
 
-                if (_playerAnimator != null)
+                if (_animatorSync != null)
                 {
-                    Vector3 currentPos = transform.position;
-                    Vector3 delta = currentPos - _lastRenderPosition;
-                    float distSqr = delta.sqrMagnitude;
-                    _lastRenderPosition = currentPos;
-
-                    // Nếu có dịch chuyển đáng kể trong frame (đang chạy), bật Run và Flip hướng
-                    if (distSqr > 0.0001f)
-                    {
-                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
-                        if (Mathf.Abs(delta.x) > 0.001f)
-                        {
-                            _playerAnimator.FlipToDirection(delta.x);
-                        }
-                    }
-                    else
-                    {
-                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
-                    }
+                    _animatorSync.UpdateRemoteAnimation();
                 }
             }
         }

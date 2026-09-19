@@ -309,11 +309,24 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
             _isHost = false;
 
+            // CHỐT AN TOÀN TUYỆT ĐỐI: Bất kể do Host thoát hay mất mạng đột ngột (Shutdown),
+            // luôn khôi phục IPlayerRegistry về SinglePlayerRegistry và khôi phục nhân vật Sảnh
+            ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new SinglePlayerRegistry());
+
             if (_activeRunner != null)
             {
                 _activeRunner = null;
                 OnRoomUpdated?.Invoke(null);
+                OnMatchEnded?.Invoke();
             }
+
+            // Khôi phục nhân vật Offline cho Sảnh nếu chưa có
+            if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
+            {
+                GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
+            }
+
+            Debug.Log($"<color=#FFAA00>[PhotonFusionSessionService]</color> OnShutdown hoàn tất (Lý do: {shutdownReason}). Đã an toàn khôi phục trạng thái Solo Offline.");
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
