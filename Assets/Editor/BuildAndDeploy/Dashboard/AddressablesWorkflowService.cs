@@ -105,6 +105,11 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
         public void SwitchToEditorTestMode()
         {
+            if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64 && EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows)
+            {
+                EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+            }
+
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings != null)
             {
@@ -121,10 +126,10 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
                 }
             }
 
-            SetStatus("Đã chuyển Addressables sang 'Use Asset Database (Fast Mode)'. Bấm PLAY trên Editor để test ngay!", MessageType.Info);
+            SetStatus("Đã chuyển Nền tảng sang Windows & Addressables sang 'Use Asset Database (Fast Mode)'. Bấm PLAY trên Editor để test ngay!", MessageType.Info);
             RefreshAll();
             GUI.FocusControl(null);
-            EditorUtility.DisplayDialog("Đã Chuyển Chế Độ Thành Công!", "Đã chuyển Addressables sang: Use Asset Database (Fast Mode).\n\nBạn có thể nhấn nút PLAY trên Unity Editor để chơi thử ngay mà không cần build lại bundle!", "OK");
+            EditorUtility.DisplayDialog("Đã Chuyển Chế Độ Thành Công!", "Đã chuyển Nền tảng sang Windows PC & Addressables sang: Use Asset Database (Fast Mode).\n\nBạn có thể nhấn nút PLAY trên Unity Editor để chơi thử ngay mà không cần build lại bundle!", "OK");
         }
 
         public void SwitchToAndroidBuildMode()

@@ -18,6 +18,8 @@ namespace ProjectZombie.Features.Player
 
         private static bool _isInitialized = false;
 
+        public static event Action<CharacterEntry> OnCharacterChanged;
+
         public static CharacterEntry SelectedCharacter
         {
             get
@@ -25,7 +27,11 @@ namespace ProjectZombie.Features.Player
                 EnsureInitialized();
                 return _selectedCharacter;
             }
-            set => _selectedCharacter = value;
+            set
+            {
+                _selectedCharacter = value;
+                OnCharacterChanged?.Invoke(value);
+            }
         }
 
         public static WeaponData SelectedPrimaryWeapon
@@ -249,6 +255,7 @@ namespace ProjectZombie.Features.Player
 
             SaveToDisk();
             Debug.Log($"<color=#00FF88>[RunLoadoutState]</color> Đã lưu Loadout: Hero={(_selectedCharacter != null ? _selectedCharacter.characterName : "Null")}, Primary={(_selectedPrimaryWeapon != null ? _selectedPrimaryWeapon.weaponName : "None")}, Relics Count={_selectedRelics.Count}");
+            OnCharacterChanged?.Invoke(_selectedCharacter);
         }
 
         /// <summary>
@@ -280,6 +287,7 @@ namespace ProjectZombie.Features.Player
 
             SaveToDisk();
             Debug.Log($"<color=#00FF88>[RunLoadoutState]</color> Đã lưu chọn tướng: {(character != null ? character.characterName : "Null")}");
+            OnCharacterChanged?.Invoke(character);
         }
 
         /// <summary>
@@ -340,28 +348,23 @@ namespace ProjectZombie.Features.Player
         {
             var list = new List<WeaponData>();
 
-            var loaded1 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-            if (loaded1 != null && loaded1.Length > 0) list.AddRange(loaded1);
-
-            var loaded2 = Resources.LoadAll<WeaponData>("Weapons");
-            if (loaded2 != null && loaded2.Length > 0)
+            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null && Application.isPlaying)
             {
-                foreach (var w in loaded2)
+                var asyncTask = ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>("WeaponData");
+                if (asyncTask.IsCompleted && asyncTask.Result != null)
                 {
-                    if (w != null && !list.Contains(w)) list.Add(w);
+                    list.AddRange(asyncTask.Result);
+                    return list;
                 }
             }
 
             #if UNITY_EDITOR
-            if (list.Count == 0)
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+            foreach (var guid in guids)
             {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    if (wd != null && !list.Contains(wd)) list.Add(wd);
-                }
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                if (wd != null && !list.Contains(wd)) list.Add(wd);
             }
             #endif
             return list;

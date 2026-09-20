@@ -83,9 +83,9 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs();
             }
 
-            if (GUILayout.Button("📦 Đồng Bộ Tất Cả Resources Cho Android Build (1-Click)", GUILayout.Height(30)))
+            if (GUILayout.Button("📦 Chuẩn Hóa Nhóm Addressables Groups Cho Build Android (1-Click)", GUILayout.Height(30)))
             {
-                AndroidBuildResourceSyncTool.SyncAllResourcesForAndroid();
+                ProjectZombie.Editor.AddressablesTools.AddressableGroupsSetupTool.SetupStandardGroups();
             }
 
             if (GUILayout.Button("🎮 Bảng Quản Lý Save Data (+ / - Tiền, Thẻ Mảnh, Sao, Hero)", GUILayout.Height(30)))

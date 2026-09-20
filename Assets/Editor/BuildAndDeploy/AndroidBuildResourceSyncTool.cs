@@ -16,7 +16,7 @@ namespace ProjectZombie.EditorTools
         [SerializeField] private bool _isScanned = false;
         [SerializeField] private string _lastSyncSummary = "";
 
-        [MenuItem("ProjectZombie/4. 🤖 Android Build & Deploy/2. Sync Build Resources Wizard", priority = 302)]
+        // [DEPRECATED] Các menu sync cũ bị xóa bỏ để chuẩn hóa theo Addressables Dashboard & Single Source of Truth
         public static void ShowWindow()
         {
             var window = GetWindow<AndroidBuildResourceSyncTool>("Android Build Wizard");
@@ -25,7 +25,6 @@ namespace ProjectZombie.EditorTools
             window.Show();
         }
 
-        [MenuItem("ProjectZombie/4. 🤖 Android Build & Deploy/2.1 Quick Sync All Resources (1-Click)", priority = 303)]
         public static void QuickSyncAll()
         {
             PerformFullSync(true);

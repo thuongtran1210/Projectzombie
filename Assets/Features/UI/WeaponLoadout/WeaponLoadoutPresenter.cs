@@ -137,22 +137,13 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            var loadedWeapons = RunLoadoutState.LoadAllWeaponsDatabase();
-            if (loadedWeapons != null && loadedWeapons.Count > 0)
-            {
-                foreach (var w in loadedWeapons) TryAddWeapon(w);
-            }
-
 #if UNITY_EDITOR
-            if (_cachedWeapons.Count == 0)
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+            foreach (var guid in guids)
             {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    TryAddWeapon(wd);
-                }
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+                TryAddWeapon(wd);
             }
 #endif
 
@@ -161,16 +152,15 @@ namespace ProjectZombie.Features.UI
             {
                 _isWeaponsLoaded = true;
             }
-            else
+
+            // Nạp bất đồng bộ 100% qua Addressables
+            if (_loadingWeaponsTask == null || _loadingWeaponsTask.IsCompleted)
             {
-                if (_loadingWeaponsTask == null || _loadingWeaponsTask.IsCompleted)
-                {
-                    _loadingWeaponsTask = LoadAllWeaponsAsync();
-                }
+                _loadingWeaponsTask = LoadAllWeaponsAsync();
             }
 
             sw.Stop();
-            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] LoadAllWeaponsIfEmpty: Đã nạp {_cachedWeapons.Count} vũ khí vào Cache trong: {sw.ElapsedMilliseconds} ms</color>");
+            Debug.Log($"<color=#00FF88>[WeaponLoadoutPresenter] LoadAllWeaponsIfEmpty hoàn tất trong: {sw.ElapsedMilliseconds} ms (Addressables Async Triggered)</color>");
         }
 
         public async Task LoadAllWeaponsAsync()

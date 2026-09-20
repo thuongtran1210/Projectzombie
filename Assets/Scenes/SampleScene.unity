@@ -4672,7 +4672,7 @@ MonoBehaviour:
   _runHUDPanel: {fileID: 221485994}
   _mobileControlsPanel: {fileID: 1355223969}
   _upgradeUIView: {fileID: 821329375}
-  _gameOverScreenView: {fileID: 0}
+  _gameOverScreenView: {fileID: 992385679}
 --- !u!1 &336659569
 GameObject:
   m_ObjectHideFlags: 0
@@ -8573,14 +8573,14 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.125
+    y: 0
     width: 1
-    height: 0.75
+    height: 1
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 9.974999
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -15280,7 +15280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 835e2338b73901448acf34bb4063a185, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _view: {fileID: 0}
+  _view: {fileID: 893884395}
 --- !u!114 &893884395
 MonoBehaviour:
   m_ObjectHideFlags: 0

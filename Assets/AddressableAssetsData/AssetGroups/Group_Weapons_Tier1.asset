@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 0e775f822654cd6459d1046379c1e3c6
   m_SerializeEntries:
+  - m_GUID: 02fe577e0a7114943a53c546da18f587
+    m_Address: VFX_Relic_Pipe_DragonSmoke
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 09b4e48d3ee686148a9b8e0397b2d8c1
     m_Address: Weapon_W006_LuuDanThanSa
     m_ReadOnly: 0
@@ -137,6 +143,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46e1ac0e67b147d40a4ba4e639d6f1ea
+    m_Address: VFX_Relic_ChickenFeather_Collectible
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4d0d4bab1599fa242a14f0f8133507de
     m_Address: Weapon_W_POT
     m_ReadOnly: 0
@@ -178,6 +190,12 @@ MonoBehaviour:
     - Relic
     - WeaponData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 924ff22c37f23654081e208bbb4e972a
+    m_Address: VFX_Relic_ChickenBroom_Smash
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93b1f7e36d03907449e3e8e623b1fe03
     m_Address: Proj_W005_TrongDongDongSon
     m_ReadOnly: 0
@@ -195,6 +213,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a61d7b38c41249f0a99602b9e4a80002
+    m_Address: Tex_VFX_Cinnabar_Shockwave_Ring
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sprite_vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aa6beef611432c9498c2331416f171e2
     m_Address: Proj_W001_NoThan
     m_ReadOnly: 0
@@ -205,10 +229,22 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7d4cf8b43c94894a84cd7b467c1ee46
+    m_Address: Tex_ChickenBroom_SingleFeather_Clean
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sprite_vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c886942421aec064db2a865c80dee974
     m_Address: Weapon_W004_CuuViHoTrao
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cce039ee7e98f434ebe2d8c21b77c699
+    m_Address: VFX_Relic_Chicken_Stampede
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce4ece6a9b60efc48b785f05dd365a93
     m_Address: "W007_CungTh\u1EA1chSanh"
@@ -223,6 +259,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - WeaponData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7a5b30e4cc541244918f9fb54609999
+    m_Address: Tex_VFX_DongSon_SonicWave
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sprite_vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d8a31b71fd5efae4bab4eeb16a9946e5
     m_Address: Proj_W002_ButPhanQuan
@@ -253,6 +295,18 @@ MonoBehaviour:
     m_Address: Weapon_W001_NoThan
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0db5c2c747e31940a67a478392101b9
+    m_Address: Companion_Chicken_Minion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f12bbfd4b590faa45853eeca7a517b06
+    m_Address: VFX_Relic_Pot_Suction
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f45d613da3cd67b458b6fc256d438f50
     m_Address: Weapon_W_PIPE

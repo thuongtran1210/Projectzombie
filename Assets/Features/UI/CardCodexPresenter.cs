@@ -211,7 +211,7 @@ namespace ProjectZombie.Features.UI
                 return; // Dữ liệu đã được nạp sẵn trong static cache, không đọc lại đĩa tránh khựng khung hình
             }
 
-            // Đồng bộ nhanh từ UpgradeManager nếu có
+            // 同步 UpgradeManager nếu có
             if (UpgradeManager.Instance != null && UpgradeManager.Instance.AllAvailableUpgrades != null && UpgradeManager.Instance.AllAvailableUpgrades.Count > 0)
             {
                 var seenUpgradeIds = new HashSet<string>();
@@ -233,20 +233,20 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            // 1. Nạp Resources đồng bộ trước
-            LoadDataFromResourcesAndEditor();
+#if UNITY_EDITOR
+            // Trong Editor: Nạp fallback qua AssetDatabase nếu chưa có data trong cache
+            LoadDataFromEditorFallback();
+#endif
 
-            // 2. Kích hoạt bất đồng bộ nạp Addressables nếu còn thiếu dữ liệu
-            if (_cachedWeapons.Count == 0 || _cachedUpgrades.Count == 0 || _cachedHeroes.Count == 0)
+            // Nạp bất đồng bộ 100% qua Addressables / GameDataService theo Addressables SPEC
+            if (_loadingDataTask == null || _loadingDataTask.IsCompleted)
             {
-                if (_loadingDataTask == null || _loadingDataTask.IsCompleted)
-                {
-                    _loadingDataTask = LoadAllDataAsync();
-                }
+                _loadingDataTask = LoadAllDataAsync();
             }
         }
 
-        private void LoadDataFromResourcesAndEditor()
+#if UNITY_EDITOR
+        private void LoadDataFromEditorFallback()
         {
             var seenUpgradeIds = new HashSet<string>();
             var seenWeaponIds = new HashSet<string>();
@@ -260,72 +260,6 @@ namespace ProjectZombie.Features.UI
                 if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
             }
 
-            void TryAddUpgrade(UpgradeData u)
-            {
-                if (u == null) return;
-                string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                if (seenUpgradeIds.Add(upId))
-                {
-                    _cachedUpgrades.Add(u);
-                    if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
-                }
-            }
-
-            void TryAddWeapon(WeaponData w)
-            {
-                if (w == null || string.IsNullOrEmpty(w.weaponId)) return;
-                if (seenWeaponIds.Add(w.weaponId))
-                {
-                    _cachedWeapons.Add(w);
-                }
-            }
-
-            // Nạp Upgrades từ Resources
-            var loadedUpgrades = Resources.LoadAll<UpgradeData>("Upgrades");
-            if (loadedUpgrades != null)
-            {
-                foreach (var u in loadedUpgrades) TryAddUpgrade(u);
-            }
-
-            // Nạp Weapons từ Resources
-            var loadedWeapons1 = Resources.LoadAll<WeaponData>("Weapons");
-            if (loadedWeapons1 != null)
-            {
-                foreach (var w in loadedWeapons1) TryAddWeapon(w);
-            }
-            var loadedWeapons2 = Resources.LoadAll<WeaponData>("ScriptableObjects/Weapons");
-            if (loadedWeapons2 != null)
-            {
-                foreach (var w in loadedWeapons2) TryAddWeapon(w);
-            }
-
-            // Nạp Heroes từ Resources
-            var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
-#if UNITY_EDITOR
-            if (charDb == null)
-            {
-                charDb = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/Resources/CharacterDatabase.asset")
-                      ?? UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDatabaseSO>("Assets/_Data/CharacterDatabase.asset");
-            }
-#endif
-            if (charDb != null && charDb.Characters != null)
-            {
-                foreach (var h in charDb.Characters)
-                {
-                    if (h != null && !_cachedHeroes.Contains(h)) _cachedHeroes.Add(h);
-                }
-            }
-
-            var loadedHeroes = Resources.LoadAll<CharacterDataSO>("Characters");
-            if (loadedHeroes != null)
-            {
-                foreach (var h in loadedHeroes)
-                {
-                    if (h != null && !_cachedHeroes.Contains(h)) _cachedHeroes.Add(h);
-                }
-            }
-
-#if UNITY_EDITOR
             if (_cachedWeapons.Count == 0)
             {
                 string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData");
@@ -333,7 +267,10 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    TryAddWeapon(w);
+                    if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
+                    {
+                        _cachedWeapons.Add(w);
+                    }
                 }
             }
             if (_cachedUpgrades.Count == 0)
@@ -343,7 +280,15 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var u = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                    TryAddUpgrade(u);
+                    if (u != null)
+                    {
+                        string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
+                        if (seenUpgradeIds.Add(upId))
+                        {
+                            _cachedUpgrades.Add(u);
+                            if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
+                        }
+                    }
                 }
             }
             if (_cachedHeroes.Count == 0)
@@ -356,12 +301,13 @@ namespace ProjectZombie.Features.UI
                     if (h != null && !_cachedHeroes.Contains(h)) _cachedHeroes.Add(h);
                 }
             }
-#endif
+
             if (_cachedWeapons.Count > 0 && _cachedHeroes.Count > 0 && _cachedUpgrades.Count > 0)
             {
                 _isDataLoaded = true;
             }
         }
+#endif
 
         public async Task LoadAllDataAsync()
         {

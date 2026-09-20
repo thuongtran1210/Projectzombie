@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Player
@@ -28,6 +28,12 @@ namespace ProjectZombie.Features.Player
                 return characters[index];
             }
             return null;
+        }
+
+        public CharacterDataSO GetCharacterByPrefab(GameObject prefab)
+        {
+            if (prefab == null || characters == null) return null;
+            return characters.Find(c => c != null && (c.playerPrefab == prefab || (c.playerPrefab != null && c.playerPrefab.name == prefab.name)));
         }
 
         public void SetCharacters(List<CharacterDataSO> list)

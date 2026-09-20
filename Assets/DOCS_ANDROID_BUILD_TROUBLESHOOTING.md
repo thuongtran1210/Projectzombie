@@ -127,15 +127,13 @@ Tài liệu này tổng hợp toàn bộ các lỗi thực tế đã phát sinh 
 ---
 
 ### ❌ Lỗi 2.4: Phân Tích Kiến Trúc Load Tài Nguyên Trên Android: `Resources.Load` vs `Addressables`
-- **Thực trạng hiện tại**:
-  - Dự án đang sử dụng mô hình **Offline-First Synchronous** qua `Resources.Load` kết hợp công cụ tiền xử lý **Android Resource Sync Tool** và nén Texture **ASTC** / Audio **Vorbis**.
-- **Đặc điểm & Hạn chế của `Resources.Load` trên Android**:
-  1. *Metadata Overhead*: Toàn bộ asset trong `Resources` sẽ được lập chỉ mục vào `resources.assets`, nạp metadata vào RAM ngay khi mở game.
-  2. *Không hỗ trợ Hot-Update*: Muốn thêm vũ khí/tướng mới phải build lại toàn bộ APK/AAB.
-  3. *Freeze Spike*: Load Prefab lớn trực tiếp trên Main Thread có thể gây khựng hình nhẹ.
-- **Lộ trình nâng cấp Addressables (Khuyến nghị cho Live-Ops)**:
-  - Chuyển đổi các gói tài nguyên nặng (Quái vật, VFX, Audio, UI Prefabs) sang **Addressable Groups**.
-  - Tích hợp cơ chế tải bất đồng bộ `Addressables.LoadAssetAsync<T>()` và **Google Play Asset Delivery (PAD)** khi phát hành chính thức trên Google Play Store.
+- **Mô Hình Chuẩn Hiện Tại (Addressables SPEC)**:
+  - Dự án áp dụng quy tắc **Single Source of Truth** từ tài liệu `DOCS_FIRST_PLAYABLE_ADDRESSABLES_SPEC.md`.
+  - Mọi Game Assets (Quái vật, Vũ khí, Thẻ Nâng Cấp, UI Prefabs, Audio) được đóng gói vào các **Addressables Groups** (`Local` cho First Playable Màn 1 và `Remote CDN` cho DLC Màn 2/3).
+  - Nạp bất đồng bộ 100% qua `Addressables.LoadAssetAsync<T>()` / `GameDataService.Instance.LoadAllAsync<T>()`.
+- **Cảnh báo mâu thuẫn kiến trúc cũ (`Resources.Load`) [DEPRECATED]**:
+  - Không còn sử dụng thư mục `Assets/Resources/` để lưu trữ dữ liệu gameplay/UI nhằm tránh lãng phí RAM (*Metadata Overhead*) và gây *Freeze Spike*.
+  - Các công cụ Sync cũ (`1-Click Sync Resources`) được cấu hình bỏ qua các Asset đã quản lý bằng Addressables (`isAddressableManaged = true`).
 
 ---
 

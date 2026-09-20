@@ -70,13 +70,16 @@ namespace ProjectZombie.Features.Player
             // 0. Đảm bảo Loadout được nạp Async hoàn chỉnh từ Addressables/Save
             await RunLoadoutState.EnsureInitializedAsync();
 
-            // 1. Đăng ký lắng nghe sự kiện đổi tướng từ UI trong Scene
+            // 1. Đăng ký lắng nghe sự kiện đổi tướng từ UI và State
             _characterSelectionPresenter = CharacterSelectionPresenter.Instance;
             if (_characterSelectionPresenter != null)
             {
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
                 _characterSelectionPresenter.OnCharacterSelected += HandleCharacterSelected;
             }
+
+            RunLoadoutState.OnCharacterChanged -= HandleRunLoadoutCharacterChanged;
+            RunLoadoutState.OnCharacterChanged += HandleRunLoadoutCharacterChanged;
 
             // Đăng ký lắng nghe sự kiện khi nhân vật mạng được sinh ra để tự động kết nối Camera & UI
             PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawnedFromProvider;
@@ -111,7 +114,24 @@ namespace ProjectZombie.Features.Player
             {
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
             }
+            RunLoadoutState.OnCharacterChanged -= HandleRunLoadoutCharacterChanged;
             PlayerProvider.OnPlayerSpawned -= HandlePlayerSpawnedFromProvider;
+        }
+
+        private void HandleRunLoadoutCharacterChanged(CharacterEntry entry)
+        {
+            var networkSession = ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>();
+            bool isInNetworkRoom = networkSession != null && networkSession.IsInRoom;
+            if (isInNetworkRoom) return;
+
+            if (entry != null && entry.playerPrefab != null)
+            {
+                SpawnPlayer(entry.playerPrefab);
+            }
+            else
+            {
+                SpawnPlayerForActiveHero();
+            }
         }
 
         private void HandlePlayerSpawnedFromProvider(Transform playerTransform, HealthSystem hp)
@@ -288,8 +308,12 @@ namespace ProjectZombie.Features.Player
                 return;
             }
 
+            GameObject targetPrefab = ResolvePlayerPrefab();
+            bool heroMismatch = _activePlayerInstance != null && targetPrefab != null && !_activePlayerInstance.name.StartsWith(targetPrefab.name);
+
             bool needRespawn = _activePlayerInstance == null || 
                                !_activePlayerInstance.activeInHierarchy || 
+                               heroMismatch ||
                                (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hpCheck) && hpCheck.CurrentHealth <= 0);
 
             if (needRespawn)
