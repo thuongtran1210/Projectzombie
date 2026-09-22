@@ -45,7 +45,7 @@ namespace ProjectZombie.Features.UI
 
         private bool _isConstructed = false;
 
-        public void Construct(HealthSystem health)
+        public void Construct(HealthSystem health, IRunStatsService runStatsService = null)
         {
             if (_isConstructed)
             {
@@ -53,6 +53,10 @@ namespace ProjectZombie.Features.UI
             }
 
             playerHealth = health;
+            if (runStatsService != null)
+            {
+                _runStatsService = runStatsService;
+            }
 
             SubscribeEvents();
 
@@ -64,10 +68,12 @@ namespace ProjectZombie.Features.UI
         private void Awake()
         {
             if (Instance == null) Instance = this;
+            _runStatsService ??= ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>();
             if (view == null)
             {
                 view = GetComponent<GameOverScreenView>();
             }
+
 
             _uiAudioSource = GetComponent<AudioSource>();
             if (_uiAudioSource == null)

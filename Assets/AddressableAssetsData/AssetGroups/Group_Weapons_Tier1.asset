@@ -325,6 +325,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 711743b41c5fa7142b2742b1bb9a8b6f
+    m_Address: Tex_Pot_Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sprite_vfx
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f6cc4bf9e198ec40a7d76095ce505f2
+    m_Address: Tex_Rice_Collectible
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sprite_vfx
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51581f381712cc344b135ad38a6171a9, type: 2}
   m_SchemaSet:

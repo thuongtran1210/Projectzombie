@@ -67,6 +67,9 @@ namespace ProjectZombie.Features.Player
         private float _damageMultiplier = 1f;
         public float DamageMultiplier => _damageMultiplier;
         public float CritDamageMultiplier => 1.5f;
+        public float Armor => 0f;
+        public ElementType CurrentElement => ElementType.None;
+
 
         public const float MIN_MOVE_SPEED = 2.0f;
         public const float MAX_MOVE_SPEED = 9.0f;

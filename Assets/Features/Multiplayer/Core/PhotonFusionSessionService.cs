@@ -42,7 +42,21 @@ namespace ProjectZombie.Features.Multiplayer.Core
             {
                 DontDestroyOnLoad(gameObject);
             }
+
+            ProjectZombie.Core.Architecture.ServiceContext.Register<INetworkSessionService>(this);
+            ProjectZombie.Core.Architecture.ServiceContext.Register<ProjectZombie.Features.Shared.Policies.IGamePausePolicy>(new MultiplayerGamePausePolicy(this));
         }
+
+        private void OnDestroy()
+        {
+            if (ReferenceEquals(ProjectZombie.Core.Architecture.ServiceContext.Get<INetworkSessionService>(), this))
+            {
+                ProjectZombie.Core.Architecture.ServiceContext.Unregister<INetworkSessionService>();
+                ProjectZombie.Core.Architecture.ServiceContext.Unregister<ProjectZombie.Features.Shared.Policies.IGamePausePolicy>();
+            }
+        }
+
+
 
         public async Task<bool> CreateHostSessionAsync(string roomCode = null, int maxPlayers = 4)
         {

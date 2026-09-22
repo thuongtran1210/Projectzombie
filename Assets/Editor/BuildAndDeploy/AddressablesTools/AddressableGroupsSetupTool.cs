@@ -206,8 +206,8 @@ namespace ProjectZombie.Editor.AddressablesTools
 
             AddAssetToGroup(settings, groupWeapons, "Assets/VFX/SkillLibrary/Textures/Tex_ChickenBroom_SingleFeather_Clean.png", "Tex_ChickenBroom_SingleFeather_Clean", "sprite_vfx");
             AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_VFX_Cinnabar_Shockwave_Ring.png", "Tex_VFX_Cinnabar_Shockwave_Ring", "sprite_vfx");
-            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_Pot_Projectile.png", "Tex_Pot_Projectile", "sprite_vfx");
-            AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_Rice_Collectible.png", "Tex_Rice_Collectible", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/Weapons/VFX/Tex_Pot_Projectile.png", "Tex_Pot_Projectile", "sprite_vfx");
+            AddAssetToGroup(settings, groupWeapons, "Assets/Art/Weapons/VFX/Tex_Rice_Collectible.png", "Tex_Rice_Collectible", "sprite_vfx");
             AddAssetToGroup(settings, groupWeapons, "Assets/Art/VFX/Tex_VFX_DongSon_SonicWave.png", "Tex_VFX_DongSon_SonicWave", "sprite_vfx");
         }
 

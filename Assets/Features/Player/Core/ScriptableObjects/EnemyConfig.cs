@@ -85,12 +85,18 @@ namespace ProjectZombie.Core.ScriptableObjects
             return false;
         }
 
+        public float MaxHealth => maxHealth;
+        public float BaseDamage => damageToPlayer;
         public float AttackSpeed => 1f / attackCooldown;
         public float CritChance => 0f;
+        public float CritDamageMultiplier => 1f;
         public float AttackRange => attackRange;
         public float MoveSpeed => moveSpeed;
         public float AreaScale => 1f;
+        public float Armor => isHeavyArmor ? 10f : 0f;
+        public ElementType CurrentElement => elementType;
         public float GetTotalDamage() => damageToPlayer;
+
 
         private void OnValidate()
         {

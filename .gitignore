@@ -68,3 +68,7 @@ crashlytics-build.properties
 *.itcst
 /Webgame_Docs_Shared/
 /.agents/
+/UI_Backups/
+screenshot_*.png
+temp_*.png
+temp_*/

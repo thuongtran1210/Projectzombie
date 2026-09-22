@@ -39,10 +39,13 @@ namespace ProjectZombie.Features.Shared
         public delegate bool DamageInterceptor(float amount, DamageData damageData);
         public DamageInterceptor CustomDamageInterceptor { get; set; }
 
+        public Vector3 Position => transform.position;
+        public ElementType CurrentElement { get; set; } = ElementType.None;
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => maxHealth;
         public bool IsAlive => _currentHealth > 0;
         public bool IsInvulnerable => Time.time < _invulnerableUntilTime;
+
 
         /// <summary>
         /// Kích hoạt trạng thái bất tử tạm thời (Spawn Shield / Grace Period / Dash I-Frame).

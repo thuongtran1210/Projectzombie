@@ -93,7 +93,9 @@ namespace ProjectZombie.Features.Enemies
             if (Config != null)
             {
                 HealthSystem.SetMaxHealth(Config.maxHealth);
+                HealthSystem.CurrentElement = Config.elementType;
             }
+
 
             Attacker = GetComponent<AttackStrategy>();
             Movement = GetComponent<CombatMovementStrategy>();

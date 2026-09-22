@@ -107,6 +107,14 @@ namespace ProjectZombie.Core.Services.Addressables
                     return asyncHandle.Result;
                 }
 
+                // Nếu tải Addressables không thành công, thử Fallback theo chính sách môi trường
+                var fallbackResult = TryFallbackLoad<T>(address);
+                if (fallbackResult != null)
+                {
+                    taskCompletionSource.TrySetResult(fallbackResult);
+                    return fallbackResult;
+                }
+
                 Debug.LogError($"[{nameof(AddressableAssetManager)}] Không thể tải Asset tại địa chỉ: '{address}'. Status: {asyncHandle.Status}");
                 taskCompletionSource.TrySetResult(null);
                 return null;
@@ -118,6 +126,13 @@ namespace ProjectZombie.Core.Services.Addressables
             }
             catch (Exception ex)
             {
+                var fallbackResult = TryFallbackLoad<T>(address);
+                if (fallbackResult != null)
+                {
+                    taskCompletionSource.TrySetResult(fallbackResult);
+                    return fallbackResult;
+                }
+
                 Debug.LogError($"[{nameof(AddressableAssetManager)}] Ngoại lệ khi tải Addressable '{address}': {ex.Message}");
                 taskCompletionSource.TrySetException(ex);
                 return null;
@@ -127,6 +142,60 @@ namespace ProjectZombie.Core.Services.Addressables
                 _inFlightTasks.Remove(address);
             }
         }
+
+        public static bool IsDevelopmentEnvironment
+        {
+            get
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
+        private T TryFallbackLoad<T>(string address) where T : UnityEngine.Object
+        {
+            if (!IsDevelopmentEnvironment)
+            {
+                Debug.LogError($"[{nameof(AddressableAssetManager)}] [RELEASE ERROR] Thiếu Asset Addressables tại key '{address}'. Fail-fast trên bản Release (AGENTS.md).");
+                return null;
+            }
+
+            // 1. Thử qua Resources
+            var res = Resources.Load<T>(address);
+            if (res != null)
+            {
+                Debug.LogWarning($"[{nameof(AddressableAssetManager)}] [DEV FALLBACK] Đã nạp thành công '{address}' từ Resources.");
+                return res;
+            }
+
+            string cleanName = System.IO.Path.GetFileNameWithoutExtension(address);
+            res = Resources.Load<T>($"Maps/{cleanName}") ?? Resources.Load<T>(cleanName);
+            if (res != null)
+            {
+                Debug.LogWarning($"[{nameof(AddressableAssetManager)}] [DEV FALLBACK] Đã nạp thành công '{cleanName}' từ Resources/Maps.");
+                return res;
+            }
+
+#if UNITY_EDITOR
+            // 2. Thử qua AssetDatabase trong Editor
+            string[] guids = UnityEditor.AssetDatabase.FindAssets($"{cleanName} t:{typeof(T).Name}");
+            if (guids != null && guids.Length > 0)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+                if (asset != null)
+                {
+                    Debug.LogWarning($"[{nameof(AddressableAssetManager)}] [DEV FALLBACK] Đã nạp thành công '{cleanName}' từ AssetDatabase ({path}).");
+                    return asset;
+                }
+            }
+#endif
+            return null;
+        }
+
 
         public async Task<IList<T>> LoadAllAsync<T>(string label, CancellationToken cancellationToken = default) where T : UnityEngine.Object
         {

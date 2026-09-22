@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healPercent: 0.35
   _minFlatHeal: 25
-  _healVfxPrefab: {fileID: 0}
+  _healVfxPrefab: {fileID: 2971553011439065403, guid: 080852c932e545f4a8648f0f3e205bfa, type: 3}

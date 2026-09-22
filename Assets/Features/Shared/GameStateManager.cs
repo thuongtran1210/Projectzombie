@@ -1,37 +1,35 @@
 using UnityEngine;
 using System;
+using ProjectZombie.Core.Architecture;
+using ProjectZombie.Features.Shared.Policies;
 
 namespace ProjectZombie.Features.Shared
 {
     /// <summary>
     /// Bộ quản lý trạng thái trò chơi (FSM Model).
     /// Quản lý việc chuyển trạng thái, điều phối Time.timeScale tương ứng và phát tín hiệu cho toàn hệ thống.
+    /// Tuân thủ Dependency Inversion: Sử dụng IGamePausePolicy để quyết định hành vi tạm dừng/chạy tiếp (Mục 3.2 AGENTS.md).
     /// </summary>
     [DefaultExecutionOrder(-100)]
     public class GameStateManager : MonoBehaviour
     {
         public static GameStateManager Instance { get; private set; }
 
-        public GameState CurrentState { get; private set; } = GameState.MainMenu; // Mặc định là MainMenu khi mở game (Hướng A)
+        public GameState CurrentState { get; private set; } = GameState.MainMenu;
+
+        private static IGamePausePolicy PausePolicy =>
+            ServiceContext.Get<IGamePausePolicy>() ?? DefaultGamePausePolicy.Instance;
 
         /// <summary>
         /// Single Source of Truth kiểm tra xem trò chơi có đang trong trạng thái chiến đấu hoạt động hay không.
         /// Trả về false khi đang Pause, GameOver hoặc ở MainMenu.
-        /// Trong chế độ Multiplayer Co-op, nếu đang chọn nâng cấp (LevelUpSelection) hoặc đang mở Cài đặt / Menu nhân vật (Paused)
-        /// thì trận đấu vẫn tiếp tục diễn ra thời gian thực trên mạng.
         /// </summary>
         public static bool IsPlaying
         {
             get
             {
                 if (Instance == null) return true;
-                if (Instance.CurrentState == GameState.Playing) return Time.timeScale > 0f;
-                if (Instance.CurrentState == GameState.LevelUpSelection || Instance.CurrentState == GameState.Paused)
-                {
-                    bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
-                    return isMultiplayer && Time.timeScale > 0f;
-                }
-                return false;
+                return PausePolicy.IsCombatActive(Instance.CurrentState);
             }
         }
 
@@ -63,22 +61,8 @@ namespace ProjectZombie.Features.Shared
 
             CurrentState = newState;
 
-            // Đồng bộ hoá Time.timeScale theo trạng thái
-            switch (newState)
-            {
-                case GameState.Playing:
-                    Time.timeScale = 1f;
-                    break;
-                case GameState.LevelUpSelection:
-                case GameState.Paused:
-                    // Trong Multiplayer Co-op: KHÔNG dừng Time.timeScale để đảm bảo nhịp tick mạng liên tục và không mất đồng bộ spawn quái
-                    bool isMultiplayer = ProjectZombie.Core.Architecture.ServiceContext.TryGet<ProjectZombie.Features.Multiplayer.Core.INetworkSessionService>(out var session) && session.IsInRoom;
-                    Time.timeScale = isMultiplayer ? 1f : 0f;
-                    break;
-                case GameState.GameOver:
-                    Time.timeScale = 0f;
-                    break;
-            }
+            // Đồng bộ hoá Time.timeScale thông qua PausePolicy trừu tượng
+            Time.timeScale = PausePolicy.GetTimeScaleForState(newState);
 
             Debug.Log($"[GameStateManager] Game State changed to: {newState} (TimeScale set to {Time.timeScale})");
             OnStateChanged?.Invoke(CurrentState);

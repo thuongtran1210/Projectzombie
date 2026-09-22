@@ -1,266 +1,34 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Maps;
-using ProjectZombie.Features.Spawners;
 using ProjectZombie.Features.Player;
-using ProjectZombie.Features.Upgrades;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.MatchFlow
 {
     /// <summary>
-    /// Nhạc trưởng điều phối luồng chuẩn bị trận đấu (Match Flow Orchestration).
-    /// Thực thi tuần tự, dứt điểm từng giai đoạn: Nạp Map -> Preload Quái -> Setup Player -> Chuyển State Playing.
-    /// Giúp tách biệt hoàn toàn Logic Gameplay ra khỏi tầng UI Presentation.
+    /// Facade Adapter tương thích ngược (Backward Compatible) điều phối luồng chuẩn bị trận đấu.
+    /// Toàn bộ logic được ủy quyền cho IMatchFlowService đăng ký trong ServiceContext (Mục 3.2 & 3.3 AGENTS.md).
     /// </summary>
     public static class MatchFlowOrchestrator
     {
-        private static GameObject _currentMapInstance;
+        private static IMatchFlowService Service =>
+            ServiceContext.Get<IMatchFlowService>() ?? MatchFlowService.Default;
 
-        public static async Task ExecuteCombatPreparationAsync(
+        public static GameObject CurrentMapInstance => Service.CurrentMapInstance;
+
+        public static Task ExecuteCombatPreparationAsync(
             StageDefinitionSO stage,
             GameplayBootstrapper gameplayBootstrapper,
             Action<float, string> reportProgress = null)
         {
-            // Tự động resolve stage mặc định nếu chưa chọn bằng Addressables
-            if (stage == null)
-            {
-                try
-                {
-                    var dbHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
-                    await dbHandle.Task;
-                    if (dbHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded &&
-                        dbHandle.Result != null && dbHandle.Result.Stages != null && dbHandle.Result.Stages.Count > 0)
-                    {
-                        stage = dbHandle.Result.Stages[0];
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning($"[MatchFlowOrchestrator] Không thể nạp WorldStageDatabase từ Addressables: {ex.Message}");
-                }
-
-                if (stage == null)
-                {
-                    try
-                    {
-                        var stageHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<StageDefinitionSO>("Stage_01_BambooForest");
-                        await stageHandle.Task;
-                        if (stageHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                        {
-                            stage = stageHandle.Result;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning($"[MatchFlowOrchestrator] Không thể nạp Stage_01_BambooForest từ Addressables: {ex.Message}");
-                    }
-                }
-
-                // Fallback nếu Addressables chưa khởi tạo hoặc chạy test độc lập
-                if (stage == null)
-                {
-                    var db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
-                             ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
-#if UNITY_EDITOR
-                    if (db == null)
-                    {
-                        db = UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/Resources/WorldStageDatabase.asset")
-                             ?? UnityEditor.AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
-                    }
-#endif
-                    if (db != null && db.Stages != null && db.Stages.Count > 0)
-                    {
-                        stage = db.Stages[0];
-                    }
-                    else
-                    {
-                        stage = Resources.Load<StageDefinitionSO>("Levels/Stage_01_BambooForest")
-                                ?? Resources.Load<StageDefinitionSO>("Levels/Stages/Stage_01_BambooForest");
-#if UNITY_EDITOR
-                        if (stage == null)
-                        {
-                            stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset")
-                                    ?? UnityEditor.AssetDatabase.LoadAssetAtPath<StageDefinitionSO>("Assets/Resources/Levels/Stage_01_BambooForest.asset");
-                        }
-#endif
-                    }
-                }
-            }
-
-            // -------------------------------------------------------------
-            // BƯỚC 1: Cấu hình Timeline Ải
-            // -------------------------------------------------------------
-            if (stage != null && stage.timelineConfig != null && SpawnManager.Instance != null)
-            {
-                SpawnManager.Instance.SetTimelineConfig(stage.timelineConfig);
-            }
-
-            // -------------------------------------------------------------
-            // BƯỚC 2: Khởi tạo Map Tilemap (Addressables -> Fallback Resources)
-            // -------------------------------------------------------------
-            string stageMsg = stage != null ? $"Đang khai mở {stage.stageName}..." : "Đang chuẩn bị chiến trường...";
-            reportProgress?.Invoke(0.2f, stageMsg);
-
-            await LoadMapAsync(stage);
-            await Task.Yield();
-
-            // -------------------------------------------------------------
-            // BƯỚC 3: Khởi tạo Player & UI In-Game
-            // -------------------------------------------------------------
-            reportProgress?.Invoke(0.4f, "Đang triệu hồi chân thân Tướng...");
-            if (gameplayBootstrapper != null)
-            {
-                gameplayBootstrapper.StartMatchFlow();
-            }
-            await Task.Yield();
-
-            // -------------------------------------------------------------
-            // BƯỚC 4: Preload Quái Vật & Khởi Tạo Pool Ngầm
-            // -------------------------------------------------------------
-            reportProgress?.Invoke(0.6f, "Đang nạp dữ liệu quái vật cõi âm...");
-            if (SpawnManager.Instance != null && !SpawnManager.Instance.IsMatchActive)
-            {
-                await SpawnManager.Instance.StartMatchAsync();
-            }
-            await Task.Yield();
-
-            // -------------------------------------------------------------
-            // BƯỚC 5: Nạp Thẻ Nâng Cấp & Chuẩn Bị Âm Thanh Trận Đấu
-            // -------------------------------------------------------------
-            reportProgress?.Invoke(0.85f, "Đang ngưng tụ linh khí ngũ hành...");
-            if (UpgradeManager.Instance != null)
-            {
-                await UpgradeManager.Instance.AutoPopulateUpgradesIfEmptyAsync();
-            }
-
-            var phaseAudio = global::Core.Audio.PhaseAudioController.Instance;
-            if (phaseAudio != null)
-            {
-                phaseAudio.ForceInitialPhaseAudio();
-            }
-            await Task.Yield();
-
-            // -------------------------------------------------------------
-            // BƯỚC 6: Bắt Đầu Trận Đấu (Chuyển GameState)
-            // -------------------------------------------------------------
-            reportProgress?.Invoke(1.0f, "Chiến trường đã sẵn sàng!");
-            if (GameStateManager.Instance != null)
-            {
-                GameStateManager.Instance.ChangeState(GameState.Playing);
-            }
-        }
-
-        private static async Task LoadMapAsync(StageDefinitionSO stage)
-        {
-            if (stage == null || string.IsNullOrEmpty(stage.mapPrefabAddress))
-            {
-                EnableStaticSceneEnvironments();
-                return;
-            }
-
-            // 1. Dọn dẹp map cũ và vô hiệu hóa các môi trường tĩnh có sẵn trong Scene để tránh trùng lặp Collider
-            DestroyCurrentMapInstance();
-            DisableStaticSceneEnvironments();
-
-            bool loadedFromAddressables = false;
-            try
-            {
-                var locHandle = UnityEngine.AddressableAssets.Addressables.LoadResourceLocationsAsync(stage.mapPrefabAddress);
-                await locHandle.Task;
-                if (locHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded &&
-                    locHandle.Result != null && locHandle.Result.Count > 0)
-                {
-                    var handle = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(stage.mapPrefabAddress);
-                    await handle.Task;
-                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                    {
-                        _currentMapInstance = handle.Result;
-                        _currentMapInstance.transform.position = Vector3.zero;
-                        _currentMapInstance.SetActive(true);
-                        SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
-                        loadedFromAddressables = true;
-                    }
-                }
-
-                if (locHandle.IsValid())
-                {
-                    UnityEngine.AddressableAssets.Addressables.Release(locHandle);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[MatchFlowOrchestrator] Addressable load failed: {ex.Message}");
-            }
-
-            // 2. Fallback sang Resources nếu offline hoặc Addressables chưa build
-            if (!loadedFromAddressables)
-            {
-                var mapPrefab = Resources.Load<GameObject>($"Maps/{stage.mapPrefabAddress}")
-                                ?? Resources.Load<GameObject>(stage.mapPrefabAddress);
-#if UNITY_EDITOR
-                if (mapPrefab == null)
-                {
-                    mapPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Prefabs/Maps/{stage.mapPrefabAddress}.prefab")
-                                ?? UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Resources/Maps/{stage.mapPrefabAddress}.prefab");
-                }
-#endif
-                if (mapPrefab != null)
-                {
-                    _currentMapInstance = UnityEngine.Object.Instantiate(mapPrefab, Vector3.zero, Quaternion.identity);
-                    _currentMapInstance.name = stage.mapPrefabAddress;
-                    _currentMapInstance.SetActive(true);
-                    SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
-                    Debug.Log($"<color=#00FF88>[MatchFlowOrchestrator] Đã nạp thành công Map '{stage.mapPrefabAddress}'!</color>");
-                }
-                else
-                {
-                    Debug.LogWarning($"[MatchFlowOrchestrator] Không tìm thấy Map '{stage.mapPrefabAddress}' trong Resources/Maps, sử dụng Tilemap mặc định trong Scene.");
-                    EnableStaticSceneEnvironments();
-                }
-            }
-        }
-
-        private static void DisableStaticSceneEnvironments()
-        {
-            var staticSanDinh = GameObject.Find("Environment_SanDinhLangCo");
-            if (staticSanDinh != null)
-            {
-                staticSanDinh.SetActive(false);
-            }
-        }
-
-        private static void EnableStaticSceneEnvironments()
-        {
-            // Tìm cả inactive object
-            var grids = UnityEngine.Object.FindObjectsOfType<Grid>(true);
-            foreach (var grid in grids)
-            {
-                if (grid.gameObject.name.Contains("SanDinh") || grid.gameObject.name.Contains("Environment"))
-                {
-                    grid.gameObject.SetActive(true);
-                }
-            }
+            return Service.ExecuteCombatPreparationAsync(stage, gameplayBootstrapper, reportProgress);
         }
 
         public static void DestroyCurrentMapInstance()
         {
-            if (_currentMapInstance != null)
-            {
-                bool releasedByAddressables = false;
-                try
-                {
-                    releasedByAddressables = UnityEngine.AddressableAssets.Addressables.ReleaseInstance(_currentMapInstance);
-                }
-                catch { }
-
-                if (!releasedByAddressables && _currentMapInstance != null)
-                {
-                    UnityEngine.Object.Destroy(_currentMapInstance);
-                }
-                _currentMapInstance = null;
-            }
+            Service.DestroyCurrentMapInstance();
         }
     }
 }
