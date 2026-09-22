@@ -176,9 +176,16 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
 
         public void ExecuteStep3_BuildAddressables()
         {
-            AddressableGroupsSetupTool.BuildAddressablesBundles();
+            bool success = AddressableGroupsSetupTool.BuildAddressablesBundles();
             RefreshAll();
-            SetStatus("Đã hoàn tất đóng gói Addressables Content Bundles vào ServerData/Android/.", MessageType.Info);
+            if (success)
+            {
+                SetStatus("Đã hoàn tất đóng gói Addressables Content Bundles vào ServerData/Android/.", MessageType.Info);
+            }
+            else
+            {
+                SetStatus("Đóng gói Addressables thất bại! Vui lòng kiểm tra tab Console.", MessageType.Error);
+            }
         }
 
         public void ExecuteStep4_BuildAPK()

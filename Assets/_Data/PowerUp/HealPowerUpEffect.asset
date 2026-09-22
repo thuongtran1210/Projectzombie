@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b18d9f91ae5f1d94883d5251c41ea7f5, type: 3}
+  m_Name: HealPowerUpEffect
+  m_EditorClassIdentifier: 
+  _healPercent: 0.35
+  _minFlatHeal: 25
+  _healVfxPrefab: {fileID: 0}

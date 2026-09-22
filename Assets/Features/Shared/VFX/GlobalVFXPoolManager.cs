@@ -9,10 +9,16 @@ namespace ProjectZombie.Features.Shared.VFX
     /// <summary>
     /// Manager quản lý Object Pool tập trung cho các loại Particle System và GameObject Modular VFX trong game.
     /// Giúp loại bỏ hoàn toàn việc tạo trùng lặp ObjectPool rải rác ở từng Vũ khí và Kỹ năng.
-    /// Supports 0 GC Allocation pooling cho cả ParticleSystem đơn lẻ lẫn Prefab Modular VFX.
+    /// Tuân thủ quy chuẩn SOLID và 0 GC Allocation pooling cho cả ParticleSystem đơn lẻ lẫn Prefab Modular VFX.
     /// </summary>
-    public class GlobalVFXPoolManager : MonoBehaviour
+    public class GlobalVFXPoolManager : MonoBehaviour, IVFXPoolService
     {
+        private const string LAYER_SKILL = "Skill";
+        private const string LAYER_TILEMAP_DECALS = "Tilemap_Decals";
+        private const string LAYER_DEFAULT = "Default";
+        private const string LAYER_VFX_FRONT = "VFX_Front";
+        private const string LAYER_VFX_BACK = "VFX_Back";
+
         public static GlobalVFXPoolManager Instance { get; private set; }
 
         private readonly Dictionary<int, ObjectPool<ParticleSystem>> _particlePoolDict = new Dictionary<int, ObjectPool<ParticleSystem>>();
@@ -31,8 +37,10 @@ namespace ProjectZombie.Features.Shared.VFX
             Instance = this;
         }
 
+        #region ParticleSystem Pooling
+
         /// <summary>
-        /// Lấy hoặc tạo mới ParticleSystem từ Pool và tự động thu hồi sau `autoReleaseDelay` giây.
+        /// Lấy hoặc tạo mới ParticleSystem từ Pool và tự động thu hồi sau autoReleaseDelay giây.
         /// </summary>
         public ParticleSystem PlayEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float autoReleaseDelay = 0.5f, Vector3? scale = null)
         {
@@ -45,10 +53,16 @@ namespace ProjectZombie.Features.Shared.VFX
                 pool = new ObjectPool<ParticleSystem>(
                     createFunc: () => {
                         Object spawned = Object.Instantiate((Object)prefab, transform);
-                        if (spawned is ParticleSystem ps) return ps;
-                        if (spawned is GameObject go) return go.GetComponentInChildren<ParticleSystem>(true);
-                        if (spawned is Component comp) return comp.GetComponentInChildren<ParticleSystem>(true);
-                        return null;
+                        ParticleSystem ps = null;
+                        if (spawned is ParticleSystem p) ps = p;
+                        else if (spawned is GameObject go) ps = go.GetComponentInChildren<ParticleSystem>(true);
+                        else if (spawned is Component comp) ps = comp.GetComponentInChildren<ParticleSystem>(true);
+
+                        if (ps != null)
+                        {
+                            ApplyStandardSortingLayers(ps.gameObject);
+                        }
+                        return ps;
                     },
                     actionOnGet: ps => { 
                         if (ps != null)
@@ -81,23 +95,7 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
-            // Tự động kiểm tra và nâng cấp Sorting Layer cho toàn bộ renderers trong hierarchy
-            var renderers = instance.GetComponentsInChildren<Renderer>(true);
-            foreach (var r in renderers)
-            {
-                if (r != null && (r.sortingLayerID == 0 || r.sortingLayerName == "Default" || r.sortingLayerName == "VFX_Front"))
-                {
-                    r.sortingLayerName = "Skill";
-                }
-                else if (r != null && r.sortingLayerName == "VFX_Back")
-                {
-                    r.sortingLayerName = "Tilemap_Decals";
-                }
-            }
-
-            // Đảm bảo toàn bộ Particle System con phát ngay lập tức
             instance.Play(true);
-
             _activeParticleToPoolMap[instance] = pool;
 
             if (autoReleaseDelay > 0f)
@@ -107,9 +105,13 @@ namespace ProjectZombie.Features.Shared.VFX
             return instance;
         }
 
+        #endregion
+
+        #region GameObject Modular VFX Pooling
+
         /// <summary>
         /// Lấy hoặc tạo mới GameObject Modular VFX (Prefab lồng nhiều Particle + VFXPoolResetter) từ Pool.
-        /// Tự động kích hoạt toàn bộ ParticleSystem con và tự thu hồi về Pool sau `autoReleaseDelay` giây.
+        /// Tự động kích hoạt toàn bộ ParticleSystem con và tự thu hồi về Pool sau autoReleaseDelay giây (0 GC).
         /// </summary>
         public GameObject PlayEffect(GameObject prefab, Vector3 position, Quaternion rotation, float autoReleaseDelay = 0.5f, Vector3? scale = null, int weaponLevel = 1)
         {
@@ -122,16 +124,28 @@ namespace ProjectZombie.Features.Shared.VFX
                 pool = new ObjectPool<GameObject>(
                     createFunc: () => {
                         Object spawned = Object.Instantiate((Object)prefab, transform);
-                        if (spawned is GameObject go) return go;
-                        if (spawned is Component comp) return comp.gameObject;
-                        return spawned as GameObject;
+                        GameObject go = null;
+                        if (spawned is GameObject g) go = g;
+                        else if (spawned is Component comp) go = comp.gameObject;
+
+                        if (go != null)
+                        {
+                            if (!go.TryGetComponent<VFXPoolResetter>(out var resetter))
+                            {
+                                ApplyStandardSortingLayers(go);
+                            }
+                        }
+                        return go;
                     },
                     actionOnGet: go => {
                         if (go != null)
                         {
                             go.SetActive(true);
-                            var resetter = go.GetComponent<VFXPoolResetter>();
-                            if (resetter != null)
+                            if (go.TryGetComponent<IPoolableVFX>(out var poolable))
+                            {
+                                poolable.OnSpawnFromPool();
+                            }
+                            else if (go.TryGetComponent<VFXPoolResetter>(out var resetter))
                             {
                                 resetter.ResetVFXState();
                             }
@@ -140,8 +154,11 @@ namespace ProjectZombie.Features.Shared.VFX
                     actionOnRelease: go => {
                         if (go != null)
                         {
-                            var resetter = go.GetComponent<VFXPoolResetter>();
-                            if (resetter != null)
+                            if (go.TryGetComponent<IPoolableVFX>(out var poolable))
+                            {
+                                poolable.OnReturnToPool();
+                            }
+                            else if (go.TryGetComponent<VFXPoolResetter>(out var resetter))
                             {
                                 resetter.ResetVFXState();
                             }
@@ -156,6 +173,8 @@ namespace ProjectZombie.Features.Shared.VFX
             }
 
             var instance = pool.Get();
+            if (instance == null) return null;
+
             instance.transform.position = position;
             instance.transform.rotation = rotation;
             if (scale.HasValue)
@@ -163,30 +182,10 @@ namespace ProjectZombie.Features.Shared.VFX
                 instance.transform.localScale = scale.Value;
             }
 
-            // Tự động phân cấp hiệu ứng VFX theo cấp độ vũ khí nếu có VFXLevelScaler
-            if (instance.TryGetComponent<ProjectZombie.Features.Shared.VFX.VFXLevelScaler>(out var levelScaler))
+            // Phân cấp quy mô hiệu ứng theo cấp độ vũ khí nếu có VFXLevelScaler
+            if (instance.TryGetComponent<VFXLevelScaler>(out var levelScaler))
             {
                 levelScaler.ApplyLevelScaling(weaponLevel);
-            }
-
-            // Đảm bảo các Particle Systems con được Play và gán Layer chuẩn
-            var renderers = instance.GetComponentsInChildren<Renderer>(true);
-            foreach (var r in renderers)
-            {
-                if (r != null && (r.sortingLayerID == 0 || r.sortingLayerName == "Default" || r.sortingLayerName == "VFX_Front"))
-                {
-                    r.sortingLayerName = "Skill";
-                }
-                else if (r != null && r.sortingLayerName == "VFX_Back")
-                {
-                    r.sortingLayerName = "Tilemap_Decals";
-                }
-            }
-
-            var pss = instance.GetComponentsInChildren<ParticleSystem>(true);
-            foreach (var ps in pss)
-            {
-                if (ps != null) ps.Play(true);
             }
 
             _activeGameObjectToPoolMap[instance] = pool;
@@ -199,9 +198,12 @@ namespace ProjectZombie.Features.Shared.VFX
             return instance;
         }
 
+        #endregion
+
+        #region Attached VFX
+
         /// <summary>
-        /// Lấy hoặc tạo mới GameObject Modular VFX gắn bám theo một Transform (ví dụ: Player) trong suốt thời gian phát.
-        /// Tự động di chuyển theo mục tiêu và reparent về Pool Manager khi thu hồi.
+        /// Lấy hoặc tạo mới GameObject Modular VFX gắn bám theo một Transform trong suốt thời gian phát.
         /// </summary>
         public GameObject PlayEffectAttached(GameObject prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null, int weaponLevel = 1)
         {
@@ -219,7 +221,7 @@ namespace ProjectZombie.Features.Shared.VFX
         }
 
         /// <summary>
-        /// Lấy hoặc tạo mới ParticleSystem gắn bám theo một Transform (ví dụ: Player) trong suốt thời gian phát.
+        /// Lấy hoặc tạo mới ParticleSystem gắn bám theo một Transform trong suốt thời gian phát.
         /// </summary>
         public ParticleSystem PlayEffectAttached(ParticleSystem prefab, Transform parent, float autoReleaseDelay = 0.5f, Vector3? scale = null)
         {
@@ -235,6 +237,10 @@ namespace ProjectZombie.Features.Shared.VFX
             }
             return instance;
         }
+
+        #endregion
+
+        #region Release & Cleanup
 
         /// <summary>
         /// Thu hồi thủ công một ParticleSystem về pool trước khi hết hạn auto-release.
@@ -278,7 +284,6 @@ namespace ProjectZombie.Features.Shared.VFX
 
         /// <summary>
         /// Thu hồi và dọn dẹp toàn bộ hiệu ứng Particle & Modular VFX đang hoạt động trên màn hình về ObjectPool tương ứng.
-        /// Thường gọi khi thoát trận về Sảnh hoặc bắt đầu trận mới.
         /// </summary>
         public void ClearAllActiveEffects()
         {
@@ -317,6 +322,30 @@ namespace ProjectZombie.Features.Shared.VFX
             }
         }
 
+        #endregion
+
+        #region Helpers & Routines
+
+        private static void ApplyStandardSortingLayers(GameObject root)
+        {
+            if (root == null) return;
+            var renderers = root.GetComponentsInChildren<Renderer>(true);
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                var r = renderers[i];
+                if (r == null) continue;
+
+                if (r.sortingLayerID == 0 || r.sortingLayerName == LAYER_DEFAULT || r.sortingLayerName == LAYER_VFX_FRONT)
+                {
+                    r.sortingLayerName = LAYER_SKILL;
+                }
+                else if (r.sortingLayerName == LAYER_VFX_BACK)
+                {
+                    r.sortingLayerName = LAYER_TILEMAP_DECALS;
+                }
+            }
+        }
+
         private IEnumerator ReleaseParticleRoutine(ObjectPool<ParticleSystem> pool, ParticleSystem instance, float delay)
         {
             yield return new WaitForSeconds(delay);
@@ -342,5 +371,7 @@ namespace ProjectZombie.Features.Shared.VFX
                 }
             }
         }
+
+        #endregion
     }
 }

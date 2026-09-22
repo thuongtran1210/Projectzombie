@@ -47,20 +47,35 @@ namespace ProjectZombie.Editor.AddressablesTools
         }
 
         [MenuItem("Tools/ProjectZombie/Addressables/🔨 Build Addressables Content Bundles", priority = 101)]
-        public static void BuildAddressablesBundles()
+        public static bool BuildAddressablesBundles()
         {
+            if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
+            {
+                Debug.LogWarning($"<color=#FFAA00>[AddressableGroupsSetupTool]</color> Active Build Target hiện tại là {EditorUserBuildSettings.activeBuildTarget}. Đang chuyển sang Android để build bundles...");
+                bool switched = EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+                if (!switched || EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
+                {
+                    string err = "Không thể chuyển Active Build Target sang Android. Hãy kiểm tra Android Build Support trong Unity Hub!";
+                    Debug.LogError($"[AddressableGroupsSetupTool] {err}");
+                    EditorUtility.DisplayDialog("Lỗi Build Addressables", err, "Đóng");
+                    return false;
+                }
+            }
+
             SetupStandardGroups();
-            Debug.Log("<color=#FFAA00>[AddressableGroupsSetupTool]</color> Bắt đầu đóng gói Addressables Content Bundles...");
+            Debug.Log("<color=#FFAA00>[AddressableGroupsSetupTool]</color> Bắt đầu đóng gói Addressables Content Bundles cho Android...");
             AddressableAssetSettings.BuildPlayerContent(out UnityEditor.AddressableAssets.Build.AddressablesPlayerBuildResult result);
             if (string.IsNullOrEmpty(result.Error))
             {
                 Debug.Log($"<color=#00FF88>[AddressableGroupsSetupTool] BUILD BUNDLE THÀNH CÔNG!</color> File đã xuất ra thư mục ServerData/Android/");
                 EditorUtility.DisplayDialog("Addressables Build Thành Công", $"Đã đóng gói hoàn tất các AssetBundle và Catalog!\n\nBạn có thể vào thư mục ServerData/Android/ và kéo thả lên Firebase Storage CDN.", "OK");
+                return true;
             }
             else
             {
                 Debug.LogError($"[AddressableGroupsSetupTool] Build Bundle thất bại: {result.Error}");
                 EditorUtility.DisplayDialog("Lỗi Build Addressables", $"Build thất bại: {result.Error}", "Đóng");
+                return false;
             }
         }
 

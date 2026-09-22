@@ -43,7 +43,7 @@ namespace ProjectZombie.Core.Pooling
 
     /// <summary>
     /// Hệ thống quản lý Object Pool tập trung cho Particle Systems, Tia lửa va chạm (HitSparks) và Vệt chém VFX.
-    /// Đã được hợp nhất về GlobalVFXPoolManager để đảm bảo vòng đời thống nhất và ngăn chặn rò rỉ bộ nhớ.
+    /// Hoạt động như một Facade / Adapter chuyển tiếp (delegate) tới IVFXPoolService (GlobalVFXPoolManager).
     /// </summary>
     public class VFXPoolManager : MonoBehaviour
     {
@@ -69,6 +69,8 @@ namespace ProjectZombie.Core.Pooling
             }
         }
 
+        private static IVFXPoolService Service => GlobalVFXPoolManager.Instance;
+
         private void Awake()
         {
             if (_instance == null)
@@ -86,15 +88,15 @@ namespace ProjectZombie.Core.Pooling
         }
 
         /// <summary>
-        /// Sinh hiệu ứng VFX từ Pool. Chuyển tiếp (delegate) tới GlobalVFXPoolManager.
+        /// Sinh hiệu ứng VFX từ Pool. Chuyển tiếp (delegate) tới IVFXPoolService.
         /// </summary>
         public static GameObject SpawnVFX(GameObject prefab, Vector3 position, Quaternion rotation, float duration = 0.5f, int weaponLevel = 1)
         {
             if (prefab == null) return null;
 
-            if (GlobalVFXPoolManager.Instance != null)
+            if (Service != null)
             {
-                return GlobalVFXPoolManager.Instance.PlayEffect(prefab, position, rotation, duration, null, weaponLevel);
+                return Service.PlayEffect(prefab, position, rotation, duration, null, weaponLevel);
             }
 
             // Fallback nếu GlobalVFXPoolManager chưa khởi tạo
@@ -113,9 +115,9 @@ namespace ProjectZombie.Core.Pooling
         public static void ReleaseVFX(GameObject prefab, GameObject instance)
         {
             if (prefab == null || instance == null) return;
-            if (GlobalVFXPoolManager.Instance != null)
+            if (Service != null)
             {
-                GlobalVFXPoolManager.Instance.ReleaseEffect(instance);
+                Service.ReleaseEffect(instance);
             }
             else
             {
@@ -128,9 +130,9 @@ namespace ProjectZombie.Core.Pooling
         /// </summary>
         public static void ClearPools()
         {
-            if (GlobalVFXPoolManager.Instance != null)
+            if (Service != null)
             {
-                GlobalVFXPoolManager.Instance.ClearAllActiveEffects();
+                Service.ClearAllActiveEffects();
             }
         }
     }
