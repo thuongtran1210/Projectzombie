@@ -12,12 +12,25 @@ namespace ProjectZombie.Features.UI
     {
         private readonly UIRegistrySO _uiRegistry;
         private readonly Transform _container;
+        private readonly ProjectZombie.Core.Audio.IAudioService _audioService;
         private readonly Dictionary<MetaScreenType, BaseMetaScreenView> _instantiatedScreens = new Dictionary<MetaScreenType, BaseMetaScreenView>();
 
-        public UIScreenFactory(UIRegistrySO uiRegistry, Transform container)
+        public UIScreenFactory(UIRegistrySO uiRegistry, Transform container, ProjectZombie.Core.Audio.IAudioService audioService = null)
         {
             _uiRegistry = uiRegistry;
             _container = container;
+            _audioService = audioService;
+        }
+
+        private void InjectAudioService(BaseMetaScreenView screen)
+        {
+            if (screen == null || _audioService == null) return;
+            var consumers = screen.GetComponentsInChildren<MonoBehaviour>(true);
+            foreach (var component in consumers)
+            {
+                if (component is ProjectZombie.Core.Audio.IAudioServiceConsumer consumer)
+                    consumer.InjectAudioService(_audioService);
+            }
         }
 
         /// <summary>
@@ -26,6 +39,7 @@ namespace ProjectZombie.Features.UI
         public void RegisterExistingScreen(BaseMetaScreenView screen)
         {
             if (screen == null) return;
+            InjectAudioService(screen);
             _instantiatedScreens[screen.ScreenType] = screen;
         }
 
@@ -145,6 +159,7 @@ namespace ProjectZombie.Features.UI
                 ? entry.screenHierarchyName 
                 : $"Screen_{screenType}";
             newScreen.name = finalName;
+            InjectAudioService(newScreen);
 
             // Đảm bảo ban đầu ở trạng thái ẩn an toàn
             newScreen.gameObject.SetActive(false);
@@ -178,6 +193,7 @@ namespace ProjectZombie.Features.UI
                     {
                         string finalName = !string.IsNullOrEmpty(entry.screenHierarchyName) ? entry.screenHierarchyName : $"Screen_{screenType}";
                         screenView.name = finalName;
+                        InjectAudioService(screenView);
                         screenView.gameObject.SetActive(false);
                         _instantiatedScreens[screenType] = screenView;
                         return screenView;

@@ -60,7 +60,7 @@ namespace ProjectZombie.Features.Weapons
         /// </summary>
         protected void DealDamageInArea(Vector2 center, Vector2 boxSize, float angle, DamageData damageData, float knockbackForce = 4.0f)
         {
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+            Audio?.PlaySlash(false, center);
 
             int mask = TargetingUtility.EnemyLayerMask;
             int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer, mask);
@@ -140,7 +140,7 @@ namespace ProjectZombie.Features.Weapons
         /// </summary>
         protected void TriggerHitImpact(bool isCritical)
         {
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(isCritical, transform.position);
+            Audio?.PlaySlash(isCritical, transform.position);
 
             if (isCritical)
             {
@@ -155,7 +155,7 @@ namespace ProjectZombie.Features.Weapons
 
         protected void PlaySlashVFX()
         {
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
+            Audio?.PlaySlash(false, transform.position);
 
             if (slashParticles != null)
             {

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Weapons
@@ -80,7 +80,7 @@ namespace ProjectZombie.Features.Weapons
 
             for (int w = 0; w < waves; w++)
             {
-                global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
+                Audio?.PlaySlash(true, transform.position);
 
                 for (int i = 0; i < arrowsPerWave; i++)
                 {

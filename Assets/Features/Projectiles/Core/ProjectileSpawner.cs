@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Shared;
@@ -64,7 +64,7 @@ namespace ProjectZombie.Features.Projectiles.Core
                 }
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(position);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayProjectileShoot(position);
 
             return controller;
         }

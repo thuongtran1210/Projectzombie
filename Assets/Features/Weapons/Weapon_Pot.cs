@@ -198,7 +198,7 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
         {
             bool isEvolution = WeaponLevel >= MaxLevel;
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+            Audio?.PlayMagicOrbit(transform.position);
 
             Vector2 targetCenter = aimResult.Distance > 0.01f 
                 ? (Vector2)aimResult.TargetWorldPos 
@@ -210,7 +210,7 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             bool isEvolution = WeaponLevel >= MaxLevel;
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+            Audio?.PlayMagicOrbit(transform.position);
 
             Vector2 targetCenter = (Vector2)transform.position;
             if (customAimDirection != Vector2.zero)
@@ -258,7 +258,7 @@ namespace ProjectZombie.Features.Weapons
             // Sinh Vòng Sóng Âm Gõ Nắp (Clang Ring)
             StartCoroutine(RoutineSpawnExpandingRing(center, 0.3f, 2.2f, new Color(1f, 0.85f, 0.3f, 0.9f)));
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.35f : 0.22f, isEvolution ? 0.4f : 0.25f);
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(true, center);
+            Audio?.PlaySlash(true, center);
 
             DamageData baseDmg = CreateDamageData();
             DamageData hitDmg = new DamageData(
@@ -337,7 +337,7 @@ namespace ProjectZombie.Features.Weapons
             // =========================================================================
             // GIAI ĐOẠN 3: NỔ ĐẠI BÁC PHÓNG QUÁI BÙNG NỔ (EXPLOSIVE CANNON BLAST)
             // =========================================================================
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            Audio?.PlayProjectileExplode(center);
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.45f : 0.3f, isEvolution ? 0.5f : 0.35f);
 
             // Bộc phát Vòng Sóng Kích Đại Bác Khổng Lồ
@@ -667,7 +667,7 @@ namespace ProjectZombie.Features.Weapons
                             float healAmount = hp.MaxHealth * healPercent;
                             hp.Heal(healAmount);
 
-                            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(hero.position);
+                            Audio?.PlayMagicOrbit(hero.position);
                         }
 
                         isCollected = true;

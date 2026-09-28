@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared.VFX;
@@ -58,7 +58,7 @@ namespace ProjectZombie.Features.Weapons
             _overchargeTickTimer = 0f;
             slashCount = Mathf.Max(6, slashCount * 2);
             PerformComboAttack(3);
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(transform.position);
+            Audio?.PlayProjectileExplode(transform.position);
 
             // Bồi thêm vệt chém Hỏa Long định hướng (0 GC Allocation)
             if (customAimDirection != Vector2.zero)
@@ -124,7 +124,7 @@ namespace ProjectZombie.Features.Weapons
             }
 
             // Phát âm thanh vung kiếm chém gió
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+            Audio?.PlaySlash(false, center);
 
             // Xác định góc gốc dựa trên hướng mặt của Player
             float baseAngle = 0f;

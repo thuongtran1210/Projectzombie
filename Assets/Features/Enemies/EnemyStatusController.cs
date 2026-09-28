@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Enemies.StatusHandlers;
@@ -234,11 +234,11 @@ namespace ProjectZombie.Features.Enemies
 
                 if (type == StatusEffectType.Freeze)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayStatusFreeze(transform.position);
+                    global::ProjectZombie.Core.Audio.AudioService.Current?.PlayStatusFreeze(transform.position);
                 }
                 else if (type == StatusEffectType.Burn)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(transform.position);
+                    global::ProjectZombie.Core.Audio.AudioService.Current?.PlayStatusBurn(transform.position);
                 }
             }
 

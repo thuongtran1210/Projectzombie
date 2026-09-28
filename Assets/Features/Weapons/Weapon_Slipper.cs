@@ -217,7 +217,7 @@ namespace ProjectZombie.Features.Weapons
             bool isEvolution = WeaponLevel >= MaxLevel;
             Transform nearest = TargetingUtility.FindNearestEnemy(transform.position, 10.0f);
             Vector2 baseDir = nearest != null ? ((Vector2)nearest.position - (Vector2)transform.position).normalized : (Vector2)transform.right;
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
+            Audio?.PlaySlash(false, transform.position);
 
             if (isEvolution)
             {
@@ -300,7 +300,7 @@ namespace ProjectZombie.Features.Weapons
             // Sinh Vòng Trận / Trụ Thần Sa Hoàng Kim tại điểm đáp
             SpawnRecastGroundMarker(_lastSlipperApexPosition, isEvolution);
 
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(true, transform.position);
+            Audio?.PlaySlash(true, transform.position);
             StartCoroutine(RoutineThrowSlipper(dir, finalDistance, isEvolution ? 2.5f : 1.8f, isEvolution: isEvolution));
             StartCoroutine(RoutineWhirlwindSlippers(isEvolution));
         }
@@ -438,7 +438,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(startPos);
+            Audio?.PlayPlayerDash(startPos);
 
             // [TIẾN HÓA] Phi Thân Thiên Thạch (Meteor Leap) — Nhảy cao vọt biến mất khỏi tầm quái rồi giáng gót
             float peakHeight = isEvolution ? 2.5f : 0.75f;
@@ -459,7 +459,7 @@ namespace ProjectZombie.Features.Weapons
             float shockwaveRadius = isEvolution ? 8.0f : (2.2f + WeaponLevel * 0.25f);
             float damageMultiplier = isEvolution ? 7.5f : (2.0f + WeaponLevel * 0.25f);
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(targetPos);
+            Audio?.PlayProjectileExplode(targetPos);
             int kickHitCount = Physics2D.OverlapCircleNonAlloc(targetPos, shockwaveRadius, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);
             DamageData kickDamage = new DamageData(GetFinalDamage() * damageMultiplier, true, ElementType.Kim, true, this);
 
@@ -638,7 +638,7 @@ namespace ProjectZombie.Features.Weapons
                 StartCoroutine(RoutineAnimateWhirlwindVisual(slamVfx, 0.4f, 4.5f));
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            Audio?.PlayProjectileExplode(center);
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.35f, 0.4f);
 
             DamageData slamDmg = new DamageData(baseDmg.Amount * 1.8f, true, ElementType.Kim, true, this);

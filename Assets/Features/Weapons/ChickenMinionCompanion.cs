@@ -41,6 +41,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private Animator animator;
 
         private SpriteRenderer _sr;
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
         private Transform _targetEnemy;
         private Transform _ownerTransform;
         private float _lastPeckTime;
@@ -323,7 +324,7 @@ namespace ProjectZombie.Features.Weapons
                 StartCoroutine(RoutineResetScale());
 
                 // Âm thanh mổ vui tai
-                global::Core.Audio.AudioManager.Instance?.PlaySlash(false, transform.position);
+                _audioService?.PlaySlash(false, transform.position);
             }
 
             StartCoroutine(RoutineEndAttackAnim());
@@ -373,12 +374,13 @@ namespace ProjectZombie.Features.Weapons
         #region OBJECT POOLING
         private static readonly Queue<ChickenMinionCompanion> _minionPool = new Queue<ChickenMinionCompanion>();
 
-        public void SetOwner(Transform owner)
+        public void SetOwner(Transform owner, ProjectZombie.Core.Audio.IAudioService audioService)
         {
             _ownerTransform = owner;
+            _audioService = audioService;
         }
 
-        public static GameObject SpawnFromPool(GameObject prefab, Vector3 spawnPos, Transform owner = null)
+        public static GameObject SpawnFromPool(GameObject prefab, Vector3 spawnPos, Transform owner = null, ProjectZombie.Core.Audio.IAudioService audioService = null)
         {
             ChickenMinionCompanion minion = null;
             while (_minionPool.Count > 0 && minion == null)
@@ -399,7 +401,7 @@ namespace ProjectZombie.Features.Weapons
 
             if (minion != null)
             {
-                minion.SetOwner(owner);
+                minion.SetOwner(owner, audioService);
             }
 
             return minion.gameObject;

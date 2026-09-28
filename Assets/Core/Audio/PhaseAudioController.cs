@@ -100,9 +100,10 @@ namespace Core.Audio
 
         private void TriggerPhaseAudio(PhaseAudioData phaseData)
         {
-            if (AudioManager.Instance == null)
+            var audioService = ProjectZombie.Core.Audio.AudioService.Current;
+            if (audioService == null)
             {
-                Debug.LogWarning($"[{nameof(PhaseAudioController)}] Không tìm thấy AudioManager.Instance trong Scene!");
+                Debug.LogWarning($"[{nameof(PhaseAudioController)}] Audio service chưa được khởi tạo.");
                 return;
             }
 
@@ -111,13 +112,13 @@ namespace Core.Audio
             // 1. Phát Stinger báo hiệu chuyển Phase (nếu có)
             if (phaseData.phaseStingerConfig != null)
             {
-                AudioManager.Instance.PlayPhaseStinger(phaseData.phaseStingerConfig);
+                audioService.PlayPhaseStinger(phaseData.phaseStingerConfig);
             }
 
             // 2. Chuyển Nhạc nền (BGM) tương ứng với Phase
             if (phaseData.bgmConfig != null)
             {
-                AudioManager.Instance.PlayBGM(phaseData.bgmConfig);
+                audioService.PlayBGM(phaseData.bgmConfig);
             }
             else
             {

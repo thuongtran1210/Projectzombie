@@ -137,7 +137,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(spawnPos);
+            Audio?.PlayStatusBurn(spawnPos);
             StartCoroutine(RoutineSmokeCircle(spawnPos, radius, duration, isEvolution));
         }
         #endregion
@@ -183,7 +183,7 @@ namespace ProjectZombie.Features.Weapons
 
             // Rung camera chấn động
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(isEvolution ? 0.3f : 0.18f, 0.3f);
-            global::Core.Audio.AudioManager.Instance?.PlayStatusBurn(wallCenter);
+            Audio?.PlayStatusBurn(wallCenter);
 
             // Sinh dãy các cụm khói thuốc rồng cuộn trải đều dọc theo bức tường vuông góc
             Vector2 wallPerp = new Vector2(-forwardDir.y, forwardDir.x);
@@ -289,7 +289,7 @@ namespace ProjectZombie.Features.Weapons
                         // 4. Cơ chế Tiến Hóa E_PIPE: Nổ Ho Dây Chuyền (Chain Cough Burst)
                         if (isEvolution && Random.value < 0.35f)
                         {
-                            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(hit.transform.position);
+                            Audio?.PlayProjectileExplode(hit.transform.position);
                             if (hp != null)
                             {
                                 hp.TakeDamage(new DamageData(baseDmg.Amount * 1.2f, true, ElementType.Hoa, false, this));

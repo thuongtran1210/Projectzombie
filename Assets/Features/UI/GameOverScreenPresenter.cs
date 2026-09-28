@@ -10,8 +10,14 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối dữ liệu cho Màn hình Kết quả Game Over / Chiến thắng.
     /// Lấy dữ liệu từ RunStatsTracker (Model), định dạng thành chuỗi và cập nhật cho View.
     /// </summary>
-    public class GameOverScreenPresenter : MonoBehaviour
+    public class GameOverScreenPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("View Reference")]
         [SerializeField] private GameOverScreenView view;
 
@@ -374,7 +380,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandlePlayAgain()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
             Time.timeScale = 1f;
             if (view != null) view.SetActive(false);
 
@@ -406,7 +412,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleMainMenu()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             Time.timeScale = 1f;
             if (view != null) view.SetActive(false);
 

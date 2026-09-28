@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Juice;
@@ -343,7 +343,7 @@ namespace ProjectZombie.Features.Player
             }
 
             // Phát âm thanh vung chém sắc bén khi xuất chiêu đánh thường
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(false, center);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlaySlash(false, center);
 
             // 2. Lực dấn người tới trước (Attack Lunge Impulse)
             ApplyAttackLunge(comboStep, direction);
@@ -425,7 +425,7 @@ namespace ProjectZombie.Features.Player
             {
                 if (isCrit)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlaySlash(true, center);
+                    global::ProjectZombie.Core.Audio.AudioService.Current?.PlaySlash(true, center);
                 }
                 TriggerDynamicGameJuice(comboStep, isCrit);
             }
@@ -541,7 +541,7 @@ namespace ProjectZombie.Features.Player
             float spread = attackConfig.spreadAngle;
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(spawnPos);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayProjectileShoot(spawnPos);
 
             for (int i = 0; i < count; i++)
             {

@@ -22,8 +22,10 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối toàn bộ luồng logic Tàng Bảo Các (Kho Pháp Bảo) chuẩn Clean MVP.
     /// Sử dụng UniversalItemSlotView dùng chung, triệt tiêu toàn bộ code sinh GameObject runtime.
     /// </summary>
-    public class WeaponLoadoutPresenter : MonoBehaviour
+    public class WeaponLoadoutPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [SerializeField] private WeaponLoadoutView _view;
 
         [Header("Weapon Database")]
@@ -276,7 +278,7 @@ namespace ProjectZombie.Features.UI
         public void SetTab(LoadoutInventoryTab tab)
         {
             _currentTab = tab;
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             RefreshUI();
         }
 
@@ -286,7 +288,7 @@ namespace ProjectZombie.Features.UI
             _selectedPrimary = weapon;
             _inspectedWeapon = weapon;
 
-            global::Core.Audio.AudioManager.Instance?.PlayWeaponEquip();
+            _audioService?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
@@ -312,7 +314,7 @@ namespace ProjectZombie.Features.UI
             _selectedRelics.Add(relic);
             _inspectedWeapon = relic;
 
-            global::Core.Audio.AudioManager.Instance?.PlayWeaponEquip();
+            _audioService?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
@@ -328,7 +330,7 @@ namespace ProjectZombie.Features.UI
         {
             if (relic == null) return;
             _inspectedWeapon = relic;
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             UpdateSelectionDetailsOnly();
         }
 

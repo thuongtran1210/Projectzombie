@@ -12,8 +12,14 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Presenter quản lý logic lựa chọn nâng cấp và cầu nối giữa UpgradeManager (Model) và UpgradeUIView.
     /// </summary>
-    public class UpgradeUIPresenter : MonoBehaviour
+    public class UpgradeUIPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("View Reference")]
         [SerializeField] private UpgradeUIView _view;
 
@@ -415,7 +421,7 @@ namespace ProjectZombie.Features.UI
         {
             if (selectedUpgrade == null) return;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             if (_playerWeaponManager != null)
             {
@@ -430,19 +436,19 @@ namespace ProjectZombie.Features.UI
         {
             if (UpgradeManager.Instance != null && UpgradeManager.Instance.TryConsumeRerollToken())
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                _audioService?.PlayUIClick();
                 PopulateUpgradeScreen();
             }
             else
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                _audioService?.PlayUIError();
                 Debug.LogWarning("[UpgradeUIPresenter] Đã hết lượt Reroll Token trong trận đấu!");
             }
         }
 
         private void OnSkipClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             if (_playerWeaponManager != null)
             {

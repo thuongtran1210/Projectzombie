@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Weapons
@@ -41,7 +41,7 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
             }
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(firePoint.position);
+            Audio?.PlayMagicOrbit(firePoint.position);
         }
     }
 }

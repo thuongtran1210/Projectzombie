@@ -27,6 +27,7 @@ namespace ProjectZombie.Features.Weapons
         private PlayerStats _playerStats;
         private PlayerPassives _playerPassives;
         private ProjectZombie.Core.Services.Data.IGameDataService _gameDataService;
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
         private List<WeaponBase> _activeWeapons = new List<WeaponBase>();
 
         private readonly List<WeaponBase> _cachedRelicWeapons = new List<WeaponBase>();
@@ -92,6 +93,7 @@ namespace ProjectZombie.Features.Weapons
             _playerPassives = GetComponent<PlayerPassives>();
             _characterCombat = GetComponent<CharacterCombat>();
             _gameDataService = ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Core.Services.Data.IGameDataService>();
+            _audioService = ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Core.Audio.IAudioService>();
         }
 
         private void Start()
@@ -309,6 +311,10 @@ namespace ProjectZombie.Features.Weapons
         {
             if (!_activeWeapons.Contains(weapon))
             {
+                if (_audioService == null)
+                    _audioService = global::ProjectZombie.Core.Audio.AudioService.Current;
+
+                weapon.InjectAudioService(_audioService);
                 weapon.InjectGameDataService(_gameDataService);
                 weapon.Initialize(_playerStats);
                 

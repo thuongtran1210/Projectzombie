@@ -130,7 +130,7 @@ namespace ProjectZombie.Features.Shared
 
             if (CompareTag("Player"))
             {
-                global::Core.Audio.AudioManager.Instance?.PlayPlayerHurt(transform.position);
+                global::ProjectZombie.Core.Audio.AudioService.Current?.PlayPlayerHurt(transform.position);
             }
 
             // Bắn event báo cáo sát thương cơ bản
@@ -160,7 +160,7 @@ namespace ProjectZombie.Features.Shared
 
             if (CompareTag("Player"))
             {
-                global::Core.Audio.AudioManager.Instance?.PlayPlayerHurt(transform.position);
+                global::ProjectZombie.Core.Audio.AudioService.Current?.PlayPlayerHurt(transform.position);
             }
 
             // Bắn event báo cáo sát thương đầy đủ (Crit, Element & Counter)

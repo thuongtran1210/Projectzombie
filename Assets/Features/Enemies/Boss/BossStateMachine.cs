@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Boss;
 using ProjectZombie.Features.Player;
@@ -63,7 +63,7 @@ namespace ProjectZombie.Features.Enemies.Boss
                 if (player != null) _playerTransform = player.transform;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayBossRoar(transform.position);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayBossRoar(transform.position);
         }
 
         private bool _isDead = false;

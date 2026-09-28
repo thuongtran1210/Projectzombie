@@ -63,7 +63,7 @@ namespace ProjectZombie.Features.UI
             }
 
             // Khởi tạo UIScreenFactory chuyên trách nạp và quản lý vòng đời màn hình
-            _screenFactory = new UIScreenFactory(_uiRegistry, transform);
+            _screenFactory = new UIScreenFactory(_uiRegistry, transform, ProjectZombie.Core.Audio.AudioService.Current);
 
 
             // Đăng ký các màn hình đã có sẵn trong Hierarchy của Scene vào Factory
@@ -268,7 +268,7 @@ namespace ProjectZombie.Features.UI
 
             if (_screenFactory == null)
             {
-                _screenFactory = new UIScreenFactory(_uiRegistry, transform);
+                _screenFactory = new UIScreenFactory(_uiRegistry, transform, ProjectZombie.Core.Audio.AudioService.Current);
             }
 
             var targetScreen = _screenFactory.GetOrCreateScreen(screenType);

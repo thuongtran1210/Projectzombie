@@ -94,7 +94,7 @@ namespace ProjectZombie.Features.Weapons
                 healable.Heal(25f);
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(transform.position);
+            Audio?.PlayMagicOrbit(transform.position);
         }
 
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)

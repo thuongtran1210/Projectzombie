@@ -9,8 +9,10 @@ namespace ProjectZombie.Features.UI.StageSelect
     /// <summary>
     /// Presenter điều phối dữ liệu Chọn Ải & Tải DLC (MVP Pattern).
     /// </summary>
-    public class StageSelectUIPresenter : MonoBehaviour
+    public class StageSelectUIPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [Header("View Reference")]
         [SerializeField] private StageSelectUIView _view;
 
@@ -152,7 +154,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_currentStageIndex > 0)
             {
                 _currentStageIndex--;
-                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                _audioService?.PlayUIClick();
                 RefreshView();
             }
         }
@@ -162,7 +164,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_currentStageIndex < _stageList.Count - 1)
             {
                 _currentStageIndex++;
-                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                _audioService?.PlayUIClick();
                 RefreshView();
             }
         }
@@ -172,7 +174,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_currentStageIndex >= _stageList.Count) return;
             var stage = _stageList[_currentStageIndex];
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
             _view.UpdateDownloadProgress(0f, "Đang kết nối máy chủ CDN...");
 
             // Tải AssetBundle chứa Map và Timeline của Ải này
@@ -197,7 +199,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         private void HandlePatchCompleted()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm(1.2f);
+            _audioService?.PlayUIConfirm(1.2f);
             RefreshView();
         }
 
@@ -225,7 +227,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (_currentStageIndex >= _stageList.Count) return;
             var stage = _stageList[_currentStageIndex];
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
             OnStageSelectedForBattle?.Invoke(stage);
         }
 

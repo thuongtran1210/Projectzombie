@@ -8,7 +8,7 @@ namespace Core.Audio
     /// Manager quản lý tập trung toàn bộ âm thanh trong game (SFX, BGM, UI).
     /// Hỗ trợ Object Pooling, Audio Cooldown, Adaptive BGM Snapshots & Phase Stingers.
     /// </summary>
-    public class AudioManager : MonoBehaviour
+    public class AudioManager : MonoBehaviour, ProjectZombie.Core.Audio.IAudioService
     {
         private static AudioManager _instance;
         public static AudioManager Instance
@@ -90,6 +90,7 @@ namespace Core.Audio
             }
 
             _instance = this;
+            ProjectZombie.Core.Architecture.ServiceContext.Register<ProjectZombie.Core.Audio.IAudioService>(this);
             if (transform.parent != null)
             {
                 transform.SetParent(null);
@@ -98,6 +99,15 @@ namespace Core.Audio
 
             InitializeAudioSystem();
             LoadAndApplyVolumeSettings();
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
+
+            if (ReferenceEquals(ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Core.Audio.IAudioService>(), this))
+                ProjectZombie.Core.Architecture.ServiceContext.Unregister<ProjectZombie.Core.Audio.IAudioService>();
         }
 
         private void InitializeAudioSystem()

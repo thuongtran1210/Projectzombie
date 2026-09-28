@@ -61,12 +61,18 @@ namespace ProjectZombie.Features.Weapons
 
         protected ICharacterStats CharacterStats;
         protected ProjectZombie.Core.Services.Data.IGameDataService GameDataService { get; private set; }
+        protected ProjectZombie.Core.Audio.IAudioService Audio { get; private set; }
         private float _lastAttackTime;
 
         /// <summary>Supplies the asset-data abstraction before weapon-specific initialization.</summary>
         public void InjectGameDataService(ProjectZombie.Core.Services.Data.IGameDataService gameDataService)
         {
             GameDataService = gameDataService;
+        }
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            Audio = audioService;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.VFX.Indicators;
@@ -65,7 +65,7 @@ namespace ProjectZombie.Features.Enemies.Boss.Skills
 
             StartCoroutine(SpawnShockwaveVFX(transform.position, slamRadius));
 
-            global::Core.Audio.AudioManager.Instance?.PlayBossSmash(transform.position);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayBossSmash(transform.position);
 
             // Quét trúng đối tượng bằng NonAlloc (0 GC Allocation)
             int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, slamRadius, _slamHitBuffer, targetLayer);

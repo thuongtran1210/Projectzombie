@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Weapons
@@ -91,7 +91,7 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
 
-                global::Core.Audio.AudioManager.Instance?.PlayProjectileShoot(firePoint.position);
+                Audio?.PlayProjectileShoot(firePoint.position);
                 yield return new WaitForSeconds(0.1f);
             }
         }

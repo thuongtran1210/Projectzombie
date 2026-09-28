@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Projectiles.Components;
 using ProjectZombie.Features.Projectiles.Data;
 using ProjectZombie.Features.Projectiles.Core;
@@ -49,7 +49,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
         {
             _hasExploded = true;
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayProjectileExplode(center);
 
             int mask = _controller.Data != null && _controller.Data.HitLayer != 0 
                 ? (int)_controller.Data.HitLayer 

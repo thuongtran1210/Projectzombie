@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Core.Audio;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
@@ -9,8 +9,16 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối toàn bộ logic của Modal Cài Đặt (Settings Modal).
     /// Tích hợp trực tiếp với AudioManager và PlayerPrefs.
     /// </summary>
-    public class SettingsModalPresenter : MonoBehaviour
+    public class SettingsModalPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+            ApplySavedAudioSettings();
+        }
+
         public static SettingsModalPresenter Instance { get; private set; }
 
         [SerializeField] private SettingsModalView _view;
@@ -32,14 +40,6 @@ namespace ProjectZombie.Features.UI
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Input.multiTouchEnabled = true;
 
-            float bgm = PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f);
-            float sfx = PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f);
-
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.SetBGMVolume(bgm, false);
-                AudioManager.Instance.SetSFXVolume(sfx, false);
-            }
         }
 
         private void Awake()
@@ -47,6 +47,13 @@ namespace ProjectZombie.Features.UI
             if (Instance == null) Instance = this;
             ApplyGlobalSettingsOnBoot();
             EnsureViewAndEvents();
+        }
+
+        private void ApplySavedAudioSettings()
+        {
+            if (_audioService == null) return;
+            _audioService.SetBGMVolume(PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f), false);
+            _audioService.SetSFXVolume(PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f), false);
         }
 
         private void OnEnable()
@@ -148,8 +155,8 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
-            float bgm = AudioManager.Instance != null ? AudioManager.Instance.BGMVolume : PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f);
-            float sfx = AudioManager.Instance != null ? AudioManager.Instance.SFXVolume : PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f);
+            float bgm = _audioService != null ? _audioService.BGMVolume : PlayerPrefs.GetFloat("Setting_BGMVolume", 0.4f);
+            float sfx = _audioService != null ? _audioService.SFXVolume : PlayerPrefs.GetFloat("Setting_SFXVolume", 0.9f);
 
             bool shake = IsScreenShakeEnabled;
             bool dmgNum = IsDamageNumbersEnabled;
@@ -165,10 +172,10 @@ namespace ProjectZombie.Features.UI
             }
             _view.SetCustomizeControlsVisible(isInMatch);
 
-            if (AudioManager.Instance != null)
+            if (_audioService != null)
             {
-                AudioManager.Instance.SetBGMVolume(bgm, false);
-                AudioManager.Instance.SetSFXVolume(sfx, false);
+                _audioService.SetBGMVolume(bgm, false);
+                _audioService.SetSFXVolume(sfx, false);
             }
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = fps60 ? 60 : 30;
@@ -178,9 +185,9 @@ namespace ProjectZombie.Features.UI
         {
             PlayerPrefs.SetFloat("Setting_BGMVolume", val);
             PlayerPrefs.Save();
-            if (AudioManager.Instance != null)
+            if (_audioService != null)
             {
-                AudioManager.Instance.SetBGMVolume(val, false);
+                _audioService.SetBGMVolume(val, false);
             }
         }
 
@@ -188,9 +195,9 @@ namespace ProjectZombie.Features.UI
         {
             PlayerPrefs.SetFloat("Setting_SFXVolume", val);
             PlayerPrefs.Save();
-            if (AudioManager.Instance != null)
+            if (_audioService != null)
             {
-                AudioManager.Instance.SetSFXVolume(val, false);
+                _audioService.SetSFXVolume(val, false);
             }
         }
 
@@ -216,7 +223,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCustomizeControlsClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             // Tìm hoặc mở Customizer Presenter
             var customizer = ProjectZombie.Features.UI.Controls.Customization.MobileControlsCustomizerPresenter.Instance;
@@ -236,6 +243,8 @@ namespace ProjectZombie.Features.UI
                     var inst = Instantiate(customizerPrefab, canvas != null ? canvas.transform : transform.root);
                     inst.name = "MobileControlsCustomizerUI";
                     customizer = inst.GetComponent<ProjectZombie.Features.UI.Controls.Customization.MobileControlsCustomizerPresenter>();
+                    if (customizer is ProjectZombie.Core.Audio.IAudioServiceConsumer consumer)
+                        consumer.InjectAudioService(_audioService);
                 }
             }
 
@@ -281,7 +290,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCloseClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = MetaUIManager.Instance ?? GetComponentInParent<MetaUIManager>();
             if (metaManager != null && metaManager.IsInMetaMenu)
             {

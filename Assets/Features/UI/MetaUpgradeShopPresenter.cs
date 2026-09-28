@@ -7,8 +7,10 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Presenter điều phối toàn bộ logic Miếu Tứ Bất Tử (Meta Upgrade Tree) theo kiến trúc MVP.
     /// </summary>
-    public class MetaUpgradeShopPresenter : MonoBehaviour
+    public class MetaUpgradeShopPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [SerializeField] private MetaUpgradeShopView _view;
         [SerializeField] private PermanentUpgradeTreeData _treeData;
 
@@ -114,7 +116,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleTabSelected(SanctuaryBranch branch)
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (_currentBranch != branch)
             {
                 _currentBranch = branch;
@@ -125,7 +127,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleNodeCardSelected(int cardIndex)
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             _selectedCardIndex = cardIndex;
             RenderShop();
         }
@@ -165,7 +167,7 @@ namespace ProjectZombie.Features.UI
             int currentLevel = saveData.GetUpgradeLevel(nodeIndex);
             if (currentLevel >= node.maxLevel)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                _audioService?.PlayUIError();
                 return;
             }
 
@@ -177,7 +179,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (service.SpendCurrency(cost))
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _audioService?.PlayUIConfirm();
                     saveData.SetUpgradeLevel(nodeIndex, currentLevel + 1);
                     Core.Save.SaveSystem.Save(saveData);
                     Debug.Log($"<color=#00FF88>[MetaUpgradeShop]</color> Đã nâng cấp '{node.displayName}' lên Cấp {currentLevel + 1} (-{cost} Cổ Tiền)!");
@@ -185,7 +187,7 @@ namespace ProjectZombie.Features.UI
                 }
                 else
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                    _audioService?.PlayUIError();
                 }
             }
         }

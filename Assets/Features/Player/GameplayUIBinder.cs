@@ -28,6 +28,7 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private RelicSkillPresenter _relicSkillPresenter;
         [SerializeField] private AttackButtonPresenter _attackButtonPresenter;
         [SerializeField] private DashButtonPresenter _dashButtonPresenter;
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
 
         public GameplayUIBinder() { }
 
@@ -36,13 +37,15 @@ namespace ProjectZombie.Features.Player
             PlayerInfoUIPresenter playerInfo,
             UpgradeUIPresenter upgradeUI,
             GameOverScreenPresenter gameOver,
-            CharacterGaugeWidgetPresenter gaugeWidget)
+            CharacterGaugeWidgetPresenter gaugeWidget,
+            ProjectZombie.Core.Audio.IAudioService audioService = null)
         {
             _runHUDPresenter = runHUD;
             _playerInfoUIPresenter = playerInfo;
             _upgradeUIPresenter = upgradeUI;
             _gameOverScreenPresenter = gameOver;
             _characterGaugeWidgetPresenter = gaugeWidget;
+            _audioService = audioService;
         }
 
         public void SetGameplayUIManager(GameplayUIManager manager)
@@ -87,6 +90,19 @@ namespace ProjectZombie.Features.Player
 
             EnsureReferences();
 
+            if (_audioService == null)
+                _audioService = ProjectZombie.Core.Audio.AudioService.Current;
+
+            InjectAudioService(CharacterSelectionPresenter.Instance);
+
+            InjectAudioService(_runHUDPresenter);
+            InjectAudioService(_playerInfoUIPresenter);
+            InjectAudioService(_upgradeUIPresenter);
+            InjectAudioService(_gameOverScreenPresenter);
+            InjectAudioService(_signatureSkillPresenter);
+            InjectAudioService(_relicSkillPresenter);
+            InjectAudioService(_dashButtonPresenter);
+
             BindRunHUD(context);
             BindOverheadStatus(context);
             BindPlayerInfo(context);
@@ -97,6 +113,12 @@ namespace ProjectZombie.Features.Player
             BindRelicSkill(context);
             BindAttackButton(context);
             BindDashButton(context);
+        }
+
+        private void InjectAudioService(MonoBehaviour presenter)
+        {
+            if (_audioService != null && presenter is ProjectZombie.Core.Audio.IAudioServiceConsumer consumer)
+                consumer.InjectAudioService(_audioService);
         }
 
         private void BindRunHUD(PlayerContext context)

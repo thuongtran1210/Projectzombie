@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 
@@ -7,8 +7,10 @@ namespace ProjectZombie.Features.UI.Controls.Customization
     /// <summary>
     /// Presenter điều phối toàn bộ luồng tùy chỉnh phím ảo giữa Model (LayoutManager) và View (CustomizerView).
     /// </summary>
-    public class MobileControlsCustomizerPresenter : MonoBehaviour
+    public class MobileControlsCustomizerPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         public static MobileControlsCustomizerPresenter Instance { get; private set; }
 
         [SerializeField] private MobileControlsCustomizerView _view;
@@ -189,7 +191,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void HandleSaveClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (MobileControlsLayoutManager.Instance != null)
             {
                 MobileControlsLayoutManager.Instance.SaveCurrentLayout();
@@ -199,7 +201,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void HandleResetDefaultClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (MobileControlsLayoutManager.Instance != null)
             {
                 MobileControlsLayoutManager.Instance.ResetToDefault();
@@ -212,7 +214,7 @@ namespace ProjectZombie.Features.UI.Controls.Customization
 
         private void HandleCancelClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             // Khôi phục lại trạng thái backup trước khi mở edit
             foreach (var kvp in _backupBeforeEdit)
             {

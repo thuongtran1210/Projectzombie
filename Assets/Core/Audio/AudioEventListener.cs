@@ -37,23 +37,23 @@ namespace ProjectZombie.Core.Audio
 
         private void OnEnemyDied(EnemyDiedEvent evt)
         {
-            if (AudioManager.Instance != null && _enemyDieSFX != null)
+            if (AudioService.Current != null && _enemyDieSFX != null)
             {
-                AudioManager.Instance.PlaySound(_enemyDieSFX, evt.Position);
+                AudioService.Current.PlaySound(_enemyDieSFX, evt.Position);
             }
         }
 
         private void OnPlayerLevelUp(PlayerLevelUpEvent evt)
         {
-            if (AudioManager.Instance != null && _playerLevelUpSFX != null)
+            if (AudioService.Current != null && _playerLevelUpSFX != null)
             {
-                AudioManager.Instance.PlaySound(_playerLevelUpSFX);
+                AudioService.Current.PlaySound(_playerLevelUpSFX);
             }
         }
 
         private void OnExpCollected(ExpCollectedEvent evt)
         {
-            if (AudioManager.Instance != null && _expCollectSFX != null)
+            if (AudioService.Current != null && _expCollectSFX != null)
             {
                 float currentTime = Time.unscaledTime;
                 if (currentTime - _lastExpCollectTime < COMBO_RESET_DELAY)
@@ -67,7 +67,7 @@ namespace ProjectZombie.Core.Audio
                 _lastExpCollectTime = currentTime;
 
                 float calculatedPitch = Mathf.Min(1.0f + _expComboCount * PITCH_STEP, MAX_PITCH);
-                AudioManager.Instance.PlaySound(_expCollectSFX, evt.Position, calculatedPitch);
+                AudioService.Current.PlaySound(_expCollectSFX, evt.Position, calculatedPitch);
             }
         }
     }

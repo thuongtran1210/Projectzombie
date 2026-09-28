@@ -187,7 +187,7 @@ namespace ProjectZombie.Features.Weapons
             _hitEnemiesThisCast.Clear();
 
             // Âm thanh vung chổi & Rung nhẹ
-            global::Core.Audio.AudioManager.Instance?.PlaySlash(true, startPos);
+            Audio?.PlaySlash(true, startPos);
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.06f, 0.08f);
 
             for (int i = 0; i < broomCount; i++)
@@ -309,7 +309,7 @@ namespace ProjectZombie.Features.Weapons
             }
 
             ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.12f, 0.15f);
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(endPos);
+            Audio?.PlayMagicOrbit(endPos);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace ProjectZombie.Features.Weapons
         public void SpawnFeatherDrop(Vector3 dropPos)
         {
             EnsureAssets();
-            ChickenFeatherDrop.GetFromPool(dropPos, this, featherCollectiblePrefab, featherCollectibleSprite);
+            ChickenFeatherDrop.GetFromPool(dropPos, this, featherCollectiblePrefab, featherCollectibleSprite, Audio);
         }
 
         /// <summary>
@@ -340,8 +340,8 @@ namespace ProjectZombie.Features.Weapons
                 SpawnChickenMinionCompanion(spawnPos);
 
                 // Âm thanh xuất trận hùng tráng & Hiệu ứng đặc sắc
-                global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
-                global::Core.Audio.AudioManager.Instance?.PlayUltimateSkillCast(spawnPos);
+                Audio?.PlayUIConfirm();
+                Audio?.PlayUltimateSkillCast(spawnPos);
                 ProjectZombie.Core.Juice.GameJuiceEvents.RequestCameraShake(0.08f, 0.1f);
             }
 
@@ -361,14 +361,14 @@ namespace ProjectZombie.Features.Weapons
 
                 if (_activeMinions.Count < maxMinions)
                 {
-                    GameObject minion = ChickenMinionCompanion.SpawnFromPool(chickenMinionPrefab, spawnPos, OwnerTransform);
+                    GameObject minion = ChickenMinionCompanion.SpawnFromPool(chickenMinionPrefab, spawnPos, OwnerTransform, Audio);
                     if (minion != null)
                     {
                         _activeMinions.Add(minion);
                     }
 
                     // Âm thanh xuất hiện
-                    global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(spawnPos);
+                    Audio?.PlayMagicOrbit(spawnPos);
                 }
             }
         }

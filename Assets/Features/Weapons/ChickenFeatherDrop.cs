@@ -17,6 +17,7 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private float lifetime = 35f;
 
         private Relic_ChickenFeatherBroom _broomSource;
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
         private Transform _targetPlayer;
         private bool _isCollected;
         private float _spawnTime;
@@ -59,7 +60,7 @@ namespace ProjectZombie.Features.Weapons
 
         private static readonly System.Collections.Generic.Queue<ChickenFeatherDrop> _pool = new();
 
-        public static ChickenFeatherDrop GetFromPool(Vector3 pos, Relic_ChickenFeatherBroom source, GameObject prefab = null, Sprite defaultSprite = null)
+        public static ChickenFeatherDrop GetFromPool(Vector3 pos, Relic_ChickenFeatherBroom source, GameObject prefab = null, Sprite defaultSprite = null, ProjectZombie.Core.Audio.IAudioService audioService = null)
         {
             ChickenFeatherDrop drop = null;
             while (_pool.Count > 0 && drop == null)
@@ -98,6 +99,7 @@ namespace ProjectZombie.Features.Weapons
                 drop.gameObject.SetActive(true);
             }
 
+            drop._audioService = audioService;
             drop.Init(source);
             return drop;
         }
@@ -178,7 +180,7 @@ namespace ProjectZombie.Features.Weapons
             }
 
             // Âm thanh nhặt & tia sáng
-            global::Core.Audio.AudioManager.Instance?.PlayCoinTick();
+            _audioService?.PlayCoinTick();
             ReturnToPool();
         }
 

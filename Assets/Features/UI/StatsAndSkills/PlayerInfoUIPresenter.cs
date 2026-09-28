@@ -15,8 +15,14 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
     /// Presenter điều phối dữ liệu từ Player, WeaponManager, Passives và RunStatsTracker sang PlayerStatsMenuUIView.
     /// Quản lý mở/đóng Pause Menu trong trận, cập nhật 8 chỉ số RPG, thông tin tướng và trang bị.
     /// </summary>
-    public class PlayerInfoUIPresenter : MonoBehaviour
+    public class PlayerInfoUIPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("Models / Logic")]
         [SerializeField] private PlayerStats _playerStats;
         [SerializeField] private HealthSystem _playerHealth;
@@ -275,7 +281,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void CloseMenu()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             if (_statsMenuView == null) return;
 
@@ -303,7 +309,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void HandleSettingsClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             var canvas = GetComponentInParent<Canvas>();
             Transform canvasTransform = canvas != null ? canvas.transform : transform.root;
@@ -331,11 +337,14 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
                     GameObject settingsObj = Instantiate(settingsPrefab, canvasTransform);
                     settingsObj.name = "Modal_Settings";
                     settingsPresenter = settingsObj.GetComponent<SettingsModalPresenter>();
+                    if (settingsPresenter is ProjectZombie.Core.Audio.IAudioServiceConsumer consumer)
+                        consumer.InjectAudioService(_audioService);
                 }
             }
 
             if (settingsPresenter != null)
             {
+                settingsPresenter.InjectAudioService(_audioService);
                 if (canvasTransform != null && settingsPresenter.transform.parent != canvasTransform)
                 {
                     settingsPresenter.transform.SetParent(canvasTransform, false);
@@ -351,7 +360,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         private void HandleQuitClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             // Đóng menu trước để reset trạng thái menu
             CloseMenu();

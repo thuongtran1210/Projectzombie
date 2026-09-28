@@ -7,8 +7,14 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối giữa PlayerController / PlayerStats (Model) và DashButtonView (View).
     /// Tuân thủ MVP (Section 12 Rules): Quản lý vòng đời subscribe/unsubscribe và format dữ liệu trước khi đẩy sang View.
     /// </summary>
-    public class DashButtonPresenter : MonoBehaviour
+    public class DashButtonPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("View Reference")]
         [SerializeField] private DashButtonView _view;
 
@@ -128,11 +134,11 @@ namespace ProjectZombie.Features.UI
             float timePassed = Time.time - _lastDashTime;
             if (timePassed < _dashCooldown)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                _audioService?.PlayUIError();
                 return;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))

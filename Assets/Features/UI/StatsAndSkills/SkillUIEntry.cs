@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -6,8 +6,10 @@ using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI.StatsAndSkills
 {
-    public class SkillUIEntry : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class SkillUIEntry : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [SerializeField] private Image _skillIcon;
         [SerializeField] private TextMeshProUGUI _levelText;
 
@@ -52,7 +54,7 @@ namespace ProjectZombie.Features.UI.StatsAndSkills
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (_tooltip != null)
             {
                 if (_tooltip.gameObject.activeSelf)

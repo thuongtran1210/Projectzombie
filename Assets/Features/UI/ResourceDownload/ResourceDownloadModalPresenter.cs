@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,8 +10,10 @@ namespace ProjectZombie.Features.UI.ResourceDownload
     /// <summary>
     /// Presenter điều phối toàn bộ danh mục tài nguyên tải về (MVP Pattern).
     /// </summary>
-    public class ResourceDownloadModalPresenter : MonoBehaviour
+    public class ResourceDownloadModalPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [Header("View Reference")]
         [SerializeField] private ResourceDownloadModalView _view;
 
@@ -156,7 +158,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
         {
             if (data == null || string.IsNullOrEmpty(data.addressableKey)) return;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             if (_viewMap.TryGetValue(data.addressableKey, out var itemView) && itemView != null)
             {
@@ -170,7 +172,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
         {
             if (data == null || string.IsNullOrEmpty(data.addressableKey)) return;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             // Xóa cache bất đồng bộ của key này và chờ hoàn tất
             await _patchManager.ClearAssetCacheAsync(data.addressableKey);
@@ -181,7 +183,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
         private async void HandleDownloadAll()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             var keysToDownload = new List<object>();
             foreach (var pkg in _packages)
@@ -200,7 +202,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
         private async void HandleClearAllCache()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
 
             await _patchManager.ClearAllCacheAsync();
             foreach (var pkg in _packages)
@@ -227,7 +229,7 @@ namespace ProjectZombie.Features.UI.ResourceDownload
 
         private void HandlePatchCompleted()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm(1.2f);
+            _audioService?.PlayUIConfirm(1.2f);
             RefreshAllStatuses();
         }
 

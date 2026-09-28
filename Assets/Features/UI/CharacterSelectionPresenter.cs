@@ -32,8 +32,15 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Presenter điều phối dữ liệu chọn nhân vật giữa Model và CharacterSelectionView.
     /// </summary>
-    public class CharacterSelectionPresenter : MonoBehaviour
+    public class CharacterSelectionPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
+
         [Header("View Reference")]
         [SerializeField] private CharacterSelectionView _view;
 
@@ -197,7 +204,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnNextCharacter()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex + 1) % _characters.Length;
             RenderCurrentCharacter();
@@ -205,7 +212,7 @@ namespace ProjectZombie.Features.UI
 
         private void OnPrevCharacter()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (_characters == null || _characters.Length == 0) return;
             _currentIndex = (_currentIndex - 1 + _characters.Length) % _characters.Length;
             RenderCurrentCharacter();
@@ -219,12 +226,12 @@ namespace ProjectZombie.Features.UI
             // Kiểm tra trạng thái mở khóa từ Save Data
             if (!IsHeroUnlocked(selected.characterId))
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                _audioService?.PlayUIClick();
                 Debug.LogWarning($"[{nameof(CharacterSelectionPresenter)}] Anh Hùng '{selected.name}' ({selected.characterId}) chưa được mở khóa trong Save Data!");
                 return;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
             Debug.Log($"[{nameof(CharacterSelectionPresenter)}] Đã chọn Anh Hùng: {selected.name} (Hệ {selected.element})");
 
             GameObject chosenPrefab = null;
@@ -348,7 +355,7 @@ namespace ProjectZombie.Features.UI
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             _currentIndex = heroIndex;
             RenderCurrentCharacter();
         }

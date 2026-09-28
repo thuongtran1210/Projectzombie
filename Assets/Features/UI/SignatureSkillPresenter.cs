@@ -9,8 +9,14 @@ namespace ProjectZombie.Features.UI
     /// Presenter kết nối giữa SignatureSkillManager (Model) và các View UI (SignatureSkillButtonView, ThuSinhElementPickerOverlayView).
     /// Tuân thủ Mô hình MVP (Section 12 Rules): Đảm bảo quản lý vòng đời subscribe/unsubscribe chuẩn mực.
     /// </summary>
-    public class SignatureSkillPresenter : MonoBehaviour
+    public class SignatureSkillPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("View References")]
         [SerializeField] private SignatureSkillButtonView _buttonView;
         [SerializeField] private ThuSinhElementPickerOverlayView _elementPickerOverlayView;
@@ -139,7 +145,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_skillManager != null && _skillManager.IsReady && _skillManager.RemainingCooldown <= 0f)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _audioService?.PlayUIConfirm();
 
                     if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null && aimResult.Direction != Vector2.zero)
                     {
@@ -206,11 +212,11 @@ namespace ProjectZombie.Features.UI
 
             if (!_skillManager.IsReady || _skillManager.RemainingCooldown > 0f)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                _audioService?.PlayUIError();
                 return;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
@@ -227,7 +233,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_skillManager == null) return;
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             // Nếu người chơi tự chọn hoặc hết 1.5s timeout, thi triển skill với hệ tương ứng
             if (selectedElement == ElementType.None)

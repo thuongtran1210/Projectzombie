@@ -324,7 +324,7 @@ namespace ProjectZombie.Features.Player
                 }
 
                 // Phát âm thanh Thân Pháp Phi Vân Lướt
-                global::Core.Audio.AudioManager.Instance?.PlayPlayerDash(transform.position);
+                global::ProjectZombie.Core.Audio.AudioService.Current?.PlayPlayerDash(transform.position);
             }
         }
 

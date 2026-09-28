@@ -22,8 +22,15 @@ namespace ProjectZombie.Features.UI
     /// Lớp cơ sở chuẩn hoá cho toàn bộ các màn hình / Popup thuộc hệ thống UI Ngoài Game (Meta Menu).
     /// Quản lý tối ưu hiển thị (Canvas/CanvasGroup không rebuild layout), hiệu ứng Pop-in mượt mà và cơ chế Click Outside to Close.
     /// </summary>
-    public abstract class BaseMetaScreenView : MonoBehaviour
+    public abstract class BaseMetaScreenView : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
+
         public abstract MetaScreenType ScreenType { get; }
 
         [Header("Modal & Animation Components")]
@@ -194,7 +201,7 @@ namespace ProjectZombie.Features.UI
         /// </summary>
         public virtual void OnBackPressed()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             if (MetaUIManager.Instance != null)
             {
                 MetaUIManager.Instance.PopScreen();

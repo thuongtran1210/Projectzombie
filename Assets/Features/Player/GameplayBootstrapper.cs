@@ -74,6 +74,8 @@ namespace ProjectZombie.Features.Player
             _characterSelectionPresenter = CharacterSelectionPresenter.Instance;
             if (_characterSelectionPresenter != null)
             {
+                if (ProjectZombie.Core.Audio.AudioService.Current is ProjectZombie.Core.Audio.IAudioService audioService)
+                    _characterSelectionPresenter.InjectAudioService(audioService);
                 _characterSelectionPresenter.OnCharacterSelected -= HandleCharacterSelected;
                 _characterSelectionPresenter.OnCharacterSelected += HandleCharacterSelected;
             }

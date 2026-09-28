@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Projectiles.Core;
@@ -56,7 +56,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayMagicOrbit(center);
+            Audio?.PlayMagicOrbit(center);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace ProjectZombie.Features.Weapons
                 }
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayProjectileExplode(center);
+            Audio?.PlayProjectileExplode(center);
         }
 
         private void OnEnable()

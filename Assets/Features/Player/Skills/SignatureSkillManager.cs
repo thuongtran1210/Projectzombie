@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Player.Skills
@@ -96,7 +96,7 @@ namespace ProjectZombie.Features.Player.Skills
                 Debug.LogError($"[SignatureSkillManager] Ngoại lệ khi thực thi {ActiveSkill.GetType().Name}: {ex}");
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUltimateSkillCast(transform.position);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayUltimateSkillCast(transform.position);
 
             RemainingCooldown = ActiveSkill.Cooldown;
             Debug.Log($"<color=#00FF88>[SignatureSkillManager]</color> Đã thi triển {ActiveSkill.GetType().Name}. Bắt đầu hồi chiêu: {RemainingCooldown:F1}s.");

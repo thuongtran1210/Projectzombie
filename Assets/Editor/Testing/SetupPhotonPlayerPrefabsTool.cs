@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Fusion;
 using ProjectZombie.Features.Multiplayer.Core;
+using ProjectZombie.Features.Multiplayer.Core.Components;
 using ProjectZombie.Features.Combat.Coop;
 using ProjectZombie.Features.Player.Mechanics;
 using ProjectZombie.Features.Player;
@@ -73,6 +74,15 @@ namespace ProjectZombie.Editor.MultiplayerTools
                         netChar = root.AddComponent<NetworkPlayerCharacter>();
                     }
 
+                    // RequireComponent only fills dependencies when NetworkPlayerCharacter is
+                    // first added. Existing prefabs are not retroactively repaired, so persist
+                    // its modular components explicitly before Fusion bakes the NetworkObject.
+                    EnsureComponent<NetworkPlayerMovement>(root);
+                    EnsureComponent<NetworkPlayerPresentation>(root);
+                    EnsureComponent<NetworkPlayerLoadout>(root);
+                    EnsureComponent<NetworkPlayerVitals>(root);
+                    EnsureComponent<NetworkPlayerCombat>(root);
+
                     // 5. Gắn Coop Mechanics (Gục ngã & Chia sẻ kinh nghiệm)
                     if (!root.TryGetComponent<CoopDownedMechanic>(out var downedMech))
                     {
@@ -118,6 +128,16 @@ namespace ProjectZombie.Editor.MultiplayerTools
             AssetDatabase.Refresh();
 
             Debug.Log($"<color=#00FF88>[SetupPhotonPlayerPrefabsTool] HOÀN TẤT!</color> Đã cập nhật {configuredCount}/{PLAYER_PREFAB_PATHS.Length} Player Prefabs và đồng bộ {syncedFiles} files sang Resources!");
+        }
+
+        private static T EnsureComponent<T>(GameObject root) where T : Component
+        {
+            if (!root.TryGetComponent<T>(out var component))
+            {
+                component = root.AddComponent<T>();
+            }
+
+            return component;
         }
     }
 }

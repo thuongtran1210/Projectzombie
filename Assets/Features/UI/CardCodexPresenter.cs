@@ -14,8 +14,10 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí / Tướng (Mô hình Clean MVP).
     /// </summary>
-    public class CardCodexPresenter : MonoBehaviour
+    public class CardCodexPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [Header("View")]
         [SerializeField] private CardCodexView _view;
 
@@ -474,7 +476,7 @@ namespace ProjectZombie.Features.UI
 
                         slotItem.BindRelic(vm, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
                         {
-                            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                            _audioService?.PlayUIClick();
                             SelectRelic(weapon);
                         });
 
@@ -526,7 +528,7 @@ namespace ProjectZombie.Features.UI
 
                         slotItem.BindHero(vm, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
                         {
-                            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                            _audioService?.PlayUIClick();
                             SelectHero(hero);
                         });
 
@@ -567,7 +569,7 @@ namespace ProjectZombie.Features.UI
 
                         slotItem.BindUpgrade(vm, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
                         {
-                            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                            _audioService?.PlayUIClick();
                             SelectUpgrade(data);
                         });
 
@@ -747,14 +749,14 @@ namespace ProjectZombie.Features.UI
 
                 if (relicMgr.TryFuseRelic(_selectedRelic.weaponId))
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _audioService?.PlayUIConfirm();
                     RefreshCurrency();
                     PopulateGridForTab(_currentTab);
                     SelectRelic(_selectedRelic);
                 }
                 else
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                    _audioService?.PlayUIError();
                 }
             }
             else if (_currentTab == CodexTabType.HeroCards)
@@ -767,21 +769,21 @@ namespace ProjectZombie.Features.UI
                 var result = heroMgr.TryUpgradeCharacterStar(_selectedHero.characterId);
                 if (result == UpgradeCharacterResult.Success)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _audioService?.PlayUIConfirm();
                     RefreshCurrency();
                     PopulateGridForTab(_currentTab);
                     SelectHero(_selectedHero);
                 }
                 else
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                    _audioService?.PlayUIError();
                 }
             }
         }
 
         private void HandleBack()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetComponentInParent<MetaUIManager>() ?? MetaUIManager.Instance;
             if (metaManager != null)
             {

@@ -130,9 +130,9 @@ namespace ProjectZombie.Features.Player
             }
 
             // 6. Phát âm thanh Chuông Chiêng Tử Trận
-            if (deathAudioConfig != null && global::Core.Audio.AudioManager.Instance != null)
+            if (deathAudioConfig != null && global::ProjectZombie.Core.Audio.AudioService.Current != null)
             {
-                global::Core.Audio.AudioManager.Instance.PlaySound(deathAudioConfig, transform.position);
+                global::ProjectZombie.Core.Audio.AudioService.Current.PlaySound(deathAudioConfig, transform.position);
             }
             else if (deathGongClip != null)
             {

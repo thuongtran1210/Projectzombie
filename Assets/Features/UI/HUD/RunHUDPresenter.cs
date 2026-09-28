@@ -20,8 +20,14 @@ namespace ProjectZombie.Features.UI.HUD
     /// 3. Kéo PlayerStats, HealthSystem, PlayerExperience từ Player vào Inspector.
     /// 4. RunStatsTracker được lấy qua Singleton vì nó quản lý run-level data.
     /// </summary>
-    public class RunHUDPresenter : MonoBehaviour
+    public class RunHUDPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         // ====================================================================
         // [INSPECTOR] — View
         // ====================================================================
@@ -128,7 +134,7 @@ namespace ProjectZombie.Features.UI.HUD
                 return;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var presenter = ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter.Instance;
             if (presenter == null)
             {

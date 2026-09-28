@@ -8,8 +8,14 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối giữa WeaponManager / Active WeaponBase (Model) và RelicSkillButtonView (View).
     /// Tuân thủ Mô hình MVP: Tự động Ẩn/Hiện nút tùy theo loại Pháp Bảo (Chủ Động vs Bị Động).
     /// </summary>
-    public class RelicSkillPresenter : MonoBehaviour
+    public class RelicSkillPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
         [Header("View Reference")]
         [SerializeField] private RelicSkillButtonView _buttonView;
 
@@ -132,7 +138,7 @@ namespace ProjectZombie.Features.UI
             {
                 if (_weaponManager != null && _boundActiveRelic != null && _boundActiveRelic.IsRelicSkillReady)
                 {
-                    global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+                    _audioService?.PlayUIConfirm();
 
                     // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
                     if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
@@ -251,11 +257,11 @@ namespace ProjectZombie.Features.UI
 
             if (!_boundActiveRelic.IsRelicSkillReady)
             {
-                global::Core.Audio.AudioManager.Instance?.PlayUIError();
+                _audioService?.PlayUIError();
                 return;
             }
 
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
 
             // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
             if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))

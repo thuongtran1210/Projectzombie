@@ -11,8 +11,10 @@ namespace ProjectZombie.Features.UI.Gacha
     /// Presenter điều phối toàn bộ logic kết nối giữa Domain Model (RelicGachaManager, MetaCurrencyManager) và View (GachaChestView).
     /// Chịu trách nhiệm định dạng toàn bộ số liệu sang Rich Text TextMeshPro trước khi đẩy cho View.
     /// </summary>
-    public class GachaChestPresenter : MonoBehaviour
+    public class GachaChestPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
         [Header("View Reference")]
         [SerializeField] private GachaChestView _view;
 
@@ -131,7 +133,7 @@ namespace ProjectZombie.Features.UI.Gacha
                 {
                     RelicGachaManager.Instance.SetActiveBanner(targetBanner);
                     RefreshAllUI();
-                    global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+                    _audioService?.PlayUIClick();
                 }
             }
         }

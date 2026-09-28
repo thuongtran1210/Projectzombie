@@ -157,7 +157,7 @@ namespace ProjectZombie.Features.Elements
             }
 
             // 2. SFX Ting Feedback (Ngũ Hành Tương Sinh)
-            global::Core.Audio.AudioManager.Instance?.PlayElementalReaction(transform.position);
+            global::ProjectZombie.Core.Audio.AudioService.Current?.PlayElementalReaction(transform.position);
 
             // 3. Event Notification cho UI HUD / VFX
             OnElementSynergyTriggered?.Invoke(hit1.element, hit2.element, hit2.weapon);

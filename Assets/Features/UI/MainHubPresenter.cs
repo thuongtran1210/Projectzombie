@@ -11,8 +11,15 @@ namespace ProjectZombie.Features.UI
     /// Presenter điều phối Sảnh Hoàng Tuyền (Main Hub).
     /// Tuân thủ MVP: Điều hướng độc lập giữa Chọn Tướng, Tàng Bảo Các, Miếu Cổ và Xuất Trận.
     /// </summary>
-    public class MainHubPresenter : MonoBehaviour
+    public class MainHubPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
+        private ProjectZombie.Core.Audio.IAudioService _audioService;
+
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService)
+        {
+            _audioService = audioService;
+        }
+
         [Header("View Reference")]
         [SerializeField] private MainHubView _view;
 
@@ -111,7 +118,7 @@ namespace ProjectZombie.Features.UI
         public void RefreshHubState()
         {
             UpdateCurrencyDisplay();
-            global::Core.Audio.AudioManager.Instance?.PlayHubBGM();
+            _audioService?.PlayHubBGM();
             UpdateSelectedHeroDisplay();
             UpdateLoadoutSummaryDisplay();
         }
@@ -244,7 +251,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleStartRunClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIConfirm();
+            _audioService?.PlayUIConfirm();
             OnStartRunRequested?.Invoke();
 
             var metaManager = GetMetaUIManager();
@@ -264,7 +271,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleMultiplayerClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             Debug.Log("<color=#00FF88>[MainHubPresenter]</color> Người chơi đã chọn chế độ Đồng Đội / Nhiều Người Chơi (Multiplayer Co-op)!");
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
@@ -275,7 +282,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleHeroSelectClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -285,7 +292,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleArmoryClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -295,7 +302,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleGachaClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -305,7 +312,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSanctuaryTreeClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -315,7 +322,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleCodexClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -325,7 +332,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleSettingsClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
@@ -335,7 +342,7 @@ namespace ProjectZombie.Features.UI
 
         private void HandleResourceDownloadClicked()
         {
-            global::Core.Audio.AudioManager.Instance?.PlayUIClick();
+            _audioService?.PlayUIClick();
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
