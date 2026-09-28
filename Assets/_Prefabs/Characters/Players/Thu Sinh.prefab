@@ -865,6 +865,7 @@ GameObject:
   - component: {fileID: 4784016667607091793}
   - component: {fileID: 5151492039553058240}
   - component: {fileID: 1227327823656218695}
+  - component: {fileID: 900000000000000002}
   m_Layer: 6
   m_Name: Thu Sinh
   m_TagString: Player
@@ -2000,3 +2001,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+
+--- !u!114 &900000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603747337966706880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4e9269182c54d478343c999308ff8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
