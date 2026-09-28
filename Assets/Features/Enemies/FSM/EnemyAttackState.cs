@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Enemies
 {
@@ -33,8 +33,12 @@ namespace ProjectZombie.Features.Enemies
 
         public override void Update()
         {
-            if (_enemy.PlayerTransform == null)
+            if (_enemy.PlayerTransform == null || (_enemy.PlayerHealthSystem != null && !_enemy.PlayerHealthSystem.IsAlive))
             {
+                if (_enemy.Attacker != null && _enemy.Attacker.IsAttacking)
+                {
+                    _enemy.Attacker.InterruptAttack();
+                }
                 _stateMachine.ChangeState(_enemy.IdleState);
                 return;
             }

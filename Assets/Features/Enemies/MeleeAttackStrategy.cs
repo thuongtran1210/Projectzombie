@@ -173,7 +173,7 @@ namespace ProjectZombie.Features.Enemies
                 }
             }
 
-            if (targetDamageable != null)
+            if (targetDamageable != null && targetDamageable.IsAlive)
             {
                 targetDamageable.TakeDamage(_enemy.GetTotalDamage());
             }

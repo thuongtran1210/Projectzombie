@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -129,7 +129,7 @@ namespace ProjectZombie.Features.Player
                 _playerAnimator.ChangeAnimationState(PlayerAnimationState.Dead);
             }
 
-            // 5. Phát âm thanh Chuông Chiêng Tử Trận
+            // 6. Phát âm thanh Chuông Chiêng Tử Trận
             if (deathAudioConfig != null && global::Core.Audio.AudioManager.Instance != null)
             {
                 global::Core.Audio.AudioManager.Instance.PlaySound(deathAudioConfig, transform.position);
@@ -139,38 +139,52 @@ namespace ProjectZombie.Features.Player
                 AudioSource.PlayClipAtPoint(deathGongClip, transform.position);
             }
 
-            // 6. Khởi chạy Coroutine điều phối Slow-motion và Camera Zoom cận cảnh
+            // 7. Yêu cầu toàn bộ kẻ địch đang hoạt động cập nhật lại mục tiêu (ngay lập tức dừng tấn công xác nhân vật)
+            foreach (var enemy in Enemies.Enemy.ActiveEnemies)
+            {
+                if (enemy != null)
+                {
+                    enemy.UpdateTarget(force: true);
+                }
+            }
+
+            // 8. Khởi chạy Coroutine điều phối Slow-motion và Camera Zoom cận cảnh
             StartCoroutine(DeathSequenceCoroutine());
         }
 
         private IEnumerator DeathSequenceCoroutine()
         {
-            // Yêu cầu Camera zoom vào vị trí nhân vật
-            if (CameraFollow.Instance != null)
+            try
             {
-                CameraFollow.Instance.ZoomTo(deathZoomOrthoSize, deathSequenceDuration);
+                // Yêu cầu Camera zoom vào vị trí nhân vật
+                if (CameraFollow.Instance != null)
+                {
+                    CameraFollow.Instance.ZoomTo(deathZoomOrthoSize, deathSequenceDuration);
+                }
+
+                float initialTimeScale = Time.timeScale;
+                float elapsed = 0f;
+
+                // Làm chậm thời gian mượt mà từ initialTimeScale về targetSlowMotionScale
+                while (elapsed < deathSequenceDuration)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                    float progress = Mathf.Clamp01(elapsed / deathSequenceDuration);
+                    
+                    // Giảm dần timeScale theo đường cong mượt
+                    Time.timeScale = Mathf.Lerp(initialTimeScale, targetSlowMotionScale, progress);
+
+                    yield return null;
+                }
+
+                // Dừng hoàn toàn thời gian khi hoạt ảnh kết thúc
+                Time.timeScale = 0f;
             }
-
-            float initialTimeScale = Time.timeScale;
-            float elapsed = 0f;
-
-            // Làm chậm thời gian mượt mà từ initialTimeScale về targetSlowMotionScale
-            while (elapsed < deathSequenceDuration)
+            finally
             {
-                elapsed += Time.unscaledDeltaTime;
-                float progress = Mathf.Clamp01(elapsed / deathSequenceDuration);
-                
-                // Giảm dần timeScale theo đường cong mượt
-                Time.timeScale = Mathf.Lerp(initialTimeScale, targetSlowMotionScale, progress);
-
-                yield return null;
+                Debug.Log("[PlayerLogic] Hoàn tất Death Sequence -> Thông báo mở Panel Game Over.");
+                OnPlayerDeathSequenceCompleted?.Invoke();
             }
-
-            // Dừng hoàn toàn thời gian khi hoạt ảnh kết thúc
-            Time.timeScale = 0f;
-
-            Debug.Log("[PlayerLogic] Hoàn tất Death Sequence -> Thông báo mở Panel Game Over.");
-            OnPlayerDeathSequenceCompleted?.Invoke();
         }
     }
 }

@@ -60,7 +60,14 @@ namespace ProjectZombie.Features.Weapons
         protected float localProjectileSpeedBonus = 0f;
 
         protected ICharacterStats CharacterStats;
+        protected ProjectZombie.Core.Services.Data.IGameDataService GameDataService { get; private set; }
         private float _lastAttackTime;
+
+        /// <summary>Supplies the asset-data abstraction before weapon-specific initialization.</summary>
+        public void InjectGameDataService(ProjectZombie.Core.Services.Data.IGameDataService gameDataService)
+        {
+            GameDataService = gameDataService;
+        }
 
         /// <summary>
         /// Transform của chủ sở hữu vũ khí (Người chơi hoặc Đệ tử/Đồng đội).

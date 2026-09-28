@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Enemies
@@ -98,6 +98,8 @@ namespace ProjectZombie.Features.Enemies
             if (targetObj.TryGetComponent<IDamageable>(out var damageable) ||
                 (damageable = targetObj.GetComponentInParent<IDamageable>()) != null)
             {
+                if (!damageable.IsAlive) return false;
+
                 if (_enemy.TryGetComponent<Special.EnemyDebtCollector>(out var debtCollector))
                 {
                     debtCollector.ExecuteSteal();

@@ -88,6 +88,7 @@ namespace ProjectZombie.Features.Spawners
         private Transform _playerTransform;
         private Camera _mainCamera;
         private WavePreloader _wavePreloader;
+        private ProjectZombie.Core.Services.Data.IGameDataService _gameDataService;
 
         // Public Properties giữ 100% tương thích ngược qua WaveScheduler sub-module
         public float MatchTime => _waveScheduler.MatchTime;
@@ -109,6 +110,7 @@ namespace ProjectZombie.Features.Spawners
 
             ProjectZombie.Core.Architecture.ServiceContext.Register<ISpawnService>(this);
             _mainCamera = Camera.main;
+            _gameDataService = ProjectZombie.Core.Architecture.ServiceContext.Get<ProjectZombie.Core.Services.Data.IGameDataService>();
             InitializeSubModules();
         }
 
@@ -196,9 +198,11 @@ namespace ProjectZombie.Features.Spawners
                 _wavePreloader = GetComponent<WavePreloader>() ?? gameObject.AddComponent<WavePreloader>();
             }
 
+            _wavePreloader.Construct(_gameDataService);
+
             if (timelineConfig == null)
             {
-                if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+                if (_gameDataService != null)
                 {
                     _ = LoadTimelineConfigAsync();
                 }
@@ -214,10 +218,10 @@ namespace ProjectZombie.Features.Spawners
 
         private async System.Threading.Tasks.Task LoadTimelineConfigAsync()
         {
-            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            if (_gameDataService != null)
             {
-                timelineConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<LevelTimelineConfig>("Level1_Timeline") ??
-                                 await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<LevelTimelineConfig>("Levels/Level1_Timeline");
+                timelineConfig = await _gameDataService.GetAsync<LevelTimelineConfig>("Level1_Timeline") ??
+                                 await _gameDataService.GetAsync<LevelTimelineConfig>("Levels/Level1_Timeline");
             }
         }
 

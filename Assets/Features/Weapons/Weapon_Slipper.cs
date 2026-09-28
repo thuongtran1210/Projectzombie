@@ -51,16 +51,16 @@ namespace ProjectZombie.Features.Weapons
                 {
                     slipperProjectileSprite = icon;
                 }
-                else if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+                else if (GameDataService != null)
                 {
-                    slipperProjectileSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_SLIPPER");
+                    slipperProjectileSprite = await GameDataService.GetAsync<Sprite>("Icon_W_SLIPPER");
                 }
             }
 
-            if (recastMarkerCircleSprite == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            if (recastMarkerCircleSprite == null && GameDataService != null)
             {
-                recastMarkerCircleSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring") ??
-                                           await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_DongSon_SonicWave");
+                recastMarkerCircleSprite = await GameDataService.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring") ??
+                                           await GameDataService.GetAsync<Sprite>("Tex_VFX_DongSon_SonicWave");
             }
 
             if (trailMaterial == null)

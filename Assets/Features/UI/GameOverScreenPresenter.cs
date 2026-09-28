@@ -44,6 +44,7 @@ namespace ProjectZombie.Features.UI
         private IRunStatsService _runStatsService;
 
         private bool _isConstructed = false;
+        private Coroutine _deathSequenceFailSafe;
 
         public void Construct(HealthSystem health, IRunStatsService runStatsService = null)
         {
@@ -56,6 +57,20 @@ namespace ProjectZombie.Features.UI
             if (runStatsService != null)
             {
                 _runStatsService = runStatsService;
+            }
+
+            if (view == null)
+            {
+                view = GetComponent<GameOverScreenView>();
+            }
+
+            PlayerLogic.OnPlayerDeathSequenceCompleted -= HandleDeathSequenceCompleted;
+            PlayerLogic.OnPlayerDeathSequenceCompleted += HandleDeathSequenceCompleted;
+
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+                GameStateManager.Instance.OnStateChanged += HandleStateChanged;
             }
 
             SubscribeEvents();
@@ -159,10 +174,21 @@ namespace ProjectZombie.Features.UI
             // Nếu Player có PlayerLogic điều phối Death Sequence thì chờ sự kiện OnPlayerDeathSequenceCompleted
             if (playerHealth != null && playerHealth.GetComponent<PlayerLogic>() != null)
             {
+                if (_deathSequenceFailSafe != null) StopCoroutine(_deathSequenceFailSafe);
+                _deathSequenceFailSafe = StartCoroutine(DeathSequenceFailSafeCoroutine());
                 return;
             }
 
             // Fallback khi không có PlayerLogic trong entity (chế độ Solo thông thường)
+            Show(isVictory: false);
+        }
+
+        private System.Collections.IEnumerator DeathSequenceFailSafeCoroutine()
+        {
+            // Dự phòng: Nếu sau 2.2 giây unscaled time mà chuỗi death sequence bị ngắt/kẹt, tự động mở GameOver
+            yield return new WaitForSecondsRealtime(2.2f);
+            _deathSequenceFailSafe = null;
+            Debug.LogWarning("[GameOverScreenPresenter] Death Sequence timed out sau 2.2s -> Kích hoạt GameOver Fail-Safe.");
             Show(isVictory: false);
         }
 
@@ -173,6 +199,12 @@ namespace ProjectZombie.Features.UI
 
         private void HandleDeathSequenceCompleted()
         {
+            if (_deathSequenceFailSafe != null)
+            {
+                StopCoroutine(_deathSequenceFailSafe);
+                _deathSequenceFailSafe = null;
+            }
+
             // Trong Multiplayer Co-op, trận đấu chỉ kết thúc qua sự kiện Team Wipe (CoopDownedMechanic)
             if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
             {
@@ -235,6 +267,12 @@ namespace ProjectZombie.Features.UI
         {
             _lastIsVictory = isVictory;
 
+            if (_deathSequenceFailSafe != null)
+            {
+                StopCoroutine(_deathSequenceFailSafe);
+                _deathSequenceFailSafe = null;
+            }
+
             // Đóng khẩn cấp bảng Upgrade nếu đang mở dở khi tử trận
             var upgradePresenter = UpgradeUIPresenter.Instance;
             if (upgradePresenter != null)
@@ -249,22 +287,27 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                // Fallback hoạt động độc lập nếu không có GameStateManager trong scene
                 Time.timeScale = 0f;
-
-                if (view != null)
-                {
-                    view.SetActive(true);
-                }
-
-                var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
-                if (tracker != null)
-                {
-                    tracker.StopTracking();
-                }
-
-                PopulateStats(isVictory);
             }
+
+            // Đảm bảo 100% view luôn được hiển thị & điền thông số bất kể OnStateChanged có phát được hay không
+            if (view == null)
+            {
+                view = GetComponent<GameOverScreenView>();
+            }
+
+            if (view != null)
+            {
+                view.SetActive(true);
+            }
+
+            var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+            if (tracker != null)
+            {
+                tracker.StopTracking();
+            }
+
+            PopulateStats(isVictory);
         }
 
         private void PopulateStats(bool isVictory)

@@ -340,16 +340,25 @@ namespace ProjectZombie.Features.Enemies
             if (registry != null && TargetSelector != null)
             {
                 var targetContext = TargetSelector.SelectTarget(transform.position, registry);
-                if (targetContext != null && targetContext.Transform != null)
+                if (targetContext != null && targetContext.Transform != null && targetContext.Health != null && targetContext.Health.IsAlive)
                 {
                     SetPlayer(targetContext.Transform, targetContext.Health);
                     return;
                 }
             }
 
-            if (PlayerProvider.HasPlayer)
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerHealth != null && PlayerProvider.PlayerHealth.IsAlive)
             {
                 SetPlayer(PlayerProvider.PlayerTransform, PlayerProvider.PlayerHealth);
+                return;
+            }
+
+            // Nếu không còn mục tiêu sống nào -> Hủy bỏ target và lập tức ngừng tấn công, chuyển về Idle
+            PlayerTransform = null;
+            PlayerHealthSystem = null;
+            if (StateMachine != null && StateMachine.CurrentState != IdleState && StateMachine.CurrentState != DeadState && IdleState != null)
+            {
+                StateMachine.ChangeState(IdleState);
             }
         }
 

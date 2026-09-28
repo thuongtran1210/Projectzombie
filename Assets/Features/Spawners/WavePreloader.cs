@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using ProjectZombie.Core.Services.Addressables;
+using ProjectZombie.Core.Services.Data;
 
 namespace ProjectZombie.Features.Spawners
 {
@@ -12,15 +12,13 @@ namespace ProjectZombie.Features.Spawners
     /// </summary>
     public class WavePreloader : MonoBehaviour
     {
-        private IAssetProvider _assetProvider;
+        private IGameDataService _gameDataService;
         private readonly List<string> _loadedAddresses = new List<string>();
         private CancellationTokenSource _cts;
 
-        private IAssetProvider AssetProvider => _assetProvider ??= AddressableAssetManager.Instance;
-
-        public void Construct(IAssetProvider assetProvider)
+        public void Construct(IGameDataService gameDataService)
         {
-            _assetProvider = assetProvider;
+            _gameDataService = gameDataService;
         }
 
         private void Awake()
@@ -57,14 +55,8 @@ namespace ProjectZombie.Features.Spawners
                 {
                     try
                     {
-                        if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
-                        {
-                            enemyPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>(evt.enemyAddress);
-                        }
-                        else
-                        {
-                            enemyPrefab = await AssetProvider.LoadAssetAsync<GameObject>(evt.enemyAddress, ct);
-                        }
+                        if (_gameDataService != null)
+                            enemyPrefab = await _gameDataService.GetAsync<GameObject>(evt.enemyAddress);
                     }
                     catch (System.Exception ex)
                     {
@@ -104,12 +96,11 @@ namespace ProjectZombie.Features.Spawners
         /// </summary>
         public void ReleasePreloadedAssets()
         {
-            var provider = AssetProvider;
-            if (provider != null)
+            if (_gameDataService != null)
             {
                 foreach (var address in _loadedAddresses)
                 {
-                    provider.ReleaseAsset(address);
+                    _gameDataService.ReleaseAsset(address);
                 }
             }
             _loadedAddresses.Clear();

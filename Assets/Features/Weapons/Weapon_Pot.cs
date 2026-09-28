@@ -82,27 +82,27 @@ namespace ProjectZombie.Features.Weapons
 
         private async void EnsureAssets()
         {
-            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            if (GameDataService != null)
             {
                 if (potVfxPrefab == null)
                 {
-                    potVfxPrefab = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GameObject>("VFX_Relic_Pot_Suction");
+                    potVfxPrefab = await GameDataService.GetAsync<GameObject>("VFX_Relic_Pot_Suction");
                 }
 
                 if (potSprite == null)
                 {
-                    potSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Pot_Projectile") ??
-                                await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Icon_W_POT");
+                    potSprite = await GameDataService.GetAsync<Sprite>("Tex_Pot_Projectile") ??
+                                await GameDataService.GetAsync<Sprite>("Icon_W_POT");
                 }
 
                 if (riceBallSprite == null)
                 {
-                    riceBallSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_Rice_Collectible");
+                    riceBallSprite = await GameDataService.GetAsync<Sprite>("Tex_Rice_Collectible");
                 }
 
                 if (shockwaveRingSprite == null)
                 {
-                    shockwaveRingSprite = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
+                    shockwaveRingSprite = await GameDataService.GetAsync<Sprite>("Tex_VFX_Cinnabar_Shockwave_Ring");
                 }
             }
 
