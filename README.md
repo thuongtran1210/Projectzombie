@@ -200,23 +200,62 @@ Nhằm đảm bảo trải nghiệm **60 FPS ổn định** trên thiết bị A
 
 ---
 
-## 🛠️ Yêu Cầu Môi Trường & Thiết Lập (Getting Started)
+## 🛠️ Yêu Cầu Môi Trường & Hướng Dẫn Cài Đặt (Getting Started)
 
-### Yêu Cầu Kỹ Thuật
-- **Unity Version:** `2022.3 LTS` (Khuyên dùng `2022.3.x`).
+### 1. Yêu Cầu Kỹ Thuật & Môi Trường
+- **Unity Editor:** `2022.3.62f3` (hoặc `Unity 2022.3 LTS`).
+- **Unity Modules (Khuyên dùng):** `Android Build Support` (kèm OpenJDK và Android SDK & NDK) để hỗ trợ build di động.
+- **Git & Git LFS:** **Bắt buộc cài đặt Git LFS** trước khi clone (dự án quản lý toàn bộ Textures `.png`, Audio `.wav`/`.mp3`, và mô hình qua Git LFS).
 - **Render Pipeline:** Universal Render Pipeline (URP 2D).
 - **Input System:** New Input System (`com.unity.inputsystem`).
 - **Target OS:** Android 8.0 (API 26) trở lên, Target SDK API 33+ (Android 13/14).
 - **Scripting Backend:** IL2CPP (ARM64-v8a).
 
-### Cài Đặt & Chạy Game Trong Unity Editor
-1. Clone repository về máy:
-   ```bash
-   git clone <repository_url>
-   ```
-2. Mở Unity Hub và thêm dự án bằng phiên bản **Unity 2022.3 LTS**.
-3. Mở scene khởi động tại: `Assets/Scenes/GamePlay_BendoVongXuyen.unity` (hoặc Scene Bootstrapper).
-4. Nhấn **Play** để trải nghiệm với Dynamic Virtual Joystick hoặc bàn phím (WASD / Phím điều hướng).
+### 2. Quy Trình Clone & Mở Dự Án Cho Đồng Đội
+
+#### Bước 2.1: Cài đặt Git LFS và Clone Repository
+Mở terminal (PowerShell, Command Prompt hoặc Git Bash) và chạy các lệnh:
+```bash
+# 1. Kích hoạt Git LFS trên hệ thống (chỉ cần chạy 1 lần duy nhất)
+git lfs install
+
+# 2. Clone repository về máy
+git clone https://github.com/thuongtran1210/Projectzombie.git
+
+# 3. Chuyển vào thư mục dự án
+cd Projectzombie
+
+# 4. Kéo toàn bộ file binary/hình ảnh/âm thanh thực tế về (tránh lỗi file pointer rỗng)
+git lfs pull
+```
+
+> [!WARNING]
+> Nếu bỏ qua bước `git lfs install` và `git lfs pull`, các file hình ảnh/âm thanh trong Unity sẽ bị lỗi missing/trắng xóa vì chỉ tải về file text con trỏ (130 bytes).
+
+#### Bước 2.2: Mở Dự Án Bằng Unity Hub
+1. Mở **Unity Hub** ➜ Bấm **Add** (hoặc *Add project from disk*).
+2. Chọn thư mục `Projectzombie` vừa clone.
+3. Đảm bảo chọn đúng phiên bản Editor: **`2022.3.62f3`** (Unity 2022.3 LTS).
+4. Nhấp mở dự án. Unity sẽ tự động import package và build thư mục `Library` lần đầu (mất khoảng 3 – 10 phút tùy cấu hình máy).
+
+#### Bước 2.3: Thiết Lập Addressables Play Mode (Quan Trọng)
+Để chạy mượt mà trên Editor mà không cần kết nối tới Server CDN Firebase hay build bundle:
+1. Trên thanh Menu Unity, mở: `Window` ➜ `Asset Management` ➜ `Addressables` ➜ `Groups`.
+2. Tại dropdown **Play Mode Script** (ở góc trên cửa sổ Addressables Groups), chọn:
+   👉 **`Use Asset Database (fastest)`**.
+
+#### Bước 2.4: Mở Scene & Trải Nghiệm
+1. Trong cửa sổ **Project**, mở scene: `Assets/Scenes/SampleScene.unity`.
+2. Nhấn nút **Play** (hoặc `Ctrl + P`). Hệ thống `CoreBootstrapper` sẽ tự động khởi tạo toàn bộ Core Services, GameManager và Save System trước khi scene tải.
+3. **Điều khiển:** Sử dụng phím **`W - A - S - D`** hoặc các phím mũi tên để di chuyển (New Input System).
+
+### 3. Xử Lý Sự Cố Thường Gặp (Troubleshooting)
+
+| Hiện tượng | Nguyên nhân | Cách khắc phục |
+|---|---|---|
+| **Sprite bị trắng xóa / Không có âm thanh SFX** | Clone khi chưa cài Git LFS hoặc thiếu bước `git lfs pull`. | Chạy lệnh `git lfs pull` trong terminal thư mục dự án, sau đó trong Unity chọn `Assets > Reimport All`. |
+| **Lỗi Addressables không tải được Asset trong Editor** | Play Mode Script đang để chế độ CDN / Existing Build. | Vào `Window > Asset Management > Addressables > Groups`, chuyển **Play Mode Script** thành **Use Asset Database (fastest)**. |
+| **Xung đột Scene khi làm việc nhóm** | Nhiều thành viên cùng chỉnh sửa file `SampleScene.unity`. | Tạo nhánh riêng (`git checkout -b feature/<ten_tinh_nang>`), hạn chế sửa trực tiếp vào scene chung; ưu tiên thao tác trên Prefab độc lập. |
 
 ---
 
