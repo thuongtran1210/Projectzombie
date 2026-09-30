@@ -31,9 +31,12 @@ namespace ProjectZombie.Features.Weapons
         [SerializeField] private GameObject matVfxPrefab;
         [SerializeField] private GameObject slideHitVfxPrefab;
 
-        public override SkillAimConfig AimConfig => IsInRecastWindow
-            ? new SkillAimConfig(SkillAimType.VectorWall, 6.5f, matSize.x, matSize.y, true)
-            : new SkillAimConfig(SkillAimType.VectorWall, 5.0f, matSize.x, matSize.y, true);
+        public override SkillAimConfig AimConfig => new SkillAimConfig(
+            SkillAimType.CircleReticle,
+            IsInRecastWindow ? 6.5f : 5.0f,
+            matSize.x * 0.5f,
+            0f,
+            false);
 
         public float CurrentDuration => baseDuration + (WeaponLevel - 1) * 0.4f;
         public float CurrentSleepDuration => baseSleepDuration + (WeaponLevel - 1) * 0.25f;
@@ -75,6 +78,16 @@ namespace ProjectZombie.Features.Weapons
             DeployMatAtPosition(targetPos, CurrentDuration);
         }
 
+        protected override void PerformActiveRelicSkill(AimResult aimResult)
+        {
+            Vector2 targetPos = aimResult.Distance > 0.01f
+                ? (Vector2)aimResult.TargetWorldPos
+                : CalculateTargetPosition(aimResult.Direction, 4.0f);
+            skillActionName = "Di Dời Bẫy";
+            recastWindowDuration = CurrentDuration;
+            DeployMatAtPosition(targetPos, CurrentDuration);
+        }
+
         /// <summary>
         /// Pha 2: Tái kích hoạt để Di Dời Bẫy Chiếu sang vị trí chiến thuật mới.
         /// </summary>
@@ -83,6 +96,15 @@ namespace ProjectZombie.Features.Weapons
             Vector2 newTargetPos = CalculateTargetPosition(customAimDirection, 5.5f);
             skillActionName = "Đặt Bẫy Chiếu";
 
+            StartCoroutine(RoutineRelocateMat(_currentMatPosition, newTargetPos));
+        }
+
+        protected override void PerformRecastSkill(AimResult aimResult)
+        {
+            Vector2 newTargetPos = aimResult.Distance > 0.01f
+                ? (Vector2)aimResult.TargetWorldPos
+                : CalculateTargetPosition(aimResult.Direction, 5.5f);
+            skillActionName = "Đặt Bẫy Chiếu";
             StartCoroutine(RoutineRelocateMat(_currentMatPosition, newTargetPos));
         }
 

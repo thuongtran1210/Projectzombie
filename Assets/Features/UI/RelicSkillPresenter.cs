@@ -111,9 +111,11 @@ namespace ProjectZombie.Features.UI
         {
             if (_boundActiveRelic == null || !_boundActiveRelic.IsRelicSkillReady) return;
 
-            var aimConfig = (_boundActiveRelic is Combat.Aiming.IAimableSkill aimable)
-                ? aimable.AimConfig
-                : new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 6.5f, 1.2f, 0f, true);
+            var aimConfig = _boundActiveRelic.AimConfig;
+            if (aimConfig.aimType == Combat.Aiming.SkillAimType.None)
+            {
+                return;
+            }
 
             Combat.Aiming.SkillAimIndicatorController.Instance?.StartAim(aimConfig);
         }
@@ -130,9 +132,15 @@ namespace ProjectZombie.Features.UI
                 : Combat.Aiming.AimResult.FromDirection(direction, _weaponManager != null ? _weaponManager.transform.position : Vector3.zero);
 
             Combat.Aiming.SkillAimIndicatorController.Instance?.StopAim();
+            if (_boundActiveRelic != null && _boundActiveRelic.AimConfig.aimType == Combat.Aiming.SkillAimType.None)
+            {
+                TriggerQuickTapSkill(default);
+                return;
+            }
+
             if (isQuickTap)
             {
-                HandleButtonClicked();
+                TriggerQuickTapSkill(direction);
             }
             else
             {
@@ -140,16 +148,64 @@ namespace ProjectZombie.Features.UI
                 {
                     _audioService?.PlayUIConfirm();
 
-                    // Tuyến đường duy nhất: Gửi Intent qua PlayerInputReader
+                    // Multiplayer cần gửi hướng qua input buffer. Chơi đơn chuyển AimResult đầy đủ
+                    // trực tiếp để không làm mất vị trí ngắm của các kỹ năng chọn điểm.
                     if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null && PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader))
                     {
-                        inputReader.TriggerRelicSkill(aimResult.Direction);
-                        return;
+                        if (inputReader.IsNetworkMode)
+                        {
+                            inputReader.TriggerRelicSkill(aimResult.Direction);
+                            return;
+                        }
                     }
 
                     _weaponManager.TriggerEquippedRelicSkill(aimResult);
                 }
             }
+        }
+
+        private void TriggerQuickTapSkill(Vector2 fallbackDirection)
+        {
+            if (_weaponManager == null || _boundActiveRelic == null || !_boundActiveRelic.IsRelicSkillReady) return;
+
+            var config = _boundActiveRelic.AimConfig;
+            if (config.aimType == Combat.Aiming.SkillAimType.None ||
+                config.aimType == Combat.Aiming.SkillAimType.SelfAOE ||
+                config.aimType == Combat.Aiming.SkillAimType.RhythmPulse)
+            {
+                HandleButtonClicked();
+                return;
+            }
+
+            Vector3 origin = _weaponManager.transform.position;
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerTransform != null)
+                origin = PlayerProvider.PlayerTransform.position;
+
+            Vector2 facing = fallbackDirection;
+            if (facing.sqrMagnitude <= 0.001f && PlayerProvider.HasPlayer)
+            {
+                var player = PlayerProvider.PlayerGameObject;
+                var controller = player != null ? player.GetComponent<PlayerController>() : null;
+                if (controller != null && controller.MovementInput.sqrMagnitude > 0.001f)
+                    facing = controller.MovementInput.normalized;
+                else if (player != null)
+                    facing = player.transform.localScale.x >= 0f ? Vector2.right : Vector2.left;
+            }
+
+            Combat.Aiming.AutoTargetScanner.TryGetAutoAimDirection(
+                origin, config, facing, out var aimDirection, out var targetPosition);
+            float distance = Vector2.Distance(origin, targetPosition);
+            var aimResult = new Combat.Aiming.AimResult(aimDirection, distance, targetPosition, 1f, true);
+
+            _audioService?.PlayUIConfirm();
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null &&
+                PlayerProvider.PlayerGameObject.TryGetComponent<Player.Input.PlayerInputReader>(out var inputReader) && inputReader.IsNetworkMode)
+            {
+                inputReader.TriggerRelicSkill(aimDirection);
+                return;
+            }
+
+            _weaponManager.TriggerEquippedRelicSkill(aimResult);
         }
 
         private void HandleAimCancelled()
@@ -238,7 +294,7 @@ namespace ProjectZombie.Features.UI
 
             string text = remaining > 0f ? RelicSkillButtonView.GetCachedCooldownText(remaining) : string.Empty;
             _buttonView.SetCooldown(remaining, max, text);
-            _buttonView.SetInteractable(remaining <= 0f);
+            RefreshUIState();
         }
 
         private void HandleRelicSkillReady()

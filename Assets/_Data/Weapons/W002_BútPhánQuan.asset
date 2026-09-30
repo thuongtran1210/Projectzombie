@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: "W002_B\xFAtPh\xE1nQuan"
   m_EditorClassIdentifier: 
   weaponRole: 2
-  isPassiveRelic: 1
-  activeCooldown: 0
-  activeDuration: 0
-  skillActionName: 
+  isPassiveRelic: 0
+  activeCooldown: 12
+  activeDuration: 5
+  skillActionName: "Phán Quyết Âm Ty"
   weaponId: W002
   weaponName: "B\xFAt Ph\xE1n Quan"
   icon: {fileID: 21300000, guid: 824c29e8b2914531b7f8c888bca56fe1, type: 3}
-  description: "Ph\xE1p b\u1EA3o b\u1ECB \u0111\u1ED9ng: T\u1EF1 \u0111\u1ED9ng vung
-    nh\xE1t ch\xE9m ph\xE1n quy\u1EBFt \xE2m ty khi Hero \u0111\xE1nh tr\xFAng qu\xE1i."
+  description: "Kỹ năng chủ động: Chém phán quyết vào vùng trước mặt; trong thời gian ngắn, đòn chém tiếp tục quét lửa quanh người."
   rarity: Common
   evolutionWeaponId: E002
   elementType: 1

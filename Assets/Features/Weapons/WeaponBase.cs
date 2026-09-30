@@ -313,6 +313,7 @@ namespace ProjectZombie.Features.Weapons
             // GIAI ĐOẠN 2: TÁI KÍCH HOẠT (RECAST PHASE 2)
             if (IsInRecastWindow)
             {
+                if (!CanActivateActiveRelicSkill()) return false;
                 _currentRelicPhase = RelicCastPhase.Cooldown;
                 _lastRelicSkillCastTime = Time.time;
                 _recastWindowEndTime = -999f;
@@ -332,6 +333,7 @@ namespace ProjectZombie.Features.Weapons
 
             // GIAI ĐOẠN 1: KÍCH HOẠT ĐẦU TIÊN (PHASE 1)
             if (RelicRemainingCooldown > 0f) return false;
+            if (!CanActivateActiveRelicSkill()) return false;
 
             if (hasRecastPhase)
             {
@@ -404,6 +406,12 @@ namespace ProjectZombie.Features.Weapons
         {
             PerformAttack();
         }
+
+        /// <summary>
+        /// Cho phép skill yêu cầu điều kiện riêng (ví dụ cần mục tiêu) từ chối cast
+        /// trước khi bắt đầu hồi chiêu.
+        /// </summary>
+        protected virtual bool CanActivateActiveRelicSkill() => true;
 
 #if UNITY_EDITOR
         /// <summary>

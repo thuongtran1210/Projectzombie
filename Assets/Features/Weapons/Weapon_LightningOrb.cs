@@ -10,6 +10,15 @@ namespace ProjectZombie.Features.Weapons
     {
         private Transform _currentTarget;
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => Combat.Aiming.SkillAimConfig.DefaultInstant;
+
+        protected override bool CanActivateActiveRelicSkill() => CanAttack();
+
+        protected override void PerformActiveRelicSkill()
+        {
+            PerformAttack();
+        }
+
         protected override bool CanAttack()
         {
             if (projectileData == null || Projectiles.Core.ProjectileSystem.Instance == null)

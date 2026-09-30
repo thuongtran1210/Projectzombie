@@ -27,7 +27,7 @@ namespace ProjectZombie.Features.Weapons
             if (string.IsNullOrEmpty(skillActionName)) skillActionName = "Thần Âm Trảm Linh";
         }
 
-        public override Combat.Aiming.SkillAimConfig AimConfig => new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.RhythmPulse, 0f, activeShockwaveRadius, 0f, false);
+        public override Combat.Aiming.SkillAimConfig AimConfig => Combat.Aiming.SkillAimConfig.DefaultSelfAOE;
 
         protected override void PerformAttack()
         {
@@ -39,7 +39,8 @@ namespace ProjectZombie.Features.Weapons
             DamageData damageData = CreateDamageData();
             Vector3 center = firePoint != null ? firePoint.position : transform.position;
 
-            _activeOrbs.Clear();
+            // Mỗi lần bấm chỉ duy trì một đợt quỹ đạo, không cộng dồn projectile cũ.
+            DespawnAllOrbs();
 
             for (int i = 0; i < orbCount; i++)
             {
@@ -75,7 +76,7 @@ namespace ProjectZombie.Features.Weapons
             int numHits = Physics2D.OverlapCircleNonAlloc(center, radius, _shockwaveHitBuffer, mask);
 
             DamageData shockwaveDmg = CreateDamageData();
-            shockwaveDmg = new DamageData(shockwaveDmg.Amount * 1.8f, true, ElementType.Tho, shockwaveDmg.IsCounter, this);
+            shockwaveDmg = new DamageData(shockwaveDmg.Amount * 1.8f, true, element, shockwaveDmg.IsCounter, this);
 
             for (int i = 0; i < numHits; i++)
             {

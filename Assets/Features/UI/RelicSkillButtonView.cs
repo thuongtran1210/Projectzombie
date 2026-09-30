@@ -41,7 +41,6 @@ namespace ProjectZombie.Features.UI
                 _dragHandler.OnAimStarted += () => OnAimStarted?.Invoke();
                 _dragHandler.OnAimUpdated += (dir, pull, isCancel) => OnAimUpdated?.Invoke(dir, pull, isCancel);
                 _dragHandler.OnAimReleased += (dir, isTap) => {
-                    if (isTap) OnButtonClicked?.Invoke();
                     OnAimReleased?.Invoke(dir, isTap);
                 };
                 _dragHandler.OnAimDetailedReleased += (dir, pull, isTap) => OnAimDetailedReleased?.Invoke(dir, pull, isTap);

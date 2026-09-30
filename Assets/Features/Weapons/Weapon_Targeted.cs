@@ -11,6 +11,35 @@ namespace ProjectZombie.Features.Weapons
     {
         private Transform _currentTarget;
 
+        public override Combat.Aiming.SkillAimConfig AimConfig =>
+            new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.LineArrow, 12f, 1.2f, 0f, true);
+
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            if (projectileData == null || Projectiles.Core.ProjectileSystem.Instance == null) return;
+
+            Vector2 direction = customAimDirection;
+            if (direction.sqrMagnitude <= 0.001f)
+            {
+                float range = CharacterStats != null ? CharacterStats.AttackRange * 1.5f : 12f;
+                _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
+                direction = _currentTarget != null
+                    ? (Vector2)(_currentTarget.position - firePoint.position).normalized
+                    : (Vector2)transform.right;
+            }
+
+            DamageData damageData = CreateDamageData();
+            int count = Mathf.Max(1, GetFinalProjectileCount());
+            for (int i = 0; i < count; i++)
+            {
+                float offsetAngle = (i - (count - 1) / 2f) * 5f;
+                Vector2 shotDirection = Quaternion.Euler(0f, 0f, offsetAngle) * direction.normalized;
+                var projectile = Projectiles.Core.ProjectileSystem.Instance.Spawn(
+                    projectileData, firePoint.position, shotDirection, gameObject, damageData);
+                ApplyScale(projectile);
+            }
+        }
+
         protected override bool CanAttack()
         {
             float range = CharacterStats != null ? CharacterStats.AttackRange : 8f;

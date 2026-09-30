@@ -15,6 +15,23 @@ namespace ProjectZombie.Features.Weapons
 
         private Transform _currentTarget;
 
+        public override Combat.Aiming.SkillAimConfig AimConfig =>
+            new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CurvedTrajectory, 9f, 1.5f, 40f, true);
+
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            Vector2 direction = customAimDirection;
+            if (direction.sqrMagnitude <= 0.001f)
+            {
+                float range = CharacterStats != null ? CharacterStats.AttackRange : 9f;
+                _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
+                direction = _currentTarget != null
+                    ? (Vector2)(_currentTarget.position - firePoint.position).normalized
+                    : (Vector2)transform.right;
+            }
+            SpawnCrescentSalvo(direction.normalized);
+        }
+
         protected override bool CanAttack()
         {
             float range = CharacterStats != null ? CharacterStats.AttackRange : 9f;
@@ -29,6 +46,13 @@ namespace ProjectZombie.Features.Weapons
             Vector2 direction = _currentTarget != null 
                 ? (Vector2)(_currentTarget.position - firePoint.position).normalized 
                 : (Vector2)transform.right;
+
+            SpawnCrescentSalvo(direction);
+        }
+
+        private void SpawnCrescentSalvo(Vector2 direction)
+        {
+            if (projectileData == null || Projectiles.Core.ProjectileSystem.Instance == null) return;
 
             DamageData damageData = CreateDamageData();
             

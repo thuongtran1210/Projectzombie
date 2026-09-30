@@ -84,8 +84,8 @@ namespace ProjectZombie.Features.Weapons.Editor
                 new FunWeaponDef("W_SLIPPER", "Dép Tổ Ong Thần Sa", ElementType.Kim, 25f, 1.2f, "Kỹ năng chủ động: Quăng Boomerang Dép khổng lồ + Lốc Dép Vạn Năng gây Quê Độ 100%.", WeaponRole.RelicOnHitTrigger, false, 7.0f, 0f, "Tổ Ong Lượn Cánh"),
                 new FunWeaponDef("W_POT", "Nồi Cơm Thạch Sanh", ElementType.Tho, 35f, 2.0f, "Kỹ năng chủ động: Gom quái diện rộng 6m vào tâm nồi, hất văng và hồi 15% Max HP.", WeaponRole.RelicOrbitalShield, false, 14.0f, 0f, "Hút Chân Không & Tiên Cơm"),
                 new FunWeaponDef("W_PIPE", "Điếu Cày Cửu U", ElementType.Hoa, 20f, 1.8f, "Kỹ năng chủ động: Rít hơi dài nhả bão khói diện rộng làm quái đi giật lùi và ho nổ sát thương.", WeaponRole.RelicSupportAura, false, 9.0f, 0f, "Bão Khói Thuốc Lào"),
-                new FunWeaponDef("R007", "Chiếu Trải Hoàng Tuyền", ElementType.Moc, 0f, 8.0f, "Pháp bảo bị động: Thả chiếu bẫy ngủ say (nhận x2 Crit); Hero bước lên trượt ván +100% tốc chạy.", WeaponRole.RelicSupportAura, true, 0f, 0f, ""),
-                new FunWeaponDef("R008", "Chổi Lông Gà Gia Truyền", ElementType.Kim, 45f, 4.0f, "Pháp bảo bị động: Tự động giáng đòn phạt khi Hero tung Combo Hit 3, đẩy lùi 12m/s gây choáng.", WeaponRole.RelicOnHitTrigger, true, 0f, 0f, "")
+                new FunWeaponDef("R007", "Chiếu Trải Hoàng Tuyền", ElementType.Moc, 0f, 8.0f, "Kỹ năng chủ động: Chọn vị trí đặt chiếu bẫy khiến quái ngủ say và nhận thêm sát thương chí mạng; người chơi bước lên chiếu sẽ trượt xuyên qua bầy quái.", WeaponRole.RelicSupportAura, false, 7.5f, 4f, "Đặt Bẫy Chiếu"),
+                new FunWeaponDef("R008", "Chổi Lông Gà Gia Truyền", ElementType.Kim, 45f, 4.0f, "Kỹ năng chủ động: Ngắm đường bay để phóng lốc chổi quét và đẩy lùi quái; trúng địch có thể triệu hồi gà con hỗ trợ.", WeaponRole.RelicOnHitTrigger, false, 9f, 0f, "Lốc Xoáy Quét Rác")
             };
 
             for (int i = 0; i < funItems.Length; i++)

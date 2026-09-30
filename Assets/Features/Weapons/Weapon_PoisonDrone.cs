@@ -10,6 +10,31 @@ namespace ProjectZombie.Features.Weapons
     {
         private Transform _currentTarget;
 
+        public override Combat.Aiming.SkillAimConfig AimConfig =>
+            new Combat.Aiming.SkillAimConfig(Combat.Aiming.SkillAimType.CircleReticle, 6f, 2f, 0f, false);
+
+        protected override void PerformActiveRelicSkill(Combat.Aiming.AimResult aimResult)
+        {
+            SpawnPoisonZone(aimResult.Distance > 0.01f ? aimResult.TargetWorldPos : transform.position);
+        }
+
+        protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
+        {
+            Vector3 position = transform.position;
+            if (customAimDirection.sqrMagnitude > 0.001f)
+                position += (Vector3)(customAimDirection.normalized * 4f);
+            SpawnPoisonZone(position);
+        }
+
+        private void SpawnPoisonZone(Vector3 position)
+        {
+            if (projectileData == null || Projectiles.Core.ProjectileSystem.Instance == null) return;
+            var projectile = Projectiles.Core.ProjectileSystem.Instance.Spawn(
+                projectileData, position, Vector2.zero, gameObject, CreateDamageData());
+            if (projectile != null && GetFinalScale() != 1f)
+                projectile.transform.localScale = Vector3.one * GetFinalScale();
+        }
+
         protected override bool CanAttack()
         {
             float range = CharacterStats != null ? CharacterStats.AttackRange : 9f;

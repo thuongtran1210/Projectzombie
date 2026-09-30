@@ -56,7 +56,6 @@ namespace ProjectZombie.Features.Weapons
         protected override void PerformActiveRelicSkill(Vector2 customAimDirection = default)
         {
             _overchargeTickTimer = 0f;
-            slashCount = Mathf.Max(6, slashCount * 2);
             PerformComboAttack(3);
             Audio?.PlayProjectileExplode(transform.position);
 
@@ -64,7 +63,7 @@ namespace ProjectZombie.Features.Weapons
             if (customAimDirection != Vector2.zero)
             {
                 int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position + (Vector3)(customAimDirection * 2.5f), 3.5f, _dragonHitBuffer, TargetingUtility.EnemyLayerMask);
-                DamageData dragonDmg = new DamageData(GetFinalDamage() * 2.5f, true, ElementType.Hoa, true, this);
+                DamageData dragonDmg = new DamageData(GetFinalDamage() * 2.5f, true, element, true, this);
                 for (int i = 0; i < hitCount; i++)
                 {
                     var h = _dragonHitBuffer[i];

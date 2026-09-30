@@ -13,6 +13,20 @@ namespace ProjectZombie.Features.Weapons
 
         private Transform _currentTarget;
 
+        public override Combat.Aiming.SkillAimConfig AimConfig => Combat.Aiming.SkillAimConfig.DefaultInstant;
+
+        protected override bool CanActivateActiveRelicSkill()
+        {
+            float range = CharacterStats != null ? CharacterStats.AttackRange : 10f;
+            _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
+            return _currentTarget != null;
+        }
+
+        protected override void PerformActiveRelicSkill()
+        {
+            PerformAttack();
+        }
+
         protected override bool CanAttack()
         {
             float range = CharacterStats != null ? CharacterStats.AttackRange : 10f;
