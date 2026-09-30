@@ -40,6 +40,10 @@ namespace ProjectZombie.Features.Player
         private Coroutine _slowCoroutine;
         private bool _useNetworkMovement = false;
 
+#if UNITY_EDITOR
+        private bool _ignoreCooldownsForTesting;
+#endif
+
         public static PlayerController Instance { get; private set; }
         public float DashDuration => dashDuration;
         public float LastDashTime => _lastDashTime;
@@ -128,6 +132,14 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+#if UNITY_EDITOR
+        /// <summary>Enables cooldown bypass for isolated editor test scenes only.</summary>
+        public void SetIgnoreCooldownsForTesting(bool enabledForTesting)
+        {
+            _ignoreCooldownsForTesting = enabledForTesting;
+        }
+#endif
+
         private void OnEnable()
         {
             if (_inputProvider != null)
@@ -173,11 +185,18 @@ namespace ProjectZombie.Features.Player
 
         private void HandleSignatureSkillTriggered()
         {
+#if UNITY_EDITOR
+            if (_ignoreCooldownsForTesting) _signatureSkillManager?.ResetCooldown();
+#endif
             _signatureSkillManager?.TryExecuteSkill();
         }
 
         private void HandleRelicSkillTriggered()
         {
+#if UNITY_EDITOR
+            if (_ignoreCooldownsForTesting && _weaponManager != null && _weaponManager.HasActiveRelic(out var relic))
+                relic.ResetRelicCooldownForTesting();
+#endif
             _weaponManager?.TriggerEquippedRelicSkill();
         }
 

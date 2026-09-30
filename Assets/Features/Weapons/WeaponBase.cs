@@ -166,6 +166,19 @@ namespace ProjectZombie.Features.Weapons
         public float RelicMaxCooldown => Mathf.Max(0.1f, activeCooldown);
         public bool IsRelicSkillReady => _currentRelicPhase == RelicCastPhase.Ready || IsInRecastWindow;
 
+#if UNITY_EDITOR
+        /// <summary>Test-scene hook; excluded from player builds.</summary>
+        public void ResetRelicCooldownForTesting()
+        {
+            _lastRelicSkillCastTime = -999f;
+            _recastWindowEndTime = -999f;
+            _currentRelicPhase = RelicCastPhase.Ready;
+            OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+            OnRelicSkillReady?.Invoke();
+            OnRelicCooldownUpdated?.Invoke(0f, RelicMaxCooldown);
+        }
+#endif
+
         public virtual string RelicStackBadgeText => string.Empty;
 
         public event System.Action<float, float> OnRelicCooldownUpdated;

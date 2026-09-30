@@ -31,6 +31,7 @@ namespace ProjectZombie.Features.Elements
         private Enemy _enemyInstance;
         private Vector2 _scroll;
         private string _message = "Chọn nhân vật, vũ khí và enemy rồi Spawn.";
+        private bool _ignoreCooldowns;
         private sealed class EnemyChoice { public string Label; public GameObject Prefab; }
 
 #if UNITY_EDITOR
@@ -57,9 +58,12 @@ namespace ProjectZombie.Features.Elements
             GUILayout.Label("Spawn prefab thật; attack đi qua callback damage của game.");
             GUILayout.Label("1) Player");
             DrawChoice("Character", _characters.Count, ref _characterIndex, i => _characters[i].characterName);
+            if (_characters.Count > 0)
+                GUILayout.Label($"Hệ nhân vật: {_characters[Mathf.Clamp(_characterIndex, 0, _characters.Count - 1)].element}");
             if (GUILayout.Button(_playerInstance == null ? "Spawn Player" : "Replace Player")) SpawnPlayer();
             GUILayout.Label(_playerInstance != null ? $"Player: {_playerInstance.name}" : "Player: chưa spawn");
             GUILayout.Label($"Kỹ năng nhân vật: {ActiveSkillLabel()}");
+            GUILayout.Label($"Hệ sát thương kỹ năng: {ActiveSkillElementLabel()}");
             DrawChoice("Dữ liệu kỹ năng", _skills.Count, ref _skillIndex, i => _skills[i].SkillName);
             if (GUILayout.Button("Nạp kỹ năng đã chọn vào nhân vật")) LoadSelectedSignatureSkill();
             GUILayout.Space(5f); GUILayout.Label("2) Weapon / relic");
@@ -81,6 +85,9 @@ namespace ProjectZombie.Features.Elements
             GUILayout.Label("D. Chọn Boss Nguu Dau Ma Dien rồi làm đúng Thủy → Hỏa → chỉ VFX/SFX, không bị trượt/choáng.");
             GUILayout.Label("E. Attack thường gọi CharacterCombat thật. Chỉ prime nếu basicAttackConfig.element là Thủy/Hỏa; element None nghĩa là không có sát thương nguyên tố.");
             GUILayout.Label("Dùng Attack/Skill ở góc phải dưới và Joystick ở góc trái dưới. Panel này chỉ dành cho chọn/spawn.");
+            _ignoreCooldowns = GUILayout.Toggle(_ignoreCooldowns, "Bỏ qua hồi chiêu (chỉ scene test)");
+            if (_playerInstance != null && _playerInstance.TryGetComponent<PlayerController>(out var playerController))
+                playerController.SetIgnoreCooldownsForTesting(_ignoreCooldowns);
             GUILayout.Label("W009 Fire bắn thẳng vào enemy đang chọn để kiểm tra hit callback; passive relic cũng tự đánh theo nhịp.");
             GUILayout.Label("Chọn Thanh Đồng và nạp Giá Đồng Tứ Phủ để thử sát thương Mộc lên các enemy trong vùng.");
             GUILayout.Space(6f);
@@ -175,6 +182,31 @@ namespace ProjectZombie.Features.Elements
             if (manager == null) return "prefab không có SignatureSkillManager";
             return manager.SkillData != null ? manager.SkillData.SkillName : "chưa được nạp";
         }
+        private string ActiveSkillElementLabel()
+        {
+            if (_playerInstance == null) return "chưa spawn nhân vật";
+            var manager = _playerInstance.GetComponent<SignatureSkillManager>();
+            if (manager == null || manager.ActiveSkill == null) return "chưa nạp kỹ năng";
+            if (manager.ActiveSkill is VoTangSignatureSkill) return "Thổ";
+            if (manager.ActiveSkill is ThanhDongSignatureSkill) return "Mộc";
+            if (manager.ActiveSkill is ThuSinhSignatureSkill)
+            {
+                var weapons = _playerInstance.GetComponent<WeaponManager>();
+                if (weapons != null && weapons.ActiveWeapons.Count > 0)
+                {
+                    ElementType element = ElementType.None;
+                    for (int i = 0; i < weapons.ActiveWeapons.Count; i++)
+                    {
+                        var weapon = weapons.ActiveWeapons[i];
+                        if (weapon != null && weapon.element != ElementType.None) { element = weapon.element; break; }
+                    }
+                    return element == ElementType.None ? "Kim (mặc định; đòn đánh gây Kim)" : $"theo vũ khí: {element} (đòn đánh kỹ năng là Kim)";
+                }
+                return "Kim (mặc định; đòn đánh gây Kim)";
+            }
+            if (manager.ActiveSkill is DaoSiSignatureSkill) return "không gây sát thương nguyên tố";
+            return "chưa khai báo / cần xem implementation";
+        }
         private void LoadSelectedSignatureSkill()
         {
             if (_playerInstance == null) { _message = "Spawn Player trước."; return; }
@@ -190,6 +222,7 @@ namespace ProjectZombie.Features.Elements
             var manager = _playerInstance.GetComponent<SignatureSkillManager>();
             if (manager == null) { _message = "Nhân vật chưa có SignatureSkillManager. Hãy nạp kỹ năng."; return; }
             if (manager.ActiveSkill == null) { _message = "Chưa nạp kỹ năng. Chọn dữ liệu ở panel rồi bấm Nạp kỹ năng."; return; }
+            if (_ignoreCooldowns) manager.ResetCooldown();
             _message = manager.TryExecuteSkill()
                 ? $"Đã thi triển {manager.SkillData.SkillName}."
                 : $"Chưa thi triển được {manager.SkillData.SkillName}: đang hồi chiêu hoặc thiếu điều kiện.";
@@ -197,7 +230,7 @@ namespace ProjectZombie.Features.Elements
         private void EquipWeapon()
         { if(_playerInstance==null){_message="Spawn Player trước.";return;} if(_weapons.Count==0)return; var wm=_playerInstance.GetComponent<WeaponManager>(); if(wm==null){_message="Player thiếu WeaponManager.";return;} var current=wm.GetWeaponById(_weapons[_weaponIndex].weaponId); if(current!=null){_message="Vũ khí này đã được equip.";return;} var active=wm.ActiveWeapons; for(int i=active.Count-1;i>=0;i--)wm.RemoveWeapon(active[i]); wm.EquipWeaponFromData(_weapons[_weaponIndex]); _message=$"Equipped {_weapons[_weaponIndex].weaponName} ({_weapons[_weaponIndex].elementType})."; }
         private void TriggerBasicAttack()
-        { if(_playerInstance==null){_message="Spawn Player trước.";return;} var combat=_playerInstance.GetComponent<CharacterCombat>(); Vector2 dir=_enemyInstance!=null?(Vector2)(_enemyInstance.transform.position-_playerInstance.transform.position).normalized:Vector2.right; _message=combat!=null&&combat.TriggerAttack(dir)?"CharacterCombat.TriggerAttack đã được gọi.":"Attack chưa sẵn sàng (cooldown/config)."; }
+        { if(_playerInstance==null){_message="Spawn Player trước.";return;} var combat=_playerInstance.GetComponent<CharacterCombat>(); if(_ignoreCooldowns&&combat!=null)combat.ResetAttackCooldownForTesting(); Vector2 dir=_enemyInstance!=null?(Vector2)(_enemyInstance.transform.position-_playerInstance.transform.position).normalized:Vector2.right; _message=combat!=null&&combat.TriggerAttack(dir)?"CharacterCombat.TriggerAttack đã được gọi.":"Attack chưa sẵn sàng (cooldown/config)."; }
         private void TriggerWeaponSkill()
         {
             if (_playerInstance == null) { _message = "Spawn Player trước."; return; }
@@ -210,6 +243,7 @@ namespace ProjectZombie.Features.Elements
                 else _message = "W009 chưa tạo được projectile; kiểm tra Console, ProjectileData và ProjectileSystem.";
                 return;
             }
+            if (_ignoreCooldowns) weapon.ResetRelicCooldownForTesting();
             Vector2 direction = (_enemyInstance.transform.position - _playerInstance.transform.position).normalized;
             _message = weapon.TriggerActiveRelicSkill(direction)
                 ? "Đã gọi skill API của relic."

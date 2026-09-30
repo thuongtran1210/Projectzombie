@@ -18,14 +18,17 @@ namespace ProjectZombie.Features.Elements
         public Object PrimedSource => _mark.GetSource(Time.time);
         public float PrimeExpiresAt => _mark.ExpiresAt;
 
-        private void Awake() => _enemy = GetComponent<Enemy>();
-
-        private void OnEnable()
+        private void Awake()
         {
-            ResetState();
+            _enemy = GetComponent<Enemy>();
             _reactionSettings = ElementReactionSettings.Runtime;
-            _dispatcher = new ElementReactionDispatcher(FireSpreadSettings.Runtime, SteamSlipReactionSettings.Runtime);
+            _dispatcher = new ElementReactionDispatcher(
+                FireSpreadSettings.Runtime,
+                SteamSlipReactionSettings.Runtime,
+                ToaiGiapReactionSettings.Runtime);
         }
+
+        private void OnEnable() => ResetState();
         private void OnDisable() => ResetState();
 
         public void ApplyElement(DamageData incomingDamage)

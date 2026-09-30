@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d86ec9efc11843cd93f8ff4c122b54c5, type: 3}
+  m_Name: ToaiGiapReactionSettings
+  m_EditorClassIdentifier:
+  staggerDuration: 0.2
+  fragmentRadius: 1
+  fragmentDamageMultiplier: 0.25
+  secondaryTargetCap: 2
+  colliderBufferSize: 24
+  fragmentVisualPrefab: {fileID: 100100000, guid: ed4d5188951b8d14bbfb62db69625ea8, type: 3}

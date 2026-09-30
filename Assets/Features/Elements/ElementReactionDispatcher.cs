@@ -7,18 +7,25 @@ namespace ProjectZombie.Features.Elements
     internal sealed class ElementReactionDispatcher
     {
         private readonly HuoHoanReaction _huoHoan;
+        private readonly ToaiGiapReaction _toaiGiap;
         private readonly bool _canExecuteBocHoi;
 
-        public ElementReactionDispatcher(FireSpreadSettings fireSettings, SteamSlipReactionSettings steamSlipSettings)
+        public ElementReactionDispatcher(
+            FireSpreadSettings fireSettings,
+            SteamSlipReactionSettings steamSlipSettings,
+            ToaiGiapReactionSettings toaiGiapSettings)
         {
             if (fireSettings != null)
                 _huoHoan = new HuoHoanReaction(fireSettings);
+            if (toaiGiapSettings != null)
+                _toaiGiap = new ToaiGiapReaction(toaiGiapSettings);
             _canExecuteBocHoi = steamSlipSettings != null;
         }
 
         public bool CanExecute(ElementReactionType reaction) =>
             (reaction == ElementReactionType.BocHoi && _canExecuteBocHoi) ||
-            (reaction == ElementReactionType.HuoHoan && _huoHoan != null);
+            (reaction == ElementReactionType.HuoHoan && _huoHoan != null) ||
+            (reaction == ElementReactionType.ToaiGiap && _toaiGiap != null);
 
         public bool TryExecute(ElementReactionType reaction, Enemy target, DamageData incomingDamage)
         {
@@ -31,6 +38,10 @@ namespace ProjectZombie.Features.Elements
 
                 case ElementReactionType.HuoHoan:
                     return _huoHoan != null && _huoHoan.TryExecute(target, incomingDamage);
+
+                case ElementReactionType.ToaiGiap:
+                    if (_toaiGiap == null || target == null) return false;
+                    return _toaiGiap.TryExecute(target, incomingDamage);
 
                 default:
                     return false;

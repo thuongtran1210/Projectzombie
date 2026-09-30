@@ -191,6 +191,11 @@ namespace ProjectZombie.Features.Player
             }
         }
 
+#if UNITY_EDITOR
+        /// <summary>Test-scene hook; excluded from player builds.</summary>
+        public void ResetAttackCooldownForTesting() => _lastAttackTime = -999f;
+#endif
+
         public float GetTotalAttackSpeed()
         {
             float baseSpeed = attackConfig != null ? attackConfig.baseAttackSpeed : 1.8f;

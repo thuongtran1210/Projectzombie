@@ -27,6 +27,7 @@ namespace ProjectZombie.Features.Player.Skills
         private const float DAMAGE_RATIO = 1.8f; // 180% Base Damage
         private const float STUN_DURATION = 2.0f;
         private const float KNOCKBACK_FORCE = 10.0f;
+        private const float KNOCKBACK_DURATION = 0.25f;
         private const float BUFF_DURATION = 4.0f;
         private const float DAMAGE_BUFF_RATIO = 0.30f;
 
@@ -107,11 +108,11 @@ namespace ProjectZombie.Features.Player.Skills
                     status.ApplyStatusEffect(StatusEffectType.Stun, STUN_DURATION);
                 }
 
-                if (col.TryGetComponent<Rigidbody2D>(out var enemyRb))
+                if (col.TryGetComponent<Enemy>(out var enemy))
                 {
                     Vector2 knockbackDir = ((Vector2)col.transform.position - (Vector2)center).normalized;
                     if (knockbackDir == Vector2.zero) knockbackDir = Vector2.up;
-                    enemyRb.AddForce(knockbackDir * KNOCKBACK_FORCE, ForceMode2D.Impulse);
+                    enemy.ApplyKnockback(knockbackDir, KNOCKBACK_FORCE, KNOCKBACK_DURATION);
                 }
             }
         }
