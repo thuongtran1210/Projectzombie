@@ -15,7 +15,8 @@ namespace ProjectZombie.Features.Shared
             if (damage.AttackRecord != null)
                 damage.AttackRecord.RegisterSuccessfulHit(damage.Element);
             else
-                Elements.ElementCycleManager.Instance?.RegisterHit(damage.Element, damage.SourceWeapon as Weapons.WeaponBase, damage.Owner);
+                Elements.ElementCycleManager.Instance?.RegisterHit(damage.Element, damage.SourceWeapon as Weapons.WeaponBase,
+                    damage.Owner, damage.HitSource, damage.AttackId);
         }
 
         public static DamageData ApplyElementCounter(DamageData damage, ElementType defender)

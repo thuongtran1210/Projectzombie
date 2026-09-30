@@ -47,6 +47,16 @@ namespace ProjectZombie.Features.Player
         public static PlayerController Instance { get; private set; }
         public float DashDuration => dashDuration;
         public float LastDashTime => _lastDashTime;
+        public float DashMaxCooldown => _playerStats != null ? _playerStats.DashCooldown : 0f;
+        public float DashRemainingCooldown => Mathf.Max(0f, _lastDashTime + DashMaxCooldown - Time.time);
+        public event System.Action<float, float> OnDashCooldownUpdated;
+
+        /// <summary>Updates the actual dash timer and HUD without firing the dash action.</summary>
+        public void ReduceRemainingDashCooldown(float fraction)
+        {
+            _lastDashTime -= DashRemainingCooldown * Mathf.Clamp01(fraction);
+            OnDashCooldownUpdated?.Invoke(DashRemainingCooldown, DashMaxCooldown);
+        }
         public Vector2 MovementInput => _movementInput;
         public bool IsDashing => _isDashing;
         public bool IsAttacking => _isAttacking;
@@ -322,6 +332,7 @@ namespace ProjectZombie.Features.Player
                 _isDashing = true;
                 _dashEndTime = Time.time + dashDuration;
                 _lastDashTime = Time.time;
+                OnDashCooldownUpdated?.Invoke(DashRemainingCooldown, DashMaxCooldown);
                 
                 // Nếu đang đứng yên, lướt theo hướng mặt hiện tại
                 if (_movementInput != Vector2.zero)

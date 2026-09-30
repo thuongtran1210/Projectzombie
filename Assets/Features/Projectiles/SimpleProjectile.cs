@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Projectiles
             _damageData.AttackRecord?.Release();
             _damageData = damage;
             _damageData.AttackRecord?.Retain();
+            Player.ElementAttackVisual.Apply(gameObject, damage.Element);
             _owner = owner;
             _knockbackForce = knockback;
             _hasHit = false;
@@ -77,6 +78,8 @@ namespace ProjectZombie.Features.Projectiles
 
                 hitDamage.AttackRecord = _damageData.AttackRecord;
                 hitDamage.Owner = _owner;
+                hitDamage.AttackId = _damageData.AttackId;
+                hitDamage.HitSource = _damageData.HitSource;
                 health.TakeDamage(hitDamage);
 
                 if (enemy != null && !enemy.IsHeavyArmor)

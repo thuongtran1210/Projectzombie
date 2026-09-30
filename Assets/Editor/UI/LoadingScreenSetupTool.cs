@@ -204,7 +204,7 @@ namespace ProjectZombie.Editor.UI
             tipBodyRect.anchoredPosition = Vector2.zero;
             tipBodyRect.sizeDelta = Vector2.zero;
             var tipBodyTmp = tipBodyObj.GetComponent<TextMeshProUGUI>();
-            tipBodyTmp.text = "Đánh trúng hệ tương khắc gây thêm +30% Sát thương và kích hoạt hiệu ứng suy yếu!";
+            tipBodyTmp.text = "Đòn đánh khắc hệ mục tiêu gây thêm 30% sát thương, tính riêng từng quái. Không tự gây suy yếu.";
             tipBodyTmp.fontSize = 15;
             tipBodyTmp.alignment = TextAlignmentOptions.Center;
             tipBodyTmp.color = new Color(0.9f, 0.9f, 0.9f, 1f);

@@ -156,6 +156,8 @@ namespace ProjectZombie.Features.Projectiles.Components
                 );
 
                 hitDamage.Owner = _controller.Owner;
+                hitDamage.AttackId = _controller.Damage.AttackId;
+                hitDamage.HitSource = _controller.Damage.HitSource;
                 damageableTarget.TakeDamage(hitDamage);
 
                 // Áp dụng lực đẩy lùi theo hướng bay của đạn (trừ quái Heavy Armor)

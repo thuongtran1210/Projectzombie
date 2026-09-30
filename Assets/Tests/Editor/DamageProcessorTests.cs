@@ -106,6 +106,14 @@ namespace ProjectZombie.Tests.Editor
         }
     }
 
+    public sealed class ElementTestSynergyReceiver : MonoBehaviour, IElementSynergyReceiver
+    {
+        public int RewardApplyCount { get; private set; }
+        public int RewardResetCount { get; private set; }
+        public void ApplyElementSynergyReward() => RewardApplyCount++;
+        public void ResetElementSynergyReward() => RewardResetCount++;
+    }
+
     public sealed class ElementTestRelic : WeaponBase
     {
         protected override void PerformAttack() { }
@@ -117,7 +125,10 @@ namespace ProjectZombie.Tests.Editor
         private GameObject _ownerA;
         private GameObject _ownerB;
         private ElementCycleManager _manager;
-        private ElementTestRelic _relic;
+        private ElementTestRelic _relicA;
+        private ElementTestRelic _relicB;
+        private ElementTestSynergyReceiver _receiverA;
+        private ElementTestSynergyReceiver _receiverB;
         private int _procs;
 
         [SetUp]
@@ -128,13 +139,26 @@ namespace ProjectZombie.Tests.Editor
             typeof(ElementCycleManager).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
                 .Invoke(_manager, null);
             _ownerA = new GameObject("Owner A");
+            _receiverA = _ownerA.AddComponent<ElementTestSynergyReceiver>();
             _ownerB = new GameObject("Owner B");
-            var relicObject = new GameObject("Relic");
-            relicObject.transform.SetParent(_ownerA.transform);
-            _relic = relicObject.AddComponent<ElementTestRelic>();
-            _relic.element = ElementType.Thuy;
-            _relic.activeCooldown = 10f;
-            SetCooldown(5f);
+            _receiverB = _ownerB.AddComponent<ElementTestSynergyReceiver>();
+
+            var relicAObject = new GameObject("Relic A");
+            relicAObject.transform.SetParent(_ownerA.transform);
+            _relicA = relicAObject.AddComponent<ElementTestRelic>();
+            _relicA.element = ElementType.Thuy;
+            _relicA.isPrimaryActiveWeapon = false;
+            _relicA.activeCooldown = 10f;
+            SetCooldown(_relicA, 5f);
+
+            var relicBObject = new GameObject("Relic B");
+            relicBObject.transform.SetParent(_ownerB.transform);
+            _relicB = relicBObject.AddComponent<ElementTestRelic>();
+            _relicB.element = ElementType.Thuy;
+            _relicB.isPrimaryActiveWeapon = false;
+            _relicB.activeCooldown = 10f;
+            SetCooldown(_relicB, 5f);
+
             _procs = 0;
             _manager.OnElementSynergyTriggered += (_, __, ___) => _procs++;
         }
@@ -147,51 +171,54 @@ namespace ProjectZombie.Tests.Editor
             Object.DestroyImmediate(_ownerB);
         }
 
-        private void SetCooldown(float remaining)
+        private void SetCooldown(WeaponBase relic, float remaining)
         {
             typeof(WeaponBase).GetField("_lastRelicSkillCastTime", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(_relic, Time.time - _relic.activeCooldown + remaining);
+                .SetValue(relic, Time.time - relic.activeCooldown + remaining);
             typeof(WeaponBase).GetField("_currentRelicPhase", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(_relic, WeaponBase.RelicCastPhase.Cooldown);
+                .SetValue(relic, WeaponBase.RelicCastPhase.Cooldown);
         }
 
         [Test]
-        public void Synergy_ReducesRelicRemainingTimeAndImmediatelyNotifiesHud()
+        public void Synergy_InvokesReceiverReward_AndResonates()
         {
-            float notified = -1f;
-            float attackCooldown = _relic.RemainingCooldown;
-            _relic.OnRelicCooldownUpdated += (remaining, _) => notified = remaining;
-            _manager.RegisterHit(ElementType.Kim, null, _ownerA);
-            _manager.RegisterHit(ElementType.Thuy, _relic);
+            _manager.RegisterHit(ElementType.Kim, null, _ownerA, ElementHitSource.HeroBasicAttack, ElementSynergyRules.NextAttackId());
+            _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.EqualTo(1));
-            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(4f).Within(0.001f));
-            Assert.That(notified, Is.EqualTo(4f).Within(0.001f));
-            Assert.That(_relic.RemainingCooldown, Is.EqualTo(attackCooldown).Within(0.001f));
+            Assert.That(_receiverA.RewardApplyCount, Is.EqualTo(1));
         }
 
         [Test]
         public void Players_DoNotShareHitsOrProcCooldown()
         {
-            _manager.RegisterHit(ElementType.Kim, null, _ownerA);
-            _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+            _manager.RegisterHit(ElementType.Kim, null, _ownerA, ElementHitSource.HeroBasicAttack, ElementSynergyRules.NextAttackId());
+            _manager.RegisterHit(ElementType.Thuy, _relicB, _ownerB, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.Zero);
-            _manager.RegisterHit(ElementType.Thuy, null, _ownerA);
-            _manager.RegisterHit(ElementType.Moc, null, _ownerB);
+
+            _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
+            Assert.That(_procs, Is.EqualTo(1));
+            Assert.That(_receiverA.RewardApplyCount, Is.EqualTo(1));
+            Assert.That(_receiverB.RewardApplyCount, Is.Zero);
+
+            // Owner B primes and procs independently
+            _manager.RegisterHit(ElementType.Moc, null, _ownerB, ElementHitSource.HeroBasicAttack, ElementSynergyRules.NextAttackId());
+            _relicB.element = ElementType.Hoa;
+            _manager.RegisterHit(ElementType.Hoa, _relicB, _ownerB, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.EqualTo(2));
-            _manager.RegisterHit(ElementType.Moc, null, _ownerA);
-            Assert.That(_procs, Is.EqualTo(2));
+            Assert.That(_receiverB.RewardApplyCount, Is.EqualTo(1));
         }
 
         [Test]
         public void VirtualHit_IsConsumedOnceAndDoesNotChangeOtherPlayer()
         {
             _manager.PushVirtualElementHit(ElementType.Kim, _ownerA);
-            _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+            _manager.RegisterHit(ElementType.Thuy, _relicB, _ownerB, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.Zero);
-            _manager.RegisterHit(ElementType.Thuy, _relic);
-            _manager.RegisterHit(ElementType.Thuy, _relic);
+
+            _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
+            _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.EqualTo(1));
-            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(4f).Within(0.001f));
+            Assert.That(_receiverA.RewardApplyCount, Is.EqualTo(1));
         }
 
         [Test]
@@ -203,21 +230,28 @@ namespace ProjectZombie.Tests.Editor
             var record = ElementAttackRecord.Acquire(_ownerA);
             try
             {
-                var hit = new DamageData(10f, element: ElementType.Kim) { AttackRecord = record };
+                var hit = new DamageData(10f, element: ElementType.Kim) 
+                { 
+                    AttackRecord = record, 
+                    Owner = _ownerA, 
+                    HitSource = ElementHitSource.HeroBasicAttack, 
+                    AttackId = record.AttackId 
+                };
                 health.CustomDamageInterceptor = (_, __) => true;
                 health.TakeDamage(hit);
-                _manager.RegisterHit(ElementType.Thuy, _relic);
+                _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
                 Assert.That(_procs, Is.Zero);
+
                 health.CustomDamageInterceptor = null;
                 health.TakeDamage(hit);
-                _manager.RegisterHit(ElementType.Thuy, _relic);
+                _manager.RegisterHit(ElementType.Thuy, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
                 Assert.That(_procs, Is.EqualTo(1));
+
+                // Repeated hit with same record does not register another lead
                 health.TakeDamage(hit);
-                // If the repeated hit re-entered the buffer, it would replace Thuy with Kim.
-                typeof(ElementCycleManager).GetField("_procCooldownSeconds", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .SetValue(_manager, 0f);
-                _manager.RegisterHit(ElementType.Moc, null, _ownerA);
-                Assert.That(_procs, Is.EqualTo(2));
+                _relicA.element = ElementType.Moc;
+                _manager.RegisterHit(ElementType.Moc, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
+                Assert.That(_procs, Is.EqualTo(1));
             }
             finally
             {
@@ -229,12 +263,12 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void RecastWindow_IsNotShortenedByCooldownReduction()
         {
-            _relic.hasRecastPhase = true;
+            _relicA.hasRecastPhase = true;
             typeof(WeaponBase).GetField("_currentRelicPhase", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(_relic, WeaponBase.RelicCastPhase.RecastReady);
-            _relic.ReduceRelicSkillCooldown(0.2f);
-            Assert.That(_relic.CurrentRelicPhase, Is.EqualTo(WeaponBase.RelicCastPhase.RecastReady));
-            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(5f).Within(0.001f));
+                .SetValue(_relicA, WeaponBase.RelicCastPhase.RecastReady);
+            _relicA.ReduceRelicSkillCooldown(0.2f);
+            Assert.That(_relicA.CurrentRelicPhase, Is.EqualTo(WeaponBase.RelicCastPhase.RecastReady));
+            Assert.That(_relicA.RelicRemainingCooldown, Is.EqualTo(5f).Within(0.001f));
         }
 
         [Test]
@@ -244,10 +278,24 @@ namespace ProjectZombie.Tests.Editor
             ElementType selected = ElementType.None;
             skill.ExecuteWithElement(_ownerA, ElementType.Hoa, element => selected = element);
             Assert.That(selected, Is.EqualTo(ElementType.Hoa));
-            _manager.RegisterHit(ElementType.Tho, null, _ownerA);
+
+            _relicA.element = ElementType.Tho;
+            _manager.RegisterHit(ElementType.Tho, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.EqualTo(1));
-            _manager.RegisterHit(ElementType.Tho, null, _ownerA);
+            _manager.RegisterHit(ElementType.Tho, _relicA, _ownerA, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
             Assert.That(_procs, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void CharacterCombat_ApplyElementSynergyReward_AppliesCooldownReductionAndResonance()
+        {
+            _ownerA.SetActive(false);
+            var stats = _ownerA.AddComponent<ProjectZombie.Features.Player.PlayerStats>();
+            var combat = _ownerA.AddComponent<ProjectZombie.Features.Player.CharacterCombat>();
+            typeof(ProjectZombie.Features.Player.CharacterCombat).GetField("_playerStats", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(combat, stats);
+            combat.ApplyElementSynergyReward();
+            Assert.That(combat.ResonanceRemainingDuration, Is.GreaterThan(0f));
         }
 
         [Test]
@@ -260,7 +308,7 @@ namespace ProjectZombie.Tests.Editor
             try
             {
                 second.RegisterSuccessfulHit(ElementType.Kim);
-                _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+                _manager.RegisterHit(ElementType.Thuy, _relicB, _ownerB, ElementHitSource.Relic, ElementSynergyRules.NextAttackId());
                 Assert.That(_procs, Is.EqualTo(1));
             }
             finally { second.Release(); }
@@ -290,7 +338,7 @@ namespace ProjectZombie.Tests.Editor
             var inventory = _ownerA.AddComponent<WeaponManager>();
             var weapons = (System.Collections.Generic.List<WeaponBase>)typeof(WeaponManager)
                 .GetField("_activeWeapons", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(inventory);
-            weapons.Add(_relic);
+            weapons.Add(_relicA);
             var other = new GameObject("Other relic");
             other.transform.SetParent(_ownerA.transform);
             var fireRelic = other.AddComponent<ElementTestRelic>();

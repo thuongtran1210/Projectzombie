@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
 
         private void PerformZoneTick()
         {
+            ulong tickAttackId = ElementSynergyRules.NextAttackId();
             float radius = _controller.Data.CollisionRadius * _controller.State.ScaleMultiplier;
             int hitLayerMask = _controller.Data.HitLayer.value != 0 ? _controller.Data.HitLayer.value : LayerMask.GetMask("Enemy");
 
@@ -82,6 +83,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                     );
 
                     tickDamage.Owner = _controller.Owner;
+                    tickDamage.AttackId = tickAttackId;
+                    tickDamage.HitSource = _controller.Damage.HitSource;
                     damageable.TakeDamage(tickDamage);
 
                     // 2. Kích hoạt Làm Chậm (Slow Debuff)

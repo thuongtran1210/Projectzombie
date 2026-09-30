@@ -179,10 +179,7 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(DamageContext context)
         {
-            TakeDamage(new DamageData(context.BaseDamage, context.IsCritical, context.Element, sourceWeapon: context.SourceWeapon)
-            {
-                Owner = context.Source
-            });
+            TakeDamage(context.ToDamageData());
         }
 
         public void Heal(float amount, bool allowRevive = false)

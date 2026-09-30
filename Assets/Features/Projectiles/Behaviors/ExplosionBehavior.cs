@@ -68,7 +68,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             }
 
             float damageAmount = _controller.Damage.BaseDamage * _data.ExplosionDamageMultiplier;
-            DamageContext explosionDamage = new DamageContext(_controller.Owner, damageAmount, _controller.Damage.Element, _controller.Damage.IsCritical, _controller.Damage.SourceWeapon);
+            DamageContext explosionDamage = _controller.Damage;
+            explosionDamage.BaseDamage = damageAmount;
 
             for (int i = 0; i < numHits; i++)
             {

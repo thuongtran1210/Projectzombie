@@ -32,7 +32,7 @@
 - 📜 **Chủ Đề & Cốt Truyện Dân Gian Việt Nam:** Hành trình vượt qua cửa ải Bến Đò Vong Xuyên cõi Âm Ty để tìm đường về nhân gian, thức tỉnh thần lực của **Tứ Tướng Thần Thoại** (Thư Sinh, Thanh Đồng, Đạo Sĩ, Võ Tăng) nhằm diệt trừ Ma Vương.
 - ☯️ **Cơ Chế Ngũ Hành Tương Sinh - Tương Khắc:** 
   - **Tương Khắc:** Tăng **+30% Sát thương** khi dùng vũ khí khắc hệ kẻ địch (`Kim khắc Mộc`, `Mộc khắc Thổ`, `Thổ khắc Thủy`, `Thủy khắc Hỏa`, `Hỏa khắc Kim`).
-  - **Tương Sinh:** Giảm **-20% Cooldown** cho vũ khí khi kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
+  - **Tương Sinh:** Giảm **-20% Cooldown còn lại** cho Tuyệt Kỹ & Lướt, tăng **+25% Tốc đánh thường** (3s) khi đòn đánh thường của Tướng kết hợp đòn Pháp bảo kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
 - ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Thanh Đồng):** Trục nội tại riêng biệt luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
 - 🗡️ **Kho Pháp Bảo & Yêu Ma Đậm Chất Thần Thoại:** Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng, Điếu Cày Cửu U, Dép Tổ Ong, Đao Cửu Vĩ đối đầu Ma Giáp, Quỷ Nhập Tràng, Ma Da, Ma Trơi, Ngưu Đầu Mã Diện.
 - ☁️ **Kiến Trúc Live-Ops DLC qua Firebase Storage CDN:** Cho phép cập nhật nóng bản đồ ải mới, quái vật, cân bằng thẻ nâng cấp và banner Gacha mà không cần phát hành lại file APK lên Google Play.

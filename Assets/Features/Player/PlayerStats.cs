@@ -110,6 +110,8 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void ResetStats()
         {
+            Elements.ElementCycleManager.Instance?.ResetOwner(gameObject);
+            GetComponent<CharacterCombat>()?.ResetElementSynergyReward();
             _elementOverride = ElementType.None;
             _statModifiers.Clear();
             InitStats();

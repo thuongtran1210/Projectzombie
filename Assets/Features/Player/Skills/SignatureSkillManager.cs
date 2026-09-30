@@ -127,6 +127,12 @@ namespace ProjectZombie.Features.Player.Skills
             }
         }
 
+        /// <summary>Reduces only the current remainder; ready skills never bank a discount.</summary>
+        public void ReduceRemainingCooldownFraction(float fraction)
+        {
+            ReduceCooldown(RemainingCooldown * Mathf.Clamp01(fraction));
+        }
+
         /// <summary>
         /// Làm mới ngay lập tức hồi chiêu của kỹ năng.
         /// </summary>

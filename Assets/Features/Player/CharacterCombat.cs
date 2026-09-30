@@ -13,7 +13,7 @@ namespace ProjectZombie.Features.Player
     /// điều phối Animation, hiệu ứng VFX Slash/Đạn và tính toán sát thương kết hợp Combo 1-2-3.
     /// </summary>
     [RequireComponent(typeof(PlayerStats))]
-    public class CharacterCombat : MonoBehaviour, Combat.Aiming.IAimableSkill
+    public class CharacterCombat : MonoBehaviour, Combat.Aiming.IAimableSkill, Elements.IElementSynergyReceiver
     {
         [Header("Character Basic Attack Configuration")]
         [SerializeField] private CharacterAttackConfig attackConfig;
@@ -28,6 +28,25 @@ namespace ProjectZombie.Features.Player
         private float _lastAttackTime;
         private int _currentComboStep = 1;
         private float _lastComboHitTime;
+        private float _resonanceUntil = float.NegativeInfinity;
+
+        public float ResonanceRemainingDuration => Mathf.Max(0f, _resonanceUntil - Time.time);
+
+        /// <summary>GDD reward: owner-only cooldown reduction and a refreshable, non-stacking basic-attack buff.</summary>
+        public void ApplyElementSynergyReward()
+        {
+            GetComponent<Skills.SignatureSkillManager>()?.ReduceRemainingCooldownFraction(ElementSynergyRules.REMAINING_COOLDOWN_REDUCTION);
+            GetComponent<PlayerController>()?.ReduceRemainingDashCooldown(ElementSynergyRules.REMAINING_COOLDOWN_REDUCTION);
+            _resonanceUntil = Time.time + ElementSynergyRules.ATTACK_SPEED_BUFF_SECONDS;
+            aimIndicator?.PulseResonance(ElementSynergyRules.ATTACK_SPEED_BUFF_SECONDS);
+        }
+
+        /// <summary>Expires only the resonance multiplier; other stat modifiers remain untouched.</summary>
+        public void ResetElementSynergyReward()
+        {
+            _resonanceUntil = float.NegativeInfinity;
+            aimIndicator?.PulseResonance(0f);
+        }
 
         // Các chỉ số nâng cấp Bí Kíp Đòn Chém (Combo Augment Modifiers)
         private float _bonusComboDamageMultiplier = 0f;
@@ -116,6 +135,8 @@ namespace ProjectZombie.Features.Player
 
         private void OnDisable()
         {
+            Elements.ElementCycleManager.Instance?.ResetOwner(gameObject);
+            ResetElementSynergyReward();
             if (_inputReader != null)
             {
                 _inputReader.OnAttackTriggered -= HandleAttackTriggered;
@@ -201,7 +222,8 @@ namespace ProjectZombie.Features.Player
         {
             float baseSpeed = attackConfig != null ? attackConfig.baseAttackSpeed : 1.8f;
             float statBonus = _playerStats != null ? _playerStats.AttackSpeed : 1.0f;
-            return baseSpeed * statBonus;
+            float resonance = ResonanceRemainingDuration > 0f ? ElementSynergyRules.BASIC_ATTACK_SPEED_MULTIPLIER : 1f;
+            return baseSpeed * statBonus * (1f + _bonusAttackSpeedMultiplier) * resonance;
         }
 
         /// <summary>
@@ -255,11 +277,7 @@ namespace ProjectZombie.Features.Player
             if (attackConfig == null) return;
 
             // 1. Đồng bộ tốc độ Animation của Animator theo Tốc Đánh thực tế
-            float currentAtkSpeed = attackConfig.baseAttackSpeed * (1f + _bonusAttackSpeedMultiplier);
-            if (_playerStats != null && _playerStats.AttackSpeed > 0.01f)
-            {
-                currentAtkSpeed *= _playerStats.AttackSpeed;
-            }
+            float currentAtkSpeed = GetTotalAttackSpeed();
             if (playerAnimator != null)
             {
                 playerAnimator.SetAttackAnimationSpeed(currentAtkSpeed / Mathf.Max(0.1f, attackConfig.baseAttackSpeed));
@@ -341,12 +359,14 @@ namespace ProjectZombie.Features.Player
             Vector2 boxSize = attackConfig.meleeAreaSize * areaScale;
             Vector2 center = (Vector2)transform.position + direction * offset;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            ElementType effectiveElement = AttackElement;
 
             // 1. Sinh hiệu ứng VFX Vệt Chém từ Object Pool
             if (attackConfig.slashVfxPrefab != null)
             {
                 float life = attackConfig.vfxDuration > 0 ? attackConfig.vfxDuration : 0.45f;
-                ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle), life);
+                var slash = ProjectZombie.Core.Pooling.VFXPoolManager.SpawnVFX(attackConfig.slashVfxPrefab, center, Quaternion.Euler(0, 0, angle), life);
+                ElementAttackVisual.Apply(slash, effectiveElement);
             }
 
             // Phát âm thanh vung chém sắc bén khi xuất chiêu đánh thường
@@ -359,7 +379,7 @@ namespace ProjectZombie.Features.Player
             float comboMultiplier = GetComboMultiplier(comboStep) + _bonusComboDamageMultiplier;
             float baseAtk = _playerStats != null ? _playerStats.GetTotalDamage() : 20f;
             float totalDamage = baseAtk * attackConfig.baseDamageMultiplier * comboMultiplier;
-            if (AttackElement == ElementType.Hoa && _playerStats != null && _playerStats.FireDamageBonus > 0f)
+            if (effectiveElement == ElementType.Hoa && _playerStats != null && _playerStats.FireDamageBonus > 0f)
             {
                 totalDamage *= (1f + _playerStats.FireDamageBonus);
             }
@@ -369,10 +389,13 @@ namespace ProjectZombie.Features.Player
             DamageData damageData = new DamageData(
                 totalDamage,
                 isCrit,
-                AttackElement,
+                effectiveElement,
                 false,
                 null
             ) { AttackRecord = ElementAttackRecord.Acquire(gameObject) };
+            damageData.AttackId = damageData.AttackRecord.AttackId;
+            damageData.Owner = gameObject;
+            damageData.HitSource = ElementHitSource.HeroBasicAttack;
 
             // 4. Quét va chạm gây damage (Zero-GC OverlapBox)
             int mask = TargetingUtility.EnemyLayerMask;
@@ -401,6 +424,9 @@ namespace ProjectZombie.Features.Player
                     );
 
                     hitDamage.AttackRecord = damageData.AttackRecord;
+                    hitDamage.AttackId = damageData.AttackId;
+                    hitDamage.Owner = gameObject;
+                    hitDamage.HitSource = damageData.HitSource;
                     health.TakeDamage(hitDamage);
                     hitAnyEnemy = true;
                     OnHitEnemy?.Invoke(hitDamage, hit);
@@ -547,6 +573,9 @@ namespace ProjectZombie.Features.Player
                 false,
                 null
             ) { AttackRecord = ElementAttackRecord.Acquire(gameObject) };
+            damageData.AttackId = damageData.AttackRecord.AttackId;
+            damageData.Owner = gameObject;
+            damageData.HitSource = ElementHitSource.HeroBasicAttack;
 
             int count = Mathf.Max(1, attackConfig.projectileCount);
             float spread = attackConfig.spreadAngle;

@@ -51,7 +51,8 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
             float startAngle = -_data.SpreadAngle / 2f;
             
             float childDamage = _data.DivideDamage ? (_controller.Damage.BaseDamage / _data.SplitCount) : _controller.Damage.BaseDamage;
-            DamageData childDamageOverride = new DamageData(childDamage);
+            DamageData childDamageOverride = _controller.Damage.ToDamageData();
+            childDamageOverride.Amount = childDamage;
 
             for (int i = 0; i < _data.SplitCount; i++)
             {

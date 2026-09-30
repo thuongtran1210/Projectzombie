@@ -22,7 +22,6 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private PlayerController _playerController;
         [SerializeField] private PlayerStats _playerStats;
 
-        private float _lastDashTime;
         private float _dashCooldown;
 
         public static DashButtonPresenter Instance { get; private set; }
@@ -47,7 +46,7 @@ namespace ProjectZombie.Features.UI
         {
             if (_playerController != null)
             {
-                _playerController.OnDashed -= OnPlayerDashed;
+                _playerController.OnDashCooldownUpdated -= RefreshCooldown;
             }
 
             _playerController = pc;
@@ -55,8 +54,8 @@ namespace ProjectZombie.Features.UI
 
             if (_playerController != null)
             {
-                _playerController.OnDashed += OnPlayerDashed;
-                _lastDashTime = _playerController.LastDashTime;
+                _playerController.OnDashCooldownUpdated += RefreshCooldown;
+                RefreshCooldown(_playerController.DashRemainingCooldown, _playerController.DashMaxCooldown);
             }
         }
 
@@ -70,7 +69,7 @@ namespace ProjectZombie.Features.UI
 
             if (_playerController != null)
             {
-                _playerController.OnDashed -= OnPlayerDashed;
+                _playerController.OnDashCooldownUpdated -= RefreshCooldown;
             }
         }
 
@@ -90,9 +89,13 @@ namespace ProjectZombie.Features.UI
                 return;
             }
 
-            _dashCooldown = _playerStats.DashCooldown;
-            float timePassed = Time.time - _lastDashTime;
-            float remaining = Mathf.Max(0f, _dashCooldown - timePassed);
+            RefreshCooldown(_playerController.DashRemainingCooldown, _playerController.DashMaxCooldown);
+        }
+
+        private void RefreshCooldown(float remaining, float maximum)
+        {
+            _dashCooldown = maximum;
+            if (_view == null) return;
 
             int currentTenths = Mathf.CeilToInt(remaining * 10f);
             if (currentTenths != _lastFormattedTenths)
@@ -107,23 +110,10 @@ namespace ProjectZombie.Features.UI
 
         private void TryBindPlayer()
         {
-            if (PlayerController.Instance != null)
+            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null
+                && PlayerProvider.PlayerGameObject.TryGetComponent<PlayerController>(out var controller))
             {
-                _playerController = PlayerController.Instance;
-                _playerStats = _playerController.GetComponent<PlayerStats>();
-
-                _playerController.OnDashed -= OnPlayerDashed;
-                _playerController.OnDashed += OnPlayerDashed;
-
-                _lastDashTime = _playerController.LastDashTime;
-            }
-        }
-
-        private void OnPlayerDashed()
-        {
-            if (_playerController != null)
-            {
-                _lastDashTime = _playerController.LastDashTime;
+                Bind(controller, controller.GetComponent<PlayerStats>());
             }
         }
 
@@ -131,8 +121,7 @@ namespace ProjectZombie.Features.UI
         {
             if (Controls.Customization.CustomizableControlButton.IsAnyInEditMode) return;
 
-            float timePassed = Time.time - _lastDashTime;
-            if (timePassed < _dashCooldown)
+            if (_playerController == null || _playerController.DashRemainingCooldown > 0f)
             {
                 _audioService?.PlayUIError();
                 return;

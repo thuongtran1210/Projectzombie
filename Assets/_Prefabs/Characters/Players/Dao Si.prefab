@@ -861,7 +861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStatsConfig: {fileID: 11400000, guid: 3ce26503ed8f36347ae6b525d735da32, type: 2}
-  baseElement: 2
+  baseElement: 3
 --- !u!114 &3864810296907868852
 MonoBehaviour:
   m_ObjectHideFlags: 0

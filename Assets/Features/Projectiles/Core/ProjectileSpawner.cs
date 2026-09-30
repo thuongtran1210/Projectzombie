@@ -48,6 +48,8 @@ namespace ProjectZombie.Features.Projectiles.Core
             Object sourceWeapon = damageOverride.SourceWeapon;
 
             DamageContext context = new DamageContext(owner, finalBaseDamage, finalElement, isCrit, sourceWeapon);
+            context.AttackId = damageOverride.AttackId != 0 ? damageOverride.AttackId : context.AttackId;
+            context.HitSource = damageOverride.HitSource;
 
             controller.Initialize(data, direction, owner, context, pool, generation);
 

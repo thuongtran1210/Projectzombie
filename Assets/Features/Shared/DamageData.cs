@@ -2,6 +2,14 @@
 
 namespace ProjectZombie.Features.Shared
 {
+    public enum ElementHitSource
+    {
+        Unknown,
+        HeroBasicAttack,
+        Relic,
+        VirtualHero
+    }
+
     /// <summary>
     /// Struct chứa dữ liệu sát thương truyền qua lại giữa các hệ thống (Weapon -> Projectile -> HealthSystem).
     /// </summary>
@@ -16,6 +24,8 @@ namespace ProjectZombie.Features.Shared
         public bool ElementMultiplierApplied;
         public ElementAttackRecord AttackRecord;
         public GameObject Owner;
+        public ulong AttackId;
+        public ElementHitSource HitSource;
         
         public DamageData(float amount, bool isCritical = false, ElementType element = ElementType.None, bool isCounter = false, Object sourceWeapon = null, bool canTriggerReaction = true)
         {
@@ -28,6 +38,13 @@ namespace ProjectZombie.Features.Shared
             ElementMultiplierApplied = isCounter;
             AttackRecord = null;
             Owner = null;
+            AttackId = ElementSynergyRules.NextAttackId();
+            HitSource = ElementHitSource.Unknown;
+            if (sourceWeapon is Weapons.WeaponBase weapon && weapon != null)
+            {
+                Owner = weapon.OwnerGameObject;
+                HitSource = weapon.isPrimaryActiveWeapon ? ElementHitSource.HeroBasicAttack : ElementHitSource.Relic;
+            }
         }
     }
 
@@ -39,6 +56,7 @@ namespace ProjectZombie.Features.Shared
         private GameObject _owner;
         private bool _registered;
         private int _references;
+        public ulong AttackId { get; private set; }
 
         private ElementAttackRecord() { }
 
@@ -48,6 +66,7 @@ namespace ProjectZombie.Features.Shared
             record._owner = owner;
             record._registered = false;
             record._references = 1;
+            record.AttackId = ElementSynergyRules.NextAttackId();
             return record;
         }
 
@@ -64,7 +83,7 @@ namespace ProjectZombie.Features.Shared
         {
             if (_registered || _owner == null || element == ElementType.None) return;
             _registered = true;
-            Elements.ElementCycleManager.Instance?.RegisterHit(element, null, _owner);
+            Elements.ElementCycleManager.Instance?.RegisterHit(element, null, _owner, ElementHitSource.HeroBasicAttack, AttackId);
         }
     }
 }

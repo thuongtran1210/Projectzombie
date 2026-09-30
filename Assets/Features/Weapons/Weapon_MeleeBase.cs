@@ -89,6 +89,8 @@ namespace ProjectZombie.Features.Weapons
                         this
                     );
 
+                    hitDamage.AttackId = damageData.AttackId;
+                    hitDamage.HitSource = damageData.HitSource;
                     health.TakeDamage(hitDamage);
                     hitCount++;
                     hitAnyEnemy = true;

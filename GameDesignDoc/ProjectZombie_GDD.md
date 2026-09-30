@@ -211,12 +211,23 @@ Tại các cột mốc sức mạnh đặc biệt (Cấp 5, Cấp 10 hoặc sau 
 ### 6.1. Vòng Tương Khắc (1 Chiều ×1.3 Sát Thương)
 $$\text{Kim} \rightarrow \text{Mộc} \rightarrow \text{Thổ} \rightarrow \text{Thủy} \rightarrow \text{Hỏa} \rightarrow \text{Kim}$$
 * Đòn chém tay từ Vũ Khí Chính và đòn đánh của Pháp Bảo khi trúng quái vật bị khắc hệ sẽ tự động kích hoạt **Damage Popup Vàng Kim rực rỡ** kèm hệ số sát thương $+30\%$.
+* **Quy tắc sát thương:** Áp dụng hệ số $\times 1.3$ độc lập trên từng mục tiêu bị khắc hệ (kể cả đòn diện rộng/vụ nổ AoE). Không áp dụng hiệu ứng suy yếu debuff.
 
 ### 6.2. Vòng Tương Sinh Trong Nhịp Chặt Chém (Elemental Resonance)
 $$\text{Kim} \rightarrow \text{Thủy} \rightarrow \text{Mộc} \rightarrow \text{Hỏa} \rightarrow \text{Thổ} \rightarrow \text{Kim}$$
-* **Cơ chế:** Đòn chém tay của Vũ khí chính đóng vai trò **"Dẫn Hệ"**. Khi đòn chém trúng quái kết hợp với Pháp bảo thuộc hệ tương sinh kế tiếp trong vòng $3s$ $\rightarrow$ Kích hoạt hiệu ứng **Cộng Hưởng Nguyên Tố**:
-  * Tức thời giảm $20\%$ Cooldown của Kỹ năng Tuyệt Kỹ & Lướt.
-  * Tăng $+25\%$ Tốc độ chém tay trong $3s$.
+
+#### Bảng Quy Chuẩn Kích Hoạt & Phần Thưởng:
+| Tiêu chí | Quy tắc chuẩn hóa |
+| :--- | :--- |
+| **Đơn vị dẫn hệ (Lead Hit)** | Đòn đánh thường của Tướng (hoặc Hit ảo từ Tuyệt kỹ Thư Sinh). |
+| **Đơn vị nối hệ (Proc Hit)** | Đòn đánh từ Pháp Bảo (Relics) thuộc quyền sở hữu của cùng một người chơi. |
+| **Thời gian mở chuỗi** | Trong vòng **3.0 giây** kể từ khi đòn dẫn hệ đánh trúng mục tiêu đầu tiên. |
+| **Mục tiêu trúng** | **Không cần cùng một quái**. Cho phép đánh quái A dẫn hệ, quái B nối hệ. |
+| **Số hit ghi nhận** | 1 đòn đánh diện rộng/đạn nổ/xuyên chỉ tính **tối đa 1 hit dẫn/nối hệ** (dựa theo `AttackId`). Đòn đánh hụt hoặc bị miễn nhiễm không sinh hit. |
+| **Phần thưởng** | Giảm **20% thời gian hồi CÒN LẠI** của Tuyệt Kỹ & Lướt; tăng **+25% tốc đánh thường** trong 3 giây. |
+| **Làm mới buff (Refresh)** | Kích hoạt lại trong thời gian buff sẽ đặt lại thời gian về 3 giây (không cộng dồn tốc độ). |
+| **Proc Cooldown** | **3.0 giây** hồi chờ giữa 2 lần kích hoạt tự nhiên (Hit ảo Thư Sinh được miễn trừ). |
+| **Co-op** | Bộ nhớ hit và hồi chờ proc tính riêng theo từng người chơi (`Owner-local`). |
 
 ### 6.3. Chi Tiết Bộ Kit Tiêu Chuẩn Cho 4 Nhân Vật (Standard 4-Skill Kit)
 Mỗi nhân vật được trang bị độc lập: **1 Đòn Đánh Thường + 1 Lướt Né + 1 Tuyệt Kỹ + 1 Nội Tại Bị Động**:

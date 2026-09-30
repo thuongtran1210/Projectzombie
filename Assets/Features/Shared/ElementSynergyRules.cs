@@ -5,6 +5,16 @@ namespace ProjectZombie.Features.Shared
     /// </summary>
     public static class ElementSynergyRules
     {
+        public const float HIT_WINDOW_SECONDS = 3f;
+        public const float PROC_COOLDOWN_SECONDS = 3f;
+        public const float REMAINING_COOLDOWN_REDUCTION = 0.2f;
+        public const float BASIC_ATTACK_SPEED_MULTIPLIER = 1.25f;
+        public const float ATTACK_SPEED_BUFF_SECONDS = 3f;
+        private static ulong _nextAttackId;
+
+        /// <summary>Session-unique identity shared by every target of one attack.</summary>
+        public static ulong NextAttackId() => ++_nextAttackId;
+
         public static ElementType GetGenerativeParent(ElementType child)
         {
             switch (child)

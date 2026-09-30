@@ -397,7 +397,7 @@ namespace ProjectZombie.Editor.UI
             stRT.offsetMin = new Vector2(110, 8);
             stRT.offsetMax = new Vector2(-12, -34);
             var stTMP = CreateTextMeshPro(skillTextObj, vietFont);
-            stTMP.text = "Phán Quyết Tiên Định: Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown.";
+            stTMP.text = "Phán Quyết Tiền Định: Tạo một hit dẫn hệ ảo để pháp bảo nối Tương Sinh trong 3 giây. Giảm hồi tuyệt kỹ và lướt, tăng tốc đánh thường; vượt hồi chờ proc.";
             stTMP.fontSize = 15.5f;
             stTMP.color = new Color(0.14f, 0.08f, 0.05f); // Chữ sẫm đậm rõ nét
             stTMP.enableWordWrapping = true;

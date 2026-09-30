@@ -30,8 +30,8 @@ namespace ProjectZombie.Features.UI
 
         private static readonly LoreTip[] _tipsDatabase = new LoreTip[]
         {
-            new LoreTip("<color=#FFD700>[ QUY LUẬT TƯƠNG KHẮC ]</color>", "Đánh trúng hệ khắc chế gây thêm <color=#FFD700>+30% Sát thương</color> và kích hoạt hiệu ứng suy yếu!"),
-            new LoreTip("<color=#2ECC71>[ NĂNG LƯỢNG TƯƠNG SINH ]</color>", "Trang bị Pháp bảo Tương Sinh với Tướng giúp giảm <color=#2ECC71>-20% Thời gian hồi chiêu</color>!"),
+            new LoreTip("<color=#FFD700>[ QUY LUẬT TƯƠNG KHẮC ]</color>", "Đòn đánh khắc hệ mục tiêu gây <color=#FFD700>+30% sát thương</color>, tính riêng từng quái (Kim khắc Mộc, Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim)."),
+            new LoreTip("<color=#2ECC71>[ NĂNG LƯỢNG TƯƠNG SINH ]</color>", "Tướng Kim đánh trúng rồi pháp bảo Thủy cùng chủ đánh trúng trong 3 giây: giảm 20% hồi còn lại của tuyệt kỹ và lướt, +25% tốc đánh thường trong 3 giây. Không cần cùng quái; mỗi người có hồi chờ 3 giây."),
             new LoreTip("<color=#FF8A50>[ DÉP TỔ ONG THẦN SA ]</color>", "Tung đòn kết liễu Combo Hit 3 sẽ triệu hồi Lốc Dép 360 độ khiến quái bị <color=#FF8A50>Quê Độ</color> quay sang đánh nhau!"),
             new LoreTip("<color=#F1C40F>[ NỒI CƠM THẠCH SANH ]</color>", "Nồi cơm tự động gom quái nguy hiểm và bắn pháo, rơi cơm nắm thần kỳ hồi phục <color=#2ECC71>5% Máu</color>!"),
             new LoreTip("<color=#E74C3C>[ ĐIẾU CÀY CỬU U ]</color>", "Luồng khói thuốc lào khiến quái vật <color=#E74C3C>Say Thuốc</color>, ho sặc sụa và đi giật lùi vô hại!"),

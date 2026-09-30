@@ -87,7 +87,7 @@ namespace ProjectZombie.Editor
             soThuSinh.uiSpdRatio = 0.75f;
             soThuSinh.uiDefRatio = 0.60f;
             soThuSinh.signatureSkillName = "Phán Quyết Tiền Định";
-            soThuSinh.signatureSkillDesc = "Chèn 1 hit ảo Ngũ Hành vào Queue Tương Sinh, kích hoạt giảm 20% Cooldown cho vũ khí khớp lệnh.";
+            soThuSinh.signatureSkillDesc = "Tạo một hit dẫn hệ ảo. Pháp bảo cùng chủ nối hệ trong 3 giây để giảm 20% hồi còn lại của tuyệt kỹ và lướt, tăng 25% tốc đánh thường trong 3 giây. Hit ảo được vượt hồi chờ Tương Sinh.";
             soThuSinh.signatureSkillIcon = iconSkillThuSinh;
             soThuSinh.passiveTraitName = "Văn Khí Hộ Thể";
             soThuSinh.passiveTraitDesc = "Khi kích hoạt Tương Sinh Ngũ Hành, tăng 15% Tốc độ di chuyển và hồi 5% HP tối đa.";
@@ -113,9 +113,9 @@ namespace ProjectZombie.Editor
             var soDaoSi = GetOrCreateSO<CharacterDataSO>($"{charactersFolder}/Hero_DaoSi.asset");
             soDaoSi.characterId = "C002_DaoSi";
             soDaoSi.characterName = "Đạo Sĩ";
-            soDaoSi.element = ElementType.Moc;
+            soDaoSi.element = ElementType.Thuy;
             soDaoSi.rarity = ItemRarity.Rare;
-            soDaoSi.elementHexColor = "#9B51E0";
+            soDaoSi.elementHexColor = "#29B6F6";
             soDaoSi.avatar = avatarDaoSi;
             soDaoSi.description = "Đạo nhân tinh thông Tiên Đạo Bát Quái. Vận hành Cán Cân Âm Dương (Âm Thịnh / Dương Thịnh / Thái Cực).";
             soDaoSi.baseMaxHealth = 110f;
