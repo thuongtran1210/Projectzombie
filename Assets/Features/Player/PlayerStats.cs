@@ -70,7 +70,19 @@ namespace ProjectZombie.Features.Player
         public float DamageMultiplier => _damageMultiplier;
         public float CritDamageMultiplier => 1.5f;
         public float Armor => 0f;
-        public ElementType CurrentElement => ElementType.None;
+        [SerializeField] private ElementType baseElement = ElementType.None;
+        private ElementType _elementOverride = ElementType.None;
+        public ElementType CurrentElement => _elementOverride != ElementType.None ? _elementOverride : baseElement;
+        public void SetElementOverride(ElementType element)
+        {
+            _elementOverride = element;
+            OnStatsUpdated?.Invoke();
+        }
+        public void SetBaseElement(ElementType element)
+        {
+            baseElement = element;
+            OnStatsUpdated?.Invoke();
+        }
 
 
         public const float MIN_MOVE_SPEED = 2.0f;
@@ -98,6 +110,7 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void ResetStats()
         {
+            _elementOverride = ElementType.None;
             _statModifiers.Clear();
             InitStats();
             ApplyPermanentUpgrades();

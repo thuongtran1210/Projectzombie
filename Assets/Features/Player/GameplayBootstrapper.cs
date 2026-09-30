@@ -253,6 +253,7 @@ namespace ProjectZombie.Features.Player
             if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null && combat != null)
             {
                 combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
+                combat.GetComponent<PlayerStats>()?.SetBaseElement(RunLoadoutState.SelectedCharacter.element);
             }
 
             if (_activePlayerInstance.TryGetComponent<WeaponManager>(out var wm))

@@ -23,7 +23,7 @@ namespace ProjectZombie.Features.Player
         [Tooltip("Icon đại diện đòn đánh hiển thị trên Attack Button")]
         public Sprite attackIcon;
 
-        [Tooltip("Hệ nguyên tố của đòn đánh")]
+        [Tooltip("Legacy metadata. Basic attacks use the owning PlayerStats.CurrentElement, including skill overrides.")]
         public ElementType element = ElementType.None;
 
         [Tooltip("Hệ số sát thương cơ bản (Ví dụ 1.0 = 100% Base Attack)")]

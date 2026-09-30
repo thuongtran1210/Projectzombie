@@ -147,6 +147,9 @@ namespace ProjectZombie.Features.Shared
             if (_currentHealth <= 0 || IsInvulnerable) return;
             if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
 
+            TryGetComponent<Enemies.Enemy>(out var enemy);
+            damageData = DamageUtility.ApplyElementCounter(damageData, enemy != null ? enemy.CurrentElement : CurrentElement);
+
             if (CustomDamageInterceptor != null && CustomDamageInterceptor.Invoke(damageData.Amount, damageData))
             {
                 return;
@@ -154,6 +157,8 @@ namespace ProjectZombie.Features.Shared
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);
+
+            DamageUtility.RegisterSuccessfulHit(damageData);
 
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
             OnDamageTaken?.Invoke(damageData);
@@ -174,7 +179,10 @@ namespace ProjectZombie.Features.Shared
 
         public void TakeDamage(DamageContext context)
         {
-            TakeDamage(context.BaseDamage);
+            TakeDamage(new DamageData(context.BaseDamage, context.IsCritical, context.Element, sourceWeapon: context.SourceWeapon)
+            {
+                Owner = context.Source
+            });
         }
 
         public void Heal(float amount, bool allowRevive = false)

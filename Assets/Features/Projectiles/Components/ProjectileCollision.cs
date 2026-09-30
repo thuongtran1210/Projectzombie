@@ -155,6 +155,7 @@ namespace ProjectZombie.Features.Projectiles.Components
                     _controller.Damage.SourceWeapon
                 );
 
+                hitDamage.Owner = _controller.Owner;
                 damageableTarget.TakeDamage(hitDamage);
 
                 // Áp dụng lực đẩy lùi theo hướng bay của đạn (trừ quái Heavy Armor)
@@ -166,12 +167,6 @@ namespace ProjectZombie.Features.Projectiles.Components
                     enemy.ApplyKnockback(pushDir, 2.5f, 0.12f);
                 }
 
-                // Kích hoạt Vòng Tương Sinh (Element Generation)
-                if (_controller.Damage.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
-                {
-                    var weapon = _controller.Damage.SourceWeapon as Weapons.WeaponBase;
-                    Elements.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
-                }
             }
 
             // 6. Xử lý logic va chạm đặc thù (Xuyên thấu, Nảy, Homing,...)

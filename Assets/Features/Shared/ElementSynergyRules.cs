@@ -5,6 +5,18 @@ namespace ProjectZombie.Features.Shared
     /// </summary>
     public static class ElementSynergyRules
     {
+        public static ElementType GetGenerativeParent(ElementType child)
+        {
+            switch (child)
+            {
+                case ElementType.Kim: return ElementType.Tho;
+                case ElementType.Moc: return ElementType.Thuy;
+                case ElementType.Thuy: return ElementType.Kim;
+                case ElementType.Hoa: return ElementType.Moc;
+                case ElementType.Tho: return ElementType.Hoa;
+                default: return ElementType.None;
+            }
+        }
         /// <summary>
         /// Kiểm tra nguyên tắc Ngũ Hành Tương Sinh: 
         /// Kim sinh Thủy, Thủy sinh Mộc, Mộc sinh Hỏa, Hỏa sinh Thổ, Thổ sinh Kim.

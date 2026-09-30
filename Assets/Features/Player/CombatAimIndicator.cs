@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Player
 {
@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Player
 
         private SpriteRenderer _aimRenderer;
         private Transform _indicatorTransform;
+        private Shared.ElementType? _displayedElement;
 
         public void Initialize(CharacterAttackConfig config = null)
         {
@@ -70,6 +71,16 @@ namespace ProjectZombie.Features.Player
             _aimRenderer.color = themeColor;
         }
 
+        public void ApplyElementColor(Shared.ElementType element)
+        {
+            if (_aimRenderer == null || _displayedElement == element) return;
+            _displayedElement = element;
+            if (ColorUtility.TryParseHtmlString(UI.Helpers.ElementVisualHelper.GetElementHexColor(element), out var color))
+            {
+                color.a = 0.65f;
+                _aimRenderer.color = color;
+            }
+        }
         public void UpdateAim(Vector2 attackDirection)
         {
             if (_indicatorTransform == null)

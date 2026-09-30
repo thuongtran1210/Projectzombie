@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectZombie.Features.Shared;
 
@@ -89,7 +89,7 @@ namespace ProjectZombie.Features.Player
                 var hit = _hitBuffer[i];
                 if (hit != null && hit.TryGetComponent<HealthSystem>(out var enemyHealth))
                 {
-                    enemyHealth.TakeDamage(damageAmount);
+                    enemyHealth.TakeDamage(new DamageData(damageAmount, element: _playerStats.CurrentElement));
                 }
             }
 

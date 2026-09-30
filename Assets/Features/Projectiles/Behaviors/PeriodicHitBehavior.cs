@@ -81,6 +81,7 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                         _controller.Damage.SourceWeapon
                     );
 
+                    tickDamage.Owner = _controller.Owner;
                     damageable.TakeDamage(tickDamage);
 
                     // 2. Kích hoạt Làm Chậm (Slow Debuff)
@@ -93,12 +94,6 @@ namespace ProjectZombie.Features.Projectiles.Behaviors
                         }
                     }
 
-                    // 3. Tương Sinh Ngũ Hành
-                    if (_controller.Damage.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
-                    {
-                        var weapon = _controller.Damage.SourceWeapon as Weapons.WeaponBase;
-                        Elements.ElementCycleManager.Instance.RegisterHit(_controller.Damage.Element, weapon);
-                    }
                 }
             }
         }

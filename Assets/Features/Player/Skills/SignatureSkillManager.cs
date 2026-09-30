@@ -82,14 +82,17 @@ namespace ProjectZombie.Features.Player.Skills
         /// <summary>
         /// Kích hoạt thi triển Signature Skill.
         /// </summary>
-        public bool TryExecuteSkill(System.Action<ElementType> onElementSelectedCallback = null)
+        public bool TryExecuteSkill(System.Action<ElementType> onElementSelectedCallback = null, ElementType selectedElement = ElementType.None)
         {
             if (ActiveSkill == null || RemainingCooldown > 0f) return false;
             if (!CanExecuteCurrentSkill()) return false;
 
             try
             {
-                ActiveSkill.Execute(gameObject, onElementSelectedCallback);
+                if (ActiveSkill is ThuSinhSignatureSkill scholar)
+                    scholar.ExecuteWithElement(gameObject, selectedElement, onElementSelectedCallback);
+                else
+                    ActiveSkill.Execute(gameObject, onElementSelectedCallback);
             }
             catch (System.Exception ex)
             {

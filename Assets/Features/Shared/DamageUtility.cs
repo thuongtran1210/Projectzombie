@@ -7,6 +7,26 @@ namespace ProjectZombie.Features.Shared
     /// </summary>
     public static class DamageUtility
     {
+        /// <summary>Records an applied hit, or an accepted client-predicted network hit.</summary>
+        public static void RegisterSuccessfulHit(DamageData damage)
+        {
+            if (damage.Amount <= 0f || damage.Element == ElementType.None) return;
+            if (damage.Owner != null && damage.Owner.CompareTag("Enemy")) return;
+            if (damage.AttackRecord != null)
+                damage.AttackRecord.RegisterSuccessfulHit(damage.Element);
+            else
+                Elements.ElementCycleManager.Instance?.RegisterHit(damage.Element, damage.SourceWeapon as Weapons.WeaponBase, damage.Owner);
+        }
+
+        public static DamageData ApplyElementCounter(DamageData damage, ElementType defender)
+        {
+            if (damage.ElementMultiplierApplied) return damage;
+            float multiplier = GetElementMultiplier(damage.Element, defender);
+            damage.Amount *= multiplier;
+            damage.IsCounter = multiplier > 1f;
+            damage.ElementMultiplierApplied = true;
+            return damage;
+        }
         // Hệ số chí mạng mặc định (200% = 2x sát thương)
         public const float CRIT_MULTIPLIER = 2.0f;
 
@@ -60,7 +80,10 @@ namespace ProjectZombie.Features.Shared
             bool isCounter = elementMult > 1.05f; // Khắc hệ (1.3x)
             float finalDamage = (isCrit ? baseDamage * critDamageMultiplier : baseDamage) * elementMult;
 
-            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon);
+            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon)
+            {
+                ElementMultiplierApplied = defenderElement != ElementType.None
+            };
         }
 
         /// <summary>
@@ -77,7 +100,10 @@ namespace ProjectZombie.Features.Shared
             bool isCounter = elementMult > 1.05f;
             float finalDamage = damageAmount * elementMult;
 
-            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon);
+            return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon)
+            {
+                ElementMultiplierApplied = defenderElement != ElementType.None
+            };
         }
     }
 }

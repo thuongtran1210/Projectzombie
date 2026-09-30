@@ -38,6 +38,7 @@ namespace ProjectZombie.Features.Player
         // Bộ nhớ đệm không cấp phát GC cho đòn quét cận chiến
         private static readonly Collider2D[] _meleeHitBuffer = new Collider2D[50];
 
+        public ElementType AttackElement => _playerStats != null ? _playerStats.CurrentElement : ElementType.None;
         public CharacterAttackConfig Config => attackConfig;
         public int CurrentComboStep => _currentComboStep;
         public Sprite AttackIcon => attackConfig != null ? attackConfig.attackIcon : null;
@@ -175,7 +176,7 @@ namespace ProjectZombie.Features.Player
                 attackConfig = config;
                 if (aimIndicator != null)
                 {
-                    aimIndicator.ApplyThemeColor(config);
+                    aimIndicator.ApplyElementColor(AttackElement);
                 }
             }
         }
@@ -212,6 +213,7 @@ namespace ProjectZombie.Features.Player
             if (aimIndicator != null)
             {
                 Vector2 dir = GetAttackDirection();
+                aimIndicator.ApplyElementColor(AttackElement);
                 aimIndicator.UpdateAim(dir);
             }
         }
@@ -357,7 +359,7 @@ namespace ProjectZombie.Features.Player
             float comboMultiplier = GetComboMultiplier(comboStep) + _bonusComboDamageMultiplier;
             float baseAtk = _playerStats != null ? _playerStats.GetTotalDamage() : 20f;
             float totalDamage = baseAtk * attackConfig.baseDamageMultiplier * comboMultiplier;
-            if (attackConfig.element == ElementType.Hoa && _playerStats != null && _playerStats.FireDamageBonus > 0f)
+            if (AttackElement == ElementType.Hoa && _playerStats != null && _playerStats.FireDamageBonus > 0f)
             {
                 totalDamage *= (1f + _playerStats.FireDamageBonus);
             }
@@ -367,10 +369,10 @@ namespace ProjectZombie.Features.Player
             DamageData damageData = new DamageData(
                 totalDamage,
                 isCrit,
-                attackConfig.element,
+                AttackElement,
                 false,
                 null
-            );
+            ) { AttackRecord = ElementAttackRecord.Acquire(gameObject) };
 
             // 4. Quét va chạm gây damage (Zero-GC OverlapBox)
             int mask = TargetingUtility.EnemyLayerMask;
@@ -398,6 +400,7 @@ namespace ProjectZombie.Features.Player
                         null
                     );
 
+                    hitDamage.AttackRecord = damageData.AttackRecord;
                     health.TakeDamage(hitDamage);
                     hitAnyEnemy = true;
                     OnHitEnemy?.Invoke(hitDamage, hit);
@@ -436,6 +439,7 @@ namespace ProjectZombie.Features.Player
             }
 
             // Cho phép di chuyển ngắt ngay động tác thừa (Animation Canceling / Stutter-Step)
+            damageData.AttackRecord.Release();
             playerController?.NotifyAttackImpactComplete();
         }
 
@@ -531,16 +535,18 @@ namespace ProjectZombie.Features.Player
             float comboMultiplier = GetComboMultiplier(comboStep);
             float baseAtk = _playerStats != null ? _playerStats.GetTotalDamage() : 20f;
             float totalDamage = baseAtk * attackConfig.baseDamageMultiplier * comboMultiplier;
+            if (AttackElement == ElementType.Hoa && _playerStats != null)
+                totalDamage *= 1f + _playerStats.FireDamageBonus;
             bool isCrit = _playerStats != null && UnityEngine.Random.value < _playerStats.CritChance;
             if (isCrit) totalDamage *= 1.5f;
 
             DamageData damageData = new DamageData(
                 totalDamage,
                 isCrit,
-                attackConfig.element,
+                AttackElement,
                 false,
                 null
-            );
+            ) { AttackRecord = ElementAttackRecord.Acquire(gameObject) };
 
             int count = Mathf.Max(1, attackConfig.projectileCount);
             float spread = attackConfig.spreadAngle;
@@ -566,6 +572,7 @@ namespace ProjectZombie.Features.Player
                     attackConfig.projectileLifetime
                 );
             }
+            damageData.AttackRecord.Release();
         }
 
         private float GetComboMultiplier(int step)

@@ -2,6 +2,9 @@ using NUnit.Framework;
 using UnityEngine;
 using ProjectZombie.Features.Combat;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Elements;
+using ProjectZombie.Features.Weapons;
+using System.Reflection;
 
 namespace ProjectZombie.Tests.Editor
 {
@@ -54,6 +57,250 @@ namespace ProjectZombie.Tests.Editor
         public void LocalDamageProcessor_WhenTargetNull_DoesNotThrow()
         {
             Assert.DoesNotThrow(() => _damageProcessor.ApplyDamage(null, 50f));
+        }
+
+        [TestCase(ElementType.Kim, ElementType.Moc)]
+        [TestCase(ElementType.Moc, ElementType.Tho)]
+        [TestCase(ElementType.Thuy, ElementType.Hoa)]
+        [TestCase(ElementType.Hoa, ElementType.Kim)]
+        [TestCase(ElementType.Tho, ElementType.Thuy)]
+        public void ElementDamage_AppliesCounterExactlyOnce(ElementType attack, ElementType defense)
+        {
+            _healthSystem.SetMaxHealth(1000f);
+            _healthSystem.CurrentElement = defense;
+            _healthSystem.TakeDamage(new DamageData(100f, element: attack));
+            Assert.That(_healthSystem.CurrentHealth, Is.EqualTo(870f).Within(0.001f));
+            var resolved = DamageUtility.CalculateHitDamage(100f, false, attack, defense);
+            _healthSystem.TakeDamage(resolved);
+            Assert.That(_healthSystem.CurrentHealth, Is.EqualTo(740f).Within(0.001f));
+        }
+
+        [Test]
+        public void ExplosionContext_PreservesCriticalElementSourceAndResolvesEachTarget()
+        {
+            _healthSystem.SetMaxHealth(1000f);
+            DamageData observed = default;
+            _healthSystem.OnDamageTaken += damage => observed = damage;
+            var context = new DamageContext(null, 200f, ElementType.Hoa, true, _targetObj);
+            _healthSystem.CurrentElement = ElementType.Kim;
+            _healthSystem.TakeDamage(context);
+            Assert.That(observed.Amount, Is.EqualTo(260f).Within(0.001f));
+            Assert.That(observed.IsCritical && observed.IsCounter);
+            Assert.That(observed.Element, Is.EqualTo(ElementType.Hoa));
+            Assert.That(observed.SourceWeapon, Is.SameAs(_targetObj));
+            _healthSystem.CurrentElement = ElementType.Thuy;
+            _healthSystem.TakeDamage(context);
+            Assert.That(observed.Amount, Is.EqualTo(200f).Within(0.001f));
+            Assert.That(observed.IsCounter, Is.False);
+        }
+
+        [TestCase(ElementType.Kim, ElementType.Tho)]
+        [TestCase(ElementType.Moc, ElementType.Thuy)]
+        [TestCase(ElementType.Thuy, ElementType.Kim)]
+        [TestCase(ElementType.Hoa, ElementType.Moc)]
+        [TestCase(ElementType.Tho, ElementType.Hoa)]
+        public void ScholarAutoElement_IsGenerativeParent(ElementType relic, ElementType expected)
+        {
+            Assert.That(ElementSynergyRules.GetGenerativeParent(relic), Is.EqualTo(expected));
+            Assert.That(ElementSynergyRules.IsElementGenerative(expected, relic));
+        }
+    }
+
+    public sealed class ElementTestRelic : WeaponBase
+    {
+        protected override void PerformAttack() { }
+    }
+
+    public class ElementCycleRegressionTests
+    {
+        private GameObject _managerObject;
+        private GameObject _ownerA;
+        private GameObject _ownerB;
+        private ElementCycleManager _manager;
+        private ElementTestRelic _relic;
+        private int _procs;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _managerObject = new GameObject("Element test manager");
+            _manager = _managerObject.AddComponent<ElementCycleManager>();
+            typeof(ElementCycleManager).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(_manager, null);
+            _ownerA = new GameObject("Owner A");
+            _ownerB = new GameObject("Owner B");
+            var relicObject = new GameObject("Relic");
+            relicObject.transform.SetParent(_ownerA.transform);
+            _relic = relicObject.AddComponent<ElementTestRelic>();
+            _relic.element = ElementType.Thuy;
+            _relic.activeCooldown = 10f;
+            SetCooldown(5f);
+            _procs = 0;
+            _manager.OnElementSynergyTriggered += (_, __, ___) => _procs++;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.DestroyImmediate(_managerObject);
+            Object.DestroyImmediate(_ownerA);
+            Object.DestroyImmediate(_ownerB);
+        }
+
+        private void SetCooldown(float remaining)
+        {
+            typeof(WeaponBase).GetField("_lastRelicSkillCastTime", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(_relic, Time.time - _relic.activeCooldown + remaining);
+            typeof(WeaponBase).GetField("_currentRelicPhase", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(_relic, WeaponBase.RelicCastPhase.Cooldown);
+        }
+
+        [Test]
+        public void Synergy_ReducesRelicRemainingTimeAndImmediatelyNotifiesHud()
+        {
+            float notified = -1f;
+            float attackCooldown = _relic.RemainingCooldown;
+            _relic.OnRelicCooldownUpdated += (remaining, _) => notified = remaining;
+            _manager.RegisterHit(ElementType.Kim, null, _ownerA);
+            _manager.RegisterHit(ElementType.Thuy, _relic);
+            Assert.That(_procs, Is.EqualTo(1));
+            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(4f).Within(0.001f));
+            Assert.That(notified, Is.EqualTo(4f).Within(0.001f));
+            Assert.That(_relic.RemainingCooldown, Is.EqualTo(attackCooldown).Within(0.001f));
+        }
+
+        [Test]
+        public void Players_DoNotShareHitsOrProcCooldown()
+        {
+            _manager.RegisterHit(ElementType.Kim, null, _ownerA);
+            _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+            Assert.That(_procs, Is.Zero);
+            _manager.RegisterHit(ElementType.Thuy, null, _ownerA);
+            _manager.RegisterHit(ElementType.Moc, null, _ownerB);
+            Assert.That(_procs, Is.EqualTo(2));
+            _manager.RegisterHit(ElementType.Moc, null, _ownerA);
+            Assert.That(_procs, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void VirtualHit_IsConsumedOnceAndDoesNotChangeOtherPlayer()
+        {
+            _manager.PushVirtualElementHit(ElementType.Kim, _ownerA);
+            _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+            Assert.That(_procs, Is.Zero);
+            _manager.RegisterHit(ElementType.Thuy, _relic);
+            _manager.RegisterHit(ElementType.Thuy, _relic);
+            Assert.That(_procs, Is.EqualTo(1));
+            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(4f).Within(0.001f));
+        }
+
+        [Test]
+        public void MultiTargetAttack_RegistersOnlyFirstSuccessfulHit()
+        {
+            var target = new GameObject("Target");
+            var health = target.AddComponent<HealthSystem>();
+            health.SetMaxHealth(1000f);
+            var record = ElementAttackRecord.Acquire(_ownerA);
+            try
+            {
+                var hit = new DamageData(10f, element: ElementType.Kim) { AttackRecord = record };
+                health.CustomDamageInterceptor = (_, __) => true;
+                health.TakeDamage(hit);
+                _manager.RegisterHit(ElementType.Thuy, _relic);
+                Assert.That(_procs, Is.Zero);
+                health.CustomDamageInterceptor = null;
+                health.TakeDamage(hit);
+                _manager.RegisterHit(ElementType.Thuy, _relic);
+                Assert.That(_procs, Is.EqualTo(1));
+                health.TakeDamage(hit);
+                // If the repeated hit re-entered the buffer, it would replace Thuy with Kim.
+                typeof(ElementCycleManager).GetField("_procCooldownSeconds", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(_manager, 0f);
+                _manager.RegisterHit(ElementType.Moc, null, _ownerA);
+                Assert.That(_procs, Is.EqualTo(2));
+            }
+            finally
+            {
+                record.Release();
+                Object.DestroyImmediate(target);
+            }
+        }
+
+        [Test]
+        public void RecastWindow_IsNotShortenedByCooldownReduction()
+        {
+            _relic.hasRecastPhase = true;
+            typeof(WeaponBase).GetField("_currentRelicPhase", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(_relic, WeaponBase.RelicCastPhase.RecastReady);
+            _relic.ReduceRelicSkillCooldown(0.2f);
+            Assert.That(_relic.CurrentRelicPhase, Is.EqualTo(WeaponBase.RelicCastPhase.RecastReady));
+            Assert.That(_relic.RelicRemainingCooldown, Is.EqualTo(5f).Within(0.001f));
+        }
+
+        [Test]
+        public void ScholarManualSelection_IsPreservedByExecution()
+        {
+            var skill = new ProjectZombie.Features.Player.Skills.ThuSinhSignatureSkill();
+            ElementType selected = ElementType.None;
+            skill.ExecuteWithElement(_ownerA, ElementType.Hoa, element => selected = element);
+            Assert.That(selected, Is.EqualTo(ElementType.Hoa));
+            _manager.RegisterHit(ElementType.Tho, null, _ownerA);
+            Assert.That(_procs, Is.EqualTo(1));
+            _manager.RegisterHit(ElementType.Tho, null, _ownerA);
+            Assert.That(_procs, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void PooledAttackRecord_DoesNotKeepPreviousOwnerOrHit()
+        {
+            var first = ElementAttackRecord.Acquire(_ownerA);
+            first.RegisterSuccessfulHit(ElementType.Kim);
+            first.Release();
+            var second = ElementAttackRecord.Acquire(_ownerB);
+            try
+            {
+                second.RegisterSuccessfulHit(ElementType.Kim);
+                _manager.RegisterHit(ElementType.Thuy, null, _ownerB);
+                Assert.That(_procs, Is.EqualTo(1));
+            }
+            finally { second.Release(); }
+        }
+
+        [Test]
+        public void BasicAttack_UsesOwnerElementAndSkillOverride()
+        {
+            _ownerA.SetActive(false);
+            var stats = _ownerA.AddComponent<ProjectZombie.Features.Player.PlayerStats>();
+            var combat = _ownerA.AddComponent<ProjectZombie.Features.Player.CharacterCombat>();
+            typeof(ProjectZombie.Features.Player.CharacterCombat).GetField("_playerStats", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(combat, stats);
+            combat.SetAttackConfig(new ProjectZombie.Features.Player.CharacterAttackConfig { element = ElementType.None });
+            stats.SetBaseElement(ElementType.Kim);
+            Assert.That(combat.AttackElement, Is.EqualTo(ElementType.Kim));
+            stats.SetElementOverride(ElementType.Hoa);
+            Assert.That(combat.AttackElement, Is.EqualTo(ElementType.Hoa));
+            stats.SetElementOverride(ElementType.None);
+            Assert.That(combat.AttackElement, Is.EqualTo(ElementType.Kim));
+        }
+
+        [Test]
+        public void ScholarAutoSelection_UsesActiveRelicCooldown()
+        {
+            _ownerA.SetActive(false);
+            var inventory = _ownerA.AddComponent<WeaponManager>();
+            var weapons = (System.Collections.Generic.List<WeaponBase>)typeof(WeaponManager)
+                .GetField("_activeWeapons", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(inventory);
+            weapons.Add(_relic);
+            var other = new GameObject("Other relic");
+            other.transform.SetParent(_ownerA.transform);
+            var fireRelic = other.AddComponent<ElementTestRelic>();
+            fireRelic.element = ElementType.Hoa;
+            fireRelic.activeCooldown = 20f;
+            typeof(WeaponBase).GetField("_lastRelicSkillCastTime", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(fireRelic, Time.time - 12f);
+            weapons.Add(fireRelic);
+            var skill = new ProjectZombie.Features.Player.Skills.ThuSinhSignatureSkill();
+            Assert.That(skill.GetAutoSelectFallbackElement(_ownerA), Is.EqualTo(ElementType.Moc));
         }
     }
 }

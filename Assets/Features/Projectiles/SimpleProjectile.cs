@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Features.Enemies;
 using ProjectZombie.Core.Juice;
@@ -26,7 +26,9 @@ namespace ProjectZombie.Features.Projectiles
 
         public void Initialize(DamageData damage, GameObject owner, float knockback)
         {
+            _damageData.AttackRecord?.Release();
             _damageData = damage;
+            _damageData.AttackRecord?.Retain();
             _owner = owner;
             _knockbackForce = knockback;
             _hasHit = false;
@@ -70,9 +72,11 @@ namespace ProjectZombie.Features.Projectiles
                     _damageData.IsCritical,
                     _damageData.Element,
                     defenderElement,
-                    null
+                    _damageData.SourceWeapon
                 );
 
+                hitDamage.AttackRecord = _damageData.AttackRecord;
+                hitDamage.Owner = _owner;
                 health.TakeDamage(hitDamage);
 
                 if (enemy != null && !enemy.IsHeavyArmor)
@@ -135,6 +139,7 @@ namespace ProjectZombie.Features.Projectiles
         {
             if (!_isActiveInPool) return;
             _isActiveInPool = false;
+            ReleaseAttackRecord();
             StopAllCoroutines();
             gameObject.SetActive(false);
 
@@ -147,6 +152,14 @@ namespace ProjectZombie.Features.Projectiles
                 Destroy(gameObject);
             }
         }
+
+        private void ReleaseAttackRecord()
+        {
+            _damageData.AttackRecord?.Release();
+            _damageData.AttackRecord = null;
+        }
+
+        private void OnDestroy() => ReleaseAttackRecord();
 
         #region STATIC OBJECT POOLING
         private bool _isActiveInPool;

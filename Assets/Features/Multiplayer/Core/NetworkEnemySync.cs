@@ -60,6 +60,9 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     _healthSystem.CustomDamageInterceptor = (amount, data) =>
                     {
                         _accumulatedDamageBuffer += amount;
+                        // Match local cooldown prediction to the owning attacker, even though
+                        // health is updated later by the host's existing damage batch RPC.
+                        DamageUtility.RegisterSuccessfulHit(data);
                         return true;
                     };
                 }

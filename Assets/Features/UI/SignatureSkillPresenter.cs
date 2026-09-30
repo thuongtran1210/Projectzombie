@@ -245,13 +245,7 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            var activeThuSinhSkill = _skillManager.ActiveSkill as ThuSinhSignatureSkill;
-            if (activeThuSinhSkill != null)
-            {
-                activeThuSinhSkill.ApplyVirtualElementHit(selectedElement);
-            }
-
-            _skillManager.TryExecuteSkill();
+            _skillManager.TryExecuteSkill(selectedElement: selectedElement);
         }
     }
 }

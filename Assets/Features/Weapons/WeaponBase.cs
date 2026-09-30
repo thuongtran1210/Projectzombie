@@ -140,6 +140,22 @@ namespace ProjectZombie.Features.Weapons
             }
         }
 
+        /// <summary>Reduces remaining active-skill cooldown without changing attack cadence or recast windows.</summary>
+        public void ReduceRelicSkillCooldown(float percentage)
+        {
+            if (isPassiveRelic || _currentRelicPhase != RelicCastPhase.Cooldown) return;
+            _lastRelicSkillCastTime -= RelicRemainingCooldown * Mathf.Clamp01(percentage);
+            float remaining = RelicRemainingCooldown;
+            _lastEmittedRelicCd = remaining;
+            if (remaining <= 0f)
+            {
+                _currentRelicPhase = RelicCastPhase.Ready;
+                OnRelicPhaseChanged?.Invoke(_currentRelicPhase);
+                OnRelicSkillReady?.Invoke();
+            }
+            OnRelicCooldownUpdated?.Invoke(remaining, RelicMaxCooldown);
+        }
+
         public enum RelicCastPhase
         {
             Ready,          // Sẵn sàng kích hoạt Phase 1

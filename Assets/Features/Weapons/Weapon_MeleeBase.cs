@@ -109,12 +109,6 @@ namespace ProjectZombie.Features.Weapons
                         hitCrit = true;
                     }
 
-                    // Kích hoạt Vòng Tương Sinh (Element Generation)
-                    if (damageData.Element != ElementType.None && Elements.ElementCycleManager.Instance != null)
-                    {
-                        Elements.ElementCycleManager.Instance.RegisterHit(damageData.Element, this);
-                    }
-
                     // Sinh tóe lửa (Hit Sparks) tại vị trí quái vật
                     if (hitSparkPrefab != null && GlobalVFXPoolManager.Instance != null)
                     {

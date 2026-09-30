@@ -42,6 +42,11 @@ namespace ProjectZombie.Features.Player.Skills
 
         public override void Execute(GameObject playerObj, System.Action<ElementType> onElementSelectedCallback = null)
         {
+            ExecuteWithElement(playerObj, ElementType.None, onElementSelectedCallback);
+        }
+
+        public void ExecuteWithElement(GameObject playerObj, ElementType selectedElement, System.Action<ElementType> onElementSelectedCallback = null)
+        {
             if (playerObj == null) return;
 
             Vector3 center = playerObj.transform.position;
@@ -56,8 +61,8 @@ namespace ProjectZombie.Features.Player.Skills
             ReduceAllWeaponsCooldown(playerObj);
 
             // 4. Đẩy phần tử ảo vào Vòng Tương Sinh Ngũ Hành
-            ElementType fallbackElement = GetAutoSelectFallbackElement(playerObj);
-            ApplyVirtualElementHit(fallbackElement);
+            ElementType fallbackElement = selectedElement != ElementType.None ? selectedElement : GetAutoSelectFallbackElement(playerObj);
+            ApplyVirtualElementHit(fallbackElement, playerObj);
             onElementSelectedCallback?.Invoke(fallbackElement);
 
             // 5. Rung Camera & Âm thanh Phán Quyết
@@ -140,7 +145,7 @@ namespace ProjectZombie.Features.Player.Skills
             {
                 if (weapon != null)
                 {
-                    weapon.ReduceCurrentCooldown(WEAPON_COOLDOWN_REDUCTION_RATIO);
+                    weapon.ReduceRelicSkillCooldown(WEAPON_COOLDOWN_REDUCTION_RATIO);
                 }
             }
         }
@@ -193,8 +198,8 @@ namespace ProjectZombie.Features.Player.Skills
 
             foreach (var weapon in weaponManager.ActiveWeapons)
             {
-                if (weapon == null) continue;
-                float rem = weapon.RemainingCooldown;
+                if (weapon == null || weapon.isPassiveRelic || weapon.AttackElement == ElementType.None) continue;
+                float rem = weapon.RelicRemainingCooldown;
                 if (rem > maxRemainingCd)
                 {
                     maxRemainingCd = rem;
@@ -202,9 +207,9 @@ namespace ProjectZombie.Features.Player.Skills
                 }
             }
 
-            if (longestCdWeapon != null && longestCdWeapon.element != ElementType.None)
+            if (longestCdWeapon != null && longestCdWeapon.AttackElement != ElementType.None)
             {
-                return longestCdWeapon.element;
+                return ElementSynergyRules.GetGenerativeParent(longestCdWeapon.AttackElement);
             }
 
             return ElementType.Kim;
@@ -213,7 +218,7 @@ namespace ProjectZombie.Features.Player.Skills
         /// <summary>
         /// Đẩy phần tử ảo vào ElementCycleManager.
         /// </summary>
-        public void ApplyVirtualElementHit(ElementType selectedElement)
+        private void ApplyVirtualElementHit(ElementType selectedElement, GameObject owner)
         {
             if (selectedElement == ElementType.None)
             {
@@ -222,7 +227,7 @@ namespace ProjectZombie.Features.Player.Skills
 
             if (ElementCycleManager.Instance != null)
             {
-                ElementCycleManager.Instance.PushVirtualElementHit(selectedElement);
+                ElementCycleManager.Instance.PushVirtualElementHit(selectedElement, owner);
             }
         }
     }
