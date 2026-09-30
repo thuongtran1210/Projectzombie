@@ -53,8 +53,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = maGiapPrefab,
                 enemyAddress = "E_MAGIAP",
-                spawnCount = 3,
-                spawnInterval = 2.5f
+                spawnCount = 12,
+                spawnInterval = 5.0f
             });
 
             // 01:00 (60s) - Ma Da trơn trượt tăng tốc áp sát
@@ -65,8 +65,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = maDaPrefab,
                 enemyAddress = "E_MADA",
-                spawnCount = 4,
-                spawnInterval = 2.5f
+                spawnCount = 12,
+                spawnInterval = 5.0f
             });
 
             // 02:00 (120s) - Ma Trơi bay lơ lửng phóng ma hỏa
@@ -77,8 +77,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = maTroiPrefab,
                 enemyAddress = "E_MATROI",
-                spawnCount = 3,
-                spawnInterval = 3.0f
+                spawnCount = 8,
+                spawnInterval = 6.0f
             });
 
             // 03:00 (180s) - Bầy Ma Da tràn lên bao vây (Burst Wave)
@@ -89,8 +89,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.BurstWave,
                 spawnPrefab = maDaPrefab,
                 enemyAddress = "E_MADA",
-                spawnCount = 15,
-                spawnInterval = 0.1f
+                spawnCount = 8,
+                spawnInterval = 0.5f
             });
 
             // 04:30 (270s) - Elite Quỷ Nhập Tràng xuất hiện (Thịt đè người)
@@ -113,8 +113,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = hoaLyTinhPrefab,
                 enemyAddress = "E_HOALYTINH",
-                spawnCount = 4,
-                spawnInterval = 3.0f
+                spawnCount = 10,
+                spawnInterval = 7.0f
             });
 
             // 06:45 (405s) - Ma Đòi Nợ lén lút thó tiền chạy trốn
@@ -125,8 +125,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = maDoiNoPrefab,
                 enemyAddress = "E_MADOINO",
-                spawnCount = 2,
-                spawnInterval = 8.0f
+                spawnCount = 5,
+                spawnInterval = 10.0f
             });
 
             // 07:30 (450s) - Mid-Boss Ngưu Đầu Mã Diện xuất hiện (Chính giữa trận đấu 15 phút)
@@ -149,8 +149,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.BurstWave,
                 spawnPrefab = hoaLyTinhPrefab,
                 enemyAddress = "E_HOALYTINH",
-                spawnCount = 20,
-                spawnInterval = 0.1f
+                spawnCount = 10,
+                spawnInterval = 0.5f
             });
 
             // 11:30 (690s) - Đội hình Quỷ Binh & Cương Thi tổng lực
@@ -161,8 +161,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.Continuous,
                 spawnPrefab = quyNhapTrangPrefab,
                 enemyAddress = "E_QUYNHAPTRANG",
-                spawnCount = 3,
-                spawnInterval = 4.0f
+                spawnCount = 8,
+                spawnInterval = 8.0f
             });
 
             // 13:30 (810s) - Đại Bão Yêu Ma Pre-Boss Rush (Burst Wave)
@@ -173,8 +173,8 @@ namespace ProjectZombie.Features.Spawners.Editor
                 eventType = TimelineEventType.BurstWave,
                 spawnPrefab = maGiapPrefab,
                 enemyAddress = "E_MAGIAP",
-                spawnCount = 30,
-                spawnInterval = 0.05f
+                spawnCount = 12,
+                spawnInterval = 0.5f
             });
 
             // 15:00 (900s) - Final Boss Diêm Vương giáng lâm

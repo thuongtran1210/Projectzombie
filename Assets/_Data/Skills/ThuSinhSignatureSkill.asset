@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ThuSinhSignatureSkill
   m_EditorClassIdentifier: 
   _skillName: "Phán Quyết Tiền Định"
-  _description: "Thư Sinh vẽ bút lệnh khí thiêng sông núi điểm hóa từ Đức Thánh Trần. Bung trận địa cổ tự, nổ 250% sát thương diện rộng, giảm 20% CD toàn vũ khí và nhận +30% Tốc đánh, +20% Tốc chạy trong 4s (Cooldown: 25s)."
+  _description: "Thư Sinh vẽ bút lệnh khí thiêng sông núi điểm hóa từ Đức Thánh Trần. Bung trận địa cổ tự, nổ 150% sát thương diện rộng, giảm 20% CD toàn vũ khí và nhận +30% Tốc đánh, +20% Tốc chạy trong 4s (Cooldown: 30s)."
   _icon: {fileID: 0}
-  _baseCooldown: 25
+  _baseCooldown: 30
   _groundDecalPrefab: {fileID: 2675986895602529700, guid: c192b114fd663824f8097b73da958b06, type: 3}
   _inkSlashPrefab: {fileID: 2690327226307785550, guid: f368769dc33a7c042b6b1ccdd7d7388c, type: 3}
   _lightningPrefab: {fileID: 8646138993609719753, guid: d8560a3fe77d8e54da3676d349ecb702, type: 3}

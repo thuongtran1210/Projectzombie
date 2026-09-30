@@ -37,6 +37,7 @@ namespace ProjectZombie.Features.Player
         private float _baseMoveSpeed = 5f;
         private float _baseDashCooldown = 2f;
         private float _baseDamage = 10f;
+        private float _startingBaseDamage = 10f;
         private float _baseAttackSpeed = 1f;
         private float _baseCritChance = 0.05f;
         private float _basePickupRange = 2f;
@@ -54,6 +55,7 @@ namespace ProjectZombie.Features.Player
         public float MoveSpeed { get; private set; }
         public float DashCooldown { get; private set; }
         public float BaseDamage { get; private set; }
+        public float DamageScale => GetTotalDamage() / Mathf.Max(_startingBaseDamage, 0.01f);
         public float AttackSpeed { get; private set; }
         public float CritChance { get; private set; }
         public float PickupRange { get; private set; }
@@ -161,6 +163,7 @@ namespace ProjectZombie.Features.Player
                 _basePickupRange = 2f;
             }
 
+            _startingBaseDamage = Mathf.Max(_baseDamage, 0.01f);
             _baseAttackRange = 9.5f;
             _baseExpMultiplier = 1f;
             _damageMultiplier = 1f;

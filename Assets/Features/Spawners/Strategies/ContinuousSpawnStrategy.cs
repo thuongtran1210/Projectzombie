@@ -6,7 +6,7 @@ using ProjectZombie.Features.Spawners.Core;
 namespace ProjectZombie.Features.Spawners.Strategies
 {
     /// <summary>
-    /// Chiến thuật spawn duy trì liên tục với chu kỳ spawnInterval và tích hợp Adaptive Catchup.
+    /// Spawns a finite event quota one enemy at a time using the configured spawn interval.
     /// </summary>
     public class ContinuousSpawnStrategy : ISpawnPatternStrategy
     {
@@ -14,6 +14,7 @@ namespace ProjectZombie.Features.Spawners.Strategies
 
         private readonly List<TimelineEvent> _activeEvents = new List<TimelineEvent>();
         private readonly Dictionary<TimelineEvent, float> _eventTimers = new Dictionary<TimelineEvent, float>();
+        private readonly Dictionary<TimelineEvent, int> _remainingSpawns = new Dictionary<TimelineEvent, int>();
 
         public void OnEventTriggered(
             TimelineEvent evt,
@@ -26,18 +27,10 @@ namespace ProjectZombie.Features.Spawners.Strategies
             {
                 _activeEvents.Add(evt);
                 _eventTimers[evt] = 0f;
-
-                // Spawn tức thì đợt quái ban đầu
-                GameObject prefab = evt.GetPrefabOrLoad();
-                string poolKey = evt.GetPoolKey();
-                int initialCount = Mathf.Max(1, evt.spawnCount);
-
-                for (int s = 0; s < initialCount; s++)
-                {
-                    if (!tracker.CanSpawnMore) break;
-                    Vector3 pos = locator.GetSpawnPosition(playerTransform, 10f, 16f);
-                    spawnCallback?.Invoke(prefab, pos, poolKey);
-                }
+                _remainingSpawns[evt] = Mathf.Max(1, evt.spawnCount);
+                if (SpawnOne(evt, locator, tracker, playerTransform, spawnCallback))
+                    _remainingSpawns[evt]--;
+                if (_remainingSpawns[evt] <= 0) RemoveEventAt(_activeEvents.Count - 1);
             }
         }
 
@@ -49,42 +42,58 @@ namespace ProjectZombie.Features.Spawners.Strategies
             Transform playerTransform,
             Func<GameObject, Vector3, string, GameObject> spawnCallback)
         {
-            if (!tracker.CanSpawnMore || _activeEvents.Count == 0) return;
+            if (_activeEvents.Count == 0) return;
 
             for (int i = 0; i < _activeEvents.Count; i++)
             {
                 var evt = _activeEvents[i];
-                if (!_eventTimers.ContainsKey(evt)) _eventTimers[evt] = 0f;
+                if (!tracker.CanSpawnMore) continue;
 
-                _eventTimers[evt] += deltaTime * timeMultiplier;
+                _eventTimers[evt] += deltaTime;
 
-                if (_eventTimers[evt] >= evt.spawnInterval)
+                float interval = Mathf.Max(0.1f, evt.spawnInterval);
+                if (_eventTimers[evt] >= interval)
                 {
-                    _eventTimers[evt] = 0f;
-
-                    if (tracker.CanSpawnMore)
+                    _eventTimers[evt] -= interval;
+                    if (SpawnOne(evt, locator, tracker, playerTransform, spawnCallback))
+                        _remainingSpawns[evt]--;
+                    if (_remainingSpawns[evt] <= 0)
                     {
-                        int maxPossible = tracker.MaxEnemyCap - tracker.CurrentEnemyCount;
-                        int desiredCount = evt.spawnCount > 0 ? evt.spawnCount : 1;
-                        int spawnBatch = Mathf.Clamp(desiredCount, 1, maxPossible);
-
-                        GameObject prefab = evt.GetPrefabOrLoad();
-                        string poolKey = evt.GetPoolKey();
-
-                        for (int b = 0; b < spawnBatch; b++)
-                        {
-                            Vector3 pos = locator.GetSpawnPosition(playerTransform, 10f, 16f);
-                            spawnCallback?.Invoke(prefab, pos, poolKey);
-                        }
+                        RemoveEventAt(i);
+                        i--;
                     }
                 }
             }
+        }
+
+        private static bool SpawnOne(
+            TimelineEvent evt,
+            ISpawnPositionLocator locator,
+            IEnemyPopulationTracker tracker,
+            Transform playerTransform,
+            Func<GameObject, Vector3, string, GameObject> spawnCallback)
+        {
+            if (evt == null || !tracker.CanSpawnMore) return false;
+            GameObject prefab = evt.GetPrefabOrLoad();
+            Vector3 position = locator.GetSpawnPosition(playerTransform, 10f, 16f);
+            spawnCallback?.Invoke(prefab, position, evt.GetPoolKey());
+            return true;
+        }
+
+        private void RemoveEventAt(int index)
+        {
+            if (index < 0 || index >= _activeEvents.Count) return;
+            TimelineEvent evt = _activeEvents[index];
+            _activeEvents.RemoveAt(index);
+            _eventTimers.Remove(evt);
+            _remainingSpawns.Remove(evt);
         }
 
         public void ResetStrategy()
         {
             _activeEvents.Clear();
             _eventTimers.Clear();
+            _remainingSpawns.Clear();
         }
     }
 }

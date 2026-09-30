@@ -11,6 +11,8 @@ namespace ProjectZombie.Features.Shared
     {
         float MaxHealth { get; }
         float BaseDamage { get; }
+        /// <summary>Damage relative to this character's starting base damage, including progression and temporary buffs.</summary>
+        float DamageScale { get; }
         float AttackSpeed { get; }
         float CritChance { get; }
         float CritDamageMultiplier { get; }

@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.Player.Skills
     /// Kỹ năng Chủ động Ẩn Sĩ Sơn Lâm: "Thập Phương Chấn Thế" (GDD v5.1).
     /// Thi triển:
     /// 1. Dậm nát mặt đất giải phóng sóng địa chấn đất đá bùng nổ (Shockwave & Earth Impact).
-    /// 2. Gây 320% Sát thương Hệ Thổ trong bán kính 7.0m.
+    /// 2. Gây 180% Sát thương Hệ Thổ trong bán kính 7.0m.
     /// 3. Hất văng quái cực mạnh (10m/s) và làm Choáng (Stun) trong 2.0s.
     /// 4. HÓA THÂN BÀN THẠCH (4s): Hồi 15% HP, tăng +30% Sát thương & Miễn khống chế (kèm tàn ảnh nham thạch).
     /// 5. +25 điểm Dương vào bàn cân Âm Dương.
@@ -18,13 +18,13 @@ namespace ProjectZombie.Features.Player.Skills
     /// </summary>
     public class VoTangSignatureSkill : SignatureSkillBase
     {
-        public override float Cooldown => 20.0f;
+        public override float Cooldown => 30.0f;
 
         private readonly GameObject _shockwavePrefab;
         private readonly GameObject _earthImpactPrefab;
 
         private const float AOE_RADIUS = 7.0f;
-        private const float DAMAGE_RATIO = 3.2f; // 320% Base Damage
+        private const float DAMAGE_RATIO = 1.8f; // 180% Base Damage
         private const float STUN_DURATION = 2.0f;
         private const float KNOCKBACK_FORCE = 10.0f;
         private const float BUFF_DURATION = 4.0f;

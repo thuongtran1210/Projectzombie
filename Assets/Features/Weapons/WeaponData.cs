@@ -58,7 +58,7 @@ namespace ProjectZombie.Features.Weapons
         public WeaponBase weaponPrefab;
         
         [Header("Starting Stats (Optional)")]
-        [Tooltip("Sát thương cơ bản khi mới nhận được")]
+        [Tooltip("Sát thương gốc của vũ khí khi mới nhận. Sát thương này tăng theo tiến trình/buff sát thương của nhân vật; giá trị 0 giữ cách tính cũ từ chỉ số nhân vật.")]
         public float baseDamage;
         
         [Tooltip("Tốc độ đánh cơ bản / Cooldown (nếu muốn override)")]

@@ -51,9 +51,9 @@ MonoBehaviour:
   description: "Ph\xE1p b\u1EA3o th\u1EA3 chi\u1EBFu khi\u1EBFn qu\xE1i ng\u1EE7
     say (nh\u1EADn x2 Crit DMG khi b\u1ECB \u0111\xE1nh th\u1EE9c); Ng\u01B0\u1EDDi
     ch\u01A1i b\u01B0\u1EDBc l\xEAn tr\u01B0\u1EE3t v\xE1n \u1EE7i v\u0103ng qu\xE1i."
-  element: 0
+  element: 2
   weaponRole: 0
-  isPrimaryActiveWeapon: 0
+  isPrimaryActiveWeapon: 1
   isPassiveRelic: 0
   activeCooldown: 8
   activeDuration: 0
@@ -62,7 +62,10 @@ MonoBehaviour:
   recastWindowDuration: 3.5
   currentComboStep: 1
   comboResetWindow: 1
-  matInterval: 8
-  matDuration: 5
+  baseDuration: 4
+  baseSleepDuration: 1.5
+  baseRamDamageMultiplier: 0.85
+  baseRelocateDamageMultiplier: 1.25
   matSize: {x: 3.5, y: 2.2}
   matVfxPrefab: {fileID: 3418663563445882567, guid: f9ddf73a8c51b5642bcc0088f830a2e6, type: 3}
+  slideHitVfxPrefab: {fileID: 3537865602398902170, guid: e97b4c726bb698941abea96464efbfcb, type: 3}

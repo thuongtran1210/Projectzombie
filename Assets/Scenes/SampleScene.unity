@@ -8617,15 +8617,15 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.055696204
+    x: 0
     y: 0
-    width: 0.8888889
+    width: 1
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 13.956582
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -27096,7 +27096,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 40
-    OrthographicSize: 7.5
+    OrthographicSize: 13.956582
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0

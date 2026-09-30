@@ -58,6 +58,24 @@ namespace ProjectZombie.Features.Enemies.Visuals
         private Quaternion _originalVisualLocalRot;
         private Vector3 _originalVisualLocalScale = Vector3.one;
         private float _currentSleepAngle = 0f;
+        private float _steamSlipSpinRemaining;
+        private float _steamSlipSpinDuration;
+        private float _steamSlipWobbleRemaining;
+        private float _steamSlipWobbleDuration;
+
+        public void PlaySteamSlipSpin(float duration)
+        {
+            _steamSlipWobbleRemaining = 0f;
+            _steamSlipSpinDuration = Mathf.Max(0.05f, duration);
+            _steamSlipSpinRemaining = _steamSlipSpinDuration;
+        }
+
+        public void PlaySteamSlipWobble(float duration)
+        {
+            _steamSlipSpinRemaining = 0f;
+            _steamSlipWobbleDuration = Mathf.Max(0.05f, duration);
+            _steamSlipWobbleRemaining = _steamSlipWobbleDuration;
+        }
 
         private void Awake()
         {
@@ -374,6 +392,31 @@ namespace ProjectZombie.Features.Enemies.Visuals
 
         private void Update()
         {
+            float dt = Time.deltaTime;
+            if (_steamSlipSpinRemaining > 0f && _visualTransform != null && !_isSleeping)
+            {
+                _steamSlipSpinRemaining = Mathf.Max(0f, _steamSlipSpinRemaining - dt);
+                float progress = 1f - (_steamSlipSpinRemaining / _steamSlipSpinDuration);
+                float direction = transform.GetInstanceID() % 2 == 0 ? 1f : -1f;
+                float spinAngle = direction * 540f * progress;
+                _visualTransform.localRotation = _originalVisualLocalRot * Quaternion.Euler(0f, 0f, spinAngle);
+                if (_steamSlipSpinRemaining <= 0f)
+                {
+                    _visualTransform.localRotation = _originalVisualLocalRot;
+                }
+            }
+
+            if (_steamSlipWobbleRemaining > 0f && _visualTransform != null && !_isSleeping)
+            {
+                _steamSlipWobbleRemaining = Mathf.Max(0f, _steamSlipWobbleRemaining - dt);
+                float elapsed = _steamSlipWobbleDuration - _steamSlipWobbleRemaining;
+                float fade = _steamSlipWobbleRemaining / _steamSlipWobbleDuration;
+                float angle = Mathf.Sin(elapsed * 45f) * 12f * fade;
+                _visualTransform.localRotation = _originalVisualLocalRot * Quaternion.Euler(0f, 0f, angle);
+                if (_steamSlipWobbleRemaining <= 0f)
+                    _visualTransform.localRotation = _originalVisualLocalRot;
+            }
+
             // 1. Procedural Slapstick Sleeping Animation
             if (_isSleeping && _visualTransform != null)
             {
@@ -462,6 +505,10 @@ namespace ProjectZombie.Features.Enemies.Visuals
 
         private void ResetAllVisuals()
         {
+            _steamSlipSpinRemaining = 0f;
+            _steamSlipSpinDuration = 0f;
+            _steamSlipWobbleRemaining = 0f;
+            _steamSlipWobbleDuration = 0f;
             _isStunned = false;
             _isFrozen = false;
             _isSlowed = false;

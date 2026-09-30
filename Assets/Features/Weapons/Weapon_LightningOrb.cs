@@ -12,6 +12,8 @@ namespace ProjectZombie.Features.Weapons
 
         protected override bool CanAttack()
         {
+            if (projectileData == null || Projectiles.Core.ProjectileSystem.Instance == null)
+                return false;
             float range = CharacterStats != null ? CharacterStats.AttackRange : 10f;
             _currentTarget = TargetingUtility.FindNearestEnemy(transform.position, range);
             return _currentTarget != null;
@@ -19,20 +21,30 @@ namespace ProjectZombie.Features.Weapons
 
         protected override void PerformAttack()
         {
-            if (projectileData == null || _currentTarget == null) return;
+            TryFireAt(_currentTarget);
+        }
 
-            Vector2 direction = (_currentTarget.position - firePoint.position).normalized;
+        /// <summary>Fires directly at a supplied target. Used by the isolated test harness.</summary>
+        public bool TryFireAt(Transform target)
+        {
+            var projectileSystem = Projectiles.Core.ProjectileSystem.Instance;
+            if (target == null || projectileData == null || projectileSystem == null || firePoint == null)
+                return false;
+
+            Vector2 direction = (target.position - firePoint.position).normalized;
             DamageData damageData = CreateDamageData();
             int count = GetFinalProjectileCount();
+            bool spawnedAny = false;
 
             for (int i = 0; i < count; i++)
             {
                 float spreadAngle = Random.Range(-15f, 15f);
                 Vector2 orbDir = Quaternion.Euler(0, 0, spreadAngle) * direction;
 
-                var proj = Projectiles.Core.ProjectileSystem.Instance.Spawn(projectileData, firePoint.position, orbDir, gameObject, damageData);
+                var proj = projectileSystem.Spawn(projectileData, firePoint.position, orbDir, gameObject, damageData);
                 if (proj != null)
                 {
+                    spawnedAny = true;
                     proj.State.RemainingBounce = 5; // Nảy chuỗi 5 lần qua 6 quái
                     proj.State.BonusPierce = 3;
                     if (GetFinalScale() != 1f)
@@ -41,7 +53,8 @@ namespace ProjectZombie.Features.Weapons
                     }
                 }
             }
-            Audio?.PlayMagicOrbit(firePoint.position);
+            if (spawnedAny) Audio?.PlayMagicOrbit(firePoint.position);
+            return spawnedAny;
         }
     }
 }

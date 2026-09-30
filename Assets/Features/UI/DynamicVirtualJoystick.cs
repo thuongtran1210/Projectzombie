@@ -50,6 +50,14 @@ namespace ProjectZombie.Features.UI
             _defaultPosition = newPos;
         }
 
+        public void Configure(RectTransform container, RectTransform handle)
+        {
+            containerRect = container;
+            handleRect = handle;
+            _joystickCanvasGroup = container != null ? container.GetComponent<CanvasGroup>() : null;
+            if (containerRect != null) _defaultPosition = containerRect.anchoredPosition;
+        }
+
         private void Awake()
         {
             Instance = this;

@@ -15,7 +15,7 @@ MonoBehaviour:
   moveSpeed: 3.2
   preferredDistance: 1
   minDistance: 0.5
-  maxHealth: 45
+  maxHealth: 60
   damageToPlayer: 0
   attackCooldown: 1
   attackRange: 1

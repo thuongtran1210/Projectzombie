@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ThanhDongSignatureSkill
   m_EditorClassIdentifier: 
   _skillName: "Giá Đồng Tứ Phủ"
-  _description: "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ), nhận hào quang & buff sắc phục 4 cõi trong 5s (Cooldown: 30s)."
+  _description: "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ). Sóng xung kích gây 130% sát thương, làm Choáng 1.5s quái xung quanh, hút ExpGem và nhận +35% DMG, +35% Tốc chạy trong 5s (Cooldown: 30s)."
   _icon: {fileID: 0}
   _baseCooldown: 30
   _tuPhuAuraPrefab: {fileID: 7321809818315038488, guid: 9918f720ba2b67c40b16d5d1d8ca56e6, type: 3}

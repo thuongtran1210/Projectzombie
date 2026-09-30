@@ -267,9 +267,9 @@ This section turns the approved five-reaction list into implementation-ready *pr
 ### 7.1 Shared application and ordering rules
 
 1. **Target state is per enemy.** An application records the element, source, and expiry time on the affected target. It is not a global player combo queue.
-2. **Old state + incoming element resolves.** A reaction is checked when a new element is applied to a target that already has an unexpired element state. The listed arrow is the required order: e.g. apply Thủy first, then apply Hỏa to the same target to trigger Bốc Hơi. Reverse order does not trigger that reaction.
-3. **One application, at most one reaction per target.** The incoming element is consumed by the reaction. The target's prior element is also consumed, then the target has no primed element until another application. This prevents ambiguous multi-match resolution in the first slice.
-4. **Refresh policy.** Reapplying the same element refreshes its 4-second primed window; it does not stack. A different element replaces the primed element unless that ordered pair is one of the five approved reactions.
+2. **Enemy identity + incoming element resolves.** A reaction is checked when the incoming element completes an approved ordered pair with the target's configured natural element. For Bốc Hơi, an Hỏa enemy hit by Thủy reacts immediately; no setup hit is required. A target-local primed-element fallback may support Thủy-then-Hỏa on targets without a matching natural element. Reverse order does not trigger Bốc Hơi.
+3. **One application, at most one reaction per target.** A direct natural-element reaction consumes the incoming application and observes the per-target reaction cooldown. A primed fallback consumes its prior and incoming applications. This prevents ambiguous multi-match resolution in the first slice.
+4. **Refresh policy.** Reapplying the same non-natural element refreshes its 4-second primed window; it does not stack. A different element replaces the primed element unless that ordered pair is one of the five approved reactions. Applying an enemy's natural element does not create a redundant prime.
 5. **Reaction effects do not recursively apply elements.** Propagation can copy only the reaction's explicitly allowed status/effect, never re-trigger the same reaction automatically. Initial propagation depth is 1; each target has a 1.0-second reaction cooldown; cap each source reaction at 3 additional targets and 4 total targets including the primary. These are provisional safety values and must be enforced by DEV-06.
 6. **Boss/resistance handling.** Bốc Hơi enemy response is fixed for the slice: light enemies slide farther and spin; standard enemies slide a short distance and stumble; heavy/armored enemies only stagger in place; flying enemies do not slip on the ground and only wobble briefly in the steam; bosses do not slip and receive only reaction VFX/SFX. For other reactions, bosses and immune/heavy targets receive reduced control effects per encounter data.
 7. **Keep systems distinct.** Existing `ElementCycleManager` tracks recent weapon hits for Tương Sinh/cooldown synergy. These new reactions are target-state interactions. Do not silently merge the two queues or let one proc substitute for the other.
@@ -278,7 +278,7 @@ This section turns the approved five-reaction list into implementation-ready *pr
 
 | Ordered application | Reaction | Provisional result | Duration / limits | Readability cue |
 |---|---|---|---|---|
-| Thủy → Hỏa | **Bốc Hơi** | Steam burst creates a wet patch; enemies crossing it respond by class: light slide farther/spin; standard slide briefly/stumble; heavy stagger in place; flying wobble in steam but do not ground-slip; bosses are unaffected by control. | Patch radius 0.8 m; affects at most 2 secondary enemies beyond the primary target; patch lasts 2.0 s; light enemy slide/spin up to 0.8 s; standard enemy stumble up to 0.35 s; heavy enemy stagger up to 0.2 s; flying enemy wobble up to 0.25 s; boss control duration 0 s. Each enemy can slip at most once per patch; up to 2 secondary enemies affected and at most 2 collision impacts per patch; collisions only stagger/interrupt and deal no damage; no element propagation. | Water mark flashes, steam burst briefly reveals a puddle with a clear wet-ground silhouette; crossing enemies squash, slide/spin, then produce a readable impact frame and splash sound. |
+| Thủy → Hỏa | **Bốc Hơi** | A Thủy application hitting an enemy configured as Hỏa creates the steam reaction and wet patch; enemies crossing it respond by class: light slide farther/spin; standard slide briefly/stumble; heavy stagger in place; flying wobble in steam but do not ground-slip; bosses are unaffected by control. A same-target Thủy-then-Hỏa primed fallback is supported when natural-element matching does not apply. | Patch radius 0.8 m; affects at most 2 secondary enemies beyond the primary target; patch lasts 2.0 s; light enemy slide/spin up to 0.8 s; standard enemy stumble up to 0.35 s; heavy enemy stagger up to 0.2 s; flying enemy wobble up to 0.25 s; boss control duration 0 s. Each enemy can slip at most once per patch; up to 2 secondary enemies affected and at most 2 collision impacts per patch; collisions only stagger/interrupt and deal no damage; no element propagation. | Water mark flashes, steam burst briefly reveals a puddle with a clear wet-ground silhouette; crossing enemies squash, slide/spin, then produce a readable impact frame and splash sound. |
 | Mộc → Hỏa | **Hỏa Hoạn** | Ignite the target; on its first burn tick, fire jumps to up to 2 nearby unburned enemies. | Burn 3 s, tick every 1 s; spread radius 1.25 m; spread once per original ignition. | Vine/leaf mark chars at edges, then a recognizable flame runs along a short brushstroke path to each secondary target. |
 | Thổ → Kim | **Toái Giáp** | Break armor on the target and emit a small directional debris burst; fragments can hit nearby enemies once. | Armor break 3 s; up to 2 secondary targets within 1 m; fragments do not apply elements. | Stone plate cracks with a metallic split, followed by 2–3 angular debris shapes; armor indicator visibly changes. |
 | Thủy → Mộc | **Sinh Trưởng** | Roots hold the target in place; target can still attack if its design permits. | Root 1.25 s; boss control reduced to a 0.25 s stumble; no spread. | Water pools under the target, then paper-cut roots wrap feet/legs; clear snap/release cue at expiry. |
@@ -287,7 +287,7 @@ This section turns the approved five-reaction list into implementation-ready *pr
 ### 7.3 Design acceptance for this pass
 
 - Every reaction card specifies ordered inputs, target/effect, duration, propagation cap, and a distinctive non-color-only cue.
-- A same-element refresh, reverse-order pair, expired state, repeated propagation, and boss-resistance case have explicit expected outcomes.
+- A natural-element direct reaction, primed fallback, reverse-order pair, expired state, repeated propagation, and boss-resistance case have explicit expected outcomes.
 - Game Design reviews the provisional tuning after the first playable Bốc Hơi build; no balance value becomes locked before observation.
 - Art confirms each reaction can be understood with UI hidden and without particle clutter; Dev demonstrates that reaction feedback does not depend on the existing global Tương Sinh queue.
 
@@ -341,8 +341,8 @@ Legend: **Approved** = explicitly selected for the slice; **Provisional** = a de
 
 ### 9.2 Design decisions this implementation must preserve
 
-- Trigger only when the **same target** has Thủy primed and then receives Hỏa before the 4-second prime expires. Reverse order does not trigger Bốc Hơi.
-- Reaction consumes both applications; same-element reapplication refreshes the prime; a different non-reaction element replaces it.
+- Trigger when a target with natural element Hỏa receives Thủy; this direct hit creates Bốc Hơi immediately. As fallback for targets without a matching natural element, the **same target** may receive Thủy then Hỏa before the 4-second prime expires. Reverse order does not trigger Bốc Hơi.
+- Direct natural-element reaction consumes the incoming application; the fallback consumes both applications. Same-element reapplication refreshes a non-natural prime; a different non-reaction element replaces it.
 - Bốc Hơi creates a **0.8 m radius wet patch**, lasting **2.0 s**, affecting at most **2 secondary enemies** beyond the primary reaction target.
 - Each eligible enemy can slip at most once per patch. At most 2 collision impacts per patch; collision only interrupts/staggers, deals no damage, applies no element and cannot trigger another reaction.
 - Per-class response: light slide/spin up to 0.8 s; standard short stumble up to 0.35 s; heavy/armored stagger in place up to 0.2 s; flying wobble in steam up to 0.25 s but no ground slip; boss gets VFX/SFX only, no control.
@@ -350,11 +350,17 @@ Legend: **Approved** = explicitly selected for the slice; **Provisional** = a de
 
 ### 9.3 Dependency-ordered tasks
 
+> **Implementation and maintainability status (2026-09-29; source review + user-confirmed Editor Play Mode):** Phase 3A for Bốc Hơi is complete for the agreed scope. Target-device profiling is deferred and does not block the next phase. The next candidate is Hỏa Hoạn (Mộc → Hỏa); its trigger semantics, source callbacks, burn refresh policy and bounded spread rules must be explicit before implementation.
+
+> **Isolated test scene:** `Assets/Scenes/SteamSlipTest.unity` is a dedicated Editor/Play Mode harness and is intentionally excluded from Build Settings. Open it and enter Play Mode; choose and spawn a character, equip a weapon/relic, then choose and spawn an enemy. The test controls use a separate touch UI: joystick at bottom-left, Attack/Fire at bottom-right, and the select/spawn panel at top-left so it does not cover gameplay controls. The direct pilot case is W009 (Thủy) hitting a naturally Hỏa enemy, which should trigger Bốc Hơi on that hit; use the enemy selector's displayed element to confirm it is Hỏa (for example, the `E_HOALYTINH_HồLyTinhNhỏ` config currently has element Hỏa). The `E_HOALYTINH` prefab shown in the first capture is not configured as Hỏa. The same-target Thủy → Hỏa primed fallback, reverse-order case, target isolation, and boss response remain additional cases. Actual reaction verification requires a real damage hit. Use `Tools > Project Zombie > Build Steam Slip Test Scene` to generate a fresh scene.
+
 #### DEV-SLIP-01 — Confirm element-hit entry points and actor classification
 **Owner:** Dev  
 **Tasks:** Trace all slice hit paths (Thư Sinh basic/combo, Ẩn Sĩ talisman, relic/projectiles) and document where damage is actually applied. Add an explicit enemy reaction class/capability (`Light`, `Standard`, `Heavy`, `Flying`, `Boss`) to enemy config/runtime with safe defaults for existing assets.  
 **Depends on:** Existing approved hero/reaction scope.  
 **Acceptance:** Every slice enemy has an explicit class; all selected Thủy/Hỏa sources are listed with their actual hit callback; unknown class defaults safely to Standard; no classification relies on string/name checks.
+
+<!-- Status: PARTIAL (source review, 2026-09-29). `Enemy.HandleElementalDamage` forwards elemental damage to its target-local controller; `EnemyConfig.reactionClass` and `Enemy.ReactionClass` provide explicit classes with Standard fallback, while boss/heavy are derived from capability flags. Maintainability concern: Boss classification also uses a runtime tag check. The repo audit has not established that every slice enemy asset is assigned or documented the selected Thủy/Hỏa source callbacks for both heroes. -->
 
 #### DEV-SLIP-02 — Define target-local ElementApplication state
 **Owner:** Dev  
@@ -362,11 +368,15 @@ Legend: **Approved** = explicitly selected for the slice; **Provisional** = a de
 **Depends on:** DEV-SLIP-01.  
 **Acceptance:** Two independent application sources can prime the same target; another target remains unaffected; order/expiry/refresh behavior matches Section 7; disable/reuse cannot carry a primed element across pooled lives.
 
+<!-- Status: PARTIAL. The controller stores target-local fallback element, source and expiry; same-element refresh and different-element replacement are implemented. Natural-element applications bypass redundant priming. State resets on enable/disable and enemy spawn. Multi-source/order/expiry/pool-reuse acceptance cases remain unverified, and spawn reset currently duplicates lifecycle reset intentionally as a safety net. -->
+
 #### DEV-SLIP-03 — Add pilot resolver and Bốc Hơi definition
 **Owner:** Dev  
-**Tasks:** Resolve ordered Thủy → Hỏa on the same target and execute one configured reaction. Keep pilot implementation data-driven where existing architecture allows; avoid a generic framework that is not needed to ship this proof. Add per-target cooldown and explicit no-recursion behavior.  
+**Tasks:** Resolve approved Thủy → Hỏa from the target's natural Hỏa element plus incoming Thủy, and execute one configured reaction immediately. Retain ordered target-local Thủy → Hỏa as fallback only where no natural-element match exists. Keep pilot implementation data-driven where existing architecture allows; avoid a generic framework that is not needed to ship this proof. Add per-target cooldown and explicit no-recursion behavior.
 **Depends on:** DEV-SLIP-02.  
-**Acceptance:** Correct ordered pair triggers once; reverse order, expired prime, unrelated target, duplicate same-frame hit and cooldown cases do not double-trigger; resolver is independent from weapon-specific code and from Tương Sinh.
+**Acceptance:** A natural Hỏa target hit by Thủy triggers once immediately; fallback ordered pair triggers once; reverse order, expired prime, unrelated target, duplicate same-frame hit and cooldown cases do not double-trigger; resolver is independent from weapon-specific code and from Tương Sinh.
+
+<!-- Status: COMPLETE for the agreed Editor Play Mode pilot (2026-09-29). User confirms the follow-up runtime checklist is complete. W009 hitting a natural-Hỏa target creates the patch; code review fixed the cooldown fall-through. Device profiling remains deferred. -->
 
 #### DEV-SLIP-04 — Implement a pooled small wet patch
 **Owner:** Dev  
@@ -374,17 +384,23 @@ Legend: **Approved** = explicitly selected for the slice; **Provisional** = a de
 **Depends on:** DEV-SLIP-03.  
 **Acceptance:** Patch expires and returns/reset cleanly; affected-target count never exceeds cap; repeated overlap cannot retrigger the same enemy; frame profiling shows no recurring managed allocation from patch tracking.
 
+<!-- Status: COMPLETE for current Editor Play Mode acceptance (2026-09-29). User confirms patch appearance, nearby secondary response, cap/lifetime/collision checks, and lifecycle/pooling follow-up are complete. Target-device buffer/performance profiling remains deferred. -->
+
 #### DEV-SLIP-05 — Implement non-damaging class-specific slip response
 **Owner:** Dev  
 **Tasks:** Add a dedicated slippery-surface movement response using explicit enemy class. Preserve enemy AI recovery. For enemy-to-enemy contact, use a bounded collision/stagger signal; explicitly bypass ragdoll impact damage and damage APIs. Boss receives no movement control.  
 **Depends on:** DEV-SLIP-01, DEV-SLIP-04.  
 **Acceptance:** All five class responses and durations match Section 7; slip collisions produce zero health change on both enemies, no damage event, no elemental application and no recursively spawned slip chain; boss motion/control remains unaffected.
 
+<!-- Status: COMPLETE for the agreed Editor Play Mode cases (2026-09-29). User confirms secondary response and remaining safety checks are complete. Other-class tuning and target-device profiling are deferred follow-up scope. -->
+
 #### DEV-SLIP-06 — Integrate actual hero/relic element sources
 **Owner:** Dev  
 **Tasks:** Wire the selected Thủy and Hỏa attacks into the target-local application API. Prefer already-approved slice attacks; if a required element source does not exist, report that gap and add the smallest data/config change rather than silently assigning a new element to an unrelated relic.  
 **Depends on:** DEV-SLIP-03 and confirmed attack ownership from DEV-SLIP-01.  
-**Acceptance:** In a playable build, the intended Thủy setup followed by Hỏa on the same enemy triggers Bốc Hơi; reversing order or switching targets does not; both Thư Sinh and Ẩn Sĩ have a documented role in available application paths.
+**Acceptance:** In a playable build, W009 (Thủy) hitting a natural Hỏa enemy triggers Bốc Hơi immediately; on targets without a natural Hỏa match, the fallback requires Thủy then Hỏa on the same enemy; unrelated targets do not share prime state. Document which selected attacks and heroes provide each element source.
+
+<!-- Status: COMPLETE for the selected pilot sources (2026-09-29). User confirms the source-path checklist is complete. W009 is the tested Thủy source; W006/W008 provide Hỏa through their weapon damage callbacks. Both heroes' basicAttackConfig.element remains None, so ordinary attacks are non-elemental; element application in this pilot comes from equipped elemental weapons/relics. -->
 
 #### DEV-SLIP-07 — Add temporary diagnostics and counters
 **Owner:** Dev  
@@ -392,17 +408,80 @@ Legend: **Approved** = explicitly selected for the slice; **Provisional** = a de
 **Depends on:** DEV-SLIP-02 through DEV-SLIP-05.  
 **Acceptance:** Designers can reproduce and diagnose all trigger/cap cases in Editor/development build; diagnostics are disabled or stripped in release configuration.
 
+<!-- Status: PARTIAL. `SteamSlipReactionDiagnostics` provides a development-only optional event seam for prime/trigger/cooldown, patch creation/capacity, overlap saturation, affected targets and collisions. No observer/debug UI is connected yet, and non-development builds compile reports out. -->
+
 #### DEV-SLIP-08 — Integrate AI-authored art and audio hooks
 **Owner:** Dev + Art  
 **Tasks:** Expose sprite/material/animation/audio references through prefab/config; support temporary placeholder and later asset swap; ensure pooling resets alpha, transform, timer, renderer and particles.  
 **Depends on:** DEV-SLIP-04 and AI art brief.  
 **Acceptance:** Placeholder and final AI art use the same prefab/config; repeated pooled reuse shows no stale visuals/audio; visual patch stays inside gameplay footprint and never masks hit feedback.
 
+<!-- Status: PARTIAL. The settings asset references the wet-patch prefab; the manager routes it through `GlobalVFXPoolManager` and plays the reaction audio hook. No pooled reuse/readability/audio runtime check has been recorded. -->
+
 #### DEV-SLIP-09 — Playtest and tune on target profiles
 **Owner:** Dev + Design + QA  
 **Tasks:** Validate ordering, class responses, radius/lifetime, cap behavior, readability and performance. Primary profile: low-end Android 4 GB/60 Hz; optional Android Go 2 GB is compatibility/memory-only evidence.  
 **Depends on:** DEV-SLIP-05 through DEV-SLIP-08.  
 **Acceptance:** Attach gameplay capture and profiler evidence; confirm exact behavior against approved rules; record tuning changes and retest; no damage on slip collisions; no significant GC spike in the hot path.
+
+<!-- Status: COMPLETE for current Editor Play Mode scope (2026-09-29). User confirms the agreed wet-patch checks and final prefab review are complete. Target-device profiling is deferred because suitable hardware is unavailable; it remains a later optimization/release check and does not block the next phase. -->
+
+### 9.3.1 Phase 3A — Bốc Hơi code-quality hardening gate
+
+Before expanding the reaction set or planning slice-content implementation, refactor the pilot so its responsibilities and extension points are explicit. Keep the implementation no more generic than needed for the next approved reaction, but prevent the current single-manager/single-enemy-class coupling from becoming the template for every reaction.
+
+- **CQ-01 — Separate responsibilities:** isolate target element state/resolution, patch tracking/lifetime, enemy-class response, and visual/audio presentation behind focused components or interfaces. `Enemy` and `SteamSlipPatchManager` should not own all pilot policy and side effects.
+- **CQ-02 — Make behavior tunable:** move durations, radius, caps, response values and presentation references out of scattered literals into a clear definition/configuration seam with safe defaults and validation. Preserve deterministic ordered-pair resolution.
+- **CQ-03 — Bound collision behavior:** track affected targets and collision pairs/impact count explicitly; guarantee no damage, element recursion, repeated application, or unbounded work. Handle overlap-buffer saturation deterministically.
+- **CQ-04 — Lifecycle and pooling:** define one reset/expiry path for enemy priming, patch records and visuals; ensure reused slots/prefabs cannot retain stale target IDs, audio, alpha, particles, or transforms.
+- **CQ-05 — Reviewable observability:** provide development-only counters/rejection reasons via an optional observer seam; keep release hot paths free of logging allocations.
+- **CQ-06 — Source and asset integration:** demonstrate selected Thủy/Hỏa application ownership; connect the existing patch prefab/config and audio hooks without coupling presentation to physics tracking.
+- **Progress:** CQ-01, CQ-02 and CQ-03 have initial code in place; prefab/audio wiring for CQ-06 is connected. Code review fixed a reaction-cooldown fall-through in `EnemyElementReactionController`; no automated tests were run. User confirms the agreed Editor Play Mode, lifecycle/pooling, source-path and final prefab checks are complete. CQ-05 has an optional development-only diagnostic event seam but no observer UI. Target-device profiling remains deferred.
+- **Exit criteria:** COMPLETE for the agreed source review and available Editor Play Mode scope (2026-09-29, user-confirmed). Device profiling in DEV-SLIP-09 remains deferred until hardware is available and does not block planning/implementation of the next reaction phase.
+
+### 9.3.2 Phase 4 — Hỏa Hoạn reaction implementation
+
+**Candidate:** Mộc → Hỏa — Hỏa Hoạn. Gameplay rules are agreed and implementation is underway against the audited weapon/status paths below.
+
+**Design decisions confirmed (2026-09-29):** A relic has one element and players do not switch relics during a run. Hỏa Hoạn therefore triggers automatically when an Mộc relic hits an enemy whose natural element is Hỏa; it does not require the player to apply two elements or switch relics. The boss continues to take elemental damage, while heavy control or disruption effects are reduced or ignored. Exact boss response is reaction-specific and must be documented before implementation.
+
+**Burn and spread rules confirmed (2026-09-29):** The primary target Burns for 3 s, taking damage every 1 s. On the first Burn tick, fire spreads once to up to 2 nearby unburned targets within 1.25 m. Spread targets do not spread further. Already-burning targets are not refreshed by this spread; Burn-immune targets are skipped and do not count toward the cap. A boss takes elemental/Burn damage, does not spread the reaction, and receives no heavy control or interruption. Values are provisional tuning starts; Burn damage uses a tunable coefficient based on the triggering Mộc hit, with no separate instant spread damage. Implementation default is 20% per tick as an unapproved balance placeholder.
+
+**Source and system audit (verified in source):**
+
+- WeaponData is the canonical source for equipped weapon element. `WeaponManager.EquipWeaponFromData` now copies `WeaponData.elementType` onto the instantiated `WeaponBase`; the prefab's serialized `element` is a default only. This prevents HUD/upgrade data and combat damage from reading conflicting element values.
+- W003 Bùa Trấn Yêu is configured Mộc and uses `Weapon_Orbit`. `CreateDamageData()` is passed through `ProjectileSystem` and `ProjectileCollision` into the enemy health callback, retaining the weapon source and element.
+- W004 Cửu Vĩ Hồ Trảo is configured Hỏa and uses `Weapon_VampiricBats`; its projectile hit event is also used for lifesteal, while elemental damage follows the shared projectile collision path.
+- W006 Lựu Đạn Thần Sa is configured Hỏa and follows the shared projectile collision path with its weapon damage data.
+- W008 Đao Cửu Vĩ is configured Hỏa and uses `Weapon_DualSlash`; the melee path carries `DamageData` through `Weapon_MeleeBase.DealDamageInArea` into the health callback.
+- Other configured Mộc sources were audited: W012 Phi Tiêu Bát Quái uses `Weapon_Boomerang.CreateDamageData()` and the shared projectile collision path; R007 Chiếu Trải Hoàng Tuyền sends explicit Mộc `DamageData` for mat-relocation and player-on-mat ram hits. Its sleeping trap application alone is a status effect, not an elemental damage hit. The Thanh Đồng signature skill also sends explicit Mộc `DamageData` through `HealthSystem.TakeDamage`; it is a hero skill, not a relic.
+- R007 now references the existing `VFX_Relic_SleepingMat_SlideHit` prefab for actual relocation/ram hits. These pooled hit effects spawn at the collision point through `VFXPoolManager`, not as child objects of `Weapon_R007(Clone)`. The mat decal is a separate configured prefab. Hỏa Hoạn still has no dedicated reaction prefab; its current feedback is the target's Burn tint and the reaction audio hook.
+- All of these damage paths reach `Enemy.HealthSystem.OnDamageTaken` when they hit an enemy, so the shared reaction dispatcher can resolve Hỏa Hoạn by damage element rather than weapon ID. This source review has not yet confirmed each source in Editor Play Mode.
+- For both `Hero_ThuSinh` and `Hero_AnSi`, `basicAttackConfig.element` is `None`. Elemental input in the candidate test therefore comes from the selected weapon/relic, not an inferred basic-attack element or hero identity.
+- `EnemyStatusController` already supports Burn with duration, tick interval, value, damage callback, immunity checks, refresh behavior and `OnStatusChanged`; `BurnStatusHandler` invokes the configured tick callback. `EnemyStatusVisuals` already displays Burn.
+- Burn refresh currently keeps the greater duration/value and resets elapsed time; repeated application can therefore extend/restart burning. The confirmed Hỏa Hoạn spread rule explicitly skips already-burning targets rather than refreshing them.
+
+#### DEV-FIRE-01 — Confirm Hỏa Hoạn trigger and source path
+**Tasks:** Trace W003 Bùa Trấn Yêu's Mộc hit callback and document the natural-Hỏa target check. The trigger is immediate on that hit; no Hỏa relic, second elemental application, or in-run relic switching is required. Keep target natural affinity distinct from an applied element for other reactions. Document the source callback and minimum test loadout without assigning element to either hero's basic attack by inference.
+**Acceptance:** W003's actual callback path and a minimum runtime test loadout are documented; hitting a natural-Hỏa target triggers Hỏa Hoạn once, while hitting a non-Hỏa target does not. The boss takes elemental damage, and the reaction's heavy control/disruption is reduced or ignored. No relic switch or second element application is part of the trigger.
+
+<!-- Status: DESIGN DECISIONS CONFIRMED (2026-09-29); source-path evidence remains to be attached. W003 is the Mộc source and both candidate heroes have non-elemental basic attacks. -->
+
+<!-- Implementation: COMPLETE in source. Enemy forwards the full DamageData from the health callback; HuoHoanReaction resolves W003's Mộc hit against the target's current natural Hỏa element. No relic swapping or second application is needed. Runtime capture remains pending. -->
+
+#### GD-FIRE-01 — Lock Burn and spread rules
+**Tasks:** Implement the confirmed provisional card values (Burn 3 s, tick every 1 s, one spread attempt on first Burn tick, radius 1.25 m, up to 2 secondary targets). Skip already-burning and immune targets; a spread target cannot spread again. Use a tunable Burn damage coefficient based on the triggering Mộc hit, with no separate instant spread damage. Bosses take elemental/Burn damage, do not spread, and receive no heavy control/interruption. Preserve no-unbounded-chain behavior.
+**Acceptance:** Primary and secondary damage, Burn refresh rules, one-hop propagation, target cap, expiry, immunity and boss handling have deterministic examples and readable VFX/SFX cues. Values remain provisional until playtest.
+
+<!-- Status: DESIGN COMPLETE (2026-09-29); implemented configuration defaults are provisional and require Editor/device tuning. -->
+
+#### DEV-FIRE-02 — Implement maintainable Burn-spread ownership
+**Tasks:** Keep reaction selection in the target reaction controller, Hỏa Hoạn policy in a focused reaction object, Burn lifetime/ticks in `EnemyStatusController`/`BurnStatusHandler`, and bounded area query/target selection in a dedicated service. Read tuning from a dedicated ScriptableObject. Do not build a generalized framework for all five reactions.
+**Acceptance:** Each component has one clear responsibility; overlap work is bounded/non-allocating; spread happens once at the primary Burn's first tick; spread targets do not spread; Burn damage cannot recursively trigger reactions; pooled enemy status callbacks clear with status lifecycle.
+
+<!-- Implementation: SOURCE COMPLETE (2026-09-29); Unity compile and Editor Play Mode evidence pending. -->
+
+**Exit gate / next step:** Source implementation is in place. Next, verify in Unity Editor using Bùa Trấn Yêu against a natural-Hỏa enemy and non-Hỏa control, confirm first-tick spread cap/immunity/already-burning rules and boss Burn behavior, then profile on primary Android hardware when available. This workspace turn did not run Unity or automated tests.
 
 ### 9.4 Implementation boundaries and risks
 

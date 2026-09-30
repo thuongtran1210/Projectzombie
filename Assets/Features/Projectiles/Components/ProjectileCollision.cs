@@ -141,6 +141,11 @@ namespace ProjectZombie.Features.Projectiles.Components
                     defenderElement = enemy.CurrentElement;
                 }
 
+#if UNITY_EDITOR
+                if (enemy != null && _controller.Damage.SourceWeapon is Weapons.Weapon_LightningOrb)
+                    Debug.Log($"[SteamSlipTest] W009 hit {enemy.name}; enemyElement={enemy.CurrentElement}; damageElement={_controller.Damage.Element}.", enemy);
+#endif
+
                 // Tính toán sát thương tương khắc 1 chiều
                 DamageData hitDamage = DamageUtility.CalculateHitDamage(
                     _controller.Damage.BaseDamage,

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a83df4a26a449209b9e4f0e84912101, type: 3}
+  m_Name: SteamSlipReactionSettings
+  m_EditorClassIdentifier:
+  primeDuration: 4
+  reactionCooldown: 1
+  patchRadius: 0.8
+  patchLifetime: 2
+  patchCapacity: 16
+  colliderBufferSize: 32
+  secondaryTargetCap: 2
+  collisionImpactCap: 2
+  patchVisualPrefab: {fileID: 3199915906762550702, guid: 7ecae996276719c4e90c198c037f7867, type: 3}
+  lightKnockbackForce: 2.5
+  lightSlideDuration: 0.8
+  standardStumbleDuration: 0.35
+  heavyStaggerDuration: 0.2
+  flyingWobbleDuration: 0.25
+  collisionStaggerDuration: 0.15

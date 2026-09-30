@@ -2,6 +2,7 @@ using ProjectZombie.Core.Pooling;
 using ProjectZombie.Core.ScriptableObjects;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Elements;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Enemies
@@ -28,6 +29,8 @@ namespace ProjectZombie.Features.Enemies
         public CombatMovementStrategy Movement { get; private set; }
         public EnemyStateMachine StateMachine { get; private set; }
         public EnemyStatusController StatusController { get; private set; }
+        public EnemyElementReactionController ElementReactionController { get; private set; }
+        private SteamSlipEnemyResponse _steamSlipResponse;
         public Vector3 InitialLocalScale { get; private set; } = Vector3.one;
 
         // IStatusReceiver Properties
@@ -50,6 +53,11 @@ namespace ProjectZombie.Features.Enemies
         [SerializeField] private bool isBoss = false;
         public bool IsBoss => isBoss || CompareTag("Boss");
         public bool IsHeavyArmor => Config != null && Config.isHeavyArmor;
+        public EnemyReactionClass ReactionClass => IsBoss
+            ? EnemyReactionClass.Boss
+            : IsHeavyArmor
+                ? EnemyReactionClass.Heavy
+                : Config != null ? Config.reactionClass : EnemyReactionClass.Standard;
 
         private ProjectZombie.Features.Boss.BossElementController _bossElementController;
 
@@ -101,6 +109,10 @@ namespace ProjectZombie.Features.Enemies
             Movement = GetComponent<CombatMovementStrategy>();
             StatusController = GetComponent<EnemyStatusController>();
             if (StatusController == null) StatusController = gameObject.AddComponent<EnemyStatusController>();
+            ElementReactionController = GetComponent<EnemyElementReactionController>();
+            if (ElementReactionController == null) ElementReactionController = gameObject.AddComponent<EnemyElementReactionController>();
+            _steamSlipResponse = GetComponent<SteamSlipEnemyResponse>();
+            if (_steamSlipResponse == null) _steamSlipResponse = gameObject.AddComponent<SteamSlipEnemyResponse>();
 
             // Tự động đảm bảo có HitFlashFeedback & EnemyStatusVisuals (Hiển thị choáng, đóng băng, thiêu đốt)
             if (GetComponent<Visuals.HitFlashFeedback>() == null)
@@ -129,6 +141,16 @@ namespace ProjectZombie.Features.Enemies
             }
         }
 
+        public void ApplySteamSlip(Vector2 direction, SteamSlipReactionSettings settings)
+        {
+            _steamSlipResponse?.ApplySlip(direction, settings);
+        }
+
+        public void ApplySteamSlipCollisionStagger(SteamSlipReactionSettings settings)
+        {
+            _steamSlipResponse?.ApplyCollisionStagger(settings);
+        }
+
         public void ApplyStatusEffect(StatusEffectType type, float duration, float value = 0f, float tickInterval = 0.5f, System.Action<float> onTickDamage = null)
         {
             if (StatusController != null)
@@ -153,6 +175,7 @@ namespace ProjectZombie.Features.Enemies
         public void OnSpawn()
         {
             _frameOffset = Random.Range(0, 4);
+            ElementReactionController?.ResetState();
 
             // Reset máu về MaxHealth khi lấy từ Object Pool
             if (HealthSystem != null && Config != null)
@@ -245,6 +268,7 @@ namespace ProjectZombie.Features.Enemies
             if (HealthSystem != null)
             {
                 HealthSystem.OnDied += HandleDeath;
+                HealthSystem.OnDamageTaken += HandleElementalDamage;
             }
         }
 
@@ -258,6 +282,15 @@ namespace ProjectZombie.Features.Enemies
             if (HealthSystem != null)
             {
                 HealthSystem.OnDied -= HandleDeath;
+                HealthSystem.OnDamageTaken -= HandleElementalDamage;
+            }
+        }
+
+        private void HandleElementalDamage(DamageData damageData)
+        {
+            if (damageData.CanTriggerReaction && damageData.Element != ElementType.None)
+            {
+                ElementReactionController?.ApplyElement(damageData);
             }
         }
 

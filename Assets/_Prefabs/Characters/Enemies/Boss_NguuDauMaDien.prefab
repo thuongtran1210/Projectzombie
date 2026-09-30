@@ -458,7 +458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf5559c5ac8a5ed49aff103c71d706cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 800
   disableGameObjectOnDeath: 1
 --- !u!114 &302480097558015566
 MonoBehaviour:

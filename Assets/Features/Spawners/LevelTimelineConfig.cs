@@ -32,7 +32,7 @@ namespace ProjectZombie.Features.Spawners
         [Tooltip("[Addressables Inspector] Tham chiếu kéo thả AssetReference (Tùy chọn, ưu tiên sử dụng enemyAddress bên trên).")]
         public UnityEngine.AddressableAssets.AssetReferenceGameObject spawnPrefabRef;
 
-        [Tooltip("Tổng số lượng quái sẽ được sinh ra trong đợt sóng này.")]
+        [Tooltip("Tổng số quái của sự kiện này. Continuous rải từng con theo spawnInterval; BurstWave dùng cùng nhịp nếu interval lớn hơn 0.")]
         public int spawnCount = 10;
 
         [Tooltip("Khoảng thời gian giãn cách giữa mỗi lần sinh 1 con quái (tính bằng Giây). VD: 0.1s = sinh dồn dập 10 con trong 1 giây.")]

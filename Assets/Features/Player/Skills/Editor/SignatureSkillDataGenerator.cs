@@ -25,7 +25,7 @@ namespace ProjectZombie.Features.Player.Skills.Editor
                 AssetDatabase.CreateFolder("Assets/_Data", "Skills");
             }
 
-            // 1. Thư Sinh - Phán Quyết Tiền Định / Phán Quyết Âm Ty (Hồi chiêu: 25s)
+            // 1. Thư Sinh - Phán Quyết Tiền Định / Phán Quyết Âm Ty (Hồi chiêu: 30s)
             string thuSinhPath = $"{folderPath}/ThuSinhSignatureSkill.asset";
             var thuSinh = AssetDatabase.LoadAssetAtPath<ThuSinhSkillData>(thuSinhPath);
             if (thuSinh == null)
@@ -35,8 +35,8 @@ namespace ProjectZombie.Features.Player.Skills.Editor
             }
             SerializedObject soThuSinh = new SerializedObject(thuSinh);
             soThuSinh.FindProperty("_skillName").stringValue = "Phán Quyết Tiền Định";
-            soThuSinh.FindProperty("_description").stringValue = "Thư Sinh vẽ bút lệnh khí thiêng sông núi điểm hóa từ Đức Thánh Trần. Bung trận địa cổ tự, nổ 250% sát thương diện rộng, giảm 20% CD toàn vũ khí và nhận +30% Tốc đánh, +20% Tốc chạy trong 4s (Cooldown: 25s).";
-            soThuSinh.FindProperty("_baseCooldown").floatValue = 25f;
+            soThuSinh.FindProperty("_description").stringValue = "Thư Sinh vẽ bút lệnh khí thiêng sông núi điểm hóa từ Đức Thánh Trần. Bung trận địa cổ tự, nổ 150% sát thương diện rộng, giảm 20% CD toàn vũ khí và nhận +30% Tốc đánh, +20% Tốc chạy trong 4s (Cooldown: 30s).";
+            soThuSinh.FindProperty("_baseCooldown").floatValue = 30f;
 
             var groundDecal = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_W002_GroundDecal.prefab");
             var inkSlash = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThuSinh_InkSlash.prefab");
@@ -60,7 +60,7 @@ namespace ProjectZombie.Features.Player.Skills.Editor
             }
             SerializedObject soThanhDong = new SerializedObject(thanhDong);
             soThanhDong.FindProperty("_skillName").stringValue = "Giá Đồng Tứ Phủ";
-            soThanhDong.FindProperty("_description").stringValue = "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ). Sóng xung kích gây 180% sát thương, làm Choáng 2.5s quái xung quanh, hút sạch ExpGem và nhận +35% DMG, +35% Tốc chạy trong 5s (Cooldown: 30s).";
+            soThanhDong.FindProperty("_description").stringValue = "Thanh Đồng thỉnh nhập Thánh thần Tứ Phủ (Thiên, Nhạc, Thoải, Địa Phủ). Sóng xung kích gây 130% sát thương, làm Choáng 1.5s quái xung quanh, hút sạch ExpGem và nhận +35% DMG, +35% Tốc chạy trong 5s (Cooldown: 30s).";
             soThanhDong.FindProperty("_baseCooldown").floatValue = 30f;
 
             var auraVfx = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_ThanhDong_TuPhuPossessionAura.prefab");
@@ -73,7 +73,7 @@ namespace ProjectZombie.Features.Player.Skills.Editor
             EditorUtility.SetDirty(thanhDong);
             Debug.Log($"[SignatureSkillDataGenerator] Đã cập nhật/tạo: {thanhDongPath}");
 
-            // 3. Ẩn Sĩ Sơn Lâm - Thập Phương Chấn Thế (Hồi chiêu: 20s)
+            // 3. Ẩn Sĩ Sơn Lâm - Thập Phương Chấn Thế (Hồi chiêu: 30s)
             string voTangPath = $"{folderPath}/VoTangSignatureSkill.asset";
             var voTang = AssetDatabase.LoadAssetAtPath<VoTangSkillData>(voTangPath);
             if (voTang == null)
@@ -83,8 +83,8 @@ namespace ProjectZombie.Features.Player.Skills.Editor
             }
             SerializedObject soVoTang = new SerializedObject(voTang);
             soVoTang.FindProperty("_skillName").stringValue = "Thập Phương Chấn Thế";
-            soVoTang.FindProperty("_description").stringValue = "Ẩn Sĩ Sơn Lâm dậm chân giải phóng địa khí núi ngàn nứt vỡ đất đá, gây 320% sát thương, hất văng (10m/s) và làm choáng 2.0s quái xung quanh. Nhận Hóa Thân Bàn Thạch (+15% HP, +30% DMG) và tăng +25 điểm về Cực Dương (Cooldown: 20s).";
-            soVoTang.FindProperty("_baseCooldown").floatValue = 20f;
+            soVoTang.FindProperty("_description").stringValue = "Ẩn Sĩ Sơn Lâm dậm chân giải phóng địa khí núi ngàn nứt vỡ đất đá, gây 180% sát thương, hất văng (10m/s) và làm choáng 2.0s quái xung quanh. Nhận Hóa Thân Bàn Thạch (+15% HP, +30% DMG) và tăng +25 điểm về Cực Dương (Cooldown: 30s).";
+            soVoTang.FindProperty("_baseCooldown").floatValue = 30f;
 
             var earthShockwave = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_W005_DongSonShockwave.prefab");
             var earthImpact = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/SkillLibrary/Prefabs/VFX_AnSi_EarthImpactSlash.prefab");

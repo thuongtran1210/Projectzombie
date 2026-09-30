@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eee2d3d04afdce409c28f27f84a36ad, type: 3}
+  m_Name: SteamSlipLightTestEnemyConfig
+  m_EditorClassIdentifier: 
+  moveSpeed: 2.2
+  preferredDistance: 4.5
+  minDistance: 2.5
+  maxHealth: 35
+  damageToPlayer: 5
+  attackCooldown: 2
+  attackRange: 5.5
+  windupRatio: 0.25
+  attackVfxPrefab: {fileID: 0}
+  vfxDuration: 0.35
+  expReward: 50
+  tier: 0
+  coinDropRate: 0.25
+  minCoinDrop: 1
+  maxCoinDrop: 3
+  elementType: 3
+  isHeavyArmor: 0
+  reactionClass: 1
+  immuneStatuses: 

@@ -16,6 +16,9 @@ namespace ProjectZombie.Features.Enemies.StatusHandlers
             if (Time.time >= effectData.NextTickTime)
             {
                 effectData.NextTickTime = Time.time + effectData.TickInterval;
+                System.Action firstTick = effectData.OnFirstTick;
+                effectData.OnFirstTick = null;
+                firstTick?.Invoke();
                 effectData.OnTickDamage?.Invoke(effectData.Value);
             }
         }

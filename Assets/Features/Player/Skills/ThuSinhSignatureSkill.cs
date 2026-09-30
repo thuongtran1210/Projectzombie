@@ -11,21 +11,21 @@ namespace ProjectZombie.Features.Player.Skills
     /// Kỹ năng Chủ động Thư Sinh: "Phán Quyết Tiền Định" / "Phán Quyết Âm Ty" (GDD v5.1).
     /// Thi triển:
     /// 1. Triệu hồi Trận Địa Cổ Tự Thư Pháp (Ground Decal) & 4 Vệt Mực Xoáy (Ink Slash).
-    /// 2. Gây 250% Sát thương Phép hệ Kim/Thủy diện rộng (6.0m) + Hất lùi nhẹ.
+    /// 2. Gây 150% Sát thương Phép hệ Kim/Thủy diện rộng (6.0m) + Hất lùi nhẹ.
     /// 3. Giảm ngay 20% thời gian hồi chiêu của toàn bộ Vũ Khí / Pháp Bảo.
     /// 4. Đẩy 1 hit ảo Ngũ Hành vào buffer Tương Sinh.
     /// 5. Nhận buff +30% Tốc đánh & +20% Tốc chạy trong 4.0s (kèm tàn ảnh hoàng kim).
     /// </summary>
     public class ThuSinhSignatureSkill : SignatureSkillBase
     {
-        public override float Cooldown => 25.0f;
+        public override float Cooldown => 30.0f;
 
         private readonly GameObject _groundDecalPrefab;
         private readonly GameObject _inkSlashPrefab;
         private readonly GameObject _lightningPrefab;
 
         private const float AOE_RADIUS = 6.0f;
-        private const float DAMAGE_RATIO = 2.5f; // 250% Base Damage
+        private const float DAMAGE_RATIO = 1.5f; // 150% Base Damage
         private const float BUFF_DURATION = 4.0f;
         private const float ATTACK_SPEED_BONUS = 0.30f;
         private const float MOVE_SPEED_BONUS = 0.20f;

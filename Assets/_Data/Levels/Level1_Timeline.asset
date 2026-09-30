@@ -26,8 +26,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 3
-    spawnInterval: 2.5
+    spawnCount: 12
+    spawnInterval: 5
     eventIcon: {fileID: 4951109404168921002, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 01:00 - Ma Da tr\u01A1n tr\u01B0\u1EE3t t\u0103ng t\u1ED1c
       \xE1p s\xE1t"
@@ -40,8 +40,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 4
-    spawnInterval: 2.5
+    spawnCount: 12
+    spawnInterval: 5
     eventIcon: {fileID: 48799176676763939, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 02:00 - Ma Tr\u01A1i bay l\u01A1 l\u1EEDng ph\xF3ng ma h\u1ECFa"
     timestampSeconds: 120
@@ -53,8 +53,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 3
-    spawnInterval: 3
+    spawnCount: 8
+    spawnInterval: 6
     eventIcon: {fileID: 6824302259244931010, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 03:00 - B\u1EA7y Ma Da tr\xE0n l\xEAn bao v\xE2y (Burst Wave)"
     timestampSeconds: 180
@@ -66,8 +66,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 15
-    spawnInterval: 0.1
+    spawnCount: 8
+    spawnInterval: 0.5
     eventIcon: {fileID: 48799176676763939, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 04:30 - ELITE QU\u1EF6 NH\u1EACP TR\xC0NG XU\u1EA4T HI\u1EC6N"
     timestampSeconds: 270
@@ -92,8 +92,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 4
-    spawnInterval: 3
+    spawnCount: 10
+    spawnInterval: 7
     eventIcon: {fileID: -7598605706414661151, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 06:45 - Ma \u0110\xF2i N\u1EE3 l\xE9n l\xFAt th\xF3 ti\u1EC1n
       ch\u1EA1y tr\u1ED1n"
@@ -106,8 +106,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 2
-    spawnInterval: 8
+    spawnCount: 5
+    spawnInterval: 10
     eventIcon: {fileID: 2300207099776836425, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 07:30 - MID-BOSS NG\u01AFU \u0110\u1EA6U M\xC3 DI\u1EC6N
       XU\u1EA4T HI\u1EC6N"
@@ -134,8 +134,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 20
-    spawnInterval: 0.1
+    spawnCount: 10
+    spawnInterval: 0.5
     eventIcon: {fileID: -7598605706414661151, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 11:30 - \u0110\u1ED9i h\xECnh Qu\u1EF7 Binh & C\u01B0\u01A1ng
       Thi t\u1ED5ng l\u1EF1c"
@@ -148,8 +148,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 3
-    spawnInterval: 4
+    spawnCount: 8
+    spawnInterval: 8
     eventIcon: {fileID: 7673597929921603940, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 13:30 - \u0110\u1EA1i B\xE3o Y\xEAu Ma Pre-Boss Rush (Burst
       Wave)"
@@ -162,8 +162,8 @@ MonoBehaviour:
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
-    spawnCount: 30
-    spawnInterval: 0.05
+    spawnCount: 12
+    spawnInterval: 0.5
     eventIcon: {fileID: 4951109404168921002, guid: 549e71e68e86d40468dbbfe97ffd6342, type: 3}
   - eventName: "Ph\xFAt 15:00 - FINAL BOSS DI\xCAM V\u01AF\u01A0NG GI\xC1NG L\xC2M"
     timestampSeconds: 900

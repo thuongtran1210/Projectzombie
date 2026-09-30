@@ -21,6 +21,10 @@ namespace ProjectZombie.Features.Weapons
 
         [Tooltip("Prefab dự phòng an toàn nếu WeaponData bị thiếu weaponPrefab (Tránh crash game trên mobile)")]
         [SerializeField] private WeaponBase defaultFallbackWeaponPrefab;
+        private bool _skipAutomaticLoadout;
+
+        /// <summary>Disables saved/default relic loading for isolated test harnesses.</summary>
+        public void SetSkipAutomaticLoadout(bool skip) => _skipAutomaticLoadout = skip;
 
         public const int MAX_WEAPONS = 1; // Tối đa 1 Pháp bảo hộ thân mang vào trận
 
@@ -105,7 +109,8 @@ namespace ProjectZombie.Features.Weapons
                 _characterCombat.OnAttackExecuted += HandleHeroAttackExecuted;
             }
 
-            ReloadEquippedWeapons();
+            if (!_skipAutomaticLoadout)
+                ReloadEquippedWeapons();
         }
 
         /// <summary>
@@ -291,6 +296,9 @@ namespace ProjectZombie.Features.Weapons
             
             if (newWeapon != null)
             {
+                // WeaponData is the authoritative source for gameplay identity; prefab values are visual/runtime defaults only.
+                newWeapon.element = data.elementType;
+                newWeapon.ConfigureBaseDamage(data.baseDamage);
                 if (string.IsNullOrEmpty(newWeapon.weaponId)) newWeapon.weaponId = data.weaponId;
                 if (string.IsNullOrEmpty(newWeapon.displayName)) newWeapon.displayName = data.weaponName;
                 if (newWeapon.icon == null) newWeapon.icon = data.icon;

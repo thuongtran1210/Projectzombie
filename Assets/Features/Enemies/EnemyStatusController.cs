@@ -34,6 +34,7 @@ namespace ProjectZombie.Features.Enemies
         public float TickInterval;
         public float NextTickTime;
         public Action<float> OnTickDamage;
+        public Action OnFirstTick;
 
         public bool IsExpired => ElapsedTime >= Duration;
     }
@@ -245,9 +246,51 @@ namespace ProjectZombie.Features.Enemies
             RecalculateStatus();
         }
 
+        /// <summary>Applies a damage-over-time effect at full duration, without scaling it by control tenacity.</summary>
+        public void ApplyDamageOverTime(StatusEffectType type, float duration, float value, float tickInterval, Action<float> onTickDamage, Action onFirstTick = null)
+        {
+            if (type != StatusEffectType.Burn)
+            {
+                ApplyStatusEffect(type, duration, value, tickInterval, onTickDamage);
+                return;
+            }
+
+            if (IsImmuneTo(type) || duration <= 0f || tickInterval <= 0f)
+                return;
+
+            ActiveStatusEffect existing = _activeEffects.Find(effect => effect.Type == type && !effect.IsExpired);
+            if (existing != null)
+            {
+                // Reaction spread policy decides whether an existing Burn can be refreshed.
+                return;
+            }
+
+            float durationBeforeTenacity = duration / Mathf.Max(0.0001f, 1f - Tenacity);
+            ApplyStatusEffect(type, durationBeforeTenacity, value, tickInterval, onTickDamage);
+            if (TryGetActiveEffect(type, out ActiveStatusEffect appliedEffect))
+                appliedEffect.OnFirstTick = onFirstTick;
+        }
+
         public bool HasStatus(StatusEffectType type)
         {
             return _activeEffects.Exists(e => e.Type == type && !e.IsExpired);
+        }
+
+        /// <summary>Returns the active effect data without exposing the mutable status collection.</summary>
+        private bool TryGetActiveEffect(StatusEffectType type, out ActiveStatusEffect effect)
+        {
+            effect = null;
+            for (int i = 0; i < _activeEffects.Count; i++)
+            {
+                ActiveStatusEffect candidate = _activeEffects[i];
+                if (candidate.Type != type || candidate.IsExpired)
+                    continue;
+
+                effect = candidate;
+                return true;
+            }
+
+            return false;
         }
 
         public void RemoveStatus(StatusEffectType type)

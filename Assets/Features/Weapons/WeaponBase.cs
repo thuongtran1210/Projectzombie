@@ -23,6 +23,7 @@ namespace ProjectZombie.Features.Weapons
         public string displayName;
         public Sprite icon;
         [TextArea] public string description;
+        [Tooltip("Prefab default only. WeaponData.elementType overrides this when the weapon is equipped.")]
         public ElementType element = ElementType.None;
         public WeaponRole weaponRole = WeaponRole.RelicOnHitTrigger;
 
@@ -51,6 +52,8 @@ namespace ProjectZombie.Features.Weapons
         
         // Local bonuses applied from upgrades
         protected float localDamageBonus = 0f;
+        private float _weaponBaseDamage;
+        private bool _hasConfiguredBaseDamage;
         protected float localAttackSpeedBonus = 0f;
         protected int localProjectileCountBonus = 0;
         protected int localPierceBonus = 0;
@@ -98,6 +101,13 @@ namespace ProjectZombie.Features.Weapons
         {
             CharacterStats = stats;
             if (firePoint == null) firePoint = transform;
+        }
+
+        /// <summary>Sets the weapon's base damage from its canonical WeaponData asset.</summary>
+        public void ConfigureBaseDamage(float baseDamage)
+        {
+            _hasConfiguredBaseDamage = baseDamage > 0f;
+            _weaponBaseDamage = Mathf.Max(0f, baseDamage);
         }
 
         /// <summary>
@@ -503,7 +513,18 @@ namespace ProjectZombie.Features.Weapons
 
         public virtual float GetDamage()
         {
-            float baseDmg = CharacterStats != null ? CharacterStats.GetTotalDamage() + localDamageBonus : localDamageBonus;
+            float baseDmg;
+            if (_hasConfiguredBaseDamage)
+            {
+                float progressionScale = CharacterStats != null ? CharacterStats.DamageScale : 1f;
+                baseDmg = _weaponBaseDamage * progressionScale;
+            }
+            else
+            {
+                // Preserve legacy prefab-only weapons that have no WeaponData base damage.
+                baseDmg = CharacterStats != null ? CharacterStats.GetTotalDamage() : 0f;
+            }
+            baseDmg += localDamageBonus;
 
             // Áp dụng Bonus Cấp Sao (Star Level) từ Relic Progression
             var relicMgr = ProjectZombie.Features.MetaProgression.RelicInventoryManager.Instance;

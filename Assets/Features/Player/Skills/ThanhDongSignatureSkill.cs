@@ -11,7 +11,7 @@ namespace ProjectZombie.Features.Player.Skills
     /// Kỹ năng Tuyệt Kỹ Thanh Đồng: "Giá Đồng Tứ Phủ" (Chuẩn hóa Action RPG v5.1).
     /// Thi triển trực tiếp khi nhấn nút HUD (Cooldown 30s).
     /// Hiệu ứng:
-    /// 1. PHÁN TRUYỀN: Tạo sóng xung kích Tứ Phủ (Oracle Shockwave), gây 180% Sát thương và Choáng (Stun) toàn bộ quái trong 8.0m (2.5s).
+    /// 1. PHÁN TRUYỀN: Tạo sóng xung kích Tứ Phủ (Oracle Shockwave), gây 130% Sát thương và Choáng (Stun) toàn bộ quái trong 8.0m (1.5s).
     /// 2. BAN LỘC: Thu hút tức thời và liên tục toàn bộ ExpGem trên toàn màn hình.
     /// 3. HÀO QUANG THÁNH GIÁNG (5s): +35% Tốc độ chạy (kèm tàn ảnh ngọc lục), +35% Sát thương toàn thể, hồi phục 10% HP.
     /// 4. Camera Shake và Sound FX.
@@ -24,10 +24,10 @@ namespace ProjectZombie.Features.Player.Skills
         private readonly GameObject _shockwavePrefab;
         private const float DURATION = 5.0f;
         private const float STUN_RADIUS = 8.0f;
-        private const float STUN_DURATION = 2.5f;
+        private const float STUN_DURATION = 1.5f;
         private const float SPEED_BUFF_RATIO = 0.35f;
         private const float DAMAGE_BUFF_RATIO = 0.35f;
-        private const float DAMAGE_RATIO = 1.8f; // 180% Base Damage
+        private const float DAMAGE_RATIO = 1.3f; // 130% Base Damage
 
         private static readonly Collider2D[] _hitBuffer = new Collider2D[80];
 

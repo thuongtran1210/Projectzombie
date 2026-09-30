@@ -6,6 +6,8 @@ namespace ProjectZombie.Core.ScriptableObjects
     /// <summary>Phên loại cấp độ của kẻ địch.</summary>
     public enum EnemyTier { Common, Elite, Boss }
 
+    public enum EnemyReactionClass { Standard, Light, Heavy, Flying, Boss }
+
     [CreateAssetMenu(fileName = "NewEnemyConfig", menuName = "ProjectZombie/Enemy Config", order = 1)]
     public class EnemyConfig : ScriptableObject, ICharacterStats
     {
@@ -57,6 +59,10 @@ namespace ProjectZombie.Core.ScriptableObjects
         [Tooltip("Cơ chế Cản Đạn Xuyên (Heavy Armor Bullet Sponge) - Tiêu tốn 2 Pierce Count của đạn xuyên.")]
         public bool isHeavyArmor = false;
 
+        [Header("Element Reaction")]
+        [Tooltip("Phân nhóm phản ứng vật lý. Boss tier luôn được xử lý như Boss.")]
+        public EnemyReactionClass reactionClass = EnemyReactionClass.Standard;
+
         [Header("Status Effect Immunities (Miễn Kháng Hiệu Ứng)")]
         [Tooltip("Danh sách các hiệu ứng trạng thái bất lợi mà quái này hoàn toàn miễn nhiễm.")]
         public System.Collections.Generic.List<ProjectZombie.Features.Enemies.StatusEffectType> immuneStatuses = new System.Collections.Generic.List<ProjectZombie.Features.Enemies.StatusEffectType>();
@@ -87,6 +93,7 @@ namespace ProjectZombie.Core.ScriptableObjects
 
         public float MaxHealth => maxHealth;
         public float BaseDamage => damageToPlayer;
+        public float DamageScale => 1f;
         public float AttackSpeed => 1f / attackCooldown;
         public float CritChance => 0f;
         public float CritDamageMultiplier => 1f;
