@@ -5,10 +5,6 @@ namespace ProjectZombie.Features.Elements
     [CreateAssetMenu(menuName = "ProjectZombie/Elements/Steam Slip Settings", fileName = "SteamSlipReactionSettings")]
     public sealed class SteamSlipReactionSettings : ScriptableObject
     {
-        [Header("Priming")]
-        [Min(0.1f)] public float primeDuration = 4f;
-        [Min(0f)] public float reactionCooldown = 1f;
-
         [Header("Patch")]
         [Min(0.1f)] public float patchRadius = 0.8f;
         [Min(0.1f)] public float patchLifetime = 2f;

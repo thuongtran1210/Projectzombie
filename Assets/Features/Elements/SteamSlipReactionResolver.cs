@@ -2,13 +2,44 @@ using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.Elements
 {
-    /// <summary>Defines the ordered element pair that triggers the Bốc Hơi pilot.</summary>
+    public enum ElementReactionType
+    {
+        None,
+        BocHoi,
+        HuoHoan,
+        ToaiGiap,
+        SinhTruong,
+        SaLay
+    }
+
+    /// <summary>Maps ordered element pairs and natural affinities to reaction identities.</summary>
     internal static class SteamSlipReactionResolver
     {
-        public static bool ShouldTrigger(ElementType previous, ElementType incoming) =>
-            previous == ElementType.Thuy && incoming == ElementType.Hoa;
+        public static ElementReactionType ResolveOrderedPair(ElementType previous, ElementType incoming)
+        {
+            if (previous == ElementType.Thuy && incoming == ElementType.Hoa)
+                return ElementReactionType.BocHoi;
+            if (previous == ElementType.Tho && incoming == ElementType.Kim)
+                return ElementReactionType.ToaiGiap;
+            if (previous == ElementType.Thuy && incoming == ElementType.Moc)
+                return ElementReactionType.SinhTruong;
+            if (previous == ElementType.Tho && incoming == ElementType.Thuy)
+                return ElementReactionType.SaLay;
 
-        public static bool ShouldTriggerNaturalMatch(ElementType target, ElementType incoming) =>
-            target == ElementType.Hoa && incoming == ElementType.Thuy;
+            return ElementReactionType.None;
+        }
+
+        public static ElementReactionType ResolveNaturalAffinity(ElementType target, ElementType incoming)
+        {
+            if (target != ElementType.Hoa)
+                return ElementReactionType.None;
+
+            if (incoming == ElementType.Moc)
+                return ElementReactionType.HuoHoan;
+            if (incoming == ElementType.Thuy)
+                return ElementReactionType.BocHoi;
+
+            return ElementReactionType.None;
+        }
     }
 }

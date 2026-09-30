@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a83df4a26a449209b9e4f0e84912101, type: 3}
   m_Name: SteamSlipReactionSettings
   m_EditorClassIdentifier:
-  primeDuration: 4
-  reactionCooldown: 1
   patchRadius: 0.8
   patchLifetime: 2
   patchCapacity: 16

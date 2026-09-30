@@ -4,29 +4,27 @@ using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Elements
 {
-    /// <summary>Target-local elemental priming and pilot reaction dispatch. Separate from global Tương Sinh.</summary>
+    /// <summary>Target-local elemental priming and ordered reaction dispatch. Separate from global Tương Sinh.</summary>
     [RequireComponent(typeof(Enemy))]
     public sealed class EnemyElementReactionController : MonoBehaviour
     {
         private Enemy _enemy;
-        private ElementType _primedElement;
-        private Object _primedSource;
-        private float _primeExpiresAt;
+        private readonly ElementMarkState _mark = new ElementMarkState();
         private float _nextReactionAt;
-        private HuoHoanReaction _huoHoanReaction;
+        private ElementReactionDispatcher _dispatcher;
+        private ElementReactionSettings _reactionSettings;
 
-        public ElementType PrimedElement => Time.time < _primeExpiresAt ? _primedElement : ElementType.None;
-        public Object PrimedSource => Time.time < _primeExpiresAt ? _primedSource : null;
-        public float PrimeExpiresAt => _primeExpiresAt;
+        public ElementType PrimedElement => _mark.GetElement(Time.time);
+        public Object PrimedSource => _mark.GetSource(Time.time);
+        public float PrimeExpiresAt => _mark.ExpiresAt;
 
         private void Awake() => _enemy = GetComponent<Enemy>();
 
         private void OnEnable()
         {
             ResetState();
-            FireSpreadSettings fireSettings = FireSpreadSettings.Runtime;
-            if (fireSettings != null)
-                _huoHoanReaction = new HuoHoanReaction(fireSettings);
+            _reactionSettings = ElementReactionSettings.Runtime;
+            _dispatcher = new ElementReactionDispatcher(FireSpreadSettings.Runtime, SteamSlipReactionSettings.Runtime);
         }
         private void OnDisable() => ResetState();
 
@@ -34,20 +32,25 @@ namespace ProjectZombie.Features.Elements
         {
             ElementType incoming = incomingDamage.Element;
             if (incoming == ElementType.None || _enemy == null || !_enemy.isActiveAndEnabled) return;
-            SteamSlipReactionSettings settings = SteamSlipReactionSettings.Runtime;
-            if (incoming == ElementType.Moc && _huoHoanReaction != null &&
-                _huoHoanReaction.TryExecute(_enemy, incomingDamage))
+
+            ElementReactionType naturalReaction = SteamSlipReactionResolver.ResolveNaturalAffinity(_enemy.CurrentElement, incoming);
+            if (naturalReaction == ElementReactionType.HuoHoan && _dispatcher != null &&
+                _dispatcher.TryExecute(naturalReaction, _enemy, incomingDamage))
                 return;
 
-            if (settings == null) return;
+            if (_reactionSettings == null) return;
 
             ElementType targetElement = _enemy.CurrentElement;
-            bool matchesNaturalElement = SteamSlipReactionResolver.ShouldTriggerNaturalMatch(targetElement, incoming);
-            bool matchesPrimedElement = SteamSlipReactionResolver.ShouldTrigger(PrimedElement, incoming);
-
-            if (matchesNaturalElement || matchesPrimedElement)
+            if (naturalReaction == ElementReactionType.BocHoi)
             {
-                TryTriggerReaction(incoming, settings);
+                TryTriggerReaction(naturalReaction, incomingDamage);
+                return;
+            }
+
+            ElementReactionType resolved = SteamSlipReactionResolver.ResolveOrderedPair(PrimedElement, incoming);
+            if (_dispatcher.CanExecute(resolved))
+            {
+                TryTriggerReaction(resolved, incomingDamage);
                 return;
             }
 
@@ -57,34 +60,33 @@ namespace ProjectZombie.Features.Elements
                 return;
             }
 
-            _primedElement = incoming;
-            _primedSource = incomingDamage.SourceWeapon;
-            _primeExpiresAt = Time.time + settings.primeDuration;
+            float expiresAt = Time.time + _reactionSettings.markDuration;
+            _mark.Apply(incoming, incomingDamage.SourceWeapon, expiresAt);
             SteamSlipReactionDiagnostics.Report(new SteamSlipDiagnosticEvent(
-                SteamSlipDiagnosticKind.ElementPrimed, _enemy.GetInstanceID(), incoming, _primeExpiresAt, 0));
+                SteamSlipDiagnosticKind.ElementPrimed, _enemy.GetInstanceID(), incoming, expiresAt, 0));
         }
 
-        private void TryTriggerReaction(ElementType incoming, SteamSlipReactionSettings settings)
+        private void TryTriggerReaction(ElementReactionType reaction, DamageData incomingDamage)
         {
-            if (Time.time < _nextReactionAt)
+            if (_reactionSettings == null || _dispatcher == null || Time.time < _nextReactionAt)
             {
                 SteamSlipReactionDiagnostics.Report(new SteamSlipDiagnosticEvent(
-                    SteamSlipDiagnosticKind.ReactionCooldownRejected, _enemy.GetInstanceID(), incoming, _nextReactionAt, 0));
+                    SteamSlipDiagnosticKind.ReactionCooldownRejected, _enemy.GetInstanceID(), incomingDamage.Element, _nextReactionAt, (int)reaction));
                 return;
             }
 
+            if (!_dispatcher.TryExecute(reaction, _enemy, incomingDamage))
+                return;
+
             ClearPrimedElement();
-            _nextReactionAt = Time.time + settings.reactionCooldown;
+            _nextReactionAt = Time.time + _reactionSettings.reactionCooldown;
             SteamSlipReactionDiagnostics.Report(new SteamSlipDiagnosticEvent(
-                SteamSlipDiagnosticKind.ReactionTriggered, _enemy.GetInstanceID(), incoming, Time.time, 0));
-            SteamSlipPatchManager.CreatePatch(_enemy);
+                SteamSlipDiagnosticKind.ReactionTriggered, _enemy.GetInstanceID(), incomingDamage.Element, Time.time, (int)reaction));
         }
 
         private void ClearPrimedElement()
         {
-            _primedElement = ElementType.None;
-            _primedSource = null;
-            _primeExpiresAt = 0f;
+            _mark.Clear();
         }
 
         public void ResetState()
