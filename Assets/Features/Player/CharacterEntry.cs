@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
@@ -24,6 +24,7 @@ namespace ProjectZombie.Features.Player
         public Sprite attackIcon;
 
         [Tooltip("Legacy metadata. Basic attacks use the owning PlayerStats.CurrentElement, including skill overrides.")]
+        [System.Obsolete("Deprecated: Đòn đánh thường tự động kế thừa từ PlayerStats.CurrentElement. Thuộc tính này không còn được sử dụng ở runtime.")]
         public ElementType element = ElementType.None;
 
         [Tooltip("Hệ số sát thương cơ bản (Ví dụ 1.0 = 100% Base Attack)")]

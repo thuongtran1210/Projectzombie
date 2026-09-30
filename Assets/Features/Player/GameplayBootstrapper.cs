@@ -67,6 +67,9 @@ namespace ProjectZombie.Features.Player
 
         private async void Start()
         {
+            // Reset tường minh trạng thái bộ đệm Tương Sinh khi bắt đầu màn chơi
+            ProjectZombie.Features.Elements.ElementCycleManager.Instance?.ResetRunState();
+
             // 0. Đảm bảo Loadout được nạp Async hoàn chỉnh từ Addressables/Save
             await RunLoadoutState.EnsureInitializedAsync();
 
