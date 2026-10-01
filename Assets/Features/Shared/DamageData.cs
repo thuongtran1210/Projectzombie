@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Shared
 {
@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Shared
     public struct DamageData
     {
         public float Amount;
+        public float RawAmount;
         public bool IsCritical;
         public ElementType Element;
         public bool IsCounter;
@@ -30,6 +31,7 @@ namespace ProjectZombie.Features.Shared
         public DamageData(float amount, bool isCritical = false, ElementType element = ElementType.None, bool isCounter = false, Object sourceWeapon = null, bool canTriggerReaction = true)
         {
             Amount = amount;
+            RawAmount = amount;
             IsCritical = isCritical;
             Element = element;
             IsCounter = isCounter;

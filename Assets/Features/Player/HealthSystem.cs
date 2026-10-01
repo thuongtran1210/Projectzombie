@@ -147,13 +147,17 @@ namespace ProjectZombie.Features.Shared
             if (_currentHealth <= 0 || IsInvulnerable) return;
             if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
 
+            if (CustomDamageInterceptor != null)
+            {
+                float interceptAmount = damageData.RawAmount > 0f ? damageData.RawAmount : damageData.Amount;
+                if (CustomDamageInterceptor.Invoke(interceptAmount, damageData))
+                {
+                    return;
+                }
+            }
+
             TryGetComponent<Enemies.Enemy>(out var enemy);
             damageData = DamageUtility.ApplyElementCounter(damageData, enemy != null ? enemy.CurrentElement : CurrentElement);
-
-            if (CustomDamageInterceptor != null && CustomDamageInterceptor.Invoke(damageData.Amount, damageData))
-            {
-                return;
-            }
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);

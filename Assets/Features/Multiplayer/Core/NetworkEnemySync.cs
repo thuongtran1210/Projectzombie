@@ -6,6 +6,31 @@ using ProjectZombie.Features.Enemies;
 namespace ProjectZombie.Features.Multiplayer.Core
 {
     /// <summary>
+    /// Cấu trúc lưu trữ thông tin của từng hit trong batch sát thương gửi từ Client lên Host.
+    /// Giữ nguyên sát thương thô, hệ nguyên tố, nguồn đòn đánh, crit, attack id và quyền kích hoạt phản ứng.
+    /// </summary>
+    [System.Serializable]
+    public struct NetworkDamageHit : INetworkStruct
+    {
+        public float RawDamage;
+        public byte Element;
+        public byte HitSource;
+        public NetworkBool IsCritical;
+        public NetworkBool CanTriggerReaction;
+        public ulong AttackId;
+
+        public NetworkDamageHit(float rawDamage, byte element = 0, byte hitSource = 0, bool isCritical = false, bool canTriggerReaction = true, ulong attackId = 0)
+        {
+            RawDamage = rawDamage;
+            Element = element;
+            HitSource = hitSource;
+            IsCritical = isCritical;
+            CanTriggerReaction = canTriggerReaction;
+            AttackId = attackId;
+        }
+    }
+
+    /// <summary>
     /// Đồng bộ hóa trạng thái quái vật theo cơ chế Host-Authoritative (Photon Fusion 2.0).
     /// Mọi tính toán AI, di chuyển và trừ máu đều do Host quyết định, Client gửi yêu cầu sát thương qua RPC.
     /// </summary>
@@ -20,7 +45,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         private HealthSystem _healthSystem;
         private Enemy _enemy;
-        private float _accumulatedDamageBuffer = 0f;
+        private readonly System.Collections.Generic.List<NetworkDamageHit> _pendingHits = new System.Collections.Generic.List<NetworkDamageHit>();
 
         private void Awake()
         {
@@ -30,7 +55,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void Spawned()
         {
-            _accumulatedDamageBuffer = 0f;
+            _pendingHits.Clear();
 
             if (Runner.IsServer)
             {
@@ -53,18 +78,24 @@ namespace ProjectZombie.Features.Multiplayer.Core
                     rb.velocity = Vector2.zero;
                 }
 
-                // Chuyển hướng mọi đòn đánh cục bộ của Client vào bộ đệm gom (Damage Batching)
-                // để tránh spam hàng trăm gói tin RPC/giây khi 4 người cùng xả AOE
+                // Chuyển hướng mọi đòn đánh cục bộ của Client vào bộ đệm gom danh sách các hit (Damage Hit Batching)
+                // để bảo toàn từng hit (hệ, nguồn, crit, attack id, reaction flag) và tránh spam RPC.
                 if (_healthSystem != null)
                 {
                     _healthSystem.CustomDamageInterceptor = (amount, data) =>
                     {
-                        _accumulatedDamageBuffer += amount;
-                        if (data.Element != ElementType.None) _lastElement = (byte)data.Element;
-                        if (data.HitSource != ElementHitSource.Unknown) _lastHitSource = (byte)data.HitSource;
-                        if (data.IsCritical) _lastIsCrit = true;
-                        // Match local cooldown prediction to the owning attacker, even though
-                        // health is updated later by the host's existing damage batch RPC.
+                        var hit = new NetworkDamageHit(
+                            rawDamage: data.RawAmount > 0f ? data.RawAmount : amount,
+                            element: (byte)data.Element,
+                            hitSource: (byte)data.HitSource,
+                            isCritical: data.IsCritical,
+                            canTriggerReaction: data.CanTriggerReaction,
+                            attackId: data.AttackId
+                        );
+                        _pendingHits.Add(hit);
+
+                        // Match local cooldown prediction to the owning attacker for responsive feel,
+                        // while authoritative damage calculation and monster reactions happen on host.
                         DamageUtility.RegisterSuccessfulHit(data);
                         return true;
                     };
@@ -74,20 +105,17 @@ namespace ProjectZombie.Features.Multiplayer.Core
 
         public override void FixedUpdateNetwork()
         {
-            // Trên máy Client: Nếu có sát thương dồn tích lũy trong tick này, gửi 1 gói duy nhất lên Host
-            if (!Runner.IsServer && _accumulatedDamageBuffer > 0f && Object.IsValid)
+            // Trên máy Client: Nếu có các hit tích lũy trong tick này, gửi 1 batch duy nhất lên Host
+            if (!Runner.IsServer && _pendingHits.Count > 0 && Object.IsValid)
             {
-                int attackerId = Runner.LocalPlayer.PlayerId;
-                RpcApplyDamage(_accumulatedDamageBuffer, attackerId, _lastElement, _lastHitSource, _lastIsCrit);
-                _accumulatedDamageBuffer = 0f;
-                _lastElement = 0;
-                _lastHitSource = 0;
-                _lastIsCrit = false;
+                RpcApplyDamageBatch(_pendingHits.ToArray());
+                _pendingHits.Clear();
             }
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
+            _pendingHits.Clear();
             if (_healthSystem != null)
             {
                 if (Runner.IsServer)
@@ -128,36 +156,68 @@ namespace ProjectZombie.Features.Multiplayer.Core
             NetworkIsDead = true;
         }
 
-        private byte _lastElement = 0;
-        private byte _lastHitSource = 0;
-        private bool _lastIsCrit = false;
-
         /// <summary>
-        /// RPC cho phép Client gửi yêu cầu gây sát thương lên Host (State Authority) để tính toán chuẩn xác,
-        /// bảo toàn đầy đủ thông tin Ngũ Hành, Nguồn đòn đánh và Chủ sở hữu (Attacker) phục vụ Phản Ứng Nguyên Tố mục tiêu.
+        /// RPC cho phép Client gửi batch danh sách các hit gây sát thương lên Host (State Authority)
+        /// để tính toán Tương Khắc (1.3x) và Phản Ứng Nguyên Tố chuẩn xác theo thứ tự,
+        /// bảo toàn đầy đủ thông tin Ngũ Hành, Nguồn đòn đánh, Crit, AttackId và CanTriggerReaction.
+        /// Danh tính người gửi được trích xuất an toàn từ RpcInfo.Source (không tin client-provided id).
         /// </summary>
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        public void RpcApplyDamage(float damageAmount, int attackerPlayerId, byte element = 0, byte hitSource = 0, bool isCritical = false)
+        public void RpcApplyDamageBatch(NetworkDamageHit[] hits, RpcInfo info = default)
         {
-            if (_healthSystem != null && _healthSystem.IsAlive)
+            GameObject attacker = ResolvePlayerObject(info.Source);
+            ProcessDamageBatchHost(hits, attacker);
+        }
+
+        /// <summary>
+        /// Xử lý batch sát thương trên Host theo đúng thứ tự, tính Tương Khắc (1.3x) và Phản Ứng Nguyên Tố.
+        /// </summary>
+        public void ProcessDamageBatchHost(NetworkDamageHit[] hits, GameObject attacker)
+        {
+            if (_healthSystem == null || !_healthSystem.IsAlive || hits == null || hits.Length == 0) return;
+
+            for (int i = 0; i < hits.Length; i++)
             {
-                GameObject attacker = ResolvePlayerObject(attackerPlayerId);
-                var damageData = new DamageData(damageAmount, isCritical, (ElementType)element, false, null)
+                if (!_healthSystem.IsAlive) break;
+
+                var hit = hits[i];
+                var damageData = new DamageData(hit.RawDamage, hit.IsCritical, (ElementType)hit.Element, false, null, hit.CanTriggerReaction)
                 {
+                    RawAmount = hit.RawDamage,
                     Owner = attacker,
-                    HitSource = (ElementHitSource)hitSource
+                    HitSource = (ElementHitSource)hit.HitSource,
+                    AttackId = hit.AttackId,
+                    ElementMultiplierApplied = false
                 };
+
                 _healthSystem.TakeDamage(damageData);
             }
         }
 
-        private GameObject ResolvePlayerObject(int attackerPlayerId)
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        public void RpcApplyDamage(float damageAmount, int attackerPlayerId = 0, byte element = 0, byte hitSource = 0, bool isCritical = false, RpcInfo info = default)
+        {
+            PlayerRef playerRef = info.Source != PlayerRef.None ? info.Source : PlayerRef.FromIndex(attackerPlayerId);
+            GameObject attacker = ResolvePlayerObject(playerRef);
+            var hit = new NetworkDamageHit(damageAmount, element, hitSource, isCritical, true, 0);
+            ProcessDamageBatchHost(new[] { hit }, attacker);
+        }
+
+        public GameObject ResolvePlayerObject(PlayerRef playerRef)
         {
             if (Runner == null) return null;
-            var playerRef = PlayerRef.FromIndex(attackerPlayerId);
+            if (playerRef == PlayerRef.None)
+            {
+                playerRef = Runner.LocalPlayer;
+            }
             if (Runner.TryGetPlayerObject(playerRef, out var netObj) && netObj != null)
                 return netObj.gameObject;
             return null;
+        }
+
+        public GameObject ResolvePlayerObject(int attackerPlayerId)
+        {
+            return ResolvePlayerObject(PlayerRef.FromIndex(attackerPlayerId));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Shared
 {
@@ -23,7 +23,8 @@ namespace ProjectZombie.Features.Shared
         {
             if (damage.ElementMultiplierApplied) return damage;
             float multiplier = GetElementMultiplier(damage.Element, defender);
-            damage.Amount *= multiplier;
+            float baseAmt = damage.RawAmount > 0f ? damage.RawAmount : damage.Amount;
+            damage.Amount = baseAmt * multiplier;
             damage.IsCounter = multiplier > 1f;
             damage.ElementMultiplierApplied = true;
             return damage;
@@ -79,10 +80,12 @@ namespace ProjectZombie.Features.Shared
             bool isCrit = Random.value <= critChance;
             float elementMult = GetElementMultiplier(attackerElement, defenderElement);
             bool isCounter = elementMult > 1.05f; // Khắc hệ (1.3x)
-            float finalDamage = (isCrit ? baseDamage * critDamageMultiplier : baseDamage) * elementMult;
+            float rawDamage = isCrit ? baseDamage * critDamageMultiplier : baseDamage;
+            float finalDamage = rawDamage * elementMult;
 
             return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon)
             {
+                RawAmount = rawDamage,
                 ElementMultiplierApplied = defenderElement != ElementType.None
             };
         }
@@ -103,6 +106,7 @@ namespace ProjectZombie.Features.Shared
 
             return new DamageData(finalDamage, isCrit, attackerElement, isCounter, sourceWeapon)
             {
+                RawAmount = damageAmount,
                 ElementMultiplierApplied = defenderElement != ElementType.None
             };
         }
