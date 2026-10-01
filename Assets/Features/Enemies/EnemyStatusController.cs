@@ -14,6 +14,7 @@ namespace ProjectZombie.Features.Enemies
         Freeze,         // Đóng băng/Cố định hoàn toàn (Ví dụ: Tuyệt kỹ Vong Xuyên / Băng Bội)
         Stun,           // Choáng (Ví dụ: Choáng do đòn chém nặng / Lực bùng nổ)
         Burn,           // Thiêu đốt gây sát thương theo thời gian DoT (Ví dụ: Flamethrower / Hỏa Cầu)
+        Root,           // Trói Chân (Sinh Trưởng Thủy → Mộc): Không thể di chuyển nhưng VẪN CÓ THỂ TẤN CÔNG
         Humiliated,     // Quê Độ: Ôm mặt xấu hổ, có 40% tỉ lệ quay sang đấm quái bên cạnh (Dép Tổ Ong)
         Sleeping,       // Ngủ Say: Bất động, đòn đánh thức nhận 2.0x Damage (Chiếu Trải Hoàng Tuyền)
         Stoned,         // Say Thuốc Lào: Đi loạng choạng zíc zắc giật lùi, hết giờ nổ ho sặc sụa (Điếu Cày)
@@ -66,6 +67,7 @@ namespace ProjectZombie.Features.Enemies
         public float CurrentSlowMultiplier { get; private set; } = 1f;
         public bool IsStunned { get; private set; } = false;
         public bool IsFrozen { get; private set; } = false;
+        public bool IsRooted { get; private set; } = false;
         public bool IsHumiliated { get; private set; } = false;
         public bool IsSleeping { get; private set; } = false;
         public bool IsStoned { get; private set; } = false;
@@ -73,7 +75,7 @@ namespace ProjectZombie.Features.Enemies
         public bool IsChickenPolymorphed { get; private set; } = false;
         public bool IsRagdollActive => _physics != null && _physics.IsRagdollActive;
 
-        public bool CanMove => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && (_physics == null || _physics.CanMovePhysics);
+        public bool CanMove => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && !IsRooted && (_physics == null || _physics.CanMovePhysics);
         public bool CanAttack => !IsStunned && !IsFrozen && !IsSleeping && !IsDancing && !IsHumiliated && !IsChickenPolymorphed && (_physics == null || !_physics.IsRagdollActive);
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace ProjectZombie.Features.Enemies
             CurrentSlowMultiplier = 1f;
             IsStunned = false;
             IsFrozen = false;
+            IsRooted = false;
             IsHumiliated = false;
             IsSleeping = false;
             IsStoned = false;
@@ -426,6 +429,7 @@ namespace ProjectZombie.Features.Enemies
             float maxSlow = 0f;
             bool isStun = false;
             bool isFreeze = false;
+            bool isRoot = false;
             bool isHumiliated = false;
             bool isSleeping = false;
             bool isStoned = false;
@@ -445,6 +449,9 @@ namespace ProjectZombie.Features.Enemies
                         break;
                     case StatusEffectType.Freeze:
                         isFreeze = true;
+                        break;
+                    case StatusEffectType.Root:
+                        isRoot = true;
                         break;
                     case StatusEffectType.Humiliated:
                         isHumiliated = true;
@@ -467,6 +474,7 @@ namespace ProjectZombie.Features.Enemies
             CurrentSlowMultiplier = Mathf.Clamp01(1f - maxSlow);
             IsStunned = isStun;
             IsFrozen = isFreeze;
+            IsRooted = isRoot;
             IsHumiliated = isHumiliated;
             IsSleeping = isSleeping;
             IsStoned = isStoned;

@@ -350,5 +350,144 @@ namespace ProjectZombie.Tests.Editor
             var skill = new ProjectZombie.Features.Player.Skills.ThuSinhSignatureSkill();
             Assert.That(skill.GetAutoSelectFallbackElement(_ownerA), Is.EqualTo(ElementType.Moc));
         }
+
+        [Test]
+        public void RootStatus_BlocksMovement_AllowsAttacking()
+        {
+            var enemyGo = new GameObject("Root_Test_Enemy");
+            try
+            {
+                var hp = enemyGo.AddComponent<HealthSystem>();
+                hp.SetMaxHealth(100f);
+                var status = enemyGo.AddComponent<ProjectZombie.Features.Enemies.EnemyStatusController>();
+
+                // Ban đầu quái có thể vừa di chuyển vừa tấn công
+                Assert.IsTrue(status.CanMove);
+                Assert.IsTrue(status.CanAttack);
+
+                // Áp dụng Root 1.25s
+                status.ApplyStatusEffect(ProjectZombie.Features.Enemies.StatusEffectType.Root, 1.25f);
+
+                // Sau khi Root: CanMove PHẢI là FALSE, CanAttack PHẢI là TRUE
+                Assert.IsTrue(status.IsRooted, "Enemy phải ở trạng thái IsRooted = true");
+                Assert.IsFalse(status.CanMove, "CanMove phải bị chặn khi quái bị Root");
+                Assert.IsTrue(status.CanAttack, "CanAttack phải được phép đánh khi quái bị Root (chuẩn GDD Sinh Trưởng)");
+            }
+            finally
+            {
+                Object.DestroyImmediate(enemyGo);
+            }
+        }
+
+        [Test]
+        public void SinhTruongReaction_WhenThuyThenMoc_AppliesRoot()
+        {
+            var enemyGo = new GameObject("SinhTruong_Test_Enemy");
+            try
+            {
+                var hp = enemyGo.AddComponent<HealthSystem>();
+                hp.SetMaxHealth(200f);
+                var enemy = enemyGo.AddComponent<ProjectZombie.Features.Enemies.Enemy>();
+                var reactionController = enemyGo.AddComponent<EnemyElementReactionController>();
+
+                // Đòn 1: Thủy -> mồi dấu Thủy
+                reactionController.ApplyElement(new DamageData(20f, element: ElementType.Thuy));
+                Assert.AreEqual(ElementType.Thuy, reactionController.PrimedElement);
+
+                // Đòn 2: Mộc -> kích hoạt Sinh Trưởng
+                reactionController.ApplyElement(new DamageData(30f, element: ElementType.Moc));
+
+                // Dấu Thủy được tiêu thụ
+                Assert.AreEqual(ElementType.None, reactionController.PrimedElement);
+                // Quái bị Root
+                Assert.IsTrue(enemy.StatusController.IsRooted);
+                Assert.IsFalse(enemy.StatusController.CanMove);
+                Assert.IsTrue(enemy.StatusController.CanAttack);
+            }
+            finally
+            {
+                Object.DestroyImmediate(enemyGo);
+            }
+        }
+
+        [Test]
+        public void SaLayReaction_WhenThoThenThuy_TriggersMudPatch()
+        {
+            var enemyGo = new GameObject("SaLay_Test_Enemy");
+            try
+            {
+                var hp = enemyGo.AddComponent<HealthSystem>();
+                hp.SetMaxHealth(200f);
+                var enemy = enemyGo.AddComponent<ProjectZombie.Features.Enemies.Enemy>();
+                var reactionController = enemyGo.AddComponent<EnemyElementReactionController>();
+
+                // Đòn 1: Thổ -> mồi dấu Thổ
+                reactionController.ApplyElement(new DamageData(20f, element: ElementType.Tho));
+                Assert.AreEqual(ElementType.Tho, reactionController.PrimedElement);
+
+                // Đòn 2: Thủy -> kích hoạt Sa Lầy
+                reactionController.ApplyElement(new DamageData(30f, element: ElementType.Thuy));
+
+                // Dấu Thổ được tiêu thụ
+                Assert.AreEqual(ElementType.None, reactionController.PrimedElement);
+            }
+            finally
+            {
+                Object.DestroyImmediate(enemyGo);
+            }
+        }
+
+        [Test]
+        public void ToaiGiapReaction_WhenThoThenKim_StunsPrimaryTarget()
+        {
+            var enemyGo = new GameObject("ToaiGiap_Test_Enemy");
+            try
+            {
+                var hp = enemyGo.AddComponent<HealthSystem>();
+                hp.SetMaxHealth(200f);
+                var enemy = enemyGo.AddComponent<ProjectZombie.Features.Enemies.Enemy>();
+                var reactionController = enemyGo.AddComponent<EnemyElementReactionController>();
+
+                // Đòn 1: Thổ -> mồi dấu Thổ
+                reactionController.ApplyElement(new DamageData(20f, element: ElementType.Tho));
+                Assert.AreEqual(ElementType.Tho, reactionController.PrimedElement);
+
+                // Đòn 2: Kim -> kích hoạt Toái Giáp
+                reactionController.ApplyElement(new DamageData(30f, element: ElementType.Kim));
+
+                // Dấu Thổ được tiêu thụ
+                Assert.AreEqual(ElementType.None, reactionController.PrimedElement);
+                // Quái bị khựng/Stun
+                Assert.IsTrue(enemy.StatusController.IsStunned);
+            }
+            finally
+            {
+                Object.DestroyImmediate(enemyGo);
+            }
+        }
+
+        [Test]
+        public void HuoHoanReaction_NaturalHoa_ReceivesMoc_BurnsTarget()
+        {
+            var enemyGo = new GameObject("HuoHoan_Test_Enemy");
+            try
+            {
+                var hp = enemyGo.AddComponent<HealthSystem>();
+                hp.SetMaxHealth(200f);
+                hp.CurrentElement = ElementType.Hoa;
+                var enemy = enemyGo.AddComponent<ProjectZombie.Features.Enemies.Enemy>();
+                var reactionController = enemyGo.AddComponent<EnemyElementReactionController>();
+
+                // Quái có hệ tự nhiên là Hỏa, nhận đòn Mộc -> kích hoạt ngay Hỏa Hoạn
+                reactionController.ApplyElement(new DamageData(40f, element: ElementType.Moc));
+
+                // Quái bị Burn
+                Assert.IsTrue(enemy.HasStatus(ProjectZombie.Features.Enemies.StatusEffectType.Burn));
+            }
+            finally
+            {
+                Object.DestroyImmediate(enemyGo);
+            }
+        }
     }
 }

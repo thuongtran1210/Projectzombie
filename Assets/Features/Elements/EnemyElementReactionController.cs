@@ -25,7 +25,9 @@ namespace ProjectZombie.Features.Elements
             _dispatcher = new ElementReactionDispatcher(
                 FireSpreadSettings.Runtime,
                 SteamSlipReactionSettings.Runtime,
-                ToaiGiapReactionSettings.Runtime);
+                ToaiGiapReactionSettings.Runtime,
+                SinhTruongReactionSettings.Runtime,
+                SaLayReactionSettings.Runtime);
         }
 
         private void OnEnable() => ResetState();

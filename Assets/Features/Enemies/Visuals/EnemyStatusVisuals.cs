@@ -1,4 +1,4 @@
-﻿using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Enemies.Visuals
@@ -343,6 +343,10 @@ namespace ProjectZombie.Features.Enemies.Visuals
                 case StatusEffectType.Burn:
                     _isBurning = isActive;
                     ApplyDirectColor(isActive ? new Color(1f, 0.45f, 0.15f, 1f) : Color.white, 0f);
+                    break;
+
+                case StatusEffectType.Root:
+                    ApplyDirectColor(isActive ? new Color(0.45f, 0.85f, 0.35f, 1f) : Color.white, isActive ? 0.8f : 0f);
                     break;
 
                 case StatusEffectType.Sleeping:

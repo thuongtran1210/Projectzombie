@@ -354,8 +354,9 @@ namespace ProjectZombie.EditorTools
             soPresenterGauge.FindProperty("_view").objectReferenceValue = gaugeView;
             soPresenterGauge.ApplyModifiedProperties();
 
-            // Mặc định ẩn widget cho đến khi Player Đạo Sĩ được spawn và kết nối
+            // Mặc định ẩn hoàn toàn widget khỏi HUD chiến đấu (Vertical Slice cô lập Âm Dương)
             gaugeView.SetVisible(false);
+            taijiTrans.gameObject.SetActive(false);
 
             // -------------------------------------------------------------
             // 4. DỰNG LẠI TopRight_RunStats (THỜI GIAN & SỐ DIỆT)

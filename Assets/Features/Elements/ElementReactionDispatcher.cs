@@ -8,24 +8,34 @@ namespace ProjectZombie.Features.Elements
     {
         private readonly HuoHoanReaction _huoHoan;
         private readonly ToaiGiapReaction _toaiGiap;
+        private readonly SinhTruongReaction _sinhTruong;
+        private readonly SaLayReaction _saLay;
         private readonly bool _canExecuteBocHoi;
 
         public ElementReactionDispatcher(
             FireSpreadSettings fireSettings,
             SteamSlipReactionSettings steamSlipSettings,
-            ToaiGiapReactionSettings toaiGiapSettings)
+            ToaiGiapReactionSettings toaiGiapSettings,
+            SinhTruongReactionSettings sinhTruongSettings = null,
+            SaLayReactionSettings saLaySettings = null)
         {
             if (fireSettings != null)
                 _huoHoan = new HuoHoanReaction(fireSettings);
             if (toaiGiapSettings != null)
                 _toaiGiap = new ToaiGiapReaction(toaiGiapSettings);
+            if (sinhTruongSettings != null)
+                _sinhTruong = new SinhTruongReaction(sinhTruongSettings);
+            if (saLaySettings != null)
+                _saLay = new SaLayReaction(saLaySettings);
             _canExecuteBocHoi = steamSlipSettings != null;
         }
 
         public bool CanExecute(ElementReactionType reaction) =>
             (reaction == ElementReactionType.BocHoi && _canExecuteBocHoi) ||
             (reaction == ElementReactionType.HuoHoan && _huoHoan != null) ||
-            (reaction == ElementReactionType.ToaiGiap && _toaiGiap != null);
+            (reaction == ElementReactionType.ToaiGiap && _toaiGiap != null) ||
+            (reaction == ElementReactionType.SinhTruong && _sinhTruong != null) ||
+            (reaction == ElementReactionType.SaLay && _saLay != null);
 
         public bool TryExecute(ElementReactionType reaction, Enemy target, DamageData incomingDamage)
         {
@@ -42,6 +52,12 @@ namespace ProjectZombie.Features.Elements
                 case ElementReactionType.ToaiGiap:
                     if (_toaiGiap == null || target == null) return false;
                     return _toaiGiap.TryExecute(target, incomingDamage);
+
+                case ElementReactionType.SinhTruong:
+                    return _sinhTruong != null && _sinhTruong.TryExecute(target, incomingDamage);
+
+                case ElementReactionType.SaLay:
+                    return _saLay != null && _saLay.TryExecute(target, incomingDamage);
 
                 default:
                     return false;

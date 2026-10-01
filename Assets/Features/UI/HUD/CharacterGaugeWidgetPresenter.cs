@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Mechanics;
 
@@ -93,6 +93,8 @@ namespace ProjectZombie.Features.UI.HUD
 
             if (_view != null)
             {
+                if (!_view.gameObject.activeSelf)
+                    _view.gameObject.SetActive(true);
                 _view.Setup(_currentProvider.MinValue, _currentProvider.MaxValue);
                 _view.UpdateGauge(_currentProvider.CurrentValue, _currentProvider.GaugeTitle, _currentProvider.GaugeColor);
                 _view.SetVisible(true);
