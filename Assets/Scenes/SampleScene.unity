@@ -8618,9 +8618,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.1
+    y: 0.125
     width: 1
-    height: 0.80105424
+    height: 0.75
   near clip plane: 0.1
   far clip plane: 5000
   field of view: 40
@@ -27096,7 +27096,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 40
-    OrthographicSize: 9.339256
+    OrthographicSize: 9.974999
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
@@ -30211,9 +30211,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb6b4574548cb4a42ad9aad77acead40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _windowTimeSeconds: 3
-  _procCooldownSeconds: 3
-  _procSFX: {fileID: 0}
 --- !u!1 &1529856825
 GameObject:
   m_ObjectHideFlags: 0
@@ -37236,7 +37233,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -58.983063, y: -13.461548}
+  m_AnchoredPosition: {x: -58.983154, y: -13.461548}
   m_SizeDelta: {x: 117.96594, y: 26.923096}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1877253972
