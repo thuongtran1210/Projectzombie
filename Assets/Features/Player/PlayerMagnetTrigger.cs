@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.Collectibles;
 
 namespace ProjectZombie.Features.Player
@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Player
 
         private PlayerStats _playerStats;
         private CircleCollider2D _magnetCollider;
+        private SphereCollider _magnetCollider3D;
 
         private void Awake()
         {
@@ -64,13 +65,25 @@ namespace ProjectZombie.Features.Player
                 if (pickupLayer >= 0) magnetChild.gameObject.layer = pickupLayer;
             }
 
-            _magnetCollider = magnetChild.GetComponent<CircleCollider2D>();
-            if (_magnetCollider == null)
+            bool is3D = GetComponent<Rigidbody>() != null;
+            if (is3D)
             {
-                _magnetCollider = magnetChild.gameObject.AddComponent<CircleCollider2D>();
+                _magnetCollider3D = magnetChild.GetComponent<SphereCollider>();
+                if (_magnetCollider3D == null)
+                {
+                    _magnetCollider3D = magnetChild.gameObject.AddComponent<SphereCollider>();
+                }
+                _magnetCollider3D.isTrigger = true;
             }
-
-            _magnetCollider.isTrigger = true;
+            else
+            {
+                _magnetCollider = magnetChild.GetComponent<CircleCollider2D>();
+                if (_magnetCollider == null)
+                {
+                    _magnetCollider = magnetChild.gameObject.AddComponent<CircleCollider2D>();
+                }
+                _magnetCollider.isTrigger = true;
+            }
 
             var proxy = magnetChild.GetComponent<MagnetTriggerProxy>();
             if (proxy == null)
@@ -82,11 +95,20 @@ namespace ProjectZombie.Features.Player
 
         public void UpdateMagnetRadius()
         {
-            if (_magnetCollider == null || _playerStats == null) return;
+            if (_playerStats == null) return;
 
             // pickupRange: 100 tương đương 100% (1.0x) base radius
             float rangeFactor = _playerStats.PickupRange > 0f ? (_playerStats.PickupRange / 100f) : 1f;
-            _magnetCollider.radius = _baseMagnetRadius * rangeFactor;
+            float finalRadius = _baseMagnetRadius * rangeFactor;
+
+            if (_magnetCollider != null)
+            {
+                _magnetCollider.radius = finalRadius;
+            }
+            if (_magnetCollider3D != null)
+            {
+                _magnetCollider3D.radius = finalRadius;
+            }
         }
 
         /// <summary>

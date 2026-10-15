@@ -4,7 +4,6 @@ using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
 {
-    [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(PlayerStats))]
     [RequireComponent(typeof(PlayerMagnetTrigger))]
     public class PlayerController : MonoBehaviour
@@ -20,6 +19,9 @@ namespace ProjectZombie.Features.Player
         [SerializeField] private float dashDuration = 0.2f;
 
         private Rigidbody2D _rb;
+        private Rigidbody _rb3D;
+        public bool Is3D => _rb3D != null;
+
         private PlayerStats _playerStats;
         private IPlayerInputProvider _inputProvider;
         private PlayerAnimator _playerAnimator;
@@ -86,6 +88,7 @@ namespace ProjectZombie.Features.Player
             Instance = this;
 
             _rb = GetComponent<Rigidbody2D>();
+            _rb3D = GetComponent<Rigidbody>();
             _playerStats = GetComponent<PlayerStats>();
             _playerAnimator = GetComponent<PlayerAnimator>();
             _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
@@ -109,7 +112,12 @@ namespace ProjectZombie.Features.Player
                 gameObject.AddComponent<Visuals.PlayerStatusVisuals>();
             }
             
-            _rb.freezeRotation = true;
+            if (_rb != null) _rb.freezeRotation = true;
+            if (_rb3D != null)
+            {
+                _rb3D.freezeRotation = true;
+                _rb3D.interpolation = RigidbodyInterpolation.Interpolate;
+            }
         }
 
         private void OnDestroy()
@@ -282,6 +290,21 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void TryAutoAimAtNearestEnemy(float radius = 5.0f)
         {
+            if (Is3D)
+            {
+                var target = Shared.TargetingUtility3D.FindTarget(transform.position, radius, Shared.TargetPriority.Nearest);
+                if (target != null)
+                {
+                    Vector3 dir = target.position - transform.position;
+                    dir.y = 0f;
+                    if (dir.sqrMagnitude > 0.001f)
+                    {
+                        transform.rotation = Quaternion.LookRotation(dir);
+                    }
+                }
+                return;
+            }
+
             Collider2D[] buffer = new Collider2D[10];
             int count = Physics2D.OverlapCircleNonAlloc(transform.position, radius, buffer, Shared.TargetingUtility.EnemyLayerMask);
             if (count == 0) return;
@@ -341,7 +364,16 @@ namespace ProjectZombie.Features.Player
                 }
                 else
                 {
-                    _dashDirection = transform.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                    if (Is3D)
+                    {
+                        Vector3 forward = transform.forward;
+                        _dashDirection = new Vector2(forward.x, forward.z).normalized;
+                        if (_dashDirection == Vector2.zero) _dashDirection = Vector2.up;
+                    }
+                    else
+                    {
+                        _dashDirection = transform.localScale.x >= 0 ? Vector2.right : Vector2.left;
+                    }
                 }
                 
                 // Phát event để các module quan tâm (như TaoistYinYangTracker) tự lắng nghe
@@ -418,65 +450,118 @@ namespace ProjectZombie.Features.Player
         {
             if (!Shared.GameStateManager.IsPlaying || !enabled)
             {
-                _rb.velocity = Vector2.zero;
+                if (_rb != null) _rb.velocity = Vector2.zero;
+                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
                 return;
             }
 
             if (_healthSystem != null && !_healthSystem.IsAlive)
             {
-                _rb.velocity = Vector2.zero;
+                if (_rb != null) _rb.velocity = Vector2.zero;
+                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
                 return;
             }
 
             if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned)
             {
-                _rb.velocity = Vector2.zero;
+                if (_rb != null) _rb.velocity = Vector2.zero;
+                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
                 return;
             }
 
             float currentSpeed = _playerStats.MoveSpeed * _slowMultiplier;
 
-            if (_isDashing)
+            if (Is3D)
             {
-                float totalDashMultiplier = dashSpeedMultiplier * (_playerStats != null ? _playerStats.DashSpeedMultiplier : 1f);
-                _rb.velocity = _dashDirection * (currentSpeed * totalDashMultiplier);
+                if (_isDashing)
+                {
+                    float totalDashMultiplier = dashSpeedMultiplier * (_playerStats != null ? _playerStats.DashSpeedMultiplier : 1f);
+                    Vector3 dashDir3D = new Vector3(_dashDirection.x, 0f, _dashDirection.y).normalized;
+                    _rb3D.velocity = dashDir3D * (currentSpeed * totalDashMultiplier);
+                }
+                else
+                {
+                    if (_isAttacking)
+                    {
+                        if (Time.time < _attackSlowdownEndTime)
+                        {
+                            currentSpeed *= 0.70f;
+                        }
+                        else
+                        {
+                            _isAttacking = false;
+                        }
+                    }
+
+                    Vector3 move3D = new Vector3(moveInput.x, 0f, moveInput.y);
+                    _rb3D.velocity = new Vector3(move3D.x * currentSpeed, _rb3D.velocity.y, move3D.z * currentSpeed);
+
+                    if (move3D.sqrMagnitude > 0.01f)
+                    {
+                        Quaternion targetRot = Quaternion.LookRotation(move3D);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.fixedDeltaTime * 15f);
+                    }
+
+                    if (_playerAnimator != null && !_isAttacking)
+                    {
+                        if (moveInput.sqrMagnitude > 0.01f)
+                        {
+                            _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                            float baseSpeed = 5.0f;
+                            _playerAnimator.SetMovementAnimationSpeed(currentSpeed / baseSpeed);
+                        }
+                        else
+                        {
+                            _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                            _playerAnimator.SetMovementAnimationSpeed(1.0f);
+                        }
+                    }
+                }
             }
-            else
+            else if (_rb != null)
             {
-                // Giảm tốc nhẹ 30% trong tích tắc vung đòn (Movement Slowdown) để tạo lực đầm nhưng không khựng chân
-                if (_isAttacking)
+                if (_isDashing)
                 {
-                    if (Time.time < _attackSlowdownEndTime)
-                    {
-                        currentSpeed *= 0.70f;
-                    }
-                    else
-                    {
-                        _isAttacking = false;
-                    }
+                    float totalDashMultiplier = dashSpeedMultiplier * (_playerStats != null ? _playerStats.DashSpeedMultiplier : 1f);
+                    _rb.velocity = _dashDirection * (currentSpeed * totalDashMultiplier);
                 }
-
-                _rb.velocity = moveInput * currentSpeed;
-
-                // Xử lý Lật mặt hình ảnh theo hướng di chuyển
-                if (_playerAnimator != null && moveInput.x != 0)
+                else
                 {
-                    _playerAnimator.FlipToDirection(moveInput.x);
-                }
-
-                // Xử lý hoạt ảnh Chạy/Đứng im khi không lướt và không chém
-                if (_playerAnimator != null && !_isAttacking)
-                {
-                    if (moveInput.sqrMagnitude > 0.01f)
+                    // Giảm tốc nhẹ 30% trong tích tắc vung đòn (Movement Slowdown) để tạo lực đầm nhưng không khựng chân
+                    if (_isAttacking)
                     {
-                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
-                        float baseSpeed = 5.0f;
-                        _playerAnimator.SetMovementAnimationSpeed(currentSpeed / baseSpeed);
+                        if (Time.time < _attackSlowdownEndTime)
+                        {
+                            currentSpeed *= 0.70f;
+                        }
+                        else
+                        {
+                            _isAttacking = false;
+                        }
                     }
-                    else
+
+                    _rb.velocity = moveInput * currentSpeed;
+
+                    // Xử lý Lật mặt hình ảnh theo hướng di chuyển
+                    if (_playerAnimator != null && moveInput.x != 0)
                     {
-                        _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
-                        _playerAnimator.SetMovementAnimationSpeed(1.0f);
+                        _playerAnimator.FlipToDirection(moveInput.x);
+                    }
+
+                    // Xử lý hoạt ảnh Chạy/Đứng im khi không lướt và không chém
+                    if (_playerAnimator != null && !_isAttacking)
+                    {
+                        if (moveInput.sqrMagnitude > 0.01f)
+                        {
+                            _playerAnimator.ChangeAnimationState(PlayerAnimationState.Run);
+                            float baseSpeed = 5.0f;
+                            _playerAnimator.SetMovementAnimationSpeed(currentSpeed / baseSpeed);
+                        }
+                        else
+                        {
+                            _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
+                            _playerAnimator.SetMovementAnimationSpeed(1.0f);
+                        }
                     }
                 }
             }
