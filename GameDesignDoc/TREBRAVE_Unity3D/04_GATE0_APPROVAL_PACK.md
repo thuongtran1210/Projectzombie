@@ -1,20 +1,20 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
 **Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** ghi các lựa chọn Gate G0: D-03/A, D-04/A, D-05, D-06/A (8/8) và D-11/A đã được duyệt ngày 2026-10-23; D-01/D-02/D-07..D-10 và local QA còn chờ. Không sửa code/scene.
+**Mục tiêu:** ghi những quyết định được duyệt ngày 2026-10-23: **D-01/A, D-03/A, D-04/A, D-05, D-06/A (8/8), D-11/A và riêng D-07-01/A**. **D-02, D-07-02..08, D-08, D-09, D-10 cùng local backup/QA vẫn PENDING.** Không sửa code/scene.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
-## 1. Bảng quyết định (D-03/A, D-04/A, D-05, D-11/A đã duyệt)
+## 1. Bảng quyết định (D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và D-07-01/A đã duyệt)
 
 | ID | Chọn mặc định đề nghị (A) | Phương án thay thế (B) | Hệ quả nếu khác |
 |---|---|---|---|
-| D-01 | Unity Defense 3D là đích chuyển engine, Web Vongxuyen vẫn hoạt động | chỉ tiếp tục Web Three.js, Unity ở chế độ prototype | ảnh hưởng toàn roadmap |
+| **D-01/A — APPROVED** | **Unity Defense 3D là runtime đích chính**; Web Vongxuyen là nguồn gameplay/Enemy/asset tham chiếu, giữ Survival 2D Legacy | Web-only không được chọn | Duyệt 2026-10-23; chưa xác nhận QA tích hợp |
 | D-02 | 600 gameplay seconds, pause/level-up không tính giờ; Inspector Fast Test riêng | thay độ dài run | ảnh hưởng lịch wave/Boss |
 | **D-03 — APPROVED / A** | **ĐÃ CHỌN A:** WIN khi BaseHP>0 **và** đã đủ 600s gameplay **và** Yaksha chết; Boss chết trước 600 → tiếp tục trận; Boss còn sống @600 → OVERTIME, không timed-wave mới; Base HP0 → LOSS ưu tiên cùng tick | B (giết Boss thắng ngay) **không được chọn** | Được duyệt 2026-10-23; phải cập nhật Unity prototype sau Gate G0 |
 | **D-04 — APPROVED / A** | **ĐÃ CHỌN A:** Hero Down khi HP0, không LOSS trực tiếp; hồi sinh tại HeroSpawn sau 5 **gameplay seconds**, countdown dừng khi Paused/LevelUp; Win/Loss dừng respawn | B (Hero chết là LOSS) **không được chọn** | Được duyệt 2026-10-23; HP hồi lúc respawn thuộc D-07 balancing |
 | **D-05 — APPROVED** | **Đã chọn A:** event #7 tại 108s chỉ 1 `magiap_boss`, không có batch thường trùng mốc | Không áp dụng B | Duyệt 2026-10-23; nguồn [Stage01](05_STAGE_ENEMY_CONTRACT.md) |
 | **D-06 — APPROVED / A (8/8)** | Ground/NavMesh 3 cầu; Thủy Quái bơi→lên bờ; Huyết Dơi/Phi Cương bay 3D; anti-air; 3 Linh Pháo thả dù; AI aggro; spawn safety | Ground-only/visual-only không được chọn | [08 D-06 Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md), 18 QA chưa chạy |
-| D-07 | giữ Web balance as **source reference** có version; tune Unity sau test, không auto-overwrite | nhập nguyên số Web vào Unity | ảnh hưởng DPS/HP/wood/test |
+| **D-07 — PARTIAL** | **Chỉ D-07-01/A APPROVED:** dùng Web làm benchmark, Unity Balance Profile riêng, cân chỉnh sau PlayMode; không auto-copy các con số | D-07-02..08 **PENDING**, chưa khóa HP/Gỗ/Tower/Enemy/Boss | [09 D-07](09_D07_BALANCE_REVIEW.md), 12 QA NOT_RUN |
 | D-08 | Core 1 Thư Sinh; thiết kế dữ liệu cho 4 Hero; roster chính thức chốt riêng | cố triển khai 4 Hero ngay trong Core | ảnh hưởng scope/stability |
 | D-09 | 1 Relic slot, dùng Dép Tổ Ong MVP | Relic MVP khác trong 5 relic FUN | ảnh hưởng test input/combat |
 | D-10 | giữ Scene/GLB/NavMesh/GUID local và Legacy riêng; backup trước tác động | rebuild scene từ generator | phương án B **không khuyến nghị** vì rủi ro mất dữ liệu |
@@ -85,6 +85,8 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ## 7. Tiêu chí ra khỏi Gate G0
 
+- [x] **D-01/A APPROVED 2026-10-23** — Unity Defense3D là runtime đích, Web/Legacy được giữ nguyên.
+- [x] **D-07-01/A APPROVED 2026-10-23** — thống nhất cách đối chiếu/chọn nguồn balance; **7 tiểu mục còn lại PENDING**.
 - [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
 - [x] **D-06/A APPROVED 2026-10-23** — 8/8 lựa chọn A: Ground/Water/Air/Landing, 3 Linh Pháo, anti-air, Enemy aggro/spawn; 18 QA chưa chạy.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
@@ -96,7 +98,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ### Cách trả lời cho chủ dự án (không cần form)
 
-**D-03/A, D-04/A, D-05, D-06/A và D-11/A đã duyệt.** Bước tiếp theo là D-07 (cân bằng), D-01/D-02/D-08..D-10 và kiểm chứng backup/Unity local; Gate G0 chưa pass.
+**D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và D-07-01/A đã duyệt.** Bước tiếp theo là **D-07-02..08, D-02, D-08, D-09, D-10**, kiểm chứng backup/Unity local; Gate G0 chưa pass.
 
 ## 8. Tài liệu G0 bước tiếp theo
 
@@ -106,7 +108,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
 
-- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): 8 lựa chọn PENDING.
+- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): D-07-01/A APPROVED, D-07-02..08 PENDING; chưa khóa số balance.
 
 ## 9. Pinned source revision cho audit
 
