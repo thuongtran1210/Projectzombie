@@ -1,124 +1,53 @@
-# PROJECTZOMBIE — GDD v6 DESIGN DECISION CHECKLIST (OWNER APPROVAL)
+# PROJECTZOMBIE — GDD v6: OWNER-APPROVED DECISION RECORD
 
-> **Trạng thái:** 12/12 PENDING; các dấu chọn ở mục "đề xuất" chỉ là khuyến nghị của tác giả, KHÔNG có giá trị phê duyệt.  
-> **Cách duyệt:** Chọn mỗi quyết định đúng **một** phương án, ghi chú nếu khác và xác nhận phiên bản. Chỉ sau đó chuyển GDD v6 và phụ lục từ DRAFT sang APPROVED.  
-> **Mục tiêu:** khóa một bộ luật duy nhất cho Map, Hero, Relic, Defense, Enemy, Boss và phạm vi legacy.
+> **Trạng thái:** 12/12 quyết định cấp sản phẩm **APPROVED bởi chủ dự án ngày 2026-10-23**. Đây là **phê duyệt quy tắc thiết kế**, KHÔNG xác nhận tính năng đã có trong runtime Unity, hoàn tất 3D migration, QA hay cho phép merge PR.
+> **Nguồn:** lựa chọn trực tiếp của chủ dự án trong cuộc hội thoại, Draft PR #1. Mục mở bên dưới không bị tự suy diễn thành phê duyệt.
 
-## D01 — Defense có phải gameplay chính của Projectzombie?
+## Các quyết định đã chốt
 
-- [ ] A — **Đề xuất:** Defense là mode chính / màn 01 chính; giữ Survival cũ ở Legacy Mode (không phải marketing core).
-- [ ] B — Defense chỉ là mode bổ sung; Survival vẫn mode chính.
-- [ ] C — Thay Survival hoàn toàn; xóa mode cũ sau migration đã duyệt.
-- [ ] Khác / ghi chú: …
+| ID | Chọn | Quyết định ràng buộc | Trạng thái |
+| --- | :---: | --- | --- |
+| **D01** | **A** | Defense là gameplay chính. Survival cũ giữ dưới Legacy Mode, không xóa scene/asset/save trước khi migration. | **APPROVED** |
+| **D02** | **C** | Unity full 3D stylized; dùng art direction semi-chibi TREBRAVE, pipeline 3D, Physics3D, NavMesh/waypoint phù hợp; không port Three.js nguyên xi. | **APPROVED** |
+| **D03** | **A** | 4 Hero có thể chọn ở sảnh, đúng 1 Hero do người chơi điều khiển trong mỗi run; danh tính/mapping bộ kit chờ P01. | **APPROVED** |
+| **D04** | **A** | 5 pháp bảo FUN Vongxuyen cho Map 01 (Dép/Nồi/Điếu/Chiếu/Chổi), 1 slot; relic cổ phong cũ chuyển Legacy/backlog không xóa code. | **APPROVED** |
+| **D05** | **A** | Relic là ACTIVE skill, dùng nút riêng, ghost aim, cast/cancel/cooldown; không auto trigger trái luật. | **APPROVED** |
+| **D06** | **A** | Map 01 gameplay clock 600 giây, 5 phase; Ma Giáp Thống Lĩnh 108s, Dạ Xoa 510s là reference timeline; xử lý chạm mốc 600s chờ P02. | **APPROVED** |
+| **D07** | **C** | CHỈ THUA khi Nhà Chính HP=0; THẮNG khi giết Boss cuối (Dạ Xoa) và Nhà Chính chưa bị phá. Hero HP=0 KHÔNG trigger thua trận; xử lý Hero incapacitation/respawn chờ P03. Boss Ma Giáp Thống Lĩnh là miniboss, không thắng sớm. | **APPROVED** |
+| **D08** | **B** | Wood là vật phẩm rơi tại vị trí enemy chết; phải được Hero nhặt (MVP) hoặc Phu thu gom (giai đoạn sau) mới tăng ví, không cộng trực tiếp qua kill event. | **APPROVED** |
+| **D09** | **A** | Map 01 dùng roster 7 types Vongxuyen; enemy Projectzombie cũ giữ trong Legacy/Future Maps; không xóa asset/code hay mapping save. | **APPROVED** |
+| **D10** | **C** | MVP chỉ Hero + Base + Tower (và pickup gỗ); chưa triển khai Phu, Thầy Lang, Dân Binh, Squad/Commander/Rally; để Phase 2 / BACKLOG. | **APPROVED** |
+| **D11** | **A** | Tên thương hiệu người chơi nhìn thấy là TREBRAVE; giữ repository, package, namespace kỹ thuật Projectzombie; Map 01 = Map Sông Quê. | **APPROVED** |
+| **D12** | **A** | Giữ hệ thống code Ngũ Hành, Âm Dương, Gacha, Meta Save, Photon Fusion, LiveOps/Monetization; không bắt buộc đưa vào Defense MVP; không xóa legacy module. | **APPROVED** |
 
-**Hệ quả:** quyết định home screen, GDD core loop, khả năng dùng lại stage/scene, Save và quảng bá.
+## Open implementation decisions — giữ PENDING, không ghi đè chủ trương đã duyệt
 
-## D02 — Dựng Map Sông Quê trên công nghệ nào?
+- [ ] **P01 — Danh tính & bộ kit 4 Hero:** chốt tên/lore/visual/bộ combo + signature/skill và mapping giữa Projectzombie 4-Hero kits với Vongxuyen (đặc biệt Võ Tăng/Ẩn Sĩ/Đạo Sĩ). Số Hero đã chốt là 4; không quyết định thay tên khi chưa duyệt.
+- [ ] **P02 — Timeout đúng 600s khi Dạ Xoa còn sống:** 600s là thời lượng thiết kế/timeline đã chốt, nhưng D07 yêu cầu thắng bằng boss kill, thua duy nhất bằng Base destroyed; cần xác nhận liệu tiếp tục đánh overtime (đề nghị), auto boss enrage hay kết thúc theo một loại kết quả trung gian. **Không tự xử thua do timeout.**
+- [ ] **P03 — Khi Hero HP=0:** chọn downed + hồi sinh sau N giây, respawn tại Base có cost, hoặc Hero phải được NPC/đồng đội cứu; nếu Hero không thể hành động nhưng Base còn sống, cần tránh softlock. **Không tự GameOver khi Hero chết.**
+- [ ] **P04 — Cơ chế Boss Dạ Xoa:** khi đến 510s xuất hiện rồi chiến đấu tại arena hay tự tấn công Base? Nếu Hero hạ Boss trước 600s có kết thúc tức thì? Mặc định proposal: Boss cuối chết → Win ngay khi Base vẫn sống, nhưng cần xác nhận trước runtime.
+- [ ] **P05 — Khả năng thu gom gỗ MVP:** wood drop duration/stack, hút vật phẩm, giới hạn vật phẩm/khung hình, reward attribution khi chết ngoài camera; khi chưa có Phu, Hero phải tiếp cận để nhặt. StartingWood 100 và +10/kill là reference chưa khóa balance.
+- [ ] **P06 — Art/render/migration 3D:** URP 3D vs renderer khác, camera angle, 3D physics/nav, input, model/rig/addressable, phạm vi phải rebuild; chuyển 2D scene cũ vào Legacy; migration performance budget cần đo sau prototype.
+- [ ] **P07 — 5 FUN relic chi tiết:** mapping ID/pre-existing Unity mechanics, active cast UX và các hiệu ứng đặc biệt khi chuyển từ auto sang active (không làm mất FUN implementation).
+- [ ] **P08 — Khả năng chơi đủ 10 phút với D07:** vì Boss ở 510s và thắng ngay khi hạ boss, một trận có thể kết thúc trước 600s; cần quyết định có gate chiến thắng tới 600s hay điều chỉnh boss end. Không thay đổi luật chỉ thua khi Base bị phá.
 
-- [ ] A — **Đề xuất:** Unity 2D/Tilemap (giữ Projectzombie hiện tại), port layout/logic từ Vongxuyen; không port 3D ngay.
-- [ ] B — Unity 2.5D (world 2D hoặc 3D visual), cần spec camera/collider mới.
-- [ ] C — Chuyển Unity sang full stylized 3D theo art direction TREBRAVE; yêu cầu roadmap/asset rewrite riêng.
+## Bất biến phải được bảo toàn
 
-**Hệ quả:** prefab, render pipeline, animation, input, navigation, performance và art budget.
+1. **Không thay điều kiện thắng/thua:** chỉ BaseHP=0 gây Lose; Boss cuối bị diệt gây Win. Hero death ≠ Lose. Không biến timer 600s thành tự động Win/Lose.
+2. **Wood pickup only:** kill tạo loot; kill không grant wood trực tiếp; grant sau khi nhặt và xác thực loot instance. Phu chỉ được nhặt khi giai đoạn sau được triển khai.
+3. **MVP không có FriendlyArmy/Squad:** các tài liệu mô tả quân/squad chỉ là POST-MVP DESIGN, không được coi là task block release MVP.
+4. **Full 3D target, hiện trạng Unity 2D:** giữ các module cũ có thể tái sử dụng, lập migration plan/tách 3D adapters, không ghi như thể đã có 3D.
+5. **Defense là mode chính**, Survival là Legacy Mode và được bảo toàn ở code/asset; old enemies không được spawn vào Map 01 mới.
 
-## D03 — Danh mục Hero ngoài sảnh?
+## Quy trình ghi nhận thay đổi
 
-- [ ] A — **Đề xuất:** Giữ tối đa bốn Hero có thể chọn/mở khóa, **mỗi run điều khiển một Hero duy nhất**.
-- [ ] B — MVP chỉ một Hero (Thư Sinh), ba Hero khác trong backlog.
-- [ ] C — Giữ nguyên roster/hero kits của Projectzombie v5.1, chỉ chốt 1 Hero trong run.
+- Các quyết định D01–D12 đã có hiệu lực làm chuẩn thiết kế trong nhánh Draft PR #1. Mọi thay đổi Dxx cần được chủ dự án xác nhận qua decision record mới.
+- P01–P08 đang mở không làm đảo ngược D01–D12. Nếu Pxx ảnh hưởng tới vòng lặp chơi được, phải giải quyết trước khi tạo implementation spec cuối và code.
+- Sau khi đồng bộ tài liệu và link, có thể review Draft PR; merge theo quy trình repo và QA tài liệu; runtime cần PR riêng.
 
-**Cần ghi:** tên hero chính thức và mapping Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ/Võ Tăng.
+## Checklist hoàn tất cập nhật tài liệu
 
-## D04 — Danh mục Pháp bảo cho Map 01?
-
-- [ ] A — **Đề xuất:** 5 FUN relic của Vongxuyen (Dép, Nồi, Điếu, Chiếu, Chổi) là bộ chuẩn Map 01; bộ cổ phong đưa backlog/legacy.
-- [ ] B — Cho chọn từ toàn bộ 17 pháp bảo cũ, nhưng 1 slot và phải cân bằng lại.
-- [ ] C — 5 FUN trước + mở thêm cổ phong theo unlock từng giai đoạn, vẫn 1 slot.
-
-**Bất biến:** đúng 1 pháp bảo / run, không được tách 17 item thành 17 slot.
-
-## D05 — Cách dùng một pháp bảo?
-
-- [ ] A — **Đề xuất:** ACTIVE skill, có nút riêng, ghost aim, cooldown; người chơi quyết định thời điểm cast.
-- [ ] B — AUTO/passive theo Projectzombie hiện tại.
-- [ ] C — HYBRID: mỗi relic có mode riêng nhưng chỉ 1 equipped; UI mô tả rõ.
-
-**Hệ quả:** WeaponManager runtime, targeting, nút HUD, upgrade và balance.
-
-## D06 — Thời gian và timeline Map 01?
-
-- [ ] A — **Đề xuất:** 600 giây / 10 phút, 5 phase; mốc Boss Ma Giáp 108s, Dạ Xoa 510s theo Vongxuyen reference.
-- [ ] B — 900 giây / 15 phút và tune lại toàn bộ wave/Boss.
-- [ ] C — 1.200 giây / 20 phút giống kịch bản GDD Projectzombie cũ.
-
-**Cần chốt:** co-op/revive pause có làm dừng clock? (Đề xuất: gameplay pause dừng tất cả).
-
-## D07 — Điều kiện thắng/thua Map 01?
-
-- [ ] A — **Đề xuất:** thua khi Base HP=0 hoặc Hero chết; thắng khi tới 600s **và** Boss chính đã chết.
-- [ ] B — thua khi Base HP=0 hoặc Hero chết; thắng sống sót đủ giờ, Boss là bonus.
-- [ ] C — chỉ thua khi Base bị phá (Hero có hồi sinh), thắng diệt Boss.
-- [ ] D — điều kiện riêng khác, ghi rõ …
-
-**Phải làm rõ thêm:** kill Boss sớm thì dừng trận ngay hay vẫn thủ đủ 600s? Boss có được đánh Base không? Hero có revive không?
-
-## D08 — Gỗ nhận theo cách nào?
-
-- [ ] A — **Đề xuất:** +gỗ vào tài nguyên run khi quái chết; Phu thu gom EXP/pickup vật lý hoặc làm logistics, chống double rewards.
-- [ ] B — Gỗ rơi dưới đất và bắt buộc Hero/Phu nhặt về mới được sử dụng.
-- [ ] C — Hybrid (một phần trực tiếp, phần thưởng lớn rơi vật phẩm).
-
-**BASELINE cho thử nghiệm:** 100 gỗ đầu; 50/tháp; 40/80 nâng lv2/lv3; 40 dân binh, 30 phu, 35 lang; +10 gỗ/kill trước modifier. Tất cả có thể tune sau.
-
-## D09 — Có chuyển toàn bộ enemy Map 01 sang roster Vongxuyen?
-
-- [ ] A — **Đề xuất:** **Map 01 chỉ dùng 7 reference types Vongxuyen**; enemy/boss cũ Projectzombie sang Legacy/Future Maps.
-- [ ] B — Map 01 dùng 7 loại VX và một số enemy cũ như optional elite.
-- [ ] C — Giữ cả roster Projectzombie và Vongxuyen, cần full reconciliation + balance.
-
-**7 types:** magiap, thuyquai, huyetdoi, magiap_boss, quaidu, phicuong, yaksha_boss.
-
-## D10 — Phạm vi hệ đồng minh và điều binh?
-
-- [ ] A — **Đề xuất:** MVP có 3 loại đơn vị + ba squad + defend/choke/follow/rally, commander succession đưa phase sau.
-- [ ] B — Full Vongxuyen system cả commander, succession, parry/block/counter ở lần phát hành đầu.
-- [ ] C — MVP chỉ tháp + Hero; toàn bộ lính/squad thêm sau.
-
-**Ảnh hưởng:** HUD mobile, AI FSM, performance và độ khó dự án.
-
-## D11 — Tên hiển thị và lore chính của sản phẩm?
-
-- [ ] A — **Đề xuất:** giữ repo/namespace Projectzombie nhưng thương hiệu trò chơi TREBRAVE; Map 01 = Map Sông Quê; bối cảnh giữ quê hương/giành lại vùng bị chiếm.
-- [ ] B — tên game Vong Xuyên, chỉ cập nhật Map 01 = Map Sông Quê và narrative như VX.
-- [ ] C — thương hiệu Projectzombie, chỉ áp gameplay VX mà không đổi lore.
-- [ ] D — Khác: …
-
-**Lưu ý:** không nhầm địa danh Vong Môn với tên Map 01, không quảng cáo territory reclaim như tính năng đã có.
-
-## D12 — Scope các tính năng Projectzombie cũ?
-
-- [ ] A — **Đề xuất:** giữ code/infrastructure của Ngũ Hành, Âm Dương, Gacha, Meta Save, Photon Fusion; **MVP Defense tạm ẩn hoặc hạn chế** các hệ ngoài core, tránh bội thực thiết kế.
-- [ ] B — tất cả chạy song song đầy đủ ngay trong Defense MVP.
-- [ ] C — loại bỏ vĩnh viễn các hệ không tương thích sau khi có kế hoạch migration rõ ràng.
-
-**Cần chốt phụ:** multiplayer co-op Defense có bắt buộc ở bản đầu không? Ads/gacha/store có thuộc tài liệu thiết kế launch không?
-
----
-
-## Quyết định phụ không làm blocker cho bản GDD
-
-- **Build positions:** mặc định 10 slot cố định của VX; nếu muốn xây tự do, lập Change Request riêng.
-- **Territory reclaim:** mới là long-term vision, không tính vào MVP cho đến khi có GDD riêng.
-- **Balance:** thông số HP/cost/wave đầu được đánh dấu BASELINE; qua playtest mới nâng thành APPROVED-BALANCE.
-- **Art:** semi-chibi stylized 3D là VX target style; không mặc nhiên ép dự án Unity hiện tại bỏ 2D khi D02 chưa duyệt.
-
-## Mẫu phản hồi nhanh
-
-Trả lời một dòng: **D01=A; D02=A; D03=A; D04=A; D05=A; D06=A; D07=A; D08=A; D09=A; D10=A; D11=A; D12=A**. Có thể viết lựa chọn khác và thêm ghi chú riêng.
-
-**Quy trình sau phê duyệt:**
-1. Ghi quyết định + ngày + owner vào checklist, chuyển status ACCEPTED.
-2. Cập nhật cùng lúc GDD chính, scenario, map, enemy roster, weapon rules, doc hub.
-3. Tài liệu legacy được dán nhãn SUPERSEDED hoặc HISTORICAL; không xóa làm mất lịch sử.
-4. Revalidate tất cả con số/xung đột; khóa version, merge PR sau review.
-5. Mới tách Epic/Issue/PR triển khai runtime Unity.
+- [x] Ghi chính xác 12 quyết định owner-approved.
+- [x] Phân biệt source code VX, nguồn Unity PZ hiện tại và bản thiết kế đã duyệt.
+- [ ] Soát lại toàn bộ file đang mang nhãn active, xác nhận không còn lời khẳng định trái D07/D08/D10/D02.
+- [ ] Chốt P01–P08 hoặc lưu làm backlog có chủ sở hữu trước khi chốt kỹ thuật implementation.
