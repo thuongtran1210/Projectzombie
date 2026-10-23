@@ -2,15 +2,23 @@
 
 **Review date:** 2026-10-23 (Asia/Ho_Chi_Minh)  
 **Scope:** `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.  
-**Status:** `DESIGN_DECISIONS_APPROVED / REMOTE_BACKLOG_REVIEWED / G0_NOT_PASSED / NO_GAMEPLAY_CODE`.  
-**Authority:** Phê duyệt D-01..D-11 ≠ chấp thuận mọi ticket đã triển khai, dữ liệu local đã commit, hoặc Gate G0 pass.
+**Status:** `G0_OWNER_APPROVED / PASSED_WITH_RECORDED_LIMITATIONS / G1_NOT_AUTHORIZED / NO_GAMEPLAY_CODE` · Owner sign-off 2026-10-23.  
+**Authority:** Chủ dự án **đã phê duyệt đóng G0 theo evidence hiện có**; **không** chấp thuận code G1, chưa nghiệm thu từng ticket, chưa commit local scenes, chưa hoàn tất full-restore hoặc PlayMode 600s.
+
+## 0. G0 SIGN-OFF — CHÍNH THỨC (2026-10-23)
+
+**OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS.** Chủ dự án đã xem [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md), xác nhận 6/6 Scene/NavMesh/GLB + `.meta` khớp SHA-256, Git branch/HEAD/2 stash trùng backup snapshot, 3 file Packages/EditorBuildSettings khớp, Unity/Legacy được owner xác nhận và 27/27 ticket đã review. **G0 được đóng theo mức bằng chứng đó; không tự làm thêm bước phục hồi/QA.**
+
+**Giới hạn được chủ dự án chấp nhận:** chưa thử full backup restore, chưa xác minh mọi material/importer/asset ngoài snapshot, không có independent Unity Legacy QA, không có full 600s run, 28 QA chính + 18 D06-QA + 12 D07-QA + ML tests chưa qua, production balance chưa khóa. **27 ticket không chuyển `ACCEPTED`**, đặc biệt U3D-003..005 G1 **chưa `IN_PROGRESS`**.
+
+**QUYỀN TRIỂN KHAI:** **NO G1 CODE AUTHORIZATION**. Không pull, merge, reset, clean, stash pop, sửa scene, NavMesh, GLB, GUID, `.meta`, không tạo gameplay commit trong lần cập nhật tài liệu. Chỉ khi owner cho phép code trong bước khác và duyệt phương án bảo vệ dirty/untracked local mới lập trình.
 
 ## 1. Kết luận review source backlog
 
 - **27/27 ID hiện diện, không trùng**: `U3D-001`.. `U3D-027`; **P0=21, P1=3, P2=3**.
 - Đã soát các dependency ID nêu tường minh theo văn bản: **không tham chiếu ticket không tồn tại; không thấy chu trình phụ thuộc**. `U3D-024` viết `U3D-010..U3D-023` là shorthand (14 ID), **phải mở rộng khi tạo issue/đưa vào công cụ theo dõi**; không ngầm coi là danh sách explicit dependencies đã được máy parse đầy đủ.
 - **24 ticket U3D-001..024** có bảng 6 cột (ID/priority/scope/dependencies/relative size/acceptance), **3 ticket U3D-025..027** là bảng post-Core 5 cột có schema khác theo G8 — không phải lỗi thiếu size.
-- **Backlog requirements are reviewed, not accepted:** owner đã cung cấp **branch/HEAD/stash đối chiếu snapshot và 6/6 SHA-256 critical assets khớp**, nên 2 evidence blockers này đã giải quyết. Vẫn **chưa có owner Gate G0 sign-off**, full recovery QA hay code G1/Unity PlayMode để đánh DONE. **27 tickets ở DRAFT/BLOCKED, chưa mở Issues.**
+- **Backlog requirements are reviewed, not accepted:** owner đã cung cấp **branch/HEAD/stash đối chiếu snapshot và 6/6 SHA-256 critical assets khớp**, nên 2 evidence blockers này đã giải quyết. **Owner Gate G0 sign-off đã nhận**; full recovery QA và G1 code/Unity PlayMode vẫn chưa được tiến hành để đánh DONE. **27 tickets ở DRAFT/BLOCKED, chưa mở Issues.**
 
 ## 2. Review từng nhóm ticket / sequence sau G0
 
@@ -38,12 +46,12 @@
 | **G0-S5** | 2 ảnh Console 20 Log/0 Warning/0 Error và root Hierarchy; chủ dự án xác nhận đã kiểm tra Missing Scripts, 3 bridge/10 sockets/NavMesh | **OWNER_REPORTED_VERIFIED** | Ảnh Inspector/PlayMode details nếu cần độc lập nghiệm thu; không mặc định 600s run đã pass |
 | **G0-S6** | Chủ dự án xác nhận đã kiểm tra Legacy `SampleScene` | **OWNER_REPORTED_VERIFIED** | Nếu cần QA độc lập, lưu smoke steps/screenshot; không coi full regression suite đã chạy |
 
-**Gate G0 = NOT PASSED, READY FOR OWNER SIGN-OFF REVIEW:** G0-S1 đã có Git snapshot matching; 6 critical Scene/NavMesh/GLB files+meta đã khớp hash; G0-S4 ba file cốt lõi khớp (full restore chưa thử); G0-S5/S6 owner reported verified. **Gate chưa được owner đóng rõ ràng và chưa cho phép code.** Không dùng GUI Scene Generator, không `git reset --hard`, `git clean -fd`, `git stash pop`, không sửa `.meta`, không rebuild/rebake NavMesh.
+**HISTORICAL BEFORE SIGN-OFF (nay SUPERSEDED bởi mục 0):** G0-S1 đã có Git snapshot matching; 6 critical Scene/NavMesh/GLB files+meta đã khớp hash; G0-S4 ba file cốt lõi khớp (full restore chưa thử); G0-S5/S6 owner reported verified. **Tại lúc rà soát trước sign-off, gate chưa được đóng**; cập nhật hiện tại: **G0 đã được owner đóng có giới hạn, nhưng G1 vẫn chưa được cho phép**. Không dùng GUI Scene Generator, không `git reset --hard`, `git clean -fd`, `git stash pop`, không sửa `.meta`, không rebuild/rebake NavMesh.
 
 ### Delta xác minh mới nhất — 2026-10-23
 - Snapshot của Git được owner đọc lại: branch = `feat/trebrave-defense3d-first-scene`; HEAD = `43ee2a806c593afe8704730f9daf012b52f56b35`; stashes 0/1 đều khớp tên/nhánh đã lưu; dirty state có 17 file tracked modified và 8 untracked entries.
 - 6 critical files Scene `.unity`/meta, baked NavMesh `.asset`/meta, map GLB/meta: **tất cả SourceExists=True, BackupExists=True, HashMatches=True**.
-- Trạng thái sau bằng chứng: **G0-S1 verified by owner output; G0-S2/S3 critical files verified; G0-S4 3 key files verified/partial; G0-S5/S6 verified by owner report/screenshots; G0 not passed**.
+- Trạng thái bằng chứng: **G0-S1 owner output verified; G0-S2/S3 6 hashes verified; G0-S4 3 config hashes verified/partial; G0-S5/S6 owner reported verified**. Sau khi owner sign-off ngày 2026-10-23: **G0 PASSED WITH RECORDED LIMITATIONS; G1 NOT AUTHORIZED**.
 - HEAD local không nhất thiết trùng remote tip vì tài liệu GitHub đã nhận nhiều commit sau snapshot. **Không yêu cầu `git pull` hoặc biến dirty working tree thành clean trong G0.**
 
 ## 4. Chỉ đọc: đối chiếu trạng thái Git + backup và hash NavMesh (không sửa file)
@@ -116,7 +124,7 @@ foreach ($rel in $critical) {
 - [x] **Local branch / HEAD / stash** được owner đối chiếu với snapshot backup; vẫn giữ 17 M/8 ?? và 2 stashes.
 - [x] **SHA-256 cụ thể 6/6** Scene+meta, NavMeshData+meta, GLB+meta có đủ nguồn+backup và khớp.
 - [ ] **Phạm vi backup mở rộng / restore test:** nếu còn asset, material hoặc prefab quan trọng ngoài snapshot, bổ sung copy-only; kiểm tra khả năng restore trước khi thao tác có nguy cơ. Đây là hardening bổ sung, **không coi 6 hashes bao phủ mọi file**.
-- [ ] **Chủ dự án phê duyệt đóng Gate G0** sau khi xem bằng chứng và review 27 nhiệm vụ; không suy từ việc gửi kết quả PowerShell rằng đã sign-off hay cho phép code.
-- [ ] Chỉ khi Gate G0 pass và chủ dự án cho phép code rõ ràng, mới bắt đầu `U3D-003 → U3D-004 → U3D-005` ở G1. **Không code trong bước Gate G0 review.**
+- [x] **Chủ dự án đã phê duyệt đóng Gate G0 ngày 2026-10-23**: `OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS`. Không có quyền code G1.
+- [ ] **G1 code authorization riêng chưa được cấp**; chỉ sau quyết định mới mới được bắt đầu `U3D-003 → U3D-004 → U3D-005`. **Không code trong lượt sign-off G0.**
 
 **Liên kết:** [02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md) · [04 — G0 Approval Pack](04_GATE0_APPROVAL_PACK.md) · [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md) · [10 — G0 Evidence Audit](10_G0_REMOTE_BASELINE_AUDIT.md).
