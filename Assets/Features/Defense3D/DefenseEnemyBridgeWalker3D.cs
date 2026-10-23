@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -26,11 +27,14 @@ namespace ProjectZombie.Features.Defense3D
         private Vector3[] route;
         private int index;
         private bool finished;
+        private bool arenaMode;
+        public event Action<DefenseEnemyBridgeWalker3D> Defeated;
 
         public void Configure(int lane, DefenseBasePrototype3D target)
         {
             targetBase = target;
             CurrentHP = maxHP;
+            arenaMode = false;
             float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
             route = new[]
             {
@@ -59,6 +63,23 @@ namespace ProjectZombie.Features.Defense3D
             SetNextDestination();
         }
 
+        /// <summary>Boss remains in arena for a configurable number of seconds.</summary>
+        public void PrepareArenaBoss(float hp)
+        {
+            maxHP = Mathf.Max(1f, hp);
+            CurrentHP = maxHP;
+            arenaMode = true;
+            finished = false;
+        }
+
+        public void BeginBossAssault(DefenseBasePrototype3D target)
+        {
+            if (IsDead || finished || !arenaMode) return;
+            arenaMode = false;
+            Configure(1, target);
+            Debug.Log("[TREBRAVE Defense3D] Yaksha entered ASSAULT_BASE.");
+        }
+
         private void SetNextDestination()
         {
             if (finished || agent == null || !agent.isOnNavMesh || index >= route.Length)
@@ -80,7 +101,7 @@ namespace ProjectZombie.Features.Defense3D
 
         private void Update()
         {
-            if (finished || IsDead || agent == null || !agent.isOnNavMesh || targetBase == null)
+            if (arenaMode || finished || IsDead || agent == null || !agent.isOnNavMesh || targetBase == null)
                 return;
             if (targetBase.IsDestroyed)
             {
@@ -127,6 +148,7 @@ namespace ProjectZombie.Features.Defense3D
             if (!IsDead) return;
             finished = true;
             Debug.Log("[TREBRAVE Defense3D] Enemy defeated: " + name);
+            Defeated?.Invoke(this);
             var wallet = FindObjectOfType<DefenseWoodWallet3D>();
             if (wallet != null)
                 DefenseWoodDrop3D.Spawn(transform.position, woodDropAmount, wallet.transform, wallet);
