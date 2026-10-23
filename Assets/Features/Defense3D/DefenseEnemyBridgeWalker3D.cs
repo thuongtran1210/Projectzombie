@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(0.1f)] private float arrivalRadius = 1.2f;
         [SerializeField, Min(0.1f)] private float attackInterval = 2f;
         [SerializeField, Min(1f)] private float maxHP = 100f;
+        [SerializeField, Min(1)] private int woodDropAmount = 10;
         [SerializeField] private DefenseBasePrototype3D targetBase;
         public float CurrentHP { get; private set; }
         public bool IsDead => CurrentHP <= 0f;
@@ -126,6 +127,11 @@ namespace ProjectZombie.Features.Defense3D
             if (!IsDead) return;
             finished = true;
             Debug.Log("[TREBRAVE Defense3D] Enemy defeated: " + name);
+            var wallet = FindObjectOfType<DefenseWoodWallet3D>();
+            if (wallet != null)
+                DefenseWoodDrop3D.Spawn(transform.position, woodDropAmount, wallet.transform, wallet);
+            else
+                Debug.LogWarning("[TREBRAVE Defense3D] Enemy defeated but Hero WoodWallet was not found; no Wood granted.");
             Destroy(gameObject);
         }
 
