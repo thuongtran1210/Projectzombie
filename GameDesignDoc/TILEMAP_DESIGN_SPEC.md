@@ -1,3 +1,7 @@
+> ⚠️ **GDD v6 REVIEW NOTICE (2026-10-23):** Đây là tiêu chuẩn **Unity 2D** hiện hữu, còn hiệu lực cho pipeline kỹ thuật **nếu D02 chọn 2D**. Map 01 cần cấu trúc Map Sông Quê hai bờ, ba cầu, ba lane và 10 bệ xây xem [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md). Nếu D02 chọn full 3D, tài liệu này sẽ chuyển HISTORICAL/2D LEGACY và thay bằng art/world spec tương ứng. Không tự ý đổi PPU/tile size chỉ vì source WebGL dùng world units.
+
+---
+
 # Tilemap Design Spec — Dự Án VONG XUYÊN
 
 **Phiên bản:** 1.0 (Official Single Source of Truth)  
