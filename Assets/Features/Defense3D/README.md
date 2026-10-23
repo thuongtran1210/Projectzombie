@@ -71,3 +71,11 @@ Run after the 3-bridge NavMesh smoke test succeeds. **Keep the imported GLB and 
 5. On finishing all 3 spawns, **no win is declared**. Boss is not yet implemented. Enemy damage intake API exists but Hero/towers cannot attack them yet.
 
 Limits: This is NOT the approved 600-second 34-event wave schedule, Boss outcome arbitration, attack animations, Unity UI canvas/HUD production, or Android-ready enemy prefab system. No Unity PlayMode validation has been run from this repository-only change.
+
+## Hero auto-attack smoke test (opt-in)
+
+After syncing feature branch, open the existing imported-GLB scene and choose **TREBRAVE > Defense 3D > Install Hero Basic Attack In Open Scene**. This adds `DefenseHeroAutoAttack3D` to the existing Hero referenced by `DefenseSceneInfo3D` without regenerating the scene. Save and Play with the 3-wave test.
+
+- Hero automatically selects the nearest active test enemy within 5 world units and deals 35 damage every 0.65 seconds. Test enemies have 100 HP and die on their third hit. The target selection queries live `DefenseEnemyBridgeWalker3D` instances, because the temporary enemy capsules do not have colliders.
+- Approach enemy paths using WASD/arrows and observe Console `Hero hit` and `Enemy defeated`. Highlight Hero in Scene view to see the yellow range Gizmo.
+- The attack intentionally uses no skill effects, aim animation, projectiles, hero HP, cooldown UI, tower or production DPS tuning. It is a smoke test to confirm enemies can be killed before reaching Base. Test in Unity Editor; not yet PlayMode QA-verified.
