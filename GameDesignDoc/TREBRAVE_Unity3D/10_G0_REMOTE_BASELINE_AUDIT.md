@@ -4,6 +4,18 @@
 **Trạng thái:** `REMOTE_INSPECTED / LOCAL_NOT_VERIFIED / G0_NOT_PASSED`.
 **Phạm vi thực tế đã làm:** **CHỈ ĐỌC** repo/manifest/Unity editor scripts trên GitHub; tài liệu audit được lưu vào repo. **Không truy cập ổ đĩa người dùng, không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không chạy backup, không code gameplay.**
 
+## 0. Bổ sung bằng chứng do chủ dự án gửi qua chat — 2026-10-23
+
+**Nguồn bằng chứng:** output PowerShell được chủ dự án tự cung cấp từ `PS C:\Users\thuon\Unity\Projectzombie>`; **không phải GitHub connector truy cập được máy local**.
+
+- `git status --short`: **17 tracked modified (`M`)** và **8 untracked path entries (`??`)**. Quan trọng: `Assets/Features/Defense3D/DefenseRun6003D.cs` (local Fast Test khác remote có thể tồn tại), **13 file `.meta` trong nhóm Defense3D** cùng `Assets/Features/Defense3D.meta`, `Packages/manifest.json`, `Packages/packages-lock.json`, `ProjectSettings/EditorBuildSettings.asset` đều hiện modified.
+- Các untracked path đặc biệt gồm `Assets/Scenes/Defense3D/` + `.meta`, `Assets/Art/Environment/` + `.meta`, `Assets/Features/DebugUI/`, `Assets/Features/Defense3D/README.md.meta`, `Packages/manifest.json.bak`, `ProjectSettings/Packages/`. `??` chỉ nói Git chưa quản lý, **không chứng minh nội dung hoặc file .unity/.glb cụ thể đã được xác minh**.
+- `Test-Path 'Assets\Scenes\Defense3D'` trả **True** — chứng minh **thư mục tồn tại trên máy người dùng khi chạy lệnh**. Chưa có output `Test-Path 'Assets\Art\Environment'`, danh sách scene `.unity`, asset GLB, SHA256, local HEAD/branch, hay đường dẫn backup.
+- **Trạng thái cập nhật:** G0-S1 = `PARTIAL_USER_REPORTED` (git status đã nhận, branch/HEAD/stash còn thiếu), G0-S2..S4 = `NOT_VERIFIED_LOCAL`, G0-S5/S6 = `NOT_RUN`. Việc gửi output không đánh dấu backup/Unity QA đã đạt.
+- **Stop rule nghiêm ngặt:** chưa chạy `git pull`, checkout, reset/clean, stash pop, scene generator, hay sửa meta; ưu tiên **đóng Unity và copy-only snapshot ngoài repo, bảo đảm NavMesh được bao gồm** rồi xác minh hash.
+
+
+
 ## 1. Bảng bằng chứng GitHub (chỉ xác minh đối với BRANCH REMOTE)
 
 | ID | Hạng mục | Bằng chứng hiện tại | Kết luận **chỉ về remote** | Hành động để đủ Gate G0 |
@@ -25,7 +37,7 @@
 
 | Gate test | Evidence required | Status hôm nay | Vì sao |
 |---|---|---|---|
-| **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **NOT_VERIFIED_LOCAL** | Chỉ có repo remote, không có `git status` từ máy Unity |
+| **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **PARTIAL_USER_REPORTED — NOT_PASSED** | Đã nhận `git status --short` (17 M / 8 ??), chưa có branch/HEAD/stash hoặc backup manifest |
 | **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **NOT_VERIFIED_LOCAL / BLOCKER** | Directory scene không có trên remote |
 | **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **NOT_VERIFIED_LOCAL / BLOCKER** | Environment không có trên remote |
 | **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **NOT_VERIFIED_LOCAL** | Remote có bản tracked, chưa chứng minh đã copy local |
