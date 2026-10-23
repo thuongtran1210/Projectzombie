@@ -43,14 +43,14 @@ Vongxuyen DefenseRules có 10 slot (id không đổi trong mapping):
 
 **Build validation**:
 1. Trận đang Playing và không bị lock input.
-2. Người chơi không nằm trong modal/cast/rally context.
+2. Người chơi không nằm trong modal/cast context (**rally chỉ POST-MVP**).
 3. Bệ tồn tại trong map và chưa occupied.
 4. Bệ không nằm trong vùng nước, không giao Base, không chắn nav.
 5. Có đủ gỗ, đúng tower type và stage restriction.
-6. BuildServer/Service execute một transaction duy nhất; thành công mới emit TowerBuilt.
+6. TowerBuildService thực thi một transaction duy nhất; thành công mới emit TowerBuilt. Không đòi hỏi network server ở Defense single-player MVP.
 7. Return failure enum cụ thể: InvalidState, OutOfZone, Occupied, NotEnoughWood, PlacementBlocked, MissingPrefab.
 
-**Lưu ý:** Bản Vongxuyen snap theo 10 slot. Không chuyển thành xây tự do trên mọi tile nếu chưa được duyệt D08.
+**Lưu ý:** Bản Vongxuyen snap theo **10 slot cố định**. Đây là baseline Map 01 đã chọn; muốn xây tự do phải có Change Request riêng, **D08 đã duyệt chỉ nói về cơ chế thu gom gỗ**, không liên quan giới hạn bệ xây.
 
 ## 3. Nhà Chính — nguồn thất bại DUY NHẤT [D07=C]
 
@@ -91,7 +91,7 @@ Enemy attack range đến cấu trúc phải được đo bằng 3D collider/nav
 
 ## 5. Tháp cung thủ
 
-**BASELINE:** Tower lvl1 maxHP 250, tầm 7; lvl2 maxHP 350, tầm 8; lvl3 maxHP 450, tầm 9; sửa theo service nếu cho phép.
+**BASELINE:** Tower lvl1 maxHP 250, tầm 7; lvl2 maxHP 350, tầm 8; lvl3 maxHP 450, tầm 9; sửa theo service nếu cho phép. Tower acquisition/damage dùng Physics3D (LOS, OverlapSphere) trong Map 01, không Physics2D.
 
 **Chu kỳ:** Idle → AcquireTarget → WindUp → Attack/Projectile → Cooldown → Acquire, song song HealthDamage/Destroyed. Priority target cấu hình nearest/threat/lowestHP; không raycast/allocate tràn trong Update.
 
