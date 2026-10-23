@@ -1,104 +1,115 @@
-# PROJECTZOMBIE — MAP 01 LEVEL SCENARIO GUIDE v6 (DRAFT)
+# TREBRAVE — MAP SÔNG QUÊ: LEVEL SCENARIO v6.1
 
-> **Trạng thái:** PROPOSED / CHƯA PHÊ DUYỆT D06–D07.  
-> **Thay thế trên nhánh draft:** kịch bản “Bến Đò Vong Xuyên”, 20 phút và Diêm Vương trong GDD v5.1.  
-> **Bản gốc v5.1:** vẫn có thể đọc qua Git history; không thay đổi runtime/asset Stage_01 hiện tại.
+> **Design APPROVED:** D01=A, D02=C, D06=A, D07=C, D08=B, D09=A, D10=C.  
+> **Implementation:** Unity full stylized 3D **NOT IMPLEMENTED**; this is a design contract, not a tested Unity scene.  
+> **PENDING:** P02 (600s timeout with final boss alive), P03 (Hero 0HP), P04/P08 (Boss raid/win timing), P05 (wood loot details).
 
-## 1. Mục tiêu trận đấu
+## 1. Stage objectives
 
-**Tên Map:** Map Sông Quê. **Mode đề xuất:** Defense / Hero Tower Defense.  
-**Bản đồ:** Bờ Tây / Sông + 3 cầu / Bờ Đông, ba tuyến North–Mid–South.  
-**Thời lượng reference:** 600 giây gameplay; tăng áp lực theo 5 phase, wave đến mỗi 18 giây.  
-**Run thành công:** theo quy tắc được chốt tại D07. Đề xuất: Base còn HP và Hero còn sống ở mốc 600s, Boss chính đã chết. Đây chưa là sự thật trong Projectzombie.
+**Defense is the main mode.** Map 01 = Map Sông Quê, two river banks connected by three bridges (North/Mid/South). The Hero and towers defend Base on west bank against enemies originating from eastern territory.
 
-**Thất bại đề xuất:** BaseHP = 0 hoặc HeroHP = 0. Tất cả nguồn thất bại phải qua RunResultResolver, chỉ xử lý một lần.  
-**Các mục tiêu phụ:** bảo vệ tháp, giữ choke, tiêu diệt elite, duy trì economy, quản lý EXP/card, bảo toàn quân, đẩy lùi boss.
+**Win (D07=C):** **only when final boss Tướng Dạ Xoa (yaksha_boss) is defeated and BaseHP > 0**. Miniboss Ma Giáp Thống Lĩnh (magiap_boss) kill is not enough.
 
-## 2. Nhịp 5 giai đoạn
+**Lose (D07=C):** **only when BaseHP reaches 0**. HeroHP=0 is not Lose. **Do not** derive Win or Lose from timer 600s. Boss kill vs Base destroyed in same tick needs order-atomic resolution tests.
 
-| Phase | Đồng hồ reference | Áp lực/chức năng | Nghiệm thu |
-| --- | --- | --- | --- |
-| 1 — Dựng phòng tuyến | 00:00–02:00 | Giới thiệu gỗ, bệ xây, lane; Ma Giáp/Dơi/Thủy quái sớm; Ma Giáp Boss ở 01:48 | Có ít nhất 1 tháp có thể xây bằng gỗ ban đầu |
-| 2 — Ba tuyến mở rộng | 02:00–04:00 | Tăng lane coverage; cơ hội tuyển quân | Không spam 1 lane duy nhất |
-| 3 — Phòng tuyến bị thử | 04:00–06:00 | Quái đặc tính nhanh/giáp tăng, pressure towers | Có hành vi địch đánh Base/Ally/Tower |
-| 4 — Phản công chiến thuật | 06:00–08:00 | Đẩy cao density, chọn squad+rally và nhịp boss | Các vùng path vẫn không nghẽn |
-| 5 — Áp lực cuối | 08:00–10:00 | Dạ Xoa xuất hiện tại 08:30 (reference), vòng chống đỡ cuối | Boss cảnh báo rõ, run kết thúc nhất quán |
+**600s (D06=A):** run design clock/timeline horizon of 10 minutes. The boss can spawn around 510s and may die before 600s; GDD requires boss kill win. **P02/P08 PENDING:** if the Boss is still alive at 600s, or a player kills it early, whether overtime/win gating applies; until defined do not implement arbitrary time-based result.
 
-**Chú ý:** các câu mô tả áp lực là thiết kế màn chơi, không khẳng định script hiện đã cấu hình đúng ở Unity.
+## 2. Full stylized 3D battlefield
 
-## 3. Công thức timeline source
+- Unity 3D world plane = XZ, Y is height (not Unity x/y 2D).
+- Bờ Tây = Base, Hero starting zone, tower pedestals; Bờ Đông = enemy spawns, portal, boss arena.
+- Three lane bridges near z=-10.5, -0.5, +10.5 according to Vongxuyen reference, configurable offsets/scale.
+- NavMesh/3D path graph should prevent ground enemies from crossing river except bridges; water and flying units have distinct movement policies.
+- 3D camera/level lighting, colliders, movement/telegraph and touch raycasts are rebuild scope; no reuse of 2D Tilemap physics in the new Defense scene.
+- Old Projectzombie 2D stage remains available in **Legacy Survival Mode**, with original 900s timeline/old enemies intact unless separately migrated.
 
-Vongxuyen STAGE_01 tạo 34 event có eventIndex từ 0 đến 33:
-- eventId: benque-01 ... benque-34
-- atSeconds = eventIndex × 18; last event at = 594
-- phase = min(5, floor(atSeconds / 120) + 1)
-- normal enemy cycle = [magiap/eastBank, huyetdoi/northCanopy, thuyquai/canalWater, magiap/eastBank, magiap/southBank]
-- eventIndex = 6, timestamp = 108: magiap_boss, count = 1
-- normal count = min(8, 3 + phase + (eventIndex % 2))
-- cap active=32, pending=40, spawnBudgetPerFrame=4, pendingLifetimeSeconds=25, minSpawnDistance=3.1.
+## 3. Gameplay rhythm: five phases
 
-Dạ Xoa được mô tả trong YakshaBoss như boss lúc 510s. **Nó không phải phần tử thứ 35 trong STAGE_01.events chỉ vì game có hai nguồn spawn.** Stage adapter phải định nghĩa BossSpawnEvent từ boss runtime riêng hoặc đưa vào timeline thống nhất có test.
-
-## 4. Biến thể target / spawn
-
-**Spawn Zone:** eastBank, northCanopy, canalWater, southBank; cần ánh xạ vào Unity 2D với transform, collider, spawn safety.  
-**Lane:** North, Mid, South; quái bám waypoint graph, không phá luật water.  
-**Threat:** địch có thể đổi target từ Hero sang Ally/Tower/Base, nhưng phải theo role policy, không tự aggro bất thường qua ba lane.
-**Death:** enemy chết bởi tất cả nguồn damage hợp lệ đều thả/trao thưởng như nhau, đúng một lần.
-
-## 5. Boss encounters
-
-### 5.1 Ma Giáp Thống Lĩnh — 01:48
-- Spawn event thứ 7 trong WaveScheduler source.
-- Boss/elite giáp lớn, HP cơ sở 700; chiến đấu quanh trục lane phù hợp.
-- Cảnh báo spawn, HP bar, kill/event cleanup, giới hạn spawn đủ cap.
-- Thưởng wood/EXP riêng theo Balance SO (chưa chốt mức).
-
-### 5.2 Tướng Dạ Xoa — 08:30
-- Sinh tại arena bờ Đông; runtime VX có state riêng.
-- Kỹ năng chém quét, bổ mạnh, đao khí có telegraph/targeting.
-- Chưa chốt D07: boss có bắt buộc phải chết, có được gây damage Nhà Chính, kill sớm có end ngay.
-- Nếu Boss spawned sau khi Base đã bị phá/GameOver thì không kích hoạt.
-
-## 6. Điều kiện kết trận: state table
-
-| Tình huống | Hành vi bản đề xuất | Phụ thuộc |
+| Phase | Time | Gameplay purpose |
 | --- | --- | --- |
-| Hero HP về 0 trước 600s | Lose | D07 |
-| Base HP về 0 trước 600s | Lose | D07 |
-| 600s, Hero+Base còn sống, Boss đã chết | Win | D07 |
-| 600s, Hero+Base còn sống, Boss chưa chết | Chờ quyết định: timeout grace hay lose | D07 |
-| Boss chết trước 600s | Tiếp tục defense tới 600s | D07 |
-| Pause / LevelUp Selection | Tạm dừng game clock, spawn, tower, ally và boss | D06 |
-| Menu restart/run start | Reset timeline, live counts, spawn queue, pooled state, economy, towers | P0 |
-| Cùng lúc Hero chết + Base chết | Chỉ một GameOver result, có reason priority | P0 |
+| 1 | 00:00–02:00 | Hero learns Wood pickup and one tower; Ma Giáp miniboss at 01:48 |
+| 2 | 02:00–04:00 | Broader lane pressure, invest dropped wood in towers |
+| 3 | 04:00–06:00 | Mix fast, ground and water threats with 3D bridge control |
+| 4 | 06:00–08:00 | Tower upgrades, world pickup risk, larger lane waves |
+| 5 | 08:00–10:00 | Boss threat, Dạ Xoa spawns ~08:30; wave end at 10:00 |
 
-## 7. Dữ liệu Unity & integration
+Pressure descriptions are **PROPOSED BALANCE**; individual event timings and spawn counts below are VX source baseline.
 
-**Không tái sử dụng Level1_Timeline.asset 900s như timeline Map 01** trừ khi chủ dự án chốt D06 và tạo bản được migrate có version. Stage_01_BambooForest.asset hiện 600s nhưng Level1_Timeline maxLevelDuration 900, nên cần validator khi link asset. Phương án:
-- StageDefinitionSO giữ metadata map/stage.
-- DefenseScenarioSO chứa mode=Defense, mapId=MapSongQue, durationSeconds, victory policy.
-- WaveTimelineSO chứa event list và boss injections.
-- LaneSpawnLocator chọn điểm spawn hợp lệ trong zone.
-- WaveScheduler tick theo shared GameStateManager/gameClock.
-- DefenseRunController đưa result về MatchFlowOrchestrator và RunStatsTracker.
-- Scenario schema versioned để không phá save/map cũ.
+## 4. Stage reference events
 
-## 8. QA checklist
+Vongxuyen STAGE_01: **600s**, **34 scheduled wave events**, each at index×18s (index 0..33; final at 594s); phase=min(5,floor(t/120)+1). Normal enemy cycle:
+1. magiap / eastBank
+2. huyetdoi / northCanopy
+3. thuyquai / canalWater
+4. magiap / eastBank
+5. magiap / southBank
 
-- [ ] Start timer 600s duy nhất, không nhảy số khi pause, load.
-- [ ] Ma Giáp Boss đúng mốc 108s, không lặp khi resume.
-- [ ] 34 event được lập lịch đúng, cap/pending đủ và hết hạn hợp lý.
-- [ ] 3 lane có cảnh báo dự đoán và spawn hợp lệ.
-- [ ] Dạ Xoa 510s theo quyết định, không spawn trong GameOver.
-- [ ] BaseHP và HeroHP thay đổi qua damage resolver, result chỉ một lần.
-- [ ] Boss chết sớm, sống sau timeout và song tử trận có policy.
-- [ ] Rerun reset tất cả stage subscriptions và pool.
-- [ ] Không làm hỏng Survival legacy stage 900s.
-- [ ] Tests PlayMode Android cho portrait/landscape và modal.
+At index 6 (t=108s) overrides with one **magiap_boss**. Normal count=min(8,3+phase+(index%2)). Active cap=32, pending cap=40, spawn budget/frame=4, pending lifetime=25s, minimum spawn distance=3.1.
 
-## 9. Liên kết
-- [Master GDD v6](ProjectZombie_GDD.md)
-- [Map / Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md)
-- [Roster](ENEMY_ROSTER_VONGXUYEN.md)
-- [Decision Checklist](DECISION_CHECKLIST_GDD_V6.md)
+**Boss separate:** yaksha_boss is driven by distinct VX boss runtime around **t=510s**, not automatically included in the 34-event list. Unity DefenseScenario must explicitly compose timed boss spawn into one authoritative runtime; no duplicate boss or missed spawn due to overflow.
+
+**Enemy selection D09=A:** exactly 7 VX archetypes are **eligible in Map 01 roster**. Normal 34 events contain only 3 normal enemy types + magiap_boss; **quaidu/phicuong/yaksha** need dedicated events/AI and should not be claimed as part of 34 base events.
+
+## 5. Wood reward and build loop [D08=B]
+
+- EnemyDeath -> RewardResolver -> spawn world **WoodDrop** with stable lootId, runId, amount, safe reachable floor position.
+- **No instant wood credit on kill**; Hero must move into pickup range and claim loot (3D collision/interact).
+- MVP has **no Phu** or allied soldiers. Phu pickup is post-MVP; it must use the same LootClaim transaction if implemented.
+- Dropped loot amount baseline +10/kill, starting Wood 100, tower costs 50/40/80 — unapproved balance numbers.
+- EXP gems and level-up cards remain separate from wood; reward events may create both EXP and WoodDrop without double grant.
+- Tower building only at ten fixed pedestals; Hero can build and upgrade while defending Base.
+
+## 6. Boss encounters
+
+### 6.1 Ma Giáp Thống Lĩnh — 01:48
+
+Miniboss at timeline event index 6, reference HP 700, armor/body recognition. May attack Hero/tower/Base based on 3D role policy; death awards drops/EXP but **cannot trigger Victory**.
+
+### 6.2 Tướng Dạ Xoa — 08:30
+
+**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN if BaseHP>0**. Boss behavior that raids Base vs stays in arena is **P04 PENDING**, not assumed.
+
+## 7. Run result decision table
+
+| Event while run Active | Result | Status |
+| --- | --- | --- |
+| Base HP becomes 0 | **LOSE** (exactly once) | APPROVED D07 |
+| Hero HP becomes 0, Base alive | **No Lose**; incapacitation/respawn TBD | D07 fixed, P03 pending |
+| Ma Giáp miniboss killed | Continue run | APPROVED D07 |
+| Dạ Xoa killed, Base alive | **WIN** (exactly once) | APPROVED D07 |
+| Dạ Xoa killed, Base already destroyed | Remain Lose | APPROVED D07 |
+| Reach 600s, Dạ Xoa alive, Base alive | **No arbitrary Win/Lose**; overtime/holding state TBD | P02 pending |
+| Dạ Xoa killed before 600s, Base alive | Boss-kill WIN intended; timing gate needs explicit P08 resolution | APPROVED D07; P08 pending |
+| Pause or LevelUp popup | Stop clock, waves, enemies, tower, loot pickup where appropriate | APPROVED consistency |
+| Restart | Reset clock, waves, Base/Towers/Wood/loot/runId/boss state | Required engineering |
+
+**RunResultResolver precedence:** BaseDestroyed after Win is not allowed to overwrite Win; FinalBossDefeated after Lose cannot overwrite Lose. For truly simultaneous signals, choose a deterministic arbitration rule in P04; the system must be idempotent.
+
+## 8. Unity 3D implementation contracts
+
+- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, lane/spawn refs, tower slot map, policy for HeroDowned and timeout (PENDING).
+- New MapSongQue3D scene with ground/water/crossing colliders, EnemyPrefab3D, tower socket transforms, camera.
+- MatchFlowService/GameStateManager still control state, but adapt 3D scene and combat interaction; WaveScheduler consumes gameplay time, never wall-clock.
+- Pool or limits for enemy, wood drops, projectiles, VFX; reset all for new run. Analytics include baseDamage, towerBuilds, woodDropped/collected, bossOutcome, duration.
+- No FriendlyArmy dependencies in MVP scene; no requirement for squad/rally UI.
+- **Do not overwrite** Projectzombie's Stage_01_BambooForest.asset (600s) or Level1_Timeline.asset (900s) as a shortcut. Link a **new Defense timeline** to Map 01 and add validation to block mismatches.
+
+## 9. Acceptance criteria
+
+- [ ] Mode selection loads Map Sông Quê full 3D, Legacy Survival remains playable.
+- [ ] Three ground routes cross three bridges without water shortcut.
+- [ ] Attack & one ACTIVE relic work using 3D targeting and aim shapes.
+- [ ] Tower placed in valid slot; enemy damage reaches Base; HP/UI correct.
+- [ ] Enemy death drops Wood; Hero pickup only; no auto credit/double claim.
+- [ ] Wave scheduler maintains event IDs/times including miniboss and final Dạ Xoa.
+- [ ] BaseDestroyed -> LOSE; HeroDeath != LOSE; MiniBossKilled != WIN; FinalBossKilled -> WIN.
+- [ ] 600s unresolved behavior held as P02 until approved (no scripted timeout-loss).
+- [ ] Run outcome/loot/AI reset correctly; Android 3D PlayMode/field QA measured.
+
+## 10. Links
+
+- [Master GDD](ProjectZombie_GDD.md)
+- [Decision Record](DECISION_CHECKLIST_GDD_V6.md)
+- [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md)
+- [3D Migration Plan](UNITY_3D_MIGRATION_PLAN.md)
+- [Defense Details](MAP_AND_DEFENSE_SYSTEM_SPEC.md)
