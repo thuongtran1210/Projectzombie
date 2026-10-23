@@ -2,7 +2,7 @@
 
 **Thời điểm audit:** 2026-10-23 · **Nguồn:** GitHub `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.
 **Trạng thái:** `REMOTE_INSPECTED / LOCAL_NOT_VERIFIED / G0_NOT_PASSED`.
-**Phạm vi thực tế đã làm:** **CHỈ ĐỌC** repo/manifest/Unity editor scripts trên GitHub; tài liệu audit được lưu vào repo. **Không truy cập ổ đĩa người dùng, không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không chạy backup, không code gameplay.**
+**Phạm vi assistant đã làm:** chỉ đọc repo/manifest/Unity editor scripts trên GitHub và cập nhật tài liệu. **Người dùng đã tự chạy backup local copy-only và báo cáo 8 file khớp hash**, không phải assistant có quyền truy cập ổ đĩa. **Không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không code gameplay.**
 
 ## 0. Bổ sung bằng chứng do chủ dự án gửi qua chat — 2026-10-23
 
@@ -15,6 +15,15 @@
 - **Stop rule nghiêm ngặt:** chưa chạy `git pull`, checkout, reset/clean, stash pop, scene generator, hay sửa meta; ưu tiên **đóng Unity và copy-only snapshot ngoài repo, bảo đảm NavMesh được bao gồm** rồi xác minh hash.
 
 
+
+### Backup copy-only do chủ dự án thực hiện — 2026-10-23 21:16 (Asia/Ho_Chi_Minh)
+
+- Chủ dự án chạy PowerShell tại `C:\Users\thuon\Unity\Projectzombie`; `Test-Path 'Assets\Scenes\Defense3D'` và `Test-Path 'Assets\Art\Environment'` đều trả `True`.
+- Script tạo snapshot bên ngoài repo: `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`. Vòng `Copy-Item -Recurse -Force -ErrorAction Stop` đã hoàn tất, không có PowerShell exception được hiển thị. Danh sách sao chép theo script gồm Defense3D scenes và .meta, Environment + .meta, Defense3D scripts, DebugUI, Editor Defense3D, `Packages` và `ProjectSettings` (mục không tồn tại tự được bỏ qua).
+- PowerShell so sánh SHA-256 nguồn/bản sao cho file có extension `.unity`, `.glb`, `.meta`, `.asset` **trong đúng hai cây thư mục** `Assets\Scenes\Defense3D` và `Assets\Art\Environment`. Output: **`Critical files checked: 8`**; **`Hash mismatches / missing: 0`**; biến `$errorsFound` rỗng. Đây là **bằng chứng do user báo cáo về 8 bản sao trùng hash**, không phải audit đã liệt kê tên từng file.
+- Git branch, HEAD, stash list được ghi vào backup thông qua các lệnh `Set-Content`, nhưng nội dung chưa được gửi để xác thực. **Không thể kết luận** đã có mọi `NavMeshData`, tất cả scene/GLB liên quan hoặc toàn bộ `Packages/ProjectSettings` được xác minh hash; script lọc 8 file và không so sánh hash cho những nhóm khác.
+- **G0-S1 = PARTIAL_USER_REPORTED; G0-S2 = COPY_REPORTED / HASH_SUBSET_MATCH (NavMesh chưa kiểm kê); G0-S3 = COPY_REPORTED / HASH_SUBSET_MATCH (bao gồm Environment nhưng chưa biết danh sách từng file); G0-S4 = COPY_REPORTED / NOT_HASH_VERIFIED; G0-S5/S6 = NOT_RUN. Gate G0 = NOT_PASSED.**
+- Bước tiếp theo: **chỉ đọc** danh sách 8 file đã so sánh và truy tìm `NavMeshData`/`NavMeshSurface` trước khi gọi backup complete; kiểm tra danh sách trong backup và hash NavMesh nếu asset nằm ngoài danh sách; sau đó mở Unity scene/Console và Legacy. **Không pull/checkout/clean/reset/generate scene/đổi GUID.**
 
 ## 1. Bảng bằng chứng GitHub (chỉ xác minh đối với BRANCH REMOTE)
 
@@ -38,9 +47,9 @@
 | Gate test | Evidence required | Status hôm nay | Vì sao |
 |---|---|---|---|
 | **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **PARTIAL_USER_REPORTED — NOT_PASSED** | Đã nhận `git status --short` (17 M / 8 ??), chưa có branch/HEAD/stash hoặc backup manifest |
-| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **NOT_VERIFIED_LOCAL / BLOCKER** | Directory scene không có trên remote |
-| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **NOT_VERIFIED_LOCAL / BLOCKER** | Environment không có trên remote |
-| **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **NOT_VERIFIED_LOCAL** | Remote có bản tracked, chưa chứng minh đã copy local |
+| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | Snapshot ngoài repo có; 8 file cảnh báo trọng yếu ở hai thư mục đã khớp SHA-256; **chưa có tên từng scene và NavMeshData** |
+| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | `Environment` local True; 8 files hash so sánh cho scene+environment, chưa xác minh từng GLB/meta và NavMesh ngoài cây |
+| **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **COPY_REPORTED / NOT_HASH_VERIFIED — NOT_PASSED** | User script `Copy-Item` cho toàn bộ `Packages` và `ProjectSettings`, không có lỗi hiển thị; chưa đối chiếu checksum / integrity / restore |
 | **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **NOT_RUN** | Không có Unity Editor local trong kết nối GitHub |
 | **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **NOT_RUN** | Remote YAML/Build Settings không chứng minh runtime |
 
