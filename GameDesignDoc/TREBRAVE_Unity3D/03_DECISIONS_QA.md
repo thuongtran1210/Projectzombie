@@ -140,3 +140,5 @@ Notes / next decision:
 
 - [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md): lựa chọn A/B, luật kết quả theo 600s, khóa G0-safety, D-11.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): bảng 34 event / 214 spawn jobs theo config nguồn, runtime elite transform, spawn restrictions, test fixtures.
+- [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): **D-03 và D-04 PENDING**, A/B rõ trường hợp Boss chết sớm, Overtime, Base HP 0, Hero Down/Pause; ML-01..ML-10 **NOT_RUN**.
+- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): chỉ dẫn sao lưu có thể đối chứng trước khi code; **backup local chưa xác minh**.
