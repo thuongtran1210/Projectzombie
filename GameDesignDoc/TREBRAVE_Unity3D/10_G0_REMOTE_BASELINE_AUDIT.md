@@ -16,6 +16,22 @@
 
 
 
+### Unity Editor G0-S5 — bằng chứng ảnh chụp Console & Hierarchy từ chủ dự án (2026-10-23)
+
+**Nguồn:** 2 ảnh chụp màn hình Unity do chủ dự án gửi qua chat; ảnh không được lưu thêm vào GitHub, chỉ ghi nhận quan sát. **Status: `PARTIAL_SCREENSHOT_VERIFIED`**, chưa đủ `PASS`.
+
+| Hạng mục | Bằng chứng quan sát được | Trạng thái |
+|---|---|---|
+| Console | Unity Console hiển thị **20 Log / 0 Warning / 0 Error** tại thời điểm chụp. Có thông báo `[TREBRAVE Defense3D] Hero hit magiap_Event_1_2...` | **SCREENSHOT_VERIFIED**, chỉ ở thời điểm ảnh, không phải full-session QA |
+| Scene đang mở | Root Hierarchy tên `MapSongQue3D_Prototype`; có `[TREBRAVE] Map Song Que Defense 3D` | **SCREENSHOT_VERIFIED** |
+| Hero/camera/map/NavMesh | Root entries `Hero_3D_Prototype`, `Main Camera`, `TREBRAVE_MapSongQue_ThreeJS`, `Defense_Navigation` hiện diện trong Hierarchy | **ROOT_ENTRIES_PRESENT**, chưa kiểm tra Inspector, component/script/asset reference và NavMesh bake thực tế |
+| Chế độ test/spawner | `[TREBRAVE] Enemy Bridge Smoke Test` và `[TREBRAVE] Three Wave Defense Test` hiện chữ xám (phù hợp inactive); `[TREBRAVE] Tower Build Test` và `[TREBRAVE] 600s Defense Run` hiện chữ sáng | **VISUAL_OBSERVATION ONLY**; chưa xác minh các source spawner active/layer hay duplication |
+| Combat runtime log | `Hero hit magiap_Event_1_2` có trong Console | Một sự kiện log combat, **không phải** bằng chứng 600s run, AI path/win/lose đã nghiệm thu |
+| Missing scripts | Ảnh Hierarchy chỉ cho thấy root GameObjects, chưa mở Inspector/hệ thống kiểm tra Missing (Mono Script) | **NOT_VERIFIED** |
+| Legacy | Không có ảnh `SampleScene` hay kết quả survival smoke | **G0-S6 NOT_RUN** |
+
+**G0-S5 = `PARTIAL_SCREENSHOT_VERIFIED / NOT_PASSED`**: chứng minh Editor đã mở scene và tại lúc chụp Console 0 warning/error; chưa chứng minh Zero Missing Mono Scripts, NavMesh/3 cầu/10 TowerSocket, runtime ổn định hoặc Console sạch sau test đầy đủ. **Không đổi G0-S6**, không viết code/rebake/regenerate.
+
 ### Xác minh danh tính asset trong bản backup — báo cáo PowerShell bổ sung
 
 Owner chạy đúng backup `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614` và cung cấp kết quả liệt kê:
@@ -77,7 +93,7 @@ Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`Back
 | **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **BACKUP ASSETS IDENTIFIED / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận scene Prototype 135896 bytes và NavMeshData asset nằm trong cây scene, `InBackup=True`; NavMesh `.meta` output bị cắt, local scene/Unity QA chưa chạy |
 | **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **GLB PRESENT / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận `TREBRAVE_MapSongQue_ThreeJS.glb` 6507936 bytes trong backup; chưa chứng minh Unity import/references và đủ toàn bộ meta/material |
 | **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **3 KEY FILES HASH VERIFIED / PARTIAL — NOT_PASSED** | Owner báo cáo `BackedUp=True` và `HashMatches=True` cho `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset`; chưa kiểm tra toàn bộ folder và khả năng restore |
-| **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **NOT_RUN** | Không có Unity Editor local trong kết nối GitHub |
+| **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **PARTIAL_SCREENSHOT_VERIFIED — NOT_PASSED** | Ảnh user: Console 20 Log / 0 Warning / 0 Error; Hierarchy có Map Song Que, Hero, GLB root, Navigation, Defense Run; **chưa xác minh Missing Scripts, NavMesh runtime, version local** |
 | **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **NOT_RUN** | Remote YAML/Build Settings không chứng minh runtime |
 
 **STOP RULE:** Nếu G0-S2 hoặc G0-S3 chưa được người dùng xác minh backup, **không được chạy scene generator / clean/reset / stash pop / đổi meta**, và không bắt đầu Core G1. Nếu Unity Console có Missing Script, giữ object để chữa có kiểm soát; không gỡ component hàng loạt.
