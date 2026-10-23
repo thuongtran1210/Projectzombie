@@ -31,6 +31,8 @@ namespace ProjectZombie.Features.Defense3D
         private bool ended;
         private bool won;
         private DefenseEnemyBridgeWalker3D yaksha;
+        private DefenseYakshaArenaCombat3D arenaCombat;
+        private DefenseHeroHealth3D heroHealth;
 
         private void Start()
         {
@@ -43,6 +45,7 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
             defenseBase.BaseDestroyed += OnBaseDestroyed;
+            heroHealth = sceneInfo.HeroSpawn != null ? sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>() : null;
             Debug.Log("[TREBRAVE Defense3D] 600s run started: 34 timed events, Miniboss@108, Yaksha@510.");
         }
 
@@ -75,6 +78,7 @@ namespace ProjectZombie.Features.Defense3D
                 elapsed >= YakshaTime + yakshaArenaDuration)
             {
                 assaultStarted = true;
+                if (arenaCombat != null) arenaCombat.EndArena();
                 yaksha.BeginBossAssault(defenseBase);
             }
             if (elapsed >= RunDuration && !overtimeLogged)
@@ -126,6 +130,8 @@ namespace ProjectZombie.Features.Defense3D
             bossSpawned = true;
             yaksha = SpawnEnemy("yaksha_boss_ARENA_COMBAT", 1, true, yakshaHealth);
             yaksha.Defeated += OnYakshaDefeated;
+            arenaCombat = yaksha.gameObject.AddComponent<DefenseYakshaArenaCombat3D>();
+            arenaCombat.Begin(heroHealth);
             Debug.Log("[TREBRAVE Defense3D] Yaksha entered ARENA_COMBAT at 510s. Assault after " + yakshaArenaDuration + "s.");
         }
 
@@ -134,6 +140,7 @@ namespace ProjectZombie.Features.Defense3D
             if (ended || defenseBase == null || defenseBase.IsDestroyed) return;
             ended = true;
             won = true;
+            if (arenaCombat != null) arenaCombat.EndArena();
             Debug.Log("[TREBRAVE Defense3D] WIN: Yaksha defeated while Base alive. All future spawns stopped.");
         }
 
@@ -142,18 +149,23 @@ namespace ProjectZombie.Features.Defense3D
             if (ended) return;
             ended = true;
             won = false;
+            if (arenaCombat != null) arenaCombat.EndArena();
             Debug.Log("[TREBRAVE Defense3D] Run ended: LOSS (BaseHP=0). All future spawns stopped.");
         }
 
         private void OnGUI()
         {
             if (defenseBase == null) return;
-            GUI.Box(new Rect(16, 16, 355, 112), "TREBRAVE Defense 3D - 600s Run");
+            GUI.Box(new Rect(16, 16, 355, 158), "TREBRAVE Defense 3D - 600s Run");
             GUI.Label(new Rect(28, 43, 330, 22), "Time: " + Mathf.FloorToInt(elapsed) + "s / 600s | Events: " + nextEvent + "/34");
             GUI.Label(new Rect(28, 66, 330, 22), "Base HP: " + Mathf.CeilToInt(defenseBase.CurrentHP) + "/" + Mathf.CeilToInt(defenseBase.MaxHP));
             GUI.Label(new Rect(28, 89, 330, 22), ended ? (won ? "WIN - Yaksha defeated" : "LOSS - Base destroyed") :
                 elapsed >= 600f ? "OVERTIME - Yaksha alive" :
                 bossSpawned ? (assaultStarted ? "Yaksha: ASSAULT_BASE" : "Yaksha: ARENA_COMBAT") : "Defend the West Bank");
+            if (bossSpawned && yaksha != null && !yaksha.IsDead)
+                GUI.Label(new Rect(28, 112, 330, 22), "Yaksha HP: " + Mathf.CeilToInt(yaksha.CurrentHP));
+            if (heroHealth != null)
+                GUI.Label(new Rect(28, 134, 330, 22), "Hero HP: " + Mathf.CeilToInt(heroHealth.CurrentHP) + (heroHealth.IsDown ? " (DOWN)" : ""));
         }
     }
 }
