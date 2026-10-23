@@ -1,17 +1,17 @@
-# TREBRAVE / PROJECTZOMBIE — GAME DESIGN DOCUMENTATION HUB (v6.1)
+# TREBRAVE / PROJECTZOMBIE — GAME DESIGN DOCUMENTATION HUB (v6.2)
 
-> **OWNER DESIGN APPROVED:** 12/12 decisions D01–D12 on **2026-10-23**.  
+> **OWNER DESIGN APPROVED:** D01–D12 và P01–P03/P05–P08 ngày **2026-10-23**. **P04 + K01–K06 còn cần chi tiết**. Owner xác nhận đang chuyển Unity 2D sang 3D, chưa xác minh build/QA.  
 > **Important:** This is a **design approval**, not an assertion Unity Projectzombie already runs full 3D Defense. The existing codebase primarily uses Unity 2D; migration is a separate implementation roadmap. **Draft PR #1 remains for documentation review; main branch not updated.**
 
 ## Design single source of truth
 
-1. **[Master GDD v6.1 — approved product rules](ProjectZombie_GDD.md):** TREBRAVE branding, Defense as main mode, Map Sông Quê, one controlled Hero and one ACTIVE FUN relic, win by final Boss defeat, lose only by Base destroyed.
-2. **[Decision Record — 12 approved choices + P01–P08 pending details](DECISION_CHECKLIST_GDD_V6.md):** source of product approvals; unresolved implementation choices explicitly marked.
+1. **[Master GDD v6.2 — approved product rules](ProjectZombie_GDD.md):** TREBRAVE branding, Defense as main mode, Map Sông Quê, one controlled Hero and one ACTIVE FUN relic, win by final Boss defeat, lose only by Base destroyed.
+2. **[Decision Record — D01–D12/P01–P03/P05–P08 approved, P04/Kxx pending](DECISION_CHECKLIST_GDD_V6.md):** source of product approvals; unresolved implementation choices explicitly marked.
 3. **[Unity Full 3D Migration Plan](UNITY_3D_MIGRATION_PLAN.md):** target is full stylized 3D; what is new vs reusable; maintain Survival 2D Legacy.
 4. **[Map Sông Quê & Tower Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md):** 3 bridges, 3 lanes, 10 build sockets, Base, towers, **physical wood drops and Hero pickup**, friendly army **post-MVP**.
 5. **[Vongxuyen Enemy & Boss Roster](ENEMY_ROSTER_VONGXUYEN.md):** 7 VX types only for Map 01. Final Dạ Xoa, miniboss Ma Giáp; old PZ roster Legacy.
-6. **[Level Scenario](LEVEL_SCENARIO_GUIDE.md):** 600s wave baseline, 108s miniboss / 510s final boss, **Base-only loss/Boss-only win** and timeout P02.
-7. **[One Hero / One ACTIVE Relic — 3D UI](WEAPON_VISUAL_MANIFESTATION_RULES.md):** 4 selectable Heroes (1 per run), 5 FUN relics (1 ACTIVE equipped), ghost aim, no auto relic behavior in Map 01.
+6. **[Level Scenario](LEVEL_SCENARIO_GUIDE.md):** 600s baseline (108s miniboss/510s final), **OVERTIME until boss kill**, **instant Victory + stop spawns**, Base-only loss and level-scaled Hero respawn.
+7. **[One Hero / Slipper-only ACTIVE MVP — 3D UI](WEAPON_VISUAL_MANIFESTATION_RULES.md):** 4 Heroes with IDs and skills in SO; 5 FUN catalog with **only Dép Tổ Ong enabled**, 4 LOCKED; no advanced FUN effects.
 8. **[Doc Refactor Ledger](DOCS_REFACTOR_LEDGER.md):** decisions conflict registry and audit of older files.
 
 ## Approved rules — compact
@@ -22,16 +22,16 @@
 | Main gameplay | Hero Tower Defense, Survival retained as **Legacy mode** |
 | Technical target | **Unity full stylized 3D** for Defense; old runtime Unity 2D preserved in Legacy |
 | Map | **Map Sông Quê**, west/east banks, three bridges/lanes |
-| Heroes | Four choices in menu; **one controlled/run** |
-| Relics | **Five FUN relic choices; exactly one ACTIVE relic equipped/run** |
-| Stage | **600-second** timeline; 5 phases |
-| Win / Lose | **Win: kill final boss Dạ Xoa while Base alive. Lose: only Base HP = 0. Hero 0 HP is NOT loss.** |
-| Wood | Enemy death creates dropped wood; **Hero must pick it up** in MVP; do not instantly credit on kill |
+| Heroes | Four HERO_01–HERO_04 choices; one/run; skill and display names configured by SO |
+| Relics | **Five FUN catalog items**, **MVP only ACTIVE Slipper enabled**, four other items LOCKED |
+| Stage | **600-second wave timeline**; after 600s Boss still alive -> OVERTIME, no auto result |
+| Win / Lose | **Final Dạ Xoa death -> instant Victory + stop spawns**; only Base HP = 0 triggers Lose; Hero 0 HP -> level-based respawn at starting point |
+| Wood | Drop + Hero pickup; **default lifetime 90s** based on VX EXP pickup lifetime, not VX wood loot; no auto grant |
 | Enemy | Map 01 uses 7 Vongxuyen types, old PZ enemies Legacy/Future Maps |
 | MVP | **Hero + Base + Tower + Wood pickup + Enemies/Boss + Relic**; **no Phu, soldiers, healers, squad or rally yet** |
 | Optional systems | Keep old Ngũ Hành/Âm Dương/Gacha/Multiplayer/Meta code, no mandatory Defense MVP support |
 
-**Pending:** P01 exact four Hero names/kits, P02 what happens if boss alive at 600s, P03 Hero downed/revive, P04 Boss attack/early win priority, P05 wood-loot parameters, P06 full 3D render/nav/camera implementation detail, P07 FUN effects adaptation, P08 10-minute pacing versus immediate boss-win. Those do not reverse already-approved choices.
+**Approved additional scope:** P01 Hero/Skill IDs in SO; P02 overtime until Boss death; P03 respawn countdown increases with level at original Hero spawn; P05 default wood drop TTL 90s from VX EXP baseline; P06 owner actively migrating Projectzombie from Unity 2D to full stylized 3D; P07 only Slipper active (basic cast/damage/ghost, no FUN effects), 4 FUN relics locked; P08 immediate Victory/stop waves upon final Boss death. **Still pending:** P04 Boss raid/targeting/simultaneous outcome, K01–K06 numeric/technical config values.
 
 ## Legacy / supporting docs (not Map 01 primary rules)
 
