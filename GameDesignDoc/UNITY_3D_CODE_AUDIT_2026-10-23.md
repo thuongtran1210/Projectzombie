@@ -1,5 +1,7 @@
 # TREBRAVE — AUDIT MÃ NGUỒN UNITY & KẾ HOẠCH TRIỂN KHAI 3D (2026-10-23)
 
+> **UPDATE / ERRATUM (2026-10-23):** Repo hiện **đã có** nhánh `feature/migrate-to-3d@749c06de` (ahead main 3 commits, 26 files changed), bổ sung hybrid PlayerController/Physics3D utilities/3D sandbox generator. Báo cáo bên dưới là **snapshot cũ lúc nhánh chưa hiện diện trong danh sách trả về** và chỉ đánh giá `main`. **Đọc bản mới [3D Branch Code Review](UNITY_3D_BRANCH_CODE_REVIEW_2026-10-23.md) trước khi quyết định triển khai**, tránh kết luận “chưa có code 3D”.
+
 > **Trạng thái:** AUDIT OF COMMITTED CODE + PROPOSED NEXT IMPLEMENTATION PRS.  
 > **Repo:** `thuongtran1210/Projectzombie` · **base:** `main@657c8215b047d2a25e19832c1882f32270fa94d1` (commit 2026-10-01).  
 > **Nhánh đã quan sát tại thời điểm audit:** `main` và `docs/gdd-v6-vongxuyen-unification-draft`; **chưa thấy nhánh code 3D trên GitHub**.  
