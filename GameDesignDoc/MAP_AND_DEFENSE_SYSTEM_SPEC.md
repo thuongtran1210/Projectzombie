@@ -136,7 +136,21 @@ UI cần ưu tiên thao tác TowerBuild/ACTIVE Relic trước. Mọi class Frien
 
 Các trạng thái bắt buộc: SpawnScheduled → SpawnEligible → Spawned / Deferred → Alive → Killed → LootCreated → LootClaimed. Enemy dead chỉ tạo loot một lần. Queue cap/backpressure và priority boss phải bảo đảm không mất final boss khi active count đạt 32.
 
-**Victory trigger:** final yaksha_boss killed + BaseHP>0 => **WIN NGAY; hủy scheduler + pending spawns, chặn spawn mới** (P08 APPROVED). **Loss trigger:** BaseHP=0 only. **T=600s:** Nếu Boss còn sống thì **OVERTIME** cho đến khi Boss chết hoặc Base bị phá; scheduled waves kết thúc ở t=594, không tự phát thêm event (P02 APPROVED). Hero Downed -> respawn theo cấp tại spawn đầu (P03). Boss Mini killed at 108s không end run.
+**Victory trigger:** final yaksha_boss killed + BaseHP>0 => **WIN NGAY; hủy scheduler + pending spawns, chặn spawn mới** (P08 APPROVED). **Loss trigger:** BaseHP=0 only. **T=600s:** Nếu Boss còn sống thì **OVERTIME** cho đến khi Boss chết hoặc Base bị phá; scheduled waves kết thúc ở t=594, không tự phát thêm event (P02 APPROVED). Hero Downed -> respawn theo cấp tại spawn đầu (P03). Boss Mini killed at 108s không end run. **P04 APPROVED:** Dạ Xoa spawn ở ARENA_COMBAT rồi **X giây unpaused gameplay tính từ spawn** chuyển ASSAULT_BASE theo 3D nav, đánh Base; X trong YakshaBossPhaseConfigSO, K03 số X/same-tick ưu tiên còn mở.
+
+### 9.1 P04 Boss — hai strategic state đã được phê duyệt
+
+```text
+Spawn yaksha_boss (~510s reference)
+  -> ARENA_COMBAT (chiến đấu trong arena, đếm thời gian X)
+  -> nếu Boss còn sống và elapsedArena >= X (config SO)
+  -> ASSAULT_BASE (di chuyển qua bridge/3D path tới Nhà Chính, tấn công Base)
+```
+
+- **Timer X** đo theo gameplay time sau BossSpawn, Pause không đếm; t=600 không làm state transition tự động nếu X chưa tới. X chưa chốt số; dùng `YakshaBossPhaseConfigSO.arenaHoldDurationSeconds`.
+- ASSAULT_BASE lấy Base làm mục tiêu chiến lược, tấn công theo phạm vi/collider Physics3D hợp lệ; không đi xuyên sông hoặc teleport.
+- Boss chết trước/sau X: Victory ngay, stop/cancel toàn bộ scheduled spawns; Base bị phá: Lose. Combat tiểu trạng thái tồn tại trong hai strategic states. **K03** còn chi tiết số X và ưu tiên same-tick.
+- [Boss Phase Spec](YAKSHA_BOSS_PHASE_SPEC.md) là nguồn đặc tả hành vi chi tiết.
 
 ## 10. Cấu trúc code đề xuất (Unity full 3D)
 
@@ -145,7 +159,7 @@ Các trạng thái bắt buộc: SpawnScheduled → SpawnEligible → Spawned / 
 - Assets/Features/Defense/Towers: TowerDefinitionSO, TowerBuildService, TowerPlacementController (3D raycast), TowerCombatController.
 - Assets/Features/Maps/World3D: MapSongQueDefinitionSO, LaneDefinitionSO, 3D LanePathGraph, NavMeshLinks, WaterAccessPolicy.
 - Assets/Features/Spawners/Spatial: LaneSpawnLocator3D.
-- Assets/Features/Enemies/Defense3D: DefensiveTargetPolicy, IDamageableTargetAdapter, 3D EnemyMovement.
+- Assets/Features/Enemies/Defense3D: DefensiveTargetPolicy, IDamageableTargetAdapter, 3D EnemyMovement, **YakshaBossStrategicFSM (ARENA_COMBAT/ASSAULT_BASE), YakshaBossPhaseConfigSO (arenaHoldDurationSeconds)**.
 - Assets/Features/Weapons/ActiveRelics3D: one-slot ActiveRelicController, 3D GhostAim, CastValidator. **MVP chỉ Slipper**; 4 relic khác LOCKED.
 - Assets/Features/UI/Defense: BaseHP, Wood/loot feedback, LaneThreat, TowerPanel, BossHUD, HeroRespawnCountdown; after Victory no spawn UI.
 
@@ -156,7 +170,7 @@ Các tên class là đề xuất. Không cần port/destroy code 2D Legacy, ch�
 ## 11. Event/Authority Contracts
 
 - RunStarted(runId), GameplayTimerUpdated(time), PhaseStarted(phase), RunEnded(result,reason) exactly once.
-- BaseDamaged, BaseDestroyed → **Lose**; FinalBossDefeated → **Win** khi Base alive. HeroDowned **không** phát GameOver.
+- BaseDamaged, BaseDestroyed → **Lose**; FinalBossDefeated → **Win** khi Base alive. HeroDowned **không** phát GameOver. BossArenaEntered/BossAssaultStarted dispatch once; Boss death disables timers and pending attacks/spawns.
 - EnemyKilled(killId,enemyId,pos), WoodLootSpawned(lootId,killId,value), WoodLootClaimed(lootId,actorId), WoodChanged(balance); **EnemyKilled không trực tiếp WoodChanged**.
 - TowerBuilt, TowerUpgraded, TowerDamaged, TowerDestroyed.
 - All events carry runId; reward/pickup only once. Scenarios ignore old run and wrong mode; when Legacy loaded, Defense events disabled.
