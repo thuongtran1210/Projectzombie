@@ -1,6 +1,6 @@
 # TREBRAVE — Unity Defense3D Core Planning Hub
 
-**Status bộ tài liệu:** **D-01..D-11 đã OWNER APPROVED về thiết kế ngày 2026-10-23 (D-07/A 8/8)**. **Gate G0 CHƯA PASS** do chưa xác minh backup ngoài repo, Console/scene/Legacy và QA; số balance production chưa khóa; **chưa code hoặc chỉnh scene**.
+**Status bộ tài liệu:** **D-01..D-11 APPROVED** (D-07/A 8/8 nguyên tắc). **G0 OWNER SIGN-OFF PENDING / CHƯA PASS**: owner đã backup ngoài repo, Git branch/HEAD/2 stashes đối chiếu khớp snapshot và **6/6 critical scene/NavMesh/GLB+meta SHA-256 MATCH**; 3 file Packages/Build Settings đã match; S5/S6 owner-reported verified. **27 tickets reviewed từ xa, chưa ACCEPTED; G1 chưa được cho phép; không code/sửa scene.**
 
 ## Bộ tài liệu chuẩn bị để duyệt
 
@@ -32,11 +32,11 @@
 
 **G0 REMOTE AUDIT ĐÃ THỰC HIỆN (2026-10-23):** [Báo cáo 10](10_G0_REMOTE_BASELINE_AUDIT.md) xác minh trên remote **không có** `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; Editor BuildSettings remote mới có Legacy SampleScene. Đây là **rủi ro local-only**, **không được suy ra scene đã bị xóa khỏi PC**. GitHub có 14 Defense3D gameplay scripts, 8 Editor scripts và `.meta` tương ứng. **Không kéo/rebuild/clean/reset** trước khi local backup.
 
-**G0 bước tiếp theo:** [11 — Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md) đã hoàn thành **rà soát từ xa 27/27 ticket** (không đổi sang ACCEPTED). Cần owner xác minh branch/HEAD/stash, hash cụ thể NavMesh + `.meta` / GLB / scene trong bản sao, sau đó **chủ dự án quyết định đóng Gate G0** nếu evidence đủ. G1 không được bắt đầu tự động; các số production chỉ khóa sau Balance QA.
+**G0 bước tiếp theo:** [11 — Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md) đã review 27/27 tickets, **Git branch/HEAD/stash và 6 file Scene/NavMesh/GLB+.meta đã MATCH bản backup** theo output owner. Chuẩn bị **Owner Gate G0 sign-off** (đồng thời chấp thuận cách bảo vệ dirty/untracked local); không nhầm G0 với Full-Run QA G7, không tự code G1. **Không pull/reset/clean/stash pop** khi chưa có kế hoạch tích hợp đã duyệt.
 
 **Vòng A — Design approval: HOÀN THÀNH về yêu cầu** — tất cả D-01..D-11 đã được chốt phương án A (D-05 không thêm miniboss; D-11/A một elite/event; D-07/A 8/8). Không coi đây là release-ready hoặc chứng nhận đủ 600s Unity.
 
-**Vòng B — Gate G0 readiness: CHƯA HOÀN THÀNH** — owner đã tạo backup ngoài repo, báo cáo hash subset của scene/GLB/NavMesh và 3 file Packages/Build Settings; ảnh Console/Hierarchy 0 Warning/0 Error; **owner xác nhận đã kiểm tra Missing Scripts, 3 cầu/10 sockets/NavMesh và Legacy Survival 2D**. Các mục đó được ghi **OWNER_REPORTED_VERIFIED** (không phải QA độc lập). Vẫn chờ branch/HEAD/stash, hash NavMesh+.meta đích danh, review 27 backlog và quyết định đóng Gate. **Không code, không đánh dấu G0 PASS.**
+**Vòng B — Gate G0 readiness: AWAITING OWNER SIGN-OFF / CHƯA PASS** — Git local branch/HEAD/stashes khớp backup và **6/6 critical Scene/NavMesh/GLB+meta hash MATCH**; 3 Packages/Build Settings hashes MATCH; Console/Hierarchy có ảnh và Legacy/Missing Scripts/map do owner xác nhận. 27 ticket remote-reviewed. Full restore/chạy full game chưa nghiệm thu và không thuộc G0 tự động; chờ owner quyết định **đóng G0**, chưa quyền code G1.
 
 **Vòng C — Code (CHƯA BẮT ĐẦU):** mã nguồn chỉ thay đổi sau khi G0 pass, bắt đầu G1 State/Clock; không rebuild scene, không rewrite mọi prototype cùng lúc. Mỗi ticket phải có PlayMode evidence, không đánh dấu DONE-QA chỉ từ GitHub diff.
 
