@@ -1,8 +1,32 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
-**Status: D-01..D-11 APPROVED; G0-S1 Git verified via owner output; G0-S2/S3 6 critical asset hashes verified; G0-S4 3 key config hashes verified/partial; G0-S5/S6 OWNER_REPORTED_VERIFIED; GATE G0 AWAITING OWNER SIGN-OFF / NOT PASSED.** 2026-10-23 · Backup owner đã thực hiện; full restore/full-run QA chưa nghiệm thu; chưa code.
+**Status: `GATE G0 = OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS` — 2026-10-23 (Asia/Ho_Chi_Minh).** Owner chủ động phê duyệt **đóng G0** trên bằng chứng hiện có. **G1 = NOT AUTHORIZED / NOT STARTED.** Chỉ cập nhật tài liệu; không code, không pull/merge/reset/clean/stash pop, không sửa scene/NavMesh/GLB/GUID.
 **Mục tiêu:** ghi biên bản phê duyệt đầy đủ **D-01/A, D-02/A, D-03/A, D-04/A, D-05, D-06/A 8/8, D-07/A 8/8, D-08/A, D-09/A, D-10/A, D-11/A**. Duyệt chính sách không đồng nghĩa QA, backup, khóa số balance hay quyền bắt đầu code.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
+
+## 0. BIÊN BẢN ĐÓNG GATE G0 — Quyết định chính thức của chủ dự án (2026-10-23)
+
+**Decision:** **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS.** Chủ dự án đã xem hồ sơ Gate G0 và **đồng ý đóng G0 theo chứng cứ hiện có**, không yêu cầu thêm điều kiện mới để ghi nhận sign-off. Đây là **phê duyệt Gate kế hoạch và baseline an toàn**, KHÔNG phải code release, kiểm thử đầy đủ, nghiệm thu 27 ticket, hay chấp thuận chuyển sang G1.
+
+**Evidence được chủ dự án chấp nhận để sign-off:**
+1. **6/6 hash SHA-256 khớp** giữa local và backup: `MapSongQue3D_Prototype.unity` + `.meta`, `NavMesh-Defense_Navigation.asset` + `.meta`, `TREBRAVE_MapSongQue_ThreeJS.glb` + `.meta`; đều `SourceExists=True / BackupExists=True / HashMatches=True`.
+2. **Git branch/HEAD/stash khớp snapshot:** `feat/trebrave-defense3d-first-scene`, local HEAD `43ee2a806c593afe8704730f9daf012b52f56b35`, hai stash Fast Test; **17 tracked modified + 8 untracked path entries** được giữ nguyên. Local HEAD **không được xem là trùng remote HEAD** vì remote có commit tài liệu mới.
+3. **3/3 file cấu hình** `Packages/manifest.json`, `Packages/packages-lock.json`, `ProjectSettings/EditorBuildSettings.asset` backup có và SHA khớp.
+4. **Unity/Legacy:** hai ảnh Console/Hierarchy (20 logs, 0 warning, 0 error tại lúc chụp), owner xác nhận Missing Scripts, GLB/3 cầu/10 socket/NavMesh và Legacy Survival 2D đã được kiểm tra.
+5. **27/27 nhiệm vụ** đã rà soát từ xa (21 P0, 3 P1, 3 P2); các quyết định D-01..D-11 đã duyệt, D-07/A 8/8 nguyên tắc.
+
+**GIỚI HẠN ĐƯỢC GHI NHẬN / ACCEPTED LIMITATIONS:**
+- Chưa thử **khôi phục toàn bộ dự án từ backup**; 6 hash trọng yếu và 3 file cấu hình **không** chứng minh mọi material, importer, prefab hoặc file ngoài snapshot đều có bản sao.
+- S5/S6 là **owner-reported verification** có ảnh hỗ trợ Console/Hierarchy, không phải bộ bằng chứng QA độc lập hoặc chứng minh 600s run.
+- **28 QA chính**, **18 D06-QA**, **12 D07-QA**, **ML-01..10** và full-run Gameplay/G7 **chưa được nghiệm thu**; không tự chuyển bất kỳ case nào thành PASS.
+- **Balance production chưa khóa**; **27 ticket chưa DONE_CODE / PASSED_PLAYMODE / ACCEPTED**, GitHub Issues chưa tạo.
+- **Không được thay đổi** local scene, GLB, NavMesh, `.meta`, GUID, Legacy và 2 stash; **không pull/merge/reset/clean/stash pop hoặc chạy generator** trong lượt sign-off này.
+
+**NEXT AUTHORIZATION BOUNDARY:** G0 **đã đóng**; **G1 KHÔNG TỰ ĐỘNG BẮT ĐẦU**. Chỉ khi chủ dự án **phê duyệt code rõ ràng trong một lượt riêng**, mới triển khai G1; trước mọi tích hợp local phải có kế hoạch bảo toàn dirty/untracked data được duyệt. Không tạo commit gameplay, chỉnh scene, PR/merge hay mở issue trong lượt này.
+
+**Nguồn bằng chứng:** [10 — Remote/Local Audit](10_G0_REMOTE_BASELINE_AUDIT.md), [11 — Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md), [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md).
+
+---
 
 ## 1. Bảng quyết định đã duyệt về thiết kế (ngày 2026-10-23)
 
@@ -100,7 +124,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [x] **D-02/A APPROVED 2026-10-23** — clock gameplay 600 giây, pause/resume và Fast Test riêng.
 - [x] **D-08/A APPROVED 2026-10-23** — Thư Sinh Core đầu tiên, hệ thống mở cho 4 Hero.
 - [x] **D-09/A APPROVED 2026-10-23** — một Pháp Bảo, Dép Tổ Ong MVP.
-- [x] **D-10/A APPROVED 2026-10-23** — đã backup copy-only do owner thực hiện và kiểm tra Unity/Legacy do owner xác nhận; **vẫn cần hash NavMesh/meta + hoàn tất G0-S1..S4, chưa G0 PASS**.
+- [x] **D-10/A APPROVED 2026-10-23** — backup được chủ dự án thực hiện, 6 file trọng yếu + 3 config hash đã đối chiếu; owner xác nhận Unity/Legacy; G0 được đóng **có ghi giới hạn full-restore/QA**, không cấp phép code.
 - [x] **D-07-02..08/A APPROVED 2026-10-23** — cấu trúc cân bằng và thử nghiệm; **không khóa số**.
 
 - [x] **D-01/A APPROVED 2026-10-23** — Unity Defense3D là runtime đích, Web/Legacy được giữ nguyên.
@@ -111,10 +135,10 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
 - [x] **D-07/A 8/8, D-08/A Hero, D-09/A Relic đã APPROVED** về nguyên tắc. Các con số balance production chưa khóa.
 - [x] **G0-S1** branch/HEAD/stashes khớp snapshot; **G0-S2/S3** 6/6 file critical Scene/NavMesh/GLB và meta khớp SHA-256.
-- [ ] **G0-S4/S5/S6** đã có báo cáo owner/ảnh Console và hash 3 key settings; chưa thử full restore hoặc independent QA. Cần xác nhận policy acceptance cho Gate G0 (không đồng nhất với QA Full Run G7).
+- [x] **Owner chấp nhận giới hạn G0-S4/S5/S6 tại Gate G0**: 3 file settings khớp, Unity/Legacy owner-verified, **full restore và independent/full-run QA vẫn chưa làm**, ghi nhận ở mục 0.
 - [x] **Remote review** Mapping và **27/27 backlog IDs** đã rà soát schema/dependency (21 P0/3 P1/3 P2; chưa tạo GitHub Issues). Chi tiết [11 — G0 Ticket Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md).
-- [ ] **Owner sign-off backlog G1 readiness** sau bằng chứng Git local/hash backup; các ticket G1 chỉ có thể chuyển `APPROVED` sau Gate G0, không coi remote review là owner sign-off.
-- [ ] Gate G0 được chủ dự án đồng ý đóng. **Không tự đánh dấu pass khi chỉ có tài liệu.**
+- [x] **Owner đã xem và chấp nhận review kế hoạch 27 nhiệm vụ làm cơ sở đóng G0.** Không coi đây là `ACCEPTED` của từng ticket hay quyền bắt đầu G1.
+- [x] **CHỦ DỰ ÁN ĐÃ SIGN-OFF ĐÓNG GATE G0 ngày 2026-10-23** — **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS**; **G1 NOT AUTHORIZED**.
 
 ### Việc cần làm sau khi phê duyệt thiết kế
 
@@ -128,7 +152,7 @@ Không cần duyệt lại D-01..D-11. Cần có bằng chứng **backup ngoài 
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
 - [08 — D-06 Enemy Navigation & AI](08_D06_ENEMY_NAVIGATION_REVIEW.md): đã APPROVED toàn bộ 8 phương án A, có 18 QA nghiệm thu NOT_RUN.
 
-**Trạng thái cập nhật:** 27/27 ticket đã rà soát từ xa (**owner chưa sign-off**); tất cả D-01..D-11 đã APPROVED. **G0-S1 đã được xác minh theo output owner, G0-S2/S3 có 6/6 asset quan trọng khớp SHA-256, G0-S4 có 3 file package/build settings khớp, G0-S5/S6 owner đã xác nhận và có ảnh cho Console/Hierarchy**. Backup còn có thể cần kiểm tra các asset ngoài danh sách/restore test khi triển khai. **Chỉ còn Owner sign-off Gate G0 và quyết định quy trình tích hợp local**; **G0 vẫn chưa PASS, chưa cấp quyền code**.
+**Trạng thái chính thức (2026-10-23):** **G0 OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS.** 27/27 ticket đã được owner chấp nhận ở mức **kế hoạch review**, **chưa ACCEPTED về triển khai**. 6/6 asset hash và 3 config hash khớp, S5/S6 owner verified. Full restore/QA độc lập/full-run còn mở như rủi ro sau G0; **G1 chưa được cấp quyền, không code**. Các đoạn phía trên mục 6 ghi theo thời điểm từng bằng chứng và không thay thế sign-off tại mục 0.
 
 - [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **8/8 phương án A APPROVED về cấu trúc/phương pháp**, con số production chưa khóa; 12 D07-QA NOT_RUN.
 
