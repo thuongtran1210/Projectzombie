@@ -98,11 +98,11 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [x] **D-02/A APPROVED 2026-10-23** — clock gameplay 600 giây, pause/resume và Fast Test riêng.
 - [x] **D-08/A APPROVED 2026-10-23** — Thư Sinh Core đầu tiên, hệ thống mở cho 4 Hero.
 - [x] **D-09/A APPROVED 2026-10-23** — một Pháp Bảo, Dép Tổ Ong MVP.
-- [x] **D-10/A APPROVED 2026-10-23** — chính sách bảo vệ local scene/GUID; **chưa backup/QA**.
+- [x] **D-10/A APPROVED 2026-10-23** — đã backup copy-only do owner thực hiện và kiểm tra Unity/Legacy do owner xác nhận; **vẫn cần hash NavMesh/meta + hoàn tất G0-S1..S4, chưa G0 PASS**.
 - [x] **D-07-02..08/A APPROVED 2026-10-23** — cấu trúc cân bằng và thử nghiệm; **không khóa số**.
 
 - [x] **D-01/A APPROVED 2026-10-23** — Unity Defense3D là runtime đích, Web/Legacy được giữ nguyên.
-- [x] **D-07-01/A APPROVED 2026-10-23** — thống nhất cách đối chiếu/chọn nguồn balance; **7 tiểu mục còn lại PENDING**.
+- [x] **D-07-01/A APPROVED 2026-10-23** (lượt trước), **D-07-02..08/A cũng đã APPROVED**, đủ 8/8 về nguyên tắc; chỉ số production vẫn chưa khóa.
 - [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
 - [x] **D-06/A APPROVED 2026-10-23** — 8/8 lựa chọn A: Ground/Water/Air/Landing, 3 Linh Pháo, anti-air, Enemy aggro/spawn; 18 QA chưa chạy.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
