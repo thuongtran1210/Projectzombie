@@ -16,6 +16,14 @@
 
 
 
+### Bổ sung xác nhận của chủ dự án — G0-S5 & G0-S6 (2026-10-23)
+
+Sau checklist trong chat yêu cầu **(1) kiểm tra Missing (Mono Script), (2) kiểm tra GLB, 3 cầu, 10 TowerSocket và NavMesh, (3) mở thử Legacy Survival 2D SampleScene**, chủ dự án trả lời **“okee đã xác minh”**. Theo ngữ cảnh, ghi nhận owner xác nhận đã kiểm tra **cả ba mục** và không báo lỗi/ngoại lệ.
+
+- **G0-S5: `OWNER_REPORTED_VERIFIED`** cho Inspector/Missing Scripts và cấu trúc bản đồ/NavMesh; cộng với hai ảnh trước cho thấy `MapSongQue3D_Prototype`, Console tại lúc chụp 0 Warning/0 Error và các root objects. Chưa có ảnh mới hay log test đính kèm để độc lập kiểm chứng mọi component/3 lane/10 socket; không coi là full 600s PlayMode PASS.
+- **G0-S6: `OWNER_REPORTED_VERIFIED`** cho mở/thử Legacy `SampleScene` không thấy vấn đề được báo cáo. Chưa có ảnh Console/PlayMode kết quả Legacy riêng để kiểm chứng độc lập.
+- **Giới hạn:** owner self-report ≠ machine-captured QA evidence; chưa biết local branch/HEAD/stash, chưa có hash đích danh `NavMesh-Defense_Navigation.asset/.meta`, chưa test restore snapshot, và chưa đóng G0. **Không đụng scene, NavMesh, GUID, packages hoặc code.**
+
 ### Unity Editor G0-S5 — bằng chứng ảnh chụp Console & Hierarchy từ chủ dự án (2026-10-23)
 
 **Nguồn:** 2 ảnh chụp màn hình Unity do chủ dự án gửi qua chat; ảnh không được lưu thêm vào GitHub, chỉ ghi nhận quan sát. **Status: `PARTIAL_SCREENSHOT_VERIFIED`**, chưa đủ `PASS`.
@@ -93,8 +101,8 @@ Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`Back
 | **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **BACKUP ASSETS IDENTIFIED / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận scene Prototype 135896 bytes và NavMeshData asset nằm trong cây scene, `InBackup=True`; NavMesh `.meta` output bị cắt, local scene/Unity QA chưa chạy |
 | **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **GLB PRESENT / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận `TREBRAVE_MapSongQue_ThreeJS.glb` 6507936 bytes trong backup; chưa chứng minh Unity import/references và đủ toàn bộ meta/material |
 | **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **3 KEY FILES HASH VERIFIED / PARTIAL — NOT_PASSED** | Owner báo cáo `BackedUp=True` và `HashMatches=True` cho `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset`; chưa kiểm tra toàn bộ folder và khả năng restore |
-| **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **PARTIAL_SCREENSHOT_VERIFIED — NOT_PASSED** | Ảnh user: Console 20 Log / 0 Warning / 0 Error; Hierarchy có Map Song Que, Hero, GLB root, Navigation, Defense Run; **chưa xác minh Missing Scripts, NavMesh runtime, version local** |
-| **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **NOT_RUN** | Remote YAML/Build Settings không chứng minh runtime |
+| **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **OWNER_REPORTED_VERIFIED + PARTIAL SCREENSHOTS — G0 NOT_PASSED** | Hai ảnh: Console 20 Log / 0 Warning / 0 Error, map root/Hero/GLB/NavMesh/Run; owner sau đó xác nhận đã kiểm tra Missing Scripts + 3 cầu/10 sockets/NavMesh. **Không có evidence Inspector/runtime mới để độc lập nghiệm thu** |
+| **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **OWNER_REPORTED_VERIFIED — G0 NOT_PASSED** | Owner trả lời đã xác minh toàn bộ checklist gồm Legacy 2D; chưa cung cấp ảnh/log/QA Legacy riêng, chỉ ghi nhận lời xác nhận, không coi là full regression suite |
 
 **STOP RULE:** Nếu G0-S2 hoặc G0-S3 chưa được người dùng xác minh backup, **không được chạy scene generator / clean/reset / stash pop / đổi meta**, và không bắt đầu Core G1. Nếu Unity Console có Missing Script, giữ object để chữa có kiểm soát; không gỡ component hàng loạt.
 
