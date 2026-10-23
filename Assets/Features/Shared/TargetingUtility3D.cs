@@ -5,15 +5,14 @@ using ProjectZombie.Features.Enemies;
 namespace ProjectZombie.Features.Shared
 {
     /// <summary>
-    /// Lớp tiện ích tĩnh hỗ trợ quét và tìm kiếm quái vật mục tiêu trong tầm đánh 3D.
-    /// Tính toán khoảng cách trên mặt phẳng ngang (X-Z), bỏ qua độ chênh lệch chiều cao Y nhỏ.
-    /// Tối ưu tuyệt đối cho Mobile 60 FPS: 0 GC Allocation, LayerMask filtering ở tầng C++ Physics.
-    /// Tuân thủ quy tắc 6.1 & 6.2 AGENTS.md.
+    /// Queries live 3D enemy entities, not individual hitbox colliders.
+    /// On mobile, callers own the output buffer; physics query buffers are reused.
     /// </summary>
     public static class TargetingUtility3D
     {
         private const int BUFFER_SIZE = 120;
         private static readonly Collider[] _hitBuffer = new Collider[BUFFER_SIZE];
+        private static readonly HealthSystem[] _randomSeenBuffer = new HealthSystem[BUFFER_SIZE];
 
         private static int _enemyLayerMask = -1;
         public static int EnemyLayerMask
@@ -22,105 +21,118 @@ namespace ProjectZombie.Features.Shared
             {
                 if (_enemyLayerMask == -1)
                 {
-                    int mask = LayerMask.GetMask("Enemy");
-                    _enemyLayerMask = mask != 0 ? mask : LayerMask.GetMask("Default", "Enemy");
+                    // Do not silently target objects on Default when the Enemy layer is missing.
+                    _enemyLayerMask = LayerMask.GetMask("Enemy");
                 }
                 return _enemyLayerMask;
             }
         }
 
+        private static HealthSystem ResolveLiveTarget(Collider hit)
+        {
+            if (hit == null) return null;
+            // In a 3D hierarchy, hitboxes are often children and the HealthSystem
+            // is attached to the logical enemy root.
+            var health = hit.GetComponentInParent<HealthSystem>();
+            return health != null && health.IsAlive ? health : null;
+        }
+
+        private static float HorizontalDistanceSquared(Vector3 a, Vector3 b)
+        {
+            float dx = a.x - b.x;
+            float dz = a.z - b.z;
+            return dx * dx + dz * dz;
+        }
+
         /// <summary>
-        /// Tìm 1 mục tiêu quái vật tối ưu nhất trong không gian 3D theo chiến lược lựa chọn (0 GC Allocation).
+        /// Returns the transform of a LIVE enemy entity root (HealthSystem host),
+        /// including if a child collider was hit.
         /// </summary>
         public static Transform FindTarget(
-            Vector3 origin, 
-            float range, 
-            TargetPriority priority = TargetPriority.Nearest, 
+            Vector3 origin,
+            float range,
+            TargetPriority priority = TargetPriority.Nearest,
             ElementType attackerElement = ElementType.None,
             int customLayerMask = 0)
         {
+            if (range <= 0f) return null;
             int mask = customLayerMask != 0 ? customLayerMask : EnemyLayerMask;
-            int numHits = Physics.OverlapSphereNonAlloc(origin, range, _hitBuffer, mask);
-            if (numHits <= 0) return null;
+            if (mask == 0) return null;
 
+            int hitCount = Physics.OverlapSphereNonAlloc(origin, range, _hitBuffer, mask);
             Transform bestTarget = null;
             float minMetric = float.MaxValue;
             float maxMetric = float.MinValue;
-            int validCandidateCount = 0;
+            int randomUniqueCount = 0;
 
-            for (int i = 0; i < numHits; i++)
+            for (int i = 0; i < hitCount; i++)
             {
-                var hit = _hitBuffer[i];
-                if (hit == null) continue;
+                var health = ResolveLiveTarget(_hitBuffer[i]);
+                if (health == null) continue;
 
-                if (!hit.CompareTag("Enemy") && customLayerMask == 0 && mask == ~0) continue;
-
-                if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0)
-                {
-                    continue;
-                }
-
-                Vector3 targetPos = hit.transform.position;
-                // Khoảng cách ngang trên mặt phẳng X-Z (bỏ qua độ dốc/chiều cao Y)
-                float dx = origin.x - targetPos.x;
-                float dz = origin.z - targetPos.z;
-                float sqrHorizontalDist = dx * dx + dz * dz;
+                Transform root = health.transform;
+                float sqrDistance = HorizontalDistanceSquared(origin, root.position);
 
                 switch (priority)
                 {
                     case TargetPriority.Nearest:
-                        if (sqrHorizontalDist < minMetric)
+                        if (sqrDistance < minMetric)
                         {
-                            minMetric = sqrHorizontalDist;
-                            bestTarget = hit.transform;
+                            minMetric = sqrDistance;
+                            bestTarget = root;
                         }
                         break;
 
                     case TargetPriority.LowestHealth:
-                        float curHp = health != null ? health.CurrentHealth : 0f;
-                        if (curHp < minMetric)
+                        if (health.CurrentHealth < minMetric)
                         {
-                            minMetric = curHp;
-                            bestTarget = hit.transform;
+                            minMetric = health.CurrentHealth;
+                            bestTarget = root;
                         }
                         break;
 
                     case TargetPriority.HighestHealth:
-                        float maxHp = health != null ? health.CurrentHealth : 0f;
-                        if (maxHp > maxMetric)
+                        if (health.CurrentHealth > maxMetric)
                         {
-                            maxMetric = maxHp;
-                            bestTarget = hit.transform;
+                            maxMetric = health.CurrentHealth;
+                            bestTarget = root;
                         }
                         break;
 
                     case TargetPriority.ElementalAdvantage:
-                        ElementType defElement = ElementType.None;
-                        if (hit.TryGetComponent<Enemy>(out var enemy))
+                        var enemy = health.GetComponent<Enemy>();
+                        var defenderElement = enemy != null ? enemy.CurrentElement : ElementType.None;
+                        float multiplier = DamageUtility.GetElementMultiplier(attackerElement, defenderElement);
+                        if (multiplier > 1.0f)
                         {
-                            defElement = enemy.CurrentElement;
-                        }
-                        float multiplier = DamageUtility.GetElementMultiplier(attackerElement, defElement);
-                        if (multiplier > 1.0f) // Khắc chế (+30%)
-                        {
-                            if (sqrHorizontalDist < minMetric)
+                            if (sqrDistance < minMetric)
                             {
-                                minMetric = sqrHorizontalDist;
-                                bestTarget = hit.transform;
+                                minMetric = sqrDistance;
+                                bestTarget = root;
                             }
                         }
                         else if (bestTarget == null)
                         {
-                            bestTarget = hit.transform;
+                            bestTarget = root;
                         }
                         break;
 
                     case TargetPriority.RandomInRange:
-                        validCandidateCount++;
-                        if (Random.Range(0, validCandidateCount) == 0)
+                        // Reservoir sampling must weight ENTITIES, not their collider count.
+                        bool alreadySeen = false;
+                        for (int seen = 0; seen < randomUniqueCount; seen++)
                         {
-                            bestTarget = hit.transform;
+                            if (_randomSeenBuffer[seen] == health)
+                            {
+                                alreadySeen = true;
+                                break;
+                            }
                         }
+                        if (alreadySeen) break;
+                        _randomSeenBuffer[randomUniqueCount] = health;
+                        randomUniqueCount++;
+                        if (Random.Range(0, randomUniqueCount) == 0)
+                            bestTarget = root;
                         break;
                 }
             }
@@ -129,37 +141,33 @@ namespace ProjectZombie.Features.Shared
         }
 
         /// <summary>
-        /// Tìm nhiều mục tiêu theo số lượng tối đa maxTargets (0 GC Allocation qua danh sách buffer truyền vào).
+        /// Fills the supplied list with distinct, live enemy entity roots.
+        /// No allocations in the normal query loop when the caller pre-sizes the list.
         /// </summary>
         public static int FindTargetsNonAlloc(
-            Vector3 origin, 
-            float range, 
-            List<Transform> resultsBuffer, 
+            Vector3 origin,
+            float range,
+            List<Transform> resultsBuffer,
             int maxTargets = 5,
             int customLayerMask = 0)
         {
             if (resultsBuffer == null) return 0;
             resultsBuffer.Clear();
+            if (range <= 0f || maxTargets <= 0) return 0;
 
             int mask = customLayerMask != 0 ? customLayerMask : EnemyLayerMask;
-            int numHits = Physics.OverlapSphereNonAlloc(origin, range, _hitBuffer, mask);
-            if (numHits <= 0) return 0;
+            if (mask == 0) return 0;
 
+            int numHits = Physics.OverlapSphereNonAlloc(origin, range, _hitBuffer, mask);
             for (int i = 0; i < numHits && resultsBuffer.Count < maxTargets; i++)
             {
-                var hit = _hitBuffer[i];
-                if (hit == null) continue;
+                var health = ResolveLiveTarget(_hitBuffer[i]);
+                if (health == null) continue;
 
-                if (!hit.CompareTag("Enemy") && customLayerMask == 0 && mask == ~0) continue;
-
-                if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0)
-                {
-                    continue;
-                }
-
-                resultsBuffer.Add(hit.transform);
+                Transform root = health.transform;
+                if (!resultsBuffer.Contains(root))
+                    resultsBuffer.Add(root);
             }
-
             return resultsBuffer.Count;
         }
     }
