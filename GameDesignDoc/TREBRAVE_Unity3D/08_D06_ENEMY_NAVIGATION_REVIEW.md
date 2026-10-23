@@ -165,7 +165,7 @@ D-06-07 Enemy Hero/Support/Base target/aggro: A — APPROVED
 D-06-08 Zone/Elite/quota: A — APPROVED
 Ngày duyệt: 2026-10-23
 Điều chỉnh riêng: không có trong lời duyệt.
-D-06: APPROVED toàn bộ 8 nhóm; QA vẫn NOT_RUN; Gate G0 chưa đóng.
+D-06: APPROVED toàn bộ 8 nhóm; QA vẫn NOT_RUN; **Gate G0 đã OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS ngày 2026-10-23**. Việc đóng G0 **không** cho phép tự code hoặc coi D06-QA đã nghiệm thu.
 ```
 
 **Quyết định đã được chốt**; đồng bộ [Decision Log](03_DECISIONS_QA.md), [Migration Matrix](01_MIGRATION_MATRIX.md), backlog [U3D-009/010/011/013/014](02_IMPLEMENTATION_BACKLOG.md) và QA matrix. **D-06 APPROVED chỉ về đặc tả**, không đồng nghĩa đã có code, prefab/scene mới hay đã đóng Gate G0. Những chi tiết cần đo/khóa sau (vị trí water exit, height/clearance của Air, quota tính Cannon/Boss, projectile đang bay khi Cannon chết, DPS/range) chưa có bằng chứng Unity và không được tự khẳng định đã có.
