@@ -9,19 +9,19 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- **D-05 và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; các quyết định còn lại D-01..D-04/D-06..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
+- **D-03/A, D-04/A, D-05 và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; D-01/D-02/D-06..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-05 + D-11/A đã duyệt; các D-xx liên quan khác vẫn chờ; không cho qua Gate0 chỉ vì 2 mục đã duyệt |
+| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-03/A + D-04/A + D-05 + D-11/A đã duyệt; D-01/D-02/D-06..D-10 và QA local vẫn chờ; không coi Gate G0 đã pass |
 | U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
-| U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Win/Loss phản ứng đúng; invalid transitions rejected |
-| U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause đóng băng AI/spawn/cooldown/damage/game-time; no double subscription |
-| U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP |
+| U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss phản ứng đúng D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
+| U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
+| U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP, overtime flag và pending Hero respawn |
 
-**Trình tự chuẩn bị G0-B (planning only):** chốt D-03/D-04 theo [Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md), thu baseline scene + backup theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md). **U3D-001 và U3D-002 chưa được đánh DONE/PASS** cho tới khi owner + Unity evidence xác nhận.
+**Trình tự chuẩn bị G0-B (planning only):** **D-03/A + D-04/A đã được duyệt** trong [Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md); tiếp tục thu baseline scene + backup theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md). **U3D-001 và U3D-002 chưa được đánh DONE/PASS** cho tới khi owner + Unity evidence xác nhận.
 
 **G1 prototype adapter:** trước tiên nối hệ thống mới vào script hiện hữu qua interface thay vì xóa/đổi tên `.cs`/`.meta`. Dễ rollback, an toàn scene.
 
@@ -73,7 +73,7 @@
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
 | U3D-021 | P0 | Yaksha Behavior FSM: telegraphed cleave/slam/crescent, arena→assault, stun/counterplay | U3D-007,U3D-011,U3D-012,U3D-017 | L | warning trước damage; có phương án né/counter; Boss HP không reset khi đổi phase |
-| U3D-022 | P0 | Match Result & overtime đúng D-03/D-04, cleanup spawners | U3D-001,U3D-005,U3D-021 | M | 600s boundary + Boss/Base cases, no further spawn/damage sau terminal state |
+| U3D-022 | P0 | Match Result & overtime đúng D-03/D-04, cleanup spawners | U3D-001,U3D-005,U3D-021 | M | **D-03/A:** chỉ WIN sau 600s + BossDead + BaseHP>0; Boss chết sớm vẫn phòng thủ, Boss còn sống @600 → OVERTIME không thêm timed-wave; LOSS BaseHP0 (ưu tiên cùng tick). **D-04/A:** Hero Down respawn sau 5 gameplay s (Pause/LevelUp đóng băng), terminal state hủy respawn; no spawn/damage sau kết thúc |
 | U3D-023 | P1 | Menu/scene route + HUD trạng thái, 2D mode preserved | U3D-005,U3D-022 | M | vào Defense rõ ràng, về menu/Restart; Legacy `SampleScene` vẫn hoạt động |
 | U3D-024 | P0 | Unity editmode/playmode/full 600s QA; benchmark baseline | U3D-010..U3D-023 | L | QA matrix `03_DECISIONS_QA.md`, ≥3 restart, 0 blocker P0, scene reopen GUID valid |
 
