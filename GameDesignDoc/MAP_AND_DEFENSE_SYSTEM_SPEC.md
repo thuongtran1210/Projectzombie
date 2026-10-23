@@ -1,6 +1,6 @@
 # TREBRAVE — MAP SÔNG QUÊ + 3D TOWER DEFENSE SPEC (APPROVED DESIGN)
 
-> **Trạng thái:** **D02=C, D06=A, D07=C, D08=B, D10=C đã APPROVED 2026-10-23**. Unity runtime/migration **chưa triển khai**; friendly army chỉ POST-MVP.  
+> **Trạng thái:** **D02=C, D06=A, D07=C, D08=B, D10=C đã APPROVED 2026-10-23**. chủ dự án **đang chuyển Unity 2D sang full 3D**, trạng thái tích hợp/QA từng feature chưa xác minh; friendly army chỉ POST-MVP.  
 > **Phạm vi:** Chuyển chiến trường và gameplay Vongxuyen sang **Unity full stylized 3D**, không copy Three.js. Map/Tower/Wood là MVP; Friendly Army/Squad là BACKLOG, không làm release gate.
 
 ## 1. Chiến trường Unity full 3D và phương hướng [D02=C]
@@ -56,7 +56,7 @@ Vongxuyen DefenseRules có 10 slot (id không đổi trong mapping):
 
 **BASELINE:** 500 MaxHP, vị trí tham chiếu VX x=−12,z=0. BaseHealth quản lý HP, DamageContext, faction, invulnerability, OnDamaged/OnDestroyed exactly once.
 
-**Hợp đồng bất biến:** **Chỉ BaseHP ≤ 0 => LOSE**. Hero HP≤0 không kết thúc trận; cần incapacitation/revive policy P03 để tránh Hero không chơi được. **Hạ final boss yaksha_boss => WIN** nếu Nhà Chính chưa chết; hạ miniboss không tạo Win. Đồng hồ 600s không tự quyết Win/Lose (P02).
+**Hợp đồng bất biến:** **Chỉ BaseHP ≤ 0 => LOSE**. Hero HP≤0 không kết thúc trận; **P03 APPROVED:** đếm ngược hồi sinh tăng theo Hero Level, hồi tại **HeroInitialSpawnPoint** đã lưu lúc bắt đầu run; công thức/giá trị cụ thể nằm HeroRespawnConfigSO, chưa khóa số. **Hạ final boss yaksha_boss => WIN** nếu Nhà Chính chưa chết; hạ miniboss không tạo Win. Đồng hồ 600s không tự quyết Win/Lose (P02).
 
 Enemy attack range đến cấu trúc phải được đo bằng 3D collider/nav target, không cast TargetSelector<PlayerContext> sang Base. UI luôn hiển thị Base HP và cảnh báo khi sắp bị phá.
 
@@ -85,9 +85,9 @@ Enemy attack range đến cấu trúc phải được đo bằng 3D collider/nav
 5. UI nhận WoodChanged; TowerBuildService dùng **wood đã nhặt** để TrySpend, transaction fail không trừ.
 6. Cleanup khi reset/run-ended; loot từ run cũ không nhặt được trong run mới.
 
-**P05 PENDING:** lifetime/stacking/magnetism, refund khi loot unreachable, giới hạn object, XP pickup policy. Những vấn đề này không cho phép quay về auto wood grant.
+**P05 BASELINE APPROVED:** WoodDrop **lifetime = 90 giây gameplay**, đưa vào **WoodDropConfigSO**; 90 giây là giá trị có trong **Vongxuyen EXP_CONFIG.gemLifetimeSeconds**, **không phải gỗ rơi đang tồn tại trong VX**. PickupRadius/MagnetRadius/pooling/cap/stack giữ cấu hình hoặc TBD, không suy diễn các con số từ WoodSource. Khi thời gian hết drop despawn, không tự cộng gỗ. Không cho phép quay về auto wood grant.
 
-**Acceptance:** kill enemy nhưng chưa nhặt thì số dư không đổi; nhặt một lần tăng đúng value; pickup lần 2 không tăng; nhiều enemy chết cùng vị trí vẫn giữ transaction identity; Hero nhặt được khi Phu chưa được triển khai.
+**Acceptance:** kill enemy nhưng chưa nhặt thì số dư không đổi; nhặt một lần tăng đúng value; pickup lần 2 không tăng; wood drop tồn tại tối đa 90s gameplay (P05 default; không tự grant khi expire); nhiều enemy chết cùng vị trí vẫn giữ transaction identity; Hero nhặt được khi Phu chưa được triển khai.
 
 ## 5. Tháp cung thủ
 
@@ -136,18 +136,18 @@ UI cần ưu tiên thao tác TowerBuild/ACTIVE Relic trước. Mọi class Frien
 
 Các trạng thái bắt buộc: SpawnScheduled → SpawnEligible → Spawned / Deferred → Alive → Killed → LootCreated → LootClaimed. Enemy dead chỉ tạo loot một lần. Queue cap/backpressure và priority boss phải bảo đảm không mất final boss khi active count đạt 32.
 
-**Victory trigger:** final yaksha_boss killed + BaseHP>0. **Loss trigger:** BaseHP=0 only. **Timeout 600s** P02 PENDING; không auto Lose. Boss Mini killed at 108s không end run.
+**Victory trigger:** final yaksha_boss killed + BaseHP>0 => **WIN NGAY; hủy scheduler + pending spawns, chặn spawn mới** (P08 APPROVED). **Loss trigger:** BaseHP=0 only. **T=600s:** Nếu Boss còn sống thì **OVERTIME** cho đến khi Boss chết hoặc Base bị phá; scheduled waves kết thúc ở t=594, không tự phát thêm event (P02 APPROVED). Hero Downed -> respawn theo cấp tại spawn đầu (P03). Boss Mini killed at 108s không end run.
 
 ## 10. Cấu trúc code đề xuất (Unity full 3D)
 
 **MVP modules**
-- Assets/Features/Defense/Core: DefenseRunController, BaseHealth, WoodWallet, LootClaimService, WorldWoodDropManager, RunResultResolver.
+- Assets/Features/Defense/Core: DefenseRunController, BaseHealth, WoodWallet, LootClaimService, WorldWoodDropManager, WoodDropConfigSO (initial lifetime 90s), RunResultResolver, HeroRespawnConfigSO.
 - Assets/Features/Defense/Towers: TowerDefinitionSO, TowerBuildService, TowerPlacementController (3D raycast), TowerCombatController.
 - Assets/Features/Maps/World3D: MapSongQueDefinitionSO, LaneDefinitionSO, 3D LanePathGraph, NavMeshLinks, WaterAccessPolicy.
 - Assets/Features/Spawners/Spatial: LaneSpawnLocator3D.
 - Assets/Features/Enemies/Defense3D: DefensiveTargetPolicy, IDamageableTargetAdapter, 3D EnemyMovement.
-- Assets/Features/Weapons/ActiveRelics3D: one-slot ActiveRelicController, 3D GhostAim, CastValidator.
-- Assets/Features/UI/Defense: BaseHP, Wood/loot feedback, LaneThreat, TowerPanel, BossHUD.
+- Assets/Features/Weapons/ActiveRelics3D: one-slot ActiveRelicController, 3D GhostAim, CastValidator. **MVP chỉ Slipper**; 4 relic khác LOCKED.
+- Assets/Features/UI/Defense: BaseHP, Wood/loot feedback, LaneThreat, TowerPanel, BossHUD, HeroRespawnCountdown; after Victory no spawn UI.
 
 **POST-MVP only:** Assets/Features/FriendlyArmy, SquadManager, Commander, RallyPointController, RecruitHUD.
 
@@ -168,9 +168,9 @@ Các tên class là đề xuất. Không cần port/destroy code 2D Legacy, ch�
 
 **Tower/Economy:** start baseline 100 wood; build 1 tower cost 50, second cost 50; kill one enemy but do not collect -> wood unchanged; collect one drop -> +value; double collect -> no extra; pickup cannot be inaccessible or use an expired runId; upgrade costs level 2/3 respect balance data.
 
-**Rules:** Base HP reaches 0 -> one LOSE; Hero HP reaches 0 while Base alive -> **no LOSE**; Ma Giáp miniboss killed -> no WIN; Dạ Xoa killed while Base alive -> one WIN; 600s while Boss alive -> **no automatic outcome until P02 is resolved**; run result atomic when BaseDestroyed & BossKilled are close.
+**Rules:** Base HP reaches 0 -> one LOSE; Hero HP reaches 0 while Base alive -> **đếm ngược và hồi sinh tại spawn đầu, không LOSE**; Ma Giáp miniboss killed -> no WIN; Dạ Xoa killed while Base alive -> **WIN tức thì + không spawn quái nữa**; 600s Boss alive -> **OVERTIME**, không auto result; run result atomic.
 
-**MVP scope:** user can finish Defense without Phu, Dân Binh, Thầy Lang, squad/rally; no recruit dock as release dependency.
+**MVP scope:** user can finish Defense without Phu, Dân Binh, Thầy Lang, squad/rally; chỉ **một ACTIVE Slipper** với basic damage/ghost/cooldown, 4 FUN relic khác LOCKED; no recruit dock as release dependency.
 
 **Legacy regression:** existing Survival Unity 2D scene, old enemy prefabs, code/Save work in Legacy Mode; no Force 3D migration of legacy maps.
 
