@@ -11,7 +11,7 @@
 | MAP-01 | `world/MapBenQue.js`, `config/mapConfig.js`, exporter PR #39 | local `Assets/Art/Environment/MapSongQue` + `MapSongQue3D_Prototype/Recovery.unity` theo người dùng; marker `DefenseSceneInfo3D` | version scene/GLB/meta còn ở local; test tọa độ, render và asset Git | L,V |
 | MAP-02 | 3 lanes / Sông Quê | `DefenseEnemyBridgeWalker3D` NavMesh ground/3 bridges; `Defense_Navigation` local | path toàn tuyến, agent runtime, liên kết các loại air/water | P,V |
 | MAP-03 | `DefenseRules.js` strategic tower slots | `DefenseSceneInfo3D` 10 sockets | đối chiếu ID/chỗ đặt và va chạm | P,V |
-| STATE-01 | `core/GameStateManager.js`, `core/GameClock.js`, `core/GameEventBus.js` | `DefenseRun6003D.elapsed`; các script dùng `Time.time` | state machine authoritative, pause/level-up, event lifecycle, restart, deterministic clock | X |
+| STATE-01 | `core/GameStateManager.js`, `core/GameClock.js`, `core/GameEventBus.js` | `DefenseRun6003D.elapsed` / `Time.deltaTime` | **D-02/A APPROVED:** authoritative 600s gameplay clock, Pause/LevelUp/Win/Loss freeze, Fast Test separate; restart and lifecycle still missing | X |
 | EN-01 | `entities/EnemyFactory.js` 6 type | `DefenseRun6003D.SpawnEnemy()` dựng capsule + `DefenseEnemyBridgeWalker3D` | cấu hình EnemyData, speed/HP/attack/size/loot theo type | M |
 | EN-02 | `combat/EnemyDamageService.js`, `HitResolver.js` | Enemy `ReceiveDamage/Defeated` + WoodDrop | damage source, stun/slow/knockback, exact-once death/reward/EXP | M |
 | EN-03 | `WaveManager.js` per-type behavior | Walker NavMesh chung, chỉ gây damage cho Base | D-06/A: Ground 3 cầu, Water→shore, Air 3D thật, anti-air, Landing; chưa triển khai | X |
@@ -20,13 +20,13 @@
 | WAVE-02 | `SpawnPlanner.js`, `WaveManager.js` queue | spawn east marker + fixed z ba lane; không thấy cap/pending | safe spawn 3.1m, 32 active, 40 pending, 4/frame, 25s TTL, no invalid NavMesh | X |
 | WAVE-03 | `WaveManager.js` GhostCannon + `quaidu` | chưa có tương đương căn cứ/đạn pháo/thả dù | D-06/A: 3 Linh Pháo, projectile→parachute→QuaiDu West đã duyệt; chưa triển khai | X |
 | BOSS-01 | `EnemyFactory.js` `magiap_boss` | Unity miniboss @108 HP350, một walker | type-specific HP/attack/role; **stage01 event #7 là miniboss thay event thường** | M |
-| BOSS-02 | `combat/YakshaBoss.js`, `YakshaTelegraph.js` | Unity `DefenseYakshaArenaCombat3D` blast ring, `BeginBossAssault`, `DefenseRun6003D` | cleave, slam, crescent projectile, stun/pillar counter, target/AI/presence across river | M |
+| BOSS-02 | `combat/YakshaBoss.js`, `YakshaTelegraph.js` | Unity `DefenseYakshaArenaCombat3D` blast ring, `BeginBossAssault`, `DefenseRun6003D` | D-07-07/A Boss profile HP/DPS riêng (chưa khóa số), cleave/slam/crescent, stun/pillar counter, target/AI/presence | M |
 | BOSS-03 | `entities/YakshaBossMesh.js` | Unity optional `yakshaVisualPrefab` + editor assign | **chưa có xác nhận prefab Yaksha nguyên gốc đã import** | X; art sau Core |
-| HERO-01 | `PlayerWanderer.js`, `combat/HeroRelicSystem.js` | `DefenseHeroMotor3D`, `DefenseHeroAutoAttack3D`, `DefenseHeroHealth3D` | dash, attack combos/targeting, status, character skill, relic 1 slot & touch input | M |
-| HERO-02 | `HeroRelicSystem.js`, `SlipperProjectile.js` | chưa thấy Unity Defense3D implementation | một relic MVP: projectile/range/cooldown/ghost aim after approval | X |
-| TOWER-01 | `defense/DefenseRules.js`, `DefenseManager.js` | `DefenseTowerBuildPrototype3D`, `DefenseTowerPrototype3D` | nâng tháp, HP/sửa/phá, targeting, cost & slot registry, save-in-run | M |
-| ECON-01 | `DefenseRules.js` Wood | `DefenseWoodWallet3D`, `DefenseWoodDrop3D` | per-type reward, one-shot/expire/cap, cost balance, guard Pause/Result | M |
-| EXP-01 | `pickups/PickupManager.js`, `progression/ExperienceManager.js`, `config/experience.js` | chưa thấy module Defense3D tương đương | EXP gem magnet/pickup, XP curve, queue level-up, reset | X |
+| HERO-01 | Web Hero/`PlayerWanderer.js`, combat and HeroRelic modules | `DefenseHeroMotor3D`, `DefenseHeroAutoAttack3D`, `DefenseHeroHealth3D` | **D-08/A APPROVED:** hoàn thiện **Thư Sinh** trước, kiến trúc dữ liệu mở cho 4 Hero; dash/combat/input/respawn cần QA, chưa khóa full roster | M |
+| HERO-02 | `HeroRelicSystem.js`, `SlipperProjectile.js` | Defense3D Relic C# tương đương chưa xác minh | **D-09/A APPROVED:** **1 Pháp Bảo slot**, **Dép Tổ Ong** MVP: aiming/cast/cancel/cooldown/damage; không tuyên bố đã port | X |
+| TOWER-01 | `defense/DefenseRules.js`, `DefenseManager.js` | `DefenseTowerBuildPrototype3D`, `DefenseTowerPrototype3D`, 10 sockets | **D-07-03/04/A APPROVED:** tối đa Lv3, cost/HP/attack/range theo Balance Profile, repair tốn Gỗ + cooldown/limit; chưa khóa giá số production | M |
+| ECON-01 | `DefenseRules.js` Wood | `DefenseWoodWallet3D`, `DefenseWoodDrop3D` | **D-07-02/05/A APPROVED:** đủ Wood xây ≥1 Tower trong baseline test; Wood và EXP là 2 pickup riêng, death/reward đúng 1 lần; không khóa số Wood/cost production | M |
+| EXP-01 | `pickups/PickupManager.js`, `progression/ExperienceManager.js`, `config/experience.js` | chưa thấy module Defense3D tương đương | D-07-05/A EXP gem magnet/pickup độc lập Wood, XP curve, queue level-up, reset | X |
 | EXP-02 | `progression/UpgradeManager.js`, `config/upgrades.js`, `ui/UpgradeSelectionUI.js` | chưa thấy Defense3D 3-card modal | 3 non-duplicate options, stack cap, stat model authoritative | X |
 | MINION-01 | `defense/MinionManager.js`, `entities/MinionFactory.js` | chưa thấy `Defense3D` tương đương | ít nhất một dân binh; roles Dân Binh/Phu Tạp Dịch/Thầy Lang backlog | X |
 | RESULT-01 | Web `app/GameSession.js`, GameState, GameHUD | Unity `DefenseRun6003D.OnGUI` WIN ngay nếu hạ Boss, `DefenseHeroHealth3D` `Time.time` respawn | **D-03/A APPROVED:** WIN Base sống + đủ 600s + BossDead, OVERTIME nếu Boss còn; **D-04/A APPROVED:** Down 5 gameplay s rồi respawn; lifecycle/restart, input guards và terminal arbitration chưa code | M |
@@ -67,7 +67,7 @@ Các số này là **giá trị nguồn** trước wave multiplier, chưa duyệ
 
 **Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-06/A/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
 
-**D-07 phê duyệt một phần:** [09_D07_BALANCE_REVIEW.md](09_D07_BALANCE_REVIEW.md): **D-07-01/A đã APPROVED** (dùng Web làm baseline tham chiếu, Unity Balance Profile riêng và điều chỉnh sau 600s PlayMode), **D-07-02..08 vẫn PENDING**. Không copy chỉ số Web sang Unity hay ghi đè scene/Inspector.
+**D-07/A FULL DESIGN APPROVAL 8/8:** [09 — Balance Review](09_D07_BALANCE_REVIEW.md) đã duyệt Web benchmark + Unity BalanceProfile riêng, Gỗ baseline đủ ≥1 Tower, 10 sockets/Lv3/repair, Wood/EXP, per-type Enemy/Boss stats và versioned Fast Test. **Mọi con số production vẫn chưa khóa**. D-10/A đã duyệt bảo vệ scene/GUID/Legacy và bắt buộc backup local trước code, **chưa có bằng chứng backup/QA**.
 
 ## D. Migration principles / asset handling
 
