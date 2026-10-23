@@ -1,7 +1,7 @@
 # Gate G0 — Remote Baseline Audit / Local Safety Blockers
 
 **Thời điểm audit:** 2026-10-23 · **Nguồn:** GitHub `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.
-**Trạng thái:** `REMOTE_INSPECTED / LOCAL_NOT_VERIFIED / G0_NOT_PASSED`.
+**Trạng thái hiện tại:** `GIT_SNAPSHOT_OWNER_VERIFIED / SIX_CRITICAL_ASSET_HASHES_MATCH / G0_AWAITING_OWNER_SIGNOFF / NO_G1_CODE`. Các mục lịch sử bên dưới ghi trạng thái tại thời điểm nhận từng bằng chứng; xem mục "Bằng chứng mới nhất" để biết kết luận cập nhật.
 **Phạm vi assistant đã làm:** chỉ đọc repo/manifest/Unity editor scripts trên GitHub và cập nhật tài liệu. **Người dùng đã tự chạy backup local copy-only và báo cáo 8 file khớp hash**, không phải assistant có quyền truy cập ổ đĩa. **Không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không code gameplay.**
 
 ## Bằng chứng mới nhất — Git snapshot và 6 critical asset hashes (owner PowerShell)
