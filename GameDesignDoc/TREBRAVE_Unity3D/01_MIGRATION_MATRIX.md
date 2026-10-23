@@ -67,7 +67,7 @@ Các số này là **giá trị nguồn** trước wave multiplier, chưa duyệ
 
 **Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-06/A/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
 
-**D-07/A FULL DESIGN APPROVAL 8/8:** [09 — Balance Review](09_D07_BALANCE_REVIEW.md) đã duyệt Web benchmark + Unity BalanceProfile riêng, Gỗ baseline đủ ≥1 Tower, 10 sockets/Lv3/repair, Wood/EXP, per-type Enemy/Boss stats và versioned Fast Test. **Mọi con số production vẫn chưa khóa**. D-10/A đã duyệt bảo vệ scene/GUID/Legacy và bắt buộc backup local trước code, **chưa có bằng chứng backup/QA**.
+**D-07/A FULL DESIGN APPROVAL 8/8:** [09 — Balance Review](09_D07_BALANCE_REVIEW.md) đã duyệt Web benchmark + Unity BalanceProfile riêng, Gỗ baseline đủ ≥1 Tower, 10 sockets/Lv3/repair, Wood/EXP, per-type Enemy/Boss stats và versioned Fast Test. **Mọi con số production vẫn chưa khóa**. **D-10/A owner backup/QA G0:** 6/6 critical Scene/NavMesh/GLB + .meta và 3 config hashes đã owner xác minh; **G0 OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS ngày 2026-10-23**, nhưng full restore/full gameplay QA chưa đạt; **G1 chưa được cấp quyền code**.
 
 ## D. Migration principles / asset handling
 
