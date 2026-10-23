@@ -1,23 +1,23 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
-**Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** ghi những quyết định được duyệt ngày 2026-10-23: **D-01/A, D-03/A, D-04/A, D-05, D-06/A (8/8), D-11/A và riêng D-07-01/A**. **D-02, D-07-02..08, D-08, D-09, D-10 cùng local backup/QA vẫn PENDING.** Không sửa code/scene.
+**Status: ALL PRODUCT DECISIONS APPROVED (D-01..D-11; D-07 = 8/8 principles) / GATE G0 NOT PASSED.** 2026-10-23 · Chỉ lập kế hoạch; local backup/Unity QA chưa xác minh, chưa code.
+**Mục tiêu:** ghi biên bản phê duyệt đầy đủ **D-01/A, D-02/A, D-03/A, D-04/A, D-05, D-06/A 8/8, D-07/A 8/8, D-08/A, D-09/A, D-10/A, D-11/A**. Duyệt chính sách không đồng nghĩa QA, backup, khóa số balance hay quyền bắt đầu code.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
-## 1. Bảng quyết định (D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và D-07-01/A đã duyệt)
+## 1. Bảng quyết định đã duyệt về thiết kế (ngày 2026-10-23)
 
 | ID | Chọn mặc định đề nghị (A) | Phương án thay thế (B) | Hệ quả nếu khác |
 |---|---|---|---|
 | **D-01/A — APPROVED** | **Unity Defense 3D là runtime đích chính**; Web Vongxuyen là nguồn gameplay/Enemy/asset tham chiếu, giữ Survival 2D Legacy | Web-only không được chọn | Duyệt 2026-10-23; chưa xác nhận QA tích hợp |
-| D-02 | 600 gameplay seconds, pause/level-up không tính giờ; Inspector Fast Test riêng | thay độ dài run | ảnh hưởng lịch wave/Boss |
+| **D-02/A — APPROVED** | 600 giây gameplay; Pause/LevelUp/Win/Loss không tăng clock; Fast Test là cấu hình riêng | thay thời lượng/run không được chọn | Chưa triển khai; phải test đồng hồ và D-03/A |
 | **D-03 — APPROVED / A** | **ĐÃ CHỌN A:** WIN khi BaseHP>0 **và** đã đủ 600s gameplay **và** Yaksha chết; Boss chết trước 600 → tiếp tục trận; Boss còn sống @600 → OVERTIME, không timed-wave mới; Base HP0 → LOSS ưu tiên cùng tick | B (giết Boss thắng ngay) **không được chọn** | Được duyệt 2026-10-23; phải cập nhật Unity prototype sau Gate G0 |
 | **D-04 — APPROVED / A** | **ĐÃ CHỌN A:** Hero Down khi HP0, không LOSS trực tiếp; hồi sinh tại HeroSpawn sau 5 **gameplay seconds**, countdown dừng khi Paused/LevelUp; Win/Loss dừng respawn | B (Hero chết là LOSS) **không được chọn** | Được duyệt 2026-10-23; HP hồi lúc respawn thuộc D-07 balancing |
 | **D-05 — APPROVED** | **Đã chọn A:** event #7 tại 108s chỉ 1 `magiap_boss`, không có batch thường trùng mốc | Không áp dụng B | Duyệt 2026-10-23; nguồn [Stage01](05_STAGE_ENEMY_CONTRACT.md) |
 | **D-06 — APPROVED / A (8/8)** | Ground/NavMesh 3 cầu; Thủy Quái bơi→lên bờ; Huyết Dơi/Phi Cương bay 3D; anti-air; 3 Linh Pháo thả dù; AI aggro; spawn safety | Ground-only/visual-only không được chọn | [08 D-06 Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md), 18 QA chưa chạy |
-| **D-07 — PARTIAL** | **Chỉ D-07-01/A APPROVED:** dùng Web làm benchmark, Unity Balance Profile riêng, cân chỉnh sau PlayMode; không auto-copy các con số | D-07-02..08 **PENDING**, chưa khóa HP/Gỗ/Tower/Enemy/Boss | [09 D-07](09_D07_BALANCE_REVIEW.md), 12 QA NOT_RUN |
-| D-08 | Core 1 Thư Sinh; thiết kế dữ liệu cho 4 Hero; roster chính thức chốt riêng | cố triển khai 4 Hero ngay trong Core | ảnh hưởng scope/stability |
-| D-09 | 1 Relic slot, dùng Dép Tổ Ong MVP | Relic MVP khác trong 5 relic FUN | ảnh hưởng test input/combat |
-| D-10 | giữ Scene/GLB/NavMesh/GUID local và Legacy riêng; backup trước tác động | rebuild scene từ generator | phương án B **không khuyến nghị** vì rủi ro mất dữ liệu |
+| **D-07/A — APPROVED 8/8 (PRINCIPLES)** | Benchmark Web, Unity Balance Profile riêng; Gỗ test đủ xây ≥1 Tower; 10 slots/Lv3; repair tốn Gỗ; Wood/EXP pickup; Enemy/Miniboss/Boss riêng; Fast Test và QA 600s | Chưa duyệt **mọi con số production** cụ thể | [09 — Balance](09_D07_BALANCE_REVIEW.md); 12 D07-QA NOT_RUN |
+| **D-08/A — APPROVED** | Core hoàn thiện **Thư Sinh trước**, kiến trúc mở rộng tối đa 4 Hero; không làm đủ 4 Hero ngay | 4 Hero đồng thời chưa được chọn | Roster cuối cùng ngoài Hero MVP chưa khóa |
+| **D-09/A — APPROVED** | Mỗi Hero **một slot Pháp Bảo**, Dép Tổ Ong MVP với ngắm/cast/cooldown/sát thương thật | chọn Relic khác làm đầu tiên không được chọn | 4 Relic còn lại sau Core |
+| **D-10/A — APPROVED (POLICY)** | Giữ scene/GLB/NavMesh/.meta/GUID, Survival 2D, rollback; **bắt buộc backup và kiểm tra Unity Console trước code** | rebuild scene không được chọn | G0-S1..S6 vẫn NOT_VERIFIED/NOT_RUN |
 | **D-11 — APPROVED / A** | **Đã chọn A:** 1 `phicuong` dẫn đầu **mỗi event Stage01 loại `magiap`**, thay đúng 1 suất Ma Giáp (không thêm quái), không phụ thuộc frame/FPS | B (thay theo frame Web) **không được chọn** | Duyệt 2026-10-23; phải bổ sung deterministic test |
 
 **Đã quyết định D-11/A:** source Web vẫn có `spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong' : job.type`, nhưng **Unity không sao chép logic frame-sensitive này**. Thay bằng 1 job `phicuong` tại slot đầu tiên của mỗi event `magiap`, bất kể phân bổ spawn qua bao nhiêu frame. Source `stage01.js` giữ 34 event và 214 suất.
@@ -85,20 +85,26 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ## 7. Tiêu chí ra khỏi Gate G0
 
+- [x] **D-02/A APPROVED 2026-10-23** — clock gameplay 600 giây, pause/resume và Fast Test riêng.
+- [x] **D-08/A APPROVED 2026-10-23** — Thư Sinh Core đầu tiên, hệ thống mở cho 4 Hero.
+- [x] **D-09/A APPROVED 2026-10-23** — một Pháp Bảo, Dép Tổ Ong MVP.
+- [x] **D-10/A APPROVED 2026-10-23** — chính sách bảo vệ local scene/GUID; **chưa backup/QA**.
+- [x] **D-07-02..08/A APPROVED 2026-10-23** — cấu trúc cân bằng và thử nghiệm; **không khóa số**.
+
 - [x] **D-01/A APPROVED 2026-10-23** — Unity Defense3D là runtime đích, Web/Legacy được giữ nguyên.
 - [x] **D-07-01/A APPROVED 2026-10-23** — thống nhất cách đối chiếu/chọn nguồn balance; **7 tiểu mục còn lại PENDING**.
 - [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
 - [x] **D-06/A APPROVED 2026-10-23** — 8/8 lựa chọn A: Ground/Water/Air/Landing, 3 Linh Pháo, anti-air, Enemy aggro/spawn; 18 QA chưa chạy.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
-- [ ] Chốt D-07 balance [review](09_D07_BALANCE_REVIEW.md), D-08 Hero và D-09 Relic. D-06/A về Enemy locomotion đã duyệt.
+- [x] **D-07/A 8/8, D-08/A Hero, D-09/A Relic đã APPROVED** về nguyên tắc. Các con số balance production chưa khóa.
 - [ ] G0-S1..G0-S6 đủ evidence, đặc biệt scene local/Meta.
 - [ ] Mapping và 27 backlog tickets review xong, chỉ các ticket G1 đủ điều kiện chuyển `APPROVED`.
 - [ ] Gate G0 được chủ dự án đồng ý đóng. **Không tự đánh dấu pass khi chỉ có tài liệu.**
 
-### Cách trả lời cho chủ dự án (không cần form)
+### Việc cần làm sau khi phê duyệt thiết kế
 
-**D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và D-07-01/A đã duyệt.** Bước tiếp theo là **D-07-02..08, D-02, D-08, D-09, D-10**, kiểm chứng backup/Unity local; Gate G0 chưa pass.
+Không cần duyệt lại D-01..D-11. Cần có bằng chứng **backup ngoài repo, trạng thái Git local, scene/Console, Legacy regression** và phê duyệt stage G0; BalanceProfile production chỉ khóa sau số liệu thử nghiệm. Các QA test vẫn NOT_RUN, code chưa bắt đầu.
 
 ## 8. Tài liệu G0 bước tiếp theo
 
@@ -106,9 +112,9 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
 - [08 — D-06 Enemy Navigation & AI](08_D06_ENEMY_NAVIGATION_REVIEW.md): đã APPROVED toàn bộ 8 phương án A, có 18 QA nghiệm thu NOT_RUN.
 
-**Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
+**Trạng thái:** tất cả D-01..D-11 đã phê duyệt **yêu cầu**. Điều kiện G0-S1..S6, thực thi backup, PlayMode và review ticket vẫn chưa có bằng chứng. **Không đánh dấu G0 PASS.**
 
-- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): D-07-01/A APPROVED, D-07-02..08 PENDING; chưa khóa số balance.
+- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **8/8 phương án A APPROVED về cấu trúc/phương pháp**, con số production chưa khóa; 12 D07-QA NOT_RUN.
 
 ## 9. Pinned source revision cho audit
 
