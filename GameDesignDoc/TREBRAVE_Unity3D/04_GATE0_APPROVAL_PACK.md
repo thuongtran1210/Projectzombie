@@ -83,6 +83,10 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Bằng chứng cần thu khi bắt đầu G0:** đường dẫn backup ngoài repo, thời điểm, commit và `git status`, Unity version/scene path, ảnh/log Console. Chưa có các bằng chứng này trong audit GitHub hiện tại.
 
+## 6A. Remote Gate G0 audit đã làm / blocker còn lại
+
+[10 — Remote Baseline Audit](10_G0_REMOTE_BASELINE_AUDIT.md) đã **chỉ đọc** nhánh GitHub ngày 2026-10-23: `Assets/Scenes/Defense3D` và `Assets/Art/Environment` **không có trên branch**, trong khi các C# script/meta, Editor installers, package AI Navigation và `SampleScene` có. BuildSettings remote chỉ chứa Legacy SampleScene. **G0-S1..S6 local đều NOT_VERIFIED/NOT_RUN**; không coi GitHub files thay cho backup. **Stop Core G1** đến khi có backup ngoài repo và bằng chứng Unity mở scene, Legacy, Console. Không dùng Scene Generator để tái tạo scene có chỉnh tay.
+
 ## 7. Tiêu chí ra khỏi Gate G0
 
 - [x] **D-02/A APPROVED 2026-10-23** — clock gameplay 600 giây, pause/resume và Fast Test riêng.
