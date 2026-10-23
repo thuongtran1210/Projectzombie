@@ -1,17 +1,17 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
 **Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** ghi các lựa chọn và bằng chứng. **D-05 và D-11/A đã được chủ dự án phê duyệt 2026-10-23**; chín quyết định còn lại vẫn chờ duyệt. Không sửa mã nguồn/scene, không tạo Issues tự động.
+**Mục tiêu:** ghi các lựa chọn và bằng chứng. **D-03/A, D-04/A, D-05 và D-11/A được chủ dự án phê duyệt ngày 2026-10-23**; các quyết định còn lại D-01/D-02/D-06..D-10 vẫn chờ. Không sửa mã nguồn/scene, không tạo Issues tự động.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
-## 1. Bảng quyết định (D-05 và D-11 đã duyệt; các mục khác chờ)
+## 1. Bảng quyết định (D-03/A, D-04/A, D-05, D-11/A đã duyệt)
 
 | ID | Chọn mặc định đề nghị (A) | Phương án thay thế (B) | Hệ quả nếu khác |
 |---|---|---|---|
 | D-01 | Unity Defense 3D là đích chuyển engine, Web Vongxuyen vẫn hoạt động | chỉ tiếp tục Web Three.js, Unity ở chế độ prototype | ảnh hưởng toàn roadmap |
 | D-02 | 600 gameplay seconds, pause/level-up không tính giờ; Inspector Fast Test riêng | thay độ dài run | ảnh hưởng lịch wave/Boss |
-| **D-03** | **WIN** khi Base còn sống **và** (đã đủ 600s **và** Yaksha đã chết). Boss chết sớm → tiếp tục phòng thủ; Boss sống sau 600s → overtime | WIN ngay khi giết Boss, dù chưa đủ 600s; hoặc WIN tự động ở mốc 600s | thay toàn bộ logic Result và kiểm thử |
-| **D-04** | Hero Down → respawn sau 5 **gameplay seconds**, không LOSS trực tiếp; Base HP=0 → LOSS | Hero tử trận → LOSS; hoặc hệ mạng sống/hồi sinh giới hạn | lựa chọn ảnh hưởng cân bằng, clock và HUD |
+| **D-03 — APPROVED / A** | **ĐÃ CHỌN A:** WIN khi BaseHP>0 **và** đã đủ 600s gameplay **và** Yaksha chết; Boss chết trước 600 → tiếp tục trận; Boss còn sống @600 → OVERTIME, không timed-wave mới; Base HP0 → LOSS ưu tiên cùng tick | B (giết Boss thắng ngay) **không được chọn** | Được duyệt 2026-10-23; phải cập nhật Unity prototype sau Gate G0 |
+| **D-04 — APPROVED / A** | **ĐÃ CHỌN A:** Hero Down khi HP0, không LOSS trực tiếp; hồi sinh tại HeroSpawn sau 5 **gameplay seconds**, countdown dừng khi Paused/LevelUp; Win/Loss dừng respawn | B (Hero chết là LOSS) **không được chọn** | Được duyệt 2026-10-23; HP hồi lúc respawn thuộc D-07 balancing |
 | **D-05 — APPROVED** | **Đã chọn A:** event #7 tại 108s chỉ 1 `magiap_boss`, không có batch thường trùng mốc | Không áp dụng B | Duyệt 2026-10-23; nguồn [Stage01](05_STAGE_ENEMY_CONTRACT.md) |
 | D-06 | Ground/Water/Air/Landing có chính sách route/attack khác nhau; GhostCannon đánh dấu chưa quyết định scope | ép mọi Enemy dùng ground NavMesh, chấp nhận thay đổi thiết kế | ảnh hưởng authenticity và path tests |
 | D-07 | giữ Web balance as **source reference** có version; tune Unity sau test, không auto-overwrite | nhập nguyên số Web vào Unity | ảnh hưởng DPS/HP/wood/test |
@@ -22,7 +22,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Đã quyết định D-11/A:** source Web vẫn có `spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong' : job.type`, nhưng **Unity không sao chép logic frame-sensitive này**. Thay bằng 1 job `phicuong` tại slot đầu tiên của mỗi event `magiap`, bất kể phân bổ spawn qua bao nhiêu frame. Source `stage01.js` giữ 34 event và 214 suất.
 
-## 2. D-03 — Ma trận quyết định WIN/LOSS tại mốc 600s (phương án A)
+## 2. D-03/A APPROVED — Ma trận WIN/LOSS tại mốc 600s
 
 | Base | Yaksha | Clock | Trạng thái đề nghị |
 |---|---|---:|---|
@@ -35,14 +35,14 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Chưa kết luận:** OVERTIME có giới hạn thời gian không; những hệ thống đặc biệt (GhostCannon, summon, minions) còn spawn trong OVERTIME không? G0 cần duyệt. Đề xuất mặc định: không có giới hạn overtime cho Core Test; không tạo thêm *timed-wave* jobs; các quái đang tồn tại tiếp tục hoạt động; chỉ Boss có thể tiếp tục summon nếu mechanic được duyệt.
 
-## 3. D-04 — Hero down & respawn (phương án A)
+## 3. D-04/A APPROVED — Hero down & respawn
 
 - Hero HP 0 → `Downed`; khóa Move/Attack/Relic/Tower interaction, không điều khiển camera như Hero đang sống.
 - Respawn sau **5 giây gameplay**, không dựa trực tiếp `Time.time` khi trận Paused hoặc LevelUpSelection.
 - Ở trạng thái WIN/LOSS: không tự hồi sinh nữa; cleanup một lần.
 - Hero down **không ngừng cả trận**, Enemy tiếp tục tấn công Base. Cần HUD countdown và vị trí respawn an toàn (HeroSpawn).
 - Nếu Hero down trong OVERTIME, vẫn respawn theo luật đã duyệt; Base vẫn có thể bị phá.
-- Nếu owner chọn Hero dead = LOSS (B), sửa toàn bộ expected của QA-21/22 và cập nhật nguồn thiết kế; không giữ đồng thời hai luật.
+- **D-04/A đã được chốt:** Hero death không tự gây LOSS. Không giữ đồng thời quy tắc Hero chết là thua (B) trong gameplay Unity.
 
 ## 4. D-05 / D-11 — Quy tắc đã APPROVED, không còn chờ quyết định
 
@@ -85,7 +85,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ## 7. Tiêu chí ra khỏi Gate G0
 
-- [ ] Chủ dự án xác nhận **D-03 và D-04** (WIN/LOSS và Hero Down) trong [Decision Log](03_DECISIONS_QA.md).
+- [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
 - [ ] Chốt policy Enemy ground/air/water/landing, phạm vi GhostCannon, Hero/Relic MVP, số liệu balance baseline (D-06..09).
@@ -95,14 +95,14 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ### Cách trả lời cho chủ dự án (không cần form)
 
-**Không cần duyệt lại D-05/D-11.** Những vấn đề chờ xác nhận tiếp theo: **D-03 luật WIN/LOSS** và **D-04 Hero Down**, cùng các điều kiện D-06/D-07 và an toàn scene. Đừng suy từ “Tiếp tục” rằng các mục đó đã được duyệt.
+**Không cần duyệt lại D-03/D-04/D-05/D-11.** Những vấn đề tiếp theo: D-01/D-02/D-06..D-10, đặc biệt chính sách AI bay/nước và an toàn scene. Gate G0 vẫn chưa pass.
 
 ## 8. Tài liệu G0 bước tiếp theo
 
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): hai phương án D-03/D-04, các ca biên khi Boss chết và Hero Down.
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
 
-**Trạng thái:** Chưa duyệt D-03/D-04. Tạo tài liệu lựa chọn không đồng nghĩa `APPROVED` hoặc cho phép code.
+**Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
 
 ## 9. Pinned source revision cho audit
 
