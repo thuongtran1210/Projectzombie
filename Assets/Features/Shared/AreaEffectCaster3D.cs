@@ -5,6 +5,16 @@ using ProjectZombie.Features.Enemies;
 namespace ProjectZombie.Features.Shared
 {
     /// <summary>
+    /// Optional adapter for kinematic 3D enemies that implement status effects without
+    /// a dynamic Rigidbody. The legacy IStatusReceiver.ApplyKnockback(Vector2) is XY,
+    /// so it must never receive an implicit 3D XZ direction.
+    /// </summary>
+    public interface I3DKnockbackReceiver
+    {
+        void ApplyKnockback3D(Vector3 horizontalDirection, float force, float duration);
+    }
+
+    /// <summary>
     /// Tiện ích hỗ trợ quét vùng (AoE 3D) và áp dụng hiệu ứng trạng thái bất lợi / đẩy lùi tập trung trong không gian 3D.
     /// Đảm bảo Zero GC Allocation (sử dụng _hitBuffer tĩnh) và Decoupling qua Interface IStatusReceiver.
     /// Tuân thủ quy tắc 6.1 & 3.4 AGENTS.md.
@@ -63,15 +73,20 @@ namespace ProjectZombie.Features.Shared
                             knockbackDir.Normalize();
                         }
 
-                        // Nếu target có Rigidbody 3D
-                        if (col.TryGetComponent<Rigidbody>(out var rb))
+                        // attachedRigidbody also resolves a Rigidbody on a parent
+                        // when the hit collider belongs to a child hitbox.
+                        Rigidbody rb3D = col.attachedRigidbody;
+                        if (rb3D != null && !rb3D.isKinematic)
                         {
-                            rb.AddForce(knockbackDir * knockbackForce, ForceMode.Impulse);
+                            rb3D.AddForce(knockbackDir * knockbackForce, ForceMode.Impulse);
                         }
-                        else
+                        else if (receiver is I3DKnockbackReceiver receiver3D)
                         {
-                            receiver.ApplyKnockback(knockbackDir, knockbackForce, knockbackDuration);
+                            receiver3D.ApplyKnockback3D(knockbackDir, knockbackForce, knockbackDuration);
                         }
+                        // No fallback to IStatusReceiver.ApplyKnockback(Vector2):
+                        // its XY direction cannot represent an XZ world-space impulse.
+
                     }
 
                     onTargetHit?.Invoke(receiver, col);

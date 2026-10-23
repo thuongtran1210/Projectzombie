@@ -424,21 +424,11 @@ namespace ProjectZombie.Features.Player
         /// </summary>
         public void ApplyNetworkMovement(Vector2 networkMoveInput)
         {
-            if (!enabled || !Shared.GameStateManager.IsPlaying)
+            if (!enabled || !Shared.GameStateManager.IsPlaying ||
+                (_healthSystem != null && !_healthSystem.IsAlive) ||
+                (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned))
             {
-                _rb.velocity = Vector2.zero;
-                return;
-            }
-
-            if (_healthSystem != null && !_healthSystem.IsAlive)
-            {
-                _rb.velocity = Vector2.zero;
-                return;
-            }
-
-            if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned)
-            {
-                _rb.velocity = Vector2.zero;
+                StopMovement();
                 return;
             }
 
@@ -446,26 +436,32 @@ namespace ProjectZombie.Features.Player
             ProcessMovement(networkMoveInput);
         }
 
+        // Shared by local and network paths; never assume the Hero has a Rigidbody2D.
+        // Preserve vertical velocity in 3D so a stopped Hero still responds to gravity.
+        private void StopMovement()
+        {
+            if (_rb != null) _rb.velocity = Vector2.zero;
+            if (_rb3D != null)
+                _rb3D.velocity = new Vector3(0f, _rb3D.velocity.y, 0f);
+        }
+
         private void ProcessMovement(Vector2 moveInput)
         {
             if (!Shared.GameStateManager.IsPlaying || !enabled)
             {
-                if (_rb != null) _rb.velocity = Vector2.zero;
-                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
+                StopMovement();
                 return;
             }
 
             if (_healthSystem != null && !_healthSystem.IsAlive)
             {
-                if (_rb != null) _rb.velocity = Vector2.zero;
-                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
+                StopMovement();
                 return;
             }
 
             if (TryGetComponent<Combat.Coop.CoopDownedMechanic>(out var downed) && downed.IsDowned)
             {
-                if (_rb != null) _rb.velocity = Vector2.zero;
-                if (_rb3D != null) _rb3D.velocity = Vector3.zero;
+                StopMovement();
                 return;
             }
 
