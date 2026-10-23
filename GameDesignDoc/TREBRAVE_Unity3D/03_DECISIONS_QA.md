@@ -3,7 +3,7 @@
 **Status:** DRAFT / AWAITING OWNER APPROVAL · 2026-10-23.
 **Mục đích:** chốt mâu thuẫn thiết kế **trước khi code** và có test thật sau mỗi gate. Chưa có QA mới trên Unity được chạy khi viết tài liệu.
 
-## 1. Decision Log — 10 quyết định sản phẩm / kỹ thuật
+## 1. Decision Log — 11 quyết định sản phẩm / kỹ thuật
 
 | ID | Vấn đề và bằng chứng hai repo | Khuyến nghị **để duyệt**, không tự áp dụng | Status |
 |---|---|---|---|
@@ -17,8 +17,9 @@
 | **D-08** | Web data 4 Hero gồm Thư Sinh, Thanh Đồng, Ẩn Sĩ, Đạo Sĩ; GDD Unity lịch sử có Võ Tăng | **Đề xuất:** Core xác minh 1 Hero Thư Sinh, giữ API mở rộng; **chưa chốt** roster cả bốn hay thay Võ Tăng | **PENDING** |
 | **D-09** | Vongxuyen đã chốt 1 Pháp Bảo trang bị/run, Web có 5 Pháp Bảo FUN | **Đề xuất:** chỉ một slot, dùng **Dép Tổ Ong** cho MVP combat đầu tiên vì Web có runtime tham chiếu | **PENDING** |
 | **D-10** | Unity local GLB/scene/NavMesh/meta chưa xác nhận tracked; legacy SampleScene còn tồn tại; đã từng có Missing Mono Script | **Đề xuất:** giữ 2D Legacy riêng; trước bất kỳ code/merge nào, kiểm tra backup scene/GUID/importer + build settings; chỉ chỉnh có rollback | **PENDING / CRITICAL** |
+| **D-11** | `stage01.js` khai báo `magiap`, nhưng `WaveManager.updateTimedSpawns()` có thể biến **Ma Giáp đầu mỗi frame** thành `phicuong`; frame-sensitive | **Đề xuất:** tách type dữ liệu và type runtime; cấu hình policy elite riêng có telemetry/test; cần owner chốt deterministic policy vs sao chép đúng frame behavior của Web | **PENDING / CRITICAL** |
 
-**Status hợp lệ:** `PENDING` / `APPROVED` / `REJECTED` / `SUPERSEDED`. Bảng trên chỉ có **khuyến nghị**, chưa thể tự ghi `APPROVED`. Các luật D-03/D-04/D-05 chặn triển khai Core GameManager, EndGame và Stage schedule.
+**Status hợp lệ:** `PENDING` / `APPROVED` / `REJECTED` / `SUPERSEDED`. Bảng trên chỉ có **khuyến nghị**, chưa thể tự ghi `APPROVED`. Các luật D-03/D-04/D-05/D-11 chặn triển khai Core GameManager, EndGame và Stage schedule.
 
 ### Form chữ ký quyết định (copy vào issue/review)
 
@@ -116,6 +117,7 @@ Notes / next decision:
 - [ ] Owner phê duyệt **D-03** luật WIN/LOSS liên hệ 600s/Yaksha.
 - [ ] Owner phê duyệt **D-04** Hero death/respawn.
 - [ ] Owner xác nhận **D-05** 108s miniboss thay đợt thường, không duplicate.
+- [ ] Owner xác nhận **D-11** chính sách chuyển Ma Giáp đầu frame thành Phi Cương (hoặc deterministic variant), tránh QA phụ thuộc FPS.
 - [ ] Owner duyệt scope một Hero, 5 enemy archetype, 1 Relic, 10 sockets, EXP/3 cards.
 - [ ] Chốt chính sách Ground/Water/Air và GhostCannon.
 - [ ] Ghi nhận được backup scene/GLB/NavMesh/meta/package local, không tái tạo scene.
@@ -123,3 +125,9 @@ Notes / next decision:
 - [ ] Trạng thái backlog chuyển `DRAFT→APPROVED` cho các ticket Gate G1; các Gate sau chưa được bật.
 
 **Đừng dùng “Bắt đầu code” để tự hiểu là chủ dự án đã duyệt các luật đang PENDING.** Chỉ update tài liệu quyết định sau khi owner xác nhận rõ ràng.
+
+
+## 6. Review pack chi tiết (tài liệu lập kế hoạch)
+
+- [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md): lựa chọn A/B, luật kết quả theo 600s, khóa G0-safety, D-11.
+- [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): bảng 34 event / 214 spawn jobs theo config nguồn, runtime elite transform, spawn restrictions, test fixtures.
