@@ -2,7 +2,7 @@
 
 > **Trạng thái:** D09=A **OWNER-APPROVED** — đúng 7 Vongxuyen archetypes Map 01, Unity full 3D mục tiêu D02=C; code/asset chưa được port/QA.  
 > **Nguồn runtime:** Vongxuyen src/entities/EnemyFactory.js, src/combat/WaveManager.js, src/combat/YakshaBoss.js, src/config/stage01.js.  
-> **Quy tắc đã chốt:** D06 600s wave timeline / D07 **Base destroyed only Lose; Dạ Xoa defeated => instant Win + stop spawns** / D09 Map 01 only VX 7 / D08 wood **drop–Hero pickup** / D10 no army MVP / P02 **overtime** / P03 **level-scaled Hero respawn** / P05 **wood lifetime default 90s borrowed from VX EXP** / P08 **instant win**. **P04 boss raid & target priority** còn mở.
+> **Quy tắc đã chốt:** D06 600s wave timeline / D07 **Base destroyed only Lose; Dạ Xoa defeated => instant Win + stop spawns** / D09 Map 01 only VX 7 / D08 wood **drop–Hero pickup** / D10 no army MVP / P02 **overtime** / P03 **level-scaled Hero respawn** / P05 **wood lifetime default 90s borrowed from VX EXP** / P08 **instant win**. **P04 2-state đã APPROVED**: Arena → sau X giây từ BossSpawn → tấn công Nhà Chính. **K03** còn X cụ thể/đòn đánh và tie-break cùng tick.
 
 ## 1. Mục tiêu hệ thống
 
@@ -80,9 +80,17 @@ Các giá trị ở cột HP/speed/damage là trực tiếp từ factory/Boss, t
 - BASELINE: 3,200 HP, 1.35 speed, 38 damage; xuất hiện khoảng **08:30 = 510s** theo lớp YakshaBoss.
 - AI có state **idle, chase, cleave_windup, slam_windup, stunned, die**; có ba nhóm skill cooldown tham chiếu cleave 3.5s, slam 8.5s, crescentWave 12.0s.
 - Đòn ví dụ: đại đao quét, khai sơn phá thạch, đao khí. Telegraph phải mở trước hit frame và cho người chơi cửa né/interrupt đúng.
-- Boss phải có phase gating theo thời gian/run và chiến thuật raid/hạn chế chase theo bờ.
-- **ĐÃ CHỐT D07/P02/P03/P08:** Dạ Xoa (final boss) chết khi Base còn HP => **WIN ngay + cancel pending spawns/chặn spawn mới**; Ma Giáp Thống Lĩnh chỉ miniboss. Nếu Boss sống qua 600s thì **OVERTIME**, không tự Win/Lose. Hero chết => hồi sinh theo Hero Level ở initial spawn, **không** gây LOSE. Boss có raid Nhà Chính hay ở arena (**P04**) còn PENDING.
+- Boss có đúng **2 strategic states** theo P04 đã duyệt: `ARENA_COMBAT` ở đấu trường Bờ Đông → sau **X giây gameplay từ BossSpawn** chuyển một chiều `ASSAULT_BASE`, đi trên path 3D hợp lệ tới Nhà Chính và đánh Base. X cấu hình trong YakshaBossPhaseConfigSO; combat substates như cleave/slam/stunned/die vẫn có thể dùng trong cả hai state.
+- **ĐÃ CHỐT D07/P02/P03/P08:** Dạ Xoa (final boss) chết khi Base còn HP => **WIN ngay + cancel pending spawns/chặn spawn mới**; Ma Giáp Thống Lĩnh chỉ miniboss. Nếu Boss sống qua 600s thì **OVERTIME**, không tự Win/Lose. Hero chết => hồi sinh theo Hero Level ở initial spawn, **không** gây LOSE. **P04 đã chốt 2 state** Arena → ASSAULT_BASE sau X; **K03** chỉ còn giá trị X/same-tick outcome priority và combat details.
 - Test: Boss spawn duy nhất, UI HP/vfx đúng, phase chuyển đúng, boss death có cleanup/cancel projectile và game result không trùng.
+
+### P04 — chiến thuật Boss hai trạng thái (đã chốt)
+
+- `ARENA_COMBAT` là state chiến thuật mặc định lúc `yaksha_boss` xuất hiện ở Bờ Đông; giới hạn không gian đánh quanh đấu trường.
+- `ASSAULT_BASE` kích hoạt khi **thời gian hoạt động của Boss tính từ spawn ≥ X giây**; Boss đi qua đường/cầu có NavMesh/waypoints đến Nhà Chính và đánh mục tiêu Base. **Không tự quay lại arena**, không teleport.
+- X là `YakshaBossPhaseConfigSO.arenaHoldDurationSeconds`, **không được gán giá trị số trong code GDD**; pause thì timer dừng, t=600 không tự kích state trừ khi X đạt. Overtime giữ boss sống/chạy.
+- Boss chết tại Arena hoặc Assault => Victory ngay, cancel spawn queue. Nhà Chính bị phá => Defeat. K03 chưa chốt cách phân xử cùng-tick Boss/Base death.
+- [Đặc tả AI Boss 2-state](YAKSHA_BOSS_PHASE_SPEC.md).
 
 ## 4. Wave 01 tham chiếu
 
@@ -116,7 +124,7 @@ Projectzombie hiện có Enemy FSM và ITargetSelector trả **PlayerContext**. 
 - World plane **XZ**, Y altitude; ground enemy chuyển qua 3 cầu theo NavMesh, Thủy Quái theo water-path đặc thù, Flying theo flying-space restrictions. Collider/line-of-sight/telegraph phải dùng **3D Physics**, không Physics2D.
 - **Loot D08=B / P05:** enemy chết tạo **WorldWoodDrop**, hero nhặt mới tăng WoodWallet; initial loot lifetime **90s**, áp dụng từ **EXP gemLifetimeSeconds của VX**, không phải wood TTL code hiện có ở VX. Phu POST-MVP không xuất hiện giai đoạn đầu; khi Boss chết instant Victory thì dừng spawns.
 - **Tower/Base targeting:** ITargetSelector Unity hiện trả PlayerContext nên cần DefenseTargetAdapter/IDamageable target; Hero downed không làm quái đứng Idle khi Base còn sống.
-- **Boss results:** Dạ Xoa defeated -> WIN; Base destroyed -> LOSE; Ma Giáp boss defeated -> continue. 600s timeout P02 còn mở, không tự xử game over.
+- **Boss results:** Dạ Xoa defeated -> instant WIN + cancel spawns; Base destroyed -> LOSE; Ma Giáp boss defeated -> continue. At 600s if Boss alive -> OVERTIME, maintain Arena/Assault state and boss elapsed timer (P02/P04); no auto game-over.
 - **Legacy:** tất cả enemy PZ cũ giữ nguyên trong Legacy Mode/Maps tương lai; không xóa scripts/SO/prefab.
 - View conversion details: [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md).
 
@@ -155,7 +163,7 @@ Projectzombie hiện có Enemy FSM và ITargetSelector trả **PlayerContext**. 
 - [ ] E04 event at 108s fires exactly once unless overridden by versioned scenario.
 - [ ] E05 drop indicators appear before impact and no infinite child spawn.
 - [ ] E06 displays elite health bar; flying targeting works.
-- [ ] B01 at 510s (if selected) and every telegraph leads damage only after windup.
+- [ ] B01 at ~510s (VX baseline); starts ARENA_COMBAT, after config X active seconds transitions exactly once to ASSAULT_BASE, follows a bridge and hits Base in 3D range; pause freezes X and overtime continues it.
 - [ ] Boss attack cannot damage destroyed/unreachable target; **Dạ Xoa death triggers immediate Victory and cancels all pending/new spawns**, run end cancels boss projectiles.
 - [ ] Enemy death tạo **WorldWoodDrop đúng một lần**, WoodWallet chỉ thay đổi sau Hero pickup, không pooled stale IDs.
 - [ ] Spawner honors cap and backpressure, no permanent queue on reset.
