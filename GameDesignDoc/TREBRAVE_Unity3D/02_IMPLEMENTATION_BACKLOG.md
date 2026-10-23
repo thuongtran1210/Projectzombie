@@ -21,6 +21,8 @@
 | U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause đóng băng AI/spawn/cooldown/damage/game-time; no double subscription |
 | U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP |
 
+**Trình tự chuẩn bị G0-B (planning only):** chốt D-03/D-04 theo [Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md), thu baseline scene + backup theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md). **U3D-001 và U3D-002 chưa được đánh DONE/PASS** cho tới khi owner + Unity evidence xác nhận.
+
 **G1 prototype adapter:** trước tiên nối hệ thống mới vào script hiện hữu qua interface thay vì xóa/đổi tên `.cs`/`.meta`. Dễ rollback, an toàn scene.
 
 ## 3. Enemy foundation & combat shared contract (G2)
