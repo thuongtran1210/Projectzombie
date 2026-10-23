@@ -116,4 +116,4 @@ Tester / screenshot / log:
 G0-S1..S6: pass/fail/not_run per item:
 ```
 
-**Approval rule:** Bản sao lưu thành công chỉ pass phần G0-S1..S4 (nếu chứng minh). **D-03/A, D-04/A, D-05, D-06/A, D-11/A đã được duyệt**; **D-01/A và riêng D-07-01/A đã APPROVED**; vẫn cần D-02, D-07-02..08, D-08..D-10, xác minh backup và QA G0-S5..S6 trước khi Gate G0 hoàn thành. **Không tự động code sau khi chạy script này.**
+**Approval rule:** **Toàn bộ D-01..D-11 đã được duyệt về thiết kế** (D-07/A đủ 8/8 nguyên tắc; production numbers chưa khóa; **D-10/A là chính sách sao lưu, không phải hành động đã làm**). **Không có bằng chứng backup local G0-S1..S4 hoặc QA G0-S5..S6 tại thời điểm viết**, Gate G0 **CHƯA PASS**. Chỉ sau khi backup/QA được đối chứng và owner đóng Gate mới được cân nhắc code ở phiên khác. Không tự động code sau khi chạy script này.
