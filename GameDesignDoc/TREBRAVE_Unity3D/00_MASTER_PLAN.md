@@ -89,7 +89,7 @@ Xem [Decision Log & QA](03_DECISIONS_QA.md): **D-01..D-11 được owner duyệt
 - [04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md): các phương án quyết định A/B và bằng chứng Gate0.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): 34 mốc, 214 spawn jobs source, runtime enemy conversion và các ca QA.
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): lựa chọn D-03 / D-04, thời gian trận/Overtime, Hero down/respawn, kiểm thử biên.
-- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only scene GLB NavMesh meta, form bằng chứng Unity để đóng Gate G0.
+- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): copy-only backup Scene/GLB/NavMesh/meta và evidence card; **owner sign-off G0 đã được ghi**, full restore còn mở.
 - [08 — D-06 Enemy AI Review](08_D06_ENEMY_NAVIGATION_REVIEW.md): checklist 8 quyết định về Ground, Water, Air, Landing, GhostCannon, aggro, anti-air và safety; **8/8 phương án A đã duyệt, 18 D06-QA chưa chạy**.
 - [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **D-07/A 8/8 APPROVED về nguyên tắc**; số BaseHP/Gỗ/Tower/Enemy/Boss production chưa khóa; 12 D07-QA NOT_RUN.
 - [Vongxuyen Master Plan](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md) (kế hoạch Web).
