@@ -29,7 +29,7 @@
 | EXP-01 | `pickups/PickupManager.js`, `progression/ExperienceManager.js`, `config/experience.js` | chưa thấy module Defense3D tương đương | EXP gem magnet/pickup, XP curve, queue level-up, reset | X |
 | EXP-02 | `progression/UpgradeManager.js`, `config/upgrades.js`, `ui/UpgradeSelectionUI.js` | chưa thấy Defense3D 3-card modal | 3 non-duplicate options, stack cap, stat model authoritative | X |
 | MINION-01 | `defense/MinionManager.js`, `entities/MinionFactory.js` | chưa thấy `Defense3D` tương đương | ít nhất một dân binh; roles Dân Binh/Phu Tạp Dịch/Thầy Lang backlog | X |
-| RESULT-01 | Web `app/GameSession.js`, GameState, GameHUD | `DefenseRun6003D.OnGUI` WIN/LOSS panel, no menu router | result authoritative, restart cleanup, menu/scene transition & input guard | M |
+| RESULT-01 | Web `app/GameSession.js`, GameState, GameHUD | Unity `DefenseRun6003D.OnGUI` WIN ngay nếu hạ Boss, `DefenseHeroHealth3D` `Time.time` respawn | **D-03/A APPROVED:** WIN Base sống + đủ 600s + BossDead, OVERTIME nếu Boss còn; **D-04/A APPROVED:** Down 5 gameplay s rồi respawn; lifecycle/restart, input guards và terminal arbitration chưa code | M |
 | QA-01 | Vongxuyen Node test & QA docs | Unity local screen/log + remote code review | Unity edit/play tests, full 600s, 3 restarts, regression old SampleScene, Android later | V |
 
 **Đối chiếu code Unity phải tiến hành trên bản local sau khi user đã pull**, vì stash Fast Test `YakshaTime=10f` có thể làm script khác branch. Remote production default `510f`.
