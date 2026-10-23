@@ -1,3 +1,7 @@
+> ⚠️ **GDD v6 REVIEW NOTICE (2026-10-23):** Tài liệu này được **giữ như tham chiếu gameplay FUN của Projectzombie cũ**, không còn là nguồn xác định quái/Boss Map 01 trong GDD hợp nhất. Danh sách quái chuẩn theo Vongxuyen nằm tại [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md); quyết định giữ/quy hoạch các enemy cũ chờ **D09** ở [checklist](DECISION_CHECKLIST_GDD_V6.md). Cơ chế FUN hiệu ứng Unity có thể tái sử dụng nhưng không tự áp thiết kế 6/17 relic slots; chỉ **một pháp bảo/run**. Toàn bộ nội dung bên dưới là **LEGACY REFERENCE**, không sửa/loại bỏ code khi chưa được duyệt.
+
+---
+
 # TÀI LIỆU THIẾT KẾ KỸ THUẬT & GAMEPLAY CHI TIẾT: HỆ THỐNG COMBAT & ENEMY SLAPSTICK / BỰA / FUN
 
 > **Dự án:** Vong Xuyên (Project Zombie)  
