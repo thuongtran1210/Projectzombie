@@ -1,6 +1,6 @@
 # TREBRAVE Defense 3D (Unity) — Master Integration Plan
 
-**Status:** D-01..D-11 **APPROVED về thiết kế**, D-07/A 8/8 nguyên tắc; **Gate G0 chưa PASS** (backup/QA local chưa xác minh) — chỉ lập kế hoạch, **không cho phép tự động code**.
+**Status (2026-10-23):** D-01..D-11 APPROVED về thiết kế (D-07/A 8/8). **Gate G0 OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS** theo [hồ sơ owner sign-off](04_GATE0_APPROVAL_PACK.md); **G1 NOT AUTHORIZED, CHƯA CODE**. Full restore/full-run QA chưa nghiệm thu.
 **Ngày lập:** 2026-10-23. **Đích:** `thuongtran1210/Projectzombie`, nhánh `feat/trebrave-defense3d-first-scene`.
 **Nguồn tham chiếu:** `thuongtran1210/Vongxuyen` (Three.js), `docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md`, `docs/09-IMPLEMENTATION-PLAN-V04.md`, `src/config/stage01.js` và các module runtime (xem [Migration Matrix](01_MIGRATION_MATRIX.md)).
 **Tình trạng kiểm thử:** audit mã nguồn GitHub + lịch sử thao tác Unity do người dùng cung cấp; **không thực hiện Unity PlayMode/Android test trong đợt viết tài liệu này**.
@@ -42,7 +42,7 @@
 
 | Mốc | Gói | Yêu cầu xuất | Exit gate |
 |---|---|---|---|
-| **G0 — Baseline** | Quyết định luật, inventory, bảo vệ scene và GUID | quyết định D-01.., Unity mở scene không Missing Script, checkpoint local rõ | Gate 0: scope/luật được duyệt |
+| **G0 — Baseline** | Quyết định luật, inventory, bảo vệ scene và GUID | 6/6 critical Scene/NavMesh/GLB+meta SHA khớp backup, Git snapshot và 3 config khớp, Unity/Legacy owner verified; **full restore/QA giới hạn được ghi nhận** | **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS — 2026-10-23** |
 | **G1 — State** | GameState/Clock/Event lifecycle, reset/test harness | 1 clock, pause không update gameplay, restart không nhân handler | State Gate |
 | **G2 — Enemy Foundation** | Enemy definitions & damage/death/reward pipeline | HP/status/death/reward once; 5 type khác nhau trên dữ liệu | Enemy Data Gate |
 | **G3 — AI & Waves** | AI NavMesh/air/water roles + 34 events, spawn planner/cap | 3 cầu hoàn chỉnh, event đúng một lần, no spawn vào Hero | Spawn Gate |
@@ -76,10 +76,10 @@
 - **D-07 APPROVED/A (8/8) 2026-10-23 — Balance:** Web làm benchmark, Unity Balance Profile riêng; Gỗ khởi đầu ở baseline test đủ xây ≥1 Tower; 10 socket/Lv3; repair tốn Gỗ, có giới hạn; Wood/EXP là hai pickup riêng; stats Enemy và Boss riêng; Fast Test versioned + QA 600s. **Chưa khóa con số balance production**, chưa có Unity PlayMode evidence.
 - **D-08 APPROVED/A 2026-10-23 — Hero:** Core hoàn thiện **Thư Sinh** trước, hệ thống data/skills mở cho 4 Hero; **chưa khóa toàn bộ roster cuối cùng** (Web/Unity GDD lịch sử khác nhau).
 - **D-09 APPROVED/A 2026-10-23 — Pháp Bảo:** 1 slot/Hero, **Dép Tổ Ong** là MVP trước, phải có casting/aim/cooldown/damage thật, các Pháp Bảo khác sau Core.
-- **D-10 APPROVED/A 2026-10-23 — An toàn Unity/Legacy:** giữ nguyên scene, GLB, NavMesh, .meta/GUID và Survival 2D; backup + kiểm tra Unity Console + rollback trước thay đổi runtime/scene. **Chính sách đã duyệt, nhưng backup local và QA chưa xác minh**.
+- **D-10 APPROVED/A 2026-10-23 — An toàn Unity/Legacy:** bảo toàn scene, GLB, NavMesh, .meta/GUID và Survival 2D. Owner đã tạo snapshot copy-only, 6/6 file trọng yếu + 3 config hash khớp; Unity/Legacy owner verified. **Chưa có full restore/full 600s test**, phạm vi backup khác chưa chứng minh đầy đủ.
 - **D-11 APPROVED/A 2026-10-23 — Elite dẫn đầu theo event**: trong mỗi event Stage01 loại `magiap`, **một suất đầu tiên** đổi thành `phicuong`; không cộng suất, không phụ thuộc FPS/frame; không đổi `magiap_boss`. 20 event Ma Giáp → **20 Phi Cương + 108 Ma Giáp**, tổng **214** spawn jobs của 34 event. Web hiện đổi theo frame, nên đây là khác biệt đã được chấp thuận cho Unity.
 
-Xem [Decision Log & QA](03_DECISIONS_QA.md): **D-01..D-11 đã được chủ dự án duyệt về thiết kế, D-07/A 8/8**, không còn mục A/B pending trong danh mục này. **Gate G0 vẫn mở** vì backup local/QA/Legacy Console và review backlog chưa hoàn tất; các chỉ số balance production cần dữ liệu QA. Không cho phép bắt đầu code.
+Xem [Decision Log & QA](03_DECISIONS_QA.md): **D-01..D-11 được owner duyệt thiết kế**, **G0 đã được owner đóng có ghi giới hạn ngày 2026-10-23**. 27 backlog tickets remote-reviewed nhưng chưa code/ACCEPTED; thông số balance production chưa khóa. **Chỉ bắt đầu G1 sau khi owner cấp quyền code riêng**.
 
 ## 7. Danh sách tài liệu / audit trails
 
@@ -97,4 +97,4 @@ Xem [Decision Log & QA](03_DECISIONS_QA.md): **D-01..D-11 đã được chủ d�
 - [Projectzombie GDD lịch sử](../ProjectZombie_GDD.md) (thiên về Unity Survival 2D).
 - [README Defense3D prototype](../../Assets/Features/Defense3D/README.md) (không coi checklist cũ là QA đã đạt).
 
-**Điểm dừng:** **Toàn bộ D-01..D-11 đã được duyệt về yêu cầu**, nhưng **Gate G0 vẫn CHƯA PASS** do chưa có bằng chứng backup/Console/scene/Legacy QA và phê duyệt đóng Gate. Thông số production chưa khóa, 27 ticket vẫn kế hoạch. **Không code, không sửa scene**.
+**Điểm dừng sau G0:** G0 **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS**; 6/6 critical hashes, snapshot Git và 3 config hashes được owner xác nhận; G0 giới hạn full restore/QA độc lập được chấp nhận. **G1 NOT AUTHORIZED** — không code, không sửa scene/GLB/NavMesh/GUID, không pull/merge/reset/clean/stash pop; 27 ticket vẫn planning.
