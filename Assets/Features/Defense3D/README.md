@@ -123,3 +123,11 @@ Verification: Save scene → pull feature branch → reopen scene → install 60
 - **Important for existing scenes:** If `[TREBRAVE] 600s Defense Run` is already installed, attach **`DefenseHeroHealth3D`** manually to the `Hero_3D_Prototype` object before Play. Or run `TREBRAVE > Defense 3D > Install 600s Defense Run In Open Scene` again: this updated installer adds Hero Health even when the run controller is already present. Keep map GLB and baked NavMesh unchanged.
 
 This implementation is an incremental combat prototype, **not** a production boss: capsule visual, no animation, no VFX attack telegraph, no final audio, no skill priority system, and no final results/save screen. Actual Unity EditMode/PlayMode tests have not been run from cloud.
+
+## Yaksha visible blast + optional 3D prefab visual
+
+The Yaksha arena blast now presents a **red warning ring in Game View** (LineRenderer, no Gizmos needed), then applies proximity damage after a **1.1-second dodge window**. The cycle repeats only during `ARENA_COMBAT`; warning stops on assault, victory, or defeat. The original 5m radius, 30 damage, Hero HP and 5s respawn prototype remain.
+
+To replace the purple placeholder with **your own imported Yaksha visual**, select the existing `[TREBRAVE] 600s Defense Run` component and assign a compatible **GameObject prefab** to `Yaksha Visual Prefab`. The prefab is instantiated as a child of the gameplay object; its Colliders are disabled so it cannot alter your baked NavMesh. The capsule renderer becomes hidden, but its HP, bridge AI and hit detection continue to run. No model, skeletal animation or external asset is bundled with this commit; you must supply an imported character prefab yourself. Leave the field blank to keep the capsule prototype.
+
+Quick test: pull branch, open saved scene, Play until 510s (or temporarily reduce run scheduling in your own test copy), walk Hero toward Yaksha, watch the red ring and move out before blast. Verify `Yaksha warning` and `Yaksha arena blast hit Hero` only if Hero remains inside the blast radius at detonation. Confirm transition at 555s removes warning and keeps Yaksha HP. The cloud edits have **not** been verified in Unity PlayMode.
