@@ -16,6 +16,18 @@
 
 
 
+### Xác minh SHA-256 bổ sung — Packages & Build Settings (output do owner cung cấp)
+
+Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`BackedUp=True` và `HashMatches=True`**:
+
+| Relative path | Backup present | Source/backup SHA-256 equal |
+|---|---|---|
+| `Packages/manifest.json` | **True** | **True** |
+| `Packages/packages-lock.json` | **True** | **True** |
+| `ProjectSettings/EditorBuildSettings.asset` | **True** | **True** |
+
+**Giới hạn bằng chứng:** Đây là xác minh thành công **3 file cụ thể**, không phải hash-check toàn bộ Packages/ProjectSettings, restore test, Unity importer, scene/NavMesh. **G0-S4 = 3 KEY FILES HASH VERIFIED / PARTIAL, NOT_PASSED** cho tới khi kiểm kê phần còn lại. **G0-S2/S3 vẫn PARTIAL**, NavMesh chưa rõ; **G0-S5/S6 NOT_RUN; Gate G0 NOT_PASSED**.
+
 ### Backup copy-only do chủ dự án thực hiện — 2026-10-23 21:16 (Asia/Ho_Chi_Minh)
 
 - Chủ dự án chạy PowerShell tại `C:\Users\thuon\Unity\Projectzombie`; `Test-Path 'Assets\Scenes\Defense3D'` và `Test-Path 'Assets\Art\Environment'` đều trả `True`.
@@ -49,7 +61,7 @@
 | **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **PARTIAL_USER_REPORTED — NOT_PASSED** | Đã nhận `git status --short` (17 M / 8 ??), chưa có branch/HEAD/stash hoặc backup manifest |
 | **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | Snapshot ngoài repo có; 8 file cảnh báo trọng yếu ở hai thư mục đã khớp SHA-256; **chưa có tên từng scene và NavMeshData** |
 | **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | `Environment` local True; 8 files hash so sánh cho scene+environment, chưa xác minh từng GLB/meta và NavMesh ngoài cây |
-| **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **COPY_REPORTED / NOT_HASH_VERIFIED — NOT_PASSED** | User script `Copy-Item` cho toàn bộ `Packages` và `ProjectSettings`, không có lỗi hiển thị; chưa đối chiếu checksum / integrity / restore |
+| **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **3 KEY FILES HASH VERIFIED / PARTIAL — NOT_PASSED** | Owner báo cáo `BackedUp=True` và `HashMatches=True` cho `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset`; chưa kiểm tra toàn bộ folder và khả năng restore |
 | **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **NOT_RUN** | Không có Unity Editor local trong kết nối GitHub |
 | **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **NOT_RUN** | Remote YAML/Build Settings không chứng minh runtime |
 
