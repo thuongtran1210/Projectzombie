@@ -80,8 +80,10 @@ namespace ProjectZombie.Features.Defense3D
         public void BeginBossAssault(DefenseBasePrototype3D target)
         {
             if (IsDead || finished || !arenaMode) return;
+            float hpBeforeTransition = CurrentHP;
             arenaMode = false;
             Configure(1, target);
+            CurrentHP = hpBeforeTransition;
             Debug.Log("[TREBRAVE Defense3D] Yaksha entered ASSAULT_BASE.");
         }
 
