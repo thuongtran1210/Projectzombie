@@ -2,7 +2,7 @@
 
 **Status:** DRAFT về thiết kế triển khai; **D-05 + D-11/A đã được OWNER APPROVED ngày 2026-10-23**. Đây là tài liệu dữ liệu, **không phải C# implementation/PlayMode PASS**.
 **Source snapshot pinned:** Vongxuyen `src/config/stage01.js` blob `bb94a71df5ccddd8d93b0f8c961dac289667d9ea`; runtime `src/combat/WaveManager.js` blob `ec64826caf7de5f240a633de3f91d3b7ea46d4ab`; `src/entities/EnemyFactory.js`; `src/combat/SpawnPlanner.js`.
-**Hướng dùng:** D-05 và D-11 là hợp đồng đã duyệt để lập `test fixtures`; D-06 (đường bay/nước) và các điều kiện Gate G0 vẫn chưa được duyệt. Không thay C# constants khi chỉ lập kế hoạch.
+**Hướng dùng:** D-05 và D-11 là hợp đồng đã duyệt để lập `test fixtures`; D-06/A (bay 3D thật, Water→shore, 3 GhostCannon) đã được duyệt, nhưng Gate G0 còn mở. Không thay C# constants khi chỉ lập kế hoạch.
 
 ## 1. Stage01 source schedule — 34 events
 
@@ -127,7 +127,7 @@ const spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong'
 
 ## 6. Stop conditions / blockers
 
-- **D-05 và D-11/A đã duyệt;** tuy nhiên G0 và D-06 chưa đóng → không bắt đầu code Stage01/Enemy adapter.
-- D-06 pending → không ép Enemy nước/bay dùng cùng agent.
+- **D-05 và D-11/A đã duyệt;** tuy nhiên G0 chưa đóng dù D-06/A đã được duyệt → không bắt đầu code Stage01/Enemy adapter.
+- D-06/A APPROVED → không ép Enemy nước/bay dùng chung Ground NavMeshAgent; chuẩn bị QA riêng, không triển khai trước G0.
 - Scene NavMesh local chưa backup/verified → không kéo prefab/scene installer.
 - Không đưa source Web `EnemyFactory.js` vào Unity runtime; export art là việc G8.
