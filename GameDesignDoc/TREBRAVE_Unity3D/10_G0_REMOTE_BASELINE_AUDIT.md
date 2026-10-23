@@ -4,6 +4,31 @@
 **Trạng thái:** `REMOTE_INSPECTED / LOCAL_NOT_VERIFIED / G0_NOT_PASSED`.
 **Phạm vi assistant đã làm:** chỉ đọc repo/manifest/Unity editor scripts trên GitHub và cập nhật tài liệu. **Người dùng đã tự chạy backup local copy-only và báo cáo 8 file khớp hash**, không phải assistant có quyền truy cập ổ đĩa. **Không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không code gameplay.**
 
+## Bằng chứng mới nhất — Git snapshot và 6 critical asset hashes (owner PowerShell)
+
+**Nguồn:** chủ dự án gửi output PowerShell đọc trực tiếp từ `C:\Users\thuon\Unity\Projectzombie` và backup `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`. Đây là owner-generated output, **không phải assistant chạy trên local machine**. Kết luận mới dưới đây **thay thế trạng thái chờ trong các ghi chép theo trình tự thời gian phía sau**, giữ lịch sử audit cũ để truy vết.
+
+**G0-S1 — OWNER_OUTPUT_VERIFIED:** `git branch --show-current` và `git-branch.txt` cùng trả `feat/trebrave-defense3d-first-scene`. `git rev-parse HEAD` và `git-head.txt` cùng trả **`43ee2a806c593afe8704730f9daf012b52f56b35`**. `git stash list` và `git-stash.txt` cùng hiển thị:
+- `stash@{0}: On feat/trebrave-defense3d-first-scene: Backup DefenseRun6003D Fast Test`
+- `stash@{1}: On feat/trebrave-defense3d-first-scene: backup local DefenseRun6003D Fast Test`
+
+`git status --short` vẫn có **17 `M` + 8 `??` entries**, gồm `DefenseRun6003D.cs` modified, hàng loạt `.meta` modified, untracked `Assets/Scenes/Defense3D/` và `Assets/Art/Environment/`. **Không so sánh HEAD local với tip mới nhất của remote branch**; các docs đã được cập nhật trên GitHub sau bản local snapshot, không được kết luận 2 bản đồng bộ. **Không pull/checkout/clean/reset hoặc stash pop.**
+
+**G0-S2 / G0-S3 — CRITICAL_6_HASH_VERIFIED (owner output):** 6 đường dẫn sau đều có **`SourceExists=True; BackupExists=True; HashMatches=True`** sau so sánh SHA-256 nguồn và bản sao (script `Get-FileHash`):
+
+| Phạm vi | Đường dẫn từ project root | SHA-256 source vs backup |
+|---|---|---|
+| Scene | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity` | **MATCH** |
+| Scene meta | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity.meta` | **MATCH** |
+| NavMesh | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype/NavMesh-Defense_Navigation.asset` | **MATCH** |
+| NavMesh meta | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype/NavMesh-Defense_Navigation.asset.meta` | **MATCH** |
+| GLB | `Assets/Art/Environment/MapSongQue/TREBRAVE_MapSongQue_ThreeJS.glb` | **MATCH** |
+| GLB meta | `Assets/Art/Environment/MapSongQue/TREBRAVE_MapSongQue_ThreeJS.glb.meta` | **MATCH** |
+
+**G0-S4:** đã xác minh từ output trước `Packages/manifest.json`, `Packages/packages-lock.json` và `ProjectSettings/EditorBuildSettings.asset` có backup + SHA-256 khớp (3/3). Chưa hash toàn bộ `Packages/`, `ProjectSettings/`, importer/material và chưa có thử khôi phục thực tế. **G0-S5/S6** vẫn **OWNER_REPORTED_VERIFIED** (Console ảnh 0 Error, người dùng xác nhận map/Legacy), không nâng thành độc lập full-run QA.
+
+**Current decision:** G0-S1 = `OWNER_OUTPUT_VERIFIED`; G0-S2/S3 = `CRITICAL_ASSET_HASH_VERIFIED` (**6/6 đúng bản sao**, không chứng minh backup của mọi asset liên quan); G0-S4 = `THREE_KEY_FILES_HASH_VERIFIED / PARTIAL`; G0-S5/S6 = `OWNER_REPORTED_VERIFIED`. **Gate G0 = AWAITING_OWNER_SIGNOFF / NOT_PASSED**. Backlog 27 tickets đã rà soát từ xa, chưa owner sign-off/ACCEPTED; G1 chưa được cho phép, không code.
+
 ## 0. Bổ sung bằng chứng do chủ dự án gửi qua chat — 2026-10-23
 
 **Nguồn bằng chứng:** output PowerShell được chủ dự án tự cung cấp từ `PS C:\Users\thuon\Unity\Projectzombie>`; **không phải GitHub connector truy cập được máy local**.
@@ -97,9 +122,9 @@ Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`Back
 
 | Gate test | Evidence required | Status hôm nay | Vì sao |
 |---|---|---|---|
-| **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **PARTIAL_USER_REPORTED — NOT_PASSED** | Đã nhận `git status --short` (17 M / 8 ??), chưa có branch/HEAD/stash hoặc backup manifest |
-| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **BACKUP ASSETS IDENTIFIED / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận scene Prototype 135896 bytes và NavMeshData asset nằm trong cây scene, `InBackup=True`; NavMesh `.meta` output bị cắt, local scene/Unity QA chưa chạy |
-| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **GLB PRESENT / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận `TREBRAVE_MapSongQue_ThreeJS.glb` 6507936 bytes trong backup; chưa chứng minh Unity import/references và đủ toàn bộ meta/material |
+| **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **OWNER_OUTPUT_VERIFIED** | Branch `feat/trebrave-defense3d-first-scene`, HEAD `43ee2a8...`, 2 stashes khớp nội dung snapshot; 17 M/8 ?? local vẫn phải bảo toàn |
+| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **CRITICAL_ASSET_HASH_VERIFIED (4/4 Scene/NavMesh)** | Owner output: Scene+meta, NavMesh asset+meta đều SourceExists/BackupExists/HashMatches=True; còn full restore/other assets chưa test |
+| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **CRITICAL_ASSET_HASH_VERIFIED (2/2 GLB)** | Owner output: GLB+meta đều SourceExists/BackupExists/HashMatches=True; importer/material khác và full restore chưa test |
 | **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **3 KEY FILES HASH VERIFIED / PARTIAL — NOT_PASSED** | Owner báo cáo `BackedUp=True` và `HashMatches=True` cho `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset`; chưa kiểm tra toàn bộ folder và khả năng restore |
 | **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **OWNER_REPORTED_VERIFIED + PARTIAL SCREENSHOTS — G0 NOT_PASSED** | Hai ảnh: Console 20 Log / 0 Warning / 0 Error, map root/Hero/GLB/NavMesh/Run; owner sau đó xác nhận đã kiểm tra Missing Scripts + 3 cầu/10 sockets/NavMesh. **Không có evidence Inspector/runtime mới để độc lập nghiệm thu** |
 | **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **OWNER_REPORTED_VERIFIED — G0 NOT_PASSED** | Owner trả lời đã xác minh toàn bộ checklist gồm Legacy 2D; chưa cung cấp ảnh/log/QA Legacy riêng, chỉ ghi nhận lời xác nhận, không coi là full regression suite |
