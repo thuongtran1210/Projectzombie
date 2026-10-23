@@ -16,10 +16,10 @@
 | **D-07** | Web/Unity prototype có HP, Gỗ, Tower, Enemy/Boss và EXP khác nhau | **APPROVED/A đủ 8/8 mục D-07-01..08**: Web là nguồn benchmark; Unity Balance Profile riêng; baseline Gỗ đủ xây ≥1 Tower, 10 sockets/max Lv3, repair tốn Gỗ, Wood/EXP pickups riêng, Enemy/Boss theo profile, Fast Test/QA có version. **Phê duyệt NGUYÊN TẮC, KHÔNG KHÓA CON SỐ PRODUCTION**; 12 D07-QA NOT_RUN. [09 — Balance Review](09_D07_BALANCE_REVIEW.md) | **APPROVED (DESIGN) — 2026-10-23** |
 | **D-08** | Vongxuyen có Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ; GDD Unity lịch sử có Võ Tăng | **APPROVED/A:** Core ưu tiên **1 Hero Thư Sinh hoàn chỉnh**, thiết kế API/data mở rộng đến 4 Hero; **không yêu cầu hoàn thành đủ 4 trong Core**; danh sách roster cuối cùng chưa tự suy thành đã khóa | **APPROVED — 2026-10-23** |
 | **D-09** | Vongxuyen có 1 slot Pháp Bảo/run, 5 Relics FUN | **APPROVED/A:** **1 slot Pháp Bảo/Hero**, triển khai **Dép Tổ Ong đầu tiên** trong Core với ngắm/cast/cooldown/sát thương thật; các Relics khác để sau, không hiểu đây là đã có code | **APPROVED — 2026-10-23** |
-| **D-10** | Scene/GLB/NavMesh/.meta/GUID Unity local và Legacy 2D có nguy cơ mất dữ liệu, chưa xác minh tracked/backup | **APPROVED/A (SAFETY POLICY):** giữ scene, GLB, NavMesh, GUID, Survival 2D; sao lưu **trước thay đổi code/scene**, kiểm tra Console, compatibility và rollback. **CHƯA THỰC HIỆN/CHƯA XÁC MINH BACKUP, Unity QA NOT_RUN** | **APPROVED (POLICY) — 2026-10-23** |
+| **D-10** | Local scene/GLB/NavMesh/.meta/GUID và Legacy 2D có rủi ro khi sync remote, chưa được versioned đầy đủ | **APPROVED/A (SAFETY POLICY):** owner đã tạo backup ngoài repo, 6 critical Scene/NavMesh/GLB+meta và 3 file config SHA khớp, Unity/Legacy owner verified. Full restore/ngoài-snapshot asset chưa chứng minh; **G0 đã được owner đóng có ghi giới hạn**, không cho sửa scene/code | **APPROVED (POLICY) — 2026-10-23** |
 | **D-11** | `stage01.js` khai báo `magiap`; Web runtime có phép thay Ma Giáp đầu **mỗi frame** thành Phi Cương | **ĐÃ DUYỆT phương án A:** mỗi **sự kiện/đợt khai báo `type=magiap`** có **1 `phicuong` dẫn đầu, thay thế 1 suất `magiap`**; số suất của event giữ nguyên; không chuyển theo frame/FPS; không áp dụng cho `magiap_boss` | **APPROVED — 2026-10-23** |
 
-**Status hợp lệ:** `PENDING` / `APPROVED` / `REJECTED` / `SUPERSEDED`. **TOÀN BỘ D-01..D-11 đã OWNER APPROVED về các phương án thiết kế A trong phạm vi đã ghi, ngày 2026-10-23.** D-07 duyệt 8/8 nguyên tắc, **con số production chưa khóa**. **Gate G0 chưa PASS:** backup scene/GLB/NavMesh/meta và Unity Console/Legacy/PlayMode chưa xác minh; backlog/QA chưa được nghiệm thu; **không cho phép code**.
+**Decision status:** `PENDING / APPROVED / REJECTED / SUPERSEDED`. **D-01..D-11 đã OWNER APPROVED về thiết kế**, D-07/A đủ 8/8 nguyên tắc. **Gate G0 owner sign-off 2026-10-23: OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS** — chỉ Gate baseline, **G1 NOT AUTHORIZED**, 28 QA chính + 18 D06-QA + 12 D07-QA và full-run vẫn chưa nghiệm thu.
 
 ### Biên bản quyết định đã được chủ dự án phê duyệt — 2026-10-23
 
@@ -66,7 +66,7 @@ New test / migration required:
 | R-09 | Tích hợp Unity 3D phá SampleScene/Legacy menu | HIGH | no automatic override default build scene, regression test | QA-24 |
 | R-10 | Giả định mã GitHub chạy được Unity trên máy người dùng | HIGH | remote `DONE_CODE` ≠ `PASSED_PLAYMODE`; nhận log/screenshot/video local | QA gate mỗi stage |
 
-**Remote G0 review đã thực hiện:** [10 — Remote Audit](10_G0_REMOTE_BASELINE_AUDIT.md) ghi nhận scene và environment **không có trên feature branch**; đây là **remote inventory**, không phải G0-S1..S6 PASS hay backup local. Mọi QA bên dưới vẫn NOT_RUN.
+**Gate G0 owner sign-off (2026-10-23):** `OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS`. Bằng chứng chi tiết [10 — Audit](10_G0_REMOTE_BASELINE_AUDIT.md) và [04 — Owner Sign-off](04_GATE0_APPROVAL_PACK.md); 6/6 critical SHA verified và 3 config SHA verified, Unity/Legacy owner reported. **Các QA dự kiến ở bảng dưới mặc định vẫn `NOT_RUN` nếu chưa có test record riêng**.
 
 ## 3. QA Matrix — chưa được chạy trong đợt lập kế hoạch
 
@@ -111,7 +111,7 @@ Trạng thái mặc định của mọi case dưới đây: `NOT_RUN` (không t�
 
 | Gate | Exit condition | Ai xác nhận |
 |---|---|---|
-| G0 | **D-01..D-11 APPROVED về thiết kế**; G0-S1..S6 phải có backup ngoài repo đã đối chứng, Console sạch, scene/Legacy được kiểm tra; review 27-ticket plan và owner đóng Gate. **Hiện CHƯA PASS** | owner + tester Unity |
+| G0 | **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS — 2026-10-23.** D-01..D-11 approved; branch/HEAD/stashes match snapshot, 6/6 critical SHA and 3 key configs match; local Unity/Legacy owner reported. Full restore & full-run QA chưa nghiệm thu. **G1 chưa được phép code.** | owner sign-off recorded; QA independent/full-run vẫn mở |
 | G1 | QA-03..05 pass; one clock and no listener duplication | reviewer + tester |
 | G2 | QA-06..08 pass; HP/death/reward exactly once; registry verified | reviewer + tester |
 | G3 | QA-09..14 pass; wave/zone/3 bridges verified, special air/water tests | tester Unity |
@@ -158,7 +158,7 @@ Notes / next decision:
 - [ ] Unity scene mở lại, Console sạch lỗi compile/missing script; version/commit được ghi.
 - [ ] Trạng thái backlog chuyển `DRAFT→APPROVED` cho các ticket Gate G1; các Gate sau chưa được bật.
 
-**Tất cả D-01..D-11 đã được duyệt về thiết kế (D-07/A 8/8 nguyên tắc).** **Gate G0 CHƯA PASS** vì chưa có bằng chứng backup/Console/Legacy QA, chưa nghiệm thu backlog; không tự động code.
+**D-01..D-11 đã được duyệt; G0 đã được owner đóng `PASSED WITH RECORDED LIMITATIONS` ngày 2026-10-23.** Chưa chạy nghiệm thu full gameplay/QA và chưa có ủy quyền code G1; 27 tickets chưa `ACCEPTED`.
 
 
 ## 6. Review pack chi tiết (tài liệu lập kế hoạch)
@@ -168,5 +168,5 @@ Notes / next decision:
 - [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md): lựa chọn A/B, luật kết quả theo 600s, khóa G0-safety, D-11.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): bảng 34 event / 214 spawn jobs theo config nguồn, runtime elite transform, spawn restrictions, test fixtures.
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): **D-03/A và D-04/A APPROVED**, luật Boss chết sớm/Overtime/Hero Down/Pause, ML-01..ML-10 vẫn **NOT_RUN**.
-- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): chỉ dẫn sao lưu có thể đối chứng trước khi code; **backup local chưa xác minh**.
+- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): hướng dẫn và backup owner đã thực hiện; **bằng chứng 6/6 SHA + 3 config hash khớp**, chưa full restore test.
 - [08 — D-06 Enemy AI Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md): **8/8 phương án A APPROVED**, 18 ca nghiệm thu chi tiết **NOT_RUN** trong checklist riêng (chưa cộng vào 28 QA chính).
