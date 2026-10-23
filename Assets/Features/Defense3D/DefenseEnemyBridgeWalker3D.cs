@@ -63,11 +63,16 @@ namespace ProjectZombie.Features.Defense3D
             SetNextDestination();
         }
 
-        /// <summary>Boss remains in arena for a configurable number of seconds.</summary>
-        public void PrepareArenaBoss(float hp)
+        public void SetMaxHealth(float hp)
         {
             maxHP = Mathf.Max(1f, hp);
             CurrentHP = maxHP;
+        }
+
+        /// <summary>Boss remains in arena for a configurable number of seconds.</summary>
+        public void PrepareArenaBoss(float hp)
+        {
+            SetMaxHealth(hp);
             arenaMode = true;
             finished = false;
         }
