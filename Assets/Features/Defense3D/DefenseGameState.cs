@@ -47,7 +47,8 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
 
-            if (gameplaySeconds < 600f) return;
+            // Do not enter Win/Overtime from a suspended game state.
+            if (!AdvancesGameplay || gameplaySeconds < 600f) return;
             if (yakshaDefeated)
             {
                 Transition(DefenseGamePhase.Win);
