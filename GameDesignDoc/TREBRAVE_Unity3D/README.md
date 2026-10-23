@@ -1,6 +1,6 @@
 # TREBRAVE — Unity Defense3D Core Planning Hub
 
-**Status bộ tài liệu:** **D-01..D-11 APPROVED** (D-07/A 8/8 nguyên tắc). **G0 OWNER SIGN-OFF PENDING / CHƯA PASS**: owner đã backup ngoài repo, Git branch/HEAD/2 stashes đối chiếu khớp snapshot và **6/6 critical scene/NavMesh/GLB+meta SHA-256 MATCH**; 3 file Packages/Build Settings đã match; S5/S6 owner-reported verified. **27 tickets reviewed từ xa, chưa ACCEPTED; G1 chưa được cho phép; không code/sửa scene.**
+**Status bộ tài liệu (owner sign-off 2026-10-23):** **Gate G0 = OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS**; D-01..D-11 được duyệt về thiết kế (D-07/A 8/8). 6/6 hash Scene/NavMesh/GLB+.meta và 3 config hashes khớp backup; owner xác nhận Unity/Legacy; 27 tickets remote-reviewed. **G1 = NOT AUTHORIZED / NOT STARTED**; không code, không sửa scene/NavMesh/GLB/GUID, không pull/merge/reset/clean/stash pop. Full restore/full-run QA chưa nghiệm thu.
 
 ## Bộ tài liệu chuẩn bị để duyệt
 
@@ -10,14 +10,14 @@
 | **[01 — Migration Matrix](01_MIGRATION_MATRIX.md)** | 23 domain mappings, Enemy registry, khác biệt Stage01 vs Unity | xác minh thứ gì đã có code/thứ gì chưa |
 | **[02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md)** | U3D-001..U3D-027, priority, dependencies, acceptance | mở issue theo gates sau khi duyệt |
 | **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-11 **đã APPROVED**, D-07/A đủ 8/8 nguyên tắc; 28 QA chính chưa chạy | Decision log + Gate evidence, không đồng nghĩa code/QA PASS |
-| **[04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md)** | Toàn bộ quyết định A đã duyệt, G0-S1..S6 và review backlog còn chưa xác minh | **Gate G0 vẫn mở** |
+| **[04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md)** | Biên bản **OWNER SIGN-OFF đóng G0 có giới hạn** và ranh giới quyền triển khai G1 | **PASSED WITH RECORDED LIMITATIONS; G1 chưa được phép code** |
 | **[05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md)** | 34 event / 214 declared jobs; D-11/A → 20 Phi Cương + 108 Ma Giáp, giữ tổng suất | dữ liệu/test fixture cho Core Enemy/Wave |
 | **[06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md)** | **D-03/A D-04/A đã chốt**, luật WIN sau 600s + Yaksha và Hero hồi sinh 5 gameplay s; ma trận edge cases | đặc tả hai luật đã duyệt để lập trình/kiểm thử sau khi G0 pass |
 | **[07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md)** | Lệnh sao lưu copy-only ngoài repo, danh sách asset và form evidence Unity | bảo toàn scene/GLB/NavMesh/GUID và QA baseline |
 | **[08 — D-06 Enemy AI Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md)** | 8/8 phương án A đã duyệt: Ground/Water/Air/Landing/3 GhostCannon/aggro/spawn; 18 QA chưa chạy | **APPROVED về yêu cầu**, chưa code/QA |
 | **[09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md)** | **D-07-01..08/A APPROVED 8/8**, 12 D07-QA NOT_RUN, số production chưa khóa | **Phê duyệt nguyên tắc**, không chỉnh Inspector |
 | **[10 — Gate G0 Remote Audit](10_G0_REMOTE_BASELINE_AUDIT.md)** | Đã kiểm kê GitHub: script/manifest/build settings có; **scene Defense3D & Environment không có trên branch** | remote inspected; local backup/QA chưa xác minh |
-| **[11 — G0 Readiness & 27-Ticket Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md)** | Rà soát 27 ticket/54 dependency references, checklist bản sao NavMesh & git HEAD, chuẩn bị sign-off | **REVIEWED (remote), G0 CHƯA PASS** |
+| **[11 — G0 Readiness & 27-Ticket Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md)** | 27/27 ticket reviewed, chứng cứ backup/Git và biên bản G0 | **G0 SIGNED-OFF; 27 ticket chưa triển khai** |
 
 ## Kết luận audit ngắn
 
@@ -32,13 +32,13 @@
 
 **G0 REMOTE AUDIT ĐÃ THỰC HIỆN (2026-10-23):** [Báo cáo 10](10_G0_REMOTE_BASELINE_AUDIT.md) xác minh trên remote **không có** `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; Editor BuildSettings remote mới có Legacy SampleScene. Đây là **rủi ro local-only**, **không được suy ra scene đã bị xóa khỏi PC**. GitHub có 14 Defense3D gameplay scripts, 8 Editor scripts và `.meta` tương ứng. **Không kéo/rebuild/clean/reset** trước khi local backup.
 
-**G0 bước tiếp theo:** [11 — Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md) đã review 27/27 tickets, **Git branch/HEAD/stash và 6 file Scene/NavMesh/GLB+.meta đã MATCH bản backup** theo output owner. Chuẩn bị **Owner Gate G0 sign-off** (đồng thời chấp thuận cách bảo vệ dirty/untracked local); không nhầm G0 với Full-Run QA G7, không tự code G1. **Không pull/reset/clean/stash pop** khi chưa có kế hoạch tích hợp đã duyệt.
+**Sau khi G0 được đóng:** không cần duyệt lại G0. Tiếp tục **lập kế hoạch tích hợp bảo vệ 17 modified và 8 untracked path entries**, nếu/chỉ nếu owner cấp quyền code G1 riêng; [11 — Readiness Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md) ghi đủ giới hạn. **Không pull/checkout/merge/reset/clean/stash pop**, không chạy scene generator trong lượt này.
 
 **Vòng A — Design approval: HOÀN THÀNH về yêu cầu** — tất cả D-01..D-11 đã được chốt phương án A (D-05 không thêm miniboss; D-11/A một elite/event; D-07/A 8/8). Không coi đây là release-ready hoặc chứng nhận đủ 600s Unity.
 
-**Vòng B — Gate G0 readiness: AWAITING OWNER SIGN-OFF / CHƯA PASS** — Git local branch/HEAD/stashes khớp backup và **6/6 critical Scene/NavMesh/GLB+meta hash MATCH**; 3 Packages/Build Settings hashes MATCH; Console/Hierarchy có ảnh và Legacy/Missing Scripts/map do owner xác nhận. 27 ticket remote-reviewed. Full restore/chạy full game chưa nghiệm thu và không thuộc G0 tự động; chờ owner quyết định **đóng G0**, chưa quyền code G1.
+**Vòng B — Gate G0: OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS (23/10/2026).** Chủ dự án đã xem bằng chứng Git snapshot, SHA-256 6/6 asset trọng yếu + 3 config, Unity/Legacy owner verified và 27-ticket review; **full restore và full 600s run chưa nghiệm thu**, các giới hạn chấp nhận được ghi ở [04](04_GATE0_APPROVAL_PACK.md).
 
-**Vòng C — Code (CHƯA BẮT ĐẦU):** mã nguồn chỉ thay đổi sau khi G0 pass, bắt đầu G1 State/Clock; không rebuild scene, không rewrite mọi prototype cùng lúc. Mỗi ticket phải có PlayMode evidence, không đánh dấu DONE-QA chỉ từ GitHub diff.
+**Vòng C — G1 Code: CHƯA ĐƯỢC CHO PHÉP.** G0 pass không tự mở khóa G1; chỉ bắt đầu sau yêu cầu code riêng của chủ dự án và kế hoạch bảo vệ working tree local. Không rebuild scene, không rewrite prototype, QA theo từng ticket sau này.
 
 ## Hướng dẫn cho máy Unity local (chưa thực hiện tự động)
 
