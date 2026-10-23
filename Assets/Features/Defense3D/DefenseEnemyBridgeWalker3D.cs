@@ -1,32 +1,32 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
-    /// First bridge-path smoke test, deliberately independent of NavMesh baking.
-    /// Follows one of three canonical Sông Quê lanes; does not cross the river
-    /// outside a bridge. Replace with NavMeshAgent when walkability is validated.
+    /// Three-lane NavMesh smoke test. Each lane validates a complete path to its
+    /// bridge and across the canal before proceeding. Never moves through water
+    /// by transform fallback when NavMesh is absent or disconnected.
     /// </summary>
+    [RequireComponent(typeof(NavMeshAgent))]
     public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour
     {
         [SerializeField, Min(0.1f)] private float speed = 2.5f;
-        [SerializeField, Min(0.05f)] private float waypointTolerance = 0.2f;
         [SerializeField, Min(0f)] private float baseDamage = 25f;
+        [SerializeField, Min(0.1f)] private float arrivalRadius = 1.2f;
         [SerializeField] private DefenseBasePrototype3D targetBase;
+        private NavMeshAgent agent;
         private Vector3[] route;
         private int index;
         private bool finished;
 
         public void Configure(int lane, DefenseBasePrototype3D target)
         {
-            float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
             targetBase = target;
-            // Route moves strictly on land -> bridge -> land. The last
-            // waypoint is deliberately in front of the Base at x=-12.
+            float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
             route = new[]
             {
                 new Vector3(8.8f, 0f, z),
-                new Vector3(8.3f, 0f, z),
                 new Vector3(6.25f, 0f, z),
                 new Vector3(3.8f, 0f, z),
                 new Vector3(-1.8f, 0f, z),
@@ -35,33 +35,78 @@ namespace ProjectZombie.Features.Defense3D
             };
             index = 0;
             finished = false;
+            agent = GetComponent<NavMeshAgent>();
+            agent.speed = speed;
+            agent.angularSpeed = 360f;
+            agent.acceleration = 12f;
+            agent.stoppingDistance = 0.1f;
+            agent.autoBraking = true;
+
+            if (!NavMesh.SamplePosition(transform.position, out NavMeshHit start, 2f, NavMesh.AllAreas))
+            {
+                Fail("spawn position is outside baked NavMesh");
+                return;
+            }
+            agent.Warp(start.position);
+            SetNextDestination();
+        }
+
+        private void SetNextDestination()
+        {
+            if (finished || agent == null || !agent.isOnNavMesh || index >= route.Length)
+                return;
+            if (!NavMesh.SamplePosition(route[index], out NavMeshHit hit, 1.3f, NavMesh.AllAreas))
+            {
+                Fail("waypoint " + index + " is not on NavMesh");
+                return;
+            }
+            var path = new NavMeshPath();
+            if (!agent.CalculatePath(hit.position, path) || path.status != NavMeshPathStatus.PathComplete)
+            {
+                Fail("no complete route to waypoint " + index + " (check bridge NavMesh connection)");
+                return;
+            }
+            if (!agent.SetDestination(hit.position))
+                Fail("SetDestination rejected waypoint " + index);
         }
 
         private void Update()
         {
-            if (finished || route == null || route.Length == 0 || targetBase == null || targetBase.IsDestroyed)
+            if (finished || agent == null || !agent.isOnNavMesh || targetBase == null)
                 return;
-            Vector3 destination = route[index];
-            Vector3 direction = destination - transform.position;
-            direction.y = 0;
-            float distance = direction.magnitude;
-            if (distance <= waypointTolerance)
+            if (targetBase.IsDestroyed)
             {
-                if (++index >= route.Length)
-                {
-                    finished = true;
-                    targetBase.ReceiveDamage(baseDamage);
-                    Debug.Log("[TREBRAVE Defense3D] Test enemy reached Base; damage: " + baseDamage);
-                    Destroy(gameObject);
-                }
+                finished = true;
+                agent.isStopped = true;
                 return;
             }
+            if (agent.pathPending) return;
+            if (agent.pathStatus == NavMeshPathStatus.PathInvalid ||
+                agent.pathStatus == NavMeshPathStatus.PathPartial)
+            {
+                Fail("path became incomplete at waypoint " + index);
+                return;
+            }
+            if (agent.remainingDistance > Mathf.Max(arrivalRadius, agent.stoppingDistance + 0.1f))
+                return;
+            if (agent.hasPath && agent.velocity.sqrMagnitude > 0.02f)
+                return;
+            if (++index >= route.Length)
+            {
+                finished = true;
+                targetBase.ReceiveDamage(baseDamage);
+                Debug.Log("[TREBRAVE Defense3D] NavMesh enemy reached Base; damage: " + baseDamage);
+                Destroy(gameObject);
+                return;
+            }
+            SetNextDestination();
+        }
 
-            float movement = Mathf.Min(speed * Time.deltaTime, distance);
-            transform.position += direction.normalized * movement;
-            if (direction.sqrMagnitude > 0.0001f)
-                transform.rotation = Quaternion.Slerp(transform.rotation,
-                    Quaternion.LookRotation(direction.normalized), Time.deltaTime * 8f);
+        private void Fail(string reason)
+        {
+            finished = true;
+            if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+            Debug.LogWarning("[TREBRAVE Defense3D] Enemy route stopped: " + reason + " (" + name + ").");
         }
     }
 }
