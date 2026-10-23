@@ -1,85 +1,94 @@
-# PROJECTZOMBIE — DOCUMENT REFACTOR LEDGER v6 (DRAFT)
+# TREBRAVE / PROJECTZOMBIE — DOCUMENT REFACTOR LEDGER v6.1
 
-> **Trạng thái:** Proposed documentation IA / impact assessment; chưa phải toàn bộ file đã được refactor.  
-> **Nguồn:** GameDesignDoc trên Projectzombie main@657c8215; Vongxuyen main@5f5d9b26.  
-> **Mục đích:** xác định file cần sửa, file giữ, phần mâu thuẫn, owner và nguồn sự thật sau khi D01–D12 được duyệt.
+> **Status:** 12/12 product decisions OWNER-APPROVED (2026-10-23). **Implementation remains proposed**; P01–P08 are open sub-decisions, see [Decision Record](DECISION_CHECKLIST_GDD_V6.md).  
+> **Scope:** restructure documentation to make new TREBRAVE / full Unity 3D Defense first-class while protecting Projectzombie Unity 2D Legacy mode.  
+> **Document-only Draft PR:** no Unity scene/script/asset refactor is claimed or committed.
 
-## 1. Hệ phân cấp tài liệu
+## 1. Authority hierarchy / single source of truth
 
-**L0 — Product:** PROJECTZOMBIE GDD v6 xác định luật Map 01, 1 Hero / 1 Relic, gameplay chính và phạm vi sản phẩm.  
-**L1 — Game Feature Specs:** Map/Defense, Enemy Roster, Level Scenario, Combat & Relic, Hero Kits, UX Controls.  
-**L2 — Production Specs:** Tilemap/Art, UI Style, Physics Layers, Audio, Performance, Build, Data/Addressables.  
-**L3 — Services / Optional:** Multiplayer, Cloud Save, Monetization, Meta Progression.  
-**L4 — History:** v5.1 reference, design concepts, bản khác engine, các prototype bỏ.
+| Level | Files | Authority |
+| --- | --- | --- |
+| L0 Game Contract | [ProjectZombie_GDD.md](ProjectZombie_GDD.md), [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) | TREBRAVE, D01–D12, win/loss, 3D target, 1 Hero/Relic, core scope |
+| L1 Feature Contract | [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md), [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md), [LEVEL_SCENARIO_GUIDE.md](LEVEL_SCENARIO_GUIDE.md), [WEAPON_VISUAL_MANIFESTATION_RULES.md](WEAPON_VISUAL_MANIFESTATION_RULES.md) | Map / wood drop / tower / 7 enemy / boss / active relic / stage |
+| L1.5 Engineering Migration | [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md) | Existing 2D → Unity full 3D, adapters and Legacy compatibility |
+| L2 Art, Technical | Art/VFX, physics layers, tilemap, UI, audio, profile and addressables | Must follow L0; existing 2D specs are **Legacy-specific** |
+| L3 Optional | Multiplayer, cloud save, monetization, Ngũ Hành/Âm Dương | Code retained D12; may stay outside Defense MVP |
+| L4 History | GDD v5.1 in Git history, old 20-minute survival/six-slot specs | Not authoritative for Map 01 TREBRAVE |
 
-**Single Source of Truth:** GDD v6 nắm luật chơi, L1 nắm thuật toán/thông số; khi tài liệu khác mâu thuẫn, ghi issue và sửa cùng PR, không âm thầm chọn số bất kỳ. Mọi file phải có version/date/status/dependency và link tương đối.
+**Approved immutable rules:** main mode Defense, Legacy Survival retained; Unity target full stylized 3D; 4 selectable Heroes and 1/run; 5 FUN relic choices and 1 ACTIVE equipped/run; 600s timeline; **Base death ONLY Lose; Dạ Xoa final boss death Win**; wood drops collectible by Hero; 7 VX Map01 enemy; Hero/Tower only MVP; TREBRAVE brand, PZ repo technical; legacy optional code retained.
 
-## 2. Ma trận refactor
+**Pending details:** P01 four heroes identity/kit mapping, P02 timeout 600s if boss alive, P03 Hero death/downed/revive, P04 boss raid and event priority, P05 loot lifespan & pickup, P06 3D camera/render/asset migration, P07 relic FX mapping, P08 whether early boss kill ends before 600s / victory gate.
 
-| File | Hiện trạng trước refactor | Hành động v6 | Trạng thái trên nhánh draft |
-| --- | --- | --- | --- |
-| GameDesignDoc/ProjectZombie_GDD.md | GDD 5.1 survival 20m, 17 relic roster, enemy/boss cũ | **REWRITE** unified Map Sông Quê/Defense/1 Hero+Relic/VX enemies | DRAFT REWRITTEN |
-| GameDesignDoc/README.md | Index v5.1, link local file:/// và chỉ dẫn nhiều file thiếu | **REWRITE** relative link hub, status từng spec | DRAFT REWRITTEN |
-| GameDesignDoc/LEVEL_SCENARIO_GUIDE.md | Kịch bản 20 phút, Ngưu Đầu–Mã Diện và Diêm Vương | **REWRITE** reference 600s, 34 events, Boss 108/510, D07 | DRAFT REWRITTEN |
-| GameDesignDoc/WEAPON_VISUAL_MANIFESTATION_RULES.md | Nói “tối đa 6 pháp bảo cùng lúc” và 12 relic cổ phong | **REWRITE** one slot, 5 FUN candidates, active/auto pending D05 | DRAFT REWRITTEN |
-| GameDesignDoc/FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md | Vừa mô tả FUN relic cũ vừa có enemy/boss legacy | **REFACTOR NEXT** giữ FUN combat as mechanics reference; tách enemy cũ thành HISTORY nếu D09=A | LEGACY / NEEDS REVIEW |
-| GameDesignDoc/TILEMAP_DESIGN_SPEC.md | PPU=64, 2D Tilemap chung, chưa mô tả 3 bridges/lane | **UPDATE AFTER D02** chuyên biệt hóa map, giữ PPU nếu vẫn 2D | D02 BLOCKED |
-| GameDesignDoc/PHYSICS_LAYER_DESIGN_SPEC.md | Layers 2D theo enemy/player/projectile | **UPDATE AFTER D02** thêm Base/Tower/Ally/Water/Nav/Placement hitboxes | D02 BLOCKED |
-| GameDesignDoc/ART_VFX_STYLE_GUIDE.md | Mỹ thuật 2D, chưa nhất quán TREBRAVE 3D | **UPDATE AFTER D02** art target theo engine được duyệt; giữ readability/telegraph | D02 BLOCKED |
-| GameDesignDoc/GAME_UI_STYLE_GUIDE.md | Combat UI cũ, không có build/squad/base | **UPDATE** Defense HUD dock, contextual actions, mobile safe-area | NOT STARTED |
-| GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md | UI prompt cũ | **UPDATE** nếu UI role/state đổi | NOT STARTED |
-| GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md | Master audio DNA và mixer | **KEEP & EXTEND** feedback tower/base/wood/boss; không overwrite | NOT STARTED |
-| GameDesignDoc/MULTIPLAYER_ONLINE_SYSTEM_SPEC.md | Photon Fusion phạm vi multiplayer | **KEEP AS OPTIONAL** theo D12; thêm authority note Defense | D12 BLOCKED |
-| GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md | Save/migration | **KEEP & EXTEND** tránh persist Wood, stage schema version | NOT STARTED |
-| GameDesignDoc/ADMOB_MONETIZATION_SPEC.md | Ads/monetization | **KEEP AS OPTIONAL** không ảnh hưởng GDD lõi | D12 BLOCKED |
-| GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md | Benchmark/kiểm tra runtime cũ | **KEEP HISTORICAL**, chỉ cập nhật khi có đo performance mới | UNCHANGED |
-| GameDesignDoc/Uprades.doc | Artifact cũ, định dạng .doc | **AUDIT & ARCHIVE** (không xóa trước khi biết nội dung) | UNCHANGED |
-| README.md (root) | Mô tả Vong Xuyên survivor 2D, long 20m | **UPDATE AFTER APPROVAL** brand/pitch và link GDD v6 | NOT STARTED |
-| DEVELOPMENT_GUIDE.md | Quy trình và kiến trúc Unity, feature-based | **KEEP**; bổ sung Defense module khi code triển khai | UNCHANGED |
+## 2. File-by-file refactor status
 
-**Không xoá** assets/scripts/tài liệu cũ hoặc chỉnh Save keys trong PR tài liệu. GDD cũ được lưu bởi lịch sử Git của branch base; có thể xuất ARCHIVE/v5_1 nếu team muốn bản đọc độc lập.
+| File | Status on draft PR | Next task |
+| --- | --- | --- |
+| [ProjectZombie_GDD.md](ProjectZombie_GDD.md) | **UPDATED v6.1 / OWNER DESIGN APPROVED** | Fill Pxx after owner follow-up; not claim Unity runtime is 3D yet |
+| [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) | **UPDATED 12/12 APPROVED** | Track P01–P08 |
+| [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md) | **UPDATED** 3D, wood pickup, tower-only MVP | Balance and 3D assets, QA |
+| [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md) | **UPDATED** VX7, final boss, 3D prefab targets | Prefab creation/AI design/tests |
+| [LEVEL_SCENARIO_GUIDE.md](LEVEL_SCENARIO_GUIDE.md) | **UPDATED** 600s, boss kill win, Base only loss, legacy timeline isolated | P02/P03/P04 event resolution |
+| [WEAPON_VISUAL_MANIFESTATION_RULES.md](WEAPON_VISUAL_MANIFESTATION_RULES.md) | **UPDATED** 5 active FUN, one slot, 3D aim ghost | P07 effect mapping |
+| [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md) | **NEW** 3D scene/pipeline, Legacy 2D and migration phases | P06 architecture/asset spike |
+| [README.md](README.md) | **UPDATED** design hub / approved vs pending | Audit links and optional specs |
+| [FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md](FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md) | **LEGACY** combat effects reference, enemy list replaced | Later split reusable FUN effects into 3D active specs |
+| [TILEMAP_DESIGN_SPEC.md](TILEMAP_DESIGN_SPEC.md) | **LEGACY ONLY** 2D/PPU 64 | No longer defines Map 01 TREBRAVE |
+| [PHYSICS_LAYER_DESIGN_SPEC.md](PHYSICS_LAYER_DESIGN_SPEC.md) | **LEGACY 2D**; 3D needs dedicated layer matrix | Add 3D-only layer/collision/raycast guide after P06 |
+| [ART_VFX_STYLE_GUIDE.md](ART_VFX_STYLE_GUIDE.md) | **LEGACY 2D**; 3D target from TREBRAVE art vision | New TREBRAVE 3D art bible, rigs, silhouette/LOD |
+| [GAME_UI_STYLE_GUIDE.md](GAME_UI_STYLE_GUIDE.md) | **NEEDS 3D DEFENSE HUD REFACTOR** | Base, wood pickup, tower, boss, 5 relics active; NO Squad dock MVP |
+| [UI_PROMPT_AND_ART_GUIDE.md](UI_PROMPT_AND_ART_GUIDE.md) | **LEGACY / REVIEW** | New 3D camera and UI style after P06 |
+| [AUDIO_SYSTEM_DESIGN_SPEC.md](AUDIO_SYSTEM_DESIGN_SPEC.md) | **KEEP** services; extend 3D spatial audio | Add wood pickup/base/tower/boss alerts |
+| [CLOUD_SAVE_SYSTEM_SPEC.md](CLOUD_SAVE_SYSTEM_SPEC.md) | **KEEP**; migration required | Separate legacy vs Defense and wood run-only |
+| [MULTIPLAYER_ONLINE_SYSTEM_SPEC.md](MULTIPLAYER_ONLINE_SYSTEM_SPEC.md) | **KEEP OPTIONAL** D12=A | Co-op Defense out of MVP |
+| [ADMOB_MONETIZATION_SPEC.md](ADMOB_MONETIZATION_SPEC.md) | **KEEP OPTIONAL** D12=A | Monetization not required for first Defense slice |
+| [PERFORMANCE_OPTIMIZATION_REPORT.md](PERFORMANCE_OPTIMIZATION_REPORT.md) | **HISTORICAL BASELINE** | Measure true Android Unity 3D performance |
+| Uprades.doc | **LEGACY PENDING AUDIT** | Inspect original binary before archive/migration |
+| ../README.md | **OLD UNITY 2D README / Legacy-current-runtime** | Display accurate present code vs approved future TREBRAVE target |
+| ../DEVELOPMENT_GUIDE.md | **KEEP** feature-based architecture | Add 3D implementation modules only when code exists |
 
-## 3. Conflict registry
+**Note:** Some untouched old docs still describe legacy 2D/survival scope; these do not override GDD v6.1. UI, Art, Physics and Audio deep refactors are separate post-P06 documentation work, not silently claimed completed by this PR.
 
-| ID | Mâu thuẫn | Nguồn A | Nguồn B | Resolution |
-| --- | --- | --- | --- | --- |
-| C01 | Core gameplay | PZ v5.1 survival hack-slash | VX hero TD 3 lanes | Chờ D01 |
-| C02 | Map 01 name/terrain | Bến Đò Vong Xuyên | Map Sông Quê two banks | GDD v6 proposed |
-| C03 | 20m vs 10m vs 900s timeline | LEVEL_SCENARIO / Level1_Timeline | VX Stage01 600s | D06, separate asset |
-| C04 | Win killing Diêm Vương vs survive/defend | PZ old scenario | VX Defense + Yaksha | D07 |
-| C05 | 6 shown vs 1 code relic slot | WEAPON_VISUAL_RULES | WeaponManager.MAX_WEAPONS=1 | 1 slot enforced |
-| C06 | 17 relic catalog vs five FUN | GDD v5.1 | VX active FUN set | D04–D05 |
-| C07 | Enemy roster | PZ ghost/deity bosses | VX magiap/water/bat/boss | D09 |
-| C08 | 2D 64PPU vs VX 3D semi-chibi | PZ art docs | VX art direction | D02 |
-| C09 | 4 hero names/kits differ | PZ multiple guides | VX roster | D03, identity mapping |
-| C10 | SP/MP, Gacha in MVP | PZ Services | VX prototype scope | D12 |
-| C11 | Economy reward auto vs gatherer role | VX DefenseRules, MinionManager | New PZ loop | D08 |
-| C12 | Commander plans vs implementation | VX squad plan | port requirement | D10 |
+## 3. Conflict registry — resolved vs pending
 
-## 4. Quy trình áp dụng thay đổi
+| ID | Conflict before owner decision | Resolution |
+| --- | --- | --- |
+| C01 | Survival vs Defense core | **RESOLVED D01=A:** Defense primary, Survival Legacy |
+| C02 | Old Bến Đò Vong Xuyên Map 01 | **RESOLVED D11=A:** Map Sông Quê, TREBRAVE |
+| C03 | 20m old vs 600s VX vs 900s timeline asset | **RESOLVED DESIGN D06=A:** 600s Defense; **engineering pending** new stage asset |
+| C04 | Hero dies Lose / 20m Diêm Vương boss vs Dạ Xoa | **RESOLVED D07=C:** only Base destroyed Lose, final Dạ Xoa killed Win; P02/P03/P04 still pending |
+| C05 | Six relics visual rule vs WeaponManager=1 | **RESOLVED D03/D04/D05:** 1 ACTIVE relic equipped/run |
+| C06 | 17 historic relics vs VX FUN 5 | **RESOLVED D04=A:** VX FUN five Map 01; legacy set preserved |
+| C07 | Old PZ enemies vs VX seven | **RESOLVED D09=A:** VX seven Map 01, old PZ enemies Legacy/Future |
+| C08 | 2D Tilemap/PPU vs VX 3D art | **RESOLVED D02=C TARGET:** full stylized Unity 3D, **MIGRATION NOT DONE**; P06 |
+| C09 | Four hero identities/kit naming | **PARTIAL D03=A:** four selectable, one/run; **P01 pending** identity mapping |
+| C10 | Multiplayer, Gacha, Meta in first launch | **RESOLVED D12=A:** code preserved, non-core out of MVP |
+| C11 | Wood credited on kill vs physical pickup | **RESOLVED D08=B:** wood **drops**, Hero pickup in MVP; Phu post-MVP |
+| C12 | Commander/squad launch scope | **RESOLVED D10=C:** NO friendly army/squad in MVP |
 
-1. Ký checklist D01–D12, ghi rationale nếu chọn khác phương án đề xuất.
-2. GDD root cập nhật quyết định và một bộ từ điển key chính thức: Map01, Hero, RelicSlot, Wood, Base, Tower, Lane, Enemy.
-3. Đặc tả L1 đồng bộ từ GDD; chỗ chưa có code dùng nhãn PROPOSED.
-4. Tài liệu L2 chỉ thay đổi phần có tác động thật; giữ nguyên tech constraints không xung đột.
-5. Đối chiếu bằng tìm kiếm từ khóa legacy: “20:00”, “20 phút”, “6 pháp bảo”, “Diêm Vương”, “Bến Đò Vong Xuyên”, “17 pháp bảo”, “1 pháp bảo”; cập nhật hoặc đóng khung HISTORICAL.
-6. Documentation PR review; không merge nếu còn hai rule active mâu thuẫn. QA tài liệu link markdown và nguồn external.
-7. Sau merge mới tạo issue/PR code và asset theo P0–P7.
+## 4. Deliverables and future documentation PRs
 
-## 5. Naming dictionary tạm thời
+**Documentation PR #1:** decisions and authoritative GDD/spec contracts recorded + compatibility notices. Keep it in draft while implementation-details Pxx and review are open.
 
-- Repo/project kỹ thuật: Projectzombie (không đổi).
-- Tên sản phẩm hiển thị: CHỜ D11.
-- Map 01: Map Sông Quê (proposal).
-- Hero: one controlled player entity per run.
-- Relic: one equipped slot; not synonymous with Basic Attack, Skill, or summoned pet.
-- Stage Time: t_gameplay; không dùng wall clock.
-- Wave: scheduled encounter event; Lane: strategic traversal route; Zone: spawn/build/AI restriction.
-- Wood: currency in-run; Coins: meta currency; EXP: level-progression.
-- Base: primary defend structure; Tower: built structure; Friendly: recruited allied unit; Squad: group of friendly soldiers.
-- Enemy ID: stable VX typeId mapping; Unity prefab names có thể khác nhưng SO phải có alias rõ.
-- Status: EXISTING-PZ / REFERENCE-VX / PROPOSED-PZ / APPROVED / BACKLOG / HISTORICAL.
+**Next doc set after P06:**
+1. Unity full 3D Art Bible (concept ratios, rigs, meshes, shaders, FX), scene and camera setup, performance LOD.
+2. 3D Physics/AI Navigation/Enemy Target Layer Spec with raycasts, NavMesh topology, water and flying.
+3. Defense-only HUD/UX spec, active five relic VFX and wood pickup input.
+4. Hero roster mapping P01 and 3D Enemy/Boss art sheets/skills.
+5. Wood loot, boss after-timeout and respawn flow P02–P05.
+6. Level data SO contracts, timeline migration, 3D scene/prefab Addressables naming map.
+7. Post-MVP Dân Binh/Phu/Thầy Lang/Squad specification in separate backlog, not MVP.
 
-## 6. Owner approval
+**Source snapshots:** PZ main@657c8215 and VX main@5f5d9b26. Git history preserves old GDD v5.1; never delete assets/keys when refactoring docs.
 
-Tài liệu này chưa được phê duyệt. [GDD v6](ProjectZombie_GDD.md) và [Checklist](DECISION_CHECKLIST_GDD_V6.md) phải cùng phiên bản sau mỗi vòng chốt.
+## 5. Authoritative product vocabulary
+
+- Brand: **TREBRAVE**; technical repo/namespace: **Projectzombie**.
+- Mode: **Defense (primary)**; **Survival Legacy** retained.
+- Map 01: **Map Sông Quê**; two banks, three bridges/lanes.
+- Hero: **one controlled per run, from roster of 4**; exact kit names P01.
+- Relic: **one equipped ACTIVE per run, from five FUN**.
+- Base: **only Lose trigger**. Final Boss Dạ Xoa: **Win trigger**.
+- Timer: **600 gameplay seconds**; P02 overtime pending.
+- Wood: **world drop, then Hero pickup**; never auto-grant on kill.
+- Tower: 10 fixed pedestals baseline, L1–L3; friendly army **post-MVP**.
+- Status: **OWNER DESIGN APPROVED** / **PENDING DETAIL** / **UNITY IMPLEMENTATION TODO** / **LEGACY** / **HISTORICAL**.
