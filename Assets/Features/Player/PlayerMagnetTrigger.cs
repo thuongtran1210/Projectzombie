@@ -156,12 +156,23 @@ namespace ProjectZombie.Features.Player
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (_parentMagnet == null) return;
+            if (_parentMagnet == null || collision == null) return;
 
-            if (collision.TryGetComponent<ICollectible>(out var collectible))
-            {
-                _parentMagnet.OnCollectibleDetected(collectible);
-            }
+            // Legacy 2D physics path remains supported.
+            var collectible = collision.GetComponent<ICollectible>() ??
+                              collision.GetComponentInParent<ICollectible>();
+            _parentMagnet.OnCollectibleDetected(collectible);
+        }
+
+        private void OnTriggerEnter(Collider collision)
+        {
+            if (_parentMagnet == null || collision == null) return;
+
+            // 3D SphereCollider triggers invoke OnTriggerEnter, not OnTriggerEnter2D.
+            // Support pickups whose collider lives on a child GameObject.
+            var collectible = collision.GetComponent<ICollectible>() ??
+                              collision.GetComponentInParent<ICollectible>();
+            _parentMagnet.OnCollectibleDetected(collectible);
         }
     }
 }
