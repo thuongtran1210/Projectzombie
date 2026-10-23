@@ -1,7 +1,7 @@
 # Gate G0 — Unity Local Baseline & Backup Runbook
 
 **Status:** DRAFT / CHƯA THỰC THI TRÊN MÁY NGƯỜI DÙNG · 2026-10-23.
-**Goal:** lưu và chứng minh backup sạch của scene Map Sông Quê + gameplay data **trước** code G1. Việc có hướng dẫn này **không phải xác nhận backup đã xong**.
+**Goal:** ghi quy trình bảo vệ scene Map Sông Quê. **Owner đã tạo backup copy-only và hoàn thành đối chiếu 6/6 file quan trọng + 3 config hashes trước G0 sign-off 2026-10-23**, nhưng chưa có full restore test; các lệnh ở dưới là **mẫu lịch sử**, không yêu cầu tự động chạy lại.
 
 **Remote audit completed 2026-10-23:** [10 — G0 Remote Baseline Audit](10_G0_REMOTE_BASELINE_AUDIT.md) xác minh trên GitHub hiện **không có** `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; Build Settings remote chỉ có Legacy SampleScene. **Đừng pull/checkout/regen để “lấy lại scene” khi chưa backup local**. Sau copy-only backup, kiểm tra xem data NavMesh có folder ngoài danh sách; copy thêm asset đó.
 **Máy mục tiêu:** Windows, Unity 2022.3.62f3, local project `C:\Users\thuon\Unity\Projectzombie`.
@@ -99,7 +99,7 @@ git status --short
 5. Mở `SampleScene` của Survival cũ, ghi test không regression; quay lại scene Defense theo menu Open Scene bình thường, không dùng generator.
 6. Ghi lại scene path, git HEAD và các local modified files; mỗi QA ở giai đoạn planning = `NOT_RUN` cho tới khi thực sự chạy.
 
-## 6. Gate G0 Evidence Card (điền sau, chưa pass)
+## 6. Gate G0 Evidence Card — mẫu gốc và owner sign-off
 
 ```text
 Date/time (Asia/Ho_Chi_Minh):
@@ -118,4 +118,4 @@ Tester / screenshot / log:
 G0-S1..S6: pass/fail/not_run per item:
 ```
 
-**Approval rule:** **Toàn bộ D-01..D-11 đã được duyệt về thiết kế** (D-07/A đủ 8/8 nguyên tắc; production numbers chưa khóa; **D-10/A là chính sách sao lưu, không phải hành động đã làm**). **Không có bằng chứng backup local G0-S1..S4 hoặc QA G0-S5..S6 tại thời điểm viết**, Gate G0 **CHƯA PASS**. Chỉ sau khi backup/QA được đối chứng và owner đóng Gate mới được cân nhắc code ở phiên khác. Không tự động code sau khi chạy script này.
+**Approval record superseding the blank historical form:** **Chủ dự án đã phê duyệt đóng G0 ngày 2026-10-23: `OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS`.** Đã đối chiếu owner output: branch/HEAD/2 stashes, 6/6 SHA-256 Scene/NavMesh/GLB+.meta, 3 file Packages/Build Settings; Unity Console/Map/Legacy owner verified. **Chưa full backup restore, chưa nghiệm thu full-run QA, chưa khóa số balance production.** Xem [04 — Owner G0 Sign-off](04_GATE0_APPROVAL_PACK.md). **G1 chưa được phép code**; không pull/merge/reset/clean/stash pop, không sửa Scene/NavMesh/GLB/GUID.
