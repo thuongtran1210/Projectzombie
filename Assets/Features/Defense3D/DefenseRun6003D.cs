@@ -27,7 +27,9 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private Vector3 yakshaVisualLocalEuler = Vector3.zero;
         [SerializeField] private Vector3 yakshaVisualLocalScale = Vector3.one;
 
-        private float elapsed;
+        private DefenseG1RuntimeAdapter g1;
+        private bool yakshaDefeated;
+        private float elapsed => g1 != null ? g1.Run.Clock.ElapsedSeconds : 0f;
         private int nextEvent;
         private bool minibossSpawned;
         private bool bossSpawned;
@@ -49,6 +51,8 @@ namespace ProjectZombie.Features.Defense3D
                 enabled = false;
                 return;
             }
+            g1 = new DefenseG1RuntimeAdapter();
+            g1.Start();
             defenseBase.BaseDestroyed += OnBaseDestroyed;
             heroHealth = sceneInfo.HeroSpawn != null ? sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>() : null;
             Debug.Log("[TREBRAVE Defense3D] 600s run started: 34 timed events, Miniboss@108, Yaksha@510.");
@@ -58,12 +62,16 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (defenseBase != null) defenseBase.BaseDestroyed -= OnBaseDestroyed;
             if (yaksha != null) yaksha.Defeated -= OnYakshaDefeated;
+            if (g1 != null) g1.Dispose();
         }
 
         private void Update()
         {
+            if (ended || g1 == null) return;
+            // One authoritative clock and terminal resolver; Base loss precedes boss victory.
+            g1.Tick(Time.deltaTime, defenseBase.CurrentHP, yakshaDefeated);
+            ApplyG1Result();
             if (ended) return;
-            elapsed += Time.deltaTime;
 
             // Preserve all due events even during occasional long frames.
             while (nextEvent < EventCount && elapsed >= nextEvent * EventInterval && !ended)
@@ -86,7 +94,11 @@ namespace ProjectZombie.Features.Defense3D
                 if (arenaCombat != null) arenaCombat.EndArena();
                 yaksha.BeginBossAssault(defenseBase);
             }
-            if (elapsed >= RunDuration && !overtimeLogged)
+            // Re-evaluate after frame events; never make pre-600 boss defeat a victory.
+            g1.Tick(0f, defenseBase.CurrentHP, yakshaDefeated);
+            ApplyG1Result();
+            if (ended) return;
+            if (g1.Run.State.Phase == DefenseGamePhase.Overtime && !overtimeLogged)
             {
                 overtimeLogged = true;
                 Debug.Log("[TREBRAVE Defense3D] OVERTIME: 600s elapsed, wait for Yaksha defeat or Base destruction. No additional timed spawns.");
@@ -159,21 +171,29 @@ namespace ProjectZombie.Features.Defense3D
 
         private void OnYakshaDefeated(DefenseEnemyBridgeWalker3D enemy)
         {
-            if (ended || defenseBase == null || defenseBase.IsDestroyed) return;
-            ended = true;
-            won = true;
-            defenseBase.LockDamageAfterWin();
-            if (arenaCombat != null) arenaCombat.EndArena();
-            Debug.Log("[TREBRAVE Defense3D] WIN: Yaksha defeated while Base alive. All future spawns stopped.");
+            if (ended || g1 == null) return;
+            yakshaDefeated = true;
+            g1.Tick(0f, defenseBase.CurrentHP, true);
+            ApplyG1Result();
         }
 
         private void OnBaseDestroyed()
         {
-            if (ended) return;
+            if (ended || g1 == null) return;
+            g1.Tick(0f, 0f, yakshaDefeated);
+            ApplyG1Result();
+        }
+
+        private void ApplyG1Result()
+        {
+            if (ended || g1 == null || !g1.Run.State.IsTerminal) return;
             ended = true;
-            won = false;
+            won = g1.Run.State.Phase == DefenseGamePhase.Win;
+            if (won) defenseBase.LockDamageAfterWin();
             if (arenaCombat != null) arenaCombat.EndArena();
-            Debug.Log("[TREBRAVE Defense3D] Run ended: LOSS (BaseHP=0). All future spawns stopped.");
+            Debug.Log(won
+                ? "[TREBRAVE Defense3D] WIN: 600s elapsed and Yaksha defeated while Base alive."
+                : "[TREBRAVE Defense3D] LOSS: BaseHP=0 (priority over WIN).");
         }
 
         private void OnGUI()
