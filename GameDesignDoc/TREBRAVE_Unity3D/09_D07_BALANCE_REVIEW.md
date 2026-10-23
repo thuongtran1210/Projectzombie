@@ -1,6 +1,6 @@
 # D-07 — CHECKLIST REVIEW: Base, Hero, Enemy, Tower & Economy Balance
 
-**Status:** `D-07-01/A APPROVED (2026-10-23) / D-07-02..08 PENDING / D-07 tổng thể CHƯA DUYỆT` · **chỉ lập kế hoạch, KHÔNG CODE / KHÔNG ĐỔI CHỈ SỐ TRONG UNITY**
+**Status:** `D-07-01..08/A APPROVED 8/8 (2026-10-23) — nguyên tắc và phạm vi; thông số production CHƯA KHÓA` · **chỉ lập kế hoạch, KHÔNG CODE / KHÔNG ĐỔI CHỈ SỐ TRONG UNITY / D07-QA NOT_RUN**
 **Phụ thuộc đã duyệt:** D-03/A (WIN sau >=600s + Boss chết + Base sống), D-04/A (Hero Down, hồi sinh sau 5 gameplay s), D-05 (@108 chỉ 1 miniboss), D-06/A (8/8 Enemy Ground/Water/Air/Landing/GhostCannon), D-11/A (1 Phi Cương thay 1 suất mỗi event Ma Giáp).
 **Mục tiêu review:** chọn **nguyên tắc cân bằng** rồi mới khóa số; không nhập thông số Web vào Unity mặc định hoặc ghi đè scene / Inspector.
 
@@ -49,7 +49,7 @@
 | EXP mỗi enemy (Web) | Ma Giáp 14; Thủy Quái20; Huyết Dơi12; Phi Cương45; Tiểu Quỷ16; Miniboss95; GhostCannon80 | chưa có EXP reward pipeline cho Defense3D | data ID → XP amount, one-shot grant |
 | Hồi sinh | Web master có phương án khác; **D-04/A đã chốt** | prototype 5s | **5 gameplay seconds đã duyệt**; HP sau hồi sinh là tham số D-07 |
 
-## 2. D-07 — 1 mục đã duyệt, 7 mục còn chờ
+## 2. D-07 — 8/8 tiểu mục A đã được chủ dự án duyệt
 
 ### D-07-01 — Triết lý cân bằng và nguồn giá trị ban đầu
 - [x] **A — APPROVED 2026-10-23:** snapshot dữ liệu Vongxuyen + Unity hiện tại; dùng Web làm **starting benchmark/role identity**, chọn **Unity balance profile v0** riêng, sau đó tune từ 600s PlayMode; không auto-copy con số giữa engine.
@@ -57,10 +57,10 @@
 - [ ] **C:** giữ nguyên tất cả số prototype Unity.
 - [ ] Khác: __________
 
-**Biên bản D-07-01/A đã duyệt:** Chủ dự án chỉ phê duyệt **nguồn/tham chiếu cân bằng**. Vongxuyen là benchmark, Unity dùng profile riêng có version, việc điều chỉnh số dựa trên PlayMode. **Không phê duyệt các giá trị Web/Unity mặc định và không phê duyệt D-07-02..08.**
+**Biên bản phê duyệt:** D-07-01/A đã được duyệt trước đó. Ngày **2026-10-23**, chủ dự án tiếp tục phê duyệt **D-07-02..08/A** theo checklist trong chat, không có điều chỉnh. **D-07/A duyệt 8/8 nguyên tắc**: Web làm benchmark, profile cân bằng Unity riêng, Gỗ đầu trận đủ xây ít nhất một Tower trong baseline test, tối đa Lv3/10 slots, sửa tốn Gỗ, Wood/EXP nhặt riêng, Enemy/Boss data riêng, Fast Test versioned. **Không duyệt số HP/Gỗ/giá/DPS production cụ thể và chưa chạy QA**.
 
 ### D-07-02 — BaseHP + Gỗ đầu trận
-- [ ] **A — ĐỀ XUẤT:** bảo đảm gameplay tutorial/cửa sổ xây tháp đầu trận, chọn **starting wood đủ xây ít nhất 1 tháp** ở baseline thử nghiệm; Base HP là config có version; **chưa khóa** 500/1000 cho production cho tới khi thử full-run.
+- [x] **A — APPROVED 2026-10-23:** bảo đảm gameplay tutorial/cửa sổ xây tháp đầu trận, chọn **starting wood đủ xây ít nhất 1 tháp** ở baseline thử nghiệm; Base HP là config có version; **chưa khóa** 500/1000 cho production cho tới khi thử full-run.
 - [ ] **B:** lấy cặp Web mặc định `500 HP / 100 Wood`.
 - [ ] **C:** giữ cặp Unity `1000 HP / 0 Wood`.
 - [ ] Khác / đề xuất số cụ thể: __________
@@ -68,36 +68,36 @@
 **Lý do:** D-03/A bắt buộc bảo vệ đủ 600s. Với 0 Gỗ đầu trận, cần kill+nhặt WoodDrop rồi mới xây; với Enemy bay thực theo D-06/A, nguy cơ game khó bất hợp lý nếu không có tháp anti-air khi bắt đầu.
 
 ### D-07-03 — Tower cấp độ / giá / tầm / độ bền
-- [ ] **A — ĐỀ XUẤT:** giữ cấu trúc Web **10 slot, tối đa Lv3**, chi phí `buildCost, upgradeCost[1→2], upgradeCost[2→3]`, HP/damage/range/fireInterval theo profile; số Web 50/40/80/250HP/range7m là baseline tham khảo, không khóa cứng.
+- [x] **A — APPROVED 2026-10-23:** giữ cấu trúc Web **10 slot, tối đa Lv3**, chi phí `buildCost, upgradeCost[1→2], upgradeCost[2→3]`, HP/damage/range/fireInterval theo profile; số Web 50/40/80/250HP/range7m là baseline tham khảo, không khóa cứng.
 - [ ] **B:** nhập đúng Web 50 Gỗ xây; +40/+80 nâng, 250 HP, 7m.
 - [ ] **C:** giữ Unity 25 Gỗ, range8m, tháp không HP/nâng cấp trong Core.
 - [ ] Khác: __________
 
 ### D-07-04 — Repair, chống hồi máu vô hạn, tài nguyên
-- [ ] **A — ĐỀ XUẤT:** repair Tower/Base có **chi phí Gỗ + cooldown/giới hạn/lượng hồi** có config; không dùng hàm Web `repairTower`/`repairBase` miễn phí không giới hạn. Có transaction atomic đảm bảo chỉ trừ phí khi repair thành công.
+- [x] **A — APPROVED 2026-10-23:** repair Tower/Base có **chi phí Gỗ + cooldown/giới hạn/lượng hồi** có config; không dùng hàm Web `repairTower`/`repairBase` miễn phí không giới hạn. Có transaction atomic đảm bảo chỉ trừ phí khi repair thành công.
 - [ ] **B:** giữ hành vi helper Web tăng 25 Tower HP hoặc 15 Base HP, không trừ Gỗ trong helper.
 - [ ] **C:** không cho sửa Base/Tower trong Core, tránh bơm kinh tế.
 - [ ] Khác: __________
 
 ### D-07-05 — WoodDrop & EXP là hai luồng thưởng
-- [ ] **A — ĐỀ XUẤT:** **Gỗ và EXP là tài nguyên khác nhau, theo pickup vật lý**, death/reward đúng một lần; Web `earnKill(10)` là reference nhưng không phát Gỗ trực tiếp nếu đã có WoodDrop; event type data quyết định reward/expiry/cap. Boss/cannon reward không tự cộng hai lần.
+- [x] **A — APPROVED 2026-10-23:** **Gỗ và EXP là tài nguyên khác nhau, theo pickup vật lý**, death/reward đúng một lần; Web `earnKill(10)` là reference nhưng không phát Gỗ trực tiếp nếu đã có WoodDrop; event type data quyết định reward/expiry/cap. Boss/cannon reward không tự cộng hai lần.
 - [ ] **B:** giết quái là vào ví Gỗ/EXP ngay, không cần nhặt.
 - [ ] **C:** Gỗ nhặt, EXP trực tiếp, hoặc cơ chế lai khác (ghi rõ): __________
 
 ### D-07-06 — Stat Enemy, phase scaling & anti-air
-- [ ] **A — ĐỀ XUẤT:** dùng ID gốc + bảng HP/speed/damage Web làm baseline **riêng theo Enemy**; hệ số theo phase có cap; AI bay/đổ bộ giữ role D-06/A; balance bắn quái bay qua test Tower/Hero, không dùng chung 100 HP/25 damage cho mọi Enemy.
+- [x] **A — APPROVED 2026-10-23:** dùng ID gốc + bảng HP/speed/damage Web làm baseline **riêng theo Enemy**; hệ số theo phase có cap; AI bay/đổ bộ giữ role D-06/A; balance bắn quái bay qua test Tower/Hero, không dùng chung 100 HP/25 damage cho mọi Enemy.
 - [ ] **B:** copy raw Web stats + `1+0.18*(phase-1)` HP scaling ngay.
 - [ ] **C:** giữ Enemy prototype Unity cùng chỉ số, khác hình ảnh.
 - [ ] Khác: __________
 
 ### D-07-07 — Boss HP, difficulty và điều kiện thắng D-03/A
-- [ ] **A — ĐỀ XUẤT:** Yaksha **tách Boss balance profile**, lưu reference 3200 Web/1200 Unity, kết hợp skill và uptime Hero/Tower rồi quyết định HP sau full-run; Miniboss có profile riêng, không mặc định 350 hay 700. **Không thay đổi D-03/A**.
+- [x] **A — APPROVED 2026-10-23:** Yaksha **tách Boss balance profile**, lưu reference 3200 Web/1200 Unity, kết hợp skill và uptime Hero/Tower rồi quyết định HP sau full-run; Miniboss có profile riêng, không mặc định 350 hay 700. **Không thay đổi D-03/A**.
 - [ ] **B:** Boss 3200 HP / Miniboss700 HP theo Web.
 - [ ] **C:** Boss1200 HP / Miniboss350 HP như Unity hiện tại.
 - [ ] Khác: __________
 
 ### D-07-08 — Benchmark, Fast Test & khóa số chính thức
-- [ ] **A — ĐỀ XUẤT:** config **Versioned `BalanceProfile`** + `FastTestProfile` tách biệt; kiểm thử 3 kịch bản đầu/mid/cuối run 600s, Enemy 5 loại + cannon + Yaksha, đếm lần xây/nâng tháp, Gỗ/EXP earned-vs-spent, Hero Down, Base HP và Overtime; chỉ chuyển v0→v1 sau **PlayMode evidence và owner duyệt**.
+- [x] **A — APPROVED 2026-10-23:** config **Versioned `BalanceProfile`** + `FastTestProfile` tách biệt; kiểm thử 3 kịch bản đầu/mid/cuối run 600s, Enemy 5 loại + cannon + Yaksha, đếm lần xây/nâng tháp, Gỗ/EXP earned-vs-spent, Hero Down, Base HP và Overtime; chỉ chuyển v0→v1 sau **PlayMode evidence và owner duyệt**.
 - [ ] **B:** chỉnh số Inspector tùy tay sau mỗi run, không lưu dữ liệu phiên bản.
 - [ ] **C:** không cân bằng cho đến khi model hoàn chỉnh.
 - [ ] Khác: __________
@@ -117,7 +117,7 @@
 - [ ] **D07-QA-11:** kiểm tra bình quân Wood income/spend và tuổi thọ Tower/Base trong 3 mốc trận, không softlock do Wood thiếu.
 - [ ] **D07-QA-12:** sau Restart ×3, Wood/EXP/HP/Boss/Upgrade/RunStats về giá trị profile; FastTest không bị lẫn production.
 
-**Trạng thái toàn bộ D07-QA: NOT_RUN.** Không cộng các ca này vào QA chính thức cho tới khi D-07 được owner duyệt và cập nhật QA Gate.
+**Trạng thái toàn bộ D07-QA: NOT_RUN.** D-07/A đã được duyệt về phạm vi thiết kế; 12 ca D07-QA-01..12 là **các test acceptance bắt buộc nhưng chưa chạy**, theo dõi riêng để tránh nhầm với 28 QA matrix chính. Không tự đánh dấu PASS/DONE_CODE hoặc đóng Gate G0.
 
 ## 4. Những câu hỏi kỹ thuật để khóa sau review
 
@@ -131,19 +131,19 @@
 
 ```text
 D-07-01 Source/reference baseline: **A — APPROVED 2026-10-23**
-D-07-02 BaseHP & starting Wood: A / B / C / số khác
-D-07-03 Tower economy/upgrade: A / B / C
-D-07-04 Repair: A / B / C
-D-07-05 WoodDrop & EXP: A / B / C
-D-07-06 Enemy scaling: A / B / C
-D-07-07 Boss HP/balance: A / B / C
-D-07-08 Balance profile/QA: A / B / C
+D-07-02 BaseHP & starting Wood: **A — APPROVED (test baseline có Gỗ đủ ít nhất 1 Tower; production numbers chưa khóa)**
+D-07-03 Tower economy/upgrade: **A — APPROVED (10 slots / tối đa Lv3 / chi phí data-driven)**
+D-07-04 Repair: **A — APPROVED (tốn Gỗ / cooldown hoặc giới hạn)**
+D-07-05 WoodDrop & EXP: **A — APPROVED (hai loại pickup, one-shot reward)**
+D-07-06 Enemy scaling: **A — APPROVED (stats theo loại, scaling theo phase có cap, anti-air)**
+D-07-07 Boss HP/balance: **A — APPROVED (Miniboss/Yaksha profile riêng, chưa khóa HP)**
+D-07-08 Balance profile/QA: **A — APPROVED (versioned profile + Fast Test riêng + QA 600s)**
 Các số cụ thể muốn khóa ngay:
 Ngoại lệ / chỉnh sửa:
-D-07: **APPROVE MỘT PHẦN** — chỉ D-07-01/A; D-07-02..08: PENDING
+D-07: **APPROVED 8/8 phương án A (2026-10-23)** — **nguyên tắc**, thông số production PENDING BALANCE QA, D07-QA NOT_RUN
 ```
 
-**Đề xuất cho phần còn chờ:** phương án A của D-07-02..08 (chưa duyệt). D-07-01/A đã duyệt về phương pháp, **chưa khóa mọi số production**. Bản Profile số cụ thể `balance-v0` cần duyệt ở một lần review sau với evidence hoặc số mặc định có nguồn và đã gắn nhãn "test only".
+**Phạm vi đã duyệt:** D-07/A đầy đủ 8/8. **Chưa khóa mọi con số production**; bản Balance Profile số cụ thể `balance-v0` chỉ là baseline để test và cần được xem lại sau khi có PlayMode evidence. Không tự copy chỉ số Web/Unity prototype hoặc biến con số ví dụ thành luật production.
 
 ## 6. Source links (blob đã kiểm tra 2026-10-23)
 
