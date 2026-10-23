@@ -12,7 +12,8 @@
 | L1 Feature Contract | [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md), [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md), [LEVEL_SCENARIO_GUIDE.md](LEVEL_SCENARIO_GUIDE.md), [WEAPON_VISUAL_MANIFESTATION_RULES.md](WEAPON_VISUAL_MANIFESTATION_RULES.md) | Map / wood drop / tower / 7 enemy / boss / active relic / stage |
 | L1.5 Engineering Migration | [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md) | Existing 2D → Unity full 3D, adapters and Legacy compatibility |
 | [YAKSHA_BOSS_PHASE_SPEC.md](YAKSHA_BOSS_PHASE_SPEC.md) | **NEW — OWNER-APPROVED P04** | Two strategic states ARENA_COMBAT → after X seconds from spawn → ASSAULT_BASE, K03 numeric/tie pending |
-| [UNITY_3D_CODE_AUDIT_2026-10-23.md](UNITY_3D_CODE_AUDIT_2026-10-23.md) | **NEW SOURCE AUDIT OF COMMITTED MAIN** | Classified existing Unity 2D dependencies and reuse potential; 3D branch not yet visible on GitHub; eight proposed implementation PRs |
+| [UNITY_3D_CODE_AUDIT_2026-10-23.md](UNITY_3D_CODE_AUDIT_2026-10-23.md) | **NEW SOURCE AUDIT OF COMMITTED MAIN** | Classified existing Unity 2D dependencies and reuse potential; historical snapshot before 3D branch review; eight proposed implementation PRs |
+| [UNITY_3D_BRANCH_CODE_REVIEW_2026-10-23.md](UNITY_3D_BRANCH_CODE_REVIEW_2026-10-23.md) | **CURRENT 3D BRANCH RE-REVIEW** | `feature/migrate-to-3d` has 3 commits / 26 files; F01–F09 defects and PlayMode/Android gates |
 | L2 Art, Technical | Art/VFX, physics layers, tilemap, UI, audio, profile and addressables | Must follow L0; existing 2D specs are **Legacy-specific** |
 | L3 Optional | Multiplayer, cloud save, monetization, Ngũ Hành/Âm Dương | Code retained D12; may stay outside Defense MVP |
 | L4 History | GDD v5.1 in Git history, old 20-minute survival/six-slot specs | Not authoritative for Map 01 TREBRAVE |
