@@ -100,3 +100,16 @@ If the menu is missing after Git pull, first check Unity Console for compile err
 5. Look for Console logs `Enemy defeated`, `Hero collected 10 Wood`, and `Tower built ... Wood: ...`. Three drops (30 Wood) can pay for one tower. A tower can still kill enemies, but drop pickup requires Hero proximity.
 
 This is a prototype using physical visual pickup proximity checks rather than trigger Rigidbody colliders. The Wood wallet is per Play session, and save/restore, mobile HUD, magnet, pooling and production wood balancing are not implemented. Unity PlayMode has not been run from these GitHub changes.
+
+## 600s / 34 timed-event Defense run (opt-in prototype)
+
+Install into your **existing saved scene** with imported Vongxuyen GLB and baked NavMesh via `TREBRAVE > Defense 3D > Install 600s Defense Run In Open Scene`. This adds a separate `DefenseRun6003D` controller and **disables** the earlier 3-wave and bridge-spawn test components; it never rebuilds or overwrites your GLB scene. If the menu is missing, attach `DefenseRun6003D` to a new active empty GameObject and manually disable the older test spawners.
+
+- **34 timed spawn events** on game time `0,18,36,...,594` seconds. Default **3 placeholder capsule enemies per event**. The names cycle over `magiap`, `thuyquai`, `huyetdoi`, `quaidu`, `phicuong` but **do not yet implement the seven distinct archetypes' stats, artwork, or skills**.
+- **Miniboss** `magiap_boss_MaGiap_ThongLinh` spawns at 108s with prototype 350 HP, otherwise using ordinary NavMesh bridge-walker behavior.
+- **Yaksha** `yaksha_boss_ARENA_COMBAT` appears in the eastern arena at 510s with prototype 1200 HP. It stays in `ARENA_COMBAT` for inspector-configurable `yakshaArenaDuration` (default **45 gameplay seconds**), then permanently transitions to `ASSAULT_BASE` and navigates the **middle bridge** using NavMesh. This is a *temporary test duration*, NOT final GDD-approved X. Boss arena attacks/skills are not yet implemented; the boss is stationary while in its arena state.
+- **WIN** as soon as Yaksha dies and Base HP is still above zero; later timed events stop immediately. **LOSS** only when Base HP becomes zero. At 600 seconds with Yaksha alive and Base alive, the match goes to **OVERTIME**, without adding new timed spawn events.
+- Existing Hero auto-attack, WoodDrop pickups and Tower Builder use the same `DefenseEnemyBridgeWalker3D` enemy instances. When a test enemy dies, normal WoodDrop handling continues. The Base/Run debug logs and small IMGUI timer / HP / wave / state HUD help verify the loop.
+- This is not a production-balanced release: Boss arena combat lacks proper attacks, the normal enemies are visual proxies, no actual 7-roster abilities, no on-screen victory overlay or completed run-result save flow. The 600s schedule and outcome logic are first-pass code requiring local Unity PlayMode QA.
+
+Verification: Save scene → pull feature branch → reopen scene → install 600s run → save → Play. Check `600s run started`, `Timed event 1/34`, `Miniboss at 108 seconds`, `Yaksha entered ARENA_COMBAT`, `Yaksha entered ASSAULT_BASE` (45s after spawn), `WIN` or `LOSS`. The 34th event occurs at 594s. Do not choose `Build & Open Map Song Que Prototype` (would risk overwriting edited scene).
