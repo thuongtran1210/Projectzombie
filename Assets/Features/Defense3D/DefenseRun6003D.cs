@@ -140,6 +140,7 @@ namespace ProjectZombie.Features.Defense3D
             if (ended || defenseBase == null || defenseBase.IsDestroyed) return;
             ended = true;
             won = true;
+            defenseBase.LockDamageAfterWin();
             if (arenaCombat != null) arenaCombat.EndArena();
             Debug.Log("[TREBRAVE Defense3D] WIN: Yaksha defeated while Base alive. All future spawns stopped.");
         }
@@ -166,6 +167,13 @@ namespace ProjectZombie.Features.Defense3D
                 GUI.Label(new Rect(28, 112, 330, 22), "Yaksha HP: " + Mathf.CeilToInt(yaksha.CurrentHP));
             if (heroHealth != null)
                 GUI.Label(new Rect(28, 134, 330, 22), "Hero HP: " + Mathf.CeilToInt(heroHealth.CurrentHP) + (heroHealth.IsDown ? " (DOWN)" : ""));
+            if (ended)
+            {
+                float panelX = (Screen.width - 420f) * 0.5f;
+                float panelY = (Screen.height - 160f) * 0.5f;
+                GUI.Box(new Rect(panelX, panelY, 420f, 160f), won ? "TREBRAVE - VICTORY" : "TREBRAVE - DEFEAT");
+                GUI.Label(new Rect(panelX + 35f, panelY + 70f, 360f, 35f), won ? "Da Xa defeated. The village survives!" : "Nha Chinh was destroyed.");
+            }
         }
     }
 }
