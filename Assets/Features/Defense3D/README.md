@@ -48,3 +48,14 @@ The generated `.unity` scene is NOT checked in as part of this PR because Unity 
 - [ ] Unity-generated scene and `.meta` are checked into version control after Unity review.
 
 No Unity Editor / PlayMode / Android test was executed remotely.
+
+## NavMesh bridge smoke test (AI Navigation 1.1.5)
+
+The smoke-test walker now uses Unity `NavMeshAgent` (not direct Transform movement). Existing `DefenseEnemyBridgeSmokeTest3D` and its Unity Editor installer continue to work; **do not rebuild the scene**, since the local GLB and NavMesh bake live in that scene.
+
+1. In `MapSongQue3D_Prototype`, enable the prototype gameplay root and keep its Ground-layer Physics Colliders enabled (west/east banks and all three bridge colliders). Keep the imported Vongxuyen GLB as visual art.
+2. Keep an active `NavMeshSurface` in the scene: `Use Geometry = Physics Colliders`, `Collect Objects = All Game Objects`, `Include Layers = Ground`; Bake and save NavMesh asset and scene.
+3. Use `TREBRAVE > Defense 3D > Add Bridge Enemy Test To Open Scene` if not installed, then Play. Three red capsules spawn on the east side and travel through their own designated bridge via `NavMeshAgent`.
+4. Each agent requires a complete navmesh path to *every* lane waypoint; it never crosses water via a Transform fallback. Console logs `NavMesh enemy reached Base` on arrival and subtracts 25 Base HP (75 total if all three arrive). If the path is not connected or waypoint is not baked, the enemy stops and logs `Enemy route stopped: ...` with its specific lane.
+
+This is deliberately a navigation **smoke test**, not combat AI: no avoidance tuning, enemy attack animations, wave logic, or production Base damage arbitration. Unity PlayMode and Android have not yet been run by the author.
