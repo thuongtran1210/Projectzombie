@@ -1,4 +1,4 @@
-> ⚠️ **GDD v6 REVIEW NOTICE (2026-10-23):** Đây là tiêu chuẩn **Unity 2D** hiện hữu, còn hiệu lực cho pipeline kỹ thuật **nếu D02 chọn 2D**. Map 01 cần cấu trúc Map Sông Quê hai bờ, ba cầu, ba lane và 10 bệ xây xem [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md). Nếu D02 chọn full 3D, tài liệu này sẽ chuyển HISTORICAL/2D LEGACY và thay bằng art/world spec tương ứng. Không tự ý đổi PPU/tile size chỉ vì source WebGL dùng world units.
+> **GDD v6.1 status: LEGACY 2D ONLY** — **D02=C was approved on 2026-10-23:** Map 01 TREBRAVE/Defense targets **Unity full stylized 3D**. The PPU=64/Tilemap/Physics2D rules below remain **only for existing Survival Legacy and older 2D assets**. They are not Map Sông Quê 3D production requirements. Reference [3D Migration](UNITY_3D_MIGRATION_PLAN.md), [Master GDD](ProjectZombie_GDD.md).
 
 ---
 
