@@ -72,9 +72,9 @@ Trạng thái mặc định của mọi case dưới đây: `NOT_RUN` (không t�
 
 | QA ID | Gate | Ca test / đầu vào | Expected (sau duyệt tương ứng) | Evidence |
 |---|---|---|---|---|
-| QA-01 | G0 | Mở lại local Scene Defense3D | không Missing Script, giữ map/3 bridges/10 sockets | Unity screenshot + Console |
-| QA-02 | G0 | Mở Legacy SampleScene | scene cũ không regress, settings giữ nguyên | screenshot + Console |
-| QA-03 | G1 | Pause từ 30s trong 20s wall-clock | gameplay elapsed không tăng; no AI/spawn/damage/cooldown | timer/trace |
+| QA-01 | G0 | D-10/A: Unity mở lại local scene Defense3D sau backup đối chiếu path/.meta | no Missing Mono Script, map GLB/3 cầu/NavMesh/10 sockets đúng, không mất GUID | git status + hashes + Unity screenshot/Console; **NOT_RUN** |
+| QA-02 | G0 | D-10/A: mở Legacy Survival 2D / SampleScene trước và sau khi phát triển | không hồi quy menu, scene cũ nguyên và không Missing Script | Unity screenshot + Console; **NOT_RUN** |
+| QA-03 | G1 | D-02/A: 600s gameplay clock, Pause 30s trong 20s wall-clock, Fast Test Boss @10s | gameplay clock/AI/spawn/cooldown đóng băng khi Pause; Fast Test **không rút ngắn điều kiện thắng 600s**; Overtime đúng D-03/A | EditMode + Unity PlayMode; **NOT_RUN** |
 | QA-04 | G1/G5 | LevelUpSelection và GameOver | chặn input chiến đấu/spawn; không duplicate event | integration log |
 | QA-05 | G1 | Restart 3 lần | no duplicated manager/event/listener; reset state | hierarchy/log 3 cycles |
 | QA-06 | G2 | Hero và Tower cùng kết liễu quái | một death, một WoodDrop, một EXP reward | deterministic damage test |
@@ -86,20 +86,22 @@ Trạng thái mặc định của mọi case dưới đây: `NOT_RUN` (không t�
 | QA-12 | G3 | Hero đứng gần vùng spawn | không spawn đè/within 3.1m; zone fallback hợp lệ | seeded test |
 | QA-13 | G3 | Wave dồn, frame dài | active≤32, pending≤40, spawn≤4/frame, TTL25s | trace counter |
 | QA-14 | G3 | t=108s stage event #7, kể cả frame skip/queue/backpressure | `benque-07` tạo 1 suất `magiap_boss` duy nhất, không có batch thường cùng event; không kích hoạt D-11 cho miniboss | event log + queued-job assertions |
-| QA-15 | G4 | Xây/nâng/sửa Tower tại 10 sockets | wallet trừ một lần, occupied đúng; không block 3 cầu | PlayMode/scene |
-| QA-16 | G4 | Enemy damage Base/Tower, Hero tấn công | hit/damage/target/cooldown chính xác, đúng guard | combat log |
-| QA-17 | G5 | EXP pickup đủ lên nhiều level | XP dư còn nguyên, mỗi level 1 lượt thẻ | automated+PlayMode |
+| QA-15 | G4 | D-07-02/03/04/A: đủ Gỗ baseline test xây 1 tháp, 10 sockets, xây/nâng tối đa Lv3/sửa | Gỗ trừ một lần, không xây trùng, repair tốn Gỗ/cooldown hoặc limit, HP clamp; giá production chưa khóa | PlayMode + versioned test BalanceProfile; **NOT_RUN** |
+| QA-16 | G4 | D-07-06/A: Enemy per-type/phase, Hero Thư Sinh và Tower anti-air; Base nhận damage | targeting/damage/cooldown đúng role, Hero down/hitbox 3D đúng, phase scaling không tạo quái vô lý | Combat + PlayMode log; **NOT_RUN** |
+| QA-17 | G5 | D-07-05/A: Wood và EXP pickup độc lập, EXP đủ vượt nhiều level | reward đúng 1 lần, XP dư nguyên, 1 modal level-up/level, không phát Gỗ/EXP trực tiếp khi đã dùng pickup | EditMode + PlayMode; **NOT_RUN** |
 | QA-18 | G5 | Chọn 3-card/Double-click/chọn lúc paused | một buff, cards hợp lệ, không duplicate | PlayMode |
 | QA-19 | G6 | t=510 và pha ARENA_COMBAT | Boss spawn đúng một lần, telegraph visible trước damage | Hierarchy/Game View |
 | QA-20 | G6 | Boss bị giảm HP rồi chuyển ASSAULT_BASE | HP giữ nguyên, movement/path sang Base hợp lệ | play log |
 | QA-21 | G6 | BaseHP=0, bao gồm khi Boss chết cùng gameplay tick | **D-03/A:** LOSS một lần, ưu tiên kết quả khi cùng tick; dừng đúng nguồn damage/spawn | MatchResult test + PlayMode |
 | QA-22 | G6 | Boss chết @540s, sống @600s, chết trong OVERTIME | **D-03/A:** Boss chết sớm → tiếp tục tới 600; sống @600 → OVERTIME (không timed-wave mới); chết trong Overtime, Base sống → WIN; không auto-WIN do hết giờ | deterministic boundary test |
-| QA-23 | G7 | Run đủ 600s và restart x3 | no P0, no stuck, no ghosts; gameplay flow thông suốt | recording/log + commit |
-| QA-24 | G7 | Vào Defense từ menu và quay lại 2D | correct scene routing, scene cũ nguyên vẹn | Android/editor smoke tùy môi trường |
+| QA-23 | G7 | D-07-08/A + D-02/A: full run 600 gameplay s, FastTest profile riêng, restart 3 lần | không P0/softlock/duplicate listeners, profile có version, telemetry Wood/EXP/Base/Enemy/Boss, không làm khác D-03/A | 600s recording/log + commit; **NOT_RUN** |
+| QA-24 | G7 | D-08/A+D-09/A: vào Defense chọn Thư Sinh, trang bị 1 Dép Tổ Ong; về Legacy 2D | Thư Sinh playable; Relic aim/cast/cancel/cooldown/damage thật, chỉ một slot; scene routing và Legacy không hồi quy | Unity Editor/PlayMode smoke; **NOT_RUN** |
 | QA-25 | G8 | Export/import từng prefab Enemy/Yaksha | scale/URP/axis/pivot đúng, Collider và NavMesh không bị art phá | model inspector + screenshot |
 | QA-26 | G3 | D-11: một event `magiap` có 4/5 suất, tách qua nhiều frame, queue đầy hoặc TTL hết | mỗi event **lên lịch 1** `phicuong` dẫn đầu thay một suất; còn lại `magiap`, không phụ thuộc FPS; không thêm slot, không áp dụng miniboss; nếu bị overflow/TTL thì đếm thất bại, không tự nhân elite | deterministic fixture + `eventId`, `slotIndex`, `declaredType/actualSpawnType` log |
 | QA-27 | G1/G6 | Hero down @100s, Pause @102s trong 20s wall-clock, Base sống | **D-04/A:** còn 3 gameplay seconds tới hồi sinh sau Resume, không gây LOSS khi Hero down; terminal state hủy hồi sinh | Unity game-clock trace |
 | QA-28 | G6 | Boss chết sớm, Boss/Base chết cùng tick, Base còn sống @600s | **D-03/A:** WIN chỉ khi đủ 600s + hạ Boss + Base sống; LOSS ưu tiên nếu BaseHP=0 cùng tick | MatchResult deterministic tests |
+
+**D-07/A (8/8) đã được duyệt về nguyên tắc:** 12 ca D07-QA-01..12 [trong checklist D-07](09_D07_BALANCE_REVIEW.md) và 18 ca D06-QA-01..18 [D-06](08_D06_ENEMY_NAVIGATION_REVIEW.md) vẫn **NOT_RUN**, theo dõi riêng. 28 QA chính ở bảng này cũng **NOT_RUN**. Duyệt yêu cầu **không** đồng nghĩa QA đã PASS.
 
 **Cần thêm:** Unity Editor tests cho các contract (Clock/State/Scheduler/Reward), PlayMode smoke per gate và performance profile trên thiết bị thật; chỉ ghi `PASSED_DEVICE` khi có model device, FPS/frametime/RAM, phiên bản/commit và evidence. Không dùng log Editor để khẳng định Android QA pass.
 
@@ -107,7 +109,7 @@ Trạng thái mặc định của mọi case dưới đây: `NOT_RUN` (không t�
 
 | Gate | Exit condition | Ai xác nhận |
 |---|---|---|
-| G0 | D-01..D-10 chốt tối thiểu các mục liên quan stage; scene backed up; import/compile clean | owner + tester Unity |
+| G0 | **D-01..D-11 APPROVED về thiết kế**; G0-S1..S6 phải có backup ngoài repo đã đối chứng, Console sạch, scene/Legacy được kiểm tra; review 27-ticket plan và owner đóng Gate. **Hiện CHƯA PASS** | owner + tester Unity |
 | G1 | QA-03..05 pass; one clock and no listener duplication | reviewer + tester |
 | G2 | QA-06..08 pass; HP/death/reward exactly once; registry verified | reviewer + tester |
 | G3 | QA-09..14 pass; wave/zone/3 bridges verified, special air/water tests | tester Unity |
