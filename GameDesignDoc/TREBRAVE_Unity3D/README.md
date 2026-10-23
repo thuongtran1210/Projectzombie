@@ -14,6 +14,7 @@
 | **[05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md)** | 34 event / 214 declared jobs; D-11/A → 20 Phi Cương + 108 Ma Giáp, giữ tổng suất | dữ liệu/test fixture cho Core Enemy/Wave |
 | **[06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md)** | **D-03/A D-04/A đã chốt**, luật WIN sau 600s + Yaksha và Hero hồi sinh 5 gameplay s; ma trận edge cases | đặc tả hai luật đã duyệt để lập trình/kiểm thử sau khi G0 pass |
 | **[07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md)** | Lệnh sao lưu copy-only ngoài repo, danh sách asset và form evidence Unity | bảo toàn scene/GLB/NavMesh/GUID và QA baseline |
+| **[08 — D-06 Enemy AI Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md)** | 8 lựa chọn A/B về Ground/Water/Air/Landing/GhostCannon/Target/Spawn; 18 QA đề xuất | **REVIEW / PENDING**, không tự phê duyệt hay code |
 
 ## Kết luận audit ngắn
 
@@ -26,7 +27,7 @@
 
 ## Quy trình đề nghị sử dụng tài liệu
 
-**G0 bước kế tiếp:** **D-03/A và D-04/A đã APPROVED**, xem [Match Lifecycle](06_MATCH_LIFECYCLE_SPEC.md). Tiếp tục thiết kế D-06, thống nhất các quyết định D-01/D-02/D-07..D-10 và thu baseline an toàn theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md).
+**G0 bước kế tiếp:** Chủ dự án **review [checklist D-06 Enemy AI](08_D06_ENEMY_NAVIGATION_REVIEW.md)**, chọn A/B cho 8 nhóm (đặc biệt thực bay 3D, Thủy Quái bơi/đổ bộ, 3 Linh Pháo và anti-air). Sau đó tiếp tục D-01/D-02/D-07..D-10 và baseline an toàn theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md). **D-06 vẫn PENDING.**
 
 **Vòng A — Design approval:** **D-05 APPROVED** — tại 108s đúng 1 Ma Giáp Thống Lĩnh; **D-11/A APPROVED** — đúng 1 Phi Cương thay suất Ma Giáp dẫn đầu **mỗi event loại `magiap`**, không theo frame/FPS. Biên bản đã lưu ở [03](03_DECISIONS_QA.md) và [04](04_GATE0_APPROVAL_PACK.md). **D-03/A (WIN/LOSS) và D-04/A (Hero down) cũng đã APPROVED; vẫn chờ D-01/D-02/D-06..D-10 cùng kiểm tra Gate G0 local.**
 
