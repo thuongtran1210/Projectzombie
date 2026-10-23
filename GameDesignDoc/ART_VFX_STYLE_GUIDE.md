@@ -1,3 +1,7 @@
+> **GDD v6.1 status: LEGACY 2D ART GUIDE ONLY** — **D02=C, D11=A approved 2026-10-23:** product target is **TREBRAVE stylized full Unity 3D**, semi-chibi heroic fantasy based on Vongxuyen approved art reference; current pixel/sprite/2D guidelines below are **Legacy Survival** only. 3D models, rigs, materials, lighting, camera and FX require a separate 3D art bible (P06), not silent application of 2D PPU/sprite rules. See [3D Migration](UNITY_3D_MIGRATION_PLAN.md).
+
+---
+
 # Document Hướng Dẫn Mỹ Thuật & VFX (Art & VFX Style Guide) — Dự Án: VONG XUYÊN
 
 **Phiên bản:** 1.0 (Được trích xuất và chuẩn hóa từ `ProjectZombie_GDD.md` v4.0)  
