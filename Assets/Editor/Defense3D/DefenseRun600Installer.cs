@@ -23,6 +23,11 @@ namespace ProjectZombie.EditorTools.Defense3D
                     "Open existing MapSongQue3D_Prototype scene and enable its gameplay root.", "OK");
                 return;
             }
+            if (info.HeroSpawn != null && info.HeroSpawn.GetComponent<DefenseHeroHealth3D>() == null)
+            {
+                Undo.AddComponent<DefenseHeroHealth3D>(info.HeroSpawn.gameObject);
+                EditorSceneManager.MarkSceneDirty(info.HeroSpawn.gameObject.scene);
+            }
             var current = Object.FindObjectOfType<DefenseRun6003D>();
             if (current != null)
             {
