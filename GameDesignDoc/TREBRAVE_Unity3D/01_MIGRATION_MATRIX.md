@@ -14,11 +14,11 @@
 | STATE-01 | `core/GameStateManager.js`, `core/GameClock.js`, `core/GameEventBus.js` | `DefenseRun6003D.elapsed`; các script dùng `Time.time` | state machine authoritative, pause/level-up, event lifecycle, restart, deterministic clock | X |
 | EN-01 | `entities/EnemyFactory.js` 6 type | `DefenseRun6003D.SpawnEnemy()` dựng capsule + `DefenseEnemyBridgeWalker3D` | cấu hình EnemyData, speed/HP/attack/size/loot theo type | M |
 | EN-02 | `combat/EnemyDamageService.js`, `HitResolver.js` | Enemy `ReceiveDamage/Defeated` + WoodDrop | damage source, stun/slow/knockback, exact-once death/reward/EXP | M |
-| EN-03 | `WaveManager.js` per-type behavior | Walker NavMesh chung, chỉ gây damage cho Base | ground / amphibian / flying / elite / parachute target-selection / telegraph | X |
+| EN-03 | `WaveManager.js` per-type behavior | Walker NavMesh chung, chỉ gây damage cho Base | D-06/A: Ground 3 cầu, Water→shore, Air 3D thật, anti-air, Landing; chưa triển khai | X |
 | EN-04 | `EnemyFactory.js` procedural meshes | placeholder capsule Unity; Boss visual prefab hook | exporter per Enemy, prefab/pivot, rendering/animation, materials | X; art sau Core |
 | WAVE-01 | `config/stage01.js`, `WaveScheduler.js`, Web `WaveManager.js` | `DefenseRun6003D` có 34 event/18s nhưng type vòng lặp và `enemiesPerEvent` cố định | **D-05 APPROVED:** #7 chỉ 1 miniboss; **D-11/A APPROVED:** mỗi event Ma Giáp 1 slot Phi Cương dẫn đầu, giữ số job và deterministic | M |
 | WAVE-02 | `SpawnPlanner.js`, `WaveManager.js` queue | spawn east marker + fixed z ba lane; không thấy cap/pending | safe spawn 3.1m, 32 active, 40 pending, 4/frame, 25s TTL, no invalid NavMesh | X |
-| WAVE-03 | `WaveManager.js` GhostCannon + `quaidu` | chưa có tương đương căn cứ/đạn pháo/thả dù | chốt scope: QuaiDu landing versus GhostCannon mechanics | X |
+| WAVE-03 | `WaveManager.js` GhostCannon + `quaidu` | chưa có tương đương căn cứ/đạn pháo/thả dù | D-06/A: 3 Linh Pháo, projectile→parachute→QuaiDu West đã duyệt; chưa triển khai | X |
 | BOSS-01 | `EnemyFactory.js` `magiap_boss` | Unity miniboss @108 HP350, một walker | type-specific HP/attack/role; **stage01 event #7 là miniboss thay event thường** | M |
 | BOSS-02 | `combat/YakshaBoss.js`, `YakshaTelegraph.js` | Unity `DefenseYakshaArenaCombat3D` blast ring, `BeginBossAssault`, `DefenseRun6003D` | cleave, slam, crescent projectile, stun/pillar counter, target/AI/presence across river | M |
 | BOSS-03 | `entities/YakshaBossMesh.js` | Unity optional `yakshaVisualPrefab` + editor assign | **chưa có xác nhận prefab Yaksha nguyên gốc đã import** | X; art sau Core |
@@ -63,9 +63,11 @@ Các số này là **giá trị nguồn** trước wave multiplier, chưa duyệ
 | Capacity | 32 active / 40 pending / 4 per frame / 25s pending lifetime | chưa thấy giới hạn tương đương | queue + fairness + drop expiry |
 | Boss | `YakshaBoss.js` @510s | `YakshaTime=510f`, arena 45s, assault, overtime | cần chốt WIN/LOSS + boss AI |
 
-**Ca kiểm thử đã có luật được duyệt:** @108s, event #7 có duy nhất 1 `magiap_boss`, không tạo event thường kèm theo; trong mỗi event `magiap`, job dẫn đầu được định danh `phicuong` ngay khi lập job, các job còn lại giữ Ma Giáp, không tùy FPS. **Lưu ý:** Web `SpawnPlanner.js` chưa whitelist `phicuong` trong vùng EastBank/SouthBank; resolver Unity phải được thiết kế (D-06 chưa duyệt) để elite bay xuất hiện hợp lệ. @510s, Boss Dạ Xoa là trigger độc lập với event lịch.
+**Ca kiểm thử đã có luật được duyệt:** @108s, event #7 có duy nhất 1 `magiap_boss`, không tạo event thường kèm theo; trong mỗi event `magiap`, job dẫn đầu được định danh `phicuong` ngay khi lập job, các job còn lại giữ Ma Giáp, không tùy FPS. **Lưu ý:** Web `SpawnPlanner.js` chưa whitelist `phicuong` trong vùng EastBank/SouthBank; resolver Unity phải được thiết kế (D-06/A đã duyệt) để elite bay xuất hiện hợp lệ. @510s, Boss Dạ Xoa là trigger độc lập với event lịch.
 
-**Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
+**Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-06/A/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
+
+**D-07 cân bằng đang chờ review:** [09_D07_BALANCE_REVIEW.md](09_D07_BALANCE_REVIEW.md). Không tự nhập con số Web vào Unity.
 
 ## D. Migration principles / asset handling
 
