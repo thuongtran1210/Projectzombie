@@ -79,3 +79,14 @@ After syncing feature branch, open the existing imported-GLB scene and choose **
 - Hero automatically selects the nearest active test enemy within 5 world units and deals 35 damage every 0.65 seconds. Test enemies have 100 HP and die on their third hit. The target selection queries live `DefenseEnemyBridgeWalker3D` instances, because the temporary enemy capsules do not have colliders.
 - Approach enemy paths using WASD/arrows and observe Console `Hero hit` and `Enemy defeated`. Highlight Hero in Scene view to see the yellow range Gizmo.
 - The attack intentionally uses no skill effects, aim animation, projectiles, hero HP, cooldown UI, tower or production DPS tuning. It is a smoke test to confirm enemies can be killed before reaching Base. Test in Unity Editor; not yet PlayMode QA-verified.
+
+## Tower build prototype (opt-in)
+
+From your **existing** scene with Vongxuyen GLB and baked NavMesh, run `TREBRAVE > Defense 3D > Install Tower Build Test In Open Scene`. Save scene and Play. Approach one of ten original tower socket markers (within 5m) and press **B**.
+
+- Prototype starts with **100 test Wood** and consumes **25 test Wood** for each tower. This is a testing wallet, not physical WoodDrops. There is no automatic wood reward from enemy kills.
+- Up to four towers can be placed with the default wallet; one tower per socket. Each simple cylinder tower automatically attacks a nearby living `DefenseEnemyBridgeWalker3D` within 8m for 22 damage every 0.9s.
+- The existing Hero auto-attack, 3-wave test, Base HP, and NavMesh agents keep working; the installation menu does not rebuild/overwrite the GLB scene, collider setup, or NavMesh.
+- Build visuals have no collider intentionally so they do not block baked navigation. Real tower prefabs, production visuals, physical wood gathering, mobile input and save/reload are not included.
+
+If the menu is missing after Git pull, first check Unity Console for compile errors, then attach `DefenseTowerBuildPrototype3D` to a new active scene GameObject via Inspector Add Component.
