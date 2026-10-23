@@ -1,3 +1,7 @@
+> **TREBRAVE GDD v6.1 — Chủ dự án đã duyệt thiết kế ngày 2026-10-23:** [Master GDD](GameDesignDoc/ProjectZombie_GDD.md) · [Decision Record](GameDesignDoc/DECISION_CHECKLIST_GDD_V6.md) · [Unity Full 3D Migration](GameDesignDoc/UNITY_3D_MIGRATION_PLAN.md). Game tương lai là **TREBRAVE**, repo kỹ thuật vẫn **Projectzombie**. **Defense/Map Sông Quê full stylized 3D** là gameplay chính: 4 Hero chọn/1 Hero mỗi run, 5 FUN relic/1 ACTIVE slot, Base + Tower, gỗ **rơi để Hero nhặt**, 7 quái VX; **chỉ thua khi Nhà Chính bị phá**, **thắng khi hạ Dạ Xoa**. **Survival hiện tại vẫn được giữ Legacy Mode**; các mô tả Unity 2D trong README bên dưới là **hiện trạng mã nguồn**, không phải bằng chứng 3D đã được triển khai. **Không bao gồm Phu/đội dân binh/squad trong Defense MVP**. Draft PR tài liệu chưa merge vào main.
+
+---
+
 # 🌊 VONG XUYÊN — Survival Roguelite Mobile Game
 
 [![Unity Version](https://img.shields.io/badge/Unity-2022.3%20LTS-blue.svg)](https://unity.com/)
