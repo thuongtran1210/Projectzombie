@@ -1,3 +1,7 @@
+> **GDD v6.1 status: LEGACY 2D PHYSICS ONLY** — **D02=C approved 2026-10-23:** the layer/collision scheme below remains a historical and active reference **for Unity 2D Legacy Survival only**. New TREBRAVE Defense uses **Physics3D, 3D Collider/Rigidbody/3D Raycasts, NavMesh or 3D path solver**, with independent 3D layers for Base, Tower, Ground, Water, Loot, Player, Enemy and skill/projectiles. 3D collision matrix is pending P06; do not copy 2D LayerMask/Collider2D calls into Defense. See [3D Migration](UNITY_3D_MIGRATION_PLAN.md).
+
+---
+
 # Projectzombie — Physics 2D Layer & Collision Matrix Design Spec
 
 Tài liệu này quy định cấu trúc phân chia **Physics 2D Layers**, ma trận va chạm (**Collision Matrix**) và các quy tắc tối ưu hiệu năng vật lý cho trò chơi **Projectzombie** (Top-down Survival Roguelite trên Android Mobile).

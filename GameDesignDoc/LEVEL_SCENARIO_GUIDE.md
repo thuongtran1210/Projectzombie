@@ -1,105 +1,130 @@
-# Kịch Bản & Diễn Biến Màn Chơi — VONG XUYÊN (Run Scenario & Level Objectives Guide)
+# TREBRAVE — MAP SÔNG QUÊ: LEVEL SCENARIO v6.2
 
-**Dự án:** Vong Xuyên (Android Top-down Survival Roguelite — GDD v4.0)  
-**Tài liệu:** Kịch bản Mục tiêu, Tiến trình Spawn Yêu Ma & Thiết kế Trận đấu (Run Duration: 20 Phút)
+> **Design APPROVED:** D01=A, D02=C, D06=A, D07=C, D08=B, D09=A, D10=C.  
+> **Implementation:** Unity full stylized 3D **NOT IMPLEMENTED**; this is a design contract, not a tested Unity scene.  
+> **OWNER-APPROVED P02/P03/P05/P08:** 600s overtime until Dạ Xoa killed or Base destroyed; Hero level-scaled respawn at original spawn; WoodDrop TTL initial 90s borrowed from VX **EXP** pickup; boss death Victory **immediately** and stop spawns. **P04 APPROVED**: 2 strategic state, boss đánh trong đấu trường → sau X giây kể từ BossSpawn chuyển sang đánh Nhà Chính. **K03 PENDING:** số X và thứ tự giải quyết death trong cùng tick.
 
----
+## 1. Stage objectives
 
-## 1. Mục Tiêu Màn Chơi (Run Objectives — Chương 1: Bến Đò Vong Xuyên)
+**Defense is the main mode.** Map 01 = Map Sông Quê, two river banks connected by three bridges (North/Mid/South). The Hero and towers defend Base on west bank against enemies originating from eastern territory.
 
-### 1.1. Mục Tiêu Chính (Primary Victory Condition)
-- **Mục tiêu:** Người chơi điều khiển nhân vật (Thư Sinh, Đạo Sĩ, Võ Tăng) sống sót qua **20 phút** nghẹt thở giữa **Bến Đò Vong Xuyên (Chương 1)** và tiêu diệt thành công **Final Boss của Map (Diêm Vương)** xuất hiện ở mốc **20:00** nhằm phá tan phong ấn cõi Hoàng Tuyền, mở lối trở về dương gian bắt đầu đại nghiệp tìm kiếm & thức tỉnh **Tứ Bất Tử** để tiêu diệt Ma Vương.
-- **Điều kiện Thắng (Victory):** Hạ gục **Diêm Vương**, nhận *Rương Đầu Thai* (+2,000 Cổ Tiền & Mở khóa Chương 2 / Nhân vật mới) và hoàn thành Chương 1.
+**Win (D07=C):** **only when final boss Tướng Dạ Xoa (yaksha_boss) is defeated and BaseHP > 0**. Miniboss Ma Giáp Thống Lĩnh (magiap_boss) kill is not enough.
 
-### 1.2. Điều Kiện Thất Bại (Defeat Condition)
-- **Cạn Máu ($HP \le 0$):** Nhân vật hết máu trước khi hạ gục Diêm Vương. Game Over và chuyển sang màn hình tổng kết (Thống kê số lượng yêu ma diệt, thời gian sống sót, nhận Cổ Tiền tích lũy).
+**Lose (D07=C):** **only when BaseHP reaches 0**. HeroHP=0 is not Lose. **Do not** derive Win or Lose from timer 600s. Boss kill vs Base destroyed in same tick needs order-atomic resolution tests.
 
-### 1.3. Mục Tiêu Phụ Trong Trận (Sub-Objectives & Milestones)
-1. **Hạ gục Boss 1 (Phút 10:00 - Ngưu Đầu Mã Diện):** Thu thập *Rương U Minh* chứa thẻ Tiến Hóa pháp bảo hoặc 3 Thẻ Nâng cấp ngẫu nhiên + 500 Cổ Tiền.
-2. **Kích hoạt Pháp Bảo Tiến Hóa (Evolution):** Nâng cấp ít nhất 1 pháp bảo chính lên Cấp 5 (Max) và nhặt đúng thẻ Passive tương ứng trước phút 12:00 để vượt qua đợt bão yêu ma Swarm Event.
-3. **Cân Bằng Cán Cân Âm Dương:** Điều khiển lối chơi (di chuyển linh hoạt / đứng yên phòng thủ) để nghiêng về Âm hoặc Dương nhằm mở khóa các thẻ Gacha độc quyền (*"Cuồng Nộ"*, *"Tịch Diệt"*, hoặc *"Thái Cực"*).
-4. **Tích Lũy Cổ Tiền:** Tiêu diệt Yêu Ma Elite/Boss và tích lũy Cổ Tiền để nâng cấp cây chỉ số vĩnh viễn (Permanent Upgrade Tree) trong Main Menu.
+**600s (D06=A, P02 APPROVED):** 10-minute designed **wave timeline**, not a hard match-end timeout. Boss can spawn at ~510s. **If still alive at 600s, continue OVERTIME** without launching new timeline events, until Dạ Xoa dies (WIN) or Base is destroyed (LOSE). **If Boss dies earlier, WIN immediately and stop all further spawns** (P08).
 
----
+## 2. Full stylized 3D battlefield
 
-## 2. Phân Chia 4 Giai Đoạn Trận Đấu (Pacing Phases)
+- Unity 3D world plane = XZ, Y is height (not Unity x/y 2D).
+- Bờ Tây = Base, Hero starting zone, tower pedestals; Bờ Đông = enemy spawns, portal, boss arena.
+- Three lane bridges near z=-10.5, -0.5, +10.5 according to Vongxuyen reference, configurable offsets/scale.
+- NavMesh/3D path graph should prevent ground enemies from crossing river except bridges; water and flying units have distinct movement policies.
+- 3D camera/level lighting, colliders, movement/telegraph and touch raycasts are rebuild scope; no reuse of 2D Tilemap physics in the new Defense scene.
+- Old Projectzombie 2D stage remains available in **Legacy Survival Mode**, with original 900s timeline/old enemies intact unless separately migrated.
 
-```mermaid
-flowchart LR
-    P1["Phút 00:00 - 05:00\nGầy Dựng & Trấn Tà\n(1.0x - 1.5x)"] --> P2["Phút 05:00 - 10:00\nYêu Phù & Boss 1\n(2.0x - 2.5x)"]
-    P2 --> P3["Phút 10:00 - 15:00\nBão Yêu Swarm\n(3.0x)"] --> P4["Phút 15:00 - 20:00\nHỗn Chiến Âm Ty & Diêm Vương\n(4.0x)"]
+## 3. Gameplay rhythm: five phases
+
+| Phase | Time | Gameplay purpose |
+| --- | --- | --- |
+| 1 | 00:00–02:00 | Hero learns Wood pickup and one tower; Ma Giáp miniboss at 01:48 |
+| 2 | 02:00–04:00 | Broader lane pressure, invest dropped wood in towers |
+| 3 | 04:00–06:00 | Mix fast, ground and water threats with 3D bridge control |
+| 4 | 06:00–08:00 | Tower upgrades, world pickup risk, larger lane waves |
+| 5 | 08:00–10:00 | Boss threat, Dạ Xoa spawns ~08:30; wave end at 10:00 |
+
+Pressure descriptions are **PROPOSED BALANCE**; individual event timings and spawn counts below are VX source baseline.
+
+## 4. Stage reference events
+
+Vongxuyen STAGE_01: **600s**, **34 scheduled wave events**, each at index×18s (index 0..33; final at 594s); phase=min(5,floor(t/120)+1). Normal enemy cycle:
+1. magiap / eastBank
+2. huyetdoi / northCanopy
+3. thuyquai / canalWater
+4. magiap / eastBank
+5. magiap / southBank
+
+At index 6 (t=108s) overrides with one **magiap_boss**. Normal count=min(8,3+phase+(index%2)). Active cap=32, pending cap=40, spawn budget/frame=4, pending lifetime=25s, minimum spawn distance=3.1.
+
+**Boss separate:** yaksha_boss is driven by distinct VX boss runtime around **t=510s**, not automatically included in the 34-event list. Unity DefenseScenario must explicitly compose timed boss spawn into one authoritative runtime; no duplicate boss or missed spawn due to overflow.
+
+**Enemy selection D09=A:** exactly 7 VX archetypes are **eligible in Map 01 roster**. Normal 34 events contain only 3 normal enemy types + magiap_boss; **quaidu/phicuong/yaksha** need dedicated events/AI and should not be claimed as part of 34 base events.
+
+## 5. Wood reward and build loop [D08=B]
+
+- EnemyDeath -> RewardResolver -> spawn world **WoodDrop** with stable lootId, runId, amount, safe reachable floor position; **wood loot TTL = 90 seconds** via WoodDropConfigSO, a *new default borrowed from Vongxuyen EXP gemLifetimeSeconds=90*, not native VX wood loot expiry.
+- **No instant wood credit on kill**; Hero must move into pickup range and claim loot (3D collision/interact).
+- MVP has **no Phu** or allied soldiers. Phu pickup is post-MVP; it must use the same LootClaim transaction if implemented.
+- Dropped loot amount baseline +10/kill, starting Wood 100, tower costs 50/40/80 — unapproved balance numbers.
+- EXP gems and level-up cards remain separate from wood; reward events may create both EXP and WoodDrop without double grant.
+- Tower building only at ten fixed pedestals; Hero can build and upgrade while defending Base.
+
+## 6. Boss encounters
+
+### 6.1 Ma Giáp Thống Lĩnh — 01:48
+
+Miniboss at timeline event index 6, reference HP 700, armor/body recognition. May attack Hero/tower/Base based on 3D role policy; death awards drops/EXP but **cannot trigger Victory**.
+
+### 6.2 Tướng Dạ Xoa — 08:30
+
+**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN IMMEDIATELY if BaseHP>0**; cancel wave scheduler/pending spawn jobs, stop AI and display result; **P04 APPROVED:** Boss bắt đầu ở **ARENA_COMBAT**; sau **X giây gameplay kể từ BossSpawn** chuyển sang **ASSAULT_BASE** và đi đánh Nhà Chính; X nằm trong SO, chưa có số. Chi tiết [Boss 2-State Spec](YAKSHA_BOSS_PHASE_SPEC.md).
+
+### 6.3 State flow Boss (P04 owner-approved)
+
+```text
+t≈510s: YakshaSpawn  ->  ARENA_COMBAT
+after X gameplay seconds since YakshaSpawn  ->  ASSAULT_BASE  ->  attacks Nhà Chính
+BossDeath (either state)  ->  Victory + cancel spawns
+BaseDestroyed             ->  Lose
 ```
 
-### 🔹 Giai Đoạn 1: Gầy Dựng & Trấn Tà (00:00 – 05:00)
-- **Mục tiêu:** Giúp người chơi làm quen nhịp di chuyển, nhặt Hạt Kinh Nghiệm và xây dựng bộ khung pháp bảo / thuộc tính Ngũ Hành đầu tiên.
-- **Tốc độ Spawn:** $1.0\times \rightarrow 1.5\times$.
-- **Kẻ địch:** Hồn tử sĩ `Ma Giáp` (hệ Kim) đi chậm, theo sau là `Ma Trơi` (hệ Hỏa) lao nhanh áp sát từ phút 02:00.
+**X là thời gian giữ Boss trong Arena tính từ lần spawn**, không phải t=510 + một mốc cứng hoặc thời gian wall-clock. `X` được quản lý trong `YakshaBossPhaseConfigSO.arenaHoldDurationSeconds`, **chưa có giá trị định lượng**. `Pause` dừng boss timer. Ở t=600, Boss vẫn giữ state và countdown X; overtime không tự ép sang Assault. Boss di chuyển qua cầu/3D nav link hợp lệ; không teleport sang Base. Xem [P04 Boss Phase Spec](YAKSHA_BOSS_PHASE_SPEC.md).
 
-### 🔹 Giai Đoạn 2: Yêu Phù & Thử Thách Cực Hạn (05:00 – 10:00)
-- **Mục tiêu:** Kiểm tra khả năng né đạn từ xa, sát thương AoE và khắc chế Ngũ Hành.
-- **Tốc độ Spawn:** $2.0\times \rightarrow 2.5\times$.
-- **Kẻ địch:** Cột mốc Elite 1 `Quỷ Nhập Tràng` (hệ Thổ) xuất hiện lúc 05:00, kết hợp `Ma Da` (hệ Thủy) phun độc từ xa và `Hồ Ly Tinh Nhỏ` (hệ Hỏa) lao vào nổ tung.
-- **Đỉnh điểm:** **Boss 1 Ngưu Đầu Mã Diện** xuất hiện ở phút 10:00.
+## 7. Run result decision table — approved P02/P03/P08
 
-### 🔹 Giai Đoạn 3: Bão Yêu & Đột Biến (10:00 – 15:00)
-- **Mục tiêu:** Ép người chơi phải có Pháp Bảo Tiến Hóa (Evolution) hoặc sát thương AoE mạnh để dọn quái.
-- **Tốc độ Spawn:** $3.0\times$.
-- **Sự kiện đột biến:** **Swarm Event (Bão Yêu 100+ Ma Giáp & Ma Trơi)** lao tràn màn hình ở phút 12:00. Tiếp theo là mốc **Multi-Elite Rush** ở phút 15:00.
+| Event while run Active | Result | Status |
+| --- | --- | --- |
+| Base HP becomes 0 | **LOSE** exactly once; stop spawns | D07 APPROVED |
+| Hero HP becomes 0 | **NO LOSE**; start level-dependent respawn countdown, return to **HeroInitialSpawnPoint** | P03 APPROVED (numeric curve in HeroRespawnConfigSO, K01 pending) |
+| Ma Giáp miniboss killed | Continue run; create wood drop if eligible | APPROVED |
+| Dạ Xoa killed with Base alive | **WIN IMMEDIATELY**; StopWaveScheduler, clear pending, reject future enemy spawns, cleanup active gameplay | P08 APPROVED |
+| Dạ Xoa killed after Base destroyed | Remain Lose | D07 APPROVED |
+| 600s reached with Boss alive/Base alive | **OVERTIME**; không spawn event mới >594s. Boss giữ state Arena hoặc Assault tùy **elapsedBossTime ≥ X**; countdown X tiếp tục nếu còn Arena | P02/P04 APPROVED; X K03 TBD |
+| 600s reached with Boss already dead | Not applicable: run already Won on Boss death | P08 APPROVED |
+| Pause/LevelUp | Stop gameplay timers including respawn countdown, waves, towers and boss | Required policy |
+| Restart/scene unload | Dispose pending spawns/drops/respawn and reset all state | Required policy |
 
-### 🔹 Giai Đoạn 4: Hỗn Chiến Âm Ty & Trùm Cuối (15:00 – 20:00)
-- **Mục tiêu:** Thử thách kỹ năng né tránh tối thượng và khả năng xoay chuyển build theo 5 hệ Ngũ Hành.
-- **Tốc độ Spawn:** $4.0\times$ (Mức tối đa).
-- **Trùm Cuối:** Phút 20:00 **Final Boss Diêm Vương** xuất hiện với khả năng luân phiên chuyển đổi 5 hệ Ngũ Hành cùng các tuyệt kỹ phán quyết.
+**P04 OWNER-APPROVED (two strategic states):** `ARENA_COMBAT` từ lúc Dạ Xoa spawn → khi elapsed gameplay time kể từ BossSpawn đạt `arenaHoldDurationSeconds` (X; `YakshaBossPhaseConfigSO`) → `ASSAULT_BASE` di chuyển qua đường 3D hợp lệ tới Nhà Chính và tấn công Base. **K03 pending** chỉ còn giá trị X, tactical target weights và deterministic priority khi BossKilled/BaseDestroyed cùng tick. Kết trận vẫn exactly once.
 
----
+**Hero respawn config:** use `HeroRespawnConfigSO` with a level→duration function (curve or table), monotonic **non-decreasing** by hero level, stored initial spawn Transform (not current death location). No unapproved numeric seconds hardcoded in document.
 
-## 3. Bảng Tiến Trình Spawn Chi Tiết (Spawn Timeline Table)
+**Relic MVP:** only `slipper` Dép Tổ Ong Thần Sa available; other four FUN items LOCKED. Simple 3D ghost aim/cast/damage/cooldown; FUN mechanics POST-MVP.
 
-| Mốc Thời Gian | Sự Kiện / Cột Mốc (Event) | Loại Yêu Ma Xuất Hiện | Thuộc Tính Ngũ Hành | Spawn Rate | Mức Độ Nguy Hiểm |
-|---|---|---|---|---|---|
-| **00:00 - 02:00** | Bắt đầu màn chơi | `Ma Giáp` | Kim | $1.0\times$ | 🟢 Thấp |
-| **02:00 - 05:00** | Đợt yêu ma chạy nhanh | `Ma Giáp` + `Ma Trơi` | Kim + Hỏa | $1.5\times$ | 🟡 Trung bình |
-| **05:00** | **Cột mốc Elite 1** | **`Quỷ Nhập Tràng` (Elite)** | Thổ | $2.0\times$ | 🟠 Cao |
-| **05:00 - 08:00** | Đợt quái trâu & Bắn xa | `Quỷ Nhập Tràng` + `Ma Da` | Thổ + Thủy | $2.0\times$ | 🟠 Cao |
-| **08:00 - 10:00** | Đợt yêu ma tự sát nổ AoE | `Hồ Ly Tinh Nhỏ` + `Ma Giáp Rush` | Hỏa + Kim | $2.5\times$ | 🔴 Rất cao |
-| **10:00** | **BOSS 1 XUẤT HIỆN** | **`Ngưu Đầu Mã Diện`** | Thổ / Hỏa (Luân phiên) | Spec | ☠️ Cực cao (Rương U Minh) |
-| **10:00 - 12:00** | Giai đoạn sau Boss 1 | `Ma Da` + `Hồ Ly Tinh Nhỏ` | Thủy + Hỏa | $3.0\times$ | 🔴 Rất cao |
-| **12:00** | **SWARM EVENT (BÃO YÊU)** | `Ma Trơi Rush` + `Hồ Ly Tinh` (100+ quái) | Hỏa | $3.5\times$ | 💥 Đột biến nguy hiểm |
-| **15:00** | **MULTI-ELITE RUSH** | $2\times$ Quỷ Nhập Tràng + $2\times$ Ma Da | Thổ + Thủy | $3.8\times$ | 🔴 Rất cao |
-| **15:00 - 20:00** | Hỗn chiến Âm Ty tổng lực | Tất cả các chủng loại Yêu Ma tràn ngập | Đủ 5 hệ (Kim/Mộc/Thủy/Hỏa/Thổ) | $4.0\times$ | 🔥 Tối đa |
-| **20:00** | **TRÙM CUỐI (FINAL BOSS)** | **`Diêm Vương`** | Luân phiên cả 5 hệ Ngũ Hành | Spec | 👑 Thử thách cuối (Rương Đầu Thai) |
+## 8. Unity 3D implementation contracts
 
----
+- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, **YakshaBossPhaseConfigSO (arenaHoldDurationSeconds = X)**, lane/spawn refs, tower slot map, policy for level-scaled HeroRespawn and Overtime/BossInstantVictory (P02/P03/P04/P08 approved).
+- New MapSongQue3D scene with ground/water/crossing colliders, EnemyPrefab3D, tower socket transforms, camera.
+- MatchFlowService/GameStateManager still control state, but adapt 3D scene and combat interaction; WaveScheduler consumes gameplay time, never wall-clock.
+- Pool or limits for enemy, wood drops, projectiles, VFX; reset all for new run. Analytics include baseDamage, towerBuilds, woodDropped/collected, bossOutcome, duration.
+- No FriendlyArmy dependencies in MVP scene; no requirement for squad/rally UI.
+- **Do not overwrite** Projectzombie's Stage_01_BambooForest.asset (600s) or Level1_Timeline.asset (900s) as a shortcut. Link a **new Defense timeline** to Map 01 and add validation to block mismatches.
 
-## 4. Kịch Bản Chi Tiết Đánh Boss (Boss Encounters)
+## 9. Acceptance criteria
 
-### 🔴 4.1. Boss 1: **Ngưu Đầu Mã Diện** — Phút 10:00
-- **Chỉ số:** HP Base = 5,000 | Speed = 2.2 | Kháng Knockback hoàn toàn | **Hệ:** Thổ (Ngưu Đầu) / Hỏa (Mã Diện).
-- **Phase 1 (HP 100% – 50%):**
-  - *Ngưu Xung Thiên (Cooldown 8s):* Báo hiệu vệt đỏ 1.5s, lao thẳng về phía Player tốc độ $x3$.
-  - *Địa Chấn Âm Ty (Cooldown 5s):* Đập xiềng xuống đất gây sát thương nổ AoE vòng tròn và làm chậm Player 40% trong 2s.
-- **Phase 2 (HP < 50% - Song Quỷ Thịnh Nộ):**
-  - Tăng 20% Tốc chạy, +15% Sát thương, luân phiên đổi hệ Thổ/Hỏa mỗi 10s.
-  - *Triệu Hồn Âm Binh (Cooldown 15s):* Triệu hồi 10x Ma Giáp bao vây.
-  - *Hắc Khí Âm Ty (Nội tại):* Toả khói đen độc tố gây 5 dmg/sec nếu Player ở gần.
-- **Phần thưởng:** **Rương U Minh** (Chắc chắn nhận 1 thẻ Tiến Hóa hoặc 3 Thẻ Nâng cấp ngẫu nhiên + 500 Cổ Tiền).
+- [ ] Mode selection loads Map Sông Quê full 3D, Legacy Survival remains playable.
+- [ ] Three ground routes cross three bridges without water shortcut.
+- [ ] Attack & one ACTIVE relic work using 3D targeting and aim shapes.
+- [ ] Tower placed in valid slot; enemy damage reaches Base; HP/UI correct.
+- [ ] Enemy death drops Wood (initial 90s expiry), Hero pickup only; no auto credit/double claim.
+- [ ] Wave scheduler maintains event IDs/times including miniboss and Dạ Xoa. Boss spawn → ARENA_COMBAT → sau X seconds active time → ASSAULT_BASE; X được load từ SO, không hardcode.
+- [ ] BaseDestroyed -> LOSE; HeroDowned -> level-scaled respawn at run start; MiniBossKilled != WIN; FinalBossKilled -> instant WIN and stop spawns.
+- [ ] At 600s with Boss alive, game enters OVERTIME and waits Boss death or Base destruction; no scripted timeout-loss.
+- [ ] Run outcome/loot/AI reset correctly; Android 3D PlayMode/field QA measured.
 
----
+## 10. Links
 
-### ☠️ 4.2. Boss 2 (Final Boss): **Diêm Vương** — Phút 20:00
-- **Chỉ số:** HP Base = 15,000 | Speed = 1.8 | Kháng Knockback hoàn toàn | **Hệ:** Luân phiên xoay vòng cả 5 hệ Ngũ Hành (Kim/Mộc/Thủy/Hỏa/Thổ) mỗi 10s.
-- **Phase 1 (HP 100% – 40%):**
-  - *Bút Phán Quan (Cooldown 4s):* Bắn 3 luồng sóng bút hình quạt về phía Player.
-  - *Lưới Nghiệp Báo (Cooldown 12s):* Bẫy lồng xương tự động khóa góc di chuyển của Player trong 3s.
-- **Phase 2 (HP < 40% - Phán Quyết Tối Thượng):**
-  - *Vực Vong Xuyên (Cooldown 20s):* Tạo hố đen hút Player vào tâm và gây sát thương liên tục.
-  - *Quỷ Sứ Trấn Tứ Phương:* Gọi 4x Cung thủ quỷ canh gác ở 4 góc bản đồ.
-- **Phần thưởng:** **Rương Đầu Thai** (+2,000 Cổ Tiền, Mở khóa Nhân vật mới & Thắng Run).
-
----
-
-## 5. Quy Định Cân Bằng (Balancing Guidelines)
-
-1. **HP Scaling của Yêu Ma:** Máu quái thường tăng nhẹ theo thời gian ($HP_{current} = HP_{base} \times (1 + 0.15 \times Minute)$).
-2. **Kinh Nghiệm Drop Rate:** Yêu Ma thường rớt 1 Hạt Kinh Nghiệm (1 EXP), Elite rớt Hạt Lớn (10 EXP), Boss rớt Rương.
-3. **Mật Độ Quái Tối Đa (Max On-Screen Enemies):** Khống chế tối đa **150 – 200 enemy** hoạt động đồng thời để duy trì **60 FPS** trên chip di động Android.
+- [Master GDD](ProjectZombie_GDD.md)
+- [Decision Record](DECISION_CHECKLIST_GDD_V6.md)
+- [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md)
+- [3D Migration Plan](UNITY_3D_MIGRATION_PLAN.md)
+- [Defense Details](MAP_AND_DEFENSE_SYSTEM_SPEC.md)

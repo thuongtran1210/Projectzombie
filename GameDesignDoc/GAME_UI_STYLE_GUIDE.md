@@ -1,3 +1,9 @@
+> **GDD v6.1 status: DESIGN REFRACTOR REQUIRED — V6** — **D01–D12 approved 2026-10-23:** TREBRAVE Defense is main mode, Unity full 3D; MVP HUD needs HeroHP, **BaseHP**, wood **world-drop Hero pickup**, three lane alerts, Tower build/upgrade, **one ACTIVE FUN relic** ghost and final Boss Dạ Xoa. Only Base death loses, only final boss defeat wins. **No recruit/squad/rally controls in MVP**. Any UI below for 20m survival, 6 slots, passive relic or squad-as-required is Legacy/non-authoritative. This notice does not mean 3D HUD implementation is complete. See [Master GDD](ProjectZombie_GDD.md), [Relic Spec](WEAPON_VISUAL_MANIFESTATION_RULES.md).
+
+> **P01/P03/P07/P08 (owner-approved):** Hero and Skill names come from SO IDs; Hero HP=0 opens level-dependent respawn countdown at original spawn without triggering Lose; **MVP has only one enabled ACTIVE relic: Dép Tổ Ong Thần Sa**, 4 others locked, no advanced FUN FX; Dạ Xoa death triggers immediate Victory and stops further spawns; at 600s Boss still alive gameplay enters overtime. WoodDrop initially expires after 90s (adapted from VX EXP gem config), and Hero must pick it up.
+
+---
+
 # KIM CHỈ NAM THIẾT KẾ GIAO DIỆN NGƯỜI DÙNG (GAME UI STYLE GUIDE)
 **Dự án:** VONG XUYÊN (Project Zombie)  
 **Nền tảng mục tiêu:** Mobile Android (Landscape 16:9, Tối ưu hóa 19.5:9 & Tablet 4:3)  

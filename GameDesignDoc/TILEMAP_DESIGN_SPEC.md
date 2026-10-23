@@ -1,3 +1,7 @@
+> **GDD v6.1 status: LEGACY 2D ONLY** — **D02=C was approved on 2026-10-23:** Map 01 TREBRAVE/Defense targets **Unity full stylized 3D**. The PPU=64/Tilemap/Physics2D rules below remain **only for existing Survival Legacy and older 2D assets**. They are not Map Sông Quê 3D production requirements. Reference [3D Migration](UNITY_3D_MIGRATION_PLAN.md), [Master GDD](ProjectZombie_GDD.md).
+
+---
+
 # Tilemap Design Spec — Dự Án VONG XUYÊN
 
 **Phiên bản:** 1.0 (Official Single Source of Truth)  

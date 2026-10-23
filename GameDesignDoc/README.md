@@ -1,107 +1,65 @@
-# 📜 Trung Tâm Tài Liệu Thiết Kế Trò Chơi (Game Design Documentation Hub)
-## Dự Án: VONG XUYÊN (Project Zombie)
+# TREBRAVE / PROJECTZOMBIE — GAME DESIGN DOCUMENTATION HUB (v6.2)
 
-Chào mừng bạn đến với trung tâm tài liệu thiết kế và đặc tả kỹ thuật (Single Source of Truth) của dự án **VONG XUYÊN** — game **2D Top-down Action Roguelite** mang phong cách mỹ thuật **Cổ Phong Đông Sơn - Anime Dark Fantasy**, phát triển trên nền tảng **Unity 2022 LTS (URP) cho thiết bị di động Android**.
+> **OWNER DESIGN APPROVED:** D01–D12 và P01–P03/P05–P08 ngày **2026-10-23**. **P04 đã duyệt 2 state** (ARENA_COMBAT → sau X giây từ BossSpawn → ASSAULT_BASE đánh Nhà Chính); **K01–K06 còn các tham số/chi tiết** (đặc biệt K03 = X và cùng-tick arbitration). Owner xác nhận đang chuyển Unity 2D sang 3D, chưa xác minh build/QA.  
+> **Important:** This is a **design approval**, not an assertion Unity Projectzombie already runs full 3D Defense. The existing codebase primarily uses Unity 2D; migration is a separate implementation roadmap. **Draft PR #1 remains for documentation review; main branch not updated.**
 
----
+## Design single source of truth
 
-## 🗺️ Bản Đồ Hệ Thống Tài Liệu (Documentation Map)
+1. **[Master GDD v6.2 — approved product rules](ProjectZombie_GDD.md):** TREBRAVE branding, Defense as main mode, Map Sông Quê, one controlled Hero and one ACTIVE FUN relic, win by final Boss defeat, lose only by Base destroyed.
+2. **[Decision Record — D01–D12 và P01–P08 approved; Kxx params pending](DECISION_CHECKLIST_GDD_V6.md):** source of product approvals; unresolved implementation choices explicitly marked.
+3. **[Unity Full 3D Migration Plan](UNITY_3D_MIGRATION_PLAN.md):** target is full stylized 3D; what is new vs reusable; maintain Survival 2D Legacy.
+   - **[Unity 3D Source Code Audit — 2026-10-23](UNITY_3D_CODE_AUDIT_2026-10-23.md):** reviewed committed `main@657c8215` (not unpublished local 3D work); KEEP/ADAPT/NEW matrix, 8 engineering blockers, Hero canonical ID mapping and **3D-01..3D-08 implementation PR order**.
+   - **[3D Branch Code Re-Review — 2026-10-23](UNITY_3D_BRANCH_CODE_REVIEW_2026-10-23.md):** reviewed actual `feature/migrate-to-3d@749c06de`, 26 changes; confirmed migration utilities and identified concrete high-priority defects F01–F09. **Supersedes old audit's no-code-branch observation.**
+4. **[Map Sông Quê & Tower Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md):** 3 bridges, 3 lanes, 10 build sockets, Base, towers, **physical wood drops and Hero pickup**, friendly army **post-MVP**.
+5. **[Vongxuyen Enemy & Boss Roster](ENEMY_ROSTER_VONGXUYEN.md):** 7 VX types only for Map 01. Final Dạ Xoa, miniboss Ma Giáp; old PZ roster Legacy.
+6. **[Level Scenario](LEVEL_SCENARIO_GUIDE.md):** 600s baseline (108s miniboss/510s final), **OVERTIME until boss kill**, **instant Victory + stop spawns**, Base-only loss and level-scaled Hero respawn.
+   - **[Yaksha Boss 2-State Spec](YAKSHA_BOSS_PHASE_SPEC.md):** P04 approved Arena → sau X giây (ScriptableObject, chưa chốt số) → Assault Base; tie-break cùng tick K03 pending.
+7. **[One Hero / Slipper-only ACTIVE MVP — 3D UI](WEAPON_VISUAL_MANIFESTATION_RULES.md):** 4 Heroes with IDs and skills in SO; 5 FUN catalog with **only Dép Tổ Ong enabled**, 4 LOCKED; no advanced FUN effects.
+8. **[Doc Refactor Ledger](DOCS_REFACTOR_LEDGER.md):** decisions conflict registry and audit of older files.
 
-```mermaid
-graph TD
-    Master[📜 ProjectZombie_GDD.md<br/>Master Game Design Document v5.1]
-    
-    subgraph ArtAndVisual [🎨 Mỹ Thuật & Visual Specs]
-        Art1[ART_VFX_STYLE_GUIDE.md]
-        Art2[UI_PROMPT_AND_ART_GUIDE.md]
-        Art3[TILEMAP_DESIGN_SPEC.md]
-        Art4[WEAPON_VISUAL_MANIFESTATION_RULES.md]
-        Art5[CHARACTER_VFX_SIZE_GUIDELINES.md]
-    end
+## Approved rules — compact
 
-    subgraph GameplayAndCombat [⚔️ Gameplay & Chiến Đấu]
-        GP1[FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md]
-        GP2[LEVEL_SCENARIO_GUIDE.md]
-        GP3[PHYSICS_LAYER_DESIGN_SPEC.md]
-        GP4[WEAPON_SYSTEM_DOC.md]
-    end
+| Topic | Rule |
+| --- | --- |
+| Product / repository | TREBRAVE brand, technical repo **Projectzombie** retained |
+| Main gameplay | Hero Tower Defense, Survival retained as **Legacy mode** |
+| Technical target | **Unity full stylized 3D** for Defense; old runtime Unity 2D preserved in Legacy |
+| Map | **Map Sông Quê**, west/east banks, three bridges/lanes |
+| Heroes | Four HERO_01–HERO_04 choices; one/run; skill and display names configured by SO |
+| Relics | **Five FUN catalog items**, **MVP only ACTIVE Slipper enabled**, four other items LOCKED |
+| Stage | **600-second wave timeline**; after 600s Boss still alive -> OVERTIME, giữ timer state; P04 Boss ARENA_COMBAT → ASSAULT_BASE sau X giây từ spawn |
+| Win / Lose | **Final Dạ Xoa death -> instant Victory + stop spawns**; only Base HP = 0 triggers Lose; Hero 0 HP -> level-based respawn at starting point |
+| Wood | Drop + Hero pickup; **default lifetime 90s** based on VX EXP pickup lifetime, not VX wood loot; no auto grant |
+| Enemy | Map 01 uses 7 Vongxuyen types, old PZ enemies Legacy/Future Maps |
+| MVP | **Hero + Base + Tower + Wood pickup + Enemies/Boss + Relic**; **no Phu, soldiers, healers, squad or rally yet** |
+| Optional systems | Keep old Ngũ Hành/Âm Dương/Gacha/Multiplayer/Meta code, no mandatory Defense MVP support |
 
-    subgraph AudioAndUI [🔊 Âm Thanh & Giao Diện]
-        Aud1[AUDIO_SYSTEM_DESIGN_SPEC.md]
-        UI1[GAME_UI_STYLE_GUIDE.md]
-        UI2[META_UI_DESIGN_SPEC.md]
-        UI3[UI_SYSTEM_DOC.md]
-    end
+**Approved additional scope:** P01 Hero/Skill IDs in SO; P02 overtime until Boss death; P03 respawn countdown increases with level at original Hero spawn; P05 default wood drop TTL 90s from VX EXP baseline; P06 owner actively migrating Projectzombie from Unity 2D to full stylized 3D; P07 only Slipper active (basic cast/damage/ghost, no FUN effects), 4 FUN relics locked; P08 immediate Victory/stop waves upon final Boss death. **P04 approved:** Boss đánh trong arena rồi sau X giây boss-time chuyển sang đánh Nhà Chính qua cầu 3D. **Still pending:** giá trị X và same-tick outcome K03, K01–K06 numeric/technical config.
 
-    subgraph ServicesAndTech [⚡ Hệ Thống Dịch Vụ & Tối Ưu]
-        Tech1[ADMOB_MONETIZATION_SPEC.md]
-        Tech2[CLOUD_SAVE_SYSTEM_SPEC.md]
-        Tech3[MULTIPLAYER_ONLINE_SYSTEM_SPEC.md]
-        Tech4[PERFORMANCE_OPTIMIZATION_REPORT.md]
-    end
+## Legacy / supporting docs (not Map 01 primary rules)
 
-    Master --> ArtAndVisual
-    Master --> GameplayAndCombat
-    Master --> AudioAndUI
-    Master --> ServicesAndTech
-```
+| Document | Classification | Notes |
+| --- | --- | --- |
+| [FUN Combat & Enemy Mechanics](FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md) | **LEGACY** | Reuse useful FUN effects, but old enemy roster and auto casting are superseded by GDD v6 |
+| [Tilemap Design](TILEMAP_DESIGN_SPEC.md) | **LEGACY 2D ONLY** | PPU/Tilemap guidance for surviving Unity 2D scenes, **not full 3D Map 01** |
+| [Physics Layer Design](PHYSICS_LAYER_DESIGN_SPEC.md) | **LEGACY 2D** | Need independent 3D Physics/Navigation spec as P06 work |
+| [Art / VFX Style](ART_VFX_STYLE_GUIDE.md) | **LEGACY 2D** | TREBRAVE needs new semi-chibi 3D art bible |
+| [Game UI Style](GAME_UI_STYLE_GUIDE.md) | **REFACTOR TODO** | Hero, Base HP, Wood loot, Tower Build, Boss telegraphs; no squad HUD MVP |
+| [UI Prompt / Art](UI_PROMPT_AND_ART_GUIDE.md) | **REVIEW TODO** | Not authority for 3D rigs/assets |
+| [Audio](AUDIO_SYSTEM_DESIGN_SPEC.md) | **KEEP/EXTEND** | Add 3D spatial feedback and Defense events |
+| [Cloud Save](CLOUD_SAVE_SYSTEM_SPEC.md) | **KEEP/EXTEND** | Never persist run-only wood balance into meta save |
+| [Multiplayer](MULTIPLAYER_ONLINE_SYSTEM_SPEC.md) | **OPTIONAL D12** | Photon Fusion code preserved; Co-op Defense outside MVP |
+| [AdMob](ADMOB_MONETIZATION_SPEC.md) | **OPTIONAL D12** | Revenue flow should not redefine core gameplay |
+| [Performance Report](PERFORMANCE_OPTIMIZATION_REPORT.md) | **HISTORICAL** | Old performance figures are not verified for 3D release |
+| Uprades.doc | **LEGACY / AUDIT PENDING** | Original binary document preserved |
 
----
+**Do not delete any legacy scripts/scenes/asset GUIDs/save keys in a documentation-only PR.** The earlier Projectzombie 20-minute survival scenario and multi-slot relic visual descriptions remain accessible in Git history, but cannot override new Map 01.
 
-## 📚 Danh Mục Tài Liệu Chi Tiết (Categorized Index)
+## Engineering and references
 
-### 1. 👑 Tài Liệu Thiết Kế Cốt Lõi (Master Design Document)
-| Tài Liệu | Phiên Bản | Mô Tả Trọng Tâm | Đường Dẫn |
-| :--- | :---: | :--- | :--- |
-| **ProjectZombie GDD** | `v5.1` | **Single Source of Truth** toàn diện: 4 Tướng Thần Thoại, Hệ thống Ngũ Hành, Vòng lặp Core Gameplay, Cơ chế Gacha & Tiến hóa Pháp bảo. | [ProjectZombie_GDD.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md) |
-
----
-
-### 2. 🎨 Mỹ Thuật, Đồ Họa & VFX (Art, Visual & VFX Specs)
-| Tài Liệu | Phiên Bản | Mô Tả Trọng Tâm | Đường Dẫn |
-| :--- | :---: | :--- | :--- |
-| **Art & VFX Style Guide** | `v1.0` | Kim chỉ nam mỹ thuật Cổ Phong Đông Sơn, 2-Tone Cell Shading, Thick Outline, Palette màu Ngũ Hành và hiệu ứng Slash VFX. | [ART_VFX_STYLE_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ART_VFX_STYLE_GUIDE.md) |
-| **UI Prompt & Art Guide** | `v1.0` | Sổ tay Prompt AI chuẩn hóa sinh Asset UI, Frame 9-Slice, Panel hoa văn trống đồng, Nút bấm & Biểu tượng đồng nhất. | [UI_PROMPT_AND_ART_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md) |
-| **Tilemap Design Spec** | `v1.0` | Quy chuẩn Tilemap 2.5D, Pixel Density PPU = 64, Auto-tiling Rule Tiles, Multi-layer Grid & Y-Sorting. | [TILEMAP_DESIGN_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/TILEMAP_DESIGN_SPEC.md) |
-| **Weapon Visual Manifestation Rules** | `v1.0` | Quy chuẩn hiển thị tối đa 6 Pháp bảo đồng thời quanh nhân vật, phối hợp Orbital/Floating và Tối ưu Animation. | [WEAPON_VISUAL_MANIFESTATION_RULES.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/WEAPON_VISUAL_MANIFESTATION_RULES.md) |
-| **Character & VFX Metric Guidelines** | `v1.0` | Bảng quy chuẩn kích thước hình học Hero Chibi (1.05m), Quái thường/Elite/Boss và Hitbox Capsule chuẩn Metric. | [CHARACTER_VFX_SIZE_GUIDELINES.md](file:///c:/Users/thuon/Unity/Projectzombie/CHARACTER_VFX_SIZE_GUIDELINES.md) |
-
----
-
-### 3. ⚔️ Cơ Chế Chiến Đấu, Màn Chơi & Vật Lý (Combat, Levels & Physics)
-| Tài Liệu | Phiên Bản | Mô Tả Trọng Tâm | Đường Dẫn |
-| :--- | :---: | :--- | :--- |
-| **Fun Combat & Enemy Mechanics** | `v1.0` | Cơ chế chiến đấu Slapstick, hiệu ứng văng gãy, biến hình bựa vui nhộn của dàn Yêu Ma Cổ Phong. | [FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md) |
-| **Level Scenario & Spawning Guide** | `v1.0` | Diễn biến màn chơi 20 phút (Vong Xuyên Hà), tiến trình Wave, Sự kiện xuất hiện Tướng Ma, Boss Ngưu Đầu Mã Diện. | [LEVEL_SCENARIO_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/LEVEL_SCENARIO_GUIDE.md) |
-| **Physics 2D & Collision Matrix Spec** | `v1.0` | Bảng phân chia Layer 2D Physics, Ma trận va chạm tối ưu và quy tắc xử lý Raycast/Contact Filter không cấp phát bộ nhớ. | [PHYSICS_LAYER_DESIGN_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PHYSICS_LAYER_DESIGN_SPEC.md) |
-| **Weapons & Relic System Dev Doc** | `v6.5` | Kiến trúc C# hệ thống Pháp bảo (Hybrid Relic System): Melee, Projectile, AoE, Orbiting, Ranged & Tiến hóa Thần khí. | [WEAPON_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Weapons/WEAPON_SYSTEM_DOC.md) |
-| **Projectile System Spec** | `v1.0` | Thiết kế hệ thống Đạn, Quỹ đạo bay (Linear, Sine Wave, Homing, Boomerang), Object Pooling & Hitbox Detection. | [PROJECTILE_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Projectiles/PROJECTILE_SYSTEM_DOC.md) |
-| **Upgrades & Gacha System Doc** | `v2.0` | Cơ chế Reroll, Ban, Rarity Weighting và kiến trúc ScriptableObject cho hệ thống Thẻ nâng cấp trong trận đấu. | [UPGRADES_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Upgrades/UPGRADES_SYSTEM_DOC.md) |
-
----
-
-### 4. 🔊 Âm Thanh & Giao Diện Người Dùng (Audio & UI Specifications)
-| Tài Liệu | Phiên Bản | Mô Tả Trọng Tâm | Đường Dẫn |
-| :--- | :---: | :--- | :--- |
-| **Audio System Design Spec** | `v2.5` | Thiết kế âm thanh Cổ Phong (Mõ gỗ, Khánh ngọc, Trống đồng), Event-Driven Audio Engine, AudioSource Pooling 0 Latency. | [AUDIO_SYSTEM_DESIGN_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md) |
-| **Game UI Style Guide** | `v2.0` | 7 Trụ cột UI/UX Di động: HUD In-game, Joystick ảo chuẩn công thái học, Bảng nâng cấp, Thang màu Ngũ Hành. | [GAME_UI_STYLE_GUIDE.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/GAME_UI_STYLE_GUIDE.md) |
-| **Meta UI Design Spec** | `v1.0` | Thiết kế giao diện Ngoài trận đấu (Sảnh Hoàng Tuyền, Kho Tướng, Meta Shop Nâng cấp vĩnh viễn, Tủ Pháp bảo). | [META_UI_DESIGN_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/META_UI_DESIGN_SPEC.md) |
-| **UI System Architecture Doc** | `v1.0` | Kiến trúc Model-View-Presenter (MVP), Tách biệt hoàn toàn UI View và Gameplay Core Logic. | [UI_SYSTEM_DOC.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/UI_SYSTEM_DOC.md) |
-
----
-
-### 5. ⚡ Dịch Vụ Nền Tảng, Mạng & Tối Ưu (Services, Tech & Optimization)
-| Tài Liệu | Phiên Bản | Mô Tả Trọng Tâm | Đường Dẫn |
-| :--- | :---: | :--- | :--- |
-| **AdMob Monetization Spec** | `v1.0` | Thiết kế tích hợp Quảng cáo Hybrid: Rewarded Video (Hồi sinh, Reroll thẻ), Interstitial tự nhiên, Collapsible Banner. | [ADMOB_MONETIZATION_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ADMOB_MONETIZATION_SPEC.md) |
-| **Cloud Save System Spec** | `v1.0` | Thiết kế Lưu trữ Đám mây (Cloud Save): Offline-first, Google Play Games Services (GPGS), Đồng bộ xung đột (Conflict Resolution). | [CLOUD_SAVE_SYSTEM_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md) |
-| **Multiplayer Online Spec** | `v1.0` | Thiết kế Chơi mạng & Co-op (Dự thảo mở rộng tương lai): Đồng bộ Client-Server, Netcode for GameObjects. | [MULTIPLAYER_ONLINE_SYSTEM_SPEC.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/MULTIPLAYER_ONLINE_SYSTEM_SPEC.md) |
-| **Performance Optimization Report** | `v2.0` | Báo cáo chi tiết triệt tiêu giật lag (Zero Freeze Spikes), Profiling CPU/GPU, Sprite Atlas, Shader Culling, 60 FPS Mobile. | [PERFORMANCE_OPTIMIZATION_REPORT.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md) |
-| **Android Build Troubleshooting** | `v1.0` | Sổ tay giải quyết triệt để các lỗi Build Android: Gradle, Keystore, ProGuard/R8, Target SDK 33+, IL2CPP ARM64. | [DOCS_ANDROID_BUILD_TROUBLESHOOTING.md](file:///c:/Users/thuon/Unity/Projectzombie/Assets/DOCS_ANDROID_BUILD_TROUBLESHOOTING.md) |
-
----
-
-## 🔄 Quy Chuẩn Cập Nhật Tài Liệu (Maintenance Guidelines)
-1. **Single Source of Truth:** Mọi thay đổi về chỉ số, cơ chế và danh sách nhân vật/vũ khí bắt buộc phải cập nhật trước tại `ProjectZombie_GDD.md`.
-2. **Metadata Headers:** Tất cả tài liệu con phải duy trì Header chuẩn gồm: **Tên Dự Án**, **Phiên Bản**, **Ngày Cập Nhật**, **Trạng Thái (Proposed / Approved / Implemented)**.
-3. **Cross-Linking:** Sử dụng Markdown Links chuẩn để liên kết chéo giữa các tài liệu đặc tả và mã nguồn C# liên quan.
+- [Projectzombie Developer Guide](../DEVELOPMENT_GUIDE.md) — modular C#, Unity services, tests, code reviews.
+- [Repository README](../README.md) — describes current Unity/2D project setup, not a guarantee 3D target already implemented.
+- [Vongxuyen Product Vision](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/PRODUCT-VISION.md)
+- [Vongxuyen Master GDD](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md)
+- [Vongxuyen Defense Rules](https://github.com/thuongtran1210/Vongxuyen/blob/main/src/defense/DefenseRules.js)
+- [Vongxuyen Enemy Factory](https://github.com/thuongtran1210/Vongxuyen/blob/main/src/entities/EnemyFactory.js)
