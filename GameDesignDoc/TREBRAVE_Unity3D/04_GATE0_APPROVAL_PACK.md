@@ -53,7 +53,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - **Vùng sinh cần thiết kế:** event East/South có thể tạo Phi Cương nhưng Web `SpawnPlanner` không whitelist Phi Cương ở các zone Ma Giáp. Unity phải dùng nguồn zone của event, điều chỉnh resolver cho airborne và kiểm thử; **D-06/A đã duyệt**.
 - **Hàng đợi:** gắn `actualSpawnType` theo event+slot trước khi enqueue; nếu job elite hết hạn/overflow, không biến job thường khác thành elite bù; cần log riêng, không phụ thuộc FPS.
 
-## 5. D-06 — Chiến lược locomotion / vai trò enemy (cần mô tả trước code)
+## 5. D-06/A APPROVED (8/8) — Chiến lược Enemy locomotion / AI
 
 | Type | Spawn semantics nguồn | Chính sách Unity đề xuất | Test gate |
 |---|---|---|---|
@@ -86,9 +86,10 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 ## 7. Tiêu chí ra khỏi Gate G0
 
 - [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
+- [x] **D-06/A APPROVED 2026-10-23** — 8/8 lựa chọn A: Ground/Water/Air/Landing, 3 Linh Pháo, anti-air, Enemy aggro/spawn; 18 QA chưa chạy.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
-- [ ] Chốt Hero/Relic MVP, số liệu balance baseline (D-06/A về Enemy locomotion đã duyệt) (D-07..09).
+- [ ] Chốt D-07 balance [review](09_D07_BALANCE_REVIEW.md), D-08 Hero và D-09 Relic. D-06/A về Enemy locomotion đã duyệt.
 - [ ] G0-S1..G0-S6 đủ evidence, đặc biệt scene local/Meta.
 - [ ] Mapping và 27 backlog tickets review xong, chỉ các ticket G1 đủ điều kiện chuyển `APPROVED`.
 - [ ] Gate G0 được chủ dự án đồng ý đóng. **Không tự đánh dấu pass khi chỉ có tài liệu.**
