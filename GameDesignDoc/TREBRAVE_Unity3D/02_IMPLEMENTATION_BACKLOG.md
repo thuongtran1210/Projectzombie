@@ -9,13 +9,13 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- **D-03/A, D-04/A, D-05, D-06/A và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; D-01/D-02/D-07..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
+- **APPROVED 2026-10-23:** D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và **chỉ D-07-01/A**. **PENDING:** D-02, D-07-02..08, D-08, D-09, D-10 và backup/QA Gate0. Đây chỉ là phê duyệt thiết kế; backlog chưa được triển khai. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-03/A + D-04/A + D-05 + D-11/A đã duyệt; D-01/D-02/D-07..D-10 và QA local vẫn chờ; không coi Gate G0 đã pass |
+| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-01/A + D-03/A + D-04/A + D-05 + D-06/A + D-11/A + D-07-01/A đã duyệt; D-02, D-07-02..08, D-08..D-10 và QA local vẫn chờ; Gate G0 chưa pass |
 | U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
 | U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss phản ứng đúng D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
 | U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
@@ -52,10 +52,12 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-015 | P0 | Tower socket registry 10 slot, build/upgrade/repair/occupancy; [D-07 balance review](09_D07_BALANCE_REVIEW.md) | U3D-002,U3D-004,U3D-007 | L | xây đúng vị trí, phí 1 lần, không xây trùng, attack/HP qua API thống nhất |
-| U3D-016 | P0 | Wood economy, pickup physical, costs & source reward rules; [D-07 review](09_D07_BALANCE_REVIEW.md) | U3D-008,U3D-015 | M | không nhận Gỗ trước nhặt, 1 pickup 1 lần, expiry/pause/reset |
+| U3D-015 | P0 | Tower socket registry 10 slot, build/upgrade/repair/occupancy; [D-07 review](09_D07_BALANCE_REVIEW.md) — chỉ D-07-01/A đã duyệt về phương pháp tham chiếu | U3D-002,U3D-004,U3D-007 | L | xây đúng vị trí, phí 1 lần, không xây trùng, attack/HP qua API thống nhất |
+| U3D-016 | P0 | Wood economy, pickup physical, costs & source reward rules; [D-07 review](09_D07_BALANCE_REVIEW.md) — D-07-05 chưa duyệt | U3D-008,U3D-015 | M | không nhận Gỗ trước nhặt, 1 pickup 1 lần, expiry/pause/reset |
 | U3D-017 | P0 | Hero combat 1 character: move, dash, basic attack, damage/HP/target | U3D-004,U3D-007 | L | Hero có thể giết / bị giết, input bị chặn khi modal, không hit ghost target |
 | U3D-018 | P1 | Một Relic FUN theo `1 slot`, cast/cooldown/hitbox/ghost aim | U3D-017,U3D-001 | L | chỉ một Relic equipped; cast confirm/cancel rõ; không tiêu cooldown khi cancel |
+
+**Balance dependency (design decision):** D-01/A đã xác nhận Unity 3D là engine đích. **D-07-01/A đã phê duyệt nguồn tham chiếu, không phê duyệt con số**; U3D-006 (Enemy data), U3D-015 (Tower), U3D-016 (Gỗ), U3D-021 (Boss) phải giữ bảng số cụ thể `BLOCKED/DRAFT` cho tới khi D-07-02..08 được lựa chọn hoặc baseline thử nghiệm được duyệt riêng. Không cập nhật scene/Inspector hoặc code trong bước này.
 
 **G4 gate:** một phiên chạy với Hero bắn/đánh, Enemy chịu damage, Nhà Chính chịu damage, xây/nâng/sửa tháp bằng Gỗ và reset toàn bộ. **Giá tháp hiện Unity 25 Wood không đồng nghĩa nguồn Web đã duyệt.**
 
