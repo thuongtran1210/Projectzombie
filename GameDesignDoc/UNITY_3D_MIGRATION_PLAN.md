@@ -24,7 +24,7 @@
 | DamageData/DamageContext, IDamageable/IHealable | **REUSE domain** | 3D hitpoint, position, faction wrapper; different contact resolver |
 | Enemy FSM, AttackStrategy, ITargetSelector<PlayerContext> | **ADAPT** | new 3D controllers/target adapter including Base and Tower; avoid global contract breakage |
 | Physics2D TargetingUtility, CameraAwareSpawnLocator | **REPLACE for Defense 3D** | Physics.OverlapSphereNonAlloc or allocated-free physics queries as feasible, 3D lane spawn zones |
-| Player 2D Rigidbody/Animator/SpriteRenderer | **NEW 3D adapter** | CharacterController/3D motor/Animator 3D with **4 HeroDefinitionSO IDs/SkillDefinitionSO IDs**, configured names later; keep legacy controller |
+| Player 2D Rigidbody/Animator/SpriteRenderer | **NEW 3D adapter** | CharacterController/3D motor/Animator 3D with **4 existing CharacterDataSO canonical IDs**, optional HERO_01..04 aliases and SkillDefinitionSO IDs, names configurable; keep legacy controller |
 | WeaponManager MAX_WEAPONS=1 | **REUSE constraint; ADAPT runtime** | **5 relic catalog IDs, 1 enabled for MVP: slipper/Dép**, active 3D ghost + basic attack. Remaining 4 locked; no advanced FUN effects now |
 | Existing upgrades/card systems | **REUSE domain** | new data-driven 3D defense pool; no extra relic slots; evaluate card effects |
 | UI MVP/presentation | **ADAPT** | HUD for Base/Wood pickups/Tower/Boss and 3D raycast context |
@@ -44,7 +44,7 @@
 ## 4. Hero and one-active-relic contract
 
 ### Hero
-- Four HeroDefinitionSO entries (**HERO_01–HERO_04**) unlocked/selected in menu; one selected/run. **P01 approved:** skill names and identity configured later via HeroDefinitionSO / SkillDefinitionSO using stable IDs; no blocker from provisional names.
+- **Reuse the four existing `CharacterDataSO` assets** (`C001_ThuSinh`, `C002_DaoSi`, `C003_ThanhDong`, `C004_AnSi`) through `CharacterDatabaseSO`; select one/run. **P01 approved:** if design uses `HERO_01..04`, map them as aliases instead of rewriting canonical serialized IDs/Save keys. Add `SkillDefinitionSO` references and 3D prefab overrides as needed; do not build a redundant `HeroDefinitionSO` database by default. See [Code Audit](UNITY_3D_CODE_AUDIT_2026-10-23.md).
 - 3D CharacterMotor, 3D Animator rig, combat hit shape, HeroStats and Health. **P03 approved:** Hero death starts respawn countdown; higher Hero Level => longer respawn delay (configurable monotonic function in HeroRespawnConfigSO), respawn at run's **initial Hero spawn Transform**; no Lose; no numeric duration is locked.
 
 ### Relic — P07 approved, Slipper-only MVP
