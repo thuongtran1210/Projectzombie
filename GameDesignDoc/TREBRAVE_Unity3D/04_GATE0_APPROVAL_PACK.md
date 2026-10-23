@@ -101,6 +101,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): hai phương án D-03/D-04, các ca biên khi Boss chết và Hero Down.
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
+- [08 — D-06 Enemy Navigation & AI Review](08_D06_ENEMY_NAVIGATION_REVIEW.md): checklist A/B theo 8 nhóm (ground/water/air/landing/ghost cannon/anti-air/target/spawn) và 18 QA đề xuất; **D-06 vẫn PENDING**.
 
 **Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
 
