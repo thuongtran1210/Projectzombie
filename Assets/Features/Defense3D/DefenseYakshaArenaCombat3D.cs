@@ -3,31 +3,87 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
-    /// Yaksha arena attack prototype: visible danger radius, timed proximity blast.
-    /// Stops permanently when the run enters ASSAULT_BASE or ends.
+    /// Telegraph -> detonation -> recovery cycle. The visible red warning ring
+    /// uses a LineRenderer (visible in Game View without Gizmos).
     /// </summary>
     public sealed class DefenseYakshaArenaCombat3D : MonoBehaviour
     {
         [SerializeField, Min(0.5f)] private float blastRadius = 5f;
-        [SerializeField, Min(0.1f)] private float blastInterval = 3f;
+        [SerializeField, Min(0.2f)] private float blastInterval = 3f;
+        [SerializeField, Min(0.1f)] private float warningDuration = 1.1f;
         [SerializeField, Min(0f)] private float blastDamage = 30f;
         private DefenseHeroHealth3D hero;
         private float nextBlastAt;
+        private float detonateAt;
         private bool activeArena;
+        private bool warning;
+        private LineRenderer ring;
+        private Material ringMaterial;
+        private const int Segments = 64;
 
         public void Begin(DefenseHeroHealth3D heroHealth)
         {
             hero = heroHealth;
             activeArena = true;
+            warning = false;
             nextBlastAt = Time.time + blastInterval;
+            CreateTelegraph();
         }
 
-        public void EndArena() { activeArena = false; }
+        public void EndArena()
+        {
+            activeArena = false;
+            warning = false;
+            if (ring != null) ring.enabled = false;
+        }
+
+        private void CreateTelegraph()
+        {
+            var marker = new GameObject("Yaksha_Blast_Warning_Ring");
+            marker.transform.SetParent(transform, false);
+            ring = marker.AddComponent<LineRenderer>();
+            ring.useWorldSpace = false;
+            ring.loop = true;
+            ring.positionCount = Segments;
+            ring.widthMultiplier = 0.17f;
+            ring.startColor = Color.red;
+            ring.endColor = Color.red;
+            ring.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            ring.receiveShadows = false;
+            var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Sprites/Default");
+            if (shader != null)
+            {
+                ringMaterial = new Material(shader);
+                ringMaterial.color = new Color(1f, 0.12f, 0.08f);
+                ring.material = ringMaterial;
+            }
+            // Compensate for the enlarged Boss transform.
+            float scale = Mathf.Max(0.001f, transform.lossyScale.x);
+            float radius = blastRadius / scale;
+            for (int i = 0; i < Segments; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Segments;
+                ring.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, -0.37f, Mathf.Sin(angle) * radius));
+            }
+            ring.enabled = false;
+        }
 
         private void Update()
         {
-            if (!activeArena || Time.time < nextBlastAt) return;
-            nextBlastAt = Time.time + blastInterval;
+            if (!activeArena) return;
+            if (!warning)
+            {
+                if (Time.time < nextBlastAt) return;
+                warning = true;
+                detonateAt = Time.time + warningDuration;
+                if (ring != null) ring.enabled = true;
+                Debug.Log("[TREBRAVE Defense3D] Yaksha warning: leave the red circle!");
+                return;
+            }
+            if (Time.time < detonateAt) return;
+            warning = false;
+            if (ring != null) ring.enabled = false;
+            nextBlastAt = Time.time + Mathf.Max(0.1f, blastInterval - warningDuration);
             if (hero == null || hero.IsDown) return;
             Vector3 delta = hero.transform.position - transform.position;
             delta.y = 0f;
@@ -36,11 +92,9 @@ namespace ProjectZombie.Features.Defense3D
             Debug.Log("[TREBRAVE Defense3D] Yaksha arena blast hit Hero for " + blastDamage);
         }
 
-        private void OnDrawGizmos()
+        private void OnDestroy()
         {
-            if (!Application.isPlaying || !activeArena) return;
-            Gizmos.color = new Color(0.95f, 0.1f, 0.15f, 0.8f);
-            Gizmos.DrawWireSphere(transform.position, blastRadius);
+            if (ringMaterial != null) Destroy(ringMaterial);
         }
     }
 }
