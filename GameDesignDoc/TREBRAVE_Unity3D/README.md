@@ -1,6 +1,6 @@
 # TREBRAVE — Unity Defense3D Core Planning Hub
 
-**Status toàn bộ bộ tài liệu: DRAFT / ĐANG CHỜ OWNER DUYỆT.** Ngày audit: **2026-10-23**. Tất cả nội dung ở đây là **planning/docs-only**, không phải code đã triển khai. Đích là Unity 2022.3.62f3 trong `thuongtran1210/Projectzombie` (feature branch `feat/trebrave-defense3d-first-scene`); nguồn tham chiếu là Vongxuyen/Three.js `main`. Không merge nhánh theo mặc định.
+**Status toàn bộ bộ tài liệu: DRAFT / GATE G0 CHƯA ĐÓNG.** **D-05 và D-11/A đã APPROVED ngày 2026-10-23; các quyết định còn lại vẫn chờ duyệt.** Ngày audit: **2026-10-23**. Tất cả nội dung ở đây là **planning/docs-only**, không phải code đã triển khai. Đích là Unity 2022.3.62f3 trong `thuongtran1210/Projectzombie` (feature branch `feat/trebrave-defense3d-first-scene`); nguồn tham chiếu là Vongxuyen/Three.js `main`. Không merge nhánh theo mặc định.
 
 ## Bộ tài liệu chuẩn bị để duyệt
 
@@ -9,9 +9,9 @@
 | **[00 — Master Plan](00_MASTER_PLAN.md)** | Core vertical slice scope, 9 stage gates G0–G8, versioning, safety | biết làm gì trước/sau, chỗ nào chưa duyệt |
 | **[01 — Migration Matrix](01_MIGRATION_MATRIX.md)** | 23 domain mappings, Enemy registry, khác biệt Stage01 vs Unity | xác minh thứ gì đã có code/thứ gì chưa |
 | **[02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md)** | U3D-001..U3D-027, priority, dependencies, acceptance | mở issue theo gates sau khi duyệt |
-| **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-11, risks R-01..R-10, 25 QA cases | chốt luật và tiêu chí kiểm thử trước code |
-| **[04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md)** | Các lựa chọn A/B, ma trận WIN/LOSS, G0 safety | hồ sơ để chủ dự án ra quyết định |
-| **[05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md)** | Đủ 34 event / 214 declared jobs, runtime Phi Cương substitution, spawn contract | dữ liệu/test fixture cho Core Enemy/Wave |
+| **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-11 (**D-05 + D-11/A approved**), risks R-01..R-10, **26 QA cases** | chốt luật và tiêu chí kiểm thử trước code |
+| **[04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md)** | D-05/D-11 đã duyệt, các lựa chọn A/B còn chờ, ma trận WIN/LOSS, G0 safety | hồ sơ quyết định Gate G0 |
+| **[05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md)** | 34 event / 214 declared jobs; D-11/A → 20 Phi Cương + 108 Ma Giáp, giữ tổng suất | dữ liệu/test fixture cho Core Enemy/Wave |
 
 ## Kết luận audit ngắn
 
@@ -24,7 +24,7 @@
 
 ## Quy trình đề nghị sử dụng tài liệu
 
-**Vòng A — Design approval:** xem 11 quyết định trong [03](03_DECISIONS_QA.md), đặc biệt D-03 (WIN/LOSS 600s), D-04 (Hero down), D-05 (108s Miniboss), D-06 (air/water AI), D-10 (local scene protection), D-11 (Phi Cương do runtime chuyển loại). Hướng dẫn chọn A/B ở [04](04_GATE0_APPROVAL_PACK.md). Ghi quyết định vào Decision Log bằng commit tài liệu.
+**Vòng A — Design approval:** **D-05 APPROVED** — tại 108s đúng 1 Ma Giáp Thống Lĩnh; **D-11/A APPROVED** — đúng 1 Phi Cương thay suất Ma Giáp dẫn đầu **mỗi event loại `magiap`**, không theo frame/FPS. Biên bản đã lưu ở [03](03_DECISIONS_QA.md) và [04](04_GATE0_APPROVAL_PACK.md). **Vẫn chờ D-03 (WIN/LOSS), D-04 (Hero down), D-06 (AI nước/bay) và các quyết định Gate G0 còn lại.**
 
 **Vòng B — Planning freeze:** duyệt Core scope trong [00](00_MASTER_PLAN.md), từng dòng Migration Matrix ở [01](01_MIGRATION_MATRIX.md), dữ liệu Stage01 tại [05](05_STAGE_ENEMY_CONTRACT.md) và ticket/gate trong [02](02_IMPLEMENTATION_BACKLOG.md). Đổi DRAFT → APPROVED chỉ cho gói thực sự đã duyệt.
 
