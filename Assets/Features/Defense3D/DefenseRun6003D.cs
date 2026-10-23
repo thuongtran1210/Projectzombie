@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1f)] private float yakshaArenaDuration = 45f;
         [SerializeField, Min(1f)] private float yakshaHealth = 1200f;
         [SerializeField, Min(1)] private int enemiesPerEvent = 3;
+        [Header("Optional Yaksha visual (child of gameplay capsule)")]
+        [SerializeField] private GameObject yakshaVisualPrefab;
 
         private float elapsed;
         private int nextEvent;
@@ -114,7 +116,22 @@ namespace ProjectZombie.Features.Defense3D
                 material.color = arenaBoss ? new Color(0.55f, 0.10f, 0.8f) : new Color(0.78f, 0.14f, 0.23f);
                 renderer.material = material;
             }
-            if (arenaBoss) go.transform.localScale = Vector3.one * 2.3f;
+            if (arenaBoss)
+            {
+                if (yakshaVisualPrefab == null)
+                    go.transform.localScale = Vector3.one * 2.3f;
+                else
+                {
+                    if (renderer != null) renderer.enabled = false;
+                    var visual = Instantiate(yakshaVisualPrefab, go.transform);
+                    visual.name = "Yaksha_3D_Visual";
+                    visual.transform.localPosition = Vector3.zero;
+                    visual.transform.localRotation = Quaternion.identity;
+                    // Gameplay capsule remains the NavMesh/HP authority.
+                    foreach (var visualCollider in visual.GetComponentsInChildren<Collider>())
+                        visualCollider.enabled = false;
+                }
+            }
             var enemy = go.AddComponent<DefenseEnemyBridgeWalker3D>();
             if (arenaBoss) enemy.PrepareArenaBoss(health);
             else
