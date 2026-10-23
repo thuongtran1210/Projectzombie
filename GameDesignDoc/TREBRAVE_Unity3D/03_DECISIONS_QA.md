@@ -13,7 +13,7 @@
 | **D-04** | Web master nói Hero tử trận có thể LOSS; Unity prototype hồi sinh bằng `Time.time` | **ĐÃ DUYỆT/A:** Hero HP0 → Downed, **không LOSS trực tiếp**; khóa input Hero; hồi sinh tại HeroSpawn sau **5 gameplay seconds** (Pause/LevelUp không giảm countdown); Enemy vẫn đánh Base; BaseHP0 → LOSS; terminal WIN/LOSS hủy hồi sinh | **APPROVED — 2026-10-23** |
 | **D-05** | `src/config/stage01.js`: event thứ 7 @108s thay bằng 1 `magiap_boss`; Unity `DefenseRun6003D` hiện spawn event thường + miniboss @108 riêng | **ĐÃ DUYỆT:** sự kiện #7 / `benque-07` tại 108s chỉ sinh **1 `magiap_boss` (Ma Giáp Thống Lĩnh)**; **không** có batch quái thường trùng mốc; Boss Dạ Xoa @510s vẫn độc lập | **APPROVED — 2026-10-23** |
 | **D-06** | Web có Thủy Quái bơi, Huyết Dơi và Phi Cương bay bằng hình ảnh, Tiểu Quỷ từ Linh Pháo; Unity hiện mới dùng Ground Walker | **APPROVED/A (8/8)**: 4 domain Ground/Water/Air/Landing; NavMesh 3 cầu; nước lên bờ; bay 3D; anti-air; 3 Linh Pháo thả dù; aggro Hero/Support/Base; spawn an toàn. Chi tiết ở [08_D06_ENEMY_NAVIGATION_REVIEW.md](08_D06_ENEMY_NAVIGATION_REVIEW.md). Chưa code, 18 D06-QA chưa chạy | **APPROVED — 2026-10-23** |
-| **D-07** | Web `DefenseRules`: Base maxHP500, start100 Wood, towerCost50, tower upgrade levels; Unity Base1000, start0 Wood, towerCost25. Vongxuyen Yaksha3200 HP vs Unity1200 | **Đề xuất:** chụp config Web thành baseline data có version, **không overwrite số hiện Unity tự động**; khóa bảng cân bằng sau playtest | **PENDING** |
+| **D-07** | Web `DefenseRules`: Base maxHP500, start100 Wood, towerCost50, tower upgrade levels; Unity Base1000, start0 Wood, towerCost25. Vongxuyen Yaksha3200 HP vs Unity1200 | **D-07 CHỜ REVIEW:** [09 — Balance Checklist](09_D07_BALANCE_REVIEW.md): 8 lựa chọn, 12 QA NOT_RUN; đối chiếu nguồn Web/Unity và dùng balance versioning; không tự overwrite Inspector | **PENDING / REVIEW** |
 | **D-08** | Web data 4 Hero gồm Thư Sinh, Thanh Đồng, Ẩn Sĩ, Đạo Sĩ; GDD Unity lịch sử có Võ Tăng | **Đề xuất:** Core xác minh 1 Hero Thư Sinh, giữ API mở rộng; **chưa chốt** roster cả bốn hay thay Võ Tăng | **PENDING** |
 | **D-09** | Vongxuyen đã chốt 1 Pháp Bảo trang bị/run, Web có 5 Pháp Bảo FUN | **Đề xuất:** chỉ một slot, dùng **Dép Tổ Ong** cho MVP combat đầu tiên vì Web có runtime tham chiếu | **PENDING** |
 | **D-10** | Unity local GLB/scene/NavMesh/meta chưa xác nhận tracked; legacy SampleScene còn tồn tại; đã từng có Missing Mono Script | **Đề xuất:** giữ 2D Legacy riêng; trước bất kỳ code/merge nào, kiểm tra backup scene/GUID/importer + build settings; chỉ chỉnh có rollback | **PENDING / CRITICAL** |
@@ -143,6 +143,8 @@ Notes / next decision:
 
 
 ## 6. Review pack chi tiết (tài liệu lập kế hoạch)
+
+- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): D-07 PENDING, 8 lựa chọn và 12 test NOT_RUN.
 
 - [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md): lựa chọn A/B, luật kết quả theo 600s, khóa G0-safety, D-11.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): bảng 34 event / 214 spawn jobs theo config nguồn, runtime elite transform, spawn restrictions, test fixtures.
