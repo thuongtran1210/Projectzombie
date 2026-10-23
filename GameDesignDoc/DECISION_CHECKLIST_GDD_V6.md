@@ -1,6 +1,6 @@
 # PROJECTZOMBIE — GDD v6: OWNER-APPROVED DECISION RECORD
 
-> **Trạng thái:** D01–D12 và P01–P03/P05–P08 **OWNER-APPROVED** ngày 2026-10-23; **P04 + K01–K06** tiếp tục chờ đặc tả. Đây là **phê duyệt quy tắc thiết kế**, KHÔNG xác nhận tính năng đã có trong runtime Unity, hoàn tất 3D migration, QA hay cho phép merge PR.
+> **Trạng thái:** D01–D12 và **P01–P08 OWNER-APPROVED** ngày 2026-10-23 về nguyên tắc; **K01–K06** (đặc biệt X của P04 và tie-break K03) vẫn chờ thông số/giải pháp kỹ thuật. Đây là **phê duyệt quy tắc thiết kế**, KHÔNG xác nhận tính năng đã có trong runtime Unity, hoàn tất 3D migration, QA hay cho phép merge PR.
 > **Nguồn:** lựa chọn trực tiếp của chủ dự án trong cuộc hội thoại, Draft PR #1. Mục mở bên dưới không bị tự suy diễn thành phê duyệt.
 
 ## Các quyết định đã chốt
@@ -27,7 +27,7 @@
 | **P01** | **APPROVED** | Có 4 Hero, dùng **mã Hero/Skill** ổn định ở runtime; tên hiển thị, tên skill, mô tả và bộ chỉ số về sau lấy từ **HeroDefinitionSO / SkillDefinitionSO**. Không cần chốt tên bốn tướng/skill trong GDD MVP. |
 | **P02** | **APPROVED** | Map 01 là onboarding, **không xử thua/hòa tại 600s**: nếu Dạ Xoa còn sống thì **tiếp tục giao chiến (overtime) cho tới khi Boss chết -> WIN hoặc Nhà Chính bị phá -> LOSE**. Không tạo một điều kiện kết trận mới. |
 | **P03** | **APPROVED** | Hero HP=0 -> downed/respawn countdown; **Hero level càng cao, thời gian hồi sinh càng dài**; respawn ở **Hero initial spawn point của run**. **Hero chết không kết thúc run**. Thời gian định lượng/curve cấu hình ở **HeroRespawnConfigSO**, không hardcode. |
-| **P04** | **PENDING** | Dạ Xoa chiến đấu tại arena hay chủ động raid Nhà Chính; cơ chế đánh Base/target priority, xử lý damage/simultaneous win/loss trong cùng tick chưa được chủ dự án quyết định. Không tự chọn. |
+| **P04** | **APPROVED (2 STATE)** | **ARENA_COMBAT**: Dạ Xoa đánh trong đấu trường sau spawn. Sau **X giây tính từ BossSpawn theo gameplay clock** (không tăng khi Pause), Boss chuyển một chiều sang **ASSAULT_BASE**: rời đấu trường đi qua đường 3D hợp lệ và **tấn công Nhà Chính**. **X configurable qua YakshaBossPhaseConfigSO, chưa chốt con số**; cùng tick BossKilled/BaseDestroyed và chi tiết target policy còn **K03 PENDING**. |
 | **P05** | **APPROVED baseline** | Dùng **90 giây** làm thời gian mặc định của **WorldWoodDrop** ở Map 01, qua **WoodDropConfigSO** để đổi sau. **Chính xác:** Vongxuyen có **gemLifetimeSeconds=90 cho EXP gem** ở src/config/experience.js; **không tồn tại TTL gỗ rơi từ kill trong nguồn VX**. Đây là baseline **áp dụng tương tự**, KHÔNG phải sao chép thông số gỗ đã có. Pickup phải được Hero thu gom. Pickup radius/magnet cần config và QA riêng, chưa chốt số khác. |
 | **P06** | **APPROVED direction / IMPLEMENTATION IN PROGRESS BY OWNER** | Chủ dự án xác nhận Projectzombie **hiện đang chuyển từ 2D sang full stylized 3D**. GDD/đặc tả hướng về **Unity 3D**, tài liệu không khẳng định migration đã hoàn thành; cụ thể camera, rig, NavMesh, URP, 3D colliders theo tech spec/QA. |
 | **P07** | **APPROVED MVP scope** | MVP **chỉ mở một pháp bảo: Dép Tổ Ong Thần Sa** (ID ref slipper). **Không yêu cầu hiệu ứng FUN đặc biệt** trong giai đoạn này; cast chủ động, 3D ghost aim, đòn đánh/damage/cooldown cơ bản. **Bốn relic còn lại** trong danh mục 5 (Nồi, Điếu, Chiếu, Chổi) **LOCKED/POST-MVP**, vẫn giữ definition/legacy code; không xóa. Chủ dự án nói “khóa 3 món kia”, nhưng vì roster D04 có 5 item, MVP chỉ có 1 thì bắt buộc **4 locked**; cần xác nhận nếu muốn loại một món khỏi roster sau. |
@@ -37,12 +37,27 @@
 
 - **K01:** Giá trị chính xác theo cấp của hồi sinh (baseSeconds, levelMultiplier/AnimationCurve, giới hạn min/max), hành vi invulnerability khi respawn. P03 đã chốt chiều tăng và vị trí, **chưa chốt con số**.
 - **K02:** WoodDrop pickup radius, magnet, pooling/merge/cap, vị trí rơi an toàn; lifetime baseline 90s đã chọn theo EXP config VX, không phải TTL gỗ gốc.
-- **K03:** Dạ Xoa raid Base hay chờ trong đấu trường, target policy và thứ tự ưu tiên khi BaseDestroyed/BossKilled trong cùng simulation tick (**P04**).
+- **K03:** **P04 hai state đã chốt**; còn chờ **giá trị X (arenaHoldDurationSeconds)**, kỹ thuật target/attack set/route của ASSAULT_BASE và quy tắc ưu tiên khi BaseDestroyed/BossKilled trong cùng simulation tick. Không tự đặt X. [Yaksha 2-State Spec](YAKSHA_BOSS_PHASE_SPEC.md).
 - **K04:** Thiết kế cụ thể 4 Hero kits/model, mapping skill IDs và 3D production config khi asset sẵn sàng. P01 không bắt buộc chốt tên trước.
 - **K05:** Dép MVP (damage/cooldown/range/indicator số cuối) trong RelicDefinitionSO; FUN effects chuyển POST-MVP.
 - **K06:** Full 3D engine settings (camera/renderer/lighting/nav/perf constraints) theo quá trình migration; tài liệu không coi là DONE-CODE.
 
-**Tách bạch:** P01–P03, P05–P08 đã được quyết định về **nguyên tắc**; P04 và K01–K06 chưa có đủ chi tiết. Không sửa D01–D12.
+**Tách bạch:** **P01–P08 đều đã được duyệt về nguyên tắc**, trong đó P04 là hai state Arena → Attack Base sau X giây. **K01–K06** còn thông số và chi tiết kỹ thuật; X và same-tick priority ở K03. Không sửa D01–D12.
+
+## P04 — hai strategic states (OWNER APPROVED)
+
+```text
+yaksha_boss spawned at configured time (~510s reference)
+    -> ARENA_COMBAT [fight in east-bank boss arena]
+    -> after X seconds of unpaused gameplay since BossSpawn
+    -> ASSAULT_BASE [navigate from arena, cross valid bridge, attack Base]
+```
+
+- `X = YakshaBossPhaseConfigSO.arenaHoldDurationSeconds` (giá trị số **PENDING K03**), không mặc định 90s/600s hay wall-clock.
+- Hai state chiến lược; `cleave_windup`, `slam_windup`, `stunned` và `die` là **combat substates** không tính thêm strategic state.
+- Hết 600s, nếu X chưa đến: tiếp tục ARENA_COMBAT trong overtime, sau X chuyển ASSAULT_BASE. Không thêm wave mới.
+- Boss chết ở bất kỳ state => WIN ngay + hủy spawn; Base chết => LOSE; chuyển trạng thái không được chạy sau run end.
+- Đường tấn công Base đi trên Unity 3D nav hợp lệ, **không teleport/xuyên nước**. [Chi tiết](YAKSHA_BOSS_PHASE_SPEC.md).
 
 ## Bất biến phải được bảo toàn
 
@@ -55,7 +70,7 @@
 ## Quy trình ghi nhận thay đổi
 
 - Các quyết định D01–D12 đã có hiệu lực làm chuẩn thiết kế trong nhánh Draft PR #1. Mọi thay đổi Dxx cần được chủ dự án xác nhận qua decision record mới.
-- **P04 vẫn PENDING**; P01–P03 và P05–P08 đã chốt nguyên tắc. K01–K06 là chi tiết config/implementation chưa khóa con số. Không đổi D01–D12.
+- **P01–P08 APPROVED ở mức nguyên tắc**; K01–K06 là chi tiết config/implementation chưa khóa (đặc biệt K03: X/tie-break). Không đổi D01–D12.
 - Sau khi đồng bộ tài liệu và link, có thể review Draft PR; merge theo quy trình repo và QA tài liệu; runtime cần PR riêng.
 
 ## Checklist hoàn tất cập nhật tài liệu
@@ -63,5 +78,5 @@
 - [x] Ghi chính xác 12 quyết định owner-approved.
 - [x] Phân biệt source code VX, nguồn Unity PZ hiện tại và bản thiết kế đã duyệt.
 - [ ] Soát lại toàn bộ file đang mang nhãn active, xác nhận không còn lời khẳng định trái D07/D08/D10/D02.
-- [x] Ghi nhận P01–P03/P05–P08 và giữ P04 pending.
-- [ ] Xác nhận P04 và các tham số kỹ thuật K01–K06 trước khi nghiệm thu runtime tương ứng.
+- [x] Ghi nhận đầy đủ **P01–P08** và đặc tả hai state P04, X là SO field.
+- [ ] Chốt X/tie-break trong K03 và các tham số K01–K06 trước khi nghiệm thu runtime tương ứng.
