@@ -105,6 +105,8 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
 
+- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): 8 lựa chọn PENDING.
+
 ## 9. Pinned source revision cho audit
 
 - [Vongxuyen stage01.js](https://github.com/thuongtran1210/Vongxuyen/blob/main/src/config/stage01.js) blob `bb94a71df5ccddd8d93b0f8c961dac289667d9ea`
