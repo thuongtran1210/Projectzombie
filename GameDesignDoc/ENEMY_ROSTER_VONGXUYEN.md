@@ -2,7 +2,7 @@
 
 > **Trạng thái:** D09=A **OWNER-APPROVED** — đúng 7 Vongxuyen archetypes Map 01, Unity full 3D mục tiêu D02=C; code/asset chưa được port/QA.  
 > **Nguồn runtime:** Vongxuyen src/entities/EnemyFactory.js, src/combat/WaveManager.js, src/combat/YakshaBoss.js, src/config/stage01.js.  
-> **Quy tắc đã chốt:** D06 600s / D07 **Base destroyed only Lose; final Dạ Xoa killed Win** / D09 Map 01 only VX 7 / D08 wood **drop–Hero pickup** / D10 no army MVP. **P02/P03/P04/P05** là chi tiết còn mở.
+> **Quy tắc đã chốt:** D06 600s wave timeline / D07 **Base destroyed only Lose; Dạ Xoa defeated => instant Win + stop spawns** / D09 Map 01 only VX 7 / D08 wood **drop–Hero pickup** / D10 no army MVP / P02 **overtime** / P03 **level-scaled Hero respawn** / P05 **wood lifetime default 90s borrowed from VX EXP** / P08 **instant win**. **P04 boss raid & target priority** còn mở.
 
 ## 1. Mục tiêu hệ thống
 
@@ -81,7 +81,7 @@ Các giá trị ở cột HP/speed/damage là trực tiếp từ factory/Boss, t
 - AI có state **idle, chase, cleave_windup, slam_windup, stunned, die**; có ba nhóm skill cooldown tham chiếu cleave 3.5s, slam 8.5s, crescentWave 12.0s.
 - Đòn ví dụ: đại đao quét, khai sơn phá thạch, đao khí. Telegraph phải mở trước hit frame và cho người chơi cửa né/interrupt đúng.
 - Boss phải có phase gating theo thời gian/run và chiến thuật raid/hạn chế chase theo bờ.
-- **ĐÃ CHỐT D07:** hạ Dạ Xoa (**final boss**) khi Base còn HP => WIN; Ma Giáp Thống Lĩnh chỉ miniboss. Boss có trực tiếp đập Nhà Chính hay chỉ ở arena (**P04**) và timeout 600s (**P02**) còn PENDING. Hero chết **không** gây LOSE.
+- **ĐÃ CHỐT D07/P02/P03/P08:** Dạ Xoa (final boss) chết khi Base còn HP => **WIN ngay + cancel pending spawns/chặn spawn mới**; Ma Giáp Thống Lĩnh chỉ miniboss. Nếu Boss sống qua 600s thì **OVERTIME**, không tự Win/Lose. Hero chết => hồi sinh theo Hero Level ở initial spawn, **không** gây LOSE. Boss có raid Nhà Chính hay ở arena (**P04**) còn PENDING.
 - Test: Boss spawn duy nhất, UI HP/vfx đúng, phase chuyển đúng, boss death có cleanup/cancel projectile và game result không trùng.
 
 ## 4. Wave 01 tham chiếu
@@ -114,7 +114,7 @@ Projectzombie hiện có Enemy FSM và ITargetSelector trả **PlayerContext**. 
 - Giữ **tên/identity/role/đặc điểm nhận diện/gameplay** của 7 enemy Vongxuyen; không sao chép Three.js mesh/material vào Unity như prefab thành phẩm.
 - **Prefab3D:** MeshRenderer/SkinnedMeshRenderer, 3D Animator rig, Collider/Rigidbody3D hoặc custom movement/NavMeshAgent, 3D attack hurtboxes, health/damage, target policy, VFX, sound và pool reset.
 - World plane **XZ**, Y altitude; ground enemy chuyển qua 3 cầu theo NavMesh, Thủy Quái theo water-path đặc thù, Flying theo flying-space restrictions. Collider/line-of-sight/telegraph phải dùng **3D Physics**, không Physics2D.
-- **Loot D08=B:** tất cả enemy khi chết chỉ tạo **WorldWoodDrop**, hero nhặt mới tăng WoodWallet; không grant gỗ lúc EnemyKilled. Phu thu gom là POST-MVP không xuất hiện trong Map 01 first release.
+- **Loot D08=B / P05:** enemy chết tạo **WorldWoodDrop**, hero nhặt mới tăng WoodWallet; initial loot lifetime **90s**, áp dụng từ **EXP gemLifetimeSeconds của VX**, không phải wood TTL code hiện có ở VX. Phu POST-MVP không xuất hiện giai đoạn đầu; khi Boss chết instant Victory thì dừng spawns.
 - **Tower/Base targeting:** ITargetSelector Unity hiện trả PlayerContext nên cần DefenseTargetAdapter/IDamageable target; Hero downed không làm quái đứng Idle khi Base còn sống.
 - **Boss results:** Dạ Xoa defeated -> WIN; Base destroyed -> LOSE; Ma Giáp boss defeated -> continue. 600s timeout P02 còn mở, không tự xử game over.
 - **Legacy:** tất cả enemy PZ cũ giữ nguyên trong Legacy Mode/Maps tương lai; không xóa scripts/SO/prefab.
@@ -156,7 +156,7 @@ Projectzombie hiện có Enemy FSM và ITargetSelector trả **PlayerContext**. 
 - [ ] E05 drop indicators appear before impact and no infinite child spawn.
 - [ ] E06 displays elite health bar; flying targeting works.
 - [ ] B01 at 510s (if selected) and every telegraph leads damage only after windup.
-- [ ] Boss attack cannot damage destroyed/unreachable target; run end cancels boss projectiles.
+- [ ] Boss attack cannot damage destroyed/unreachable target; **Dạ Xoa death triggers immediate Victory and cancels all pending/new spawns**, run end cancels boss projectiles.
 - [ ] Enemy death tạo **WorldWoodDrop đúng một lần**, WoodWallet chỉ thay đổi sau Hero pickup, không pooled stale IDs.
 - [ ] Spawner honors cap and backpressure, no permanent queue on reset.
 - [ ] Survival Legacy giữ nguyên roster cũ, không bị 3D Defense scene import/rewrite.
