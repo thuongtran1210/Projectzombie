@@ -88,6 +88,8 @@ Xem [Decision Log & QA](03_DECISIONS_QA.md) để biết các quyết định đ
 - [03 — Decision Log & QA Gates](03_DECISIONS_QA.md): chờ duyệt, test case và QA evidence.
 - [04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md): các phương án quyết định A/B và bằng chứng Gate0.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): 34 mốc, 214 spawn jobs source, runtime enemy conversion và các ca QA.
+- [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): lựa chọn D-03 / D-04, thời gian trận/Overtime, Hero down/respawn, kiểm thử biên.
+- [07 — G0 Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only scene GLB NavMesh meta, form bằng chứng Unity để đóng Gate G0.
 - [Vongxuyen Master Plan](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md) (kế hoạch Web).
 - [Vongxuyen Web S0–S4](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/09-IMPLEMENTATION-PLAN-V04.md) (kế hoạch Web).
 - [Projectzombie GDD lịch sử](../ProjectZombie_GDD.md) (thiên về Unity Survival 2D).
