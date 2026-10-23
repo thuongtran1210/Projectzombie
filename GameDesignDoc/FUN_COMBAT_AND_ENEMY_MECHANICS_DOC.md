@@ -1,5 +1,7 @@
 > **GDD v6.1 status: LEGACY FUN COMBAT REFERENCE** — **D04=A, D05=A, D09=A, D10=C were approved:** Map 01 uses **five FUN relics with manual ACTIVE cast + 3D ghost**, **seven Vongxuyen enemy archetypes only**, and **no allied squad in MVP**. Old PZ enemy/Boss design below applies only to Legacy/Future Maps, not new Map 01. Retain existing complex FUN effects as implementation reference for P07, but convert activation via 3D active controller. See [Relic Spec](WEAPON_VISUAL_MANIFESTATION_RULES.md) and [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md).
 
+> **P07 owner-approved MVP scope:** only **Dép Tổ Ong Thần Sa** is enabled as ACTIVE relic with simple 3D ghost targeting/basic damage/cooldown. **Nồi, Điếu, Chiếu, Chổi are LOCKED**; complex boomerang/slapstick/FUN status effects below are **LEGACY/BACKLOG** and should not be required in Map 01 MVP. Existing code/asset remains preserved. D04 catalog stays five relics (1 enabled + 4 locked).
+
 ---
 
 # TÀI LIỆU THIẾT KẾ KỸ THUẬT & GAMEPLAY CHI TIẾT: HỆ THỐNG COMBAT & ENEMY SLAPSTICK / BỰA / FUN
