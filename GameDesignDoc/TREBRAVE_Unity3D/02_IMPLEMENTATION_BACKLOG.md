@@ -1,6 +1,6 @@
 # TREBRAVE Unity 3D — Implementation Backlog (Planning only)
 
-**Status:** DRAFT — scope & estimates relative, **chưa tạo Issues/chưa bắt đầu code**. Ngày 2026-10-23.
+**Status:** `G0 OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS` ngày 2026-10-23; **27 ticket U3D-001..027 vẫn planning/reviewed, chưa DONE_CODE/PASSED_PLAYMODE/ACCEPTED**, chưa tạo Issues; **G1 code NOT AUTHORIZED**. Sizes S/M/L là tương đối.
 **Nguyên tắc:** ticket lập theo dependency và gate; `P0` chặn Core, `P1` cần trước vertical slice playable, `P2` sau Core. Kích thước `S/M/L` là độ phức tạp tương đối, **không phải số giờ/ngày**. Xem [Master Plan](00_MASTER_PLAN.md) và [Matrix](01_MIGRATION_MATRIX.md).
 
 ## 1. Tracking và quy tắc quản trị
@@ -9,19 +9,19 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- **DESIGN APPROVED 2026-10-23:** D-01..D-11, gồm **D-07/A 8/8 nguyên tắc**; không còn quyết định A/B đang chờ trong checklist Gate G0. **Gate G0 vẫn BLOCKED** bởi xác minh backup scene/GLB/NavMesh/.meta/GUID, Unity Console/Legacy QA và review ticket; thông số production còn cần PlayMode. **Các ticket vẫn `DRAFT/BLOCKED`, chưa code.**
+- **OWNER G0 SIGN-OFF 2026-10-23:** D-01..D-11 đã duyệt; G0 được **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS**, theo [04](04_GATE0_APPROVAL_PACK.md). Đã nhận Git/backup hashes và owner Unity/Legacy verification; full restore & full-run QA chưa có. **27 ticket không tự đổi trạng thái; G1 cần lệnh code riêng**.
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Decision register & scope freeze: D-01..D-11 | none | M | **Các quyết định A đã OWNER APPROVED**; **chưa ACCEPTED** ticket/Gate G0 đến khi local backup/Console/Legacy evidence và review backlog; production balance chưa khóa |
-| U3D-002 | P0 | Backup + inventory local scene, GLB, NavMesh, Packages, GUID/.meta; D-10/A safety gate | none — copy-only song song design review | M | **OWNER EVIDENCE:** snapshot ngoài repo, HEAD/branch/2 stashes trùng, 6/6 critical Scene/NavMesh/GLB+meta SHA-256 khớp, 3 Packages/Build Settings hashes khớp, owner confirms Console/Legacy/Missing Scripts. **Chưa ACCEPTED** tới owner G0 sign-off; chưa thử full restore hoặc code |
+| U3D-001 | P0 | Decision register & scope freeze: D-01..D-11 | none | M | **G0 OWNER SIGNED-OFF / PASS WITH LIMITATIONS** ở cấp Gate; decision register reviewed, không coi `U3D-001` đã `ACCEPTED` về triển khai hoặc tạo issue |
+| U3D-002 | P0 | Backup + inventory local scene, GLB, NavMesh, Packages, GUID/.meta; D-10/A safety gate | none — copy-only song song design review | M | Owner G0 sign-off: 6/6 critical assets+meta SHA verified, 3 config hashes, Git snapshot và local Unity/Legacy owner verified. **Recorded limitations:** full restore/ngoài-snapshot assets chưa chứng minh. Gate G0 pass có giới hạn **không tự đánh ticket ACCEPTED** |
 | U3D-003 | P0 | D-02/A: authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss đúng D-02/A+D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
 | U3D-004 | P0 | D-02/A: thiết kế shared gameplay clock 600s, Inspector Fast Test profile riêng, event lifecycle | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time; terminal dừng hẳn, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
 | U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP, overtime flag và pending Hero respawn |
 
-**G0 readiness (planning only):** **D-01..D-11 APPROVED về thiết kế; remote review 27/27 tickets hoàn tất** (21 P0/3 P1/3 P2, không phát hiện dependency cycle). **Owner gửi evidence đã xác minh Git branch/HEAD/2 stashes khớp snapshot, SHA-256 6/6 file Scene/NavMesh/GLB + meta khớp backup**, 3 file Packages/BuildSettings khớp, Unity/Legacy user-reported verified. [11 — Readiness Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md). **G0/U3D-001/U3D-002 CHƯA ACCEPTED vì owner chưa sign-off đóng G0**; full restore và full-run PlayMode chưa nghiệm thu. Không chuyển ticket sang code nếu chưa có phê duyệt riêng.
+**G0 outcome:** **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS (2026-10-23)**; 27/27 ticket đã rà soát thiết kế từ xa, **không có ticket được đánh `DONE_CODE`, `PASSED_PLAYMODE`, `ACCEPTED` chỉ nhờ sign-off**. 6/6 Scene/NavMesh/GLB+meta cùng 3 file config hash khớp snapshot, branch/HEAD/stashes khớp, owner xác nhận Unity/Legacy. Full restore/full-run QA còn chưa làm; **G1/U3D-003..005 chưa `IN_PROGRESS`, chỉ chuyển khi owner cấp quyền riêng và chốt quy trình tích hợp không phá local dirty files**.
 
 **G1 prototype adapter:** trước tiên nối hệ thống mới vào script hiện hữu qua interface thay vì xóa/đổi tên `.cs`/`.meta`. Dễ rollback, an toàn scene.
 
