@@ -73,15 +73,15 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 | Check | Bằng chứng cần có | Status |
 |---|---|---|
-| G0-S1 | `git status --short`, branch/head, ghi rõ file M/??/D | **NOT_VERIFIED_THIS_REVIEW** |
-| G0-S2 | Backup offline scene `Assets/Scenes/Defense3D` gồm `.unity`/Meta, NavMesh data nếu nằm ngoài folder | **NOT_VERIFIED** |
-| G0-S3 | Backup `Assets/Art/Environment` + `Assets/Features/Defense3D*.meta` + script `.meta` liên quan | **NOT_VERIFIED** |
-| G0-S4 | Backup `Packages/manifest.json`, `packages-lock.json`, EditorBuildSettings, ProjectSettings/Packages nếu có | **NOT_VERIFIED** |
+| G0-S1 | `git status --short`, branch/head, ghi rõ file M/??/D | **PARTIAL_USER_REPORTED** — đã gửi git status; branch/HEAD/stash chưa đọc nội dung |
+| G0-S2 | Backup offline scene `Assets/Scenes/Defense3D` gồm `.unity`/Meta, NavMesh data nếu nằm ngoài folder | **COPY_REPORTED / 8 FILE HASH SUBSET MATCH** — cần kiểm kê NavMeshData và danh sách file |
+| G0-S3 | Backup `Assets/Art/Environment` + `Assets/Features/Defense3D*.meta` + script `.meta` liên quan | **COPY_REPORTED / 8 FILE HASH SUBSET MATCH** — chưa kiểm kê tên từng GLB/.meta |
+| G0-S4 | Backup `Packages/manifest.json`, `packages-lock.json`, EditorBuildSettings, ProjectSettings/Packages nếu có | **COPY_REPORTED / HASH NOT_VERIFIED** — backup folder đã thực hiện theo log, cần kiểm chứng đầy đủ |
 | G0-S5 | Unity mở scene local, Console 0 compile error, 0 Missing(Mono Script) | **NOT_RUN** |
 | G0-S6 | Test mở lại Legacy `SampleScene` / menu cũ không lỗi | **NOT_RUN** |
 | G0-S7 | Không làm `Build & Open Map Song Que Prototype`, `git reset --hard`, `git clean -fd`, `stash pop` toàn cục | **SAFETY POLICY** |
 
-**Bằng chứng cần thu khi bắt đầu G0:** đường dẫn backup ngoài repo, thời điểm, commit và `git status`, Unity version/scene path, ảnh/log Console. Chưa có các bằng chứng này trong audit GitHub hiện tại.
+**Bằng chứng local do owner báo cáo (2026-10-23 21:16 +07):** backup tại `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`, lệnh copy-only hoàn tất không báo lỗi; SHA256 **8 file** trong hai cây Scene Defense3D / Art Environment khớp, **0 missing/mismatches**. Nội dung branch/HEAD/stash đã ghi vào backup nhưng chưa gửi, NavMeshData và backup Packages/ProjectSettings chưa xác minh đầy đủ; Unity Console/Legacy **NOT_RUN**. Chi tiết ở [10 — Local Backup Evidence](10_G0_REMOTE_BASELINE_AUDIT.md).
 
 ## 6A. Remote Gate G0 audit đã làm / blocker còn lại
 
