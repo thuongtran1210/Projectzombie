@@ -55,7 +55,7 @@ New test / migration required:
 
 | Risk ID | Mô tả / dấu hiệu | Severity | Biện pháp trước code | QA evidence |
 |---|---|---|---|---|
-| R-01 | Scene/GLB/NavMesh local chưa nằm đầy đủ trong Git branch, mất sau regen/clean | CRITICAL | backup thư mục `Assets/Scenes/Defense3D`, `Assets/Art/Environment`, NavMesh data, manifest, meta; chuẩn hóa owner asset | scene reopen, scene/asset references |
+| R-01 | **REMOTE CONFIRMED 2026-10-23:** branch không có `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; scene/GLB/NavMesh có thể chỉ ở local, dễ mất sau regen/clean | CRITICAL | [Remote audit 10](10_G0_REMOTE_BASELINE_AUDIT.md) + backup copy-only `.unity`/GLB/NavMesh/.meta/package ngoài repo trước pull/rebuild; không khởi chạy scene generator | local backup hashes, scene reopen, GUID refs, Console/Legacy evidence **NOT_RUN** |
 | R-02 | GUID thay đổi, duplicate `.cs`, `Missing (Mono Script)` | CRITICAL | không xóa/đổi `.meta`, không regen scene, kiểm tra duplicate class/compile | Console compile clean, count missing=0 |
 | R-03 | Thêm manager mới nhưng old `DefenseRun6003D`, `WaveSlice3D`, `BridgeSmokeTest3D` còn active | HIGH | single spawner authority, opt-in adapter / old tests disabled | 1 event=1 spawn batch, hierarchy/log |
 | R-04 | Pause/LevelUp vẫn tiến clock, AI/damage gây lỗi | HIGH | one clock + input/spawn/damage guards | QA-03/QA-04 |
@@ -65,6 +65,8 @@ New test / migration required:
 | R-08 | Import GLB bao trùm collider/map hoặc sai scale/pivot, camera không thấy Boss | MEDIUM | render-only prefab, colliders disabled, verified source export | QA-25 |
 | R-09 | Tích hợp Unity 3D phá SampleScene/Legacy menu | HIGH | no automatic override default build scene, regression test | QA-24 |
 | R-10 | Giả định mã GitHub chạy được Unity trên máy người dùng | HIGH | remote `DONE_CODE` ≠ `PASSED_PLAYMODE`; nhận log/screenshot/video local | QA gate mỗi stage |
+
+**Remote G0 review đã thực hiện:** [10 — Remote Audit](10_G0_REMOTE_BASELINE_AUDIT.md) ghi nhận scene và environment **không có trên feature branch**; đây là **remote inventory**, không phải G0-S1..S6 PASS hay backup local. Mọi QA bên dưới vẫn NOT_RUN.
 
 ## 3. QA Matrix — chưa được chạy trong đợt lập kế hoạch
 
