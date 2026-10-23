@@ -1,7 +1,7 @@
 # TREBRAVE — Feature Inventory & Vongxuyen → Unity Migration Matrix
 
 **Status:** DRAFT / chờ xác minh Unity thực tế · 2026-10-23. **Không phải xác nhận đã chuyển đầy đủ**.
-**Engine nguồn:** Vongxuyen/Three.js `main`. **Engine đích:** Projectzombie/Unity nhánh `feat/trebrave-defense3d-first-scene`.
+**D-01/A APPROVED:** **Engine đích chính là Unity Defense 3D** trong Projectzombie, nhánh `feat/trebrave-defense3d-first-scene`; **Vongxuyen/Three.js `main`** là nguồn tham chiếu hành vi, Enemy, asset. Giữ Survival 2D và Web độc lập; đây là mục tiêu triển khai, chưa phải QA đã đạt.
 **Quy ước status:** `P`=đã có prototype Unity, `M`=một phần có/cần adapter, `X`=chưa có bản tương đương Unity được xác nhận, `L`=chỉ tồn tại local theo ảnh/log người dùng, `V`=cần QA Unity. **P không đồng nghĩa DONE-QA.**
 
 ## A. Migration Matrix theo subsystem
@@ -67,7 +67,7 @@ Các số này là **giá trị nguồn** trước wave multiplier, chưa duyệ
 
 **Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-06/A/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
 
-**D-07 cân bằng đang chờ review:** [09_D07_BALANCE_REVIEW.md](09_D07_BALANCE_REVIEW.md). Không tự nhập con số Web vào Unity.
+**D-07 phê duyệt một phần:** [09_D07_BALANCE_REVIEW.md](09_D07_BALANCE_REVIEW.md): **D-07-01/A đã APPROVED** (dùng Web làm baseline tham chiếu, Unity Balance Profile riêng và điều chỉnh sau 600s PlayMode), **D-07-02..08 vẫn PENDING**. Không copy chỉ số Web sang Unity hay ghi đè scene/Inspector.
 
 ## D. Migration principles / asset handling
 
