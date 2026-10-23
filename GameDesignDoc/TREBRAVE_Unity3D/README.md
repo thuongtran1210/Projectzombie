@@ -6,7 +6,7 @@
 
 | Tài liệu | Nội dung | Kết quả mong muốn |
 |---|---|---|
-| **[00 — Master Plan](00_MASTER_PLAN.md)** | Core vertical slice scope, 8 stage gates G0–G8, versioning, safety | biết làm gì trước/sau, chỗ nào chưa duyệt |
+| **[00 — Master Plan](00_MASTER_PLAN.md)** | Core vertical slice scope, 9 stage gates G0–G8, versioning, safety | biết làm gì trước/sau, chỗ nào chưa duyệt |
 | **[01 — Migration Matrix](01_MIGRATION_MATRIX.md)** | 23 domain mappings, Enemy registry, khác biệt Stage01 vs Unity | xác minh thứ gì đã có code/thứ gì chưa |
 | **[02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md)** | U3D-001..U3D-027, priority, dependencies, acceptance | mở issue theo gates sau khi duyệt |
 | **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-10, risks R-01..R-10, 25 QA cases | chốt luật và tiêu chí kiểm thử trước code |
