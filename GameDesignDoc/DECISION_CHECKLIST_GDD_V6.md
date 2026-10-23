@@ -24,7 +24,7 @@
 
 | ID | Trạng thái | Quy tắc thiết kế / giới hạn |
 | --- | --- | --- |
-| **P01** | **APPROVED** | Có 4 Hero, dùng **mã Hero/Skill** ổn định ở runtime; tên hiển thị, tên skill, mô tả và bộ chỉ số về sau lấy từ **HeroDefinitionSO / SkillDefinitionSO**. Không cần chốt tên bốn tướng/skill trong GDD MVP. |
+| **P01** | **APPROVED** | Có 4 Hero, mã Hero/Skill có thể ánh xạ và cấu hình trong SO. **Audit main cho thấy đã có CharacterDataSO và canonical `characterId=C001_ThuSinh/C002_DaoSi/C003_ThanhDong/C004_AnSi`**. `HERO_01..04` chỉ là **alias thiết kế** nếu dùng; không đổi ID/save hiện tại. Tên/skill/mô tả điều chỉnh trong `CharacterDataSO` / `SkillDefinitionSO`, không cần tạo Hero database mới. |
 | **P02** | **APPROVED** | Map 01 là onboarding, **không xử thua/hòa tại 600s**: nếu Dạ Xoa còn sống thì **tiếp tục giao chiến (overtime) cho tới khi Boss chết -> WIN hoặc Nhà Chính bị phá -> LOSE**. Không tạo một điều kiện kết trận mới. |
 | **P03** | **APPROVED** | Hero HP=0 -> downed/respawn countdown; **Hero level càng cao, thời gian hồi sinh càng dài**; respawn ở **Hero initial spawn point của run**. **Hero chết không kết thúc run**. Thời gian định lượng/curve cấu hình ở **HeroRespawnConfigSO**, không hardcode. |
 | **P04** | **APPROVED (2 STATE)** | **ARENA_COMBAT**: Dạ Xoa đánh trong đấu trường sau spawn. Sau **X giây tính từ BossSpawn theo gameplay clock** (không tăng khi Pause), Boss chuyển một chiều sang **ASSAULT_BASE**: rời đấu trường đi qua đường 3D hợp lệ và **tấn công Nhà Chính**. **X configurable qua YakshaBossPhaseConfigSO, chưa chốt con số**; cùng tick BossKilled/BaseDestroyed và chi tiết target policy còn **K03 PENDING**. |
