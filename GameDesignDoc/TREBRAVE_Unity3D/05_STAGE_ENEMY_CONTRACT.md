@@ -53,7 +53,7 @@ Công thức từ JS: `at = index*18`; `phase = min(5,floor(at/120)+1)`; riêng 
 - `benque-07` @108s: **D-05 APPROVED** — 1 `magiap_boss`; không sinh batch thường rồi thêm boss; không áp dụng D-11 cho Miniboss.
 - `benque-29` @504s: `magiap` x8 theo stage.
 - **Dạ Xoa @510s**: sự kiện Boss độc lập `YakshaBoss.js`, không là phần của 34 stage rows.
-- `benque-30` @522s: stage tiếp tục trong lúc Boss có thể đang ở Arena; không tự ngưng Stage vì Boss spawn (chờ duyệt luật Match).
+- `benque-30` @522s: stage tiếp tục trong lúc Boss ở Arena; **D-03/A + D-02/A APPROVED**: game-time schedule chạy tới 600s dù Boss đã ra @510s, chỉ dừng timed-wave khi đã đến mốc 600s/terminal.
 - `benque-34` @594s: last scheduled wave. Tới 600s không tạo thêm stage events.
 
 ## 2. Type/AI contracts — source vs đề nghị chuyển Unity
