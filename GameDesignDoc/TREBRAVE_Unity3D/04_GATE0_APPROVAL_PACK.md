@@ -1,10 +1,10 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
 **Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** chuyển 11 quyết định (10 quyết định ban đầu và D-11 bổ sung) từ danh sách vấn đề thành câu hỏi thiết kế có lựa chọn, hệ quả và ca kiểm thử. **Không hàm ý người dùng đã chọn phương án**. Không sửa mã nguồn/scene, không tạo Issues tự động.
+**Mục tiêu:** ghi các lựa chọn và bằng chứng. **D-05 và D-11/A đã được chủ dự án phê duyệt 2026-10-23**; chín quyết định còn lại vẫn chờ duyệt. Không sửa mã nguồn/scene, không tạo Issues tự động.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
-## 1. Tóm tắt quyết định còn mở (approval menu)
+## 1. Bảng quyết định (D-05 và D-11 đã duyệt; các mục khác chờ)
 
 | ID | Chọn mặc định đề nghị (A) | Phương án thay thế (B) | Hệ quả nếu khác |
 |---|---|---|---|
@@ -12,15 +12,15 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 | D-02 | 600 gameplay seconds, pause/level-up không tính giờ; Inspector Fast Test riêng | thay độ dài run | ảnh hưởng lịch wave/Boss |
 | **D-03** | **WIN** khi Base còn sống **và** (đã đủ 600s **và** Yaksha đã chết). Boss chết sớm → tiếp tục phòng thủ; Boss sống sau 600s → overtime | WIN ngay khi giết Boss, dù chưa đủ 600s; hoặc WIN tự động ở mốc 600s | thay toàn bộ logic Result và kiểm thử |
 | **D-04** | Hero Down → respawn sau 5 **gameplay seconds**, không LOSS trực tiếp; Base HP=0 → LOSS | Hero tử trận → LOSS; hoặc hệ mạng sống/hồi sinh giới hạn | lựa chọn ảnh hưởng cân bằng, clock và HUD |
-| **D-05** | Event #7 tại 108s **chỉ là 1 `magiap_boss`**, không tạo thêm batch thường | thêm boss ngoài 34 sự kiện; ghi rõ thành 35+ event thực | khác danh mục stage và mật độ |
+| **D-05 — APPROVED** | **Đã chọn A:** event #7 tại 108s chỉ 1 `magiap_boss`, không có batch thường trùng mốc | Không áp dụng B | Duyệt 2026-10-23; nguồn [Stage01](05_STAGE_ENEMY_CONTRACT.md) |
 | D-06 | Ground/Water/Air/Landing có chính sách route/attack khác nhau; GhostCannon đánh dấu chưa quyết định scope | ép mọi Enemy dùng ground NavMesh, chấp nhận thay đổi thiết kế | ảnh hưởng authenticity và path tests |
 | D-07 | giữ Web balance as **source reference** có version; tune Unity sau test, không auto-overwrite | nhập nguyên số Web vào Unity | ảnh hưởng DPS/HP/wood/test |
 | D-08 | Core 1 Thư Sinh; thiết kế dữ liệu cho 4 Hero; roster chính thức chốt riêng | cố triển khai 4 Hero ngay trong Core | ảnh hưởng scope/stability |
 | D-09 | 1 Relic slot, dùng Dép Tổ Ong MVP | Relic MVP khác trong 5 relic FUN | ảnh hưởng test input/combat |
 | D-10 | giữ Scene/GLB/NavMesh/GUID local và Legacy riêng; backup trước tác động | rebuild scene từ generator | phương án B **không khuyến nghị** vì rủi ro mất dữ liệu |
-| **D-11 (mới)** | dữ liệu `stage01` xác định **loại theo event**; phép chuyển `magiap` đầu frame thành `phicuong` là **SpawnModifier rõ cấu hình & test**, không cài ngầm | chạy đúng runtime Web mỗi frame như hiện tại | kết quả thay đổi theo FPS, cần quyết định deterministic policy |
+| **D-11 — APPROVED / A** | **Đã chọn A:** 1 `phicuong` dẫn đầu **mỗi event Stage01 loại `magiap`**, thay đúng 1 suất Ma Giáp (không thêm quái), không phụ thuộc frame/FPS | B (thay theo frame Web) **không được chọn** | Duyệt 2026-10-23; phải bổ sung deterministic test |
 
-**D-11** phát hiện khi đọc `src/combat/WaveManager.js`: `spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong' : job.type`. Với nhiều job trong queue và spawn budget 4/frame, việc nâng cấp đầu frame thành Phi Cương phụ thuộc phân bổ frame, không chỉ ID event. Cần chốt **deterministic vs same Web runtime** trước khi lập snapshot expected type.
+**Đã quyết định D-11/A:** source Web vẫn có `spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong' : job.type`, nhưng **Unity không sao chép logic frame-sensitive này**. Thay bằng 1 job `phicuong` tại slot đầu tiên của mỗi event `magiap`, bất kể phân bổ spawn qua bao nhiêu frame. Source `stage01.js` giữ 34 event và 214 suất.
 
 ## 2. D-03 — Ma trận quyết định WIN/LOSS tại mốc 600s (phương án A)
 
@@ -44,12 +44,14 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - Nếu Hero down trong OVERTIME, vẫn respawn theo luật đã duyệt; Base vẫn có thể bị phá.
 - Nếu owner chọn Hero dead = LOSS (B), sửa toàn bộ expected của QA-21/22 và cập nhật nguồn thiết kế; không giữ đồng thời hai luật.
 
-## 4. D-05 — Miniboss và D-11 — Enemy phase rules
+## 4. D-05 / D-11 — Quy tắc đã APPROVED, không còn chờ quyết định
 
 - Event #7: `at=108`, `type=magiap_boss`, `zone=eastBank`, `count=1`. **Không sinh thêm batch thường cùng event #7.**
 - `yaksha_boss` ở 510s là **trigger độc lập**, không nằm trong 34 sự kiện. Đây là **quy tắc nguồn Web**, Unity prototype đã có trigger riêng.
 - `quaidu` và `phicuong` là loại có code trong Vongxuyen nhưng **không xuất hiện trực tiếp trong khai báo 34 event source**; có thể do GhostCannon, logic elite frame hoặc debug spawning. Không nhét các ID này vào stage table chỉ để đạt '5 types'.
-- Nếu dùng policy Phi Cương đầu frame, phải chỉ rõ semantics *frame* hoặc đổi thành *event/phase* deterministic; phương án thứ hai cần sản phẩm duyệt vì thay gameplay Web.
+- **D-11/A đã được duyệt:** `đợt` = **event Stage01 khai báo `type=magiap`**; quy tắc đổi `slotIndex=0` thành `phicuong`, các slot còn lại giữ `magiap`. Dữ liệu nguồn có **20 event Ma Giáp**, 128 suất ⇒ 20 suất Phi Cương + 108 suất Ma Giáp; tổng stage vẫn **214**, không nhân thêm 20. Không áp dụng cho `magiap_boss`.
+- **Vùng sinh cần thiết kế:** event East/South có thể tạo Phi Cương nhưng Web `SpawnPlanner` không whitelist Phi Cương ở các zone Ma Giáp. Unity phải dùng nguồn zone của event, điều chỉnh resolver cho airborne và kiểm thử; **D-06 vẫn chờ duyệt**.
+- **Hàng đợi:** gắn `actualSpawnType` theo event+slot trước khi enqueue; nếu job elite hết hạn/overflow, không biến job thường khác thành elite bù; cần log riêng, không phụ thuộc FPS.
 
 ## 5. D-06 — Chiến lược locomotion / vai trò enemy (cần mô tả trước code)
 
@@ -83,7 +85,9 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ## 7. Tiêu chí ra khỏi Gate G0
 
-- [ ] Chủ dự án xác nhận các phương án **D-03, D-04, D-05** (và D-11), ghi decision `APPROVED` vào [Decision Log](03_DECISIONS_QA.md).
+- [ ] Chủ dự án xác nhận **D-03 và D-04** (WIN/LOSS và Hero Down) trong [Decision Log](03_DECISIONS_QA.md).
+- [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
+- [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
 - [ ] Chốt policy Enemy ground/air/water/landing, phạm vi GhostCannon, Hero/Relic MVP, số liệu balance baseline (D-06..09).
 - [ ] G0-S1..G0-S6 đủ evidence, đặc biệt scene local/Meta.
 - [ ] Mapping và 27 backlog tickets review xong, chỉ các ticket G1 đủ điều kiện chuyển `APPROVED`.
@@ -91,7 +95,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 ### Cách trả lời cho chủ dự án (không cần form)
 
-Có thể phê duyệt theo cụm bằng lời, ví dụ: **“D-03 A, D-04 A, D-05 A; D-11 chờ thảo luận.”** Sau đó cập nhật Decision Log; không tự suy từ `Tiếp tục` rằng mọi quyết định đã được duyệt.
+**Không cần duyệt lại D-05/D-11.** Những vấn đề chờ xác nhận tiếp theo: **D-03 luật WIN/LOSS** và **D-04 Hero Down**, cùng các điều kiện D-06/D-07 và an toàn scene. Đừng suy từ “Tiếp tục” rằng các mục đó đã được duyệt.
 
 ## 8. Pinned source revision cho audit
 
