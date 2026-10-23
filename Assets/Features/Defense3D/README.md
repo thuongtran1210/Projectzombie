@@ -113,3 +113,13 @@ Install into your **existing saved scene** with imported Vongxuyen GLB and baked
 - This is not a production-balanced release: Boss arena combat lacks proper attacks, the normal enemies are visual proxies, no actual 7-roster abilities, no on-screen victory overlay or completed run-result save flow. The 600s schedule and outcome logic are first-pass code requiring local Unity PlayMode QA.
 
 Verification: Save scene → pull feature branch → reopen scene → install 600s run → save → Play. Check `600s run started`, `Timed event 1/34`, `Miniboss at 108 seconds`, `Yaksha entered ARENA_COMBAT`, `Yaksha entered ASSAULT_BASE` (45s after spawn), `WIN` or `LOSS`. The 34th event occurs at 594s. Do not choose `Build & Open Map Song Que Prototype` (would risk overwriting edited scene).
+
+## Yaksha arena combat + Hero down / respawn (follow-up prototype)
+
+- The 600-second run now adds a `DefenseYakshaArenaCombat3D` component to the Yaksha spawn at 510s. During `ARENA_COMBAT` it deals a timed 30-damage proximity blast to Hero within 5m every 3s. The danger radius is drawn as a red **Scene View Gizmo**, not yet a player-facing telegraph/VFX; arena-phase Boss does not chase the Hero.
+- Hero has `DefenseHeroHealth3D` with 200 test HP, returns to the original Hero start position after a test **5-second** down timer. Hero down **never** causes LOSS, only BaseHP=0 does. This is a placeholder respawn delay, not the finalized level-scaled respawn formula.
+- After configurable arena time (default 45s), Yaksha irreversibly enters `ASSAULT_BASE`, reuses the validated NavMesh middle bridge, and **preserves HP already lost in arena**, without teleporting to a bridge. Its radius blast stops in assault phase.
+- HUD includes Yaksha HP and Hero HP. WIN/LOSS now shows a simple IMGUI centered result panel. After WIN, the Base rejects subsequent hits from surviving enemies. The future spawn schedule already stops on WIN/LOSS.
+- **Important for existing scenes:** If `[TREBRAVE] 600s Defense Run` is already installed, attach **`DefenseHeroHealth3D`** manually to the `Hero_3D_Prototype` object before Play. Or run `TREBRAVE > Defense 3D > Install 600s Defense Run In Open Scene` again: this updated installer adds Hero Health even when the run controller is already present. Keep map GLB and baked NavMesh unchanged.
+
+This implementation is an incremental combat prototype, **not** a production boss: capsule visual, no animation, no VFX attack telegraph, no final audio, no skill priority system, and no final results/save screen. Actual Unity EditMode/PlayMode tests have not been run from cloud.
