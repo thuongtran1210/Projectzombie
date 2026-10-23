@@ -65,21 +65,21 @@
 7. **Mỗi ticket**: nguồn + mục tiêu + acceptance + QA + rollback + tác động scene/meta; không merge PR khi thiếu kết quả kiểm thử.
 8. **Fast Test**: game-time overrides qua Inspector/test config cho QA; mặc định production 600/108/510; không sửa `const YakshaTime` thủ công mỗi lần pull.
 
-## 6. Những mâu thuẫn **chưa được tự chốt**
+## 6. Hai quyết định đã duyệt và các quyết định còn mở
 
 - **D-01 Runtime đích**: đề xuất Unity Defense3D là đích; Web Vongxuyen vẫn giữ độc lập.
 - **D-02 Thời gian**: đề xuất 600 giây gameplay.
 - **D-03 WIN/LOSS**: Web Master Plan mô tả trụ đủ 600 giây; Unity hiện **WIN ngay khi Yaksha chết, Base > 0** và overtime nếu Boss còn sống sau 600. Cần quyết định chính thức mối quan hệ Boss/600s.
 - **D-04 Hero Down**: Web Master Plan đề cập Hero tử trận có thể thua; Unity tự respawn 5s và chỉ Base vỡ mới thua. Cần quyết định.
-- **D-05 Stage@108**: `stage01.js` có 1 `magiap_boss` tại event #7 (108s). Unity hiện **spawn thường event #7 + spawn riêng miniboss**. Cần chốt không tạo sự kiện trùng.
+- **D-05 APPROVED 2026-10-23 — Miniboss@108s**: sự kiện #7 `benque-07` chỉ có **1 `magiap_boss`**, không spawn batch thường trùng mốc. Unity hiện còn logic khác, **chưa sửa code**.
 - **D-06 Enemy movement**: địch Thủy Quái từ canal và Huyết Dơi bay không thể mặc định đi cùng ground NavMesh qua cầu. Chọn chiến lược đa-locomotion mà không phá routing map.
 - **D-07 Tower balance**: source Web và prototype Unity khác chi phí, HP/tấn công, kiểu quản lý slot; cần cân bằng theo dữ liệu có version.
 - **D-08 Hero roster**: Vongxuyen có Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ; GDD Unity cũ có Võ Tăng; không tự thay danh sách tướng.
 - **D-09 Core relic**: 1 slot được duyệt; chốt pháp bảo đầu tiên để QA.
 - **D-10 Save & navigation**: luồng mới không làm hỏng SampleScene/Legacy; chưa xác minh kết nối flow.
-- **D-11 Runtime enemy transformation**: Web `WaveManager` chuyển Ma Giáp đầu mỗi frame thành Phi Cương, khác dữ liệu loại quái của `stage01.js`; quyết định tính deterministic của Unity trước khi code.
+- **D-11 APPROVED/A 2026-10-23 — Elite dẫn đầu theo event**: trong mỗi event Stage01 loại `magiap`, **một suất đầu tiên** đổi thành `phicuong`; không cộng suất, không phụ thuộc FPS/frame; không đổi `magiap_boss`. 20 event Ma Giáp → **20 Phi Cương + 108 Ma Giáp**, tổng **214** spawn jobs của 34 event. Web hiện đổi theo frame, nên đây là khác biệt đã được chấp thuận cho Unity.
 
-Xem [Decision Log & QA](03_DECISIONS_QA.md) để phê duyệt từng mục.
+Xem [Decision Log & QA](03_DECISIONS_QA.md) để biết các quyết định đã duyệt và còn PENDING. **Chỉ D-05 và D-11/A đã APPROVED; Gate G0 còn mở**, không cho phép bắt đầu code.
 
 ## 7. Danh sách tài liệu / audit trails
 
@@ -93,4 +93,4 @@ Xem [Decision Log & QA](03_DECISIONS_QA.md) để phê duyệt từng mục.
 - [Projectzombie GDD lịch sử](../ProjectZombie_GDD.md) (thiên về Unity Survival 2D).
 - [README Defense3D prototype](../../Assets/Features/Defense3D/README.md) (không coi checklist cũ là QA đã đạt).
 
-**Điểm dừng:** Hoàn thành 4 tài liệu không phải là phê duyệt. Không triển khai Core G1 cho tới khi owner chốt các D-01..D-11 quan trọng, xác minh backup và Gate G0.
+**Điểm dừng:** **D-05 & D-11/A đã duyệt**, nhưng bộ hồ sơ vẫn ở Gate G0; không triển khai Core G1 cho tới khi những quyết định quan trọng khác (đặc biệt D-03/D-04/D-06), backup local và QA baseline được xác nhận. Chưa sửa code/scene.
