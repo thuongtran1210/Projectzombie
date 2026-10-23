@@ -77,6 +77,7 @@
 - **D-08 Hero roster**: Vongxuyen có Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ; GDD Unity cũ có Võ Tăng; không tự thay danh sách tướng.
 - **D-09 Core relic**: 1 slot được duyệt; chốt pháp bảo đầu tiên để QA.
 - **D-10 Save & navigation**: luồng mới không làm hỏng SampleScene/Legacy; chưa xác minh kết nối flow.
+- **D-11 Runtime enemy transformation**: Web `WaveManager` chuyển Ma Giáp đầu mỗi frame thành Phi Cương, khác dữ liệu loại quái của `stage01.js`; quyết định tính deterministic của Unity trước khi code.
 
 Xem [Decision Log & QA](03_DECISIONS_QA.md) để phê duyệt từng mục.
 
@@ -85,9 +86,11 @@ Xem [Decision Log & QA](03_DECISIONS_QA.md) để phê duyệt từng mục.
 - [01 — Migration Matrix](01_MIGRATION_MATRIX.md): đối chiếu nguồn JS, code Unity và khoảng trống.
 - [02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md): ticket IDs/ưu tiên/phụ thuộc/deliverable/acceptance.
 - [03 — Decision Log & QA Gates](03_DECISIONS_QA.md): chờ duyệt, test case và QA evidence.
+- [04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md): các phương án quyết định A/B và bằng chứng Gate0.
+- [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): 34 mốc, 214 spawn jobs source, runtime enemy conversion và các ca QA.
 - [Vongxuyen Master Plan](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md) (kế hoạch Web).
 - [Vongxuyen Web S0–S4](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/09-IMPLEMENTATION-PLAN-V04.md) (kế hoạch Web).
 - [Projectzombie GDD lịch sử](../ProjectZombie_GDD.md) (thiên về Unity Survival 2D).
 - [README Defense3D prototype](../../Assets/Features/Defense3D/README.md) (không coi checklist cũ là QA đã đạt).
 
-**Điểm dừng:** Hoàn thành 4 tài liệu không phải là phê duyệt. Không triển khai Core G1 cho tới khi owner chốt các D-01..D-10 quan trọng, xác minh backup và Gate G0.
+**Điểm dừng:** Hoàn thành 4 tài liệu không phải là phê duyệt. Không triển khai Core G1 cho tới khi owner chốt các D-01..D-11 quan trọng, xác minh backup và Gate G0.
