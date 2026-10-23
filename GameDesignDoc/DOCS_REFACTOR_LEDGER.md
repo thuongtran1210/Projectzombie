@@ -1,6 +1,6 @@
 # TREBRAVE / PROJECTZOMBIE — DOCUMENT REFACTOR LEDGER v6.2
 
-> **Status:** 12/12 product decisions OWNER-APPROVED (2026-10-23). **Implementation remains separate/in progress under owner's 2D→3D migration**; P01–P03/P05–P08 now owner-approved; P04 and K01–K06 are open technical parameters, see [Decision Record](DECISION_CHECKLIST_GDD_V6.md).  
+> **Status:** 12/12 product decisions OWNER-APPROVED (2026-10-23). **Implementation remains separate/in progress under owner's 2D→3D migration**; P01–P08 now owner-approved at design level (**P04 = 2 boss strategic states**); K01–K06 remain parameter/engineering-detail questions, see [Decision Record](DECISION_CHECKLIST_GDD_V6.md).  
 > **Scope:** restructure documentation to make new TREBRAVE / full Unity 3D Defense first-class while protecting Projectzombie Unity 2D Legacy mode.  
 > **Document-only Draft PR:** no Unity scene/script/asset refactor is claimed or committed.
 
@@ -11,6 +11,7 @@
 | L0 Game Contract | [ProjectZombie_GDD.md](ProjectZombie_GDD.md), [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) | TREBRAVE, D01–D12, win/loss, 3D target, 1 Hero/Relic, core scope |
 | L1 Feature Contract | [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md), [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md), [LEVEL_SCENARIO_GUIDE.md](LEVEL_SCENARIO_GUIDE.md), [WEAPON_VISUAL_MANIFESTATION_RULES.md](WEAPON_VISUAL_MANIFESTATION_RULES.md) | Map / wood drop / tower / 7 enemy / boss / active relic / stage |
 | L1.5 Engineering Migration | [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md) | Existing 2D → Unity full 3D, adapters and Legacy compatibility |
+| [YAKSHA_BOSS_PHASE_SPEC.md](YAKSHA_BOSS_PHASE_SPEC.md) | **NEW — OWNER-APPROVED P04** | Two strategic states ARENA_COMBAT → after X seconds from spawn → ASSAULT_BASE, K03 numeric/tie pending |
 | L2 Art, Technical | Art/VFX, physics layers, tilemap, UI, audio, profile and addressables | Must follow L0; existing 2D specs are **Legacy-specific** |
 | L3 Optional | Multiplayer, cloud save, monetization, Ngũ Hành/Âm Dương | Code retained D12; may stay outside Defense MVP |
 | L4 History | GDD v5.1 in Git history, old 20-minute survival/six-slot specs | Not authoritative for Map 01 TREBRAVE |
@@ -19,14 +20,14 @@
 
 **P01–P03/P05–P08 approved:** four Hero skill/identity IDs are configured in ScriptableObjects; 600s triggers overtime if Boss still lives; Hero respawns at starting transform after level-scaled countdown; WoodDrop TTL default 90s (borrowed from VX **EXP gem** lifetime, not wood default); full-3D migration is actively being performed by owner, scope settings not yet independently verified; MVP only Slipper ACTIVE/basic FX, 4 other FUN relics LOCKED; Dạ Xoa death instantly triggers Victory and stops all further spawns.
 
-**PENDING:** P04 Boss raid Base and simultaneous event priority, plus K01–K06 config numbers/engine details.
+**P04 OWNER-APPROVED:** Dạ Xoa uses ARENA_COMBAT after spawn → after **X gameplay seconds measured since BossSpawn** transitions to ASSAULT_BASE, navigates to attack Base. [P04 Boss Phase Spec](YAKSHA_BOSS_PHASE_SPEC.md). **K03 pending:** X exact value, same-tick Boss/Base death arbitration; K01–K06 also contain other numeric/engineering details.
 
 ## 2. File-by-file refactor status
 
 | File | Status on draft PR | Next task |
 | --- | --- | --- |
 | [ProjectZombie_GDD.md](ProjectZombie_GDD.md) | **UPDATED v6.2 / OWNER DESIGN APPROVED** | Fill Pxx after owner follow-up; not claim Unity runtime is 3D yet |
-| [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) | **UPDATED D01–D12 + P01–P03/P05–P08 APPROVED** | Track P04, K01–K06 |
+| [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) | **UPDATED D01–D12 + P01–P03/P05–P08 APPROVED** | Track K03 X and simultaneous event priority, K01–K06 params |
 | [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md) | **UPDATED** 3D, wood pickup 90s, tower-only MVP | Balance and 3D assets, QA |
 | [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md) | **UPDATED** VX7, final boss, 3D prefab targets | Prefab creation/AI design/tests |
 | [LEVEL_SCENARIO_GUIDE.md](LEVEL_SCENARIO_GUIDE.md) | **UPDATED** 600s overtime, Boss instant win + stop spawns, Base only loss, legacy timeline isolated | P02/P03/P04 event resolution |
@@ -57,7 +58,7 @@
 | C01 | Survival vs Defense core | **RESOLVED D01=A:** Defense primary, Survival Legacy |
 | C02 | Old Bến Đò Vong Xuyên Map 01 | **RESOLVED D11=A:** Map Sông Quê, TREBRAVE |
 | C03 | 20m old vs 600s VX vs 900s timeline asset | **RESOLVED DESIGN D06=A:** 600s Defense; **engineering pending** new stage asset |
-| C04 | Hero dies Lose / 20m Diêm Vương boss vs Dạ Xoa | **RESOLVED D07=C/P02/P03/P08:** only Base destroyed Lose, Dạ Xoa dies instant Win and stop spawns, Hero level-scaled respawns, 600s overtime; P04 raid pending |
+| C04 | Hero dies Lose / 20m Diêm Vương boss vs Dạ Xoa | **RESOLVED D07=C/P02/P03/P08:** only Base destroyed Lose, Dạ Xoa dies instant Win and stop spawns, Hero level-scaled respawns, 600s overtime; P04 strategic 2-state approved; K03 X/tie pending |
 | C05 | Six relics visual rule vs WeaponManager=1 | **RESOLVED D03/D04/D05:** 1 ACTIVE relic equipped/run |
 | C06 | 17 historic relics vs VX FUN 5 | **RESOLVED D04=A/P07:** VX FUN 5 are catalog; **MVP Slipper enabled, 4 others locked**, no advanced FUN FX; legacy preserved |
 | C07 | Old PZ enemies vs VX seven | **RESOLVED D09=A:** VX seven Map 01, old PZ enemies Legacy/Future |
@@ -76,7 +77,7 @@
 2. 3D Physics/AI Navigation/Enemy Target Layer Spec with raycasts, NavMesh topology, water and flying.
 3. Defense-only HUD/UX spec, **Slipper-only ACTIVE MVP** and 90s WoodDrop pickup input; other relics post-MVP.
 4. HeroDefinitionSO/SkillDefinitionSO key contract + 3D Enemy/Boss art sheets/skills; names can be configured later.
-5. WoodLoot 90s/edge pooling, 600s overtime and level-scaled respawn test spec; **P04 boss AI raid pending**.
+5. WoodLoot 90s/edge pooling, 600s overtime and level-scaled respawn test spec; **P04 Boss 2-state approved; K03 X/tie pending**.
 6. Level data SO contracts, timeline migration, 3D scene/prefab Addressables naming map.
 7. Post-MVP Dân Binh/Phu/Thầy Lang/Squad specification in separate backlog, not MVP.
 
@@ -91,6 +92,7 @@
 - Relic: **five FUN catalog items, only Slipper ACTIVE enabled in MVP**, four locked; one slot/run.
 - Base: **only Lose trigger**. Final Boss Dạ Xoa: **Win trigger**.
 - Timer: **600-second wave timeline**, if Boss alive then **OVERTIME**; Dạ Xoa kill = WIN instantly and no further spawns.
+- Boss strategic FSM **P04**: `ARENA_COMBAT` after BossSpawn → `ASSAULT_BASE` after `X=arenaHoldDurationSeconds` unpaused Boss-time; attack Base across valid 3D bridge; **X number and same-tick arbitration pending K03**.
 - Wood: **world drop lifetime baseline 90s** adopted from VX **EXP gem** config, then Hero pickup; never auto-grant on kill.
 - Tower: 10 fixed pedestals baseline, L1–L3; friendly army **post-MVP**.
-- Status: **OWNER DESIGN APPROVED** / **P04 PENDING** / **K01–K06 CONFIG TBD** / **UNITY 3D MIGRATION IN PROGRESS (owner report)** / **LEGACY** / **HISTORICAL**.
+- Status: **OWNER DESIGN APPROVED** / **P04 2-STATE APPROVED** / **K03 X/TIE PENDING** / **K01–K06 CONFIG TBD** / **UNITY 3D MIGRATION IN PROGRESS (owner report)** / **LEGACY** / **HISTORICAL**.
