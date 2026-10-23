@@ -76,12 +76,14 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 | G0-S1 | `git status --short`, branch/head, ghi rõ file M/??/D | **PARTIAL_USER_REPORTED** — đã gửi git status; branch/HEAD/stash chưa đọc nội dung |
 | G0-S2 | Backup offline scene `Assets/Scenes/Defense3D` gồm `.unity`/Meta, NavMesh data nếu nằm ngoài folder | **COPY_REPORTED / 8 FILE HASH SUBSET MATCH** — cần kiểm kê NavMeshData và danh sách file |
 | G0-S3 | Backup `Assets/Art/Environment` + `Assets/Features/Defense3D*.meta` + script `.meta` liên quan | **COPY_REPORTED / 8 FILE HASH SUBSET MATCH** — chưa kiểm kê tên từng GLB/.meta |
-| G0-S4 | Backup `Packages/manifest.json`, `packages-lock.json`, EditorBuildSettings, ProjectSettings/Packages nếu có | **COPY_REPORTED / HASH NOT_VERIFIED** — backup folder đã thực hiện theo log, cần kiểm chứng đầy đủ |
+| G0-S4 | Backup `Packages/manifest.json`, `packages-lock.json`, EditorBuildSettings, ProjectSettings/Packages nếu có | **3 FILES VERIFIED SHA-256 / PARTIAL** — `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset` đều `BackedUp=True`, `HashMatches=True`; chưa verify toàn bộ folders/restore |
 | G0-S5 | Unity mở scene local, Console 0 compile error, 0 Missing(Mono Script) | **NOT_RUN** |
 | G0-S6 | Test mở lại Legacy `SampleScene` / menu cũ không lỗi | **NOT_RUN** |
 | G0-S7 | Không làm `Build & Open Map Song Que Prototype`, `git reset --hard`, `git clean -fd`, `stash pop` toàn cục | **SAFETY POLICY** |
 
 **Bằng chứng local do owner báo cáo (2026-10-23 21:16 +07):** backup tại `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`, lệnh copy-only hoàn tất không báo lỗi; SHA256 **8 file** trong hai cây Scene Defense3D / Art Environment khớp, **0 missing/mismatches**. Nội dung branch/HEAD/stash đã ghi vào backup nhưng chưa gửi, NavMeshData và backup Packages/ProjectSettings chưa xác minh đầy đủ; Unity Console/Legacy **NOT_RUN**. Chi tiết ở [10 — Local Backup Evidence](10_G0_REMOTE_BASELINE_AUDIT.md).
+
+**Bằng chứng bổ sung:** chủ dự án gửi bảng SHA-256, xác nhận 3 file cốt lõi `Packages/manifest.json`, `Packages/packages-lock.json`, `ProjectSettings/EditorBuildSettings.asset` đã backup và hash khớp. Chỉ nâng **G0-S4 lên PARTIAL VERIFIED**, chưa có QA Unity/restore, NavMesh chưa xác minh; **Gate G0 NOT PASSED**.
 
 ## 6A. Remote Gate G0 audit đã làm / blocker còn lại
 
