@@ -30,8 +30,10 @@ namespace ProjectZombie.Features.Shared
             {
                 if (_groundMask == -1)
                 {
-                    int mask = LayerMask.GetMask("Ground", "Default");
-                    _groundMask = mask != 0 ? mask : LayerMask.GetMask("Default");
+                    // Ground is a dedicated 3D layer (ProjectSettings/TagManager.asset).
+                    // Default contains props/bridges/hitboxes and must never be
+                    // accepted as standable ground just because it has a collider.
+                    _groundMask = LayerMask.GetMask("Ground");
                 }
                 return _groundMask;
             }
@@ -102,9 +104,14 @@ namespace ProjectZombie.Features.Shared
             // 3. Nếu có NavMesh, kiểm tra vị trí hợp lệ trên NavMesh
             if (NavMesh.SamplePosition(pos, out NavMeshHit navHit, bodyRadius * 1.5f, NavMesh.AllAreas))
             {
+                // SamplePosition may return the other side of a wall: never
+                // accept a far-off NavMesh point as proof this position is safe.
                 return Vector3.Distance(pos, navHit.position) <= bodyRadius;
             }
 
+            // Prototype scenes may not have a baked NavMesh; the dedicated
+            // Ground collider is still sufficient for stationary floor checks.
+            // NavMesh connectivity for movement destinations is validated below.
             return true;
         }
 
@@ -150,6 +157,11 @@ namespace ProjectZombie.Features.Shared
             float stepSize = 0.3f;
             float currentDist = 0f;
             Vector3 lastValidPos = startPos;
+            // Rigidbody/Capsule center is commonly about 1m above the ground.
+            // Compare FLOOR heights, not the original capsule-center height.
+            if (!TryGetGroundHeight(startPos, out float startFloorY))
+                return startPos;
+            lastValidPos.y = startFloorY;
 
             while (currentDist < allowedDistance)
             {
@@ -158,16 +170,20 @@ namespace ProjectZombie.Features.Shared
 
                 Vector3 candidate = startPos + dir * currentDist;
 
-                if (TryGetGroundHeight(candidate, out float floorY))
+                if (!IsPositionWalkable(candidate, bodyRadius) ||
+                    !TryGetGroundHeight(candidate, out float floorY))
                 {
-                    candidate.y = floorY;
-                    lastValidPos = candidate;
-                }
-                else
-                {
-                    // Gặp mép vực không có sàn: Dừng lại ngay tại vị trí có sàn hợp lệ cuối cùng
+                    // No dedicated ground, an obstacle, or disconnected local
+                    // NavMesh: stop at the last safe sample.
                     return lastValidPos;
                 }
+
+                // Avoid stepping over a ledge in a single 0.3m sweep sample.
+                if (Mathf.Abs(floorY - lastValidPos.y) > 0.7f)
+                    return lastValidPos;
+
+                candidate.y = floorY;
+                lastValidPos = candidate;
             }
 
             return lastValidPos;
@@ -176,41 +192,69 @@ namespace ProjectZombie.Features.Shared
         /// <summary>
         /// [GROUND CLAMP 3D]: Kéo một tọa độ chỉ định về vị trí sàn hợp lệ gần nhất.
         /// </summary>
+        // Reuse the same path object to avoid repeated heap allocations.
+        // Only called on the Unity main thread, like Physics and NavMesh.
+        private static readonly NavMeshPath _navPathBuffer = new NavMeshPath();
+
+        private static bool CanReachByNavMesh(Vector3 origin, Vector3 candidate, float radius)
+        {
+            // If there is no baked NavMesh at the origin (prototype sandbox),
+            // defer to the dedicated Ground + Obstacle physics checks.
+            Vector3 originFloor = origin;
+            if (TryGetGroundHeight(origin, out float originFloorY))
+                originFloor.y = originFloorY;
+            if (!NavMesh.SamplePosition(originFloor, out NavMeshHit originNav, radius * 2f, NavMesh.AllAreas))
+                return true;
+
+            // For a baked Defense map, destination must be on the same
+            // navigable island; nearby surfaces across water are not enough.
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit targetNav, radius * 1.5f, NavMesh.AllAreas))
+                return false;
+            if (Vector3.Distance(candidate, targetNav.position) > radius)
+                return false;
+
+            return NavMesh.CalculatePath(originNav.position, targetNav.position, NavMesh.AllAreas, _navPathBuffer)
+                && _navPathBuffer.status == NavMeshPathStatus.PathComplete;
+        }
+
+        private static bool TryValidateDestination(
+            Vector3 candidate, Vector3 origin, float radius, out Vector3 groundPosition)
+        {
+            groundPosition = candidate;
+            if (!IsPositionWalkable(candidate, radius) ||
+                !TryGetGroundHeight(candidate, out float groundY))
+                return false;
+
+            groundPosition.y = groundY;
+            return CanReachByNavMesh(origin, groundPosition, radius);
+        }
+
         public static Vector3 ClampToWalkableGround(Vector3 targetPos, Vector3 fallbackOrigin, float maxClampStep = 8.0f, float bodyRadius = 0.45f)
         {
-            if (IsPositionWalkable(targetPos, bodyRadius))
+            if (TryValidateDestination(targetPos, fallbackOrigin, bodyRadius, out Vector3 validPos))
+                return validPos;
+
+            // SamplePosition alone can land inside an obstacle or across a
+            // nonconnected water/bridge island. Recheck BOTH physics and path.
+            if (NavMesh.SamplePosition(targetPos, out NavMeshHit navHit, maxClampStep, NavMesh.AllAreas) &&
+                TryValidateDestination(navHit.position, fallbackOrigin, bodyRadius, out validPos))
+                return validPos;
+
+            Vector3 towardOrigin = fallbackOrigin - targetPos;
+            towardOrigin.y = 0f;
+            if (towardOrigin.sqrMagnitude > 0.0001f)
             {
-                if (TryGetGroundHeight(targetPos, out float groundY))
+                Vector3 dir = towardOrigin.normalized;
+                for (float step = 0.3f; step <= maxClampStep; step += 0.3f)
                 {
-                    targetPos.y = groundY;
-                }
-                return targetPos;
-            }
-
-            // Dùng NavMesh SamplePosition để tìm vị trí gần nhất nếu có
-            if (NavMesh.SamplePosition(targetPos, out NavMeshHit navHit, maxClampStep, NavMesh.AllAreas))
-            {
-                return navHit.position;
-            }
-
-            // Kéo dần về phía fallbackOrigin theo vector ngang
-            Vector3 fromTargetToOrigin = fallbackOrigin - targetPos;
-            fromTargetToOrigin.y = 0f;
-            Vector3 dir = fromTargetToOrigin.normalized;
-
-            for (float step = 0.3f; step <= maxClampStep; step += 0.3f)
-            {
-                Vector3 candidate = targetPos + dir * step;
-                if (IsPositionWalkable(candidate, bodyRadius))
-                {
-                    if (TryGetGroundHeight(candidate, out float floorY))
-                    {
-                        candidate.y = floorY;
-                    }
-                    return candidate;
+                    Vector3 candidate = targetPos + dir * step;
+                    if (TryValidateDestination(candidate, fallbackOrigin, bodyRadius, out validPos))
+                        return validPos;
                 }
             }
 
+            // Refuse the teleport if no candidate is safe. Never fabricate
+            // a destination by returning unchecked NavMesh or collider points.
             return fallbackOrigin;
         }
 

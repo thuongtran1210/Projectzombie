@@ -473,7 +473,20 @@ namespace ProjectZombie.Features.Player
                 {
                     float totalDashMultiplier = dashSpeedMultiplier * (_playerStats != null ? _playerStats.DashSpeedMultiplier : 1f);
                     Vector3 dashDir3D = new Vector3(_dashDirection.x, 0f, _dashDirection.y).normalized;
-                    _rb3D.velocity = dashDir3D * (currentSpeed * totalDashMultiplier);
+                    float requestedDashSpeed = currentSpeed * totalDashMultiplier;
+                    float fixedStep = Mathf.Max(0.0001f, Time.fixedDeltaTime);
+                    Vector3 start = _rb3D.position;
+                    Vector3 safeDestination = Shared.MovementPhysicsUtility3D.CalculateDashDestination(
+                        start, dashDir3D, requestedDashSpeed * fixedStep);
+
+                    // Keep the Rigidbody physics-driven (no teleport), but cap
+                    // this frame's horizontal velocity to a swept safe distance.
+                    // This prevents flying beyond ground edges or through walls.
+                    Vector3 allowedDelta = safeDestination - start;
+                    allowedDelta.y = 0f;
+                    float allowedSpeed = Mathf.Min(requestedDashSpeed, allowedDelta.magnitude / fixedStep);
+                    Vector3 dashVelocity = dashDir3D * allowedSpeed;
+                    _rb3D.velocity = new Vector3(dashVelocity.x, _rb3D.velocity.y, dashVelocity.z);
                 }
                 else
                 {
