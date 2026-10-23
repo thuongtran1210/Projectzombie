@@ -42,7 +42,7 @@ namespace ProjectZombie.Features.Defense3D
             var marker = new GameObject("Yaksha_Blast_Warning_Ring");
             marker.transform.SetParent(transform, false);
             ring = marker.AddComponent<LineRenderer>();
-            ring.useWorldSpace = false;
+            ring.useWorldSpace = true;
             ring.loop = true;
             ring.positionCount = Segments;
             ring.widthMultiplier = 0.17f;
@@ -58,12 +58,11 @@ namespace ProjectZombie.Features.Defense3D
                 ring.material = ringMaterial;
             }
             // Compensate for the enlarged Boss transform.
-            float scale = Mathf.Max(0.001f, transform.lossyScale.x);
-            float radius = blastRadius / scale;
+            float radius = blastRadius;
             for (int i = 0; i < Segments; i++)
             {
                 float angle = i * Mathf.PI * 2f / Segments;
-                ring.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, -0.37f, Mathf.Sin(angle) * radius));
+                ring.SetPosition(i, transform.position + new Vector3(Mathf.Cos(angle) * radius, 0.35f, Mathf.Sin(angle) * radius));
             }
             ring.enabled = false;
         }
@@ -76,7 +75,11 @@ namespace ProjectZombie.Features.Defense3D
                 if (Time.time < nextBlastAt) return;
                 warning = true;
                 detonateAt = Time.time + warningDuration;
-                if (ring != null) ring.enabled = true;
+                if (ring != null)
+                {
+                    UpdateRingPosition();
+                    ring.enabled = true;
+                }
                 Debug.Log("[TREBRAVE Defense3D] Yaksha warning: leave the red circle!");
                 return;
             }
@@ -90,6 +93,22 @@ namespace ProjectZombie.Features.Defense3D
             if (delta.sqrMagnitude > blastRadius * blastRadius) return;
             hero.ReceiveDamage(blastDamage);
             Debug.Log("[TREBRAVE Defense3D] Yaksha arena blast hit Hero for " + blastDamage);
+        }
+
+        private void UpdateRingPosition()
+        {
+            if (ring == null) return;
+            for (int i = 0; i < Segments; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Segments;
+                ring.SetPosition(i, transform.position +
+                    new Vector3(Mathf.Cos(angle) * blastRadius, 0.35f, Mathf.Sin(angle) * blastRadius));
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (activeArena && warning) UpdateRingPosition();
         }
 
         private void OnDestroy()
