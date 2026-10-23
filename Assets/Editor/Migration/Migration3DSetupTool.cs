@@ -76,6 +76,8 @@ namespace ProjectZombie.EditorTools.Migration
 
                 // 4. Đối tượng Player 3D Prototype
                 var playerObj = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                // Build dependencies while inactive: Awake must see HealthSystem on activation.
+                playerObj.SetActive(false);
                 playerObj.name = "Player_3D_Prototype";
                 playerObj.transform.position = new Vector3(0f, 1.0f, 0f);
                 playerObj.tag = "Player";
@@ -95,11 +97,11 @@ namespace ProjectZombie.EditorTools.Migration
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
                 rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
-                // Player Stats & Controller
+                // Add Health first; PlayerStats and PlayerController look it up in Awake.
+                var health = playerObj.AddComponent<HealthSystem>();
                 var stats = playerObj.AddComponent<PlayerStats>();
                 var magnet = playerObj.AddComponent<PlayerMagnetTrigger>();
                 var controller = playerObj.AddComponent<PlayerController>();
-                var health = playerObj.AddComponent<HealthSystem>();
 
                 // Gắn mũi tên chỉ hướng (Visual Nose) để quan sát góc xoay 3D
                 var nose = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -127,6 +129,9 @@ namespace ProjectZombie.EditorTools.Migration
                 var follower = camObj.AddComponent<Camera3DFollower>();
                 follower.target = playerObj.transform;
                 follower.offset = new Vector3(0f, 18f, -13f);
+
+                // Activate after all runtime components and scene references are configured.
+                playerObj.SetActive(true);
 
                 // 6. Quái vật Dummy 3D thử nghiệm
                 CreateDummyEnemy(new Vector3(4f, 1f, 8f), "Enemy_3D_Dummy_A");
@@ -201,20 +206,4 @@ namespace ProjectZombie.EditorTools.Migration
         }
     }
 
-    /// <summary>
-    /// Component hỗ trợ Camera 3D bám mượt mà theo Player trong Scene Playground.
-    /// </summary>
-    public class Camera3DFollower : MonoBehaviour
-    {
-        public Transform target;
-        public Vector3 offset = new Vector3(0f, 18f, -13f);
-        public float smoothSpeed = 10f;
-
-        private void LateUpdate()
-        {
-            if (target == null) return;
-            Vector3 desiredPosition = target.position + offset;
-            transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
-        }
-    }
 }
