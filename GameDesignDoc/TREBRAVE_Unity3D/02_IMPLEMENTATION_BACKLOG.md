@@ -16,12 +16,12 @@
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
 | U3D-001 | P0 | Decision register & scope freeze: D-01..D-11 | none | M | **Các quyết định A đã OWNER APPROVED**; **chưa ACCEPTED** ticket/Gate G0 đến khi local backup/Console/Legacy evidence và review backlog; production balance chưa khóa |
-| U3D-002 | P0 | Backup + inventory local scene, GLB, NavMesh, Packages, GUID/.meta; D-10/A safety gate | none — copy-only song song với design review | M | **D-10/A policy APPROVED, action NOT_VERIFIED**: có backup ngoài repo + hash/path/manifest, scene mở không Missing Script, Legacy và Console evidence theo G0-S1..S6 |
+| U3D-002 | P0 | Backup + inventory local scene, GLB, NavMesh, Packages, GUID/.meta; D-10/A safety gate | none — copy-only song song với design review | M | **COPY-ONLY BACKUP owner-reported**: snapshot ngoài repo, 8 Scene/Environment files 0 SHA mismatch; 3 Packages/BuildSettings hashes khớp; scene/GLB/NavMesh hiện diện; owner xác nhận Console/Legacy/Inspector. **CHƯA ACCEPTED**: branch/HEAD/stash, NavMesh/.meta + GLB direct hashes, owner G0 sign-off còn thiếu; xem [11](11_G0_READINESS_AND_BACKLOG_REVIEW.md) |
 | U3D-003 | P0 | D-02/A: authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss đúng D-02/A+D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
 | U3D-004 | P0 | D-02/A: thiết kế shared gameplay clock 600s, Inspector Fast Test profile riêng, event lifecycle | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time; terminal dừng hẳn, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
 | U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP, overtime flag và pending Hero respawn |
 
-**G0 readiness (planning only):** **D-01..D-11 đã APPROVED về thiết kế**. Chưa thể đánh G0/U3D-001/U3D-002 là PASSED hoặc ACCEPTED: cần local backup/`git status`, Console 0 errors/Missing Scripts, Legacy smoke, xác minh scene/GLB/NavMesh/meta và gate review theo [runbook 07](07_G0_LOCAL_SAFETY_RUNBOOK.md). **Không chuyển sang code nếu chưa có bằng chứng và cho phép triển khai.**
+**G0 readiness (planning only):** **D-01..D-11 đã APPROVED về thiết kế**. **Rà soát 27 tickets từ xa đã xong**: 21 P0/3 P1/3 P2, không thiếu explicit dependency và không thấy cycle; [11 — Readiness Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md). Owner đã tạo backup và kiểm tra Unity/Legacy, nhưng **G0/U3D-001/U3D-002 chưa ACCEPTED**: chưa đối chiếu local branch/HEAD/stash và hash đích danh NavMesh+.meta/GLB+meta, chưa có chủ dự án sign-off G0. **Không chuyển sang code nếu chưa đủ evidence và cho phép triển khai rõ ràng.**
 
 **G1 prototype adapter:** trước tiên nối hệ thống mới vào script hiện hữu qua interface thay vì xóa/đổi tên `.cs`/`.meta`. Dễ rollback, an toàn scene.
 
@@ -105,5 +105,7 @@ Evidence (Unity version, scene, branch/commit, screenshot/log):
 Rollback / regression check:
 Status: DRAFT | APPROVED | IN_PROGRESS | DONE_CODE | PASSED_PLAYMODE | ACCEPTED | BLOCKED
 ```
+
+**Lưu ý khi tách GitHub Issues:** `U3D-024` đang có dependency shorthand `U3D-010..U3D-023` (14 ticket), phải mở rộng explicit refs trong issue. `U3D-014` tuy là P1 vẫn bắt buộc để đủ 3 GhostCannon cho Core full-run QA theo D-06/A.
 
 **Không mở issue/code khi chưa duyệt.** Khi bắt đầu triển khai, chỉ chọn 1–2 ticket trong cùng gate để giảm xung đột local/Git; cập nhật Matrix, QA và Decision Log cùng PR.
