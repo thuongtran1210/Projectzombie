@@ -1,10 +1,10 @@
-# TREBRAVE — PROJECTZOMBIE MASTER GAME DESIGN DOCUMENT v6.1 (OWNER DESIGN APPROVED)
+# TREBRAVE — PROJECTZOMBIE MASTER GAME DESIGN DOCUMENT v6.2 (OWNER DESIGN APPROVED)
 
 > **Trạng thái:** D01–D12 **OWNER-APPROVED** 2026-10-23; **RUNTIME IMPLEMENTATION NOT STARTED / DRAFT PR**.  
 > **Ngày soạn:** 2026-10-23. **Mục tiêu:** hợp nhất gameplay Projectzombie với các trụ cột được xây dựng trong Vongxuyen / TREBRAVE.  
 > **Repository triển khai:** Projectzombie, Unity 2022.3 LTS / C# / Android. **Repository thiết kế tham chiếu:** Vongxuyen, Three.js/WebGL.  
 > **Nguồn khảo sát:** Projectzombie main 657c8215; Vongxuyen main 5f5d9b26.  
-> **Quy tắc:** D01–D12 được phê duyệt trong [Decision Record](DECISION_CHECKLIST_GDD_V6.md). P01–P08 là chi tiết **PENDING** và không được tự suy diễn. Phê duyệt thiết kế không đồng nghĩa 3D/runtime đã được lập trình/QA.
+> **Quy tắc:** D01–D12 được phê duyệt trong [Decision Record](DECISION_CHECKLIST_GDD_V6.md). P01–P03, P05–P08 đã được **owner-approved**; P04 và tham số K01–K06 vẫn **PENDING**. Không được tự suy diễn. Phê duyệt thiết kế không đồng nghĩa 3D/runtime đã được lập trình/QA.
 
 ## 0. Nguồn sự thật, trạng thái và phạm vi
 
@@ -12,7 +12,7 @@
 - **Nền tảng đích:** Unity **full stylized 3D** trên Android (D02=C), lấy art direction semi-chibi/heroic fantasy từ TREBRAVE, không giả vờ Unity repo hiện đã chuyển sang 3D. Unity 2022.3 LTS là hiện trạng, renderer và migration strategy còn P06.
 - **Defense Mode là mode chính** (D01=A). **Survival giữ Legacy Mode**: bảo lưu asset, code, saved data; không đưa timeline/roster cũ vào Map 01 mới.
 - **Thiết kế source:** Vongxuyen Three.js/WebGL có map, tower, enemy; Projectzombie Unity hiện có combat, meta, service và nhiều relic effects. “Đã có VX” ≠ “đã có PZ 3D”.
-- Bất biến thiết kế **D01–D12 APPROVED**, chi tiết P01–P08 PENDING; mọi thông số “BASELINE” chỉ là số tham chiếu từ source VX chứ chưa là balance-locked.
+- Bất biến thiết kế **D01–D12 APPROVED**, P04 và K01–K06 còn cần chốt; mọi thông số “BASELINE” chỉ là số tham chiếu từ source VX chứ chưa là balance-locked.
 - Tài liệu chuyên biệt: [Map & Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md), [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md), [Run Scenario](LEVEL_SCENARIO_GUIDE.md), [One Relic UX](WEAPON_VISUAL_MANIFESTATION_RULES.md), [3D Migration](UNITY_3D_MIGRATION_PLAN.md) và [Doc Ledger](DOCS_REFACTOR_LEDGER.md).
 
 ## 1. Tầm nhìn và gameplay đã phê duyệt
@@ -25,9 +25,9 @@
 3. **Map 3D, 3 lane:** hai bờ, dòng sông, ba cầu, 10 bệ tháp tham chiếu VX, 3D navigation/collision/telegraph.
 4. **Wood pick-up:** kill enemy tạo **gỗ rơi**; trong MVP **Hero phải nhặt** mới có gỗ xây/nâng tháp (D08=B). Phu Tạp Dịch tự thu gom thuộc POST-MVP do D10=C.
 5. **Địch VX:** 7 archetype cho Map 01; quái PZ cũ chỉ trong Legacy/Maps tương lai.
-6. **10 phút gameplay clock, 5 phase:** timeline 600 giây (D06=A), nhưng luật xử lý 600s nếu Boss chưa chết đang **P02 PENDING**. Không được tự auto-win/auto-lose tại timeout.
+6. **Timeline 600 giây, 5 phase:** Nếu hết 600s mà Dạ Xoa còn sống, trận tiếp tục **overtime**; chỉ Boss chết mới WIN, Base bị phá mới LOSE (**P02 approved**). Boss chết sớm thì thắng ngay (**P08 approved**).
 
-**MVP scope:** Hero, Base, Tower, Wood drops/pickup, three-lane enemy/boss, 5 active relics, EXP/card và UI. **Không bao gồm FriendlyArmy, Squad, Commander, Phu, Thầy Lang**, không buộc các tính năng multiplayer/gacha/ngũ hành v5 xuất hiện trong Defense MVP. Các hệ thống này còn code và roadmap nhưng không nằm release gate.
+**MVP scope:** Hero, Base, Tower, Wood drops/pickup, three-lane enemy/boss, **chỉ 1 ACTIVE relic: Dép Tổ Ong Thần Sa**, EXP/card và UI. Bốn relic FUN khác **LOCKED/POST-MVP**. **Không bao gồm FriendlyArmy, Squad, Commander, Phu, Thầy Lang**, không buộc các tính năng multiplayer/gacha/ngũ hành v5 xuất hiện trong Defense MVP. Các hệ thống này còn code và roadmap nhưng không nằm release gate.
 
 ## 2. TREBRAVE fantasy, identity và narrative
 
@@ -37,20 +37,22 @@
 - Cốt truyện Tứ Bất Tử, Vong Xuyên/Âm Ty trong tài liệu cũ là LEGACY/LORE BACKLOG; nếu sử dụng trong các map khác phải thiết kế lại để không phủ định nhận diện Map 01.
 - **Mỹ thuật mục tiêu:** semi-chibi stylized heroic fantasy 3D, silhouette dễ đọc, chi tiết chất liệu Việt Nam, hero/relic/tower không cản boss telegraph. Đây là đích sản xuất asset, không phải đặc điểm runtime Unity hiện hành.
 
-## 3. Gameplay loop chính — Defense [D01, D06–D08 APPROVED]
+## 3. Gameplay loop chính — Defense (OWNER-APPROVED D01, D06–D08, P02–P03/P08)
 
-**Sảnh:** chọn 1 Hero trong roster 4 → chọn **một trong 5** FUN relic → Map 01 → bắt đầu run.
-**Spawn:** Hero ở Bờ Tây; Nhà Chính full HP; 10 bệ tower; gỗ đầu trận BASELINE 100; shared game clock 0s/600s; wave timeline và spawn zone VX; không có friendly unit trong MVP.
-**Combat:** enemy đi theo lane; Hero dùng Attack/Dash/Signature và **ACTIVE Relic + ghost aim**; tower tự động bảo vệ; Boss có telegraph.
-**Reward:** Enemy chết -> tạo *WorldWoodDrop* và ExpGem qua reward pipeline. Wood **không tự cộng** lúc kill; Hero pickup => validate lootId/runId -> tăng WoodWallet. Sau MVP, Phu được phép dùng cùng pickup transaction, không tạo nguồn wood mới. EXP dùng để lên level/chọn 1/3 card.
-**Spend:** Wood đã nhặt -> đặt tháp ở 10 slot, nâng cấp 1–3 theo config. Không dùng EXP/Coins làm wood.
-**Pacing:** 5 phase trong 600 giây; Ma Giáp Thống Lĩnh (miniboss) t≈108s, Dạ Xoa (final boss) t≈510s (reference).
-**Kết quả bất biến:**
-- **WIN:** final boss *yaksha_boss* chết và Base còn HP. Không cần Hero sống và **không buộc chờ đến 600s** chỉ để thắng; khả năng gate thắng sớm vẫn là P08 (không thực thi nếu chưa chốt).
-- **LOSE:** **duy nhất Nhà Chính HP = 0**. Enemy wipe/hero HP=0/time reaching 600s/kill miniboss không phải tự động LOSE.
-- **Hero chết:** chuyển qua incapacitation/revive flow chưa định nghĩa (**P03**) nhưng luôn duy trì điều kiện Base-only-loss; tránh deadlock không ai có thể giết Boss.
-- **TIMEOUT 600s và Boss còn sống:** **P02 PENDING** (gợi ý overtime giữ timer 600 làm mốc wave chứ không sinh kết quả); không được phát WIN/LOSE tùy tiện.
-**RunEnded:** chỉ emit một lần theo game authority; hủy build ghost/relic aim, destroy/resets pooled objects, subscriptions, drop loot và timer.
+**Sảnh:** chọn 1 Hero trong roster 4 bằng heroId (tên và kỹ năng từ SO); trang bị một relic khả dụng. **MVP chỉ mở Dép Tổ Ong Thần Sa**; Nồi/Điếu/Chiếu/Chổi có trong catalog nhưng ở trạng thái LOCKED.
+**Spawn:** Hero tại **HeroInitialSpawnPoint** trên Bờ Tây (lưu WorldTransform của run để respawn cùng vị trí); Base full HP; 10 bệ tower; gỗ đầu trận baseline 100; shared clock 0–600 giây; không có friendly unit trong MVP.
+**Combat:** enemy tiến qua 3 lane, Hero dùng Attack/Dash/Signature, **Dép ACTIVE** có ghost aim hợp lệ + cooldown, tower tự động bảo vệ; chưa áp dụng hiệu ứng FUN nâng cao.
+**Reward:** Enemy chết -> tạo **WorldWoodDrop**, mặc định TTL **90 giây** theo *EXP gem reference* của Vongxuyen; Hero phải nhặt mới cộng WoodWallet. Đây không phải wood TTL đã có của VX. EXP giữ riêng; không auto-grant gỗ lúc kill.
+**Spend:** Wood đã nhặt để build/upgrade tower. Không đòi Phu Tạp Dịch để hoàn thành MVP.
+
+**Kết quả trận / timeline:**
+- **WIN:** final Boss **Tướng Dạ Xoa** chết + Nhà Chính còn HP => **Victory ngay lập tức**, kể cả trước 600 giây.
+- **Sau Victory:** **ngừng spawn quái ngay**, dừng wave/boss spawner, clear pending jobs, ngừng combat AI, cleanup entities/VFX, ghi kết quả một lần và vào result screen.
+- **LOSE:** **duy nhất BaseHP=0**; HeroHP=0 không Lose.
+- **Hero HP=0:** vào trạng thái Downed và chạy đếm ngược hồi sinh theo Hero Level, level càng cao thời gian càng dài. Khi hết countdown, hồi sinh ở **chính HeroInitialSpawnPoint lưu lúc bắt đầu run**. Công thức/curve và giá trị số đưa vào **HeroRespawnConfigSO**; chưa chốt seconds cụ thể (K01). Chỉ dừng/resume đồng hồ theo shared GameState.
+- **T=600s, Boss còn sống, Base còn HP:** tiếp tục **overtime cho đến khi Dạ Xoa chết hoặc Base bị phá**; không auto Win/Lose. Wave timeline 34 events kết thúc (tối đa 594s); không tự tạo vô hạn wave sau 600s. Hero/Tower/Boss còn hoạt động.
+- **P04 PENDING:** Boss Dạ Xoa có raid Base hay không, target priority và simultaneous-damage priority trong một tick.
+- **One authority:** RunResultResolver phát RunEnded đúng một lần, sau đó block mọi SpawnEvent/RewardDuplicate/Interaction.
 
 ## 4. Map 01 — Map Sông Quê trong Unity full 3D [D02=C]
 
@@ -61,18 +63,17 @@
 - **3D migration bắt buộc:** xem [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md). Không gắn component Physics2D vào Defense 3D chỉ để tái sử dụng cho nhanh; pure combat domain phải độc lập adapter 2D/3D.
 - **Legacy:** Survival scene 2D trước đây được giữ nguyên và load như mode Legacy, không áp geometry mới vào map lịch sử.
 
-## 5. 4 Hero có thể chọn — 1 Hero/run; 5 FUN relic — 1 ACTIVE slot/run
+## 5. 4 Hero bằng mã SO — 1 Hero/run; relic MVP chỉ Dép Tổ Ong Thần Sa
 
-### Hero selection [D03=A]
-Có **bốn nhân vật lựa chọn/mở khóa ở sảnh**, **mỗi trận chỉ điều khiển một**. Hero có Basic Attack, Dash, Signature Skill, HP, EXP và build interactions. **Danh sách tên, model và kit mapping giữa PZ/VX là P01 PENDING**, không tự khẳng định Võ Tăng hay Ẩn Sĩ đã bị đổi hoặc giữ chính thức.
+### Hero selection — P01 APPROVED
+**4 Hero**, 1 do người chơi điều khiển/run, key ổn định **HERO_01–HERO_04**. Không chốt tên, các tên/kit/skill đưa về **HeroDefinitionSO / SkillDefinitionSO** để điều chỉnh sau. Skill tham chiếu ID thay vì tên: **BASIC_01..04, DASH_01..04, SIGNATURE_01..04**, mỗi Hero map tới bộ config tương ứng. Không hardcode tên nhân vật/kỹ năng vào RunFlow/HUD/Save; muốn đổi tên không thay heroId hoặc Save schema.
 
-### Relic selection [D04=A, D05=A]
-**Chỉ năm pháp bảo Map 01:** Dép Tổ Ong Thần Sa, Nồi Cơm Thạch Sanh, Điếu Cày Cửu U, Chiếu Trải Hoàng Tuyền, Chổi Lông Gà Gia Truyền. **Chính xác 1 slot trang bị**, không sinh thêm qua level-up/save/meta. Các relic khác trong PZ cũ giữ ở Legacy/backlog, không xuất hiện loadout Map 01.
+### Relic selection — D04/D05 + P07 APPROVED
+Roster thiết kế **5 FUN relic** gồm: **Dép Tổ Ong Thần Sa (slipper — MVP ENABLED)**, **Nồi Cơm (pot — LOCKED)**, **Điếu Cày (pipe — LOCKED)**, **Chiếu Trải (mat — LOCKED)**, **Chổi Lông Gà (broom — LOCKED)**. Vì D04 đã khóa catalog có năm loại, nếu chỉ mở một thì có **bốn** món khóa. Câu nói “khóa 3 món kia” cần được xác nhận lại nếu có ý loại một món khỏi catalog, nhưng chưa tự xóa loại nào.
 
-**Relic là ACTIVE skill**: icon + nút riêng, giữ/kéo ngắm bằng ghost shape, kiểm tra hợp lệ, confirm cast/nhấn hủy, cooldown bắt đầu sau cast thành công. VFX shape phải tương ứng hit volume 3D; build/rally/cast UI không cùng tiêu input. Relic effect phức tạp đang có ở Unity cần audit và port hợp lý; P07 còn mở về mapping và cân bằng, **không xóa hiệu ứng FUN để thay bằng prototype damage đơn giản**.
+**Chỉ một ACTIVE relic slot**. MVP Dép: có nút Relic riêng, ghost aim 3D (đường bay/điểm trúng), cast hợp lệ, damage/cooldown và visual/âm thanh cơ bản. **Chưa yêu cầu boomerang combo, Quê Độ hoặc FUN effects đặc biệt**. Mọi hiệu ứng nâng cao và việc mở Nồi/Điếu/Chiếu/Chổi thuộc POST-MVP; code/asset Unity cũ được giữ, không tự kích hoạt trong mode mới. Thông số damage/cooldown/range nằm trong RelicDefinitionSO (K05).
 
-### Combat continuity
-Giữ combat, 1/3 upgrade cards, EXP/gem, signature/dash logic ở mức domain/service. Cải tiến movement/collider/hitbox/aim qua 3D adapter; giữ Unity Legacy mode không bị phá bởi thay đổi này.
+**Mở rộng sau:** bật availability flag trong RelicDefinitionSO, port effect riêng theo đúng thiết kế và QA; không tăng số slot.
 
 ## 6. Nhà Chính, Tower Defense và Wood Pickup — MVP [D08=B, D10=C]
 
@@ -80,7 +81,7 @@ Giữ combat, 1/3 upgrade cards, EXP/gem, signature/dash logic ở mức domain/
 BaseHP **baseline 500** (có cấu hình), công trình mục tiêu duy nhất xác định LOSE khi HP về 0. Base destruction là authoritative, exactly-once, có health bar và critical alert. Hero HP về 0 **không** dispatch RunEnded(LOSE).
 
 ### Wood drop & pickup
-**Baseline**: 100 wood start, 10 wood per enemy kill (chưa balance-lock). EnemyKill → spawn WoodLoot entity tại vị trí tử trận/điểm an toàn có thể nhặt, có pickupId/runId/value/expiry/pool state. Không grant gỗ trước pickup. **MVP Hero chủ động đến nhặt**. Phu chưa xuất hiện trong MVP. Khi có Phu, nó nhặt qua cùng một transaction/loot ownership. Chặn double-collect, nil spawn, drops nằm dưới nước/vùng inaccessible; nếu drop không thể nhặt, cần safe relocation/fallback trong phạm vi luật D08=B, không tự chuyển sang auto reward.
+**Baseline**: 100 wood start, 10 wood per enemy kill (chưa balance-lock). EnemyKill → spawn WoodLoot entity tại vị trí tử trận/điểm an toàn có thể nhặt, có pickupId/runId/value/expiry/pool state; **expiry = 90 giây gameplay** là baseline áp dụng từ Vongxuyen EXP gem config (không phải default wood loot code ở VX), có thể chỉnh WoodDropConfigSO. Không grant gỗ trước pickup. **MVP Hero chủ động đến nhặt**. Phu chưa xuất hiện trong MVP. Khi có Phu, nó nhặt qua cùng một transaction/loot ownership. Chặn double-collect, nil spawn, drops nằm dưới nước/vùng inaccessible; nếu drop không thể nhặt, cần safe relocation/fallback trong phạm vi luật D08=B, không tự chuyển sang auto reward.
 
 ### Tower
 **10 bệ cố định** (baseline VX). L1 xây 50 wood, HP 250, range 7; L2 nâng 40 wood, +100 maxHP và +1 range; L3 nâng 80 wood, +100 maxHP và +1 range. Tất cả số có thể cân bằng lại qua TowerDefinitionSO. Build/upgrade có validation/transaction và 3D ghost preview + raycast. Tower target, damage, destroyed, repair đều theo authority service; không chặn lối qua 3 cầu.
@@ -100,21 +101,19 @@ BaseHP **baseline 500** (có cấu hình), công trình mục tiêu duy nhất x
 
 Nguồn và thông số baseline đầy đủ: [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md).
 
-## 8. Wave, final Boss và state machine 600s [D06=A, D07=C]
+## 8. Wave, Boss, overtime và kết trận [D06/D07, P02/P08 APPROVED]
 
-**Stage target:** 600s gameplay time; 5 phase; source VX có 34 timeline events/18s, cap 32 active, pending 40, tối đa 4 spawn/frame; stage source Boss Ma Giáp Thống Lĩnh t=108s và Dạ Xoa t≈510s (lớp boss riêng). **Tất cả giá trị wave là reference baseline**.
-
-**Final Boss:** yaksha_boss/Dạ Xoa. Khi boss death valid + Base HP > 0 -> WIN (game authority, exactly once). Miniboss magiap_boss không phải objective cuối.
-
-**LOSE duy nhất:** Base destroyed. HeroDowned không kết thúc run; TimerReached600 không tự Lose hoặc Win. **P02 PENDING:** xử lý overtime sau 600s nếu boss còn sống; **P03 PENDING:** Hero knockdown/revive; **P04/P08 PENDING:** boss chuyển sang đánh Base và gate 600s nếu muốn giữ đúng “10 phút”.
-
-**Asset contract:** Projectzombie Stage_01_BambooForest.asset ghi 600s nhưng linked Level1_Timeline.asset maxLevelDuration 900s; không dùng trực tiếp cho Map 01 mới. Tạo DefenseScenarioSO/Timeline riêng và validator. GameStateManager là source of truth cho Pause/LevelUp; boss spawn chỉ một lần, timer pause đồng bộ.
-
-**Priority event:** nếu BaseDestroyed đã được công nhận trước final boss kill trong cùng tick, LOSE. Nếu boss kill được công nhận trước destruction, WIN; run transition atomic và order phải có integration test. Chính sách simultaneous frame/game tick có thể được làm rõ thêm trong P04.
+- **Base timeline:** 600s / 5 phase; 34 spawn events mỗi 18s (last event at 594s), active cap 32 và pending cap 40 từ VX; miniboss Ma Giáp Thống Lĩnh ở 108s, **Final Boss Dạ Xoa** ở 510s reference.
+- **Dạ Xoa bị hạ và BaseHP>0:** phát **WIN ngay**, không đợi timer; StopWaveScheduler, CancelPendingSpawns, DisableBossSpawner, StopEnemyAI, dispose transient projectiles/drops, result exactly once. **Không spawn thêm quái khi boss chết**.
+- **BaseHP=0:** duy nhất điều kiện **LOSE**. Hero downed không Lose; Ma Giáp miniboss chết không Win.
+- **T=600s, Dạ Xoa còn sống:** clock chuyển trạng thái **OVERTIME**, không đổi điều kiện thắng/thua. 34 event không có sự kiện >594s nên không tự spawn waves mới; Boss/Enemy còn sống tiếp tục hoạt động, Hero respawn theo level (P03).
+- **P04 PENDING:** Boss raid/chase Base hay chỉ giữ arena, và quy tắc hai event BossDeath/BaseDeath xảy ra trong cùng một simulation tick.
+- **Timeline asset isolation:** Stage_01_BambooForest.asset ghi 600s nhưng Level1_Timeline.asset maxLevelDuration 900s, phải tạo Defense scenario/timeline mới, không sửa mù Legacy.
+- **Data:** RunClock/PhaseTracker, WaveScheduler, EnemySpawnGate, BossState, ResultResolver và RunStats phải có runId; RunEnded chặn late callbacks/spawns/rewards.
 
 ## 9. Roguelite và các hệ thống legacy [D12=A]
 
-**MVP Defense:** combat, EXP/gem, chọn 1 trong 3 upgrade cards, Hero stats/skills, **một relic ACTIVE**, tower upgrades bằng **wood nhặt**, HUD/Save thống kê. Không cho upgrade phát sinh thêm relic slot. Không auto-grant wood qua kill.
+**MVP Defense:** combat, EXP/gem, chọn 1 trong 3 upgrade cards, Hero stats/skills, **một relic ACTIVE duy nhất (Dép Tổ Ong; 4 món còn lại locked)**, tower upgrades bằng **wood nhặt**, HUD/Save thống kê. Không cho upgrade phát sinh thêm relic slot. Không auto-grant wood qua kill.
 
 **Giữ CODE nhưng chưa bắt buộc bật trong Defense MVP:** Ngũ Hành, Âm Dương, Gacha, Meta Progression/Cloud Save, Photon Fusion Multiplayer, monetization và mọi content ngoài Map 01. Các hệ thống hiện tại vẫn phục vụ Legacy Mode và có thể được tích hợp dần sau với change request; không xóa asset/schema để tối ưu tiến độ.
 
@@ -122,7 +121,7 @@ Nguồn và thông số baseline đầy đủ: [ENEMY_ROSTER_VONGXUYEN.md](ENEMY
 
 ## 10. UI/UX Android full 3D
 
-**HUD MVP:** Hero HP/Downed status, Base HP (prominent), Wood Wallet và floating Wood Loot, EXP/level, Timer 0–600 và thông tin Boss, cảnh báo ba lane, Tower Build/Upgrade, selected ACTIVE Relic, Attack/Dash/Signature. **Không có recruit/squad/rally dock trong MVP** (D10=C).
+**HUD MVP:** Hero HP/Downed status, Base HP (prominent), Wood Wallet và floating Wood Loot, EXP/level, Timer 0–600 và thông tin Boss, cảnh báo ba lane, Tower Build/Upgrade, Dép ACTIVE + cooldown/ghost aim, Attack/Dash/Signature và hồi sinh đếm ngược khi Hero downed. **Không có recruit/squad/rally dock trong MVP** (D10=C).
 
 **Input:** joystick, 3D camera, raycast ground/slot, hero movement, active cast ghost (line/circle/cone/rect), contextual build panel. Cần input interaction owner duy nhất: ActiveRelicAim và TowerBuild không thể cùng chiếm cú chạm. Khi pause/levelup/gameover, 3D placement, projectile, tower, AI, loot pickup cùng bị khóa theo time/state.
 
@@ -138,7 +137,7 @@ Nguồn và thông số baseline đầy đủ: [ENEMY_ROSTER_VONGXUYEN.md](ENEMY
 - Defense/Core: DefenseRunController, BaseHealth, WoodLootDropService, WoodWallet, TowerBuildService, TowerRuntime.
 - World3D/MapSongQue: river bridges/nav links, spawn zones, build sockets, boss arena.
 - AI/DefenseTarget: EnemyTargetCatalog, NavPolicy, tower/base damage adapters để tránh phá ITargetSelector<PlayerContext> của Legacy.
-- Relics/Active: one-slot RelicAbilityController, 3D ghost indicator, valid cast, effect adapter.
+- Relics/Active: **Slipper MVP**, one-slot RelicAbilityController, 3D ghost indicator, valid cast và basic damage/cooldown; FUN effects / 4 relic khác để POST-MVP.
 - UI/Defense: Base HUD, LaneThreat, Wood pickup, Tower panel, Boss HUD. **FriendlyArmy module để backlog.**
 
 **Legacy 2D mode:** giữ ở scenes/assemblies/adapters riêng; không phá asset GUID và Save Keys. Khối domain logic có thể dùng chung nếu thực sự independent của physics/rendering. Cần migration PR theo phases, not an instant Unity 3D flip.
@@ -150,11 +149,11 @@ Xem: [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md).
 | P | Scope | Gate nghiệm thu |
 | --- | --- | --- |
 | P0 — Design & Engine Spike | GDD v6 approved, 3D architecture, 3D player/map small slice, policy P02/P03 | 3D app scene riêng, Survival Legacy vẫn mở được |
-| P1 — Core Base + Result | 3D Base, HP/damage, RunResult, Hero incapacitation policy | **Base=0 Lose**, Hero HP=0 **không Lose**, boss death Win |
+| P1 — Core Base + Result | 3D Base, HP/damage, RunResult, Hero incapacitation policy | **Base=0 Lose**, Hero HP=0 **hồi sinh theo cấp**, boss death Win |
 | P2 — 3D Map/Lanes + Enemies | Hai bờ, 3 cầu, navigation/collisions, 7 enemy type definitions | 3D traversability và 3 lane hoạt động |
 | P3 — Wood Drop & Tower | Wood pickup cho Hero, economy, 10 build slots, Tower L1–L3 | Không cộng Wood trực tiếp khi kill, không double pickup |
-| P4 — Hero + Active Relic | 4 hero roster contract, 1 hero/run, 5 FUN active relics, 3D ghost | Không kích hoạt passive sai; đúng 1 slot |
-| P5 — 600s Waves/Boss | 34 events baseline, miniboss 108s, final Yaksha 510s, victory/timeout policies | Boss cuối chết Win; Base chết Lose; timeout policy P02 |
+| P4 — Hero + Slipper MVP | 4 hero IDs/SkillDefinitionSO, 1 hero/run, 1 Dép ACTIVE, 3D ghost; 4 relic LOCKED | Không kích hoạt passive/FUN sai; đúng 1 slot |
+| P5 — 600s Waves/Boss | 34 events baseline, miniboss 108s, final Dạ Xoa 510s, overtime và stop spawns on Victory | Boss chết Win ngay; Base chết Lose; overtime không auto result |
 | P6 — UI/Balance/3D Content | HUD, intro, progression, stylized 3D assets, Android | Run hoàn chỉnh, safe-area, perf được đo |
 | P7 — Regression/QA | Legacy survival, build pipeline, profiler and mobile devices | No critical regression, release candidate |
 
@@ -164,7 +163,7 @@ Xem: [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md).
 
 ## 13. Definition of Done và tài liệu kèm
 
-- **12 owner decisions D01–D12 đã chốt**; các chi tiết P01–P08 đang pending cho kỹ thuật cụ thể. Tài liệu phải phân biệt “approved design” với “implemented Unity runtime”.
+- **12 owner decisions D01–D12 đã chốt**; các chi tiết P01–P03 và P05–P08 đã chốt nguyên tắc; P04 và K01–K06 là các chi tiết còn mở. Tài liệu phải phân biệt “approved design” với “implemented Unity runtime”.
 - Document checks: liên kết đúng, không active doc nào nói 20 phút / 6 relic slots / Diêm Vương final / Hero chết thua / wood auto-grant / friendly army launch MVP / Projectzombie runtime 2D là target cuối.
 - Code gates: Unity compile, EditMode/PlayMode, Android smoke/profiling, source asset migration, 3D physics/nav QA, old Survival Legacy regression.
 - D07 event tests: base death only loss; final boss death win; miniboss death not win; Hero death not loss; timeout 600 no arbitrary result; exactly-once completion.
@@ -176,7 +175,9 @@ Xem: [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md).
 
 **OWNER-APPROVED 2026-10-23:** D01=A, D02=C, D03=A, D04=A, D05=A, D06=A, D07=C, D08=B, D09=A, D10=C, D11=A, D12=A. Đây là hợp đồng thiết kế, không phải xác nhận Unity build sẵn sàng.
 
-**PENDING triển khai:** P01 4 Hero identity; P02 timeout 600s; P03 Hero downed/respawn; P04 boss raid/win early; P05 wood loot lifetime/collection; P06 3D render & migration; P07 relic Unity runtime adaptation; P08 đảm bảo duration 10 phút với kill-boss win rule.
+**P01–P03/P05–P08 OWNER-APPROVED:** Hero and skill IDs configured in SO; overtime until Boss killed; level-scaled respawn at initial Hero spawn; WoodDrop 90s baseline adapted from VX EXP gems; Unity full 3D migration is underway; only Slipper ACTIVE/basic MVP with 4 other FUN relics locked; Boss death -> instant Win and stop spawns.
+
+**P04 PENDING:** Dạ Xoa targeting/raid Base and simultaneous outcomes. **K01–K06 PENDING PARAMS:** respawn curve numbers, pickup radius/magnet/cap, boss AI/priority, Hero SO kit values, Slipper damage/CD and Unity 3D production details.
 
 Chi tiết phê duyệt/checklist: [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md).
 
