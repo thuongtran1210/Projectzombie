@@ -1,8 +1,8 @@
 # Stage01 & Enemy Contract — Vongxuyen to Unity (planning snapshot)
 
-**Status:** DRAFT. 2026-10-23. **Tài liệu dữ liệu, không phải C# implementation, không phải PlayMode PASS.**
+**Status:** DRAFT về thiết kế triển khai; **D-05 + D-11/A đã được OWNER APPROVED ngày 2026-10-23**. Đây là tài liệu dữ liệu, **không phải C# implementation/PlayMode PASS**.
 **Source snapshot pinned:** Vongxuyen `src/config/stage01.js` blob `bb94a71df5ccddd8d93b0f8c961dac289667d9ea`; runtime `src/combat/WaveManager.js` blob `ec64826caf7de5f240a633de3f91d3b7ea46d4ab`; `src/entities/EnemyFactory.js`; `src/combat/SpawnPlanner.js`.
-**Hướng dùng:** làm `test fixtures` sau khi duyệt D-05, D-06, D-11. Không thay C# constants khi chỉ lập kế hoạch.
+**Hướng dùng:** D-05 và D-11 là hợp đồng đã duyệt để lập `test fixtures`; D-06 (đường bay/nước) và các điều kiện Gate G0 vẫn chưa được duyệt. Không thay C# constants khi chỉ lập kế hoạch.
 
 ## 1. Stage01 source schedule — 34 events
 
@@ -45,11 +45,12 @@ Công thức từ JS: `at = index*18`; `phase = min(5,floor(at/120)+1)`; riêng 
 | 33 | benque-33 | 576 | 5 | `thuyquai` | `canalWater` | 8 |
 | 34 | benque-34 | 594 | 5 | `magiap` | `eastBank` | 8 |
 
-**Tổng dữ liệu stage:** `214` **spawn jobs theo khai báo**, gồm Ma Giáp `128`, Huyết Dơi `40`, Thủy Quái `45`, Miniboss `1`; phase job counts `[28,39,39,52,56]`.
+**Tổng dữ liệu stage gốc:** `214` **spawn jobs theo khai báo**, gồm Ma Giáp `128`, Huyết Dơi `40`, Thủy Quái `45`, Miniboss `1`; phase job counts `[28,39,39,52,56]`.
+**Sau D-11/A (đã duyệt):** 20 **event loại `magiap`**, mỗi event dành đúng 1 suất cho Phi Cương dẫn đầu → **20 `phicuong` + 108 `magiap` + 40 `huyetdoi` + 45 `thuyquai` + 1 `magiap_boss` = 214 suất theo kế hoạch**. Đây là **thay thế** chứ không sinh thêm 20 suất.
 Đây **không phải 214 Enemy xuất hiện thành công**: `maxActiveEnemies=32`, `maxPendingSpawns=40`, `spawnBudgetPerFrame=4`, pending expiry 25s, safe spawn và giới hạn runtime có thể làm job chờ, hết hạn hoặc overflow. Cần telemetry `scheduled/queued/spawned/expired/rejected/alive`.
 
 ### Những event quan trọng
-- `benque-07` @108s: **1** `magiap_boss`; không sinh batch thường rồi thêm boss.
+- `benque-07` @108s: **D-05 APPROVED** — 1 `magiap_boss`; không sinh batch thường rồi thêm boss; không áp dụng D-11 cho Miniboss.
 - `benque-29` @504s: `magiap` x8 theo stage.
 - **Dạ Xoa @510s**: sự kiện Boss độc lập `YakshaBoss.js`, không là phần của 34 stage rows.
 - `benque-30` @522s: stage tiếp tục trong lúc Boss có thể đang ở Arena; không tự ngưng Stage vì Boss spawn (chờ duyệt luật Match).
@@ -69,14 +70,27 @@ Công thức từ JS: `at = index*18`; `phase = min(5,floor(at/120)+1)`; riêng 
 
 **Nguồn raw stats chưa scale.** `EnemyFactory.js` có wave multiplier; Web runtime dùng `1+(phase-1)*0.18` cho HP khi spawn regular scheduled jobs. Unity hiện 100 HP quái thường, 350 miniboss, 1200 Boss; **chưa quyết định nên nhập số nào**.
 
-## 3. Runtime transforms không thể bỏ qua (D-11)
+## 3. D-11/A APPROVED — một Phi Cương dẫn đầu mỗi event Ma Giáp
+
+**Hợp đồng Unity được chủ dự án duyệt ngày 2026-10-23:** 
+
+1. **Đợt** trong D-11 = **một sự kiện** Stage01 có `type=magiap` (không phải phase 120s hoặc từng frame).
+2. Gắn `eventId`, `slotIndex` cho mọi suất. Suất `slotIndex=0` của mỗi event `magiap` được định trước là `actualSpawnType=phicuong`; các suất còn lại giữ `actualSpawnType=magiap`. `declaredType` luôn là `magiap` cho cả event.
+3. **Không sinh thêm số lượng**: event 4 suất → 1 Phi Cương + 3 Ma Giáp; event 5 suất → 1 Phi Cương + 4 Ma Giáp. Có **20 sự kiện** Ma Giáp, nên tổng kế hoạch có 20 Phi Cương, 108 Ma Giáp (không tính mất lượt do queue/cap).
+4. Phải gán suất dẫn đầu tại thời điểm **lập job theo event**, không quyết định bằng `spawnedThisFrame`; job giữ nguyên loại khi chuyển frame, chờ slot hay restart. **Đặt thứ tự FIFO theo event và slot**.
+5. Nếu job elite bị **overflow/hết hạn**, ghi lại job thất bại; không thay một job thường khác thành elite để bù. Khi tất cả suất event spawn thành công thì đúng một elite; số quái thực tế có thể thấp hơn khi bị cap/TTL.
+6. **Ngoại lệ:** `magiap_boss` sự kiện #7, `yaksha_boss`, `quaidu`, các event `thuyquai/huyetdoi` không chuyển loại D-11. Các spawns đặc biệt GhostCannon/Boss được hạch toán riêng.
+7. **Spawn zone:** khi chuyển `magiap→phicuong`, vẫn dùng vùng của *event Ma Giáp nguồn* (`eastBank` hoặc `southBank`), nhưng resolver Unity phải hỗ trợ locomotion bay/route phù hợp; Web `SpawnPlanner` hiện không whitelist `phicuong` cho các zone này. Đây là **ràng buộc thiết kế U3D-011/U3D-013**, không tự cập nhật scene.
+8. Telemetry bắt buộc: `eventId`, `slotIndex`, `declaredType`, `actualSpawnType`, `zone`, `state` (scheduled/queued/spawned/expired/overflow) để QA đúng cả khi nhiều frame.
+
+**Đối chiếu Web gốc:**
 
 - Web runtime hiện trong `WaveManager.updateTimedSpawns()` thực thi:
 ```js
 const spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong' : job.type;
 ```
 - `spawnedThisFrame` reset trong mỗi lần gọi hàm; do đó elite substitution hiện tại là **frame-sensitive**. Nếu frame đầu batch spawn một Ma Giáp, nó có thể thành Phi Cương; tỷ lệ không suy ra chỉ bằng bảng Stage01.
-- Unity đề nghị tách `declaredType` với `actualSpawnType`; chỉ bật policy khi D-11 được phê duyệt; policy log/test deterministic (seed/order/cap).
+- **Khác biệt có chủ đích đã duyệt:** Unity dùng D-11/A theo **event**, không sao chép quy tắc Web theo **frame**. Phải có regression test với nhiều FPS, cap/TTL và frame skip.
 - `quaidu` xuất hiện do `GhostCannon` thả lính, không phải một trong 34 Stage01 rows. Không đổi bảng để “ép có đủ 5 loại” mà không thiết kế trigger.
 
 ## 4. Spawn planning & space contract
@@ -98,20 +112,22 @@ const spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong'
 |---|---|
 | ST-01 | 34 unique IDs, 0/18/.../594s, no missing or duplicate due to frame skips |
 | ST-02 | 214 declared spawn jobs across 34 events (before cap, FIFO, expiry) |
-| ST-03 | `benque-07` only one miniboss `magiap_boss` @108s |
+| ST-03 | D-05 APPROVED: `benque-07` chỉ một `magiap_boss` @108s; không batch thường và không chuyển elite |
 | ST-04 | Yaksha trigger independent once at 510s, not counted as event #29/#30 |
 | ST-05 | Paused/LevelUp time freezes scheduler and queue TTL; no spawn or attack |
 | ST-06 | 32 active / 40 pending / 4 spawned per Update / TTL25s; clear stats on restart |
-| ST-07 | stage metadata type distinct from runtime actualSpawnType in telemetry |
-| ST-08 | `thuyquai` canal, `huyetdoi` north, `quaidu` landed, `phicuong` substitution as approved |
+| ST-07 | D-11/A: 20 event Ma Giáp → 20 suất Phi Cương + 108 suất Ma Giáp; tổng stage vẫn 214 suất, không thêm event/job |
+| ST-08 | D-11/A: mỗi event Ma Giáp đúng một `slotIndex=0` Phi Cương, các slot còn lại là Ma Giáp, không lệ thuộc FPS/độ dài frame |
 | ST-09 | Complete crossing / engagement all three ground lanes with existing local NavMesh |
 | ST-10 | at 600s scheduled waves stop; active enemies/Boss continue per D-03 decision |
+| ST-11 | Queue overflow/TTL: job elite không sinh → không nâng job thường khác lên elite; log failure; no double spawn |
+| ST-12 | Phi Cương dùng đúng zone Ma Giáp khai báo và locomotion airborne hợp lệ; không bỏ qua whitelist/safety/spawn cap |
 
 **Traceability:** Backlog [U3D-006, U3D-010..014](02_IMPLEMENTATION_BACKLOG.md); [QA-09..14](03_DECISIONS_QA.md); [Gate0 approval](04_GATE0_APPROVAL_PACK.md).
 
 ## 6. Stop conditions / blockers
 
-- D-05/D-11 pending → không hardcode new Stage01 adapter.
+- **D-05 và D-11/A đã duyệt;** tuy nhiên G0 và D-06 chưa đóng → không bắt đầu code Stage01/Enemy adapter.
 - D-06 pending → không ép Enemy nước/bay dùng cùng agent.
 - Scene NavMesh local chưa backup/verified → không kéo prefab/scene installer.
 - Không đưa source Web `EnemyFactory.js` vào Unity runtime; export art là việc G8.
