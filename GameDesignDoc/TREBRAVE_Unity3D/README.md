@@ -17,6 +17,7 @@
 | **[08 — D-06 Enemy AI Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md)** | 8/8 phương án A đã duyệt: Ground/Water/Air/Landing/3 GhostCannon/aggro/spawn; 18 QA chưa chạy | **APPROVED về yêu cầu**, chưa code/QA |
 | **[09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md)** | **D-07-01..08/A APPROVED 8/8**, 12 D07-QA NOT_RUN, số production chưa khóa | **Phê duyệt nguyên tắc**, không chỉnh Inspector |
 | **[10 — Gate G0 Remote Audit](10_G0_REMOTE_BASELINE_AUDIT.md)** | Đã kiểm kê GitHub: script/manifest/build settings có; **scene Defense3D & Environment không có trên branch** | remote inspected; local backup/QA chưa xác minh |
+| **[11 — G0 Readiness & 27-Ticket Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md)** | Rà soát 27 ticket/54 dependency references, checklist bản sao NavMesh & git HEAD, chuẩn bị sign-off | **REVIEWED (remote), G0 CHƯA PASS** |
 
 ## Kết luận audit ngắn
 
@@ -31,7 +32,7 @@
 
 **G0 REMOTE AUDIT ĐÃ THỰC HIỆN (2026-10-23):** [Báo cáo 10](10_G0_REMOTE_BASELINE_AUDIT.md) xác minh trên remote **không có** `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; Editor BuildSettings remote mới có Legacy SampleScene. Đây là **rủi ro local-only**, **không được suy ra scene đã bị xóa khỏi PC**. GitHub có 14 Defense3D gameplay scripts, 8 Editor scripts và `.meta` tương ứng. **Không kéo/rebuild/clean/reset** trước khi local backup.
 
-**G0 bước tiếp theo:** Không cần duyệt lại D-01..D-11. **Bảo toàn local theo D-10/A** bằng [runbook backup/QA](07_G0_LOCAL_SAFETY_RUNBOOK.md), lấy bằng chứng G0-S1..S6, rà soát 27 ticket và chỉ đóng Gate G0 nếu đủ evidence; các số production chỉ khóa sau Balance QA.
+**G0 bước tiếp theo:** [11 — Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md) đã hoàn thành **rà soát từ xa 27/27 ticket** (không đổi sang ACCEPTED). Cần owner xác minh branch/HEAD/stash, hash cụ thể NavMesh + `.meta` / GLB / scene trong bản sao, sau đó **chủ dự án quyết định đóng Gate G0** nếu evidence đủ. G1 không được bắt đầu tự động; các số production chỉ khóa sau Balance QA.
 
 **Vòng A — Design approval: HOÀN THÀNH về yêu cầu** — tất cả D-01..D-11 đã được chốt phương án A (D-05 không thêm miniboss; D-11/A một elite/event; D-07/A 8/8). Không coi đây là release-ready hoặc chứng nhận đủ 600s Unity.
 
