@@ -9,13 +9,13 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- Gate 0 duyệt D-01..D-10 trước code; nếu một quyết định chưa duyệt, ticket phụ thuộc vẫn `BLOCKED`.
+- **D-05 và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; các quyết định còn lại D-01..D-04/D-06..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-10) | none | M | Decision log `APPROVED`; no contradictory active rule |
+| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-05 + D-11/A đã duyệt; các D-xx liên quan khác vẫn chờ; không cho qua Gate0 chỉ vì 2 mục đã duyệt |
 | U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
 | U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Win/Loss phản ứng đúng; invalid transitions rejected |
 | U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause đóng băng AI/spawn/cooldown/damage/game-time; no double subscription |
@@ -27,7 +27,7 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-006 | P0 | Enemy registry / `EnemyDataSO`, giữ source IDs, stat defaults và version | U3D-001,U3D-003 | M | ID `magiap,thuyquai,huyetdoi,quaidu,phicuong,magiap_boss,yaksha_boss` duy nhất; validate thiếu asset |
+| U3D-006 | P0 | Enemy registry / `EnemyDataSO`, giữ source IDs, stat defaults và version | U3D-001,U3D-003 | M | ID `magiap,thuyquai,huyetdoi,quaidu,phicuong,magiap_boss,yaksha_boss` duy nhất; type gốc vs type thực spawn phân biệt theo D-11/A; validate thiếu asset |
 | U3D-007 | P0 | Unified Damage/Health/Death API + attacker source & status hooks | U3D-004,U3D-006 | L | damage >0, HP clamp 0, death exactly-once, trúng hitbox/target đúng, paused=no damage |
 | U3D-008 | P0 | Event/Reward pipeline cho Enemy: kill, EXP, Wood, source tag | U3D-007 | M | 2 nguồn damage kết liễu cùng frame vẫn chỉ 1 death và 1 reward; không direct Wood nếu phải nhặt |
 | U3D-009 | P0 | Enemy prefab/AI adapter, bảo toàn `DefenseEnemyBridgeWalker3D` scene refs | U3D-006,U3D-007 | M | các Enemy registry spawn được riêng, HP/speed/attack đúng; không cần art để test |
@@ -40,11 +40,11 @@
 |---|---|---|---|---|---|
 | U3D-010 | P0 | Ground Enemy AI NavMesh theo route 3 lane, target priority base/tower/hero | U3D-002,U3D-009 | L | 3 bridge path complete; không xuyên nước/nhà; stuck detected & reported |
 | U3D-011 | P0 | Amphibian/Flying policies cho `thuyquai`, `huyetdoi`, `phicuong` | U3D-001,U3D-009,U3D-010 | L | water/air spawn không bị ép vô Ground NavMesh; collision/layer/range đúng |
-| U3D-012 | P0 | `Stage01` data schedule 34 event, phase/type/count/zone + miniboss event #7 | U3D-004,U3D-006 | M | 34 unique events @0..594; event #7 chỉ đúng 1 `magiap_boss`; dt dài không mất/dup |
-| U3D-013 | P0 | Safe Spawn Planner + bounded queue (32 active/40 pending/4 per frame/25s TTL, baseline) | U3D-010,U3D-011,U3D-012 | L | không spawn trong 3.1m Hero, không spawn off-NavMesh, backpressure không bùng nổ |
+| U3D-012 | P0 | `Stage01` schedule 34 event/214 suất nguồn; D-05: miniboss #7 một mình; D-11/A: đặt 1 Phi Cương dẫn đầu mỗi event `magiap` | U3D-004,U3D-006 | M | 34 unique events 0..594; event #7 đúng 1 `magiap_boss`, không batch thường; 20 event Ma Giáp ⇒ 20 suất Phi Cương + 108 Ma Giáp (thay, không thêm), 214 suất tổng; không phụ thuộc FPS/dt |
+| U3D-013 | P0 | Safe Spawn Planner + bounded queue (32 active/40 pending/4 per frame/25s TTL, baseline), giữ `eventId/slotIndex/declaredType/actualSpawnType` | U3D-010,U3D-011,U3D-012 | L | không spawn trong 3.1m Hero, không spawn off-NavMesh; elite D-11/A duy nhất theo event, không đổi sau frame/queue; job elite hết hạn thì log, không nâng job khác bù; zone East/South hỗ trợ airborne hợp lệ |
 | U3D-014 | P1 | `quaidu` landing source adapter & GhostCannon dependency decision | U3D-001,U3D-011,U3D-013 | M/L | landing vào điểm hợp lệ; không spawn ở East giả làm quái ground; cannon nếu duyệt |
 
-**G3 gate:** automated scheduler/spawn budget/safe radius; Unity scene test đủ 3 lane, 5 loại quái; debug log chỉ có một spawner production đang hoạt động, old smoke tests phải tắt. QA được thực hiện với bản đồ và NavMesh **local hiện có**.
+**G3 gate:** automated scheduler/spawn budget/safe radius; Unity scene test đủ 3 lane, 5 loại quái; **D-05 event #7 không double, D-11/A mỗi event Ma Giáp một elite slot dẫn đầu** và deterministic qua nhiều frame, không thay quái vượt cap; debug log chỉ có một spawner production đang hoạt động, old smoke tests phải tắt. QA thực hiện với bản đồ và NavMesh **local hiện có**. **Bổ sung QA-26/ST-07..12; không tạo ticket code mới.**
 
 ## 5. Defense/Tower/Economy & Hero (G4)
 
