@@ -1,7 +1,7 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
 **Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** ghi các lựa chọn và bằng chứng. **D-03/A, D-04/A, D-05 và D-11/A được chủ dự án phê duyệt ngày 2026-10-23**; các quyết định còn lại D-01/D-02/D-06..D-10 vẫn chờ. Không sửa mã nguồn/scene, không tạo Issues tự động.
+**Mục tiêu:** ghi các lựa chọn Gate G0: D-03/A, D-04/A, D-05, D-06/A (8/8) và D-11/A đã được duyệt ngày 2026-10-23; D-01/D-02/D-07..D-10 và local QA còn chờ. Không sửa code/scene.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
 ## 1. Bảng quyết định (D-03/A, D-04/A, D-05, D-11/A đã duyệt)
@@ -13,7 +13,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 | **D-03 — APPROVED / A** | **ĐÃ CHỌN A:** WIN khi BaseHP>0 **và** đã đủ 600s gameplay **và** Yaksha chết; Boss chết trước 600 → tiếp tục trận; Boss còn sống @600 → OVERTIME, không timed-wave mới; Base HP0 → LOSS ưu tiên cùng tick | B (giết Boss thắng ngay) **không được chọn** | Được duyệt 2026-10-23; phải cập nhật Unity prototype sau Gate G0 |
 | **D-04 — APPROVED / A** | **ĐÃ CHỌN A:** Hero Down khi HP0, không LOSS trực tiếp; hồi sinh tại HeroSpawn sau 5 **gameplay seconds**, countdown dừng khi Paused/LevelUp; Win/Loss dừng respawn | B (Hero chết là LOSS) **không được chọn** | Được duyệt 2026-10-23; HP hồi lúc respawn thuộc D-07 balancing |
 | **D-05 — APPROVED** | **Đã chọn A:** event #7 tại 108s chỉ 1 `magiap_boss`, không có batch thường trùng mốc | Không áp dụng B | Duyệt 2026-10-23; nguồn [Stage01](05_STAGE_ENEMY_CONTRACT.md) |
-| D-06 | Ground/Water/Air/Landing có chính sách route/attack khác nhau; GhostCannon đánh dấu chưa quyết định scope | ép mọi Enemy dùng ground NavMesh, chấp nhận thay đổi thiết kế | ảnh hưởng authenticity và path tests |
+| **D-06 — APPROVED / A (8/8)** | Ground/NavMesh 3 cầu; Thủy Quái bơi→lên bờ; Huyết Dơi/Phi Cương bay 3D; anti-air; 3 Linh Pháo thả dù; AI aggro; spawn safety | Ground-only/visual-only không được chọn | [08 D-06 Checklist](08_D06_ENEMY_NAVIGATION_REVIEW.md), 18 QA chưa chạy |
 | D-07 | giữ Web balance as **source reference** có version; tune Unity sau test, không auto-overwrite | nhập nguyên số Web vào Unity | ảnh hưởng DPS/HP/wood/test |
 | D-08 | Core 1 Thư Sinh; thiết kế dữ liệu cho 4 Hero; roster chính thức chốt riêng | cố triển khai 4 Hero ngay trong Core | ảnh hưởng scope/stability |
 | D-09 | 1 Relic slot, dùng Dép Tổ Ong MVP | Relic MVP khác trong 5 relic FUN | ảnh hưởng test input/combat |
@@ -50,7 +50,7 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - `yaksha_boss` ở 510s là **trigger độc lập**, không nằm trong 34 sự kiện. Đây là **quy tắc nguồn Web**, Unity prototype đã có trigger riêng.
 - `quaidu` và `phicuong` là loại có code trong Vongxuyen nhưng **không xuất hiện trực tiếp trong khai báo 34 event source**; có thể do GhostCannon, logic elite frame hoặc debug spawning. Không nhét các ID này vào stage table chỉ để đạt '5 types'.
 - **D-11/A đã được duyệt:** `đợt` = **event Stage01 khai báo `type=magiap`**; quy tắc đổi `slotIndex=0` thành `phicuong`, các slot còn lại giữ `magiap`. Dữ liệu nguồn có **20 event Ma Giáp**, 128 suất ⇒ 20 suất Phi Cương + 108 suất Ma Giáp; tổng stage vẫn **214**, không nhân thêm 20. Không áp dụng cho `magiap_boss`.
-- **Vùng sinh cần thiết kế:** event East/South có thể tạo Phi Cương nhưng Web `SpawnPlanner` không whitelist Phi Cương ở các zone Ma Giáp. Unity phải dùng nguồn zone của event, điều chỉnh resolver cho airborne và kiểm thử; **D-06 vẫn chờ duyệt**.
+- **Vùng sinh cần thiết kế:** event East/South có thể tạo Phi Cương nhưng Web `SpawnPlanner` không whitelist Phi Cương ở các zone Ma Giáp. Unity phải dùng nguồn zone của event, điều chỉnh resolver cho airborne và kiểm thử; **D-06/A đã duyệt**.
 - **Hàng đợi:** gắn `actualSpawnType` theo event+slot trước khi enqueue; nếu job elite hết hạn/overflow, không biến job thường khác thành elite bù; cần log riêng, không phụ thuộc FPS.
 
 ## 5. D-06 — Chiến lược locomotion / vai trò enemy (cần mô tả trước code)
@@ -88,20 +88,20 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [x] **D-03/A APPROVED 2026-10-23** — WIN sau 600s + hạ Dạ Xoa khi Base còn; OVERTIME nếu Boss sống.
 - [x] **D-05 APPROVED** — event #7 tại 108s chỉ một Ma Giáp Thống Lĩnh.
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
-- [ ] Chốt policy Enemy ground/air/water/landing, phạm vi GhostCannon, Hero/Relic MVP, số liệu balance baseline (D-06..09).
+- [ ] Chốt Hero/Relic MVP, số liệu balance baseline (D-06/A về Enemy locomotion đã duyệt) (D-07..09).
 - [ ] G0-S1..G0-S6 đủ evidence, đặc biệt scene local/Meta.
 - [ ] Mapping và 27 backlog tickets review xong, chỉ các ticket G1 đủ điều kiện chuyển `APPROVED`.
 - [ ] Gate G0 được chủ dự án đồng ý đóng. **Không tự đánh dấu pass khi chỉ có tài liệu.**
 
 ### Cách trả lời cho chủ dự án (không cần form)
 
-**Không cần duyệt lại D-03/D-04/D-05/D-11.** Những vấn đề tiếp theo: D-01/D-02/D-06..D-10, đặc biệt chính sách AI bay/nước và an toàn scene. Gate G0 vẫn chưa pass.
+**D-03/A, D-04/A, D-05, D-06/A và D-11/A đã duyệt.** Bước tiếp theo là D-07 (cân bằng), D-01/D-02/D-08..D-10 và kiểm chứng backup/Unity local; Gate G0 chưa pass.
 
 ## 8. Tài liệu G0 bước tiếp theo
 
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): hai phương án D-03/D-04, các ca biên khi Boss chết và Hero Down.
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
-- [08 — D-06 Enemy Navigation & AI Review](08_D06_ENEMY_NAVIGATION_REVIEW.md): checklist A/B theo 8 nhóm (ground/water/air/landing/ghost cannon/anti-air/target/spawn) và 18 QA đề xuất; **D-06 vẫn PENDING**.
+- [08 — D-06 Enemy Navigation & AI](08_D06_ENEMY_NAVIGATION_REVIEW.md): đã APPROVED toàn bộ 8 phương án A, có 18 QA nghiệm thu NOT_RUN.
 
 **Trạng thái:** **D-03/A và D-04/A đã duyệt**, nhưng quyết định sản phẩm chưa đầy đủ và backup/QA G0 chưa xác minh. Việc phê duyệt quyết định **không cho phép bắt đầu code**.
 
