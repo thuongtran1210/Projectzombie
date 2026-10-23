@@ -116,4 +116,4 @@ Tester / screenshot / log:
 G0-S1..S6: pass/fail/not_run per item:
 ```
 
-**Approval rule:** Bản sao lưu thành công chỉ pass phần G0-S1..S4 (nếu chứng minh). Vẫn cần owner quyết định luật D-03/D-04/D-06.. và QA G0-S5..S6 mới hoàn thành Gate G0. **Không tự động code sau khi chạy script này.**
+**Approval rule:** Bản sao lưu thành công chỉ pass phần G0-S1..S4 (nếu chứng minh). **D-03/A, D-04/A đã được duyệt**; vẫn cần D-01/D-02/D-06..D-10 và QA G0-S5..S6 trước khi Gate G0 hoàn thành. **Không tự động code sau khi chạy script này.**
