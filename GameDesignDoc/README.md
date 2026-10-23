@@ -9,6 +9,7 @@
 2. **[Decision Record — D01–D12 và P01–P08 approved; Kxx params pending](DECISION_CHECKLIST_GDD_V6.md):** source of product approvals; unresolved implementation choices explicitly marked.
 3. **[Unity Full 3D Migration Plan](UNITY_3D_MIGRATION_PLAN.md):** target is full stylized 3D; what is new vs reusable; maintain Survival 2D Legacy.
    - **[Unity 3D Source Code Audit — 2026-10-23](UNITY_3D_CODE_AUDIT_2026-10-23.md):** reviewed committed `main@657c8215` (not unpublished local 3D work); KEEP/ADAPT/NEW matrix, 8 engineering blockers, Hero canonical ID mapping and **3D-01..3D-08 implementation PR order**.
+   - **[3D Branch Code Re-Review — 2026-10-23](UNITY_3D_BRANCH_CODE_REVIEW_2026-10-23.md):** reviewed actual `feature/migrate-to-3d@749c06de`, 26 changes; confirmed migration utilities and identified concrete high-priority defects F01–F09. **Supersedes old audit's no-code-branch observation.**
 4. **[Map Sông Quê & Tower Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md):** 3 bridges, 3 lanes, 10 build sockets, Base, towers, **physical wood drops and Hero pickup**, friendly army **post-MVP**.
 5. **[Vongxuyen Enemy & Boss Roster](ENEMY_ROSTER_VONGXUYEN.md):** 7 VX types only for Map 01. Final Dạ Xoa, miniboss Ma Giáp; old PZ roster Legacy.
 6. **[Level Scenario](LEVEL_SCENARIO_GUIDE.md):** 600s baseline (108s miniboss/510s final), **OVERTIME until boss kill**, **instant Victory + stop spawns**, Base-only loss and level-scaled Hero respawn.
