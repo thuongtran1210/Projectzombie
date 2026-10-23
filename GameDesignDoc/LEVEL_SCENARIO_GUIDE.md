@@ -1,8 +1,8 @@
-# TREBRAVE — MAP SÔNG QUÊ: LEVEL SCENARIO v6.1
+# TREBRAVE — MAP SÔNG QUÊ: LEVEL SCENARIO v6.2
 
 > **Design APPROVED:** D01=A, D02=C, D06=A, D07=C, D08=B, D09=A, D10=C.  
 > **Implementation:** Unity full stylized 3D **NOT IMPLEMENTED**; this is a design contract, not a tested Unity scene.  
-> **PENDING:** P02 (600s timeout with final boss alive), P03 (Hero 0HP), P04/P08 (Boss raid/win timing), P05 (wood loot details).
+> **OWNER-APPROVED P02/P03/P05/P08:** 600s overtime until Dạ Xoa killed or Base destroyed; Hero level-scaled respawn at original spawn; WoodDrop TTL initial 90s borrowed from VX **EXP** pickup; boss death Victory **immediately** and stop spawns. **P04** boss raid/priority pending, parameter values configurable.
 
 ## 1. Stage objectives
 
@@ -12,7 +12,7 @@
 
 **Lose (D07=C):** **only when BaseHP reaches 0**. HeroHP=0 is not Lose. **Do not** derive Win or Lose from timer 600s. Boss kill vs Base destroyed in same tick needs order-atomic resolution tests.
 
-**600s (D06=A):** run design clock/timeline horizon of 10 minutes. The boss can spawn around 510s and may die before 600s; GDD requires boss kill win. **P02/P08 PENDING:** if the Boss is still alive at 600s, or a player kills it early, whether overtime/win gating applies; until defined do not implement arbitrary time-based result.
+**600s (D06=A, P02 APPROVED):** 10-minute designed **wave timeline**, not a hard match-end timeout. Boss can spawn at ~510s. **If still alive at 600s, continue OVERTIME** without launching new timeline events, until Dạ Xoa dies (WIN) or Base is destroyed (LOSE). **If Boss dies earlier, WIN immediately and stop all further spawns** (P08).
 
 ## 2. Full stylized 3D battlefield
 
@@ -52,7 +52,7 @@ At index 6 (t=108s) overrides with one **magiap_boss**. Normal count=min(8,3+pha
 
 ## 5. Wood reward and build loop [D08=B]
 
-- EnemyDeath -> RewardResolver -> spawn world **WoodDrop** with stable lootId, runId, amount, safe reachable floor position.
+- EnemyDeath -> RewardResolver -> spawn world **WoodDrop** with stable lootId, runId, amount, safe reachable floor position; **wood loot TTL = 90 seconds** via WoodDropConfigSO, a *new default borrowed from Vongxuyen EXP gemLifetimeSeconds=90*, not native VX wood loot expiry.
 - **No instant wood credit on kill**; Hero must move into pickup range and claim loot (3D collision/interact).
 - MVP has **no Phu** or allied soldiers. Phu pickup is post-MVP; it must use the same LootClaim transaction if implemented.
 - Dropped loot amount baseline +10/kill, starting Wood 100, tower costs 50/40/80 — unapproved balance numbers.
@@ -67,27 +67,31 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 
 ### 6.2 Tướng Dạ Xoa — 08:30
 
-**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN if BaseHP>0**. Boss behavior that raids Base vs stays in arena is **P04 PENDING**, not assumed.
+**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN IMMEDIATELY if BaseHP>0**; cancel wave scheduler/pending spawn jobs, stop AI and display result; Boss behavior that raids Base vs stays in arena remains **P04 PENDING**.
 
-## 7. Run result decision table
+## 7. Run result decision table — approved P02/P03/P08
 
 | Event while run Active | Result | Status |
 | --- | --- | --- |
-| Base HP becomes 0 | **LOSE** (exactly once) | APPROVED D07 |
-| Hero HP becomes 0, Base alive | **No Lose**; incapacitation/respawn TBD | D07 fixed, P03 pending |
-| Ma Giáp miniboss killed | Continue run | APPROVED D07 |
-| Dạ Xoa killed, Base alive | **WIN** (exactly once) | APPROVED D07 |
-| Dạ Xoa killed, Base already destroyed | Remain Lose | APPROVED D07 |
-| Reach 600s, Dạ Xoa alive, Base alive | **No arbitrary Win/Lose**; overtime/holding state TBD | P02 pending |
-| Dạ Xoa killed before 600s, Base alive | Boss-kill WIN intended; timing gate needs explicit P08 resolution | APPROVED D07; P08 pending |
-| Pause or LevelUp popup | Stop clock, waves, enemies, tower, loot pickup where appropriate | APPROVED consistency |
-| Restart | Reset clock, waves, Base/Towers/Wood/loot/runId/boss state | Required engineering |
+| Base HP becomes 0 | **LOSE** exactly once; stop spawns | D07 APPROVED |
+| Hero HP becomes 0 | **NO LOSE**; start level-dependent respawn countdown, return to **HeroInitialSpawnPoint** | P03 APPROVED (numeric curve in HeroRespawnConfigSO, K01 pending) |
+| Ma Giáp miniboss killed | Continue run; create wood drop if eligible | APPROVED |
+| Dạ Xoa killed with Base alive | **WIN IMMEDIATELY**; StopWaveScheduler, clear pending, reject future enemy spawns, cleanup active gameplay | P08 APPROVED |
+| Dạ Xoa killed after Base destroyed | Remain Lose | D07 APPROVED |
+| 600s reached with Boss alive/Base alive | **OVERTIME**; wave timeline has no events >594s; Boss/remaining enemies continue to fight; no auto timeout result | P02 APPROVED |
+| 600s reached with Boss already dead | Not applicable: run already Won on Boss death | P08 APPROVED |
+| Pause/LevelUp | Stop gameplay timers including respawn countdown, waves, towers and boss | Required policy |
+| Restart/scene unload | Dispose pending spawns/drops/respawn and reset all state | Required policy |
 
-**RunResultResolver precedence:** BaseDestroyed after Win is not allowed to overwrite Win; FinalBossDefeated after Lose cannot overwrite Lose. For truly simultaneous signals, choose a deterministic arbitration rule in P04; the system must be idempotent.
+**P04 still pending:** Dạ Xoa raids Base or waits in arena, and priority when BossKilled/BaseDestroyed in the same authoritative tick. Regardless, finish once and never award both results.
+
+**Hero respawn config:** use `HeroRespawnConfigSO` with a level→duration function (curve or table), monotonic **non-decreasing** by hero level, stored initial spawn Transform (not current death location). No unapproved numeric seconds hardcoded in document.
+
+**Relic MVP:** only `slipper` Dép Tổ Ong Thần Sa available; other four FUN items LOCKED. Simple 3D ghost aim/cast/damage/cooldown; FUN mechanics POST-MVP.
 
 ## 8. Unity 3D implementation contracts
 
-- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, lane/spawn refs, tower slot map, policy for HeroDowned and timeout (PENDING).
+- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, lane/spawn refs, tower slot map, policy for level-scaled HeroRespawn and Overtime/BossInstantVictory (P02/P03/P08 approved).
 - New MapSongQue3D scene with ground/water/crossing colliders, EnemyPrefab3D, tower socket transforms, camera.
 - MatchFlowService/GameStateManager still control state, but adapt 3D scene and combat interaction; WaveScheduler consumes gameplay time, never wall-clock.
 - Pool or limits for enemy, wood drops, projectiles, VFX; reset all for new run. Analytics include baseDamage, towerBuilds, woodDropped/collected, bossOutcome, duration.
@@ -100,10 +104,10 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 - [ ] Three ground routes cross three bridges without water shortcut.
 - [ ] Attack & one ACTIVE relic work using 3D targeting and aim shapes.
 - [ ] Tower placed in valid slot; enemy damage reaches Base; HP/UI correct.
-- [ ] Enemy death drops Wood; Hero pickup only; no auto credit/double claim.
+- [ ] Enemy death drops Wood (initial 90s expiry), Hero pickup only; no auto credit/double claim.
 - [ ] Wave scheduler maintains event IDs/times including miniboss and final Dạ Xoa.
-- [ ] BaseDestroyed -> LOSE; HeroDeath != LOSE; MiniBossKilled != WIN; FinalBossKilled -> WIN.
-- [ ] 600s unresolved behavior held as P02 until approved (no scripted timeout-loss).
+- [ ] BaseDestroyed -> LOSE; HeroDowned -> level-scaled respawn at run start; MiniBossKilled != WIN; FinalBossKilled -> instant WIN and stop spawns.
+- [ ] At 600s with Boss alive, game enters OVERTIME and waits Boss death or Base destruction; no scripted timeout-loss.
 - [ ] Run outcome/loot/AI reset correctly; Android 3D PlayMode/field QA measured.
 
 ## 10. Links
