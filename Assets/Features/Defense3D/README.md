@@ -90,3 +90,13 @@ From your **existing** scene with Vongxuyen GLB and baked NavMesh, run `TREBRAVE
 - Build visuals have no collider intentionally so they do not block baked navigation. Real tower prefabs, production visuals, physical wood gathering, mobile input and save/reload are not included.
 
 If the menu is missing after Git pull, first check Unity Console for compile errors, then attach `DefenseTowerBuildPrototype3D` to a new active scene GameObject via Inspector Add Component.
+
+## Physical WoodDrop economy (opt-in Hero wallet)
+
+1. Save the GLB/NavMesh scene, pull this feature branch, and **do not rebuild** the map.
+2. Open the existing Defense scene; run `TREBRAVE > Defense 3D > Install WoodDrop Economy In Open Scene`. This adds `DefenseWoodWallet3D` to the Hero marker (starting Wood = **0**). If Unity does not show the menu, Add Component > `DefenseWoodWallet3D` to `Hero_3D_Prototype`.
+3. Keep `DefenseHeroAutoAttack3D`, `DefenseWaveSlice3D` and `DefenseTowerBuildPrototype3D` active. Kill a capsule enemy with Hero or tower; it creates a physical brown `WoodDrop_10` cube at the death position.
+4. Move Hero within 1.4m of the pickup. Only this Hero's wallet increases (+10 Wood). Uncollected drops expire after 90 seconds. Kills **do not** grant Wood directly. Press **B** within 5m of an empty tower socket to spend 25 Wood; starting test Wood of 100 is removed.
+5. Look for Console logs `Enemy defeated`, `Hero collected 10 Wood`, and `Tower built ... Wood: ...`. Three drops (30 Wood) can pay for one tower. A tower can still kill enemies, but drop pickup requires Hero proximity.
+
+This is a prototype using physical visual pickup proximity checks rather than trigger Rigidbody colliders. The Wood wallet is per Play session, and save/restore, mobile HUD, magnet, pooling and production wood balancing are not implemented. Unity PlayMode has not been run from these GitHub changes.
