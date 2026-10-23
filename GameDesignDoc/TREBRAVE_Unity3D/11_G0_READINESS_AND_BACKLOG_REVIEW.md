@@ -10,7 +10,7 @@
 - **27/27 ID hiện diện, không trùng**: `U3D-001`.. `U3D-027`; **P0=21, P1=3, P2=3**.
 - Đã soát các dependency ID nêu tường minh theo văn bản: **không tham chiếu ticket không tồn tại; không thấy chu trình phụ thuộc**. `U3D-024` viết `U3D-010..U3D-023` là shorthand (14 ID), **phải mở rộng khi tạo issue/đưa vào công cụ theo dõi**; không ngầm coi là danh sách explicit dependencies đã được máy parse đầy đủ.
 - **24 ticket U3D-001..024** có bảng 6 cột (ID/priority/scope/dependencies/relative size/acceptance), **3 ticket U3D-025..027** là bảng post-Core 5 cột có schema khác theo G8 — không phải lỗi thiếu size.
-- **Backlog requirements are reviewed, not accepted:** còn thiếu Git branch/HEAD/stash local, hash cụ thể NavMesh & meta, G0 owner closure; không có code G1 hoặc kết quả Unity PlayMode mới để đánh DONE. **27 ticket trạng thái tracking vẫn DRAFT/BLOCKED (chưa mở Issues).**
+- **Backlog requirements are reviewed, not accepted:** owner đã cung cấp **branch/HEAD/stash đối chiếu snapshot và 6/6 SHA-256 critical assets khớp**, nên 2 evidence blockers này đã giải quyết. Vẫn **chưa có owner Gate G0 sign-off**, full recovery QA hay code G1/Unity PlayMode để đánh DONE. **27 tickets ở DRAFT/BLOCKED, chưa mở Issues.**
 
 ## 2. Review từng nhóm ticket / sequence sau G0
 
@@ -31,14 +31,20 @@
 
 | ID | Evidence hiện có | Status | Việc cần làm trước G0 review |
 |---|---|---|---|
-| **G0-S1** | Owner đã gửi `git status --short`: 17 `M`/8 `??`; local backup script đã ghi `git-branch.txt`, `git-head.txt`, `git-stash.txt` | **PARTIAL** | Đối chiếu/đọc ba file backup với `git branch --show-current`, `git rev-parse HEAD`, `git stash list`; bảo toàn dirty/untracked; không pull/checkout |
-| **G0-S2** | Backup path `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`; owner liệt kê `MapSongQue3D_Prototype.unity` (135896 bytes), `NavMesh-Defense_Navigation.asset` trong backup. 8 file Scene/Environment khớp hash subset | **PARTIAL** | Chỉ đích danh SHA256 Scene, scene `.meta`, NavMesh `.asset/.meta`; kiểm tra backup còn tại path |
-| **G0-S3** | GLB `TREBRAVE_MapSongQue_ThreeJS.glb` trong backup, 6507936 bytes; có hình root GLB trên Hierarchy | **PARTIAL** | Hash cụ thể GLB và `.meta`; nếu có importer/material ở vị trí khác phải sao lưu riêng và không đổi GUID |
+| **G0-S1** | Git branch, HEAD, 2 stash names từ local **giống hệt** `git-branch.txt`, `git-head.txt`, `git-stash.txt` của backup; HEAD `43ee2a806c593afe8704730f9daf012b52f56b35`, 17 M và 8 ?? local | **OWNER_OUTPUT_VERIFIED** | Bảo toàn dirty/untracked & 2 stashes; không pull/checkout/clean/reset; HEAD local chưa so sánh remote tip |
+| **G0-S2** | `MapSongQue3D_Prototype.unity`, scene `.meta`, `NavMesh-Defense_Navigation.asset` và NavMesh `.meta` ở source+backup, **4/4 HashMatches=True** | **CRITICAL_4_HASH_VERIFIED** | Full restore chưa thử; không tái bake/regenerate, không kết luận mọi scene khác cũng đã backup |
+| **G0-S3** | `TREBRAVE_MapSongQue_ThreeJS.glb` và `.meta` có trong source+backup, **2/2 HashMatches=True** | **CRITICAL_2_HASH_VERIFIED** | Material/importer file ngoài thư mục chưa chứng minh toàn bộ; root GLB trong Hierarchy đã chụp |
 | **G0-S4** | Owner cung cấp `BackedUp=True` + `HashMatches=True` cho `Packages/manifest.json`, `packages-lock.json`, `ProjectSettings/EditorBuildSettings.asset` | **3 key files VERIFIED / PARTIAL** | Ghi rõ snapshot packages/project settings khác nếu có; không tuyên bố restore test đã qua |
 | **G0-S5** | 2 ảnh Console 20 Log/0 Warning/0 Error và root Hierarchy; chủ dự án xác nhận đã kiểm tra Missing Scripts, 3 bridge/10 sockets/NavMesh | **OWNER_REPORTED_VERIFIED** | Ảnh Inspector/PlayMode details nếu cần độc lập nghiệm thu; không mặc định 600s run đã pass |
 | **G0-S6** | Chủ dự án xác nhận đã kiểm tra Legacy `SampleScene` | **OWNER_REPORTED_VERIFIED** | Nếu cần QA độc lập, lưu smoke steps/screenshot; không coi full regression suite đã chạy |
 
-**Gate G0 = NOT PASSED** ở thời điểm review, vì G0-S1..S4 chưa hoàn tất bằng chứng chi tiết, ticket/baseline chưa owner đóng G0 và chưa có quyết định cấp quyền triển khai code. Không dùng GUI Scene Generator, không `git reset --hard`, `git clean -fd`, `git stash pop`, không sửa `.meta`, không rebuild/rebake NavMesh.
+**Gate G0 = NOT PASSED, READY FOR OWNER SIGN-OFF REVIEW:** G0-S1 đã có Git snapshot matching; 6 critical Scene/NavMesh/GLB files+meta đã khớp hash; G0-S4 ba file cốt lõi khớp (full restore chưa thử); G0-S5/S6 owner reported verified. **Gate chưa được owner đóng rõ ràng và chưa cho phép code.** Không dùng GUI Scene Generator, không `git reset --hard`, `git clean -fd`, `git stash pop`, không sửa `.meta`, không rebuild/rebake NavMesh.
+
+### Delta xác minh mới nhất — 2026-10-23
+- Snapshot của Git được owner đọc lại: branch = `feat/trebrave-defense3d-first-scene`; HEAD = `43ee2a806c593afe8704730f9daf012b52f56b35`; stashes 0/1 đều khớp tên/nhánh đã lưu; dirty state có 17 file tracked modified và 8 untracked entries.
+- 6 critical files Scene `.unity`/meta, baked NavMesh `.asset`/meta, map GLB/meta: **tất cả SourceExists=True, BackupExists=True, HashMatches=True**.
+- Trạng thái sau bằng chứng: **G0-S1 verified by owner output; G0-S2/S3 critical files verified; G0-S4 3 key files verified/partial; G0-S5/S6 verified by owner report/screenshots; G0 not passed**.
+- HEAD local không nhất thiết trùng remote tip vì tài liệu GitHub đã nhận nhiều commit sau snapshot. **Không yêu cầu `git pull` hoặc biến dirty working tree thành clean trong G0.**
 
 ## 4. Chỉ đọc: đối chiếu trạng thái Git + backup và hash NavMesh (không sửa file)
 
@@ -107,10 +113,10 @@ foreach ($rel in $critical) {
 - [x] **Owner approved design:** D-01..D-11; D-07/A đủ 8 nguyên tắc.
 - [x] **Remote backlog reviewed:** 27 IDs valid, no unknown explicit dependencies/cycles, 21 P0 / 3 P1 / 3 P2; không có ticket nào `ACCEPTED`.
 - [x] **Owner-reported Unity baseline:** Console screenshot 0 Error, Missing Scripts/map/Legacy đã được owner xác nhận; không coi là độc lập QA full run.
-- [ ] **Local branch / HEAD / stash** được đối chiếu với snapshot backup.
-- [ ] **SHA-256 cụ thể** Scene+meta, NavMeshData+meta, GLB+meta đều tồn tại và khớp.
-- [ ] Nếu có NavMesh/asset/scene khác ngoài tree, **sao lưu thêm và xác minh**.
-- [ ] **Chủ dự án phê duyệt đóng Gate G0** sau khi xem evidence còn thiếu và review 27 nhiệm vụ; không giả định từ câu “Tiếp tục”.
+- [x] **Local branch / HEAD / stash** được owner đối chiếu với snapshot backup; vẫn giữ 17 M/8 ?? và 2 stashes.
+- [x] **SHA-256 cụ thể 6/6** Scene+meta, NavMeshData+meta, GLB+meta có đủ nguồn+backup và khớp.
+- [ ] **Phạm vi backup mở rộng / restore test:** nếu còn asset, material hoặc prefab quan trọng ngoài snapshot, bổ sung copy-only; kiểm tra khả năng restore trước khi thao tác có nguy cơ. Đây là hardening bổ sung, **không coi 6 hashes bao phủ mọi file**.
+- [ ] **Chủ dự án phê duyệt đóng Gate G0** sau khi xem bằng chứng và review 27 nhiệm vụ; không suy từ việc gửi kết quả PowerShell rằng đã sign-off hay cho phép code.
 - [ ] Chỉ khi Gate G0 pass và chủ dự án cho phép code rõ ràng, mới bắt đầu `U3D-003 → U3D-004 → U3D-005` ở G1. **Không code trong bước Gate G0 review.**
 
 **Liên kết:** [02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md) · [04 — G0 Approval Pack](04_GATE0_APPROVAL_PACK.md) · [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md) · [10 — G0 Evidence Audit](10_G0_REMOTE_BASELINE_AUDIT.md).
