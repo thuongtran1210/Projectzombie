@@ -129,7 +129,7 @@ Menu/Preparing
 
 1. **Đã hoàn thành:** chủ dự án duyệt **D-03/A và D-04/A ngày 2026-10-23**; ghi vào [03_DECISIONS_QA.md](03_DECISIONS_QA.md).
 2. **Đã hoàn thành về kế hoạch:** cập nhật acceptance QA-21/22/27/28 và backlog U3D-001/003/004/005/022 theo luật đã duyệt.
-3. **Đang chờ:** D-02, D-07-02..08 (D-07 chỉ được duyệt D-07-01/A về phương pháp), D-08, D-09, D-10 và backup Scene/GLB/NavMesh/GUID. **D-01/A đã APPROVED**, Gate G0 chưa đóng.
-4. **Chỉ sau Gate G0** mới tạo code State/Clock G1. **Không tự tạo PR/commit gameplay hoặc sửa constants bây giờ.**
+3. **Đã duyệt:** D-01..D-11 (D-07/A 8/8 nguyên tắc), bao gồm **D-02/A 600 giây gameplay** và **D-10/A bảo vệ Legacy**. **Chưa nghiệm thu:** backup scene/GLB/NavMesh/GUID, local Unity Console/Legacy QA, số balance production. Gate G0 vẫn chưa đóng.
+4. **Chỉ sau Gate G0 pass với bằng chứng và lệnh code riêng** mới tạo code State/Clock G1. **Không tự tạo PR/commit gameplay hoặc sửa constants bây giờ.**
 
 **Ghi chú:** D-05 (1 miniboss @108) và D-11/A (1 Phi Cương dẫn đầu event Ma Giáp) **đã được owner duyệt**, không mở lại những quyết định này.
