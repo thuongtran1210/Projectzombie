@@ -5,8 +5,8 @@
 
 **Review date:** 2026-10-23 (Asia/Ho_Chi_Minh)  
 **Scope:** `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.  
-**Status:** `G0_OWNER_APPROVED / PASSED_WITH_RECORDED_LIMITATIONS / G1_NOT_AUTHORIZED / NO_GAMEPLAY_CODE` · Owner sign-off 2026-10-23.  
-**Authority:** Chủ dự án **đã phê duyệt đóng G0 theo evidence hiện có**; **không** chấp thuận code G1, chưa nghiệm thu từng ticket, chưa commit local scenes, chưa hoàn tất full-restore hoặc PlayMode 600s.
+**Status:** `G0_OWNER_APPROVED / PASSED_WITH_RECORDED_LIMITATIONS / G1_OWNER_AUTHORIZED_TO_START / IMPLEMENTATION_NOT_STARTED` · Owner sign-off 2026-10-23.  
+**Authority:** Chủ dự án **đã phê duyệt đóng G0 theo evidence hiện có**; **đã chấp thuận riêng quyền bắt đầu code G1 (sau G0 sign-off); chưa triển khai code trong lượt ghi nhận này**, chưa nghiệm thu từng ticket, chưa commit local scenes, chưa hoàn tất full-restore hoặc PlayMode 600s.
 
 ## 0. G0 SIGN-OFF — CHÍNH THỨC (2026-10-23)
 
