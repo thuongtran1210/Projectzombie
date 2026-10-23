@@ -1,6 +1,6 @@
 # D-07 — CHECKLIST REVIEW: Base, Hero, Enemy, Tower & Economy Balance
 
-**Status:** `DRAFT / D-07 PENDING / OWNER REVIEW` · 2026-10-23 · **chỉ lập kế hoạch, KHÔNG CODE / KHÔNG ĐỔI CHỈ SỐ TRONG UNITY**
+**Status:** `D-07-01/A APPROVED (2026-10-23) / D-07-02..08 PENDING / D-07 tổng thể CHƯA DUYỆT` · **chỉ lập kế hoạch, KHÔNG CODE / KHÔNG ĐỔI CHỈ SỐ TRONG UNITY**
 **Phụ thuộc đã duyệt:** D-03/A (WIN sau >=600s + Boss chết + Base sống), D-04/A (Hero Down, hồi sinh sau 5 gameplay s), D-05 (@108 chỉ 1 miniboss), D-06/A (8/8 Enemy Ground/Water/Air/Landing/GhostCannon), D-11/A (1 Phi Cương thay 1 suất mỗi event Ma Giáp).
 **Mục tiêu review:** chọn **nguyên tắc cân bằng** rồi mới khóa số; không nhập thông số Web vào Unity mặc định hoặc ghi đè scene / Inspector.
 
@@ -49,13 +49,15 @@
 | EXP mỗi enemy (Web) | Ma Giáp 14; Thủy Quái20; Huyết Dơi12; Phi Cương45; Tiểu Quỷ16; Miniboss95; GhostCannon80 | chưa có EXP reward pipeline cho Defense3D | data ID → XP amount, one-shot grant |
 | Hồi sinh | Web master có phương án khác; **D-04/A đã chốt** | prototype 5s | **5 gameplay seconds đã duyệt**; HP sau hồi sinh là tham số D-07 |
 
-## 2. D-07 — Những quyết định cần REVIEW (8 mục)
+## 2. D-07 — 1 mục đã duyệt, 7 mục còn chờ
 
 ### D-07-01 — Triết lý cân bằng và nguồn giá trị ban đầu
-- [ ] **A — ĐỀ XUẤT:** snapshot dữ liệu Vongxuyen + Unity hiện tại; dùng Web làm **starting benchmark/role identity**, chọn **Unity balance profile v0** riêng, sau đó tune từ 600s PlayMode; không auto-copy con số giữa engine.
+- [x] **A — APPROVED 2026-10-23:** snapshot dữ liệu Vongxuyen + Unity hiện tại; dùng Web làm **starting benchmark/role identity**, chọn **Unity balance profile v0** riêng, sau đó tune từ 600s PlayMode; không auto-copy con số giữa engine.
 - [ ] **B:** chép đúng mọi số Web vào Unity trước khi test.
 - [ ] **C:** giữ nguyên tất cả số prototype Unity.
 - [ ] Khác: __________
+
+**Biên bản D-07-01/A đã duyệt:** Chủ dự án chỉ phê duyệt **nguồn/tham chiếu cân bằng**. Vongxuyen là benchmark, Unity dùng profile riêng có version, việc điều chỉnh số dựa trên PlayMode. **Không phê duyệt các giá trị Web/Unity mặc định và không phê duyệt D-07-02..08.**
 
 ### D-07-02 — BaseHP + Gỗ đầu trận
 - [ ] **A — ĐỀ XUẤT:** bảo đảm gameplay tutorial/cửa sổ xây tháp đầu trận, chọn **starting wood đủ xây ít nhất 1 tháp** ở baseline thử nghiệm; Base HP là config có version; **chưa khóa** 500/1000 cho production cho tới khi thử full-run.
@@ -128,7 +130,7 @@
 ## 5. Phiếu duyệt D-07
 
 ```text
-D-07-01 Source/reference baseline: A / B / C
+D-07-01 Source/reference baseline: **A — APPROVED 2026-10-23**
 D-07-02 BaseHP & starting Wood: A / B / C / số khác
 D-07-03 Tower economy/upgrade: A / B / C
 D-07-04 Repair: A / B / C
@@ -138,10 +140,10 @@ D-07-07 Boss HP/balance: A / B / C
 D-07-08 Balance profile/QA: A / B / C
 Các số cụ thể muốn khóa ngay:
 Ngoại lệ / chỉnh sửa:
-D-07: APPROVE / APPROVE MỘT PHẦN / CHỈNH SỬA
+D-07: **APPROVE MỘT PHẦN** — chỉ D-07-01/A; D-07-02..08: PENDING
 ```
 
-**Đề xuất:** chọn **A cho cả 8 mục** (duyệt phương pháp & cấu trúc, **chưa khóa mọi số production**). Bản Profile số cụ thể `balance-v0` cần duyệt ở một lần review sau với evidence hoặc số mặc định có nguồn và đã gắn nhãn "test only".
+**Đề xuất cho phần còn chờ:** phương án A của D-07-02..08 (chưa duyệt). D-07-01/A đã duyệt về phương pháp, **chưa khóa mọi số production**. Bản Profile số cụ thể `balance-v0` cần duyệt ở một lần review sau với evidence hoặc số mặc định có nguồn và đã gắn nhãn "test only".
 
 ## 6. Source links (blob đã kiểm tra 2026-10-23)
 
