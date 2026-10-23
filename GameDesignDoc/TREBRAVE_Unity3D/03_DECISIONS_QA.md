@@ -8,21 +8,27 @@
 | ID | Vấn đề và bằng chứng hai repo | Khuyến nghị **để duyệt**, không tự áp dụng | Status |
 |---|---|---|---|
 | **D-01** | Vongxuyen là Web/Three.js, Projectzombie có Unity Defense3D và Survival 2D cũ | **APPROVED/A — Unity Defense 3D là runtime đích chính**; Vongxuyen giữ làm nguồn tham chiếu thiết kế, Enemy, luật và tài nguyên, không xóa/ghi đè Web hay Survival 2D | **APPROVED — 2026-10-23** |
-| **D-02** | Vongxuyen Web chốt 600 gameplay seconds; Unity `DefenseRun6003D` có 600s `Time.deltaTime` | **600s game time**, dừng hoàn toàn trong Pause/LevelUp/Win/Loss; fast test qua cấu hình riêng, không sửa constants | **PENDING** |
+| **D-02** | Vongxuyen 600s game-time; Unity prototype dùng `Time.deltaTime` và sửa constant Fast Test thủ công | **APPROVED/A:** trận **600 gameplay seconds**; đồng hồ **dừng trong Pause, LevelUp, Win, Loss**, tiếp tục trong Overtime; Fast Test bằng cấu hình Inspector/test profile riêng, không sửa constants. Không coi đồng hồ Unity hiện tại đã tuân thủ | **APPROVED — 2026-10-23** |
 | **D-03** | Web master yêu cầu thủ 600s; Unity prototype WIN ngay khi hạ Yaksha | **ĐÃ DUYỆT/A:** WIN chỉ khi **BaseHP>0 VÀ gameplayElapsed≥600s VÀ YakshaDead**; Boss chết trước 600s thì vẫn phòng thủ đến hết giờ; Boss còn sống @600s → OVERTIME, không thêm timed-wave jobs; BaseHP=0 → LOSS, ưu tiên nếu cùng gameplay tick với Boss chết | **APPROVED — 2026-10-23** |
 | **D-04** | Web master nói Hero tử trận có thể LOSS; Unity prototype hồi sinh bằng `Time.time` | **ĐÃ DUYỆT/A:** Hero HP0 → Downed, **không LOSS trực tiếp**; khóa input Hero; hồi sinh tại HeroSpawn sau **5 gameplay seconds** (Pause/LevelUp không giảm countdown); Enemy vẫn đánh Base; BaseHP0 → LOSS; terminal WIN/LOSS hủy hồi sinh | **APPROVED — 2026-10-23** |
 | **D-05** | `src/config/stage01.js`: event thứ 7 @108s thay bằng 1 `magiap_boss`; Unity `DefenseRun6003D` hiện spawn event thường + miniboss @108 riêng | **ĐÃ DUYỆT:** sự kiện #7 / `benque-07` tại 108s chỉ sinh **1 `magiap_boss` (Ma Giáp Thống Lĩnh)**; **không** có batch quái thường trùng mốc; Boss Dạ Xoa @510s vẫn độc lập | **APPROVED — 2026-10-23** |
 | **D-06** | Web có Thủy Quái bơi, Huyết Dơi và Phi Cương bay bằng hình ảnh, Tiểu Quỷ từ Linh Pháo; Unity hiện mới dùng Ground Walker | **APPROVED/A (8/8)**: 4 domain Ground/Water/Air/Landing; NavMesh 3 cầu; nước lên bờ; bay 3D; anti-air; 3 Linh Pháo thả dù; aggro Hero/Support/Base; spawn an toàn. Chi tiết ở [08_D06_ENEMY_NAVIGATION_REVIEW.md](08_D06_ENEMY_NAVIGATION_REVIEW.md). Chưa code, 18 D06-QA chưa chạy | **APPROVED — 2026-10-23** |
-| **D-07** | Web và Unity prototype có chỉ số khác nhau (Base HP, Gỗ, Tower, Boss) | **APPROVED MỘT PHẦN:** chỉ **D-07-01/A** đã duyệt: đối chiếu snapshot Web/Unity; dùng Web làm benchmark và tạo Unity Balance Profile riêng, cân chỉnh bằng 600s PlayMode; không tự copy chỉ số. **D-07-02..08 vẫn PENDING**, D-07 tổng thể chưa duyệt. [09 — Balance Checklist](09_D07_BALANCE_REVIEW.md) | **PARTIAL — D-07-01/A APPROVED 2026-10-23** |
-| **D-08** | Web data 4 Hero gồm Thư Sinh, Thanh Đồng, Ẩn Sĩ, Đạo Sĩ; GDD Unity lịch sử có Võ Tăng | **Đề xuất:** Core xác minh 1 Hero Thư Sinh, giữ API mở rộng; **chưa chốt** roster cả bốn hay thay Võ Tăng | **PENDING** |
-| **D-09** | Vongxuyen đã chốt 1 Pháp Bảo trang bị/run, Web có 5 Pháp Bảo FUN | **Đề xuất:** chỉ một slot, dùng **Dép Tổ Ong** cho MVP combat đầu tiên vì Web có runtime tham chiếu | **PENDING** |
-| **D-10** | Unity local GLB/scene/NavMesh/meta chưa xác nhận tracked; legacy SampleScene còn tồn tại; đã từng có Missing Mono Script | **Đề xuất:** giữ 2D Legacy riêng; trước bất kỳ code/merge nào, kiểm tra backup scene/GUID/importer + build settings; chỉ chỉnh có rollback | **PENDING / CRITICAL** |
+| **D-07** | Web/Unity prototype có HP, Gỗ, Tower, Enemy/Boss và EXP khác nhau | **APPROVED/A đủ 8/8 mục D-07-01..08**: Web là nguồn benchmark; Unity Balance Profile riêng; baseline Gỗ đủ xây ≥1 Tower, 10 sockets/max Lv3, repair tốn Gỗ, Wood/EXP pickups riêng, Enemy/Boss theo profile, Fast Test/QA có version. **Phê duyệt NGUYÊN TẮC, KHÔNG KHÓA CON SỐ PRODUCTION**; 12 D07-QA NOT_RUN. [09 — Balance Review](09_D07_BALANCE_REVIEW.md) | **APPROVED (DESIGN) — 2026-10-23** |
+| **D-08** | Vongxuyen có Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ; GDD Unity lịch sử có Võ Tăng | **APPROVED/A:** Core ưu tiên **1 Hero Thư Sinh hoàn chỉnh**, thiết kế API/data mở rộng đến 4 Hero; **không yêu cầu hoàn thành đủ 4 trong Core**; danh sách roster cuối cùng chưa tự suy thành đã khóa | **APPROVED — 2026-10-23** |
+| **D-09** | Vongxuyen có 1 slot Pháp Bảo/run, 5 Relics FUN | **APPROVED/A:** **1 slot Pháp Bảo/Hero**, triển khai **Dép Tổ Ong đầu tiên** trong Core với ngắm/cast/cooldown/sát thương thật; các Relics khác để sau, không hiểu đây là đã có code | **APPROVED — 2026-10-23** |
+| **D-10** | Scene/GLB/NavMesh/.meta/GUID Unity local và Legacy 2D có nguy cơ mất dữ liệu, chưa xác minh tracked/backup | **APPROVED/A (SAFETY POLICY):** giữ scene, GLB, NavMesh, GUID, Survival 2D; sao lưu **trước thay đổi code/scene**, kiểm tra Console, compatibility và rollback. **CHƯA THỰC HIỆN/CHƯA XÁC MINH BACKUP, Unity QA NOT_RUN** | **APPROVED (POLICY) — 2026-10-23** |
 | **D-11** | `stage01.js` khai báo `magiap`; Web runtime có phép thay Ma Giáp đầu **mỗi frame** thành Phi Cương | **ĐÃ DUYỆT phương án A:** mỗi **sự kiện/đợt khai báo `type=magiap`** có **1 `phicuong` dẫn đầu, thay thế 1 suất `magiap`**; số suất của event giữ nguyên; không chuyển theo frame/FPS; không áp dụng cho `magiap_boss` | **APPROVED — 2026-10-23** |
 
-**Status hợp lệ:** `PENDING` / `APPROVED` / `PARTIAL` / `REJECTED` / `SUPERSEDED`. **Đã APPROVED D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và riêng D-07-01/A ngày 2026-10-23.** D-02, D-07-02..08, D-08, D-09, D-10 và backup/QA Unity local vẫn PENDING; **Gate G0 chưa đóng, chưa cho phép code**.
+**Status hợp lệ:** `PENDING` / `APPROVED` / `REJECTED` / `SUPERSEDED`. **TOÀN BỘ D-01..D-11 đã OWNER APPROVED về các phương án thiết kế A trong phạm vi đã ghi, ngày 2026-10-23.** D-07 duyệt 8/8 nguyên tắc, **con số production chưa khóa**. **Gate G0 chưa PASS:** backup scene/GLB/NavMesh/meta và Unity Console/Legacy/PlayMode chưa xác minh; backlog/QA chưa được nghiệm thu; **không cho phép code**.
 
 ### Biên bản quyết định đã được chủ dự án phê duyệt — 2026-10-23
 
+- **Lượt phê duyệt mới 2026-10-23:** chủ dự án chọn **D-02/A, D-08/A, D-09/A, D-10/A và D-07-02..08/A**; không có ngoại lệ. D-07-01/A, D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A giữ nguyên.
+- **D-02/A:** 600 giây game-time; Pause/LevelUp/Win/Loss đóng băng clock; Fast Test riêng; đúng điều kiện D-03/A 600s dù Boss test xuất hiện sớm.
+- **D-08/A:** một Thư Sinh hoàn thiện Core, kiến trúc 4 Hero; chưa kết luận roster chính thức cả bốn.
+- **D-09/A:** một Pháp Bảo trang bị/Hero, Dép Tổ Ong là MVP có ngắm, hồi chiêu và gây damage thật.
+- **D-10/A:** bảo toàn scene/GLB/NavMesh/.meta/GUID và Survival 2D, backup/Console/rollback bắt buộc trước code. **Duyệt chính sách ≠ backup đã có/QA đã pass.**
+- **D-07-02..08/A:** baseline test có đủ Gỗ xây ít nhất một Tower (chưa khóa số Gỗ cụ thể); 10 socket/tối đa Lv3; sửa tốn Gỗ, có cooldown/limit; Wood và EXP nhặt riêng; Enemy stats riêng và theo phase có cap, bảo đảm anti-air; Miniboss/Boss profile riêng; Balance/Fast Test có version và 600s QA trước khóa số. **D-07/A đủ 8/8 đã duyệt, production HP/cost/damage chưa chốt.**
 - **D-01/A — APPROVED:** Unity Defense 3D thuộc Projectzombie là **runtime đích chính**. Vongxuyen/Three.js tiếp tục là nguồn tham chiếu thiết kế, hệ thống Enemy, gameplay và tài nguyên; giữ nguyên Web và Survival 2D hiện có. Đây là quyết định phạm vi dự án, không phải xác nhận đã đồng bộ thành công.
 - **D-07-01/A — APPROVED (chỉ tiểu mục):** Chụp snapshot số liệu Web và Unity để đối chiếu; Web là **benchmark/nguồn vai trò**, Unity có Balance Profile riêng theo phiên bản và cần PlayMode 600s để cân chỉnh. **Không chốt HP, Gỗ, Tower, Enemy/Boss, EXP hoặc những lựa chọn D-07-02..08; D-07 tổng thể vẫn chờ.**
 - **D-03/A — APPROVED:** Chủ dự án chọn “Theo phương án đề xuất” cho D-03/D-04. Điều kiện WIN = BaseHP>0 + game-time≥600s + Yaksha đã chết; Boss chết sớm thì tiếp tục thủ; Boss sống ở mốc 600s thì OVERTIME; Base HP0 thì LOSS ưu tiên trong cùng tick. OVERTIME không sinh thêm timed-wave; quái/Boss đã có vẫn hoạt động. Những chi tiết về giới hạn overtime và GhostCannon/summon vẫn là phạm vi chi tiết cần thiết kế.
@@ -32,7 +38,7 @@
 - **D-11 — APPROVED / A:** “1 Phi Cương dẫn đầu mỗi đợt Ma Giáp.” Định nghĩa nghiệm thu: **đợt = một event Stage01 khai báo `type=magiap`** (không phải phase 120s, không phải mỗi frame); **thay đúng một suất**, không thêm suất. Ví dụ event 4 suất Ma Giáp → 1 Phi Cương + 3 Ma Giáp; event 5 suất → 1 Phi Cương + 4 Ma Giáp. **Không chuyển miniboss `magiap_boss`**, không nhân đôi Boss.
 - **Ảnh hưởng dữ liệu kế hoạch:** trong 34 event gốc có **20 sự kiện `magiap`**, tổng 128 suất Ma Giáp. Sau quy tắc D-11, **kế hoạch yêu cầu sinh 20 Phi Cương + 108 Ma Giáp**, cùng 40 Huyết Dơi, 45 Thủy Quái và 1 Miniboss = **214 suất** (trước queue/cap/TTL). Số spawn thực tế có thể ít hơn khi bị giới hạn; ghi `declaredType`, `actualSpawnType`, `eventId`, `slotIndex`.
 - **Vấn đề kỹ thuật phải thiết kế:** vùng `eastBank`/`southBank` trong `SpawnPlanner.js` hiện chưa liệt kê `phicuong` là type hợp lệ; adapter Unity cần sử dụng vùng hợp lệ của đợt khai báo hoặc chính sách cho phép elite bay một cách tường minh. Không tự đổi map/zone.
-- **Chưa được duyệt:** D-02, D-07-02..08 (D-07 tổng thể), D-08, D-09, D-10; backup local và QA trên Unity chưa xác minh. D-01/A và D-07-01/A duyệt kế hoạch, không phải triển khai.
+- **Chưa được nghiệm thu (không phải quyết định đang PENDING):** các con số balance production chưa khóa; backup scene/GLB/NavMesh/meta, Unity Console, Legacy scene và các ca PlayMode đều chưa xác minh. Chưa có code mới.
 
 ### Form chữ ký quyết định (copy vào issue/review)
 
@@ -130,25 +136,30 @@ Notes / next decision:
 
 ## 5. Approval checklist trước khi mở code
 
+- [x] Owner **APPROVED D-02/A ngày 2026-10-23**: 600 giây game-time, Pause/LevelUp/Result đóng băng, Fast Test cấu hình riêng.
+- [x] Owner **APPROVED D-07/A (8/8) ngày 2026-10-23**: 8 nguyên tắc cân bằng được chốt; chỉ số production chưa khóa; 12 D07-QA NOT_RUN.
+- [x] Owner **APPROVED D-08/A ngày 2026-10-23**: Thư Sinh trước, mở rộng 4 Hero sau Core.
+- [x] Owner **APPROVED D-09/A ngày 2026-10-23**: 1 Pháp Bảo, Dép Tổ Ong MVP.
+- [x] Owner **APPROVED D-10/A ngày 2026-10-23**: bảo vệ Unity local/Legacy; **backup chưa thực hiện**.
 - [x] Owner **APPROVED D-01/A ngày 2026-10-23**: Unity Defense 3D là nền tảng đích, giữ Vongxuyen và Survival 2D độc lập.
-- [x] Owner **APPROVED D-07-01/A ngày 2026-10-23**: benchmark Web, Balance Profile riêng cho Unity; **D-07-02..08 vẫn PENDING**.
+- [x] Owner **APPROVED D-07-01/A ngày 2026-10-23** (trước đó) và **D-07-02..08/A lần này**; D-07 đã được duyệt **8/8 về thiết kế**, không phải sản phẩm đã cân bằng.
 - [x] Owner **APPROVED D-03/A ngày 2026-10-23**: WIN Base còn HP + 600s gameplay + hạ Dạ Xoa, overtime nếu chưa hạ Boss.
 - [x] Owner **APPROVED D-04/A ngày 2026-10-23**: Hero down hồi sinh sau 5s gameplay, không thua trực tiếp.
 - [x] Owner **APPROVED D-05 ngày 2026-10-23**: đúng 1 Miniboss tại 108s, thay event thường.
 - [x] Owner **APPROVED D-06/A ngày 2026-10-23** — đủ 8/8 mục; 18 ca D06-QA vẫn NOT_RUN.
 - [x] Owner **APPROVED D-11/A ngày 2026-10-23**: 1 Phi Cương **mỗi event Ma Giáp**, thay 1 suất, không chuyển theo frame/FPS.
-- [ ] Owner duyệt scope một Hero, 5 enemy archetype, 1 Relic, 10 sockets, EXP/3 cards.
+- [x] Owner duyệt **phạm vi Core theo D-06/A, D-07/A, D-08/A, D-09/A**: một Thư Sinh, Enemy roles, một Dép Tổ Ong, 10 socket, EXP/3 cards trong backlog; chưa qua QA.
 - [x] **D-06/A đã duyệt chính sách Ground/Water/Air/Landing và ba GhostCannon;** vẫn cần nghiệm thu D06-QA thực tế.
 - [ ] Ghi nhận được backup scene/GLB/NavMesh/meta/package local, không tái tạo scene.
 - [ ] Unity scene mở lại, Console sạch lỗi compile/missing script; version/commit được ghi.
 - [ ] Trạng thái backlog chuyển `DRAFT→APPROVED` cho các ticket Gate G1; các Gate sau chưa được bật.
 
-**Đã APPROVED D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và D-07-01/A (một phần D-07).** D-02, D-07-02..08, D-08, D-09, D-10 và local safety Gate G0 vẫn PENDING; không tự động code.
+**Tất cả D-01..D-11 đã được duyệt về thiết kế (D-07/A 8/8 nguyên tắc).** **Gate G0 CHƯA PASS** vì chưa có bằng chứng backup/Console/Legacy QA, chưa nghiệm thu backlog; không tự động code.
 
 
 ## 6. Review pack chi tiết (tài liệu lập kế hoạch)
 
-- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **D-07-01/A APPROVED**, D-07-02..08 **PENDING**, D-07 tổng thể **PARTIAL**; 12 QA **NOT_RUN** (không cộng vào 28 QA chính).
+- [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **D-07-01..08/A APPROVED 8/8 về nguyên tắc**, thông số production chưa khóa; 12 D07-QA **NOT_RUN**, 28 QA chính vẫn chưa được thực thi.
 
 - [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md): lựa chọn A/B, luật kết quả theo 600s, khóa G0-safety, D-11.
 - [05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md): bảng 34 event / 214 spawn jobs theo config nguồn, runtime elite transform, spawn restrictions, test fixtures.
