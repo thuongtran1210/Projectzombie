@@ -66,7 +66,7 @@ namespace ProjectZombie.Features.Defense3D
             if (!minibossSpawned && elapsed >= MinibossTime)
             {
                 minibossSpawned = true;
-                SpawnEnemy("MaGiap_ThongLinh_Miniboss", 1, false, 0f);
+                SpawnEnemy("magiap_boss_MaGiap_ThongLinh", 1, false, 350f);
                 Debug.Log("[TREBRAVE Defense3D] Miniboss at 108 seconds.");
             }
             if (!bossSpawned && elapsed >= YakshaTime)
@@ -113,7 +113,11 @@ namespace ProjectZombie.Features.Defense3D
             if (arenaBoss) go.transform.localScale = Vector3.one * 2.3f;
             var enemy = go.AddComponent<DefenseEnemyBridgeWalker3D>();
             if (arenaBoss) enemy.PrepareArenaBoss(health);
-            else enemy.Configure(lane, defenseBase);
+            else
+            {
+                if (health > 0f) enemy.SetMaxHealth(health);
+                enemy.Configure(lane, defenseBase);
+            }
             return enemy;
         }
 
