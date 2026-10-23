@@ -97,7 +97,14 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Không cần duyệt lại D-05/D-11.** Những vấn đề chờ xác nhận tiếp theo: **D-03 luật WIN/LOSS** và **D-04 Hero Down**, cùng các điều kiện D-06/D-07 và an toàn scene. Đừng suy từ “Tiếp tục” rằng các mục đó đã được duyệt.
 
-## 8. Pinned source revision cho audit
+## 8. Tài liệu G0 bước tiếp theo
+
+- [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): hai phương án D-03/D-04, các ca biên khi Boss chết và Hero Down.
+- [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
+
+**Trạng thái:** Chưa duyệt D-03/D-04. Tạo tài liệu lựa chọn không đồng nghĩa `APPROVED` hoặc cho phép code.
+
+## 9. Pinned source revision cho audit
 
 - [Vongxuyen stage01.js](https://github.com/thuongtran1210/Vongxuyen/blob/main/src/config/stage01.js) blob `bb94a71df5ccddd8d93b0f8c961dac289667d9ea`
 - [Vongxuyen WaveManager.js](https://github.com/thuongtran1210/Vongxuyen/blob/main/src/combat/WaveManager.js) blob `ec64826caf7de5f240a633de3f91d3b7ea46d4ab`
