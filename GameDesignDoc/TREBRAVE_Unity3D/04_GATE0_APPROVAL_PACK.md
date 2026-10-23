@@ -1,6 +1,6 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
-**Status: ALL PRODUCT DECISIONS APPROVED (D-01..D-11; D-07 = 8/8 principles) / GATE G0 NOT PASSED.** 2026-10-23 · Chỉ lập kế hoạch; local backup/Unity QA chưa xác minh, chưa code.
+**Status: D-01..D-11 APPROVED; G0-S1 Git verified via owner output; G0-S2/S3 6 critical asset hashes verified; G0-S4 3 key config hashes verified/partial; G0-S5/S6 OWNER_REPORTED_VERIFIED; GATE G0 AWAITING OWNER SIGN-OFF / NOT PASSED.** 2026-10-23 · Backup owner đã thực hiện; full restore/full-run QA chưa nghiệm thu; chưa code.
 **Mục tiêu:** ghi biên bản phê duyệt đầy đủ **D-01/A, D-02/A, D-03/A, D-04/A, D-05, D-06/A 8/8, D-07/A 8/8, D-08/A, D-09/A, D-10/A, D-11/A**. Duyệt chính sách không đồng nghĩa QA, backup, khóa số balance hay quyền bắt đầu code.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
