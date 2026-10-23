@@ -59,4 +59,21 @@ public sealed class DefenseG1LifecycleTests
         Assert.IsFalse(run.Resume());
         Assert.IsTrue(run.Start());
     }
+    [Test]
+    public void EarlyBossDefeat_PersistsUntil600_AndBaseLossStillOverrides()
+    {
+        var run = new DefenseRunLifecycle();
+        run.Start();
+        run.Tick(510f, 100f, true);
+        Assert.AreEqual(DefenseGamePhase.Playing, run.State.Phase);
+        run.Tick(90f, 100f, true);
+        Assert.AreEqual(DefenseGamePhase.Win, run.State.Phase);
+
+        run.ResetCore();
+        run.Start();
+        run.Tick(510f, 100f, true);
+        run.Tick(90f, 0f, true);
+        Assert.AreEqual(DefenseGamePhase.Loss, run.State.Phase);
+    }
+
 }
