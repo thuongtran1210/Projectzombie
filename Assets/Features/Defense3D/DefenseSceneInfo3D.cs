@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Defense3D
         public Transform EastEnemySpawn => eastEnemySpawn;
         public int BridgeCount => bridges != null ? bridges.Length : 0;
         public int TowerSocketCount => towerSockets != null ? towerSockets.Length : 0;
+        public Transform GetTowerSocket(int index) => towerSockets != null && index >= 0 && index < towerSockets.Length ? towerSockets[index] : null;
 
         public void Configure(Transform hero, Transform defenseBase, Transform enemy, Transform[] bridgeMarkers, Transform[] sockets)
         {
