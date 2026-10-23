@@ -1,291 +1,195 @@
-# Game Design Document — Dự Án: VONG XUYÊN
+# PROJECTZOMBIE — MASTER GAME DESIGN DOCUMENT v6.0 (DRAFT)
 
-**Phiên bản:** 5.1 (Official Single Source of Truth — Action RPG Standardized 4-Hero Release)  
-**Thể loại:** Top-down Action RPG Roguelite / Hack & Slash (Cơ chế Ngũ Hành & 4-Hero Standard Kit)  
-**Nền tảng:** Android Mobile (Google Play Store — Target API 33+, IL2CPP ARM64, AAB Package)  
-**Phong cách đồ họa:** 2D Top-down (Top-down 3/4 View), Mỹ thuật dân gian Việt Nam (Tranh Đông Hồ / Hàng Trống cách điệu, tông màu u linh)  
+> **Trạng thái:** REVIEW REQUIRED / CHƯA CHỐT / KHÔNG PHẢI BẢN PHÁT HÀNH.  
+> **Ngày soạn:** 2026-10-23. **Mục tiêu:** hợp nhất gameplay Projectzombie với các trụ cột được xây dựng trong Vongxuyen / TREBRAVE.  
+> **Repository triển khai:** Projectzombie, Unity 2022.3 LTS / C# / Android. **Repository thiết kế tham chiếu:** Vongxuyen, Three.js/WebGL.  
+> **Nguồn khảo sát:** Projectzombie main 657c8215; Vongxuyen main 5f5d9b26.  
+> **Quy tắc:** Các mục có ký hiệu **[Dxx]** là đề xuất chưa duyệt. Chỉ được chuyển trạng thái sang APPROVED sau khi chủ dự án chọn tại [Decision Checklist](DECISION_CHECKLIST_GDD_V6.md). Đây là bản **thiết kế tương lai**, không khẳng định tính năng đã được Unity triển khai.
 
----
+## 0. Quy tắc nguồn sự thật
 
-## 1. Tổng Quan (Overview)
+- GDD này là **đề xuất gameplay chuẩn cho Projectzombie**, không đồng nghĩa thay engine, đổi toàn bộ asset hoặc xóa chức năng Unity hiện có.
+- Tài liệu hệ thống chuyên sâu: [Map & Defense](MAP_AND_DEFENSE_SYSTEM_SPEC.md), [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md), [Scenario](LEVEL_SCENARIO_GUIDE.md).
+- [Document Refactor Ledger](DOCS_REFACTOR_LEDGER.md) chỉ rõ tài liệu cũ nào còn hiệu lực, đang xung đột hoặc cần chuyển thành phụ lục.
+- Số liệu lấy từ code Vongxuyen được dán nhãn **BASELINE**, không phải giá trị cân bằng cuối cùng.
+- Phân biệt **EXISTING-PZ**, **REFERENCE-VX**, **PROPOSED-PZ**, **APPROVED**, **DEPRECATED**, **BACKLOG**; không sử dụng “đã có” để mô tả đề xuất chưa implement.
 
-### 1.1. Tầm nhìn sản phẩm & Cốt truyện Tổng thể (Vision Statement & Grand Narrative)
-**Vong Xuyên** lấy bối cảnh cõi giới thần thoại và tín ngưỡng dân gian Việt Nam khi **Ma Vương Tối Thượng** (Chúa Quỷ) thức tỉnh, làm đảo lộn trật tự cõi trần và nhấn chìm tam giới vào bóng tối yêu ma.
+## 1. Tầm nhìn và trụ cột trải nghiệm
 
-* **Mục tiêu & Điểm kết của Toàn Bộ Câu Chuyện:** Hành trình của các Anh Hùng qua các miền đất thiêng để tìm kiếm di tích, vượt thử thách và **Thức tỉnh / Triệu hồi "TỨ BẤT TỬ"** (Tản Viên Sơn Thánh, Chử Đồng Tử, Phù Đổng Thiên Vương, Thánh Mẫu Liễu Hạnh) nhằm hợp nhất thần lực đánh bại Ma Vương, cứu vãn nhân gian.
-* **Vị trí của Map 1 — "Bến Đò Vong Xuyên" (Bản MVP):** Đây là **Chương 1 (Mở Đầu)**. Khi kiệt sức trước đợt tấn công đầu tiên của quỷ dữ, linh hồn người chơi bị giam hãm tại Bến Đò Vong Xuyên — ranh giới u linh giữa cõi sống và cõi chết.
-  * **Mục tiêu cụ thể tại Map 1:** Sống sót qua 20 phút nghẹt thở, vận dụng kỹ năng chặt chém của Vũ Khí Chính, sự trợ lực của Pháp Bảo Hộ Thân và Vòng Ngũ Hành để tiêu diệt các Cai ngục & Sứ giả địa phủ (*Ngưu Đầu Mã Diện, Diêm Vương*), **phá vỡ phong ấn Hoàng Tuyền để mở đường Trở Về Trần Thế** và mở khóa bản đồ dẫn lối tới nơi phong ấn của vị Thánh Bất Tử đầu tiên.
+**Pitch đề xuất:** Người chơi chọn **một nhân vật và một pháp bảo** cho một trận đấu, bảo vệ phần quê hương còn giữ được trước làn sóng yêu ma. Người chơi trực tiếp chiến đấu, thu thập EXP để nâng cấp nhân vật, nhận gỗ từ trận để xây/nâng tháp và tuyển đồng minh, điều quân giữ ba tuyến cầu bắc qua dòng sông. Thắng khi hoàn thành mục tiêu của màn và bảo toàn Nhà Chính theo luật được chốt.
 
-### 1.2. Đối tượng người chơi & Phong cách Đồ họa (Target & Graphic Specs)
-- **Người chơi mục tiêu:** Casual / Mid-core yêu thích thể loại Action RPG, Chặt chém (Hack & Slash) và Roguelite trên di động. Phiên chơi 10–20 phút/run.
-- **Phong cách Đồ họa Pixel Art 2D Top-down (Top-down 3/4 View):**
-  - **Góc nhìn (Perspective):** **Top-down 3/4 view** (thấy mặt trước/trang phục dân gian áo the, khăn đóng, cà sa, pháp bảo).
-  - **Tỉ lệ cơ thể (Body Ratio):** **Chibi hóa nhẹ (1:3 đến 1:4)** giúp silhouette nhân vật và hành động vung kiếm/ra chiêu rõ ràng, dễ đọc.
-  - **Kích thước Sprite Canvas:** Nhân vật/Quái: **32×32px đến 48×48px**. Tilemap: **16×16px hoặc 32×32px**. Boss: **64×64px đến 96×96px**.
-  - **Viền Outline:** Viền đen mỏng **1px** bao quanh nhân vật/quái để tách khỏi nền tối.
-- **Hệ thống Hướng & Hoạt Ảnh (Action Animation System):**
-  - Hỗ trợ bộ hoạt ảnh chiến đấu: `Idle` (nhịp thở), `Move` (di chuyển), `Attack_1` (chém nhẹ), `Attack_2` (chém vừa), `Attack_3` (đòn kết thúc), `Dash` (lướt né đòn) và `Signature Skill` (kỹ năng đặc biệt).
-  - Cơ chế lật hướng tự động `SpriteRenderer.flipX` theo hướng di chuyển hoặc hướng ngắm mục tiêu.
+**Các trụ cột bắt buộc trong bản hợp nhất:**
+1. **Map Sông Quê:** hai bờ sông, ba cầu, ba lane Bắc/Giữa/Nam; Bờ Tây là căn cứ phòng thủ, Bờ Đông là lãnh thổ quê hương đang bị chiếm đóng.
+2. **1 nhân vật trong run:** một player-controlled hero; số lượng nhân vật có thể chọn ở sảnh là vấn đề riêng **[D03]**.
+3. **1 pháp bảo trong run:** chỉ một relic slot, không tự biến thành 6 hay 17 slot; danh mục và cách kích hoạt theo **[D04–D05]**.
+4. **Hero + Tower + Allies:** sức mạnh đến từ kỹ năng tướng, công trình phòng thủ và lực lượng đồng minh; không biến Tower Defense thành một game chiến thuật thuần không có hero combat.
+5. **Quái và Boss Vongxuyen:** dùng roster, silhouette, vai trò AI và cách tiến công theo lane từ mã nguồn Vongxuyen; cách xử lý quái Projectzombie cũ theo **[D09]**.
+6. **Roguelite trong run:** EXP/gem, chọn 1/3 thẻ, build variation; tách khỏi kinh tế gỗ.
 
-### 1.3. Điểm khác biệt độc quyền (Unique Selling Points - USPs)
-- **Lối Chơi Chặt Chém Đã Tay (Action Combat Feel):** Đòn đánh thường đặc trưng theo từng Tướng (Melee Slash / Ranged Projectile + Chuỗi Combo 3 đòn liên hoàn), hỗ trợ ngắm thông minh (Smart Soft-Lock), cơ chế hủy hoạt ảnh bằng Lướt (Dash Cancel) và phản hồi lực đánh đã tay (Hit-stop $0.04s$, Camera Shake, Knockback).
-- **Bộ Kỹ Năng Tướng Chuẩn Hóa (Standard 4-Skill Hero Kit):** Mỗi nhân vật sở hữu trọn vẹn **1 Đòn Đánh Thường + 1 Lướt Né + 1 Kỹ Năng Tuyệt Kỹ + 1 Nội Tại Bị Động** rõ ràng, trực quan, dễ chơi dễ làm quen.
-- **Hệ Thống 1 Pháp Bảo Hộ Thân (Single Relic Loadout):** Kết hợp với **đúng 1 Pháp bảo hộ thân duy nhất** tự động bảo vệ sau lưng hoặc đính kèm hiệu ứng vào đòn chém (On-Hit Imbuement).
-- **Cơ chế Ngũ Hành (Kim - Mộc - Thủy - Hỏa - Thổ):** Vận dụng đòn chém tay để kích hoạt chuỗi Tương Khắc (+30% Sát thương) và chuỗi Tương Sinh (-20% Cooldown + Tăng tốc đánh).
-- **Bản Sắc Văn Hóa Dân Gian Thuần Việt:** Tích hợp truyền thuyết Tứ Bất Tử, vũ khí cổ vật (Bút Phán Quan, Nỏ Thần, Bùa Trấn Yêu, Trống Đồng Đông Sơn) và yêu quái dân gian (Ma Giáp, Ma Trơi, Quỷ Nhập Tràng, Ma Da).
+**Không mặc nhiên đồng nhất:** thiết kế gameplay với công nghệ 3D. **[D02]** quyết định dùng Unity 2D hiện tại hoặc lên kế hoạch chuyển toàn bộ sang 3D. Không tự động quảng cáo cơ chế chiếm lại lãnh thổ vì hiện chỉ là tầm nhìn.
 
----
+## 2. Fantasy, bối cảnh và bản sắc [D01, D11]
 
-## 2. Vòng Lặp Gameplay (Core Gameplay Loop)
+- Vòng lặp narrative tham chiếu TREBRAVE: **Giữ đất → Chuẩn bị → Vượt sông → Đánh tan quân chiếm đóng → Giành lại vùng quê** (hai bước cuối là mục tiêu chiến dịch dài hạn, không phải tính năng MVP).
+- **Map 01 = Map Sông Quê**; không còn sử dụng Bến Đò Vong Xuyên làm tên hiển thị của Map 01 nếu quyết định hợp nhất được phê duyệt.
+- Quái dân gian, pháp bảo FUN, địa danh và mỹ thuật văn hóa Việt được giữ phù hợp; không buộc tất cả quái thuộc cùng một lore thần thoại/địa phủ.
+- Tên thương hiệu sản phẩm (Projectzombie/Vong Xuyên/TREBRAVE) và việc giữ cốt truyện Tứ Bất Tử chưa được quyết định ở **[D11]**. Không đổi tên repository, package, namespace, Addressable keys trong PR sửa tài liệu.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                       SẢNH CHỜ NGOÀI TRẬN (OUT-GAME META)                    │
-│  - Chọn Nhân Vật & Đòn Đánh Đặc Trưng (Character Selection)                 │
-│  - Chọn 1 Pháp Bảo Hộ Thân Duy Nhất (Single Relic Loadout)                  │
-│  - Nâng cấp Chỉ số Vĩnh viễn (Sanctuary Tree) & Mở khóa Pháp Bảo Mới       │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Bắt đầu Trận Chiến (Enter Run)
-                                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                     TRẬN ĐÁNH HACK & SLASH (IN-RUN ROGUELITE)               │
-│  1. Thao Tác Chiến Đấu:                                                     │
-│     - Tay trái: Joystick 360° di chuyển & định hướng                        │
-│     - Tay phải: Nút Đánh Tướng (Combo 3-Hit / Tầm Xa) + Lướt (Dash) + Skill │
-│  2. Chặt Chém & Tiêu Diệt Yêu Ma:                                           │
-│     - Đòn đánh tướng gây 70-80% DPS, 1 Pháp bảo tự động hỗ trợ xoay quanh/bắn│
-│     - Kích hoạt Vòng Tương Sinh qua nhịp chém tay                           │
-│  3. Thu Thập Hạt Kinh Nghiệm (Exp Gem) & Lên Cấp (Level Up):                │
-│     - Chọn 1 trong 3 Thẻ Nâng Cấp Trong Trận:                               │
-│       * Biến hóa Đòn Đánh Tướng (Combo Augments / Bí Kíp Võ Học)            │
-│       * Cường Hóa & Tiến Hóa 1 Pháp Bảo Đang Mang (Relic Awakening)         │
-│       * Cường hóa Kỹ năng Lướt (Dash Traits) & Chỉ số Tình huống           │
-│     - Mốc Level 5 & 10: Đột Phá Tuyệt Kỹ (Overclock / Ultimate Breakthrough)│
-│  4. Kết Thúc Trận:                                                          │
-│     - Thắng khi diệt Diêm Vương ở 20:00 (Phá phong ấn) / Thua khi hết HP    │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Quy đổi Điểm & Rơi Cổ Tiền
-                                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           TIẾN TRÌNH VĨNH VIỄN                              │
-│  - Tích lũy Cổ Tiền (Vĩnh viễn) -> Nâng cấp cây Sanctuary Tree              │
-│  - Mở khóa Nhân vật và Pháp bảo mới trong Cửa Hàng                          │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+## 3. Gameplay loop [D01, D06, D07]
 
----
+**Sảnh:** chọn tướng → chọn một pháp bảo → chọn Map 01 / cấu hình trận → bắt đầu.
 
-## 3. Hệ Thống Điều Khiển & Giao Diện Chiến Đấu (Controls & Combat HUD)
+**Đầu trận:** spawn Hero ở Bờ Tây; Nhà Chính khởi tạo HP; nạp cấu hình bản đồ 3 lane / bệ tháp; khởi tạo Wood Economy và Timeline; giao diện cho phép xây tháp/tuyển lính theo giới hạn.
 
-### 3.1. Bố Cục Cụm Phím Thao Tác (Combat Action Cluster)
-* **Tay Trái (Movement Area):**
-  * **Dynamic Virtual Joystick (360°):** Di chuyển nhân vật mượt mà, hỗ trợ tự động căn vị trí ngón tay chạm trên nửa trái màn hình.
-* **Tay Phải (Action Button Cluster):**
-  * **Nút Tấn Công Nhân Vật (Character Basic Attack Button - Kích thước Lớn Nhất):** Nhấn liên tục để thực hiện chuỗi 3-Hit Combo hoặc bắn đạn tầm xa. Hỗ trợ Tap Buffer Window $0.18s$.
-  * **Nút Lướt (Dash / Dodge Button):** Lướt nhanh qua kẻ địch (có $0.15s$ khung bất tử - I-Frame). Hỗ trợ **Hủy hoạt ảnh đòn chém (Animation Cancel)** để né đòn khẩn cấp. Cooldown: $1.2s$ (hồi lại nhanh).
-  * **Nút Tuyệt Kỹ (Signature Skill Button):** Kích hoạt kỹ năng đặc biệt của nhân vật với Cooldown dài ($20s - 30s$), có vòng đếm Cooldown Radial Fill.
+**Trong trận:**
+1. Quái sinh ở spawn zone bờ Đông / rặng Bắc / sông / khu vực đặc biệt; theo navigation hợp lệ về các mục tiêu phòng thủ.
+2. Hero di chuyển, Attack, Dash, Signature Skill và kích hoạt/tận dụng một pháp bảo theo quyết định cơ chế điều khiển.
+3. Hạ quái → thưởng EXP và gỗ qua kênh sự kiện chống double reward.
+4. EXP → lên level → chọn một trong ba thẻ nâng cấp.
+5. Gỗ → xây tháp, nâng tháp, tuyển đồng minh. Không được trả bằng EXP/Coins.
+6. Ra lệnh phòng tuyến/đặt cờ cho dân binh, tập trung ở các choke point khi cần.
+7. Wave và Boss tăng áp lực có telegraph, UI báo lane/HP/tháp/boss.
 
-### 3.2. Cơ Chế Hỗ Trợ Ngắm Thông Minh (Smart Soft-Lock System)
-* Khi bấm nút Tấn công:
-  * Nếu người chơi **đang kéo Joystick:** Nhân vật chém/bắn theo hướng Joystick chỉ định.
-  * Nếu người chơi **thả Joystick:** Hệ thống tự động quét mục tiêu trong góc hình nón $90^\circ$ và bán kính $5m$ phía trước mặt $\rightarrow$ Tự động xoay người chém chính xác vào yêu ma gần nhất, loại bỏ hoàn toàn hiện tượng chém hụt vào không khí.
+**Kết trận:** run kết thúc duy nhất một lần; chiến thắng và thất bại được tính theo chính sách **[D07]**, lưu thống kê và phát thưởng meta nếu đã chốt. Tất cả controller ngừng cập nhật, hủy ghost preview, hoàn trả pooled objects.
 
-### 3.3. Hệ Thống Chỉ Dấu Kỹ Năng & Đòn Đánh 2.5D (Telegraph & Aim Indicator System)
-Hệ thống chỉ dấu được phân tách rõ ràng theo chuẩn MOBA (Liên Quân / Wild Rift) gồm 2 tầng hoạt động độc lập:
+**Thời lượng khởi điểm [D06]:** 600 giây theo STAGE_01 của Vongxuyen, nhưng mốc boss 510 giây và luật khi hết giờ phải thống nhất. Không giữ đồng thời luật 20:00 của GDD cũ và 10:00 của bản mới.
 
-1. **Chỉ Dấu Định Hướng Bị Động Dưới Chân (`CombatAimIndicator`):**
-   * Hiển thị liên tục (Passive) một mũi tên/vòng cung nhỏ sát dưới chân nhân vật ($0.4m$).
-   * Tự động xoay theo hướng di chuyển của Joystick hoặc hướng quay mặt của Tướng.
-   * Tự động chuyển màu bản sắc theo Ngũ hành của Tướng (Đạo Sĩ: Xanh Ngọc, Thư Sinh: Vàng Kim, Thanh Đồng: Đỏ Cam, Ẩn Sĩ: Hổ Phách).
+## 4. Map 01 — Map Sông Quê [D02]
 
-2. **Chỉ Dấu Kỹ Năng & Đòn Đánh Chủ Động (`SkillAimIndicatorController` / `ISkillAimService`):**
-   * **Kích hoạt thông minh (Smart Touch Filter):** Thiết lập `_requireHoldOrDrag = true` để **Khử chớp nháy (No Flicker)**. Khi nhấp nhanh (Quick Tap < 0.12s), đòn đánh/chiêu thức được kích hoạt ngay lập tức qua Auto-Aim mà không bật chỉ dấu; Chỉ dấu chỉ xuất hiện khi người chơi **ĐÈ (Hold > 0.12s)** hoặc **KÉO (Drag > 25px)** để căn chỉnh cự ly/góc chém.
-   * **Công nghệ đồ họa URP:** 
-     * `ConeSector`: Sử dụng Shader chuyên dụng `SH_URP_SkillIndicator_Sector` tính toán Tọa độ cực (Polar Coordinates) trên GPU để hiển thị góc quạt quét từ $30^\circ$ đến $270^\circ$ với viền phát sáng (Glow Border) và làm mịn cạnh (Anti-Aliasing Feather).
-     * `LineArrow`: Dải định hướng tầm xa (Nỏ thần, Cung Thạch Sanh).
-     * `CircleReticle`: Vòng tròn tâm rơi AOE tự do theo cự ly kéo (Nước thánh, Lựu đạn thần sa).
-     * `SelfAOE`: Hào quang kích hoạt quanh thân nhân vật (Khiên hộ thể, Trống Đồng).
-     * `DashLine`: Chỉ báo hướng lướt né đòn và hiển thị điểm đáp nhân vật.
-   * **Vùng Hủy Chiêu (Cancel Zone) & Rung Xúc Giác (Haptic Feedback):** Khi kéo ngón tay vào biểu tượng Hủy chiêu ở góc trên, thiết bị lập tức **rung nhẹ (Haptic Vibration)** phản hồi xúc giác, toàn bộ chỉ dấu chuyển sang màu đỏ rực cảnh báo và triệt tiêu lệnh tung chiêu khi nhấc tay.
-   * **Tối ưu hiệu năng:** Ứng dụng `MaterialPropertyBlock` cập nhật góc quét và màu sắc thời gian thực với Zero Memory Allocation (GC Alloc = 0).
+- **Bố cục reference:** 60 x 40 world units; hai bờ, một đoạn kênh, ba cầu tại tuyến Bắc z≈−10.5; Giữa z≈−0.5; Nam z≈10.5 (hệ tọa độ Vongxuyen x/z chỉ là tham chiếu).
+- **Bờ Tây:** Nhà Chính, 10 bệ công trình chiến lược, vùng spawn Hero/allies, kho tài nguyên/điểm tập kết và vùng phòng thủ.
+- **Bờ Đông:** vùng spawn địch, lối tới đấu trường boss, cửa Vong Môn; chưa có chức năng giành quyền kiểm soát vùng đất.
+- **Navigation:** waypoint graph được ánh xạ sang hệ tọa độ Unity 2D x/y; cấm địch đi xuyên mặt nước (trừ class thủy quái có route riêng), cấm tháp chặn toàn bộ lối đi.
+- **Validation:** kiểm tra liên thông 3 cầu, mỗi spawn zone có đường đến mục tiêu; build sites không nằm trên nước; prefab/Tilemap có collider đúng Layer.
+- **Không tự chuyển tọa độ 3D trực tiếp thành tọa độ Unity:** cần quy tắc scale, offset, projection và vị trí ground plane.
 
----
+Chi tiết và sơ đồ phụ thuộc: [MAP_AND_DEFENSE_SYSTEM_SPEC.md](MAP_AND_DEFENSE_SYSTEM_SPEC.md).
 
-## 4. Hệ Thống Đòn Đánh Nhân Vật & 1 Pháp Bảo Hộ Thân (Combat & Relic Architecture)
+## 5. Một nhân vật — một pháp bảo [D03, D04, D05]
 
-### 4.1. Phân Định Cấu Trúc Sức Mạnh (Combat Role & DPS Distribution)
-* **Đòn Đánh Bản Thể Tướng (`CharacterCombat` — Chiếm 75 - 85% Tổng DPS):** Là công cụ tấn công chủ động bằng tay của người chơi qua nút Attack. Mỗi nhân vật sở hữu bộ Animation, VFX chém Melee hoặc đạn Ranged và combo 1-2-3 riêng biệt.
-* **Pháp Bảo Hộ Thân (`Relic` — Chiếm 15 - 25% Tổng DPS):** Người chơi mang theo **duy nhất 1 Pháp bảo** vào trận. Đóng vai trò **Khống chế (CC), tự động bay quanh bảo vệ (`Orbit`), hoặc tự kích hoạt theo chu kỳ độc lập**.
-* **Tuyệt Kỹ Nhân Vật (Signature Skill — Chiếm 10 - 15% Tổng DPS):** Kỹ năng giải vây, buff bùng nổ hoặc xoay chuyển thế trận.
+**Hợp đồng bắt buộc:** mỗi run chỉ có 1 player-controlled Hero và tối đa 1 pháp bảo trang bị. Không cho phép thẻ nâng cấp phát sinh slot mới; chuyển pháp bảo giữa trận chỉ khi có quyết định sản phẩm mới.
 
----
+**Hero sở hữu:** Basic Attack/Combo, Dash, Signature Skill, HP, EXP, thẻ nâng cấp, khả năng tương tác build/rally và phân biệt đồng minh/địch. **Số hero có thể unlock ở sảnh** và hero khởi đầu phụ thuộc [D03]. Projectzombie có bộ 4 hero được đặc tả, còn Vongxuyen tham chiếu Thư Sinh/Thanh Đồng/Ẩn Sĩ/Đạo Sĩ; cần mapping cụ thể trước khi viết character roster chuẩn.
 
-### 4.2. Danh Mục 17 Pháp Bảo Hộ Thân (Relics — Hộ Vệ, Tự Động Ra Đòn & Slapstick Fun)
+**Pháp bảo:** nên giữ đúng 1 slot trong WeaponManager hiện tại (MAX_WEAPONS = 1). Năm pháp bảo FUN tham chiếu: Dép Tổ Ong, Nồi Cơm, Điếu Cày, Chiếu Trải và Chổi Lông Gà. Danh mục 12 cổ phong trong GDD cũ không mặc nhiên xóa khỏi code; phân loại sản phẩm qua [D04].
 
-Mọi trang bị trong Tàng Bảo Các đều là **Pháp Bảo Hộ Thân**. Người chơi chọn **đúng 1 Pháp Bảo** mang theo vào trận để hỗ trợ tự động:
+**Xung đột cần chốt [D05]:** GDD Projectzombie mô tả pháp bảo tự động/passive trong khi Vongxuyen dùng nút cast chủ động với ghost aim; cùng một vật phẩm có thể có hiệu ứng nâng cao khác nhau giữa 2 runtime. Định nghĩa rõ AUTO, ACTIVE, hay HYBRID theo relic trước khi chỉnh WeaponManager. Nếu ACTIVE, nút Relic nằm cạnh Attack/Dash/Signature, aim preview hợp lệ, hủy không tiêu cooldown.
 
-#### A. Nhóm 12 Pháp Bảo Cổ Phong (Vòng Xuyến Truyền Thuyết)
-| ID | Tên Pháp Bảo | Hệ | Cơ Chế Hoạt Động Cốt Lõi | Hiệu Ứng Hộ Thân Tự Động |
-|---|---|---|---|---|
-| `W001` | **Nỏ Thần** | Kim | `RelicOnHitTrigger` | Bắn linh tiễn An Dương Vương xuyên thấu 2 kẻ địch gần nhất. |
-| `W002` | **Bút Phán Quan** | Kim | `RelicOnHitTrigger` | Vung nhát chém phán quyết âm ty gây sát thương chí mạng 2 bên. |
-| `W003` | **Bùa Trấn Yêu** | Mộc | `RelicOrbitalShield` | 3 lá bùa xoay quanh thân nhân vật, cản đạn và đẩy lùi quái áp sát. |
-| `W004` | **Cửu Vĩ Hồ Trảo** | Hỏa | `RelicOnHitTrigger` | Móng vuốt cáo lửa tự tìm diệt quái và hút sinh khí hồi phục cho Tướng. |
-| `W005` | **Trống Đồng Đông Sơn** | Thổ | `RelicOrbitalShield` | Phát sóng âm trảm linh 5 hướng làm choáng diện rộng xung quanh ($0.8s$). |
-| `W006` | **Lựu Đạn Thần Sa** | Hỏa | `RelicOnHitTrigger` | Quăng hạt thần sa phát nổ tạo bão lửa thiêu rụi vùng rộng và đẩy lùi mạnh. |
-| `W007` | **Cung Thạch Sanh** | Kim | `RelicOnHitTrigger` | Bắn mũi tên thần lực Thạch Sanh xuyên qua hàng loạt yêu tinh trên đường thẳng. |
-| `W008` | **Đao Cửu Vĩ** | Hỏa | `RelicSupportAura` | Phun luồng rồng lửa thiêu đốt liên tục kẻ địch trước mặt (DoT). |
-| `W009` | **Trượng Long Vương** | Thủy | `RelicSupportAura` | Phóng sét nước thủy cung lan truyền qua chuỗi 6 yêu quái gây Choáng 0.5s. |
-| `W010` | **Linh Phù Ma Da** | Thủy | `RelicSupportAura` | Triệu hồi linh thú Ma Da phun độc sát thương liên tục lên kẻ địch. |
-| `W011` | **Nước Thánh Chùa Hương** | Thổ | `RelicSupportAura` | Tạo bãi giếng thiêng trên mặt đất làm chậm quái $40\%$ và gây sát thương liên tục. |
-| `W012` | **Phi Tiêu Bát Quái** | Mộc | `RelicOnHitTrigger` | Phi tiêu ma thuật tự động xoay tròn quét kẻ địch theo hình cánh cung rồi quy hồi. |
+## 6. Nhà Chính, tháp và tài nguyên gỗ [D08]
 
-#### B. Nhóm 5 Pháp Bảo Dân Gian Hài Hước (Slapstick Relics)
-| ID | Tên Pháp Bảo | Hệ | Cơ Chế Hoạt Động Cốt Lõi | Hiệu Ứng Hộ Thân Tự Động |
-|---|---|---|---|---|
-| `W_SLIPPER` | **Dép Tổ Ong Thần Sa** | Kim | `RelicOnHitTrigger` | Ném Boomerang dép tự động; Hit 3 quăng lốc dép gây hiệu ứng *"Quê Độ"* (quái tự đấm nhau). |
-| `W_POT` | **Nồi Cơm Thạch Sanh** | Thổ | `RelicOrbitalShield` | Gom tối đa 3-5 quái vào nồi và phóng ra như đạn pháo; chạm đất rơi cơm nắm hồi 5% HP. |
-| `W_PIPE` | **Điếu Cày Cửu U** | Hỏa | `RelicSupportAura` | Phun bão khói *"Say Thuốc Lào"* dày đặc khiến quái đi giật lùi và nổ sát thương ho sặc sụa. |
-| `R007` | **Chiếu Trải Hoàng Tuyền** | Mộc | `RelicSupportAura` | Thả chiếu bẫy ngủ say 3s (nhận x2 Crit DMG); Tướng bước lên trượt ván siêu tốc (+100% Move Speed) ủi bay quái. |
-| `R008` | **Chổi Lông Gà Gia Truyền** | Kim | `RelicOnHitTrigger` | Triệu hồi chổi khổng lồ giáng từ trời, tạo lực đẩy lùi cực đại 12m/s găm quái vào tường gây Choáng. |
+### 6.1 Nhà Chính
+- **BASELINE:** HP 500, đặt ở khu vực phòng thủ phía Tây.
+- Nhận damage từ enemy/ability đã qua kiểm tra hợp lệ; không bị trừ HP khi đã GameOver; phát event base-damaged/base-destroyed đúng 1 lần.
+- UI: thanh HP cố định, cảnh báo dưới ngưỡng và hiệu ứng khi bị phá.
+- **[D07]:** quyết định thua ngay khi Hero chết, Base chết, hay có revive/comeback.
 
----
+### 6.2 Wood Economy
+- **BASELINE:** gỗ đầu trận 100, mặc định +10 gỗ/kill, chi phí xây tháp 50 gỗ; nâng cấp level 1→2: 40, level 2→3: 80.
+- Gỗ là **currency in-run**; không chuyển sang Cổ Tiền hay EXP. Chỉ service có thẩm quyền thay đổi số dư.
+- Thưởng kill phải dùng identity của một enemy instance/run; chống double grant (kể cả chết bởi tower/ally/hero/DoT hoặc cleanup pool). Có thể chuyển sang “gỗ rơi/Phu thu gom” nếu chọn [D08].
+- Build transaction phải atomic: kiểm tra slot, stage, tiền, preview; trừ tiền và spawn đồng thời. Nếu spawn thất bại phải hoàn tiền.
 
-### 4.4. Kỹ Năng Tuyệt Kỹ Nhân Vật Đặc Biệt (Signature Skills — Fun & Độc Đáo)
+### 6.3 Tower System
+- **BASELINE:** 10 bệ cố định; tháp HP 250 level 1; maximum level 3, tăng 100 MaxHP mỗi level; range level 1 = 7, +1 per level.
+- Tháp tự tìm địch trong tầm, tấn công, nhận damage và bị phá. Cơ chế sửa/tháp khác loại sẽ cần quyết định riêng.
+- Không xây trên nước, lên bệ đang có tháp, trong bán kính cấm của Base, ngoài vùng hợp lệ, hoặc khi UI chặn input.
+- Ưu tiên tái sử dụng Physics2D NonAlloc, damage pipeline, projectile pooling và TargetingUtility.
 
-| Nhân Vật | Tên Tuyệt Kỹ | Thời Gian Hồi | Cơ Chế Hoạt Động & Yếu Tố Fun/Bựa |
-|---|---|---|---|
-| **Thư Sinh** | **Bút Sa Gà Chết** | $25s$ | Cầm bút vẽ ngoáy hình một **Con Gà Chọi Khổng Lồ**. Con gà lao ra mổ lia lịa vào mông quái vật, khiến quái hoảng loạn bỏ chạy tán loạn khắp sàn đấu. |
-| **Đạo Sĩ** | **Bùa Tráo Hồn** | $20s$ | Dán bùa tráo đổi vị trí ngay lập tức giữa bản thân với 1 con quái to trong đàn. Toàn bộ đạn đạo và đòn đánh của đàn quái dội thẳng vào chính đồng bọn vừa bị tráo. |
-| **Thanh Đồng** | **Aura Loa Phường** | $28s$ | Bật loa phát thanh hát văn cực đại: Sóng âm làm quái ôm tai co giật, đồng thời bẻ cong phản xạ toàn bộ đạn đạo của quái bay ngược lại kẻ bắn (Reflect). |
-| **Võ Tăng** | **Thiết Đầu Công** | $22s$ | Tích lực rồi phóng đầu trọc như tên lửa tông thủng đội hình quái; khi va chạm phát ra tiếng chuông chùa *"BOONG!"* ngân vang làm nổ tung đạn đạo xung quanh. |
+### 6.4 Friendly Army
+- Ba vai trò tham chiếu: **Dân Binh Giáo Tre** (40 gỗ, tank/chặn cầu), **Phu Tạp Dịch** (30 gỗ, thu gom/tiếp vận), **Thầy Lang Nam Dược** (35 gỗ, hồi máu/hậu cần). Đây là BASELINE, chưa chốt phạm vi launch [D10].
+- Đồng minh không được nhận XP như Hero hoặc tính là enemy; có faction/targeting rõ ràng.
+- Đòn tấn công lính đi qua cùng damage resolution; kill reward không trùng.
 
----
+### 6.5 Squad / Commander
+- Tham chiếu Vongxuyen: tối đa 3 tiểu đội dân binh, stance **defend / follow / choke** (vị trí rally tùy thế trận).
+- Có đội trưởng/đội viên, bổ nhiệm người kế nhiệm khi chết, rally flag, vùng hoạt động hợp lệ, ưu tiên mục tiêu và trở về đội hình.
+- Cơ chế commander kế nhiệm chi tiết là reference design; mức ưu tiên triển khai trong [D10].
+- Mobile: click/chạm đội trưởng hoặc chọn đội ở Dock, hiển thị zone/flag; không để lệnh điều quân va chạm với build, cast và joystick.
 
-## 5. Hệ Thống Nâng Cấp Trong Trận (In-Run Roguelite Upgrades)
+## 7. Kẻ địch và Boss — roster Vongxuyen [D09]
 
-Khi tiêu diệt Yêu ma và thu thập Hạt Kinh Nghiệm (Exp Gem) để **Lên Cấp (Level Up)**, game sẽ tạm dừng và hiển thị **3 Thẻ Nâng Cấp Ngẫu Nhiên** thuộc 4 nhóm chiến thuật:
+**Danh sách tồn tại ở enemy factory:** Ma Giáp Cương Thi (magiap), Thủy Quái Rạch Đêm (thuyquai), Huyết Dơi Đêm (huyetdoi), Ma Giáp Thống Lĩnh (magiap_boss), Tiểu Quỷ Nón Lá Dù (quaidu), Phi Cương Tinh Anh (phicuong). Boss riêng Tướng Dạ Xoa (yaksha_boss).
 
-```
-                      [ GIAO DIỆN LÊN CẤP TRONG TRẬN ]
-                                     │
-       ┌─────────────────────┬───────┴─────────────┬─────────────────────┐
-       ▼                     ▼                     ▼                     ▼
-[1. Biến Hóa Combo]   [2. Thức Tỉnh]        [3. Cường Hóa Lướt]   [4. Kích Ứng]
- (Combo Augments)     (Relic Awakening)       (Dash Traits)       (Passives)
-```
+**Tính trạng quan trọng:** STAGE_01 chạy lịch cho magiap/huyetdoi/thuyquai và ma giáp boss; quái dù, phi cương và Dạ Xoa có nguồn runtime/sự kiện khác, **không tuyên bố tất cả cùng xuất hiện trong timeline cơ bản**.
 
-### 5.1. Nhóm 1: Biến Hóa Chuỗi Đòn Đánh (Combo Augments / Bí Kíp)
-* **Kiếm Khí Trảm:** Đòn đánh thứ 3 giải phóng sóng kiếm khí bay thẳng $5m$.
-* **Trảm Phong Liên Hoàn:** Giảm $30\%$ thời gian trễ giữa các nhát chém, mở rộng chuỗi combo lên 4 đòn.
-* **Trọng Trảm Diện Rộng:** Tăng $40\%$ góc quét hình quạt của nhát chém, tăng lực đẩy lùi (Knockback).
-* **Áp Sát Trảm (Lunge Slash):** Nhát chém đầu tiên tự động lướt nhanh $2m$ áp sát kẻ địch.
+**Tổ chức AI:**
+- Thường/giáp: đi trên lane, ưu tiên quân phòng thủ và công trình hợp lệ; quái có đặc tính khác nhau.
+- Bay: có quy tắc route riêng và tấn công đột kích.
+- Thủy quái: spawn nước/ven sông hợp lệ, không tùy ý xuyên đất hoặc công trình.
+- Elite/Boss: telegraph trước khi gây damage, giai đoạn tấn công riêng, không spawn nhầm khi timer pause.
+- Lựa chọn mục tiêu: Player, tower, ally, Base, và lựa chọn theo vai trò / threat / phạm vi; không áp nguyên xi ITargetSelector hiện trả PlayerContext để target Base.
+- Spawn phải có cap, backpressure, đường đi hợp lệ, pooling và hủy sau run.
 
-### 5.2. Nhóm 2: Thức Tỉnh & Cường Hóa Pháp Bảo Đã Trang Bị (Relic Awakening)
-* **Cường Hóa Bùa Trấn Yêu:** Tăng số lượng từ 3 lên 5 lá bùa; lá bùa phát nổ gây choáng $1s$ khi chạm quái Tinh Anh.
-* **Cường Hóa Cửu Vĩ Hồ Trảo:** Đòn cào lửa tạo vệt thiêu đốt trên mặt đất duy trì trong $3s$.
-* **Cường Hóa Trống Đồng:** Sóng âm phát nổ thêm 1 đợt vọng âm sau $1s$.
-* **Cường Hóa Chiếu Hoàng Tuyền:** Chiếu rộng gấp đôi, người chơi trượt trên chiếu bắn ra tia lửa điện xung quanh.
+**Những enemy Projectzombie cũ** (Ma Đòi Nợ, Ngưu Đầu/Mã Diện, Diêm Vương, v.v.) chưa được công nhận thuộc Map 01; cách archive/move to future map phụ thuộc [D09]. Xem [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md).
 
-### 5.3. Nhóm 3: Cường Hóa Cơ Động & Kỹ Năng Lướt (Dash Traits)
-* **Tàn Ảnh Kiếm:** Khi lướt qua kẻ địch, để lại tàn ảnh phát nổ gây sát thương hệ Phong/Mộc.
-* **Lướt Trượt Vỏ Chuối (Banana Dash):** Khi lướt bỏ lại vỏ chuối trơn trượt; quái đuổi theo giẫm phải sẽ trượt chân té sấp mặt (Ragdoll Knockup) và tự nổ văng.
-* **Lướt Phản Đòn (Parry Dash):** Lướt đúng lúc quái tung đòn sẽ làm quái choáng $1.5s$ và nhận $+50\%$ Crit cho đòn chém tiếp theo.
-* **Lướt Vô Ảnh:** Tích lũy tối đa 2 lần lướt liên tiếp, giảm thời gian hồi lướt đi $25\%$.
+## 8. Wave, Boss và luật thắng/thua [D06, D07]
 
-### 5.4. Nhóm 4: Bổ Trợ Chỉ Số Tình Huống (Conditional Combat Passives)
-* **Trảm Hậu (Backstab):** Chém vào sau lưng kẻ địch nhận $+100\%$ Sát thương Chí mạng.
-* **Cuồng Nộ (Berserk):** Khi HP dưới $30\%$, tăng $+40\%$ Tốc độ đánh và $+10\%$ Hút máu.
-* **Hành Quyết (Execute):** Đòn chém có $10\%$ tỷ lệ kết liễu ngay lập tức quái thường dưới $20\%$ HP.
+**BASELINE tham chiếu:** STAGE_01 có duration 600s, 34 event cách nhau 18s, chia 5 phase, cap active 32, pending 40, max spawn/frame 4, pending lifetime 25s. Event index 6 có Ma Giáp Thống Lĩnh. Tướng Dạ Xoa có spawn/AI riêng ở mốc khoảng 510s.
 
-### 5.5. Cơ Chế Đột Phá Tuyệt Kỹ (Breakthrough Milestones — Level 5 & 10)
-Tại các cột mốc sức mạnh đặc biệt (Cấp 5, Cấp 10 hoặc sau khi hạ Boss Phút 10), giao diện sẽ xuất hiện **3 "Bí Tịch Tuyệt Kỹ"** biến đổi hoàn toàn phong cách chơi:
-1. **Bát Quái Kiếm Trận:** Đòn chém triệu hồi phi kiếm bay lượn tự động găm vào mọi kẻ địch xung quanh.
-2. **Hóa Thần Nhập Ma:** Sát thương vũ khí tăng gấp đôi ($+100\%$), đổi lại sát thương nhận vào tăng $20\%$.
-3. **Thái Cực Hộ Mệnh:** Mọi Pháp bảo hộ thân tăng gấp đôi kích thước và bán kính bảo vệ.
+**Đề xuất biểu diễn dữ liệu:** StageDefinitionSO -> DefenseScenarioSO -> WaveTimelineSO -> SpawnEvent(type, lane, zone, count, timestamp, objective). Sử dụng WaveScheduler hiện có; không viết clock thứ hai.
 
----
+**Rủi ro cụ thể:** Stage_01_BambooForest.asset có stageDurationSeconds 600 nhưng Level1_Timeline.asset maxLevelDuration 900 (boss 900). Defense Mode bắt buộc có asset timeline tách riêng và validation; không chỉnh thời lượng mode cũ một cách âm thầm.
 
-## 6. Hệ Thống Ngũ Hành & Bộ Tứ Tướng Chuẩn Hóa (Standard 4-Hero Kits)
+**Luật kết thúc đề xuất tạm thời:** 600s là mục tiêu sống sót; BaseHP = 0 thì thua; Hero HP = 0 cũng thua. Boss là áp lực ở cuối run, **[D07]** quyết định có phải giết boss để thắng hay không. Khi kill boss sớm, cần xác nhận có end early, hay kết thúc đủ time.
 
-### 6.1. Vòng Tương Khắc (1 Chiều ×1.3 Sát Thương)
-$$\text{Kim} \rightarrow \text{Mộc} \rightarrow \text{Thổ} \rightarrow \text{Thủy} \rightarrow \text{Hỏa} \rightarrow \text{Kim}$$
-* Đòn chém tay từ Vũ Khí Chính và đòn đánh của Pháp Bảo khi trúng quái vật bị khắc hệ sẽ tự động kích hoạt **Damage Popup Vàng Kim rực rỡ** kèm hệ số sát thương $+30\%$.
-* **Quy tắc sát thương:** Áp dụng hệ số $\times 1.3$ độc lập trên từng mục tiêu bị khắc hệ (kể cả đòn diện rộng/vụ nổ AoE). Không áp dụng hiệu ứng suy yếu debuff.
+## 9. In-run progression và các hệ thống giữ lại [D12]
 
-### 6.2. Vòng Tương Sinh Trong Nhịp Chặt Chém (Elemental Resonance)
-$$\text{Kim} \rightarrow \text{Thủy} \rightarrow \text{Mộc} \rightarrow \text{Hỏa} \rightarrow \text{Thổ} \rightarrow \text{Kim}$$
+- Giữ combat/weapon, EXP/gem, chọn 1 trong 3 thẻ, cooldown, dash, signature, damage/resistance, pool và game-state policy từ Unity hiện có.
+- Card pool phải kiểm soát cấp nhân vật, chỉ số pháp bảo duy nhất và một số buff phòng tuyến nếu được duyệt. Không để thẻ “thêm relic slot” lách luật.
+- Âm Dương, Ngũ Hành, gacha, meta progression và các dịch vụ live ops đã có trong Projectzombie có thể tiếp tục ở cấp code, nhưng **mức độ xuất hiện trong GDD MVP Defense** chờ [D12].
+- Phải tránh quảng cáo 60 FPS/0-GC như một kết quả đo đã xác nhận. KPI performance là mục tiêu test, không bảo đảm.
 
-#### Bảng Quy Chuẩn Kích Hoạt & Phần Thưởng:
-| Tiêu chí | Quy tắc chuẩn hóa |
-| :--- | :--- |
-| **Đơn vị dẫn hệ (Lead Hit)** | Đòn đánh thường của Tướng (hoặc Hit ảo từ Tuyệt kỹ Thư Sinh). |
-| **Đơn vị nối hệ (Proc Hit)** | Đòn đánh từ Pháp Bảo (Relics) thuộc quyền sở hữu của cùng một người chơi. |
-| **Thời gian mở chuỗi** | Trong vòng **3.0 giây** kể từ khi đòn dẫn hệ đánh trúng mục tiêu đầu tiên. |
-| **Mục tiêu trúng** | **Không cần cùng một quái**. Cho phép đánh quái A dẫn hệ, quái B nối hệ. |
-| **Số hit ghi nhận** | 1 đòn đánh diện rộng/đạn nổ/xuyên chỉ tính **tối đa 1 hit dẫn/nối hệ** (dựa theo `AttackId`). Đòn đánh hụt hoặc bị miễn nhiễm không sinh hit. |
-| **Phần thưởng** | Giảm **20% thời gian hồi CÒN LẠI** của Tuyệt Kỹ & Lướt; tăng **+25% tốc đánh thường** trong 3 giây. |
-| **Làm mới buff (Refresh)** | Kích hoạt lại trong thời gian buff sẽ đặt lại thời gian về 3 giây (không cộng dồn tốc độ). |
-| **Proc Cooldown** | **3.0 giây** hồi chờ giữa 2 lần kích hoạt tự nhiên (Hit ảo Thư Sinh được miễn trừ). |
-| **Co-op** | Bộ nhớ hit và hồi chờ proc tính riêng theo từng người chơi (`Owner-local`). |
+## 10. UI/UX cho mobile
 
-### 6.3. Chi Tiết Bộ Kit Tiêu Chuẩn Cho 4 Nhân Vật (Standard 4-Skill Kit)
-Mỗi nhân vật được trang bị độc lập: **1 Đòn Đánh Thường + 1 Lướt Né + 1 Tuyệt Kỹ + 1 Nội Tại Bị Động**:
+Màn hình phải thể hiện rõ Hero HP, Base HP, Wood, EXP/Level, Timer/Phase, cảnh báo 3 lane, xây tháp và nâng tháp, tuyển lính, chọn squad/stance/rally, thông tin boss và game result.
 
-| Nhân Vật | Hệ | Đòn Đánh Thường | Lướt Né (Dash) | Tuyệt Kỹ (Signature Skill) | Nội Tại Bị Động (Passive) |
-| :--- | :---: | :--- | :--- | :--- | :--- |
-| **Thư Sinh** | **Kim** | **Vung Bút Phán Quan**<br>Chém mực 3-hit combo | **Hành Vân Lưu Thủy**<br>Lướt né vệt mực | **Phán Quyết Tiền Định**<br>Sét Phán Quan AOE + Giảm 20% CD toàn vũ khí | **Văn Khí Hộ Thể**<br>Nhặt 10 Exp Gem $\rightarrow$ Hồi 3% HP + 10% Tốc chạy (2s) |
-| **Đạo Sĩ** | **Thủy** | **Trảm Yêu Trừ Ma Kiếm**<br>Chém kiếm khí 3-hit | **Lăng Ba Vi Bộ**<br>Lướt xuyên quái | **Bát Quái Trận Đồ**<br>Trận địa làm chậm 50% & giật sét liên tục 4s | **Kiếm Khí Bát Quái**<br>Mỗi 4 đòn đánh phóng 1 luồng Kiếm Khí xuyên thấu (150% DMG) |
-| **Thanh Đồng** | **Mộc** | **Khí Ba Đạo Mẫu**<br>Bắn 3 tia Linh Phù tầm xa | **Vũ Điệu Lên Đồng**<br>Lướt né uyển chuyển | **Giá Đồng Tứ Phủ**<br>Thỉnh Thánh Thần: +30% DMG & Tốc chạy + Giáp 5s | **Linh Phù Tụ Khí**<br>+20% Bán kính nhặt đồ & 10% tỉ lệ rơi thêm Hồn Thạch hồi máu |
-| **Ẩn Sĩ** | **Thổ** | **Thạch Quyền Phá Địa**<br>Dộng quyền nứt đất AOE | **Sơn Thạch Băng Đột**<br>Lướt húc cản quái | **Thập Phương Chấn Thế**<br>Dậm nát đất: DMG lớn + Choáng 1.2s + Hất lùi | **Bàn Thạch Chi Khu**<br>Khi HP < 50% $\rightarrow$ Nhận +30% Kháng sát thương & Miễn bị đẩy lùi |
+**Ưu tiên tác vụ:** thao tác di chuyển và chiến đấu phải hoạt động liên tục; build menu, rally/cast aim được quản lý bởi một Input Interaction Coordinator để không một chạm tạo cả tháp và cast relic. Modal Pause/LevelUp/GameOver chặn mọi hành động gameplay. Không phơi bày quá nhiều nút cố định làm che màn hình nhỏ; dùng context menu cho build/squad.
 
----
+## 11. Hợp đồng kỹ thuật Unity
 
-## 7. Thiết Kế Kẻ Địch, Boss & Nhịp Độ Màn Chơi (Enemies & Combat Pacing)
+- **Giữ:** Feature-based Architecture, C# services, ScriptableObjects, URP, DamageData / DamageContext, IDamageable, IHealable, WeaponManager, GameStateManager, WaveScheduler, MatchFlowService, RunHUD, pooling, Addressables và Unity Test Framework.
+- **Thêm module** Defense (BaseHealth, Economy, Structure, Tower, Placement, RunController), FriendlyArmy (Units/Orders/Commander), Maps/Lanes, DefenseUI và adapter target.
+- **Đường di chuyển:** Vongxuyen x/z được chuyển thông qua explicit projection mapping sang Unity x/y, không copy code Three.js.
+- **IDamageable:** có thể dùng cho Base/tower nếu không tạo phụ thuộc sai; giải quyết faction, nhận damage, death pipeline.
+- **Enemy target:** interface ITargetSelector hiện trả PlayerContext và nên giữ backward-compatible trong Survival. Thêm adapter hoặc interface chiến lược mục tiêu chung; không thay mọi enemy hiện tại trước khi có test.
+- **Multiplayer:** giới hạn MVP Defense single-player nếu [D12] đồng ý, nhưng không hardcode phụ thuộc network trong domain; khả năng co-op sau bằng adapter authority.
+- **State & Reset:** 1 owner của state và time, cleanup event subscriptions/coroutines/pooled instances sau mỗi run.
+- **Save:** tách meta save với runtime Wood; không tự lưu Wood giữa run. Tránh đổi key đã phát hành khi chưa có migration.
 
-### 7.1. Điều Chỉnh Mật Độ & Chất Lượng Quái (Enemy Wave Balance)
-* **Số lượng quái đồng thời:** Giảm từ 200 quái xuống **30 – 50 quái/wave** để đảm bảo không gian thao tác lướt, né và chặt chém không bị nghẽn góc.
-* **Máu và Sát thương:** Tăng lượng máu (HP) của quái lên $2.5\text{x}$ so với bản Survivor cũ để mỗi chuỗi combo chém vào quái có cảm giác "đã tay, đẫm lực".
-* **Chỉ Báo Đòn Đánh (Telegraphing / Red Zones):**
-  * Quái tinh anh và Boss có vệt đỏ/khung cảnh báo trước khi vung đòn ($0.3s - 0.5s$) để người chơi kịp dùng nút **Dash** né tránh phản xạ.
+## 12. Sản phẩm tối thiểu và lộ trình
 
-### 7.2. Danh Mục Yêu Ma MVP & Đặc Tính Chặt Chém / Slapstick
+| Mốc | Nội dung | Nghiệm thu tối thiểu |
+| --- | --- | --- |
+| P0 | GDD approved, DefenseScenario, stage timer, entry point | Cả Survival cũ và Defense đều start/stop ổn |
+| P1 | Nhà Chính, damage, điều kiện thua | Base bị đánh, mất HP, end đúng một lần |
+| P2 | Map 2 bờ, 3 bridge, lanes, enemy navigation | Quái theo đúng lane, không xuyên nước |
+| P3 | Wood, 10 build slots, tower 1–3 | Build/upgrade/kill reward atomic |
+| P4 | 3 Friendly Unit role | AI tank, collect, healer theo faction |
+| P5 | 3 squads, stance, rally, commander | Lệnh độc lập, kế nhiệm đúng |
+| P6 | 34 wave event, elite, Boss, UI, result | Chơi trọn 600s trên device |
+| P7 | Regression, tuning, perf, Addressables, QA | No critical bugs, mobile budget đo thật |
 
-| Enemy ID | Tên Yêu Ma | Hệ | Vai Trò Combat | Cơ Chế Phản Ứng Khi Bị Chém & Yếu Tố Fun |
-|---|---|---|---|---|
-| `E_MAGIAP` | **Ma Giáp** | Kim | Quái lính đi bộ | Bị hất lùi (Knockback) rõ rệt theo hướng vung đao; có thể bị ném dính vào tường. |
-| `E_MATROI` | **Ma Trơi** | Hỏa | Quái cơ động lao nhanh | Bay zíc zắc khó đoán; nếu chém hụt lao vào đá tự choáng bản thân $1s$. |
-| `E_QUYNHAPTRANG`| **Quỷ Nhập Tràng**| Thổ | Quái Tanker Giáp Nặng | Kháng hất lùi; Giăng Dây Xích Oán Khí nối đôi gây sát thương + làm chậm; khi gặp sóng âm (Trống/Loa) sẽ dừng đánh nhảy múa. |
-| `E_MADA` | **Ma Da** | Thủy | Quái bắn tỉa từ xa | Phun nước độc; khi bị chém trúng sẽ trơn tuột văng ra xa như xà phòng. |
-| `E_HOALYTINH` | **Hồ Ly Tinh Nhỏ**| Hỏa | Quái cảm tử phát nổ | Khi bị chém chết sẽ có $0.5s$ đếm ngược phát nổ; có thể dùng đòn 3 đánh bay nó vào giữa đàn quái khác. |
-| `E_MADOINO` | **Ma Đòi Nợ** | Kim | Quái trộm cắp chạy nhanh | Không đánh mất máu; lao vào cướp 50 Cổ Tiền/Exp rồi bỏ chạy. Diệt trong 5s nhận thưởng gấp đôi! |
+**Vertical slice đầu tiên:** 1 lane, 1 Base, 1 Tower, 1 enemy type, wood income, loss/win và HUD. Phải chơi được trước khi viết commander phức tạp.
 
-### 7.3. Boss Cai Ngục Hoàng Tuyền & Cơ Chế Tương Tác Vui Nhộn
-* **Ngưu Đầu Mã Diện (Phút 10 — "Đấu Vật Biểu Diễn"):**
-  * *Hành vi:* Húc càn tông thẳng (Bull Dash) và Giậm đất tạo chấn động.
-  * *Tương tác Fun/Slapstick:* Khi cả 2 con cùng húc, nếu người chơi Dash né ở giữa, chúng sẽ **tự đâm đầu vào nhau** kêu *"Ối!"*, tự choáng kép $4s$ và rớt ra kho báu lớn.
-* **Diêm Vương (Phút 20 — Final Boss):**
-  * *Hành vi:* Quét sóng kiếm quạt 3 hướng, đặt bẫy Lưới Nghiệp Báo và luân phiên đổi 5 hệ Ngũ Hành.
-  * *Chiến thuật:* Vận dụng luân chuyển chuỗi combo Ngũ Hành và sử dụng đòn Đột Phá Cấp 10 để dứt điểm.
+## 13. Definition of Done cho tài liệu và code
 
----
+- Mỗi hệ thống có owner, config, events, input, output, failure modes và tests.
+- Mọi ID được dùng nhất quán giữa GDD, enemy roster, timeline, balance, prefab và Addressables.
+- Không có hai rule khác nhau về thời lượng trận, mục tiêu chiến thắng, số slot pháp bảo, loại quái Map 01.
+- Phân biệt **đã code trên Vongxuyen** với **đã port và kiểm thử trên Unity**.
+- Tài liệu được chủ dự án duyệt checklist trước khi PR merge vào main.
+- Code được xác nhận bằng EditMode, PlayMode, kiểm thử Android và profiling phù hợp scope.
 
-## 8. Cảm Giác Đòn Đánh & Game Feel (Juice & Feedback)
+## 14. Open decisions
 
-Để lối chơi Chặt chém đạt mức thỏa mãn cao nhất (Satisfying Hack & Slash):
-1. **Hit-Stop (Khựng hình tác động):** Khi đòn chém trúng quái, khung hình dừng lại $0.04s$ (chí mạng dừng $0.08s$) tạo cảm giác lưỡi kiếm thực sự va chạm vào mục tiêu.
-2. **VFX Vệt Chém (Directional Slash Arc):** Vệt chém phát sáng theo thuộc tính Ngũ Hành (Kim vàng, Mộc lục, Thủy lam, Hỏa đỏ, Thổ cam) uốn cong theo chuyển động vung tay của nhân vật.
-3. **Camera Shake & Lực Đẩy Lùi (Knockback):** Đòn kết thúc combo thứ 3 luôn đi kèm rung nhẹ màn hình ($0.1s$) và hất văng quái vật ngược về sau.
+Xem [DECISION_CHECKLIST_GDD_V6.md](DECISION_CHECKLIST_GDD_V6.md) — **D01–D12 đều ở trạng thái PENDING**, kể cả khi GDD có phương án đề xuất. Sau khi nhận quyết định, cập nhật các phụ lục cùng một PR và đổi trạng thái các mục tương ứng thành APPROVED.
 
----
+## 15. Tài liệu nguồn
 
-## 10. Tiêu Chuẩn Kỹ Thuật Hiệu Năng & Tải Trận Đấu (Zero-Lag Performance Standard)
-
-Để đảm bảo trải nghiệm mượt mà $60\text{ FPS}$ ổn định trên mọi thiết bị di động Android/iOS tầm trung:
-1. **Real Async Loading Pipeline:** Tận dụng 100% màn hình Loading Screen để nạp ngầm toàn bộ Prefab, Object Pool quái vật và khởi tạo FMOD Audio Stream. Khi Loading Screen tắt, chiến trường bắt đầu ngay với $0\text{ms}$ lag.
-2. **Time-Sliced Pooling:** Toàn bộ việc sinh đối tượng hàng loạt (Quái vật, EXP Gems, Damage Numbers) phải phân bổ qua Coroutine (tối đa 3-5 đối tượng/frame) để CPU frame time không vượt quá ngưỡng $16.6\text{ms}$.
-3. **Zero Garbage Collection (0-Alloc Loop):** Vòng lặp `Update` / `LateUpdate` / `FixedUpdate` của hệ thống Combat, Chỉ dấu kỹ năng, HUD Canvas và Audio tuyệt đối không tạo `GC.Alloc` (sử dụng Static Delegates, NonAlloc Physics, MaterialPropertyBlock).
-4. **Streaming Audio Mode:** Toàn bộ nhạc nền (BGM) dài $>1\text{ phút}$ phải cấu hình `loadType: 2 (Streaming)` và `loadInBackground: 1` để triệt tiêu tải giải nén CPU.
-
-*(Chi tiết xem thêm tại tài liệu kỹ thuật chuyên sâu: [PERFORMANCE_OPTIMIZATION_REPORT.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md)).*
-
+- Projectzombie GDD v5.1: https://github.com/thuongtran1210/Projectzombie/blob/main/GameDesignDoc/ProjectZombie_GDD.md
+- Projectzombie Developer Guide: https://github.com/thuongtran1210/Projectzombie/blob/main/DEVELOPMENT_GUIDE.md
+- Vongxuyen Product Vision: https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/PRODUCT-VISION.md
+- Vongxuyen Master GDD: https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md
+- Vongxuyen Stage 01: https://github.com/thuongtran1210/Vongxuyen/blob/main/src/config/stage01.js
+- Vongxuyen DefenseRules: https://github.com/thuongtran1210/Vongxuyen/blob/main/src/defense/DefenseRules.js
+- Vongxuyen EnemyFactory: https://github.com/thuongtran1210/Vongxuyen/blob/main/src/entities/EnemyFactory.js
