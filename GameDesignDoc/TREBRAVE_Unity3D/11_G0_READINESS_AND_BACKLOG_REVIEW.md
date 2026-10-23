@@ -1,5 +1,8 @@
 # Gate G0 — Final Readiness Checklist & 27-Ticket Backlog Review
 
+> **G1 AUTHORIZATION UPDATE — 2026-10-23 (Asia/Ho_Chi_Minh):** Chủ dự án đã phê duyệt riêng **quyền bắt đầu G1** sau khi G0 được đóng. **G1 = OWNER AUTHORIZED TO START / IMPLEMENTATION NOT STARTED BY THIS APPROVAL RECORD.** Phê duyệt này không phải xác nhận đã triển khai, QA PASS, hay cho phép tác động trực tiếp lên local dirty/untracked tree. Giữ nguyên 17 tracked modified, 8 untracked entries và 2 stashes; không pull/merge/reset/clean/stash pop, không sửa scene/NavMesh/GLB/.meta/GUID hoặc Legacy trong cập nhật tài liệu này. Trước khi thực thi G1 phải có phương án bảo toàn dữ liệu local và kiểm tra phạm vi thay đổi; các hạn chế G0 (chưa full backup restore, chưa full-run gameplay QA) vẫn có hiệu lực. Các dòng `G1 NOT AUTHORIZED` phía dưới là **ghi chép lịch sử tại thời điểm G0 sign-off**, đã được quyết định riêng này thay thế về **quyền bắt đầu code**; không có ticket nào tự chuyển IN_PROGRESS/DONE/ACCEPTED.
+
+
 **Review date:** 2026-10-23 (Asia/Ho_Chi_Minh)  
 **Scope:** `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.  
 **Status:** `G0_OWNER_APPROVED / PASSED_WITH_RECORDED_LIMITATIONS / G1_NOT_AUTHORIZED / NO_GAMEPLAY_CODE` · Owner sign-off 2026-10-23.  
