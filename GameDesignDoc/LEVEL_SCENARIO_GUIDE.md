@@ -2,7 +2,7 @@
 
 > **Design APPROVED:** D01=A, D02=C, D06=A, D07=C, D08=B, D09=A, D10=C.  
 > **Implementation:** Unity full stylized 3D **NOT IMPLEMENTED**; this is a design contract, not a tested Unity scene.  
-> **OWNER-APPROVED P02/P03/P05/P08:** 600s overtime until Dạ Xoa killed or Base destroyed; Hero level-scaled respawn at original spawn; WoodDrop TTL initial 90s borrowed from VX **EXP** pickup; boss death Victory **immediately** and stop spawns. **P04** boss raid/priority pending, parameter values configurable.
+> **OWNER-APPROVED P02/P03/P05/P08:** 600s overtime until Dạ Xoa killed or Base destroyed; Hero level-scaled respawn at original spawn; WoodDrop TTL initial 90s borrowed from VX **EXP** pickup; boss death Victory **immediately** and stop spawns. **P04 APPROVED**: 2 strategic state, boss đánh trong đấu trường → sau X giây kể từ BossSpawn chuyển sang đánh Nhà Chính. **K03 PENDING:** số X và thứ tự giải quyết death trong cùng tick.
 
 ## 1. Stage objectives
 
@@ -67,7 +67,18 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 
 ### 6.2 Tướng Dạ Xoa — 08:30
 
-**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN IMMEDIATELY if BaseHP>0**; cancel wave scheduler/pending spawn jobs, stop AI and display result; Boss behavior that raids Base vs stays in arena remains **P04 PENDING**.
+**Final boss ID yaksha_boss** spawns in east-bank arena. VX source: ~3200 HP, cleave/slam/crescentWave, clear telegraph/windup. Hitting final boss by hero/tower must feed one authoritative death event; **Dạ Xoa death -> WIN IMMEDIATELY if BaseHP>0**; cancel wave scheduler/pending spawn jobs, stop AI and display result; **P04 APPROVED:** Boss bắt đầu ở **ARENA_COMBAT**; sau **X giây gameplay kể từ BossSpawn** chuyển sang **ASSAULT_BASE** và đi đánh Nhà Chính; X nằm trong SO, chưa có số. Chi tiết [Boss 2-State Spec](YAKSHA_BOSS_PHASE_SPEC.md).
+
+### 6.3 State flow Boss (P04 owner-approved)
+
+```text
+t≈510s: YakshaSpawn  ->  ARENA_COMBAT
+after X gameplay seconds since YakshaSpawn  ->  ASSAULT_BASE  ->  attacks Nhà Chính
+BossDeath (either state)  ->  Victory + cancel spawns
+BaseDestroyed             ->  Lose
+```
+
+**X là thời gian giữ Boss trong Arena tính từ lần spawn**, không phải t=510 + một mốc cứng hoặc thời gian wall-clock. `X` được quản lý trong `YakshaBossPhaseConfigSO.arenaHoldDurationSeconds`, **chưa có giá trị định lượng**. `Pause` dừng boss timer. Ở t=600, Boss vẫn giữ state và countdown X; overtime không tự ép sang Assault. Boss di chuyển qua cầu/3D nav link hợp lệ; không teleport sang Base. Xem [P04 Boss Phase Spec](YAKSHA_BOSS_PHASE_SPEC.md).
 
 ## 7. Run result decision table — approved P02/P03/P08
 
@@ -78,12 +89,12 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 | Ma Giáp miniboss killed | Continue run; create wood drop if eligible | APPROVED |
 | Dạ Xoa killed with Base alive | **WIN IMMEDIATELY**; StopWaveScheduler, clear pending, reject future enemy spawns, cleanup active gameplay | P08 APPROVED |
 | Dạ Xoa killed after Base destroyed | Remain Lose | D07 APPROVED |
-| 600s reached with Boss alive/Base alive | **OVERTIME**; wave timeline has no events >594s; Boss/remaining enemies continue to fight; no auto timeout result | P02 APPROVED |
+| 600s reached with Boss alive/Base alive | **OVERTIME**; không spawn event mới >594s. Boss giữ state Arena hoặc Assault tùy **elapsedBossTime ≥ X**; countdown X tiếp tục nếu còn Arena | P02/P04 APPROVED; X K03 TBD |
 | 600s reached with Boss already dead | Not applicable: run already Won on Boss death | P08 APPROVED |
 | Pause/LevelUp | Stop gameplay timers including respawn countdown, waves, towers and boss | Required policy |
 | Restart/scene unload | Dispose pending spawns/drops/respawn and reset all state | Required policy |
 
-**P04 still pending:** Dạ Xoa raids Base or waits in arena, and priority when BossKilled/BaseDestroyed in the same authoritative tick. Regardless, finish once and never award both results.
+**P04 OWNER-APPROVED (two strategic states):** `ARENA_COMBAT` từ lúc Dạ Xoa spawn → khi elapsed gameplay time kể từ BossSpawn đạt `arenaHoldDurationSeconds` (X; `YakshaBossPhaseConfigSO`) → `ASSAULT_BASE` di chuyển qua đường 3D hợp lệ tới Nhà Chính và tấn công Base. **K03 pending** chỉ còn giá trị X, tactical target weights và deterministic priority khi BossKilled/BaseDestroyed cùng tick. Kết trận vẫn exactly once.
 
 **Hero respawn config:** use `HeroRespawnConfigSO` with a level→duration function (curve or table), monotonic **non-decreasing** by hero level, stored initial spawn Transform (not current death location). No unapproved numeric seconds hardcoded in document.
 
@@ -91,7 +102,7 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 
 ## 8. Unity 3D implementation contracts
 
-- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, lane/spawn refs, tower slot map, policy for level-scaled HeroRespawn and Overtime/BossInstantVictory (P02/P03/P08 approved).
+- New DefenseScenarioSO: stageId, mapId, targetDurationSeconds=600, mainBossType=yaksha_boss, **YakshaBossPhaseConfigSO (arenaHoldDurationSeconds = X)**, lane/spawn refs, tower slot map, policy for level-scaled HeroRespawn and Overtime/BossInstantVictory (P02/P03/P04/P08 approved).
 - New MapSongQue3D scene with ground/water/crossing colliders, EnemyPrefab3D, tower socket transforms, camera.
 - MatchFlowService/GameStateManager still control state, but adapt 3D scene and combat interaction; WaveScheduler consumes gameplay time, never wall-clock.
 - Pool or limits for enemy, wood drops, projectiles, VFX; reset all for new run. Analytics include baseDamage, towerBuilds, woodDropped/collected, bossOutcome, duration.
@@ -105,7 +116,7 @@ Miniboss at timeline event index 6, reference HP 700, armor/body recognition. Ma
 - [ ] Attack & one ACTIVE relic work using 3D targeting and aim shapes.
 - [ ] Tower placed in valid slot; enemy damage reaches Base; HP/UI correct.
 - [ ] Enemy death drops Wood (initial 90s expiry), Hero pickup only; no auto credit/double claim.
-- [ ] Wave scheduler maintains event IDs/times including miniboss and final Dạ Xoa.
+- [ ] Wave scheduler maintains event IDs/times including miniboss and Dạ Xoa. Boss spawn → ARENA_COMBAT → sau X seconds active time → ASSAULT_BASE; X được load từ SO, không hardcode.
 - [ ] BaseDestroyed -> LOSE; HeroDowned -> level-scaled respawn at run start; MiniBossKilled != WIN; FinalBossKilled -> instant WIN and stop spawns.
 - [ ] At 600s with Boss alive, game enters OVERTIME and waits Boss death or Base destruction; no scripted timeout-loss.
 - [ ] Run outcome/loot/AI reset correctly; Android 3D PlayMode/field QA measured.
