@@ -109,7 +109,8 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 - [x] **D-11/A APPROVED** — một Phi Cương dẫn đầu mỗi **event** Ma Giáp, không thêm suất.
 - [x] **D-07/A 8/8, D-08/A Hero, D-09/A Relic đã APPROVED** về nguyên tắc. Các con số balance production chưa khóa.
 - [ ] G0-S1..G0-S6 đủ evidence, đặc biệt scene local/Meta.
-- [ ] Mapping và 27 backlog tickets review xong, chỉ các ticket G1 đủ điều kiện chuyển `APPROVED`.
+- [x] **Remote review** Mapping và **27/27 backlog IDs** đã rà soát schema/dependency (21 P0/3 P1/3 P2; chưa tạo GitHub Issues). Chi tiết [11 — G0 Ticket Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md).
+- [ ] **Owner sign-off backlog G1 readiness** sau bằng chứng Git local/hash backup; các ticket G1 chỉ có thể chuyển `APPROVED` sau Gate G0, không coi remote review là owner sign-off.
 - [ ] Gate G0 được chủ dự án đồng ý đóng. **Không tự đánh dấu pass khi chỉ có tài liệu.**
 
 ### Việc cần làm sau khi phê duyệt thiết kế
@@ -118,11 +119,13 @@ Không cần duyệt lại D-01..D-11. Cần có bằng chứng **backup ngoài 
 
 ## 8. Tài liệu G0 bước tiếp theo
 
+- [11 — G0 Readiness & Backlog Review](11_G0_READINESS_AND_BACKLOG_REVIEW.md): 27 tickets đã remote-audit, lệnh read-only đối chiếu branch/HEAD/stash/NavMesh hash; các điều kiện còn thiếu trước sign-off.
+
 - [06 — Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md): hai phương án D-03/D-04, các ca biên khi Boss chết và Hero Down.
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
 - [08 — D-06 Enemy Navigation & AI](08_D06_ENEMY_NAVIGATION_REVIEW.md): đã APPROVED toàn bộ 8 phương án A, có 18 QA nghiệm thu NOT_RUN.
 
-**Trạng thái:** D-01..D-11 đã được duyệt về yêu cầu. **Backup copy-only đã được owner thực hiện; G0-S2/S3 có scene/GLB/NavMesh trong backup và hash subset, G0-S4 có 3 hashes đối chiếu. G0-S5/S6 được OWNER_REPORTED_VERIFIED, với hai ảnh Console/Hierarchy làm bằng chứng phụ cho S5.** Vẫn chưa đủ branch/HEAD/stash, hash cụ thể NavMesh+.meta, review ticket và evidence QA độc lập để đóng G0; **Gate G0 chưa PASS, chưa code**.
+**Trạng thái:** đã review 27/27 ticket về cấu trúc và dependency (chưa owner sign-off); D-01..D-11 đã được duyệt về yêu cầu. **Backup copy-only đã được owner thực hiện; G0-S2/S3 có scene/GLB/NavMesh trong backup và hash subset, G0-S4 có 3 hashes đối chiếu. G0-S5/S6 được OWNER_REPORTED_VERIFIED, với hai ảnh Console/Hierarchy làm bằng chứng phụ cho S5.** Vẫn chưa đủ branch/HEAD/stash, hash cụ thể NavMesh+.meta, review ticket và evidence QA độc lập để đóng G0; **Gate G0 chưa PASS, chưa code**.
 
 - [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **8/8 phương án A APPROVED về cấu trúc/phương pháp**, con số production chưa khóa; 12 D07-QA NOT_RUN.
 
