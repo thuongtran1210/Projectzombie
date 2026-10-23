@@ -149,6 +149,7 @@ namespace ProjectZombie.Features.Defense3D
             yaksha.Defeated += OnYakshaDefeated;
             arenaCombat = yaksha.gameObject.AddComponent<DefenseYakshaArenaCombat3D>();
             arenaCombat.Begin(heroHealth);
+            Debug.Log("[TREBRAVE Defense3D] Yaksha spawned at world position " + yaksha.transform.position + " (East arena). Select yaksha_boss_ARENA_COMBAT in Hierarchy while playing, then press F in Scene View. Yaksha Visual Prefab assigned: " + (yakshaVisualPrefab != null) + ".");
             Debug.Log("[TREBRAVE Defense3D] Yaksha entered ARENA_COMBAT at 510s. Assault after " + yakshaArenaDuration + "s.");
         }
 
