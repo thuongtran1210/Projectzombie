@@ -77,8 +77,8 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 | G0-S2 | Backup offline scene `Assets/Scenes/Defense3D` gồm `.unity`/Meta, NavMesh data nếu nằm ngoài folder | **SCENE + NAVMESH IDENTIFIED IN BACKUP / PARTIAL** — Prototype 135896 bytes, NavMesh .asset InBackup=True; meta output bị cắt, Unity QA chưa chạy |
 | G0-S3 | Backup `Assets/Art/Environment` + `Assets/Features/Defense3D*.meta` + script `.meta` liên quan | **GLB IDENTIFIED IN BACKUP / PARTIAL** — `TREBRAVE_MapSongQue_ThreeJS.glb` 6507936 bytes; chưa kiểm chứng Unity importer/material/meta đầy đủ |
 | G0-S4 | Backup `Packages/manifest.json`, `packages-lock.json`, EditorBuildSettings, ProjectSettings/Packages nếu có | **3 FILES VERIFIED SHA-256 / PARTIAL** — `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset` đều `BackedUp=True`, `HashMatches=True`; chưa verify toàn bộ folders/restore |
-| G0-S5 | Unity mở scene local, Console 0 compile error, 0 Missing(Mono Script) | **PARTIAL_SCREENSHOT_VERIFIED — NOT_PASSED**: ảnh cho thấy 20 Log, 0 Warning/0 Error, scene `MapSongQue3D_Prototype` và GLB/Navigation/Hero roots; **chưa xác minh Missing Scripts và runtime NavMesh** |
-| G0-S6 | Test mở lại Legacy `SampleScene` / menu cũ không lỗi | **NOT_RUN** |
+| G0-S5 | Unity mở scene local, Console 0 compile error, 0 Missing(Mono Script) | **OWNER_REPORTED_VERIFIED + ẢNH CONSOLE/HIERARCHY**: owner xác nhận đã kiểm tra Missing Scripts, GLB, 3 cầu, 10 socket, NavMesh; 2 ảnh trước có Console 0 Warning/0 Error. Chưa có ảnh Inspector/test mới để QA độc lập |
+| G0-S6 | Test mở lại Legacy `SampleScene` / menu cũ không lỗi | **OWNER_REPORTED_VERIFIED** — owner xác nhận đã kiểm tra checklist Legacy 2D; chưa có ảnh/log regression độc lập |
 | G0-S7 | Không làm `Build & Open Map Song Que Prototype`, `git reset --hard`, `git clean -fd`, `stash pop` toàn cục | **SAFETY POLICY** |
 
 **Bằng chứng local do owner báo cáo (2026-10-23 21:16 +07):** backup tại `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614`, lệnh copy-only hoàn tất không báo lỗi; SHA256 **8 file** trong hai cây Scene Defense3D / Art Environment khớp, **0 missing/mismatches**. Nội dung branch/HEAD/stash đã ghi vào backup nhưng chưa gửi, NavMeshData và backup Packages/ProjectSettings chưa xác minh đầy đủ; Unity Console/Legacy **NOT_RUN**. Chi tiết ở [10 — Local Backup Evidence](10_G0_REMOTE_BASELINE_AUDIT.md).
@@ -87,11 +87,11 @@ Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [
 
 **Đối chiếu danh mục backup:** owner đã liệt kê `MapSongQue3D_Prototype.unity` (135896 bytes), `TREBRAVE_MapSongQue_ThreeJS.glb` (6507936 bytes), và `NavMesh-Defense_Navigation.asset` dưới scene folder (`InBackup=True`). Dòng `.meta` NavMesh bị cắt cột nhưng có chữ `Tru`; bản sao 8 file Scene/Environment đã có 0 SHA mismatch trong lần kiểm tra trước, **không có danh sách từng hash để xác định trực tiếp file nào**. **G0-S2/S3 vẫn PARTIAL / Unity NOT_RUN**, không tự đóng Gate.
 
-**Bằng chứng Unity Editor mới (2026-10-23):** 2 ảnh user cung cấp có Console 20 Logs/0 Warnings/0 Errors và Hierarchy `MapSongQue3D_Prototype`, `Hero_3D_Prototype`, `TREBRAVE_MapSongQue_ThreeJS`, `Defense_Navigation`, `600s Defense Run`. Hai smoke spawners `Enemy Bridge Smoke Test` và `Three Wave Defense Test` hiện màu xám (có vẻ inactive). Chỉ chấp nhận **G0-S5 PARTIAL**, **không chứng minh zero Missing Scripts**, 3 cầu/10 socket, NavMesh runtime hoặc full run. **G0-S6 Legacy NOT_RUN**, Gate G0 vẫn CHƯA PASS. Chi tiết ở [10 — Evidence Audit](10_G0_REMOTE_BASELINE_AUDIT.md).
+**Bằng chứng Unity Editor và owner bổ sung (2026-10-23):** hai ảnh có Console 20 Logs/0 Warnings/0 Errors và Hierarchy Map Sông Quê, Hero, GLB, Navigation, Defense Run. Sau đó chủ dự án xác nhận **đã kiểm tra Missing Scripts, 3 cầu/10 socket/NavMesh và Legacy Survival 2D**. Ghi trạng thái **G0-S5/S6 OWNER_REPORTED_VERIFIED** (không có ảnh Inspector/Legacy riêng để kiểm chứng độc lập). **Không coi đây là PlayMode 600s PASS hoặc Gate G0 PASS**. Chi tiết ở [10 — Evidence Audit](10_G0_REMOTE_BASELINE_AUDIT.md).
 
 ## 6A. Remote Gate G0 audit đã làm / blocker còn lại
 
-[10 — Remote Baseline Audit](10_G0_REMOTE_BASELINE_AUDIT.md) đã **chỉ đọc** nhánh GitHub ngày 2026-10-23: `Assets/Scenes/Defense3D` và `Assets/Art/Environment` **không có trên branch**, trong khi các C# script/meta, Editor installers, package AI Navigation và `SampleScene` có. BuildSettings remote chỉ chứa Legacy SampleScene. **G0-S1..S4 có bằng chứng một phần; G0-S5 đã có screenshot partial; G0-S6 vẫn NOT_RUN**; không coi GitHub files thay cho backup. **Stop Core G1** đến khi có backup ngoài repo và bằng chứng Unity mở scene, Legacy, Console. Không dùng Scene Generator để tái tạo scene có chỉnh tay.
+[10 — Remote Baseline Audit](10_G0_REMOTE_BASELINE_AUDIT.md) đã **chỉ đọc** nhánh GitHub ngày 2026-10-23: `Assets/Scenes/Defense3D` và `Assets/Art/Environment` **không có trên branch**, trong khi các C# script/meta, Editor installers, package AI Navigation và `SampleScene` có. BuildSettings remote chỉ chứa Legacy SampleScene. **G0-S1..S4 có bằng chứng một phần; G0-S5/S6 đã được owner xác nhận, cần đối chứng nếu muốn QA độc lập**; không coi GitHub files thay cho backup. **Stop Core G1** đến khi có backup ngoài repo và bằng chứng Unity mở scene, Legacy, Console. Không dùng Scene Generator để tái tạo scene có chỉnh tay.
 
 ## 7. Tiêu chí ra khỏi Gate G0
 
@@ -122,7 +122,7 @@ Không cần duyệt lại D-01..D-11. Cần có bằng chứng **backup ngoài 
 - [07 — Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md): backup copy-only bên ngoài repo, bảo vệ scene/GLB/NavMesh/meta và form QA evidence.
 - [08 — D-06 Enemy Navigation & AI](08_D06_ENEMY_NAVIGATION_REVIEW.md): đã APPROVED toàn bộ 8 phương án A, có 18 QA nghiệm thu NOT_RUN.
 
-**Trạng thái:** tất cả D-01..D-11 đã phê duyệt **yêu cầu**. Điều kiện G0-S1..S6, thực thi backup, PlayMode và review ticket vẫn chưa có bằng chứng. **Không đánh dấu G0 PASS.**
+**Trạng thái:** D-01..D-11 đã được duyệt về yêu cầu. **Backup copy-only đã được owner thực hiện; G0-S2/S3 có scene/GLB/NavMesh trong backup và hash subset, G0-S4 có 3 hashes đối chiếu. G0-S5/S6 được OWNER_REPORTED_VERIFIED, với hai ảnh Console/Hierarchy làm bằng chứng phụ cho S5.** Vẫn chưa đủ branch/HEAD/stash, hash cụ thể NavMesh+.meta, review ticket và evidence QA độc lập để đóng G0; **Gate G0 chưa PASS, chưa code**.
 
 - [09 — D-07 Balance Review](09_D07_BALANCE_REVIEW.md): **8/8 phương án A APPROVED về cấu trúc/phương pháp**, con số production chưa khóa; 12 D07-QA NOT_RUN.
 
