@@ -127,7 +127,7 @@ const spawnType = (job.type === 'magiap' && spawnedThisFrame === 0) ? 'phicuong'
 
 ## 6. Stop conditions / blockers
 
-- **D-05 và D-11/A đã duyệt;** tuy nhiên G0 chưa đóng dù D-06/A đã được duyệt → không bắt đầu code Stage01/Enemy adapter.
+- **D-05, D-06/A và D-11/A đã duyệt; G0 được chủ dự án đóng ngày 2026-10-23 theo `OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS`.** Tuy nhiên **chưa có phê duyệt code G1/G3**, không tự bắt đầu Stage01/Enemy adapter; mọi ST tests vẫn NOT_RUN.
 - D-06/A APPROVED → không ép Enemy nước/bay dùng chung Ground NavMeshAgent; chuẩn bị QA riêng, không triển khai trước G0.
 - Scene NavMesh local chưa backup/verified → không kéo prefab/scene installer.
 - Không đưa source Web `EnemyFactory.js` vào Unity runtime; export art là việc G8.
