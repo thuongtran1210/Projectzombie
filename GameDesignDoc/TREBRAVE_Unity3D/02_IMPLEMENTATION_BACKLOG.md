@@ -9,13 +9,13 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- **D-03/A, D-04/A, D-05 và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; D-01/D-02/D-06..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
+- **D-03/A, D-04/A, D-05, D-06/A và D-11/A đã APPROVED 2026-10-23**, chỉ cập nhật planning/acceptance; D-01/D-02/D-07..D-10 và backup/QA Gate0 vẫn chưa pass. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-03/A + D-04/A + D-05 + D-11/A đã duyệt; D-01/D-02/D-06..D-10 và QA local vẫn chờ; không coi Gate G0 đã pass |
+| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-03/A + D-04/A + D-05 + D-11/A đã duyệt; D-01/D-02/D-07..D-10 và QA local vẫn chờ; không coi Gate G0 đã pass |
 | U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
 | U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss phản ứng đúng D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
 | U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
@@ -40,11 +40,11 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-010 | P0 | Ground Enemy AI NavMesh theo route 3 lane, target priority base/tower/hero | U3D-002,U3D-009 | L | 3 bridge path complete; không xuyên nước/nhà; stuck detected & reported |
-| U3D-011 | P0 | Amphibian/Flying policies cho `thuyquai`, `huyetdoi`, `phicuong`; xem [D-06 review](08_D06_ENEMY_NAVIGATION_REVIEW.md) | U3D-001,U3D-009,U3D-010 | L | **D-06 PENDING:** chọn Water bơi/đổ bộ, Air 3D hay visual flight, targetability/anti-air, map collider; sau duyệt mới khóa acceptance |
+| U3D-010 | P0 | Ground AI NavMesh 3 cầu và target Hero/Support/Base theo D-06/A | U3D-002,U3D-009 | L | 3 bridge path complete; không xuyên nước/nhà; stuck detected & reported |
+| U3D-011 | P0 | Amphibian/Flying policies cho `thuyquai`, `huyetdoi`, `phicuong`; xem [D-06 review](08_D06_ENEMY_NAVIGATION_REVIEW.md) | U3D-001,U3D-009,U3D-010 | L | **D-06/A APPROVED:** Water bơi rồi lên bờ; Air bay thật 3D, anti-air, hitbox/target; D06-QA chưa chạy |
 | U3D-012 | P0 | `Stage01` schedule 34 event/214 suất nguồn; D-05: miniboss #7 một mình; D-11/A: đặt 1 Phi Cương dẫn đầu mỗi event `magiap` | U3D-004,U3D-006 | M | 34 unique events 0..594; event #7 đúng 1 `magiap_boss`, không batch thường; 20 event Ma Giáp ⇒ 20 suất Phi Cương + 108 Ma Giáp (thay, không thêm), 214 suất tổng; không phụ thuộc FPS/dt |
 | U3D-013 | P0 | Safe Spawn Planner + bounded queue (32 active/40 pending/4 per frame/25s TTL, baseline), giữ `eventId/slotIndex/declaredType/actualSpawnType` | U3D-010,U3D-011,U3D-012 | L | không spawn trong 3.1m Hero, không spawn off-NavMesh; elite D-11/A duy nhất theo event, không đổi sau frame/queue; job elite hết hạn thì log, không nâng job khác bù; zone East/South hỗ trợ airborne hợp lệ |
-| U3D-014 | P1 | `quaidu` landing source adapter & GhostCannon decision, [D-06-06](08_D06_ENEMY_NAVIGATION_REVIEW.md) | U3D-001,U3D-011,U3D-013 | M/L | **D-06 PENDING:** chọn giữ 3 cannon East và ballistic→parachute→ground West trong Core, hoặc chia phase; không spawn `quaidu` trực tiếp thành Stage01 event |
+| U3D-014 | P1 | `quaidu` landing source adapter & GhostCannon decision, [D-06-06](08_D06_ENEMY_NAVIGATION_REVIEW.md) | U3D-001,U3D-011,U3D-013 | M/L | **D-06/A APPROVED:** giữ 3 Linh Pháo East với projectile→dù→QuaiDu ground West, hoàn thành trước Full Core QA; không đưa QuaiDu vào 34 event Stage01 |
 
 **G3 gate:** automated scheduler/spawn budget/safe radius; Unity scene test đủ 3 lane, 5 loại quái; **D-05 event #7 không double, D-11/A mỗi event Ma Giáp một elite slot dẫn đầu** và deterministic qua nhiều frame, không thay quái vượt cap; debug log chỉ có một spawner production đang hoạt động, old smoke tests phải tắt. QA thực hiện với bản đồ và NavMesh **local hiện có**. **Bổ sung QA-26/ST-07..12; không tạo ticket code mới.**
 
@@ -52,8 +52,8 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-015 | P0 | Tower socket registry 10 slot, build/upgrade/repair/occupancy | U3D-002,U3D-004,U3D-007 | L | xây đúng vị trí, phí 1 lần, không xây trùng, attack/HP qua API thống nhất |
-| U3D-016 | P0 | Wood economy, pickup physical, costs & source reward rules | U3D-008,U3D-015 | M | không nhận Gỗ trước nhặt, 1 pickup 1 lần, expiry/pause/reset |
+| U3D-015 | P0 | Tower socket registry 10 slot, build/upgrade/repair/occupancy; [D-07 balance review](09_D07_BALANCE_REVIEW.md) | U3D-002,U3D-004,U3D-007 | L | xây đúng vị trí, phí 1 lần, không xây trùng, attack/HP qua API thống nhất |
+| U3D-016 | P0 | Wood economy, pickup physical, costs & source reward rules; [D-07 review](09_D07_BALANCE_REVIEW.md) | U3D-008,U3D-015 | M | không nhận Gỗ trước nhặt, 1 pickup 1 lần, expiry/pause/reset |
 | U3D-017 | P0 | Hero combat 1 character: move, dash, basic attack, damage/HP/target | U3D-004,U3D-007 | L | Hero có thể giết / bị giết, input bị chặn khi modal, không hit ghost target |
 | U3D-018 | P1 | Một Relic FUN theo `1 slot`, cast/cooldown/hitbox/ghost aim | U3D-017,U3D-001 | L | chỉ một Relic equipped; cast confirm/cancel rõ; không tiêu cooldown khi cancel |
 
