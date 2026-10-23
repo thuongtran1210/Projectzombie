@@ -16,6 +16,21 @@
 
 
 
+### Xác minh danh tính asset trong bản backup — báo cáo PowerShell bổ sung
+
+Owner chạy đúng backup `C:\Users\thuon\Unity\TREBRAVE_G0_Backup_20261023_211614` và cung cấp kết quả liệt kê:
+
+| Nhóm | Đường dẫn / tên asset trong backup | Kích thước / trạng thái |
+|---|---|---|
+| Scene Defense3D | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity` | **135896 bytes**, có bản sao |
+| Map GLB | `Assets/Art/Environment/**/TREBRAVE_MapSongQue_ThreeJS.glb` | **6507936 bytes**, có bản sao (chưa có path con đầy đủ) |
+| NavMesh data | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype/NavMesh-Defense_Navigation.asset` | `InBackup=True` trong danh sách quét local |
+| NavMesh meta | `Assets/Scenes/Defense3D/MapSongQue3D_Prototype/NavMesh-Defense_Navigation.asset.meta` | cột `InBackup` ở output bị cắt chữ thành `Tru`, cần xác nhận đầy đủ nếu muốn kết luận chính thức |
+
+**Diễn giải bằng chứng:** Ở bước trước owner đã chạy so sánh SHA-256 với **8 files** có đuôi `.unity/.glb/.meta/.asset` trong **hai cây Scene/Environment** (0 mismatch/missing). NavMesh hiện được tìm thấy ở **cây scene đã được đưa vào tập scan**, vì vậy có cơ sở để tin nó thuộc tập hash, nhưng output trước không in ra tên từng file; **chưa có báo cáo hash chỉ đích danh NavMesh/.meta** và chưa kiểm tra khả năng Unity dùng được bake. `G0-S2/S3` giữ `BACKUP_PRESENT / HASH_SUBSET_MATCH / LOCAL_RUNTIME_NOT_RUN`, **không tự đổi PASS**.
+
+**Next:** ưu tiên Unity Console + mở Scene/Legacy bằng File > Open Scene sau khi bảo toàn backup; nếu cần bằng chứng trực tiếp, so sánh SHA-256 đúng các đường dẫn NavMesh và `.meta` theo tên. Không chạy scene generator/rebake khi chưa review.
+
 ### Xác minh SHA-256 bổ sung — Packages & Build Settings (output do owner cung cấp)
 
 Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`BackedUp=True` và `HashMatches=True`**:
@@ -59,8 +74,8 @@ Báo cáo PowerShell nguồn vs backup của chủ dự án có ba dòng **`Back
 | Gate test | Evidence required | Status hôm nay | Vì sao |
 |---|---|---|---|
 | **G0-S1** | Local `git branch --show-current`, `git rev-parse HEAD`, `git status --short`, stash listing | **PARTIAL_USER_REPORTED — NOT_PASSED** | Đã nhận `git status --short` (17 M / 8 ??), chưa có branch/HEAD/stash hoặc backup manifest |
-| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | Snapshot ngoài repo có; 8 file cảnh báo trọng yếu ở hai thư mục đã khớp SHA-256; **chưa có tên từng scene và NavMeshData** |
-| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **COPY_REPORTED / HASH_SUBSET_MATCH — NOT_PASSED** | `Environment` local True; 8 files hash so sánh cho scene+environment, chưa xác minh từng GLB/meta và NavMesh ngoài cây |
+| **G0-S2** | Copy-only backup local scene `.unity`+`.meta`, NavMeshData liên quan, location/size/hash | **BACKUP ASSETS IDENTIFIED / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận scene Prototype 135896 bytes và NavMeshData asset nằm trong cây scene, `InBackup=True`; NavMesh `.meta` output bị cắt, local scene/Unity QA chưa chạy |
+| **G0-S3** | Copy-only backup local GLB, material, importer meta, script .meta, NavMesh folder ngoài path | **GLB PRESENT / HASH SUBSET MATCH — NOT_PASSED** | Owner xác nhận `TREBRAVE_MapSongQue_ThreeJS.glb` 6507936 bytes trong backup; chưa chứng minh Unity import/references và đủ toàn bộ meta/material |
 | **G0-S4** | Backup package manifest/lock, EditorBuildSettings, restore evidence | **3 KEY FILES HASH VERIFIED / PARTIAL — NOT_PASSED** | Owner báo cáo `BackedUp=True` và `HashMatches=True` cho `manifest.json`, `packages-lock.json`, `EditorBuildSettings.asset`; chưa kiểm tra toàn bộ folder và khả năng restore |
 | **G0-S5** | Unity 2022.3.62f3 mở đúng scene Map Sông Quê, Console 0 compile errors, 0 Missing Mono Script | **NOT_RUN** | Không có Unity Editor local trong kết nối GitHub |
 | **G0-S6** | Reopen Legacy `SampleScene` sạch, không regress; 3 bridge/10 sockets/NavMesh check | **NOT_RUN** | Remote YAML/Build Settings không chứng minh runtime |
