@@ -16,7 +16,7 @@
 | EN-02 | `combat/EnemyDamageService.js`, `HitResolver.js` | Enemy `ReceiveDamage/Defeated` + WoodDrop | damage source, stun/slow/knockback, exact-once death/reward/EXP | M |
 | EN-03 | `WaveManager.js` per-type behavior | Walker NavMesh chung, chỉ gây damage cho Base | ground / amphibian / flying / elite / parachute target-selection / telegraph | X |
 | EN-04 | `EnemyFactory.js` procedural meshes | placeholder capsule Unity; Boss visual prefab hook | exporter per Enemy, prefab/pivot, rendering/animation, materials | X; art sau Core |
-| WAVE-01 | `config/stage01.js`, `WaveScheduler.js` | `DefenseRun6003D` có 34 event/18s nhưng type vòng lặp và `enemiesPerEvent` cố định | đúng `event.id/at/phase/type/count/zone`, mỗi event đúng 1 lần | M |
+| WAVE-01 | `config/stage01.js`, `WaveScheduler.js`, Web `WaveManager.js` | `DefenseRun6003D` có 34 event/18s nhưng type vòng lặp và `enemiesPerEvent` cố định | **D-05 APPROVED:** #7 chỉ 1 miniboss; **D-11/A APPROVED:** mỗi event Ma Giáp 1 slot Phi Cương dẫn đầu, giữ số job và deterministic | M |
 | WAVE-02 | `SpawnPlanner.js`, `WaveManager.js` queue | spawn east marker + fixed z ba lane; không thấy cap/pending | safe spawn 3.1m, 32 active, 40 pending, 4/frame, 25s TTL, no invalid NavMesh | X |
 | WAVE-03 | `WaveManager.js` GhostCannon + `quaidu` | chưa có tương đương căn cứ/đạn pháo/thả dù | chốt scope: QuaiDu landing versus GhostCannon mechanics | X |
 | BOSS-01 | `EnemyFactory.js` `magiap_boss` | Unity miniboss @108 HP350, một walker | type-specific HP/attack/role; **stage01 event #7 là miniboss thay event thường** | M |
@@ -57,13 +57,15 @@ Các số này là **giá trị nguồn** trước wave multiplier, chưa duyệ
 | Thời lượng | 600 gameplay s | `elapsed += Time.deltaTime`, overtime sau 600 | shared clock + pause guard |
 | Event | 34 events tại `index*18` = 0..594 | 34 events tại `index*18` | giữ ID + đảm bảo once |
 | Phase | `min(5,floor(at/120)+1)` | không dùng phase config | stage data |
-| Count | event #7 miniboss 1; thường `min(8,3+phase+(index%2))` | `enemiesPerEvent=3` và **miniboss riêng** | stage config nguyên tắc + tránh double |
-| Types | các event chủ yếu magiap, thuyquai, huyetdoi; `magiap_boss` index6 | xoay qua 5 tên (bao gồm quaiDu, phiCuong) | dùng stage type thật, phân biệt spawn đặc biệt |
+| Count | event #7 miniboss 1; thường `min(8,3+phase+(index%2))` | `enemiesPerEvent=3` và **miniboss riêng** | **D-05 APPROVED:** #7 chỉ 1 `magiap_boss`, không batch thường; 34 events / 214 planned jobs |
+| Types | 20 events khai báo Ma Giáp (128 suất), 40 Huyết Dơi, 45 Thủy Quái, 1 Miniboss; runtime Web đổi quái đầu mỗi frame | xoay qua 5 tên (bao gồm quaiDu, phiCuong) | **D-11/A APPROVED:** mỗi event `magiap` thay suất 0 thành `phicuong` → 20 elite + 108 magiap, 214 suất tổng; không theo frame/FPS |
 | Safe zone | EastBank/NorthCanopy/CanalWater/SouthBank/GateWest theo type; min 3.1m | vị trí east spawn + z cầu | zone→NavMesh/Air/Water adapter |
 | Capacity | 32 active / 40 pending / 4 per frame / 25s pending lifetime | chưa thấy giới hạn tương đương | queue + fairness + drop expiry |
 | Boss | `YakshaBoss.js` @510s | `YakshaTime=510f`, arena 45s, assault, overtime | cần chốt WIN/LOSS + boss AI |
 
-**Ví dụ ca kiểm thử bắt buộc:** @108s, source yêu cầu event #7 = 1 `magiap_boss`, không phải thêm một `magiap_boss` cạnh một event thường. @510s, phải đối chiếu riêng event spawn lịch và Boss dù cùng frame/mốc.
+**Ca kiểm thử đã có luật được duyệt:** @108s, event #7 có duy nhất 1 `magiap_boss`, không tạo event thường kèm theo; trong mỗi event `magiap`, job dẫn đầu được định danh `phicuong` ngay khi lập job, các job còn lại giữ Ma Giáp, không tùy FPS. **Lưu ý:** Web `SpawnPlanner.js` chưa whitelist `phicuong` trong vùng EastBank/SouthBank; resolver Unity phải được thiết kế (D-06 chưa duyệt) để elite bay xuất hiện hợp lệ. @510s, Boss Dạ Xoa là trigger độc lập với event lịch.
+
+**Nguồn sự thật quyết định:** [Decision Log](03_DECISIONS_QA.md), [Gate G0 pack](04_GATE0_APPROVAL_PACK.md), [34 event / Enemy contract](05_STAGE_ENEMY_CONTRACT.md). **D-05/D-11 được duyệt về hành vi, không phải code Unity đã đồng bộ.**
 
 ## D. Migration principles / asset handling
 
