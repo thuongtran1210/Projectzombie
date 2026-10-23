@@ -23,6 +23,9 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1)] private int enemiesPerEvent = 3;
         [Header("Optional Yaksha visual (child of gameplay capsule)")]
         [SerializeField] private GameObject yakshaVisualPrefab;
+        [SerializeField] private Vector3 yakshaVisualLocalOffset = Vector3.zero;
+        [SerializeField] private Vector3 yakshaVisualLocalEuler = Vector3.zero;
+        [SerializeField] private Vector3 yakshaVisualLocalScale = Vector3.one;
 
         private float elapsed;
         private int nextEvent;
@@ -125,8 +128,9 @@ namespace ProjectZombie.Features.Defense3D
                     if (renderer != null) renderer.enabled = false;
                     var visual = Instantiate(yakshaVisualPrefab, go.transform);
                     visual.name = "Yaksha_3D_Visual";
-                    visual.transform.localPosition = Vector3.zero;
-                    visual.transform.localRotation = Quaternion.identity;
+                    visual.transform.localPosition = yakshaVisualLocalOffset;
+                    visual.transform.localRotation = Quaternion.Euler(yakshaVisualLocalEuler);
+                    visual.transform.localScale = Vector3.Scale(visual.transform.localScale, yakshaVisualLocalScale);
                     // Gameplay capsule remains the NavMesh/HP authority.
                     foreach (var visualCollider in visual.GetComponentsInChildren<Collider>())
                         visualCollider.enabled = false;
