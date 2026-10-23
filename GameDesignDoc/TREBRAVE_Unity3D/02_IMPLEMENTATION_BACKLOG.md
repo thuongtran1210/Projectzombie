@@ -9,19 +9,19 @@
 - State: `DRAFT` → `APPROVED` → `IN_PROGRESS` → `DONE_CODE` → `PASSED_PLAYMODE` → `ACCEPTED`; `BLOCKED` khi phụ thuộc, dữ liệu hoặc QA chưa đáp ứng.
 - Mỗi ticket cần: GitHub issue link (sau duyệt), commit SHA, source version, scene impact (Yes/No), QA evidence (ảnh/log/test report), rollback steps, không có P0 lỗi mở.
 - **Không sửa/regen scene local ở các ticket design**; mọi thao tác importer/Unity scene chỉ khi có backup và chủ máy xác nhận.
-- **APPROVED 2026-10-23:** D-01/A, D-03/A, D-04/A, D-05, D-06/A, D-11/A và **chỉ D-07-01/A**. **PENDING:** D-02, D-07-02..08, D-08, D-09, D-10 và backup/QA Gate0. Đây chỉ là phê duyệt thiết kế; backlog chưa được triển khai. Các ticket liên quan vẫn `DRAFT/BLOCKED` tới khi đủ phụ thuộc, **không bắt đầu code**.
+- **DESIGN APPROVED 2026-10-23:** D-01..D-11, gồm **D-07/A 8/8 nguyên tắc**; không còn quyết định A/B đang chờ trong checklist Gate G0. **Gate G0 vẫn BLOCKED** bởi xác minh backup scene/GLB/NavMesh/.meta/GUID, Unity Console/Legacy QA và review ticket; thông số production còn cần PlayMode. **Các ticket vẫn `DRAFT/BLOCKED`, chưa code.**
 
 ## 2. Product baseline & kiến trúc (G0–G1)
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
-| U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-11) | none | M | D-01/A + D-03/A + D-04/A + D-05 + D-06/A + D-11/A + D-07-01/A đã duyệt; D-02, D-07-02..08, D-08..D-10 và QA local vẫn chờ; Gate G0 chưa pass |
-| U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
-| U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss phản ứng đúng D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
-| U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
+| U3D-001 | P0 | Decision register & scope freeze: D-01..D-11 | none | M | **Các quyết định A đã OWNER APPROVED**; **chưa ACCEPTED** ticket/Gate G0 đến khi local backup/Console/Legacy evidence và review backlog; production balance chưa khóa |
+| U3D-002 | P0 | Backup + inventory local scene, GLB, NavMesh, Packages, GUID/.meta; D-10/A safety gate | none — copy-only song song với design review | M | **D-10/A policy APPROVED, action NOT_VERIFIED**: có backup ngoài repo + hash/path/manifest, scene mở không Missing Script, Legacy và Console evidence theo G0-S1..S6 |
+| U3D-003 | P0 | D-02/A: authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Overtime/Win/Loss đúng D-02/A+D-03/A; invalid transitions rejected; terminal LOSS ưu tiên khi BaseHP=0 cùng tick |
+| U3D-004 | P0 | D-02/A: thiết kế shared gameplay clock 600s, Inspector Fast Test profile riêng, event lifecycle | U3D-003 | M | pause/level-up đóng băng AI/spawn/cooldown/damage/game-time; terminal dừng hẳn, gồm **5s Hero respawn countdown D-04/A**; no double subscription |
 | U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP, overtime flag và pending Hero respawn |
 
-**Trình tự chuẩn bị G0-B (planning only):** **D-03/A + D-04/A đã được duyệt** trong [Match Lifecycle Spec](06_MATCH_LIFECYCLE_SPEC.md); tiếp tục thu baseline scene + backup theo [Local Safety Runbook](07_G0_LOCAL_SAFETY_RUNBOOK.md). **U3D-001 và U3D-002 chưa được đánh DONE/PASS** cho tới khi owner + Unity evidence xác nhận.
+**G0 readiness (planning only):** **D-01..D-11 đã APPROVED về thiết kế**. Chưa thể đánh G0/U3D-001/U3D-002 là PASSED hoặc ACCEPTED: cần local backup/`git status`, Console 0 errors/Missing Scripts, Legacy smoke, xác minh scene/GLB/NavMesh/meta và gate review theo [runbook 07](07_G0_LOCAL_SAFETY_RUNBOOK.md). **Không chuyển sang code nếu chưa có bằng chứng và cho phép triển khai.**
 
 **G1 prototype adapter:** trước tiên nối hệ thống mới vào script hiện hữu qua interface thay vì xóa/đổi tên `.cs`/`.meta`. Dễ rollback, an toàn scene.
 
@@ -52,12 +52,12 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-015 | P0 | Tower socket registry 10 slot, build/upgrade/repair/occupancy; [D-07 review](09_D07_BALANCE_REVIEW.md) — chỉ D-07-01/A đã duyệt về phương pháp tham chiếu | U3D-002,U3D-004,U3D-007 | L | xây đúng vị trí, phí 1 lần, không xây trùng, attack/HP qua API thống nhất |
-| U3D-016 | P0 | Wood economy, pickup physical, costs & source reward rules; [D-07 review](09_D07_BALANCE_REVIEW.md) — D-07-05 chưa duyệt | U3D-008,U3D-015 | M | không nhận Gỗ trước nhặt, 1 pickup 1 lần, expiry/pause/reset |
-| U3D-017 | P0 | Hero combat 1 character: move, dash, basic attack, damage/HP/target | U3D-004,U3D-007 | L | Hero có thể giết / bị giết, input bị chặn khi modal, không hit ghost target |
-| U3D-018 | P1 | Một Relic FUN theo `1 slot`, cast/cooldown/hitbox/ghost aim | U3D-017,U3D-001 | L | chỉ một Relic equipped; cast confirm/cancel rõ; không tiêu cooldown khi cancel |
+| U3D-015 | P0 | **D-07-03/04/A APPROVED thiết kế:** 10 Tower sockets, tối đa Lv3, build/upgrade/repair/HP/occupancy, costs/profile chưa khóa số | U3D-002,U3D-004,U3D-007 | L | phí tính một lần, không xây trùng, repair tốn Gỗ với cooldown/limit, HP clamp, attack anti-air theo D-06/A; số production chưa khóa, QA NOT_RUN |
+| U3D-016 | P0 | **D-07-02/05/A:** baseline Gỗ test đủ ≥1 tháp, WoodDrop + EXP pickups độc lập, chi phí/reward theo profile | U3D-008,U3D-015 | M | Gỗ và EXP khác resource, nhặt trước cộng, one-shot reward, pause/expiry/reset, không khóa số Gỗ production |
+| U3D-017 | P0 | **D-08/A:** 1 Hero **Thư Sinh** hoàn thiện move/dash/basic/combat/HP/target, adapter kiến trúc tối đa 4 Hero | U3D-004,U3D-007 | L | có thể kill/bị kill/respawn theo D-04/A, controls khóa khi modal/down, mở rộng data không cần sửa core; roster đầy đủ chưa khóa |
+| U3D-018 | P1 | **D-09/A:** 1 Pháp Bảo slot, **Dép Tổ Ong** là MVP, ngắm/cast/cancel/cooldown/hitbox/damage | U3D-017,U3D-001 | L | mỗi Hero chỉ 1 Relic, aim/cast thực và damage chính xác, cooldown không tiêu khi cancel, pause/Down/Result guard |
 
-**Balance dependency (design decision):** D-01/A đã xác nhận Unity 3D là engine đích. **D-07-01/A đã phê duyệt nguồn tham chiếu, không phê duyệt con số**; U3D-006 (Enemy data), U3D-015 (Tower), U3D-016 (Gỗ), U3D-021 (Boss) phải giữ bảng số cụ thể `BLOCKED/DRAFT` cho tới khi D-07-02..08 được lựa chọn hoặc baseline thử nghiệm được duyệt riêng. Không cập nhật scene/Inspector hoặc code trong bước này.
+**Balance dependency:** **D-07/A cả 8/8 đã APPROVED về NGUYÊN TẮC**; các số BaseHP/Gỗ/Tower/Enemy/Boss production **chưa khóa**, cần `BalanceProfile v0` test và PlayMode telemetry rồi mới duyệt bản release. D-08/A khóa Thư Sinh MVP, D-09/A khóa Dép Tổ Ong MVP. Đừng biến phê duyệt thiết kế thành ticket DONE/PASSED_PLAYMODE hay thay Inspector ở bước planning.
 
 **G4 gate:** một phiên chạy với Hero bắn/đánh, Enemy chịu damage, Nhà Chính chịu damage, xây/nâng/sửa tháp bằng Gỗ và reset toàn bộ. **Giá tháp hiện Unity 25 Wood không đồng nghĩa nguồn Web đã duyệt.**
 
@@ -65,7 +65,7 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-019 | P0 | EXP gem drop/magnet/collect + per-run XP curve/pending levels | U3D-004,U3D-008 | L | EXP và Gỗ tách biệt; 1 gem collected 1 lần; dư XP giữ, multi-level queued |
+| U3D-019 | P0 | D-07-05/A: EXP gem riêng Wood, drop/magnet/collect + XP curve/pending levels | U3D-004,U3D-008 | L | EXP và Gỗ tách biệt; 1 gem collected 1 lần; dư XP giữ, multi-level queued |
 | U3D-020 | P0 | Upgrade pool 3 cards/level, stack rules, fallback, apply stat modifiers | U3D-019,U3D-017 | L | 3 lựa chọn hợp lệ không trùng; chọn đúng 1; damage/speed/cooldown đổi thực; game frozen |
 
 **G5 gate:** `kill→EXP drop→collect→level-up pause→select 1/3→apply→resume` và sau 3 restart không còn gem/card cũ.
@@ -74,10 +74,10 @@
 
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance |
 |---|---|---|---|---|---|
-| U3D-021 | P0 | Yaksha Behavior FSM: telegraphed cleave/slam/crescent, arena→assault, stun/counterplay | U3D-007,U3D-011,U3D-012,U3D-017 | L | warning trước damage; có phương án né/counter; Boss HP không reset khi đổi phase |
+| U3D-021 | P0 | D-07-07/A: Yaksha balance profile riêng + Behavior FSM: telegraphed cleave/slam/crescent, arena→assault, stun/counterplay | U3D-007,U3D-011,U3D-012,U3D-017 | L | warning trước damage; có phương án né/counter; Boss HP không reset khi đổi phase; Boss HP/DPS production chưa khóa |
 | U3D-022 | P0 | Match Result & overtime đúng D-03/D-04, cleanup spawners | U3D-001,U3D-005,U3D-021 | M | **D-03/A:** chỉ WIN sau 600s + BossDead + BaseHP>0; Boss chết sớm vẫn phòng thủ, Boss còn sống @600 → OVERTIME không thêm timed-wave; LOSS BaseHP0 (ưu tiên cùng tick). **D-04/A:** Hero Down respawn sau 5 gameplay s (Pause/LevelUp đóng băng), terminal state hủy respawn; no spawn/damage sau kết thúc |
 | U3D-023 | P1 | Menu/scene route + HUD trạng thái, 2D mode preserved | U3D-005,U3D-022 | M | vào Defense rõ ràng, về menu/Restart; Legacy `SampleScene` vẫn hoạt động |
-| U3D-024 | P0 | Unity editmode/playmode/full 600s QA; benchmark baseline | U3D-010..U3D-023 | L | QA matrix `03_DECISIONS_QA.md`, ≥3 restart, 0 blocker P0, scene reopen GUID valid |
+| U3D-024 | P0 | **D-07-08/A:** QA Unity edit/play/full 600s, FastTest profile riêng, balance versioning; D-10/A local/Legacy regression | U3D-010..U3D-023 | L | 28 QA core + 18 D06-QA + 12 D07-QA evidence (có thể overlap), ≥3 restart, 0 P0, scene GUID preserved; **tất cả hiện NOT_RUN** |
 
 **G6/G7 gate:** kết luận `ACCEPTED` chỉ từ PlayMode trên máy người dùng, ghi Unity version, scene/commit, log, video/screenshot. Review GitHub code không thay thế QA.
 
