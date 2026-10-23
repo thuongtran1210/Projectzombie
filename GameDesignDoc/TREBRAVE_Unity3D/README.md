@@ -9,7 +9,9 @@
 | **[00 — Master Plan](00_MASTER_PLAN.md)** | Core vertical slice scope, 9 stage gates G0–G8, versioning, safety | biết làm gì trước/sau, chỗ nào chưa duyệt |
 | **[01 — Migration Matrix](01_MIGRATION_MATRIX.md)** | 23 domain mappings, Enemy registry, khác biệt Stage01 vs Unity | xác minh thứ gì đã có code/thứ gì chưa |
 | **[02 — Implementation Backlog](02_IMPLEMENTATION_BACKLOG.md)** | U3D-001..U3D-027, priority, dependencies, acceptance | mở issue theo gates sau khi duyệt |
-| **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-10, risks R-01..R-10, 25 QA cases | chốt luật và tiêu chí kiểm thử trước code |
+| **[03 — Decision + QA](03_DECISIONS_QA.md)** | D-01..D-11, risks R-01..R-10, 25 QA cases | chốt luật và tiêu chí kiểm thử trước code |
+| **[04 — Gate0 Approval Pack](04_GATE0_APPROVAL_PACK.md)** | Các lựa chọn A/B, ma trận WIN/LOSS, G0 safety | hồ sơ để chủ dự án ra quyết định |
+| **[05 — Stage01 & Enemy Contract](05_STAGE_ENEMY_CONTRACT.md)** | Đủ 34 event / 214 declared jobs, runtime Phi Cương substitution, spawn contract | dữ liệu/test fixture cho Core Enemy/Wave |
 
 ## Kết luận audit ngắn
 
@@ -22,9 +24,9 @@
 
 ## Quy trình đề nghị sử dụng tài liệu
 
-**Vòng A — Design approval:** xem 10 quyết định trong [03](03_DECISIONS_QA.md), đặc biệt D-03 (WIN/LOSS 600s), D-04 (Hero down), D-05 (108s Miniboss), D-06 (air/water AI), D-10 (local scene protection). Ghi quyết định vào Decision Log bằng commit tài liệu.
+**Vòng A — Design approval:** xem 11 quyết định trong [03](03_DECISIONS_QA.md), đặc biệt D-03 (WIN/LOSS 600s), D-04 (Hero down), D-05 (108s Miniboss), D-06 (air/water AI), D-10 (local scene protection), D-11 (Phi Cương do runtime chuyển loại). Hướng dẫn chọn A/B ở [04](04_GATE0_APPROVAL_PACK.md). Ghi quyết định vào Decision Log bằng commit tài liệu.
 
-**Vòng B — Planning freeze:** duyệt Core scope trong [00](00_MASTER_PLAN.md), từng dòng Migration Matrix ở [01](01_MIGRATION_MATRIX.md), và ticket/gate trong [02](02_IMPLEMENTATION_BACKLOG.md). Đổi DRAFT → APPROVED chỉ cho gói thực sự đã duyệt.
+**Vòng B — Planning freeze:** duyệt Core scope trong [00](00_MASTER_PLAN.md), từng dòng Migration Matrix ở [01](01_MIGRATION_MATRIX.md), dữ liệu Stage01 tại [05](05_STAGE_ENEMY_CONTRACT.md) và ticket/gate trong [02](02_IMPLEMENTATION_BACKLOG.md). Đổi DRAFT → APPROVED chỉ cho gói thực sự đã duyệt.
 
 **Vòng C — Code (CHƯA BẮT ĐẦU):** mã nguồn chỉ thay đổi sau khi G0 pass, bắt đầu G1 State/Clock; không rebuild scene, không rewrite mọi prototype cùng lúc. Mỗi ticket phải có PlayMode evidence, không đánh dấu DONE-QA chỉ từ GitHub diff.
 
