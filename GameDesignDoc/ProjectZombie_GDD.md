@@ -66,7 +66,7 @@
 ## 5. 4 Hero bằng mã SO — 1 Hero/run; relic MVP chỉ Dép Tổ Ong Thần Sa
 
 ### Hero selection — P01 APPROVED
-**4 Hero**, 1 do người chơi điều khiển/run, key ổn định **HERO_01–HERO_04**. Không chốt tên, các tên/kit/skill đưa về **HeroDefinitionSO / SkillDefinitionSO** để điều chỉnh sau. Skill tham chiếu ID thay vì tên: **BASIC_01..04, DASH_01..04, SIGNATURE_01..04**, mỗi Hero map tới bộ config tương ứng. Không hardcode tên nhân vật/kỹ năng vào RunFlow/HUD/Save; muốn đổi tên không thay heroId hoặc Save schema.
+**4 Hero**, 1 do người chơi điều khiển/run. **HERO_01–HERO_04 là mã thiết kế trung lập / alias**, không tự đổi các **characterId đã tồn tại** trong `CharacterDataSO`: `C001_ThuSinh`, `C002_DaoSi`, `C003_ThanhDong`, `C004_AnSi`. Dùng `CharacterDataSO` hiện có cho roster và SO ánh xạ alias/skill (`SkillDefinitionSO` nếu cần). Tên/kit/skill có thể sửa trong SO sau này; không tạo Hero database thứ hai hoặc đổi saved character IDs. Chi tiết tại [Code Audit](UNITY_3D_CODE_AUDIT_2026-10-23.md). Skill tham chiếu ID thay vì tên: **BASIC_01..04, DASH_01..04, SIGNATURE_01..04**, mỗi Hero map tới bộ config tương ứng. Không hardcode tên nhân vật/kỹ năng vào RunFlow/HUD/Save; muốn đổi tên không thay heroId hoặc Save schema.
 
 ### Relic selection — D04/D05 + P07 APPROVED
 Roster thiết kế **5 FUN relic** gồm: **Dép Tổ Ong Thần Sa (slipper — MVP ENABLED)**, **Nồi Cơm (pot — LOCKED)**, **Điếu Cày (pipe — LOCKED)**, **Chiếu Trải (mat — LOCKED)**, **Chổi Lông Gà (broom — LOCKED)**. Vì D04 đã khóa catalog có năm loại, nếu chỉ mở một thì có **bốn** món khóa. Câu nói “khóa 3 món kia” cần được xác nhận lại nếu có ý loại một món khỏi catalog, nhưng chưa tự xóa loại nào.
