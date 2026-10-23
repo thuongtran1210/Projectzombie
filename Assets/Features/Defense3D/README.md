@@ -13,6 +13,19 @@ This module is intentionally **separate from Legacy Survival 2D** and from the o
 
 The generated `.unity` scene is NOT checked in as part of this PR because Unity Editor cannot be executed via the GitHub connector. **Commit the generated scene plus `.meta` on a Unity workstation only after import/test, and preserve these script GUIDs.** Do not claim a reproducible Unity scene asset exists on remote until this is done.
 
+## Dùng bản đồ gốc Vongxuyen Three.js trong Unity
+
+[Draft PR Vongxuyen #39](https://github.com/thuongtran1210/Vongxuyen/pull/39) thêm nút **📦 Xuất Map .GLB** trên `map-overview.html`. Nguồn: `src/world/MapBenQue.js`, `ScenicDetails.js`, `src/config/mapConfig.js`.
+
+1. Checkout nhánh `feat/export-song-que-map-glb-unity` của Vongxuyen, mở web qua local HTTP server (ví dụ VS Code Live Server), vào `map-overview.html`, bấm **Xuất Map .GLB**. Trình duyệt tải `TREBRAVE_MapSongQue_ThreeJS.glb`.
+2. Unity 2022.3 của Projectzombie: cài glTF/GLB importer tương thích (ví dụ **glTFast**). Unity Editor không đảm bảo import GLB trực tiếp nếu thiếu package importer.
+3. Import GLB vào `Assets/Art/Environment/MapSongQue/` rồi đưa model vào scene `MapSongQue3D_Prototype` thay **phần hiển thị** primitive. Giữ scene gameplay/marker/collider 3D để không phá luồng điều khiển.
+4. Kiểm tra tỉ lệ (kỳ vọng 1 world unit = 1 m), hướng trục, tọa độ nhà x≈−12, đấu trường x≈25, rạch x≈4.45–8.05, ba cầu z≈−10.5,−0.5,10.5. Kiểm chứng bằng các marker thực tế.
+5. Tạo/kiểm lại **3D Ground colliders**, bridge colliders, NavMeshSurface/links và layer `Ground`, bảo đảm không đi xuyên sông. Phần nước, sương, animation và shader Three.js cần chuyển sang vật liệu/FX URP riêng.
+6. Khi được Unity kiểm chứng, commit file scene `.unity` và `.meta`, asset/model đã import cùng manifest package, rồi mới nối nút Vào Trận vào Defense3D.
+
+**Quan trọng:** GLB là snapshot hình học/vật liệu Three.js, **không** tự chuyển gameplay scripts, vật lý, VFX động, wave, tháp hay Boss sang Unity. Chưa chạy thử exporter trong browser hoặc import trong Unity từ phía ChatGPT.
+
 ## Important limitations
 
 - **Not wired to existing "Vào Trận" menu yet.** Existing menu boots Legacy Survival, so it will still show the old U Minh Giới Tilemap until a Defense3D mode selection/scene-routing PR is implemented. The Editor menu is the new entry point for this technical first scene.
