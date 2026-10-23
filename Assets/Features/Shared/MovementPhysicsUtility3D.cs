@@ -157,6 +157,11 @@ namespace ProjectZombie.Features.Shared
             float stepSize = 0.3f;
             float currentDist = 0f;
             Vector3 lastValidPos = startPos;
+            // Rigidbody/Capsule center is commonly about 1m above the ground.
+            // Compare FLOOR heights, not the original capsule-center height.
+            if (!TryGetGroundHeight(startPos, out float startFloorY))
+                return startPos;
+            lastValidPos.y = startFloorY;
 
             while (currentDist < allowedDistance)
             {
@@ -195,7 +200,10 @@ namespace ProjectZombie.Features.Shared
         {
             // If there is no baked NavMesh at the origin (prototype sandbox),
             // defer to the dedicated Ground + Obstacle physics checks.
-            if (!NavMesh.SamplePosition(origin, out NavMeshHit originNav, radius * 2f, NavMesh.AllAreas))
+            Vector3 originFloor = origin;
+            if (TryGetGroundHeight(origin, out float originFloorY))
+                originFloor.y = originFloorY;
+            if (!NavMesh.SamplePosition(originFloor, out NavMeshHit originNav, radius * 2f, NavMesh.AllAreas))
                 return true;
 
             // For a baked Defense map, destination must be on the same
