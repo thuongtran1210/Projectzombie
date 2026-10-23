@@ -67,8 +67,16 @@
 **Roster:** magiap, huyetdoi, thuyquai, magiap_boss, quaidu, phicuong, yaksha_boss. Map 01 roster only. Unity legacy enemy prefabs remain.
 **3D components:** EnemyDefinitionSO, EnemyController3D/FSM, 3D navigation agent, role-target policy, hit/collider/health, renderer+rig, animator, VFX/Audio, pooling hooks.
 **TargetCatalog:** Base/Tower/Hero with IDamageable, faction and threat. ITargetSelector currently returns PlayerContext; don't globally change it without migration tests.
-**Boss:** miniboss Ma Giáp Thống Lĩnh event t=108s; final Dạ Xoa special spawn ~510s with cleave/slam/crescentWave. **Final Boss death while Base alive => Win**; miniboss kill never triggers win.
+**Boss:** miniboss Ma Giáp Thống Lĩnh event t=108s; final Dạ Xoa special spawn ~510s with cleave/slam/crescentWave. **P04 owner-approved**: Yaksha starts `ARENA_COMBAT`, stays for **X seconds of active gameplay since BossSpawn**, then one-way `ASSAULT_BASE` by NavMesh/3D bridge to strike Base. `X=YakshaBossPhaseConfigSO.arenaHoldDurationSeconds` (numeric K03 pending). Final boss death while Base alive => instant Win; miniboss kill never triggers win.
 **600s:** **P02 approved** — when Boss alive, continue **OVERTIME** until Boss killed or Base destroyed, no time-based Win/Lose. **P08:** on final boss death, **instant WIN** and **cancel/stop all further spawns**.
+
+### Yaksha 2-state implementation contract [P04 owner-approved]
+
+- New `YakshaBossStrategicState` enum: **ARENA_COMBAT, ASSAULT_BASE**; combat windup/die/stun remain internal animation/combat substates.
+- `YakshaBossPhaseConfigSO.arenaHoldDurationSeconds` is **X**, measured since boss spawn with shared gameplay clock and paused with game; initial numeric value not yet defined (**K03 pending**).
+- In ARENA_COMBAT Boss stays in configured east-bank arena while fighting. After X, ASSAULT_BASE sets Base as strategic target, follows **3D nav across a valid bridge** and uses allowed attack set to hurt Base at true 3D range; no water teleport.
+- 600s overtime does not forcibly switch phase: if elapsed arena-time < X, Boss remains there until timer expires. Boss death at either state immediately Wins and blocks spawns.
+- Same simulation tick BaseDestroyed and BossKilled deterministic arbitration remains **K03 pending**, must be fixed before runtime QA gate. See [Yaksha Boss Phase Spec](YAKSHA_BOSS_PHASE_SPEC.md).
 
 ## 7. Migration phases + milestones
 
@@ -79,7 +87,7 @@
 | M2 — 1 enemy + WoodLoot + Tower | Spawn->Death->Loot->HeroPickup->Build->Tower attack loop | One 3D lane fully playable; no auto wood grant |
 | M3 — Full 3 lanes + enemies | All seven VX archetypes, zone spawn, boss arena, target policy, NavMeshLinks | No bridge/ground/water shortcuts, boss telegraphs aligned |
 | M4 — 4 Hero SO IDs + Slipper MVP | 3D anim/skill ID configs, 1 ACTIVE Dép ghost/damage/cooldown, 4 others locked, 1 slot | Four Hero IDs selectable; one enabled relic, no advanced FUN FX |
-| M5 — Timeline + results | 600s clock, 5 phases, 34 events, miniboss, Dạ Xoa final, Base lose, Hero respawn, overtime | Boss death instant WIN + stop spawns; Base loss; timer reaches 600 without auto result |
+| M5 — Timeline + results | 600s clock, 5 phases, 34 events, Dạ Xoa final with **ARENA_COMBAT → after X sec → ASSAULT_BASE**, Hero respawn, overtime | Boss crosses real 3D bridge/path to attack Base after X, death instant WIN + stop spawns; Base loss |
 | M6 — Content & mobile optimization | 3D environment art, animation, VFX, input/HUD, LOD/shadows, Addressables | Mobile visual readability and measured performance budget |
 | M7 — Legacy regression & release candidate | Save/Addressables tests, existing 2D Legacy support, PlayMode, real-device CI/manual QA | No P0/P1 bugs, rollback/migration documented |
 
@@ -89,7 +97,7 @@
 
 **EditMode:** Data validation (one relic slot, 4 Hero IDs with configured skill IDs, 5 relic IDs with exactly 1 enabled, 7 enemies, 10 build slots, 600s timeline, 90s wood TTL, unique eventIDs), reward idempotency, level-dependent respawn monotonic curve, Base-only loss, instant Boss win + spawn shutdown, overtime, save separation.
 
-**PlayMode 3D:** NavMesh paths by 3 bridges, 3D collider/no water route, tower placement raycast/cost, wood dropped/picked only once then expires at 90s, boss triggers and telegraphs, Hero downed -> respawn at start after level-scaled duration (not Lose), Boss killed -> immediate Win/stop spawns, Base destroyed Lose, overtime at 600, touch interactions.
+**PlayMode 3D:** Boss Arena → Assault exactly after config X unpaused Boss-time, 3D bridge path valid, Base attacks in range, pause/overtime transition, no delayed raid after victory; NavMesh paths by 3 bridges, 3D collider/no water route, tower placement raycast/cost, wood dropped/picked only once then expires at 90s, boss triggers and telegraphs, Hero downed -> respawn at start after level-scaled duration (not Lose), Boss killed -> immediate Win/stop spawns, Base destroyed Lose, overtime at 600, touch interactions.
 
 **Legacy regression:** old Unity 2D scene, Physics2D attacks, Addressables maps, weapons and Save still load in Legacy mode.
 
@@ -105,7 +113,7 @@
 | Wood drops unreachable under terrain/water | Nav-snap spawn position, cap lifetime/stack, pickup QA |
 | FPS drops from 3D assets and high enemy count | Pool, GPU instancing/LOD, baked lighting tests, progressive content |
 | Hero 0HP leaves player unable to defeat final Boss | Level-scaled countdown, respawn at run start via SO; QA anti-softlock, no forced loss |
-| Run reaches 600s before Boss dies | Enter OVERTIME, continue Boss battle with no new scheduled waves; Base loss/Boss win only |
+| Run reaches 600s before Boss dies | Enter OVERTIME, continue current Arena or Assault state; X timer advances on unpaused Boss gameplay time, no new scheduled waves |
 | 4 Hero/5 relic effects require full 3D models/animations | Placeholder Hero SO IDs first, only basic Slipper 3D; 4 other relics LOCKED |
 
 ## 10. Data and implementation repository rules
