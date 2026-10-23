@@ -1,7 +1,7 @@
 # Gate G0 — Hồ sơ quyết định trước khi code Unity Defense3D
 
 **Status: DRAFT / NEEDS OWNER APPROVAL.** 2026-10-23.
-**Mục tiêu:** chuyển 10 quyết định từ danh sách vấn đề thành câu hỏi thiết kế có lựa chọn, hệ quả và ca kiểm thử. **Không hàm ý người dùng đã chọn phương án**. Không sửa mã nguồn/scene, không tạo Issues tự động.
+**Mục tiêu:** chuyển 11 quyết định (10 quyết định ban đầu và D-11 bổ sung) từ danh sách vấn đề thành câu hỏi thiết kế có lựa chọn, hệ quả và ca kiểm thử. **Không hàm ý người dùng đã chọn phương án**. Không sửa mã nguồn/scene, không tạo Issues tự động.
 Nguồn: [Decision Log](03_DECISIONS_QA.md), [Master Plan](00_MASTER_PLAN.md), [Vongxuyen master](https://github.com/thuongtran1210/Vongxuyen/blob/main/docs/MASTER-GAME-DESIGN-AND-COMPLETION-PLAN.md), [Unity DefenseRun6003D](https://github.com/thuongtran1210/Projectzombie/blob/feat/trebrave-defense3d-first-scene/Assets/Features/Defense3D/DefenseRun6003D.cs).
 
 ## 1. Tóm tắt quyết định còn mở (approval menu)
