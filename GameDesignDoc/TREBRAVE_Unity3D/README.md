@@ -35,7 +35,7 @@
 
 **Vòng A — Design approval: HOÀN THÀNH về yêu cầu** — tất cả D-01..D-11 đã được chốt phương án A (D-05 không thêm miniboss; D-11/A một elite/event; D-07/A 8/8). Không coi đây là release-ready hoặc chứng nhận đủ 600s Unity.
 
-**Vòng B — Gate G0 readiness: CHƯA HOÀN THÀNH** — cần backup scene/GLB/NavMesh/.meta/GUID, Unity Console sạch, Legacy smoke, xác minh tracker/27 backlog và ghi bằng chứng. Không đánh dấu G0 PASS do chỉ có tài liệu.
+**Vòng B — Gate G0 readiness: CHƯA HOÀN THÀNH** — owner đã tạo backup ngoài repo, báo cáo hash subset của scene/GLB/NavMesh và 3 file Packages/Build Settings; ảnh Console/Hierarchy 0 Warning/0 Error; **owner xác nhận đã kiểm tra Missing Scripts, 3 cầu/10 sockets/NavMesh và Legacy Survival 2D**. Các mục đó được ghi **OWNER_REPORTED_VERIFIED** (không phải QA độc lập). Vẫn chờ branch/HEAD/stash, hash NavMesh+.meta đích danh, review 27 backlog và quyết định đóng Gate. **Không code, không đánh dấu G0 PASS.**
 
 **Vòng C — Code (CHƯA BẮT ĐẦU):** mã nguồn chỉ thay đổi sau khi G0 pass, bắt đầu G1 State/Clock; không rebuild scene, không rewrite mọi prototype cùng lúc. Mỗi ticket phải có PlayMode evidence, không đánh dấu DONE-QA chỉ từ GitHub diff.
 
