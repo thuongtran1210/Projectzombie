@@ -2,12 +2,18 @@
 
 This module is intentionally **separate from Legacy Survival 2D** and from the old `SampleScene.unity` bootstrap.
 
-## Open it locally in Unity 2022.3.62f3
+## Local scene safety — Gate G0 note (2026-10-23)
 
-1. Switch to `feat/trebrave-defense3d-first-scene` after the stacked PR #2 and #3 source changes are available.
+**IMPORTANT:** The remote feature branch does **not** contain `Assets/Scenes/Defense3D` or `Assets/Art/Environment` (see [G0 remote audit](../../../GameDesignDoc/TREBRAVE_Unity3D/10_G0_REMOTE_BASELINE_AUDIT.md)). A working manually configured scene/GLB/NavMesh may exist **only on the local Unity workstation**. The generator below **can overwrite `MapSongQue3D_Prototype.unity` if the user confirms its rebuild prompt**. **DO NOT click `TREBRAVE > Defense 3D > Build & Open Map Song Que Prototype` on a custom scene.** This README's original generation instructions are retained only as historical reference, **not as a recommended current action**.
+
+Before any pull/scene change, follow [07 — Local backup + QA runbook](../../../GameDesignDoc/TREBRAVE_Unity3D/07_G0_LOCAL_SAFETY_RUNBOOK.md). Preserve local scene/GLB/NavMesh/`.meta`, then open an **existing** scene through Unity `File > Open Scene`. If no existing local scene is found, **stop and audit/restore backups before doing anything else**. No Unity Editor tests have been run remotely.
+
+## Historical clean-scene generation steps (DO NOT RUN ON CUSTOM SCENE)
+
+1. Switch to `feat/trebrave-defense3d-first-scene` only after backing up local changes; this historical step is **not** permission to checkout now.
 2. Open the Unity project, wait for script import.
-3. Select **TREBRAVE > Defense 3D > Build & Open Map Song Que Prototype**.
-4. Unity generates `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity` on your machine, adds it to Editor Build Settings **without removing SampleScene**, and opens it.
+3. On a disposable/unmodified prototype **only**, the menu `TREBRAVE > Defense 3D > Build & Open Map Song Que Prototype` used to create the generated scene. **Do not use it for the current manually edited Map Sông Quê.**
+4. The generator writes `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity` and registers it in Build Settings; it does not publish that local asset to GitHub automatically.
 5. Hit **Play** in this scene; keyboard **WASD/arrows** or gamepad **left stick** moves the cyan capsule Hero on the XZ plane. Camera follows Hero.
 6. Inspect two 3D ground banks, water strip, 3 bridge colliders, gold Base on west, enemy arena marker on east, and 10 gold tower sockets.
 
