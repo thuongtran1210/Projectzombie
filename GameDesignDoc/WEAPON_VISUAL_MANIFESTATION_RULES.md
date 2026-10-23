@@ -1,8 +1,8 @@
-# TREBRAVE — ONE HERO / ONE ACTIVE FUN RELIC — UNITY 3D UX SPEC v6.1
+# TREBRAVE — SLIPPER-ONLY ACTIVE RELIC MVP — UNITY 3D UX SPEC v6.2
 
-> **Trạng thái:** **D02=C, D03=A, D04=A, D05=A owner-approved 2026-10-23** — 4 Hero chọn sảnh, 1 Hero/run, 5 FUN relic choices, 1 ACTIVE relic/run, Unity full 3D target. Runtime 3D chưa port.  
+> **Trạng thái:** **D02=C, D03=A, D04=A, D05=A, P01/P07 owner-approved 2026-10-23** — 4 Hero chọn sảnh sử dụng ID và ScriptableObject, 1 Hero/run, 5-item FUN catalog nhưng **MVP chỉ Dép Tổ Ong ENABLED**, 1 ACTIVE relic/run, Unity full 3D target. Runtime 3D chưa port.  
 > **Thay thế bản visual rules legacy** từng mô tả mang tối đa 6 pháp bảo. Lịch sử thiết kế cũ vẫn có trong Git.  
-> **PENDING chỉ còn:** P01 mapping/naming 4 Hero kits; P06 camera/assets/3D pipeline; P07 giữ các hiệu ứng FUN phức tạp khi chuyển auto sang ACTIVE; không cho phép AUTO/HYBRID trong Map 01.
+> **Cấu hình chưa khóa:** tên/kit 4 Hero (SO), cooldown/damage/range Dép (RelicDefinitionSO), camera/assets 3D. P07 MVP **không cần hiệu ứng FUN**; 4 relic còn lại LOCKED/POST-MVP. 
 
 ## 1. Combat loadout
 
@@ -15,28 +15,29 @@ Một Hero có các nút/kênh hành động riêng:
 
 Giới hạn kỹ thuật hiện tại Projectzombie là WeaponManager.MAX_WEAPONS = 1; không tăng số này khi đổi GDD.
 
-## 2. Danh mục ĐÃ CHỐT của 5 relic Map 01 [D04=A]
+## 2. Danh mục 5 relic FUN — trạng thái availability ở MVP [P07 APPROVED]
 
-| ID từ Vongxuyen | Tên | Silhouette/indicator | Gameplay role |
+| ID | Tên | MVP | Nội dung phải làm ở giai đoạn này |
 | --- | --- | --- | --- |
-| slipper | Dép Tổ Ong Thần Sa | đường bay / boomerang arc | Hit & return / CC |
-| pot | Nồi Cơm Thạch Sanh | vòng tròn hút + hướng phóng | Gather & launch |
-| pipe | Điếu Cày Cửu U | quạt khói / cone | Area & damage-over-time |
-| mat | Chiếu Trải Hoàng Tuyền | hình chữ nhật trên mặt đất | Zone trap / sleep |
-| broom | Chổi Lông Gà Gia Truyền | điểm rơi/sweep radius | High knockback |
+| `slipper` | **Dép Tổ Ong Thần Sa** | **ENABLED / DEFAULT** | Nút cast chủ động, ghost 3D, xác thực hướng/tầm, projectile/hit basic, damage, cooldown và feedback đơn giản |
+| `pot` | Nồi Cơm Thạch Sanh | **LOCKED** | Chỉ catalog/ID, không runtime effect/upgrade/cast |
+| `pipe` | Điếu Cày Cửu U | **LOCKED** | Chỉ catalog/ID, không runtime effect/upgrade/cast |
+| `mat` | Chiếu Trải Hoàng Tuyền | **LOCKED** | Chỉ catalog/ID, không runtime effect/upgrade/cast |
+| `broom` | Chổi Lông Gà Gia Truyền | **LOCKED** | Chỉ catalog/ID, không runtime effect/upgrade/cast |
 
-**Phân biệt source:** Vongxuyen JS hiện có active cast/ghost aim và damage cơ bản; cơ chế FUN sâu hơn ở tài liệu VX có phần chưa thực hiện. Projectzombie Unity lại có nhiều hiệu ứng FUN runtime phức tạp hơn và có xu hướng auto/passive. Chỉ chốt UX thi triển tại D05, không áp lại mechanic prototype thấp cấp khiến Unity bị mất tính năng.
+**Catalog có 5 món theo D04=A, 1 mở + 4 khóa.** Chủ dự án viết “khóa 3 món kia”; do phép đếm không khớp, tài liệu tạm khóa **toàn bộ 4 món còn lại** để đảm bảo MVP chỉ một pháp bảo cho tới khi có xác nhận danh mục khác. Không được âm thầm xóa món thứ năm.
 
-## 3. ACTIVE RELIC ONLY (D05=A — APPROVED)
+## 3. Dép ACTIVE: minimal implementation, no advanced FUN FX [P07 APPROVED]
 
-**Không sử dụng AUTO/PASSIVE/HYBRID cho slot trang bị Map 01.** Mọi relic trong năm pháp bảo FUN cần có cách kích hoạt chủ động, nút Relic riêng, 3D aim ghost chuẩn hit shape, cast confirmation, cooldown, cancel.
+1. Hero vào Map 01 được equip 1 `slipper`; `MAX_WEAPONS=1` vẫn là invariant. Các relic có `isAvailableInDefenseMvp = false` không được equip qua saved loadout, level-up cards, shop, cheat/dev UI hoặc migration.
+2. Bấm nút Relic → 3D GhostAim theo hướng/tầm đã config; kết quả raycast xuống Unity ground XZ. Hiện preview hình dải bay/điểm trúng.
+3. Cast hợp lệ thì bắn dép/sinh projectile đơn giản, gây damage theo `RelicDefinitionSO`, phát feedback/animation tối thiểu, bắt đầu cooldown.
+4. Cancel, invalid range, pause, Hero downed hoặc RunEnd không cast và **không tiêu cooldown**.
+5. **Không bắt buộc** 3-hit combo, boomerang return, Quê Độ, knockback FUN nâng cao, multi-target synergy ở MVP. Hình ảnh dép nhận diện là đủ; effect chain mở rộng đặt giai đoạn sau.
+6. Dùng `RelicDefinitionSO` để cấu hình unlocked, projectile speed, damage, cooldown, maxRange, preview, attack count. Không hardcode số hoặc bắt chước values prototype VX chưa được QA.
+7. Những runtime FUN effects nâng cao từ Projectzombie hiện tại **giữ code/asset ở Legacy**; không bật tự động trong Defense Map 01. Khi đưa vào Defense ở Phase sau, phải kiểm thử từng effect.
 
-- **State**: READY → AIMING → CAST_VALIDATION → EXECUTE → COOLDOWN → READY. CANCEL chỉ từ AIMING/VALIDATION và không trừ cooldown.
-- **3D targeting**: Physics.Raycast xuống ground/XZ, target lane and collisions; indicator chiếu xuống đúng diện tích thật, không dùng Unity Physics2D shape làm nguồn hit.
-- **One equip slot**: equip 1 vật phẩm trước run; Attack/Dash/Signature là Hero abilities, không chiếm relic slot. Upgrade không phát sinh slot nữa.
-- **Effect retention**: Projectzombie đã có các hệ FUN/weapon effects phức tạp hơn prototype Vongxuyen; đánh giá từng relic P07 và chuyển sang cast controller mà không tắt mechanic hợp lệ.
-- **Failure**: invalid range/terrain, paused, Hero downed hoặc Base GameOver phải hủy preview, không chi cooldown/wood. Hero death không tự đặt RunEnded(LOSE).
-- **3D feedback**: chỉ dấu line/arc/circle/cone/rect/swept đúng collision volume, occlusion và priority bảo toàn Boss telegraph.
+**State:** READY → AIMING → VALIDATING → CAST → COOLDOWN → READY. CAST gây damage đúng một lần; ghost disposed khi đóng modal, Hero Downed hoặc run Victory.
 
 ## 4. Quy tắc hiển thị vũ khí và VFX
 
@@ -53,28 +54,28 @@ Giới hạn kỹ thuật hiện tại Projectzombie là WeaponManager.MAX_WEAPO
 **MVP State exclusivity**: NORMAL | RELIC_AIM | BUILD | UPGRADE_TOWER | PAUSE | LEVEL_UP | GAME_OVER. **SQUAD_RALLY là POST-MVP (D10=C).**  
 - Enter RELIC_AIM: hủy 3D Build ghost, ẩn tower selection; rally mode không triển khai trong MVP.
 - Enter BUILD: hủy relic ghost, không tiêu cooldown; world-space selection bằng 3D raycast.
-- Pause hoặc LevelUp: khóa attack/dash/relic/build/rally; resume khôi phục input mode hợp lệ duy nhất.
+- Pause hoặc LevelUp hoặc Hero Downed: khóa attack/dash/relic/build, chỉ resume khi điều kiện hợp lệ; boss death xử lý Victory và stop enemy spawning.
 - Orientation/device interruptions: cancel pending cast/build, không tự trigger; raycast camera 3D must work for different aspect ratios.
-- Touch target min-size, safe-area và UI collision check; đặt nút relic ở combat cluster, contextual build/squad panel không đè.
+- Touch target min-size, safe-area và UI collision check; đặt nút Dép ở combat cluster, contextual build panel không đè.
 
 ## 6. Code contracts
 
 - WeaponManager: **1 slot** và one-active-item contract; giữ MAX_WEAPONS=1, không auto proc song song khi đã chuyển Map 01 sang active.
-- WeaponData/RelicDefinitionSO: typeId, activationMode, targetShape, cooldown, range, effect/prefab references.
+- WeaponData/RelicDefinitionSO: typeId, isAvailableInDefenseMvp, activationMode=ACTIVE, targetShape, cooldown, range, basicDamage, prefab references.
 - SkillAimIndicatorController: chỉ tái sử dụng state/domain; cần **3D ghost indicator/Physics3D** preview adapter, đảm bảo shape and collision validity.
 - InputCoordinator: arbiter giữa build/relic trong MVP; squad POST-MVP.
 - RunHUDPresenter: view state / cooldown / owned relic.
-- Upgrade cards: chỉ nâng cấp relic hiện có, không unlock slot mới.
+- Upgrade cards: chỉ nâng cấp **Dép** đang có, không unlock slot mới hoặc một trong bốn relic khóa.
 
 ## 7. Acceptance & QA
 
 - [ ] Không thể mang nhiều hơn một relic trong cùng một run (kể cả save/load/upgrade).
-- [ ] 5 typeId được map 1-1 sang Unity prefab/definition hoặc có trạng thái chưa implement.
+- [ ] 5 item IDs tồn tại trong catalog, nhưng chỉ `slipper` có Unity 3D runtime/prefab và `isAvailableInDefenseMvp=true`; 4 món kia LOCKED.
 - [ ] Không có tài liệu ACTIVE v6 vẫn hướng dẫn mang 6 relic.
-- [ ] **ACTIVE cho cả 5 relic**: nút cast thật + ghost 3D hợp lệ; không AUTO/HYBRID/double trigger.
+- [ ] **ACTIVE cho Dép duy nhất**: nút cast thật + ghost 3D hợp lệ + damage/cooldown cơ bản; không AUTO/HYBRID/FUN effects nâng cao.
 - [ ] Hủy aim không mất gỗ/cooldown; Tower Build không cast nhầm relic. Rally là POST-MVP.
-- [ ] Runtime effects được giữ nếu port/thiết kế là tương thích; không downgrade vô ý.
-- [ ] QA mobile full 3D: portrait/landscape, pause, boss telegraph, occlusion, tối ưu VFX.
+- [ ] Không xóa code/asset runtime FUN effects Legacy; chỉ không triển khai chúng trên Defense MVP theo P07.
+- [ ] QA mobile full 3D: Dép aim/cast/disable while downed, portrait/landscape, pause, boss telegraph, occlusion, tối ưu VFX.
 
 ## 8. Source links
 
