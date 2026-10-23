@@ -1,8 +1,18 @@
 # Gate G0 — Remote Baseline Audit / Local Safety Blockers
 
 **Thời điểm audit:** 2026-10-23 · **Nguồn:** GitHub `thuongtran1210/Projectzombie`, branch `feat/trebrave-defense3d-first-scene`.
-**Trạng thái hiện tại:** `GIT_SNAPSHOT_OWNER_VERIFIED / SIX_CRITICAL_ASSET_HASHES_MATCH / G0_AWAITING_OWNER_SIGNOFF / NO_G1_CODE`. Các mục lịch sử bên dưới ghi trạng thái tại thời điểm nhận từng bằng chứng; xem mục "Bằng chứng mới nhất" để biết kết luận cập nhật.
+**Trạng thái mới nhất (owner sign-off 2026-10-23):** `G0_OWNER_APPROVED / PASSED_WITH_RECORDED_LIMITATIONS / G1_NOT_AUTHORIZED`. Báo cáo lưu lại các bước audit trước đó ở trạng thái lịch sử; **quyết định chính thức xem [04 — Gate G0 Approval Pack](04_GATE0_APPROVAL_PACK.md)**.
 **Phạm vi assistant đã làm:** chỉ đọc repo/manifest/Unity editor scripts trên GitHub và cập nhật tài liệu. **Người dùng đã tự chạy backup local copy-only và báo cáo 8 file khớp hash**, không phải assistant có quyền truy cập ổ đĩa. **Không mở Unity Editor, không Save Scene, không ghi GLB/NavMesh, không code gameplay.**
+
+## OWNER G0 SIGN-OFF — 2026-10-23
+
+**Owner decision:** chủ dự án xác nhận đã xem hồ sơ và **phê duyệt đóng Gate G0**, ghi kết quả **OWNER APPROVED / PASSED WITH RECORDED LIMITATIONS**. Đây là quyết định chính thức mới nhất, **supersede** nhãn `G0_AWAITING_OWNER_SIGNOFF` / `NOT_PASSED` trong phần audit lịch sử bên dưới, **không làm thay đổi dữ liệu chứng cứ gốc**.
+
+**Accepted evidence:** 6/6 local Scene/NavMesh/GLB cùng `.meta` khớp SHA-256 với backup, branch/HEAD/stashes khớp snapshot, 3 file Packages/EditorBuildSettings khớp hash, owner xác nhận Unity/Missing Scripts/3 bridges/10 sockets/NavMesh/Legacy, 27 tickets đã rà soát.
+
+**Recorded limitations:** không có full restore test, không xác minh tuyệt đối mọi asset ngoài snapshot; Unity/Legacy một phần bằng owner report; 28 main QA + 18 D06-QA + 12 D07-QA và full-run 600s **chưa được nghiệm thu**, cân bằng production chưa khóa. **Các bằng chứng/giới hạn không bị diễn giải thành runtime/gameplay pass.**
+
+**Authorization boundary:** **G1 CODE NOT AUTHORIZED**. Không tự pull/merge/reset/clean/stash pop, tạo gameplay code, đổi scene/GLB/NavMesh/GUID/`.meta`. 27 ticket chưa `DONE_CODE`/`PASSED_PLAYMODE`/`ACCEPTED`. Quyết định cho phép code phải đến từ owner **ở bước riêng**.
 
 ## Bằng chứng mới nhất — Git snapshot và 6 critical asset hashes (owner PowerShell)
 
@@ -27,7 +37,7 @@
 
 **G0-S4:** đã xác minh từ output trước `Packages/manifest.json`, `Packages/packages-lock.json` và `ProjectSettings/EditorBuildSettings.asset` có backup + SHA-256 khớp (3/3). Chưa hash toàn bộ `Packages/`, `ProjectSettings/`, importer/material và chưa có thử khôi phục thực tế. **G0-S5/S6** vẫn **OWNER_REPORTED_VERIFIED** (Console ảnh 0 Error, người dùng xác nhận map/Legacy), không nâng thành độc lập full-run QA.
 
-**Current decision:** G0-S1 = `OWNER_OUTPUT_VERIFIED`; G0-S2/S3 = `CRITICAL_ASSET_HASH_VERIFIED` (**6/6 đúng bản sao**, không chứng minh backup của mọi asset liên quan); G0-S4 = `THREE_KEY_FILES_HASH_VERIFIED / PARTIAL`; G0-S5/S6 = `OWNER_REPORTED_VERIFIED`. **Gate G0 = AWAITING_OWNER_SIGNOFF / NOT_PASSED**. Backlog 27 tickets đã rà soát từ xa, chưa owner sign-off/ACCEPTED; G1 chưa được cho phép, không code.
+**Decision at time of evidence collection (historical):** G0-S1 = OWNER_OUTPUT_VERIFIED; G0-S2/S3 = CRITICAL_ASSET_HASH_VERIFIED (6/6); G0-S4 = THREE_KEY_FILES_HASH_VERIFIED/PARTIAL; G0-S5/S6 = OWNER_REPORTED_VERIFIED. **Subsequently, owner signed off G0 on 2026-10-23 with recorded limitations (see top).** 27 tickets are reviewed, not accepted; G1 remains unauthorized.
 
 ## 0. Bổ sung bằng chứng do chủ dự án gửi qua chat — 2026-10-23
 
