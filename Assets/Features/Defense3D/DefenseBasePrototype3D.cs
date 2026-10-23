@@ -1,16 +1,17 @@
+using System;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// Minimal base health for the first Defense3D scene smoke-test.
-    /// Full IDamageable and run end arbitration belong to the next vertical-slice PR.
-    /// </summary>
+    /// <summary>Defense vertical slice base. BaseHP == 0 is the only loss trigger.</summary>
     public sealed class DefenseBasePrototype3D : MonoBehaviour
     {
         [SerializeField, Min(1f)] private float maxHP = 1000f;
+        public float MaxHP => maxHP;
         public float CurrentHP { get; private set; }
         public bool IsDestroyed => CurrentHP <= 0f;
+        public event Action<float, float> HealthChanged;
+        public event Action BaseDestroyed;
 
         private void Awake() { CurrentHP = maxHP; }
 
@@ -18,8 +19,11 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (IsDestroyed || amount <= 0f) return;
             CurrentHP = Mathf.Max(0f, CurrentHP - amount);
-            if (IsDestroyed)
-                Debug.Log("[TREBRAVE Defense3D] BaseHP=0. Prototype LOSS; run result UI is not implemented.");
+            HealthChanged?.Invoke(CurrentHP, maxHP);
+            Debug.Log("[TREBRAVE Defense3D] Base HP: " + CurrentHP + "/" + maxHP);
+            if (!IsDestroyed) return;
+            Debug.Log("[TREBRAVE Defense3D] LOSS: BaseHP=0.");
+            BaseDestroyed?.Invoke();
         }
     }
 }
