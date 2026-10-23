@@ -1,8 +1,8 @@
-# PROJECTZOMBIE — VONGXUYEN ENEMY & BOSS ROSTER (DRAFT)
+# TREBRAVE — MAP 01 VONGXUYEN ENEMY & BOSS ROSTER (DESIGN APPROVED)
 
-> **Trạng thái:** REFERENCE-VX → PROPOSED-PZ. Chưa có kết luận các archetype đã được port/QA trên Unity.  
+> **Trạng thái:** D09=A **OWNER-APPROVED** — đúng 7 Vongxuyen archetypes Map 01, Unity full 3D mục tiêu D02=C; code/asset chưa được port/QA.  
 > **Nguồn runtime:** Vongxuyen src/entities/EnemyFactory.js, src/combat/WaveManager.js, src/combat/YakshaBoss.js, src/config/stage01.js.  
-> **Câu hỏi mở:** D06 thời lượng/Boss, D07 thắng/thua, D09 phạm vi quái cũ.
+> **Quy tắc đã chốt:** D06 600s / D07 **Base destroyed only Lose; final Dạ Xoa killed Win** / D09 Map 01 only VX 7 / D08 wood **drop–Hero pickup** / D10 no army MVP. **P02/P03/P04/P05** là chi tiết còn mở.
 
 ## 1. Mục tiêu hệ thống
 
@@ -12,7 +12,7 @@ Map 01 của Projectzombie sử dụng **enemy identity, vai trò, khả năng t
 - Có ID ổn định, displayName, vai trò, HP, tốc độ, damage, range, attack cooldown, target policy, navigation mode, reward và addressable asset.
 - Phân biệt prototype values với balance target; enemy boss không phải enemy thường phóng to.
 - Attack chỉ resolve khi hợp lệ, có telegraph cho đòn nguy hiểm; enemy chết chỉ award một lần.
-- Support map lane, faction, pooling, hit reaction, death cleanup, game-state pause, hitbox 2D (nếu D02 chọn Unity 2D).
+- Support map lane, faction, pooling, hit reaction, death cleanup, game-state pause, **Physics3D hurtboxes/NavMesh/3D animation** theo D02=C.
 - Không mặc định mọi enemy bay có thể xuyên mọi vật cản hoặc tấn công Base từ dưới nước.
 
 ## 2. Roster được kiểm chứng từ factory/runnable code Vongxuyen
@@ -81,7 +81,7 @@ Các giá trị ở cột HP/speed/damage là trực tiếp từ factory/Boss, t
 - AI có state **idle, chase, cleave_windup, slam_windup, stunned, die**; có ba nhóm skill cooldown tham chiếu cleave 3.5s, slam 8.5s, crescentWave 12.0s.
 - Đòn ví dụ: đại đao quét, khai sơn phá thạch, đao khí. Telegraph phải mở trước hit frame và cho người chơi cửa né/interrupt đúng.
 - Boss phải có phase gating theo thời gian/run và chiến thuật raid/hạn chế chase theo bờ.
-- **Chưa chốt:** hạ Dạ Xoa có bắt buộc để thắng ở 600s? Dạ Xoa có trực tiếp đập Nhà Chính hay chỉ đấu arena? Câu trả lời tại D07.
+- **ĐÃ CHỐT D07:** hạ Dạ Xoa (**final boss**) khi Base còn HP => WIN; Ma Giáp Thống Lĩnh chỉ miniboss. Boss có trực tiếp đập Nhà Chính hay chỉ ở arena (**P04**) và timeout 600s (**P02**) còn PENDING. Hero chết **không** gây LOSE.
 - Test: Boss spawn duy nhất, UI HP/vfx đúng, phase chuyển đúng, boss death có cleanup/cancel projectile và game result không trùng.
 
 ## 4. Wave 01 tham chiếu
@@ -109,22 +109,24 @@ Projectzombie hiện có Enemy FSM và ITargetSelector trả **PlayerContext**. 
 
 **Acceptance:** enemy có thể chuyển từ đánh Hero sang Tower/Base khi điều kiện đúng; không gây ngoại lệ casting target; dân binh chặn được tuyến nếu còn sống; dead target không được nhận đòn; đảm bảo backward compatibility Survival.
 
-## 6. Quy tắc chuyển đổi asset
+## 6. Quy tắc chuyển đổi asset sang Unity full stylized 3D [D02=C]
 
-Từ web 3D sang Unity 2D (nếu D02 = 2D):
-- Giữ role, silhouette, tên, dấu hiệu nhận biết, âm thanh và gameplay; không sao chép Three.js material/mesh trực tiếp.
-- Prefab mỗi enemy: SpriteRenderer/Animator, Collider2D, Health/Target, AI, DamageReceiver, Audio/VFX, Projectile/Hitbox, pooling reset.
-- Boss telegraph được dựng bằng URP shader/mesh/UI world-space; hình dạng hit phải trùng VFX.
-- Asset path và ID không bị đổi giữa GDD và ScriptableObject; lưu source art/provenance khi tạo asset mới.
-- Unit tests về domain; PlayMode tests về spawn, layer, collision, state transitions và navigation.
+- Giữ **tên/identity/role/đặc điểm nhận diện/gameplay** của 7 enemy Vongxuyen; không sao chép Three.js mesh/material vào Unity như prefab thành phẩm.
+- **Prefab3D:** MeshRenderer/SkinnedMeshRenderer, 3D Animator rig, Collider/Rigidbody3D hoặc custom movement/NavMeshAgent, 3D attack hurtboxes, health/damage, target policy, VFX, sound và pool reset.
+- World plane **XZ**, Y altitude; ground enemy chuyển qua 3 cầu theo NavMesh, Thủy Quái theo water-path đặc thù, Flying theo flying-space restrictions. Collider/line-of-sight/telegraph phải dùng **3D Physics**, không Physics2D.
+- **Loot D08=B:** tất cả enemy khi chết chỉ tạo **WorldWoodDrop**, hero nhặt mới tăng WoodWallet; không grant gỗ lúc EnemyKilled. Phu thu gom là POST-MVP không xuất hiện trong Map 01 first release.
+- **Tower/Base targeting:** ITargetSelector Unity hiện trả PlayerContext nên cần DefenseTargetAdapter/IDamageable target; Hero downed không làm quái đứng Idle khi Base còn sống.
+- **Boss results:** Dạ Xoa defeated -> WIN; Base destroyed -> LOSE; Ma Giáp boss defeated -> continue. 600s timeout P02 còn mở, không tự xử game over.
+- **Legacy:** tất cả enemy PZ cũ giữ nguyên trong Legacy Mode/Maps tương lai; không xóa scripts/SO/prefab.
+- View conversion details: [UNITY_3D_MIGRATION_PLAN.md](UNITY_3D_MIGRATION_PLAN.md).
 
 ## 7. Old Projectzombie enemy reconciliation
 
-| Tài liệu trước đây | Map 01 mới | Hướng xử lý trước khi duyệt D09 |
+| Tài liệu trước đây | Map 01 mới | Hướng xử lý đã duyệt theo D09=A |
 | --- | --- | --- |
-| Ngưu Đầu / Mã Diện | Không thuộc Wave 01 Vongxuyen | Giữ code/asset, đưa legacy/next map |
-| Diêm Vương 20:00 | Không là Boss Dạ Xoa 510s | Xóa khỏi luật Map 01 v6, chờ quyết định |
-| Ma Đòi Nợ (FUN Doc) | Không thuộc baseline | Không spawn vào Map 01 mặc định |
+| Ngưu Đầu / Mã Diện | Không thuộc Wave 01 Vongxuyen | **APPROVED:** giữ code/asset Legacy/Future Maps |
+| Diêm Vương 20:00 | Không là Boss Dạ Xoa 510s | **APPROVED:** không dùng Map 01, giữ Legacy asset |
+| Ma Đòi Nợ (FUN Doc) | Không thuộc baseline | **APPROVED:** giữ Legacy, không spawn Map 01 |
 | Quái Projectzombie khác | Không rõ mapping | Audit registry SO/prefab, không delete tự động |
 
 **Không xóa asset, save key hay script cũ chỉ vì đổi GDD.** Nếu sau này loại bỏ, cần dependency graph, migration, PlayMode regression và PR riêng.
@@ -148,17 +150,17 @@ Từ web 3D sang Unity 2D (nếu D02 = 2D):
 
 ## 9. QA checklist
 
-- [ ] 7 reference types have definition, prefab or explicit unavailable status.
+- [ ] 7 reference types have **3D Unity** definition, prefab or explicit unavailable status.
 - [ ] E01/E02/E03 navigate correct intended terrain without crossing invalid water/bridges.
 - [ ] E04 event at 108s fires exactly once unless overridden by versioned scenario.
 - [ ] E05 drop indicators appear before impact and no infinite child spawn.
 - [ ] E06 displays elite health bar; flying targeting works.
 - [ ] B01 at 510s (if selected) and every telegraph leads damage only after windup.
 - [ ] Boss attack cannot damage destroyed/unreachable target; run end cancels boss projectiles.
-- [ ] Wood/EXP/kill only once per enemy death; no pooled stale IDs.
+- [ ] Enemy death tạo **WorldWoodDrop đúng một lần**, WoodWallet chỉ thay đổi sau Hero pickup, không pooled stale IDs.
 - [ ] Spawner honors cap and backpressure, no permanent queue on reset.
-- [ ] Survival Mode enemy roster unchanged unless D01 deliberately replaces that mode.
-- [ ] D09 approved: legacy enemy plan documented.
+- [ ] Survival Legacy giữ nguyên roster cũ, không bị 3D Defense scene import/rewrite.
+- [x] D09 approved: Map 01 dùng 7 VX archetypes, enemy PZ cũ giữ Legacy/Future Maps.
 
 ## 10. Links
 
