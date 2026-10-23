@@ -10,6 +10,8 @@ namespace ProjectZombie.Features.Defense3D
         public float MaxHP => maxHP;
         public float CurrentHP { get; private set; }
         public bool IsDestroyed => CurrentHP <= 0f;
+        public bool DamageLockedAfterWin { get; private set; }
+        public void LockDamageAfterWin() { DamageLockedAfterWin = true; }
         public event Action<float, float> HealthChanged;
         public event Action BaseDestroyed;
 
@@ -17,7 +19,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public void ReceiveDamage(float amount)
         {
-            if (IsDestroyed || amount <= 0f) return;
+            if (IsDestroyed || DamageLockedAfterWin || amount <= 0f) return;
             CurrentHP = Mathf.Max(0f, CurrentHP - amount);
             HealthChanged?.Invoke(CurrentHP, maxHP);
             Debug.Log("[TREBRAVE Defense3D] Base HP: " + CurrentHP + "/" + maxHP);
