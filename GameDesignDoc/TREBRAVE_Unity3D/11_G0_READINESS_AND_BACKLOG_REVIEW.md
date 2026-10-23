@@ -97,10 +97,10 @@ foreach ($rel in $critical) {
         BackupExists = $dstOk
         HashMatches = $match
     }
-} | Format-Table -Wrap -AutoSize
+}
 ```
 
-**Đọc kết quả:** `HashMatches=True` với NavMesh + meta và Scene + meta + GLB + meta xác nhận **đúng bản sao trên disk**, không chứng minh `NavMeshSurface` runtime bake đủ/chạy được. Nếu thiếu bất kỳ file nào, **KHÔNG xóa/tạo lại/đổi GUID**; kiểm tra source/backup và đưa đường dẫn thiếu vào danh sách cần sao lưu bổ sung theo [Runbook 07](07_G0_LOCAL_SAFETY_RUNBOOK.md). Trong PowerShell đoạn cuối, phần tử trên vòng `foreach` tạo ra các dòng đối tượng, rồi đưa qua `Format-Table`; nếu PowerShell parse pipeline sau `foreach` không được hỗ trợ, bỏ phần `| Format-Table -Wrap -AutoSize` cuối và để các đối tượng tự hiển thị.
+**Đọc kết quả:** `HashMatches=True` với NavMesh + meta và Scene + meta + GLB + meta xác nhận **đúng bản sao trên disk**, không chứng minh `NavMeshSurface` runtime bake đủ/chạy được. Nếu thiếu bất kỳ file nào, **KHÔNG xóa/tạo lại/đổi GUID**; kiểm tra source/backup và đưa đường dẫn thiếu vào danh sách cần sao lưu bổ sung theo [Runbook 07](07_G0_LOCAL_SAFETY_RUNBOOK.md). Đoạn `foreach` cuối xuất trực tiếp từng đối tượng `PSCustomObject` ra Console; không sử dụng pipeline sau khối `foreach`, tương thích PowerShell 5.1/7.
 
 ## 5. Sign-off sau khi có output
 
