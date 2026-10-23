@@ -59,3 +59,15 @@ The smoke-test walker now uses Unity `NavMeshAgent` (not direct Transform moveme
 4. Each agent requires a complete navmesh path to *every* lane waypoint; it never crosses water via a Transform fallback. Console logs `NavMesh enemy reached Base` on arrival and subtracts 25 Base HP (75 total if all three arrive). If the path is not connected or waypoint is not baked, the enemy stops and logs `Enemy route stopped: ...` with its specific lane.
 
 This is deliberately a navigation **smoke test**, not combat AI: no avoidance tuning, enemy attack animations, wave logic, or production Base damage arbitration. Unity PlayMode and Android have not yet been run by the author.
+
+## Three-wave Defense mini vertical slice (opt-in)
+
+Run after the 3-bridge NavMesh smoke test succeeds. **Keep the imported GLB and baked scene/NavMesh**; never rebuild the prototype scene to install this feature.
+
+1. Save scene, close Unity, `git status`, then `git pull --ff-only origin feat/trebrave-defense3d-first-scene` only if safe against local tracked changes.
+2. Reopen `MapSongQue3D_Prototype`, confirm `NavMeshSurface` is enabled and baked.
+3. Choose `TREBRAVE > Defense 3D > Install 3-Wave Defense Test In Open Scene`. The installer disables the old bridge-only spawner component so the two tests do not spawn together. Save scene and Play.
+4. Three quick test waves (3 enemies each, approximately 16-second wave interval) use NavMesh waypoint lanes. Enemies have 100 test HP, move to Base, and repeatedly hit it for 25 every 2 seconds until BaseHP reaches 0. Top-left IMGUI overlay shows Base HP and wave state. Base loss emits a signal and stops further timed wave spawns.
+5. On finishing all 3 spawns, **no win is declared**. Boss is not yet implemented. Enemy damage intake API exists but Hero/towers cannot attack them yet.
+
+Limits: This is NOT the approved 600-second 34-event wave schedule, Boss outcome arbitration, attack animations, Unity UI canvas/HUD production, or Android-ready enemy prefab system. No Unity PlayMode validation has been run from this repository-only change.
