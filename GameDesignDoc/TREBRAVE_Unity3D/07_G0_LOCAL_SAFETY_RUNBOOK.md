@@ -2,6 +2,8 @@
 
 **Status:** DRAFT / CHƯA THỰC THI TRÊN MÁY NGƯỜI DÙNG · 2026-10-23.
 **Goal:** lưu và chứng minh backup sạch của scene Map Sông Quê + gameplay data **trước** code G1. Việc có hướng dẫn này **không phải xác nhận backup đã xong**.
+
+**Remote audit completed 2026-10-23:** [10 — G0 Remote Baseline Audit](10_G0_REMOTE_BASELINE_AUDIT.md) xác minh trên GitHub hiện **không có** `Assets/Scenes/Defense3D` và `Assets/Art/Environment`; Build Settings remote chỉ có Legacy SampleScene. **Đừng pull/checkout/regen để “lấy lại scene” khi chưa backup local**. Sau copy-only backup, kiểm tra xem data NavMesh có folder ngoài danh sách; copy thêm asset đó.
 **Máy mục tiêu:** Windows, Unity 2022.3.62f3, local project `C:\Users\thuon\Unity\Projectzombie`.
 
 ## 1. Nguyên tắc an toàn
