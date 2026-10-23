@@ -16,7 +16,7 @@
 | ID | Priority | Scope / deliverable | Depends | Size | Acceptance (trước khi đánh ACCEPTED) |
 |---|---|---|---|---|---|
 | U3D-001 | P0 | Chốt luật State, WIN/LOSS, Boss, Hero down, thời gian, Enemy lanes (D-01..D-10) | none | M | Decision log `APPROVED`; no contradictory active rule |
-| U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | U3D-001 | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
+| U3D-002 | P0 | Backup & inventory local scene, GLB, NavMesh, packages, meta GUID; map asset register | none — thực hiện ngay, song song với D-xx | M | Scene mở lại không Missing Script; manifest/glTFast không vỡ; backup checksum/path |
 | U3D-003 | P0 | Thiết kế authoritative `DefenseGameState` + allowed transitions + blocking contract | U3D-001 | M | Playing/Paused/LevelUp/Win/Loss phản ứng đúng; invalid transitions rejected |
 | U3D-004 | P0 | Thiết kế shared gameplay clock, event lifecycle, pause guard | U3D-003 | M | pause đóng băng AI/spawn/cooldown/damage/game-time; no double subscription |
 | U3D-005 | P0 | Reset/Restart lifecycle spec và compatibility adapter cho existing `DefenseRun6003D` | U3D-003,U3D-004 | M | 3 lần restart không nhân GameObjects/listeners, clear Time/HP/slots/Gỗ/EXP |
