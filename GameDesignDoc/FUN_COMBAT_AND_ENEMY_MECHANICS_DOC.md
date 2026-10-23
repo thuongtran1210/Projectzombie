@@ -1,4 +1,4 @@
-> ⚠️ **GDD v6 REVIEW NOTICE (2026-10-23):** Tài liệu này được **giữ như tham chiếu gameplay FUN của Projectzombie cũ**, không còn là nguồn xác định quái/Boss Map 01 trong GDD hợp nhất. Danh sách quái chuẩn theo Vongxuyen nằm tại [ENEMY_ROSTER_VONGXUYEN.md](ENEMY_ROSTER_VONGXUYEN.md); quyết định giữ/quy hoạch các enemy cũ chờ **D09** ở [checklist](DECISION_CHECKLIST_GDD_V6.md). Cơ chế FUN hiệu ứng Unity có thể tái sử dụng nhưng không tự áp thiết kế 6/17 relic slots; chỉ **một pháp bảo/run**. Toàn bộ nội dung bên dưới là **LEGACY REFERENCE**, không sửa/loại bỏ code khi chưa được duyệt.
+> **GDD v6.1 status: LEGACY FUN COMBAT REFERENCE** — **D04=A, D05=A, D09=A, D10=C were approved:** Map 01 uses **five FUN relics with manual ACTIVE cast + 3D ghost**, **seven Vongxuyen enemy archetypes only**, and **no allied squad in MVP**. Old PZ enemy/Boss design below applies only to Legacy/Future Maps, not new Map 01. Retain existing complex FUN effects as implementation reference for P07, but convert activation via 3D active controller. See [Relic Spec](WEAPON_VISUAL_MANIFESTATION_RULES.md) and [Enemy Roster](ENEMY_ROSTER_VONGXUYEN.md).
 
 ---
 
