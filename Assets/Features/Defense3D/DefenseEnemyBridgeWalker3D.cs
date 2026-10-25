@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.Defense3D
     /// by transform fallback when NavMesh is absent or disconnected.
     /// </summary>
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour
+    public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour, IDefenseDamageable3D
     {
         [SerializeField, Min(0.1f)] private float speed = 2.5f;
         [SerializeField, Min(0f)] private float baseDamage = 25f;
@@ -19,8 +19,27 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1f)] private float maxHP = 100f;
         [SerializeField, Min(1)] private int woodDropAmount = 10;
         [SerializeField] private DefenseBasePrototype3D targetBase;
-        public float CurrentHP { get; private set; }
-        public bool IsDead => CurrentHP <= 0f;
+
+        private DefenseHealthCore healthCore;
+        private DefenseHealthCore HealthCore
+        {
+            get
+            {
+                if (healthCore == null)
+                {
+                    healthCore = new DefenseHealthCore(maxHP);
+                    healthCore.HealthChanged += (cur, max) => HealthChanged?.Invoke(cur, max);
+                    healthCore.Damaged += ctx => Damaged?.Invoke(ctx);
+                    healthCore.Defeated += OnDefeated;
+                }
+                return healthCore;
+            }
+        }
+
+        public float CurrentHP => HealthCore.CurrentHp;
+        public float MaxHP => HealthCore.MaxHp;
+        public bool IsDead => HealthCore.IsDead;
+
         private float nextAttackTime;
         private bool attacking;
         private NavMeshAgent agent;
@@ -28,13 +47,23 @@ namespace ProjectZombie.Features.Defense3D
         private int index;
         private bool finished;
         private bool arenaMode;
+
         public event Action<DefenseEnemyBridgeWalker3D> Defeated;
+        public event Action<float, float> HealthChanged;
+        public event Action<DefenseDamageContext> Damaged;
+        event Action IDefenseDamageable3D.Defeated
+        {
+            add => internalDefeated += value;
+            remove => internalDefeated -= value;
+        }
+        private Action internalDefeated;
 
         public void Configure(int lane, DefenseBasePrototype3D target)
         {
             targetBase = target;
-            CurrentHP = maxHP;
+            HealthCore.Reset(maxHP);
             arenaMode = false;
+
             float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
             route = new[]
             {
@@ -66,7 +95,7 @@ namespace ProjectZombie.Features.Defense3D
         public void SetMaxHealth(float hp)
         {
             maxHP = Mathf.Max(1f, hp);
-            CurrentHP = maxHP;
+            HealthCore.Reset(maxHP);
         }
 
         /// <summary>Boss remains in arena for a configurable number of seconds.</summary>
@@ -83,7 +112,7 @@ namespace ProjectZombie.Features.Defense3D
             float hpBeforeTransition = CurrentHP;
             arenaMode = false;
             Configure(1, target);
-            CurrentHP = hpBeforeTransition;
+            HealthCore.ApplyDamage(new DefenseDamageContext(maxHP - hpBeforeTransition));
             Debug.Log("[TREBRAVE Defense3D] Yaksha entered ASSAULT_BASE.");
         }
 
@@ -148,14 +177,24 @@ namespace ProjectZombie.Features.Defense3D
             SetNextDestination();
         }
 
+        public bool TakeDamage(DefenseDamageContext context)
+        {
+            if (finished || IsDead) return false;
+            return HealthCore.ApplyDamage(context);
+        }
+
         public void ReceiveDamage(float damage)
         {
-            if (finished || IsDead || damage <= 0f) return;
-            CurrentHP = Mathf.Max(0f, CurrentHP - damage);
-            if (!IsDead) return;
+            TakeDamage(new DefenseDamageContext(damage));
+        }
+
+        private void OnDefeated()
+        {
+            if (finished) return;
             finished = true;
             Debug.Log("[TREBRAVE Defense3D] Enemy defeated: " + name);
             Defeated?.Invoke(this);
+            internalDefeated?.Invoke();
             var wallet = FindObjectOfType<DefenseWoodWallet3D>();
             if (wallet != null)
                 DefenseWoodDrop3D.Spawn(transform.position, woodDropAmount, wallet.transform, wallet);
@@ -172,3 +211,4 @@ namespace ProjectZombie.Features.Defense3D
         }
     }
 }
+
