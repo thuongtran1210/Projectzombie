@@ -13,7 +13,7 @@ namespace ProjectZombie.Features.Defense3D
         private const int EventCount = 34;
         private const float EventInterval = 18f;
         private const float MinibossTime = 108f;
-        private const float YakshaTime = 510f;
+        private const float YakshaTime = 10f;
         private const float RunDuration = 600f;
 
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
@@ -40,6 +40,9 @@ namespace ProjectZombie.Features.Defense3D
         private DefenseEnemyBridgeWalker3D yaksha;
         private DefenseYakshaArenaCombat3D arenaCombat;
         private DefenseHeroHealth3D heroHealth;
+        private readonly System.Collections.Generic.List<DefenseEnemyBridgeWalker3D> spawnedEnemies = new System.Collections.Generic.List<DefenseEnemyBridgeWalker3D>();
+        private readonly DefenseSpawnPlanner spawnPlanner = new DefenseSpawnPlanner();
+        private System.Collections.Generic.List<DefenseStageEvent> stageEvents;
 
         private void Start()
         {
@@ -51,17 +54,63 @@ namespace ProjectZombie.Features.Defense3D
                 enabled = false;
                 return;
             }
+            stageEvents = DefenseStage01Schedule.GenerateEvents();
+            spawnPlanner.JobSpawned += OnJobSpawned;
+            heroHealth = sceneInfo.HeroSpawn != null ? sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>() : null;
             g1 = new DefenseG1RuntimeAdapter();
+            g1.RegisterOwner(CleanupCurrentRunEntities, ResetRunState);
             g1.Start();
             defenseBase.BaseDestroyed += OnBaseDestroyed;
-            heroHealth = sceneInfo.HeroSpawn != null ? sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>() : null;
-            Debug.Log("[TREBRAVE Defense3D] 600s run started: 34 timed events, Miniboss@108, Yaksha@510.");
+            Debug.Log("[TREBRAVE Defense3D] 600s run started: 34 timed events (D-05 Miniboss@108s, D-11/A Phi Cuong elite lead), Yaksha@510s.");
+        }
+
+        private void CleanupCurrentRunEntities()
+        {
+            for (int i = spawnedEnemies.Count - 1; i >= 0; i--)
+            {
+                if (spawnedEnemies[i] != null)
+                {
+                    Destroy(spawnedEnemies[i].gameObject);
+                }
+            }
+            spawnedEnemies.Clear();
+            spawnPlanner.Reset();
+            if (arenaCombat != null)
+            {
+                arenaCombat.EndArena();
+                arenaCombat = null;
+            }
+            yaksha = null;
+        }
+
+        private void ResetRunState()
+        {
+            yakshaDefeated = false;
+            nextEvent = 0;
+            minibossSpawned = false;
+            bossSpawned = false;
+            assaultStarted = false;
+            overtimeLogged = false;
+            ended = false;
+            won = false;
+
+            if (defenseBase != null) defenseBase.ResetBase();
+            if (heroHealth != null) heroHealth.ResetHero();
+        }
+
+        public void RestartRun()
+        {
+            if (g1 == null) return;
+            g1.Restart();
+            g1.Start();
+            Debug.Log("[TREBRAVE Defense3D] Run restarted cleanly via G1 adapter.");
         }
 
         private void OnDestroy()
         {
             if (defenseBase != null) defenseBase.BaseDestroyed -= OnBaseDestroyed;
             if (yaksha != null) yaksha.Defeated -= OnYakshaDefeated;
+            if (spawnPlanner != null) spawnPlanner.JobSpawned -= OnJobSpawned;
             if (g1 != null) g1.Dispose();
         }
 
@@ -69,22 +118,24 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (ended || g1 == null) return;
             // One authoritative clock and terminal resolver; Base loss precedes boss victory.
-            g1.Tick(Time.deltaTime, defenseBase.CurrentHP, yakshaDefeated);
+            float acceptedDt = g1.Tick(Time.deltaTime, defenseBase.CurrentHP, yakshaDefeated);
+            if (heroHealth != null)
+                heroHealth.AdvanceGameplayTime(acceptedDt, g1.Run.State.IsTerminal);
+
             ApplyG1Result();
             if (ended) return;
 
-            // Preserve all due events even during occasional long frames.
-            while (nextEvent < EventCount && elapsed >= nextEvent * EventInterval && !ended)
+            // Preserve all due events and enqueue their jobs into the bounded SpawnPlanner
+            if (stageEvents == null) stageEvents = DefenseStage01Schedule.GenerateEvents();
+            while (nextEvent < stageEvents.Count && elapsed >= stageEvents[nextEvent].TriggerTime && !ended)
             {
-                SpawnWaveEvent(nextEvent);
+                EnqueueWaveEvent(stageEvents[nextEvent]);
                 nextEvent++;
             }
-            if (!minibossSpawned && elapsed >= MinibossTime)
-            {
-                minibossSpawned = true;
-                SpawnEnemy("magiap_boss_MaGiap_ThongLinh", 1, false, 350f);
-                Debug.Log("[TREBRAVE Defense3D] Miniboss at 108 seconds.");
-            }
+
+            // Process spawn queue with budget (max 4 per frame, max 32 active)
+            spawnPlanner.ProcessSpawns(elapsed, CanSafelySpawn);
+
             if (!bossSpawned && elapsed >= YakshaTime)
                 SpawnYaksha();
             if (bossSpawned && !assaultStarted && yaksha != null &&
@@ -95,7 +146,10 @@ namespace ProjectZombie.Features.Defense3D
                 yaksha.BeginBossAssault(defenseBase);
             }
             // Re-evaluate after frame events; never make pre-600 boss defeat a victory.
-            g1.Tick(0f, defenseBase.CurrentHP, yakshaDefeated);
+            float terminalCheckDt = g1.Tick(0f, defenseBase.CurrentHP, yakshaDefeated);
+            if (heroHealth != null)
+                heroHealth.AdvanceGameplayTime(terminalCheckDt, g1.Run.State.IsTerminal);
+
             ApplyG1Result();
             if (ended) return;
             if (g1.Run.State.Phase == DefenseGamePhase.Overtime && !overtimeLogged)
@@ -105,15 +159,49 @@ namespace ProjectZombie.Features.Defense3D
             }
         }
 
-        private void SpawnWaveEvent(int index)
+        private void EnqueueWaveEvent(DefenseStageEvent evt)
         {
-            // Seven-VX-enemy roster is a design target; these are placeholder capsules.
-            string[] names = { "magiap", "thuyquai", "huyetdoi", "quaidu", "phicuong" };
-            string kind = names[index % names.Length];
-            for (int i = 0; i < enemiesPerEvent; i++)
-                SpawnEnemy(kind + "_Event_" + (index + 1) + "_" + (i + 1), (index + i) % 3, false, 0f);
-            Debug.Log("[TREBRAVE Defense3D] Timed event " + (index + 1) + "/34 at " + (index * 18) + "s.");
+            for (int slot = 0; slot < evt.JobCount; slot++)
+            {
+                string actualType = evt.DeclaredType;
+                // D-11/A: Magiap events have slot 0 assigned as Phi Cuong elite
+                if (evt.DeclaredType == DefenseEnemyRegistry.ID_MAGIAP && slot == 0)
+                {
+                    actualType = DefenseEnemyRegistry.ID_PHICUONG;
+                }
+                var job = new DefenseSpawnJob(evt.EventId, slot, evt.DeclaredType, actualType, evt.Zone, evt.TriggerTime);
+                spawnPlanner.EnqueueJob(job, elapsed);
+            }
+            Debug.Log($"[TREBRAVE Defense3D] Enqueued event {evt.EventId} ({evt.DeclaredType} x{evt.JobCount}) at {evt.TriggerTime}s.");
         }
+
+        private bool CanSafelySpawn(DefenseSpawnJob job)
+        {
+            // Safety rule: avoid spawning directly on top of Hero if closer than 3.1m
+            if (heroHealth != null && sceneInfo != null && sceneInfo.EastEnemySpawn != null)
+            {
+                float dist = Vector3.Distance(heroHealth.transform.position, sceneInfo.EastEnemySpawn.position);
+                if (dist < 3.1f) return false;
+            }
+            return true;
+        }
+
+        private void OnJobSpawned(DefenseSpawnJob job)
+        {
+            int lane = job.SlotIndex % 3;
+            float hpOverride = 0f;
+            if (job.ActualSpawnType == DefenseEnemyRegistry.ID_MAGIAP_BOSS)
+            {
+                hpOverride = 700f;
+            }
+            else if (DefenseEnemyRegistry.TryGetStats(job.ActualSpawnType, out var stats))
+            {
+                hpOverride = stats.MaxHp;
+            }
+            string enemyName = $"{job.ActualSpawnType}_{job.EventId}_Slot{job.SlotIndex + 1}";
+            SpawnEnemy(enemyName, lane, false, hpOverride);
+        }
+
 
         private DefenseEnemyBridgeWalker3D SpawnEnemy(string enemyName, int lane, bool arenaBoss, float health)
         {
@@ -155,8 +243,10 @@ namespace ProjectZombie.Features.Defense3D
                 if (health > 0f) enemy.SetMaxHealth(health);
                 enemy.Configure(lane, defenseBase);
             }
+            spawnedEnemies.Add(enemy);
             return enemy;
         }
+
 
         private void SpawnYaksha()
         {
@@ -208,14 +298,24 @@ namespace ProjectZombie.Features.Defense3D
             if (bossSpawned && yaksha != null && !yaksha.IsDead)
                 GUI.Label(new Rect(28, 112, 330, 22), "Yaksha HP: " + Mathf.CeilToInt(yaksha.CurrentHP));
             if (heroHealth != null)
-                GUI.Label(new Rect(28, 134, 330, 22), "Hero HP: " + Mathf.CeilToInt(heroHealth.CurrentHP) + (heroHealth.IsDown ? " (DOWN)" : ""));
+            {
+                string heroText = "Hero HP: " + Mathf.CeilToInt(heroHealth.CurrentHP);
+                if (heroHealth.IsDown)
+                    heroText += " (DOWN - Respawn in " + Mathf.CeilToInt(heroHealth.RemainingRespawnTime) + "s)";
+                GUI.Label(new Rect(28, 134, 330, 22), heroText);
+            }
             if (ended)
             {
                 float panelX = (Screen.width - 420f) * 0.5f;
-                float panelY = (Screen.height - 160f) * 0.5f;
-                GUI.Box(new Rect(panelX, panelY, 420f, 160f), won ? "TREBRAVE - VICTORY" : "TREBRAVE - DEFEAT");
-                GUI.Label(new Rect(panelX + 35f, panelY + 70f, 360f, 35f), won ? "Da Xa defeated. The village survives!" : "Nha Chinh was destroyed.");
+                float panelY = (Screen.height - 180f) * 0.5f;
+                GUI.Box(new Rect(panelX, panelY, 420f, 180f), won ? "TREBRAVE - VICTORY" : "TREBRAVE - DEFEAT");
+                GUI.Label(new Rect(panelX + 35f, panelY + 60f, 360f, 35f), won ? "Da Xa defeated. The village survives!" : "Nha Chinh was destroyed.");
+                if (GUI.Button(new Rect(panelX + 135f, panelY + 110f, 150f, 40f), "Restart Match"))
+                {
+                    RestartRun();
+                }
             }
         }
     }
 }
+
