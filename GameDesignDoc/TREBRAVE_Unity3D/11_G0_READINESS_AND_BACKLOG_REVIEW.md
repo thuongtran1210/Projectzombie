@@ -1,5 +1,48 @@
 # Gate G0 — Final Readiness Checklist & 27-Ticket Backlog Review
 
+> **G6 BOSS YAKSHA FSM & MATCH RESULT EVALUATOR — 2026-10-25:** Triển khai hoàn thiện máy trạng thái Boss Dạ Xoa và bộ phân định thắng/thua chuẩn hóa D-03/A (U3D-021, U3D-022):
+> - `DefenseYakshaBehaviorFSM.cs`: Máy trạng thái FSM Boss Dạ Xoa (`Dormant` -> `ArenaCombat` -> `AssaultBase` -> `Defeated`). Báo trước các đòn đánh cực hiểm (Slam 1.2s, Cleave 0.8s) tạo cơ hội phản đòn né tránh, bảo toàn 100% máu Boss khi chuyển từ Đấu trường sang Công thành, dừng lập tức khi Nhà Chính sụp đổ.
+> - `DefenseMatchResultEvaluator.cs`: Bộ đánh giá luật kết thúc trận đấu chuẩn xác: Nhà Chính sụp đổ (`BaseHP <= 0`) luôn luôn là LOSS ưu tiên; hạ Boss trước 600s vẫn phải tiếp tục thủ; đạt mốc 600s mà Boss còn sống tự động vào OVERTIME (không sinh thêm wave hẹn giờ); chỉ WIN khi sống sót qua 600s + diệt Boss + Base còn máu.
+> - Bộ kiểm thử NUnit Editor `DefenseG6BossAndResultTests.cs`: Kiểm thử trọn vẹn FSM Boss, bảo toàn máu khi đổi phase, telegraph báo trước đòn đánh, và 6 trường hợp phân định biên Win/Loss/Overtime.
+
+
+> **G5 ROGUELITE PROGRESSION (EXP CORE & 3-CARD UPGRADE DECK) — 2026-10-25:** Triển khai hoàn thiện hệ thống thăng cấp và chọn thẻ nâng cấp (U3D-019, U3D-020):
+> - `DefenseExperienceCore.cs`: Đường cong EXP tăng dần theo cấp độ (`20 * level + 10`), bảo toàn EXP dư thừa chuyển sang cấp tiếp theo, tự động đưa các lần thăng cấp đồng thời vào hàng đợi (`PendingLevelUps`).
+> - `DefenseUpgradeDeck.cs`: Bể thẻ nâng cấp Roguelite hỗ trợ rút ngẫu nhiên 3 thẻ không trùng lặp, áp dụng trực tiếp các modifier chỉ số (Sát thương/Tốc đánh/Tốc chạy Hero, Sát thương/Tầm bắn Tháp, Máu Nhà Chính).
+> - Bộ kiểm thử NUnit Editor `DefenseG5RogueliteTests.cs`: Kiểm thử trọn vẹn tích lũy EXP, hàng đợi thăng cấp nhiều tầng, rút 3 thẻ độc nhất và cộng dồn modifier.
+
+
+> **G4 DEFENSE & HERO (TOWER SOCKET, HERO THƯ SINH & DÉP TỔ ONG) — 2026-10-25:** Triển khai hoàn thiện cơ chế tháp và nhân vật chiến đấu (U3D-015, U3D-016, U3D-017, U3D-018):
+> - `DefenseTowerSocketCore.cs`: Quản lý 10 socket tháp, tối đa Lv3. Quy định chi phí xây (25 Gỗ), nâng cấp (40/60 Gỗ), sửa chữa (15 Gỗ) và mở rộng máu theo level tháp (BaseHpPerLevel * Level).
+> - `DefenseHeroCombatState.cs`: Điều phối bộ kit chiến đấu của Hero Thư Sinh MVP (bắn cơ bản 40 sát thương, tầm 5.5m; lướt Dash cooldown 3s). Khóa điều khiển khi gục ngã (Down) hoặc mở Modal (Paused/LevelUp).
+> - `DefenseDepToOngRelic.cs`: Triển khai Pháp Bảo Dép Tổ Ong MVP (180 sát thương diện rộng 3.5m, cooldown 12s, ngắm/cast/hủy aim an toàn không mất cooldown).
+> - Bộ kiểm thử NUnit Editor `DefenseG4DefenseAndHeroTests.cs`: Kiểm thử toàn bộ vòng đời Socket (Build/Upgrade/Repair), cooldown Hero và luồng ngắm/cast/hủy Pháp Bảo.
+
+
+> **G3 STAGE01 SCHEDULE, D-11/A ELITE & SPAWN PLANNER — 2026-10-25:** Triển khai hoàn thiện lịch trình wave và quản lý hàng đợi spawn an toàn (U3D-010, U3D-011, U3D-012, U3D-013):
+> - `DefenseStage01Schedule.cs`: Sinh chính xác 34 events / 214 jobs. Tuân thủ D-05 (sự kiện #7 `benque-07` @108s là 1 `magiap_boss` đơn độc) và D-11/A (20 event Ma Giáp có đúng 1 suất dẫn đầu `slotIndex=0` đổi thành `phicuong` -> 20 Phi Cương + 108 Ma Giáp, tổng 214 jobs).
+> - `DefenseSpawnPlanner.cs`: Quản lý giới hạn an toàn (`maxActiveEnemies=32`, `maxPendingSpawns=40`, `spawnBudgetPerFrame=4`, `TTL=25s`), hỗ trợ kiểm tra vị trí an toàn (`CanSafelySpawn` không spawn đè lên Hero < 3.1m).
+> - Tích hợp `DefenseRun6003D.cs`: Tự động đẩy jobs theo tiến trình thời gian gameplay clock vào `DefenseSpawnPlanner`, tự điều phối spawn quái với máu theo archetype đã đăng ký.
+> - Bộ kiểm thử NUnit Editor `DefenseG3StageAndSpawnTests.cs`: Kiểm thử đủ 34 events, 214 jobs, 20 Phi Cương dẫn đầu, giới hạn ngân sách frame và hết hạn TTL.
+
+
+> **G2 ENEMY FOUNDATION & COMBAT CONTRACT — 2026-10-25:** Triển khai hoàn thiện nền tảng dữ liệu quái và hợp đồng chiến đấu chuẩn (U3D-006, U3D-007, U3D-008, U3D-009):
+> - `DefenseEnemyDataSO.cs` & `DefenseEnemyRegistry.cs`: Đầy đủ 7 archetype theo hợp đồng Vongxuyen (`magiap`, `thuyquai`, `huyetdoi`, `quaidu`, `phicuong`, `magiap_boss`, `yaksha_boss`) với base stats (HP/Speed/Damage/Drop) và phân loại di chuyển (Ground, Amphibian, Air, Paratrooper).
+> - `IDefenseDamageable3D.cs` & `DefenseHealthCore.cs` & `DefenseDamageableComponent3D.cs`: Chuẩn hóa API máu & sát thương, đảm bảo HP clamp [0, MaxHP], damage > 0, sự kiện Defeated chỉ phát duy nhất đúng 1 lần (exactly-once).
+> - `DefenseRewardPipeline.cs`: Pipeline phân phối phần thưởng (Wood/EXP riêng biệt) đảm bảo phát thưởng đúng 1 lần khi chết.
+> - Nâng cấp `DefenseEnemyBridgeWalker3D.cs`: Kế thừa `IDefenseDamageable3D`, tích hợp `DefenseHealthCore` để tương thích hoàn toàn với hệ thống chiến đấu mới mà không làm hỏng scene.
+> - Bộ kiểm thử NUnit Editor `DefenseG2CombatAndEnemyTests.cs`: Kiểm thử đủ 7 archetype, clamp máu, kích hoạt Defeated exactly-once và pipeline drop.
+
+
+> **G1 HERO RESPAWN & RESTART INTEGRATION — 2026-10-25:** Hoàn thiện tích hợp D-04/A và cơ chế Restart sạch:
+> - Thêm `DefenseHeroRespawnTracker.cs` (pure C#): đếm ngược 5s hồi sinh của Hero theo gameplay delta seconds, tự động đóng băng trong `Paused`/`LevelUp`, hủy hồi sinh nếu trận đấu đạt trạng thái terminal Win/Loss.
+> - Nâng cấp `DefenseHeroHealth3D.cs`: kết nối trực tiếp với `DefenseHeroRespawnTracker`, nhận `AdvanceGameplayTime` từ clock của G1.
+> - Bổ sung `ResetBase()` vào `DefenseBasePrototype3D.cs`.
+> - Nâng cấp `DefenseRun6003D.cs`: đăng ký owner `CleanupCurrentRunEntities` và `ResetRunState` vào `DefenseG1RuntimeAdapter`, tự động dọn dẹp các capsule Enemy/Arena khi restart, bổ sung nút "Restart Match" trên UI kết quả và hiển thị đếm ngược hồi sinh của Hero.
+> - Bổ sung bộ kiểm thử `DefenseHeroRespawnTests.cs` (freeze countdown & terminal cancel).
+> - Scene, NavMesh, GLB, GUID/.meta giữ nguyên không bị phá vỡ.
+
+
 > **G1 RUNTIME INTEGRATION — 2026-10-23:** `DefenseRun6003D.cs` now constructs the opt-in `DefenseG1RuntimeAdapter`, advances its authoritative gameplay clock and resolves BaseHP LOSS versus Yaksha defeat/600s WIN (`a40001c4e2ff066ea24d982d004281e32d19d897`). Yaksha defeat before 600s is remembered but does not end the run; a regression test was added (`ccc146909c59649fc8eb7d7eb97313acac10566a`). **PARTIAL, NOT QA-PASSED:** pause/level-up control UI and shared-time integration for enemy AI/spawn cooldowns/hero respawn are NOT wired; prototype restart does not yet clean up objects, subscriptions, resources or sockets. No Unity compile, Editor or PlayMode test has been executed; do not mark U3D-003..005 DONE/ACCEPTED. Scene, NavMesh, GLB, meta/GUID and dirty local snapshot are untouched.
 
 > **G1 ADAPTER UPDATE — 2026-10-23:** Added opt-in `Assets/Features/Defense3D/DefenseG1RuntimeAdapter.cs` and `Assets/Tests/Editor/DefenseG1RuntimeAdapterTests.cs` (commits `b5b3624a64e5ceb20f738bfd48ad9779581f149f`, `256d9e46b6e1ced14deddaf75eabbe6e9c6ec5c9`). Adapter coordinates registration of per-owner cleanup/reset actions, reverse-order cleanup, forward-order reset, and core generation reset only after callbacks succeed. **No scene/runtime wiring has been performed**; callers still need actual subscriptions, spawned-object teardown, Hero/Base HP, wallet, EXP, tower, pending queue and 5-second respawn reset logic. Restart callback errors can leave owner state partially cleaned; integration must supply safe/idempotent cleanup and test recovery. **U3D-003/004/005 = PARTIAL / QA NOT_RUN / NOT_ACCEPTED**, tests committed but not executed; no Unity or local Git operations performed.
