@@ -27,5 +27,14 @@ namespace ProjectZombie.Features.Defense3D
             Debug.Log("[TREBRAVE Defense3D] LOSS: BaseHP=0.");
             BaseDestroyed?.Invoke();
         }
+
+        public void ResetBase()
+        {
+            CurrentHP = maxHP;
+            DamageLockedAfterWin = false;
+            HealthChanged?.Invoke(CurrentHP, maxHP);
+        }
     }
 }
+
+
