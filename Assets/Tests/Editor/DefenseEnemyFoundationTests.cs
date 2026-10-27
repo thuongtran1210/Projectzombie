@@ -83,5 +83,34 @@ namespace ProjectZombie.Tests.Editor
             Assert.That(stats.AttackInterval, Is.EqualTo(definition.AttackInterval));
             Assert.That(stats.AttackRange, Is.EqualTo(definition.AttackRange));
         }
+
+        [Test]
+        public void EnemyPoolManager_CanAcquireReleaseAndReuseInstance()
+        {
+            var poolRoot = new GameObject("TestEnemyPoolRoot");
+            var dummyPrefab = new GameObject("DummyEnemyPrefab");
+            dummyPrefab.AddComponent<DefenseEnemy3D>();
+
+            var poolManager = new DefenseEnemyPoolManager(poolRoot.transform);
+            try
+            {
+                var first = poolManager.Get(dummyPrefab);
+                Assert.That(first, Is.Not.Null);
+
+                bool released = poolManager.TryRelease(first);
+                Assert.That(released, Is.True);
+                Assert.That(first.activeSelf, Is.False);
+                Assert.That(first.transform.parent, Is.EqualTo(poolRoot.transform));
+
+                var second = poolManager.Get(dummyPrefab);
+                Assert.That(second, Is.SameAs(first), "ObjectPool should reuse the same GameObject instance without re-instantiating.");
+            }
+            finally
+            {
+                poolManager.Dispose();
+                Object.DestroyImmediate(dummyPrefab);
+                Object.DestroyImmediate(poolRoot);
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace ProjectZombie.Features.Defense3D
         public Transform Actors => _actors;
         public Transform Staging => _staging;
         public Transform Pickups => _pickups;
+        public Transform Pools => _pools;
 
         public void ValidateBindings()
         {

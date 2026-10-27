@@ -85,7 +85,14 @@ namespace ProjectZombie.Features.Defense3D
                 if (actor != null && reason != DefenseActorReleaseReason.ExternalRemoved)
                 {
                     try { actor.gameObject.SetActive(false); }
-                    finally { UnityEngine.Object.Destroy(actor.gameObject); }
+                    finally
+                    {
+                        if (DefenseEnemyPoolManager.ActiveSessionPool == null ||
+                            !DefenseEnemyPoolManager.ActiveSessionPool.TryRelease(actor.gameObject))
+                        {
+                            UnityEngine.Object.Destroy(actor.gameObject);
+                        }
+                    }
                 }
                 _entries.Remove(actor);
             }

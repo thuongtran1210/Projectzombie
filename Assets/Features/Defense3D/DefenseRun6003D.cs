@@ -20,6 +20,8 @@ namespace ProjectZombie.Features.Defense3D
         private DefenseSpawnRuntime _spawns;
         private DefenseYakshaEncounter3D _encounter;
         private DefenseHeroHealth3D _heroHealth;
+        private DefenseWoodDropPool _woodDropPool;
+        private DefenseEnemyPoolManager _enemyPoolManager;
 
         public float ElapsedTime => _session != null ? _session.ElapsedSeconds : 0f;
         public bool IsEnded => _session != null && _session.IsTerminal;
@@ -57,6 +59,17 @@ namespace ProjectZombie.Features.Defense3D
                 var factory = new DefenseEnemySessionFactory3D(session,_runtimeRoots,wallet,session.TargetRegistry);
                 _spawns = new DefenseSpawnRuntime(plan, placement, session, defenseBase, wallet, _encounter, session.TargetRegistry,factory,_runtimeRoots.CannonBattery);
                 _runtimeRoots.CannonBattery.Bind(session,_spawns);
+
+                var woodDropPrefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
+                if (woodDropPrefab != null)
+                {
+                    _woodDropPool = new DefenseWoodDropPool(woodDropPrefab, _runtimeRoots.Pools);
+                    DefenseWoodDropPool.RegisterSessionPool(_woodDropPool);
+                }
+
+                _enemyPoolManager = new DefenseEnemyPoolManager(_runtimeRoots.Pools);
+                DefenseEnemyPoolManager.RegisterSessionPool(_enemyPoolManager);
+
                 _runtime = new DefenseMatchRuntime(session, defenseBase, _heroHealth, towerBuilder, _spawns, _encounter);
                 session.Own(_runtime);
                 _runtime.MatchEnded += ForwardResult;
@@ -66,6 +79,18 @@ namespace ProjectZombie.Features.Defense3D
             }
             catch (Exception exception)
             {
+                if (_enemyPoolManager != null)
+                {
+                    DefenseEnemyPoolManager.UnregisterSessionPool(_enemyPoolManager);
+                    _enemyPoolManager.Dispose();
+                    _enemyPoolManager = null;
+                }
+                if (_woodDropPool != null)
+                {
+                    DefenseWoodDropPool.UnregisterSessionPool(_woodDropPool);
+                    _woodDropPool.Dispose();
+                    _woodDropPool = null;
+                }
                 try
                 {
                     if (_runtime != null) _runtime.Dispose();
@@ -92,6 +117,18 @@ namespace ProjectZombie.Features.Defense3D
 
         private void OnDestroy()
         {
+            if (_enemyPoolManager != null)
+            {
+                DefenseEnemyPoolManager.UnregisterSessionPool(_enemyPoolManager);
+                _enemyPoolManager.Dispose();
+                _enemyPoolManager = null;
+            }
+            if (_woodDropPool != null)
+            {
+                DefenseWoodDropPool.UnregisterSessionPool(_woodDropPool);
+                _woodDropPool.Dispose();
+                _woodDropPool = null;
+            }
             if (_runtime == null) return;
             _runtime.MatchEnded -= ForwardResult;
             _runtime.Dispose();

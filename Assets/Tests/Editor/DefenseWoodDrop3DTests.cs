@@ -46,5 +46,37 @@ namespace ProjectZombie.Tests.Editor
                 Object.DestroyImmediate(hero);
             }
         }
+
+        [Test]
+        public void WoodDropPool_CanAcquireReleaseAndReuseInstance()
+        {
+            var prefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
+            Assert.That(prefab, Is.Not.Null);
+
+            var poolRoot = new GameObject("TestWoodPoolRoot");
+            var pool = new DefenseWoodDropPool(prefab, poolRoot.transform, defaultCapacity: 5, maxSize: 10);
+            try
+            {
+                var drop1 = pool.Get();
+                Assert.That(drop1.gameObject.activeInHierarchy, Is.True);
+                var goInstanceId = drop1.gameObject.GetInstanceID();
+
+                // Trả về pool
+                pool.Release(drop1);
+                Assert.That(drop1.gameObject.activeSelf, Is.False);
+
+                // Lấy lại từ pool - phải tái sử dụng lại đúng instance vừa trả về (LIFO)
+                var drop2 = pool.Get();
+                Assert.That(drop2.gameObject.activeInHierarchy, Is.True);
+                Assert.That(drop2.gameObject.GetInstanceID(), Is.EqualTo(goInstanceId));
+
+                pool.Release(drop2);
+            }
+            finally
+            {
+                pool.Dispose();
+                Object.DestroyImmediate(poolRoot);
+            }
+        }
     }
 }

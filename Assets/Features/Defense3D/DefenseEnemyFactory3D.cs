@@ -87,14 +87,16 @@ namespace ProjectZombie.Features.Defense3D
             if (!ReferenceEquals(gameplay.Targets, targets)) throw new System.ArgumentException("Target index must belong to the injected gameplay session.");
             if (definition.Stats.Locomotion == DefenseEnemyLocomotionType.ParatrooperLanding && !landed)
                 throw new System.InvalidOperationException("Landing enemy can only be acquired after an approved landing.");
-            var instance = DefenseEnemyPrefab3D.Instantiate(definition.Prefab,roots != null ? roots.Staging : null);
+            var instance = DefenseEnemyPoolManager.ActiveSessionPool != null
+                ? DefenseEnemyPoolManager.ActiveSessionPool.Get(definition.Prefab, roots != null ? roots.Staging : null)
+                : DefenseEnemyPrefab3D.Instantiate(definition.Prefab, roots != null ? roots.Staging : null);
             try
             {
                 instance.transform.position = position;
                 var adapter = instance.GetComponent<DefenseEnemyBridgeWalker3D>();
                 if (adapter == null)
                     throw new System.InvalidOperationException("Enemy prefab requires its bridge composition adapter: " + definition.EnemyId);
-                adapter.BindGameplay(gameplay, collectorWallet,roots != null ? roots.Pickups : null, roots != null ? roots.FriendlyTargets : null);
+                adapter.BindGameplay(gameplay, collectorWallet, roots != null ? roots.Pickups : null, roots != null ? roots.FriendlyTargets : null);
                 adapter.Initialize(definition);
                 if (definition.Stats.Locomotion == DefenseEnemyLocomotionType.AmphibianWaterToShore)
                 {
@@ -116,7 +118,7 @@ namespace ProjectZombie.Features.Defense3D
                 prepared?.Invoke(actor);
                 if (roots != null)
                 {
-                    instance.transform.SetParent(roots.Actors,true);
+                    instance.transform.SetParent(roots.Actors, true);
                     instance.SetActive(true);
                 }
                 return actor;
@@ -133,7 +135,11 @@ namespace ProjectZombie.Features.Defense3D
             var actor = instance.GetComponent<DefenseEnemy3D>();
             if (actor != null && actor.RequestRelease(DefenseActorReleaseReason.SpawnFailed)) return;
             instance.SetActive(false);
-            Object.Destroy(instance);
+            if (DefenseEnemyPoolManager.ActiveSessionPool == null ||
+                !DefenseEnemyPoolManager.ActiveSessionPool.TryRelease(instance))
+            {
+                Object.Destroy(instance);
+            }
         }
     }
 }
