@@ -63,23 +63,10 @@ namespace ProjectZombie.Features.Defense3D
         private void Spawn(int lane, int currentWave, int ordinal)
         {
             float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
-            var enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            var enemy = DefenseEnemyPrefab3D.Instantiate();
             enemy.name = "Enemy_Wave_" + currentWave + "_Lane_" + (lane + 1) + "_" + ordinal;
             enemy.transform.position = new Vector3(sceneInfo.EastEnemySpawn.position.x, 1.1f, z);
-            var collider = enemy.GetComponent<Collider>();
-            if (collider != null) Destroy(collider);
-            var renderer = enemy.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-                if (shader != null)
-                {
-                    var material = new Material(shader);
-                    material.color = new Color(0.78f, 0.12f, 0.25f);
-                    renderer.material = material;
-                }
-            }
-            enemy.AddComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, defenseBase);
+            enemy.GetComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, defenseBase);
         }
 
         private void OnGUI()

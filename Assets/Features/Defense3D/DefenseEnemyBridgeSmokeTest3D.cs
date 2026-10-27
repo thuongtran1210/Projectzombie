@@ -37,23 +37,10 @@ namespace ProjectZombie.Features.Defense3D
             {
                 int lane = spawnThreeLanes ? i : 1;
                 float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
-                var enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                var enemy = DefenseEnemyPrefab3D.Instantiate();
                 enemy.name = "Enemy_Test_Lane_" + (lane + 1);
                 enemy.transform.position = new Vector3(sceneInfo.EastEnemySpawn.position.x, 1.1f, z);
-                var collider = enemy.GetComponent<Collider>();
-                if (collider != null) Destroy(collider); // Prototype route is visual, not physics simulation.
-                var renderer = enemy.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-                    if (shader != null)
-                    {
-                        var mat = new Material(shader);
-                        mat.color = new Color(0.85f, 0.22f, 0.26f);
-                        renderer.material = mat;
-                    }
-                }
-                enemy.AddComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, defenseBase);
+                enemy.GetComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, defenseBase);
             }
             Debug.Log("[TREBRAVE Defense3D] Spawned " + count + " bridge test enemies.");
         }

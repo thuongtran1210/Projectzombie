@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39bcd434d5e5c269364c1875927feb2, type: 3}
+  m_Name: Aggro_SongQue
+  m_EditorClassIdentifier: 
+  _acquireRange: 4.2
+  _retainRange: 7
+  _lockSeconds: 0.75
+  _thinkSeconds: 0.25
+  _provokedSeconds: 3

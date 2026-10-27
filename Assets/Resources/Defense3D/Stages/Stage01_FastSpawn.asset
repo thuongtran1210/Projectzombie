@@ -1,0 +1,269 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7e1b825d0a35546ab7cac6a554d571, type: 3}
+  m_Name: Stage01_FastSpawn
+  m_EditorClassIdentifier: 
+  profileVersion: stage01-fast-spawn-v1
+  events:
+  - EventId: benque-01
+    TriggerTime: 0
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 4
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-02
+    TriggerTime: 0.90000004
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 5
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-03
+    TriggerTime: 1.8000001
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 4
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-04
+    TriggerTime: 2.7
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 5
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-05
+    TriggerTime: 3.6000001
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 4
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-06
+    TriggerTime: 4.5
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 5
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-07
+    TriggerTime: 5.4
+    Enemy: {fileID: 11400000, guid: d73b8a43267d9a346a51a9caf4b808ca, type: 2}
+    ZoneId: eastBank
+    Count: 1
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-08
+    TriggerTime: 6.3
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 6
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-09
+    TriggerTime: 7.2000003
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 5
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-10
+    TriggerTime: 8.1
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 6
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-11
+    TriggerTime: 9
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 5
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-12
+    TriggerTime: 9.900001
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 6
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-13
+    TriggerTime: 10.8
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 5
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-14
+    TriggerTime: 11.7
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 6
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-15
+    TriggerTime: 12.6
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 6
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-16
+    TriggerTime: 13.5
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 7
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-17
+    TriggerTime: 14.400001
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 6
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-18
+    TriggerTime: 15.3
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 7
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-19
+    TriggerTime: 16.2
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 6
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-20
+    TriggerTime: 17.1
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 7
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-21
+    TriggerTime: 18
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 7
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-22
+    TriggerTime: 18.9
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 8
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-23
+    TriggerTime: 19.800001
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 7
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-24
+    TriggerTime: 20.7
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-25
+    TriggerTime: 21.6
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 7
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-26
+    TriggerTime: 22.5
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-27
+    TriggerTime: 23.4
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 7
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-28
+    TriggerTime: 24.300001
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 8
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-29
+    TriggerTime: 25.2
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-30
+    TriggerTime: 26.1
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: southBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-31
+    TriggerTime: 27
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - EventId: benque-32
+    TriggerTime: 27.9
+    Enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    ZoneId: northCanopy
+    Count: 8
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-33
+    TriggerTime: 28.800001
+    Enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    ZoneId: canalWater
+    Count: 8
+    LeadEnemy: {fileID: 0}
+  - EventId: benque-34
+    TriggerTime: 29.7
+    Enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    ZoneId: eastBank
+    Count: 8
+    LeadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  zones:
+  - ZoneId: eastBank
+    RelativeToEastMarker: 1
+    Origin: {x: 0, y: 1, z: 0}
+    Points:
+    - Offset: {x: 0, y: 0, z: -10.5}
+      Lane: 0
+    - Offset: {x: 0, y: 0, z: -0.5}
+      Lane: 1
+    - Offset: {x: 0, y: 0, z: 10.5}
+      Lane: 2
+  - ZoneId: northCanopy
+    RelativeToEastMarker: 1
+    Origin: {x: 0, y: 1, z: 14}
+    Points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 2
+  - ZoneId: southBank
+    RelativeToEastMarker: 1
+    Origin: {x: 0, y: 1, z: -14}
+    Points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 0
+  - ZoneId: canalWater
+    RelativeToEastMarker: 0
+    Origin: {x: 6.25, y: 1.1, z: 0}
+    Points:
+    - Offset: {x: 0, y: 0, z: -10.5}
+      Lane: 0
+    - Offset: {x: 0, y: 0, z: -0.5}
+      Lane: 1
+    - Offset: {x: 0, y: 0, z: 10.5}
+      Lane: 2
+  - ZoneId: arenaEast
+    RelativeToEastMarker: 1
+    Origin: {x: 0, y: 1, z: 0}
+    Points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 1
+  arenaBoss: {fileID: 11400000, guid: d3e6042e586122e48b1e3489a8d066f4, type: 2}
+  bossZoneId: arenaEast
+  bossSpawnTime: 10
+  arenaDuration: 5
+  bossHealth: 1200
+  maxActiveEnemies: 32
+  maxPendingSpawns: 40
+  spawnBudgetPerFrame: 4
+  jobLifetime: 25
+  safeHeroDistance: 3.1

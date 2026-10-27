@@ -24,6 +24,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private string displayName = "Ma Giáp";
         [SerializeField] private DefenseEnemyLocomotionType locomotionType = DefenseEnemyLocomotionType.GroundNavMesh;
         [SerializeField] private bool isBossOrMiniboss;
+        [SerializeField] private GameObject prefab;
 
         [Header("Base Stats (Unscaled)")]
         [SerializeField, Min(1f)] private float maxHP = 130f;
@@ -40,6 +41,7 @@ namespace ProjectZombie.Features.Defense3D
         public string DisplayName => displayName;
         public DefenseEnemyLocomotionType LocomotionType => locomotionType;
         public bool IsBossOrMiniboss => isBossOrMiniboss;
+        public GameObject Prefab => prefab;
         public float MaxHP => maxHP;
         public float MoveSpeed => moveSpeed;
         public float AttackDamage => attackDamage;
@@ -47,6 +49,17 @@ namespace ProjectZombie.Features.Defense3D
         public float AttackRange => attackRange;
         public int WoodDrop => woodDrop;
         public int ExpDrop => expDrop;
+
+        // Copy values per spawn; damage and scaling never mutate the shared asset.
+        public DefenseEnemyStats CreateStats()
+        {
+            return new DefenseEnemyStats(enemyId, displayName, locomotionType, maxHP,
+                moveSpeed, attackDamage, woodDrop, expDrop, isBossOrMiniboss)
+            {
+                AttackInterval = attackInterval,
+                AttackRange = attackRange
+            };
+        }
 
         /// <summary>
         /// Calculate scaled stats according to wave/phase multiplier.

@@ -41,10 +41,11 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseUpgradeDeck
     {
         private readonly List<DefenseUpgradeCard> cardPool;
-        private readonly Dictionary<DefenseUpgradeType, float> activeModifiers = new Dictionary<DefenseUpgradeType, float>();
+        private DefenseRunStats _modifiers;
 
         public DefenseUpgradeDeck()
         {
+            _modifiers = new DefenseRunStats();
             cardPool = new List<DefenseUpgradeCard>
             {
                 new DefenseUpgradeCard("card_dmg_1", "Thư Kiếm Hợp Nhất", "+20% Sát thương Hero", DefenseUpgradeType.HeroAttackDamage, 0.20f),
@@ -55,10 +56,12 @@ namespace ProjectZombie.Features.Defense3D
                 new DefenseUpgradeCard("card_base_hp_1", "Thành Kiên Đao Cố", "+200 Máu Nhà Chính", DefenseUpgradeType.BaseMaxHp, 200f)
             };
 
-            foreach (DefenseUpgradeType type in Enum.GetValues(typeof(DefenseUpgradeType)))
-            {
-                activeModifiers[type] = 0f;
-            }
+        }
+
+        /// <summary>Composition supplies the session ledger; standalone callers retain a private ledger.</summary>
+        public void BindModifiers(DefenseRunStats modifiers)
+        {
+            _modifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers));
         }
 
         public List<DefenseUpgradeCard> DrawThreeCards(int seed = 0)
@@ -84,27 +87,23 @@ namespace ProjectZombie.Features.Defense3D
             return chosen;
         }
 
+        public List<DefenseUpgradeCard> DrawThreeChoices(int seed = 0) => DrawThreeCards(seed);
+
         public bool TryApplyCard(DefenseUpgradeCard card)
         {
-            if (activeModifiers.ContainsKey(card.UpgradeType))
-            {
-                activeModifiers[card.UpgradeType] += card.Value;
-                return true;
-            }
-            return false;
+            return _modifiers.TryApplyCard(card);
         }
+
+        public bool SelectUpgrade(DefenseUpgradeCard card) => TryApplyCard(card);
 
         public float GetModifier(DefenseUpgradeType type)
         {
-            return activeModifiers.TryGetValue(type, out float val) ? val : 0f;
+            return _modifiers.GetModifier(type);
         }
 
         public void Reset()
         {
-            foreach (DefenseUpgradeType type in Enum.GetValues(typeof(DefenseUpgradeType)))
-            {
-                activeModifiers[type] = 0f;
-            }
+            _modifiers.Reset();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ProjectZombie.Features.Defense3D
     /// U3D-007 MonoBehaviour wrapper implementing IDefenseDamageable3D.
     /// Can be attached to any 3D entity (Enemy, Tower, Base, Hero) without tight coupling.
     /// </summary>
-    public sealed class DefenseDamageableComponent3D : MonoBehaviour, IDefenseDamageable3D
+    public sealed class DefenseDamageableComponent3D : DefenseGameplayBehaviour, IDefenseDamageable3D
     {
         [SerializeField, Min(1f)] private float maxHP = 100f;
 
@@ -49,7 +49,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool TakeDamage(DefenseDamageContext context)
         {
-            return HealthCore.ApplyDamage(context);
+            return isActiveAndEnabled && DefenseDamageRules.CanApply(context, Gameplay, IsDead) && HealthCore.ApplyDamage(context);
         }
 
         public bool TakeDamage(float amount, object source = null)

@@ -1,72 +1,66 @@
+using System;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// Hero down/respawn according to D-04/A.
-    /// Hero death never ends the Defense run (only BaseHP=0 causes LOSS).
-    /// Respawn delay is 5 gameplay seconds and freezes during Pause/LevelUp.
-    /// </summary>
-    public sealed class DefenseHeroHealth3D : MonoBehaviour
+    /// <summary>Hero damage capability; Downed starts a gameplay-time respawn and never ends the match.</summary>
+    public sealed class DefenseHeroHealth3D : DefenseGameplayBehaviour, IDefenseDamageable3D
     {
         [SerializeField, Min(1f)] private float maxHP = 200f;
         [SerializeField, Min(0.1f)] private float respawnDelay = 5f;
-
         private Vector3 originalSpawn;
         private DefenseHeroRespawnTracker tracker;
         private DefenseHeroMotor3D motor;
         private Rigidbody rb;
+        public float CurrentHP => Tracker.CurrentHp;
+        public float MaxHP => Tracker.MaxHp;
+        public bool IsDown => Tracker.IsDown;
+        public bool IsDead => IsDown;
+        public float RemainingRespawnTime => Tracker.RemainingRespawnTime;
+        public event Action<float, float> HealthChanged;
+        public event Action<DefenseDamageContext> Damaged;
+        public event Action Defeated;
 
-        public float CurrentHP => tracker != null ? tracker.CurrentHp : maxHP;
-        public bool IsDown => tracker != null && tracker.IsDown;
-        public float RemainingRespawnTime => tracker != null ? tracker.RemainingRespawnTime : 0f;
+        private DefenseHeroRespawnTracker Tracker
+        {
+            get
+            {
+                if (tracker != null) return tracker;
+                tracker = new DefenseHeroRespawnTracker(maxHP, respawnDelay);
+                tracker.Downed += OnHeroDowned;
+                tracker.Respawned += RespawnAtOrigin;
+                tracker.HealthChanged += (current, maximum) => HealthChanged?.Invoke(current, maximum);
+                tracker.Damaged += context => Damaged?.Invoke(context);
+                return tracker;
+            }
+        }
 
         private void Awake()
         {
             originalSpawn = transform.position;
             motor = GetComponent<DefenseHeroMotor3D>();
             rb = GetComponent<Rigidbody>();
-            InitTracker();
+            _ = Tracker;
         }
 
-        private void InitTracker()
+        public bool TakeDamage(DefenseDamageContext context)
         {
-            tracker = new DefenseHeroRespawnTracker(maxHP, respawnDelay);
-            tracker.Downed += OnHeroDowned;
-            tracker.Respawned += OnHeroRespawned;
+            return isActiveAndEnabled && DefenseDamageRules.CanApply(context, Gameplay, IsDead) && Tracker.ApplyDamage(context);
         }
 
-        public void ReceiveDamage(float amount)
-        {
-            if (tracker == null) InitTracker();
-            tracker.TakeDamage(amount);
-        }
-
-        /// <summary>
-        /// Advance respawn timer using authoritative gameplay delta seconds.
-        /// </summary>
-        public void AdvanceGameplayTime(float gameplayDeltaSeconds, bool isTerminal)
-        {
-            if (tracker == null) return;
-            tracker.Tick(gameplayDeltaSeconds, isTerminal);
-        }
+        public void ReceiveDamage(float amount) => TakeDamage(new DefenseDamageContext(amount));
+        public void AdvanceGameplayTime(float gameplayDeltaSeconds, bool isTerminal) => Tracker.Tick(gameplayDeltaSeconds, isTerminal);
 
         public void ResetHero()
         {
-            if (tracker != null) tracker.Reset();
+            Tracker.Reset();
             RespawnAtOrigin();
         }
 
         private void OnHeroDowned()
         {
             if (motor != null) motor.enabled = false;
-            Debug.Log("[TREBRAVE Defense3D] Hero downed; 5s gameplay respawn countdown started. Base remains the only loss condition.");
-        }
-
-        private void OnHeroRespawned()
-        {
-            RespawnAtOrigin();
-            Debug.Log("[TREBRAVE Defense3D] Hero respawned at origin.");
+            Defeated?.Invoke();
         }
 
         private void RespawnAtOrigin()
@@ -76,10 +70,7 @@ namespace ProjectZombie.Features.Defense3D
                 rb.velocity = Vector3.zero;
                 rb.position = originalSpawn;
             }
-            else
-            {
-                transform.position = originalSpawn;
-            }
+            else transform.position = originalSpawn;
             if (motor != null) motor.enabled = true;
         }
     }

@@ -31,7 +31,7 @@ namespace ProjectZombie.Features.Defense3D
         public bool TryStart() => Transition(DefenseGamePhase.Playing);
         public bool TryPause() => Transition(DefenseGamePhase.Paused);
         public bool TryOpenLevelUp() => Transition(DefenseGamePhase.LevelUp);
-        public bool TryResume() => Transition(ResumePhase);
+        public bool TryResume() => (Phase == DefenseGamePhase.Paused || Phase == DefenseGamePhase.LevelUp) && Transition(ResumePhase);
 
         /// <summary>
         /// Evaluate authoritative results once after same-tick base/boss updates.

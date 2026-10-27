@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f3b9ea165358889c0e12269ac77935, type: 3}
+  m_Name: RelicStatus_SongQue
+  m_EditorClassIdentifier: 
+  _slowDuration: 2
+  _slowStrength: 0.35
+  _stunDuration: 0.25
+  _knockDuration: 0.2
+  _knockStrength: 0.5

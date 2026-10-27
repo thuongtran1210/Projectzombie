@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ProjectZombie.Features.Defense3D
 {
@@ -7,18 +6,22 @@ namespace ProjectZombie.Features.Defense3D
     /// Keyboard tower building, using only the shared Hero WoodWallet.
     /// Enemy kills create physical drops; no wood is granted directly on death.
     /// </summary>
-    public sealed class DefenseTowerBuildPrototype3D : MonoBehaviour
+    public sealed class DefenseTowerBuildPrototype3D : DefenseGameplayBehaviour
     {
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
         [SerializeField] private DefenseWoodWallet3D wallet;
         [SerializeField, Min(1)] private int towerWoodCost = 25;
         [SerializeField, Min(0.5f)] private float buildRadius = 5f;
+        [SerializeField] private DefenseTowerPrototype3D[] socketTowers;
+        [SerializeField] private bool showDebugOverlay;
         private bool[] occupied;
+        private DefenseHeroHealth3D _heroHealth;
+        private IDefenseHeroCommands _commands;
+        public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
         
 
         private void Start()
         {
-            if (sceneInfo == null) sceneInfo = FindObjectOfType<DefenseSceneInfo3D>();
             if (sceneInfo == null || sceneInfo.HeroSpawn == null || sceneInfo.TowerSocketCount == 0)
             {
                 Debug.LogError("[TREBRAVE Defense3D] Tower builder requires active SceneInfo, Hero and tower sockets.");
@@ -26,6 +29,23 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
             occupied = new bool[sceneInfo.TowerSocketCount];
+            _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
+            if (socketTowers == null || socketTowers.Length != occupied.Length)
+            {
+                Debug.LogError("[TREBRAVE Defense3D] Assign one authored Tower per socket in the Inspector.", this);
+                enabled = false;
+                return;
+            }
+            for (int i = 0; i < socketTowers.Length; i++)
+            {
+                if (socketTowers[i] == null)
+                {
+                    Debug.LogError("[TREBRAVE Defense3D] Missing authored Tower at socket " + i, this);
+                    enabled = false;
+                    return;
+                }
+                occupied[i] = socketTowers[i].gameObject.activeSelf;
+            }
             if (wallet == null) wallet = sceneInfo.HeroSpawn.GetComponent<DefenseWoodWallet3D>();
             if (wallet == null)
             {
@@ -38,12 +58,24 @@ namespace ProjectZombie.Features.Defense3D
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
+            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return;
+            if (_commands != null && _commands.ConsumeBuild())
                 TryBuildNearest();
+        }
+
+        public void ResetTowers()
+        {
+            if (socketTowers == null) return;
+            for (int i = 0; i < socketTowers.Length; i++)
+            {
+                if (socketTowers[i] != null) socketTowers[i].gameObject.SetActive(false);
+                if (occupied != null && i < occupied.Length) occupied[i] = false;
+            }
         }
 
         private void TryBuildNearest()
         {
+            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return;
             if (wallet == null || wallet.Wood < towerWoodCost)
             {
                 Debug.Log("[TREBRAVE Defense3D] Not enough test wood to build tower.");
@@ -69,28 +101,14 @@ namespace ProjectZombie.Features.Defense3D
             }
 
             if (!wallet.TrySpend(towerWoodCost)) return;
-            var marker = sceneInfo.GetTowerSocket(candidate);
-            var tower = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            tower.name = "Defense_Test_Tower_" + (candidate + 1).ToString("00");
-            tower.transform.position = marker.position + Vector3.up * 0.8f;
-            tower.transform.localScale = new Vector3(0.65f, 1.4f, 0.65f);
-            var collider = tower.GetComponent<Collider>();
-            if (collider != null) Destroy(collider); // Visual-only prototype; does not change baked NavMesh.
-            var renderer = tower.GetComponent<Renderer>();
-            var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-            if (renderer != null && shader != null)
-            {
-                var material = new Material(shader);
-                material.color = new Color(0.95f, 0.7f, 0.25f);
-                renderer.material = material;
-            }
-            tower.AddComponent<DefenseTowerPrototype3D>();
+            socketTowers[candidate].gameObject.SetActive(true);
             occupied[candidate] = true;
             Debug.Log("[TREBRAVE Defense3D] Tower built at socket " + (candidate + 1) + ". Wood: " + wallet.Wood);
         }
 
         private void OnGUI()
         {
+            if (!showDebugOverlay) return;
             GUI.Box(new Rect(16, 116, 320, 72), "Tower Building (Prototype)");
             GUI.Label(new Rect(28, 143, 290, 22), "Wood: " + (wallet != null ? wallet.Wood : 0) + " | Tower Cost: " + towerWoodCost);
             GUI.Label(new Rect(28, 164, 290, 20), "Press B near an empty tower socket.");

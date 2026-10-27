@@ -2,71 +2,60 @@ using System;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// Pure C# coordinator for hero down & respawn timer according to D-04/A.
-    /// Respawn timer only advances via gameplay delta seconds (freezes during Pause/LevelUp).
-    /// Terminal states (Win/Loss) cancel pending respawn.
-    /// </summary>
+    /// <summary>Hero life/respawn coordinator; shared health core owns all HP and death transitions.</summary>
     public sealed class DefenseHeroRespawnTracker
     {
         public const float StandardRespawnDelay = 5f;
-
-        public float MaxHp { get; private set; }
-        public float CurrentHp { get; private set; }
+        private readonly DefenseHealthCore _health;
+        private bool _respawnCancelled;
+        public float MaxHp => _health.MaxHp;
+        public float CurrentHp => _health.CurrentHp;
         public float RespawnDelay { get; }
         public float RemainingRespawnTime { get; private set; }
-        public bool IsDown => CurrentHp <= 0f;
-
+        public bool IsDown => _health.IsDead;
         public event Action Downed;
         public event Action Respawned;
+        public event Action<float, float> HealthChanged { add => _health.HealthChanged += value; remove => _health.HealthChanged -= value; }
+        public event Action<DefenseDamageContext> Damaged { add => _health.Damaged += value; remove => _health.Damaged -= value; }
 
         public DefenseHeroRespawnTracker(float maxHp = 200f, float respawnDelay = StandardRespawnDelay)
         {
-            if (maxHp <= 0f) throw new ArgumentOutOfRangeException(nameof(maxHp));
-            if (respawnDelay <= 0f) throw new ArgumentOutOfRangeException(nameof(respawnDelay));
-
-            MaxHp = maxHp;
-            CurrentHp = maxHp;
+            if (!DefenseDamageRules.IsFinite(respawnDelay) || respawnDelay <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(respawnDelay));
+            _health = new DefenseHealthCore(maxHp);
             RespawnDelay = respawnDelay;
-            RemainingRespawnTime = 0f;
+            _health.Defeated += () =>
+            {
+                RemainingRespawnTime = _respawnCancelled ? 0f : RespawnDelay;
+                Downed?.Invoke();
+            };
         }
 
-        public void TakeDamage(float amount)
-        {
-            if (IsDown || amount <= 0f) return;
-            CurrentHp = Math.Max(0f, CurrentHp - amount);
-            if (CurrentHp <= 0f)
-            {
-                RemainingRespawnTime = RespawnDelay;
-                Downed?.Invoke();
-            }
-        }
+        public void TakeDamage(float amount) => ApplyDamage(new DefenseDamageContext(amount));
+        public bool ApplyDamage(DefenseDamageContext context) => _health.ApplyDamage(context);
 
         public void Tick(float gameplayDeltaSeconds, bool isTerminal)
         {
-            if (!IsDown) return;
-
+            if (!DefenseDamageRules.IsFinite(gameplayDeltaSeconds) || gameplayDeltaSeconds < 0f)
+                throw new ArgumentOutOfRangeException(nameof(gameplayDeltaSeconds));
             if (isTerminal)
             {
-                // Terminal Win/Loss cancels pending respawn permanently
+                _respawnCancelled = true;
                 RemainingRespawnTime = 0f;
                 return;
             }
-
-            if (gameplayDeltaSeconds <= 0f) return;
-
+            if (!IsDown || _respawnCancelled || gameplayDeltaSeconds <= 0f) return;
             RemainingRespawnTime = Math.Max(0f, RemainingRespawnTime - gameplayDeltaSeconds);
-            if (RemainingRespawnTime <= 0f)
-            {
-                CurrentHp = MaxHp;
-                Respawned?.Invoke();
-            }
+            if (RemainingRespawnTime > 0f) return;
+            _health.Reset();
+            Respawned?.Invoke();
         }
 
         public void Reset()
         {
-            CurrentHp = MaxHp;
+            _respawnCancelled = false;
             RemainingRespawnTime = 0f;
+            _health.Reset();
         }
     }
 }

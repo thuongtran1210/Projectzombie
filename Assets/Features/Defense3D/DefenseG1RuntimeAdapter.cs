@@ -55,11 +55,27 @@ namespace ProjectZombie.Features.Defense3D
         public void Restart()
         {
             ThrowIfDisposed();
-            for (int i = cleanup.Count - 1; i >= 0; --i)
-                cleanup[i]();
+            CleanupOwners();
             for (int i = 0; i < reset.Count; ++i)
                 reset[i]();
             Run.ResetCore();
+        }
+
+        /// <summary>Attempts every owner in reverse order; failure prevents reset and generation advancement.</summary>
+        public void CleanupOwners()
+        {
+            ThrowIfDisposed();
+            List<Exception> failures = null;
+            for (int i = cleanup.Count - 1; i >= 0; --i)
+            {
+                try { cleanup[i](); }
+                catch (Exception exception)
+                {
+                    if (failures == null) failures = new List<Exception>();
+                    failures.Add(exception);
+                }
+            }
+            if (failures != null) throw new AggregateException("Defense owner cleanup failed.", failures);
         }
 
         public void Dispose()

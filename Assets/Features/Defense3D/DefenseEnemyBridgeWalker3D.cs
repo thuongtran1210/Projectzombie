@@ -1,17 +1,17 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
-    /// Three-lane NavMesh smoke test. Each lane validates a complete path to its
-    /// bridge and across the canal before proceeding. Never moves through water
-    /// by transform fallback when NavMesh is absent or disconnected.
+    /// Compatibility adapter for existing bridge scenes and Yaksha callers.
+    /// New health, movement, combat and drop behavior live in independent components.
     /// </summary>
-    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(DefenseEnemy3D), typeof(DefenseGroundMovement3D), typeof(DefenseEnemyAttack3D))]
+    [RequireComponent(typeof(DefenseEnemyDrop3D))]
     public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour, IDefenseDamageable3D
     {
+        // Retain serialized fields so existing scene/prefab overrides survive migration.
         [SerializeField, Min(0.1f)] private float speed = 2.5f;
         [SerializeField, Min(0f)] private float baseDamage = 25f;
         [SerializeField, Min(0.1f)] private float arrivalRadius = 1.2f;
@@ -19,196 +19,181 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1f)] private float maxHP = 100f;
         [SerializeField, Min(1)] private int woodDropAmount = 10;
         [SerializeField] private DefenseBasePrototype3D targetBase;
-
-        private DefenseHealthCore healthCore;
-        private DefenseHealthCore HealthCore
+        private DefenseEnemy3D enemy;
+        private DefenseGroundMovement3D movement;
+        private DefenseEnemyAttack3D attack;
+        private DefenseGroundAggro3D _aggro;
+        private DefenseHeroHealth3D _hero;
+        private bool configured;
+        private DefenseEnemy3D Enemy
         {
-            get
-            {
-                if (healthCore == null)
-                {
-                    healthCore = new DefenseHealthCore(maxHP);
-                    healthCore.HealthChanged += (cur, max) => HealthChanged?.Invoke(cur, max);
-                    healthCore.Damaged += ctx => Damaged?.Invoke(ctx);
-                    healthCore.Defeated += OnDefeated;
-                }
-                return healthCore;
-            }
+            get { EnsureComponents(); return enemy; }
         }
-
-        public float CurrentHP => HealthCore.CurrentHp;
-        public float MaxHP => HealthCore.MaxHp;
-        public bool IsDead => HealthCore.IsDead;
-
-        private float nextAttackTime;
-        private bool attacking;
-        private NavMeshAgent agent;
-        private Vector3[] route;
-        private int index;
-        private bool finished;
-        private bool arenaMode;
-
+        public float CurrentHP => Enemy.CurrentHP;
+        public float MaxHP => Enemy.MaxHP;
+        public bool IsDead => Enemy.IsDead;
         public event Action<DefenseEnemyBridgeWalker3D> Defeated;
         public event Action<float, float> HealthChanged;
         public event Action<DefenseDamageContext> Damaged;
+        private event Action damageableDefeated;
         event Action IDefenseDamageable3D.Defeated
         {
-            add => internalDefeated += value;
-            remove => internalDefeated -= value;
+            add => damageableDefeated += value;
+            remove => damageableDefeated -= value;
         }
-        private Action internalDefeated;
+        private void Awake() => EnsureComponents();
 
+        /// <summary>Inject session dependencies before initializing a spawned actor.</summary>
+        public void BindGameplay(IDefenseGameplayContext gameplay, DefenseWoodWallet3D collectorWallet, Transform pickupRoot = null, DefenseFriendlyTargets3D friends = null)
+        {
+            EnsureComponents();
+            enemy.BindGameplay(gameplay);
+            movement.BindGameplay(gameplay);
+            attack.BindGameplay(gameplay);
+            var drops = GetComponent<DefenseEnemyDrop3D>();
+            drops.BindGameplay(gameplay);
+            drops.BindCollector(collectorWallet,pickupRoot);
+            if (_aggro!=null)
+            {
+                _aggro.BindFriendlyTargets(friends);
+                _aggro.BindGameplay(gameplay);
+            }
+            if (collectorWallet!=null) collectorWallet.TryGetComponent(out _hero);
+        }
+        private void EnsureComponents()
+        {
+            if (enemy != null) return;
+            // Composition is authored on the prefab, visible before entering Play.
+            enemy = GetComponent<DefenseEnemy3D>();
+            movement = GetComponent<DefenseGroundMovement3D>();
+            attack = GetComponent<DefenseEnemyAttack3D>();
+            _aggro=GetComponent<DefenseGroundAggro3D>();
+            movement.Arrived += BeginAttack;
+            enemy.Defeated += OnDefeated;
+            enemy.HealthChanged += ForwardHealth;
+            enemy.Damaged += ForwardDamage;
+        }
+        public void Initialize(DefenseEnemyStats stats)
+        {
+            EnsureComponents();
+            attack.StopAttack();
+            movement.Stop();
+            enemy.Initialize(stats);
+            _aggro?.Stop();
+            configured = true;
+        }
+        public void Initialize(DefenseEnemyDataSO definition)
+        {
+            EnsureComponents();
+            attack.StopAttack();
+            movement.Stop();
+            enemy.Initialize(definition);
+            _aggro?.Stop();
+            configured = true;
+        }
+        public void Initialize(DefenseEnemySpawnDefinition definition)
+        {
+            EnsureComponents();
+            attack.StopAttack();
+            movement.Stop();
+            _aggro?.Stop();
+            enemy.Initialize(definition);
+            configured = true;
+        }
+        private void EnsureConfiguration()
+        {
+            EnsureComponents();
+            if (configured) return;
+            if (enemy.Definition != null) enemy.Initialize(enemy.Definition);
+            else enemy.Initialize(new DefenseEnemyStats("legacy", name,
+                DefenseEnemyLocomotionType.GroundNavMesh, maxHP, speed, baseDamage, woodDropAmount, 0)
+                { AttackInterval = attackInterval, AttackRange = arrivalRadius });
+            configured = true;
+        }
         public void Configure(int lane, DefenseBasePrototype3D target)
         {
+            EnsureConfiguration();
             targetBase = target;
-            HealthCore.Reset(maxHP);
-            arenaMode = false;
-
-            float z = lane == 0 ? -10.5f : lane == 2 ? 10.5f : -0.5f;
-            route = new[]
+            attack.StopAttack();
+            if (enemy.Stats.Locomotion == DefenseEnemyLocomotionType.AmphibianWaterToShore)
             {
-                new Vector3(8.8f, 0f, z),
-                new Vector3(6.25f, 0f, z),
-                new Vector3(3.8f, 0f, z),
-                new Vector3(-1.8f, 0f, z),
-                new Vector3(-7.5f, 0f, z * 0.6f),
-                new Vector3(-12f, 0f, 0f)
-            };
-            index = 0;
-            finished = false;
-            agent = GetComponent<NavMeshAgent>();
-            agent.speed = speed;
-            agent.angularSpeed = 360f;
-            agent.acceleration = 12f;
-            agent.stoppingDistance = 0.1f;
-            agent.autoBraking = true;
-
-            if (!NavMesh.SamplePosition(transform.position, out NavMeshHit start, 2f, NavMesh.AllAreas))
-            {
-                Fail("spawn position is outside baked NavMesh");
+                var water = GetComponent<DefenseWaterMovement3D>();
+                if (water == null) throw new InvalidOperationException("Missing authored amphibian movement.");
+                water.Begin(target);
                 return;
             }
-            agent.Warp(start.position);
-            SetNextDestination();
+            if (enemy.Stats.Locomotion == DefenseEnemyLocomotionType.AirFlight)
+            {
+                var air = GetComponent<DefenseAirMovement3D>();
+                if (air == null) throw new InvalidOperationException("Missing authored Air movement.");
+                air.Begin(target);
+                return;
+            }
+            // Configure route without resetting HP; arena -> assault preserves damage.
+            if (_aggro!=null && !enemy.Stats.IsBoss)
+                _aggro.Configure(lane,target,_hero,enemy.Stats.Locomotion==DefenseEnemyLocomotionType.ParatrooperLanding);
+            else
+            {
+                _aggro?.Stop();
+                var collider=target!=null ? target.GetComponent<Collider>() : null;
+                float extent=collider!=null ? Mathf.Max(collider.bounds.extents.x,collider.bounds.extents.z) : 0f;
+                movement.Follow(DefenseBridgeRoute3D.Create(lane,transform.position,target.transform.position),
+                    enemy.Stats.Speed,enemy.Stats.AttackRange+extent);
+            }
         }
-
         public void SetMaxHealth(float hp)
         {
-            maxHP = Mathf.Max(1f, hp);
-            HealthCore.Reset(maxHP);
+            EnsureConfiguration();
+            enemy.SetMaxHealth(hp);
         }
-
-        /// <summary>Boss remains in arena for a configurable number of seconds.</summary>
         public void PrepareArenaBoss(float hp)
         {
             SetMaxHealth(hp);
-            arenaMode = true;
-            finished = false;
+            _aggro?.Stop();
+            movement.Stop();
+            attack.StopAttack();
         }
-
         public void BeginBossAssault(DefenseBasePrototype3D target)
         {
-            if (IsDead || finished || !arenaMode) return;
-            float hpBeforeTransition = CurrentHP;
-            arenaMode = false;
+            if (IsDead) return;
             Configure(1, target);
-            HealthCore.ApplyDamage(new DefenseDamageContext(maxHP - hpBeforeTransition));
             Debug.Log("[TREBRAVE Defense3D] Yaksha entered ASSAULT_BASE.");
         }
-
-        private void SetNextDestination()
+        public void StopBossCombat()
         {
-            if (finished || agent == null || !agent.isOnNavMesh || index >= route.Length)
-                return;
-            if (!NavMesh.SamplePosition(route[index], out NavMeshHit hit, 1.3f, NavMesh.AllAreas))
-            {
-                Fail("waypoint " + index + " is not on NavMesh");
-                return;
-            }
-            var path = new NavMeshPath();
-            if (!agent.CalculatePath(hit.position, path) || path.status != NavMeshPathStatus.PathComplete)
-            {
-                Fail("no complete route to waypoint " + index + " (check bridge NavMesh connection)");
-                return;
-            }
-            if (!agent.SetDestination(hit.position))
-                Fail("SetDestination rejected waypoint " + index);
+            _aggro?.Stop();
+            movement?.Stop();
+            attack?.StopAttack();
         }
-
-        private void Update()
+        private void BeginAttack()
         {
-            if (arenaMode || finished || IsDead || agent == null || !agent.isOnNavMesh || targetBase == null)
-                return;
-            if (targetBase.IsDestroyed)
-            {
-                finished = true;
-                agent.isStopped = true;
-                return;
-            }
-            if (attacking)
-            {
-                if (Time.time >= nextAttackTime)
-                {
-                    targetBase.ReceiveDamage(baseDamage);
-                    nextAttackTime = Time.time + attackInterval;
-                    Debug.Log("[TREBRAVE Defense3D] Enemy attacked Base: " + baseDamage);
-                }
-                return;
-            }
-            if (agent.pathPending) return;
-            if (agent.pathStatus == NavMeshPathStatus.PathInvalid ||
-                agent.pathStatus == NavMeshPathStatus.PathPartial)
-            {
-                Fail("path became incomplete at waypoint " + index);
-                return;
-            }
-            if (agent.remainingDistance > Mathf.Max(arrivalRadius, agent.stoppingDistance + 0.1f))
-                return;
-            if (agent.hasPath && agent.velocity.sqrMagnitude > 0.02f)
-                return;
-            if (++index >= route.Length)
-            {
-                attacking = true;
-                agent.isStopped = true;
-                nextAttackTime = Time.time;
-                Debug.Log("[TREBRAVE Defense3D] NavMesh enemy reached Base; starting attacks.");
-                return;
-            }
-            SetNextDestination();
+            if (_aggro!=null && _aggro.OwnsCombat) return;
+            if (!IsDead && targetBase != null && !targetBase.IsDestroyed) attack.Begin(targetBase);
         }
-
-        public bool TakeDamage(DefenseDamageContext context)
-        {
-            if (finished || IsDead) return false;
-            return HealthCore.ApplyDamage(context);
-        }
-
-        public void ReceiveDamage(float damage)
-        {
-            TakeDamage(new DefenseDamageContext(damage));
-        }
-
+        public bool TakeDamage(DefenseDamageContext context) => Enemy.TakeDamage(context);
+        public void ReceiveDamage(float damage) => TakeDamage(new DefenseDamageContext(damage));
         private void OnDefeated()
         {
-            if (finished) return;
-            finished = true;
+            movement.Stop();
+            attack.StopAttack();
             Debug.Log("[TREBRAVE Defense3D] Enemy defeated: " + name);
             Defeated?.Invoke(this);
-            internalDefeated?.Invoke();
-            var wallet = FindObjectOfType<DefenseWoodWallet3D>();
-            if (wallet != null)
-                DefenseWoodDrop3D.Spawn(transform.position, woodDropAmount, wallet.transform, wallet);
-            else
-                Debug.LogWarning("[TREBRAVE Defense3D] Enemy defeated but Hero WoodWallet was not found; no Wood granted.");
-            Destroy(gameObject);
+            damageableDefeated?.Invoke();
         }
-
-        private void Fail(string reason)
+        private void ForwardHealth(float current, float max) => HealthChanged?.Invoke(current, max);
+        private void ForwardDamage(DefenseDamageContext context) => Damaged?.Invoke(context);
+        private void OnDisable()
         {
-            finished = true;
-            if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
-            Debug.LogWarning("[TREBRAVE Defense3D] Enemy route stopped: " + reason + " (" + name + ").");
+            if (movement != null) movement.Stop();
+            if (attack != null) attack.StopAttack();
+        }
+        private void OnDestroy()
+        {
+            if (movement != null) movement.Arrived -= BeginAttack;
+            if (enemy == null) return;
+            enemy.Defeated -= OnDefeated;
+            enemy.HealthChanged -= ForwardHealth;
+            enemy.Damaged -= ForwardDamage;
         }
     }
 }
-

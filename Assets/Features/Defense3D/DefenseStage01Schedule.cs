@@ -3,26 +3,6 @@ using System.Collections.Generic;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    public struct DefenseSpawnJob
-    {
-        public string EventId;
-        public int SlotIndex;
-        public string DeclaredType;
-        public string ActualSpawnType;
-        public string Zone;
-        public float ScheduledTime;
-
-        public DefenseSpawnJob(string eventId, int slotIndex, string declaredType, string actualSpawnType, string zone, float scheduledTime)
-        {
-            EventId = eventId;
-            SlotIndex = slotIndex;
-            DeclaredType = declaredType;
-            ActualSpawnType = actualSpawnType;
-            Zone = zone;
-            ScheduledTime = scheduledTime;
-        }
-    }
-
     public struct DefenseStageEvent
     {
         public int Index;

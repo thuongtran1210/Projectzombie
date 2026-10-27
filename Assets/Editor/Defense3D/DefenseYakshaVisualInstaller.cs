@@ -1,11 +1,10 @@
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using ProjectZombie.Features.Defense3D;
 
 namespace ProjectZombie.EditorTools.Defense3D
 {
-    /// <summary>Assign an imported Yaksha model prefab without modifying map or NavMesh.</summary>
+    /// <summary>Author the visual inside the Yaksha prefab before entering Play Mode.</summary>
     public static class DefenseYakshaVisualInstaller
     {
         [MenuItem("TREBRAVE/Defense 3D/Assign Selected Model As Yaksha Visual")]
@@ -17,14 +16,6 @@ namespace ProjectZombie.EditorTools.Defense3D
                 return;
             }
 
-            var run = Object.FindObjectOfType<DefenseRun6003D>();
-            if (run == null)
-            {
-                EditorUtility.DisplayDialog("TREBRAVE Yaksha",
-                    "Open your existing MapSongQue3D scene and ensure the 600s Defense Run component is active.", "OK");
-                return;
-            }
-
             var prefab = Selection.activeObject as GameObject;
             if (prefab == null || !PrefabUtility.IsPartOfPrefabAsset(prefab))
             {
@@ -33,25 +24,31 @@ namespace ProjectZombie.EditorTools.Defense3D
                 return;
             }
 
-            if (!EditorUtility.DisplayDialog("TREBRAVE Yaksha",
-                "Assign prefab '" + prefab.name + "' as the Yaksha visual? The existing 600s controller, HP, NavMesh and map remain unchanged.", "Assign", "Cancel"))
-                return;
-
-            var serialized = new SerializedObject(run);
-            var visual = serialized.FindProperty("yakshaVisualPrefab");
-            if (visual == null)
+            const string bossPath = "Assets/Resources/Defense3D/DefenseYaksha3D.prefab";
+            if (AssetDatabase.GetAssetPath(prefab) == bossPath)
             {
-                Debug.LogError("[TREBRAVE Defense3D] yakshaVisualPrefab property not found.");
+                Debug.LogError("Select a visual model, not the Yaksha gameplay prefab itself.");
                 return;
             }
-            Undo.RecordObject(run, "Assign Yaksha visual prefab");
-            visual.objectReferenceValue = prefab;
-            serialized.ApplyModifiedProperties();
-            EditorUtility.SetDirty(run);
-            EditorSceneManager.MarkSceneDirty(run.gameObject.scene);
-            Selection.activeGameObject = run.gameObject;
-            Debug.Log("[TREBRAVE Defense3D] Yaksha visual prefab assigned: " + prefab.name +
-                ". Save scene. Boss visual is instantiated at runtime at 510s.");
+            if (!EditorUtility.DisplayDialog("TREBRAVE Yaksha",
+                "Save '" + prefab.name + "' as a visual child inside the Yaksha prefab? You can edit its transform in Prefab Mode.", "Assign", "Cancel"))
+                return;
+            var root = PrefabUtility.LoadPrefabContents(bossPath);
+            try
+            {
+                var oldVisual = root.transform.Find("Yaksha_3D_Visual");
+                if (oldVisual != null) Object.DestroyImmediate(oldVisual.gameObject);
+                var visual = (GameObject)PrefabUtility.InstantiatePrefab(prefab, root.scene);
+                visual.name = "Yaksha_3D_Visual";
+                visual.transform.SetParent(root.transform, false);
+                foreach (var collider in visual.GetComponentsInChildren<Collider>(true)) collider.enabled = false;
+                var placeholder = root.GetComponent<Renderer>();
+                if (placeholder != null) placeholder.enabled = false;
+                PrefabUtility.SaveAsPrefabAsset(root, bossPath);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<GameObject>(bossPath);
+            Debug.Log("[TREBRAVE Defense3D] Yaksha visual saved in prefab. Adjust it in Prefab Mode.");
         }
 
         [MenuItem("TREBRAVE/Defense 3D/Assign Selected Model As Yaksha Visual", true)]

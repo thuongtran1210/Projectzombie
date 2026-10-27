@@ -3,33 +3,48 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Physical Wood pickup, collected only when the Hero approaches.</summary>
-    public sealed class DefenseWoodDrop3D : MonoBehaviour
+    public sealed class DefenseWoodDrop3D : DefenseGameplayBehaviour
     {
         [SerializeField, Min(1)] private int woodAmount = 10;
         [SerializeField, Min(1f)] private float lifetime = 90f;
         [SerializeField, Min(0.1f)] private float pickupRadius = 1.4f;
+        [SerializeField, Min(0f)] private float pickupDelay = 0.75f;
+        public const string ResourcePath = "Defense3D/DefenseWoodDrop3D";
         private Transform hero;
         private DefenseWoodWallet3D wallet;
+        private DefenseHeroHealth3D _collectorHealth;
         private bool collected;
         private float expireTime;
+        private float pickupReadyTime;
 
         public void Initialize(int amount, Transform collector, DefenseWoodWallet3D collectorWallet)
         {
             woodAmount = Mathf.Max(1, amount);
             hero = collector;
             wallet = collectorWallet;
-            expireTime = Time.time + lifetime;
+            _collectorHealth = collector != null ? collector.GetComponent<DefenseHeroHealth3D>() : null;
+            expireTime = GameplayTime + lifetime;
+            pickupReadyTime = GameplayTime + pickupDelay;
+        }
+
+        protected override void OnGameplayCleanup()
+        {
+            collected = true;
+            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
 
         private void Update()
         {
-            if (collected) return;
-            if (Time.time >= expireTime)
+            if (!CanAdvanceGameplay || collected) return;
+            if (GameplayTime >= expireTime)
             {
                 Destroy(gameObject);
                 return;
             }
+            if (GameplayTime < pickupReadyTime) return;
             if (hero == null || wallet == null || !hero.gameObject.activeInHierarchy) return;
+            if (_collectorHealth != null && _collectorHealth.IsDown) return;
             Vector3 delta = hero.position - transform.position;
             delta.y = 0f;
             if (delta.sqrMagnitude > pickupRadius * pickupRadius) return;
@@ -38,24 +53,24 @@ namespace ProjectZombie.Features.Defense3D
             Destroy(gameObject);
         }
 
-        public static void Spawn(Vector3 deathPosition, int amount, Transform collector, DefenseWoodWallet3D collectorWallet)
+        public static DefenseWoodDrop3D Spawn(Vector3 deathPosition, int amount, Transform collector, DefenseWoodWallet3D collectorWallet,
+            IDefenseGameplayContext gameplay = null, Transform parent = null)
         {
-            if (collector == null || collectorWallet == null) return;
-            var drop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            if (gameplay == null) throw new System.ArgumentNullException(nameof(gameplay), "Pickup spawning requires an explicit Defense session context.");
+            var prefab = Resources.Load<GameObject>(ResourcePath);
+            if (prefab == null)
+                throw new System.InvalidOperationException("Missing WoodDrop prefab: Resources/" + ResourcePath);
+#if UNITY_EDITOR
+            var drop = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefab,parent);
+#else
+            var drop = Object.Instantiate(prefab,parent);
+#endif
             drop.name = "WoodDrop_" + amount;
             drop.transform.position = new Vector3(deathPosition.x, Mathf.Max(0.3f, deathPosition.y - 0.65f), deathPosition.z);
-            drop.transform.localScale = new Vector3(0.42f, 0.28f, 0.35f);
-            var collider = drop.GetComponent<Collider>();
-            if (collider != null) Destroy(collider);
-            var renderer = drop.GetComponent<Renderer>();
-            var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-            if (renderer != null && shader != null)
-            {
-                var material = new Material(shader);
-                material.color = new Color(0.65f, 0.38f, 0.14f);
-                renderer.material = material;
-            }
-            drop.AddComponent<DefenseWoodDrop3D>().Initialize(amount, collector, collectorWallet);
+            var pickup = drop.GetComponent<DefenseWoodDrop3D>();
+            pickup.BindGameplay(gameplay);
+            pickup.Initialize(amount, collector, collectorWallet);
+            return pickup;
         }
     }
 }

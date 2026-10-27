@@ -7,8 +7,15 @@ namespace ProjectZombie.Features.Defense3D
     {
         [SerializeField, Min(0)] private int startingWood = 0;
         public int Wood { get; private set; }
+        public int CurrentWood => Wood;
 
-        private void Awake() { Wood = startingWood; }
+        private void Awake()
+        {
+            ResetWallet();
+        }
+
+        /// <summary>Restores the authored initial balance for a new run.</summary>
+        public void ResetWallet() => Wood = startingWood;
 
         public void CollectWood(int amount)
         {

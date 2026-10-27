@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Defense3D
         public event Action Defeated;
 
         private bool defeatedTriggered;
+        private int _revision;
+        private int _lifeVersion;
 
         public DefenseHealthCore(float maxHp)
         {
@@ -34,16 +36,21 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool ApplyDamage(DefenseDamageContext context)
         {
-            if (IsDead || context.Amount <= 0f || float.IsNaN(context.Amount) || float.IsInfinity(context.Amount))
+            if (IsDead || !DefenseDamageRules.IsValid(context))
                 return false;
 
             CurrentHp = Math.Max(0f, CurrentHp - context.Amount);
+            int revision = ++_revision;
+            int lifeVersion = _lifeVersion;
+            bool lethal = IsDead && !defeatedTriggered;
+            if (lethal) defeatedTriggered = true;
             Damaged?.Invoke(context);
-            HealthChanged?.Invoke(CurrentHp, MaxHp);
+            if (_lifeVersion != lifeVersion) return true;
+            if (_revision == revision) HealthChanged?.Invoke(CurrentHp, MaxHp);
+            if (_lifeVersion != lifeVersion) return true;
 
-            if (CurrentHp <= 0f && !defeatedTriggered)
+            if (lethal)
             {
-                defeatedTriggered = true;
                 Defeated?.Invoke();
             }
 
@@ -60,6 +67,20 @@ namespace ProjectZombie.Features.Defense3D
             }
             CurrentHp = MaxHp;
             defeatedTriggered = false;
+            _revision++;
+            _lifeVersion++;
+            HealthChanged?.Invoke(CurrentHp, MaxHp);
+        }
+
+        /// <summary>Changes capacity without reviving dead actors; positive grants may fill only the added capacity.</summary>
+        public void SetCapacity(float maxHp, bool fillIncrease)
+        {
+            if (maxHp <= 0f || !DefenseDamageRules.IsFinite(maxHp)) throw new ArgumentOutOfRangeException(nameof(maxHp));
+            if (maxHp == MaxHp) return;
+            float delta = Math.Max(0f, maxHp - MaxHp);
+            CurrentHp = IsDead ? 0f : Math.Min(maxHp, CurrentHp + (fillIncrease ? delta : 0f));
+            MaxHp = maxHp;
+            _revision++;
             HealthChanged?.Invoke(CurrentHp, MaxHp);
         }
     }

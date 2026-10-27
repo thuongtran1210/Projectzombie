@@ -14,6 +14,8 @@ namespace ProjectZombie.Features.Defense3D
         public int WoodReward;
         public int ExpReward;
         public bool IsBoss;
+        public float AttackInterval;
+        public float AttackRange;
 
         public DefenseEnemyStats(string id, string name, DefenseEnemyLocomotionType loco, float hp, float speed, float dmg, int wood, int exp, bool isBoss = false)
         {
@@ -26,6 +28,8 @@ namespace ProjectZombie.Features.Defense3D
             WoodReward = wood;
             ExpReward = exp;
             IsBoss = isBoss;
+            AttackInterval = 2f;
+            AttackRange = 1.2f;
         }
     }
 
