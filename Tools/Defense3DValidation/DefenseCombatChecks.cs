@@ -16,6 +16,7 @@ public static class DefenseCombatChecks
     public static void Main()
     {
         CheckHealth();
+        CheckHealing();
         CheckDamageScope();
         CheckTargets();
         CheckModifiers();
@@ -23,6 +24,25 @@ public static class DefenseCombatChecks
         Check(valid.IsValid && !new DefenseStatusRequest(DefenseStatusKind.Stun, float.NaN, 0f, default).IsValid &&
             !new DefenseStatusRequest((DefenseStatusKind)999, 2f, 0f, default).IsValid, "Status boundary validates finite duration, strength and effect kind");
         Console.WriteLine("TOTAL " + _checks + " PASS (standalone combat core, no Unity runtime)");
+    }
+
+    private static void CheckHealing()
+    {
+        var health = new DefenseHealthCore(100f);
+        Check(!health.Heal(10f), "Healing a full target does not consume a heal");
+        health.ApplyDamage(new DefenseDamageContext(40f));
+        Check(!health.Heal(0f) && !health.Heal(-1f) && !health.Heal(float.NaN) && !health.Heal(float.PositiveInfinity) && health.CurrentHp == 60f,
+            "Healing rejects zero, negative and non-finite amounts");
+        int changes = 0;
+        health.HealthChanged += (current, maximum) => changes++;
+        Check(health.Heal(20f) && health.CurrentHp == 80f && health.MaxHp == 100f && changes == 1,
+            "Healing restores HP and publishes one update without changing capacity");
+        Check(health.Heal(float.MaxValue) && health.CurrentHp == 100f, "Large finite heal clamps to maximum health");
+        int deaths = 0;
+        health.Defeated += () => deaths++;
+        health.ApplyDamage(new DefenseDamageContext(100f));
+        Check(!health.Heal(50f) && health.IsDead && health.CurrentHp == 0f, "Healer cannot revive a dead actor");
+        Check(!health.ApplyDamage(new DefenseDamageContext(1f)) && deaths == 1, "Rejected healing cannot reset the once-only defeat latch");
     }
 
     private static void CheckHealth()

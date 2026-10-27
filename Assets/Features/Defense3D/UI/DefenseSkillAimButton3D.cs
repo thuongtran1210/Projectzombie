@@ -50,6 +50,11 @@ namespace ProjectZombie.Features.Defense3D.UI
         public event Action<DefenseResolvedAim, bool> PreviewChanged;
         public event Action PreviewCleared;
         public event Action<DefenseAimSubmission> AimReleased;
+        public event Action BasicAttackRequested;
+        private bool _basicPressMode, _basicHeld;
+        public void SetBasicPressMode(bool enabled) { _basicHeld = false; _basicPressMode = enabled; }
+        private bool CanBasicInput => isActiveAndEnabled && Application.isFocused && !_paused && _gameplay != null &&
+            _gameplay.AdvancesGameplay && _heroHealth != null && _heroHealth.isActiveAndEnabled && !_heroHealth.IsDown;
 
         public void Bind(IDefenseGameplayContext gameplay, DefenseAbilityRuntime ability, float range, bool autoTargetOnTap,
             DefenseTargetMask targetMask = DefenseTargetMask.All, bool selfTarget = false)
@@ -74,6 +79,13 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (_basicPressMode)
+            {
+                if (eventData.button != PointerEventData.InputButton.Left || _basicHeld || !CanBasicInput) return;
+                _basicHeld = true; _pointerId = eventData.pointerId;
+                BasicAttackRequested?.Invoke();
+                return;
+            }
             if (eventData.button != PointerEventData.InputButton.Left) return;
             if (_gesture == null || _gesture.IsPressed) return;
             _pointerId = eventData.pointerId;
@@ -85,6 +97,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (_basicPressMode) return;
             if (eventData.pointerId != _pointerId) return;
             _pointerPosition = eventData.position;
             RefreshAvailability();
@@ -93,6 +106,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            if (_basicPressMode) { if (eventData.pointerId == _pointerId) _basicHeld = false; return; }
             RefreshAvailability();
             _gesture?.Release(eventData.pointerId, eventData.position.x, eventData.position.y, Time.unscaledTimeAsDouble, InCancelZone(eventData));
         }
@@ -108,6 +122,12 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void Update()
         {
+            if (_basicPressMode)
+            {
+                if (!CanBasicInput) _basicHeld = false;
+                if (_basicHeld && _interactable) BasicAttackRequested?.Invoke();
+                return;
+            }
             RefreshAvailability();
             _gesture?.Tick(Time.unscaledTimeAsDouble);
         }
@@ -118,7 +138,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             RefreshAvailability();
         }
 
-        private void RefreshAvailability() => _gesture?.SetAvailable(_interactable && isActiveAndEnabled && Application.isFocused && !_paused &&
+        private void RefreshAvailability() => _gesture?.SetAvailable(!_basicPressMode && _interactable && isActiveAndEnabled && Application.isFocused && !_paused &&
             _projector != null && _projector.IsConfigured && _heroHealth != null && _heroHealth.isActiveAndEnabled && !_heroHealth.IsDown);
 
         private void OnSample(DefenseSkillGestureSample sample)
@@ -172,10 +192,11 @@ namespace ProjectZombie.Features.Defense3D.UI
                 Application.isFocused && !_paused && (_selfTarget ? _projector.TrySelf(out aim) : _projector.TryTap(_gameplay.Targets, _range, _autoTargetOnTap, out aim, _targetMask));
         }
 
-        public void Cancel() => _gesture?.Cancel();
+        public void Cancel() { _basicHeld = false; _gesture?.Cancel(); }
 
         public void Unbind()
         {
+            _basicHeld = false;
             _bindingVersion++;
             if (_heroHealth != null) _heroHealth.Defeated -= Cancel;
             if (_gesture != null)
@@ -190,7 +211,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             PreviewCleared?.Invoke();
         }
 
-        private void OnDisable() => _gesture?.SetAvailable(false);
+        private void OnDisable() { _basicHeld = false; _gesture?.SetAvailable(false); }
         private void OnDestroy() => Unbind();
         private void OnApplicationFocus(bool focused) { if (!focused) Cancel(); }
         private void OnApplicationPause(bool paused) { _paused = paused; if (paused) Cancel(); }

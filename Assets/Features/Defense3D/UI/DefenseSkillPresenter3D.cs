@@ -47,6 +47,8 @@ namespace ProjectZombie.Features.Defense3D.UI
             _button.PreviewChanged += Preview;
             _button.PreviewCleared += HidePreview;
             _button.AimReleased += Cast;
+            _button.BasicAttackRequested += BasicPressed;
+            _button.SetBasicPressMode(definition.Kind == DefenseSkillKind.BasicAttack);
             _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, definition.Kind == DefenseSkillKind.ScholarSignature);
             Refresh();
         }
@@ -87,7 +89,13 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public bool TryQuickCast()
         {
-            if (_runtime == null || _gameplay == null || !ActorAvailable || !_button.TryResolveTap(out var aim)) return false;
+            if (_runtime == null || _gameplay == null || !ActorAvailable) return false;
+            DefenseResolvedAim aim;
+            if (_effect is DefenseHeroAttackEffect3D basic)
+            {
+                if (!basic.TryResolveBasicAim(out aim)) return false;
+            }
+            else if (!_button.TryResolveTap(out aim)) return false;
             Vector3 p = _origin.position;
             bool cast = _runtime.TryCast(new DefenseSkillCastRequest(aim, _gameplay.SessionIdentity, _gameplay.RunGeneration),
                 new DefensePoint3(p.x, p.y, p.z), ActorAvailable, _effect);
@@ -96,6 +104,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         }
 
         private void Update() => Refresh();
+        private void BasicPressed() => TryQuickCast();
 
         private void Refresh()
         {
@@ -109,7 +118,8 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _displaySeconds = seconds;
                 _cooldownLabel = seconds > 0 ? seconds.ToString() : string.Empty;
             }
-            _view.Render(remaining / (_effect is IDefenseSharedAbilityEffect shared ? shared.CastCooldown : _runtime.Definition.Cooldown), _cooldownLabel, !interactable && remaining <= 0f);
+            _view.Render(remaining / (_effect is IDefenseSharedAbilityEffect shared ? shared.CastCooldown : _runtime.Definition.Cooldown),
+                Kind == DefenseSkillKind.BasicAttack ? string.Empty : _cooldownLabel, !interactable && remaining <= 0f);
         }
 
         private void OnDisable() { _button?.SetInteractable(false); HidePreview(); }
@@ -122,6 +132,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _button.PreviewChanged -= Preview;
                 _button.PreviewCleared -= HidePreview;
                 _button.AimReleased -= Cast;
+                _button.BasicAttackRequested -= BasicPressed;
                 _button.SetInteractable(false);
                 _button.Unbind();
             }

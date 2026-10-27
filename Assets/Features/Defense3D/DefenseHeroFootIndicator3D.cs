@@ -9,6 +9,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroHealth3D _health;
         [SerializeField] private Transform _visual;
         [SerializeField] private LayerMask _groundMask;
+        [SerializeField] private DefenseIndicatorSurface3D _surface;
         [SerializeField, Min(0f)] private float _surfaceOffset = 0.05f;
         private Collider _heroCollider;
 
@@ -26,6 +27,7 @@ namespace ProjectZombie.Features.Defense3D
                 point.y = _heroCollider != null ? _heroCollider.bounds.min.y : point.y;
                 if (Physics.Raycast(_hero.position + Vector3.up * 2f, Vector3.down, out var hit, 8f,
                     _groundMask, QueryTriggerInteraction.Ignore)) point = hit.point;
+                if (_surface != null) point = _surface.Place(_hero.position, 0f, .44f);
                 _visual.SetPositionAndRotation(point + Vector3.up * _surfaceOffset,
                     Quaternion.Euler(0f, _hero.eulerAngles.y, 0f));
                 SetVisible(true);

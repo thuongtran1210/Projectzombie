@@ -20,9 +20,9 @@ $coreNames = @(
     'DefenseStageSpawnScheduler', 'DefenseDamageContext', 'DefenseTargetIndex', 'DefenseRunStats',
     'DefenseUpgradeDeck', 'DefenseHealthCore', 'DefenseHeroRespawnTracker',
     'DefenseHeroCommands', 'DefenseAbilityRuntime', 'DefenseAimResolver', 'DefenseSkillGestureSession',
-    'DefenseSkillDefinition', 'DefenseSkillCastRuntime', 'DefenseActorLifetime', 'DefenseGroundNavigationRules', 'DefenseSpatialRules', 'DefenseLandingFlight', 'DefenseAggroPolicy', 'DefenseStatusRuntime', 'DefenseConeTelegraphRuntime', 'DefenseYakshaBehaviorFSM', 'DefenseIndicatorProjection'
+    'DefenseSkillDefinition', 'DefenseSkillCastRuntime', 'DefenseActorLifetime', 'DefenseGroundNavigationRules', 'DefenseSpatialRules', 'DefenseLandingFlight', 'DefenseAggroPolicy', 'DefenseStatusRuntime', 'DefenseConeTelegraphRuntime', 'DefenseYakshaBehaviorFSM', 'DefenseIndicatorProjection', 'DefenseVillageInteractionRules', 'DefenseBasicAttackRules'
 )
-$checkNames = @('DefenseSessionChecks', 'DefenseCombatChecks', 'DefenseAbilityInputChecks', 'DefenseGestureAimChecks', 'DefenseSkillCastChecks', 'DefenseVongxuyenControlChecks', 'DefenseActorLifetimeChecks', 'DefenseGroundAggroChecks', 'DefenseSpawnQueueChecks', 'DefenseAirTargetChecks', 'DefenseLandingChecks', 'DefenseMultiAggroChecks', 'DefenseStatusChecks', 'DefenseConeTelegraphChecks', 'DefenseBossFSMChecks', 'DefenseScholarCombatChecks', 'DefenseIndicatorChecks')
+$checkNames = @('DefenseSessionChecks', 'DefenseCombatChecks', 'DefenseAbilityInputChecks', 'DefenseGestureAimChecks', 'DefenseSkillCastChecks', 'DefenseVongxuyenControlChecks', 'DefenseActorLifetimeChecks', 'DefenseGroundAggroChecks', 'DefenseSpawnQueueChecks', 'DefenseAirTargetChecks', 'DefenseLandingChecks', 'DefenseMultiAggroChecks', 'DefenseStatusChecks', 'DefenseConeTelegraphChecks', 'DefenseBossFSMChecks', 'DefenseScholarCombatChecks', 'DefenseIndicatorChecks', 'DefenseBasicAttackParityChecks')
 $temporaryDirectory = Join-Path $projectDirectory 'Temp'
 $logDirectory = Join-Path $projectDirectory 'Logs/TraversalQA'
 New-Item -ItemType Directory -Force -Path $temporaryDirectory, $logDirectory | Out-Null

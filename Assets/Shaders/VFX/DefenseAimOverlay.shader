@@ -5,7 +5,7 @@ Shader "ProjectZombie/Defense3D/AimOverlay"
         [MainTexture] _MainTex("Ink Texture", 2D) = "white" {}
         [HDR] _BaseColor("Ink Tint Color", Color) = (0.05, 0.05, 0.08, 1.0)
         _AlphaCutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.0
-        [Enum(Line,0,Ring,1,Disc,2,Arrow,3,Triangle,4,Sector,5)] _Shape("Authored Shape", Float) = 0
+        [Enum(Line,0,Ring,1,Disc,2,Arrow,3,Triangle,4,Sector,5,Slash,6)] _Shape("Authored Shape", Float) = 0
         _EdgeWidth("Shape Edge Width", Range(0.005,0.2)) = 0.06
         _FillOpacity("Arrow Fill Opacity", Range(0,1)) = 0.18
         _UseVertexColor("UI Vertex Tint", Float) = 0
@@ -97,6 +97,7 @@ Shader "ProjectZombie/Defense3D/AimOverlay"
                         float angularAA = max(fwidth(directionCos),0.001);
                         float angular = radius < 0.001 ? 1.0 : smoothstep(_SectorCos-angularAA,_SectorCos+angularAA,directionCos);
                         coverage = (1.0-smoothstep(1.0-aa,1.0,radius)) * angular;
+                        if (_Shape > 5.5) coverage *= smoothstep(.4642857-aa,.4642857+aa,radius);
                     }
                     else
                     {

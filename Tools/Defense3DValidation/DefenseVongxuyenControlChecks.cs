@@ -13,8 +13,30 @@ public static class DefenseVongxuyenControlChecks
     }
     private static bool Close(float a, float b) => Math.Abs(a-b) < 0.001f;
 
+    private static void CheckVillageContext()
+    {
+        var origin = new DefensePoint3(0f, 0f, 0f);
+        Check(DefenseVillageInteractionRules.InZone(new DefensePoint3(1.6f, 100f, 0f), origin, 1.6f, true), "Hut includes its 1.6m XZ boundary regardless of actor height");
+        Check(!DefenseVillageInteractionRules.InZone(new DefensePoint3(1.6001f, 0f, 0f), origin, 1.6f, true), "Leaving the hut radius closes recruitment access");
+        Check(!DefenseVillageInteractionRules.InZone(new DefensePoint3(1.7f, 0f, 0f), origin, 1.7f, false), "Tower zone uses the source strict 1.7m boundary");
+        Check(DefenseVillageInteractionRules.InZone(new DefensePoint3(1.699f, 0f, 0f), origin, 1.7f, false), "Tower context opens inside its interaction radius");
+        Check(!DefenseVillageInteractionRules.InZone(new DefensePoint3(float.NaN, 0f, 0f), origin, 1.6f, true), "Invalid positions cannot open an interaction zone");
+        Check(DefenseVillageInteractionRules.Resolve(false, true, true, 0, 100, 50, 40).Action == DefenseVillageAction.None, "Closed gameplay gate hides all context actions");
+        Check(DefenseVillageInteractionRules.Resolve(true, false, false, 0, 100, 50, 40).Action == DefenseVillageAction.None, "Outside every zone no global shop or build button is shown");
+        var hut = DefenseVillageInteractionRules.Resolve(true, true, true, 1, 0, 50, 40);
+        Check(hut.Action == DefenseVillageAction.Recruit && hut.Enabled, "Hut takes priority over a nearby tower and opening shop costs no wood");
+        var poor = DefenseVillageInteractionRules.Resolve(true, false, true, 0, 49, 50, -1);
+        Check(poor.Action == DefenseVillageAction.Build && !poor.Enabled && poor.Shortage == 1, "An unaffordable build remains visible with an exact shortage");
+        Check(DefenseVillageInteractionRules.Resolve(true, false, true, 0, 50, 50, -1).Enabled, "Exact build balance enables the context action");
+        var upgrade = DefenseVillageInteractionRules.Resolve(true, false, true, 1, 40, 50, 40);
+        Check(upgrade.Action == DefenseVillageAction.Upgrade && upgrade.Enabled && upgrade.Cost == 40, "Occupied pedestal switches to the actual upgrade price");
+        var max = DefenseVillageInteractionRules.Resolve(true, false, true, 3, 1000, 50, -1);
+        Check(max.Action == DefenseVillageAction.Maximum && !max.Enabled, "Level-three tower shows maximum level without allowing further purchases");
+    }
+
     public static void Main()
     {
+        CheckVillageContext();
         var gesture = new SkillPointerGesture(6f,52f,0d,false,true);
         var press = gesture.Press(1,100f,200f,0d);
         Check(press.Signal == SkillPointerSignal.Aiming && press.AimStarted, "Vongxuyen press opens aim immediately without hold delay");

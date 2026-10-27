@@ -12,6 +12,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private MeshRenderer _arrow;
         [SerializeField] private MeshRenderer _sector;
         [SerializeField] private LineRenderer _sectorBorder;
+        [SerializeField] private DefenseIndicatorSurface3D _surface;
         public bool CanShowCone => IsConfigured && _sector != null && _sectorBorder != null;
         [SerializeField, Min(0.1f)] private float _arrowWidth = 1f;
         [SerializeField, Min(0f)] private float _surfaceOffset = 0.05f;
@@ -30,9 +31,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             ShowAim(aim, radius, radius, cancelled);
             if (!CanShowCone || !aim.Origin.IsFinite || !aim.Direction.IsFinite || radius <= 0f) { Hide(); return; }
-            Vector3 center = new Vector3(aim.Origin.X, aim.Target.Y + _surfaceOffset, aim.Origin.Z);
-            if (Physics.Raycast(new Vector3(center.x, aim.Origin.Y + 2f, center.z), Vector3.down, out var hit, 8f, 4096, QueryTriggerInteraction.Ignore))
-                center.y = hit.point.y + _surfaceOffset;
+            Vector3 center = SurfaceAt(new Vector3(aim.Origin.X, aim.Origin.Y, aim.Origin.Z), radius);
             if (_rangeRing != null) _rangeRing.transform.position = center;
             if (_rangeFill != null) _rangeFill.transform.position = center;
             Vector3 direction = new Vector3(aim.Direction.X, 0f, aim.Direction.Z);
@@ -43,6 +42,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_arrow != null) _arrow.enabled = false;
             if (_tint == null) _tint = new MaterialPropertyBlock();
             _tint.Clear();
+            _tint.SetFloat("_Shape", 5f);
             _tint.SetFloat("_SectorCos", Mathf.Cos(Mathf.Clamp(angle, 1f, 360f) * 0.5f * Mathf.Deg2Rad));
             _tint.SetColor(BASE_COLOR, cancelled ? _cancelColor : new Color(0.2f, 0.608f, 0.839f, 0.18f));
             _sector.SetPropertyBlock(_tint);
@@ -62,13 +62,54 @@ namespace ProjectZombie.Features.Defense3D.UI
             _sectorBorder.enabled = true;
         }
 
+        /// <summary>Transient source slash at waist height; this is not a permanent ground range fan.</summary>
+        public void ShowSlash(DefenseConeSnapshot cone, float progress)
+        {
+            Hide();
+            if (_sector == null) return;
+            Vector3 direction = new Vector3(cone.Forward.X, 0f, cone.Forward.Z);
+            if (direction.sqrMagnitude < .000001f) direction = Vector3.forward;
+            Vector3 origin = new Vector3(cone.Origin.X, cone.Origin.Y, cone.Origin.Z);
+            Vector3 center = SurfaceAt(origin, 0f) + Vector3.up * .68f + direction * .35f;
+            _sector.transform.SetPositionAndRotation(center, Quaternion.LookRotation(direction) *
+                Quaternion.AngleAxis(progress * 4.2f * Mathf.Rad2Deg, Vector3.up) * Quaternion.Euler(90f, 0f, 0f));
+            _sector.transform.localScale = Vector3.one * (cone.Radius * (1.4f / 2.05f) * 2f);
+            if (_tint == null) _tint = new MaterialPropertyBlock();
+            _tint.Clear();
+            _tint.SetFloat("_Shape", 6f);
+            _tint.SetFloat("_Progress", progress);
+            _tint.SetFloat("_SectorCos", Mathf.Cos(117f * Mathf.Deg2Rad));
+            _tint.SetColor(BASE_COLOR, new Color(.392f, 1f, .855f, .85f * (1f - progress)));
+            _sector.SetPropertyBlock(_tint);
+            _sector.enabled = true;
+        }
+
+        private Vector3 SurfaceAt(Vector3 origin, float radius)
+        {
+            if (_surface != null) return _surface.Place(origin, _surfaceOffset, radius);
+            if (Physics.Raycast(origin + Vector3.up * 20f, Vector3.down, out var hit, 40f, 4096, QueryTriggerInteraction.Ignore))
+                origin.y = hit.point.y;
+            return origin + Vector3.up * _surfaceOffset;
+        }
+
+        /// <summary>Persistent basic-attack footprint without the gesture range ring or arrow.</summary>
+        public void ShowFootprint(DefenseResolvedAim aim, float radius, float angle)
+        {
+            ShowCone(aim, radius, angle, false);
+            if (!CanShowCone || !_sector.enabled) return;
+            if (_rangeRing != null) _rangeRing.enabled = false;
+            if (_rangeFill != null) _rangeFill.enabled = false;
+            _directionLine.enabled = false;
+            _sectorBorder.enabled = false;
+            _tint.SetColor(BASE_COLOR, new Color(0.62f, 0.86f, 0.79f, 0.3f));
+            _sector.SetPropertyBlock(_tint);
+        }
+
         public void ShowAim(DefenseResolvedAim aim, float radius, float range, bool cancelled, bool showTarget = true)
         {
             Show(aim, radius, cancelled);
             if (_rangeRing == null || _rangeFill == null || _arrow == null || !aim.Target.IsFinite || range <= 0f) return;
-            Vector3 origin = new Vector3(aim.Origin.X, aim.Target.Y + _surfaceOffset, aim.Origin.Z);
-            if (Physics.Raycast(new Vector3(origin.x, aim.Origin.Y + 2f, origin.z), Vector3.down, out var ground, 8f, 4096, QueryTriggerInteraction.Ignore))
-                origin.y = ground.point.y + _surfaceOffset;
+            Vector3 origin = SurfaceAt(new Vector3(aim.Origin.X, aim.Origin.Y, aim.Origin.Z), range);
             if (!showTarget) _targetRing.enabled = false;
             Quaternion plane = Quaternion.Euler(90f, 0f, 0f);
             _rangeRing.transform.SetPositionAndRotation(origin, plane);
@@ -114,10 +155,10 @@ namespace ProjectZombie.Features.Defense3D.UI
                 Hide();
                 return;
             }
-            Vector3 target = new Vector3(aim.Target.X, aim.Target.Y + _surfaceOffset, aim.Target.Z);
+            Vector3 target = SurfaceAt(new Vector3(aim.Target.X, aim.Target.Y, aim.Target.Z), radius);
             _targetRing.transform.SetPositionAndRotation(target, Quaternion.identity);
             _targetRing.transform.localScale = new Vector3(radius, 1f, radius);
-            _directionLine.SetPosition(0, new Vector3(aim.Origin.X, aim.Origin.Y + _surfaceOffset, aim.Origin.Z));
+            _directionLine.SetPosition(0, SurfaceAt(new Vector3(aim.Origin.X, aim.Origin.Y, aim.Origin.Z), 0f));
             _directionLine.SetPosition(1, target);
             Color color = cancelled ? _cancelColor : _validColor;
             _targetRing.startColor = _targetRing.endColor = color;
