@@ -26,8 +26,8 @@ for name in ['Stage01_FastSpawn','Stage01_Production']:
     assert len(data['events'])==34 and sum(e['Count'] for e in data['events'])==214
     assert (data['maxActiveEnemies'],data['maxPendingSpawns'],data['spawnBudgetPerFrame'],data['jobLifetime'])==(32,40,4,25)
     assert data['events'][20]['TriggerTime']==(18 if name.endswith('FastSpawn') else 360)
-planner=(root/'Assets/Features/Defense3D/DefenseSpawnPlanner.cs').read_text()
-runtime=(root/'Assets/Features/Defense3D/DefenseSpawnRuntime.cs').read_text()
+planner=next((root/'Assets/Features/Defense3D').rglob('DefenseSpawnPlanner.cs')).read_text()
+runtime=next((root/'Assets/Features/Defense3D').rglob('DefenseSpawnRuntime.cs')).read_text()
 assert planner.index('ExpirePending(currentTime);')<planner.index('pendingQueue.Count >= pendingLimit')
 assert '_resetVersion' in planner and 'if (_expiring) return 0' in planner
 tick=runtime.split('public void Tick()')[1].split('private bool CanSpawn')[0]

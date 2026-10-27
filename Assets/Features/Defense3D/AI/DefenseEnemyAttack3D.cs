@@ -4,7 +4,7 @@ namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Cooldown and damage delivery; receives a target from the route/controller.</summary>
     [DisallowMultipleComponent, RequireComponent(typeof(DefenseEnemy3D))]
-    public sealed class DefenseEnemyAttack3D : DefenseGameplayBehaviour
+    public sealed class DefenseEnemyAttack3D : DefenseGameplayBehaviour, IDefenseAttackStrategy3D
     {
         private DefenseEnemy3D enemy;
         private IDefenseDamageable3D target;

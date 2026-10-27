@@ -108,7 +108,8 @@ namespace ProjectZombie.EditorTools.Defense3D
             try
             {
                 var actor = root.GetComponent<DefenseEnemy3D>() ?? root.AddComponent<DefenseEnemy3D>();
-                if (root.GetComponent<DefenseGroundMovement3D>() == null) root.AddComponent<DefenseGroundMovement3D>();
+                if (enemyId != DefenseEnemyRegistry.ID_HUYETDOI && root.GetComponent<DefenseGroundMovement3D>() == null)
+                    root.AddComponent<DefenseGroundMovement3D>();
                 if (root.GetComponent<DefenseEnemyAttack3D>() == null) root.AddComponent<DefenseEnemyAttack3D>();
                 if (root.GetComponent<DefenseEnemyDrop3D>() == null) root.AddComponent<DefenseEnemyDrop3D>();
                 if (actor.Definition == null)

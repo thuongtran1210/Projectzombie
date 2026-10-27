@@ -33,7 +33,7 @@ assert 'Boss.StopBossCombat()' in encounter and '_state.Dispose()' in encounter
 assert '_state.Tick(delta, false)' in encounter
 assert 'ReferenceEquals(_enemy.Lifetime, _lifetime)' in arena and 'Gameplay.RunGeneration == _generation' in arena
 assert 'ring.enabled = false' in arena and 'WarningActive && CanExecute' in arena
-assert (source / 'DefenseMatchRuntime.cs').read_bytes() == (BASE / 'Assets/Features/Defense3D/DefenseMatchRuntime.cs').read_bytes()
+assert next(source.rglob('DefenseMatchRuntime.cs')).read_bytes() == (BASE / 'Assets/Features/Defense3D/DefenseMatchRuntime.cs').read_bytes()
 for name in ['DefenseWaterNavigation3D', 'DefenseCannonBattery3D']:
     assert not re.search(r'private\s+(?:readonly\s+)?NavMeshPath\s+\w+\s*=\s*new', (source / (name+'.cs')).read_text())
 print('PASS Shared actor health injected into FSM; duplicate encounter/arena/bridge phase timers removed')

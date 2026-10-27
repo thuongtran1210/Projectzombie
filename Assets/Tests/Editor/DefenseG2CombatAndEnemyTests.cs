@@ -72,7 +72,16 @@ public sealed class DefenseG2CombatAndEnemyTests
             Assert.IsNotNull(definition.Prefab, $"Missing prefab reference on definition: {id}");
             Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyBridgeWalker3D>(), $"Missing DefenseEnemyBridgeWalker3D on {id} prefab");
             Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemy3D>(), $"Missing DefenseEnemy3D on {id} prefab");
-            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseGroundMovement3D>(), $"Missing DefenseGroundMovement3D on {id} prefab");
+            if (id == "huyetdoi")
+            {
+                Assert.IsTrue(definition.Prefab.GetComponent<IDefenseLocomotionStrategy3D>() != null ||
+                              definition.Prefab.GetComponent<DefenseAirMovement3D>() != null,
+                              $"Missing locomotion strategy on {id} prefab");
+            }
+            else
+            {
+                Assert.IsNotNull(definition.Prefab.GetComponent<DefenseGroundMovement3D>(), $"Missing DefenseGroundMovement3D on {id} prefab");
+            }
             Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyAttack3D>(), $"Missing DefenseEnemyAttack3D on {id} prefab");
             Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyDrop3D>(), $"Missing DefenseEnemyDrop3D on {id} prefab");
 

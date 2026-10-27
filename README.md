@@ -279,7 +279,7 @@ Hệ thống tài liệu dự án được cấu trúc bài bản và phân lo�
 
 ### 🔊 Âm Thanh, Dịch Vụ Kỹ Thuật & CDN
 - 🔊 [Đặc Tả Hệ Thống Âm Thanh Cổ Phong](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md) — Mõ gỗ, Khánh ngọc, AudioSource Pooling 0 GC.
-- 🌐 [Hướng Dẫn Addressables & Firebase CDN DLC](file:///c:/Users/thuon/Unity/Projectzombie/Assets/DOCS_ADDRESSABLES_CDN_FIREBASE.md) — Cơ chế 8 nhóm, URL Transform, Hot-update Live-Ops.
+- 🌐 [Hướng Dẫn Addressables & Firebase CDN DLC](file:///c:/Users/thuon/Unity/Projectzombie/Docs/DOCS_ADDRESSABLES_CDN_FIREBASE.md) — Cơ chế 8 nhóm, URL Transform, Hot-update Live-Ops.
 - 💰 [Đặc Tả Kiếm Tiền & Quảng Cáo AdMob](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ADMOB_MONETIZATION_SPEC.md) — Rewarded Video, Interstitial, Collapsible Banner.
 - ☁️ [Đặc Tả Lưu Trữ Đám Mây (Cloud Save)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md) — Offline-first, Google Play Games Services, Conflict Resolution.
 - ⚡ [Báo Cáo Tối Ưu Hiệu Năng & Zero Freeze Spikes](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md) — Triệt tiêu giật lag, 60 FPS Mobile.

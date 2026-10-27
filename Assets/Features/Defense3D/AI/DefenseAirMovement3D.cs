@@ -6,8 +6,11 @@ namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Base-directed XYZ flight with swept obstacle avoidance; never enables a NavMeshAgent.</summary>
     [DisallowMultipleComponent]
-    public sealed class DefenseAirMovement3D : DefenseGameplayBehaviour
+    public sealed class DefenseAirMovement3D : DefenseGameplayBehaviour, IDefenseLocomotionStrategy3D
     {
+        public bool IsMoving => _flying;
+        public bool HasFailed => false;
+        public void Stop() { _flying = false; _focus = null; }
         private DefenseAirNavigation3D _navigation;
         private DefenseEnemy3D _enemy;
         private DefenseEnemyAttack3D _attack;
@@ -32,9 +35,10 @@ namespace ProjectZombie.Features.Defense3D
             _navigation = navigation != null ? navigation : throw new ArgumentNullException(nameof(navigation));
             _enemy = GetComponent<DefenseEnemy3D>();
             _attack = GetComponent<DefenseEnemyAttack3D>();
-            if (!TryGetComponent<NavMeshAgent>(out var agent) || _enemy == null || _attack == null ||
+            if (TryGetComponent<NavMeshAgent>(out var agent)) agent.enabled = false;
+            if (_enemy == null || _attack == null ||
                 !TryGetComponent<SphereCollider>(out var hitbox) || !hitbox.isTrigger)
-                throw new InvalidOperationException("Air prefab requires Enemy, Attack, disabled agent and authored spherical hitbox.");
+                throw new InvalidOperationException("Air prefab requires Enemy, Attack and authored spherical trigger hitbox.");
             Vector3 scale = transform.lossyScale;
             float radius = hitbox.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
             if (hitbox.center != Vector3.zero || radius > _navigation.Profile.ClearanceRadius)
@@ -47,7 +51,6 @@ namespace ProjectZombie.Features.Defense3D
             _candidates = friends.Candidates;
             _reachable = CanReach;
             if (!_subscribed) { _enemy.Damaged += OnDamaged; _subscribed = true; }
-            agent.enabled = false;
             BindGameplay(gameplay);
         }
 

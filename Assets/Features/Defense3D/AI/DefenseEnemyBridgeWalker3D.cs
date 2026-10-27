@@ -7,7 +7,7 @@ namespace ProjectZombie.Features.Defense3D
     /// Compatibility adapter for existing bridge scenes and Yaksha callers.
     /// New health, movement, combat and drop behavior live in independent components.
     /// </summary>
-    [RequireComponent(typeof(DefenseEnemy3D), typeof(DefenseGroundMovement3D), typeof(DefenseEnemyAttack3D))]
+    [RequireComponent(typeof(DefenseEnemy3D))]
     [RequireComponent(typeof(DefenseEnemyDrop3D))]
     public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour, IDefenseDamageable3D
     {
@@ -49,17 +49,20 @@ namespace ProjectZombie.Features.Defense3D
             EnsureComponents();
             enemy.BindGameplay(gameplay);
             if (TryGetComponent<DefenseEnemyVisualMotion3D>(out var visual)) visual.BindGameplay(gameplay);
-            movement.BindGameplay(gameplay);
-            attack.BindGameplay(gameplay);
+            if (movement != null) movement.BindGameplay(gameplay);
+            if (attack != null) attack.BindGameplay(gameplay);
             var drops = GetComponent<DefenseEnemyDrop3D>();
-            drops.BindGameplay(gameplay);
-            drops.BindCollector(collectorWallet,pickupRoot);
-            if (_aggro!=null)
+            if (drops != null)
+            {
+                drops.BindGameplay(gameplay);
+                drops.BindCollector(collectorWallet, pickupRoot);
+            }
+            if (_aggro != null)
             {
                 _aggro.BindFriendlyTargets(friends);
                 _aggro.BindGameplay(gameplay);
             }
-            if (collectorWallet!=null) collectorWallet.TryGetComponent(out _hero);
+            if (collectorWallet != null) collectorWallet.TryGetComponent(out _hero);
         }
         private void EnsureComponents()
         {
@@ -68,8 +71,8 @@ namespace ProjectZombie.Features.Defense3D
             enemy = GetComponent<DefenseEnemy3D>();
             movement = GetComponent<DefenseGroundMovement3D>();
             attack = GetComponent<DefenseEnemyAttack3D>();
-            _aggro=GetComponent<DefenseGroundAggro3D>();
-            movement.Arrived += BeginAttack;
+            _aggro = GetComponent<DefenseGroundAggro3D>();
+            if (movement != null) movement.Arrived += BeginAttack;
             enemy.Defeated += OnDefeated;
             enemy.HealthChanged += ForwardHealth;
             enemy.Damaged += ForwardDamage;
@@ -77,8 +80,8 @@ namespace ProjectZombie.Features.Defense3D
         public void Initialize(DefenseEnemyStats stats)
         {
             EnsureComponents();
-            attack.StopAttack();
-            movement.Stop();
+            attack?.StopAttack();
+            movement?.Stop();
             enemy.Initialize(stats);
             _aggro?.Stop();
             configured = true;
@@ -86,8 +89,8 @@ namespace ProjectZombie.Features.Defense3D
         public void Initialize(DefenseEnemyDataSO definition)
         {
             EnsureComponents();
-            attack.StopAttack();
-            movement.Stop();
+            attack?.StopAttack();
+            movement?.Stop();
             enemy.Initialize(definition);
             _aggro?.Stop();
             configured = true;
@@ -95,8 +98,8 @@ namespace ProjectZombie.Features.Defense3D
         public void Initialize(DefenseEnemySpawnDefinition definition)
         {
             EnsureComponents();
-            attack.StopAttack();
-            movement.Stop();
+            attack?.StopAttack();
+            movement?.Stop();
             _aggro?.Stop();
             enemy.Initialize(definition);
             configured = true;
@@ -115,7 +118,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             EnsureConfiguration();
             targetBase = target;
-            attack.StopAttack();
+            attack?.StopAttack();
             if (enemy.Stats.Locomotion == DefenseEnemyLocomotionType.AmphibianWaterToShore)
             {
                 var water = GetComponent<DefenseWaterMovement3D>();
@@ -131,15 +134,15 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
             // Configure route without resetting HP; arena -> assault preserves damage.
-            if (_aggro!=null && !enemy.Stats.IsBoss)
-                _aggro.Configure(lane,target,_hero,enemy.Stats.Locomotion==DefenseEnemyLocomotionType.ParatrooperLanding);
-            else
+            if (_aggro != null && !enemy.Stats.IsBoss)
+                _aggro.Configure(lane, target, _hero, enemy.Stats.Locomotion == DefenseEnemyLocomotionType.ParatrooperLanding);
+            else if (movement != null)
             {
                 _aggro?.Stop();
-                var collider=target!=null ? target.GetComponent<Collider>() : null;
-                float extent=collider!=null ? Mathf.Max(collider.bounds.extents.x,collider.bounds.extents.z) : 0f;
-                movement.Follow(DefenseBridgeRoute3D.Create(lane,transform.position,target.transform.position),
-                    enemy.Stats.Speed,enemy.Stats.AttackRange+extent);
+                var collider = target != null ? target.GetComponent<Collider>() : null;
+                float extent = collider != null ? Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.z) : 0f;
+                movement.Follow(DefenseBridgeRoute3D.Create(lane, transform.position, target.transform.position),
+                    enemy.Stats.Speed, enemy.Stats.AttackRange + extent);
             }
         }
         public void SetMaxHealth(float hp)
@@ -168,15 +171,15 @@ namespace ProjectZombie.Features.Defense3D
         }
         private void BeginAttack()
         {
-            if (_aggro!=null && _aggro.OwnsCombat) return;
-            if (!IsDead && targetBase != null && !targetBase.IsDestroyed) attack.Begin(targetBase);
+            if (_aggro != null && _aggro.OwnsCombat) return;
+            if (!IsDead && targetBase != null && !targetBase.IsDestroyed && attack != null) attack.Begin(targetBase);
         }
         public bool TakeDamage(DefenseDamageContext context) => Enemy.TakeDamage(context);
         public void ReceiveDamage(float damage) => TakeDamage(new DefenseDamageContext(damage));
         private void OnDefeated()
         {
-            movement.Stop();
-            attack.StopAttack();
+            movement?.Stop();
+            attack?.StopAttack();
             Debug.Log("[TREBRAVE Defense3D] Enemy defeated: " + name);
             Defeated?.Invoke(this);
             damageableDefeated?.Invoke();

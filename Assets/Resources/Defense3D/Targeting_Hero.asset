@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0904a5ce1ba1596c8b631015b357e975, type: 3}
   m_Name: Targeting_Hero
   m_EditorClassIdentifier: 
-  _targets: 3
+  _targets: -1
   _lineOfSightMask:
     serializedVersion: 2
     m_Bits: 4105

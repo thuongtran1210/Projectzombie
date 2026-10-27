@@ -19,7 +19,15 @@ def refs(v):
             for a in v.values():yield from refs(a)
     elif isinstance(v,list):
         for a in v:yield from refs(a)
-def guid(path):return re.search(r'^guid: (\w+)',Path(str(root/path)+'.meta').read_text(),re.M)[1]
+def guid(path):
+    p = Path(path)
+    if not p.exists():
+        matches = list((ROOT / 'Assets/Features/Defense3D').rglob(p.name))
+        if matches: p = matches[0]
+    meta = p.parent / (p.name + '.meta')
+    for line in meta.read_text().splitlines():
+        if line.startswith('guid: '): return line.split()[1]
+    raise AssertionError('No guid in ' + str(meta))
 
 folder=Path('Assets/Features/Defense3D')
 aggro_guid=guid(folder/'DefenseGroundAggro3D.cs')

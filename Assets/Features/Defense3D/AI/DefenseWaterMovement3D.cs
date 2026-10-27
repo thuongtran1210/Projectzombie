@@ -6,9 +6,12 @@ namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Moves an amphibian through water and an explicit shore exit before handing off to Ground.</summary>
     [DisallowMultipleComponent]
-    public sealed class DefenseWaterMovement3D : DefenseGameplayBehaviour
+    public sealed class DefenseWaterMovement3D : DefenseGameplayBehaviour, IDefenseLocomotionStrategy3D
     {
         public enum Phase { Idle, Swimming, Docking, Ground }
+        public bool IsMoving => CurrentPhase == Phase.Swimming || CurrentPhase == Phase.Docking;
+        public bool HasFailed => false;
+        public void Stop() { CurrentPhase = Phase.Idle; }
         [SerializeField, Min(0.01f)] private float _arrivalDistance = 0.08f;
         [SerializeField, Min(0.1f)] private float _shoreRetrySeconds = 1f;
         [SerializeField, Min(1f)] private float _shoreTimeoutSeconds = 25f;
@@ -33,7 +36,7 @@ namespace ProjectZombie.Features.Defense3D
             _agent = GetComponent<NavMeshAgent>();
             _groundedAggro = GetComponent<DefenseGroundAggro3D>();
             if (_groundedAggro == null) throw new InvalidOperationException("Amphibian prefab requires authored grounded aggro.");
-            _agent.enabled = false;
+            if (_agent != null) _agent.enabled = false;
             BindGameplay(gameplay);
         }
 
@@ -43,9 +46,9 @@ namespace ProjectZombie.Features.Defense3D
                 !_navigation.TryGetExit(transform.position, out _water, out _shore))
                 throw new InvalidOperationException("Water actor requires an authored canal exit.");
             _target = target;
-            _groundedAggro.Stop();
-            _ground.Stop();
-            _agent.enabled = false;
+            _groundedAggro?.Stop();
+            _ground?.Stop();
+            if (_agent != null) _agent.enabled = false;
             CurrentPhase = Phase.Swimming;
             _timeoutAt = float.PositiveInfinity;
             _retryAt = GameplayTime;

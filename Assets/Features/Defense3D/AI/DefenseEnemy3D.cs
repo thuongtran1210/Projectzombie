@@ -12,8 +12,27 @@ namespace ProjectZombie.Features.Defense3D
         private DefenseTargetIndex _targetIndex;
         private Action<DefenseEnemy3D,DefenseActorLifetime,DefenseActorReleaseReason> _release;
         public DefenseEnemyStatus3D Status { get; private set; }
+        public IDefenseLocomotionStrategy3D Locomotion { get; private set; }
+        public IDefenseAttackStrategy3D Attack { get; private set; }
+        public IDefenseTargetingStrategy3D Targeting { get; private set; }
+
+        public void EnsureStrategies()
+        {
+            if (Locomotion == null) Locomotion = GetComponent<IDefenseLocomotionStrategy3D>();
+            if (Attack == null) Attack = GetComponent<IDefenseAttackStrategy3D>();
+            if (Targeting == null) Targeting = GetComponent<IDefenseTargetingStrategy3D>();
+        }
+
+        public void StopAllActions()
+        {
+            Locomotion?.Stop();
+            Attack?.StopAttack();
+            Targeting?.Stop();
+        }
+
         protected override void OnGameplayBound()
         {
+            EnsureStrategies();
             if (Status == null) Status = GetComponent<DefenseEnemyStatus3D>();
             Status?.BindGameplay(Gameplay);
         }
@@ -81,6 +100,7 @@ namespace ProjectZombie.Features.Defense3D
         private void OnEnable() => RegisterTarget();
         private void OnDisable()
         {
+            StopAllActions();
             DefenseEnemyTargets3D.Unregister(_targetIndex, this);
             if (Lifetime != null && !Lifetime.IsRetired) RequestRelease(DefenseActorReleaseReason.ExternalDisabled);
         }
@@ -100,6 +120,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public void Initialize(DefenseEnemyStats stats)
         {
+            EnsureStrategies();
             Stats = stats;
             if (health == null) CreateHealth(stats.MaxHp);
             health.Reset(stats.MaxHp);
@@ -118,7 +139,11 @@ namespace ProjectZombie.Features.Defense3D
             health = new DefenseHealthCore(maximum);
             health.HealthChanged += (current, max) => HealthChanged?.Invoke(current, max);
             health.Damaged += context => Damaged?.Invoke(context);
-            health.Defeated += () => Defeated?.Invoke();
+            health.Defeated += () =>
+            {
+                StopAllActions();
+                Defeated?.Invoke();
+            };
         }
 
         public void SetMaxHealth(float hp) => Health.Reset(Mathf.Max(1f, hp));

@@ -18,7 +18,15 @@ def blocks(path):
         assert identity not in result, 'Duplicate fileID ' + identity
         result[identity] = (kind, yaml.load(body, Loader=UniqueLoader))
     return result
-def guid(path): return re.search(r'guid: (\w+)', Path(str(path)+'.meta').read_text()).group(1)
+def guid(path):
+    p = Path(path)
+    if not p.exists():
+        matches = list((ROOT / 'Assets/Features/Defense3D').rglob(p.name))
+        if matches: p = matches[0]
+    meta = p.parent / (p.name + '.meta')
+    for line in meta.read_text().splitlines():
+        if line.startswith('guid: '): return line.split()[1]
+    raise AssertionError('No guid in ' + str(meta))
 scene_path = Path('Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity')
 old, scene = blocks(BASE / scene_path), blocks(ROOT / scene_path)
 assert set(old).issubset(scene) and len(scene) == len(old) + 3

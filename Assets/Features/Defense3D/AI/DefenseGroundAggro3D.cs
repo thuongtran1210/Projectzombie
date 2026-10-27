@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Ground route/chase/attack coordinator, including explicit amphibian/landing handoff. Boss remains separate.</summary>
-    public sealed class DefenseGroundAggro3D : DefenseGameplayBehaviour
+    public sealed class DefenseGroundAggro3D : DefenseGameplayBehaviour, IDefenseTargetingStrategy3D
     {
         [SerializeField] private DefenseEnemy3D _enemy;
         [SerializeField] private DefenseGroundMovement3D _movement;

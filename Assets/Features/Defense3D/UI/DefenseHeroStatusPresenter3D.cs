@@ -45,17 +45,21 @@ namespace ProjectZombie.Features.Defense3D.UI
             _statusGroup.alpha = visible ? 1f : 0f;
             if (!visible || _camera == null)
             {
-                _attackArea.Hide();
+                if (_attackArea != null) _attackArea.Hide();
                 return;
             }
 
             Vector3 head = _health.transform.position;
             head.y = (_body != null ? _body.bounds.max.y : head.y) + _headOffset;
-            _overhead.SetPositionAndRotation(head, _camera.transform.rotation);
+            if (_overhead.parent == null)
+                _overhead.SetPositionAndRotation(head, _camera.transform.rotation);
+            else
+                _overhead.rotation = _camera.transform.rotation;
+
             if (Vector3.Dot(_camera.transform.forward, head - _camera.transform.position) <= 0f)
                 _statusGroup.alpha = 0f;
 
-            var experience = _match.ExperienceCore;
+            var experience = _match != null ? _match.ExperienceCore : null;
             if (experience != null && _lastLevel != experience.CurrentLevel)
             {
                 _lastLevel = experience.CurrentLevel;
@@ -64,23 +68,21 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             if (!CanAdvanceGameplay || !_attack.isActiveAndEnabled)
             {
-                _attackArea.Hide();
+                if (_attackArea != null) _attackArea.Hide();
                 return;
             }
-            // Source idle presentation has only the compact foot ring, not a permanent attack fan.
-            _attackArea.Hide();
         }
 
         protected override void OnGameplayGateChanged(bool active)
         {
-            if (!active) _attackArea.Hide();
+            if (!active && _attackArea != null) _attackArea.Hide();
         }
 
         protected override void OnGameplayCleanup()
         {
             _cleanedUp = true;
             _statusGroup.alpha = 0f;
-            _attackArea.Hide();
+            if (_attackArea != null) _attackArea.Hide();
         }
 
         protected override void OnGameplayReset()
@@ -93,7 +95,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void OnDisable()
         {
             _statusGroup.alpha = 0f;
-            _attackArea.Hide();
+            if (_attackArea != null) _attackArea.Hide();
         }
 
         protected override void OnDestroy()

@@ -19,7 +19,14 @@ def blocks(path):
         result[identity] = (kind, yaml.load(body, Loader=UniqueLoader))
     return result
 def guid(path):
-    return re.search(r'guid: (\w+)', Path(str(path)+'.meta').read_text()).group(1)
+    p = Path(path)
+    if not p.exists():
+        matches = list((ROOT / 'Assets/Features/Defense3D').rglob(p.name))
+        if matches: p = matches[0]
+    meta = p.parent / (p.name + '.meta')
+    for line in meta.read_text().splitlines():
+        if line.startswith('guid: '): return line.split()[1]
+    raise AssertionError('No guid in ' + str(meta))
 scene_path = Path('Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity')
 old, scene = blocks(BASE / scene_path), blocks(ROOT / scene_path)
 assert set(old).issubset(scene) and len(scene) == len(old) + 18
@@ -66,7 +73,7 @@ for name, expected in json.loads((BASE / 'manifest.json').read_text()).items():
         assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, 'Protected asset changed ' + name
         protected += 1
 for name in ['DefenseCannonBattery3D', 'DefenseWaterNavigation3D']:
-    source = (ROOT / ('Assets/Features/Defense3D/' + name + '.cs')).read_text()
+    source = next((ROOT / 'Assets/Features/Defense3D').rglob(name + '.cs')).read_text()
     assert not re.search(r'private\s+(?:readonly\s+)?NavMeshPath\s+\w+\s*=\s*new', source)
     assert 'Awake() => _path = new NavMeshPath();' in source
 print('PASS Three linked Cannon prefab instances, authored projectile/canopy, West anchors and bindings')

@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             _button.PreviewCleared += HidePreview;
             _button.AimReleased += Cast;
             _button.BasicAttackRequested += BasicPressed;
+            if (_view != null) _button.AimFeedbackChanged += _view.SetAimFeedback;
             _button.SetBasicPressMode(definition.Kind == DefenseSkillKind.BasicAttack);
             _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, definition.Kind == DefenseSkillKind.ScholarSignature);
             Refresh();
@@ -133,6 +134,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _button.PreviewCleared -= HidePreview;
                 _button.AimReleased -= Cast;
                 _button.BasicAttackRequested -= BasicPressed;
+                if (_view != null) _button.AimFeedbackChanged -= _view.SetAimFeedback;
                 _button.SetInteractable(false);
                 _button.Unbind();
             }

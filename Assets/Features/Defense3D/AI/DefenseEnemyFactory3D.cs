@@ -20,7 +20,8 @@ namespace ProjectZombie.Features.Defense3D
                 if (!arenaBoss)
                 {
                     actor.GetComponent<DefenseEnemyBridgeWalker3D>().Configure(lane,target);
-                    if (actor.GetComponent<DefenseGroundMovement3D>().HasFailed)
+                    if ((actor.Locomotion != null && actor.Locomotion.HasFailed) ||
+                        (actor.TryGetComponent<DefenseGroundMovement3D>(out var ground) && ground.HasFailed))
                         throw new System.InvalidOperationException("Enemy route initialization failed: " + definition.EnemyId);
                 }
                 return actor;
@@ -55,7 +56,8 @@ namespace ProjectZombie.Features.Defense3D
             try
             {
                 actor.GetComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, target);
-                if (actor.GetComponent<DefenseGroundMovement3D>().HasFailed)
+                if ((actor.Locomotion != null && actor.Locomotion.HasFailed) ||
+                    (actor.TryGetComponent<DefenseGroundMovement3D>(out var ground) && ground.HasFailed))
                     throw new System.InvalidOperationException("Enemy route initialization failed: " + definition.EnemyId);
                 return actor;
             }

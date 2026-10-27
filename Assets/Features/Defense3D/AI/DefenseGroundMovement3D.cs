@@ -6,11 +6,12 @@ namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Follows a supplied route on NavMesh; owns no health, target or reward logic.</summary>
     [DisallowMultipleComponent, RequireComponent(typeof(NavMeshAgent))]
-    public sealed class DefenseGroundMovement3D : DefenseGameplayBehaviour
+    public sealed class DefenseGroundMovement3D : DefenseGameplayBehaviour, IDefenseLocomotionStrategy3D
     {
         private NavMeshAgent agent;
         private DefenseEnemyStatus3D _status;
         private float _baseSpeed;
+        public bool IsMoving => following;
         [SerializeField] private float _displacementSampleRadius = 0.2f;
         [SerializeField] private float _maximumDisplacementHeight = 0.25f;
         public void BindStatus(DefenseEnemyStatus3D status) => _status = status;

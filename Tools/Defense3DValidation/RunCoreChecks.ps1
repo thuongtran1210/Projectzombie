@@ -31,8 +31,9 @@ $responseLines = @('/nologo', '/target:exe')
 $responseLines += '"' + (Join-Path $projectDirectory 'Assets/Features/UI/Controls/SkillPointerGesture.cs') + '"'
 foreach ($coreName in $coreNames)
 {
-    $sourcePath = Join-Path $projectDirectory "Assets/Features/Defense3D/$coreName.cs"
-    $responseLines += '"' + $sourcePath + '"'
+    $matchedFiles = @(Get-ChildItem -Path (Join-Path $projectDirectory "Assets/Features/Defense3D") -Filter "$coreName.cs" -Recurse)
+    if ($matchedFiles.Count -eq 0) { throw "Source file not found: $coreName.cs" }
+    $responseLines += '"' + $matchedFiles[0].FullName + '"'
 }
 foreach ($checkName in $checkNames)
 {

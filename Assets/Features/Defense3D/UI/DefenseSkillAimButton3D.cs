@@ -51,6 +51,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         public event Action PreviewCleared;
         public event Action<DefenseAimSubmission> AimReleased;
         public event Action BasicAttackRequested;
+        public event Action<bool, bool> AimFeedbackChanged;
         private bool _basicPressMode, _basicHeld;
         public void SetBasicPressMode(bool enabled) { _basicHeld = false; _basicPressMode = enabled; }
         private bool CanBasicInput => isActiveAndEnabled && Application.isFocused && !_paused && _gameplay != null &&
@@ -148,6 +149,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (sample.Pointer.Signal == SkillPointerSignal.Aiming)
             {
                 ShowCancelZone(true);
+                AimFeedbackChanged?.Invoke(true, sample.Pointer.CancelHovered);
                 if (sample.Pointer.AimStarted) _stick.Begin(_pressPosition, _pressCamera);
                 _stick.Move(_pointerPosition, _maxDragDistance, sample.Pointer.CancelHovered);
                 DefenseResolvedAim preview;
@@ -164,6 +166,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 return;
             }
             ShowCancelZone(false);
+            AimFeedbackChanged?.Invoke(false, false);
             _stick?.Hide();
             PreviewCleared?.Invoke();
             // Presentation callbacks may pause, disable, rebind or restart before a release is dispatched.

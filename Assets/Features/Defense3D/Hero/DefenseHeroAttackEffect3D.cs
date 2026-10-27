@@ -7,12 +7,13 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseHeroAttackEffect3D : DefenseSkillEffect3D, IDefenseSharedAbilityEffect
     {
         [SerializeField] private DefenseHeroAutoAttack3D _attack;
+        [SerializeField] private DefenseCombatSlashVfx3D _slashVfx;
         [SerializeField] private DefenseAimIndicator3D _impactView;
         private float _hideAt;
         private float _showAt;
         private DefenseConeSnapshot _hit;
         public override DefenseSkillKind Kind => DefenseSkillKind.BasicAttack;
-        public override bool IsConfigured => _attack != null && _impactView != null && _impactView.CanShowCone;
+        public override bool IsConfigured => _attack != null && (_slashVfx != null || (_impactView != null && _impactView.CanShowCone));
         public DefenseAbilityRuntime SharedAbility => _attack.Ability;
         public float CastCooldown => _attack.EffectiveAttackInterval;
         public float ConeAngle => _attack.ConeAngle;
@@ -30,15 +31,26 @@ namespace ProjectZombie.Features.Defense3D
             _hit = cone;
             _showAt = GameplayTime;
             _hideAt = GameplayTime + .22f;
-            _impactView.ShowSlash(cone, 0f);
+            if (_slashVfx != null) _slashVfx.ShowSlash(cone, 0f);
+            else if (_impactView != null) _impactView.ShowSlash(cone, 0f);
         }
         private void Update()
         {
             if (_hideAt <= 0f) return;
             if (GameplayTime >= _hideAt) Hide();
-            else _impactView.ShowSlash(_hit, Mathf.Clamp01((GameplayTime - _showAt) / .22f));
+            else
+            {
+                float progress = Mathf.Clamp01((GameplayTime - _showAt) / .22f);
+                if (_slashVfx != null) _slashVfx.ShowSlash(_hit, progress);
+                else if (_impactView != null) _impactView.ShowSlash(_hit, progress);
+            }
         }
-        private void Hide() { _hideAt = 0f; _impactView?.Hide(); }
+        private void Hide()
+        {
+            _hideAt = 0f;
+            if (_slashVfx != null) _slashVfx.Hide();
+            if (_impactView != null) _impactView.Hide();
+        }
         protected override void OnGameplayGateChanged(bool active) { if (!active) Hide(); }
         protected override void OnGameplayCleanup() => Hide();
         private void OnDisable() => Hide();
