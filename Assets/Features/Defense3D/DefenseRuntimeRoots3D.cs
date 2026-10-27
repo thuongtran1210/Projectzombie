@@ -25,8 +25,10 @@ namespace ProjectZombie.Features.Defense3D
 
         public void ValidateBindings()
         {
-            if (transform.parent != null || transform.position != Vector3.zero || transform.rotation != Quaternion.identity || transform.lossyScale != Vector3.one)
-                throw new InvalidOperationException("Runtime Roots must be an independent identity scene root.");
+            if (transform.position != Vector3.zero || transform.rotation != Quaternion.identity || transform.lossyScale != Vector3.one)
+                throw new InvalidOperationException("Runtime Roots must have identity world transform.");
+            if (transform.parent != null && (transform.parent.position != Vector3.zero || transform.parent.rotation != Quaternion.identity || transform.parent.lossyScale != Vector3.one))
+                throw new InvalidOperationException("Runtime Roots parent container must also have identity world transform.");
             if (_waterNavigation == null || _waterNavigation.gameObject.scene != gameObject.scene)
                 throw new InvalidOperationException("Assign the scene-authored water navigation.");
             _waterNavigation.ValidateBindings();
