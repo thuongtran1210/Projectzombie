@@ -167,13 +167,13 @@ namespace ProjectZombie.Features.Elements
         {
             if(_characters.Count==0)return; if(_playerInstance!=null)Destroy(_playerInstance); var data=_characters[_characterIndex];
             _playerInstance=Instantiate(data.playerPrefab,playerSpawnPosition,Quaternion.identity); _playerInstance.name=data.characterName; _playerInstance.SetActive(true);
-            if(!_playerInstance.TryGetComponent<PlayerStats>(out _))_playerInstance.AddComponent<PlayerStats>();
+            if(!_playerInstance.TryGetComponent<PlayerStats>(out var playerStats))playerStats=_playerInstance.AddComponent<PlayerStats>();
             if(!_playerInstance.TryGetComponent<PlayerInputReader>(out _))_playerInstance.AddComponent<PlayerInputReader>();
             if(!_playerInstance.TryGetComponent<CharacterCombat>(out var combat))combat=_playerInstance.AddComponent<CharacterCombat>(); combat.SetAttackConfig(data.basicAttackConfig);
             if(!_playerInstance.TryGetComponent<PlayerLogic>(out _))_playerInstance.AddComponent<PlayerLogic>();
             if(!_playerInstance.TryGetComponent<WeaponManager>(out var wm))wm=_playerInstance.AddComponent<WeaponManager>(); wm.SetSkipAutomaticLoadout(true); wm.enabled=true;
             var skillManager = _playerInstance.GetComponent<SignatureSkillManager>();
-            _message=$"Spawned {data.characterName}; skill = {(skillManager != null && skillManager.SkillData != null ? skillManager.SkillData.SkillName : "chưa được nạp")}; basic attack element = {(data.basicAttackConfig!=null?data.basicAttackConfig.element.ToString():"None")}.";
+            _message=$"Spawned {data.characterName}; skill = {(skillManager != null && skillManager.SkillData != null ? skillManager.SkillData.SkillName : "chưa được nạp")}; basic attack element = {playerStats.CurrentElement}.";
         }
         private string ActiveSkillLabel()
         {

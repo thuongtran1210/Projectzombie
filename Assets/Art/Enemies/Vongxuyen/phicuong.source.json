@@ -1,0 +1,36 @@
+{
+  "source": "thuongtran1210/Vongxuyen",
+  "id": "phicuong",
+  "threeVersion": "160",
+  "sourceHashes": {
+    "src/entities/EnemyFactory.js": "72e6b13910a74da913726c5f4f2aebcc856dd90106425929ac4e765ad2687050",
+    "src/core/MaterialManager.js": "571c65fb1c66c72edbf6ee97e74f97aec4933afd3271d74a6fa1d7f3e9f72541"
+  },
+  "meshes": 16,
+  "triangles": 1114,
+  "materials": 7,
+  "bounds": {
+    "min": [
+      -1.5120000064373018,
+      0.9180000096559525,
+      -0.5129999935626984
+    ],
+    "max": [
+      1.5120000064373018,
+      3.523500002413988,
+      0.7043311842994955
+    ]
+  },
+  "bodyPivot": [
+    0,
+    1.35,
+    0
+  ],
+  "leftWing": "PC_WingL",
+  "rightWing": "PC_WingR",
+  "notes": [
+    "Original geometry, rigid hierarchy, colors and baked outline extrusion.",
+    "Health bars, transparent web auras and lights excluded; Unity retains gameplay ownership.",
+    "Locomotion poses are driven by the imported EnemyBody and wings in Unity, not animation clips."
+  ]
+}

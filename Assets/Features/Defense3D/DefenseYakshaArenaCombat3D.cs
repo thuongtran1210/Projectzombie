@@ -23,6 +23,11 @@ namespace ProjectZombie.Features.Defense3D
         private Action<DefenseYakshaPhase> _phaseObserver;
         private Action _stopObserver;
         public bool HasWarningRenderer => ring != null && ring.positionCount >= 3;
+        public DefenseYakshaPhase PresentationPhase => _state != null && _lifetime != null && _lifetime.IsCurrent(Gameplay)
+            ? _state.Phase : DefenseYakshaPhase.Dormant;
+        public bool IsTelegraphing => CanExecute && WarningActive;
+        public float TelegraphProgress => IsTelegraphing
+            ? Mathf.Clamp01(1f - _state.TelegraphTimerRemaining / Mathf.Max(0.001f, warningDuration)) : 0f;
         private bool WarningActive => _state != null && !_state.IsStopped && _state.Phase == DefenseYakshaPhase.ArenaCombat &&
             _state.ActiveTelegraph == DefenseYakshaAttackTelegraph.TelegraphSlam;
 

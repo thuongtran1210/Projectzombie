@@ -1,0 +1,37 @@
+{
+  "source": "thuongtran1210/Vongxuyen",
+  "id": "yaksha_boss",
+  "threeVersion": "160",
+  "sourceHashes": {
+    "src/entities/EnemyFactory.js": "72e6b13910a74da913726c5f4f2aebcc856dd90106425929ac4e765ad2687050",
+    "src/entities/YakshaBossMesh.js": "4c59c09f64bf115df9dfa3b0bf098b6b5acebcb267ccc27a7a690112b3c403ec",
+    "src/core/MaterialManager.js": "571c65fb1c66c72edbf6ee97e74f97aec4933afd3271d74a6fa1d7f3e9f72541"
+  },
+  "meshes": 44,
+  "triangles": 2592,
+  "materials": 9,
+  "bounds": {
+    "min": [
+      -1.8205606092105662,
+      -0.2540999929904938,
+      -1.6272819142341615
+    ],
+    "max": [
+      1.8205606092105662,
+      4.010915649463455,
+      7.340684999595926
+    ]
+  },
+  "bodyPivot": [
+    0,
+    0,
+    0
+  ],
+  "leftWing": null,
+  "rightWing": null,
+  "notes": [
+    "Original geometry, rigid hierarchy, colors and baked outline extrusion.",
+    "Health bars, transparent web auras and lights excluded; Unity retains gameplay ownership.",
+    "Locomotion poses are driven by the imported EnemyBody and wings in Unity, not animation clips."
+  ]
+}

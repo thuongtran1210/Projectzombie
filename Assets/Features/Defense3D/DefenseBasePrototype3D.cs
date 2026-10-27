@@ -54,6 +54,7 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         public void ReceiveDamage(float amount) => TakeDamage(new DefenseDamageContext(amount));
+        public bool Heal(float amount) => isActiveAndEnabled && CanAdvanceGameplay && !IsDestroyed && Health.Heal(amount);
         public void LockDamageAfterWin() => DamageLockedAfterWin = true;
 
         public void ResetBase()

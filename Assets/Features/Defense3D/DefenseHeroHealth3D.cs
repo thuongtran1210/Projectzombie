@@ -49,6 +49,7 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         public void ReceiveDamage(float amount) => TakeDamage(new DefenseDamageContext(amount));
+        public bool Heal(float amount) => isActiveAndEnabled && CanAdvanceGameplay && !IsDown && Tracker.Heal(amount);
         public void AdvanceGameplayTime(float gameplayDeltaSeconds, bool isTerminal) => Tracker.Tick(gameplayDeltaSeconds, isTerminal);
 
         public void ResetHero()

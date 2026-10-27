@@ -1,0 +1,62 @@
+{
+  "source": "thuongtran1210/Vongxuyen",
+  "threeVersion": "160",
+  "sourceHashes": {
+    "src/entities/PlayerWanderer.js": "434d808d74850a52626c67ee320705d46351895469995641e164a2d47cb92b3c",
+    "src/entities/HeroVisuals.js": "15bd7b55c0b47f9a4bc6903e00dfb95d52648c4323405377246e09db1f543ba3",
+    "src/core/MaterialManager.js": "571c65fb1c66c72edbf6ee97e74f97aec4933afd3271d74a6fa1d7f3e9f72541"
+  },
+  "meshes": 66,
+  "triangles": 7174,
+  "materials": 15,
+  "bounds": {
+    "min": [
+      -0.6289449588750451,
+      -0.1254835806764965,
+      -0.45576339960098267
+    ],
+    "max": [
+      0.951460405153552,
+      1.6525800037384033,
+      0.473920871773837
+    ]
+  },
+  "clips": [
+    {
+      "name": "Idle",
+      "duration": 2,
+      "tracks": 12
+    },
+    {
+      "name": "Run",
+      "duration": 0.8,
+      "tracks": 12
+    },
+    {
+      "name": "Dash",
+      "duration": 0.42,
+      "tracks": 12
+    },
+    {
+      "name": "Attack",
+      "duration": 0.85,
+      "tracks": 12
+    },
+    {
+      "name": "Skill",
+      "duration": 1.5,
+      "tracks": 12
+    },
+    {
+      "name": "Die",
+      "duration": 0.7,
+      "tracks": 12
+    }
+  ],
+  "notes": [
+    "Original visible Scholar hierarchy and colors; no gameplay changes.",
+    "Six procedural poses baked at 30 FPS by the original source baker.",
+    "Web toon lighting replaced with Unity material; outline extrusion baked into geometry.",
+    "Web combat VFX and hidden Hermit accessories excluded."
+  ]
+}

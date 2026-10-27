@@ -7,6 +7,8 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseSupportTarget3D : DefenseGameplayBehaviour, IDefenseDamageable3D
     {
         [SerializeField, Min(1f)] private float _maxHp = 100f;
+        [SerializeField] private bool _isStructure;
+        public bool IsStructure => _isStructure;
         private DefenseHealthCore _health;
         private int _generation;
         private bool _live;
@@ -27,6 +29,9 @@ namespace ProjectZombie.Features.Defense3D
         public bool TakeDamage(DefenseDamageContext context) => isActiveAndEnabled && _live && Gameplay != null && _generation == Gameplay.RunGeneration &&
             DefenseDamageRules.CanApply(context, Gameplay, IsDead) && _health.ApplyDamage(context);
         private void ResetHealth() { _generation = Gameplay.RunGeneration; _health.Reset(_maxHp); _live = true; }
+        public void ResetForRecruit() { if (Gameplay != null && CanAdvanceGameplay) ResetHealth(); }
+        public bool Heal(float amount) => isActiveAndEnabled && CanAdvanceGameplay && !IsDead && _generation == Gameplay.RunGeneration && _health.Heal(amount);
+        public void IncreaseCapacity(float amount) { if (_health != null && !IsDead && CanAdvanceGameplay && amount > 0f) _health.SetCapacity(_health.MaxHp + amount, true); }
         protected override void OnGameplayReset() => ResetHealth();
         protected override void OnGameplayCleanup() => _live = false;
     }

@@ -13,6 +13,12 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private float turnRate = 14f;
 
         private Rigidbody _body;
+        private DefenseHeroAutoAttack3D _basicAttack;
+        public void FaceBasicAttack(object owner, DefensePoint3 direction)
+        {
+            SetAimFacing(owner, direction);
+            if (_body != null && ReferenceEquals(_aimFacingOwner, owner)) _body.rotation = Quaternion.LookRotation(_aimFacing);
+        }
         private IDefenseHeroCommands _commands;
         private object _aimFacingOwner;
         private Vector3 _aimFacing;
@@ -83,6 +89,7 @@ namespace ProjectZombie.Features.Defense3D
         private void Awake()
         {
             _body = GetComponent<Rigidbody>();
+            _basicAttack = GetComponent<DefenseHeroAutoAttack3D>();
             _body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             _body.interpolation = RigidbodyInterpolation.Interpolate;
         }
@@ -113,7 +120,8 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
             Vector2 input = new Vector2(command.X, command.Z);
-            Vector3 move = new Vector3(input.x, 0f, input.y) * EffectiveSpeed;
+            Vector3 move = new Vector3(input.x, 0f, input.y) * EffectiveSpeed *
+                (_basicAttack != null && _basicAttack.IsRecovering ? DefenseBasicAttackRules.MoveMultiplier : 1f);
             _body.velocity = new Vector3(move.x, _body.velocity.y, move.z);
             if (_aimFacingOwner == null && input.sqrMagnitude > 0.001f)
             {

@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             EnsureComponents();
             enemy.BindGameplay(gameplay);
+            if (TryGetComponent<DefenseEnemyVisualMotion3D>(out var visual)) visual.BindGameplay(gameplay);
             movement.BindGameplay(gameplay);
             attack.BindGameplay(gameplay);
             var drops = GetComponent<DefenseEnemyDrop3D>();

@@ -33,6 +33,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public void TakeDamage(float amount) => ApplyDamage(new DefenseDamageContext(amount));
         public bool ApplyDamage(DefenseDamageContext context) => _health.ApplyDamage(context);
+        public bool Heal(float amount) => _health.Heal(amount);
 
         public void Tick(float gameplayDeltaSeconds, bool isTerminal)
         {

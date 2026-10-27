@@ -72,6 +72,16 @@ namespace ProjectZombie.Features.Defense3D
             HealthChanged?.Invoke(CurrentHp, MaxHp);
         }
 
+        /// <summary>Restores finite positive health to a living actor without resetting its lifetime.</summary>
+        public bool Heal(float amount)
+        {
+            if (IsDead || !DefenseDamageRules.IsFinite(amount) || amount <= 0f || CurrentHp >= MaxHp) return false;
+            CurrentHp = Math.Min(MaxHp, CurrentHp + amount);
+            _revision++;
+            HealthChanged?.Invoke(CurrentHp, MaxHp);
+            return true;
+        }
+
         /// <summary>Changes capacity without reviving dead actors; positive grants may fill only the added capacity.</summary>
         public void SetCapacity(float maxHp, bool fillIncrease)
         {

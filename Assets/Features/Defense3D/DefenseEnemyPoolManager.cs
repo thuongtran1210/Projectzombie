@@ -81,10 +81,8 @@ namespace ProjectZombie.Features.Defense3D
             if (instance != null)
             {
                 instance.SetActive(false);
-                if (_poolsRoot != null)
-                {
-                    instance.transform.SetParent(_poolsRoot, false);
-                }
+                // Release can run inside OnDisable while an ancestor is changing activation.
+                // Unity forbids reparenting there; leave the inactive instance in place until Get.
             }
         }
 
@@ -102,9 +100,10 @@ namespace ProjectZombie.Features.Defense3D
             if (prefab == null) throw new ArgumentNullException(nameof(prefab));
             var pool = GetOrCreatePool(prefab);
             var instance = pool.Get();
-            if (parent != null)
+            Transform destination = parent != null ? parent : _poolsRoot;
+            if (destination != null && instance.transform.parent != destination)
             {
-                instance.transform.SetParent(parent, false);
+                instance.transform.SetParent(destination, false);
             }
             return instance;
         }

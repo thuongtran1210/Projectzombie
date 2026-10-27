@@ -6,6 +6,25 @@ namespace ProjectZombie.Tests.Editor
 {
     public sealed class DefenseEnemyFoundationTests
     {
+        [TestCase("danbinh")]
+        [TestCase("phutapdich")]
+        [TestCase("thaylang")]
+        public void InactiveMinionPrefab_CanInstantiateWithoutConstructorNavMeshErrors(string id)
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Art/Minions/Vongxuyen/Prefabs/" + id + "Minion.prefab");
+            Assert.That(prefab, Is.Not.Null);
+            GameObject instance = null;
+            try
+            {
+                instance = Object.Instantiate(prefab);
+                Assert.That(instance.activeSelf, Is.False);
+                Assert.That(instance.GetComponent<DefenseMinion3D>(), Is.Not.Null);
+                UnityEngine.TestTools.LogAssert.NoUnexpectedReceived();
+            }
+            finally { if (instance != null) Object.DestroyImmediate(instance); }
+        }
+
         [Test]
         public void InitializeFromDefinition_UsesSnapshotWithoutMutatingSharedData()
         {
@@ -82,6 +101,53 @@ namespace ProjectZombie.Tests.Editor
             Assert.That(stats.MaxHp, Is.EqualTo(definition.MaxHP));
             Assert.That(stats.AttackInterval, Is.EqualTo(definition.AttackInterval));
             Assert.That(stats.AttackRange, Is.EqualTo(definition.AttackRange));
+        }
+
+        [Test]
+        public void EnemyPoolManager_ParentDisableCanReturnActorAndReuseItOutsideTheCallback()
+        {
+            var poolRoot = new GameObject("PoolRoot");
+            var actors = new GameObject("Actors");
+            var session = new DefenseSession();
+            var pool = new DefenseEnemyPoolManager(poolRoot.transform);
+            GameObject instance = null;
+            try
+            {
+                var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/Resources/Defense3D/DefenseEnemy_Magiap.prefab");
+                instance = pool.Get(prefab, actors.transform);
+                var enemy = instance.GetComponent<DefenseEnemy3D>();
+                enemy.BindGameplay(session);
+                session.Start();
+                var lifetime = new DefenseActorLifetime(session.SessionIdentity, session.RunGeneration, 1);
+                int releases = 0;
+                enemy.BindLifetime(lifetime, (actor, lease, reason) =>
+                {
+                    if (!lease.TryRetire(session.SessionIdentity, session.RunGeneration, reason)) return;
+                    releases++;
+                    Assert.That(pool.TryRelease(actor.gameObject), Is.True);
+                });
+                instance.SetActive(true);
+
+                actors.SetActive(false);
+
+                UnityEngine.TestTools.LogAssert.NoUnexpectedReceived();
+                Assert.That(releases, Is.EqualTo(1));
+                Assert.That(instance.activeSelf, Is.False);
+                Assert.That(instance.transform.parent, Is.SameAs(actors.transform));
+                var reused = pool.Get(prefab);
+                Assert.That(reused, Is.SameAs(instance));
+                Assert.That(reused.transform.parent, Is.SameAs(poolRoot.transform));
+                Assert.That(reused.activeSelf, Is.False);
+            }
+            finally
+            {
+                session.Dispose();
+                if (instance != null) Object.DestroyImmediate(instance);
+                pool.Dispose();
+                Object.DestroyImmediate(actors);
+                Object.DestroyImmediate(poolRoot);
+            }
         }
 
         [Test]

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dbacac5700c38f4d8b2da82a9bf25d9, type: 3}
+  m_Name: thaylang
+  m_EditorClassIdentifier: 
+  _id: thaylang
+  _displayName: "Th\u1EA7y Lang Nam D\u01B0\u1EE3c"
+  _role: 2
+  _woodCost: 35
+  _maxHp: 135
+  _speed: 2.25
+  _damage: 4
+  _attackRange: 4.2
+  _attackInterval: 1
+  _thinkInterval: 0.2
+  _searchRange: 8
+  _healAmount: 45
+  _heroHealAmount: 28
+  _healInterval: 2.6
+  _carryCapacity: 60
+  _slowStrength: 0.5
+  _slowDuration: 2.2
+  _heavyStunDuration: 1.25
+  _heavyDamage: 14
+  _knockStrength: 0.325
+  _knockDuration: 0.2
+  _repairAmount: 25
+  _baseRepairAmount: 15
+  _repairInterval: 0.95
