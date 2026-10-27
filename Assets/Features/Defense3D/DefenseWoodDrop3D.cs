@@ -17,6 +17,18 @@ namespace ProjectZombie.Features.Defense3D
         private float expireTime;
         private float pickupReadyTime;
         private System.Action<DefenseWoodDrop3D> _poolRelease;
+        private int _generation;
+        public bool CanBeGathered(IDefenseGameplayContext gameplay) => ReferenceEquals(Gameplay, gameplay) &&
+            isActiveAndEnabled && CanAdvanceGameplay && _generation == Gameplay.RunGeneration && !collected && GameplayTime >= pickupReadyTime;
+        public bool TryGather(IDefenseGameplayContext gameplay, int capacity, out int amount)
+        {
+            amount = 0;
+            if (capacity <= 0 || !CanBeGathered(gameplay)) return false;
+            amount = Mathf.Min(woodAmount, capacity);
+            woodAmount -= amount;
+            if (woodAmount == 0) DespawnOrDestroy();
+            return true;
+        }
 
         public void SetPoolRelease(System.Action<DefenseWoodDrop3D> releaseAction)
         {
@@ -26,6 +38,7 @@ namespace ProjectZombie.Features.Defense3D
         public void Initialize(int amount, Transform collector, DefenseWoodWallet3D collectorWallet)
         {
             woodAmount = Mathf.Max(1, amount);
+            _generation = Gameplay != null ? Gameplay.RunGeneration : -1;
             hero = collector;
             wallet = collectorWallet;
             _collectorHealth = collector != null ? collector.GetComponent<DefenseHeroHealth3D>() : null;

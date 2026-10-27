@@ -10,14 +10,19 @@ namespace ProjectZombie.Features.Defense3D
     {
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
         [SerializeField] private DefenseWoodWallet3D wallet;
-        [SerializeField, Min(1)] private int towerWoodCost = 25;
-        [SerializeField, Min(0.5f)] private float buildRadius = 5f;
+        [SerializeField, Min(1)] private int towerWoodCost = 50;
+        [SerializeField, Min(0.5f)] private float buildRadius = 1.7f;
         [SerializeField] private DefenseTowerPrototype3D[] socketTowers;
         [SerializeField] private bool showDebugOverlay;
         private bool[] occupied;
         private DefenseHeroHealth3D _heroHealth;
         private IDefenseHeroCommands _commands;
         public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
+        public int BuildCost => towerWoodCost;
+        public int NearestSocket => FindNearestSocket();
+        public Transform GetSocket(int index) => sceneInfo != null ? sceneInfo.GetTowerSocket(index) : null;
+        public event System.Action InteractRequested;
+        public DefenseTowerPrototype3D NearestTower => FindNearestSocket() is int index && index >= 0 ? socketTowers[index] : null;
         
 
         private void Start()
@@ -60,7 +65,10 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return;
             if (_commands != null && _commands.ConsumeBuild())
-                TryBuildNearest();
+            {
+                if (InteractRequested != null) InteractRequested.Invoke();
+                else TryBuildNearest();
+            }
         }
 
         public void ResetTowers()
@@ -73,37 +81,51 @@ namespace ProjectZombie.Features.Defense3D
             }
         }
 
-        private void TryBuildNearest()
+        public bool TryBuildNearest()
         {
-            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return;
+            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return false;
             if (wallet == null || wallet.Wood < towerWoodCost)
             {
                 Debug.Log("[TREBRAVE Defense3D] Not enough test wood to build tower.");
-                return;
+                return false;
             }
-            int candidate = -1;
-            float best = buildRadius * buildRadius;
-            for (int i = 0; i < occupied.Length; i++)
-            {
-                if (occupied[i]) continue;
-                Transform socket = sceneInfo.GetTowerSocket(i);
-                if (socket == null) continue;
-                Vector3 offset = socket.position - sceneInfo.HeroSpawn.position;
-                offset.y = 0f;
-                if (offset.sqrMagnitude >= best) continue;
-                best = offset.sqrMagnitude;
-                candidate = i;
-            }
+            int candidate = FindNearestSocket();
             if (candidate < 0)
             {
                 Debug.Log("[TREBRAVE Defense3D] Stand within " + buildRadius + "m of an empty TowerSocket and press B.");
-                return;
+                return false;
             }
-
-            if (!wallet.TrySpend(towerWoodCost)) return;
+            if (socketTowers[candidate].gameObject.activeSelf || !wallet.TrySpend(towerWoodCost)) return false;
+            socketTowers[candidate].PrepareForBuild();
             socketTowers[candidate].gameObject.SetActive(true);
             occupied[candidate] = true;
             Debug.Log("[TREBRAVE Defense3D] Tower built at socket " + (candidate + 1) + ". Wood: " + wallet.Wood);
+            return true;
+        }
+
+        public bool TryUpgradeNearest()
+        {
+            var tower = NearestTower;
+            return CanAdvanceGameplay && _heroHealth != null && !_heroHealth.IsDown && tower != null && tower.TryUpgrade(wallet);
+        }
+
+        private int FindNearestSocket()
+        {
+            if (sceneInfo == null || sceneInfo.HeroSpawn == null || socketTowers == null) return -1;
+            int candidate = -1;
+            float best = buildRadius * buildRadius;
+            for (int i = 0; i < socketTowers.Length; i++)
+            {
+                var socket = sceneInfo.GetTowerSocket(i);
+                if (socket == null || socketTowers[i] == null) continue;
+                Vector3 hero = sceneInfo.HeroSpawn.position, center = socket.position;
+                if (!DefenseVillageInteractionRules.InZone(new DefensePoint3(hero.x, hero.y, hero.z),
+                    new DefensePoint3(center.x, center.y, center.z), buildRadius, false)) continue;
+                Vector3 delta = socket.position - sceneInfo.HeroSpawn.position; delta.y = 0f;
+                if (delta.sqrMagnitude >= best) continue;
+                best = delta.sqrMagnitude; candidate = i;
+            }
+            return candidate;
         }
 
         private void OnGUI()

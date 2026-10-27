@@ -8,6 +8,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(0)] private int startingWood = 0;
         public int Wood { get; private set; }
         public int CurrentWood => Wood;
+        public event System.Action Changed;
 
         private void Awake()
         {
@@ -15,12 +16,13 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         /// <summary>Restores the authored initial balance for a new run.</summary>
-        public void ResetWallet() => Wood = startingWood;
+        public void ResetWallet() { Wood = startingWood; Changed?.Invoke(); }
 
         public void CollectWood(int amount)
         {
             if (amount <= 0) return;
-            Wood += amount;
+            Wood = amount > int.MaxValue - Wood ? int.MaxValue : Wood + amount;
+            Changed?.Invoke();
             Debug.Log("[TREBRAVE Defense3D] Hero collected " + amount + " Wood. Wallet: " + Wood);
         }
 
@@ -28,6 +30,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (amount < 0 || Wood < amount) return false;
             Wood -= amount;
+            Changed?.Invoke();
             return true;
         }
     }

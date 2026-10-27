@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -16,6 +17,8 @@ namespace ProjectZombie.Features.Defense3D
         private readonly ObjectPool<DefenseWoodDrop3D> _pool;
         private readonly GameObject _prefab;
         private readonly Transform _poolRoot;
+        private readonly List<DefenseWoodDrop3D> _activeDrops = new List<DefenseWoodDrop3D>(80);
+        public IReadOnlyList<DefenseWoodDrop3D> ActiveDrops => _activeDrops;
 
         public DefenseWoodDropPool(GameObject prefab, Transform poolRoot = null, int defaultCapacity = 20, int maxSize = 80)
         {
@@ -63,6 +66,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (drop != null)
             {
+                _activeDrops.Add(drop);
                 drop.gameObject.SetActive(true);
             }
         }
@@ -71,11 +75,9 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (drop != null)
             {
+                _activeDrops.Remove(drop);
                 drop.gameObject.SetActive(false);
-                if (_poolRoot != null)
-                {
-                    drop.transform.SetParent(_poolRoot, false);
-                }
+                // A cleanup callback can run while an ancestor is deactivating; reparent on reuse.
             }
         }
 
@@ -100,6 +102,7 @@ namespace ProjectZombie.Features.Defense3D
         public void Dispose()
         {
             _pool.Clear();
+            _activeDrops.Clear();
             if (ReferenceEquals(_activeSessionPool, this))
             {
                 _activeSessionPool = null;
