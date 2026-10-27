@@ -27,7 +27,9 @@ namespace ProjectZombie.Features.Defense3D
             target.TakeDamage(new DefenseDamageContext(EffectiveDamage, this, target.TargetTransform.position,
                 runGeneration: Gameplay.RunGeneration, sessionIdentity: Gameplay.SessionIdentity));
             Debug.DrawLine(transform.position + Vector3.up, target.TargetTransform.position + Vector3.up, Color.yellow, 0.4f);
+#if UNITY_EDITOR && DEFENSE_TOWER_DEBUG
             Debug.Log("[TREBRAVE Defense3D] Tower hit " + target.TargetTransform.name + " for " + EffectiveDamage);
+#endif
         }
 
         private void OnDrawGizmosSelected()
