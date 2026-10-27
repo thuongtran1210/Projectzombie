@@ -26,17 +26,18 @@ namespace ProjectZombie.Features.Defense3D
         public bool IsAvailable => isActiveAndEnabled && !_health.IsDead;
         public Vector3 FormationOffset { get; private set; }
 
-        private void Awake() => EnsurePath();
+        private void Awake() => EnsureAgent();
 
-        private void EnsurePath()
+        private void EnsureAgent()
         {
             if (_path == null) _path = new NavMeshPath();
+            if (_agent == null) _agent = GetComponent<NavMeshAgent>();
         }
 
         public void Bind(DefenseVillageShop3D shop, IDefenseGameplayContext gameplay)
         {
             // Authored pool slots are inactive, so binding can precede their first Awake.
-            EnsurePath();
+            EnsureAgent();
             _shop = shop;
             if (!_bound)
             {
@@ -55,6 +56,8 @@ namespace ProjectZombie.Features.Defense3D
         public bool Deploy(Vector3 point, int index)
         {
             if (gameObject.activeSelf || !CanAdvanceGameplay || (transform.parent != null && !transform.parent.gameObject.activeInHierarchy)) return false;
+            EnsureAgent();
+            if (_agent == null) return false;
             _cargo = _combo = 0;
             _nextThink = _nextAction = GameplayTime;
             _walkTime = 0f;
@@ -73,11 +76,12 @@ namespace ProjectZombie.Features.Defense3D
         {
             _cargo = 0;
             Stop();
-            _agent.enabled = false;
+            if (_agent != null) _agent.enabled = false;
             if (_visualBody != null) _visualBody.localPosition = _bodyOrigin;
-            if (_legRotations != null)
-                for (int i = 0; i < _legs.Length; i++) _legs[i].localRotation = _legRotations[i];
-            gameObject.SetActive(false);
+            if (_legRotations != null && _legs != null)
+                for (int i = 0; i < _legs.Length; i++)
+                    if (_legs[i] != null) _legs[i].localRotation = _legRotations[i];
+            if (this != null && gameObject != null) gameObject.SetActive(false);
         }
 
         private void OnDefeated()
@@ -91,13 +95,13 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool CanReach(Vector3 point)
         {
-            if (!_agent.enabled || !_agent.isOnNavMesh || !NavMesh.SamplePosition(point, out var hit, 2.5f, _agent.areaMask)) return false;
+            if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh || !NavMesh.SamplePosition(point, out var hit, 2.5f, _agent.areaMask)) return false;
             return _agent.CalculatePath(hit.position, _path) && _path.status == NavMeshPathStatus.PathComplete;
         }
 
         private bool Move(Vector3 point, float stoppingDistance)
         {
-            if (!CanReach(point)) { Stop(); return false; }
+            if (_agent == null || !CanReach(point)) { Stop(); return false; }
             _agent.stoppingDistance = stoppingDistance;
             _agent.isStopped = false;
             return _agent.SetPath(_path);
@@ -105,7 +109,7 @@ namespace ProjectZombie.Features.Defense3D
 
         private void Stop()
         {
-            if (_agent.enabled && _agent.isOnNavMesh) { _agent.isStopped = true; _agent.ResetPath(); }
+            if (_agent != null && _agent.enabled && _agent.isOnNavMesh) { _agent.isStopped = true; _agent.ResetPath(); }
         }
 
         private void Update()
@@ -121,12 +125,15 @@ namespace ProjectZombie.Features.Defense3D
                     case DefenseMinionRole.Healer: Heal(); break;
                 }
             }
-            if (_agent.enabled && _agent.isOnNavMesh && _agent.velocity.sqrMagnitude > .04f)
+            if (_agent != null && _agent.enabled && _agent.isOnNavMesh && _agent.velocity.sqrMagnitude > .04f)
             {
                 _walkTime += Time.deltaTime * 8f;
                 if (_visualBody != null) _visualBody.localPosition = _bodyOrigin + Vector3.up * (Mathf.Abs(Mathf.Sin(_walkTime)) * .035f);
-                for (int i = 0; i < _legs.Length; i++)
-                    _legs[i].localRotation = _legRotations[i] * Quaternion.Euler(Mathf.Sin(_walkTime) * (i % 2 == 0 ? 25f : -25f), 0f, 0f);
+                if (_legs != null && _legRotations != null)
+                {
+                    for (int i = 0; i < _legs.Length; i++)
+                        if (_legs[i] != null) _legs[i].localRotation = _legRotations[i] * Quaternion.Euler(Mathf.Sin(_walkTime) * (i % 2 == 0 ? 25f : -25f), 0f, 0f);
+                }
             }
         }
 
@@ -222,6 +229,11 @@ namespace ProjectZombie.Features.Defense3D
         protected override void OnGameplayReset() => Retire();
         private void OnDisable() => Stop();
         private void RefreshHealth(float current, float maximum) { if (_healthView != null) _healthView.SetRatio(maximum > 0f ? current / maximum : 0f); }
-        protected override void OnDestroy() { if (_health != null) { _health.Defeated -= OnDefeated; _health.HealthChanged -= RefreshHealth; } base.OnDestroy(); }
+        protected override void OnDestroy()
+        {
+            Stop();
+            if (_health != null) { _health.Defeated -= OnDefeated; _health.HealthChanged -= RefreshHealth; }
+            base.OnDestroy();
+        }
     }
 }

@@ -25,16 +25,37 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseTowerPrototype3D NearestTower => FindNearestSocket() is int index && index >= 0 ? socketTowers[index] : null;
         
 
+        private void Awake() => EnsureInitialized();
+
+        private void EnsureInitialized()
+        {
+            if (sceneInfo == null) sceneInfo = FindObjectOfType<DefenseSceneInfo3D>();
+            if (sceneInfo != null && sceneInfo.HeroSpawn != null)
+            {
+                if (_heroHealth == null) _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
+                if (wallet == null) wallet = sceneInfo.HeroSpawn.GetComponent<DefenseWoodWallet3D>();
+            }
+            if (occupied == null || (socketTowers != null && occupied.Length != socketTowers.Length))
+            {
+                int count = socketTowers != null ? socketTowers.Length : (sceneInfo != null ? sceneInfo.TowerSocketCount : 0);
+                occupied = new bool[count];
+                if (socketTowers != null)
+                {
+                    for (int i = 0; i < socketTowers.Length && i < occupied.Length; i++)
+                        occupied[i] = socketTowers[i] != null && socketTowers[i].gameObject.activeSelf;
+                }
+            }
+        }
+
         private void Start()
         {
+            EnsureInitialized();
             if (sceneInfo == null || sceneInfo.HeroSpawn == null || sceneInfo.TowerSocketCount == 0)
             {
                 Debug.LogError("[TREBRAVE Defense3D] Tower builder requires active SceneInfo, Hero and tower sockets.");
                 enabled = false;
                 return;
             }
-            occupied = new bool[sceneInfo.TowerSocketCount];
-            _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
             if (socketTowers == null || socketTowers.Length != occupied.Length)
             {
                 Debug.LogError("[TREBRAVE Defense3D] Assign one authored Tower per socket in the Inspector.", this);
@@ -51,7 +72,6 @@ namespace ProjectZombie.Features.Defense3D
                 }
                 occupied[i] = socketTowers[i].gameObject.activeSelf;
             }
-            if (wallet == null) wallet = sceneInfo.HeroSpawn.GetComponent<DefenseWoodWallet3D>();
             if (wallet == null)
             {
                 Debug.LogError("[TREBRAVE Defense3D] Tower builder needs DefenseWoodWallet3D on Hero. Install WoodDrop Economy in scene.");
@@ -83,6 +103,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool TryBuildNearest()
         {
+            EnsureInitialized();
             if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return false;
             if (wallet == null || wallet.Wood < towerWoodCost)
             {
@@ -90,7 +111,7 @@ namespace ProjectZombie.Features.Defense3D
                 return false;
             }
             int candidate = FindNearestSocket();
-            if (candidate < 0)
+            if (candidate < 0 || socketTowers == null || candidate >= socketTowers.Length || socketTowers[candidate] == null)
             {
                 Debug.Log("[TREBRAVE Defense3D] Stand within " + buildRadius + "m of an empty TowerSocket and press B.");
                 return false;
@@ -98,19 +119,24 @@ namespace ProjectZombie.Features.Defense3D
             if (socketTowers[candidate].gameObject.activeSelf || !wallet.TrySpend(towerWoodCost)) return false;
             socketTowers[candidate].PrepareForBuild();
             socketTowers[candidate].gameObject.SetActive(true);
-            occupied[candidate] = true;
+            if (occupied == null || occupied.Length != socketTowers.Length)
+                occupied = new bool[socketTowers.Length];
+            if (candidate < occupied.Length)
+                occupied[candidate] = true;
             Debug.Log("[TREBRAVE Defense3D] Tower built at socket " + (candidate + 1) + ". Wood: " + wallet.Wood);
             return true;
         }
 
         public bool TryUpgradeNearest()
         {
+            EnsureInitialized();
             var tower = NearestTower;
             return CanAdvanceGameplay && _heroHealth != null && !_heroHealth.IsDown && tower != null && tower.TryUpgrade(wallet);
         }
 
         private int FindNearestSocket()
         {
+            EnsureInitialized();
             if (sceneInfo == null || sceneInfo.HeroSpawn == null || socketTowers == null) return -1;
             int candidate = -1;
             float best = buildRadius * buildRadius;
