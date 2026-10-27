@@ -8,19 +8,14 @@ Mở lại `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity` để nạp th
 
 | Trong Hierarchy | Chỉnh ở đâu |
 |---|---|
-| `DefenseRuntime` | Actors/Pickups active, Staging/Pools_Reserved inactive; root/children giữ TRS identity. Run có reference tới component Runtime Roots. |
-| `MapSongQue` | Root bản đồ chung, giữ TRS identity. Các nhóm Visuals/Collision/GameplayMarkers/Structures/Navigation ở bên dưới; SceneInfo giữ nguyên component và binding. |
-| `[TREBRAVE] Session Composition` | Điểm khởi tạo session. Nối Run, Match UI, Wallet, 18 gameplay participant (gồm 10 tháp inactive, Base/Hero Health, hai skill effects và foot indicator) và hai skill presenters. Actor không có context sẽ không chạy gameplay. |
-| `DefenseMatchUICanvas` | Prefab instance có sẵn. Expand để chỉnh MatchHUD, UpgradeModal và ResultModal. Không tạo Canvas trong Start. |
-| `DefenseSkillControlsCanvas` | Prefab instance chứa Dash/Dép, icon/fill/TMP/lock/cancel zones. Presenter refs được override tới Hero/effect/indicator trong scene. |
-| `DashAimIndicator`, `DepAimIndicator`, `DepImpactIndicator` | Ba instance có sẵn, renderer ẩn mặc định. Chỉnh visual nguồn ở DefenseAimIndicator3D.prefab. |
-| `Hero_3D_Prototype` | Projector, Dash Traversal, Dash/Relic Effect và collider/motor có sẵn. Ground mask 4096; blocker mask 25; Dash yêu cầu baked NavMesh. |
-| `EventSystem` | Có sẵn EventSystem và InputSystemUIInputModule; dùng cùng Input Actions với Legacy scene. |
-| `MapSongQue/Structures/[TREBRAVE] Authored Towers` | 10 prefab instance `DefenseTower_Socket_01..10`, đặt tại tọa độ socket hiện có và tắt ban đầu. Bật tạm trong EditMode để chỉnh, tắt lại trước khi lưu. |
-| `[TREBRAVE] Tower Build Test` | `Socket Towers` liên kết theo thứ tự `SceneInfo.TowerSockets`. Xây tháp chỉ bật instance tương ứng; Restart tắt lại. |
-| `[TREBRAVE] 600s Defense Run` | Kéo reference Match UI và Tower Builder trực tiếp trong Inspector. `Show Debug Overlay` mặc định tắt. Scene chính hiện dùng Stage01_Production; FastSpawn giữ riêng cho stress test. |
+| `--- [SYSTEMS & CORE] ---` | Chứa `[TREBRAVE] Session Composition`, `[TREBRAVE] 600s Defense Run` và `EventSystem`. Điểm khởi tạo và điều phối trận đấu. |
+| `--- [ENVIRONMENT & LIGHTING] ---` | Chứa `Main Camera`, `Directional Light` và `MapSongQue` (gồm Visuals, Collision, GameplayMarkers, Structures, Navigation). |
+| `--- [GAMEPLAY ACTORS] ---` | Chứa `Hero_3D_Prototype` (Hero Motor, Health, Attack) và `DefenseRuntime` (Actors, Pickups, Staging, Pools_Reserved). |
+| `--- [VFX & INDICATORS] ---` | Chứa các chỉ dấu kỹ năng: `DefenseHeroFootIndicator3D`, `DashAimIndicator`, `DepAimIndicator`, `DepImpactIndicator`, `HeroAttackPreview/Impact`, `ScholarSignaturePreview/Impact`. Giữ Identity Transform để đảm bảo phép chiếu mặt đất chuẩn xác. |
+| `--- [USER INTERFACE] ---` | Chứa 3 Canvas prefab instances: `DefenseMatchUICanvas` (HUD & Modals), `DefenseSkillControlsCanvas` (Nút Skill, Vùng Hủy), `DefenseSpawnWarningsCanvas` (Cảnh báo đợt quái/Boss). |
+| `--- [DEBUG & LEGACY TESTS] ---` | Chứa các runner test cũ (`Tower Build Test`, `Three Wave Defense Test`, `Enemy Bridge Smoke Test`). Đã tắt active mặc định để tránh chạy ngầm. |
 
-Từ gói refactor session, Run không tự khởi tạo trong Start nữa: composition root cấp session và gọi InitializeSession. Khi tạo scene Defense mới hoặc dùng fixture/smoke scene cũ, cần author composition/binding tương ứng. Không tạo một session riêng trong từng actor. Chi tiết trạng thái và giới hạn kiểm chứng ở `DEFENSE3D_REFACTOR_PROGRESS.md`.
+Từ gói refactor session, Run không tự khởi tạo trong Start nữa: composition root cấp session và gọi InitializeSession. Toàn bộ 6 Root Header đều giữ Transform Identity (Position 0, Rotation 0, Scale 1). Chi tiết trạng thái và giới hạn kiểm chứng ở `DEFENSE3D_REFACTOR_PROGRESS.md`.
 
 Tháp nằm trong nhóm riêng, không parent dưới marker có scale dẹt. Nếu đổi vị trí socket, chỉnh lại Transform của tháp tương ứng trong nhóm này.
 
