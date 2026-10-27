@@ -58,4 +58,29 @@ public sealed class DefenseG2CombatAndEnemyTests
         Assert.IsFalse(pipeline.TryGrantReward(drop));
         Assert.AreEqual(1, grantCount);
     }
+
+    [Test]
+    public void AllSevenArchetypes_HaveValidDedicatedPrefabsAndComponents()
+    {
+        string[] expected = { "magiap", "thuyquai", "huyetdoi", "quaidu", "phicuong", "magiap_boss", "yaksha_boss" };
+        var seenPrefabs = new System.Collections.Generic.HashSet<UnityEngine.GameObject>();
+
+        foreach (var id in expected)
+        {
+            var definition = UnityEngine.Resources.Load<DefenseEnemyDataSO>(DefenseEnemyFactory3D.DefinitionsFolder + id);
+            Assert.IsNotNull(definition, $"Missing definition for archetype: {id}");
+            Assert.IsNotNull(definition.Prefab, $"Missing prefab reference on definition: {id}");
+            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyBridgeWalker3D>(), $"Missing DefenseEnemyBridgeWalker3D on {id} prefab");
+            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemy3D>(), $"Missing DefenseEnemy3D on {id} prefab");
+            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseGroundMovement3D>(), $"Missing DefenseGroundMovement3D on {id} prefab");
+            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyAttack3D>(), $"Missing DefenseEnemyAttack3D on {id} prefab");
+            Assert.IsNotNull(definition.Prefab.GetComponent<DefenseEnemyDrop3D>(), $"Missing DefenseEnemyDrop3D on {id} prefab");
+
+            // Ensure distinct dedicated prefabs
+            Assert.IsFalse(seenPrefabs.Contains(definition.Prefab), $"Duplicate prefab reused for archetype {id}: {definition.Prefab.name}");
+            seenPrefabs.Add(definition.Prefab);
+        }
+
+        Assert.AreEqual(7, seenPrefabs.Count, "Expected exactly 7 distinct dedicated prefabs for 7 enemy archetypes.");
+    }
 }
