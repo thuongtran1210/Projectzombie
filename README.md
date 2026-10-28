@@ -1,5 +1,7 @@
 # 🌊 VONG XUYÊN — Survival Roguelite Mobile Game
 
+> **Tiến độ chuyển gameplay sang Defense3D:** bắt đầu đọc [MIGRATION_STATUS.md](MIGRATION_STATUS.md). Phần mô tả gameplay cũ bên dưới đang được rà để thay thế; không coi đó là đặc tả của hướng Defense3D hiện tại.
+
 [![Unity Version](https://img.shields.io/badge/Unity-2022.3%20LTS-blue.svg)](https://unity.com/)
 [![Platform](https://img.shields.io/badge/Platform-Android%20Mobile-green.svg)](https://play.google.com/)
 [![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-URP%202D-orange.svg)](https://unity.com/srp/universal-render-pipeline)

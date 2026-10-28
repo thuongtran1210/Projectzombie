@@ -10,11 +10,11 @@ namespace ProjectZombie.Features.Defense3D
         /// <summary>Production path: register ownership while inactive, then enable and configure navigation.</summary>
         internal static DefenseEnemy3D SpawnOwnedSnapshot(DefenseEnemySpawnDefinition definition, Vector3 position, int lane,
             DefenseBasePrototype3D target, IDefenseGameplayContext gameplay, DefenseWoodWallet3D wallet,
-            DefenseTargetIndex targets, DefenseRuntimeRoots3D roots, System.Action<DefenseEnemy3D> prepared, bool arenaBoss, bool landed = false)
+            DefenseTargetIndex targets, DefenseRuntimeRoots3D roots, System.Action<DefenseEnemy3D> prepared, bool arenaBoss, bool landed = false, IDefenseEnemyPool pool = null, IDefenseWoodDrops woodDrops = null)
         {
             if (!arenaBoss && target == null) throw new System.ArgumentNullException(nameof(target));
             if (roots == null || prepared == null) throw new System.ArgumentNullException(nameof(roots));
-            var actor = CreateActor(definition,position,gameplay,wallet,targets,roots,prepared,landed);
+            var actor = CreateActor(definition,position,gameplay,wallet,targets,roots,prepared,landed,pool,woodDrops);
             try
             {
                 if (!arenaBoss)
@@ -28,7 +28,7 @@ namespace ProjectZombie.Features.Defense3D
             }
             catch
             {
-                ReleaseFailedActor(actor.gameObject);
+                ReleaseFailedActor(actor.gameObject, pool);
                 throw;
             }
         }
@@ -81,7 +81,7 @@ namespace ProjectZombie.Features.Defense3D
 
         private static DefenseEnemy3D CreateActor(DefenseEnemySpawnDefinition definition, Vector3 position,
             IDefenseGameplayContext gameplay, DefenseWoodWallet3D collectorWallet, DefenseTargetIndex targets,
-            DefenseRuntimeRoots3D roots = null, System.Action<DefenseEnemy3D> prepared = null, bool landed = false)
+            DefenseRuntimeRoots3D roots = null, System.Action<DefenseEnemy3D> prepared = null, bool landed = false, IDefenseEnemyPool pool = null, IDefenseWoodDrops woodDrops = null)
         {
             if (definition == null) throw new System.ArgumentNullException(nameof(definition));
             if (gameplay == null) throw new System.ArgumentNullException(nameof(gameplay), "Spawn requires an explicit Defense session context.");
@@ -89,16 +89,17 @@ namespace ProjectZombie.Features.Defense3D
             if (!ReferenceEquals(gameplay.Targets, targets)) throw new System.ArgumentException("Target index must belong to the injected gameplay session.");
             if (definition.Stats.Locomotion == DefenseEnemyLocomotionType.ParatrooperLanding && !landed)
                 throw new System.InvalidOperationException("Landing enemy can only be acquired after an approved landing.");
-            var instance = DefenseEnemyPoolManager.ActiveSessionPool != null
-                ? DefenseEnemyPoolManager.ActiveSessionPool.Get(definition.Prefab, roots != null ? roots.Staging : null)
-                : DefenseEnemyPrefab3D.Instantiate(definition.Prefab, roots != null ? roots.Staging : null);
+            // Chỉ luồng tương thích không có roots mới được tra cứu pool cũ.
+            var allocator = pool ?? (roots == null ? DefenseEnemyPoolManager.ActiveSessionPool : null);
+            var lease = allocator != null ? allocator.Acquire(definition.Prefab, roots != null ? roots.Staging : null) : default;
+            var instance = allocator != null ? lease.Item : DefenseEnemyPrefab3D.Instantiate(definition.Prefab, roots != null ? roots.Staging : null);
             try
             {
                 instance.transform.position = position;
                 var adapter = instance.GetComponent<DefenseEnemyBridgeWalker3D>();
                 if (adapter == null)
                     throw new System.InvalidOperationException("Enemy prefab requires its bridge composition adapter: " + definition.EnemyId);
-                adapter.BindGameplay(gameplay, collectorWallet, roots != null ? roots.Pickups : null, roots != null ? roots.FriendlyTargets : null);
+                adapter.BindGameplay(gameplay, collectorWallet, roots != null ? roots.Pickups : null, roots != null ? roots.FriendlyTargets : null, woodDrops);
                 adapter.Initialize(definition);
                 if (definition.Stats.Locomotion == DefenseEnemyLocomotionType.AmphibianWaterToShore)
                 {
@@ -120,28 +121,30 @@ namespace ProjectZombie.Features.Defense3D
                 prepared?.Invoke(actor);
                 if (roots != null)
                 {
-                    instance.transform.SetParent(roots.Actors, true);
+                    instance.transform.SetParent(roots.EnemyActors, true);
                     instance.SetActive(true);
                 }
                 return actor;
             }
             catch
             {
-                ReleaseFailedActor(instance);
+                ReleaseFailedActor(instance, allocator, lease);
                 throw;
             }
         }
 
-        private static void ReleaseFailedActor(GameObject instance)
+        private static void ReleaseFailedActor(GameObject instance, IDefenseEnemyPool pool = null, PoolLease<GameObject> lease = default)
         {
             var actor = instance.GetComponent<DefenseEnemy3D>();
-            if (actor != null && actor.RequestRelease(DefenseActorReleaseReason.SpawnFailed)) return;
+            if (actor != null && actor.Lifetime != null && !actor.Lifetime.IsRetired && actor.RequestRelease(DefenseActorReleaseReason.SpawnFailed)) return;
             instance.SetActive(false);
-            if (DefenseEnemyPoolManager.ActiveSessionPool == null ||
-                !DefenseEnemyPoolManager.ActiveSessionPool.TryRelease(instance))
+            if (pool != null)
             {
-                Object.Destroy(instance);
+                if (!lease.IsAssigned) pool.TryGetLease(instance, out lease);
+                if (pool.TryRelease(lease)) return;
             }
+            else if (DefenseEnemyPoolManager.ActiveSessionPool != null && DefenseEnemyPoolManager.ActiveSessionPool.TryRelease(instance)) return;
+            Object.Destroy(instance);
         }
     }
 }

@@ -1,165 +1,124 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
-using ProjectZombie.Features.Shared;
 
 namespace ProjectZombie.Features.UI.DamageText
 {
-    /// <summary>
-    /// Manager quản lý Object Pool & Off-screen Culling cho hệ thống Floating Damage Text.
-    /// Tối ưu hiệu năng 0-GC nhờ String Lookup Table.
-    /// </summary>
-    public class DamageTextManager : MonoBehaviour
+    /// <summary>Điều phối chữ combat theo scene; là nơi duy nhất sở hữu pool và quản lý vòng đời item đang hiển thị.</summary>
+    public class DamageTextManager : MonoBehaviour, ICombatTextService
     {
+        // Giữ tương thích với scene và nơi gọi cũ. Hệ thống mới nhận ICombatTextService qua bước khởi tạo.
         public static DamageTextManager Instance { get; private set; }
-
-        [Header("Configurations")]
         [SerializeField] private DamageTextItem _textPrefab;
         [SerializeField] private DamageTextStyleConfig _styleConfig;
         [SerializeField] private int _defaultPoolCapacity = 50;
         [SerializeField] private int _maxPoolSize = 200;
-
+        [SerializeField, Min(1)] private int _maxActiveCount = 100;
+        [SerializeField] private Camera _camera;
+        [SerializeField] private bool _listenToLegacyDamage = true;
+        [SerializeField] private bool _faceCamera;
+        [SerializeField] private string _sortingLayer = "UI_World";
+        [SerializeField] private int _sortingOrder = 1000;
         private ObjectPool<DamageTextItem> _pool;
-        private Camera _mainCamera;
-
-        // GC Zero Optimization: Lookup Table Cache cho các chuỗi số từ 0 - 9999
-        private static readonly string[] NUMBER_CACHE = new string[10000];
-
-        static DamageTextManager()
+        private CombatTextLeases<DamageTextItem> _leases;
+        private LegacyDamageTextAdapter _legacy;
+        private Action<DamageTextItem, long> _completion;
+        private Func<bool> _canAnimate;
+        private bool _accepting = true;
+        public int ActiveCount => _leases == null ? 0 : _leases.Count;
+        private static readonly string[] Numbers = BuildNumbers();
+        private static string[] BuildNumbers()
         {
-            for (int i = 0; i < NUMBER_CACHE.Length; i++)
-            {
-                NUMBER_CACHE[i] = i.ToString();
-            }
+            var result = new string[10000];
+            for (int i = 0; i < result.Length; i++) result[i] = i.ToString();
+            return result;
         }
-
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-
-            _mainCamera = Camera.main;
-            InitPool();
+            if (Instance == null) Instance = this;
+            _completion = Complete;
+            _legacy = new LegacyDamageTextAdapter(this);
         }
-
-        private void OnEnable()
+        private void Start()
         {
-            HealthSystem.OnDamageReported += HandleDamageReported;
+            if (_textPrefab != null && _styleConfig != null) EnsurePool();
         }
-
-        private void OnDisable()
+        private void OnEnable() { if (_listenToLegacyDamage) _legacy?.Bind(); }
+        private void OnDisable() { _legacy?.Dispose(); Clear(); }
+        public void Configure(Camera camera, bool faceCamera, Func<bool> canAnimate = null)
         {
-            HealthSystem.OnDamageReported -= HandleDamageReported;
+            _camera = camera; _faceCamera = faceCamera; _canAnimate = canAnimate;
         }
-
-        private void InitPool()
+        public void SetAccepting(bool accepting) { _accepting = accepting; }
+        public void SetLegacyInput(bool enabled)
         {
+            _listenToLegacyDamage = enabled;
+            _legacy?.Dispose();
+            if (enabled && isActiveAndEnabled) _legacy?.Bind();
+        }
+        private void EnsurePool()
+        {
+            if (_pool != null) return;
+            int retained = Mathf.Max(1, _maxPoolSize);
+            int prewarm = Mathf.Clamp(_defaultPoolCapacity, 0, Mathf.Min(retained, Mathf.Max(1, _maxActiveCount)));
             _pool = new ObjectPool<DamageTextItem>(
-                createFunc: () =>
-                {
-                    DamageTextItem item = Instantiate(_textPrefab, transform);
-                    item.gameObject.SetActive(false);
-                    return item;
-                },
-                actionOnGet: (item) => { },
-                actionOnRelease: (item) => { item.gameObject.SetActive(false); },
-                actionOnDestroy: (item) => { Destroy(item.gameObject); },
-                collectionCheck: false,
-                defaultCapacity: _defaultPoolCapacity,
-                maxSize: _maxPoolSize
-            );
-
-            // Pre-warm pool: Khởi tạo trước các item để loại bỏ Instantiate/JIT spikes trong combat
-            var prewarmedItems = new System.Collections.Generic.List<DamageTextItem>(_defaultPoolCapacity);
-            for (int i = 0; i < _defaultPoolCapacity; i++)
-            {
-                prewarmedItems.Add(_pool.Get());
-            }
-            for (int i = 0; i < prewarmedItems.Count; i++)
-            {
-                _pool.Release(prewarmedItems[i]);
-            }
+                () => { var item = Instantiate(_textPrefab, transform); item.StopPresentation(); return item; },
+                null, item => item.StopPresentation(), item => Destroy(item.gameObject),
+                true, Mathf.Max(1, prewarm), retained);
+            _leases = new CombatTextLeases<DamageTextItem>(Mathf.Max(1, _maxActiveCount), _pool.Get, _pool.Release);
+            var warm = new List<DamageTextItem>(prewarm);
+            for (int i = 0; i < prewarm; i++) warm.Add(_pool.Get());
+            foreach (var item in warm) _pool.Release(item);
         }
-
-        private void HandleDamageReported(DamageReport report)
+        public bool Show(in CombatTextRequest request)
         {
-            if (_styleConfig == null || _textPrefab == null || report.Amount <= 0f) return;
-
-            // 1. Off-Screen Culling: Kiểm tra xem vị trí trúng đòn có nằm trong Camera hay không
-            if (_mainCamera == null) _mainCamera = Camera.main;
-            if (_mainCamera != null)
+            if (!_accepting || !isActiveAndEnabled || !request.IsValid || _textPrefab == null || _styleConfig == null ||
+                (_canAnimate != null && !_canAnimate())) return false;
+            var camera = _camera;
+            if (camera == null && _listenToLegacyDamage) camera = Camera.main;
+            if (camera == null) return false;
+            var point = camera.WorldToViewportPoint(request.Position);
+            if (point.z <= 0f || point.x < 0f || point.x > 1f || point.y < 0f || point.y > 1f) return false;
+            EnsurePool();
+            bool player = request.Target == CombatTextTarget.Player;
+            Color color = request.ColorOverride ?? _styleConfig.ResolveColor(request);
+            float size = request.FontSizeOverride > 0f ? request.FontSizeOverride :
+                _styleConfig.GetFontSize(player, request.IsCritical, request.IsCounter);
+            if (!_leases.TryAcquire(request.Priority, out var item, out long token)) return false;
+            try
             {
-                Vector3 viewportPos = _mainCamera.WorldToViewportPoint(report.Position);
-                bool isVisible = viewportPos.x >= 0f && viewportPos.x <= 1f &&
-                                 viewportPos.y >= 0f && viewportPos.y <= 1f &&
-                                 viewportPos.z > 0f;
-                if (!isVisible) return; // Bỏ qua nếu nằm ngoài màn hình
+                item.Setup(Format(request), color, size, request.Position, _styleConfig, token, _completion,
+                    camera, _faceCamera, _sortingLayer, _sortingOrder, _canAnimate);
             }
-
-            // 2. Format chuỗi sát thương không sinh GC (0-GC Lookup Table)
-            string formattedText = GetFastFormattedNumber(report.Amount);
-            if (report.IsCounter)
-            {
-                formattedText = $"* {formattedText}";
-            }
-            if (report.IsCritical)
-            {
-                formattedText = $"<b>{formattedText}!</b>";
-            }
-
-            // 3. Lấy Color & Font Size từ Config
-            Color textColor = _styleConfig.GetColor(report.IsPlayerTarget, report.IsCritical, report.Element, report.IsCounter);
-            float fontSize = _styleConfig.GetFontSize(report.IsPlayerTarget, report.IsCritical, report.IsCounter);
-
-            // 4. Lấy Item từ Pool và khởi tạo
-            DamageTextItem item = _pool.Get();
-            item.Setup(formattedText, textColor, fontSize, report.Position, _styleConfig, (releasedItem) =>
-            {
-                _pool.Release(releasedItem);
-            });
+            catch { _leases.Complete(item, token); throw; }
+            return true;
         }
-
-        /// <summary>
-        /// Hiển thị chữ số tùy biến (như -50, +100 của Ma Đòi Nợ) sử dụng chung ObjectPool của DamageText (Zero-GC).
-        /// </summary>
-        public void ShowCustomText(string text, Vector3 worldPosition, Color color, float customFontSize = 0f)
+        public static string Format(in CombatTextRequest request)
         {
-            if (_styleConfig == null || _textPrefab == null || _pool == null) return;
-
-            // Off-Screen Culling
-            if (_mainCamera == null) _mainCamera = Camera.main;
-            if (_mainCamera != null)
-            {
-                Vector3 viewportPos = _mainCamera.WorldToViewportPoint(worldPosition);
-                bool isVisible = viewportPos.x >= 0f && viewportPos.x <= 1f &&
-                                 viewportPos.y >= 0f && viewportPos.y <= 1f &&
-                                 viewportPos.z > 0f;
-                if (!isVisible) return;
-            }
-
-            float fontSize = customFontSize > 0f ? customFontSize : _styleConfig.NormalFontSize * 1.15f;
-            DamageTextItem item = _pool.Get();
-            item.Setup(text, color, fontSize, worldPosition, _styleConfig, (releasedItem) =>
-            {
-                _pool.Release(releasedItem);
-            });
+            if (request.Kind == CombatTextKind.Custom) return request.Text;
+            if (request.Kind == CombatTextKind.Block) return "BLOCK";
+            if (request.Kind == CombatTextKind.Immune) return "IMMUNE";
+            float rounded = Mathf.Round(request.Amount);
+            string text = rounded >= 0f && rounded < Numbers.Length ? Numbers[(int)rounded] : rounded.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+            if (request.Kind == CombatTextKind.Heal || request.Kind == CombatTextKind.Resource) text = "+" + text;
+            if (request.IsCounter) text = "* " + text;
+            if (request.IsCritical) text = "<b>" + text + "!</b>";
+            return text;
         }
-
-        /// <summary>
-        /// Chuyển đổi float sát thương thành string nhanh chóng dùng Lookup Cache (Triệt tiêu GC Spikes).
-        /// </summary>
-        private string GetFastFormattedNumber(float amount)
+        public void ShowCustomText(string text, Vector3 position, Color color, float customFontSize = 0f)
         {
-            int rounded = Mathf.RoundToInt(amount);
-            if (rounded >= 0 && rounded < NUMBER_CACHE.Length)
-            {
-                return NUMBER_CACHE[rounded];
-            }
-            return rounded.ToString();
+            Show(new CombatTextRequest(0f, position, kind: CombatTextKind.Custom, text: text,
+                color: color, fontSize: customFontSize > 0f ? customFontSize : _styleConfig != null ? _styleConfig.NormalFontSize * 1.15f : 0f));
+        }
+        private void Complete(DamageTextItem item, long token) { _leases?.Complete(item, token); }
+        public void Clear() { _leases?.Clear(); }
+        private void OnDestroy()
+        {
+            _legacy?.Dispose();
+            _leases?.Dispose();
+            _pool?.Dispose();
+            if (Instance == this) Instance = null;
         }
     }
 }

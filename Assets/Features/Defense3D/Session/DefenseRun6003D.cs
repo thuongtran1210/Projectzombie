@@ -15,6 +15,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private bool showDebugOverlay;
         [SerializeField] private DefenseRuntimeRoots3D _runtimeRoots;
         [SerializeField] private UI.DefenseSpawnWarningPresenter3D _spawnWarnings;
+        [SerializeField] private DefenseBasicAttackEffectSetSO _enemyAttackStyle;
         private DefenseSession _session;
         private DefenseMatchRuntime _runtime;
         private DefenseSpawnRuntime _spawns;
@@ -35,10 +36,11 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseG1RuntimeAdapter RuntimeAdapter => _session != null ? _session.RuntimeAdapter : null;
         public DefenseBasePrototype3D Base => defenseBase;
         public DefenseHeroHealth3D HeroHealth => _heroHealth;
+        public IDefenseWoodDrops WoodDrops => _woodDropPool;
         public event Action<bool> MatchEnded;
 
         /// <summary>Preserves authored bindings while creating only C# runtime services.</summary>
-        public bool InitializeSession(DefenseSession session, DefenseWoodWallet3D wallet)
+        public bool InitializeSession(DefenseSession session, DefenseWoodWallet3D wallet, ProjectZombie.Features.UI.DamageText.ICombatTextService combatText = null, IDefenseEffectService effects = null)
         {
             if (_session != null) throw new InvalidOperationException("Run is already initialized.");
             try
@@ -51,24 +53,26 @@ namespace ProjectZombie.Features.Defense3D
                 if (_runtimeRoots == null || _runtimeRoots.gameObject.scene != gameObject.scene)
                     throw new InvalidOperationException("Assign authored Runtime Roots in this scene.");
                 _runtimeRoots.ValidateBindings();
+                if (effects != null && (_enemyAttackStyle == null || !_enemyAttackStyle.IsValid))
+                    throw new InvalidOperationException("Assign valid enemy basic-attack VFX profiles.");
                 var plan = stageSpawnConfig.Compile();
                 _spawnWarnings?.Configure(plan, sceneInfo.EastEnemySpawn);
                 _encounter = new DefenseYakshaEncounter3D(session, defenseBase, _heroHealth, plan.ArenaDuration, plan.BossHealth);
                 var placement = new DefenseSpawnPlacement3D(plan, sceneInfo.EastEnemySpawn, sceneInfo.HeroSpawn,defenseBase.transform,_runtimeRoots.WaterNavigation,_runtimeRoots.AirNavigation);
                 _runtimeRoots.FriendlyTargets.Bind(session);
-                var factory = new DefenseEnemySessionFactory3D(session,_runtimeRoots,wallet,session.TargetRegistry);
+                // Session sở hữu pool trước runtime để dispose runtime/factory trước pool theo thứ tự ngược.
+                var woodDropPrefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
+                if (woodDropPrefab == null) throw new InvalidOperationException("Missing wood pickup prefab.");
+                _woodDropPool = new DefenseWoodDropPool(woodDropPrefab, _runtimeRoots.PickupPools, gameplay: session);
+                _enemyPoolManager = new DefenseEnemyPoolManager(_runtimeRoots.EnemyPools);
+                session.Own(_woodDropPool);
+                session.Own(_enemyPoolManager);
+                session.RunCleanup += _woodDropPool.Clear;
+                foreach (var shop in _runtimeRoots.GetComponentsInChildren<DefenseVillageShop3D>(true)) shop.BindWoodDrops(_woodDropPool);
+                // Shop có thể được đặt ngoài Runtime; composition root cũng truyền dependency cho scene participant.
+                var factory = new DefenseEnemySessionFactory3D(session,_runtimeRoots,wallet,session.TargetRegistry,combatText,_enemyPoolManager,_woodDropPool,effects,_enemyAttackStyle);
                 _spawns = new DefenseSpawnRuntime(plan, placement, session, defenseBase, wallet, _encounter, session.TargetRegistry,factory,_runtimeRoots.CannonBattery);
                 _runtimeRoots.CannonBattery.Bind(session,_spawns);
-
-                var woodDropPrefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
-                if (woodDropPrefab != null)
-                {
-                    _woodDropPool = new DefenseWoodDropPool(woodDropPrefab, _runtimeRoots.Pools);
-                    DefenseWoodDropPool.RegisterSessionPool(_woodDropPool);
-                }
-
-                _enemyPoolManager = new DefenseEnemyPoolManager(_runtimeRoots.Pools);
-                DefenseEnemyPoolManager.RegisterSessionPool(_enemyPoolManager);
 
                 _runtime = new DefenseMatchRuntime(session, defenseBase, _heroHealth, towerBuilder, _spawns, _encounter);
                 session.Own(_runtime);
@@ -79,24 +83,17 @@ namespace ProjectZombie.Features.Defense3D
             }
             catch (Exception exception)
             {
-                if (_enemyPoolManager != null)
-                {
-                    DefenseEnemyPoolManager.UnregisterSessionPool(_enemyPoolManager);
-                    _enemyPoolManager.Dispose();
-                    _enemyPoolManager = null;
-                }
-                if (_woodDropPool != null)
-                {
-                    DefenseWoodDropPool.UnregisterSessionPool(_woodDropPool);
-                    _woodDropPool.Dispose();
-                    _woodDropPool = null;
-                }
                 try
                 {
                     if (_runtime != null) _runtime.Dispose();
                     else _spawns?.Dispose();
                 }
-                finally { _encounter?.Dispose(); }
+                finally
+                {
+                    _encounter?.Dispose();
+                    _enemyPoolManager?.Dispose();
+                    _woodDropPool?.Dispose();
+                }
                 Debug.LogError("[TREBRAVE Defense3D] Run initialization failed: " + exception.Message, this);
                 enabled = false;
                 return false;
@@ -108,6 +105,8 @@ namespace ProjectZombie.Features.Defense3D
         private void Update()
         {
             _runtime?.Tick(Time.deltaTime);
+            _enemyPoolManager?.FlushReturns();
+            _woodDropPool?.FlushReturns();
         }
 
         private void OnDisable()
@@ -117,21 +116,9 @@ namespace ProjectZombie.Features.Defense3D
 
         private void OnDestroy()
         {
-            if (_enemyPoolManager != null)
-            {
-                DefenseEnemyPoolManager.UnregisterSessionPool(_enemyPoolManager);
-                _enemyPoolManager.Dispose();
-                _enemyPoolManager = null;
-            }
-            if (_woodDropPool != null)
-            {
-                DefenseWoodDropPool.UnregisterSessionPool(_woodDropPool);
-                _woodDropPool.Dispose();
-                _woodDropPool = null;
-            }
-            if (_runtime == null) return;
-            _runtime.MatchEnded -= ForwardResult;
-            _runtime.Dispose();
+            if (_runtime != null) _runtime.MatchEnded -= ForwardResult;
+            // Session là owner duy nhất quyết định thứ tự cleanup và dispose các service.
+            _session?.Dispose();
         }
 
         private void ForwardResult(bool won) => MatchEnded?.Invoke(won);
@@ -142,4 +129,3 @@ namespace ProjectZombie.Features.Defense3D
         }
     }
 }
-

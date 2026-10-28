@@ -1,22 +1,20 @@
 using System;
 using UnityEngine;
-using ProjectZombie.Features.Defense3D.UI;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>Current Dép MVP: immediate point AoE over a stable session target snapshot; no Physics2D or collider duplicates.</summary>
+    /// <summary>Pháp bảo gây sát thương tức thì; phát sự kiện kết quả để adapter trình diễn độc lập.</summary>
     public sealed class DefenseRelicSkillEffect3D : DefenseSkillEffect3D
     {
         [SerializeField] private DefenseHeroHealth3D _health;
-        [SerializeField] private DefenseAimIndicator3D _impactView;
         [SerializeField, Min(1)] private int _targetCapacity = 256;
         [SerializeField] private DefenseHitStatusProfileSO _hitStatuses;
         private IDefenseTargetPosition[] _targets;
         private int _count;
         private bool _executing;
-        private float _hideAt;
+        public event Action<DefenseRelicImpact> ImpactOccurred;
         public override DefenseSkillKind Kind => DefenseSkillKind.DepToOng;
-        public override bool IsConfigured => _health != null && _impactView != null && _targetCapacity > 0 && (_hitStatuses == null || _hitStatuses.IsValid);
+        public override bool IsConfigured => _health != null && _targetCapacity > 0 && (_hitStatuses == null || _hitStatuses.IsValid);
 
         private void Awake() => _targets = new IDefenseTargetPosition[Mathf.Max(1, _targetCapacity)];
 
@@ -35,8 +33,12 @@ namespace ProjectZombie.Features.Defense3D
             int generation = Gameplay.RunGeneration;
             try
             {
-                _impactView.Show(new DefenseResolvedAim(prepared.Target, prepared.Target, default, 0f), Definition.Radius, false);
-                _hideAt = GameplayTime + Definition.Duration;
+                // VFX không được quyết định hoặc chặn damage; lỗi adapter được ghi riêng.
+                var impact = new DefenseRelicImpact(new Vector3(prepared.Target.X, prepared.Target.Y, prepared.Target.Z),
+                    Definition.Radius, Gameplay.SessionIdentity, generation);
+                if (ImpactOccurred != null)
+                    foreach (Action<DefenseRelicImpact> observer in ImpactOccurred.GetInvocationList())
+                        try { observer(impact); } catch (Exception error) { Debug.LogException(error, this); }
                 for (int i = 0; i < _count; i++)
                 {
                     if (!CanAdvanceGameplay || Gameplay.RunGeneration != generation || _health.IsDown) break;
@@ -61,15 +63,10 @@ namespace ProjectZombie.Features.Defense3D
             }
         }
 
-        private void Update() { if (_hideAt > 0f && GameplayTime >= _hideAt) ClearImpact(); }
-        private void ClearImpact() { _hideAt = 0f; _impactView?.Hide(); }
-        protected override void OnGameplayGateChanged(bool active) { if (!active) ClearImpact(); }
         protected override void OnGameplayCleanup()
         {
-            ClearImpact();
             if (!_executing && _targets != null) { Array.Clear(_targets, 0, _count); _count = 0; }
         }
         protected override void OnGameplayReset() => OnGameplayCleanup();
-        private void OnDisable() => ClearImpact();
     }
 }

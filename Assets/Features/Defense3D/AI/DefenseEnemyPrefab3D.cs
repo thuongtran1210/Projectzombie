@@ -44,7 +44,9 @@ namespace ProjectZombie.Features.Defense3D
 #if UNITY_EDITOR
             // Object.Instantiate loses the source-prefab connection in Play Mode.
             // Keep it in the Editor so spawned enemies expose Select/Open Prefab.
-            return (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefab,parent);
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(prefab))
+                return (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefab,parent);
+            return Object.Instantiate(prefab,parent);
 #else
             return Object.Instantiate(prefab,parent);
 #endif

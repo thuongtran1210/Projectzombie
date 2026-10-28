@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13425938bfe0cb648ac1f67ea1d1bc02, type: 3}
+  m_Name: CombatTextStyle_VongXuyen
+  m_EditorClassIdentifier: 
+  NormalColor: {r: 0.969, g: 0.937, b: 0.839, a: 1}
+  NormalFontSize: 5.2
+  CritColor: {r: 1, g: 0.835, b: 0.455, a: 1}
+  CritFontSize: 6.8
+  PlayerDamageColor: {r: 1, g: 0.435, b: 0.357, a: 1}
+  PlayerDamageFontSize: 6.2
+  HealColor: {r: 0.627, g: 0.835, b: 0.545, a: 1}
+  ResourceColor: {r: 0.910, g: 0.769, b: 0.408, a: 1}
+  BlockColor: {r: 0.710, g: 0.831, b: 0.878, a: 1}
+  CounterColor: {r: 1, g: 0.906, b: 0.651, a: 1}
+  CounterFontSize: 6.4
+  ElementalStyles:
+  - Element: 1
+    TextColor: {r: 0.910, g: 0.769, b: 0.408, a: 1}
+  - Element: 2
+    TextColor: {r: 0.561, g: 0.788, b: 0.478, a: 1}
+  - Element: 3
+    TextColor: {r: 0.498, g: 0.796, b: 0.918, a: 1}
+  - Element: 4
+    TextColor: {r: 1, g: 0.541, b: 0.314, a: 1}
+  - Element: 5
+    TextColor: {r: 0.788, g: 0.659, b: 0.463, a: 1}
+  Lifetime: 0.62
+  FloatSpeed: 0.9
+  RandomArcSpread: 0.22
+  ScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.12
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.16
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  AlphaCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.55
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

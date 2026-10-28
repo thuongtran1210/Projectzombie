@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>Single basic-attack ability owner. Manual and optional auto input feed the same delayed cone hit.</summary>
-    public sealed class DefenseHeroAutoAttack3D : DefenseGameplayBehaviour
+    /// <summary>Sở hữu đòn đánh thường; damage và thời gian ra đòn độc lập với observer trình diễn.</summary>
+    public sealed class DefenseHeroAutoAttack3D : DefenseGameplayBehaviour, IDefenseAttackFeedbackSource
     {
         [SerializeField, Min(0.5f)] private float attackRange = 5f;
         [SerializeField, Min(1f)] private float damage = 35f;
@@ -33,6 +33,8 @@ namespace ProjectZombie.Features.Defense3D
         public float EffectiveAttackInterval => Gameplay != null ? Gameplay.Stats.EvaluateHeroAttackInterval(_definition != null ? _definition.Cooldown : attackCooldown) : attackCooldown;
         private float Range => _definition != null ? _definition.Radius : attackRange;
         public float AttackRange => Range;
+        private DefenseAttackFeedbackEvents _feedback;
+        public DefenseAttackFeedbackEvents Feedback => _feedback ?? (_feedback = new DefenseAttackFeedbackEvents(error => Debug.LogException(error, this)));
         public event Action<DefenseConeSnapshot> AttackResolved;
         public event Action AttackStarted;
         public bool TryResolveBasicAim(out DefenseResolvedAim aim)
@@ -84,7 +86,9 @@ namespace ProjectZombie.Features.Defense3D
             if (!_windup.TryBegin(Point(transform.position), Point(direction))) return false;
             _recoveryUntil = GameplayTime + DefenseBasicAttackRules.Recovery;
             _motor.FaceBasicAttack(this, Point(direction));
-            AttackStarted?.Invoke();
+            if (AttackStarted != null)
+                foreach (Action observer in AttackStarted.GetInvocationList())
+                    try { observer(); } catch (Exception error) { Debug.LogException(error, this); }
             return true;
         }
         public void CancelPendingAttack() { _windup?.Cancel(); _motor?.ClearAimFacing(this); _recoveryUntil = 0f; }
@@ -110,6 +114,8 @@ namespace ProjectZombie.Features.Defense3D
             if (!(Gameplay.Targets is IDefenseAreaTargetQuery area) || !area.TryCopyWithin(cone.Origin, cone.Radius,
                 _definition != null ? _definition.TargetMask : DefenseTargetMask.All, _targets, out int count)) return;
             int generation = Gameplay.RunGeneration;
+            object identity = Gameplay.SessionIdentity;
+            Feedback.PublishSwing(new DefenseSwingFeedback(cone, identity, generation));
             try
             {
                 for (int i = 0; i < count; i++)
@@ -118,8 +124,11 @@ namespace ProjectZombie.Features.Defense3D
                     var candidate = _targets[i];
                     if (candidate == null || !candidate.IsAvailable || !cone.Contains(candidate.Position) || !_selector.CanHit(candidate, transform.position) ||
                         !(candidate.Identity is IDefenseEnemyTarget3D enemy)) continue;
-                    bool hit = enemy.TakeDamage(new DefenseDamageContext(EffectiveDamage, this, enemy.TargetTransform.position,
-                        runGeneration: generation, sessionIdentity: Gameplay.SessionIdentity));
+                    var hitPosition = DefenseAttackFeedbackPoints.Capture(enemy.TargetTransform, enemy.TargetTransform.position + Vector3.up * .7f);
+                    float hitDamage = EffectiveDamage;
+                    bool hit = enemy.TakeDamage(new DefenseDamageContext(hitDamage, this, enemy.TargetTransform.position,
+                        runGeneration: generation, sessionIdentity: identity));
+                    if (hit) Feedback.PublishHit(new DefenseHitFeedback(hitPosition, cone.Forward, hitDamage, identity, generation));
                     if (hit && CanAdvanceGameplay && Gameplay.RunGeneration == generation && candidate.IsAvailable && enemy is IDefenseStatusReceiver status)
                     {
                         Vector3 outward = enemy.TargetTransform.position - new Vector3(cone.Origin.X, cone.Origin.Y, cone.Origin.Z);
@@ -128,7 +137,9 @@ namespace ProjectZombie.Features.Defense3D
                             _knockbackStrength, Point(outward), Gameplay.SessionIdentity, generation));
                     }
                 }
-                if (isActiveAndEnabled && CanAdvanceGameplay && Gameplay.RunGeneration == generation && _health.isActiveAndEnabled && !_health.IsDown && !_motor.IsDashing) AttackResolved?.Invoke(cone);
+                if (isActiveAndEnabled && CanAdvanceGameplay && Gameplay.RunGeneration == generation && _health.isActiveAndEnabled && !_health.IsDown && !_motor.IsDashing && AttackResolved != null)
+                    foreach (Action<DefenseConeSnapshot> observer in AttackResolved.GetInvocationList())
+                        try { observer(cone); } catch (Exception error) { Debug.LogException(error, this); }
             }
             finally { Array.Clear(_targets, 0, count); }
         }

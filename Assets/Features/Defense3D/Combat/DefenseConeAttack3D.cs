@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Delayed cone hit strategy. No separate attack cooldown or ownership/reward path.</summary>
-    public sealed class DefenseConeAttack3D : DefenseGameplayBehaviour
+    public sealed class DefenseConeAttack3D : DefenseGameplayBehaviour, IDefenseAttackFeedbackSource
     {
         [SerializeField] private DefenseConeAttackProfileSO _profile;
         [SerializeField] private DefenseConeTelegraphView3D _view;
@@ -16,6 +16,8 @@ namespace ProjectZombie.Features.Defense3D
         private DefenseBasePrototype3D _base;
         private Collider _baseCollider;
         private IDefenseDamageable3D _lockedVictim;
+        private DefenseAttackFeedbackEvents _feedback;
+        public DefenseAttackFeedbackEvents Feedback => _feedback ?? (_feedback = new DefenseAttackFeedbackEvents(error => Debug.LogException(error, this)));
         public bool IsWindingUp => _runtime != null && _runtime.IsPending;
         public void Bind(IDefenseGameplayContext gameplay, DefenseEnemy3D enemy)
         {
@@ -57,6 +59,7 @@ namespace ProjectZombie.Features.Defense3D
             int generation = Gameplay.RunGeneration;
             var lifetime = _enemy.Lifetime;
             _view.Hide(); _lockedVictim = null;
+            Feedback.PublishSwing(new DefenseSwingFeedback(cone, Gameplay.SessionIdentity, generation));
             for (int i = 0; i < _friends.Length; i++)
             {
                 if (!Current(generation, lifetime)) break;
@@ -72,8 +75,12 @@ namespace ProjectZombie.Features.Defense3D
             Vector3 origin = new Vector3(cone.Origin.X, cone.Origin.Y, cone.Origin.Z);
             Vector3 point = HitPoint(victim, collider, origin);
             if (!cone.Contains(Point(point)) || !ClearLine(origin, point, victim, collider)) return;
-            victim.TakeDamage(new DefenseDamageContext(_enemy.Stats.Damage, _enemy, point,
-                runGeneration: generation, sessionIdentity: Gameplay.SessionIdentity));
+            var hitPosition = DefenseAttackFeedbackPoints.Capture(((Component)victim).transform, point);
+            float damage = _enemy.Stats.Damage;
+            object identity = Gameplay.SessionIdentity;
+            bool accepted = victim.TakeDamage(new DefenseDamageContext(damage, _enemy, point,
+                runGeneration: generation, sessionIdentity: identity));
+            if (accepted) Feedback.PublishHit(new DefenseHitFeedback(hitPosition, cone.Forward, damage, identity, generation));
         }
         private bool ClearLine(Vector3 origin, Vector3 point, IDefenseDamageable3D victim, Collider collider)
         {

@@ -49,6 +49,7 @@ namespace ProjectZombie.Features.Defense3D
 
         private void DespawnOrDestroy()
         {
+            if (collected) return;
             collected = true;
             if (_poolRelease != null)
             {
@@ -58,6 +59,15 @@ namespace ProjectZombie.Features.Defense3D
             {
                 Destroy(gameObject);
             }
+        }
+
+        /// <summary>Xóa dữ liệu lượt cũ và callback; pool giữ quyền thu hồi.</summary>
+        public void ResetForPool()
+        {
+            collected = true;
+            _poolRelease = null;
+            hero = null; wallet = null; _collectorHealth = null;
+            _generation = -1; expireTime = 0f; pickupReadyTime = 0f;
         }
 
         protected override void OnGameplayCleanup()
@@ -84,20 +94,14 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         public static DefenseWoodDrop3D Spawn(Vector3 deathPosition, int amount, Transform collector, DefenseWoodWallet3D collectorWallet,
-            IDefenseGameplayContext gameplay = null, Transform parent = null)
+            IDefenseGameplayContext gameplay = null, Transform parent = null, IDefenseWoodDrops spawner = null)
         {
             var spawnPos = new Vector3(deathPosition.x, Mathf.Max(0.3f, deathPosition.y - 0.65f), deathPosition.z);
 
-            // Nếu đang trong Gameplay session và có Pool kích hoạt, lấy từ pool để triệt tiêu 100% GC
-            if (gameplay != null && DefenseWoodDropPool.ActiveSessionPool != null)
-            {
-                var pooledPickup = DefenseWoodDropPool.ActiveSessionPool.Get();
-                if (parent != null) pooledPickup.transform.SetParent(parent, false);
-                pooledPickup.transform.position = spawnPos;
-                pooledPickup.BindGameplay(gameplay);
-                pooledPickup.Initialize(amount, collector, collectorWallet);
-                return pooledPickup;
-            }
+            // Luồng production nhận spawner trực tiếp; static chỉ dành cho caller tương thích cũ.
+            var source = spawner ?? DefenseWoodDropPool.ActiveSessionPool;
+            if (gameplay != null && source != null)
+                return source.Spawn(spawnPos, amount, collector, collectorWallet, gameplay, parent);
 
             // Fallback khi chạy unit test độc lập hoặc chưa khởi tạo session pool
             var prefab = Resources.Load<GameObject>(ResourcePath);

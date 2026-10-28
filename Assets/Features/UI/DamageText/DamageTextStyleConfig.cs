@@ -15,6 +15,17 @@ namespace ProjectZombie.Features.UI.DamageText
 
         [Header("Normal Damage")]
         public Color NormalColor = Color.white;
+        public Color HealColor = new Color(.3f, 1f, .4f);
+        public Color ResourceColor = new Color(1f, .88f, .2f);
+        public Color BlockColor = new Color(.7f, .85f, 1f);
+
+        public Color ResolveColor(in CombatTextRequest request)
+        {
+            if (request.Kind == CombatTextKind.Heal) return HealColor;
+            if (request.Kind == CombatTextKind.Resource) return ResourceColor;
+            if (request.Kind == CombatTextKind.Block || request.Kind == CombatTextKind.Immune) return BlockColor;
+            return GetColor(request.Target == CombatTextTarget.Player, request.IsCritical, request.Element, request.IsCounter);
+        }
         public float NormalFontSize = 3.5f;
 
         [Header("Critical Damage")]

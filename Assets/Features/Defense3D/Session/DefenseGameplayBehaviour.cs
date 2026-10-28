@@ -14,7 +14,7 @@ namespace ProjectZombie.Features.Defense3D
         public void BindGameplay(IDefenseGameplayContext gameplay)
         {
             if (gameplay == null) throw new ArgumentNullException(nameof(gameplay));
-            Unbind();
+            UnbindGameplay();
             Gameplay = gameplay;
             Gameplay.GameplayGateChanged += OnGameplayGateChanged;
             Gameplay.RunCleanup += OnGameplayCleanup;
@@ -30,10 +30,11 @@ namespace ProjectZombie.Features.Defense3D
 
         protected virtual void OnDestroy()
         {
-            Unbind();
+            UnbindGameplay();
         }
 
-        private void Unbind()
+        /// <summary>Gỡ đăng ký session khi trả pool; không phát lại sự kiện cleanup.</summary>
+        public void UnbindGameplay()
         {
             if (Gameplay == null) return;
             Gameplay.GameplayGateChanged -= OnGameplayGateChanged;

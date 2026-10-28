@@ -1,5 +1,9 @@
 Shader "ProjectZombie/Defense3D/CombatLine"
 {
+    Properties
+    {
+        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("Depth Test", Float) = 4
+    }
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" }
@@ -8,7 +12,7 @@ Shader "ProjectZombie/Defense3D/CombatLine"
             Tags { "LightMode"="SRPDefaultUnlit" }
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
-            ZTest LEqual
+            ZTest [_ZTest]
             Cull Off
             HLSLPROGRAM
             #pragma vertex Vert

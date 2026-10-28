@@ -9,12 +9,14 @@ namespace ProjectZombie.Features.Defense3D
         private bool dropped;
         private DefenseWoodWallet3D _collectorWallet;
         private Transform _pickupRoot;
+        private IDefenseWoodDrops _woodDrops;
 
         /// <summary>Collector belongs to the session; deaths do not perform scene searches.</summary>
-        public void BindCollector(DefenseWoodWallet3D collectorWallet, Transform pickupRoot = null)
+        public void BindCollector(DefenseWoodWallet3D collectorWallet, Transform pickupRoot = null, IDefenseWoodDrops woodDrops = null)
         {
             _collectorWallet = collectorWallet;
             _pickupRoot = pickupRoot;
+            _woodDrops = woodDrops;
             ResetDrop();
         }
 
@@ -48,7 +50,7 @@ namespace ProjectZombie.Features.Defense3D
                 if (enemy.Stats.WoodReward > 0)
                 {
                     DefenseWoodDrop3D.Spawn(transform.position, enemy.Stats.WoodReward,
-                        _collectorWallet != null ? _collectorWallet.transform : null, _collectorWallet, Gameplay,_pickupRoot);
+                        _collectorWallet != null ? _collectorWallet.transform : null, _collectorWallet, Gameplay,_pickupRoot,_woodDrops);
                 }
             }
             finally

@@ -72,3 +72,4 @@ crashlytics-build.properties
 screenshot_*.png
 temp_*.png
 temp_*/
+scratch/

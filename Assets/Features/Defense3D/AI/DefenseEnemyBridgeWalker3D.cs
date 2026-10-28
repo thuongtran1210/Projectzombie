@@ -44,7 +44,7 @@ namespace ProjectZombie.Features.Defense3D
         private void Awake() => EnsureComponents();
 
         /// <summary>Inject session dependencies before initializing a spawned actor.</summary>
-        public void BindGameplay(IDefenseGameplayContext gameplay, DefenseWoodWallet3D collectorWallet, Transform pickupRoot = null, DefenseFriendlyTargets3D friends = null)
+        public void BindGameplay(IDefenseGameplayContext gameplay, DefenseWoodWallet3D collectorWallet, Transform pickupRoot = null, DefenseFriendlyTargets3D friends = null, IDefenseWoodDrops woodDrops = null)
         {
             EnsureComponents();
             enemy.BindGameplay(gameplay);
@@ -55,7 +55,7 @@ namespace ProjectZombie.Features.Defense3D
             if (drops != null)
             {
                 drops.BindGameplay(gameplay);
-                drops.BindCollector(collectorWallet, pickupRoot);
+                drops.BindCollector(collectorWallet, pickupRoot, woodDrops);
             }
             if (_aggro != null)
             {

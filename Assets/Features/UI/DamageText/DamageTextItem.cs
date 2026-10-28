@@ -1,90 +1,64 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
 namespace ProjectZombie.Features.UI.DamageText
 {
-    /// <summary>
-    /// Item hiển thị chữ số sát thương World-Space passive (nhận dữ liệu từ Manager).
-    /// Tự động bay nẩy và mờ dần, sau đó trả về Pool.
-    /// </summary>
+    /// <summary>Hiển thị và chạy hoạt ảnh chữ; báo hoàn thành để chủ sở hữu thu hồi về pool.</summary>
     [RequireComponent(typeof(TextMeshPro))]
     public class DamageTextItem : MonoBehaviour
     {
         [SerializeField] private TextMeshPro _textMesh;
-
-        private Action<DamageTextItem> _onDespawn;
-
-        private void Awake()
+        private void Awake() { if (_textMesh == null) _textMesh = GetComponent<TextMeshPro>(); }
+        public void StopPresentation()
         {
-            if (_textMesh == null)
-            {
-                _textMesh = GetComponent<TextMeshPro>();
-            }
-            if (_textMesh != null)
-            {
-                _textMesh.alignment = TextAlignmentOptions.Center;
-                // Ép buộc hiển thị lên Layer WorldUI (hoặc Layer cao hơn Characters/VFX)
-                _textMesh.sortingLayerID = SortingLayer.NameToID("UI_World");
-                _textMesh.sortingOrder = 1000; // Đảm bảo luôn đè lên VFX và Enemy
-            }
-        }
-
-        public void Setup(string text, Color color, float fontSize, Vector3 spawnPosition, DamageTextStyleConfig config, Action<DamageTextItem> onDespawn)
-        {
-            _onDespawn = onDespawn;
-            if (_textMesh == null) return;
-
-            _textMesh.SetText(text);
-            _textMesh.color = color;
-            _textMesh.fontSize = fontSize;
-
-            // Offset ngẫu nhiên để tránh đè chữ
-            Vector3 randomOffset = new Vector3(
-                UnityEngine.Random.Range(-config.RandomArcSpread, config.RandomArcSpread),
-                UnityEngine.Random.Range(0f, config.RandomArcSpread * 0.5f),
-                0f
-            );
-
-            transform.position = spawnPosition + randomOffset;
-            gameObject.SetActive(true);
-
             StopAllCoroutines();
-            StartCoroutine(AnimateRoutine(config));
+            gameObject.SetActive(false);
+            transform.localScale = Vector3.one;
         }
-
-        private IEnumerator AnimateRoutine(DamageTextStyleConfig config)
+        public void Setup(string text, Color color, float fontSize, Vector3 position, DamageTextStyleConfig config,
+            long token, Action<DamageTextItem, long> completed, Camera camera, bool faceCamera,
+            string sortingLayer, int sortingOrder, Func<bool> canAnimate)
+        {
+            StopAllCoroutines();
+            if (_textMesh == null) _textMesh = GetComponent<TextMeshPro>();
+            if (_textMesh == null) throw new InvalidOperationException("Combat text requires TextMeshPro.");
+            _textMesh.SetText(text); _textMesh.color = color; _textMesh.fontSize = fontSize;
+            _textMesh.alignment = TextAlignmentOptions.Center;
+            _textMesh.sortingLayerID = SortingLayer.NameToID(sortingLayer);
+            _textMesh.sortingOrder = sortingOrder;
+            var right = faceCamera ? camera.transform.right : Vector3.right;
+            var up = faceCamera ? camera.transform.up : Vector3.up;
+            transform.position = position + right * UnityEngine.Random.Range(-config.RandomArcSpread, config.RandomArcSpread)
+                + up * UnityEngine.Random.Range(0f, config.RandomArcSpread * .5f);
+            transform.rotation = faceCamera ? camera.transform.rotation : Quaternion.identity;
+            transform.localScale = Vector3.one;
+            gameObject.SetActive(true);
+            StartCoroutine(Animate(config, token, completed, camera, faceCamera, canAnimate, color));
+        }
+        private IEnumerator Animate(DamageTextStyleConfig config, long token, Action<DamageTextItem, long> completed,
+            Camera camera, bool faceCamera, Func<bool> canAnimate, Color initialColor)
         {
             float elapsed = 0f;
-            Vector3 startPos = transform.position;
-            Vector3 startScale = Vector3.one;
-
-            Color initialColor = _textMesh.color;
-
-            while (elapsed < config.Lifetime)
+            float lifetime = Mathf.Max(.01f, config.Lifetime);
+            Vector3 origin = transform.position;
+            while (elapsed < lifetime)
             {
+                // Tạm dừng hoạt ảnh theo trạng thái trận đấu; coroutine chỉ tồn tại khi item đang hiển thị.
+                if (canAnimate != null && !canAnimate()) { yield return null; continue; }
                 elapsed += Time.deltaTime;
-                float normalizedTime = Mathf.Clamp01(elapsed / config.Lifetime);
-
-                // Movement (Float Up)
-                transform.position = startPos + Vector3.up * (config.FloatSpeed * elapsed);
-
-                // Scale Curve (Pop effect)
-                float scaleMultiplier = config.ScaleCurve.Evaluate(normalizedTime);
-                transform.localScale = startScale * scaleMultiplier;
-
-                // Alpha Curve (Fade out)
-                float alpha = config.AlphaCurve.Evaluate(normalizedTime);
-                Color currentColor = initialColor;
-                currentColor.a = alpha;
-                _textMesh.color = currentColor;
-
+                float t = Mathf.Clamp01(elapsed / lifetime);
+                var up = faceCamera && camera != null ? camera.transform.up : Vector3.up;
+                if (faceCamera && camera != null) transform.rotation = camera.transform.rotation;
+                transform.position = origin + up * (config.FloatSpeed * elapsed);
+                transform.localScale = Vector3.one * (config.ScaleCurve != null ? config.ScaleCurve.Evaluate(t) : 1f);
+                var color = initialColor;
+                color.a *= config.AlphaCurve != null ? config.AlphaCurve.Evaluate(t) : 1f - t;
+                _textMesh.color = color;
                 yield return null;
             }
-
-            gameObject.SetActive(false);
-            _onDespawn?.Invoke(this);
+            completed(this, token);
         }
     }
 }

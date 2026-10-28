@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>One owner for actor creation, lifetime identity and release. Pool reuse is not implemented here.</summary>
+    /// <summary>Sở hữu vòng đời actor; trả về đúng pool bằng token của lượt spawn.</summary>
     public sealed class DefenseEnemySessionFactory3D : IDisposable
     {
         private sealed class Entry
@@ -13,6 +13,9 @@ namespace ProjectZombie.Features.Defense3D
             public Action Removed;
             public bool Releasing;
             public bool Notified;
+            public IDisposable CombatText;
+            public IDisposable AttackFeedback;
+            public PoolLease<GameObject> PoolLease;
         }
         private readonly IDefenseGameplayContext _gameplay;
         private readonly DefenseRuntimeRoots3D _roots;
@@ -20,6 +23,11 @@ namespace ProjectZombie.Features.Defense3D
         private readonly DefenseTargetIndex _targets;
         private readonly Dictionary<DefenseEnemy3D,Entry> _entries = new Dictionary<DefenseEnemy3D,Entry>();
         private readonly Action<DefenseEnemy3D,DefenseActorLifetime,DefenseActorReleaseReason> _release;
+        private readonly ProjectZombie.Features.UI.DamageText.ICombatTextService _combatText;
+        private readonly IDefenseEnemyPool _pool;
+        private readonly IDefenseWoodDrops _woodDrops;
+        private readonly IDefenseEffectService _effects;
+        private readonly DefenseBasicAttackEffectSetSO _enemyAttackStyle;
         private long _nextLease;
         private bool _cleaning, _disposed;
         public event Action<DefenseEnemy3D,DefenseActorLifetime> ActorReleased;
@@ -27,7 +35,7 @@ namespace ProjectZombie.Features.Defense3D
         public bool BelongsTo(IDefenseGameplayContext gameplay) => ReferenceEquals(_gameplay,gameplay);
 
         public DefenseEnemySessionFactory3D(IDefenseGameplayContext gameplay, DefenseRuntimeRoots3D roots,
-            DefenseWoodWallet3D wallet, DefenseTargetIndex targets)
+            DefenseWoodWallet3D wallet, DefenseTargetIndex targets, ProjectZombie.Features.UI.DamageText.ICombatTextService combatText = null, IDefenseEnemyPool pool = null, IDefenseWoodDrops woodDrops = null, IDefenseEffectService effects = null, DefenseBasicAttackEffectSetSO enemyAttackStyle = null)
         {
             _gameplay = gameplay ?? throw new ArgumentNullException(nameof(gameplay));
             _roots = roots != null ? roots : throw new ArgumentNullException(nameof(roots));
@@ -36,6 +44,8 @@ namespace ProjectZombie.Features.Defense3D
             if (!ReferenceEquals(gameplay.Targets,targets)) throw new ArgumentException("Factory target index belongs to another session.");
             roots.ValidateBindings();
             _release = Release;
+            _combatText = combatText;
+            _pool = pool; _woodDrops = woodDrops; _effects = effects; _enemyAttackStyle = enemyAttackStyle;
         }
 
         public DefenseEnemy3D Spawn(DefenseEnemySpawnDefinition definition, Vector3 position, int lane,
@@ -61,16 +71,23 @@ namespace ProjectZombie.Features.Defense3D
                 !_roots.Pickups.gameObject.activeInHierarchy) throw new InvalidOperationException("Enemy acquisition gate or authored runtime root is closed.");
             var lifetime = new DefenseActorLifetime(_gameplay.SessionIdentity,_gameplay.RunGeneration,checked(++_nextLease));
             return DefenseEnemyFactory3D.SpawnOwnedSnapshot(definition,position,lane,target,_gameplay,_wallet,_targets,_roots,
-                actor => Register(actor,lifetime),arenaBoss,landed);
+                actor => Register(actor,lifetime),arenaBoss,landed,_pool,_woodDrops);
         }
 
         private void Register(DefenseEnemy3D actor, DefenseActorLifetime lifetime)
         {
             var entry = new Entry { Lifetime=lifetime };
+            if (_pool != null) _pool.TryGetLease(actor.gameObject, out entry.PoolLease);
             entry.Removed = () => Release(actor,lifetime,DefenseActorReleaseReason.ExternalRemoved);
             _entries.Add(actor,entry);
             actor.Removed += entry.Removed;
             actor.BindLifetime(lifetime,_release);
+            if (_effects != null && _enemyAttackStyle != null && actor.TryGetComponent<DefenseEnemyAttack3D>(out var attack))
+                entry.AttackFeedback = new DefenseBasicAttackFeedbackAdapter(attack.Feedback, _gameplay, _effects, _enemyAttackStyle, actor,
+                    () => actor != null && actor.isActiveAndEnabled && ReferenceEquals(actor.Lifetime, lifetime) && lifetime.IsCurrent(_gameplay));
+            actor.TryGetComponent<DefenseActorAnchors3D>(out var anchors);
+            if (_combatText != null) entry.CombatText = new UI.DefenseCombatTextAdapter(actor, _gameplay, _combatText,
+                () => anchors != null && anchors.Head != null ? anchors.Head.position : actor.transform.position + Vector3.up, ProjectZombie.Features.UI.DamageText.CombatTextTarget.Enemy);
         }
 
         public void Release(DefenseEnemy3D actor, DefenseActorLifetime lifetime, DefenseActorReleaseReason reason)
@@ -81,19 +98,22 @@ namespace ProjectZombie.Features.Defense3D
             entry.Releasing = true;
             try
             {
+                _effects?.StopOwner(actor);
+                entry.CombatText?.Dispose();
+                entry.AttackFeedback?.Dispose();
                 actor.Removed -= entry.Removed;
                 if (actor != null && reason != DefenseActorReleaseReason.ExternalRemoved)
                 {
                     try { actor.gameObject.SetActive(false); }
                     finally
                     {
-                        if (DefenseEnemyPoolManager.ActiveSessionPool == null ||
-                            !DefenseEnemyPoolManager.ActiveSessionPool.TryRelease(actor.gameObject))
+                        if (_pool == null || !_pool.TryRelease(entry.PoolLease))
                         {
                             UnityEngine.Object.Destroy(actor.gameObject);
                         }
                     }
                 }
+                if (reason == DefenseActorReleaseReason.ExternalRemoved) _pool?.TryRelease(entry.PoolLease);
                 _entries.Remove(actor);
             }
             finally
