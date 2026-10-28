@@ -1,7 +1,6 @@
 using UnityEngine;
 using Fusion;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Multiplayer.Core
 {
@@ -44,13 +43,11 @@ namespace ProjectZombie.Features.Multiplayer.Core
         public NetworkBool NetworkIsDead { get; set; }
 
         private HealthSystem _healthSystem;
-        private Enemy _enemy;
         private readonly System.Collections.Generic.List<NetworkDamageHit> _pendingHits = new System.Collections.Generic.List<NetworkDamageHit>();
 
         private void Awake()
         {
             _healthSystem = GetComponent<HealthSystem>();
-            _enemy = GetComponent<Enemy>();
         }
 
         public override void Spawned()
@@ -70,8 +67,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
             }
             else
             {
-                // Client: Tắt Enemy FSM & Physics để nhường quyền điều phối chuyển động cho NetworkTransform từ Host
-                if (_enemy != null) _enemy.enabled = false;
+                // Client: Tắt Physics để nhường quyền điều phối chuyển động cho NetworkTransform từ Host
                 if (TryGetComponent<Rigidbody2D>(out var rb))
                 {
                     rb.isKinematic = true;

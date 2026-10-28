@@ -1,8 +1,23 @@
 using UnityEngine;
-using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.UI
 {
+    public enum UpgradeType
+    {
+        Stat,
+        Weapon,
+        Relic,
+        MicroCard,
+        MythicCore,
+        BreakthroughUltimate,
+        EvolutionUpgrade,
+        SynergyTrait,
+        RareUpgrade,
+        ComboAugment,
+        DashTrait,
+        ConditionalPassive
+    }
+
     /// <summary>
     /// ScriptableObject quản lý tập trung toàn bộ tài nguyên giao diện, khung viền 9-slice,
     /// icon dự phòng và màu sắc nguyên tố cho hệ thống Thẻ Nâng Cấp (Upgrade Cards).

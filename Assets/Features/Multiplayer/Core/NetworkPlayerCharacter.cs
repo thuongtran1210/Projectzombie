@@ -2,7 +2,6 @@ using UnityEngine;
 using Fusion;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Core;
-using ProjectZombie.Features.Player.Mechanics;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Architecture;
 using ProjectZombie.Features.Multiplayer.Core.Components;
@@ -50,10 +49,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
             _loadout = GetComponent<NetworkPlayerLoadout>() ?? gameObject.AddComponent<NetworkPlayerLoadout>();
             _presentation = GetComponent<NetworkPlayerPresentation>() ?? gameObject.AddComponent<NetworkPlayerPresentation>();
 
-            if (!TryGetComponent<CoopTeamExperience>(out _))
-            {
-                gameObject.AddComponent<CoopTeamExperience>();
-            }
         }
 
         public override void Spawned()

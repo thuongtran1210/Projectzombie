@@ -8,7 +8,6 @@ namespace ProjectZombie.Features.Multiplayer.Core.Components
     /// Component quản lý điều phối di chuyển mạng và input provider (Local vs Remote).
     /// Tuân thủ Single Responsibility Principle (SRP - Mục 3.1 AGENTS.md).
     /// </summary>
-    [RequireComponent(typeof(PlayerController))]
     public class NetworkPlayerMovement : MonoBehaviour
     {
         private PlayerController _controller;

@@ -707,21 +707,6 @@ namespace ProjectZombie.Editor.UI
                 Object.DestroyImmediate(root);
             }
 
-            // Tự động gán Prefab vào GameplayBootstrapper trong Scene nếu có
-            var bootstrapper = Object.FindObjectOfType<ProjectZombie.Features.Player.GameplayBootstrapper>();
-            if (bootstrapper != null && savedPrefab != null)
-            {
-                SerializedObject soBoot = new SerializedObject(bootstrapper);
-                var prop = soBoot.FindProperty("characterSelectionUIPrefab");
-                if (prop != null)
-                {
-                    prop.objectReferenceValue = savedPrefab;
-                    soBoot.ApplyModifiedProperties();
-                    EditorUtility.SetDirty(bootstrapper);
-                    Debug.Log("[CharacterSelectionUIGenerator] Đã tự động liên kết UI Prefab vào GameplayBootstrapper trong Scene!");
-                }
-            }
-
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[CharacterSelectionUIGenerator] Đã sinh thành công UI Prefab: {prefabPath}");

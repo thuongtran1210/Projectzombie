@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace ProjectZombie.Features.Weapons
 {
@@ -55,7 +55,7 @@ namespace ProjectZombie.Features.Weapons
 
         [Header("Prefabs")]
         [Tooltip("Prefab của vũ khí sẽ được gắn vào Player")]
-        public WeaponBase weaponPrefab;
+        public GameObject weaponPrefab;
         
         [Header("Starting Stats (Optional)")]
         [Tooltip("Sát thương gốc của vũ khí khi mới nhận. Sát thương này tăng theo tiến trình/buff sát thương của nhân vật; giá trị 0 giữ cách tính cũ từ chỉ số nhân vật.")]

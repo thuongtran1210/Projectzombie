@@ -43,24 +43,9 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Editor.UI.SettingsUIGenerator.RebuildSettingsUI();
             }
 
-            if (GUILayout.Button("📊 Cập Nhật Bảng Thông Số & Pause Menu Trong Trận", GUILayout.Height(30)))
+            if (GUILayout.Button("☠️ Cập Nhật Màn Hình Kết Thúc Trận (GameOver UI)", GUILayout.Height(30)))
             {
-                ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI();
-            }
-
-            if (GUILayout.Button("⚔️ Cập Nhật Top Run HUD (Máu, Cấp, EXP, Kỹ Năng)", GUILayout.Height(30)))
-            {
-                RunHUDHierarchyOptimizer.OptimizeRunHUD();
-            }
-
-            if (GUILayout.Button("🏮 Cập Nhật Đại Banner Đột Phá Chuyển Wave (Center Panel)", GUILayout.Height(30)))
-            {
-                EpicWaveTransitionBannerSetupTool.SetupEpicWaveTransitionBannerOnly();
-            }
-
-            if (GUILayout.Button("🃏 Cập Nhật Bảng Chọn Thẻ Level Up (Upgrade Modal)", GUILayout.Height(30)))
-            {
-                UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
+                ProjectZombie.Editor.UI.GameOverUIGenerator.RebuildGameOverUI();
             }
 
             if (GUILayout.Button("☠️ Cập Nhật Màn Hình Kết Thúc Trận (GameOver UI)", GUILayout.Height(30)))
@@ -434,20 +419,7 @@ namespace ProjectZombie.EditorTools
                 stageObj.AddComponent<CharacterPreviewStage>();
             }
 
-            // 3. Dựng Canvas_Gameplay Root
-            Transform gameRoot = mainCanvas.transform.Find("Canvas_Gameplay");
-            if (gameRoot == null)
-            {
-                GameObject gameObj = new GameObject("Canvas_Gameplay", typeof(RectTransform), typeof(CanvasGroup), typeof(GameplayUIManager));
-                gameObj.transform.SetParent(mainCanvas.transform, false);
-                gameRoot = gameObj.transform;
-            }
-            StretchRect(gameRoot.GetComponent<RectTransform>());
-            var gameGroup = gameRoot.GetComponent<CanvasGroup>();
-            var gameplayManager = gameRoot.GetComponent<GameplayUIManager>();
-            if (gameplayManager == null) gameplayManager = gameRoot.gameObject.AddComponent<GameplayUIManager>();
-
-            // 4. Fade Overlay Panel
+            // 3. Fade Overlay Panel
             Transform fadeTrans = mainCanvas.transform.Find("Panel_FadeOverlay");
             if (fadeTrans == null)
             {
@@ -462,87 +434,6 @@ namespace ProjectZombie.EditorTools
             var fadeGroup = fadeTrans.GetComponent<CanvasGroup>();
             fadeGroup.alpha = 0f;
             fadeObjOrTrans(fadeTrans, false);
-
-            // 5. Tìm và di chuyển UI_RunHUDRoot & Panel_MobileControls vào Canvas_Gameplay
-            Transform hudTrans = gameRoot.Find("UI_RunHUDRoot");
-            if (hudTrans == null) hudTrans = gameRoot.Find("RunHUD_Root");
-            if (hudTrans == null)
-            {
-                // Tìm kiếm cả trường hợp có khoảng trắng thừa trong tên (vd: " UI_RunHUDRoot")
-                var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-                foreach (var go in allObjects)
-                {
-                    if (go.name.Trim() == "UI_RunHUDRoot" || go.name.Trim() == "RunHUD_Root")
-                    {
-                        go.name = "UI_RunHUDRoot";
-                        go.transform.SetParent(gameRoot, false);
-                        hudTrans = go.transform;
-                        break;
-                    }
-                }
-            }
-
-            // Tự động nâng cấp và gắn trọn bộ Sprite Đông Sơn cho Top Run HUD
-            RunHUDHierarchyOptimizer.OptimizeRunHUD();
-
-            // Tối ưu toàn diện Level Up Selection Modal theo Prefab tùy chỉnh của người dùng
-            UpgradeUIHierarchyOptimizer.OptimizeUpgradeUI();
-
-            Transform mobileTrans = gameRoot.Find("Panel_MobileControls");
-            if (mobileTrans == null)
-            {
-                var existingMobile = GameObject.Find("Panel_MobileControls");
-                if (existingMobile == null)
-                {
-                    var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-                    foreach (var go in allObjects)
-                    {
-                        if (go.name.Trim() == "Panel_MobileControls")
-                        {
-                            existingMobile = go;
-                            break;
-                        }
-                    }
-                }
-
-                if (existingMobile != null)
-                {
-                    existingMobile.transform.SetParent(gameRoot, false);
-                    mobileTrans = existingMobile.transform;
-                }
-            }
-
-            // Tự động gọi MobileControlsSetupTool để dựng cụm Joystick & Attack Button nếu chưa có
-            ProjectZombie.Editor.Tools.MobileControlsSetupTool.SetupAndWireControlsInScene();
-
-            if (mobileTrans == null)
-            {
-                var createdMobile = GameObject.Find("Panel_MobileControls");
-                if (createdMobile != null)
-                {
-                    createdMobile.transform.SetParent(gameRoot, false);
-                    mobileTrans = createdMobile.transform;
-                }
-            }
-
-            // Wire GameplayUIManager
-            var soGameplay = new SerializedObject(gameplayManager);
-            soGameplay.FindProperty("_gameplayCanvasGroup").objectReferenceValue = gameGroup;
-            if (hudTrans != null)
-            {
-                soGameplay.FindProperty("_runHUDPanel").objectReferenceValue = hudTrans.gameObject;
-            }
-            if (mobileTrans != null)
-            {
-                soGameplay.FindProperty("_mobileControlsPanel").objectReferenceValue = mobileTrans.gameObject;
-            }
-            // Tự động chuẩn hóa GameOver UI Cổ Phong Đông Sơn
-            ProjectZombie.Editor.UI.GameOverUIGenerator.RebuildGameOverUI();
-
-            // Tự động dựng và chuẩn hóa Bảng Thông Số Thuộc Tính & Menu Tạm Dừng trong trận 3 cột Vọng Xuyên
-            ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI();
-
-            soGameplay.ApplyModifiedProperties();
 
             // 6. MetaSceneTransitionController
             var transitionController = FindObjectOfType<MetaSceneTransitionController>();

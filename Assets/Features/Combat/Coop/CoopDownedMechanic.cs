@@ -4,7 +4,6 @@ using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Player.Core;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Architecture;
-using ProjectZombie.Features.UI.HUD;
 
 namespace ProjectZombie.Features.Combat.Coop
 {
@@ -28,18 +27,14 @@ namespace ProjectZombie.Features.Combat.Coop
 
         [Header("Visual Indicators")]
         [SerializeField] private GameObject _downedVfx;
-        [Tooltip("Prefab Overhead UI tùy biến (Để trống sẽ tự sinh hoặc load từ Resources/Prefabs)")]
+        [Tooltip("Prefab Overhead UI tùy biến")]
         [SerializeField] private GameObject _reviveHUDPrefab;
 
         private HealthSystem _healthSystem;
         private PlayerController _playerController;
         private PlayerAnimator _playerAnimator;
         private SpriteRenderer _spriteRenderer;
-        private Weapons.WeaponManager _weaponManager;
-        private CharacterCombat _characterCombat;
         private Rigidbody2D _rb;
-
-        private CoopReviveHUDPresenter _revivePresenter;
 
         private bool _isDowned = false;
         private float _currentReviveProgress = 0f;
@@ -61,78 +56,10 @@ namespace ProjectZombie.Features.Combat.Coop
             _playerController = GetComponent<PlayerController>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            _weaponManager = GetComponent<Weapons.WeaponManager>();
-            _characterCombat = GetComponent<CharacterCombat>();
             _rb = GetComponent<Rigidbody2D>();
-
-            // Khởi tạo Presenter & View theo chuẩn MVP & SOLID (Decoupling UI hoàn toàn khỏi logic)
-            EnsurePresenterAndView();
         }
 
-        private void EnsurePresenterAndView()
-        {
-            if (_revivePresenter == null)
-            {
-                _revivePresenter = GetComponentInChildren<CoopReviveHUDPresenter>(true);
-            }
 
-            if (_revivePresenter == null)
-            {
-                GameObject hudObj = null;
-
-                // 1. Ưu tiên Prefab được gán trực tiếp qua Inspector
-                if (_reviveHUDPrefab != null)
-                {
-                    hudObj = Instantiate(_reviveHUDPrefab, transform);
-                }
-
-                // 2. Fallback tìm trong Resources hoặc UnityEditor AssetDatabase
-                if (hudObj == null)
-                {
-                    var loadedPrefab = Resources.Load<GameObject>("UI/CoopReviveOverheadHUD");
-                    if (loadedPrefab == null)
-                    {
-                        loadedPrefab = Resources.Load<GameObject>("CoopReviveOverheadHUD");
-                    }
-#if UNITY_EDITOR
-                    if (loadedPrefab == null)
-                    {
-                        loadedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/CoopReviveOverheadHUD.prefab");
-                    }
-                    if (loadedPrefab == null)
-                    {
-                        loadedPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Features/UI/Prefabs/CoopReviveOverheadHUD.prefab");
-                    }
-#endif
-                    if (loadedPrefab != null)
-                    {
-                        hudObj = Instantiate(loadedPrefab, transform);
-                    }
-                }
-
-                // 3. Fallback cuối cùng: Tự dựng Runtime hoàn chỉnh
-                if (hudObj == null)
-                {
-                    hudObj = new GameObject("CoopReviveOverheadHUD");
-                    hudObj.transform.SetParent(transform, false);
-                    hudObj.AddComponent<UI.HUD.CoopReviveWorldView>();
-                    _revivePresenter = hudObj.AddComponent<CoopReviveHUDPresenter>();
-                }
-                else
-                {
-                    _revivePresenter = hudObj.GetComponent<CoopReviveHUDPresenter>();
-                    if (_revivePresenter == null)
-                    {
-                        _revivePresenter = hudObj.AddComponent<CoopReviveHUDPresenter>();
-                    }
-                }
-            }
-
-            if (_revivePresenter != null)
-            {
-                _revivePresenter.Construct(this);
-            }
-        }
 
         private void OnEnable()
         {
@@ -210,12 +137,7 @@ namespace ProjectZombie.Features.Combat.Coop
                 }
             }
 
-            // 3. Vô hiệu hóa tấn công thường và vũ khí tự động
-            if (_characterCombat == null) _characterCombat = GetComponent<CharacterCombat>();
-            if (_characterCombat != null) _characterCombat.enabled = false;
 
-            if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
-            if (_weaponManager != null) _weaponManager.enabled = false;
 
             // 4. Phát hoạt ảnh Dead / Downed
             if (_playerAnimator != null)
@@ -322,9 +244,7 @@ namespace ProjectZombie.Features.Combat.Coop
                 }
             }
 
-            // 3. Kích hoạt lại tấn công thường và vũ khí
-            if (_characterCombat != null) _characterCombat.enabled = true;
-            if (_weaponManager != null) _weaponManager.enabled = true;
+
 
             // 4. Khôi phục hoạt ảnh Idle
             if (_playerAnimator != null)
@@ -371,11 +291,7 @@ namespace ProjectZombie.Features.Combat.Coop
                 }
             }
 
-            if (_characterCombat == null) _characterCombat = GetComponent<CharacterCombat>();
-            if (_characterCombat != null) _characterCombat.enabled = true;
 
-            if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
-            if (_weaponManager != null) _weaponManager.enabled = true;
 
             if (_playerAnimator == null) _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             if (_playerAnimator != null)

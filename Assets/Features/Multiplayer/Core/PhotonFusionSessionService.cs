@@ -186,12 +186,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
             // Khôi phục PlayerRegistry về SinglePlayer
             ProjectZombie.Core.Architecture.ServiceContext.Register<IPlayerRegistry>(new SinglePlayerRegistry());
 
-            // Khôi phục nhân vật Offline/Singleplayer cho Sảnh nếu chưa có
-            if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
-            {
-                GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
-            }
-
             OnMatchEnded?.Invoke();
             OnRoomUpdated?.Invoke(null);
         }
@@ -208,10 +202,7 @@ namespace ProjectZombie.Features.Multiplayer.Core
         {
             if (_activeRunner == null || !_isHost) return;
 
-            // 1. Dọn dẹp nhân vật Offline trước khi vào trận Co-op
-            GameplayBootstrapper.Instance?.DespawnActivePlayer();
-
-            // 2. Kích hoạt Spawner sinh nhân vật cho tất cả người chơi trong phòng
+            // Kích hoạt Spawner sinh nhân vật cho tất cả người chơi trong phòng
             if (_playerSpawner != null)
             {
                 _playerSpawner.Initialize(_activeRunner);
@@ -332,12 +323,6 @@ namespace ProjectZombie.Features.Multiplayer.Core
                 _activeRunner = null;
                 OnRoomUpdated?.Invoke(null);
                 OnMatchEnded?.Invoke();
-            }
-
-            // Khôi phục nhân vật Offline cho Sảnh nếu chưa có
-            if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
-            {
-                GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
             }
 
             Debug.Log($"<color=#FFAA00>[PhotonFusionSessionService]</color> OnShutdown hoàn tất (Lý do: {shutdownReason}). Đã an toàn khôi phục trạng thái Solo Offline.");

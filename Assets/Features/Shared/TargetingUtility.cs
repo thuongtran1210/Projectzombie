@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
-using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Shared
 {
@@ -104,11 +103,7 @@ namespace ProjectZombie.Features.Shared
                         break;
 
                     case TargetPriority.ElementalAdvantage:
-                        ElementType defElement = ElementType.None;
-                        if (hit.TryGetComponent<Enemy>(out var enemy))
-                        {
-                            defElement = enemy.CurrentElement;
-                        }
+                        ElementType defElement = health != null ? health.CurrentElement : ElementType.None;
                         float multiplier = DamageUtility.GetElementMultiplier(attackerElement, defElement);
                         if (multiplier > 1.0f) // Khắc chế (+30%)
                         {
