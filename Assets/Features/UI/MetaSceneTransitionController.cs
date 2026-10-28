@@ -132,14 +132,19 @@ namespace ProjectZombie.Features.UI
 
                 LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                 {
-                    // Ủy quyền toàn bộ luồng nạp Map, Preload Quái, Khởi tạo Player và Chuyển State cho MatchFlowOrchestrator
-                    await MatchFlow.MatchFlowOrchestrator.ExecuteCombatPreparationAsync(_selectedStage, _gameplayBootstrapper, reportProgress);
+                    // Nạp cấu hình Loadout hiện tại từ Repository
+                    var repo = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository();
+                    var dto = repo.Load();
+                    var snapshot = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutSnapshot(
+                        dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+
+                    // Điều hướng sang Scene Defense 3D ("MapSongQue3D_Prototype")
+                    await ProjectZombie.Features.Defense3D.DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot, reportProgress);
                 }, () =>
                 {
                     ApplyStateVisuals(false);
                     loadingFinished = true;
-                    CheckAndPromptInitialMythicCore();
-                }, "Đang khai mở cửa Hoàng Tuyền...");
+                }, "Đang khai mở chiến trường Sông Quê 3D...");
 
                 while (!loadingFinished) yield return null;
             }
@@ -152,19 +157,12 @@ namespace ProjectZombie.Features.UI
                 // 2. Chuyển UI
                 ApplyStateVisuals(false);
 
-                // 3. Bắt đầu trận đấu
-                if (_gameplayBootstrapper != null)
-                {
-                    _gameplayBootstrapper.StartMatchFlow();
-                }
-                if (Spawners.SpawnManager.Instance != null)
-                {
-                    _ = Spawners.SpawnManager.Instance.StartMatchAsync();
-                }
-                if (GameStateManager.Instance != null)
-                {
-                    GameStateManager.Instance.ChangeState(GameState.Playing);
-                }
+                // 3. Bắt đầu trận đấu Defense 3D
+                var repo = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository();
+                var dto = repo.Load();
+                var snapshot = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutSnapshot(
+                    dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+                _ = ProjectZombie.Features.Defense3D.DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot);
 
                 // 4. Fade In sáng lại
                 yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));

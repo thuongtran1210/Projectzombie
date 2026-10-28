@@ -24,6 +24,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         private DefenseUpgradeCard[] _currentDrawnCards;
         private bool _isLevelUpModalOpen;
         private IDefenseSessionCommands _sessionCommands;
+        private readonly DefenseMatchResultService _resultService = new DefenseMatchResultService();
 
         // Dirty-checking cache to eliminate string allocations every frame
         private int _lastSeconds = -1;
@@ -47,6 +48,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public DefenseExperienceCore ExperienceCore => _experienceCore;
         public DefenseUpgradeDeck UpgradeDeck => _upgradeDeck;
+        public DefenseMatchResultService ResultService => _resultService;
 
         /// <summary>Scene composition supplies commands; UI never mutates the gameplay FSM directly.</summary>
         public void BindSession(IDefenseSessionCommands commands, DefenseRunStats modifiers = null)
@@ -295,24 +297,21 @@ namespace ProjectZombie.Features.Defense3D.UI
             CancelRunPresentation();
             if (_resultModalView == null || _run == null) return;
 
-            string title = isWon
-                ? "<color=#FFD700>CHIẾN THẮNG QUANG VINH</color>"
-                : "<color=#FF4444>CĂN CỨ THẤT THỦ</color>";
-
-            string message = isWon
-                ? "Đã tiêu diệt Đại Boss Dạ Xoa và bảo vệ vững chắc Sông Quê!"
-                : "Căn cứ Nhà Chính Bờ Tây đã bị quỷ sứ tàn phá hoàn toàn.";
-
-            int minutes = Mathf.FloorToInt(_run.ElapsedTime / 60f);
-            int seconds = Mathf.FloorToInt(_run.ElapsedTime % 60f);
             int wood = _woodWallet != null ? _woodWallet.CurrentWood : 0;
-            string summary = $"Thời gian sống sót: {minutes:00}:{seconds:00} | Cấp độ: {_experienceCore.CurrentLevel} | Gỗ thu thập: {wood}";
+            var resultData = new DefenseMatchResultData(
+                isWon: isWon,
+                elapsedSeconds: _run.ElapsedTime,
+                woodCollected: wood,
+                enemiesDefeated: 0,
+                stageId: "STAGE_01");
 
-            _resultModalView.ShowResult(title, message, summary);
+            var processed = _resultService.ProcessMatchResult(resultData);
+            _resultModalView.ShowResult(processed.Title, processed.Message, processed.Summary);
         }
 
         private void OnRestartClicked()
         {
+            _resultService.Reset();
             _sessionCommands?.Restart();
         }
 
@@ -330,12 +329,13 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             CancelRunPresentation();
             _experienceCore?.Reset();
+            _resultService.Reset();
         }
 
         private void OnMainMenuClicked()
         {
-            // Trở về Scene 0 (SampleScene - Survival 2D) hoặc Scene Menu
-            SceneManager.LoadScene(0, LoadSceneMode.Single);
+            // Trở về Sảnh bằng hợp đồng điều hướng tường minh thay vì SceneManager.LoadScene(0)
+            _ = DefenseNavigationService.Default.ReturnToHubAsync(() => CancelRunPresentation());
         }
     }
 }
