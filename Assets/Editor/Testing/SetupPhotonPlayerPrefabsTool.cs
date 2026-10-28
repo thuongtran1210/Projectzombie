@@ -6,7 +6,6 @@ using Fusion;
 using ProjectZombie.Features.Multiplayer.Core;
 using ProjectZombie.Features.Multiplayer.Core.Components;
 using ProjectZombie.Features.Combat.Coop;
-using ProjectZombie.Features.Player.Mechanics;
 using ProjectZombie.Features.Player;
 using ProjectZombie.EditorTools.BuildSync;
 
@@ -87,11 +86,6 @@ namespace ProjectZombie.Editor.MultiplayerTools
                     if (!root.TryGetComponent<CoopDownedMechanic>(out var downedMech))
                     {
                         downedMech = root.AddComponent<CoopDownedMechanic>();
-                    }
-
-                    if (!root.TryGetComponent<CoopTeamExperience>(out var teamExp))
-                    {
-                        teamExp = root.AddComponent<CoopTeamExperience>();
                     }
 
                     // 6. Đảm bảo CharacterCombat luôn hiện diện cho đòn đánh thường bản thể Tướng (Combo 1-2-3)

@@ -2155,6 +2155,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 140641897}
+  _lastWaveDesc: 
+  _lastCachedSecond: -1
+  _lastCachedProgressPercent: -1
+  _lastCachedTimeStr: 
 --- !u!114 &140641897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2191,10 +2195,27 @@ MonoBehaviour:
   _bannerTagText: {fileID: 1316751110}
   _bannerTitleText: {fileID: 1860299760}
   _bannerSubText: {fileID: 337128849}
-  _normalWaveColor: {r: 1, g: 0.63, b: 0, a: 1}
-  _burstWaveColor: {r: 0.3, g: 0.93, b: 0.92, a: 1}
-  _bossWaveColor: {r: 1, g: 0.15, b: 0.15, a: 1}
-  _pillarWaveColor: {r: 0.85, g: 0.65, b: 0.15, a: 1}
+  _normalWaveColor:
+    r: 1
+    g: 0.63
+    b: 0
+    a: 1
+  _burstWaveColor:
+    r: 0.3
+    g: 0.93
+    b: 0.92
+    a: 1
+  _bossWaveColor:
+    r: 1
+    g: 0.15
+    b: 0.15
+    a: 1
+  _pillarWaveColor:
+    r: 0.85
+    g: 0.65
+    b: 0.15
+    a: 1
+  _cachedTimelineConfig: {fileID: 0}
 --- !u!1 &141669175
 GameObject:
   m_ObjectHideFlags: 0
@@ -3212,8 +3233,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 221485995}
-  - component: {fileID: 221485996}
-  - component: {fileID: 221485997}
   m_Layer: 5
   m_Name: UI_RunHUDRoot
   m_TagString: Untagged
@@ -3241,51 +3260,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &221485996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 221485994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9966041f79905f24e95b822fff2f2beb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hpSlider: {fileID: 1691653299}
-  _hpFillImage: {fileID: 1680059955}
-  _hpText: {fileID: 1497453525}
-  _expSlider: {fileID: 1159502589}
-  _expFillImage: {fileID: 953197045}
-  _levelText: {fileID: 1324609219}
-  _normalHpColor: {r: 0.82, g: 0.22, b: 0.22, a: 1}
-  _lowHpColor: {r: 1, g: 0.15, b: 0.15, a: 1}
-  _lowHpThresholdRatio: 0.25
-  _timerText: {fileID: 2006444678}
-  _killCountText: {fileID: 952131393}
-  _skillsContainer: {fileID: 1704408305}
-  _skillEntryPrefab: {fileID: 3201153403393415415, guid: 8c1e8bea65456cf47aa880c19edc3ab5, type: 3}
-  _tooltipUI: {fileID: 6513349618278906069, guid: 50c577fe99e2382488fe2bf7496c01b8, type: 3}
-  _pauseButton: {fileID: 1055840037}
---- !u!114 &221485997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 221485994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 109d35a42ff470c4bacb7209f24948f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _view: {fileID: 221485996}
-  _playerHealth: {fileID: 0}
-  _playerStats: {fileID: 0}
-  _playerExp: {fileID: 0}
-  _weaponManager: {fileID: 0}
-  _playerPassives: {fileID: 0}
 --- !u!1 &224303744
 GameObject:
   m_ObjectHideFlags: 0
@@ -4610,7 +4584,6 @@ GameObject:
   m_Component:
   - component: {fileID: 335681718}
   - component: {fileID: 335681719}
-  - component: {fileID: 335681720}
   m_Layer: 0
   m_Name: Canvas_Gameplay
   m_TagString: Untagged
@@ -4656,23 +4629,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &335681720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 335681717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfe9b21c072861e4dacb845af2052eca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _gameplayCanvasGroup: {fileID: 335681719}
-  _runHUDPanel: {fileID: 221485994}
-  _mobileControlsPanel: {fileID: 1355223969}
-  _upgradeUIView: {fileID: 821329375}
-  _gameOverScreenView: {fileID: 992385679}
 --- !u!1 &336659569
 GameObject:
   m_ObjectHideFlags: 0
@@ -5104,6 +5060,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 929932d2c6b89bf4f977998b3c7a8aae, type: 2}
   _fallbackRewards: []
   _defaultRerollTokensPerRun: 2
+  _currentRerollTokens: 2
 --- !u!114 &346094968 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4857448725799413343, guid: 7f0f276ad71c1b242a630c5a2788f64d, type: 3}
@@ -5160,6 +5117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config: {fileID: 11400000, guid: aa6cdd3be49e09e4d9dea3eb53cfb1fe, type: 2}
+  _nextSpawnTime: 0
 --- !u!1 &357397798
 GameObject:
   m_ObjectHideFlags: 0
@@ -5747,6 +5705,9 @@ MonoBehaviour:
   _view: {fileID: 376222158}
   _playerController: {fileID: 0}
   _playerStats: {fileID: 0}
+  _dashCooldown: 0
+  _lastFormattedTenths: -1
+  _lastFormattedCooldownStr: 
 --- !u!114 &376222161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7557,6 +7518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28b270fd90b87a44970751af79d7a85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawner: {fileID: 0}
 --- !u!1 &468666468
 GameObject:
   m_ObjectHideFlags: 0
@@ -8057,6 +8019,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5625234141400032445, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
+      propertyPath: _statsMenuView
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6315739000219182583, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8137,7 +8103,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6732156625963769871, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
+    - {fileID: 5625234141400032445, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -8147,17 +8115,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6315739000219182583, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
   m_PrefabInstance: {fileID: 508447454}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &508447456 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5625234141400032445, guid: 66f15df4d5d914743a99d1ec378fda39, type: 3}
-  m_PrefabInstance: {fileID: 508447454}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9652196453c8d2a4181b3ec456729140, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &511684989
 GameObject:
   m_ObjectHideFlags: 0
@@ -11920,12 +11877,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 109d35a42ff470c4bacb7209f24948f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _view: {fileID: 221485996}
+  _view: {fileID: 0}
   _playerHealth: {fileID: 0}
   _playerStats: {fileID: 0}
   _playerExp: {fileID: 0}
   _weaponManager: {fileID: 0}
   _playerPassives: {fileID: 0}
+  _isConstructed: 0
 --- !u!1 &720703769
 GameObject:
   m_ObjectHideFlags: 0
@@ -14023,6 +13981,8 @@ MonoBehaviour:
   _playerWeaponManager: {fileID: 0}
   _defaultChoiceCount: 3
   _maxRerollsPerRun: 3
+  _isConstructed: 0
+  _currentRerolls: 0
 --- !u!1 &827887734
 GameObject:
   m_ObjectHideFlags: 0
@@ -24725,10 +24685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fadeOverlayCanvasGroup: {fileID: 980325166}
   _metaUIManager: {fileID: 950501924}
-  _gameplayUIManager: {fileID: 335681720}
   _mainHubPresenter: {fileID: 0}
-  _spawnManager: {fileID: 0}
-  _gameplayBootstrapper: {fileID: 0}
 --- !u!4 &1279611767
 Transform:
   m_ObjectHideFlags: 0
@@ -26936,10 +26893,13 @@ MonoBehaviour:
   spawnPoint: {fileID: 1792380789}
   cameraFollow: {fileID: 519420033}
   runHUDPresenter: {fileID: 719202294}
-  playerInfoUIPresenter: {fileID: 508447456}
+  playerInfoUIPresenter: {fileID: 0}
   upgradeUIPresenter: {fileID: 821329376}
   gameOverScreenPresenter: {fileID: 992385680}
   characterGaugeWidgetPresenter: {fileID: 2029477070}
+  _activePlayerInstance: {fileID: 0}
+  _uiBinder: {_gameplayUIManager: {fileID: 0}, _runHUDPresenter: {fileID: 0}, _overheadStatusPresenter: {fileID: 0}, _playerInfoUIPresenter: {fileID: 0}, _upgradeUIPresenter: {fileID: 0}, _gameOverScreenPresenter: {fileID: 0}, _characterGaugeWidgetPresenter: {fileID: 0}, _signatureSkillPresenter: {fileID: 0}, _relicSkillPresenter: {fileID: 0}, _attackButtonPresenter: {fileID: 0}, _dashButtonPresenter: {fileID: 0}}
+  _characterSelectionPresenter: {fileID: 0}
 --- !u!1 &1373126532
 GameObject:
   m_ObjectHideFlags: 0
@@ -30852,6 +30812,7 @@ MonoBehaviour:
   _view: {fileID: 1570967001}
   _characterCombat: {fileID: 0}
   _weaponManager: {fileID: 0}
+  _bufferedAttackTime: 0
 --- !u!225 &1570967003
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -31061,6 +31022,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonView: {fileID: 1583381443}
   _weaponManager: {fileID: 0}
+  _boundActiveRelic: {fileID: 0}
 --- !u!114 &1583381443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32374,6 +32336,8 @@ MonoBehaviour:
   _btnHoa: {fileID: 1579513767}
   _btnTho: {fileID: 1729052639}
   _timerProgressBar: {fileID: 728756518}
+  _timeRemaining: 0
+  _isShowing: 0
 --- !u!1 &1629658187
 GameObject:
   m_ObjectHideFlags: 0
@@ -37532,6 +37496,12 @@ MonoBehaviour:
   _styleConfig: {fileID: 11400000, guid: cdc02411371b6ba4280b1616caafe5dd, type: 2}
   _defaultPoolCapacity: 50
   _maxPoolSize: 200
+  _maxActiveCount: 100
+  _camera: {fileID: 0}
+  _listenToLegacyDamage: 1
+  _faceCamera: 0
+  _sortingLayer: UI_World
+  _sortingOrder: 1000
 --- !u!1 &1884891943
 GameObject:
   m_ObjectHideFlags: 0
@@ -37749,6 +37719,9 @@ MonoBehaviour:
   autoFindGroundTilemap: 1
   cameraPadding: 1.5
   autoStartOnPlay: 1
+  _playerTransform: {fileID: 0}
+  _mainCamera: {fileID: 0}
+  _wavePreloader: {fileID: 0}
 --- !u!1 &1903158963
 GameObject:
   m_ObjectHideFlags: 0

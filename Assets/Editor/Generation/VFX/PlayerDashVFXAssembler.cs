@@ -92,26 +92,6 @@ namespace Projectzombie.Editor.VFXTools
                 "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab"
             };
 
-            foreach (var pPath in playerPrefabs)
-            {
-                GameObject pPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(pPath);
-                if (pPrefab != null)
-                {
-                    var dashVisual = pPrefab.GetComponent<ProjectZombie.Features.Player.Visuals.PlayerDashVisuals>();
-                    if (dashVisual == null)
-                    {
-                        dashVisual = pPrefab.AddComponent<ProjectZombie.Features.Player.Visuals.PlayerDashVisuals>();
-                    }
-
-                    // Assign serialized dust prefab
-                    var so = new SerializedObject(dashVisual);
-                    so.FindProperty("_dashDustPrefab").objectReferenceValue = dustPrefab;
-                    so.ApplyModifiedProperties();
-
-                    EditorUtility.SetDirty(pPrefab);
-                }
-            }
-
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[DashVFX] ĐÃ TỰ ĐỘNG GẮN VÀ CẤU HÌNH HIỆU ỨNG TÀN ẢNH (GHOST AFTERIMAGE) & BỤI GIÓ LƯỚT CHO TẤT CẢ HERO!");

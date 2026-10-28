@@ -15,6 +15,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             _fill.localScale = new Vector3(_width * ratio, _height, 1f);
             _fill.localPosition = new Vector3(-_width * .5f + _width * ratio * .5f, 0f, -.005f);
         }
-        private void LateUpdate() { if (_camera != null) transform.rotation = _camera.transform.rotation; }
+
+        private void LateUpdate()
+        {
+            if (_camera == null) _camera = Camera.main;
+            if (_camera != null) transform.rotation = _camera.transform.rotation;
+        }
     }
 }

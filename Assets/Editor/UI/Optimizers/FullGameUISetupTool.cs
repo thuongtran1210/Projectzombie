@@ -217,52 +217,6 @@ namespace ProjectZombie.EditorTools
                 Object.DestroyImmediate(standaloneGameMgr);
             }
 
-            // Quản lý CoinPoolManager làm con của --- GAME MANAGER ---
-            var coinPoolMgr = Object.FindObjectOfType<ProjectZombie.Features.Collectibles.CoinPoolManager>();
-            if (coinPoolMgr == null)
-            {
-                var coinPoolObj = new GameObject("[CoinPoolManager]", typeof(ProjectZombie.Features.Collectibles.CoinPoolManager));
-                coinPoolObj.transform.SetParent(managerRoot.transform);
-                coinPoolMgr = coinPoolObj.GetComponent<ProjectZombie.Features.Collectibles.CoinPoolManager>();
-            }
-            else if (coinPoolMgr.transform.parent != managerRoot.transform)
-            {
-                coinPoolMgr.transform.SetParent(managerRoot.transform);
-            }
-
-            // Quản lý ExpGemPoolManager làm con của --- GAME MANAGER ---
-            var expGemPoolMgr = Object.FindObjectOfType<ProjectZombie.Features.Collectibles.ExpGemPoolManager>();
-            if (expGemPoolMgr == null)
-            {
-                var expGemPoolObj = new GameObject("[ExpGemPoolManager]", typeof(ProjectZombie.Features.Collectibles.ExpGemPoolManager));
-                expGemPoolObj.transform.SetParent(managerRoot.transform);
-                expGemPoolMgr = expGemPoolObj.GetComponent<ProjectZombie.Features.Collectibles.ExpGemPoolManager>();
-            }
-            else if (expGemPoolMgr.transform.parent != managerRoot.transform)
-            {
-                expGemPoolMgr.transform.SetParent(managerRoot.transform);
-            }
-
-            // Đảm bảo Coin_Drop.prefab luôn được tạo và gán sẵn
-            string coinPrefabPath = "Assets/_Prefabs/Collectibles/Coin_Drop.prefab";
-            GameObject coinPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(coinPrefabPath);
-            if (coinPrefab == null)
-            {
-                Projectzombie.Editor.CollectiblesTools.CoinPrefabBuilder.CreateCoinPrefab();
-                coinPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(coinPrefabPath);
-            }
-            if (coinPoolMgr != null && coinPrefab != null)
-            {
-                var soPool = new SerializedObject(coinPoolMgr);
-                var propPrefab = soPool.FindProperty("defaultCoinPrefab");
-                if (propPrefab != null && propPrefab.objectReferenceValue == null)
-                {
-                    propPrefab.objectReferenceValue = coinPrefab;
-                    soPool.ApplyModifiedProperties();
-                    EditorUtility.SetDirty(coinPoolMgr);
-                }
-            }
-
             // 2. Dựng Canvas_MetaMenu Root
             Transform metaRoot = mainCanvas.transform.Find("Canvas_MetaMenu");
             if (metaRoot == null)
@@ -446,7 +400,6 @@ namespace ProjectZombie.EditorTools
             var soTC = new SerializedObject(transitionController);
             soTC.FindProperty("_fadeOverlayCanvasGroup").objectReferenceValue = fadeGroup;
             soTC.FindProperty("_metaUIManager").objectReferenceValue = metaManager;
-            soTC.FindProperty("_gameplayUIManager").objectReferenceValue = gameplayManager;
             soTC.FindProperty("_mainHubPresenter").objectReferenceValue = hubTrans.GetComponent<MainHubPresenter>();
             soTC.ApplyModifiedProperties();
 

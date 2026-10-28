@@ -178,6 +178,16 @@ namespace ProjectZombie.Features.Defense3D
                     else
                     {
                         SaveSystem.Save(saveData);
+
+                        // Nạp lại và đồng bộ tất cả module (bao gồm MetaCurrencyManager) nếu GameManager đang chạy
+                        if (GameManager.Instance != null)
+                        {
+                            GameManager.Instance.LoadGame();
+                        }
+                        else if (MetaCurrencyManager.Instance != null)
+                        {
+                            MetaCurrencyManager.Instance.Initialize(saveData);
+                        }
                     }
                 }
             }

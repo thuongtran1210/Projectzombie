@@ -36,44 +36,7 @@ namespace ProjectZombie.EditorTools
             serializedTheme.ApplyModifiedProperties();
             EditorUtility.SetDirty(theme);
             AssetDatabase.SaveAssets();
-
-            // 3. Tự động gán Theme vào tất cả UpgradeCardView Prefab trong Assets
-            string[] guids = AssetDatabase.FindAssets("t:Prefab");
-            int updatedCount = 0;
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (prefab == null) continue;
-
-                var cardViews = prefab.GetComponentsInChildren<UpgradeCardView>(true);
-                if (cardViews != null && cardViews.Length > 0)
-                {
-                    bool modified = false;
-                    foreach (var view in cardViews)
-                    {
-                        SerializedObject soView = new SerializedObject(view);
-                        var prop = soView.FindProperty("_themeDatabase");
-                        if (prop != null && prop.objectReferenceValue == null)
-                        {
-                            prop.objectReferenceValue = theme;
-                            soView.ApplyModifiedProperties();
-                            modified = true;
-                        }
-                    }
-
-                    if (modified)
-                    {
-                        EditorUtility.SetDirty(prefab);
-                        updatedCount++;
-                    }
-                }
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            Debug.Log($"<color=#00FF88>[CardThemeSetup]</color> Hoàn tất cài đặt CardThemeDatabase! Đã cập nhật {updatedCount} Prefab.");
+            Debug.Log("<color=#00FF88>[CardThemeSetup]</color> Đã thiết lập xong CardThemeDatabase mặc định.");
         }
     }
 }

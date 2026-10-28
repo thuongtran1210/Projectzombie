@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.IO;
 using ProjectZombie.Features.MetaProgression;
-using ProjectZombie.Features.Upgrades;
+using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Editor.MetaProgression
 {

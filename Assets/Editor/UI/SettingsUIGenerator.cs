@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using UnityEditor;
 using TMPro;
 using ProjectZombie.Features.UI;
-using ProjectZombie.Features.UI.StatsAndSkills;
 
 namespace ProjectZombie.Editor.UI
 {
@@ -452,17 +451,8 @@ namespace ProjectZombie.Editor.UI
                 }
                 else
                 {
-                    var statsMenuView = Object.FindObjectOfType<PlayerStatsMenuUIView>(true);
-                    if (statsMenuView != null)
-                    {
-                        var canvas = statsMenuView.GetComponentInParent<Canvas>();
-                        if (canvas != null) targetParent = canvas.transform;
-                    }
-                    else
-                    {
-                        var anyCanvas = Object.FindObjectOfType<Canvas>(true);
-                        if (anyCanvas != null) targetParent = anyCanvas.transform;
-                    }
+                    var anyCanvas = Object.FindObjectOfType<Canvas>(true);
+                    if (anyCanvas != null) targetParent = anyCanvas.transform;
                 }
             }
 

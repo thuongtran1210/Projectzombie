@@ -100,8 +100,6 @@ namespace ProjectZombie.EditorTools.Migration
                 // Add Health first; PlayerStats and PlayerController look it up in Awake.
                 var health = playerObj.AddComponent<HealthSystem>();
                 var stats = playerObj.AddComponent<PlayerStats>();
-                var magnet = playerObj.AddComponent<PlayerMagnetTrigger>();
-                var controller = playerObj.AddComponent<PlayerController>();
 
                 // Gắn mũi tên chỉ hướng (Visual Nose) để quan sát góc xoay 3D
                 var nose = GameObject.CreatePrimitive(PrimitiveType.Cube);

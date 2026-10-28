@@ -84,6 +84,8 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_upgradeModalView != null)
             {
                 _upgradeModalView.OnCardSelected += OnUpgradeCardSelected;
+                _upgradeModalView.OnRerollRequested += OnUpgradeRerollRequested;
+                _upgradeModalView.OnSkipRequested += OnUpgradeSkipRequested;
                 _upgradeModalView.Hide();
             }
 
@@ -108,7 +110,11 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void OnDestroy()
         {
             if (_upgradeModalView != null)
+            {
                 _upgradeModalView.OnCardSelected -= OnUpgradeCardSelected;
+                _upgradeModalView.OnRerollRequested -= OnUpgradeRerollRequested;
+                _upgradeModalView.OnSkipRequested -= OnUpgradeSkipRequested;
+            }
 
             if (_resultModalView != null)
             {
@@ -257,15 +263,17 @@ namespace ProjectZombie.Features.Defense3D.UI
             OpenNextLevelUpChoice();
         }
 
+        private int _availableRerolls = 2;
+
         private void OpenNextLevelUpChoice()
         {
             if (_upgradeDeck == null || _upgradeModalView == null) return;
             if (!_isLevelUpModalOpen && (_sessionCommands == null || !_sessionCommands.OpenLevelUp())) return;
             _isLevelUpModalOpen = true;
 
-            var choices = _upgradeDeck.DrawThreeChoices();
+            var choices = _upgradeDeck.DrawThreeChoices(UnityEngine.Random.Range(1, 100000));
             _currentDrawnCards = choices.ToArray();
-            _upgradeModalView.Show(_currentDrawnCards);
+            _upgradeModalView.Show(_currentDrawnCards, _availableRerolls);
         }
 
         private void OnUpgradeCardSelected(int cardIndex)
@@ -292,6 +300,33 @@ namespace ProjectZombie.Features.Defense3D.UI
             }
         }
 
+        private void OnUpgradeRerollRequested()
+        {
+            if (!_isLevelUpModalOpen || _upgradeDeck == null || _upgradeModalView == null || _availableRerolls <= 0) return;
+            _availableRerolls--;
+            var choices = _upgradeDeck.DrawThreeChoices(UnityEngine.Random.Range(1, 100000));
+            _currentDrawnCards = choices.ToArray();
+            _upgradeModalView.Show(_currentDrawnCards, _availableRerolls);
+        }
+
+        private void OnUpgradeSkipRequested()
+        {
+            if (!_isLevelUpModalOpen || _experienceCore.PendingLevelUps <= 0) return;
+            _currentDrawnCards = null;
+            if (!_experienceCore.TryConsumePendingLevelUp()) return;
+
+            if (_experienceCore.PendingLevelUps > 0)
+            {
+                OpenNextLevelUpChoice();
+            }
+            else
+            {
+                _isLevelUpModalOpen = false;
+                _upgradeModalView.Hide();
+                _sessionCommands?.Resume();
+            }
+        }
+
         private void OnMatchEnded(bool isWon)
         {
             CancelRunPresentation();
@@ -303,7 +338,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 elapsedSeconds: _run.ElapsedTime,
                 woodCollected: wood,
                 enemiesDefeated: 0,
-                stageId: "STAGE_01");
+                stageId: "STAGE_DEFENSE_3D");
 
             var processed = _resultService.ProcessMatchResult(resultData);
             _resultModalView.ShowResult(processed.Title, processed.Message, processed.Summary);
@@ -322,6 +357,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_resultModalView != null) _resultModalView.Hide();
             _currentDrawnCards = null;
             _isLevelUpModalOpen = false;
+            _availableRerolls = 2;
         }
 
         /// <summary>Transitional model reset owner until progression leaves the Presenter in RF3D-025.</summary>

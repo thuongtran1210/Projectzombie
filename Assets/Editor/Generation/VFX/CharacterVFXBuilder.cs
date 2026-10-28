@@ -384,9 +384,6 @@ namespace ProjectZombie.Editor.VFX
             col.direction = CapsuleDirection2D.Vertical;
             col.size = new Vector2(0.22f, 1.05f);
 
-            var simpleProj = projObj.AddComponent<ProjectZombie.Features.Projectiles.SimpleProjectile>();
-            simpleProj.SetPiercing(true, 4); // Xuyên qua 4 quái vật trên đường bay
-
             // 1. Thân Đạn: Dùng SpriteRenderer đơn lẻ (Chỉ có DUY NHẤT 1 làn sóng khí sắc nét)
             Sprite waveSprite = AssetDatabase.LoadAssetAtPath<Sprite>(THANHDONG_WAVE_TEX);
             if (waveSprite == null)

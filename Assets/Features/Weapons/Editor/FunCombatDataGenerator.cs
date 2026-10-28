@@ -42,28 +42,6 @@ namespace ProjectZombie.Features.Weapons.Editor
             }
         }
 
-        private struct FunUpgradeDef
-        {
-            public string id;
-            public string weaponId;
-            public string name;
-            public string desc;
-            public int reqLevel;
-            public ElementType element;
-            public WeaponStatModifier modifier;
-
-            public FunUpgradeDef(string id, string weaponId, string name, string desc, int reqLevel, ElementType element, WeaponStatModifier modifier)
-            {
-                this.id = id;
-                this.weaponId = weaponId;
-                this.name = name;
-                this.desc = desc;
-                this.reqLevel = reqLevel;
-                this.element = element;
-                this.modifier = modifier;
-            }
-        }
-
         [MenuItem("ProjectZombie/Weapons/Generate Slapstick Weapons & Relics SOs")]
         public static void GenerateFunCombatData()
         {
@@ -138,7 +116,7 @@ namespace ProjectZombie.Features.Weapons.Editor
 
                 if (prefabObj != null)
                 {
-                    so.weaponPrefab = prefabObj.GetComponent<WeaponBase>();
+                    so.weaponPrefab = prefabObj;
                 }
 
                 // Tự động tìm và gán Sprite Icon trong Assets/Art/Weapons
@@ -169,15 +147,7 @@ namespace ProjectZombie.Features.Weapons.Editor
 
         private static System.Type GetWeaponComponentType(string id)
         {
-            switch (id.ToUpper())
-            {
-                case "W_SLIPPER": return typeof(Weapon_Slipper);
-                case "W_POT": return typeof(Weapon_Pot);
-                case "W_PIPE": return typeof(Weapon_Pipe);
-                case "R007": return typeof(Relic_SleepingMat);
-                case "R008": return typeof(Relic_ChickenFeatherBroom);
-                default: return null;
-            }
+            return typeof(WeaponBase);
         }
     }
 }

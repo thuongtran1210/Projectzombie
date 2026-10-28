@@ -86,14 +86,8 @@ namespace ProjectZombie.Editor.Testing
                         if (!root.TryGetComponent<HealthSystem>(out _))
                             report.Errors.Add($"[{prefabName}] Thiếu Component 'HealthSystem'!");
 
-                        if (!root.TryGetComponent<PlayerController>(out _))
-                            report.Errors.Add($"[{prefabName}] Thiếu Component 'PlayerController'!");
-
                         if (!root.TryGetComponent<CharacterCombat>(out _))
                             report.Errors.Add($"[{prefabName}] Thiếu Component 'CharacterCombat' (Gây lỗi đòn đánh thường)!");
-
-                        if (!root.TryGetComponent<WeaponManager>(out _))
-                            report.Errors.Add($"[{prefabName}] Thiếu Component 'WeaponManager'!");
 
                         if (!root.TryGetComponent<NetworkPlayerCharacter>(out _))
                             report.Warnings.Add($"[{prefabName}] Chưa gắn 'NetworkPlayerCharacter' phục vụ Multiplayer.");

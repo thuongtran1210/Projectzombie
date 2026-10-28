@@ -1,5 +1,7 @@
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
+using System.IO;
 
 namespace ProjectZombie.Editor.Optimization
 {
@@ -413,118 +415,9 @@ namespace ProjectZombie.Editor.Optimization
         {
             GUILayout.Label("⏱️ Level Timeline Preloader & Addressables Switcher", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "Quản lý cơ chế nạp RAM của quái vật trên Level Timeline:\n" +
-                "• Chế độ Development (Editor Test): Kéo Prefab trực tiếp vào ô 'Spawn Prefab' để Play test nhanh trong Editor.\n" +
-                "• Chế độ Production (Release / Mobile Build): Tự động điền 'Enemy Address' và 'Spawn Prefab Ref', đồng thời giải phóng ô 'Spawn Prefab' (Direct Ref) để WavePreloader nạp Async, tiết kiệm 100% RAM cho quái các wave sau.",
+                "Hệ thống Level Timeline 2D cũ đã được ngắt và loại bỏ trong giai đoạn G6.\n" +
+                "Chế độ chơi mới Defense 3D sử dụng DefenseSessionContext và MapSongQue3D_Prototype.",
                 MessageType.Info);
-
-            GUILayout.Space(10);
-            LevelTimelineConfig timeline = AssetDatabase.LoadAssetAtPath<LevelTimelineConfig>("Assets/_Data/Levels/Level1_Timeline.asset");
-
-            if (timeline == null)
-            {
-                EditorGUILayout.HelpBox("Không tìm thấy tệp 'Assets/_Data/Levels/Level1_Timeline.asset'!", MessageType.Warning);
-                return;
-            }
-
-            int directRefCount = 0;
-            int addressableRefCount = 0;
-
-            if (timeline.events != null)
-            {
-                foreach (var evt in timeline.events)
-                {
-                    if (evt.spawnPrefab != null) directRefCount++;
-                    if (!string.IsNullOrEmpty(evt.enemyAddress) || evt.spawnPrefabRef != null && evt.spawnPrefabRef.editorAsset != null) addressableRefCount++;
-                }
-            }
-
-            EditorGUILayout.BeginVertical("box");
-            GUILayout.Label($"Tệp đang chọn: {timeline.name} ({timeline.levelName})", EditorStyles.boldLabel);
-            GUILayout.Label($"• Tổng số Timeline Events: {timeline.events?.Count ?? 0}");
-            GUILayout.Label($"• Đang dùng Direct Reference: {directRefCount} events {(directRefCount > 0 ? "(Nạp toàn bộ vào RAM từ đầu trận)" : "(Đã giải phóng)")}");
-            GUILayout.Label($"• Đang dùng Addressables Key: {addressableRefCount} events (Nạp bất đồng bộ theo nhịp)");
-            EditorGUILayout.EndVertical();
-
-            GUILayout.Space(10);
-            EditorGUILayout.BeginHorizontal();
-
-            GUI.backgroundColor = new Color(0.3f, 0.85f, 0.45f);
-            if (GUILayout.Button("🚀 1. Chuyển Sang Chế Độ Build Phát Hành (Strip Direct Refs)", GUILayout.Height(40)))
-            {
-                SwitchTimelineToProductionMode(timeline);
-            }
-
-            GUI.backgroundColor = new Color(0.4f, 0.7f, 1.0f);
-            if (GUILayout.Button("🛠️ 2. Chuyển Sang Chế Độ Test Nhanh (Restore Direct Refs)", GUILayout.Height(40)))
-            {
-                SwitchTimelineToDevelopmentMode(timeline);
-            }
-            GUI.backgroundColor = Color.white;
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        private void SwitchTimelineToProductionMode(LevelTimelineConfig timeline)
-        {
-            if (timeline == null || timeline.events == null) return;
-
-            int modified = 0;
-            foreach (var evt in timeline.events)
-            {
-                if (evt.spawnPrefab != null)
-                {
-                    if (string.IsNullOrEmpty(evt.enemyAddress))
-                    {
-                        evt.enemyAddress = evt.spawnPrefab.name;
-                    }
-                    evt.spawnPrefab = null; // Giải phóng Direct Reference
-                    modified++;
-                }
-            }
-
-            EditorUtility.SetDirty(timeline);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            EditorUtility.DisplayDialog("Chuyển Chế Độ Thành Công", $"Đã chuyển {modified} events sang chế độ Addressables Async Preload (Không giữ Direct Reference) để chuẩn bị Build APK/IPA!", "OK");
-        }
-
-        private void SwitchTimelineToDevelopmentMode(LevelTimelineConfig timeline)
-        {
-            if (timeline == null || timeline.events == null) return;
-
-            int restored = 0;
-            string[] enemyPrefabs = AssetDatabase.FindAssets("t:Prefab", new string[] { "Assets/_Prefabs/Characters/Enemies" });
-            Dictionary<string, GameObject> prefabMap = new Dictionary<string, GameObject>();
-
-            foreach (var guid in enemyPrefabs)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (prefab != null && !prefabMap.ContainsKey(prefab.name))
-                {
-                    prefabMap[prefab.name] = prefab;
-                }
-            }
-
-            foreach (var evt in timeline.events)
-            {
-                if (evt.spawnPrefab == null && !string.IsNullOrEmpty(evt.enemyAddress))
-                {
-                    if (prefabMap.TryGetValue(evt.enemyAddress, out var foundPrefab))
-                    {
-                        evt.spawnPrefab = foundPrefab;
-                        restored++;
-                    }
-                }
-            }
-
-            EditorUtility.SetDirty(timeline);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            EditorUtility.DisplayDialog("Khôi Phục Direct Refs Thành Công", $"Đã khôi phục Direct Reference cho {restored} events để Designer bấm Play test trực tiếp trong Editor!", "OK");
         }
 
         #endregion
