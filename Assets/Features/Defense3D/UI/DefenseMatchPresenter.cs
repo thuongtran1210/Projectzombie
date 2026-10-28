@@ -67,13 +67,29 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_upgradeModalView == null) _upgradeModalView = GetComponentInChildren<DefenseUpgradeModalView>(true);
             if (_resultModalView == null) _resultModalView = GetComponentInChildren<DefenseMatchResultModalView>(true);
 
+            if (_run == null) _run = FindObjectOfType<DefenseRun6003D>();
+            if (_woodWallet == null) _woodWallet = FindObjectOfType<DefenseWoodWallet3D>();
+
             _experienceCore = new DefenseExperienceCore();
             _upgradeDeck = new DefenseUpgradeDeck();
         }
 
         private void Start()
         {
-            if (_sessionCommands == null || _run == null || _woodWallet == null || _hudView == null ||
+            if (_run == null) _run = FindObjectOfType<DefenseRun6003D>();
+            if (_woodWallet == null) _woodWallet = FindObjectOfType<DefenseWoodWallet3D>();
+            if (_hudView == null) _hudView = GetComponentInChildren<DefenseMatchHUDView>(true);
+            if (_upgradeModalView == null) _upgradeModalView = GetComponentInChildren<DefenseUpgradeModalView>(true);
+            if (_resultModalView == null) _resultModalView = GetComponentInChildren<DefenseMatchResultModalView>(true);
+
+            if (_sessionCommands == null)
+            {
+                Debug.LogWarning("[TREBRAVE Defense3D] Match Presenter chưa nhận được Session Commands (SceneCompositionRoot có thể chưa hoàn thành Start hoặc bị lỗi).", this);
+                enabled = false;
+                return;
+            }
+
+            if (_run == null || _woodWallet == null || _hudView == null ||
                 _upgradeModalView == null || _resultModalView == null)
             {
                 Debug.LogError("[TREBRAVE Defense3D] Assign all Match Presenter scene and view references in the Inspector.", this);

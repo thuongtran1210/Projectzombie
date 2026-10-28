@@ -19,4 +19,4 @@ MonoBehaviour:
   _cooldown: 12
   _duration: 0.2
   _autoTargetOnTap: 1
-  _targetMask: -1
+  _targetMask: 3
