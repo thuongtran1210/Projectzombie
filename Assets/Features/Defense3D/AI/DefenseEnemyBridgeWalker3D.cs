@@ -9,7 +9,7 @@ namespace ProjectZombie.Features.Defense3D
     /// </summary>
     [RequireComponent(typeof(DefenseEnemy3D))]
     [RequireComponent(typeof(DefenseEnemyDrop3D))]
-    public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour, IDefenseDamageable3D
+    public sealed class DefenseEnemyBridgeWalker3D : MonoBehaviour, IDefenseDamageable3D, IDefenseBossCombatAdapter3D
     {
         // Retain serialized fields so existing scene/prefab overrides survive migration.
         [SerializeField, Min(0.1f)] private float speed = 2.5f;
@@ -49,7 +49,12 @@ namespace ProjectZombie.Features.Defense3D
             EnsureComponents();
             enemy.BindGameplay(gameplay);
             if (TryGetComponent<DefenseEnemyVisualMotion3D>(out var visual)) visual.BindGameplay(gameplay);
-            if (movement != null) movement.BindGameplay(gameplay);
+            if (collectorWallet != null) collectorWallet.TryGetComponent(out _hero);
+            if (movement != null)
+            {
+                if (_hero != null) movement.BindHero(_hero);
+                movement.BindGameplay(gameplay);
+            }
             if (attack != null) attack.BindGameplay(gameplay);
             var drops = GetComponent<DefenseEnemyDrop3D>();
             if (drops != null)
@@ -62,7 +67,6 @@ namespace ProjectZombie.Features.Defense3D
                 _aggro.BindFriendlyTargets(friends);
                 _aggro.BindGameplay(gameplay);
             }
-            if (collectorWallet != null) collectorWallet.TryGetComponent(out _hero);
         }
         private void EnsureComponents()
         {
@@ -119,30 +123,19 @@ namespace ProjectZombie.Features.Defense3D
             EnsureConfiguration();
             targetBase = target;
             attack?.StopAttack();
-            if (enemy.Stats.Locomotion == DefenseEnemyLocomotionType.AmphibianWaterToShore)
+            if (movement != null && _hero != null) movement.BindHero(_hero);
+
+            // Đa hình OCP: Ủy quyền trực tiếp cho Locomotion Strategy đã gán
+            if (enemy.Locomotion != null)
             {
-                var water = GetComponent<DefenseWaterMovement3D>();
-                if (water == null) throw new InvalidOperationException("Missing authored amphibian movement.");
-                water.Begin(target);
+                enemy.Locomotion.Configure(lane, target);
                 return;
             }
-            if (enemy.Stats.Locomotion == DefenseEnemyLocomotionType.AirFlight)
+
+            // Fallback an toàn
+            if (movement != null)
             {
-                var air = GetComponent<DefenseAirMovement3D>();
-                if (air == null) throw new InvalidOperationException("Missing authored Air movement.");
-                air.Begin(target);
-                return;
-            }
-            // Configure route without resetting HP; arena -> assault preserves damage.
-            if (_aggro != null && !enemy.Stats.IsBoss)
-                _aggro.Configure(lane, target, _hero, enemy.Stats.Locomotion == DefenseEnemyLocomotionType.ParatrooperLanding);
-            else if (movement != null)
-            {
-                _aggro?.Stop();
-                var collider = target != null ? target.GetComponent<Collider>() : null;
-                float extent = collider != null ? Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.z) : 0f;
-                movement.Follow(DefenseBridgeRoute3D.Create(lane, transform.position, target.transform.position),
-                    enemy.Stats.Speed, enemy.Stats.AttackRange + extent);
+                movement.Configure(lane, target);
             }
         }
         public void SetMaxHealth(float hp)
@@ -154,14 +147,14 @@ namespace ProjectZombie.Features.Defense3D
         {
             SetMaxHealth(hp);
             _aggro?.Stop();
-            movement.Stop();
-            attack.StopAttack();
+            movement?.Stop();
+            attack?.StopAttack();
         }
         public void BeginBossAssault(DefenseBasePrototype3D target)
         {
             if (IsDead) return;
             Configure(1, target);
-            Debug.Log("[TREBRAVE Defense3D] Yaksha entered ASSAULT_BASE.");
+            Debug.Log("[TREBRAVE Defense3D] Boss entered ASSAULT_BASE.");
         }
         public void StopBossCombat()
         {

@@ -58,6 +58,13 @@ namespace ProjectZombie.Features.Defense3D
             RespawnAtOrigin();
         }
 
+        public void SetMaxHealth(float newMaxHp)
+        {
+            if (newMaxHp <= 0f) return;
+            maxHP = newMaxHp;
+            Tracker.SetMaxHp(newMaxHp);
+        }
+
         private void OnHeroDowned()
         {
             if (motor != null) motor.enabled = false;

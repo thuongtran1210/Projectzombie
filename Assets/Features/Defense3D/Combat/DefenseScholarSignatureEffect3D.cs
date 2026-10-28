@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>AoE quanh Thư Sinh và giảm hồi pháp bảo; chỉ phát kết quả để adapter trình diễn.</summary>
-    public sealed class DefenseScholarSignatureEffect3D : DefenseSkillEffect3D
+    public sealed class DefenseScholarSignatureEffect3D : DefenseSkillEffect3D, IDefenseSignatureEffect
     {
         [SerializeField] private DefenseHeroHealth3D _health;
         [SerializeField] private DefenseHeroAutoAttack3D _attack;

@@ -22,14 +22,23 @@ namespace ProjectZombie.Features.Defense3D
             _relic = relic;
         }
 
+        public DefenseSkillDefinitionSO Attack => _attack;
+        public DefenseSkillDefinitionSO Dash => _dash;
+        public DefenseSkillDefinitionSO Signature => _signature;
+
+        public void SetSignature(DefenseSkillDefinitionSO signature)
+        {
+            _signature = signature;
+        }
+
         public DefenseSkillDefinitionSO DefinitionFor(DefenseSkillKind kind)
         {
             switch (kind)
             {
                 case DefenseSkillKind.BasicAttack: return _attack;
                 case DefenseSkillKind.Dash: return _dash;
-                case DefenseSkillKind.ScholarSignature: return _signature;
-                case DefenseSkillKind.DepToOng: return _relic;
+                case DefenseSkillKind.Signature: return _signature;
+                case DefenseSkillKind.Relic: return _relic;
                 default: throw new ArgumentOutOfRangeException(nameof(kind));
             }
         }
@@ -39,8 +48,10 @@ namespace ProjectZombie.Features.Defense3D
             if (string.IsNullOrWhiteSpace(_heroId) || string.IsNullOrWhiteSpace(_displayName)) throw new InvalidOperationException("Hero kit requires identity.");
             if (_attack == null || _attack.Capture().Kind != DefenseSkillKind.BasicAttack) throw new InvalidOperationException("Hero kit requires basic attack definition.");
             if (_dash == null || _dash.Capture().Kind != DefenseSkillKind.Dash) throw new InvalidOperationException("Hero kit requires dash definition.");
-            if (_signature == null || _signature.Capture().Kind != DefenseSkillKind.ScholarSignature) throw new InvalidOperationException("Hero kit requires scholar signature definition.");
-            if (_relic != null && _relic.Capture().Kind != DefenseSkillKind.DepToOng) throw new InvalidOperationException("Hero kit relic must match relic kind.");
+            if (_signature == null || (_signature.Capture().Kind != DefenseSkillKind.Signature && _signature.Capture().Kind != DefenseSkillKind.ScholarSignature))
+                throw new InvalidOperationException("Hero kit requires signature definition.");
+            if (_relic != null && _relic.Capture().Kind != DefenseSkillKind.Relic && _relic.Capture().Kind != DefenseSkillKind.DepToOng)
+                throw new InvalidOperationException("Hero kit relic must match relic kind.");
         }
     }
 }

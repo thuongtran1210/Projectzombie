@@ -2,7 +2,17 @@ using System;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    public enum DefenseSkillKind { Dash, DepToOng, BasicAttack, ScholarSignature }
+    public enum DefenseSkillKind
+    {
+        Dash = 0,
+        DepToOng = 1,
+        BasicAttack = 2,
+        ScholarSignature = 3,
+
+        // Chuẩn hóa các Slot kỹ năng mở rộng cho mọi Tướng và Pháp Bảo tương lai
+        Relic = DepToOng,
+        Signature = ScholarSignature
+    }
 
     /// <summary>Immutable authoring snapshot shared by preview, effect and cooldown UI.</summary>
     public sealed class DefenseSkillDefinition

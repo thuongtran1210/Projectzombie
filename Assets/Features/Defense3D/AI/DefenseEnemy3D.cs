@@ -18,7 +18,12 @@ namespace ProjectZombie.Features.Defense3D
 
         public void EnsureStrategies()
         {
-            if (Locomotion == null) Locomotion = GetComponent<IDefenseLocomotionStrategy3D>();
+            if (Locomotion == null)
+            {
+                if (TryGetComponent<DefenseAirMovement3D>(out var air)) Locomotion = air;
+                else if (TryGetComponent<DefenseWaterMovement3D>(out var water)) Locomotion = water;
+                else Locomotion = GetComponent<IDefenseLocomotionStrategy3D>();
+            }
             if (Attack == null) Attack = GetComponent<IDefenseAttackStrategy3D>();
             if (Targeting == null) Targeting = GetComponent<IDefenseTargetingStrategy3D>();
         }

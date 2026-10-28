@@ -58,5 +58,11 @@ namespace ProjectZombie.Features.Defense3D
             RemainingRespawnTime = 0f;
             _health.Reset();
         }
+
+        public void SetMaxHp(float newMaxHp)
+        {
+            if (newMaxHp <= 0f) return;
+            _health.Reset(newMaxHp);
+        }
     }
 }

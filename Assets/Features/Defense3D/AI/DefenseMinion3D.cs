@@ -99,17 +99,32 @@ namespace ProjectZombie.Features.Defense3D
             return _agent.CalculatePath(hit.position, _path) && _path.status == NavMeshPathStatus.PathComplete;
         }
 
-        private bool Move(Vector3 point, float stoppingDistance)
+        private IMinionRoleBehavior _behavior;
+        public IMinionRoleBehavior Behavior => _behavior;
+        public float CurrentGameplayTime => GameplayTime;
+        public bool IsGameplayAdvancing => CanAdvanceGameplay;
+        public int Cargo { get => _cargo; set => _cargo = value; }
+        public float NextActionTime { get => _nextAction; set => _nextAction = value; }
+        public int AdvanceCombo() => ++_combo;
+        public Predicate<IDefenseTargetPosition> TargetAcceptancePredicate => _accepts;
+
+        public bool SampleAreaPosition(Vector3 point, out NavMeshHit hit, float maxDistance)
         {
-            if (_agent == null || !CanReach(point)) { Stop(); return false; }
-            _agent.stoppingDistance = stoppingDistance;
-            _agent.isStopped = false;
-            return _agent.SetPath(_path);
+            int mask = _agent != null ? _agent.areaMask : NavMesh.AllAreas;
+            return NavMesh.SamplePosition(point, out hit, maxDistance, mask);
         }
 
-        private void Stop()
+        public bool RaycastNavMesh(Vector3 source, Vector3 target)
         {
-            if (_agent != null && _agent.enabled && _agent.isOnNavMesh) { _agent.isStopped = true; _agent.ResetPath(); }
+            int mask = _agent != null ? _agent.areaMask : NavMesh.AllAreas;
+            return NavMesh.Raycast(source, target, out _, mask);
+        }
+
+        public bool RepairStructure(IDefenseDamageable3D structure)
+        {
+            if (structure is DefenseBasePrototype3D home) return home.Heal(_definition.BaseRepairAmount);
+            if (structure is DefenseSupportTarget3D support && support.IsStructure) return support.Heal(_definition.RepairAmount);
+            return false;
         }
 
         private void Update()
@@ -118,12 +133,9 @@ namespace ProjectZombie.Features.Defense3D
             if (GameplayTime >= _nextThink)
             {
                 _nextThink = GameplayTime + _definition.ThinkInterval;
-                switch (_definition.Role)
-                {
-                    case DefenseMinionRole.Militia: Fight(); break;
-                    case DefenseMinionRole.Gatherer: Gather(); break;
-                    case DefenseMinionRole.Healer: Heal(); break;
-                }
+                if (_behavior == null && _definition != null)
+                    _behavior = MinionBehaviorFactory.GetBehavior(_definition.Role);
+                _behavior?.Tick(this, _shop, Gameplay);
             }
             if (_agent != null && _agent.enabled && _agent.isOnNavMesh && _agent.velocity.sqrMagnitude > .04f)
             {
@@ -145,84 +157,18 @@ namespace ProjectZombie.Features.Defense3D
             return _shop.WithinOrders(this, point) && CanReach(point);
         }
 
-        private void Fight()
+        public bool Move(Vector3 point, float stoppingDistance)
         {
-            Vector3 p = transform.position;
-            var target = (Gameplay.Targets as IDefenseSpatialTargetQuery)?.FindNearestSpatial(
-                new DefensePoint3(p.x, p.y, p.z), _definition.SearchRange, DefenseTargetMask.Ground, _accepts)?.Identity as IDefenseEnemyTarget3D;
-            if (target == null) { Move(_shop.Anchor(this), .5f); return; }
-            Vector3 goal = target.TargetTransform.position;
-            if (!Move(goal, _definition.AttackRange * .75f)) return;
-            Vector3 delta = goal - p; delta.y = 0f;
-            if (delta.sqrMagnitude > _definition.AttackRange * _definition.AttackRange || GameplayTime < _nextAction) return;
-            if (!NavMesh.SamplePosition(goal, out var hit, 2.5f, _agent.areaMask) || NavMesh.Raycast(p, hit.position, out _, _agent.areaMask)) return;
-            Stop();
-            if (delta.sqrMagnitude > .0001f) transform.rotation = Quaternion.LookRotation(delta);
-            _nextAction = GameplayTime + _definition.AttackInterval;
-            bool heavy = (++_combo % 4) == 0;
-            int generation = Gameplay.RunGeneration;
-            if (!target.TakeDamage(new DefenseDamageContext(heavy ? _definition.HeavyDamage : _definition.Damage, this, goal,
-                runGeneration: generation, sessionIdentity: Gameplay.SessionIdentity))) return;
-            if (target is IDefenseStatusReceiver receiver && CanAdvanceGameplay && Gameplay.RunGeneration == generation && IsAvailable)
-            {
-                receiver.TryApplyStatus(new DefenseStatusRequest(DefenseStatusKind.Slow, _definition.SlowDuration,
-                    _definition.SlowStrength, default, Gameplay.SessionIdentity, generation));
-                if (heavy) receiver.TryApplyStatus(new DefenseStatusRequest(DefenseStatusKind.Stun, _definition.HeavyStunDuration,
-                    1f, default, Gameplay.SessionIdentity, generation));
-                Vector3 direction = delta.sqrMagnitude > .0001f ? delta.normalized : transform.forward;
-                receiver.TryApplyStatus(new DefenseStatusRequest(DefenseStatusKind.Knockback, _definition.KnockDuration,
-                    _definition.KnockStrength, new DefensePoint3(direction.x, 0f, direction.z), Gameplay.SessionIdentity, generation));
-            }
+            if (_agent == null || !CanReach(point)) { Stop(); return false; }
+            _agent.stoppingDistance = stoppingDistance;
+            _agent.isStopped = false;
+            return _agent.SetPath(_path);
         }
 
-        private void Gather()
+        public void Stop()
         {
-            var drop = _cargo >= _definition.CarryCapacity ? null : _shop.FindWood(this);
-            if (_cargo > 0 && (drop == null || _cargo >= _definition.CarryCapacity))
-            {
-                if (_shop.Hero.IsDown) { Move(_shop.Base.transform.position + Vector3.right * 3f, 1f); return; }
-                Vector3 hero = _shop.Hero.transform.position;
-                Move(hero, .8f);
-                Vector3 delta = hero - transform.position; delta.y = 0f;
-                if (delta.sqrMagnitude <= 1.8f * 1.8f)
-                {
-                    int cargo = _cargo; _cargo = 0;
-                    _shop.Deliver(cargo);
-                }
-                return;
-            }
-            if (drop == null)
-            {
-                if (_shop.FindPatient(this, out var repairPoint, true) is IDefenseDamageable3D structure)
-                {
-                    Move(repairPoint, .7f);
-                    Vector3 repairDelta = _shop.InteractionPoint(structure, transform.position, repairPoint) - transform.position; repairDelta.y = 0f;
-                    if (repairDelta.sqrMagnitude <= _definition.AttackRange * _definition.AttackRange && GameplayTime >= _nextAction && Repair(structure))
-                        _nextAction = GameplayTime + _definition.RepairInterval;
-                }
-                else Move(_shop.Anchor(this), .5f);
-                return;
-            }
-            Move(drop.transform.position, .4f);
-            Vector3 offset = drop.transform.position - transform.position; offset.y = 0f;
-            if (offset.sqrMagnitude <= 1f && drop.TryGather(Gameplay, _definition.CarryCapacity - _cargo, out int amount)) _cargo += amount;
+            if (_agent != null && _agent.enabled && _agent.isOnNavMesh) { _agent.isStopped = true; _agent.ResetPath(); }
         }
-
-        private void Heal()
-        {
-            var patient = _shop.FindPatient(this, out var point);
-            if (patient == null) { Move(_shop.Anchor(this), .5f); return; }
-            Move(point, _definition.AttackRange * .7f);
-            Vector3 delta = _shop.InteractionPoint(patient, transform.position, point) - transform.position; delta.y = 0f;
-            if (delta.sqrMagnitude > _definition.AttackRange * _definition.AttackRange || GameplayTime < _nextAction) return;
-            bool structure = patient is DefenseBasePrototype3D || (patient is DefenseSupportTarget3D building && building.IsStructure);
-            bool healed = structure ? Repair(patient) : patient is DefenseHeroHealth3D hero ? hero.Heal(_definition.HeroHealAmount) :
-                patient is DefenseSupportTarget3D support && support.Heal(_definition.HealAmount);
-            if (healed) _nextAction = GameplayTime + (structure ? _definition.RepairInterval : _definition.HealInterval);
-        }
-
-        private bool Repair(IDefenseDamageable3D structure) => structure is DefenseBasePrototype3D home ? home.Heal(_definition.BaseRepairAmount) :
-            structure is DefenseSupportTarget3D support && support.IsStructure && support.Heal(_definition.RepairAmount);
 
         protected override void OnGameplayGateChanged(bool active) { if (!active) Stop(); }
         protected override void OnGameplayCleanup() => Retire();

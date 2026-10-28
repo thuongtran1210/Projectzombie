@@ -10,6 +10,8 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(0.1f)] private float fireInterval = 0.9f;
         [SerializeField] private DefenseAttackTargetingProfileSO _targeting;
         [SerializeField] private DefenseTowerProjectileVfx3D _projectileVfx;
+        [SerializeField] private MonoBehaviour _customLauncher;
+        private IDefenseProjectileLauncher _launcher;
         private DefenseAttackTargetSelector3D _targetSelector;
         private float nextShot;
         private DefenseSupportTarget3D _health;
@@ -24,6 +26,7 @@ namespace ProjectZombie.Features.Defense3D
         protected override void OnGameplayBound()
         {
             _targetSelector = new DefenseAttackTargetSelector3D(transform, _targeting);
+            _launcher = _customLauncher as IDefenseProjectileLauncher ?? _projectileVfx;
             if (_health != null) _health.Defeated -= OnDefeated;
             _health = GetComponent<DefenseSupportTarget3D>();
             if (_health != null) _health.Defeated += OnDefeated;
@@ -48,9 +51,21 @@ namespace ProjectZombie.Features.Defense3D
             var target = _targetSelector?.Find(Gameplay.Targets, EffectiveRange);
             if (target == null) return;
             nextShot = GameplayTime + fireInterval / (1f + (Level - 1) * _fireRatePerLevel);
-            if (_projectileVfx == null || !_projectileVfx.TryLaunch(this, target, EffectiveDamage))
+
+            var request = new DefenseProjectileLaunchRequest(
+                source: this,
+                origin: transform.position + Vector3.up * 1.65f,
+                target: target,
+                damage: EffectiveDamage,
+                runGeneration: Gameplay.RunGeneration,
+                sessionIdentity: Gameplay.SessionIdentity);
+
+            bool launched = _launcher != null && _launcher.TryLaunch(request);
+            if (!launched)
+            {
                 target.TakeDamage(new DefenseDamageContext(EffectiveDamage, this, target.TargetTransform.position,
                     runGeneration: Gameplay.RunGeneration, sessionIdentity: Gameplay.SessionIdentity));
+            }
 #if UNITY_EDITOR && DEFENSE_TOWER_DEBUG
             Debug.Log("[TREBRAVE Defense3D] Tower hit " + target.TargetTransform.name + " for " + EffectiveDamage);
 #endif

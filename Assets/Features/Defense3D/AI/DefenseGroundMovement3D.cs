@@ -50,9 +50,27 @@ namespace ProjectZombie.Features.Defense3D
         public bool HasFailed { get; private set; }
         public event Action Arrived;
 
-        protected override void OnGameplayGateChanged(bool active)
+        private DefenseHeroHealth3D _hero;
+        public void BindHero(DefenseHeroHealth3D hero) => _hero = hero;
+
+        public void Configure(int lane, DefenseBasePrototype3D target)
         {
-            ApplyMotionState();
+            if (TryGetComponent<DefenseGroundAggro3D>(out var aggro) &&
+                TryGetComponent<DefenseEnemy3D>(out var enemy) &&
+                !enemy.Stats.IsBoss)
+            {
+                aggro.Configure(lane, target, _hero, enemy.Stats.Locomotion == DefenseEnemyLocomotionType.ParatrooperLanding);
+            }
+            else
+            {
+                var enemyStats = TryGetComponent<DefenseEnemy3D>(out var e) ? e.Stats : default;
+                float speed = enemyStats.Speed > 0f ? enemyStats.Speed : 2.5f;
+                var collider = target != null ? target.GetComponent<Collider>() : null;
+                float extent = collider != null ? Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.z) : 0f;
+                float radius = (enemyStats.AttackRange > 0f ? enemyStats.AttackRange : 1.2f) + extent;
+                Vector3 targetPos = target != null ? target.transform.position : transform.position;
+                Follow(DefenseBridgeRoute3D.Create(lane, transform.position, targetPos), speed, radius);
+            }
         }
 
         public void Follow(Vector3[] waypoints, float speed, float radius)

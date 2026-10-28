@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Scene-owned, bounded projectile simulation. All geometry is authored and reused.</summary>
-    public sealed class DefenseTowerProjectileVfx3D : DefenseGameplayBehaviour
+    public sealed class DefenseTowerProjectileVfx3D : DefenseGameplayBehaviour, IDefenseProjectileLauncher
     {
         [SerializeField] private DefenseCombatVfxProfileSO _profile;
         [SerializeField] private LineRenderer[] _arrows = Array.Empty<LineRenderer>();
@@ -31,6 +31,12 @@ namespace ProjectZombie.Features.Defense3D
             _impactOrigins = new Vector3[_impacts.Length];
             Clear();
         }
+
+        public bool TryLaunch(DefenseProjectileLaunchRequest request)
+        {
+            return TryLaunch(request.Source, request.Target, request.Damage);
+        }
+
         public bool TryLaunch(Component source, IDefenseEnemyTarget3D target, float damage)
         {
             if (!CanAdvanceGameplay || !isActiveAndEnabled || _profile == null || _shots == null || target == null) return false;

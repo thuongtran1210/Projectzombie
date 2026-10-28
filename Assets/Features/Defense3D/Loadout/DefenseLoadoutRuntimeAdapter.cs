@@ -32,5 +32,35 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 heroKit.SetRelic(relicDefinition);
             }
         }
+
+        /// <summary>
+        /// Áp dụng dữ liệu Anh Hùng được chọn từ Loadout (HeroId) vào trận đấu 3D:
+        /// Đồng bộ chỉ số cơ bản, kit kỹ năng và visual controller.
+        /// </summary>
+        public static void ApplyHero(
+            DefenseResolvedLoadout resolved,
+            DefenseHeroCatalogSO catalog,
+            DefenseHeroHealth3D health,
+            DefenseHeroMotor3D motor,
+            DefenseHeroAutoAttack3D attack,
+            DefenseHeroVisualController3D visual)
+        {
+            if (resolved == null) return;
+
+            DefenseHeroDefinitionSO heroDef = null;
+            if (catalog != null)
+            {
+                heroDef = catalog.GetHeroById(resolved.HeroId);
+            }
+
+            if (heroDef != null)
+            {
+                heroDef.ApplyStatsToHero(health, motor, attack);
+                if (visual != null && heroDef.HeroKit != null)
+                {
+                    visual.SetKit(heroDef.HeroKit);
+                }
+            }
+        }
     }
 }

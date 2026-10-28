@@ -11,6 +11,15 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private float speed = 5f;
         [SerializeField] private float turnRate = 14f;
 
+        public float MoveSpeed => speed;
+        public float TurnRate => turnRate;
+
+        public void SetMovementParameters(float newSpeed, float newTurnRate)
+        {
+            if (newSpeed > 0f) speed = newSpeed;
+            if (newTurnRate > 0f) turnRate = newTurnRate;
+        }
+
         private Rigidbody _body;
         private DefenseHeroAutoAttack3D _basicAttack;
         public void FaceBasicAttack(object owner, DefensePoint3 direction)

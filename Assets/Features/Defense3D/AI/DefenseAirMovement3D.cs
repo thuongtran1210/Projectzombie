@@ -54,6 +54,8 @@ namespace ProjectZombie.Features.Defense3D
             BindGameplay(gameplay);
         }
 
+        public void Configure(int lane, DefenseBasePrototype3D target) => Begin(target);
+
         public void Begin(DefenseBasePrototype3D target)
         {
             if (_navigation == null || target == null || !_navigation.CanOccupy(transform.position))

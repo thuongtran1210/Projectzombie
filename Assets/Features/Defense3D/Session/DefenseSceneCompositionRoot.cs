@@ -11,6 +11,7 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseSceneCompositionRoot : MonoBehaviour
     {
         [SerializeField] private DefenseHeroKitSO _heroKit;
+        [SerializeField] private DefenseHeroCatalogSO _heroCatalog;
         [SerializeField] private DefenseRun6003D _run;
         [SerializeField] private DefenseMatchPresenter _matchUI;
         [SerializeField] private DefenseWoodWallet3D _wallet;
@@ -94,12 +95,31 @@ namespace ProjectZombie.Features.Defense3D
             }
 
             var resolved = DefenseLoadoutResolver.Resolve(_loadoutSnapshot);
+
+            // Tự động tìm catalog trong Resources nếu Inspector chưa gán
+            if (_heroCatalog == null)
+            {
+                _heroCatalog = Resources.Load<DefenseHeroCatalogSO>("Defense3D/DefenseHeroCatalog");
+            }
+
+            DefenseHeroMotor3D motor = null;
+            DefenseHeroAutoAttack3D attack = null;
+            DefenseHeroVisualController3D visual = null;
+
             foreach (var participant in _sceneParticipants)
             {
                 if (participant is DefenseVillageShop3D shop)
                 {
                     DefenseLoadoutRuntimeAdapter.ApplyToShop(resolved, shop);
                 }
+                else if (participant is DefenseHeroMotor3D m) motor = m;
+                else if (participant is DefenseHeroAutoAttack3D a) attack = a;
+                else if (participant is DefenseHeroVisualController3D v) visual = v;
+            }
+
+            if (_heroHealth != null)
+            {
+                DefenseLoadoutRuntimeAdapter.ApplyHero(resolved, _heroCatalog, _heroHealth, motor, attack, visual);
             }
         }
 

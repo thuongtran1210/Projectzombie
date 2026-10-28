@@ -12,6 +12,17 @@ namespace ProjectZombie.Features.Defense3D
         bool HasFailed { get; }
         void Stop();
         bool TryDisplace(Vector3 delta, bool apply);
+        void Configure(int lane, DefenseBasePrototype3D target);
+    }
+
+    /// <summary>
+    /// Segregated contract for Boss-specific arena lifecycle and transition to base assault.
+    /// </summary>
+    public interface IDefenseBossCombatAdapter3D
+    {
+        void PrepareArenaBoss(float hp);
+        void BeginBossAssault(DefenseBasePrototype3D target);
+        void StopBossCombat();
     }
 
     /// <summary>
