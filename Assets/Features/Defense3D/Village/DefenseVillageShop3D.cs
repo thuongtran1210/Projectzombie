@@ -18,6 +18,8 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseTowerBuildPrototype3D _towerBuilder;
         [SerializeField] private Transform _recruitmentAnchor;
         [SerializeField, Min(.1f)] private float _recruitmentRadius = 1.6f;
+        private IDefenseWoodDrops _woodDrops;
+        public void BindWoodDrops(IDefenseWoodDrops woodDrops) => _woodDrops = woodDrops;
         private bool _busy;
         private Collider _baseCollider;
         private readonly DefenseMinionOrder[] _orders = new DefenseMinionOrder[3];
@@ -42,6 +44,25 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseMinionDefinitionSO Definition(int role) => role >= 0 && role < _catalog.Length ? _catalog[role] : null;
         public DefenseMinionOrder Order(int role) => _orders[role];
 
+        private System.Collections.Generic.HashSet<int> _allowedRoles;
+
+        /// <summary>Cấu hình danh sách vai trò lính được phép tuyển mộ theo đội hình Loadout đã chọn.</summary>
+        public void SetAllowedRoles(System.Collections.Generic.IEnumerable<int> allowedRoles)
+        {
+            if (allowedRoles == null)
+            {
+                _allowedRoles = null;
+            }
+            else
+            {
+                _allowedRoles = new System.Collections.Generic.HashSet<int>(allowedRoles);
+            }
+            NotifyChanged();
+        }
+
+        /// <summary>Kiểm tra vai trò lính có nằm trong danh sách xuất trận hay không.</summary>
+        public bool IsRoleAllowed(int role) => _allowedRoles == null || _allowedRoles.Contains(role);
+
         protected override void OnGameplayBound()
         {
             _base.TryGetComponent(out _baseCollider);
@@ -59,6 +80,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public int Capacity(int role)
         {
+            if (!IsRoleAllowed(role)) return 0;
             int count = 0;
             foreach (var unit in _slots) if ((int)unit.Definition.Role == role) count++;
             return count;
@@ -66,6 +88,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool TryRecruit(int role)
         {
+            if (!IsRoleAllowed(role)) return false;
             var definition = Definition(role);
             if (_busy || !CanRecruit || definition == null || definition.WoodCost <= 0 || _wallet.Wood < definition.WoodCost) return false;
             DefenseMinion3D slot = null;
@@ -127,7 +150,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public DefenseWoodDrop3D FindWood(DefenseMinion3D unit)
         {
-            var pool = DefenseWoodDropPool.ActiveSessionPool;
+            var pool = _woodDrops;
             if (pool == null) return null;
             DefenseWoodDrop3D best = null;
             float distance = float.PositiveInfinity;

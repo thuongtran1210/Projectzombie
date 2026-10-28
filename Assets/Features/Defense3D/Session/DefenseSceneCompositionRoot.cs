@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Defense3D.UI;
+using ProjectZombie.Features.Defense3D.Loadout;
 
 namespace ProjectZombie.Features.Defense3D
 {
@@ -15,14 +16,37 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseWoodWallet3D _wallet;
         [SerializeField] private DefenseGameplayBehaviour[] _sceneParticipants;
         [SerializeField] private DefenseSkillPresenter3D[] _skillPresenters;
+        [SerializeField] private ProjectZombie.Features.UI.DamageText.DamageTextManager _combatText;
+        [SerializeField] private Camera _combatTextCamera;
+        [SerializeField] private DefenseCombatTextBinding[] _combatTextActors;
+        [Serializable]
+        private struct DefenseCombatTextBinding
+        {
+            public MonoBehaviour Actor;
+            public ProjectZombie.Features.UI.DamageText.CombatTextTarget Target;
+            public Vector3 Offset;
+        }
+        [SerializeField] private DefenseEffectService3D _effectService;
+        [SerializeField] private DefenseRuntimeRoots3D _runtimeRoots;
+        [SerializeField] private DefenseRelicEffectPresenter3D[] _effectPresenters;
+        [SerializeField] private DefenseHeroBasicAttackPresenter3D _basicAttackPresenter;
+        [SerializeField] private DefenseHeroDashPresenter3D _dashPresenter;
+        [SerializeField] private DefenseScholarSignaturePresenter3D _signaturePresenter;
         private DefenseSession _session;
         private DefenseHeroCommands _heroCommands;
         private DefenseHeroHealth3D _heroHealth;
         private readonly DefenseHeroDeviceInput _deviceInput = new DefenseHeroDeviceInput();
         private bool _hasFocus = true;
         private bool _applicationPaused;
+        private DefenseLoadoutSnapshot _loadoutSnapshot;
 
         public IDefenseGameplayContext Gameplay => _session;
+
+        /// <summary>Cấu hình snapshot đội hình xuất trận trước khi Session được khởi động.</summary>
+        public void SetLoadoutSnapshot(DefenseLoadoutSnapshot snapshot)
+        {
+            _loadoutSnapshot = snapshot;
+        }
 
         private void Start()
         {
@@ -42,10 +66,15 @@ namespace ProjectZombie.Features.Defense3D
                 }
                 _heroHealth.Defeated += ClearHeroCommands;
                 _matchUI.BindSession(_session, _session.Modifiers);
-                if (!_run.InitializeSession(_session, _wallet))
+                BindCombatText();
+                BindEffects();
+                if (!_run.InitializeSession(_session, _wallet, _combatText, _effectService))
                     throw new InvalidOperationException("Run configuration could not be initialized.");
+                foreach (var participant in _sceneParticipants)
+                    if (participant is DefenseVillageShop3D shop) shop.BindWoodDrops(_run.WoodDrops);
                 foreach (var presenter in _skillPresenters) presenter.Bind(_session);
                 _session.RuntimeAdapter.RegisterOwner(_matchUI.CancelRunPresentation, ResetPresentationAndWallet);
+                ApplyLoadout();
                 _session.Start();
             }
             catch (Exception exception)
@@ -54,6 +83,23 @@ namespace ProjectZombie.Features.Defense3D
                 if (_run != null) _run.enabled = false;
                 Debug.LogError("[TREBRAVE Defense3D] Scene composition failed: " + exception.Message, this);
                 enabled = false;
+            }
+        }
+
+        private void ApplyLoadout()
+        {
+            if (_loadoutSnapshot == null)
+            {
+                _loadoutSnapshot = DefenseSessionContext.ConsumeSnapshot();
+            }
+
+            var resolved = DefenseLoadoutResolver.Resolve(_loadoutSnapshot);
+            foreach (var participant in _sceneParticipants)
+            {
+                if (participant is DefenseVillageShop3D shop)
+                {
+                    DefenseLoadoutRuntimeAdapter.ApplyToShop(resolved, shop);
+                }
             }
         }
 
@@ -103,6 +149,56 @@ namespace ProjectZombie.Features.Defense3D
             }
         }
 
+        private void BindEffects()
+        {
+            if (_effectService == null) return;
+            if (_runtimeRoots == null) throw new InvalidOperationException("Assign VFX Runtime Roots.");
+            _effectService.Bind(_session, _runtimeRoots);
+            if (_basicAttackPresenter != null) _basicAttackPresenter.Bind(_session, _effectService);
+            if (_dashPresenter != null) _dashPresenter.Bind(_session, _effectService);
+            if (_signaturePresenter != null) _signaturePresenter.Bind(_session, _effectService);
+            if (_effectPresenters != null) foreach (var presenter in _effectPresenters)
+            {
+                if (presenter == null) throw new InvalidOperationException("Missing effect presenter.");
+                presenter.Bind(_session, _effectService);
+            }
+        }
+
+        private void BindCombatText()
+        {
+            if (_combatText == null) return;
+            if (_combatTextCamera == null) throw new InvalidOperationException("Assign Combat Text Camera.");
+            _combatText.SetLegacyInput(false);
+            _combatText.Configure(_combatTextCamera, true, () => _session != null && _session.AdvancesGameplay);
+            _combatText.SetAccepting(true);
+            var bound = new HashSet<IDefenseDamageable3D>();
+            if (_combatTextActors != null)
+                foreach (var binding in _combatTextActors)
+                {
+                    if (binding.Actor == null || !(binding.Actor is IDefenseDamageable3D source) ||
+                        binding.Actor.gameObject.scene != gameObject.scene || !bound.Add(source))
+                        throw new InvalidOperationException("Combat Text Actors require unique same-scene damageable actors.");
+                    var actor = binding.Actor;
+                    var offset = binding.Offset;
+                    _session.Own(new DefenseCombatTextAdapter(source, _session, _combatText,
+                        () => actor.transform.position + offset, binding.Target));
+                }
+            foreach (var participant in _sceneParticipants)
+            {
+                if (!(participant is IDefenseDamageable3D source) || !bound.Add(source)) continue;
+                var actor = participant;
+                var target = participant is DefenseHeroHealth3D
+                    ? ProjectZombie.Features.UI.DamageText.CombatTextTarget.Player
+                    : participant is DefenseEnemy3D ? ProjectZombie.Features.UI.DamageText.CombatTextTarget.Enemy
+                    : participant is DefenseSupportTarget3D support && !support.IsStructure
+                    ? ProjectZombie.Features.UI.DamageText.CombatTextTarget.Ally
+                    : ProjectZombie.Features.UI.DamageText.CombatTextTarget.Structure;
+                _session.Own(new DefenseCombatTextAdapter(source, _session, _combatText,
+                    () => actor.transform.position + Vector3.up, target));
+            }
+            _session.RunCleanup += ClearCombatText;
+        }
+        private void ClearCombatText() { if (_combatText != null) _combatText.Clear(); }
         private void ResetPresentationAndWallet()
         {
             _wallet.ResetWallet();
@@ -139,6 +235,13 @@ namespace ProjectZombie.Features.Defense3D
 
         private void DisposeSession()
         {
+            if (_basicAttackPresenter != null) _basicAttackPresenter.Unbind();
+            if (_dashPresenter != null) _dashPresenter.Unbind();
+            if (_signaturePresenter != null) _signaturePresenter.Unbind();
+            if (_effectPresenters != null) foreach (var presenter in _effectPresenters) if (presenter != null) presenter.Unbind();
+            if (_effectService != null) _effectService.Unbind();
+            if (_session != null) _session.RunCleanup -= ClearCombatText;
+            if (_combatText != null) { _combatText.SetAccepting(false); _combatText.Clear(); }
             if (_session != null && _session.AdvancesGameplay)
             {
                 try { _session.Pause(); }
