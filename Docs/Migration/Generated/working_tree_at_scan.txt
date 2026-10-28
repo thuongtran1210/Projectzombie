@@ -1,0 +1,99 @@
+ M Assets/Features/Defense3D/AI/DefenseEnemyAttack3D.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemyBridgeWalker3D.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemyDrop3D.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemyFactory3D.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemyPoolManager.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemyPrefab3D.cs
+ M Assets/Features/Defense3D/AI/DefenseEnemySessionFactory3D.cs
+ M Assets/Features/Defense3D/Combat/DefenseConeAttack3D.cs
+ M Assets/Features/Defense3D/Combat/DefenseRelicSkillEffect3D.cs
+ M Assets/Features/Defense3D/Combat/DefenseScholarSignatureEffect3D.cs
+ M Assets/Features/Defense3D/Hero/DefenseHeroAttackEffect3D.cs
+ M Assets/Features/Defense3D/Hero/DefenseHeroAutoAttack3D.cs
+ M Assets/Features/Defense3D/Hero/DefenseHeroMotor3D.cs
+ M Assets/Features/Defense3D/Session/DefenseGameplayBehaviour.cs
+ M Assets/Features/Defense3D/Session/DefenseRun6003D.cs
+ M Assets/Features/Defense3D/Session/DefenseRuntimeRoots3D.cs
+ M Assets/Features/Defense3D/Session/DefenseSceneCompositionRoot.cs
+ M Assets/Features/Defense3D/Session/DefenseWoodDrop3D.cs
+ M Assets/Features/Defense3D/Session/DefenseWoodDropPool.cs
+ M Assets/Features/Defense3D/Village/DefenseVillageShop3D.cs
+ M Assets/Features/UI/DamageText/DamageTextItem.cs
+ M Assets/Features/UI/DamageText/DamageTextManager.cs
+ M Assets/Features/UI/DamageText/DamageTextStyleConfig.cs
+ M Assets/Resources/Defense3D/DefenseEnemy_Magiap.prefab
+ M Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity
+ M Assets/Shaders/VFX/DefenseCombatLine.shader
+ M README.md
+?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackEvents.cs
+?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackEvents.cs.meta
+?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackPoints.cs
+?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackPoints.cs.meta
+?? Assets/Features/Defense3D/Combat/DefenseDashFeedbackEvents.cs
+?? Assets/Features/Defense3D/Combat/DefenseDashFeedbackEvents.cs.meta
+?? Assets/Features/Defense3D/Combat/DefensePresentationSignal.cs
+?? Assets/Features/Defense3D/Combat/DefensePresentationSignal.cs.meta
+?? Assets/Features/Defense3D/Combat/DefenseSignatureFeedbackEvents.cs
+?? Assets/Features/Defense3D/Combat/DefenseSignatureFeedbackEvents.cs.meta
+?? Assets/Features/Defense3D/Effects.meta
+?? Assets/Features/Defense3D/Effects/
+?? Assets/Features/Defense3D/Pooling.meta
+?? Assets/Features/Defense3D/Pooling/
+?? Assets/Features/Defense3D/UI/DefenseCombatTextAdapter.cs
+?? Assets/Features/Defense3D/UI/DefenseCombatTextAdapter.cs.meta
+?? Assets/Features/UI/DamageText/CombatTextLeases.cs
+?? Assets/Features/UI/DamageText/CombatTextLeases.cs.meta
+?? Assets/Features/UI/DamageText/CombatTextRequest.cs
+?? Assets/Features/UI/DamageText/CombatTextRequest.cs.meta
+?? Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs
+?? Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs.meta
+?? Assets/Resources/Defense3D/Players.meta
+?? Assets/Resources/UI/CombatText.meta
+?? Assets/Resources/UI/CombatText/
+?? Assets/Shaders/VFX/DefenseHitSpark.shader
+?? Assets/Shaders/VFX/DefenseHitSpark.shader.meta
+?? Assets/Shaders/VFX/DefenseScholarSeal.shader
+?? Assets/Shaders/VFX/DefenseScholarSeal.shader.meta
+?? Assets/Tests/Editor/CombatTextTests.cs
+?? Assets/Tests/Editor/CombatTextTests.cs.meta
+?? Assets/Tests/Editor/DefenseAttackFeedbackTests.cs
+?? Assets/Tests/Editor/DefenseAttackFeedbackTests.cs.meta
+?? Assets/Tests/Editor/DefenseBasicAttackAuthoringTests.cs
+?? Assets/Tests/Editor/DefenseBasicAttackAuthoringTests.cs.meta
+?? Assets/Tests/Editor/DefenseBasicAttackGameplayTests.cs
+?? Assets/Tests/Editor/DefenseBasicAttackGameplayTests.cs.meta
+?? Assets/Tests/Editor/DefenseDashAuthoringTests.cs
+?? Assets/Tests/Editor/DefenseDashAuthoringTests.cs.meta
+?? Assets/Tests/Editor/DefenseDashFeedbackTests.cs
+?? Assets/Tests/Editor/DefenseDashFeedbackTests.cs.meta
+?? Assets/Tests/Editor/DefenseDashMotorTests.cs
+?? Assets/Tests/Editor/DefenseDashMotorTests.cs.meta
+?? Assets/Tests/Editor/DefenseEffectAuthoringTests.cs
+?? Assets/Tests/Editor/DefenseEffectAuthoringTests.cs.meta
+?? Assets/Tests/Editor/DefensePoolLifecycleTests.cs
+?? Assets/Tests/Editor/DefensePoolLifecycleTests.cs.meta
+?? Assets/Tests/Editor/DefenseRelicPresentationTests.cs
+?? Assets/Tests/Editor/DefenseRelicPresentationTests.cs.meta
+?? Assets/Tests/Editor/DefenseScholarSignatureGameplayTests.cs
+?? Assets/Tests/Editor/DefenseScholarSignatureGameplayTests.cs.meta
+?? Assets/Tests/Editor/DefenseSignatureAuthoringTests.cs
+?? Assets/Tests/Editor/DefenseSignatureAuthoringTests.cs.meta
+?? Assets/Tests/Editor/DefenseSignatureFeedbackTests.cs
+?? Assets/Tests/Editor/DefenseSignatureFeedbackTests.cs.meta
+?? Assets/Tests/Editor/DefenseSignatureInterruptionTests.cs
+?? Assets/Tests/Editor/DefenseSignatureInterruptionTests.cs.meta
+?? Assets/Tests/Editor/DefenseTestAbilitySource.cs
+?? Assets/Tests/Editor/DefenseTestAbilitySource.cs.meta
+?? Assets/Tests/Editor/OwnedPoolTests.cs
+?? Assets/Tests/Editor/OwnedPoolTests.cs.meta
+?? Assets/Tests/Editor/VongXuyenCombatTextAssetTests.cs
+?? Assets/Tests/Editor/VongXuyenCombatTextAssetTests.cs.meta
+?? Docs/COMBAT_TEXT_INTEGRATION.md
+?? Docs/DEFENSE3D_BASIC_ATTACK_EFFECTS.md
+?? Docs/DEFENSE3D_DASH_EFFECTS.md
+?? Docs/DEFENSE3D_GAMEPLAY_MIGRATION_PLAN.md
+?? Docs/DEFENSE3D_POOL_AND_EFFECTS.md
+?? Docs/DEFENSE3D_SCHOLAR_SIGNATURE_EFFECTS.md
+?? Docs/Migration/
+?? MIGRATION_STATUS.md
+?? Tools/Audits/

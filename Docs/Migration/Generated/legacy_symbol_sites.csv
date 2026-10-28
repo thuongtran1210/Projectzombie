@@ -1,0 +1,1077 @@
+﻿source,line,symbol,evidence
+Assets/_Data/Arena/CameraFollow.cs,81,HealthSystem,"private void HandlePlayerSpawned(Transform playerTransform, HealthSystem hp)"
+Assets/Core/Audio/PhaseAudioController.cs,48,GameStateManager,if (ProjectZombie.Features.Shared.GameStateManager.Instance != null &&
+Assets/Core/Audio/PhaseAudioController.cs,49,GameStateManager,ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState != ProjectZombie.Features.Shared.GameState.Playing)
+Assets/Core/Audio/PhaseAudioController.cs,54,SpawnManager,if (SpawnManager.Instance != null && _phaseAudioList != null && _phaseAudioList.Length > 0)
+Assets/Core/Audio/PhaseAudioController.cs,56,SpawnManager,CheckPhaseTransition(SpawnManager.Instance.MatchTime);
+Assets/Core/Audio/PhaseAudioController.cs,65,GameStateManager,if (ProjectZombie.Features.Shared.GameStateManager.Instance != null &&
+Assets/Core/Audio/PhaseAudioController.cs,66,GameStateManager,ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState != ProjectZombie.Features.Shared.GameState.Playing)
+Assets/Core/Audio/PhaseAudioController.cs,71,SpawnManager,if (SpawnManager.Instance == null || _phaseAudioList == null || _phaseAudioList.Length == 0) return;
+Assets/Core/Audio/PhaseAudioController.cs,77,SpawnManager,float currentMatchTime = SpawnManager.Instance.MatchTime;
+Assets/Core/Juice/GameJuiceManager.cs,44,GameStateManager,if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Playing)
+Assets/Core/Juice/GameJuiceManager.cs,66,GameStateManager,// Luôn khôi phục về 1.0f nếu game đang trong trạng thái Playing (hoặc chưa khởi tạo GameStateManager)
+Assets/Core/Juice/GameJuiceManager.cs,67,GameStateManager,if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.Playing)
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,152,WeaponData,// 3.1 Toàn bộ ScriptableObject Cấu hình Vũ Khí & Pháp Bảo (WeaponData)
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,153,WeaponData,"string[] weaponDataGuids = AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,158,WeaponData,"AddAssetToGroup(settings, groupWeapons, path, fileName, ""WeaponData"", ""Relic"");"
+Assets/Editor/Generation/Rigging/AnSiRigPrefabBuilder.cs,21,Rigidbody2D,var rb = root.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/BambooForestTilemapGenerator.cs,76,Rigidbody2D,Rigidbody2D rb = obstacleObj.GetComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/BambooForestTilemapGenerator.cs,206,Rigidbody2D,var rb = wall.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/RemoteStagesPrefabGenerator.cs,426,Rigidbody2D,var rb = obstacleObj.GetComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/RemoteStagesPrefabGenerator.cs,458,Rigidbody2D,var rb = wall.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/SanDinhTilemapBuilder.cs,155,Rigidbody2D,Rigidbody2D rb = obstacleObj.GetComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/SanDinhTilemapBuilder.cs,323,Rigidbody2D,var rb = wall.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/Tilemap/TilemapPipelineWindow.cs,145,Rigidbody2D,var rb = obstacle.gameObject.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,377,Rigidbody2D,var rb = projObj.AddComponent<Rigidbody2D>();
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,60,WeaponData,"var relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W002_BútPhánQuan.asset"");"
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,61,WeaponData,"var relicDaoSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W003_BùaTrấnYêu.asset"");"
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,62,WeaponData,"var relicThanhDong = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W010_LinhPhùMaDa.asset"");"
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,63,WeaponData,"var relicAnSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W005_TrốngĐồngĐôngSơn.asset"");"
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,108,WeaponData,soThuSinh.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicThuSinh };
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,148,WeaponData,soDaoSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicDaoSi };
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,187,WeaponData,soThanhDong.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicThanhDong };
+Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,227,WeaponData,soAnSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicAnSi };
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,10,WeaponData,/// Công cụ kiểm tra tính toàn vẹn của tất cả WeaponData ScriptableObjects trong dự án.
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,18,WeaponData,"string[] guids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,21,WeaponData,"Debug.LogWarning(""[WeaponDataValidator] Không tìm thấy bất kỳ WeaponData nào trong dự án."");"
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,32,WeaponData,"Debug.Log($""<color=#00E5FF>[WeaponDataValidator]</color> Bắt đầu kiểm tra {totalCount} WeaponData assets..."");"
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,40,WeaponData,WeaponData weaponData = AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,63,WeaponData,"Debug.LogError($""<color=#FF4444>[WeaponDataValidator] LỖI THIẾU PREFAB:</color> WeaponData '<b>{weaponData.name}</b>' (ID: {weaponData.weaponId}) chưa được gán 'weaponPrefab' tại '{path}'!"", weaponData);"
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,112,WeaponData,"Debug.Log($""<color=#00FF88>[WeaponDataValidator] HOÀN TẤT:</color> 100% ({validCount}/{totalCount}) WeaponData đã được gán Prefab hợp lệ và an toàn với Android IL2CPP!"");"
+Assets/Editor/Migration/Migration3DSetupTool.cs,79,HealthSystem,// Build dependencies while inactive: Awake must see HealthSystem on activation.
+Assets/Editor/Migration/Migration3DSetupTool.cs,100,PlayerController,// Add Health first; PlayerStats and PlayerController look it up in Awake.
+Assets/Editor/Migration/Migration3DSetupTool.cs,100,PlayerStats,// Add Health first; PlayerStats and PlayerController look it up in Awake.
+Assets/Editor/Migration/Migration3DSetupTool.cs,101,HealthSystem,var health = playerObj.AddComponent<HealthSystem>();
+Assets/Editor/Migration/Migration3DSetupTool.cs,102,PlayerStats,var stats = playerObj.AddComponent<PlayerStats>();
+Assets/Editor/Migration/Migration3DSetupTool.cs,104,PlayerController,var controller = playerObj.AddComponent<PlayerController>();
+Assets/Editor/Migration/Migration3DSetupTool.cs,197,HealthSystem,var health = dummy.AddComponent<HealthSystem>();
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,46,PlayerController,var player = FindObjectOfType<PlayerController>();
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,47,WeaponManager,var weaponMgr = player != null ? player.GetComponentInChildren<WeaponManager>() : FindObjectOfType<WeaponManager>();
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,51,WeaponManager,"EditorGUILayout.HelpBox(""❌ Không tìm thấy WeaponManager trên Player trong Scene hiện tại!"", MessageType.Error);"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,101,WeaponManager,"private void DrawRelicRow(WeaponManager weaponMgr, string baseId, string baseName, string evoId, string evoName)"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,127,WeaponManager,"private void EquipById(WeaponManager weaponMgr, string weaponId, int targetLvl)"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,129,WeaponData,// 1. Tìm WeaponData trong AssetDatabase
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,130,WeaponData,"string[] guids = AssetDatabase.FindAssets($""t:WeaponData {weaponId}"");"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,131,WeaponData,WeaponData foundData = null;
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,136,WeaponData,var data = AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,168,WeaponData,"string[] baseGuids = AssetDatabase.FindAssets($""t:WeaponData {targetScriptId}"");"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,172,WeaponData,var data = AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,200,WeaponData,"Debug.LogWarning($""<color=#FFAA00>[Tester]</color> Không tìm thấy WeaponData hoặc weaponPrefab cho ID '{weaponId}' (ScriptID: {targetScriptId}). Hãy bảo đảm file WeaponData.asset đã được cấu hình weaponPrefab."");"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,219,WeaponManager,"private void SetAllWeaponsLevel(WeaponManager weaponMgr, int targetLvl)"
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,83,PlayerStats,if (!root.TryGetComponent<PlayerStats>(out _))
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,84,PlayerStats,"report.Errors.Add($""[{prefabName}] Thiếu Component 'PlayerStats'!"");"
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,86,HealthSystem,if (!root.TryGetComponent<HealthSystem>(out _))
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,87,HealthSystem,"report.Errors.Add($""[{prefabName}] Thiếu Component 'HealthSystem'!"");"
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,89,PlayerController,if (!root.TryGetComponent<PlayerController>(out _))
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,90,PlayerController,"report.Errors.Add($""[{prefabName}] Thiếu Component 'PlayerController'!"");"
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,95,WeaponManager,if (!root.TryGetComponent<WeaponManager>(out _))
+Assets/Editor/Testing/PrefabIntegrityAuditor.cs,96,WeaponManager,"report.Errors.Add($""[{prefabName}] Thiếu Component 'WeaponManager'!"");"
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,39,WeaponData,private List<WeaponData> _allWeapons = new List<WeaponData>();
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,71,WeaponData,"string[] wGuids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,74,WeaponData,var w = AssetDatabase.LoadAssetAtPath<WeaponData>(AssetDatabase.GUIDToAssetPath(g));
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,122,RunLoadoutState,if (loadoutPresenter != null && RunLoadoutState.SelectedCharacter != null)
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,124,RunLoadoutState,loadoutPresenter.SetupForHero(RunLoadoutState.SelectedCharacter);
+Assets/Editor/UI/CharacterSelectionUIGenerator.cs,710,GameplayBootstrapper,// Tự động gán Prefab vào GameplayBootstrapper trong Scene nếu có
+Assets/Editor/UI/CharacterSelectionUIGenerator.cs,711,GameplayBootstrapper,var bootstrapper = Object.FindObjectOfType<ProjectZombie.Features.Player.GameplayBootstrapper>();
+Assets/Editor/UI/CharacterSelectionUIGenerator.cs,721,GameplayBootstrapper,"Debug.Log(""[CharacterSelectionUIGenerator] Đã tự động liên kết UI Prefab vào GameplayBootstrapper trong Scene!"");"
+Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,15,GameStateManager,/// - Fade Transition Overlay & GameStateManager / MetaSceneTransitionController
+Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,167,GameStateManager,var stateMgr = Object.FindObjectOfType<ProjectZombie.Features.Shared.GameStateManager>();
+Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,173,GameStateManager,"managerRoot = new GameObject(""--- GAME MANAGER ---"", typeof(ProjectZombie.Features.Shared.GameStateManager));"
+Assets/Editor/UI/PlayerStatsMenuUIGenerator.cs,705,GameplayBootstrapper,// Wire into GameplayBootstrapper
+Assets/Editor/UI/PlayerStatsMenuUIGenerator.cs,706,GameplayBootstrapper,var bootstrapper = Object.FindAnyObjectByType<Features.Player.GameplayBootstrapper>();
+Assets/Features/Collectibles/CoinDrop.cs,183,RunStatsTracker,// Ghi nhận vào RunStatsTracker
+Assets/Features/Collectibles/CoinDrop.cs,184,RunStatsTracker,if (RunStatsTracker.Instance != null)
+Assets/Features/Collectibles/CoinDrop.cs,186,RunStatsTracker,RunStatsTracker.Instance.RegisterCoinCollected(coinValue);
+Assets/Features/Collectibles/PowerUps/Effects/HealPowerUpEffect.cs,29,HealthSystem,if (player.TryGetComponent<HealthSystem>(out var healthSystem))
+Assets/Features/Collectibles/PowerUps/Effects/SpeedBoostPowerUpEffect.cs,11,PlayerStats,/// Tích hợp trực tiếp với hệ thống StatModifier của PlayerStats.
+Assets/Features/Collectibles/PowerUps/Effects/SpeedBoostPowerUpEffect.cs,33,PlayerStats,if (player.TryGetComponent<PlayerStats>(out var playerStats))
+Assets/Features/Collectibles/PowerUps/Effects/SpeedBoostPowerUpEffect.cs,45,PlayerStats,private IEnumerator ApplyTemporarySpeedRoutine(PlayerStats playerStats)
+Assets/Features/Collectibles/PowerUps/MapPowerUpSpawner.cs,44,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,88,PlayerController,if (PlayerController.Instance != null)
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,90,PlayerController,_playerTransform = PlayerController.Instance.transform;
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,298,PlayerController,var ctrl = p.GetComponent<PlayerController>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,34,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,35,PlayerController,private PlayerController _playerController;
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,38,WeaponManager,private Weapons.WeaponManager _weaponManager;
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,40,Rigidbody2D,private Rigidbody2D _rb;
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,60,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,61,PlayerController,_playerController = GetComponent<PlayerController>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,64,WeaponManager,_weaponManager = GetComponent<Weapons.WeaponManager>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,66,Rigidbody2D,_rb = GetComponent<Rigidbody2D>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,165,GameStateManager,bool isPlaying = GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.Playing;
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,182,HealthSystem,return true; // Chặn cái chết để HealthSystem không disable GameObject
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,186,HealthSystem,return false; // Chơi Solo / Offline / Ở Sảnh: Cho phép HealthSystem xử lý chết/GameOver thông thường
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,197,Rigidbody2D,if (_rb == null) _rb = GetComponent<Rigidbody2D>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,217,WeaponManager,if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,315,PlayerController,// 2. Kích hoạt lại PlayerController và mở khóa input
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,362,Rigidbody2D,if (_rb == null) _rb = GetComponent<Rigidbody2D>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,377,WeaponManager,if (_weaponManager == null) _weaponManager = GetComponent<Weapons.WeaponManager>();
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,413,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,415,GameStateManager,GameStateManager.Instance.ChangeState(GameState.GameOver);
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,445,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,447,GameStateManager,GameStateManager.Instance.ChangeState(GameState.GameOver);
+Assets/Features/Combat/IDamageProcessor.cs,12,HealthSystem,/// Xử lý áp dụng sát thương lên mục tiêu HealthSystem.
+Assets/Features/Combat/IDamageProcessor.cs,17,HealthSystem,"void ApplyDamage(HealthSystem target, float damageAmount, object instigator = null);"
+Assets/Features/Combat/LocalDamageProcessor.cs,13,HealthSystem,"public void ApplyDamage(HealthSystem target, float damageAmount, object instigator = null)"
+Assets/Features/Elements/ElementCycleManager.cs,52,GameStateManager,private GameStateManager _gameState;
+Assets/Features/Elements/ElementCycleManager.cs,69,GameStateManager,if (_gameState != null || GameStateManager.Instance == null) return;
+Assets/Features/Elements/ElementCycleManager.cs,70,GameStateManager,_gameState = GameStateManager.Instance;
+Assets/Features/Elements/FireSpreadService.cs,28,Physics2D,int colliderCount = Physics2D.OverlapCircleNonAlloc(
+Assets/Features/Elements/FireSpreadService.cs,47,HealthSystem,if (target == null || !target.HealthSystem.IsAlive || target.HasStatus(StatusEffectType.Burn) ||
+Assets/Features/Elements/FireSpreadService.cs,64,HealthSystem,!target.HealthSystem.IsAlive || target.HasStatus(StatusEffectType.Burn) ||
+Assets/Features/Elements/FireSpreadService.cs,119,HealthSystem,if (target != null && target.HealthSystem != null)
+Assets/Features/Elements/FireSpreadService.cs,120,HealthSystem,"target.HealthSystem.TakeDamage(new DamageData(damage, element: ElementType.Hoa, canTriggerReaction: false));"
+Assets/Features/Elements/HuoHoanReaction.cs,19,HealthSystem,if (target == null || target.HealthSystem == null || !target.HealthSystem.IsAlive ||
+Assets/Features/Elements/HuoHoanReaction.cs,48,HealthSystem,if (target != null && target.HealthSystem != null)
+Assets/Features/Elements/HuoHoanReaction.cs,49,HealthSystem,"target.HealthSystem.TakeDamage(new DamageData(damage, element: ElementType.Hoa, canTriggerReaction: false));"
+Assets/Features/Elements/SaLayPatchManager.cs,126,Physics2D,int hitCount = Physics2D.OverlapCircleNonAlloc(
+Assets/Features/Elements/SaLayPatchManager.cs,135,HealthSystem,if (col != null && col.TryGetComponent<Enemy>(out var enemy) && enemy.HealthSystem != null && enemy.HealthSystem.IsAlive)
+Assets/Features/Elements/SaLayReaction.cs,23,HealthSystem,if (target == null || target.HealthSystem == null || !target.HealthSystem.IsAlive)
+Assets/Features/Elements/SinhTruongReaction.cs,23,HealthSystem,if (target == null || target.HealthSystem == null || !target.HealthSystem.IsAlive)
+Assets/Features/Elements/SteamSlipPatchTracker.cs,104,Physics2D,int count = Physics2D.OverlapCircleNonAlloc(
+Assets/Features/Elements/SteamSlipTestHarness.cs,26,WeaponData,private readonly List<WeaponData> _weapons = new List<WeaponData>();
+Assets/Features/Elements/SteamSlipTestHarness.cs,89,PlayerController,if (_playerInstance != null && _playerInstance.TryGetComponent<PlayerController>(out var playerController))
+Assets/Features/Elements/SteamSlipTestHarness.cs,100,SpawnManager,foreach (var spawner in FindObjectsByType<ProjectZombie.Features.Spawners.SpawnManager>(FindObjectsSortMode.None))
+Assets/Features/Elements/SteamSlipTestHarness.cs,104,PlayerController,foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+Assets/Features/Elements/SteamSlipTestHarness.cs,141,WeaponData,"foreach (string guid in UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { WeaponFolder }))"
+Assets/Features/Elements/SteamSlipTestHarness.cs,142,WeaponData,{ var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid)); if (w != null && w.weaponPrefab != null) _weapons.Add(w); }
+Assets/Features/Elements/SteamSlipTestHarness.cs,164,WeaponData,"private string WeaponDescription()=>_weapons.Count==0?""Không có WeaponData hợp lệ."":$""Nguồn element: {_weapons[_weaponIndex].elementType}. W009 = Thủy; W006/W008 = Hỏa. Hit thật cần được xác nhận khi chơi."";"
+Assets/Features/Elements/SteamSlipTestHarness.cs,170,PlayerStats,if(!_playerInstance.TryGetComponent<PlayerStats>(out var playerStats))playerStats=_playerInstance.AddComponent<PlayerStats>();
+Assets/Features/Elements/SteamSlipTestHarness.cs,174,WeaponManager,if(!_playerInstance.TryGetComponent<WeaponManager>(out var wm))wm=_playerInstance.AddComponent<WeaponManager>(); wm.SetSkipAutomaticLoadout(true); wm.enabled=true;
+Assets/Features/Elements/SteamSlipTestHarness.cs,194,WeaponManager,var weapons = _playerInstance.GetComponent<WeaponManager>();
+Assets/Features/Elements/SteamSlipTestHarness.cs,231,WeaponManager,"{ if(_playerInstance==null){_message=""Spawn Player trước."";return;} if(_weapons.Count==0)return; var wm=_playerInstance.GetComponent<WeaponManager>(); if(wm==null){_message=""Player thiếu WeaponManager."";return;} var current=wm.GetWeaponById(_weapons[_weaponIndex].weaponId); if(current!=null){_message=""Vũ khí này đã được equip."";return;} var active=wm.ActiveWeapons; for(int i=active.Count-1;i>=0;i--)wm.RemoveWeapon(active[i]); wm.EquipWeaponFromData(_weapons[_weaponIndex]); _message=$""Equipped {_weapons[_weaponIndex].weaponName} ({_weapons[_weaponIndex].elementType}).""; }"
+Assets/Features/Elements/ToaiGiapReaction.cs,26,HealthSystem,if (primary == null || primary.HealthSystem == null || !primary.HealthSystem.IsAlive)
+Assets/Features/Elements/ToaiGiapReaction.cs,37,Physics2D,int colliderCount = Physics2D.OverlapCircleNonAlloc(
+Assets/Features/Elements/ToaiGiapReaction.cs,60,HealthSystem,if (target == null || !target.HealthSystem.IsAlive)
+Assets/Features/Elements/ToaiGiapReaction.cs,63,HealthSystem,target.HealthSystem.TakeDamage(fragmentHit);
+Assets/Features/Elements/ToaiGiapReaction.cs,77,HealthSystem,target == null || target == primary || target.HealthSystem == null || !target.HealthSystem.IsAlive ||
+Assets/Features/Enemies/AbominationBossController.cs,35,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Enemies/AbominationBossController.cs,45,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Enemies/Boss/BossStateMachine.cs,34,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Enemies/Boss/BossStateMachine.cs,46,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Enemies/Boss/BossStateMachine.cs,74,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/Boss/Skills/BossMeleeAttackStrategy.cs,184,Physics2D,"hitCount = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, filterMask);"
+Assets/Features/Enemies/Boss/Skills/BossMeleeAttackStrategy.cs,189,Physics2D,"hitCount = Physics2D.OverlapBoxNonAlloc(center, boxSize, 0f, _hitBuffer, filterMask);"
+Assets/Features/Enemies/Boss/Skills/BossMeleeAttackStrategy.cs,204,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var playerHealth))
+Assets/Features/Enemies/Boss/Skills/BullDashSkill.cs,94,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, dashWidth, _dashHitBuffer);"
+Assets/Features/Enemies/Boss/Skills/BullDashSkill.cs,100,HealthSystem,var health = col.GetComponent<HealthSystem>();
+Assets/Features/Enemies/Boss/Skills/GroundSlamSkill.cs,71,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, slamRadius, _slamHitBuffer, targetLayer);"
+Assets/Features/Enemies/Boss/Skills/GroundSlamSkill.cs,77,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var health))
+Assets/Features/Enemies/Boss/Skills/GroundSlamSkill.cs,82,PlayerController,if (hit.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var playerController))
+Assets/Features/Enemies/CombatMovementStrategy.cs,96,Physics2D,"int overlapCount = Physics2D.OverlapCircleNonAlloc(origin, bodyRadius + 0.12f, _overlapBuffer, obstacleLayerMask);"
+Assets/Features/Enemies/CombatMovementStrategy.cs,183,Physics2D,"int count = Physics2D.CircleCastNonAlloc(origin, radius, direction, _raycastBuffer, distance, obstacleLayerMask);"
+Assets/Features/Enemies/CombatMovementStrategy.cs,199,Physics2D,"int count = Physics2D.RaycastNonAlloc(origin, direction, _raycastBuffer, distance, obstacleLayerMask);"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,64,Rigidbody2D,// Rigidbody2D
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,65,Rigidbody2D,var rb = root.AddComponent<Rigidbody2D>();
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,76,HealthSystem,// HealthSystem
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,77,HealthSystem,var health = root.AddComponent<HealthSystem>();
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,179,Rigidbody2D,var rb = root.AddComponent<Rigidbody2D>();
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,189,HealthSystem,var health = root.AddComponent<HealthSystem>();
+Assets/Features/Enemies/EnemyKinematicPhysics.cs,89,GameStateManager,if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/EnemyKinematicPhysics.cs,137,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, _ragdollImpactRadius, _ragdollHitBuffer, 1 << gameObject.layer);"
+Assets/Features/Enemies/EnemyKinematicPhysics.cs,143,HealthSystem,otherEnemy.HealthSystem?.TakeDamage(_ragdollImpactDamage);
+Assets/Features/Enemies/EnemyStatusController.cs,360,GameStateManager,if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/EnemyStatusController.cs,362,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive) return;
+Assets/Features/Enemies/EnemyStatusController.cs,380,HealthSystem,if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+Assets/Features/Enemies/EnemyStatusController.cs,393,HealthSystem,if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+Assets/Features/Enemies/EnemyStatusController.cs,413,HealthSystem,if (!gameObject.activeInHierarchy || (_enemy != null && _enemy.HealthSystem != null && !_enemy.HealthSystem.IsAlive))
+Assets/Features/Enemies/FSM/Enemy.cs,10,Rigidbody2D,[RequireComponent(typeof(Rigidbody2D))]
+Assets/Features/Enemies/FSM/Enemy.cs,11,HealthSystem,[RequireComponent(typeof(HealthSystem))]
+Assets/Features/Enemies/FSM/Enemy.cs,20,Rigidbody2D,public Rigidbody2D Rb { get; private set; }
+Assets/Features/Enemies/FSM/Enemy.cs,21,HealthSystem,public HealthSystem HealthSystem { get; private set; }
+Assets/Features/Enemies/FSM/Enemy.cs,26,HealthSystem,public HealthSystem PlayerHealthSystem { get; private set; }
+Assets/Features/Enemies/FSM/Enemy.cs,94,Rigidbody2D,Rb = GetComponent<Rigidbody2D>();
+Assets/Features/Enemies/FSM/Enemy.cs,95,HealthSystem,HealthSystem = GetComponent<HealthSystem>();
+Assets/Features/Enemies/FSM/Enemy.cs,103,HealthSystem,HealthSystem.SetMaxHealth(Config.maxHealth);
+Assets/Features/Enemies/FSM/Enemy.cs,104,HealthSystem,HealthSystem.CurrentElement = Config.elementType;
+Assets/Features/Enemies/FSM/Enemy.cs,160,HealthSystem,if (HealthSystem != null) HealthSystem.TakeDamage(damage);
+Assets/Features/Enemies/FSM/Enemy.cs,181,HealthSystem,if (HealthSystem != null && Config != null)
+Assets/Features/Enemies/FSM/Enemy.cs,183,HealthSystem,HealthSystem.SetMaxHealth(Config.maxHealth);
+Assets/Features/Enemies/FSM/Enemy.cs,238,Physics2D,"Physics2D.IgnoreCollision(enemyCol, playerCol, true);"
+Assets/Features/Enemies/FSM/Enemy.cs,268,HealthSystem,if (HealthSystem != null)
+Assets/Features/Enemies/FSM/Enemy.cs,270,HealthSystem,HealthSystem.OnDied += HandleDeath;
+Assets/Features/Enemies/FSM/Enemy.cs,271,HealthSystem,HealthSystem.OnDamageTaken += HandleElementalDamage;
+Assets/Features/Enemies/FSM/Enemy.cs,282,HealthSystem,if (HealthSystem != null)
+Assets/Features/Enemies/FSM/Enemy.cs,284,HealthSystem,HealthSystem.OnDied -= HandleDeath;
+Assets/Features/Enemies/FSM/Enemy.cs,285,HealthSystem,HealthSystem.OnDamageTaken -= HandleElementalDamage;
+Assets/Features/Enemies/FSM/Enemy.cs,297,HealthSystem,"private void HandlePlayerSpawned(Transform playerTf, HealthSystem playerHp)"
+Assets/Features/Enemies/FSM/Enemy.cs,308,Physics2D,"Physics2D.IgnoreCollision(enemyCol, playerCol, true);"
+Assets/Features/Enemies/FSM/Enemy.cs,324,HealthSystem,"public void SetPlayer(Transform playerTransform, HealthSystem playerHealthSystem = null)"
+Assets/Features/Enemies/FSM/Enemy.cs,333,HealthSystem,PlayerHealthSystem = playerTransform.GetComponent<HealthSystem>();
+Assets/Features/Enemies/FSM/Enemy.cs,342,Physics2D,"Physics2D.IgnoreCollision(enemyCol, playerCol, true);"
+Assets/Features/Enemies/FSM/Enemy.cs,402,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/FSM/Enemy.cs,425,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/FSM/Enemy.cs,444,RunStatsTracker,if (RunStatsTracker.Instance != null)
+Assets/Features/Enemies/FSM/Enemy.cs,446,RunStatsTracker,RunStatsTracker.Instance.RegisterKill();
+Assets/Features/Enemies/FSM/EnemyAttackState.cs,119,HealthSystem,_enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive &&
+Assets/Features/Enemies/MeleeAttackStrategy.cs,121,GameStateManager,if (!ProjectZombie.Features.Shared.GameStateManager.IsPlaying) return;
+Assets/Features/Enemies/MeleeAttackStrategy.cs,138,Physics2D,"hitCount = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, filterMask);"
+Assets/Features/Enemies/MeleeAttackStrategy.cs,143,Physics2D,"hitCount = Physics2D.OverlapBoxNonAlloc(center, boxSize, 0f, _hitBuffer, filterMask);"
+Assets/Features/Enemies/RangedAttackStrategy.cs,140,Rigidbody2D,var playerRb = _enemy.PlayerTransform.GetComponent<Rigidbody2D>();
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,44,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null)
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,46,HealthSystem,_enemy.HealthSystem.OnDied += HandleDeathReward;
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,52,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null)
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,54,HealthSystem,_enemy.HealthSystem.OnDied -= HandleDeathReward;
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,66,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null && _enemy.HealthSystem.IsAlive)
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,90,PlayerController,"if (collision.CompareTag(""Player"") || collision.GetComponent<Player.PlayerController>() != null)"
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,104,RunStatsTracker,if (RunStatsTracker.Instance != null)
+Assets/Features/Enemies/Special/EnemyDebtCollector.cs,106,RunStatsTracker,RunStatsTracker.Instance.AddCoins(-stolenCoins);
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,90,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null)
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,92,HealthSystem,_enemy.HealthSystem.OnDied += HandleDeath;
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,100,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null)
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,102,HealthSystem,_enemy.HealthSystem.OnDied -= HandleDeath;
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,108,HealthSystem,if (_enemy == null || _enemy.HealthSystem == null || !_enemy.HealthSystem.IsAlive)
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,120,HealthSystem,_linkedPartner.Enemy.HealthSystem == null ||
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,121,HealthSystem,!_linkedPartner.Enemy.HealthSystem.IsAlive ||
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,149,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(transform.position, _linkRadius, _scanBuffer, _enemyLayer);"
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,161,HealthSystem,if (candidate.Enemy != null && candidate.Enemy.HealthSystem != null && candidate.Enemy.HealthSystem.IsAlive)
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,225,PlayerController,PlayerProvider.PlayerGameObject.TryGetComponent<PlayerController>(out var ctrl) &&
+Assets/Features/Enemies/Special/EnemyTetherLink.cs,253,PlayerController,PlayerProvider.PlayerGameObject.TryGetComponent<PlayerController>(out var ctrl))
+Assets/Features/Enemies/StatusHandlers/HumiliatedStatusHandler.cs,30,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(enemy.transform.position, 1.5f, _alliesBuffer, 1 << enemy.gameObject.layer);"
+Assets/Features/Enemies/StatusHandlers/HumiliatedStatusHandler.cs,36,HealthSystem,allyEnemy.HealthSystem?.TakeDamage(50f);
+Assets/Features/Enemies/StatusHandlers/StonedStatusHandler.cs,22,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(enemy.transform.position, 2.5f, _nearbyBuffer, 1 << enemy.gameObject.layer);"
+Assets/Features/Enemies/StatusHandlers/StonedStatusHandler.cs,28,HealthSystem,otherEnemy.HealthSystem?.TakeDamage(60f);
+Assets/Features/Enemies/SuicideAttackStrategy.cs,11,Physics2D,/// Tối ưu 0 GC Allocation cho Physics2D.
+Assets/Features/Enemies/SuicideAttackStrategy.cs,100,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, explodeRadius, _hitBuffer, filterMask);"
+Assets/Features/Enemies/SuicideAttackStrategy.cs,106,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var playerHealth))
+Assets/Features/Enemies/SuicideAttackStrategy.cs,117,HealthSystem,if (_enemy != null && _enemy.HealthSystem != null)
+Assets/Features/Enemies/SuicideAttackStrategy.cs,119,HealthSystem,_enemy.HealthSystem.TakeDamage(new DamageData(99999f));
+Assets/Features/Enemies/TouchAttackStrategy.cs,79,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, filterMask);"
+Assets/Features/Enemies/Visuals/HitFlashFeedback.cs,26,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Enemies/Visuals/HitFlashFeedback.cs,36,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Enemies/Visuals/HitFlashFeedback.cs,39,HealthSystem,_healthSystem = GetComponentInParent<HealthSystem>();
+Assets/Features/Enemies/Visuals/HitFlashFeedback.cs,72,HealthSystem,/// Xử lý sự kiện nhận sát thương từ HealthSystem và chọn màu Flash phù hợp.
+Assets/Features/MatchFlow/IMatchFlowService.cs,25,GameplayBootstrapper,"GameplayBootstrapper gameplayBootstrapper,"
+Assets/Features/MatchFlow/MatchFlowOrchestrator.cs,23,GameplayBootstrapper,"GameplayBootstrapper gameplayBootstrapper,"
+Assets/Features/MatchFlow/MatchFlowService.cs,35,GameplayBootstrapper,"GameplayBootstrapper gameplayBootstrapper,"
+Assets/Features/MatchFlow/MatchFlowService.cs,54,SpawnManager,if (stage != null && stage.timelineConfig != null && SpawnManager.Instance != null)
+Assets/Features/MatchFlow/MatchFlowService.cs,56,SpawnManager,SpawnManager.Instance.SetTimelineConfig(stage.timelineConfig);
+Assets/Features/MatchFlow/MatchFlowService.cs,76,SpawnManager,if (SpawnManager.Instance != null && !SpawnManager.Instance.IsMatchActive)
+Assets/Features/MatchFlow/MatchFlowService.cs,78,SpawnManager,await SpawnManager.Instance.StartMatchAsync();
+Assets/Features/MatchFlow/MatchFlowService.cs,84,UpgradeManager,if (UpgradeManager.Instance != null)
+Assets/Features/MatchFlow/MatchFlowService.cs,86,UpgradeManager,await UpgradeManager.Instance.AutoPopulateUpgradesIfEmptyAsync();
+Assets/Features/MatchFlow/MatchFlowService.cs,98,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/MatchFlow/MatchFlowService.cs,100,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Playing);
+Assets/Features/MatchFlow/MatchFlowService.cs,122,SpawnManager,SpawnManager.Instance?.ConfigureMapInstance(_currentMapInstance);
+Assets/Features/MatchFlow/MatchFlowService.cs,158,SpawnManager,SpawnManager.Instance?.ConfigureMapInstance(grid.gameObject);
+Assets/Features/MetaProgression/Gacha/Data/GachaDropItem.cs,22,WeaponData,"[Tooltip(""Mã định danh của Pháp Bảo (khớp với weaponId trong WeaponData) hoặc characterId của Tướng."")]"
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,13,WeaponData,/// Editor Tool quét toàn bộ WeaponData trong dự án và tự động sinh GachaBannerConfigSO chuẩn mực.
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,47,WeaponData,// Quét toàn bộ WeaponData trong dự án
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,48,WeaponData,"string[] guids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,52,WeaponData,var weapon = AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Features/Multiplayer/Core/Commands/AttackActionCommand.cs,26,WeaponManager,else if (playerRoot.TryGetComponent<WeaponManager>(out var wm))
+Assets/Features/Multiplayer/Core/Commands/DashActionCommand.cs,13,PlayerController,if (playerRoot.TryGetComponent<PlayerController>(out var controller))
+Assets/Features/Multiplayer/Core/Commands/RelicSkillActionCommand.cs,13,WeaponManager,if (playerRoot.TryGetComponent<WeaponManager>(out var wm))
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerLoadout.cs,13,WeaponManager,private WeaponManager _weaponManager;
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerLoadout.cs,17,WeaponManager,_weaponManager = GetComponent<WeaponManager>();
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerLoadout.cs,22,RunLoadoutState,if (RunLoadoutState.SelectedRelic != null && !string.IsNullOrEmpty(RunLoadoutState.SelectedRelic.weaponId))
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerLoadout.cs,24,RunLoadoutState,return RunLoadoutState.SelectedRelic.weaponId;
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerMovement.cs,11,PlayerController,[RequireComponent(typeof(PlayerController))]
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerMovement.cs,14,PlayerController,private PlayerController _controller;
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerMovement.cs,20,PlayerController,_controller = GetComponent<PlayerController>();
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerVitals.cs,14,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerVitals.cs,20,HealthSystem,public HealthSystem HealthSystem => _healthSystem;
+Assets/Features/Multiplayer/Core/Components/NetworkPlayerVitals.cs,24,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Multiplayer/Core/NetworkEnemySync.cs,46,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Multiplayer/Core/NetworkEnemySync.cs,52,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Multiplayer/Core/NetworkEnemySync.cs,75,Rigidbody2D,if (TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Multiplayer/Core/NetworkLobbySync.cs,55,RunLoadoutState,"string heroName = RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterName : (isHost ? ""Đạo Sĩ"" : ""Thư Sinh"");"
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,86,HealthSystem,if (_vitals.HealthSystem != null)
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,88,HealthSystem,NetworkHealth = _vitals.HealthSystem.CurrentHealth;
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,89,HealthSystem,NetworkMaxHealth = _vitals.HealthSystem.MaxHealth;
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,90,HealthSystem,_vitals.HealthSystem.OnHealthChanged += HandleHostHealthChanged;
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,134,HealthSystem,if (Object.HasStateAuthority && _vitals.HealthSystem != null)
+Assets/Features/Multiplayer/Core/NetworkPlayerCharacter.cs,136,HealthSystem,_vitals.HealthSystem.OnHealthChanged -= HandleHostHealthChanged;
+Assets/Features/Multiplayer/Core/NetworkPlayerSpawner.cs,53,RunLoadoutState,// Đảm bảo RunLoadoutState đã được nạp dữ liệu tướng
+Assets/Features/Multiplayer/Core/NetworkPlayerSpawner.cs,54,RunLoadoutState,RunLoadoutState.EnsureInitialized();
+Assets/Features/Multiplayer/Core/NetworkPlayerSpawner.cs,134,RunLoadoutState,RunLoadoutState.EnsureInitialized();
+Assets/Features/Multiplayer/Core/NetworkPlayerSpawner.cs,144,RunLoadoutState,string localHeroId = RunLoadoutState.SelectedCharacter?.characterId ?? RunLoadoutState.SelectedCharacter?.characterName;
+Assets/Features/Multiplayer/Core/PhotonFusionSessionService.cs,190,GameplayBootstrapper,if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
+Assets/Features/Multiplayer/Core/PhotonFusionSessionService.cs,192,GameplayBootstrapper,GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
+Assets/Features/Multiplayer/Core/PhotonFusionSessionService.cs,212,GameplayBootstrapper,GameplayBootstrapper.Instance?.DespawnActivePlayer();
+Assets/Features/Multiplayer/Core/PhotonFusionSessionService.cs,338,GameplayBootstrapper,if (GameplayBootstrapper.Instance != null && !PlayerProvider.HasPlayer)
+Assets/Features/Multiplayer/Core/PhotonFusionSessionService.cs,340,GameplayBootstrapper,GameplayBootstrapper.Instance.SpawnPlayerForActiveHero();
+Assets/Features/Player/CharacterCombat.cs,15,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/CharacterCombat.cs,24,PlayerController,[SerializeField] private PlayerController playerController;
+Assets/Features/Player/CharacterCombat.cs,26,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/CharacterCombat.cs,27,Rigidbody2D,private Rigidbody2D _rb;
+Assets/Features/Player/CharacterCombat.cs,39,PlayerController,GetComponent<PlayerController>()?.ReduceRemainingDashCooldown(ElementSynergyRules.REMAINING_COOLDOWN_REDUCTION);
+Assets/Features/Player/CharacterCombat.cs,100,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/CharacterCombat.cs,101,Rigidbody2D,_rb = GetComponent<Rigidbody2D>();
+Assets/Features/Player/CharacterCombat.cs,104,PlayerController,if (playerController == null) playerController = GetComponent<PlayerController>();
+Assets/Features/Player/CharacterCombat.cs,108,RunLoadoutState,// Khởi tạo config từ RunLoadoutState nếu có
+Assets/Features/Player/CharacterCombat.cs,109,RunLoadoutState,if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null)
+Assets/Features/Player/CharacterCombat.cs,111,RunLoadoutState,attackConfig = RunLoadoutState.SelectedCharacter.basicAttackConfig;
+Assets/Features/Player/CharacterCombat.cs,245,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Features/Player/CharacterCombat.cs,402,Physics2D,"int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _meleeHitBuffer, mask);"
+Assets/Features/Player/CharacterCombat.cs,410,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth > 0)
+Assets/Features/Player/CharacterDataSO.cs,78,WeaponData,public WeaponData defaultRelic;
+Assets/Features/Player/CharacterDataSO.cs,81,WeaponData,public WeaponData defaultPrimaryWeapon;
+Assets/Features/Player/CharacterDataSO.cs,84,WeaponData,public List<WeaponData> defaultRelics = new List<WeaponData>();
+Assets/Features/Player/CharacterDataSO.cs,90,CharacterEntry,/// Chuyển đổi dữ liệu ScriptableObject sang struct/class CharacterEntry cho runtime compatibility.
+Assets/Features/Player/CharacterDataSO.cs,92,CharacterEntry,public CharacterEntry ToEntry()
+Assets/Features/Player/CharacterDataSO.cs,94,CharacterEntry,return new CharacterEntry
+Assets/Features/Player/CharacterEntry.cs,26,PlayerStats,"[Tooltip(""Legacy metadata. Basic attacks use the owning PlayerStats.CurrentElement, including skill overrides."")]"
+Assets/Features/Player/CharacterEntry.cs,27,PlayerStats,"[System.Obsolete(""Deprecated: Đòn đánh thường tự động kế thừa từ PlayerStats.CurrentElement. Thuộc tính này không còn được sử dụng ở runtime."")]"
+Assets/Features/Player/CharacterEntry.cs,71,CharacterEntry,public class CharacterEntry
+Assets/Features/Player/CharacterEntry.cs,108,WeaponData,public Weapons.WeaponData defaultRelic;
+Assets/Features/Player/CharacterEntry.cs,111,WeaponData,public Weapons.WeaponData defaultPrimaryWeapon;
+Assets/Features/Player/CharacterEntry.cs,114,WeaponData,public List<Weapons.WeaponData> defaultRelics = new List<Weapons.WeaponData>();
+Assets/Features/Player/Core/IPlayerInputProvider.cs,8,PlayerController,/// Cho phép PlayerController nhận lệnh từ cả Local InputReader (Phím/Joystick) lẫn NetworkInputBridge (Photon Fusion).
+Assets/Features/Player/Core/PlayerInputReader.cs,103,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying) return;
+Assets/Features/Player/Core/PlayerInputReader.cs,109,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying)
+Assets/Features/Player/Core/PlayerInputReader.cs,224,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying) return;
+Assets/Features/Player/Core/PlayerInputReader.cs,238,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying) return;
+Assets/Features/Player/Core/PlayerInputReader.cs,252,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying) return;
+Assets/Features/Player/Core/PlayerInputReader.cs,266,GameStateManager,if (isInputBlocked || !GameStateManager.IsPlaying) return;
+Assets/Features/Player/GameplayBootstrapper.cs,17,GameplayBootstrapper,public class GameplayBootstrapper : MonoBehaviour
+Assets/Features/Player/GameplayBootstrapper.cs,47,GameplayBootstrapper,public static GameplayBootstrapper Instance { get; private set; }
+Assets/Features/Player/GameplayBootstrapper.cs,74,RunLoadoutState,await RunLoadoutState.EnsureInitializedAsync();
+Assets/Features/Player/GameplayBootstrapper.cs,86,RunLoadoutState,RunLoadoutState.OnCharacterChanged -= HandleRunLoadoutCharacterChanged;
+Assets/Features/Player/GameplayBootstrapper.cs,87,RunLoadoutState,RunLoadoutState.OnCharacterChanged += HandleRunLoadoutCharacterChanged;
+Assets/Features/Player/GameplayBootstrapper.cs,104,GameplayBootstrapper,"Debug.Log(""<color=#00FF88>[GameplayBootstrapper]</color> Phát hiện đang trong phòng Co-op mạng. Bỏ qua spawn Offline để nhường quyền cho NetworkPlayerSpawner."");"
+Assets/Features/Player/GameplayBootstrapper.cs,108,GameStateManager,bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
+Assets/Features/Player/GameplayBootstrapper.cs,122,RunLoadoutState,RunLoadoutState.OnCharacterChanged -= HandleRunLoadoutCharacterChanged;
+Assets/Features/Player/GameplayBootstrapper.cs,126,CharacterEntry,private void HandleRunLoadoutCharacterChanged(CharacterEntry entry)
+Assets/Features/Player/GameplayBootstrapper.cs,142,HealthSystem,"private void HandlePlayerSpawnedFromProvider(Transform playerTransform, HealthSystem hp)"
+Assets/Features/Player/GameplayBootstrapper.cs,174,GameplayBootstrapper,"Debug.LogError(""[GameplayBootstrapper] Không thể Resolve Player Prefab! Hãy kiểm tra CharacterDatabase hoặc defaultPlayerPrefab."");"
+Assets/Features/Player/GameplayBootstrapper.cs,180,RunLoadoutState,RunLoadoutState.EnsureInitialized();
+Assets/Features/Player/GameplayBootstrapper.cs,182,RunLoadoutState,// Ưu tiên 1: Lấy từ RunLoadoutState (Đã được khởi tạo từ Save/Default SO)
+Assets/Features/Player/GameplayBootstrapper.cs,183,RunLoadoutState,if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.playerPrefab != null)
+Assets/Features/Player/GameplayBootstrapper.cs,185,RunLoadoutState,return RunLoadoutState.SelectedCharacter.playerPrefab;
+Assets/Features/Player/GameplayBootstrapper.cs,256,RunLoadoutState,if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null && combat != null)
+Assets/Features/Player/GameplayBootstrapper.cs,258,RunLoadoutState,combat.SetAttackConfig(RunLoadoutState.SelectedCharacter.basicAttackConfig);
+Assets/Features/Player/GameplayBootstrapper.cs,259,PlayerStats,combat.GetComponent<PlayerStats>()?.SetBaseElement(RunLoadoutState.SelectedCharacter.element);
+Assets/Features/Player/GameplayBootstrapper.cs,259,RunLoadoutState,combat.GetComponent<PlayerStats>()?.SetBaseElement(RunLoadoutState.SelectedCharacter.element);
+Assets/Features/Player/GameplayBootstrapper.cs,262,WeaponManager,if (_activePlayerInstance.TryGetComponent<WeaponManager>(out var wm))
+Assets/Features/Player/GameplayBootstrapper.cs,276,GameplayBootstrapper,"Debug.Log($""<color=#00FF88>[GameplayBootstrapper]</color> Đã spawn nhân vật thành công: {_activePlayerInstance.name} tại {position}"");"
+Assets/Features/Player/GameplayBootstrapper.cs,323,HealthSystem,(_activePlayerInstance.TryGetComponent<HealthSystem>(out var hpCheck) && hpCheck.CurrentHealth <= 0);
+Assets/Features/Player/GameplayBootstrapper.cs,332,HealthSystem,if (_activePlayerInstance.TryGetComponent<HealthSystem>(out var hp)) hp.ResetHealth();
+Assets/Features/Player/GameplayBootstrapper.cs,333,PlayerController,if (_activePlayerInstance.TryGetComponent<PlayerController>(out var ctrl)) ctrl.enabled = true;
+Assets/Features/Player/GameplayBootstrapper.cs,341,PlayerStats,if (_activePlayerInstance.TryGetComponent<PlayerStats>(out var stats)) stats.ResetStats();
+Assets/Features/Player/GameplayBootstrapper.cs,348,WeaponManager,if (_activePlayerInstance.TryGetComponent<WeaponManager>(out var wm))
+Assets/Features/Player/GameplayBootstrapper.cs,355,UpgradeManager,UpgradeManager.Instance?.ResetBannedUpgrades();
+Assets/Features/Player/GameplayBootstrapper.cs,393,HealthSystem,if (_activePlayerInstance != null && _activePlayerInstance.TryGetComponent<HealthSystem>(out var playerHp))
+Assets/Features/Player/GameplayBootstrapper.cs,398,RunStatsTracker,if (RunStatsTracker.Instance != null)
+Assets/Features/Player/GameplayBootstrapper.cs,400,RunStatsTracker,RunStatsTracker.Instance.StartTracking();
+Assets/Features/Player/GameplayBootstrapper.cs,401,GameplayBootstrapper,"Debug.Log(""[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00."");"
+Assets/Features/Player/GameplayBootstrapper.cs,401,RunStatsTracker,"Debug.Log(""[GameplayBootstrapper] RunStatsTracker đã bắt đầu đếm thời gian từ 00:00."");"
+Assets/Features/Player/GameplayBootstrapper.cs,405,SpawnManager,if (ProjectZombie.Features.Spawners.SpawnManager.Instance != null && !ProjectZombie.Features.Spawners.SpawnManager.Instance.IsMatchActive)
+Assets/Features/Player/GameplayBootstrapper.cs,407,SpawnManager,ProjectZombie.Features.Spawners.SpawnManager.Instance.StartMatch();
+Assets/Features/Player/GameplayBootstrapper.cs,408,GameplayBootstrapper,"Debug.Log(""[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu."");"
+Assets/Features/Player/GameplayBootstrapper.cs,408,SpawnManager,"Debug.Log(""[GameplayBootstrapper] SpawnManager đã bắt đầu trận đấu."");"
+Assets/Features/Player/GameplayBootstrapper.cs,411,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/Player/GameplayBootstrapper.cs,413,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Playing);
+Assets/Features/Player/GameplayUIBinder.cs,12,GameplayBootstrapper,/// Giúp GameplayBootstrapper tuân thủ nguyên tắc SRP (Single Responsibility Principle).
+Assets/Features/Player/GameplayUIBinder.cs,133,WeaponManager,"context.WeaponManager,"
+Assets/Features/Player/GameplayUIBinder.cs,162,WeaponManager,"context.WeaponManager,"
+Assets/Features/Player/GameplayUIBinder.cs,172,WeaponManager,"_upgradeUIPresenter.Construct(context.Experience, context.WeaponManager);"
+Assets/Features/Player/GameplayUIBinder.cs,218,WeaponManager,if (context.WeaponManager != null)
+Assets/Features/Player/GameplayUIBinder.cs,220,WeaponManager,_relicSkillPresenter.Bind(context.WeaponManager);
+Assets/Features/Player/GameplayUIBinder.cs,221,WeaponManager,"Debug.Log(""[GameplayUIBinder] RelicSkillPresenter đã Bind WeaponManager."");"
+Assets/Features/Player/GameplayUIBinder.cs,231,WeaponManager,if (context.WeaponManager != null) _attackButtonPresenter.Bind(context.WeaponManager);
+Assets/Features/Player/GameplayUIBinder.cs,232,WeaponManager,"Debug.Log(""[GameplayUIBinder] AttackButtonPresenter đã Bind Combat & WeaponManager."");"
+Assets/Features/Player/GameplayUIBinder.cs,241,PlayerController,"Debug.Log(""[GameplayUIBinder] DashButtonPresenter đã Bind PlayerController & PlayerStats."");"
+Assets/Features/Player/GameplayUIBinder.cs,241,PlayerStats,"Debug.Log(""[GameplayUIBinder] DashButtonPresenter đã Bind PlayerController & PlayerStats."");"
+Assets/Features/Player/HealthSystem.cs,10,HealthSystem,"public class HealthSystem : MonoBehaviour, IDamageable, IHealable"
+Assets/Features/Player/HealthSystem.cs,13,PlayerStats,"[Tooltip(""Giá trị này sẽ bị ghi đè nếu Object có gắn PlayerStats hoặc EnemyAI (sử dụng cấu hình từ ScriptableObject)"")]"
+Assets/Features/Player/HealthSystem.cs,117,GameStateManager,if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
+Assets/Features/Player/HealthSystem.cs,148,GameStateManager,if (GameStateManager.Instance != null && !GameStateManager.IsPlaying) return;
+Assets/Features/Player/Mechanics/ThanhDongPossessionTracker.cs,53,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/Mechanics/ThanhDongPossessionTracker.cs,81,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/PlayerContext.cs,20,PlayerStats,public PlayerStats Stats { get; }
+Assets/Features/Player/PlayerContext.cs,21,HealthSystem,public HealthSystem Health { get; }
+Assets/Features/Player/PlayerContext.cs,23,WeaponManager,public WeaponManager WeaponManager { get; }
+Assets/Features/Player/PlayerContext.cs,28,PlayerController,public PlayerController Controller { get; }
+Assets/Features/Player/PlayerContext.cs,48,PlayerStats,Stats = playerObject.GetComponent<PlayerStats>();
+Assets/Features/Player/PlayerContext.cs,49,HealthSystem,Health = playerObject.GetComponent<HealthSystem>();
+Assets/Features/Player/PlayerContext.cs,51,WeaponManager,WeaponManager = playerObject.GetComponent<WeaponManager>();
+Assets/Features/Player/PlayerContext.cs,56,PlayerController,Controller = playerObject.GetComponent<PlayerController>();
+Assets/Features/Player/PlayerContext.cs,83,PlayerStats,"if (Stats == null) Debug.LogWarning($""[PlayerContext] {GameObject.name} thiếu PlayerStats!"");"
+Assets/Features/Player/PlayerContext.cs,84,HealthSystem,"if (Health == null) Debug.LogWarning($""[PlayerContext] {GameObject.name} thiếu HealthSystem!"");"
+Assets/Features/Player/PlayerContext.cs,86,WeaponManager,"if (WeaponManager == null) Debug.LogWarning($""[PlayerContext] {GameObject.name} thiếu WeaponManager!"");"
+Assets/Features/Player/PlayerController.cs,7,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/PlayerController.cs,9,PlayerController,public class PlayerController : MonoBehaviour
+Assets/Features/Player/PlayerController.cs,21,Rigidbody2D,private Rigidbody2D _rb;
+Assets/Features/Player/PlayerController.cs,25,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/PlayerController.cs,29,WeaponManager,private Weapons.WeaponManager _weaponManager;
+Assets/Features/Player/PlayerController.cs,30,HealthSystem,private Shared.HealthSystem _healthSystem;
+Assets/Features/Player/PlayerController.cs,49,PlayerController,public static PlayerController Instance { get; private set; }
+Assets/Features/Player/PlayerController.cs,90,Rigidbody2D,_rb = GetComponent<Rigidbody2D>();
+Assets/Features/Player/PlayerController.cs,92,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/PlayerController.cs,95,WeaponManager,_weaponManager = GetComponent<Weapons.WeaponManager>();
+Assets/Features/Player/PlayerController.cs,96,HealthSystem,_healthSystem = GetComponent<Shared.HealthSystem>();
+Assets/Features/Player/PlayerController.cs,231,GameStateManager,if (!Shared.GameStateManager.IsPlaying) return;
+Assets/Features/Player/PlayerController.cs,309,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(transform.position, radius, buffer, Shared.TargetingUtility.EnemyLayerMask);"
+Assets/Features/Player/PlayerController.cs,344,GameStateManager,if (!enabled || !Shared.GameStateManager.IsPlaying) return;
+Assets/Features/Player/PlayerController.cs,427,GameStateManager,if (!enabled || !Shared.GameStateManager.IsPlaying ||
+Assets/Features/Player/PlayerController.cs,439,Rigidbody2D,// Shared by local and network paths; never assume the Hero has a Rigidbody2D.
+Assets/Features/Player/PlayerController.cs,450,GameStateManager,if (!Shared.GameStateManager.IsPlaying || !enabled)
+Assets/Features/Player/PlayerExperience.cs,10,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/PlayerExperience.cs,21,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/PlayerExperience.cs,38,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/PlayerExperience.cs,45,HealthSystem,if (TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0) return;
+Assets/Features/Player/PlayerExperience.cs,46,GameStateManager,if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu)) return;
+Assets/Features/Player/PlayerExperience.cs,58,HealthSystem,if (TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0) return;
+Assets/Features/Player/PlayerExperience.cs,59,GameStateManager,if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu)) return;
+Assets/Features/Player/PlayerLogic.cs,13,HealthSystem,[RequireComponent(typeof(HealthSystem))]
+Assets/Features/Player/PlayerLogic.cs,31,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Player/PlayerLogic.cs,33,PlayerController,private PlayerController _playerController;
+Assets/Features/Player/PlayerLogic.cs,35,WeaponManager,private WeaponManager _weaponManager;
+Assets/Features/Player/PlayerLogic.cs,47,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Player/PlayerLogic.cs,49,PlayerController,_playerController = GetComponent<PlayerController>();
+Assets/Features/Player/PlayerLogic.cs,51,WeaponManager,_weaponManager = GetComponent<WeaponManager>();
+Assets/Features/Player/PlayerLogic.cs,56,HealthSystem,// Ngăn HealthSystem ẩn GameObject để player kịp chạy animation tử trận
+Assets/Features/Player/PlayerMagnetTrigger.cs,8,PlayerStats,/// Tự động cập nhật bán kính Trigger Collider theo chỉ số PlayerStats.PickupRange.
+Assets/Features/Player/PlayerMagnetTrigger.cs,10,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/PlayerMagnetTrigger.cs,17,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/PlayerMagnetTrigger.cs,23,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/PlayerProvider.cs,30,HealthSystem,public static HealthSystem PlayerHealth => Registry.LocalPlayer?.Health;
+Assets/Features/Player/PlayerProvider.cs,35,HealthSystem,"public static event Action<Transform, HealthSystem> OnPlayerSpawned;"
+Assets/Features/Player/PlayerProvider.cs,46,GameplayBootstrapper,/// Đăng ký thực thể người chơi mới sinh ra từ GameplayBootstrapper.
+Assets/Features/Player/PlayerStats.cs,31,PlayerStats,"public class PlayerStats : MonoBehaviour, ICharacterStats"
+Assets/Features/Player/PlayerStats.cs,123,PlayerStats,"Debug.Log(""[PlayerStats] Đã reset toàn bộ Stats về mặc định."");"
+Assets/Features/Player/PlayerStats.cs,147,RunLoadoutState,var selectedChar = RunLoadoutState.SelectedCharacter;
+Assets/Features/Player/PlayerStats.cs,208,RunLoadoutState,var selectedChar = RunLoadoutState.SelectedCharacter;
+Assets/Features/Player/PlayerStats.cs,375,HealthSystem,var healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Player/RunLoadoutState.cs,13,RunLoadoutState,public static class RunLoadoutState
+Assets/Features/Player/RunLoadoutState.cs,21,CharacterEntry,public static event Action<CharacterEntry> OnCharacterChanged;
+Assets/Features/Player/RunLoadoutState.cs,23,CharacterEntry,public static CharacterEntry SelectedCharacter
+Assets/Features/Player/RunLoadoutState.cs,37,WeaponData,public static WeaponData SelectedPrimaryWeapon
+Assets/Features/Player/RunLoadoutState.cs,47,WeaponData,public static WeaponData SelectedRelic
+Assets/Features/Player/RunLoadoutState.cs,61,WeaponData,public static List<WeaponData> SelectedRelics
+Assets/Features/Player/RunLoadoutState.cs,68,WeaponData,set => _selectedRelics = value ?? new List<WeaponData>();
+Assets/Features/Player/RunLoadoutState.cs,71,CharacterEntry,private static CharacterEntry _selectedCharacter;
+Assets/Features/Player/RunLoadoutState.cs,72,WeaponData,private static WeaponData _selectedPrimaryWeapon;
+Assets/Features/Player/RunLoadoutState.cs,73,WeaponData,private static List<WeaponData> _selectedRelics = new List<WeaponData>();
+Assets/Features/Player/RunLoadoutState.cs,154,WeaponData,"private static void ApplySavedLoadout(CharacterDatabaseSO characterDatabase, List<WeaponData> allWeapons)"
+Assets/Features/Player/RunLoadoutState.cs,232,RunLoadoutState,"Debug.Log($""<color=#00FF88>[RunLoadoutState]</color> Nạp Loadout thành công: Hero={(_selectedCharacter != null ? _selectedCharacter.characterName : ""Null"")}, Primary={(_selectedPrimaryWeapon != null ? _selectedPrimaryWeapon.weaponName : ""Null"")}, Relics={_selectedRelics.Count}"");"
+Assets/Features/Player/RunLoadoutState.cs,238,CharacterEntry,"public static void SetLoadout(CharacterEntry character, WeaponData primaryWeapon, List<WeaponData> relics)"
+Assets/Features/Player/RunLoadoutState.cs,238,WeaponData,"public static void SetLoadout(CharacterEntry character, WeaponData primaryWeapon, List<WeaponData> relics)"
+Assets/Features/Player/RunLoadoutState.cs,257,RunLoadoutState,"Debug.Log($""<color=#00FF88>[RunLoadoutState]</color> Đã lưu Loadout: Hero={(_selectedCharacter != null ? _selectedCharacter.characterName : ""Null"")}, Primary={(_selectedPrimaryWeapon != null ? _selectedPrimaryWeapon.weaponName : ""None"")}, Relics Count={_selectedRelics.Count}"");"
+Assets/Features/Player/RunLoadoutState.cs,264,CharacterEntry,public static void SetCharacter(CharacterEntry character)
+Assets/Features/Player/RunLoadoutState.cs,289,RunLoadoutState,"Debug.Log($""<color=#00FF88>[RunLoadoutState]</color> Đã lưu chọn tướng: {(character != null ? character.characterName : ""Null"")}"");"
+Assets/Features/Player/RunLoadoutState.cs,330,WeaponData,public static async Task<List<WeaponData>> LoadAllWeaponsDatabaseAsync()
+Assets/Features/Player/RunLoadoutState.cs,332,WeaponData,var list = new List<WeaponData>();
+Assets/Features/Player/RunLoadoutState.cs,336,WeaponData,"var addressableWeapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/Player/RunLoadoutState.cs,347,WeaponData,public static List<WeaponData> LoadAllWeaponsDatabase()
+Assets/Features/Player/RunLoadoutState.cs,349,WeaponData,var list = new List<WeaponData>();
+Assets/Features/Player/RunLoadoutState.cs,353,WeaponData,"var asyncTask = ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/Player/RunLoadoutState.cs,362,WeaponData,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Features/Player/RunLoadoutState.cs,366,WeaponData,var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Features/Player/Skills/ISignatureSkill.cs,19,HealthSystem,"bool CanExecute(PlayerStats stats, HealthSystem health);"
+Assets/Features/Player/Skills/ISignatureSkill.cs,19,PlayerStats,"bool CanExecute(PlayerStats stats, HealthSystem health);"
+Assets/Features/Player/Skills/SignatureSkillBase.cs,14,HealthSystem,"public virtual bool CanExecute(PlayerStats stats, HealthSystem health)"
+Assets/Features/Player/Skills/SignatureSkillBase.cs,14,PlayerStats,"public virtual bool CanExecute(PlayerStats stats, HealthSystem health)"
+Assets/Features/Player/Skills/SignatureSkillManager.cs,11,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/Skills/SignatureSkillManager.cs,12,HealthSystem,[RequireComponent(typeof(HealthSystem))]
+Assets/Features/Player/Skills/SignatureSkillManager.cs,29,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/Skills/SignatureSkillManager.cs,30,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Player/Skills/SignatureSkillManager.cs,34,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/SignatureSkillManager.cs,35,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,76,PlayerStats,var stats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,81,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, STUN_RADIUS, _hitBuffer, mask);"
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,88,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,99,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,112,PlayerStats,var playerStats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/ThanhDongSignatureSkill.cs,113,HealthSystem,var health = playerObj.GetComponent<HealthSystem>();
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,107,PlayerStats,var playerStats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,112,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, AOE_RADIUS, _hitBuffer, mask);"
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,119,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,130,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,141,WeaponManager,var weaponManager = playerObj.GetComponent<WeaponManager>();
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,157,PlayerStats,var stats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/ThuSinhSignatureSkill.cs,190,WeaponManager,var weaponManager = playerObj.GetComponent<WeaponManager>();
+Assets/Features/Player/Skills/VoTangSignatureSkill.cs,83,PlayerStats,var playerStats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/VoTangSignatureSkill.cs,88,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, AOE_RADIUS, _hitBuffer, mask);"
+Assets/Features/Player/Skills/VoTangSignatureSkill.cs,95,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var enemyHealth))
+Assets/Features/Player/Skills/VoTangSignatureSkill.cs,124,PlayerStats,var playerStats = playerObj.GetComponent<PlayerStats>();
+Assets/Features/Player/Skills/VoTangSignatureSkill.cs,125,HealthSystem,var health = playerObj.GetComponent<HealthSystem>();
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,9,PlayerStats,/// vào đối tượng PlayerStats khi bắt đầu trận đấu hoặc khi reset.
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,10,PlayerStats,/// Tách biệt hoàn toàn trách nhiệm nạp dữ liệu (Data Loading & Resolution) ra khỏi Core Domain Model PlayerStats (SRP & DIP).
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,18,PlayerStats,/// Nạp toàn bộ chỉ số vĩnh viễn đã nâng cấp tại Miếu Tứ Bất Tử vào PlayerStats.
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,21,PlayerStats,"PlayerStats stats,"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,77,PlayerStats,"PlayerStats stats,"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,86,RunLoadoutState,: (RunLoadoutState.SelectedCharacter != null ? RunLoadoutState.SelectedCharacter.characterId : null);
+Assets/Features/Player/ViralBurstUltimate.cs,7,HealthSystem,[RequireComponent(typeof(HealthSystem))]
+Assets/Features/Player/ViralBurstUltimate.cs,8,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Player/ViralBurstUltimate.cs,18,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Player/ViralBurstUltimate.cs,19,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/ViralBurstUltimate.cs,45,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Player/ViralBurstUltimate.cs,46,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/ViralBurstUltimate.cs,86,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, 30f, _hitBuffer, _enemyLayerMask);"
+Assets/Features/Player/ViralBurstUltimate.cs,90,HealthSystem,if (hit != null && hit.TryGetComponent<HealthSystem>(out var enemyHealth))
+Assets/Features/Player/Visuals/PlayerDashVisuals.cs,28,PlayerController,private PlayerController _playerController;
+Assets/Features/Player/Visuals/PlayerDashVisuals.cs,38,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Player/Visuals/PlayerDashVisuals.cs,43,PlayerController,_playerController = GetComponent<PlayerController>();
+Assets/Features/Player/Visuals/PlayerDashVisuals.cs,44,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Player/Visuals/PlayerStatusVisuals.cs,15,PlayerController,private PlayerController _playerController;
+Assets/Features/Player/Visuals/PlayerStatusVisuals.cs,26,PlayerController,_playerController = GetComponentInParent<PlayerController>() ?? GetComponent<PlayerController>();
+Assets/Features/Projectiles/Behaviors/ExplosionBehavior.cs,58,Physics2D,"int numHits = Physics2D.OverlapCircleNonAlloc(center, _data.ExplosionRadius, _explosionBuffer, mask);"
+Assets/Features/Projectiles/Behaviors/ExplosionBehavior.cs,91,PlayerController,col.GetComponentInParent<Player.PlayerController>() != null ||
+Assets/Features/Projectiles/Behaviors/ExplosionBehavior.cs,92,PlayerStats,col.GetComponentInParent<Player.PlayerStats>() != null) continue;
+Assets/Features/Projectiles/Behaviors/PeriodicHitBehavior.cs,55,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(_controller.transform.position, radius, _scanBuffer, hitLayerMask);"
+Assets/Features/Projectiles/Components/ProjectileCollision.cs,66,PlayerController,collision.GetComponentInParent<Player.PlayerController>() != null ||
+Assets/Features/Projectiles/Components/ProjectileCollision.cs,67,PlayerStats,collision.GetComponentInParent<Player.PlayerStats>() != null)
+Assets/Features/Projectiles/Components/ProjectileCollision.cs,96,PlayerController,collision.GetComponentInParent<Player.PlayerController>() != null ||
+Assets/Features/Projectiles/Components/ProjectileCollision.cs,97,PlayerStats,collision.GetComponentInParent<Player.PlayerStats>() != null;
+Assets/Features/Projectiles/Components/ProjectileCollision.cs,116,Physics2D,"RaycastHit2D hit = Physics2D.Raycast(_lastPosition, dir, dist, hitLayerMask);"
+Assets/Features/Projectiles/Components/ProjectileMovement.cs,8,Rigidbody2D,private Rigidbody2D _rb;
+Assets/Features/Projectiles/Components/ProjectileMovement.cs,12,Rigidbody2D,_rb = GetComponent<Rigidbody2D>();
+Assets/Features/Projectiles/Core/ProjectileSystem.cs,43,WeaponManager,"/// Prewarm pool thủ công, thường gọi từ LevelManager hoặc WeaponManager lúc bắt đầu."
+Assets/Features/Projectiles/Editor/ProjectilePrefabGenerator.cs,9,Rigidbody2D,/// Editor Tool tự động tạo 12 Prefab đạn chuẩn (Rigidbody2D Kinematic + CircleCollider2D IsTrigger + Visual_Root)
+Assets/Features/Projectiles/Editor/ProjectilePrefabGenerator.cs,65,Rigidbody2D,var rb = rootGo.AddComponent<Rigidbody2D>();
+Assets/Features/Projectiles/SimpleProjectile.cs,13,Rigidbody2D,[RequireComponent(typeof(Rigidbody2D))]
+Assets/Features/Projectiles/SimpleProjectile.cs,61,HealthSystem,if (collision.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth > 0)
+Assets/Features/Projectiles/SimpleProjectile.cs,217,Rigidbody2D,if (projectile.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Shared/AreaEffectCaster.cs,43,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, filterMask);"
+Assets/Features/Shared/DamageData.cs,14,HealthSystem,/// Struct chứa dữ liệu sát thương truyền qua lại giữa các hệ thống (Weapon -> Projectile -> HealthSystem).
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,7,Physics2D,/// Editor Tool tự động tạo Layers và cấu hình Physics2D Collision Matrix
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,68,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY, LAYER_ENEMY, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,71,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_PROJECTILE, LAYER_PLAYER_PROJECTILE, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,72,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_PROJECTILE, LAYER_PLAYER, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,73,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_PROJECTILE, LAYER_ENEMY_PROJECTILE, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,74,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_PROJECTILE, LAYER_PICKUP, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,77,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY_PROJECTILE, LAYER_ENEMY_PROJECTILE, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,78,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY_PROJECTILE, LAYER_ENEMY, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,79,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY_PROJECTILE, LAYER_PICKUP, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,82,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PICKUP, LAYER_ENEMY, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,83,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PICKUP, LAYER_OBSTACLE, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,84,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PICKUP, LAYER_PICKUP, true);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,87,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER, LAYER_ENEMY, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,88,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER, LAYER_OBSTACLE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,89,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER, LAYER_ENEMY_PROJECTILE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,90,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER, LAYER_PICKUP, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,92,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY, LAYER_OBSTACLE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,93,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY, LAYER_PLAYER_PROJECTILE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,95,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_PROJECTILE, LAYER_OBSTACLE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,96,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_ENEMY_PROJECTILE, LAYER_OBSTACLE, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,98,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_HITBOX, LAYER_ENEMY, false);"
+Assets/Features/Shared/Editor/PhysicsLayerSetupTool.cs,99,Physics2D,"Physics2D.IgnoreLayerCollision(LAYER_PLAYER_HITBOX, LAYER_ENEMY_PROJECTILE, false);"
+Assets/Features/Shared/GameStateManager.cs,14,GameStateManager,public class GameStateManager : MonoBehaviour
+Assets/Features/Shared/GameStateManager.cs,16,GameStateManager,public static GameStateManager Instance { get; private set; }
+Assets/Features/Shared/GameStateManager.cs,67,GameStateManager,"Debug.Log($""[GameStateManager] Game State changed to: {newState} (TimeScale set to {Time.timeScale})"");"
+Assets/Features/Shared/ICharacterStats.cs,8,PlayerStats,/// Giúp hệ thống vũ khí (WeaponBase) và chiến đấu không bị bó buộc vào PlayerStats.
+Assets/Features/Shared/IRunStatsService.cs,7,RunStatsTracker,"/// Giúp UI Presenters (như RunHUDPresenter, GameOverPresenter) lấy dữ liệu mà không phụ thuộc vào Singleton RunStatsTracker."
+Assets/Features/Shared/MovementPhysicsUtility.cs,147,Physics2D,"bool isInsideObstacle = mask != 0 && Physics2D.OverlapCircleNonAlloc(targetPos, bodyRadius, _overlapBuffer, mask) > 0;"
+Assets/Features/Shared/MovementPhysicsUtility.cs,162,Physics2D,"bool candObstacle = mask != 0 && Physics2D.OverlapCircleNonAlloc(candidate, bodyRadius, _overlapBuffer, mask) > 0;"
+Assets/Features/Shared/MovementPhysicsUtility.cs,190,Physics2D,"int hitCount = Physics2D.CircleCastNonAlloc(startPos, bodyRadius, dir, _hitBuffer, maxDistance, mask);"
+Assets/Features/Shared/Policies/IGamePausePolicy.cs,4,GameStateManager,/// Contract trừu tượng hóa chính sách dừng/chạy mô phỏng (Time.timeScale) và trạng thái chiến đấu cho GameStateManager.
+Assets/Features/Shared/RunStatsTracker.cs,11,RunStatsTracker,"public class RunStatsTracker : MonoBehaviour, IRunStatsService, ProjectZombie.Core.Architecture.IResettableStatic"
+Assets/Features/Shared/RunStatsTracker.cs,16,RunStatsTracker,public static RunStatsTracker Instance { get; private set; }
+Assets/Features/Shared/TargetingUtility.cs,54,Physics2D,"int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer, mask);"
+Assets/Features/Shared/TargetingUtility.cs,70,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0)
+Assets/Features/Shared/TargetingUtility.cs,158,Physics2D,"int numHits = Physics2D.OverlapCircleNonAlloc(origin, range, _hitBuffer, mask);"
+Assets/Features/Shared/TargetingUtility.cs,166,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth <= 0) continue;
+Assets/Features/Shared/TargetingUtility3D.cs,15,HealthSystem,private static readonly HealthSystem[] _randomSeenBuffer = new HealthSystem[BUFFER_SIZE];
+Assets/Features/Shared/TargetingUtility3D.cs,31,HealthSystem,private static HealthSystem ResolveLiveTarget(Collider hit)
+Assets/Features/Shared/TargetingUtility3D.cs,34,HealthSystem,"// In a 3D hierarchy, hitboxes are often children and the HealthSystem"
+Assets/Features/Shared/TargetingUtility3D.cs,36,HealthSystem,var health = hit.GetComponentInParent<HealthSystem>();
+Assets/Features/Shared/TargetingUtility3D.cs,48,HealthSystem,"/// Returns the transform of a LIVE enemy entity root (HealthSystem host),"
+Assets/Features/Skills/Zones/BatQuaiTranZone.cs,177,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, _radius, _hitBuffer, mask);"
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,10,SpawnManager,/// Editor Tool sinh dữ liệu mẫu cho WavePhase (Pillar System) và tự động gán vào SpawnManager GameObject trong Scene.
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,11,SpawnManager,/// Menu: ProjectZombie > Spawners > Generate WavePhase Data & Assign to SpawnManager
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,15,SpawnManager,"[MenuItem(""ProjectZombie/Spawners/Generate WavePhase Data & Assign to SpawnManager"")]"
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,44,SpawnManager,// 3. Tự động tìm SpawnManager trong Scene và gán danh sách WavePhase
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,45,SpawnManager,SpawnManager spawnManager = Object.FindObjectOfType<SpawnManager>();
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,63,SpawnManager,"Debug.Log($""[WavePhaseGenerator] ✅ Đã gán 3 WavePhase vào SpawnManager GameObject trên Scene!"");"
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,67,SpawnManager,"Debug.LogWarning(""[WavePhaseGenerator] ⚠️ Đã tạo 3 file WavePhase SOs nhưng không tìm thấy GameObject SpawnManager trong Scene hiện tại."");"
+Assets/Features/Spawners/EnemyPoolConfig.cs,11,HealthSystem,[RequireComponent(typeof(HealthSystem))]
+Assets/Features/Spawners/EnemyPoolConfig.cs,16,HealthSystem,private HealthSystem _health;
+Assets/Features/Spawners/EnemyPoolConfig.cs,20,HealthSystem,_health = GetComponent<HealthSystem>();
+Assets/Features/Spawners/EnemyPoolConfig.cs,29,SpawnManager,// Đồng bộ giảm bộ đếm quái trong SpawnManager để luôn phản ánh chính xác số lượng quái còn sống
+Assets/Features/Spawners/EnemyPoolConfig.cs,30,SpawnManager,SpawnManager.Instance?.OnEnemyDied();
+Assets/Features/Spawners/Spatial/CameraAwareSpawnLocator.cs,16,Physics2D,// Bộ đệm tĩnh cấp phát sẵn để triệt tiêu GC Alloc trong Physics2D NonAlloc
+Assets/Features/Spawners/Spatial/CameraAwareSpawnLocator.cs,66,Physics2D,"if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)"
+Assets/Features/Spawners/Spatial/CameraAwareSpawnLocator.cs,97,Physics2D,"if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)"
+Assets/Features/Spawners/Spatial/CameraAwareSpawnLocator.cs,117,Physics2D,"if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(candidatePos, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0)"
+Assets/Features/Spawners/Spatial/CameraAwareSpawnLocator.cs,146,Physics2D,"if (obstacleMask != 0 && Physics2D.OverlapCircleNonAlloc(p, 0.5f, _spawnObstacleBuffer, obstacleMask) > 0) continue;"
+Assets/Features/Spawners/SpawnManager.cs,20,SpawnManager,"public class SpawnManager : MonoBehaviour, ISpawnService, ProjectZombie.Core.Architecture.IResettableStatic"
+Assets/Features/Spawners/SpawnManager.cs,22,SpawnManager,public static SpawnManager Instance { get; private set; }
+Assets/Features/Spawners/SpawnManager.cs,163,HealthSystem,"private void HandlePlayerSpawned(Transform playerTf, Shared.HealthSystem playerHp)"
+Assets/Features/Spawners/SpawnManager.cs,176,GameStateManager,(Shared.GameStateManager.Instance == null || Shared.GameStateManager.Instance.CurrentState == Shared.GameState.Playing);
+Assets/Features/Spawners/SpawnManager.cs,309,SpawnManager,"Debug.LogWarning($""[SpawnManager] Preload assets warning: {ex.Message}"");"
+Assets/Features/Spawners/SpawnManager.cs,420,SpawnManager,"Debug.Log($""[SpawnManager] Kích hoạt Timeline Event: '{evt.eventName}' (Key: {evt.GetPoolKey()}, Type: {evt.eventType}) tại phút {(MatchTime / 60f):F2}"");"
+Assets/Features/Spawners/SpawnManager.cs,440,SpawnManager,"Debug.LogWarning($""[SpawnManager] Chưa có strategy cho loại TimelineEventType: {evt.eventType}"");"
+Assets/Features/Spawners/SpawnManager.cs,555,SpawnManager,"Debug.LogWarning($""[SpawnManager] Không thể spawn quái vì cả Prefab và PoolKey ('{poolKey}') đều không tìm thấy đối tượng hợp lệ!"");"
+Assets/Features/Spawners/SpawnPillar.cs,12,HealthSystem,private HealthSystem _healthSystem;
+Assets/Features/Spawners/SpawnPillar.cs,24,HealthSystem,// Setup HealthSystem if attackable
+Assets/Features/Spawners/SpawnPillar.cs,25,HealthSystem,_healthSystem = GetComponent<HealthSystem>();
+Assets/Features/Spawners/SpawnPillar.cs,31,HealthSystem,_healthSystem = gameObject.AddComponent<HealthSystem>();
+Assets/Features/Spawners/Strategies/BossEncounterStrategy.cs,57,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center.position, radius, _clearEnemiesBuffer);"
+Assets/Features/UI/AttackButtonPresenter.cs,8,WeaponManager,/// Presenter điều phối giữa CharacterCombat / WeaponManager (Model) và AttackButtonView (View).
+Assets/Features/UI/AttackButtonPresenter.cs,18,WeaponManager,[SerializeField] private WeaponManager _weaponManager;
+Assets/Features/UI/AttackButtonPresenter.cs,65,PlayerController,if (_characterCombat == null && PlayerController.Instance != null)
+Assets/Features/UI/AttackButtonPresenter.cs,67,PlayerController,_characterCombat = PlayerController.Instance.GetComponent<CharacterCombat>();
+Assets/Features/UI/AttackButtonPresenter.cs,110,WeaponManager,public void Bind(WeaponManager weaponManager)
+Assets/Features/UI/AttackButtonPresenter.cs,128,PlayerController,if (PlayerController.Instance != null)
+Assets/Features/UI/AttackButtonPresenter.cs,132,PlayerController,_characterCombat = PlayerController.Instance.GetComponent<CharacterCombat>();
+Assets/Features/UI/AttackButtonPresenter.cs,137,PlayerController,var wm = PlayerController.Instance.GetComponent<WeaponManager>();
+Assets/Features/UI/AttackButtonPresenter.cs,137,WeaponManager,var wm = PlayerController.Instance.GetComponent<WeaponManager>();
+Assets/Features/UI/AttackButtonPresenter.cs,197,RunLoadoutState,else if (RunLoadoutState.SelectedCharacter != null && RunLoadoutState.SelectedCharacter.basicAttackConfig != null && RunLoadoutState.SelectedCharacter.basicAttackConfig.attackIcon != null)
+Assets/Features/UI/AttackButtonPresenter.cs,199,RunLoadoutState,iconToSet = RunLoadoutState.SelectedCharacter.basicAttackConfig.attackIcon;
+Assets/Features/UI/AttackButtonPresenter.cs,201,RunLoadoutState,else if (RunLoadoutState.SelectedCharacter != null)
+Assets/Features/UI/AttackButtonPresenter.cs,203,RunLoadoutState,"string charId = RunLoadoutState.SelectedCharacter.characterId?.ToLower() ?? """";"
+Assets/Features/UI/AttackButtonPresenter.cs,204,RunLoadoutState,"string charName = RunLoadoutState.SelectedCharacter.characterName?.ToLower() ?? """";"
+Assets/Features/UI/AttackButtonPresenter.cs,219,RunLoadoutState,iconToSet = RunLoadoutState.SelectedCharacter.avatar;
+Assets/Features/UI/CardCodexPresenter.cs,37,WeaponData,private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
+Assets/Features/UI/CardCodexPresenter.cs,44,WeaponData,"private readonly Dictionary<WeaponData, CodexSlotItemView> _relicSlotViewMap = new Dictionary<WeaponData, CodexSlotItemView>();"
+Assets/Features/UI/CardCodexPresenter.cs,49,WeaponData,private WeaponData _selectedRelic;
+Assets/Features/UI/CardCodexPresenter.cs,216,UpgradeManager,// 同步 UpgradeManager nếu có
+Assets/Features/UI/CardCodexPresenter.cs,217,UpgradeManager,if (UpgradeManager.Instance != null && UpgradeManager.Instance.AllAvailableUpgrades != null && UpgradeManager.Instance.AllAvailableUpgrades.Count > 0)
+Assets/Features/UI/CardCodexPresenter.cs,224,UpgradeManager,foreach (var u in UpgradeManager.Instance.AllAvailableUpgrades)
+Assets/Features/UI/CardCodexPresenter.cs,267,WeaponData,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Features/UI/CardCodexPresenter.cs,271,WeaponData,var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Features/UI/CardCodexPresenter.cs,338,WeaponData,"var weapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/UI/CardCodexPresenter.cs,353,WeaponData,"Debug.LogWarning($""[CardCodexPresenter] GameDataService Load WeaponData warning: {ex.Message}"");"
+Assets/Features/UI/CardCodexPresenter.cs,638,WeaponData,private void SelectRelic(WeaponData weapon)
+Assets/Features/UI/CharacterPreviewStage.cs,276,Rigidbody2D,var rb = root.GetComponent<Rigidbody2D>();
+Assets/Features/UI/CharacterPreviewStage.cs,282,PlayerController,"// Tắt các MonoBehaviour Gameplay (PlayerController, Health, WeaponManager...)"
+Assets/Features/UI/CharacterPreviewStage.cs,282,WeaponManager,"// Tắt các MonoBehaviour Gameplay (PlayerController, Health, WeaponManager...)"
+Assets/Features/UI/CharacterSelectionPresenter.cs,25,WeaponData,public WeaponData primaryWeapon;
+Assets/Features/UI/CharacterSelectionPresenter.cs,26,WeaponData,public System.Collections.Generic.List<WeaponData> relics;
+Assets/Features/UI/CharacterSelectionPresenter.cs,121,WeaponData,var relicsList = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>();
+Assets/Features/UI/CharacterSelectionPresenter.cs,247,WeaponData,var relics = new System.Collections.Generic.List<ProjectZombie.Features.Weapons.WeaponData>(so.defaultRelics);
+Assets/Features/UI/CharacterSelectionPresenter.cs,250,CharacterEntry,// Chuyển đổi sang CharacterEntry để nạp vào RunLoadoutState
+Assets/Features/UI/CharacterSelectionPresenter.cs,250,RunLoadoutState,// Chuyển đổi sang CharacterEntry để nạp vào RunLoadoutState
+Assets/Features/UI/CharacterSelectionPresenter.cs,251,CharacterEntry,var entry = new CharacterEntry
+Assets/Features/UI/CharacterSelectionPresenter.cs,278,RunLoadoutState,RunLoadoutState.SetCharacter(entry);
+Assets/Features/UI/CharacterSelectionPresenter.cs,279,RunLoadoutState,if (RunLoadoutState.SelectedPrimaryWeapon == null)
+Assets/Features/UI/CharacterSelectionPresenter.cs,281,RunLoadoutState,"RunLoadoutState.SetLoadout(entry, primaryW, relics);"
+Assets/Features/UI/CharacterSelectionView.cs,402,WeaponData,"public void DisplayLoadout(Weapons.WeaponData primaryWeapon, System.Collections.Generic.List<Weapons.WeaponData> relics)"
+Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs,15,HealthSystem,HealthSystem.OnDamageReported += OnDamage;
+Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs,22,HealthSystem,HealthSystem.OnDamageReported -= OnDamage;
+Assets/Features/UI/DashButtonPresenter.cs,7,PlayerController,/// Presenter điều phối giữa PlayerController / PlayerStats (Model) và DashButtonView (View).
+Assets/Features/UI/DashButtonPresenter.cs,7,PlayerStats,/// Presenter điều phối giữa PlayerController / PlayerStats (Model) và DashButtonView (View).
+Assets/Features/UI/DashButtonPresenter.cs,22,PlayerController,[SerializeField] private PlayerController _playerController;
+Assets/Features/UI/DashButtonPresenter.cs,23,PlayerStats,[SerializeField] private PlayerStats _playerStats;
+Assets/Features/UI/DashButtonPresenter.cs,45,PlayerController,"public void Bind(PlayerController pc, PlayerStats stats)"
+Assets/Features/UI/DashButtonPresenter.cs,45,PlayerStats,"public void Bind(PlayerController pc, PlayerStats stats)"
+Assets/Features/UI/DashButtonPresenter.cs,114,PlayerController,&& PlayerProvider.PlayerGameObject.TryGetComponent<PlayerController>(out var controller))
+Assets/Features/UI/DashButtonPresenter.cs,116,PlayerStats,"Bind(controller, controller.GetComponent<PlayerStats>());"
+Assets/Features/UI/Formatters/UpgradeSynergyFormatter.cs,16,WeaponManager,"WeaponManager weaponManager,"
+Assets/Features/UI/Gacha/GachaChestPresenter.cs,155,RunLoadoutState,var allWeapons = RunLoadoutState.LoadAllWeaponsDatabase();
+Assets/Features/UI/GameOverScreenPresenter.cs,11,RunStatsTracker,"/// Lấy dữ liệu từ RunStatsTracker (Model), định dạng thành chuỗi và cập nhật cho View."
+Assets/Features/UI/GameOverScreenPresenter.cs,42,HealthSystem,[SerializeField] private HealthSystem playerHealth;
+Assets/Features/UI/GameOverScreenPresenter.cs,55,HealthSystem,"public void Construct(HealthSystem health, IRunStatsService runStatsService = null)"
+Assets/Features/UI/GameOverScreenPresenter.cs,76,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameOverScreenPresenter.cs,78,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+Assets/Features/UI/GameOverScreenPresenter.cs,79,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+Assets/Features/UI/GameOverScreenPresenter.cs,120,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameOverScreenPresenter.cs,122,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+Assets/Features/UI/GameOverScreenPresenter.cs,144,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameOverScreenPresenter.cs,146,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+Assets/Features/UI/GameOverScreenPresenter.cs,231,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/GameOverScreenPresenter.cs,290,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameOverScreenPresenter.cs,292,GameStateManager,GameStateManager.Instance.ChangeState(GameState.GameOver);
+Assets/Features/UI/GameOverScreenPresenter.cs,310,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/GameOverScreenPresenter.cs,341,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/GameOverScreenPresenter.cs,344,RunStatsTracker,"Debug.LogWarning(""[GameOverScreenPresenter] IRunStatsService/RunStatsTracker không tìm thấy — không có dữ liệu thống kê."");"
+Assets/Features/UI/GameplayUIManager.cs,10,GameStateManager,"/// Hoạt động theo mô hình State-Driven dựa trên GameStateManager, tách bạch rõ ràng với MetaUIManager."
+Assets/Features/UI/GameplayUIManager.cs,47,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameplayUIManager.cs,49,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleGameStateChanged;
+Assets/Features/UI/GameplayUIManager.cs,50,GameStateManager,HandleGameStateChanged(GameStateManager.Instance.CurrentState);
+Assets/Features/UI/GameplayUIManager.cs,56,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/GameplayUIManager.cs,58,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleGameStateChanged;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,14,PlayerStats,"/// Presenter điều phối dữ liệu từ các Model (PlayerStats, RunStatsTracker, PlayerExperience)"
+Assets/Features/UI/HUD/RunHUDPresenter.cs,14,RunStatsTracker,"/// Presenter điều phối dữ liệu từ các Model (PlayerStats, RunStatsTracker, PlayerExperience)"
+Assets/Features/UI/HUD/RunHUDPresenter.cs,20,HealthSystem,"/// 3. Kéo PlayerStats, HealthSystem, PlayerExperience từ Player vào Inspector."
+Assets/Features/UI/HUD/RunHUDPresenter.cs,20,PlayerStats,"/// 3. Kéo PlayerStats, HealthSystem, PlayerExperience từ Player vào Inspector."
+Assets/Features/UI/HUD/RunHUDPresenter.cs,21,RunStatsTracker,/// 4. RunStatsTracker được lấy qua Singleton vì nó quản lý run-level data.
+Assets/Features/UI/HUD/RunHUDPresenter.cs,43,HealthSystem,[SerializeField] private HealthSystem _playerHealth;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,44,PlayerStats,[SerializeField] private PlayerStats _playerStats;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,46,WeaponManager,[SerializeField] private ProjectZombie.Features.Weapons.WeaponManager _weaponManager;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,53,HealthSystem,"public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null, Combat.Coop.IDownedStateProvider downedProvider = null)"
+Assets/Features/UI/HUD/RunHUDPresenter.cs,53,PlayerStats,"public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null, Combat.Coop.IDownedStateProvider downedProvider = null)"
+Assets/Features/UI/HUD/RunHUDPresenter.cs,53,WeaponManager,"public void Construct(HealthSystem health, PlayerStats stats, PlayerExperience experience, ProjectZombie.Features.Weapons.WeaponManager weaponManager = null, PlayerPassives passives = null, Combat.Coop.IDownedStateProvider downedProvider = null)"
+Assets/Features/UI/HUD/RunHUDPresenter.cs,110,RunStatsTracker,_runStatsService = ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,122,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/HUD/RunHUDPresenter.cs,124,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,125,GameStateManager,HandleStateChanged(GameStateManager.Instance.CurrentState);
+Assets/Features/UI/HUD/RunHUDPresenter.cs,132,GameStateManager,if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+Assets/Features/UI/HUD/RunHUDPresenter.cs,182,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/HUD/RunHUDPresenter.cs,184,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+Assets/Features/UI/HUD/RunHUDPresenter.cs,265,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/HUD/RunHUDView.cs,4,PlayerStats,"// KHÔNG chứa logic nghiệp vụ. KHÔNG biết PlayerStats, RunStatsTracker tồn tại."
+Assets/Features/UI/HUD/RunHUDView.cs,4,RunStatsTracker,"// KHÔNG chứa logic nghiệp vụ. KHÔNG biết PlayerStats, RunStatsTracker tồn tại."
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,32,SpawnManager,SpawnManager.OnWaveTriggered += HandleWaveTriggered;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,33,SpawnManager,SpawnManager.OnTimelineProgressUpdated += HandleTimelineProgressUpdated;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,39,SpawnManager,SpawnManager.OnWaveTriggered -= HandleWaveTriggered;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,40,SpawnManager,SpawnManager.OnTimelineProgressUpdated -= HandleTimelineProgressUpdated;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,45,SpawnManager,// Dự phòng cập nhật mượt mà khi SpawnManager đang chạy
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,46,SpawnManager,if (SpawnManager.Instance != null && SpawnManager.Instance.IsMatchActive)
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,48,SpawnManager,float time = SpawnManager.Instance.MatchTime;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,49,SpawnManager,float maxTime = SpawnManager.Instance.LevelDuration;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,50,SpawnManager,float progress = SpawnManager.Instance.MatchProgress;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,56,SpawnManager,/// Đồng bộ trực tiếp dữ liệu số màn chơi và đợt quái từ SpawnManager (tránh bị rỗng hoặc lệch nhịp khi khởi động).
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,62,SpawnManager,var spawner = SpawnManager.Instance;
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,103,SpawnManager,if (SpawnManager.Instance != null && SpawnManager.Instance.TimelineConfig != null)
+Assets/Features/UI/HUD/WaveBannerWidgetPresenter.cs,105,SpawnManager,_view.SetupTimelineMarkers(SpawnManager.Instance.TimelineConfig);
+Assets/Features/UI/HUD/WaveInfo.cs,8,SpawnManager,/// Giúp tách rời (Decoupled) dữ liệu giữa SpawnManager và tầng UI.
+Assets/Features/UI/Lobby/LobbyPresenter.cs,286,GameplayBootstrapper,"// Nếu GameplayBootstrapper có sẵn trong scene, chuyển trạng thái sang Playing"
+Assets/Features/UI/Lobby/LobbyPresenter.cs,287,GameplayBootstrapper,if (Player.GameplayBootstrapper.Instance != null)
+Assets/Features/UI/Lobby/LobbyPresenter.cs,289,GameplayBootstrapper,Player.GameplayBootstrapper.Instance.StartMatchFlow();
+Assets/Features/UI/MainHubPresenter.cs,140,CharacterEntry,CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+Assets/Features/UI/MainHubPresenter.cs,140,RunLoadoutState,CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+Assets/Features/UI/MainHubPresenter.cs,183,RunLoadoutState,RunLoadoutState.SetCharacter(hero);
+Assets/Features/UI/MainHubPresenter.cs,220,CharacterEntry,CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+Assets/Features/UI/MainHubPresenter.cs,220,RunLoadoutState,CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+Assets/Features/UI/MainHubPresenter.cs,221,RunLoadoutState,WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
+Assets/Features/UI/MainHubPresenter.cs,221,WeaponData,WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
+Assets/Features/UI/MainHubPresenter.cs,222,RunLoadoutState,List<WeaponData> relics = RunLoadoutState.SelectedRelics;
+Assets/Features/UI/MainHubPresenter.cs,222,WeaponData,List<WeaponData> relics = RunLoadoutState.SelectedRelics;
+Assets/Features/UI/MetaSceneTransitionController.cs,12,GameStateManager,/// Tích hợp trực tiếp với GameStateManager gốc trong Shared.
+Assets/Features/UI/MetaSceneTransitionController.cs,27,SpawnManager,[SerializeField] private SpawnManager _spawnManager;
+Assets/Features/UI/MetaSceneTransitionController.cs,28,GameplayBootstrapper,[SerializeField] private GameplayBootstrapper _gameplayBootstrapper;
+Assets/Features/UI/MetaSceneTransitionController.cs,50,GameStateManager,bool isMainMenu = GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.MainMenu;
+Assets/Features/UI/MetaSceneTransitionController.cs,64,SpawnManager,if (_spawnManager == null) _spawnManager = SpawnManager.Instance;
+Assets/Features/UI/MetaSceneTransitionController.cs,65,GameplayBootstrapper,if (_gameplayBootstrapper == null) _gameplayBootstrapper = GameplayBootstrapper.Instance;
+Assets/Features/UI/MetaSceneTransitionController.cs,120,SpawnManager,"// Nếu có cấu hình ải được chọn, gán Timeline cho SpawnManager"
+Assets/Features/UI/MetaSceneTransitionController.cs,123,SpawnManager,if (Spawners.SpawnManager.Instance != null)
+Assets/Features/UI/MetaSceneTransitionController.cs,125,SpawnManager,Spawners.SpawnManager.Instance.SetTimelineConfig(_selectedStage.timelineConfig);
+Assets/Features/UI/MetaSceneTransitionController.cs,160,SpawnManager,if (Spawners.SpawnManager.Instance != null)
+Assets/Features/UI/MetaSceneTransitionController.cs,162,SpawnManager,_ = Spawners.SpawnManager.Instance.StartMatchAsync();
+Assets/Features/UI/MetaSceneTransitionController.cs,164,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/MetaSceneTransitionController.cs,166,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Playing);
+Assets/Features/UI/MetaSceneTransitionController.cs,188,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/MetaSceneTransitionController.cs,191,GameStateManager,GameStateManager.Instance.ChangeState(GameState.LevelUpSelection);
+Assets/Features/UI/MetaSceneTransitionController.cs,195,GameStateManager,"Debug.LogError(""<color=#FFD700>[DIAG_TRANSITION]</color> GameStateManager.Instance is NULL!"");"
+Assets/Features/UI/MetaSceneTransitionController.cs,253,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/MetaSceneTransitionController.cs,255,GameStateManager,GameStateManager.Instance.ChangeState(GameState.MainMenu);
+Assets/Features/UI/MetaUIManager.cs,106,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/MetaUIManager.cs,108,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleGameStateChanged;
+Assets/Features/UI/MetaUIManager.cs,109,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleGameStateChanged;
+Assets/Features/UI/MetaUIManager.cs,110,GameStateManager,HandleGameStateChanged(GameStateManager.Instance.CurrentState);
+Assets/Features/UI/MetaUIManager.cs,124,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/MetaUIManager.cs,126,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleGameStateChanged;
+Assets/Features/UI/Overhead/OverheadStatusPresenter.cs,3,HealthSystem,"// Trách nhiệm: Lắng nghe Model events (HealthSystem, PlayerExperience),"
+Assets/Features/UI/Overhead/OverheadStatusPresenter.cs,15,HealthSystem,/// Presenter điều phối dữ liệu từ HealthSystem và PlayerExperience sang OverheadStatusView.
+Assets/Features/UI/Overhead/OverheadStatusPresenter.cs,23,HealthSystem,[SerializeField] private HealthSystem _healthSystem;
+Assets/Features/UI/Overhead/OverheadStatusPresenter.cs,47,HealthSystem,_healthSystem = GetComponentInParent<HealthSystem>();
+Assets/Features/UI/Overhead/OverheadStatusPresenter.cs,67,HealthSystem,"public void Construct(HealthSystem health, PlayerExperience experience = null)"
+Assets/Features/UI/RelicSkillPresenter.cs,8,WeaponManager,/// Presenter điều phối giữa WeaponManager / Active WeaponBase (Model) và RelicSkillButtonView (View).
+Assets/Features/UI/RelicSkillPresenter.cs,23,WeaponManager,[SerializeField] private WeaponManager _weaponManager;
+Assets/Features/UI/RelicSkillPresenter.cs,27,WeaponManager,public void Bind(WeaponManager manager)
+Assets/Features/UI/RelicSkillPresenter.cs,70,WeaponManager,var weaponMgr = PlayerProvider.GetPlayerComponent<WeaponManager>();
+Assets/Features/UI/RelicSkillPresenter.cs,80,WeaponManager,Bind(player.GetComponent<WeaponManager>());
+Assets/Features/UI/RelicSkillPresenter.cs,188,PlayerController,var controller = player != null ? player.GetComponent<PlayerController>() : null;
+Assets/Features/UI/SettingsModalPresenter.cs,145,GameStateManager,if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.Playing)
+Assets/Features/UI/SettingsModalPresenter.cs,169,GameStateManager,if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.MainMenu)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,15,RunStatsTracker,"/// Presenter điều phối dữ liệu từ Player, WeaponManager, Passives và RunStatsTracker sang PlayerStatsMenuUIView."
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,15,WeaponManager,"/// Presenter điều phối dữ liệu từ Player, WeaponManager, Passives và RunStatsTracker sang PlayerStatsMenuUIView."
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,27,PlayerStats,[SerializeField] private PlayerStats _playerStats;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,28,HealthSystem,[SerializeField] private HealthSystem _playerHealth;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,30,WeaponManager,[SerializeField] private WeaponManager _weaponManager;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,70,HealthSystem,"public void Construct(PlayerStats stats, HealthSystem health, PlayerExperience experience, WeaponManager weaponManager, PlayerPassives passives = null)"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,70,PlayerStats,"public void Construct(PlayerStats stats, HealthSystem health, PlayerExperience experience, WeaponManager weaponManager, PlayerPassives passives = null)"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,70,WeaponManager,"public void Construct(PlayerStats stats, HealthSystem health, PlayerExperience experience, WeaponManager weaponManager, PlayerPassives passives = null)"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,153,RunStatsTracker,_runStatsService = ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,201,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,223,GameStateManager,if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,239,PlayerController,?? (Player.PlayerController.Instance != null ? Player.PlayerController.Instance.gameObject : null);
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,244,PlayerStats,"playerObj.GetComponent<PlayerStats>(),"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,245,HealthSystem,"playerObj.GetComponent<HealthSystem>(),"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,247,WeaponManager,"playerObj.GetComponent<WeaponManager>(),"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,264,PlayerController,if (PlayerProvider.PlayerGameObject.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var pc) && pc.InputProvider != null)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,270,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,272,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Paused);
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,294,PlayerController,if (PlayerProvider.PlayerGameObject.TryGetComponent<ProjectZombie.Features.Player.PlayerController>(out var pc) && pc.InputProvider != null)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,300,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,302,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Playing);
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,371,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,399,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,401,GameStateManager,GameStateManager.Instance.ChangeState(GameState.MainMenu);
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,420,RunLoadoutState,var hero = RunLoadoutState.SelectedCharacter;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,493,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,592,RunStatsTracker,var tracker = _runStatsService ?? ProjectZombie.Core.Architecture.ServiceContext.Get<IRunStatsService>() ?? RunStatsTracker.Instance;
+Assets/Features/UI/UpgradeUIPresenter.cs,13,UpgradeManager,/// Presenter quản lý logic lựa chọn nâng cấp và cầu nối giữa UpgradeManager (Model) và UpgradeUIView.
+Assets/Features/UI/UpgradeUIPresenter.cs,28,WeaponManager,[SerializeField] private WeaponManager _playerWeaponManager;
+Assets/Features/UI/UpgradeUIPresenter.cs,50,WeaponManager,"public void Construct(PlayerExperience experience, WeaponManager weaponManager)"
+Assets/Features/UI/UpgradeUIPresenter.cs,78,GameStateManager,if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+Assets/Features/UI/UpgradeUIPresenter.cs,127,GameplayBootstrapper,// Tương thích ngược: nếu chưa được Construct từ GameplayBootstrapper và đã kéo thả trong Inspector thì mới tự gọi Construct
+Assets/Features/UI/UpgradeUIPresenter.cs,139,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,141,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+Assets/Features/UI/UpgradeUIPresenter.cs,142,GameStateManager,GameStateManager.Instance.OnStateChanged += HandleStateChanged;
+Assets/Features/UI/UpgradeUIPresenter.cs,143,GameStateManager,"Debug.Log($""<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> Start: Đã xác nhận subscribe GameStateManager.OnStateChanged (CurrentState: {GameStateManager.Instance.CurrentState})"");"
+Assets/Features/UI/UpgradeUIPresenter.cs,145,GameStateManager,if (GameStateManager.Instance.CurrentState == GameState.LevelUpSelection)
+Assets/Features/UI/UpgradeUIPresenter.cs,158,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,160,GameStateManager,GameStateManager.Instance.OnStateChanged -= HandleStateChanged;
+Assets/Features/UI/UpgradeUIPresenter.cs,185,GameStateManager,if (GameStateManager.Instance != null && (GameStateManager.Instance.CurrentState == GameState.GameOver || GameStateManager.Instance.CurrentState == GameState.MainMenu))
+Assets/Features/UI/UpgradeUIPresenter.cs,190,HealthSystem,if (_playerExperience != null && _playerExperience.TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth <= 0)
+Assets/Features/UI/UpgradeUIPresenter.cs,195,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,197,GameStateManager,GameStateManager.Instance.ChangeState(GameState.LevelUpSelection);
+Assets/Features/UI/UpgradeUIPresenter.cs,201,GameStateManager,// Fallback nếu không có GameStateManager trong scene test
+Assets/Features/UI/UpgradeUIPresenter.cs,246,HealthSystem,if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject.TryGetComponent<HealthSystem>(out var hp))
+Assets/Features/UI/UpgradeUIPresenter.cs,265,UpgradeManager,if (UpgradeManager.Instance == null)
+Assets/Features/UI/UpgradeUIPresenter.cs,267,UpgradeManager,"Debug.LogError(""<color=#00FFFF>[DIAG_UPGRADE_PRESENTER]</color> LỖI: UpgradeManager.Instance is null!"");"
+Assets/Features/UI/UpgradeUIPresenter.cs,275,WeaponManager,_playerWeaponManager = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+Assets/Features/UI/UpgradeUIPresenter.cs,280,WeaponManager,if (p != null) _playerWeaponManager = p.GetComponent<WeaponManager>();
+Assets/Features/UI/UpgradeUIPresenter.cs,291,UpgradeManager,bool isMutation = UpgradeManager.Instance != null && UpgradeManager.Instance.IsMutationLevel(currentLevel);
+Assets/Features/UI/UpgradeUIPresenter.cs,307,UpgradeManager,if (isMutation && UpgradeManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,309,UpgradeManager,"_view.SetRerollCountText($""Lắc Lại ({UpgradeManager.Instance.CurrentRerollTokens}/2)"");"
+Assets/Features/UI/UpgradeUIPresenter.cs,310,UpgradeManager,_view.SetRerollInteractable(UpgradeManager.Instance.CurrentRerollTokens > 0);
+Assets/Features/UI/UpgradeUIPresenter.cs,320,UpgradeManager,"List<UpgradeData> choices = UpgradeManager.Instance.GetProgressionUpgrades(choiceCount, currentLevel, context);"
+Assets/Features/UI/UpgradeUIPresenter.cs,437,UpgradeManager,if (UpgradeManager.Instance != null && UpgradeManager.Instance.TryConsumeRerollToken())
+Assets/Features/UI/UpgradeUIPresenter.cs,455,HealthSystem,var healthSystem = _playerWeaponManager.GetComponent<HealthSystem>();
+Assets/Features/UI/UpgradeUIPresenter.cs,469,UpgradeManager,if (upgradeToBan != null && UpgradeManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,471,UpgradeManager,UpgradeManager.Instance.BanUpgrade(upgradeToBan);
+Assets/Features/UI/UpgradeUIPresenter.cs,478,GameStateManager,if (GameStateManager.Instance != null)
+Assets/Features/UI/UpgradeUIPresenter.cs,480,GameStateManager,GameStateManager.Instance.ChangeState(GameState.Playing);
+Assets/Features/UI/UpgradeUIView.cs,398,GameStateManager,if (ProjectZombie.Features.Shared.GameStateManager.Instance == null ||
+Assets/Features/UI/UpgradeUIView.cs,399,GameStateManager,ProjectZombie.Features.Shared.GameStateManager.Instance.CurrentState == ProjectZombie.Features.Shared.GameState.Playing)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,32,WeaponData,[SerializeField] private List<WeaponData> _allWeapons = new List<WeaponData>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,34,WeaponData,private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,47,CharacterEntry,private CharacterEntry _currentHero;
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,48,WeaponData,private WeaponData _selectedPrimary;
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,49,WeaponData,private readonly List<WeaponData> _selectedRelics = new List<WeaponData>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,50,WeaponData,private WeaponData _inspectedWeapon;
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,53,WeaponData,"private readonly Dictionary<WeaponData, UniversalItemSlotView> _slotViewMap = new Dictionary<WeaponData, UniversalItemSlotView>();"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,100,RunLoadoutState,if (RunLoadoutState.SelectedCharacter != null)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,102,RunLoadoutState,SetupForHero(RunLoadoutState.SelectedCharacter);
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,106,RunLoadoutState,RunLoadoutState.EnsureInitialized();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,107,RunLoadoutState,if (RunLoadoutState.SelectedCharacter != null)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,109,RunLoadoutState,SetupForHero(RunLoadoutState.SelectedCharacter);
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,133,WeaponData,void TryAddWeapon(WeaponData w)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,143,WeaponData,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,147,WeaponData,var wd = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,181,WeaponData,"var handle = Addressables.LoadAssetsAsync<WeaponData>(""WeaponData"", null);"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,197,WeaponData,"Debug.LogWarning($""[WeaponLoadoutPresenter] Addressables Load WeaponData warning: {ex.Message}"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,211,WeaponData,public bool IsRelicOwned(WeaponData relic)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,229,CharacterEntry,public void SetupForHero(CharacterEntry hero)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,235,RunLoadoutState,if (RunLoadoutState.SelectedPrimaryWeapon != null)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,237,RunLoadoutState,_selectedPrimary = RunLoadoutState.SelectedPrimaryWeapon;
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,250,RunLoadoutState,if (RunLoadoutState.SelectedRelic != null && IsRelicOwned(RunLoadoutState.SelectedRelic))
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,252,RunLoadoutState,_selectedRelics.Add(RunLoadoutState.SelectedRelic);
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,254,RunLoadoutState,else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0 && IsRelicOwned(RunLoadoutState.SelectedRelics[0]))
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,256,RunLoadoutState,_selectedRelics.Add(RunLoadoutState.SelectedRelics[0]);
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,285,WeaponData,public void SelectPrimaryWeapon(WeaponData weapon)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,293,RunLoadoutState,"RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,296,WeaponManager,var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,303,WeaponData,public void ToggleRelic(WeaponData relic)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,319,RunLoadoutState,"RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,322,WeaponManager,var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,329,WeaponData,public void InspectRelic(WeaponData relic)
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,453,WeaponData,var targetList = new List<WeaponData>();
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,541,RunLoadoutState,"RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,555,RunLoadoutState,"RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,108,CharacterEntry,"public void DisplayEquippedLoadout(CharacterEntry hero, List<WeaponData> relics)"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,108,WeaponData,"public void DisplayEquippedLoadout(CharacterEntry hero, List<WeaponData> relics)"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,152,WeaponData,"public void DisplayEquippedLoadout(WeaponData primary, List<WeaponData> relics)"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,188,WeaponData,"public void DisplayWeaponDetail(WeaponData weapon, float damageFill, float cooldownFill)"
+Assets/Features/Upgrades/CommonUpgradeData.cs,53,PlayerStats,var playerStats = player.GetComponent<PlayerStats>();
+Assets/Features/Upgrades/Editor/MythicCoresDataGenerator.cs,66,UpgradeManager,// 4. Auto-setup Player Prefabs & UpgradeManager Pool
+Assets/Features/Upgrades/Editor/MythicCoresDataGenerator.cs,76,UpgradeManager,"EditorUtility.DisplayDialog(""Mythic Setup Complete"", ""Đã khởi tạo hoàn tất 5 Đại Lõi Thần Thoại, 25 Thẻ Nhánh và tự động nạp sạch sẽ UpgradeManager Data Pool!"", ""Tuyệt vời"");"
+Assets/Features/Upgrades/Editor/MythicCoresDataGenerator.cs,247,PlayerStats,if (prefab != null && prefab.GetComponent<PlayerStats>() != null)
+Assets/Features/Upgrades/Editor/MythicCoresDataGenerator.cs,272,UpgradeManager,var managers = Object.FindObjectsOfType<UpgradeManager>();
+Assets/Features/Upgrades/Editor/UpgradeGeneratorTool.cs,68,UpgradeManager,"[MenuItem(""Tools/ProjectZombie/Populate UpgradeManager Pool"")]"
+Assets/Features/Upgrades/Editor/UpgradeGeneratorTool.cs,71,UpgradeManager,var manager = Object.FindObjectOfType<UpgradeManager>();
+Assets/Features/Upgrades/Editor/UpgradeGeneratorTool.cs,78,UpgradeManager,"Debug.LogWarning(""[UpgradeGeneratorTool] Không tìm thấy UpgradeManager trong Scene hiện tại!"");"
+Assets/Features/Upgrades/EvolutionUpgradeData.cs,31,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/EvolutionUpgradeData.cs,56,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/FallbackRewardUpgradeData.cs,36,HealthSystem,var healthSystem = player.GetComponent<HealthSystem>() ?? player.GetComponentInParent<HealthSystem>();
+Assets/Features/Upgrades/Filters/IUpgradeFilter.cs,7,UpgradeManager,/// Cho phép mở rộng thêm các điều kiện lọc thẻ mới mà không cần chỉnh sửa UpgradeManager.
+Assets/Features/Upgrades/FusionUpgradeData.cs,32,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/FusionUpgradeData.cs,75,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/Runtimes/Augments/ChainLightningAugmentRuntime.cs,46,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _chainRadius, _bounceBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/CritExplodeAugmentRuntime.cs,43,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, _explosionRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/ExecuteAugmentRuntime.cs,34,HealthSystem,// Kiểm tra máu mục tiêu nếu có HealthSystem hoặc tương đương
+Assets/Features/Upgrades/Runtimes/Augments/ExecuteAugmentRuntime.cs,35,HealthSystem,if (e.Target.TryGetComponent<HealthSystem>(out var enemyHealth))
+Assets/Features/Upgrades/Runtimes/Augments/FireTrailAugmentRuntime.cs,89,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(zone.Position, _hitRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/KimQuyMulticastAugmentRuntime.cs,40,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _scanRadius, _scanBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/PhuDongGigantismAugmentRuntime.cs,64,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, _quakeRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/PhuDongGigantismAugmentRuntime.cs,75,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Upgrades/Runtimes/Augments/ShieldBashAugmentRuntime.cs,48,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _pulseRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/ShieldBashAugmentRuntime.cs,59,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Upgrades/Runtimes/Augments/TanVienImmortalAugmentRuntime.cs,49,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, _burstRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/Augments/ThuyBaFreezeBurstAugmentRuntime.cs,45,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(origin, _freezeRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/KimQuyCoreRuntime.cs,105,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(hitPos, _ricochetRadius, _ricochetBuffer);"
+Assets/Features/Upgrades/Runtimes/PhuDongCoreRuntime.cs,97,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(midPoint, scanRadius, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/PhuDongCoreRuntime.cs,110,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Upgrades/Runtimes/PhuDongCoreRuntime.cs,124,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, 10f, _hitBuffer);"
+Assets/Features/Upgrades/Runtimes/SonThanhCoreRuntime.cs,100,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, _pillarRadius, _stoneBuffer);"
+Assets/Features/Upgrades/Runtimes/SonThanhCoreRuntime.cs,135,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(e.EndPosition, 3.5f, _stoneBuffer);"
+Assets/Features/Upgrades/Runtimes/SonThanhCoreRuntime.cs,155,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, 8.0f, _stoneBuffer);"
+Assets/Features/Upgrades/Runtimes/ThuyBaCoreRuntime.cs,58,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(playerPos, _tsunamiRadius, _waterBuffer);"
+Assets/Features/Upgrades/Runtimes/ThuyBaCoreRuntime.cs,70,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Upgrades/Runtimes/ThuyBaCoreRuntime.cs,117,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(e.EndPosition, 3.0f, _waterBuffer);"
+Assets/Features/Upgrades/Runtimes/ThuyBaCoreRuntime.cs,134,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(center, 12.0f, _waterBuffer);"
+Assets/Features/Upgrades/Runtimes/ThuyBaCoreRuntime.cs,145,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Upgrades/UpgradeManager.cs,18,UpgradeManager,"public class UpgradeManager : MonoBehaviour, IUpgradeService, ProjectZombie.Core.Architecture.IResettableStatic"
+Assets/Features/Upgrades/UpgradeManager.cs,20,UpgradeManager,public static UpgradeManager Instance { get; private set; }
+Assets/Features/Upgrades/UpgradeManager.cs,92,UpgradeManager,"Debug.Log($""<color=#00FF88>[UpgradeManager]</color> Đã tự động loại bỏ {_allAvailableUpgrades.Count - uniqueList.Count} thẻ trùng lặp từ Scene Serialization. Còn lại: {uniqueList.Count} thẻ duy nhất."");"
+Assets/Features/Upgrades/UpgradeManager.cs,235,UpgradeManager,"Debug.Log($""<color=#00FF88>[UpgradeManager]</color> Editor Tool: Đã nạp chính xác {_allAvailableUpgrades.Count} thẻ UpgradeData Master duy nhất."");"
+Assets/Features/Upgrades/UpgradeManager.cs,276,UpgradeManager,"Debug.Log($""<color=#00FF88>[UpgradeManager]</color> Đã nạp thành công {_allAvailableUpgrades.Count} thẻ nâng cấp qua GameDataService."");"
+Assets/Features/Upgrades/UpgradeManager.cs,281,UpgradeManager,"Debug.LogWarning($""[UpgradeManager] Lỗi nạp UpgradeData qua GameDataService: {ex.Message}"");"
+Assets/Features/Upgrades/UpgradeManager.cs,288,UpgradeManager,"Debug.LogWarning(""[UpgradeManager] Không tìm thấy UpgradeData trong Resources. Fallback sang Editor AssetDatabase."");"
+Assets/Features/Upgrades/UpgradeManager.cs,307,UpgradeManager,"Debug.Log($""[UpgradeManager] Banned upgrade: {upgrade.upgradeName}"");"
+Assets/Features/Upgrades/UpgradeManager.cs,350,UpgradeManager,"Debug.Log($""<color=#00FF88>[UpgradeManager]</color> Đã dùng 1 Reroll Token! Còn lại: {_currentRerollTokens}"");"
+Assets/Features/Upgrades/WeaponUpgradeData.cs,31,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/WeaponUpgradeData.cs,43,WeaponManager,var weaponManager = player.GetComponent<WeaponManager>();
+Assets/Features/Upgrades/Weighting/ElementSynergyWeighter.cs,18,WeaponManager,if (upgrade == null || upgrade.element == ElementType.None || context?.WeaponManager == null)
+Assets/Features/Upgrades/Weighting/ElementSynergyWeighter.cs,23,WeaponManager,var weapons = context.WeaponManager.ActiveWeapons;
+Assets/Features/Upgrades/Weighting/OwnedWeaponPriorityWeighter.cs,15,WeaponManager,if (upgrade == null || context?.WeaponManager == null) return 1.0f;
+Assets/Features/Upgrades/Weighting/OwnedWeaponPriorityWeighter.cs,19,WeaponManager,if (context.WeaponManager.GetWeaponById(weaponUp.weaponId) != null)
+Assets/Features/Weapons/ChickenFeatherDrop.cs,204,HealthSystem,private HealthSystem _hp;
+Assets/Features/Weapons/ChickenFeatherDrop.cs,209,HealthSystem,"public void Setup(Relic_ChickenFeatherBroom broom, HealthSystem hp)"
+Assets/Features/Weapons/ChickenMinionCompanion.cs,316,HealthSystem,if (enemyTf != null && enemyTf.TryGetComponent<HealthSystem>(out var hp))
+Assets/Features/Weapons/ChickenMinionCompanion.cs,356,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(transform.position, attackDetectRange, _scanBuffer, mask);"
+Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,11,WeaponData,/// Editor Tool tự động tạo toàn bộ ScriptableObject WeaponData và WeaponUpgradeData cho Hệ Thống Slapstick/Fun Combat (GDD v5.1).
+Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,95,WeaponData,WeaponData so = AssetDatabase.LoadAssetAtPath<WeaponData>(assetPath);
+Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,99,WeaponData,so = ScriptableObject.CreateInstance<WeaponData>();
+Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,232,UpgradeManager,// Nạp tự động vào UpgradeManager trong Scene nếu đang mở
+Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,233,UpgradeManager,var upgradeManager = Object.FindAnyObjectByType<UpgradeManager>();
+Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,93,WeaponData,var asset = AssetDatabase.LoadAssetAtPath<WeaponData>(assetPath);
+Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,96,WeaponData,asset = ScriptableObject.CreateInstance<WeaponData>();
+Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,135,WeaponData,"Debug.Log($""[WeaponDataGenerator] Đã tự động gán Prefab '{weaponPrefab.name}' vào WeaponData '{def.id}_{def.name}'"");"
+Assets/Features/Weapons/Pets/PetController.cs,224,HealthSystem,var health = _target.GetComponent<HealthSystem>();
+Assets/Features/Weapons/Pets/PetController.cs,232,HealthSystem,var playerHealth = _player.GetComponent<HealthSystem>();
+Assets/Features/Weapons/Relic_ChickenFeatherBroom.cs,153,PlayerController,var player = OwnerTransform.GetComponent<PlayerController>();
+Assets/Features/Weapons/Relic_ChickenFeatherBroom.cs,171,PlayerController,var player = OwnerTransform.GetComponent<PlayerController>();
+Assets/Features/Weapons/Relic_ChickenFeatherBroom.cs,247,Physics2D,"int numHits = Physics2D.OverlapCircleNonAlloc(currentPos, radius, _hitBuffer, mask);"
+Assets/Features/Weapons/Relic_ChickenFeatherBroom.cs,258,HealthSystem,if (col.TryGetComponent<HealthSystem>(out var hp))
+Assets/Features/Weapons/Relic_SleepingMat.cs,197,Physics2D,"int flightHits = Physics2D.OverlapBoxNonAlloc(currentFlightPos, matSize, 0f, _matHitBuffer, enemyMask);"
+Assets/Features/Weapons/Relic_SleepingMat.cs,215,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Weapons/Relic_SleepingMat.cs,251,Physics2D,"int hitCount = Physics2D.OverlapBoxNonAlloc(matCenter, matSize, 0f, _matHitBuffer, enemyMask);"
+Assets/Features/Weapons/Relic_SleepingMat.cs,300,Rigidbody2D,if (col.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Weapons/Weapon_Crossbow.cs,103,Physics2D,"int pushHits = Physics2D.OverlapBoxNonAlloc(firePoint.position + (Vector3)(direction * 4f), new Vector2(8f, 3f), 0f, _wavePushBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Crossbow.cs,107,Rigidbody2D,if (hit != null && hit.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Weapons/Weapon_DirectionalTorch.cs,24,PlayerController,private PlayerController _playerController;
+Assets/Features/Weapons/Weapon_DirectionalTorch.cs,29,PlayerController,_playerController = GetComponentInParent<PlayerController>();
+Assets/Features/Weapons/Weapon_DirectionalTorch.cs,37,PlayerController,_playerController = GetComponentInParent<PlayerController>();
+Assets/Features/Weapons/Weapon_DualSlash.cs,27,PlayerController,private PlayerController _playerController;
+Assets/Features/Weapons/Weapon_DualSlash.cs,33,PlayerController,_playerController = GetComponentInParent<PlayerController>();
+Assets/Features/Weapons/Weapon_DualSlash.cs,65,Physics2D,"int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position + (Vector3)(customAimDirection * 2.5f), 3.5f, _dragonHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_DualSlash.cs,119,PlayerController,// Thông báo cho PlayerController phát animation / hiệu ứng tương ứng
+Assets/Features/Weapons/Weapon_HolyWater.cs,87,HealthSystem,var ownerHealth = OwnerGameObject != null ? OwnerGameObject.GetComponent<HealthSystem>() : null;
+Assets/Features/Weapons/Weapon_MeleeBase.cs,11,Physics2D,/// Tối ưu hóa bằng cách dùng Physics2D.OverlapBox thay vì Spawn Projectile.
+Assets/Features/Weapons/Weapon_MeleeBase.cs,66,Physics2D,"int numHits = Physics2D.OverlapBoxNonAlloc(center, boxSize, angle, _hitBuffer, mask);"
+Assets/Features/Weapons/Weapon_MeleeBase.cs,76,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth > 0)
+Assets/Features/Weapons/Weapon_Orbit.cs,76,Physics2D,"int numHits = Physics2D.OverlapCircleNonAlloc(center, radius, _shockwaveHitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Orbit.cs,91,Rigidbody2D,if (hit.TryGetComponent<Rigidbody2D>(out var rb))
+Assets/Features/Weapons/Weapon_Pipe.cs,114,PlayerController,if (OwnerTransform != null && OwnerTransform.TryGetComponent<PlayerController>(out var player))
+Assets/Features/Weapons/Weapon_Pipe.cs,164,PlayerController,if (customAimDirection == Vector2.zero && OwnerTransform != null && OwnerTransform.TryGetComponent<PlayerController>(out var player))
+Assets/Features/Weapons/Weapon_Pipe.cs,228,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Pipe.cs,265,Physics2D,"int count = Physics2D.OverlapBoxNonAlloc(wallCenter, boxSize, wallAngle, _hitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Pipe.cs,273,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var hp))
+Assets/Features/Weapons/Weapon_Pipe.cs,321,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, radius, _hitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Pipe.cs,328,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var hp)) hp.TakeDamage(tickDmg);
+Assets/Features/Weapons/Weapon_Pot.cs,179,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(transform.position, checkRadius, _potHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Pot.cs,272,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, currentRadius, _potHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Pot.cs,278,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var hp)) hp.TakeDamage(hitDmg);
+Assets/Features/Weapons/Weapon_Pot.cs,309,Physics2D,"count = Physics2D.OverlapCircleNonAlloc(center, currentRadius * 1.15f, _potHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Pot.cs,360,HealthSystem,if (mob.TryGetComponent<HealthSystem>(out var hp))
+Assets/Features/Weapons/Weapon_Pot.cs,664,HealthSystem,if (hero.TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth > 0)
+Assets/Features/Weapons/Weapon_Slipper.cs,182,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, 1.6f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,368,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, 3.8f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,431,PlayerController,if (playerTf.TryGetComponent<PlayerController>(out var playerCtrl))
+Assets/Features/Weapons/Weapon_Slipper.cs,463,Physics2D,"int kickHitCount = Physics2D.OverlapCircleNonAlloc(targetPos, shockwaveRadius, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,527,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, radius, _slipperHitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,645,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, 5.5f, _slipperHitBuffer, TargetingUtility.EnemyLayerMask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,700,Physics2D,"int count = Physics2D.OverlapCircleNonAlloc(center, whirlwindRadius, _slipperHitBuffer, mask);"
+Assets/Features/Weapons/Weapon_Slipper.cs,707,HealthSystem,if (hit.TryGetComponent<HealthSystem>(out var hp) && hp.CurrentHealth > 0)
+Assets/Features/Weapons/Weapon_VampiricBats.cs,50,HealthSystem,if (transform.root.TryGetComponent<HealthSystem>(out var hp) && hp.MaxHealth > 0f)
+Assets/Features/Weapons/Weapon_VampiricBats.cs,93,HealthSystem,if (transform.root.TryGetComponent<HealthSystem>(out var playerHealth) && playerHealth.MaxHealth > 0f)
+Assets/Features/Weapons/WeaponBase.cs,26,WeaponData,"[Tooltip(""Prefab default only. WeaponData.elementType overrides this when the weapon is equipped."")]"
+Assets/Features/Weapons/WeaponBase.cs,106,WeaponData,/// <summary>Sets the weapon's base damage from its canonical WeaponData asset.</summary>
+Assets/Features/Weapons/WeaponBase.cs,561,WeaponData,// Preserve legacy prefab-only weapons that have no WeaponData base damage.
+Assets/Features/Weapons/WeaponData.cs,14,WeaponData,public class WeaponData : ScriptableObject
+Assets/Features/Weapons/WeaponManager.cs,12,PlayerStats,[RequireComponent(typeof(PlayerStats))]
+Assets/Features/Weapons/WeaponManager.cs,13,WeaponManager,public class WeaponManager : MonoBehaviour
+Assets/Features/Weapons/WeaponManager.cs,17,WeaponData,[SerializeField] private List<WeaponData> startingLoadout = new List<WeaponData>();
+Assets/Features/Weapons/WeaponManager.cs,22,WeaponData,"[Tooltip(""Prefab dự phòng an toàn nếu WeaponData bị thiếu weaponPrefab (Tránh crash game trên mobile)"")]"
+Assets/Features/Weapons/WeaponManager.cs,31,PlayerStats,private PlayerStats _playerStats;
+Assets/Features/Weapons/WeaponManager.cs,96,PlayerStats,_playerStats = GetComponent<PlayerStats>();
+Assets/Features/Weapons/WeaponManager.cs,117,RunLoadoutState,/// Nạp lại toàn bộ Pháp Bảo / Vũ Khí theo RunLoadoutState hiện tại (dùng khi đổi trang bị ở Sảnh Chờ hoặc Xuất Trận).
+Assets/Features/Weapons/WeaponManager.cs,140,RunLoadoutState,if (RunLoadoutState.HasCustomLoadout)
+Assets/Features/Weapons/WeaponManager.cs,143,RunLoadoutState,if (RunLoadoutState.SelectedRelic != null)
+Assets/Features/Weapons/WeaponManager.cs,145,RunLoadoutState,"EquipWeaponFromData(RunLoadoutState.SelectedRelic, isPrimary: false);"
+Assets/Features/Weapons/WeaponManager.cs,147,RunLoadoutState,else if (RunLoadoutState.SelectedRelics != null && RunLoadoutState.SelectedRelics.Count > 0)
+Assets/Features/Weapons/WeaponManager.cs,149,RunLoadoutState,"EquipWeaponFromData(RunLoadoutState.SelectedRelics[0], isPrimary: false);"
+Assets/Features/Weapons/WeaponManager.cs,174,WeaponManager,"Debug.Log($""<color=#00FF88>[WeaponManager]</color> Đã nạp lại vũ khí/pháp bảo: ActiveCount={_activeWeapons.Count}"");"
+Assets/Features/Weapons/WeaponManager.cs,226,WeaponData,WeaponData targetData = null;
+Assets/Features/Weapons/WeaponManager.cs,231,WeaponData,var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WeaponData>(weaponId);
+Assets/Features/Weapons/WeaponManager.cs,250,WeaponData,"string[] guids = UnityEditor.AssetDatabase.FindAssets($""t:WeaponData {weaponId}"");"
+Assets/Features/Weapons/WeaponManager.cs,254,WeaponData,targetData = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
+Assets/Features/Weapons/WeaponManager.cs,265,WeaponData,"Debug.LogWarning($""[WeaponManager] Không tìm thấy WeaponData cho weaponId: '{weaponId}'"");"
+Assets/Features/Weapons/WeaponManager.cs,265,WeaponManager,"Debug.LogWarning($""[WeaponManager] Không tìm thấy WeaponData cho weaponId: '{weaponId}'"");"
+Assets/Features/Weapons/WeaponManager.cs,269,WeaponData,"public void EquipWeaponFromData(WeaponData data, bool isPrimary = false)"
+Assets/Features/Weapons/WeaponManager.cs,284,WeaponData,"Debug.LogError($""<color=#FF4444>[WeaponManager] LỖI CẤU HÌNH:</color> WeaponData '<b>{data.weaponName}</b>' (ID: {data.weaponId}) chưa được gán weaponPrefab!"");"
+Assets/Features/Weapons/WeaponManager.cs,284,WeaponManager,"Debug.LogError($""<color=#FF4444>[WeaponManager] LỖI CẤU HÌNH:</color> WeaponData '<b>{data.weaponName}</b>' (ID: {data.weaponId}) chưa được gán weaponPrefab!"");"
+Assets/Features/Weapons/WeaponManager.cs,288,WeaponManager,"Debug.LogWarning($""[WeaponManager] Đang sử dụng defaultFallbackWeaponPrefab cho '{data.weaponName}' để bảo đảm trận đấu không bị crash."");"
+Assets/Features/Weapons/WeaponManager.cs,299,WeaponData,// WeaponData is the authoritative source for gameplay identity; prefab values are visual/runtime defaults only.
+Assets/Features/Weapons/WeaponManager.cs,432,GameStateManager,if (!GameStateManager.IsPlaying) return;
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4341,Physics2D,if (scene.GetPhysicsScene2D() != Physics2D.defaultPhysicsScene) {
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4342,Physics2D,mode |= LocalPhysicsMode.Physics2D;
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,110,Physics2D,new CreateSceneParameters(LocalPhysicsMode.Physics2D | LocalPhysicsMode.Physics3D));
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,19,Rigidbody2D,#region Rigidbody2D Shortcuts
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,21,Rigidbody2D,/// <summary>Tweens a Rigidbody2D's position to the given value.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,22,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations</summary>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,25,Rigidbody2D,"public static TweenerCore<Vector2, Vector2, VectorOptions> DOMove(this Rigidbody2D target, Vector2 endValue, float duration, bool snapping = false)"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,32,Rigidbody2D,/// <summary>Tweens a Rigidbody2D's X position to the given value.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,33,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations</summary>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,36,Rigidbody2D,"public static TweenerCore<Vector2, Vector2, VectorOptions> DOMoveX(this Rigidbody2D target, float endValue, float duration, bool snapping = false)"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,43,Rigidbody2D,/// <summary>Tweens a Rigidbody2D's Y position to the given value.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,44,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations</summary>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,47,Rigidbody2D,"public static TweenerCore<Vector2, Vector2, VectorOptions> DOMoveY(this Rigidbody2D target, float endValue, float duration, bool snapping = false)"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,54,Rigidbody2D,/// <summary>Tweens a Rigidbody2D's rotation to the given value.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,55,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations</summary>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,57,Rigidbody2D,"public static TweenerCore<float, float, FloatOptions> DORotate(this Rigidbody2D target, float endValue, float duration)"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,66,Rigidbody2D,"/// <summary>Tweens a Rigidbody2D's position to the given value, while also applying a jump effect along the Y axis."
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,68,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,75,Rigidbody2D,"public static Sequence DOJump(this Rigidbody2D target, Vector2 endValue, float jumpPower, int numJumps, float duration, bool snapping = false)"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,102,Rigidbody2D,"/// <summary>Tweens a Rigidbody2D's position through the given path waypoints, using the chosen path algorithm."
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,103,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations.
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,104,Rigidbody2D,/// <para>NOTE: to tween a Rigidbody2D correctly it should be set to kinematic at least while being tweened.</para>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,115,Rigidbody2D,"this Rigidbody2D target, Vector2[] path, float duration, PathType pathType = PathType.Linear,"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,130,Rigidbody2D,"/// <summary>Tweens a Rigidbody2D's localPosition through the given path waypoints, using the chosen path algorithm."
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,131,Rigidbody2D,/// Also stores the Rigidbody2D as the tween's target so it can be used for filtered operations
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,132,Rigidbody2D,/// <para>NOTE: to tween a Rigidbody2D correctly it should be set to kinematic at least while being tweened.</para>
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,143,Rigidbody2D,"this Rigidbody2D target, Vector2[] path, float duration, PathType pathType = PathType.Linear,"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,162,Rigidbody2D,"this Rigidbody2D target, Path path, float duration, PathMode pathMode = PathMode.Full3D"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModulePhysics2D.cs,173,Rigidbody2D,"this Rigidbody2D target, Path path, float duration, PathMode pathMode = PathMode.Full3D"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs,98,Physics2D,"// Returns FALSE if the DOTween's Physics2D Module is disabled, or if there's no Rigidbody2D attached"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs,98,Rigidbody2D,"// Returns FALSE if the DOTween's Physics2D Module is disabled, or if there's no Rigidbody2D attached"
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs,102,Rigidbody2D,return target.GetComponent<Rigidbody2D>() != null;
+Assets/Plugins/Demigiant/DOTween/Modules/DOTweenModuleUtils.cs,147,Rigidbody2D,Rigidbody2D rBody2D = target.GetComponent<Rigidbody2D>();
+Assets/Tests/Editor/DamageProcessorTests.cs,15,HealthSystem,private HealthSystem _healthSystem;
+Assets/Tests/Editor/DamageProcessorTests.cs,22,HealthSystem,_healthSystem = _targetObj.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,228,HealthSystem,var health = target.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,293,PlayerStats,var stats = _ownerA.AddComponent<ProjectZombie.Features.Player.PlayerStats>();
+Assets/Tests/Editor/DamageProcessorTests.cs,321,PlayerStats,var stats = _ownerA.AddComponent<ProjectZombie.Features.Player.PlayerStats>();
+Assets/Tests/Editor/DamageProcessorTests.cs,338,WeaponManager,var inventory = _ownerA.AddComponent<WeaponManager>();
+Assets/Tests/Editor/DamageProcessorTests.cs,339,WeaponManager,var weapons = (System.Collections.Generic.List<WeaponBase>)typeof(WeaponManager)
+Assets/Tests/Editor/DamageProcessorTests.cs,360,HealthSystem,var hp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,388,HealthSystem,var hp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,419,HealthSystem,var hp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,446,HealthSystem,var hp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/DamageProcessorTests.cs,475,HealthSystem,var hp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/EnemyTargetingTests.cs,25,HealthSystem,var hp = _playerObj1.AddComponent<HealthSystem>();
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,65,PlayerController,var controller = _hero.GetComponent<PlayerController>();
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,67,Rigidbody2D,Assert.IsNull(_hero.GetComponent<Rigidbody2D>());
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,78,PlayerController,var healthField = typeof(PlayerController).GetField(
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,82,HealthSystem,"""Controller Awake should see HealthSystem on a fully assembled sandbox Hero."");"
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,96,Rigidbody2D,var rb2D = _hero.AddComponent<Rigidbody2D>();
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,100,HealthSystem,_hero.AddComponent<HealthSystem>();
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,101,PlayerStats,_hero.AddComponent<PlayerStats>();
+Assets/Tests/Editor/Migration3DFoundationRegressionTests.cs,103,PlayerController,if (withController) _hero.AddComponent<PlayerController>();
+Assets/Tests/Editor/Migration3DTraversalAndTargetingTests.cs,61,HealthSystem,var deadHealth = dead.GetComponent<HealthSystem>();
+Assets/Tests/Editor/Migration3DTraversalAndTargetingTests.cs,143,HealthSystem,var health = root.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerCoreTests.cs,25,HealthSystem,var hp1 = _playerObj1.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerCoreTests.cs,30,HealthSystem,var hp2 = _playerObj2.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerCoreTests.cs,35,HealthSystem,var hp3 = _playerObj3.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,27,HealthSystem,var hpHost = _playerHost.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,31,HealthSystem,var hpClient = _playerClient.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,58,HealthSystem,var hp = _playerClient.GetComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,81,HealthSystem,var hp = _playerHost.GetComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,96,GameStateManager,var gsm = gsmGo.AddComponent<GameStateManager>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,101,GameStateManager,Assert.IsTrue(GameStateManager.IsPlaying);
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,106,GameStateManager,"Assert.IsTrue(GameStateManager.IsPlaying, ""GameStateManager.IsPlaying phải trả về true khi trong phòng Multiplayer Co-op lúc LevelUp."");"
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,111,GameStateManager,"Assert.IsTrue(GameStateManager.IsPlaying, ""GameStateManager.IsPlaying phải trả về true khi trong phòng Multiplayer Co-op lúc Paused."");"
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,122,HealthSystem,var hp = _playerHost.GetComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,152,HealthSystem,var enemyHp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,203,HealthSystem,var enemyHp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,235,HealthSystem,var enemyHp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,268,HealthSystem,var enemyHp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/MultiplayerGameplayTests.cs,299,HealthSystem,var enemyHp = enemyGo.AddComponent<HealthSystem>();
+Assets/Tests/Editor/PlayerRegistryTests.cs,21,HealthSystem,var hp1 = _playerObj1.AddComponent<HealthSystem>();
+Assets/Tests/Editor/PlayerRegistryTests.cs,26,HealthSystem,var hp2 = _playerObj2.AddComponent<HealthSystem>();

@@ -1,0 +1,306 @@
+﻿source,line,evidence
+Assets/Core/Architecture/CoreBootstrapper.cs,17,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Core/Architecture/CoreBootstrapper.cs,26,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+Assets/Core/Architecture/ServiceContext.cs,15,[UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Core/Audio/AudioManager.cs,235,var clip = Resources.Load<AudioClip>(resourcePath);
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,30,"public async Task<T> LoadAssetAsync<T>(string address, CancellationToken cancellationToken = default) where T : UnityEngine.Object"
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,88,var asyncHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(address);
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,167,var res = Resources.Load<T>(address);
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,175,"res = Resources.Load<T>($""Maps/{cleanName}"") ?? Resources.Load<T>(cleanName);"
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,184,"string[] guids = UnityEditor.AssetDatabase.FindAssets($""{cleanName} t:{typeof(T).Name}"");"
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,200,"public async Task<IList<T>> LoadAllAsync<T>(string label, CancellationToken cancellationToken = default) where T : UnityEngine.Object"
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,245,"public async Task<GameObject> InstantiateAsync(string address, Vector3 position, Quaternion rotation, Transform parent = null, CancellationToken cancellationToken = default)"
+Assets/Core/Services/Addressables/AddressableAssetManager.cs,247,"var prefab = await LoadAssetAsync<GameObject>(address, cancellationToken);"
+Assets/Core/Services/Addressables/AddressablePatchManager.cs,76,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+Assets/Core/Services/Addressables/IAssetProvider.cs,19,"Task<T> LoadAssetAsync<T>(string address, CancellationToken cancellationToken = default) where T : UnityEngine.Object;"
+Assets/Core/Services/Addressables/IAssetProvider.cs,24,"Task<System.Collections.Generic.IList<T>> LoadAllAsync<T>(string label, CancellationToken cancellationToken = default) where T : UnityEngine.Object;"
+Assets/Core/Services/Addressables/IAssetProvider.cs,29,"Task<GameObject> InstantiateAsync(string address, Vector3 position, Quaternion rotation, Transform parent = null, CancellationToken cancellationToken = default);"
+Assets/Core/Services/Data/GameDataService.cs,18,Task<IList<T>> LoadAllAsync<T>(string label) where T : UnityEngine.Object;
+Assets/Core/Services/Data/GameDataService.cs,71,var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(key);
+Assets/Core/Services/Data/GameDataService.cs,91,result = Resources.Load<T>(key);
+Assets/Core/Services/Data/GameDataService.cs,103,string[] guids = UnityEditor.AssetDatabase.FindAssets(searchFilter);
+Assets/Core/Services/Data/GameDataService.cs,132,/// Nạp tất cả tài nguyên theo Label/Tag cụ thể thông qua Addressables. Fallback sang Resources.LoadAll nếu rỗng.
+Assets/Core/Services/Data/GameDataService.cs,134,public async Task<IList<T>> LoadAllAsync<T>(string label) where T : UnityEngine.Object
+Assets/Core/Services/Data/GameDataService.cs,152,"Debug.LogWarning($""[GameDataService] Addressables LoadAllAsync failed for label '{label}': {ex.Message}. Falling back to Resources.LoadAll."");"
+Assets/Core/Services/Data/GameDataService.cs,155,// Fallback sang Resources.LoadAll
+Assets/Core/Services/Data/GameDataService.cs,156,T[] resList = Resources.LoadAll<T>(label);
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,106,"string[] stageGuids = AssetDatabase.FindAssets(""t:StageDefinitionSO"", new[] { ""Assets/_Data/Levels/Stages"" });"
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,153,"string[] weaponDataGuids = AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,162,"string[] enemyGuids = AssetDatabase.FindAssets(""t:Prefab"", new[] { ""Assets/_Prefabs/Characters/Enemies"" });"
+Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,178,"string[] upgradeGuids = AssetDatabase.FindAssets(""t:UpgradeData"", new[] { ""Assets/_Data/Upgrades"" });"
+Assets/Editor/BuildAndDeploy/BuildTools/Core/AndroidAuditEngine.cs,290,"string[] audioGuids = AssetDatabase.FindAssets(""t:AudioClip"", new[] { ""Assets/Art"", ""Assets/Resources/Audios"", ""Assets/_Data/Audios"" });"
+Assets/Editor/BuildAndDeploy/BuildTools/Core/AndroidAuditEngine.cs,311,"string[] textureGuids = AssetDatabase.FindAssets(""t:Texture2D"", new[] { ""Assets/Art"", ""Assets/Resources/UI"", ""Assets/VFX"" });"
+Assets/Editor/BuildAndDeploy/Optimization/ProjectMemoryOptimizer.cs,134,"string[] guids = AssetDatabase.FindAssets(""t:AudioClip"", new string[] { ""Assets"" });"
+Assets/Editor/BuildAndDeploy/Optimization/ProjectMemoryOptimizer.cs,319,"string[] guids = AssetDatabase.FindAssets(""t:Texture2D"", new string[] { ""Assets/Art"", ""Assets/Sprites"", ""Assets/VFX"", ""Assets/_Data"" });"
+Assets/Editor/BuildAndDeploy/Optimization/ProjectMemoryOptimizer.cs,349,"string[] guids = AssetDatabase.FindAssets(""t:Texture2D"", new string[] { ""Assets/Art/UI"" });"
+Assets/Editor/BuildAndDeploy/Optimization/ProjectMemoryOptimizer.cs,501,"string[] enemyPrefabs = AssetDatabase.FindAssets(""t:Prefab"", new string[] { ""Assets/_Prefabs/Characters/Enemies"" });"
+Assets/Editor/Defense3D/DefenseCombatVfxInstaller.cs,38,"var lineMaterial = Material(""ArrowUnlit"", Shader.Find(""ProjectZombie/Defense3D/CombatLine""));"
+Assets/Editor/Defense3D/DefenseCombatVfxInstaller.cs,39,"var slashMaterial = Material(""JadeSlash"", Shader.Find(""ProjectZombie/Defense3D/CombatSlash""));"
+Assets/Editor/Defense3D/DefenseEnemyPrefabInstaller.cs,143,"var shader = Shader.Find(""Universal Render Pipeline/Lit"") ?? Shader.Find(""Standard"");"
+Assets/Editor/Defense3D/DefenseEnemyPrefabInstaller.cs,169,"var shader = Shader.Find(""Universal Render Pipeline/Lit"") ?? Shader.Find(""Standard"");"
+Assets/Editor/Defense3D/DefenseMapSongQueSceneGenerator.cs,189,"var shader = Shader.Find(""Universal Render Pipeline/Lit"") ?? Shader.Find(""Standard"");"
+Assets/Editor/Generation/Enemies/QuyNhapTrangTetherSetupTool.cs,74,"Shader sh = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/Tools/CharacterShadowSetupTool.cs,45,"string[] prefabGuids = AssetDatabase.FindAssets(""t:Prefab"", new[] { folderPath });"
+Assets/Editor/Generation/VFX/BatQuaiVFXAssembler.cs,92,"Shader unlit2D = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,35,"Shader shader = Shader.Find(""ProjectZombie/VFX/Slash_Additive"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,36,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,177,"Shader shader = Shader.Find(""ProjectZombie/VFX/Slash_Additive"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,178,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,335,"Shader shader = Shader.Find(""ProjectZombie/VFX/Slash_Additive"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,336,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,490,"Shader shader = Shader.Find(""ProjectZombie/VFX/Slash_Additive"");"
+Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,491,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/PlayerDashVFXAssembler.cs,34,"Shader unlit2D = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/VFX/SlapstickRelicVFXBuilder.cs,1164,"? (Shader.Find(""Universal Render Pipeline/Particles/Unlit"") ?? Shader.Find(""Particles/Standard Unlit"") ?? Shader.Find(""ProjectZombie/VFX/Slash_Additive""))"
+Assets/Editor/Generation/VFX/SlapstickRelicVFXBuilder.cs,1165,": (Shader.Find(""Universal Render Pipeline/Particles/Unlit"") ?? Shader.Find(""Sprites/Default""));"
+Assets/Editor/Generation/VFX/SlapstickRelicVFXBuilder.cs,1208,"? (Shader.Find(""ProjectZombie/VFX/Slash_Additive"") ?? Shader.Find(""Universal Render Pipeline/Particles/Unlit""))"
+Assets/Editor/Generation/VFX/SlapstickRelicVFXBuilder.cs,1209,": Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/SortingLayerFixerTool.cs,36,"string[] guids = AssetDatabase.FindAssets(""t:Prefab"", new[] { ""Assets/_Prefabs"", ""Assets/VFX"", ""Assets/Features"" });"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,100,"string[] guids = AssetDatabase.FindAssets($""{Path.GetFileNameWithoutExtension(fileName)} t:Texture2D"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,115,"Shader shader = Shader.Find(""ProjectZombie/VFX/Slash_Additive"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,116,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,156,"Shader shader = Shader.Find(""ProjectZombie/VFX/SonicWave_Additive"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,157,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,189,"Shader inkShader = Shader.Find(""ProjectZombie/VFX/URP_VFX_Ink_AlphaBlend"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,190,"if (inkShader == null) inkShader = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,191,"if (inkShader == null) inkShader = Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,223,"Shader shader = Shader.Find(""ProjectZombie/VFX/Distortion_Shockwave"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,224,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,258,"Shader shader = Shader.Find(""ProjectZombie/VFX/GroundDecal_Dissolve"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,259,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,297,"Shader shader = Shader.Find(""ProjectZombie/Sprite_HitFlash"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,298,"if (shader == null) shader = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,299,"if (shader == null) shader = Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,323,"Shader particleShader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,324,"if (particleShader == null) particleShader = Shader.Find(""Particles/Additive"");"
+Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,325,"if (particleShader == null) particleShader = Shader.Find(""Sprites/Default"");"
+Assets/Editor/Generation/VFX/WeaponVFXAssembler.cs,57,"string[] textureGuids = AssetDatabase.FindAssets(""t:Texture2D"", new string[] { TEXTURE_DIR });"
+Assets/Editor/Generation/VFX/WeaponVFXAssembler.cs,90,"? (Shader.Find(""ProjectZombie/VFX/Slash_Additive"") ?? Shader.Find(""Universal Render Pipeline/Particles/Unlit"") ?? Shader.Find(""Sprites/Default""))"
+Assets/Editor/Generation/VFX/WeaponVFXAssembler.cs,91,": (Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"") ?? Shader.Find(""Sprites/Default""));"
+Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,18,"string[] guids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Editor/Migration/Migration3DSetupTool.cs,60,"var groundMat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Migration/Migration3DSetupTool.cs,87,"var playerMat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Migration/Migration3DSetupTool.cs,113,"var noseMat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Migration/Migration3DSetupTool.cs,161,"var mat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Migration/Migration3DSetupTool.cs,175,"var mat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Migration/Migration3DSetupTool.cs,190,"var mat = new Material(Shader.Find(""Universal Render Pipeline/Lit""));"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,130,"string[] guids = AssetDatabase.FindAssets($""t:WeaponData {weaponId}"");"
+Assets/Editor/Testing/EvolutionAndRelicTesterWindow.cs,168,"string[] baseGuids = AssetDatabase.FindAssets($""t:WeaponData {targetScriptId}"");"
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,71,"string[] wGuids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Editor/Testing/SaveDataAndProgressionEditorWindow.cs,84,"string[] hGuids = AssetDatabase.FindAssets(""t:CharacterDataSO"");"
+Assets/Editor/UI/EpicWaveTransitionBannerSetupTool.cs,47,"if (vietFont == null) vietFont = Resources.Load<TMP_FontAsset>(""Fonts/GameFont_Vietnamese_SD"");"
+Assets/Editor/UI/EpicWaveTransitionBannerSetupTool.cs,50,"if (customBannerSprite == null) customBannerSprite = Resources.Load<Sprite>(""UI/Frames/Frame_Wave_Transition_Banner_9Slice"");"
+Assets/Editor/UI/Optimizers/CardThemeSetupUtility.cs,41,"string[] guids = AssetDatabase.FindAssets(""t:Prefab"");"
+Assets/Editor/UI/Optimizers/UIRegistrySetupTool.cs,82,"string[] guids = AssetDatabase.FindAssets($""t:Prefab {map.type}"");"
+Assets/Editor/UI/SpriteAtlasAndBackupTool.cs,122,"string[] guids = AssetDatabase.FindAssets(""t:Texture2D"", new[] { UI_ROOT_FOLDER });"
+Assets/Editor/UI/StageSelectUIGenerator.cs,23,"?? Resources.Load<TMP_FontAsset>(""Fonts & Materials/LiberationSans SDF"");"
+Assets/Editor/UI/UIRaycastOptimizer.cs,92,"string[] guids = AssetDatabase.FindAssets(""t:Prefab"", new[] { ""Assets/_Prefabs/UI"", ""Assets/Art/UI"" });"
+Assets/Editor/UI/WaveBannerUISetupTool.cs,51,"if (vietFont == null) vietFont = Resources.Load<TMP_FontAsset>(""Fonts/GameFont_Vietnamese_SD"");"
+Assets/Editor/VFX/AlwaysIncludedShadersSetupTool.cs,47,Shader shader = Shader.Find(shaderName);
+Assets/Features/Combat/Aiming/Renderers/CurvedTrajectoryIndicatorRenderer.cs,27,"_curveLineRenderer.material = new Material(Shader.Find(""Sprites/Default""));"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,110,"var shader = Shader.Find(""ProjectZombie/VFX/SkillIndicator_Sector"");"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,114,"if (_circleSprite == null) _circleSprite = Resources.Load<Sprite>(""Art/VFX/Indicators/TEX_Indicator_Circle"");"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,115,"if (_boxSprite == null) _boxSprite = Resources.Load<Sprite>(""Art/VFX/Indicators/TEX_Indicator_Box"");"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,116,"if (_fillSprite == null) _fillSprite = Resources.Load<Sprite>(""Art/VFX/Indicators/TEX_Indicator_Fill"");"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,117,"if (_arrowSprite == null) _arrowSprite = Resources.Load<Sprite>(""Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle"");"
+Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,120,"var shader = Shader.Find(""ProjectZombie/VFX/SkillIndicator_Sector"");"
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,92,"var loadedPrefab = Resources.Load<GameObject>(""UI/CoopReviveOverheadHUD"");"
+Assets/Features/Combat/Coop/CoopDownedMechanic.cs,95,"loadedPrefab = Resources.Load<GameObject>(""CoopReviveOverheadHUD"");"
+Assets/Features/Defense3D/AI/DefenseEnemyFactory3D.cs,39,var definition = Resources.Load<DefenseEnemyDataSO>(DefinitionsFolder + enemyId);
+Assets/Features/Defense3D/AI/DefenseEnemyPrefab3D.cs,35,var prefab = Resources.Load<GameObject>(resource);
+Assets/Features/Defense3D/Session/DefenseRun6003D.cs,64,var woodDropPrefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
+Assets/Features/Defense3D/Session/DefenseWoodDrop3D.cs,107,var prefab = Resources.Load<GameObject>(ResourcePath);
+Assets/Features/Defense3D/UI/DefenseMatchPresenter.cs,338,"SceneManager.LoadScene(0, LoadSceneMode.Single);"
+Assets/Features/Elements/ElementReactionSettings.cs,21,"_runtime = Resources.Load<ElementReactionSettings>(""ElementReactionSettings"");"
+Assets/Features/Elements/FireSpreadSettings.cs,22,"_runtime = Resources.Load<FireSpreadSettings>(""FireSpreadSettings"");"
+Assets/Features/Elements/SaLayReactionSettings.cs,33,"_runtime = Resources.Load<SaLayReactionSettings>(""SaLayReactionSettings"");"
+Assets/Features/Elements/SinhTruongReactionSettings.cs,24,"_runtime = Resources.Load<SinhTruongReactionSettings>(""SinhTruongReactionSettings"");"
+Assets/Features/Elements/SteamSlipReactionSettings.cs,31,"_runtime = Resources.Load<SteamSlipReactionSettings>(""SteamSlipReactionSettings"");"
+Assets/Features/Elements/SteamSlipTestHarness.cs,141,"foreach (string guid in UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { WeaponFolder }))"
+Assets/Features/Elements/SteamSlipTestHarness.cs,145,"foreach (string guid in UnityEditor.AssetDatabase.FindAssets(""t:SignatureSkillData"", new[] { SkillFolder }))"
+Assets/Features/Elements/SteamSlipTestHarness.cs,154,"foreach (string guid in UnityEditor.AssetDatabase.FindAssets(""t:Prefab"", new[] { EnemyFolder }))"
+Assets/Features/Elements/ToaiGiapReactionSettings.cs,25,"_runtime = Resources.Load<ToaiGiapReactionSettings>(""ToaiGiapReactionSettings"");"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,29,"string[] expGuids = AssetDatabase.FindAssets(""ExpGem t:Prefab"", new string[] { ""Assets/_Prefabs"" });"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,144,"string[] configGuids = AssetDatabase.FindAssets($""{enemyId} t:EnemyConfig"", new string[] { ""Assets/_Data/Enemies"" });"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,215,"string[] spriteGuids = AssetDatabase.FindAssets(""Nguudaumadien-Idle t:Sprite"", new string[] { ""Assets/_ART"" });"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,228,"string[] controllerGuids = AssetDatabase.FindAssets(""NguuDauMaDien t:RuntimeAnimatorController"", new string[] { ""Assets/_ART"" });"
+Assets/Features/Enemies/Editor/EnemyPrefabGenerator.cs,269,"string[] configGuids = AssetDatabase.FindAssets($""{bossId} t:EnemyConfig"", new string[] { ""Assets/_Data/Enemies"" });"
+Assets/Features/Enemies/Editor/WaveDataGenerator.cs,93,"string[] existingGuids = AssetDatabase.FindAssets(""t:SpawnWaveConfig"", new string[] { folderPath });"
+Assets/Features/Enemies/Visuals/TetherBeamVisual.cs,109,"Shader shader = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"")"
+Assets/Features/Enemies/Visuals/TetherBeamVisual.cs,110,"?? Shader.Find(""Sprites/Default"")"
+Assets/Features/Enemies/Visuals/TetherBeamVisual.cs,111,"?? Shader.Find(""Unlit/Color"");"
+Assets/Features/MatchFlow/MatchFlowService.cs,41,"var db = await _assetProvider.LoadAssetAsync<WorldStageDatabaseSO>(""WorldStageDatabase"");"
+Assets/Features/MatchFlow/MatchFlowService.cs,49,"stage = await _assetProvider.LoadAssetAsync<StageDefinitionSO>(""Stage_01_BambooForest"");"
+Assets/Features/MatchFlow/MatchFlowService.cs,115,"var mapInstance = await _assetProvider.InstantiateAsync(stage.mapPrefabAddress, Vector3.zero, Quaternion.identity);"
+Assets/Features/MetaProgression/CharacterProgressionManager.cs,89,"_progressionConfig = Resources.Load<CharacterStarProgressionSO>(""CharacterStarProgressionConfig"");"
+Assets/Features/MetaProgression/Editor/PermanentUpgradeTreeGenerator.cs,150,// Tự động đồng bộ file asset sang Assets/Resources/ để runtime Resources.Load luôn tải được
+Assets/Features/MetaProgression/Gacha/Core/LocalSOGachaDataProvider.cs,38,"var loaded = Resources.Load<GachaBannerConfigSO>($""Gacha/{bannerId}"");"
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,48,"string[] guids = AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Features/MetaProgression/Gacha/Editor/GachaDataGenerator.cs,133,"string[] guids = AssetDatabase.FindAssets(""t:CharacterDataSO"");"
+Assets/Features/MetaProgression/Gacha/RelicGachaManager.cs,54,"_activeBanner = Resources.Load<GachaBannerConfigSO>(""Gacha/banner_standard"");"
+Assets/Features/MetaProgression/Gacha/RelicGachaManager.cs,71,"_activeBanner = Resources.Load<GachaBannerConfigSO>(""Gacha/banner_standard"");"
+Assets/Features/Multiplayer/Core/CharacterDatabasePrefabProvider.cs,25,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Multiplayer/Core/CharacterDatabasePrefabProvider.cs,34,"if (_database == null) _database = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Player/CharacterCombat.cs,544,"_cachedHitSparksPrefab = Resources.Load<GameObject>(""Prefabs/VFX/PS_ImpactSparks"");"
+Assets/Features/Player/CharacterCombat.cs,547,"_cachedHitSparksPrefab = Resources.Load<GameObject>(""PS_ImpactSparks"");"
+Assets/Features/Player/CombatAimIndicator.cs,49,"indicatorSprite = Resources.Load<Sprite>(""Art/UI/HUD/Tex_Attack_Aim_Arc_Reticle"");"
+Assets/Features/Player/GameplayBootstrapper.cs,197,"characterDatabase = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Player/Mechanics/ThanhDongPossessionTracker.cs,272,"line.material = new Material(Shader.Find(""Sprites/Default""));"
+Assets/Features/Player/PlayerProvider.cs,38,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Features/Player/PlayerStats.cs,130,"baseStatsConfig = Resources.Load<HeroStatsConfig>(""HeroStatsConfig"");"
+Assets/Features/Player/PlayerStats.cs,134,"var configs = UnityEditor.AssetDatabase.FindAssets(""t:HeroStatsConfig"");"
+Assets/Features/Player/RunLoadoutState.cs,107,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,117,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,118,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""Character/CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,119,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""Database/CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,143,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,144,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""Character/CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,145,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""Database/CharacterDatabase"");"
+Assets/Features/Player/RunLoadoutState.cs,336,"var addressableWeapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/Player/RunLoadoutState.cs,353,"var asyncTask = ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/Player/RunLoadoutState.cs,362,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Features/Player/Skills/DaoSiSignatureSkill.cs,47,"lineRenderer.material = new Material(Shader.Find(""Sprites/Default""));"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,124,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>(""PermanentUpgradeTree"");"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,133,"_cachedTreeData = Resources.Load<PermanentUpgradeTreeData>(""PermanentUpgradeTree"")"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,134,"?? Resources.Load<PermanentUpgradeTreeData>(""Meta/PermanentUpgradeTree"");"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,155,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterStarProgressionSO>(""CharacterStarProgressionConfig"");"
+Assets/Features/Player/Stats/PlayerProgressionApplicator.cs,164,"_cachedStarConfig = Resources.Load<CharacterStarProgressionSO>(""CharacterStarProgressionConfig"");"
+Assets/Features/Projectiles/Editor/ProjectileBehaviorDataGenerator.cs,113,"string[] guids = AssetDatabase.FindAssets($""{projId}_ t:ProjectileData"", new string[] { dataFolder });"
+Assets/Features/Projectiles/Editor/ProjectilePrefabGenerator.cs,82,"string[] dataGuids = AssetDatabase.FindAssets($""{info.id}_ t:ProjectileData"", new string[] { dataFolder });"
+Assets/Features/Projectiles/SimpleProjectile.cs,105,"_hitSparksPrefab = Resources.Load<GameObject>(""Prefabs/VFX/PS_ImpactSparks"");"
+Assets/Features/Projectiles/SimpleProjectile.cs,108,"_hitSparksPrefab = Resources.Load<GameObject>(""PS_ImpactSparks"");"
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,25,"string[] enemyGuids = AssetDatabase.FindAssets(""E_MAGIAP t:Prefab"", new string[] { ""Assets/_Prefabs/Enemies"" });"
+Assets/Features/Spawners/Editor/WavePhaseGenerator.cs,122,"string[] guids = AssetDatabase.FindAssets($""{fileName} t:SpawnWaveConfig"", new string[] { waveFolder });"
+Assets/Features/Spawners/LevelTimelineConfig.cs,63,"spawnPrefab = Resources.Load<GameObject>($""Enemies/{enemyAddress}"") ??"
+Assets/Features/Spawners/LevelTimelineConfig.cs,64,Resources.Load<GameObject>(enemyAddress);
+Assets/Features/UI/CardCodexPresenter.cs,267,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"");"
+Assets/Features/UI/CardCodexPresenter.cs,280,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:UpgradeData"");"
+Assets/Features/UI/CardCodexPresenter.cs,298,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:CharacterDataSO"");"
+Assets/Features/UI/CardCodexPresenter.cs,338,"var weapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>(""WeaponData"");"
+Assets/Features/UI/CardCodexPresenter.cs,362,"var upgrades = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>(""UpgradeData"");"
+Assets/Features/UI/Editor/CoopRevivePrefabGenerator.cs,47,// Đồng bộ thêm vào Assets/Resources/UI để Resources.Load hoạt động trên cả Runtime APK Android
+Assets/Features/UI/Editor/CoopRevivePrefabGenerator.cs,56,"Debug.Log($""<color=#00FF88>[Coop Revive UI]</color> Đã tạo và đồng bộ thành công Prefab tại:\n- <b>{PREFAB_PATH}</b>\n- <b>{RESOURCE_PATH}</b> (Resources.Load)"");"
+Assets/Features/UI/Gacha/GachaChestPresenter.cs,202,"var charDb = Resources.Load<ProjectZombie.Features.Player.CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/UI/GameOverScreenPresenter.cs,409,SceneManager.LoadScene(gameSceneName);
+Assets/Features/UI/GameOverScreenPresenter.cs,425,SceneManager.LoadScene(mainMenuSceneName);
+Assets/Features/UI/HUD/RunHUDPresenter.cs,142,"var prefab = Resources.Load<GameObject>(""UI/PlayerStatsMenuUI"");"
+Assets/Features/UI/HUD/RunHUDView.cs,240,"_skillEntryPrefab = Resources.Load<SkillUIEntry>(""SkillUIEntry"");"
+Assets/Features/UI/HUD/WaveBannerWidgetView.cs,164,"if (_playerIndicatorSprite == null) _playerIndicatorSprite = Resources.Load<Sprite>(""UI/HUD/Pin_Player_LacBird"") ?? Resources.Load<Sprite>(""Pin_Player_LacBird"");"
+Assets/Features/UI/HUD/WaveBannerWidgetView.cs,165,"if (_phaseDividerSprite == null) _phaseDividerSprite = Resources.Load<Sprite>(""UI/HUD/Pin_Phase_Divider"") ?? Resources.Load<Sprite>(""Pin_Phase_Divider"");"
+Assets/Features/UI/HUD/WaveBannerWidgetView.cs,166,"if (_swarmBadgeSprite == null) _swarmBadgeSprite = Resources.Load<Sprite>(""UI/HUD/Badge_Swarm_Swords"") ?? Resources.Load<Sprite>(""Badge_Swarm_Swords"");"
+Assets/Features/UI/HUD/WaveBannerWidgetView.cs,167,"if (_eliteBadgeSprite == null) _eliteBadgeSprite = Resources.Load<Sprite>(""UI/HUD/Badge_Elite_OxHead"") ?? Resources.Load<Sprite>(""Badge_Elite_OxHead"");"
+Assets/Features/UI/HUD/WaveBannerWidgetView.cs,168,"if (_finalBossBadgeSprite == null) _finalBossBadgeSprite = Resources.Load<Sprite>(""UI/HUD/Badge_Boss_Dragon"") ?? Resources.Load<Sprite>(""Badge_Boss_Dragon"");"
+Assets/Features/UI/Lobby/LobbyPresenter.cs,252,"var dbHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<ProjectZombie.Features.Maps.WorldStageDatabaseSO>(""WorldStageDatabase"");"
+Assets/Features/UI/MainHubPresenter.cs,147,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/UI/MainHubPresenter.cs,156,"if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/UI/MetaUIManager.cs,62,"_uiRegistry = Resources.Load<UIRegistrySO>(""UI/UIRegistry"");"
+Assets/Features/UI/MetaUpgradeShopPresenter.cs,36,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<PermanentUpgradeTreeData>(""PermanentUpgradeTree"");"
+Assets/Features/UI/MetaUpgradeShopPresenter.cs,45,"_treeData = Resources.Load<PermanentUpgradeTreeData>(""PermanentUpgradeTree"") ?? Resources.Load<PermanentUpgradeTreeData>(""Meta/PermanentUpgradeTree"");"
+Assets/Features/UI/MetaUpgradeShopPresenter.cs,55,"if (_tabActiveSprite == null) _tabActiveSprite = Resources.Load<Sprite>(""UI/VongXuyen/Btn_Tab_Wood_Active"") ?? Resources.Load<Sprite>(""Btn_Tab_Wood_Active"");"
+Assets/Features/UI/MetaUpgradeShopPresenter.cs,56,"if (_tabInactiveSprite == null) _tabInactiveSprite = Resources.Load<Sprite>(""UI/VongXuyen/Btn_Tab_Wood_Inactive"") ?? Resources.Load<Sprite>(""Btn_Tab_Wood_Inactive"");"
+Assets/Features/UI/ResourceDownload/ResourceDownloadModalView.cs,90,"var loaded = Resources.Load<GameObject>(""UI/ResourcePackageItem_Prefab"");"
+Assets/Features/UI/SettingsModalPresenter.cs,232,"var customizerPrefab = Resources.Load<GameObject>(""UI/MobileControlsCustomizerUI"");"
+Assets/Features/UI/StageSelect/StageSelectUIPresenter.cs,49,"db = Resources.Load<WorldStageDatabaseSO>(""WorldStageDatabase"")"
+Assets/Features/UI/StageSelect/StageSelectUIPresenter.cs,50,"?? Resources.Load<WorldStageDatabaseSO>(""Levels/WorldStageDatabase"");"
+Assets/Features/UI/StageSelect/StageSelectUIPresenter.cs,110,"var localMap = Resources.Load<GameObject>($""Maps/{currentStage.mapPrefabAddress}"");"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,327,"var settingsPrefab = Resources.Load<GameObject>(""UI/SettingsModalUI"");"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,407,SceneManager.LoadScene(currentSceneName);
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,411,"SceneManager.LoadScene(""SampleScene"");"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,426,"var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/UI/StatsAndSkills/PlayerInfoUIPresenter.cs,435,"if (charDb == null) charDb = Resources.Load<CharacterDatabaseSO>(""CharacterDatabase"");"
+Assets/Features/UI/UIScreenFactory.cs,60,"var registry = _uiRegistry ?? Resources.Load<UIRegistrySO>(""UI/UIRegistry"");"
+Assets/Features/UI/UIScreenFactory.cs,109,var prefabGo = Resources.Load<GameObject>(resName);
+Assets/Features/UI/UIScreenFactory.cs,185,"var registry = _uiRegistry ?? Resources.Load<UIRegistrySO>(""UI/UIRegistry"");"
+Assets/Features/UI/UIScreenFactory.cs,190,var handle = entry.screenPrefabRef.InstantiateAsync(_container);
+Assets/Features/UI/UpgradeUIPresenter.cs,94,"var treeData = Resources.Load<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>(""PermanentUpgradeTree"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,143,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,519,"return Resources.Load<Sprite>(""UI/Badges/Badge_Element_Kim"") ?? Resources.Load<Sprite>(""Badge_Element_Kim"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,522,"return Resources.Load<Sprite>(""UI/Badges/Badge_Element_Moc"") ?? Resources.Load<Sprite>(""Badge_Element_Moc"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,525,"return Resources.Load<Sprite>(""UI/Badges/Badge_Element_Thuy"") ?? Resources.Load<Sprite>(""Badge_Element_Thuy"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,528,"return Resources.Load<Sprite>(""UI/Badges/Badge_Element_Hoa"") ?? Resources.Load<Sprite>(""Badge_Element_Hoa"");"
+Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,531,"return Resources.Load<Sprite>(""UI/Badges/Badge_Element_Tho"") ?? Resources.Load<Sprite>(""Badge_Element_Tho"");"
+Assets/Features/Upgrades/Debug/RuntimeUpgradeDebugController.cs,89,"var coreData = Resources.Load<MythicCoreUpgradeData>($""Upgrades/Mythic/{coreId}"");"
+Assets/Features/Upgrades/Debug/RuntimeUpgradeDebugController.cs,93,"string[] guids = UnityEditor.AssetDatabase.FindAssets($""{coreId} t:MythicCoreUpgradeData"");"
+Assets/Features/Upgrades/Editor/AugmentVFXPrefabsBuilder.cs,90,"Shader particleShader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Features/Upgrades/Editor/MythicCoresDataGenerator.cs,242,"string[] guids = AssetDatabase.FindAssets(""t:Prefab Player"");"
+Assets/Features/Upgrades/Editor/ProgressionUpgradesDatabaseBuilder.cs,202,"var traits = AssetDatabase.FindAssets(""t:SynergyTraitUpgradeData"", new[] { TRAITS_DIR });"
+Assets/Features/Upgrades/Editor/ProgressionUpgradesDatabaseBuilder.cs,339,"string[] guids = AssetDatabase.FindAssets($""{id} t:{typeof(T).Name}"", new[] { folder });"
+Assets/Features/Upgrades/Editor/Studio/UpgradeStudioWindow.cs,65,"string[] guids = AssetDatabase.FindAssets(""t:UpgradeData"", new[] { ""Assets/_Data/Upgrades"" });"
+Assets/Features/Upgrades/Editor/Studio/UpgradeStudioWindow.cs,68,"guids = AssetDatabase.FindAssets(""t:UpgradeData"", new[] { ""Assets/Resources/Upgrades"" });"
+Assets/Features/Upgrades/Editor/UpgradeDatabaseStandardizer.cs,64,"string[] guids = AssetDatabase.FindAssets($""{id}_ t:CommonUpgradeData"", new string[] { passivesFolder });"
+Assets/Features/Upgrades/Editor/UpgradeDatabaseStandardizer.cs,155,"string[] iconGuids = AssetDatabase.FindAssets($""Icon_{wId} t:Sprite"", new string[] { ""Assets/Art/Weapons"" });"
+Assets/Features/Upgrades/Editor/UpgradeDatabaseStandardizer.cs,225,"string[] guids = AssetDatabase.FindAssets($""{evoId}_ t:EvolutionUpgradeData"", new string[] { evolutionsFolder });"
+Assets/Features/Upgrades/Editor/UpgradeDatabaseStandardizer.cs,246,"string[] prefabGuids = AssetDatabase.FindAssets($""Weapon_{wId} t:Prefab"");"
+Assets/Features/Upgrades/UpgradeManager.cs,216,"string[] guids = UnityEditor.AssetDatabase.FindAssets(""t:UpgradeData"", searchFolders);"
+Assets/Features/Upgrades/UpgradeManager.cs,261,"var loadedList = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>(""UpgradeData"");"
+Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,102,"string[] guids = AssetDatabase.FindAssets($""Weapon_{def.id}_ t:Prefab"", new string[] { ""Assets/_Prefabs/Weapons"" });"
+Assets/Features/Weapons/Editor/WeaponPrefabElementUpdater.cs,50,"string[] guids = AssetDatabase.FindAssets($""Weapon_{info.id}_ t:Prefab"", new string[] { ""Assets/_Prefabs/Weapons"" });"
+Assets/Features/Weapons/Weapon_Pot.cs,111,"suctionMaterial = Resources.Load<Material>(""Materials/MAT_VFX_Pot_Suction"") ??"
+Assets/Features/Weapons/Weapon_Pot.cs,112,"Resources.Load<Material>(""MAT_VFX_Pot_Suction"");"
+Assets/Features/Weapons/Weapon_Slipper.cs,68,"Shader unlitShader = Shader.Find(""Universal Render Pipeline/2D/Sprite-Unlit-Default"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Features/Weapons/Weapon_Slipper.cs,77,"Shader particleShader = Shader.Find(""Universal Render Pipeline/Particles/Unlit"") ?? Shader.Find(""Particles/Standard Unlit"") ?? Shader.Find(""Sprites/Default"");"
+Assets/Features/Weapons/WeaponManager.cs,231,var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<WeaponData>(weaponId);
+Assets/Features/Weapons/WeaponManager.cs,250,"string[] guids = UnityEditor.AssetDatabase.FindAssets($""t:WeaponData {weaponId}"");"
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,4686,"foreach (var path in AssetDatabase.FindAssets($""l:{Label} t:TextAsset"")"
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,9605,"var query = AssetDatabase.FindAssets(""t:asmdef"")"
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,11767,"_allScenes = _allScenes ?? AssetDatabase.FindAssets(""t:scene"")"
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,12495,"asset = Resources.Load(path, attrib.ResourceType);"
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,12565,[RuntimeInitializeOnLoadMethod]
+Assets/Photon/Fusion/Editor/Fusion.Unity.Editor.cs,16281,"foreach (var prefab in AssetDatabase.FindAssets($""t:prefab"")"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,99,_op = Addressables.LoadAssetAsync<UnityEngine.Object>(RuntimeKey);
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,279,var assets = UnityResources.LoadAll<T>(resoucePath);
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,295,"_state = string.IsNullOrEmpty(SubObjectName) ? UnityResources.Load<T>(ResourcePath) : LoadNamedResource(ResourcePath, SubObjectName);"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,297,_state = UnityResources.LoadAsync<T>(ResourcePath);
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,329,"public T EditorInstance => string.IsNullOrEmpty(SubObjectName) ? UnityResources.Load<T>(ResourcePath) : LoadNamedResource(ResourcePath, SubObjectName);"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,538,var op = Addressables.LoadAssetAsync<FusionGlobalScriptableObject>(Address);
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,563,var op = Addressables.LoadAssetAsync<FusionGlobalScriptableObject>(Address);
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,632,"var instance = UnityEngine.Resources.Load(resourcePath, type);"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,654,"var request = UnityEngine.Resources.LoadAsync(resourcePath, type);"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,1110,[RuntimeInitializeOnLoadMethod]
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,1313,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,1919,[RuntimeInitializeOnLoadMethod]
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,2623,public static string Dump(this LoadSceneParameters loadSceneParameters) {
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,2624,"return $""[LoadSceneParameters: {loadSceneParameters.loadSceneMode}, localPhysicsMode:{loadSceneParameters.localPhysicsMode}]"";"
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4240,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4517,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/FusionAddressablePrefabsPreloader.cs,24,"// we can't just LoadAssetAsync() because source does it, too:"
+Assets/Photon/Fusion/Runtime/FusionAddressablePrefabsPreloader.cs,27,var handle = Addressables.LoadAssetAsync<GameObject>(key);
+Assets/Photon/Fusion/Runtime/FusionBasicBillboard.cs,69,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/FusionBootstrap.cs,61,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/FusionBootstrap.cs,195,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/FusionBootstrap.cs,463,SceneManager.LoadSceneAsync(_initialScenePath);
+Assets/Photon/Fusion/Runtime/FusionBootstrap.cs,667,"sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,82,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,261,"public virtual NetworkSceneAsyncOp LoadScene(SceneRef sceneRef, NetworkLoadSceneParameters parameters) {"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,263,"return NetworkSceneAsyncOp.FromCoroutine(sceneRef, StartTracedCoroutine(LoadSceneCoroutine(sceneRef, parameters)));"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,322,"protected virtual IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams) {"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,328,"Log.TraceSceneManager(Runner, $""LoadSceneCoroutine called with {sceneRef}, {sceneParams}"");"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,330,var loadSceneMode    = sceneParams.LoadSceneMode;
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,338,if (loadSceneMode == LoadSceneMode.Single) {
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,341,loadSceneMode = LoadSceneMode.Additive;
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,362,if (DestroySpawnedPrefabsOnSceneUnload && loadSceneMode == LoadSceneMode.Single)
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,389,if (loadSceneMode == LoadSceneMode.Single && !IsMultiplePeer) {
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,405,if (loadSceneMode == LoadSceneMode.Single) {
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,413,"var op = SceneManager.LoadSceneAsync(sceneRef.AsIndex,"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,414,"new LoadSceneParameters(loadSceneMode, localPhysicsMode));"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,426,"OnLoadSceneProgress(sceneRef, op.progress);"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,451,"var loadSceneParameters = new LoadSceneParameters(loadSceneMode, localPhysicsMode);"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,458,"var op = Addressables.LoadSceneAsync(sceneAddress, loadSceneParameters);"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,480,"OnLoadSceneProgress(sceneRef, op.PercentComplete);"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,581,"protected virtual IEnumerator OnSceneLoaded(SceneRef sceneRef, Scene scene, NetworkLoadSceneParameters sceneParams) {"
+Assets/Photon/Fusion/Runtime/NetworkSceneManagerDefault.cs,629,"protected virtual void OnLoadSceneProgress(SceneRef sceneRef, float progress) {"
+Assets/Photon/Fusion/Runtime/Statistics/FusionStatistics.cs,62,_statsCanvasPrefab = Resources.Load<GameObject>(STATS_CANVAS_PREFAB_PATH);
+Assets/Photon/Fusion/Runtime/Statistics/FusionStatistics.cs,63,_objectGraphCombinePrefab = Resources.Load<FusionNetworkObjectStatsGraphCombine>(STATS_OBJECT_COMBINE_PREFAB_PATH);
+Assets/Photon/Fusion/Runtime/Statistics/FusionStatsCanvas.cs,44,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Photon/Fusion/Runtime/Statistics/FusionStatsConfig.cs,27,[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+Assets/Tests/Editor/DefenseEnemyFoundationTests.cs,93,"var definition = Resources.Load<DefenseEnemyDataSO>(DefenseEnemyFactory3D.DefinitionsFolder + ""magiap"");"
+Assets/Tests/Editor/DefenseEnemyPrefab3DTests.cs,20,Is.SameAs(Resources.Load<GameObject>(resource)));
+Assets/Tests/Editor/DefenseG2CombatAndEnemyTests.cs,70,var definition = UnityEngine.Resources.Load<DefenseEnemyDataSO>(DefenseEnemyFactory3D.DefinitionsFolder + id);
+Assets/Tests/Editor/DefenseRuntimeIntegrationTests.cs,71,var definition = Object.Instantiate(Resources.Load<DefenseEnemyDataSO>(
+Assets/Tests/Editor/DefenseRuntimeIntegrationTests.cs,110,var config = Object.Instantiate(Resources.Load<StageSpawnConfig>(StageSpawnConfig.DefaultResource));
+Assets/Tests/Editor/DefenseRuntimeIntegrationTests.cs,119,"entry.FindPropertyRelative(""Enemy"").objectReferenceValue = Resources.Load<DefenseEnemyDataSO>(DefenseEnemyFactory3D.DefinitionsFolder + ""magiap"");"
+Assets/Tests/Editor/DefenseRuntimeIntegrationTests.cs,295,"var boss = Object.Instantiate(Resources.Load<GameObject>(""Defense3D/DefenseYaksha3D""));"
+Assets/Tests/Editor/DefenseWoodDrop3DTests.cs,19,Is.SameAs(Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath)));
+Assets/Tests/Editor/DefenseWoodDrop3DTests.cs,53,var prefab = Resources.Load<GameObject>(DefenseWoodDrop3D.ResourcePath);
+Assets/Tests/Editor/StageSpawnConfigTests.cs,12,private static StageSpawnConfig Production => Resources.Load<StageSpawnConfig>(StageSpawnConfig.DefaultResource);
+Assets/Tests/Editor/StageSpawnConfigTests.cs,54,"var fast = Resources.Load<StageSpawnConfig>(""Defense3D/Stages/Stage01_FastSpawn"").Compile();"
