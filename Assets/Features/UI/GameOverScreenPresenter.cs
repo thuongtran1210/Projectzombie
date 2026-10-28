@@ -279,13 +279,7 @@ namespace ProjectZombie.Features.UI
                 _deathSequenceFailSafe = null;
             }
 
-            // Đóng khẩn cấp bảng Upgrade nếu đang mở dở khi tử trận
-            var upgradePresenter = UpgradeUIPresenter.Instance;
-            if (upgradePresenter != null)
-            {
-                var upgradeView = upgradePresenter.GetComponent<UpgradeUIView>();
-                if (upgradeView != null) upgradeView.SetActive(false);
-            }
+
 
             if (GameStateManager.Instance != null)
             {

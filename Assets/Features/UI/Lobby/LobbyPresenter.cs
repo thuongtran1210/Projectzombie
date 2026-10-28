@@ -273,21 +273,16 @@ namespace ProjectZombie.Features.UI.Lobby
                 {
                     MetaUIManager.Instance.SetMetaCanvasActive(false);
                 }
-                if (GameplayUIManager.Instance != null)
-                {
-                    GameplayUIManager.Instance.SetGameplayCanvasActive(true);
-                }
-
                 if (CharacterPreviewStage.Instance != null)
                 {
                     CharacterPreviewStage.Instance.SetStageActive(false);
                 }
 
-                // Nếu GameplayBootstrapper có sẵn trong scene, chuyển trạng thái sang Playing
-                if (Player.GameplayBootstrapper.Instance != null)
-                {
-                    Player.GameplayBootstrapper.Instance.StartMatchFlow();
-                }
+                // Điều hướng sang Defense 3D
+                var repo = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository();
+                var dto = repo.Load();
+                var snapshot = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutSnapshot(dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+                _ = ProjectZombie.Features.Defense3D.DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot);
             }
         }
 

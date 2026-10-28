@@ -1,11 +1,6 @@
 using UnityEngine;
-using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.Player.Mechanics;
-using ProjectZombie.Features.Player.Skills;
 using ProjectZombie.Features.Player.Input;
-using ProjectZombie.Features.Combat;
-using ProjectZombie.Features.Upgrades;
 
 namespace ProjectZombie.Features.Player
 {
@@ -19,18 +14,9 @@ namespace ProjectZombie.Features.Player
         public Transform Transform { get; }
         public PlayerStats Stats { get; }
         public HealthSystem Health { get; }
-        public PlayerExperience Experience { get; }
-        public WeaponManager WeaponManager { get; }
-        public PlayerPassives Passives { get; }
-        public ICharacterGaugeProvider GaugeProvider { get; }
-        public SignatureSkillManager SignatureSkillManager { get; }
-        public CharacterCombat Combat { get; }
         public PlayerController Controller { get; }
         public PlayerInputReader InputReader { get; }
-
-        public PlayerLogic Logic { get; }
         public ProjectZombie.Features.Combat.PlayerCombatEvents CombatEvents { get; }
-        public PlayerMythicManager MythicManager { get; }
 
         public bool IsLocal { get; set; } = true;
         public int PlayerId { get; set; } = 0;
@@ -47,27 +33,13 @@ namespace ProjectZombie.Features.Player
             {
                 Stats = playerObject.GetComponent<PlayerStats>();
                 Health = playerObject.GetComponent<HealthSystem>();
-                Experience = playerObject.GetComponent<PlayerExperience>();
-                WeaponManager = playerObject.GetComponent<WeaponManager>();
-                Passives = playerObject.GetComponent<PlayerPassives>();
-                GaugeProvider = playerObject.GetComponent<ICharacterGaugeProvider>();
-                SignatureSkillManager = playerObject.GetComponent<SignatureSkillManager>();
-                Combat = playerObject.GetComponent<CharacterCombat>();
                 Controller = playerObject.GetComponent<PlayerController>();
                 InputReader = playerObject.GetComponent<PlayerInputReader>();
-                Logic = playerObject.GetComponent<PlayerLogic>();
                 CombatEvents = playerObject.GetComponent<ProjectZombie.Features.Combat.PlayerCombatEvents>();
                 if (CombatEvents == null)
                 {
                     CombatEvents = playerObject.AddComponent<ProjectZombie.Features.Combat.PlayerCombatEvents>();
                 }
-
-                MythicManager = playerObject.GetComponent<PlayerMythicManager>();
-                if (MythicManager == null)
-                {
-                    MythicManager = playerObject.AddComponent<PlayerMythicManager>();
-                }
-                MythicManager.Construct(this);
 
                 ValidateComponents();
             }
@@ -82,8 +54,6 @@ namespace ProjectZombie.Features.Player
         {
             if (Stats == null) Debug.LogWarning($"[PlayerContext] {GameObject.name} thiếu PlayerStats!");
             if (Health == null) Debug.LogWarning($"[PlayerContext] {GameObject.name} thiếu HealthSystem!");
-            if (Experience == null) Debug.LogWarning($"[PlayerContext] {GameObject.name} thiếu PlayerExperience!");
-            if (WeaponManager == null) Debug.LogWarning($"[PlayerContext] {GameObject.name} thiếu WeaponManager!");
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.Upgrades;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.Player;
@@ -36,19 +35,15 @@ namespace ProjectZombie.Features.UI
 
         private static readonly List<WeaponData> _cachedWeapons = new List<WeaponData>();
         private static readonly List<CharacterDataSO> _cachedHeroes = new List<CharacterDataSO>();
-        private static readonly List<UpgradeData> _cachedUpgrades = new List<UpgradeData>();
-        private static readonly List<FusionUpgradeData> _cachedFusionUpgrades = new List<FusionUpgradeData>();
         private static bool _isDataLoaded = false;
         private static Task _loadingDataTask = null;
 
         private readonly Dictionary<WeaponData, CodexSlotItemView> _relicSlotViewMap = new Dictionary<WeaponData, CodexSlotItemView>();
         private readonly Dictionary<CharacterDataSO, CodexSlotItemView> _heroSlotViewMap = new Dictionary<CharacterDataSO, CodexSlotItemView>();
-        private readonly Dictionary<UpgradeData, CodexSlotItemView> _upgradeSlotViewMap = new Dictionary<UpgradeData, CodexSlotItemView>();
 
         private CodexTabType _currentTab = CodexTabType.RelicFusion;
         private WeaponData _selectedRelic;
         private CharacterDataSO _selectedHero;
-        private UpgradeData _selectedUpgrade;
 
         private void Awake()
         {
@@ -208,31 +203,9 @@ namespace ProjectZombie.Features.UI
 
         public void LoadAllData()
         {
-            if (_isDataLoaded && _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0 && _cachedUpgrades.Count > 0)
+            if (_isDataLoaded && _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0)
             {
                 return; // Dữ liệu đã được nạp sẵn trong static cache, không đọc lại đĩa tránh khựng khung hình
-            }
-
-            // 同步 UpgradeManager nếu có
-            if (UpgradeManager.Instance != null && UpgradeManager.Instance.AllAvailableUpgrades != null && UpgradeManager.Instance.AllAvailableUpgrades.Count > 0)
-            {
-                var seenUpgradeIds = new HashSet<string>();
-                foreach (var u in _cachedUpgrades)
-                {
-                    if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
-                }
-                foreach (var u in UpgradeManager.Instance.AllAvailableUpgrades)
-                {
-                    if (u != null)
-                    {
-                        string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                        if (seenUpgradeIds.Add(upId))
-                        {
-                            _cachedUpgrades.Add(u);
-                            if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
-                        }
-                    }
-                }
             }
 
 #if UNITY_EDITOR
@@ -250,13 +223,8 @@ namespace ProjectZombie.Features.UI
 #if UNITY_EDITOR
         private void LoadDataFromEditorFallback()
         {
-            var seenUpgradeIds = new HashSet<string>();
             var seenWeaponIds = new HashSet<string>();
 
-            foreach (var u in _cachedUpgrades)
-            {
-                if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
-            }
             foreach (var w in _cachedWeapons)
             {
                 if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
@@ -275,24 +243,6 @@ namespace ProjectZombie.Features.UI
                     }
                 }
             }
-            if (_cachedUpgrades.Count == 0)
-            {
-                string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UpgradeData");
-                foreach (var guid in guids)
-                {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                    var u = UnityEditor.AssetDatabase.LoadAssetAtPath<UpgradeData>(path);
-                    if (u != null)
-                    {
-                        string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                        if (seenUpgradeIds.Add(upId))
-                        {
-                            _cachedUpgrades.Add(u);
-                            if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
-                        }
-                    }
-                }
-            }
             if (_cachedHeroes.Count == 0)
             {
                 string[] guids = UnityEditor.AssetDatabase.FindAssets("t:CharacterDataSO");
@@ -304,7 +254,7 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            if (_cachedWeapons.Count > 0 && _cachedHeroes.Count > 0 && _cachedUpgrades.Count > 0)
+            if (_cachedWeapons.Count > 0 && _cachedHeroes.Count > 0)
             {
                 _isDataLoaded = true;
             }
@@ -316,13 +266,8 @@ namespace ProjectZombie.Features.UI
             var sw = System.Diagnostics.Stopwatch.StartNew();
             bool hasNewData = false;
 
-            var seenUpgradeIds = new HashSet<string>();
-            var seenWeaponIds = new HashSet<string>();
 
-            foreach (var u in _cachedUpgrades)
-            {
-                if (u != null) seenUpgradeIds.Add(!string.IsNullOrEmpty(u.id) ? u.id : u.name);
-            }
+            var seenWeaponIds = new HashSet<string>();
             foreach (var w in _cachedWeapons)
             {
                 if (w != null && !string.IsNullOrEmpty(w.weaponId)) seenWeaponIds.Add(w.weaponId);
@@ -354,36 +299,7 @@ namespace ProjectZombie.Features.UI
                     }
                 }
 
-                // 2. Nạp Upgrades từ GameDataService
-                if (_cachedUpgrades.Count == 0)
-                {
-                    try
-                    {
-                        var upgrades = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<UpgradeData>("UpgradeData");
-                        if (upgrades != null)
-                        {
-                            foreach (var u in upgrades)
-                            {
-                                if (u != null)
-                                {
-                                    string upId = !string.IsNullOrEmpty(u.id) ? u.id : u.name;
-                                    if (seenUpgradeIds.Add(upId))
-                                    {
-                                        _cachedUpgrades.Add(u);
-                                        if (u is FusionUpgradeData f) _cachedFusionUpgrades.Add(f);
-                                        hasNewData = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load UpgradeData warning: {ex.Message}");
-                    }
-                }
-
-                // 3. Nạp Heroes từ GameDataService
+                // 2. Nạp Heroes từ GameDataService
                 if (_cachedHeroes.Count == 0)
                 {
                     try
@@ -410,7 +326,7 @@ namespace ProjectZombie.Features.UI
 
             _isDataLoaded = _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0;
             sw.Stop();
-            Debug.Log($"<color=#00FF88>[CardCodexPresenter] LoadAllDataAsync hoàn tất: ({_cachedWeapons.Count} Vũ khí, {_cachedHeroes.Count} Tướng, {_cachedUpgrades.Count} Thẻ) trong {sw.ElapsedMilliseconds} ms.</color>");
+            Debug.Log($"<color=#00FF88>[CardCodexPresenter] LoadAllDataAsync hoàn tất: ({_cachedWeapons.Count} Vũ khí, {_cachedHeroes.Count} Tướng) trong {sw.ElapsedMilliseconds} ms.</color>");
 
             if (hasNewData && gameObject.activeInHierarchy && _view != null && _view.gameObject.activeInHierarchy)
             {
@@ -440,7 +356,6 @@ namespace ProjectZombie.Features.UI
             _view.ClearGrid();
             _relicSlotViewMap.Clear();
             _heroSlotViewMap.Clear();
-            _upgradeSlotViewMap.Clear();
 
             if (tab == CodexTabType.RelicFusion)
             {
@@ -548,39 +463,7 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                List<UpgradeData> filterList = new List<UpgradeData>();
-                filterList.AddRange(_cachedUpgrades.FindAll(u => u.upgradeType == UpgradeType.CommonUpgrade || u.upgradeType == UpgradeType.RareUpgrade || u.upgradeType == UpgradeType.ComboAugment || u.upgradeType == UpgradeType.DashTrait || u.upgradeType == UpgradeType.BreakthroughUltimate));
-
-                if (filterList.Count > 0)
-                {
-                    for (int i = 0; i < filterList.Count; i++)
-                    {
-                        var data = filterList[i];
-                        bool isSelected = _selectedUpgrade == data;
-
-                        var slotItem = _view.CreateSlotItem();
-                        var vm = new UpgradeSlotViewModel
-                        {
-                            UpgradeId = data.id,
-                            UpgradeName = data.upgradeName,
-                            Icon = data.icon,
-                            IsSelected = isSelected
-                        };
-
-                        slotItem.BindUpgrade(vm, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
-                        {
-                            _audioService?.PlayUIClick();
-                            SelectUpgrade(data);
-                        });
-
-                        _upgradeSlotViewMap[data] = slotItem;
-                    }
-                    SelectUpgrade(filterList[0]);
-                }
-                else
-                {
-                    _view.DisplayCardDetail("Chưa Có Dữ Liệu", "", "Thư viện đang được cập nhật...", null, false);
-                }
+                _view.DisplayCardDetail("Thần Thẻ Bị Động", "[ĐANG CHUYỂN DỊCH]", "Hệ thống nâng cấp thẻ kỹ năng đang được tối ưu và chuyển dịch sang chế độ Phòng Thủ 3D.", null, false);
             }
 
             sw.Stop();
@@ -619,18 +502,6 @@ namespace ProjectZombie.Features.UI
                     bool isUnlocked = star > 0;
 
                     slotView.SetSelected(isSelected, isUnlocked, GetElementColor(hero.element), hero.characterName);
-                }
-            }
-            else
-            {
-                foreach (var kvp in _upgradeSlotViewMap)
-                {
-                    var data = kvp.Key;
-                    var slotView = kvp.Value;
-                    if (slotView == null) continue;
-
-                    bool isSelected = data == _selectedUpgrade;
-                    slotView.SetSelected(isSelected, true, null, data.upgradeName);
                 }
             }
         }
@@ -725,18 +596,7 @@ namespace ProjectZombie.Features.UI
             _view.DisplayRelicDetail(hero.characterName, category, desc, hero.avatar, star, shards, reqShards, cost, canUpgrade, btnLabel);
         }
 
-        private void SelectUpgrade(UpgradeData data)
-        {
-            if (data == null) return;
-            _selectedUpgrade = data;
 
-            UpdateSelectionVisuals();
-
-            bool isFusion = data is FusionUpgradeData;
-            string categoryName = data.GetCategoryDisplayName();
-
-            _view.DisplayCardDetail(data.upgradeName, categoryName, data.description, data.icon, isFusion);
-        }
 
         private void HandleFusionClicked()
         {

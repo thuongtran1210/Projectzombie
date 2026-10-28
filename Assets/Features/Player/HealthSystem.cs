@@ -156,8 +156,7 @@ namespace ProjectZombie.Features.Shared
                 }
             }
 
-            TryGetComponent<Enemies.Enemy>(out var enemy);
-            damageData = DamageUtility.ApplyElementCounter(damageData, enemy != null ? enemy.CurrentElement : CurrentElement);
+            damageData = DamageUtility.ApplyElementCounter(damageData, CurrentElement);
 
             _currentHealth -= damageData.Amount;
             _currentHealth = Mathf.Max(_currentHealth, 0f);

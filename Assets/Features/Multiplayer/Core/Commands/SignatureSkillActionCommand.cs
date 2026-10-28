@@ -1,6 +1,5 @@
 using UnityEngine;
 using ProjectZombie.Features.Player;
-using ProjectZombie.Features.Player.Skills;
 
 namespace ProjectZombie.Features.Multiplayer.Core.Commands
 {
@@ -15,11 +14,6 @@ namespace ProjectZombie.Features.Multiplayer.Core.Commands
             {
                 var anim = playerRoot.GetComponentInChildren<PlayerAnimator>();
                 if (anim != null) anim.FlipToDirection(aimDirection.x);
-            }
-
-            if (playerRoot.TryGetComponent<SignatureSkillManager>(out var sig))
-            {
-                sig.TryExecuteSkill();
             }
         }
     }
