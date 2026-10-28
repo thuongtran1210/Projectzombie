@@ -6,9 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
     path: Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity
     guid: a120a823c226e2a46af86be9e5e71c0b
   m_configObjects:

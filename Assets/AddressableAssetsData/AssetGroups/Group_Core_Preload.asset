@@ -103,12 +103,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - ui_meta
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ae65768a14cc70f4b839c3d00b7bb729
-    m_Address: Map_BambooForest
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bb55896b976f62a4cb0393430a4d8e0f
     m_Address: Boss_DiemVuong
     m_ReadOnly: 0
@@ -129,12 +123,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e12064e9cecf6914986590730288b6a7
     m_Address: Stage_01_BambooForest
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Map
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fc586c07ce4487745b9382018edaae87
-    m_Address: Map_SanDinhLangCo
     m_ReadOnly: 0
     m_SerializedLabels:
     - Map
