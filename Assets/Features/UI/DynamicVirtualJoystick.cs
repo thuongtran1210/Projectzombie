@@ -50,6 +50,31 @@ namespace ProjectZombie.Features.UI
             _defaultPosition = newPos;
         }
 
+        /// <summary>
+        /// Bật/tắt chế độ Floating Joystick và Dynamic Follow Drag trên di động.
+        /// </summary>
+        public void SetFloatingMode(bool isFloating, bool dynamicFollow = true)
+        {
+            _isFloatingJoystick = isFloating;
+            _dynamicFollowDrag = dynamicFollow;
+        }
+
+        /// <summary>
+        /// Cập nhật vùng chết (Deadzone) chống rung ngón tay.
+        /// </summary>
+        public void SetDeadZone(float newDeadzone)
+        {
+            deadZone = Mathf.Clamp(newDeadzone, 0f, 0.5f);
+        }
+
+        /// <summary>
+        /// Cập nhật bán kính kéo tối đa của cần gạt Joystick.
+        /// </summary>
+        public void SetHandleRange(float newRange)
+        {
+            handleRange = Mathf.Max(10f, newRange);
+        }
+
         public void Configure(RectTransform container, RectTransform handle)
         {
             containerRect = container;

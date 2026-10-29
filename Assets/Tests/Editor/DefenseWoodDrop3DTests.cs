@@ -78,5 +78,37 @@ namespace ProjectZombie.Tests.Editor
                 Object.DestroyImmediate(poolRoot);
             }
         }
+
+        [Test]
+        public void HeroWithinMagnetRadius_PullsWoodDropCloser()
+        {
+            var hero = new GameObject("WoodMagnetHero");
+            hero.transform.position = new Vector3(22000f, 0f, 0f);
+            var wallet = hero.AddComponent<DefenseWoodWallet3D>();
+            // Đặt vị trí rơi cách Hero 3.0m (trong magnetRadius 3.8m nhưng ngoài pickupRadius 1.4m)
+            var drop = DefenseWoodDrop3D.Spawn(new Vector3(22003f, 0f, 0f), 10, hero.transform, wallet);
+            try
+            {
+                // Bỏ qua pickupDelay bằng cách gán pickupReadyTime = 0
+                var readyField = typeof(DefenseWoodDrop3D).GetField("pickupReadyTime",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                readyField.SetValue(drop, 0f);
+
+                float initialDist = Vector3.Distance(hero.transform.position, drop.transform.position);
+
+                // Gọi Update để kích hoạt lực hút nam châm
+                typeof(DefenseWoodDrop3D).GetMethod("Update",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    .Invoke(drop, null);
+
+                float newDist = Vector3.Distance(hero.transform.position, drop.transform.position);
+                Assert.That(newDist, Is.LessThan(initialDist));
+            }
+            finally
+            {
+                if (drop != null) Object.DestroyImmediate(drop.gameObject);
+                Object.DestroyImmediate(hero);
+            }
+        }
     }
 }

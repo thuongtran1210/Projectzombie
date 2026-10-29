@@ -41,6 +41,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         private IDefenseGameplayContext _gameplay;
         private float _range;
         private bool _autoTargetOnTap, _showingCancel, _paused, _selfTarget;
+        private bool _lastCancelHovered;
         private int _bindingVersion;
         private bool _interactable;
         private DefenseTargetMask _targetMask = DefenseTargetMask.All;
@@ -158,6 +159,13 @@ namespace ProjectZombie.Features.Defense3D.UI
             {
                 ShowCancelZone(true);
                 AimFeedbackChanged?.Invoke(true, sample.Pointer.CancelHovered);
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+                if (!_lastCancelHovered && sample.Pointer.CancelHovered)
+                {
+                    try { Handheld.Vibrate(); } catch { }
+                }
+#endif
+                _lastCancelHovered = sample.Pointer.CancelHovered;
                 if (sample.Pointer.AimStarted) _stick.Begin(_pressPosition, _pressCamera);
                 _stick.Move(_pointerPosition, _maxDragDistance, sample.Pointer.CancelHovered);
                 DefenseResolvedAim preview;
@@ -173,6 +181,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 else PreviewCleared?.Invoke();
                 return;
             }
+            _lastCancelHovered = false;
             ShowCancelZone(false);
             AimFeedbackChanged?.Invoke(false, false);
             _stick?.Hide();

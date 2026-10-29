@@ -108,7 +108,26 @@ Khi bạn mở Scene `MapSongQue3D_Prototype.unity`, các GameObject quan trọn
 
 ---
 
+### 📱 Nhóm 4: Điều Khiển Cảm Ứng Di Động & Kinh Tế Gỗ (Mobile Combat & Touch)
+* **`DynamicVirtualJoystick` & `DynamicJoystickTouchZone`:**
+  - Cần gạt ảo 2.5D phản hồi tức thì với độ trễ 0ms.
+  - Hỗ trợ **Floating Mode** (chạm bất kỳ đâu ở nửa trái màn hình để gọi Joystick) và **Dynamic Follow Drag** (tâm Joystick trượt theo khi ngón tay kéo xa).
+  - Vùng chết (Deadzone 0.1) chống rung ngón tay khi giữ đứng yên.
+* **`DefenseSkillControlsCanvas` & `DefenseSkillAimButton3D`:**
+  - Cụm 4 nút kỹ năng cảm ứng: Đánh thường (Tap/Hold), Lướt (Dash), Tuyệt kỹ Tướng (Signature), và Pháp bảo Dép Tổ Ong (Relic Skill).
+  - Hỗ trợ **Drag-to-Aim** (kéo để định hướng) và **Tap-to-Cast** (chạm nhanh để tự ngắm quái gần nhất).
+  - Phản hồi rung xúc giác (**Haptic Vibrate**) khi kéo ngón tay vào vùng Hủy Chiêu (Cancel Zone).
+* **`DefenseWoodDrop3D` (Smart Magnet Vacuum):**
+  - Cơ chế **Nam Châm Hút Gỗ**: Khi Tướng di chuyển trong bán kính 3.8m quanh khúc gỗ rơi ra từ quái, gỗ sẽ tự động bay lượn lướt về phía Tướng.
+  - Loại bỏ hoàn toàn cảm giác mỏi tay/ức chế khi phải giẫm chính xác lên từng khúc gỗ trên màn hình cảm ứng di động.
+* **Tương Tác Xây Tháp Cảm Ứng (`DefenseMatchHUDView`):**
+  - Khi Tướng bước vào bán kính Socket (1.7m), một nút bấm to rõ sẽ tự động hiện lên trên HUD: **"XÂY THÁP (50 GỖ)"** hoặc **"NÂNG CẤP LV.X (Y GỖ)"**, dễ dàng chạm bằng ngón tay cái mà không cần thao tác bàn phím.
+
+---
+
 ## 4. Quy Chuẩn Hiệu Năng 60 FPS Mobile Đã Tích Hợp
 1. **0 GC Allocations:** Toàn bộ đạn bắn của 10 tháp canh đều dùng chung `UnityEngine.Pool.ObjectPool` ([DefenseProjectilePool3D](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Defense3D/Combat/Projectiles/DefenseProjectilePool3D.cs)), không gọi `Instantiate`/`Destroy` trong lúc chơi.
-2. **Trail Renderer:** Được reset sạch sẽ (`Clear()`) khi sinh ra và thu hồi để triệt tiêu hiện tượng vệt đạn bị kéo dài vắt ngang màn hình.
-3. **Decoupled Events:** Giao tiếp qua Event Channels `SO_FloatEvent`, `SO_IntEvent` giúp UI và Gameplay không bị phụ thuộc cứng vào nhau.
+2. **Numbers Cache Array:** Hệ thống sát thương nổi ([DamageTextManager](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/UI/DamageText/DamageTextManager.cs)) cache sẵn 10.000 số nguyên (0..9999), hoàn toàn triệt tiêu rác chuỗi (string garbage) trong combat.
+3. **Trail Renderer:** Được reset sạch sẽ (`Clear()`) khi sinh ra và thu hồi để triệt tiêu hiện tượng vệt đạn bị kéo dài vắt ngang màn hình.
+4. **Decoupled Events:** Giao tiếp qua Event Channels `SO_FloatEvent`, `SO_IntEvent` giúp UI và Gameplay không bị phụ thuộc cứng vào nhau.
+5. **Smart Magnet & Touch Zones:** Nam châm hút gỗ và vùng nhận cảm ứng nửa màn hình trái nâng tầm trải nghiệm mượt mà chuẩn game Mobile quốc tế.

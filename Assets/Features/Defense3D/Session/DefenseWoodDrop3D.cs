@@ -9,6 +9,13 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1f)] private float lifetime = 90f;
         [SerializeField, Min(0.1f)] private float pickupRadius = 1.4f;
         [SerializeField, Min(0f)] private float pickupDelay = 0.75f;
+        [Header("── MOBILE SMART MAGNET (Cơ chế Nam Châm Hút Gỗ) ──")]
+        [Tooltip("Bán kính hút tự động khi Tướng di chuyển lại gần (mét)")]
+        [SerializeField, Min(0.5f)] private float magnetRadius = 3.8f;
+        [Tooltip("Tốc độ bay tối đa khi bị hút về phía Tướng (m/s)")]
+        [SerializeField, Min(1f)] private float magnetSpeed = 9f;
+        [Tooltip("Gia tốc tăng tốc khi bắt đầu bị hút")]
+        [SerializeField, Min(1f)] private float magnetAcceleration = 14f;
         public const string ResourcePath = "Defense3D/DefenseWoodDrop3D";
         private Transform hero;
         private DefenseWoodWallet3D wallet;
@@ -16,6 +23,7 @@ namespace ProjectZombie.Features.Defense3D
         private bool collected;
         private float expireTime;
         private float pickupReadyTime;
+        private float _currentFlySpeed;
         private System.Action<DefenseWoodDrop3D> _poolRelease;
         private int _generation;
         public bool CanBeGathered(IDefenseGameplayContext gameplay) => ReferenceEquals(Gameplay, gameplay) &&
@@ -44,6 +52,7 @@ namespace ProjectZombie.Features.Defense3D
             _collectorHealth = collector != null ? collector.GetComponent<DefenseHeroHealth3D>() : null;
             expireTime = GameplayTime + lifetime;
             pickupReadyTime = GameplayTime + pickupDelay;
+            _currentFlySpeed = 0f;
             collected = false;
         }
 
@@ -51,6 +60,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (collected) return;
             collected = true;
+            _currentFlySpeed = 0f;
             if (_poolRelease != null)
             {
                 _poolRelease(this);
@@ -65,6 +75,7 @@ namespace ProjectZombie.Features.Defense3D
         public void ResetForPool()
         {
             collected = true;
+            _currentFlySpeed = 0f;
             _poolRelease = null;
             hero = null; wallet = null; _collectorHealth = null;
             _generation = -1; expireTime = 0f; pickupReadyTime = 0f;
@@ -86,11 +97,33 @@ namespace ProjectZombie.Features.Defense3D
             if (GameplayTime < pickupReadyTime) return;
             if (hero == null || wallet == null || !hero.gameObject.activeInHierarchy) return;
             if (_collectorHealth != null && _collectorHealth.IsDown) return;
-            Vector3 delta = hero.position - transform.position;
+
+            Vector3 heroPos = hero.position;
+            Vector3 currentPos = transform.position;
+            Vector3 delta = heroPos - currentPos;
             delta.y = 0f;
-            if (delta.sqrMagnitude > pickupRadius * pickupRadius) return;
-            wallet.CollectWood(woodAmount);
-            DespawnOrDestroy();
+            float sqrDist = delta.sqrMagnitude;
+
+            // 1. Kiểm tra đã đến bán kính nhặt -> Thu thập gỗ vào ví
+            if (sqrDist <= pickupRadius * pickupRadius)
+            {
+                wallet.CollectWood(woodAmount);
+                DespawnOrDestroy();
+                return;
+            }
+
+            // 2. Nam châm hút gỗ về phía Tướng (Smart Magnet Attraction)
+            if (sqrDist <= magnetRadius * magnetRadius)
+            {
+                float dt = Time.deltaTime;
+                _currentFlySpeed = Mathf.MoveTowards(_currentFlySpeed, magnetSpeed, magnetAcceleration * dt);
+                Vector3 targetPos = new Vector3(heroPos.x, currentPos.y, heroPos.z);
+                transform.position = Vector3.MoveTowards(currentPos, targetPos, _currentFlySpeed * dt);
+            }
+            else if (_currentFlySpeed > 0f)
+            {
+                _currentFlySpeed = Mathf.MoveTowards(_currentFlySpeed, 0f, magnetAcceleration * Time.deltaTime);
+            }
         }
 
         public static DefenseWoodDrop3D Spawn(Vector3 deathPosition, int amount, Transform collector, DefenseWoodWallet3D collectorWallet,
