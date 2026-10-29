@@ -105,6 +105,13 @@ namespace ProjectZombie.Features.Defense3D
         [Tooltip("Khoảng cách an toàn tối thiểu với Anh Hùng (mét). Quái sẽ không spawn nếu người chơi đứng quá gần vùng này.")]
         [SerializeField, Min(0f)] private float safeHeroDistance = 3.1f;
 
+        public IReadOnlyList<DefenseSpawnEventConfig> Events => events;
+        public IReadOnlyList<DefenseSpawnZoneConfig> Zones => zones;
+        public DefenseEnemyDataSO ArenaBoss => arenaBoss;
+        public float BossSpawnTime => bossSpawnTime;
+        public float BossHealth => bossHealth;
+        public string BossZoneId => bossZoneId;
+
         public DefenseStageSpawnPlan Compile()
         {
             if (string.IsNullOrWhiteSpace(profileVersion)) throw new InvalidOperationException("Profile version is required.");

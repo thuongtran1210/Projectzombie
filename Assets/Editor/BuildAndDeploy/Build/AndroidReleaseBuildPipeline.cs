@@ -54,10 +54,7 @@ namespace ProjectZombie.Editor.Build
                 Debug.Log("<color=#00FF88>[AndroidPipeline]</color> Đã đặt Min SDK = API 24.");
             }
 
-            // 5. Đảm bảo Incremental IL2CPP Build được bật để tăng tốc độ biên dịch
-            PlayerSettings.SetIncrementalIl2CppBuild(NamedBuildTarget.Android, true);
-
-            // 6. Đảm bảo cảnh quan ngang (Landscape)
+            // 5. Đảm bảo cảnh quan ngang (Landscape)
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
             PlayerSettings.allowedAutorotateToLandscapeLeft = true;
             PlayerSettings.allowedAutorotateToLandscapeRight = true;

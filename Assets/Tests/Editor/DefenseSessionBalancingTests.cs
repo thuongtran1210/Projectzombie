@@ -55,7 +55,7 @@ namespace ProjectZombie.Tests.Editor
             var stage = Resources.Load<StageSpawnConfig>(STAGE_PATH);
             Assert.That(stage, Is.Not.Null);
 
-            var archetypes = new HashSet<DefenseEnemyArchetypeSO>();
+            var archetypes = new HashSet<DefenseEnemyDataSO>();
             foreach (var wave in stage.Events)
             {
                 if (wave.Enemy != null) archetypes.Add(wave.Enemy);
