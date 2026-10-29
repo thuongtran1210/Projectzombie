@@ -77,6 +77,19 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_expLevelText != null) _expLevelText.text = formattedExp;
         }
 
+        public void SetBossHealth(bool visible, float current, float max, string formattedText)
+        {
+            if (_bossHealthRoot != null) _bossHealthRoot.SetActive(visible);
+            if (!visible) return;
+
+            if (_bossHealthSlider != null)
+            {
+                _bossHealthSlider.maxValue = Mathf.Max(1f, max);
+                _bossHealthSlider.value = Mathf.Clamp(current, 0f, max);
+            }
+            if (_bossHealthText != null) _bossHealthText.text = formattedText;
+        }
+
         [Header("Tương Tác Xây Tháp (Mobile & PC)")]
         [Tooltip("Root GameObject chứa cụm nút bấm tương tác Xây / Nâng cấp tháp")]
         [SerializeField] private GameObject _buildPromptRoot;
