@@ -140,5 +140,47 @@ namespace ProjectZombie.Tests.Editor
                 UnityEngine.Object.DestroyImmediate(bp);
             }
         }
+
+        [Test]
+        public void Compile_SortsEventsChronologically_InPlan()
+        {
+            var bp = ScriptableObject.CreateInstance<DefenseStageBlueprintSO>();
+            bp.stageId = "TEST_STAGE";
+            bp.arenaBoss = _mockBoss;
+            bp.bossSpawnTime = 300f;
+
+            bp.spawnZones = new[]
+            {
+                new DefenseSpawnZoneBlueprint
+                {
+                    zoneType = DefenseSpawnZoneType.EastBank,
+                    points = new[] { new DefenseSpawnPointConfig { Offset = Vector3.zero, Lane = 1 } }
+                }
+            };
+
+            // Waves defined out of order
+            bp.timelineWaves = new List<DefenseStageWaveEntry>
+            {
+                new DefenseStageWaveEntry { eventId = "wave_late", triggerTime = 120f, enemy = _mockEnemy, zone = DefenseSpawnZoneType.EastBank, count = 2 },
+                new DefenseStageWaveEntry { eventId = "wave_early", triggerTime = 15f, enemy = _mockEnemy, zone = DefenseSpawnZoneType.EastBank, count = 1 }
+            };
+
+            try
+            {
+                var plan = bp.Compile();
+                Assert.IsNotNull(plan);
+                Assert.AreEqual(3, plan.Events.Count);
+                Assert.AreEqual("wave_early", plan.Events[0].EventId);
+                Assert.AreEqual(15f, plan.Events[0].TriggerTime);
+                Assert.AreEqual("wave_late", plan.Events[1].EventId);
+                Assert.AreEqual(120f, plan.Events[1].TriggerTime);
+                Assert.AreEqual("arena-boss", plan.Events[2].EventId);
+                Assert.AreEqual(300f, plan.Events[2].TriggerTime);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bp);
+            }
+        }
     }
 }
