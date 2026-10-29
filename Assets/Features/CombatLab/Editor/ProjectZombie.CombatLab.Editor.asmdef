@@ -1,0 +1,10 @@
+{
+  "name": "ProjectZombie.CombatLab.Editor",
+  "references": [
+    "ProjectZombie.CombatLab"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false
+}

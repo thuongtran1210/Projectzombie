@@ -1,0 +1,13 @@
+{
+  "name": "ProjectZombie.CombatLab.Tests",
+  "references": [
+    "ProjectZombie.CombatLab"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}
