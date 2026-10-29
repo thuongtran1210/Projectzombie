@@ -3,16 +3,27 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
-    /// Keyboard tower building, using only the shared Hero WoodWallet.
-    /// Enemy kills create physical drops; no wood is granted directly on death.
+    /// [BỘ QUẢN LÝ XÂY DỰNG THÁP CANH TẠI CÁC SOCKET]
+    /// Quản lý tương tác xây tháp trên 10 vị trí Socket:
+    /// - Khi Tướng di chuyển lại gần Socket (trong bán kính `buildRadius`), hệ thống cho phép bấm phím tương tác / chạm nút xây tháp.
+    /// - Kiểm tra số Gỗ trong `DefenseWoodWallet3D`, trừ tiền và kích hoạt Prefab tháp tại vị trí Socket tương ứng.
     /// </summary>
     public sealed class DefenseTowerBuildPrototype3D : DefenseGameplayBehaviour
     {
+        [Header("=== 1. THAM CHIẾU SCENE & VÍ TIỀN ===")]
+        [Tooltip("Tham chiếu chứa danh sách Transform 10 vị trí Socket trên bản đồ")]
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
+        [Tooltip("Ví Gỗ để trừ chi phí khi xây dựng hoặc nâng cấp tháp")]
         [SerializeField] private DefenseWoodWallet3D wallet;
+
+        [Header("=== 2. THÔNG SỐ XÂY DỰNG ===")]
+        [Tooltip("Số Gỗ tiêu hao khi xây một tháp mới (Mặc định: 50 Gỗ)")]
         [SerializeField, Min(1)] private int towerWoodCost = 50;
+        [Tooltip("Bán kính tối đa Tướng đứng gần Socket để có thể kích hoạt menu Xây tháp (mét)")]
         [SerializeField, Min(0.5f)] private float buildRadius = 1.7f;
+        [Tooltip("Danh sách các đối tượng tháp canh tương ứng với từng Socket")]
         [SerializeField] private DefenseTowerPrototype3D[] socketTowers;
+        [Tooltip("Bật hiển thị vòng tròn bán kính xây dựng và thông tin debug")]
         [SerializeField] private bool showDebugOverlay;
         private bool[] occupied;
         private DefenseHeroHealth3D _heroHealth;

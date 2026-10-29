@@ -3,12 +3,20 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
-    /// Di chuyển Defense3D và trạng thái dash; phát kết quả để phần trình diễn xử lý độc lập.
+    /// [BỘ ĐIỀU KHIỂN DI CHUYỂN TƯỚNG 3D]
+    /// Nhận tín hiệu điều khiển di chuyển (WASD / Phím mũi tên / Virtual Joystick):
+    /// - Di chuyển Tướng theo mặt phẳng XZ (mặt đất).
+    /// - Xoay hướng mặt Tướng mượt mà theo hướng di chuyển hoặc hướng ngắm đòn đánh.
+    /// - Không cho phép Tướng đi xuyên sông nếu không bước qua 3 cây cầu.
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public sealed class DefenseHeroMotor3D : DefenseGameplayBehaviour
     {
+        [Header("=== THÔNG SỐ DI CHUYỂN TƯỚNG ===")]
+        [Tooltip("Tốc độ chạy của Tướng (mét/giây)")]
         [SerializeField] private float speed = 5f;
+
+        [Tooltip("Tốc độ xoay người của Tướng khi đổi hướng di chuyển")]
         [SerializeField] private float turnRate = 14f;
 
         public float MoveSpeed => speed;

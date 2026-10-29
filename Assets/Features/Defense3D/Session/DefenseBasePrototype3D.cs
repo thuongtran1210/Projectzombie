@@ -3,13 +3,20 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>Authored Base adapter sharing health rules with Enemy and Hero.</summary>
+    /// <summary>
+    /// [CĂN CỨ BỜ TÂY - TRÁI TIM PHÒNG THỦ]
+    /// Là mục tiêu bảo vệ tối thượng của người chơi trong màn Thung Lũng Sông Quê.
+    /// Quái sau khi vượt cầu sẽ lao vào tấn công Căn Cứ.
+    /// Khi máu Căn Cứ về 0 -> Kích hoạt Thất Thủ (GameOver).
+    /// </summary>
     public sealed class DefenseBasePrototype3D : DefenseGameplayBehaviour, IDefenseDamageable3D
     {
+        [Header("=== THÔNG SỐ CĂN CỨ PHÒNG THỦ BỜ TÂY ===")]
+        [Tooltip("Lượng máu tối đa của Căn Cứ. Khi máu giảm về 0, trận đấu lập tức Thất Thủ.")]
         [SerializeField, Min(1f)] private float maxHP = 1000f;
 
-        [Header("── EVENT CHANNELS (Sổ tay Kiến trúc 3D - Tùy chọn) ──")]
-        [Tooltip("Kênh sự kiện phát ra lượng máu hiện tại của Căn cứ")]
+        [Header("── EVENT CHANNELS (Kênh Sự Kiện Decoupling) ──")]
+        [Tooltip("Kênh sự kiện phát ra lượng máu hiện tại của Căn cứ để UI lắng nghe")]
         [SerializeField] private SO_FloatEvent _onBaseHealthChangedEvent;
 
         [Tooltip("Kênh sự kiện phát tín hiệu khi Căn cứ bị phá hủy")]

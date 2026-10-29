@@ -2,13 +2,20 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>One-run Wood wallet. Only physical WoodDrop pickups can grant Wood.</summary>
+    /// <summary>
+    /// [VÍ TÀI NGUYÊN GỖ - KINH TẾ TRẬN ĐẤU]
+    /// Quản lý số lượng Gỗ (Cổ Mộc) trong suốt phiên phòng thủ 3D:
+    /// - Quái bị hạ gục rơi ra khối Gỗ vật lý -> Tướng nhặt thì được cộng vào ví qua `CollectWood()`.
+    /// - Khi xây mới hoặc nâng cấp tháp canh tại các Socket -> Trừ tiền qua `TrySpend()`.
+    /// </summary>
     public sealed class DefenseWoodWallet3D : MonoBehaviour
     {
+        [Header("=== THÔNG SỐ KHO TÀI NGUYÊN GỖ ===")]
+        [Tooltip("Số Gỗ khởi điểm người chơi nhận được ngay khi trận đấu bắt đầu (Mặc định: 100 Gỗ để xây tháp đầu tiên)")]
         [SerializeField, Min(0)] private int startingWood = 0;
 
-        [Header("── EVENT CHANNELS (Sổ tay Kiến trúc 3D - Tùy chọn) ──")]
-        [Tooltip("Kênh sự kiện phát ra số lượng Cổ Mộc (Gỗ) hiện tại")]
+        [Header("── EVENT CHANNELS (Kênh Sự Kiện Decoupling) ──")]
+        [Tooltip("Kênh sự kiện phát ra số lượng Gỗ hiện tại để HUD hiển thị")]
         [SerializeField] private SO_IntEvent _onWoodChangedEvent;
 
         public int Wood { get; private set; }

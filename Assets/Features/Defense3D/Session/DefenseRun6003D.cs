@@ -3,19 +3,43 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>Serialized scene facade. Composition owns the session; runtime services own match behavior.</summary>
+    /// <summary>
+    /// [BỘ ĐIỀU PHỐI VÒNG LẶP TRẬN ĐẤU 600 GIÂY - 10 PHÚT]
+    /// Quản lý toàn bộ tiến trình diễn ra trận đấu:
+    /// - Đếm ngược thời gian từ 0 -> 600 giây.
+    /// - Quản lý triệu hồi Wave quái, cảnh báo quái xuất hiện.
+    /// - Kích hoạt sự kiện Boss Dạ Xoa xuất hiện (Yaksha Encounter).
+    /// - Bắt các điều kiện Thắng (sống sót qua 600s/diệt Boss) hoặc Thua (Căn cứ sập).
+    /// </summary>
     [DefaultExecutionOrder(-500)]
     public sealed class DefenseRun6003D : MonoBehaviour
     {
+        [Header("=== 1. ĐỊA HÌNH & CĂN CỨ PHÒNG THỦ ===")]
+        [Tooltip("Chứa các điểm Spawn chính: Tướng xuất hiện ở đâu, quái xuất hiện ở đâu")]
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
+        [Tooltip("Căn Cứ Bờ Tây cần bảo vệ (Máu căn cứ)")]
         [SerializeField] private DefenseBasePrototype3D defenseBase;
+
+        [Header("=== 2. CẤU HÌNH ĐỢT QUÁI (STAGE & WAVE PLAN) ===")]
+        [Tooltip("Cấu hình danh sách các Wave quái theo mốc thời gian giây")]
         [SerializeField] private StageSpawnConfig stageSpawnConfig;
+        [Tooltip("Blueprint của ải (nếu dùng ScriptableObject thay cho component trên scene)")]
         [SerializeField] private DefenseStageBlueprintSO stageBlueprint;
+
+        [Header("=== 3. QUẢN LÝ XÂY THÁP & HIỂN THỊ HUD ===")]
+        [Tooltip("Presenter điều khiển giao diện HUD thời gian và thanh máu trong trận")]
         [SerializeField] private UI.DefenseMatchPresenter matchUI;
+        [Tooltip("Bộ điều khiển cho phép người chơi đứng gần Socket để bấm nút Xây Tháp")]
         [SerializeField] private DefenseTowerBuildPrototype3D towerBuilder;
+        [Tooltip("Bật hiển thị thông tin debug trên màn hình")]
         [SerializeField] private bool showDebugOverlay;
+        [Tooltip("Gốc chứa các đối tượng động được spawn lúc chơi")]
         [SerializeField] private DefenseRuntimeRoots3D _runtimeRoots;
+
+        [Header("=== 4. CẢNH BÁO QUÁI & HIỆU ỨNG TẤN CÔNG ===")]
+        [Tooltip("Presenter hiển thị vệt đỏ/mũi tên cảnh báo trước khi đợt quái lớn ập đến")]
         [SerializeField] private UI.DefenseSpawnWarningPresenter3D _spawnWarnings;
+        [Tooltip("Cấu hình hiệu ứng đòn đánh thường của quái")]
         [SerializeField] private DefenseBasicAttackEffectSetSO _enemyAttackStyle;
         private DefenseSession _session;
         private DefenseMatchRuntime _runtime;

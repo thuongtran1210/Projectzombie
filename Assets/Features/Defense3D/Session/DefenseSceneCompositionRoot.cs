@@ -6,19 +6,43 @@ using ProjectZombie.Features.Defense3D.Loadout;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>Validates authored bindings and constructs a session without creating scene objects.</summary>
+    /// <summary>
+    /// [TỔNG ĐẠO DIỄN KHỞI TẠO CHIẾN TRƯỜNG 3D]
+    /// Chạy ở thời điểm sớm nhất (DefaultExecutionOrder -1000).
+    /// Chịu trách nhiệm:
+    /// 1. Khởi tạo phiên chơi (DefenseSession) duy nhất.
+    /// 2. Kết nối Tướng (Hero), Quái (Enemies), Tháp (Towers), Căn Cứ (Base), Ví Gỗ (Wallet) và Giao diện (UI).
+    /// 3. Inject dữ liệu chuẩn bị xuất trận (Loadout Snapshot) vào game.
+    /// </summary>
     [DefaultExecutionOrder(-1000), DisallowMultipleComponent]
     public sealed class DefenseSceneCompositionRoot : MonoBehaviour
     {
+        [Header("=== 1. CẤU HÌNH TƯỚNG & DANH MỤC ===")]
+        [Tooltip("Bộ kỹ năng và chỉ số mặc định của Tướng trong trận")]
         [SerializeField] private DefenseHeroKitSO _heroKit;
+        [Tooltip("Danh mục toàn bộ Tướng 3D để tra cứu prefab và chỉ số")]
         [SerializeField] private DefenseHeroCatalogSO _heroCatalog;
+
+        [Header("=== 2. QUẢN LÝ VÒNG LẶP TRẬN ĐẤU & GIAO DIỆN ===")]
+        [Tooltip("Bộ đếm thời gian trận 600 giây (10 phút) và điều phối Wave quái")]
         [SerializeField] private DefenseRun6003D _run;
+        [Tooltip("Presenter kết nối dữ liệu trận đánh lên màn hình HUD (Thời gian, Máu, Wave)")]
         [SerializeField] private DefenseMatchPresenter _matchUI;
+        [Tooltip("Ví lưu trữ tài nguyên Gỗ dùng để mua và nâng cấp tháp canh")]
         [SerializeField] private DefenseWoodWallet3D _wallet;
+
+        [Header("=== 3. CÁC THỰC THỂ CHIẾN TRƯỜNG (SCENE PARTICIPANTS) ===")]
+        [Tooltip("Danh sách các đối tượng trên sân cần lắng nghe phiên chơi (Tướng, Căn cứ, Socket tháp, Cửa hàng làng...)")]
         [SerializeField] private DefenseGameplayBehaviour[] _sceneParticipants;
+        [Tooltip("Các presenter điều khiển hiển thị kỹ năng Tướng trên thanh HUD")]
         [SerializeField] private DefenseSkillPresenter3D[] _skillPresenters;
+
+        [Header("=== 4. PHẢN HỒI CHIẾN ĐẤU (COMBAT TEXT & VFX) ===")]
+        [Tooltip("Hệ thống hiển thị chữ số sát thương nhảy lên khi đánh trúng")]
         [SerializeField] private ProjectZombie.Features.UI.DamageText.DamageTextManager _combatText;
+        [Tooltip("Camera chính dùng để chiếu tọa độ 3D sát thương lên Canvas")]
         [SerializeField] private Camera _combatTextCamera;
+        [Tooltip("Danh sách các thực thể được gắn hiển thị số sát thương")]
         [SerializeField] private DefenseCombatTextBinding[] _combatTextActors;
         [Serializable]
         private struct DefenseCombatTextBinding
@@ -27,11 +51,19 @@ namespace ProjectZombie.Features.Defense3D
             public ProjectZombie.Features.UI.DamageText.CombatTextTarget Target;
             public Vector3 Offset;
         }
+        [Tooltip("Dịch vụ xử lý hiệu ứng kỹ xảo VFX trong trận")]
         [SerializeField] private DefenseEffectService3D _effectService;
+        [Tooltip("Các gốc chứa GameObject sinh ra trong lúc chơi để quản lý vòng đời")]
         [SerializeField] private DefenseRuntimeRoots3D _runtimeRoots;
+        [Tooltip("Các presenter hiển thị hiệu ứng Cổ Vật (Relic Effects)")]
         [SerializeField] private DefenseRelicEffectPresenter3D[] _effectPresenters;
+
+        [Header("=== 5. BỘ ĐIỀU KHIỂN & KỸ NĂNG TƯỚNG ===")]
+        [Tooltip("Presenter đòn đánh thường của Tướng")]
         [SerializeField] private DefenseHeroBasicAttackPresenter3D _basicAttackPresenter;
+        [Tooltip("Presenter kỹ năng lướt (Dash) né đòn của Tướng")]
         [SerializeField] private DefenseHeroDashPresenter3D _dashPresenter;
+        [Tooltip("Presenter tuyệt kỹ riêng biệt của Tướng (VD: Thư Sinh)")]
         [SerializeField] private DefenseScholarSignaturePresenter3D _signaturePresenter;
         private DefenseSession _session;
         private DefenseHeroCommands _heroCommands;
