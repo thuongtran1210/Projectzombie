@@ -7,50 +7,102 @@ namespace ProjectZombie.Features.Defense3D
     [Serializable]
     public sealed class DefenseSpawnEventConfig
     {
+        [Tooltip("Mã định danh đợt xuất hiện quái (Ví dụ: benque-01, wave-02)")]
         public string EventId;
+
+        [Tooltip("Thời điểm kích hoạt đợt sóng tính từ lúc bắt đầu trận (giây). Ví dụ: 18s, 108s")]
         [Min(0f)] public float TriggerTime;
+
+        [Tooltip("Loại quái vật xuất hiện chính trong đợt sóng này")]
         public DefenseEnemyDataSO Enemy;
+
+        [Tooltip("Mã vùng xuất hiện trên bản đồ (Ví dụ: eastBank, canalWater, northCanopy, southBank)")]
         public string ZoneId;
+
+        [Tooltip("Số lượng quái vật sinh ra trong đợt này")]
         [Min(1)] public int Count = 1;
-        [Tooltip("Optional replacement for slot 0. Does not add an extra enemy.")]
+
+        [Tooltip("Quái vật thủ lĩnh đi đầu đàn (tùy chọn: thay thế vị trí con quái đầu tiên trong đàn, không làm tăng tổng số lượng quái)")]
         public DefenseEnemyDataSO LeadEnemy;
     }
 
     [Serializable]
     public sealed class DefenseSpawnPointConfig
     {
+        [Tooltip("Độ lệch tọa độ (X, Y, Z) so với tâm vùng Origin")]
         public Vector3 Offset;
+
+        [Tooltip("Đường hành quân / Làn đường di chuyển (0: Làn Trái / Bắc, 1: Làn Giữa, 2: Làn Phải / Nam)")]
         [Range(0, 2)] public int Lane = 1;
     }
 
     [Serializable]
     public sealed class DefenseSpawnZoneConfig
     {
+        [Tooltip("Mã định danh vùng xuất hiện (Ví dụ: eastBank, canalWater, northCanopy, southBank, arenaEast)")]
         public string ZoneId;
+
+        [Tooltip("Tích chọn: Tọa độ tính tương đối từ mốc Bờ Đông (EastMarker). Bỏ chọn: Tọa độ thế giới tuyệt đối.")]
         public bool RelativeToEastMarker = true;
+
+        [Tooltip("Tọa độ tâm điểm của vùng xuất hiện")]
         public Vector3 Origin;
+
+        [Tooltip("Danh sách các điểm xuất hiện chi tiết trong vùng này")]
         public DefenseSpawnPointConfig[] Points = Array.Empty<DefenseSpawnPointConfig>();
     }
 
-    /// <summary>Authoring data only. Compile validates and copies it for a run.</summary>
+    /// <summary>
+    /// Bản cấu hình đợt sóng xuất hiện quái trong Màn chơi (Stage Spawn Configuration).
+    /// Hỗ trợ Game Designer thiết lập toàn bộ Timeline quái, Vùng xuất hiện và Giới hạn hiệu năng chống giật lag.
+    /// </summary>
     [CreateAssetMenu(fileName = "StageSpawnConfig", menuName = "TREBRAVE/Defense3D/Stage Spawn Config")]
     public sealed class StageSpawnConfig : ScriptableObject
     {
         public const string DefaultResource = "Defense3D/Stages/Stage01_Production";
+
+        [Header("── 1. ĐỊNH DANH CẤU HÌNH (Profile Identity) ──")]
+        [Tooltip("Mã phiên bản cấu hình màn chơi (Ví dụ: stage01-v1, stage02-v1)")]
         [SerializeField] private string profileVersion = "stage01-v1";
+
+        [Header("── 2. DÒNG THỜI GIAN ĐỢT QUÁI (Wave Timeline Events) ──")]
+        [Tooltip("Danh sách toàn bộ các đợt xuất hiện quái vật theo trình tự thời gian trận đấu")]
         [SerializeField] private DefenseSpawnEventConfig[] events = Array.Empty<DefenseSpawnEventConfig>();
+
+        [Header("── 3. CÁC VÙNG XUẤT HIỆN TRÊN BẢN ĐỒ (Spawn Zones) ──")]
+        [Tooltip("Danh sách các vùng xuất hiện (Bờ Đông, Kênh Nước, Tán Rừng...) trên bản đồ")]
         [SerializeField] private DefenseSpawnZoneConfig[] zones = Array.Empty<DefenseSpawnZoneConfig>();
-        [Header("Arena boss (independent of ordinary events)")]
+
+        [Header("── 4. ĐẠI BOSS CUỐI TRẬN (Arena Climax Boss) ──")]
+        [Tooltip("Dữ liệu của Đại Boss xuất hiện ở giai đoạn quyết chiến Đấu Trường cuối trận")]
         [SerializeField] private DefenseEnemyDataSO arenaBoss;
+
+        [Tooltip("Mã vùng xuất hiện dành riêng cho Boss (mặc định: arenaEast)")]
         [SerializeField] private string bossZoneId = "arenaEast";
+
+        [Tooltip("Thời điểm Đại Boss xuất hiện (giây). Ví dụ: 510s = 8 phút 30 giây")]
         [SerializeField, Min(0f)] private float bossSpawnTime = 510f;
+
+        [Tooltip("Thời gian tối đa để tiêu diệt Boss trong Đấu Trường (giây) trước khi kết luận thất bại")]
         [SerializeField, Min(0f)] private float arenaDuration = 45f;
+
+        [Tooltip("Lượng máu tối đa của Boss ghi đè riêng cho trận đấu này")]
         [SerializeField, Min(1f)] private float bossHealth = 1200f;
-        [Header("Spawn queue limits")]
+
+        [Header("── 5. GIỚI HẠN HIỆU NĂNG & CHỐNG GIẬT LAG (Performance Budget) ──")]
+        [Tooltip("Số lượng quái vật tối đa đồng thời hoạt động trên sân (chống quá tải CPU/GPU trên di động)")]
         [SerializeField, Min(1)] private int maxActiveEnemies = 32;
+
+        [Tooltip("Số lượng quái vật tối đa được xếp hàng chờ sinh ra trong bộ đệm")]
         [SerializeField, Min(1)] private int maxPendingSpawns = 40;
+
+        [Tooltip("Số lượng quái vật tối đa được phép khởi tạo trong mỗi khung hình (tránh drop FPS đột ngột)")]
         [SerializeField, Min(1)] private int spawnBudgetPerFrame = 4;
+
+        [Tooltip("Thời gian sống tối đa của yêu cầu spawn trong hàng đợi (giây). Nếu vị trí bị chặn quá lâu sẽ tự hủy để tránh tràn bộ đệm.")]
         [SerializeField, Min(0.1f)] private float jobLifetime = 25f;
+
+        [Tooltip("Khoảng cách an toàn tối thiểu với Anh Hùng (mét). Quái sẽ không spawn nếu người chơi đứng quá gần vùng này.")]
         [SerializeField, Min(0f)] private float safeHeroDistance = 3.1f;
 
         public DefenseStageSpawnPlan Compile()

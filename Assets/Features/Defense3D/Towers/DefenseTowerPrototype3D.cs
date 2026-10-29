@@ -5,19 +5,39 @@ namespace ProjectZombie.Features.Defense3D
     /// <summary>Simple stationary auto-attack tower for the Defense MVP.</summary>
     public sealed class DefenseTowerPrototype3D : DefenseGameplayBehaviour
     {
+        [Header("── 1. CHỈ SỐ BẮN CƠ BẢN (Cấp 1) ──")]
+        [Tooltip("Tầm bắn hiệu dụng tối đa tính từ tâm tháp (mét)")]
         [SerializeField, Min(0.1f)] private float attackRange = 8f;
+
+        [Tooltip("Sát thương mỗi mũi tên / viên đạn gây ra")]
         [SerializeField, Min(1f)] private float damage = 22f;
+
+        [Tooltip("Thời gian giãn cách giữa 2 phát bắn (giây). Càng nhỏ bắn càng nhanh.")]
         [SerializeField, Min(0.1f)] private float fireInterval = 0.9f;
+
+        [Tooltip("Cấu hình ưu tiên chọn mục tiêu (Quái gần nhất, Quái máu thấp nhất, v.v.)")]
         [SerializeField] private DefenseAttackTargetingProfileSO _targeting;
+
+        [Tooltip("Hiệu ứng visual đường bay của đạn")]
         [SerializeField] private DefenseTowerProjectileVfx3D _projectileVfx;
+
+        [Tooltip("Bộ phóng đạn tùy chỉnh (tùy chọn)")]
         [SerializeField] private MonoBehaviour _customLauncher;
+
+        [Header("── 2. TĂNG TIẾN KHI NÂNG CẤP (Level Up Scaling) ──")]
+        [Tooltip("Lượng sát thương cộng thêm mỗi khi tháp lên cấp")]
+        [SerializeField] private float _damagePerLevel = 10f;
+
+        [Tooltip("Tầm bắn cộng thêm mỗi khi tháp lên cấp (mét)")]
+        [SerializeField] private float _rangePerLevel = 1f;
+
+        [Tooltip("Tốc độ bắn gia tăng mỗi khi tháp lên cấp (tỷ lệ phần trăm)")]
+        [SerializeField] private float _fireRatePerLevel = .3f;
+
         private IDefenseProjectileLauncher _launcher;
         private DefenseAttackTargetSelector3D _targetSelector;
         private float nextShot;
         private DefenseSupportTarget3D _health;
-        [SerializeField] private float _damagePerLevel = 10f;
-        [SerializeField] private float _rangePerLevel = 1f;
-        [SerializeField] private float _fireRatePerLevel = .3f;
         public int Level { get; private set; } = 1;
         public int UpgradeCost => Level < 3 ? Level * 40 : -1;
         public float EffectiveDamage => Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.TowerDamage, damage + (Level - 1) * _damagePerLevel) : damage;
