@@ -80,11 +80,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - ui_gameplay
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 911aaf45e6473754a8b6c7a5fa4b9105
-    m_Address: spr_blob_shadow
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 993d9d6a82992a74ca49b90beb51ebaf
     m_Address: MainHubUI
     m_ReadOnly: 0
