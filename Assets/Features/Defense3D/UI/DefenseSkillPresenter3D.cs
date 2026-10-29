@@ -48,6 +48,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             _button.PreviewCleared += HidePreview;
             _button.AimReleased += Cast;
             _button.BasicAttackRequested += BasicPressed;
+            _button.RecastRequested += BasicPressed;
             if (_view != null) _button.AimFeedbackChanged += _view.SetAimFeedback;
             _button.SetBasicPressMode(definition.Kind == DefenseSkillKind.BasicAttack);
             _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, definition.Kind == DefenseSkillKind.ScholarSignature);
@@ -91,6 +92,12 @@ namespace ProjectZombie.Features.Defense3D.UI
         public bool TryQuickCast()
         {
             if (_runtime == null || _gameplay == null || !ActorAvailable) return false;
+            if (_effect is DefenseRelicSkillEffect3D relic && relic.Phase == DefenseRelicPhase.Anchored)
+            {
+                bool recast = relic.TryRecast();
+                Refresh();
+                return recast;
+            }
             DefenseResolvedAim aim;
             if (_effect is DefenseHeroAttackEffect3D basic)
             {
@@ -111,7 +118,11 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             if (_runtime == null || _gameplay == null) return;
             float remaining = _runtime.Ability.RemainingCooldown;
-            bool interactable = ActorAvailable && _gameplay.AdvancesGameplay && remaining <= 0f;
+            var relic = _effect as DefenseRelicSkillEffect3D;
+            bool recast = relic != null && relic.CanRecast;
+            bool relicBusy = relic != null && relic.Phase != DefenseRelicPhase.Ready;
+            bool interactable = ActorAvailable && _gameplay.AdvancesGameplay && (recast || (!relicBusy && remaining <= 0f));
+            _button.SetRecastMode(recast);
             _button.SetInteractable(interactable);
             int seconds = Mathf.CeilToInt(remaining);
             if (_displaySeconds != seconds)
@@ -119,8 +130,16 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _displaySeconds = seconds;
                 _cooldownLabel = seconds > 0 ? seconds.ToString() : string.Empty;
             }
+            if (recast)
+            {
+                _view.Render(0f, "LAO TỚI", !interactable);
+                return;
+            }
+            string label = Kind == DefenseSkillKind.BasicAttack ? string.Empty : _cooldownLabel;
+            if (relic != null && remaining <= 0f && !relicBusy) label = "QUĂNG";
+            if (relic != null && relic.Phase == DefenseRelicPhase.Flying) label = "ĐANG BAY";
             _view.Render(remaining / (_effect is IDefenseSharedAbilityEffect shared ? shared.CastCooldown : _runtime.Definition.Cooldown),
-                Kind == DefenseSkillKind.BasicAttack ? string.Empty : _cooldownLabel, !interactable && remaining <= 0f);
+                label, !interactable && remaining <= 0f);
         }
 
         private void OnDisable() { _button?.SetInteractable(false); HidePreview(); }
@@ -134,6 +153,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _button.PreviewCleared -= HidePreview;
                 _button.AimReleased -= Cast;
                 _button.BasicAttackRequested -= BasicPressed;
+                _button.RecastRequested -= BasicPressed;
                 if (_view != null) _button.AimFeedbackChanged -= _view.SetAimFeedback;
                 _button.SetInteractable(false);
                 _button.Unbind();

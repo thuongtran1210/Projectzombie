@@ -125,7 +125,7 @@ namespace ProjectZombie.EditorTools.Defense3D
             definitionData.FindProperty("_duration").floatValue = DefenseBasicAttackRules.Windup;
             definitionData.ApplyModifiedPropertiesWithoutUndo();
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
-            File.WriteAllText("Logs/basic-attack-source-install.txt", "APPLIED: source press/hold basic attack, .18s hit/.25s repeat/.85s pose, transient waist slash, no idle fan, " + surfaces + " visible ground meshes (" + triangles.Count / 3 + " triangles). Gameplay colliders unchanged; no Play Mode/GUI QA.\n");
+            File.WriteAllText("Logs/basic-attack-source-install.txt", "APPLIED: source press/hold basic attack, .18s hit/.65s repeat/.85s pose, transient waist slash, no idle fan, " + surfaces + " visible ground meshes (" + triangles.Count / 3 + " triangles). Gameplay colliders unchanged; no Play Mode/GUI QA.\n");
         }
     }
 }

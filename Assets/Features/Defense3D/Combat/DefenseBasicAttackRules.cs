@@ -6,7 +6,7 @@ namespace ProjectZombie.Features.Defense3D
     public static class DefenseBasicAttackRules
     {
         public const float Windup = .18f;
-        public const float RepeatInterval = .25f;
+        public const float RepeatInterval = .65f;
         public const float Recovery = .85f;
         public const float ConeAngle = 210.14012f;
         public const float MoveMultiplier = 2.1f / 3.8f;

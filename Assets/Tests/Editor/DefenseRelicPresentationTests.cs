@@ -34,8 +34,12 @@ public sealed class DefenseRelicPresentationTests
                 using (var runtime = new DefenseSkillCastRuntime(session, definition))
                 {
                     // Lỗi hình ảnh được ghi log nhưng không được chặn damage hoặc callback hình ảnh còn lại.
-                    LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex("Visual adapter test failure"));
                     Assert.IsTrue(runtime.TryCast(new DefenseSkillCastRequest(aim, session, session.RunGeneration), default, true, effect));
+                    Assert.AreEqual(0f, victim.TotalDamage);
+                    Assert.AreEqual(DefenseRelicPhase.Flying, effect.Phase);
+                    LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex("Visual adapter test failure"));
+                    session.Tick(.5f, 100f, false);
+                    typeof(DefenseRelicSkillEffect3D).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(effect, null);
                     Assert.AreEqual(180f, victim.TotalDamage);
                     Assert.AreEqual(1, notifications);
                     Assert.Greater(runtime.Ability.RemainingCooldown, 0f);

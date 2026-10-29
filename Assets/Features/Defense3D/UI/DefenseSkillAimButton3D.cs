@@ -52,7 +52,9 @@ namespace ProjectZombie.Features.Defense3D.UI
         public event Action<DefenseAimSubmission> AimReleased;
         public event Action BasicAttackRequested;
         public event Action<bool, bool> AimFeedbackChanged;
-        private bool _basicPressMode, _basicHeld;
+        private bool _basicPressMode, _basicHeld, _recastMode;
+        public event Action RecastRequested;
+        public void SetRecastMode(bool enabled) => _recastMode = enabled;
         public void SetBasicPressMode(bool enabled) { _basicHeld = false; _basicPressMode = enabled; }
         private bool CanBasicInput => isActiveAndEnabled && Application.isFocused && !_paused && _gameplay != null &&
             _gameplay.AdvancesGameplay && _heroHealth != null && _heroHealth.isActiveAndEnabled && !_heroHealth.IsDown;
@@ -80,6 +82,12 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (_recastMode)
+            {
+                if (eventData.button == PointerEventData.InputButton.Left && _interactable && CanBasicInput)
+                    RecastRequested?.Invoke();
+                return;
+            }
             if (_basicPressMode)
             {
                 if (eventData.button != PointerEventData.InputButton.Left || _basicHeld || !CanBasicInput) return;
@@ -199,6 +207,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void Unbind()
         {
+            _recastMode = false;
             _basicHeld = false;
             _bindingVersion++;
             if (_heroHealth != null) _heroHealth.Defeated -= Cancel;

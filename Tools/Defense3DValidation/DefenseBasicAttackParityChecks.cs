@@ -12,8 +12,8 @@ public static class DefenseBasicAttackParityChecks
     }
     public static void Main()
     {
-        Check(DefenseBasicAttackRules.Windup == .18f && DefenseBasicAttackRules.RepeatInterval == .25f && DefenseBasicAttackRules.Recovery == .85f,
-            "Basic hit, repeat gate and uncompressed pose timing match PlayerCombatController");
+        Check(DefenseBasicAttackRules.Windup == .18f && DefenseBasicAttackRules.RepeatInterval == .65f && DefenseBasicAttackRules.Recovery == .85f,
+            "Basic attack uses the slower .65s repeat gate while retaining .18s hit and .85s pose");
         Check(Math.Abs(Math.Cos(DefenseBasicAttackRules.ConeAngle * Math.PI / 360d) + .26d) < .000001d,
             "Basic sector reproduces source dot threshold -0.26");
         var origin = new DefensePoint3(0f, 0f, 0f);
