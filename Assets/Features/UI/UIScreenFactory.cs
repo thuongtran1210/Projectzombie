@@ -96,7 +96,6 @@ namespace ProjectZombie.Features.UI
                 string[] resourceNames = new[]
                 {
                     $"UI/{entry.screenHierarchyName}",
-                    $"UI/LobbyModalUI",
                     $"UI/{screenType}ModalUI",
                     $"UI/{screenType}UI",
                     $"UI/{screenType}Panel",
@@ -125,8 +124,6 @@ namespace ProjectZombie.Features.UI
             {
                 string[] editorPaths = new[]
                 {
-                    $"Assets/Resources/UI/LobbyModalUI.prefab",
-                    $"Assets/_Prefabs/UI/LobbyModalUI.prefab",
                     $"Assets/Resources/UI/{entry.screenHierarchyName}.prefab",
                     $"Assets/_Prefabs/UI/{entry.screenHierarchyName}.prefab",
                     $"Assets/Resources/UI/{screenType}UI.prefab",
@@ -210,6 +207,22 @@ namespace ProjectZombie.Features.UI
         public bool IsScreenLoaded(MetaScreenType screenType)
         {
             return _instantiatedScreens.ContainsKey(screenType) && _instantiatedScreens[screenType] != null;
+        }
+
+        /// <summary>
+        /// Kiểm tra xem màn hình có cấu hình trong Registry hoặc đã được nạp hay không.
+        /// </summary>
+        public bool HasScreen(MetaScreenType screenType)
+        {
+            if (IsScreenLoaded(screenType)) return true;
+
+            var registry = _uiRegistry ?? Resources.Load<UIRegistrySO>("UI/UIRegistry");
+            if (registry != null && registry.TryGetScreenEntry(screenType, out var entry))
+            {
+                return entry.screenPrefab != null || entry.screenPrefabRef != null;
+            }
+
+            return false;
         }
 
         /// <summary>

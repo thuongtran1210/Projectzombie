@@ -44,6 +44,16 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private Image _primaryWeaponIcon;
         [SerializeField] private Image[] _relicIcons;
 
+        public void SetDefenseLoadoutSummary(string summary)
+        {
+            if (_primaryWeaponNameText != null)
+            {
+                _primaryWeaponNameText.text = summary;
+                _primaryWeaponNameText.enableAutoSizing = true;
+                _primaryWeaponNameText.fontSizeMin = 12;
+            }
+        }
+
         public event Action OnStartRunClicked;
         public event Action OnMultiplayerClicked;
         public event Action OnHeroSelectClicked;
@@ -59,6 +69,11 @@ namespace ProjectZombie.Features.UI
             base.Awake();
 
             AutoWireButtonsFallback();
+            if (_loadoutCardButton == null)
+            {
+                var card = FindChildRecursive(transform, "Btn_CardCodex_Wood_Frame");
+                if (card != null) _loadoutCardButton = card.GetComponent<Button>();
+            }
 
             if (_startRunButton != null) _startRunButton.onClick.AddListener(() => OnStartRunClicked?.Invoke());
             if (_multiplayerButton != null) _multiplayerButton.onClick.AddListener(() => OnMultiplayerClicked?.Invoke());
@@ -66,9 +81,9 @@ namespace ProjectZombie.Features.UI
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_gachaButton != null) _gachaButton.onClick.AddListener(() => OnGachaClicked?.Invoke());
             if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
-            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
+            if (_loadoutCardButton != null && _loadoutCardButton != _deckCardsButton) _loadoutCardButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());
-            if (_codexButton != null) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
+            if (_codexButton != null && _codexButton != _deckCardsButton && _codexButton != _loadoutCardButton) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_settingsButton != null) _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());
             if (_resourceDownloadButton != null) _resourceDownloadButton.onClick.AddListener(() => OnResourceDownloadClicked?.Invoke());
         }

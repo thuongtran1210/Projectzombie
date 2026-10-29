@@ -63,6 +63,11 @@ namespace ProjectZombie.EditorTools
                 ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab();
             }
 
+            if (GUILayout.Button("🛡️ Cập Nhật Màn Hình Chuẩn Bị Xuất Trận (Defense Preparation UI)", GUILayout.Height(30)))
+            {
+                ProjectZombie.Editor.UI.DefensePreparationUIGenerator.GenerateDefensePreparationUI();
+            }
+
             if (GUILayout.Button("⛩️ Cập Nhật Bảo Rương Gacha (Gacha Shop UI)", GUILayout.Height(30)))
             {
                 ProjectZombie.Features.MetaProgression.Gacha.Editor.GachaUIPrefabBuilder.BuildGachaUIPrefabs();

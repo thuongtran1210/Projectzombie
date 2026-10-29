@@ -247,6 +247,12 @@ namespace ProjectZombie.Features.UI
             }
 
             _view.SetEquippedLoadoutSummary(priName, priSprite, relicSprites);
+            var saved = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository().Load();
+            var catalog = ProjectZombie.Features.Defense3D.Loadout.Defense3DCatalog.CreateDefault();
+            var rules = ProjectZombie.Features.Defense3D.Loadout.LoadoutRules.Default;
+            string heroName = catalog.TryGetEntry(saved.HeroId, out var h) ? h.DisplayName : saved.HeroId;
+            string relicName = catalog.TryGetEntry(saved.RelicId, out var relicEntry) ? relicEntry.DisplayName : saved.RelicId;
+            _view.SetDefenseLoadoutSummary($"{heroName} • {relicName}\nLính {saved.MinionIds.Count}/{rules.MaxMinionCount} • Trụ {saved.TowerIds.Count}/{rules.MaxTowerCount}");
         }
 
         private void HandleStartRunClicked()

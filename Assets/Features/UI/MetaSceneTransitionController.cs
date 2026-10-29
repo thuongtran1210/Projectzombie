@@ -26,6 +26,8 @@ namespace ProjectZombie.Features.UI
 
         private Maps.StageDefinitionSO _selectedStage;
         public Maps.StageDefinitionSO SelectedStage => _selectedStage;
+        public bool IsLoadoutReviewPending { get; private set; }
+        public void CancelLoadoutReview() => IsLoadoutReviewPending = false;
 
         private void Awake()
         {
@@ -73,7 +75,13 @@ namespace ProjectZombie.Features.UI
 
         private void HandleStageSelectedForBattle(Maps.StageDefinitionSO stage)
         {
-            TransitionToCombat(stage);
+            _selectedStage = stage;
+            IsLoadoutReviewPending = true;
+            var manager = _metaUIManager != null ? _metaUIManager : MetaUIManager.Instance;
+            if (manager != null && manager.HasScreen(MetaScreenType.DefensePreparation))
+                manager.OpenScreen(MetaScreenType.DefensePreparation);
+            else
+                TransitionToCombat(stage);
         }
 
         public void TransitionToCombat(Maps.StageDefinitionSO stage = null)

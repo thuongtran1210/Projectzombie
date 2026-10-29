@@ -93,3 +93,11 @@ MonoBehaviour:
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     screenHierarchyName: Modal_Lobby
+  - screenType: 10
+    screenPrefab: {fileID: 4919000467815508050, guid: ee5a99f4a4d74d7429a6c73319bc14e6, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Modal_DefensePreparation
