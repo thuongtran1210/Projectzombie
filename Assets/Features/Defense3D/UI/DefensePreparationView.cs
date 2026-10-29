@@ -309,7 +309,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 if (_minionSlotButtons[i] != null) _minionSlotButtons[i].gameObject.SetActive(i < capacity);
                 if (i >= capacity || i >= allMinions.Count) continue;
                 var minion = allMinions[i];
-                bool isSelected = selectedIds != null && selectedIds.Contains(minion.Id);
+                bool isSelected = ContainsId(selectedIds, minion.Id);
                 SetRow(i, isSelected, minion.DisplayName, _minionSlotCheckmarks, _minionSlotNameTexts);
             }
         }
@@ -323,9 +323,19 @@ namespace ProjectZombie.Features.Defense3D.UI
                 if (_towerSlotButtons[i] != null) _towerSlotButtons[i].gameObject.SetActive(i < capacity);
                 if (i >= capacity || i >= allTowers.Count) continue;
                 var tower = allTowers[i];
-                bool isSelected = selectedIds != null && selectedIds.Contains(tower.Id);
+                bool isSelected = ContainsId(selectedIds, tower.Id);
                 SetRow(i, isSelected, tower.DisplayName, _towerSlotCheckmarks, _towerSlotNameTexts);
             }
+        }
+
+        private static bool ContainsId(IReadOnlyList<string> list, string targetId)
+        {
+            if (list == null || string.IsNullOrEmpty(targetId)) return false;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (string.Equals(list[i], targetId, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
         }
 
         public void SetHeroInfo(string heroName, string roleDesc, Sprite avatar = null)
