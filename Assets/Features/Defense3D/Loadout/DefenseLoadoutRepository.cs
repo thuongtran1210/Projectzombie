@@ -171,8 +171,10 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 
         private LoadoutSaveDto TryMigrateFromLegacy()
         {
-            string legacyHero = null;
+            string legacyHero = PlayerPrefs.GetString("VONGXUYEN_SAVED_HERO_ID", null);
             string legacyRelic = null;
+            string currentRelics = PlayerPrefs.GetString("VONGXUYEN_SAVED_RELICS_CSV", string.Empty);
+            if (!string.IsNullOrEmpty(currentRelics)) legacyRelic = currentRelics.Split(',')[0].Trim();
 
             // Đọc PlayerPrefs cũ nếu có
             if (PlayerPrefs.HasKey(LEGACY_PREF_HERO_ID))

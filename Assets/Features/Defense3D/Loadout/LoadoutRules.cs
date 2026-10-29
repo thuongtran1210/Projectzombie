@@ -23,9 +23,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             int maxHeroCount = 1,
             int maxRelicCount = 1,
             int minMinionCount = 1,
-            int maxMinionCount = 3,
+            int maxMinionCount = 4,
             int minTowerCount = 1,
-            int maxTowerCount = 3)
+            int maxTowerCount = 4)
         {
             if (maxHeroCount < (requireHero ? 1 : 0))
                 throw new ArgumentException("MaxHeroCount không thể nhỏ hơn số lượng bắt buộc.", nameof(maxHeroCount));

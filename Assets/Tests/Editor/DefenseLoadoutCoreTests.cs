@@ -179,17 +179,46 @@ namespace ProjectZombie.Tests.Editor
             Assert.That(resultTooFew.IsValid, Is.False);
             Assert.That(resultTooFew.ErrorCode, Is.EqualTo(LoadoutValidationErrorCode.MinionCountOutOfRange));
 
-            // 4 lính (vượt mức tối đa 3)
+            // 5 lính (vượt mức tối đa 4)
             _ownership.Grant("minion_xathu");
             var tooManyMinions = new LoadoutSelection(
                 "hero_thusinh",
                 "relic_deptoong",
-                new[] { "minion_danbinh", "minion_phutapdich", "minion_thaylang", "minion_xathu" },
+                new[] { "minion_danbinh", "minion_phutapdich", "minion_thaylang", "minion_xathu", "minion_fifth" },
                 new[] { "tower_cungtien" });
 
             var resultTooMany = LoadoutValidator.Validate(tooManyMinions, _defaultRules, _catalog, _ownership);
             Assert.That(resultTooMany.IsValid, Is.False);
             Assert.That(resultTooMany.ErrorCode, Is.EqualTo(LoadoutValidationErrorCode.MinionCountOutOfRange));
+        }
+
+        [Test]
+        public void FourDistinctMinionsAndTowers_AreValid_FifthIsRejected()
+        {
+            var minions = new List<string>();
+            var towers = new List<string>();
+            for (int i = 0; i < 5; i++)
+            {
+                string m = "minion_slot_" + i;
+                string t = "tower_slot_" + i;
+                _catalog.Add(m, LoadoutItemType.Minion, m);
+                _catalog.Add(t, LoadoutItemType.Tower, t);
+                _ownership.Grant(m); _ownership.Grant(t);
+                if (i < 4) { minions.Add(m); towers.Add(t); }
+            }
+            var selection = new LoadoutSelection("hero_thusinh", "relic_deptoong", minions, towers);
+            Assert.That(LoadoutValidator.Validate(selection, _defaultRules, _catalog, _ownership).IsValid, Is.True);
+            Assert.That(selection.AddMinion("MINION_SLOT_0"), Is.False);
+            Assert.That(selection.AddTower("TOWER_SLOT_0"), Is.False);
+            selection.AddMinion("minion_slot_4");
+            Assert.That(LoadoutValidator.Validate(selection, _defaultRules, _catalog, _ownership).ErrorCode,
+                Is.EqualTo(LoadoutValidationErrorCode.MinionCountOutOfRange));
+            selection.RemoveMinion("minion_slot_4");
+            selection.AddTower("tower_slot_4");
+            Assert.That(LoadoutValidator.Validate(selection, _defaultRules, _catalog, _ownership).ErrorCode,
+                Is.EqualTo(LoadoutValidationErrorCode.TowerCountOutOfRange));
+            Assert.That(LoadoutValidator.Validate(new LoadoutSelection("hero_thusinh", "relic_deptoong", minions, towers),
+                new LoadoutRules(maxMinionCount: 6, maxTowerCount: 6), _catalog, _ownership).IsValid, Is.True);
         }
 
         [Test]

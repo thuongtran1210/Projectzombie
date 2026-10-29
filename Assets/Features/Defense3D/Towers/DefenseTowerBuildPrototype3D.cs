@@ -17,6 +17,21 @@ namespace ProjectZombie.Features.Defense3D
         private bool[] occupied;
         private DefenseHeroHealth3D _heroHealth;
         private IDefenseHeroCommands _commands;
+        private readonly System.Collections.Generic.List<string> _allowedTowerIds = new System.Collections.Generic.List<string>();
+        public System.Collections.Generic.IReadOnlyList<string> AllowedTowerIds => _allowedTowerIds;
+
+        /// <summary>
+        /// Cấu hình danh sách loại trụ được phép xây theo Loadout đã chọn trước trận.
+        /// </summary>
+        public void SetAllowedTowers(System.Collections.Generic.IEnumerable<string> towerIds)
+        {
+            _allowedTowerIds.Clear();
+            if (towerIds != null)
+            {
+                _allowedTowerIds.AddRange(towerIds);
+            }
+        }
+
         public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
         public int BuildCost => towerWoodCost;
         public int NearestSocket => FindNearestSocket();

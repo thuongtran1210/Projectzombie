@@ -89,7 +89,7 @@ public static class DefenseLoadoutCoreChecks
         Check(!resTooFew.IsValid && resTooFew.ErrorCode == LoadoutValidationErrorCode.MinionCountOutOfRange, "Too few minions fails");
 
         ownership.Grant("minion_xathu");
-        var tooManyMinions = new LoadoutSelection("hero_thusinh", "relic_deptoong", new[] { "minion_danbinh", "minion_phutapdich", "minion_thaylang", "minion_xathu" }, new[] { "tower_cungtien" });
+        var tooManyMinions = new LoadoutSelection("hero_thusinh", "relic_deptoong", new[] { "minion_danbinh", "minion_phutapdich", "minion_thaylang", "minion_xathu", "minion_fifth" }, new[] { "tower_cungtien" });
         var resTooMany = LoadoutValidator.Validate(tooManyMinions, defaultRules, catalog, ownership);
         Check(!resTooMany.IsValid && resTooMany.ErrorCode == LoadoutValidationErrorCode.MinionCountOutOfRange, "Too many minions fails");
 
