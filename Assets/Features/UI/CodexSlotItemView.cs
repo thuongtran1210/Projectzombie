@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -49,262 +49,68 @@ namespace ProjectZombie.Features.UI
     /// </summary>
     public class CodexSlotItemView : MonoBehaviour
     {
-        [Header("Components")]
         [SerializeField] private Image _boxImage;
         [SerializeField] private Image _iconImage;
         [SerializeField] private Image _elementBadgeImage;
         [SerializeField] private TextMeshProUGUI _starText;
         [SerializeField] private TextMeshProUGUI _shardProgressText;
         [SerializeField] private TextMeshProUGUI _nameText;
+        [SerializeField] private TextMeshProUGUI _equippedBadgeText;
+        [SerializeField] private TextMeshProUGUI _lockedBadgeText;
         [SerializeField] private Button _clickButton;
-
-        [Header("Sprites Config")]
         [SerializeField] private Sprite _normalSlotSprite;
         [SerializeField] private Sprite _selectedSlotSprite;
-
         private Action _onClickedCallback;
-
-        private void Awake()
-        {
-            EnsureButtonListener();
-        }
-
+        private bool _equipped;
+        private void Awake() => EnsureButtonListener();
         public void EnsureButtonListener()
         {
-            if (_clickButton == null)
-            {
-                _clickButton = GetComponentInChildren<Button>(true);
-            }
-
-            if (_clickButton != null)
-            {
-                _clickButton.onClick.RemoveListener(HandleClick);
-                _clickButton.onClick.AddListener(HandleClick);
-            }
+            if (_clickButton == null) _clickButton = GetComponentInChildren<Button>(true);
+            if (_clickButton == null) return;
+            _clickButton.onClick.RemoveListener(HandleClick);
+            _clickButton.onClick.AddListener(HandleClick);
         }
-
-        private void HandleClick()
+        private void HandleClick() => _onClickedCallback?.Invoke();
+        public void BindRelic(RelicSlotViewModel vm, Sprite normal, Sprite selected, Action click)
+            => Bind(vm.WeaponName, vm.Icon, vm.ElementBadge, vm.StarLevel, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
+        public void BindHero(HeroSlotViewModel vm, Sprite normal, Sprite selected, Action click)
+            => Bind(vm.CharacterName, vm.Avatar, vm.ElementBadge, vm.StarLevel, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
+        public void BindUpgrade(UpgradeSlotViewModel vm, Sprite normal, Sprite selected, Action click)
+            => Bind(vm.UpgradeName, vm.Icon, null, 0, true, vm.IsSelected, normal, selected, click);
+        private void Bind(string name, Sprite icon, Sprite element, int stars, bool owned, bool inspected,
+            Sprite normal, Sprite selected, Action click)
         {
-            _onClickedCallback?.Invoke();
-        }
-
-        public void BindRelic(RelicSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
-        {
-            _onClickedCallback = onClicked;
-            _normalSlotSprite = normalSlot;
-            _selectedSlotSprite = selectedSlot;
+            _onClickedCallback = click; _normalSlotSprite = normal; _selectedSlotSprite = selected;
             EnsureButtonListener();
-
-            // 1. Box State
-            UpdateBoxVisual(vm.IsSelected, vm.IsUnlocked);
-
-            // 2. Icon
-            if (_iconImage != null)
-            {
-                _iconImage.sprite = vm.Icon;
-                _iconImage.enabled = vm.Icon != null;
-                _iconImage.color = vm.IsUnlocked ? Color.white : new Color(0.35f, 0.30f, 0.35f, 0.45f);
-            }
-
-            // 3. Element Badge
-            if (_elementBadgeImage != null)
-            {
-                if (vm.IsUnlocked && vm.ElementBadge != null)
-                {
-                    _elementBadgeImage.sprite = vm.ElementBadge;
-                    _elementBadgeImage.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _elementBadgeImage.gameObject.SetActive(false);
-                }
-            }
-
-            // 4. Star Badge
-            if (_starText != null)
-            {
-                if (vm.StarLevel > 0)
-                {
-                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel} Sao</b></color>";
-                    _starText.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _starText.gameObject.SetActive(false);
-                }
-            }
-
-            // 5. Shards Progress
-            if (_shardProgressText != null)
-            {
-                if (vm.StarLevel >= 5)
-                {
-                    _shardProgressText.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
-                }
-                else
-                {
-                    string colorHex = vm.ShardCount >= vm.ReqShards ? "00FF88" : "FFAA00";
-                    _shardProgressText.text = $"<color=#{colorHex}><b>{vm.ShardCount}/{vm.ReqShards}</b></color>";
-                }
-            }
-
-            // 6. Label Name
-            if (_nameText != null)
-            {
-                if (!vm.IsUnlocked)
-                {
-                    _nameText.text = vm.IsSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
-                }
-                else
-                {
-                    string nameColorHex = vm.IsSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(vm.NameColor);
-                    _nameText.text = $"<color=#{nameColorHex}>{vm.WeaponName}</color>";
-                }
-            }
+            if (_iconImage != null) { _iconImage.sprite = icon; _iconImage.enabled = icon != null; _iconImage.color = owned ? Color.white : new Color(.65f,.65f,.65f,.8f); }
+            if (_elementBadgeImage != null) { _elementBadgeImage.sprite = element; _elementBadgeImage.gameObject.SetActive(element != null); }
+            if (_starText != null) { _starText.text = stars + " Sao"; _starText.gameObject.SetActive(stars > 0); }
+            if (_shardProgressText != null) _shardProgressText.gameObject.SetActive(false);
+            SetEquipped(false);
+            SetSelected(inspected, owned, null, name);
         }
-
-        public void BindHero(HeroSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
+        public void SetEquipped(bool equipped)
         {
-            _onClickedCallback = onClicked;
-            _normalSlotSprite = normalSlot;
-            _selectedSlotSprite = selectedSlot;
-            EnsureButtonListener();
-
-            // 1. Box State
-            UpdateBoxVisual(vm.IsSelected, vm.IsUnlocked);
-
-            // 2. Avatar
-            if (_iconImage != null)
-            {
-                _iconImage.sprite = vm.Avatar;
-                _iconImage.enabled = vm.Avatar != null;
-                _iconImage.color = vm.IsUnlocked ? Color.white : new Color(0.35f, 0.30f, 0.35f, 0.45f);
-            }
-
-            // 3. Element Badge
-            if (_elementBadgeImage != null)
-            {
-                if (vm.IsUnlocked && vm.ElementBadge != null)
-                {
-                    _elementBadgeImage.sprite = vm.ElementBadge;
-                    _elementBadgeImage.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _elementBadgeImage.gameObject.SetActive(false);
-                }
-            }
-
-            // 4. Star Badge
-            if (_starText != null)
-            {
-                if (vm.StarLevel > 0)
-                {
-                    _starText.text = $"<color=#FFD700><b>{vm.StarLevel} Sao</b></color>";
-                    _starText.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _starText.gameObject.SetActive(false);
-                }
-            }
-
-            // 5. Shards Progress
-            if (_shardProgressText != null)
-            {
-                if (vm.StarLevel >= 5)
-                {
-                    _shardProgressText.text = "<color=#00FF88><b>TỐI ĐA</b></color>";
-                }
-                else
-                {
-                    string colorHex = vm.ShardCount >= vm.ReqShards ? "00FF88" : "FFAA00";
-                    _shardProgressText.text = $"<color=#{colorHex}><b>{vm.ShardCount}/{vm.ReqShards}</b></color>";
-                }
-            }
-
-            // 6. Label Name
-            if (_nameText != null)
-            {
-                if (!vm.IsUnlocked)
-                {
-                    _nameText.text = vm.IsSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
-                }
-                else
-                {
-                    string nameColorHex = vm.IsSelected ? "FFFFFF" : ColorUtility.ToHtmlStringRGB(vm.NameColor);
-                    _nameText.text = $"<color=#{nameColorHex}>{vm.CharacterName}</color>";
-                }
-            }
+            _equipped = equipped;
+            if (_equippedBadgeText != null) _equippedBadgeText.gameObject.SetActive(equipped);
+            if (equipped && _lockedBadgeText != null) _lockedBadgeText.gameObject.SetActive(false);
         }
-
-        public void BindUpgrade(UpgradeSlotViewModel vm, Sprite normalSlot, Sprite selectedSlot, Action onClicked)
-        {
-            _onClickedCallback = onClicked;
-            _normalSlotSprite = normalSlot;
-            _selectedSlotSprite = selectedSlot;
-            EnsureButtonListener();
-
-            // 1. Box State
-            UpdateBoxVisual(vm.IsSelected, true);
-
-            // 2. Icon
-            if (_iconImage != null)
-            {
-                _iconImage.sprite = vm.Icon;
-                _iconImage.enabled = vm.Icon != null;
-                _iconImage.color = Color.white;
-            }
-
-            // 3. Hide Element & Star for basic upgrades
-            if (_elementBadgeImage != null) _elementBadgeImage.gameObject.SetActive(false);
-            if (_starText != null) _starText.gameObject.SetActive(false);
-            if (_shardProgressText != null) _shardProgressText.text = "";
-
-            // 4. Label Name
-            if (_nameText != null)
-            {
-                _nameText.text = vm.IsSelected ? $"<color=#FFFFFF>{vm.UpgradeName}</color>" : $"<color=#F1E6C8>{vm.UpgradeName}</color>";
-            }
-        }
-
         public void SetSelected(bool isSelected, bool isUnlocked = true, Color? customNameColor = null, string baseName = null)
         {
-            UpdateBoxVisual(isSelected, isUnlocked);
-
-            if (_nameText != null)
+            if (_boxImage != null)
             {
-                if (!isUnlocked)
-                {
-                    _nameText.text = isSelected ? "<color=#FFCC88>Chưa Mở Khóa</color>" : "<color=#665544>Chưa Mở Khóa</color>";
-                }
-                else if (!string.IsNullOrEmpty(baseName))
-                {
-                    string nameColorHex = isSelected ? "FFFFFF" : (customNameColor.HasValue ? ColorUtility.ToHtmlStringRGB(customNameColor.Value) : "F1E6C8");
-                    _nameText.text = $"<color=#{nameColorHex}>{baseName}</color>";
-                }
+                var sprite = isSelected ? _selectedSlotSprite : _normalSlotSprite;
+                if (sprite != null) _boxImage.sprite = sprite;
+                _boxImage.color = isSelected || isUnlocked ? Color.white : new Color(.72f,.72f,.72f,.85f);
             }
+            if (_nameText != null && baseName != null)
+            {
+                _nameText.text = baseName;
+                _nameText.color = isSelected ? Color.white : new Color(.89f,.85f,.75f);
+            }
+            if (_lockedBadgeText != null) _lockedBadgeText.gameObject.SetActive(!isUnlocked && !_equipped);
         }
 
-        private void UpdateBoxVisual(bool isSelected, bool isUnlocked)
-        {
-            if (_boxImage == null) return;
-
-            if (isSelected)
-            {
-                if (_selectedSlotSprite != null) _boxImage.sprite = _selectedSlotSprite;
-                _boxImage.color = Color.white;
-            }
-            else
-            {
-                if (_normalSlotSprite != null) _boxImage.sprite = _normalSlotSprite;
-                _boxImage.color = isUnlocked ? Color.white : new Color(0.40f, 0.35f, 0.30f, 0.6f);
-            }
-        }
-
-        /// <summary>
-        /// Tạo cấu trúc GameObject đầy đủ chuẩn Cổ Phong runtime nếu prefab chưa được build trong Asset.
-        /// </summary>
         public static CodexSlotItemView CreateDynamicSlot(Transform parent)
         {
             GameObject slotObj = new GameObject("CodexSlotItem", typeof(RectTransform));

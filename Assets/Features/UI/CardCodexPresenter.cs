@@ -13,7 +13,7 @@ namespace ProjectZombie.Features.UI
     /// <summary>
     /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí / Tướng (Mô hình Clean MVP).
     /// </summary>
-    public class CardCodexPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
+    public partial class CardCodexPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
         private ProjectZombie.Core.Audio.IAudioService _audioService;
         public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
@@ -49,11 +49,14 @@ namespace ProjectZombie.Features.UI
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             if (_view == null) _view = GetComponent<CardCodexView>();
+            InitializeLoadout();
             EnsureVisualSprites();
             LoadAllData();
 
             if (_view != null)
             {
+                _view.OnLoadoutSlotClicked += HandleLoadoutSlotClicked;
+                _view.OnEquipClicked += HandleEquipClicked;
                 _view.OnBackClicked += HandleBack;
                 _view.OnTabChanged += SetTab;
                 _view.OnAlchemyFusionClicked += HandleFusionClicked;
@@ -88,6 +91,8 @@ namespace ProjectZombie.Features.UI
         {
             if (_view != null)
             {
+                _view.OnLoadoutSlotClicked -= HandleLoadoutSlotClicked;
+                _view.OnEquipClicked -= HandleEquipClicked;
                 _view.OnBackClicked -= HandleBack;
                 _view.OnTabChanged -= SetTab;
                 _view.OnAlchemyFusionClicked -= HandleFusionClicked;
@@ -107,6 +112,7 @@ namespace ProjectZombie.Features.UI
             var sw = System.Diagnostics.Stopwatch.StartNew();
             SubscribeManagers();
             LoadAllData();
+            InitializeLoadout();
             RefreshCurrency();
             SetTab(_currentTab);
             sw.Stop();
@@ -344,6 +350,8 @@ namespace ProjectZombie.Features.UI
         public void SetTab(CodexTabType tab)
         {
             _currentTab = tab;
+            _inspectedDefenseId = null;
+            RefreshLoadoutSummary();
             if (_view != null) _view.UpdateTabVisuals(tab, _tabActiveSprite, _tabInactiveSprite);
             PopulateGridForTab(tab);
         }
@@ -353,6 +361,8 @@ namespace ProjectZombie.Features.UI
             if (_view == null) return;
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
+            _inspectedCard = null;
+            _defenseSlotViewMap.Clear();
             _view.ClearGrid();
             _relicSlotViewMap.Clear();
             _heroSlotViewMap.Clear();
@@ -370,7 +380,7 @@ namespace ProjectZombie.Features.UI
                         int shards = relicMgr != null ? relicMgr.GetRelicShardCount(weapon.weaponId) : 0;
                         var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 5;
-                        bool isUnlocked = star > 0;
+                        bool isUnlocked = star > 0 || (_defenseOwnership.IsOwned(ResolveSupportedId(weapon.weaponId, false) ?? ""));
                         bool isSelected = _selectedRelic == weapon;
 
                         var slotItem = _view.CreateSlotItem();
@@ -422,7 +432,7 @@ namespace ProjectZombie.Features.UI
                         int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
                         var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 10;
-                        bool isUnlocked = star > 0;
+                        bool isUnlocked = star > 0 || _defenseOwnership.IsOwned(ResolveSupportedId(hero.characterId, true) ?? "");
                         bool isSelected = _selectedHero == hero;
 
                         var slotItem = _view.CreateSlotItem();
@@ -463,46 +473,43 @@ namespace ProjectZombie.Features.UI
             }
             else
             {
-                _view.DisplayCardDetail("Thần Thẻ Bị Động", "[ĐANG CHUYỂN DỊCH]", "Hệ thống nâng cấp thẻ kỹ năng đang được tối ưu và chuyển dịch sang chế độ Phòng Thủ 3D.", null, false);
+                PopulateDefenseGrid(tab);
             }
 
+            AddMissingCatalogCards(tab);
+            RefreshEquippedBadges();
+            RefreshEquipAction();
             sw.Stop();
             Debug.Log($"<color=#00FF88>[CardCodexPresenter] PopulateGridForTab ({tab}) hoàn tất trong: {sw.ElapsedMilliseconds} ms.</color>");
         }
 
+        private CodexSlotItemView _inspectedCard;
+        private bool _inspectedCardOwned;
+        private string _inspectedCardName;
+
+        private void HighlightCard(CodexSlotItemView card, bool owned, string name)
+        {
+            if (_inspectedCard != null && _inspectedCard != card)
+                _inspectedCard.SetSelected(false, _inspectedCardOwned, null, _inspectedCardName);
+            _inspectedCard = card; _inspectedCardOwned = owned; _inspectedCardName = name;
+            if (card != null) card.SetSelected(true, owned, null, name);
+        }
+
         private void UpdateSelectionVisuals()
         {
-            if (_currentTab == CodexTabType.RelicFusion)
+            if (_currentTab == CodexTabType.RelicFusion && _selectedRelic != null
+                && _relicSlotViewMap.TryGetValue(_selectedRelic, out var relicSlot))
             {
-                var relicMgr = RelicInventoryManager.Instance;
-                foreach (var kvp in _relicSlotViewMap)
-                {
-                    var weapon = kvp.Key;
-                    var slotView = kvp.Value;
-                    if (slotView == null) continue;
-
-                    bool isSelected = weapon == _selectedRelic;
-                    int star = relicMgr != null ? relicMgr.GetRelicStarLevel(weapon.weaponId) : 0;
-                    bool isUnlocked = star > 0;
-
-                    slotView.SetSelected(isSelected, isUnlocked, GetElementColor(weapon.elementType), weapon.weaponName);
-                }
+                bool owned = (RelicInventoryManager.Instance != null && RelicInventoryManager.Instance.GetRelicStarLevel(_selectedRelic.weaponId) > 0)
+                    || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedRelic.weaponId, false) ?? "");
+                HighlightCard(relicSlot, owned, _selectedRelic.weaponName);
             }
-            else if (_currentTab == CodexTabType.HeroCards)
+            else if (_currentTab == CodexTabType.HeroCards && _selectedHero != null
+                && _heroSlotViewMap.TryGetValue(_selectedHero, out var heroSlot))
             {
-                var heroMgr = CharacterProgressionManager.Instance;
-                foreach (var kvp in _heroSlotViewMap)
-                {
-                    var hero = kvp.Key;
-                    var slotView = kvp.Value;
-                    if (slotView == null) continue;
-
-                    bool isSelected = hero == _selectedHero;
-                    int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
-                    bool isUnlocked = star > 0;
-
-                    slotView.SetSelected(isSelected, isUnlocked, GetElementColor(hero.element), hero.characterName);
-                }
+                bool owned = (CharacterProgressionManager.Instance != null && CharacterProgressionManager.Instance.GetCharacterStarLevel(_selectedHero.characterId) > 0)
+                    || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedHero.characterId, true) ?? "");
+                HighlightCard(heroSlot, owned, _selectedHero.characterName);
             }
         }
 
@@ -510,6 +517,8 @@ namespace ProjectZombie.Features.UI
         {
             if (weapon == null) return;
             _selectedRelic = weapon;
+            _inspectedDefenseId = ResolveSupportedId(weapon.weaponId, false);
+            RefreshEquipAction();
 
             UpdateSelectionVisuals();
 
@@ -554,6 +563,8 @@ namespace ProjectZombie.Features.UI
         {
             if (hero == null) return;
             _selectedHero = hero;
+            _inspectedDefenseId = ResolveSupportedId(hero.characterId, true);
+            RefreshEquipAction();
 
             UpdateSelectionVisuals();
 
@@ -645,8 +656,14 @@ namespace ProjectZombie.Features.UI
         {
             _audioService?.PlayUIClick();
             var metaManager = GetComponentInParent<MetaUIManager>() ?? MetaUIManager.Instance;
+            if (MainHubPresenter.Instance != null) MainHubPresenter.Instance.RefreshHubState();
             if (metaManager != null)
             {
+                if (MetaSceneTransitionController.Instance != null && MetaSceneTransitionController.Instance.IsLoadoutReviewPending)
+                {
+                    metaManager.OpenScreen(MetaScreenType.DefensePreparation);
+                    return;
+                }
                 metaManager.PopScreen();
             }
         }
