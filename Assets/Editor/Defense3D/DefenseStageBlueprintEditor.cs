@@ -13,7 +13,7 @@ namespace ProjectZombie.EditorTools.Defense3D
     /// và nút tiền kiểm định hợp lệ (Pre-flight Validation) dành riêng cho Game Designer.
     /// </summary>
     [CustomEditor(typeof(DefenseStageBlueprintSO))]
-    public sealed class DefenseStageBlueprintEditor : Editor
+    public sealed class DefenseStageBlueprintEditor : global::UnityEditor.Editor
     {
         private string _validationMessage;
         private MessageType _validationMessageType = MessageType.Info;
