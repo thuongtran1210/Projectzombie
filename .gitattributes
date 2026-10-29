@@ -78,3 +78,7 @@
 *.txt text
 *.json text
 *.md text
+
+# Binary Unity Assets (Do not convert line endings)
+[Nn]av[Mm]esh*.asset -text merge=binary
+*.navmesh -text merge=binary

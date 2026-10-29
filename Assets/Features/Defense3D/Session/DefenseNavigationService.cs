@@ -23,7 +23,8 @@ namespace ProjectZombie.Features.Defense3D
     /// </summary>
     public sealed class DefenseNavigationService : IDefenseNavigationService
     {
-        public const string HUB_SCENE_NAME = "SampleScene";
+        public const string HUB_SCENE_NAME = "MainMenu";
+        public const string LEGACY_HUB_SCENE_NAME = "SampleScene";
 
         private static DefenseNavigationService _default;
         public static DefenseNavigationService Default => _default ??= new DefenseNavigationService();
@@ -47,7 +48,7 @@ namespace ProjectZombie.Features.Defense3D
         public bool IsNavigating => _isNavigating;
 
         /// <summary>
-        /// Trở về Sảnh Hoàng Tuyền.
+        /// Trở về Sảnh Chính (MainMenu).
         /// </summary>
         /// <param name="onBeforeUnload">Hành động dọn dẹp (cleanup pools, dispose session) trước khi unload scene.</param>
         public async Task<bool> ReturnToHubAsync(Action onBeforeUnload = null)
@@ -77,11 +78,29 @@ namespace ProjectZombie.Features.Defense3D
 
                 await Task.Yield();
 
-                // 2. Nạp Scene Sảnh bằng tên tường minh
-                var asyncOp = SceneManager.LoadSceneAsync(HUB_SCENE_NAME, LoadSceneMode.Single);
+                // 2. Xác định Scene Sảnh hợp lệ bằng Application.CanStreamedLevelBeLoaded
+                string targetScene = HUB_SCENE_NAME;
+                if (!Application.CanStreamedLevelBeLoaded(targetScene))
+                {
+                    if (Application.CanStreamedLevelBeLoaded(LEGACY_HUB_SCENE_NAME))
+                    {
+                        targetScene = LEGACY_HUB_SCENE_NAME;
+                    }
+                    else if (SceneManager.sceneCountInBuildSettings > 0)
+                    {
+                        string scenePath = SceneUtility.GetScenePathByBuildIndex(0);
+                        if (!string.IsNullOrEmpty(scenePath))
+                        {
+                            targetScene = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+                        }
+                    }
+                }
+
+                // 3. Nạp Scene Sảnh bằng tên tường minh
+                var asyncOp = SceneManager.LoadSceneAsync(targetScene, LoadSceneMode.Single);
                 if (asyncOp == null)
                 {
-                    throw new InvalidOperationException($"Không thể nạp Scene Sảnh '{HUB_SCENE_NAME}'. Hãy kiểm tra Build Settings.");
+                    throw new InvalidOperationException($"Không thể nạp Scene Sảnh '{targetScene}'. Hãy kiểm tra Build Settings.");
                 }
 
                 while (!asyncOp.isDone)

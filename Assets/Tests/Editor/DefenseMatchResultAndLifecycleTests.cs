@@ -159,8 +159,8 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void Navigation_HubSceneName_IsExplicitStringNotIndex()
         {
-            // Yêu cầu G5: Hợp đồng điều hướng về sảnh bằng tên tường minh
-            Assert.AreEqual("SampleScene", DefenseNavigationService.HUB_SCENE_NAME);
+            // Yêu cầu G5: Hợp đồng điều hướng về sảnh bằng tên tường minh (MainMenu)
+            Assert.AreEqual("MainMenu", DefenseNavigationService.HUB_SCENE_NAME);
             Assert.IsFalse(int.TryParse(DefenseNavigationService.HUB_SCENE_NAME, out _));
         }
 
