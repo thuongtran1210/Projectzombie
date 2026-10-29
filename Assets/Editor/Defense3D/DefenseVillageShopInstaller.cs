@@ -266,6 +266,7 @@ namespace ProjectZombie.EditorTools.Defense3D
             WriteArray(data, "_recruit", recruit.Select(item => item.Button)); WriteArray(data, "_orders", orders.Select(item => item.Button));
             WriteArray(data, "_recruitLabels", recruit.Select(item => item.Label)); WriteArray(data, "_orderLabels", orders.Select(item => item.Label));
             data.ApplyModifiedPropertiesWithoutUndo();
+            DefenseVillageShopUIStyler.Apply(view);
             return view;
         }
 

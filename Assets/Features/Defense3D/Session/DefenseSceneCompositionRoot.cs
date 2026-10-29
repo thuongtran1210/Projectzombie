@@ -105,6 +105,7 @@ namespace ProjectZombie.Features.Defense3D
             DefenseHeroMotor3D motor = null;
             DefenseHeroAutoAttack3D attack = null;
             DefenseHeroVisualController3D visual = null;
+            DefenseTowerBuildPrototype3D towerBuilder = null;
 
             foreach (var participant in _sceneParticipants)
             {
@@ -115,11 +116,22 @@ namespace ProjectZombie.Features.Defense3D
                 else if (participant is DefenseHeroMotor3D m) motor = m;
                 else if (participant is DefenseHeroAutoAttack3D a) attack = a;
                 else if (participant is DefenseHeroVisualController3D v) visual = v;
+                else if (participant is DefenseTowerBuildPrototype3D tb) towerBuilder = tb;
             }
 
             if (_heroHealth != null)
             {
                 DefenseLoadoutRuntimeAdapter.ApplyHero(resolved, _heroCatalog, _heroHealth, motor, attack, visual);
+            }
+
+            if (towerBuilder != null)
+            {
+                DefenseLoadoutRuntimeAdapter.ApplyTowers(resolved, towerBuilder);
+            }
+
+            if (_heroKit != null)
+            {
+                DefenseLoadoutRuntimeAdapter.ApplyToHeroKit(resolved, _heroKit);
             }
         }
 

@@ -68,6 +68,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             var action = CurrentAction(out int socket, out int level);
             bool nearHut = _shop.IsNearRecruitment, available = _shop.CanTrade;
             _view.SetRecruitmentAccess(available && nearHut);
+            _view.SetCommandsVisible(available);
             bool visible = action.Action != DefenseVillageAction.None && _camera != null;
             if (visible)
             {
@@ -87,9 +88,12 @@ namespace ProjectZombie.Features.Defense3D.UI
             for (int role = 0; role < 3; role++)
             {
                 var definition = _shop.Definition(role);
+                bool allowed = definition != null && _shop.IsRoleAllowed(role);
+                _view.SetRoleVisible(role, allowed);
+                if (!allowed) continue;
                 int count = _shop.Count(role), capacity = _shop.Capacity(role);
-                _view.SetRow(role, definition.DisplayName + " · " + definition.WoodCost + " gỗ  (" + count + "/" + capacity + ")",
-                    ORDER_LABELS[role, (int)_shop.Order(role)], available && nearHut && wood >= definition.WoodCost && count < capacity, available && count > 0);
+                _view.SetRow(role, definition.DisplayName + "\n<color=#EACB83>" + definition.WoodCost + " gỗ</color>  (" + count + "/" + capacity + ")",
+                    ORDER_LABELS[role, (int)_shop.Order(role)], available && nearHut && wood >= definition.WoodCost && count < capacity, available && count > 0, count, (int)_shop.Order(role));
             }
             string label;
             switch (action.Action)
@@ -105,9 +109,9 @@ namespace ProjectZombie.Features.Defense3D.UI
         protected override void OnGameplayGateChanged(bool active)
         {
             MarkDirty();
-            if (!active) { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); }
+            if (!active) { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); _view.SetCommandsVisible(false); }
         }
-        protected override void OnGameplayCleanup() { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); }
+        protected override void OnGameplayCleanup() { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); _view.SetCommandsVisible(false); }
         private void Unsubscribe()
         {
             if (_shop != null) { _shop.Changed -= MarkDirty; _shop.TowerBuilder.InteractRequested -= KeyboardInteract; }

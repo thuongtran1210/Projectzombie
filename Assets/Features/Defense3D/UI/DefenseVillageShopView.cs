@@ -21,6 +21,14 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private Button _upgrade;
         [SerializeField] private TMP_Text _buildLabel;
         [SerializeField] private TMP_Text _upgradeLabel;
+        [Header("Independent squad command dock")]
+        [SerializeField] private GameObject _commandDock;
+        [SerializeField] private GameObject[] _commandGroups;
+        [SerializeField] private Image[] _orderIcons;
+        [SerializeField] private Image[] _recruitIcons;
+        [SerializeField] private TMP_Text[] _orderCounts;
+        [SerializeField] private Button _close;
+        private Vector2Int _lastScreenSize;
         private Rect _lastSafeArea;
         private TMP_Text _contextLabel;
         public event Action ContextRequested;
@@ -32,6 +40,8 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void Awake()
         {
             _panel.SetActive(false);
+            SetCommandsVisible(false);
+            if (_close != null) _close.onClick.AddListener(CloseRecruitment);
             _contextLabel = _toggle.GetComponentInChildren<TMP_Text>(true);
             _toggle.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -45,6 +55,20 @@ namespace ProjectZombie.Features.Defense3D.UI
             }
             _build.onClick.AddListener(() => BuildRequested?.Invoke());
             _upgrade.onClick.AddListener(() => UpgradeRequested?.Invoke());
+        }
+
+        private void CloseRecruitment() => _panel.SetActive(false);
+        private void OnDestroy() { if (_close != null) _close.onClick.RemoveListener(CloseRecruitment); }
+        public void SetCommandsVisible(bool visible)
+        {
+            if (_commandDock != null && _commandDock.activeSelf != visible) _commandDock.SetActive(visible);
+        }
+        public void SetRoleVisible(int role, bool visible)
+        {
+            if (role < 0 || role >= _recruit.Length) return;
+            if (_recruit[role].gameObject.activeSelf != visible) _recruit[role].gameObject.SetActive(visible);
+            var group = _commandGroups != null && role < _commandGroups.Length ? _commandGroups[role] : _orders[role].gameObject;
+            if (group != null && group.activeSelf != visible) group.SetActive(visible);
         }
 
         public void SetRecruitmentAccess(bool accessible) { if (!accessible && _panel.activeSelf) _panel.SetActive(false); }
@@ -70,20 +94,39 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void LateUpdate()
         {
+            if (_safeArea == null || Screen.width <= 0 || Screen.height <= 0) return;
             var area = Screen.safeArea;
-            if (area == _lastSafeArea || Screen.width <= 0 || Screen.height <= 0) return;
-            _lastSafeArea = area;
-            _safeArea.anchorMin = new Vector2(area.xMin / Screen.width, area.yMin / Screen.height);
-            _safeArea.anchorMax = new Vector2(area.xMax / Screen.width, area.yMax / Screen.height);
+            var screen = new Vector2Int(Screen.width, Screen.height);
+            if (area == _lastSafeArea && screen == _lastScreenSize) return;
+            _lastSafeArea = area; _lastScreenSize = screen;
+            if (area.width <= 0 || area.height <= 0) area = new Rect(0, 0, screen.x, screen.y);
+            _safeArea.anchorMin = new Vector2(Mathf.Clamp01(area.xMin / screen.x), Mathf.Clamp01(area.yMin / screen.y));
+            _safeArea.anchorMax = new Vector2(Mathf.Clamp01(area.xMax / screen.x), Mathf.Clamp01(area.yMax / screen.y));
+            if (_safeArea.anchorMax.x <= _safeArea.anchorMin.x || _safeArea.anchorMax.y <= _safeArea.anchorMin.y)
+            {
+                _safeArea.anchorMin = Vector2.zero;
+                _safeArea.anchorMax = Vector2.one;
+            }
             _safeArea.offsetMin = _safeArea.offsetMax = Vector2.zero;
         }
 
         public void SetHeader(string wood, string status) { _wood.text = wood; _status.text = status; }
-        public void SetRow(int role, string recruit, string order, bool canRecruit, bool canOrder)
+        public void SetRow(int role, string recruit, string order, bool canRecruit, bool canOrder, int count = -1, int orderState = -1)
         {
+            if (role < 0 || role >= _recruit.Length || role >= _orders.Length) return;
             _recruitLabels[role].text = recruit; _orderLabels[role].text = order;
             _recruit[role].interactable = canRecruit; _orders[role].interactable = canOrder;
+            if (_orderCounts != null && role < _orderCounts.Length && _orderCounts[role] != null)
+                _orderCounts[role].text = count < 0 ? string.Empty : count.ToString();
+            if (_orderIcons != null && role < _orderIcons.Length && _orderIcons[role] != null)
+                _orderIcons[role].color = canOrder ? Color.white : new Color(.45f,.45f,.45f,.7f);
+            if (_recruitIcons != null && role < _recruitIcons.Length && _recruitIcons[role] != null)
+                _recruitIcons[role].color = canRecruit ? Color.white : new Color(.65f,.65f,.65f,.85f);
+            if (orderState >= 0 && _orders[role].targetGraphic != null)
+                _orders[role].targetGraphic.color = orderState == 0 ? new Color(1f,.85f,.55f)
+                    : orderState == 1 ? new Color(.60f,.92f,.91f) : new Color(1f,.66f,.55f);
         }
+
         public void SetTowers(string build, string upgrade, bool canBuild, bool canUpgrade)
         {
             _buildLabel.text = build; _upgradeLabel.text = upgrade;
