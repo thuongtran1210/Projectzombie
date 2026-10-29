@@ -359,7 +359,7 @@ namespace ProjectZombie.Features.Player
             }
 
             #if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/Archive_Legacy_2D/Data/Weapons" });
             foreach (var guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);

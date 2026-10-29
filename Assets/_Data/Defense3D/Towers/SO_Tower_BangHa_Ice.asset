@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a6b7c8d9e0f1a2b3c4d5e6f7a8b9cb, type: 3}
+  m_Name: SO_Tower_BangHa_Ice
+  m_EditorClassIdentifier: 
+  _id: tower_bangha
+  _towerName: "H\xE0n B\u0103ng Th\xE1p"
+  _icon: {fileID: 0}
+  _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
+  _attackEffects:
+  - {fileID: 11400000, guid: 1cabf5d441d0d9e45a10919a2f7229dd, type: 2}
+  _projectilePrefab: {fileID: 5703743784151780575, guid: e4abf3697c2c8354185b4d0f57d49d6a, type: 3}
+  _projectileSpeed: 18
+  _projectileArcHeight: 0.6
+  _levels:
+  - buildCost: 30
+    damage: 15
+    attackRange: 7.5
+    attackRate: 0.9
+    visualModelPrefab: {fileID: 0}
+  - buildCost: 50
+    damage: 25
+    attackRange: 8.5
+    attackRate: 1.1
+    visualModelPrefab: {fileID: 0}
+  - buildCost: 75
+    damage: 40
+    attackRange: 10
+    attackRate: 1.3
+    visualModelPrefab: {fileID: 0}

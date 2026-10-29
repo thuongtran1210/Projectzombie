@@ -90,5 +90,23 @@ namespace ProjectZombie.Features.Defense3D
             float mult = 1f + Mathf.Max(0, phase - 1) * 0.18f;
             return maxHP * mult;
         }
+
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(enemyId))
+            {
+                Debug.LogWarning($"[{name}] Mã định danh enemyId không được để trống!", this);
+            }
+
+            if (maxHP <= 0f)
+            {
+                Debug.LogWarning($"[{name}] MaxHealth phải lớn hơn 0!", this);
+            }
+
+            if (moveSpeed <= 0f)
+            {
+                Debug.LogWarning($"[{name}] MoveSpeed phải lớn hơn 0!", this);
+            }
+        }
     }
 }

@@ -320,10 +320,10 @@ namespace ProjectZombie.Features.UI
             if (chosenPrefab == null)
             {
                 string[] paths = new string[] {
-                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab",
-                    "Assets/_Prefabs/Characters/Players/Dao Si.prefab",
-                    "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab",
-                    "Assets/_Prefabs/Characters/Players/An Si.prefab"
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Thu Sinh.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Dao Si.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Thanh Dong.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/An Si.prefab"
                 };
                 if (_currentIndex >= 0 && _currentIndex < paths.Length)
                 {
@@ -401,10 +401,10 @@ namespace ProjectZombie.Features.UI
             if (currentPrefab == null)
             {
                 string[] paths = new string[] {
-                    "Assets/_Prefabs/Characters/Players/Thu Sinh.prefab",
-                    "Assets/_Prefabs/Characters/Players/Dao Si.prefab",
-                    "Assets/_Prefabs/Characters/Players/Thanh Dong.prefab",
-                    "Assets/_Prefabs/Characters/Players/An Si.prefab"
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Thu Sinh.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Dao Si.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/Thanh Dong.prefab",
+                    "Assets/Archive_Legacy_2D/Prefabs/Characters/An Si.prefab"
                 };
                 if (_currentIndex >= 0 && _currentIndex < paths.Length)
                 {

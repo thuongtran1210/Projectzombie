@@ -3834,6 +3834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingWood: 100
+  _onWoodChangedEvent: {fileID: 0}
 --- !u!1 &257235374
 GameObject:
   m_ObjectHideFlags: 0
@@ -7532,6 +7533,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 546165549}
   m_CullTransparentMesh: 1
+--- !u!1 &551445284
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 551445286}
+  - component: {fileID: 551445285}
+  m_Layer: 0
+  m_Name: '[DEFENSE_PROJECTILE_POOL]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &551445285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551445284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 835230c99f02c7545b23811460abd180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultProjectilePrefab: {fileID: 1729867154203885746, guid: d5084dbe3e04b7c4b88c22e712bf92b5, type: 3}
+  _defaultPoolCapacity: 32
+  _maxPoolSize: 128
+--- !u!4 &551445286
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551445284}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &563282073
 GameObject:
   m_ObjectHideFlags: 0
@@ -12686,6 +12734,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 1000
+  _onBaseHealthChangedEvent: {fileID: 0}
+  _onBaseDestroyedEvent: {fileID: 0}
 --- !u!1001 &876316314
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29610,6 +29660,7 @@ MonoBehaviour:
   - {fileID: 926127812}
   - {fileID: 926127811}
   - {fileID: 687179699}
+  - {fileID: 551445285}
   _skillPresenters:
   - {fileID: 8000600002}
   - {fileID: 8000600003}
@@ -34533,3 +34584,4 @@ SceneRoots:
   - {fileID: 8002000401}
   - {fileID: 8002000501}
   - {fileID: 8002000601}
+  - {fileID: 551445286}

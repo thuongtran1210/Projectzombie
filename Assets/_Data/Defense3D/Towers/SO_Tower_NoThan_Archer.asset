@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a6b7c8d9e0f1a2b3c4d5e6f7a8b9cb, type: 3}
+  m_Name: SO_Tower_NoThan_Archer
+  m_EditorClassIdentifier: 
+  _id: tower_nothan
+  _towerName: "N\u1ECF Th\u1EA7n B\u1EAFn T\u1EC9a"
+  _icon: {fileID: 0}
+  _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
+  _attackEffects: []
+  _projectilePrefab: {fileID: 1729867154203885746, guid: d5084dbe3e04b7c4b88c22e712bf92b5, type: 3}
+  _projectileSpeed: 26
+  _projectileArcHeight: 0.4
+  _levels:
+  - buildCost: 25
+    damage: 22
+    attackRange: 8
+    attackRate: 1.1
+    visualModelPrefab: {fileID: 0}
+  - buildCost: 40
+    damage: 35
+    attackRange: 9.5
+    attackRate: 1.4
+    visualModelPrefab: {fileID: 0}
+  - buildCost: 60
+    damage: 55
+    attackRange: 11
+    attackRate: 1.8
+    visualModelPrefab: {fileID: 0}

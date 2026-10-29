@@ -120,18 +120,19 @@ namespace ProjectZombie.Features.Defense3D
         {
             EnsureInitialized();
             if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return false;
-            if (wallet == null || wallet.Wood < towerWoodCost)
-            {
-                Debug.Log("[TREBRAVE Defense3D] Not enough test wood to build tower.");
-                return false;
-            }
             int candidate = FindNearestSocket();
             if (candidate < 0 || socketTowers == null || candidate >= socketTowers.Length || socketTowers[candidate] == null)
             {
                 Debug.Log("[TREBRAVE Defense3D] Stand within " + buildRadius + "m of an empty TowerSocket and press B.");
                 return false;
             }
-            if (socketTowers[candidate].gameObject.activeSelf || !wallet.TrySpend(towerWoodCost)) return false;
+            int cost = socketTowers[candidate].BuildCost > 0 ? socketTowers[candidate].BuildCost : towerWoodCost;
+            if (wallet == null || wallet.Wood < cost)
+            {
+                Debug.Log("[TREBRAVE Defense3D] Not enough wood to build tower. Required: " + cost);
+                return false;
+            }
+            if (socketTowers[candidate].gameObject.activeSelf || !wallet.TrySpend(cost)) return false;
             socketTowers[candidate].PrepareForBuild();
             socketTowers[candidate].gameObject.SetActive(true);
             if (occupied == null || occupied.Length != socketTowers.Length)

@@ -17,45 +17,21 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 26eb188e86fa62a49b3a5b8c1867121f
   m_SerializeEntries:
-  - m_GUID: 12ce05702ae7c3cdd96897666b4265f5
-    m_Address: Thanh Dong
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Character
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1634a91af1076b44b88f91adc4cb0388
     m_Address: CharacterSelectionUI
     m_ReadOnly: 0
     m_SerializedLabels:
     - ui_meta
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 176ac12ec7c47dd40a1313ca69e113a7
-    m_Address: Thu Sinh
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Character
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 229d1d4561bf6f943bf922d7642df32d
     m_Address: Collectibles_Atlas
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3689df294ea14fc4b94df7d8c930accc
-    m_Address: Dao Si
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Character
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 53277d525c89b4a4aaef4bd9ff9b86a6
     m_Address: M_Boss_Outline
     m_ReadOnly: 0
     m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 592ebb9e16325104291165bb0f670f02
-    m_Address: Level1_Timeline
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Timeline
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 59a57369d3c438a4ba9da72e9a87f092
     m_Address: SpriteOutline2D
@@ -67,12 +43,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ui_gameplay
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 75af532554b34642a8ba8b3f34d28c4d
-    m_Address: An Si
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Character
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f0f276ad71c1b242a630c5a2788f64d
     m_Address: UpgradePanel_Template
@@ -97,8 +67,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Map
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e12064e9cecf6914986590730288b6a7
-    m_Address: Stage_01_BambooForest
+  - m_GUID: e5fe7ae9f4904609abe27264743f9365
+    m_Address: Stage_04_SongQue_Defense3D
     m_ReadOnly: 0
     m_SerializedLabels:
     - Map

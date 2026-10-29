@@ -7,6 +7,14 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseBasePrototype3D : DefenseGameplayBehaviour, IDefenseDamageable3D
     {
         [SerializeField, Min(1f)] private float maxHP = 1000f;
+
+        [Header("── EVENT CHANNELS (Sổ tay Kiến trúc 3D - Tùy chọn) ──")]
+        [Tooltip("Kênh sự kiện phát ra lượng máu hiện tại của Căn cứ")]
+        [SerializeField] private SO_FloatEvent _onBaseHealthChangedEvent;
+
+        [Tooltip("Kênh sự kiện phát tín hiệu khi Căn cứ bị phá hủy")]
+        [SerializeField] private SO_VoidEvent _onBaseDestroyedEvent;
+
         private DefenseHealthCore _health;
         private IDefenseStatModifiers _stats;
         public float MaxHP => Health.MaxHp;
@@ -25,9 +33,17 @@ namespace ProjectZombie.Features.Defense3D
             {
                 if (_health != null) return _health;
                 _health = new DefenseHealthCore(maxHP);
-                _health.HealthChanged += (current, maximum) => HealthChanged?.Invoke(current, maximum);
+                _health.HealthChanged += (current, maximum) =>
+                {
+                    HealthChanged?.Invoke(current, maximum);
+                    _onBaseHealthChangedEvent?.Raise(current);
+                };
                 _health.Damaged += context => Damaged?.Invoke(context);
-                _health.Defeated += () => BaseDestroyed?.Invoke();
+                _health.Defeated += () =>
+                {
+                    BaseDestroyed?.Invoke();
+                    _onBaseDestroyedEvent?.Raise();
+                };
                 return _health;
             }
         }

@@ -138,13 +138,29 @@ namespace ProjectZombie.Core.Services.Data
             string labelKey = $"label:{label}";
             try
             {
-                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<T>(label, null);
-                var results = await handle.Task;
-                if (results != null && results.Count > 0)
+                bool keyFound = false;
+                if (UnityEngine.AddressableAssets.Addressables.ResourceLocators != null)
                 {
-                    _handles[labelKey] = handle;
-                    _handles[label] = handle; // Lưu cả 2 key để tương thích khi release
-                    return results;
+                    foreach (var locator in UnityEngine.AddressableAssets.Addressables.ResourceLocators)
+                    {
+                        if (locator != null && locator.Locate(label, typeof(T), out var locs) && locs != null && locs.Count > 0)
+                        {
+                            keyFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (keyFound)
+                {
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetsAsync<T>(label, null);
+                    var results = await handle.Task;
+                    if (results != null && results.Count > 0)
+                    {
+                        _handles[labelKey] = handle;
+                        _handles[label] = handle; // Lưu cả 2 key để tương thích khi release
+                        return results;
+                    }
                 }
             }
             catch (Exception ex)

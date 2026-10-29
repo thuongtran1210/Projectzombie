@@ -40,8 +40,27 @@ namespace ProjectZombie.Features.Defense3D
             Health = null;
         }
 
-        public int GetRequiredWood(DefenseTowerAction action)
+        public int GetRequiredWood(DefenseTowerAction action, SO_TowerData customTowerData = null)
         {
+            if (customTowerData != null)
+            {
+                switch (action)
+                {
+                    case DefenseTowerAction.Build:
+                        return Level == 0 && customTowerData.Levels != null && customTowerData.Levels.Length > 0 ? customTowerData.Levels[0].buildCost : -1;
+                    case DefenseTowerAction.Upgrade:
+                        if (Level > 0 && Level < customTowerData.MaxLevel)
+                            return customTowerData.GetLevelStats(Level + 1).buildCost;
+                        return -1;
+                    case DefenseTowerAction.Repair:
+                        if (Level > 0 && Health != null && Health.CurrentHp < Health.MaxHp)
+                            return DefaultRepairCost;
+                        return -1;
+                    default:
+                        return -1;
+                }
+            }
+
             switch (action)
             {
                 case DefenseTowerAction.Build:

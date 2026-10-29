@@ -140,7 +140,7 @@ namespace ProjectZombie.Features.UI
             }
 
 #if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/_Data/Weapons" });
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/Archive_Legacy_2D/Data/Weapons" });
             foreach (var guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
@@ -178,16 +178,32 @@ namespace ProjectZombie.Features.UI
 
             try
             {
-                var handle = Addressables.LoadAssetsAsync<WeaponData>("WeaponData", null);
-                await handle.Task;
-                if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
+                bool keyFound = false;
+                if (Addressables.ResourceLocators != null)
                 {
-                    foreach (var w in handle.Result)
+                    foreach (var locator in Addressables.ResourceLocators)
                     {
-                        if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenIds.Add(w.weaponId))
+                        if (locator != null && locator.Locate("WeaponData", typeof(WeaponData), out var locs) && locs != null && locs.Count > 0)
                         {
-                            _cachedWeapons.Add(w);
-                            hasNew = true;
+                            keyFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (keyFound)
+                {
+                    var handle = Addressables.LoadAssetsAsync<WeaponData>("WeaponData", null);
+                    await handle.Task;
+                    if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
+                    {
+                        foreach (var w in handle.Result)
+                        {
+                            if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenIds.Add(w.weaponId))
+                            {
+                                _cachedWeapons.Add(w);
+                                hasNew = true;
+                            }
                         }
                     }
                 }
