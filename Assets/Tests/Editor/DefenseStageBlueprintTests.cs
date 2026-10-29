@@ -182,5 +182,100 @@ namespace ProjectZombie.Tests.Editor
                 UnityEngine.Object.DestroyImmediate(bp);
             }
         }
+
+        [Test]
+        public void Validator_DetectsEmptyStageId_ReturnsError()
+        {
+            var bp = ScriptableObject.CreateInstance<DefenseStageBlueprintSO>();
+            bp.stageId = "";
+            bp.arenaBoss = _mockBoss;
+
+            try
+            {
+                var report = DefenseStageValidator.Validate(bp);
+                Assert.IsFalse(report.IsValid);
+                Assert.IsTrue(report.Errors.Exists(e => e.Contains("StageId")));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bp);
+            }
+        }
+
+        [Test]
+        public void Validator_DetectsUnmappedSpawnZone_ReturnsError()
+        {
+            var bp = ScriptableObject.CreateInstance<DefenseStageBlueprintSO>();
+            bp.stageId = "TEST_STAGE";
+            bp.arenaBoss = _mockBoss;
+            bp.spawnZones = new[]
+            {
+                new DefenseSpawnZoneBlueprint
+                {
+                    zoneType = DefenseSpawnZoneType.EastBank,
+                    points = new[] { new DefenseSpawnPointConfig { Offset = Vector3.zero, Lane = 1 } }
+                }
+            };
+            bp.timelineWaves = new List<DefenseStageWaveEntry>
+            {
+                new DefenseStageWaveEntry
+                {
+                    eventId = "wave_water",
+                    triggerTime = 30f,
+                    enemy = _mockEnemy,
+                    zone = DefenseSpawnZoneType.CanalWater, // Not in spawnZones!
+                    count = 2
+                }
+            };
+
+            try
+            {
+                var report = DefenseStageValidator.Validate(bp);
+                Assert.IsFalse(report.IsValid);
+                Assert.IsTrue(report.Errors.Exists(e => e.Contains("CanalWater")));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bp);
+            }
+        }
+
+        [Test]
+        public void Validator_DetectsExcessiveSingleWaveCount_ReturnsWarning()
+        {
+            var bp = ScriptableObject.CreateInstance<DefenseStageBlueprintSO>();
+            bp.stageId = "TEST_STAGE";
+            bp.arenaBoss = _mockBoss;
+            bp.maxActiveEnemies = 20;
+            bp.spawnZones = new[]
+            {
+                new DefenseSpawnZoneBlueprint
+                {
+                    zoneType = DefenseSpawnZoneType.EastBank,
+                    points = new[] { new DefenseSpawnPointConfig { Offset = Vector3.zero, Lane = 1 } }
+                }
+            };
+            bp.timelineWaves = new List<DefenseStageWaveEntry>
+            {
+                new DefenseStageWaveEntry
+                {
+                    eventId = "wave_huge",
+                    triggerTime = 30f,
+                    enemy = _mockEnemy,
+                    zone = DefenseSpawnZoneType.EastBank,
+                    count = 35 // > maxActiveEnemies!
+                }
+            };
+
+            try
+            {
+                var report = DefenseStageValidator.Validate(bp);
+                Assert.IsTrue(report.Warnings.Exists(w => w.Contains("vượt giới hạn an toàn")));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bp);
+            }
+        }
     }
 }

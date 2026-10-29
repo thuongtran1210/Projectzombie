@@ -162,20 +162,25 @@ namespace ProjectZombie.EditorTools.Defense3D
 
             if (GUILayout.Button("🔍 Kiểm Tra Hợp Lệ (Validate)", GUILayout.Height(28)))
             {
-                try
+                var report = DefenseStageValidator.Validate(bp);
+                if (!report.IsValid)
                 {
-                    var plan = bp.Compile();
-                    int totalEvents = plan.Events.Count;
-                    int ordinarySlots = plan.Events.Where(e => e.Kind == DefenseSpawnKind.Enemy).Sum(e => e.Count);
-                    var boss = plan.Events.FirstOrDefault(e => e.Kind == DefenseSpawnKind.ArenaBoss);
-
-                    _validationMessage = $"✅ Cấu hình hợp lệ 100%!\n• Phiên bản Plan: {plan.ProfileVersion}\n• Số đợt quái: {totalEvents - 1} đợt thường ({ordinarySlots} con)\n• Đại Boss xuất hiện tại: {boss.TriggerTime:F0}s (Máu: {plan.BossHealth} HP)\n• Sẵn sàng cho trận chiến!";
-                    _validationMessageType = MessageType.Info;
-                }
-                catch (Exception ex)
-                {
-                    _validationMessage = $"❌ Phát hiện lỗi cấu hình:\n{ex.Message}";
+                    _validationMessage = report.ToFormattedSummary();
                     _validationMessageType = MessageType.Error;
+                }
+                else
+                {
+                    try
+                    {
+                        var plan = bp.Compile();
+                        _validationMessage = report.ToFormattedSummary() + $"\n• Kích thước bộ nạp Runtime: {plan.Events.Count} sự kiện sẵn sàng";
+                        _validationMessageType = report.Warnings.Count > 0 ? MessageType.Warning : MessageType.Info;
+                    }
+                    catch (Exception ex)
+                    {
+                        _validationMessage = $"❌ Lỗi biên dịch Runtime:\n{ex.Message}";
+                        _validationMessageType = MessageType.Error;
+                    }
                 }
             }
 
