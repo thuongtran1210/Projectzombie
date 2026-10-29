@@ -12,7 +12,6 @@ Assets/Core/Juice/GameJuiceManager.cs,67,GameStateManager,if (GameStateManager.I
 Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,152,WeaponData,// 3.1 Toàn bộ ScriptableObject Cấu hình Vũ Khí & Pháp Bảo (WeaponData)
 Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,153,WeaponData,"string[] weaponDataGuids = AssetDatabase.FindAssets(""t:WeaponData"", new[] { ""Assets/_Data/Weapons"" });"
 Assets/Editor/BuildAndDeploy/AddressablesTools/AddressableGroupsSetupTool.cs,158,WeaponData,"AddAssetToGroup(settings, groupWeapons, path, fileName, ""WeaponData"", ""Relic"");"
-Assets/Editor/Generation/Rigging/AnSiRigPrefabBuilder.cs,21,Rigidbody2D,var rb = root.AddComponent<Rigidbody2D>();
 Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,377,Rigidbody2D,var rb = projObj.AddComponent<Rigidbody2D>();
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,60,WeaponData,"var relicThuSinh = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W002_BútPhánQuan.asset"");"
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,61,WeaponData,"var relicDaoSi = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Weapons.WeaponData>(""Assets/_Data/Weapons/W003_BùaTrấnYêu.asset"");"
@@ -22,20 +21,6 @@ Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,108,WeaponDa
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,148,WeaponData,soDaoSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicDaoSi };
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,187,WeaponData,soThanhDong.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicThanhDong };
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,227,WeaponData,soAnSi.defaultRelics = new List<ProjectZombie.Features.Weapons.WeaponData> { relicAnSi };
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,10,WeaponData,/// Công cụ kiểm tra tính toàn vẹn của tất cả WeaponData ScriptableObjects trong dự án.
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,18,WeaponData,"string[] guids = AssetDatabase.FindAssets(""t:WeaponData"");"
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,21,WeaponData,"Debug.LogWarning(""[WeaponDataValidator] Không tìm thấy bất kỳ WeaponData nào trong dự án."");"
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,32,WeaponData,"Debug.Log($""<color=#00E5FF>[WeaponDataValidator]</color> Bắt đầu kiểm tra {totalCount} WeaponData assets..."");"
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,40,WeaponData,WeaponData weaponData = AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,63,WeaponData,"Debug.LogError($""<color=#FF4444>[WeaponDataValidator] LỖI THIẾU PREFAB:</color> WeaponData '<b>{weaponData.name}</b>' (ID: {weaponData.weaponId}) chưa được gán 'weaponPrefab' tại '{path}'!"", weaponData);"
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,112,WeaponData,"Debug.Log($""<color=#00FF88>[WeaponDataValidator] HOÀN TẤT:</color> 100% ({validCount}/{totalCount}) WeaponData đã được gán Prefab hợp lệ và an toàn với Android IL2CPP!"");"
-Assets/Editor/Migration/CleanLegacySampleSceneTool.cs,23,SpawnManager,"""SpawnManager"","
-Assets/Editor/Migration/Migration3DSetupTool.cs,79,HealthSystem,// Build dependencies while inactive: Awake must see HealthSystem on activation.
-Assets/Editor/Migration/Migration3DSetupTool.cs,100,PlayerController,// Add Health first; PlayerStats and PlayerController look it up in Awake.
-Assets/Editor/Migration/Migration3DSetupTool.cs,100,PlayerStats,// Add Health first; PlayerStats and PlayerController look it up in Awake.
-Assets/Editor/Migration/Migration3DSetupTool.cs,101,HealthSystem,var health = playerObj.AddComponent<HealthSystem>();
-Assets/Editor/Migration/Migration3DSetupTool.cs,102,PlayerStats,var stats = playerObj.AddComponent<PlayerStats>();
-Assets/Editor/Migration/Migration3DSetupTool.cs,195,HealthSystem,var health = dummy.AddComponent<HealthSystem>();
 Assets/Editor/Testing/PrefabIntegrityAuditor.cs,83,PlayerStats,if (!root.TryGetComponent<PlayerStats>(out _))
 Assets/Editor/Testing/PrefabIntegrityAuditor.cs,84,PlayerStats,"report.Errors.Add($""[{prefabName}] Thiếu Component 'PlayerStats'!"");"
 Assets/Editor/Testing/PrefabIntegrityAuditor.cs,86,HealthSystem,if (!root.TryGetComponent<HealthSystem>(out _))
@@ -51,9 +36,6 @@ Assets/Editor/UI/MainMenuSceneSetupTool.cs,81,GameStateManager,var gameStateMgr 
 Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,15,GameStateManager,/// - Fade Transition Overlay & GameStateManager / MetaSceneTransitionController
 Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,157,GameStateManager,var stateMgr = Object.FindObjectOfType<ProjectZombie.Features.Shared.GameStateManager>();
 Assets/Editor/UI/Optimizers/FullGameUISetupTool.cs,163,GameStateManager,"managerRoot = new GameObject(""--- GAME MANAGER ---"", typeof(ProjectZombie.Features.Shared.GameStateManager));"
-Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,88,PlayerController,if (PlayerController.Instance != null)
-Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,90,PlayerController,_playerTransform = PlayerController.Instance.transform;
-Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,298,PlayerController,var ctrl = p.GetComponent<PlayerController>();
 Assets/Features/Combat/Coop/CoopDownedMechanic.cs,33,HealthSystem,private HealthSystem _healthSystem;
 Assets/Features/Combat/Coop/CoopDownedMechanic.cs,34,PlayerController,private PlayerController _playerController;
 Assets/Features/Combat/Coop/CoopDownedMechanic.cs,37,Rigidbody2D,private Rigidbody2D _rb;
@@ -360,12 +342,6 @@ Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,108,CharacterEntry,"public
 Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,108,WeaponData,"public void DisplayEquippedLoadout(CharacterEntry hero, List<WeaponData> relics)"
 Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,152,WeaponData,"public void DisplayEquippedLoadout(WeaponData primary, List<WeaponData> relics)"
 Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,188,WeaponData,"public void DisplayWeaponDetail(WeaponData weapon, float damageFill, float cooldownFill)"
-Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,10,WeaponData,/// Editor Tool tự động tạo toàn bộ ScriptableObject WeaponData và WeaponUpgradeData cho Hệ Thống Slapstick/Fun Combat (GDD v5.1).
-Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,72,WeaponData,WeaponData so = AssetDatabase.LoadAssetAtPath<WeaponData>(assetPath);
-Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,76,WeaponData,so = ScriptableObject.CreateInstance<WeaponData>();
-Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,93,WeaponData,var asset = AssetDatabase.LoadAssetAtPath<WeaponData>(assetPath);
-Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,96,WeaponData,asset = ScriptableObject.CreateInstance<WeaponData>();
-Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,135,WeaponData,"Debug.Log($""[WeaponDataGenerator] Đã tự động gán Prefab '{weaponPrefab.name}' vào WeaponData '{def.id}_{def.name}'"");"
 Assets/Features/Weapons/WeaponData.cs,14,WeaponData,public class WeaponData : ScriptableObject
 Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4341,Physics2D,if (scene.GetPhysicsScene2D() != Physics2D.defaultPhysicsScene) {
 Assets/Photon/Fusion/Runtime/Fusion.Unity.cs,4342,Physics2D,mode |= LocalPhysicsMode.Physics2D;

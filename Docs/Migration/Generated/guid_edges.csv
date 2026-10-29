@@ -2322,6 +2322,7 @@ Assets/Scenes/MainMenu.unity,0cd44c1031e13a943bb63640046fad76,,BUILTIN_OR_EXTERN
 Assets/Scenes/MainMenu.unity,1634a91af1076b44b88f91adc4cb0388,Assets/_Prefabs/UI/CharacterSelectionUI.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,22310e45ce0f84f40b72db2396a5ccc7,Assets/_Prefabs/UI/StageSelect_Screen.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,22c541d7d8358d444b0ecb32201991a3,Assets/Core/Save/GameManager.cs,RESOLVED
+Assets/Scenes/MainMenu.unity,2888ca01785459549a2aeec47def726b,Assets/Features/UI/MainHubPresenter.cs,RESOLVED
 Assets/Scenes/MainMenu.unity,2d6de189e51546a4fa45c6ef69f241fd,Assets/_Prefabs/UI/CardCodexUI.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,35166a368b019cb4286bc850a674c239,Assets/Features/UI/MetaSceneTransitionController.cs,RESOLVED
 Assets/Scenes/MainMenu.unity,3d7b32b1a2bbea24cbddfc177cf2b5a8,Assets/_Prefabs/UI/SanctuaryTreeUI.prefab,RESOLVED
@@ -2329,6 +2330,7 @@ Assets/Scenes/MainMenu.unity,76c392e42b5098c458856cdf6ecaaaa1,,BUILTIN_OR_EXTERN
 Assets/Scenes/MainMenu.unity,82a3b8f8f9c45ae47bb70815dac3dad2,Assets/_Prefabs/UI/WeaponLoadoutUI.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,87bb1a1f583f7234db97c69017b3bd45,Assets/Features/MetaProgression/Gacha/RelicGachaManager.cs,RESOLVED
 Assets/Scenes/MainMenu.unity,88ed459cc8221124eb0ef3f474fce8f7,Assets/Features/MetaProgression/MetaCurrencyManager.cs,RESOLVED
+Assets/Scenes/MainMenu.unity,8e57b9a102c454e47b85354dfa968142,Assets/_Data/Gacha/banner_hero.asset,RESOLVED
 Assets/Scenes/MainMenu.unity,91f0fe91d5cb02e43bc6f9c35461004d,Assets/_Prefabs/UI/LobbyModalUI.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,926fd02703a13ad458e3f0b9408fa60c,Assets/_Prefabs/UI/Gacha/GachaShopPanel.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,993d9d6a82992a74ca49b90beb51ebaf,Assets/_Prefabs/UI/MainHubUI.prefab,RESOLVED
@@ -2340,6 +2342,7 @@ Assets/Scenes/MainMenu.unity,ca9f5fa95ffab41fb9a615ab714db018,,BUILTIN_OR_EXTERN
 Assets/Scenes/MainMenu.unity,d46c8d1266ebf9342aa29c37bcd36be0,Assets/_Prefabs/UI/SettingsModalUI.prefab,RESOLVED
 Assets/Scenes/MainMenu.unity,d66763869ec1c014ca5dca767fb8f780,Assets/Resources/UI/UIRegistry.asset,RESOLVED
 Assets/Scenes/MainMenu.unity,dc42784cf147c0c48a680349fa168899,,BUILTIN_OR_EXTERNAL_OR_MISSING_REVIEW
+Assets/Scenes/MainMenu.unity,f6a5fd60794bc074d834e2b070a6c87b,Assets/_Data/RelicStarProgressionConfig.asset,RESOLVED
 Assets/Scenes/MainMenu.unity,fafcc8fce9dc68442a60c6c10ace712d,Assets/Features/MetaProgression/RelicInventoryManager.cs,RESOLVED
 Assets/Scenes/MainMenu.unity,fe87c0e1cc204ed48ad3b37840f39efc,,BUILTIN_OR_EXTERNAL_OR_MISSING_REVIEW
 Assets/Settings/URP_2D_Asset.asset,bf2edee5c58d82540a51f03df9d42094,,BUILTIN_OR_EXTERNAL_OR_MISSING_REVIEW

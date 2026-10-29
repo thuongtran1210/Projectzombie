@@ -40,7 +40,7 @@ Assets/_Data/CharacterS/Hero_ThanhDong.asset,a77db5cf948478a498c53b5d878cd299,.a
 Assets/_Data/CharacterS/Hero_ThuSinh.asset,b9735391c94692a47bc727b07daf7413,.asset,2719,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,2,True,False
 Assets/_Data/CharacterS/StreamerBaseStats.asset,3ce26503ed8f36347ae6b525d735da32,.asset,552,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,4,True,False
 Assets/_Data/CharacterStarProgressionConfig.asset,31fa273824bf2cb4a81b598ce719306e,.asset,1994,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
-Assets/_Data/Gacha/banner_hero.asset,8e57b9a102c454e47b85354dfa968142,.asset,1905,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
+Assets/_Data/Gacha/banner_hero.asset,8e57b9a102c454e47b85354dfa968142,.asset,1905,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,2,True,False
 Assets/_Data/Gacha/banner_standard.asset,62dcdd7e0647de845a69f83e10be1236,.asset,12153,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
 Assets/_Data/Levels/Level1_Timeline.asset,592ebb9e16325104291165bb0f670f02,.asset,7095,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,4,True,False
 Assets/_Data/Levels/Stages/Stage_01_BambooForest.asset,e12064e9cecf6914986590730288b6a7,.asset,1084,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,4,True,False
@@ -49,7 +49,7 @@ Assets/_Data/Levels/Stages/Stage_03_CinnabarSwamp.asset,af97b27eec4b210458bf141d
 Assets/_Data/Levels/Stages/Stage_04_SongQue_Defense3D.asset,e5fe7ae9f4904609abe27264743f9365,.asset,1138,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
 Assets/_Data/Levels/WorldStageDatabase.asset,c9e1a869fe5d24f49b37614c1024e502,.asset,725,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
 Assets/_Data/Meta/PermanentUpgradeTree.asset,d35c27b9e0b86b54fad24b926ec99a41,.asset,6848,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,3,True,False
-Assets/_Data/RelicStarProgressionConfig.asset,f6a5fd60794bc074d834e2b070a6c87b,.asset,1668,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,False,False
+Assets/_Data/RelicStarProgressionConfig.asset,f6a5fd60794bc074d834e2b070a6c87b,.asset,1668,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,2,True,False
 Assets/_Data/Skills/DaoSiSignatureSkill.asset,108b5c99c78b93f40bb99b61f421e8c8,.asset,928,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
 Assets/_Data/Skills/ThanhDongSignatureSkill.asset,82c2b3d8750849c4ab471649987dc1e8,.asset,959,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
 Assets/_Data/Skills/ThuSinhSignatureSkill.asset,dc12786aab8856a41a22bd999e3abb65,.asset,1076,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
@@ -581,7 +581,7 @@ Assets/Art/Weapons/Icon_W012_PhiTieuBatQuai.png,de14356655dc4c1fb7510fe87ac5f37f
 Assets/Art/Weapons/Icon_W_PIPE.png,a6f17b42d2c54f8291a53c9ec9898772,.png,27242,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,2,False,False
 Assets/Art/Weapons/Icon_W_POT.png,0a1687fcd9e9470fab95ae72e905cad1,.png,81403,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,2,False,False
 Assets/Art/Weapons/Icon_W_SLIPPER.png,0efd548e32264c8fb67aa8e812cb6e8e,.png,74381,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,6,True,False
-Assets/Art/Weapons/pixel_art_16x16_12_weapons_transparent.png,ffb6ecf7493305e4481587fbd3fe8db3,.png,647657,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,7,False,False
+Assets/Art/Weapons/pixel_art_16x16_12_weapons_transparent.png,ffb6ecf7493305e4481587fbd3fe8db3,.png,647657,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,7,True,False
 Assets/Art/Weapons/VFX/Tex_ChickenBroom_Giant.png,c7f4b76cadd04af4cab55bb80eaa1cc5,.png,4954,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
 Assets/Art/Weapons/VFX/Tex_Feather_Burst.png,f6ff2b3b78b57ad4e8a09e4f2a5b88b3,.png,1291,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
 Assets/Art/Weapons/VFX/Tex_FoxClaw_BloodOrb.png,d749c5f817c1b6940b67a5315267a9cd,.png,875,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
@@ -666,20 +666,10 @@ Assets/Editor/Defense3D/DefenseWoodEconomyInstaller.cs,17ef48077ed34a5a8bd993b69
 Assets/Editor/Defense3D/DefenseYakshaVisualInstaller.cs,5e0b13f19fc34d0f8747f3a46118e6a9,.cs,2899,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Defense3D/StageSpawnConfigEditor.cs,7919b71527556db48abdece735d94b5a,.cs,1673,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Defense3D/StageSpawnQaTemporary.cs,cd603a8ff7231744cbad1b98b966754a,.cs,2462,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Collectibles/CollectiblesAtlasProcessor.cs,e4a5a436fc149fd478058028bcbd79ba,.cs,6787,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/Maps/StageDataGeneratorTool.cs,4b5daad9c04d140419aba84f895149e8,.cs,5578,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/PythonScripts/clean_alpha_frames.py,24cf27fc3bf2008419d9c5c857dcbc75,.py,2585,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/PythonScripts/crop_frames_tight.py,b291af5ab7b86244bb5b9c1d369b4468,.py,862,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/PythonScripts/process_frames.py,8aa6912c4cedd1e40a0f24d3826c13bf,.py,1884,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/AnSiAnimationGenerator.cs,d1f420ea1f796754f9506b39a9706845,.cs,12252,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/AnSiAnimationProcessorWindow.cs,480bfd4847ebadc43a0656475a066be3,.cs,12000,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/AnSiAutoMetaConfigurator.cs,21d97a652909bf9449516001a21e99fa,.cs,4209,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/AnSiRigPrefabBuilder.cs,4f252157f1953074da24793171f52f5c,.cs,4563,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/RiggingAssetPostprocessor.cs,1002788ed87bddd42947137db39e6e0c,.cs,2856,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/SpriteBorderConfigurator.cs,cc28437c00d43a747a345dd1f91404ab,.cs,1660,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Rigging/SpriteProcessorEditorTool.cs,aeac60799bbebc64cbc94f02cac46e65,.cs,17125,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Tools/CharacterShadowSetupTool.cs,912f19419b5350a4aa1dbd8bad6de1e9,.cs,7025,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/Tools/ShadowSpriteGenerator.cs,757150396adc76a46a5d909ee08f6e56,.cs,2796,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/Tools/UIEditorHelper.cs,7071a4a546d3ee74cbc7fc596baa4660,.cs,5455,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/VFX/CharacterVFXBuilder.cs,58bf251354624e140b7c1cd33855c7bb,.cs,34006,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/VFX/PlayerDashVFXAssembler.cs,450c36d63cc6380479e319fd6f5e88b2,.cs,4501,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
@@ -690,9 +680,6 @@ Assets/Editor/Generation/VFX/VFXMaterialGenerator.cs,b97d1ba1e88b4c14ab4cc68221a
 Assets/Editor/Generation/VFX/WeaponVFXAssembler.cs,99fec585d00e21c40800999796a70371,.cs,20443,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/VFX/WeaponVFXBuilder.cs,e60b0ad405b848d4f866177152bedfd2,.cs,91170,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Generation/WeaponTools/CharacterDataAssetGenerator.cs,ac91bf88e0ae29e4d873006c24160156,.cs,17799,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Generation/WeaponTools/WeaponDataValidator.cs,060e801fbe024b141aa6e5ea3cc2479b,.cs,5665,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Migration/CleanLegacySampleSceneTool.cs,2fe616834bc7de04abc56acb4c2c9cc5,.cs,5227,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Editor/Migration/Migration3DSetupTool.cs,bf7d1d78b9a44529b0bc927804bfa63c,.cs,10829,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Testing/AssetSourceConflictDetector.cs,a9dd8fcf2925d3c41adc1a35398d8f98,.cs,9288,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Testing/PrefabIntegrityAuditor.cs,83ff644cd374ae64da4c0ad2d17a2782,.cs,5069,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Editor/Testing/RuntimeLookupAuditor.cs,71708bb8971ee1f4d9c673b221c73be7,.cs,4556,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
@@ -734,17 +721,7 @@ Assets/Editor/UI/WeaponLoadoutUIGenerator.cs,69c967418dd444543ba644721e03c2c8,.c
 Assets/Editor/VFX/AlwaysIncludedShadersSetupTool.cs,47b5bde9862b36d4a9af294f908435a8,.cs,3902,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/Combat/Aiming/AimResult.cs,626a406f2317b444d81e33b7ab8c375a,.cs,2496,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/Combat/Aiming/AutoTargetScanner.cs,40da741b50f06594f9e0fb094503133b,.cs,1798,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/IAimIndicatorRenderer.cs,084da848e8c6bc141b041ef4fcb6920d,.cs,973,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/CircleReticleIndicatorRenderer.cs,98013661e41ab2d4d932397386fcb430,.cs,3702,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/ConeSectorIndicatorRenderer.cs,9f64ff1105b1e6d45a897231ddf75109,.cs,3564,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/CurvedTrajectoryIndicatorRenderer.cs,1b9af331184f2f44c8317851b0ba6ac9,.cs,3794,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/DashLineIndicatorRenderer.cs,aa67d94cdb8f7c84c9c92e2419f1f45f,.cs,3495,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/LineArrowIndicatorRenderer.cs,0d1df728a6fd66e499e6222ea2fe0391,.cs,2353,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/RhythmPulseIndicatorRenderer.cs,27d1e26830ce52242b31a191887da74a,.cs,2066,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/SelfAOEIndicatorRenderer.cs,ef6b10ae6fe470a4a9dceefa0fe758d7,.cs,1984,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/Renderers/VectorWallIndicatorRenderer.cs,6f31413801a90ea4cb2f6f44271f3ac1,.cs,3635,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/Combat/Aiming/SkillAimConfig.cs,f40d246fb048683488953075bb3d3408,.cs,5697,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
-Assets/Features/Combat/Aiming/SkillAimIndicatorController.cs,539fb814e7062bd4bb27776298684da3,.cs,16131,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/Combat/Coop/CoopDownedMechanic.cs,bc6e69ad7ecf58e4fb881f567c8df80a,.cs,13642,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,4,True,False
 Assets/Features/Combat/Coop/IDownedStateProvider.cs,89ff96677d23cb8429f8ceb55f81139e,.cs,1457,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/Combat/Events/CombatEventContracts.cs,3d685481e5d489c47a0d60d345b9e0f8,.cs,4573,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
@@ -997,7 +974,7 @@ Assets/Features/MetaProgression/Gacha/Core/CoTienCurrencyProcessor.cs,4cbf2200a7
 Assets/Features/MetaProgression/Gacha/Core/ICurrencyProcessor.cs,73a8f181c513d024399eadfc3065f981,.cs,955,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/MetaProgression/Gacha/Core/IGachaDataProvider.cs,7f987e64ff2e1b743b6fb37ea0c0efae,.cs,561,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/MetaProgression/Gacha/Core/LocalSOGachaDataProvider.cs,92880fe0df08fb74faa3f80ab29f687f,.cs,2017,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
-Assets/Features/MetaProgression/Gacha/Data/GachaBannerConfigSO.cs,174c24198c2b83b468fc6ca7984ce1a4,.cs,2394,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,False,False
+Assets/Features/MetaProgression/Gacha/Data/GachaBannerConfigSO.cs,174c24198c2b83b468fc6ca7984ce1a4,.cs,2394,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
 Assets/Features/MetaProgression/Gacha/Data/GachaDropItem.cs,94c2ab1ae15aabe4d8b0f06952f2b2b5,.cs,1499,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/MetaProgression/Gacha/Data/GachaDropResult.cs,dad412e61b6b90f44a0d45d43936aa56,.cs,1037,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/MetaProgression/Gacha/Editor/GachaChestAnimationGenerator.cs,bf31c43c7507c104b9d41546dfc98302,.cs,10410,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
@@ -1010,7 +987,7 @@ Assets/Features/MetaProgression/MetaCurrencyManager.cs,88ed459cc8221124eb0ef3f47
 Assets/Features/MetaProgression/MetaProgressionSaveData.cs,ec97c4358394a1d4482d77eb0c27a11c,.cs,10788,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/MetaProgression/PermanentUpgradeTreeData.cs,ece2901adbdc48e4a9eba9bd316f4e05,.cs,3360,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
 Assets/Features/MetaProgression/RelicInventoryManager.cs,fafcc8fce9dc68442a60c6c10ace712d,.cs,11765,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
-Assets/Features/MetaProgression/RelicStarProgressionSO.cs,72ee2fa8cc58e0e4fb71808623bf0c8c,.cs,3060,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,False,False
+Assets/Features/MetaProgression/RelicStarProgressionSO.cs,72ee2fa8cc58e0e4fb71808623bf0c8c,.cs,3060,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
 Assets/Features/Multiplayer/Core/CharacterDatabasePrefabProvider.cs,7d301a89d4a804e4f8596192e304e539,.cs,2728,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/Multiplayer/Core/Commands/AttackActionCommand.cs,91238eb73ab87814b874297e0e641596,.cs,482,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/Multiplayer/Core/Commands/DashActionCommand.cs,1137296acbf0b7645b3bf521bb348f8a,.cs,527,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
@@ -1126,7 +1103,6 @@ Assets/Features/UI/DamageText/DamageTextManager.cs,a418190cb7288b5458c88a8e755a9
 Assets/Features/UI/DamageText/DamageTextStyleConfig.cs,13425938bfe0cb648ac1f67ea1d1bc02,.cs,3824,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
 Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs,0e504be408392824e95ba8c1e2e6f9aa,.cs,1060,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/UI/DynamicVirtualJoystick.cs,5e5f6ddaea2df5a419f0ccf61d680218,.cs,13398,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
-Assets/Features/UI/Editor/Cinemachine2DSetupTool.cs,af7e0753d6362804baa60292ce04698c,.cs,7371,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/UI/Editor/OverheadStatusPrefabGenerator.cs,c305823329330b744b852c4f1e871d19,.cs,12731,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/UI/Gacha/GachaCardRewardView.cs,32c7aa5f1241dda4fa42df9fa95d29e5,.cs,2816,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
 Assets/Features/UI/Gacha/GachaChestPresenter.cs,835e2338b73901448acf34bb4063a185,.cs,13175,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
@@ -1139,7 +1115,7 @@ Assets/Features/UI/LoadingScreenView.cs,0b71d5fd9f89e044dbc35880a04744a6,.cs,536
 Assets/Features/UI/Lobby/LobbyPlayerSlotView.cs,f0be2f595faa27246850dfb29e706bec,.cs,2771,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
 Assets/Features/UI/Lobby/LobbyPresenter.cs,4ac7ae31e7cce064797fbe37dfd34ece,.cs,11206,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
 Assets/Features/UI/Lobby/LobbyView.cs,da47d81e6d74b2748b939cf41ff47363,.cs,7426,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
-Assets/Features/UI/MainHubPresenter.cs,2888ca01785459549a2aeec47def726b,.cs,13815,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
+Assets/Features/UI/MainHubPresenter.cs,2888ca01785459549a2aeec47def726b,.cs,13815,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,3,True,False
 Assets/Features/UI/MainHubView.cs,a0c99ec6df32f404885921a73d193c0f,.cs,11619,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,3,True,False
 Assets/Features/UI/META_UI_DESIGN_SPEC.md,2f01ca5fbb2d1b943924fe2b41e6460e,.md,9301,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,NOT_TEXT_SCANNED,0,False,False
 Assets/Features/UI/MetaSceneTransitionController.cs,35166a368b019cb4286bc850a674c239,.cs,9102,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,1,True,False
@@ -1160,7 +1136,6 @@ Assets/Features/UI/UIRegistrySO.cs,af8d45b37ec37404891160e82bbd5720,.cs,2996,ADA
 Assets/Features/UI/UIScreenFactory.cs,2d8e3f1227009cf43afe3104d51749b2,.cs,10531,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,0,False,False
 Assets/Features/UI/WeaponLoadout/WeaponLoadoutPresenter.cs,a072671c8257d3143ba68c3f22cfdd86,.cs,22322,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
 Assets/Features/UI/WeaponLoadout/WeaponLoadoutView.cs,36eccbfd2cedc64499d4d5cdd999d8f5,.cs,13959,ADAPT_REVIEW,Có phần dùng chung và dependency cần thay thế,TEXT_SCANNED,2,True,False
-Assets/Features/VFX/Editor/SkillIndicatorPrefabGenerator.cs,66464ce934e239a47b9687eee1866961,.cs,4894,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/VFX/Indicators/IndicatorRequest.cs,ab296c4a58d6de54cbd965a99de3c416,.cs,1717,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/VFX/Indicators/IndicatorUtility.cs,c1176f900d5aadd42ba6162885f391d2,.cs,1034,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/VFX/Indicators/SkillIndicator.cs,c1d0a130e3680924eb808aae5d112b9b,.cs,4879,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,2,False,False
@@ -1169,9 +1144,6 @@ Assets/Features/VFX/MODULAR_VFX_SYSTEM_DOC.md,9a478f0faad86ad46aac3a75ce7e3bd4,.
 Assets/Features/VFX/Prefabs/Indicator_Box.prefab,a6f713b6cb5d09b4aa1855cb6f220839,.prefab,5271,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/VFX/Prefabs/Indicator_Circle.prefab,46861b4ba300269418c189c6c4206928,.prefab,5276,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Features/VFX/VFXPoolResetter.cs,17b872d0eca7d884383a7b2a9c594b86,.cs,4740,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,18,True,False
-Assets/Features/Weapons/Editor/FunCombatDataGenerator.cs,d73a8b13958314e4b8d052ab609e0c5b,.cs,8308,LEGACY_REVIEW,Ứng viên runtime cũ; chưa chứng minh xóa an toàn,TEXT_SCANNED,0,False,False
-Assets/Features/Weapons/Editor/WeaponDataGenerator.cs,0e59f6c156506614a937e46209bcd96a,.cs,9598,LEGACY_REVIEW,Ứng viên runtime cũ; chưa chứng minh xóa an toàn,TEXT_SCANNED,0,False,False
-Assets/Features/Weapons/Editor/WeaponPrefabElementUpdater.cs,73509410a1116174ca90cd1f63c174f9,.cs,3821,LEGACY_REVIEW,Ứng viên runtime cũ; chưa chứng minh xóa an toàn,TEXT_SCANNED,0,False,False
 Assets/Features/Weapons/WeaponBase.cs,62b8537b7e2c25749860bae149d7990b,.cs,2228,LEGACY_REVIEW,Ứng viên runtime cũ; chưa chứng minh xóa an toàn,TEXT_SCANNED,0,False,False
 Assets/Features/Weapons/WeaponData.cs,99f46a068b35443468d83b1d0544b85d,.cs,3153,LEGACY_REVIEW,Ứng viên runtime cũ; chưa chứng minh xóa an toàn,TEXT_SCANNED,17,True,False
 Assets/InputActions/PlayerInputActions.cs,716261ec85be980448cec2f5c724e00d,.cs,15692,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
@@ -1506,7 +1478,7 @@ Assets/Resources/UI/HUD/Tex_Attack_Aim_Arrow.png,b5a3c6ce007be9b42a17902f160c17c
 Assets/Resources/UI/HUD/Timeline_HUD_Kit.png,8ebd2ed60c8f5fc47926c4eb8804f7f3,.png,392990,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,NOT_TEXT_SCANNED,0,False,False
 Assets/Resources/UI/LoadingScreenUI.prefab,5ffd759d15d807a4e9e6b8c4c5c0d2dd,.prefab,29889,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Resources/UI/LobbyModalUI.prefab,1f00869d2dea30a4e83cd608ac1ba2a2,.prefab,237802,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
-Assets/Resources/UI/MainHubUI.prefab,6221125051b1d1c41a55b557834c5a3b,.prefab,125242,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
+Assets/Resources/UI/MainHubUI.prefab,6221125051b1d1c41a55b557834c5a3b,.prefab,125252,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
 Assets/Resources/UI/MobileControlsCustomizerUI.prefab,b30811e2e958972469acb287ea9f91fc,.prefab,74584,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Resources/UI/PlayerStatsMenuUI.prefab,693942883ef27a944997a7b6710652bd,.prefab,199606,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Resources/UI/ResourceDownloadModalUI.prefab,0f0f0074a5b741a4eb305e3f3661182a,.prefab,51486,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
@@ -1596,7 +1568,7 @@ Assets/Resources/VFX/PS_ImpactSparks.prefab,e4a50896e345fbe41bd58f4abb9a4fb3,.pr
 Assets/Resources/VFX/VFX_Player_DashDust.prefab,08eeeafe4a72f324b853e3be7ca825c6,.prefab,118459,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False
 Assets/Scenes/Defense3D/MapSongQue3D_Prototype/NavMesh-Defense_Navigation.asset,ea8a135a34758154d9c8c287fa0cf329,.asset,9936,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,BINARY_OR_ENCODING_REVIEW,2,True,False
 Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity,a120a823c226e2a46af86be9e5e71c0b,.unity,1007337,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
-Assets/Scenes/MainMenu.unity,7def1f2fee8e4cef921175701513c2f2,.unity,72675,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
+Assets/Scenes/MainMenu.unity,7def1f2fee8e4cef921175701513c2f2,.unity,73250,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
 Assets/Settings/URP_2D_Asset.asset,f94de91eae447da41bfca99ec46f3c49,.asset,3645,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,2,True,False
 Assets/Settings/URP_2D_Renderer.asset,d1dbe3c5e61f9b74580642dcbc829dd3,.asset,3141,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,1,True,False
 Assets/Shaders/MagicCircleShader.shadergraph,bc0b5d80f459920479c21a1c151d4e93,.shadergraph,32585,UNCLASSIFIED_REVIEW,Cần đối chiếu consumer và mục đích,TEXT_SCANNED,0,False,False

@@ -460,3 +460,4 @@ Assets/Scenes/MainMenu.unity,400000006,400000001,Canvas_Master,1,,dc42784cf147c0
 Assets/Scenes/MainMenu.unity,420000004,420000001,Canvas_Master/Canvas_MetaMenu/Persistent_MetaBackdrop,1,,fe87c0e1cc204ed48ad3b37840f39efc,TEXT_ONLY_PREFAB_INSTANCES_NOT_EXPANDED
 Assets/Scenes/MainMenu.unity,500000005,500000001,Canvas_Master/FadeTransitionOverlay,1,,fe87c0e1cc204ed48ad3b37840f39efc,TEXT_ONLY_PREFAB_INSTANCES_NOT_EXPANDED
 Assets/Scenes/MainMenu.unity,1649012756,0,,1,Assets/Features/UI/MainHubView.cs,a0c99ec6df32f404885921a73d193c0f,TEXT_ONLY_PREFAB_INSTANCES_NOT_EXPANDED
+Assets/Scenes/MainMenu.unity,1985926720,0,,1,Assets/Features/UI/MainHubPresenter.cs,2888ca01785459549a2aeec47def726b,TEXT_ONLY_PREFAB_INSTANCES_NOT_EXPANDED
