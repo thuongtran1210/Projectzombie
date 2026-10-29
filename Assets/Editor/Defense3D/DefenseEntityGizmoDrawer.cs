@@ -43,7 +43,7 @@ namespace ProjectZombie.EditorTools.Defense3D
         {
             if (heroAttack == null) return;
             Vector3 center = heroAttack.transform.position;
-            float range = heroAttack.Range;
+            float range = heroAttack.AttackRange;
 
             Handles.color = HeroRangeColor;
             Handles.DrawWireDisc(center, Vector3.up, range);
@@ -96,9 +96,13 @@ namespace ProjectZombie.EditorTools.Defense3D
             float attackRange = 1.5f;
             float aggroRange = 8.0f;
 
-            if (enemy.Stats != null)
+            if (enemy.Definition != null)
             {
-                attackRange = enemy.Stats.AttackRange > 0.1f ? enemy.Stats.AttackRange : 1.5f;
+                attackRange = enemy.Definition.AttackRange > 0.1f ? enemy.Definition.AttackRange : 1.5f;
+            }
+            else if (enemy.Stats.AttackRange > 0.1f)
+            {
+                attackRange = enemy.Stats.AttackRange;
             }
 
             // Vùng cảnh giác / Aggro
