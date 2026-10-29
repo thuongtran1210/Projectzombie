@@ -110,6 +110,11 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                     motor.SetMovementParameters(heroDef.BaseMoveSpeed * speedMultiplier, heroDef.TurnRate);
                 }
 
+                if (attack != null)
+                {
+                    attack.SetBaseCombatStats(heroDef.BaseDamage, heroDef.BaseAttackRange);
+                }
+
                 if (visual != null && heroDef.HeroKit != null)
                 {
                     visual.SetKit(heroDef.HeroKit);

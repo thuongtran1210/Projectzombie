@@ -263,6 +263,13 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
+                // Mở trực tiếp màn hình Chuẩn Bị Xuất Trận Defense 3D ("Thủ Thành Sông Quê") nếu đã có sẵn trong Registry
+                if (metaManager.HasScreen(MetaScreenType.DefensePreparation))
+                {
+                    metaManager.OpenScreen(MetaScreenType.DefensePreparation);
+                    return;
+                }
+
                 metaManager.OpenScreen(MetaScreenType.StageSelect);
             }
             else

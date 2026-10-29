@@ -11,6 +11,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
     {
         // Định danh chuỗi hằng số chuẩn cho toàn dự án
         public const string HERO_THU_SINH = "hero_thusinh";
+        public const string HERO_DAO_SI = "hero_daosi";
+        public const string HERO_THANH_DONG = "hero_thanhdong";
+        public const string HERO_AN_SI = "hero_ansi";
         public const string RELIC_DEP_TO_ONG = "relic_deptoong";
         public const string MINION_DAN_BINH = "minion_danbinh";
         public const string MINION_PHU_TAP_DICH = "minion_phutapdich";
@@ -66,12 +69,15 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         }
 
         /// <summary>
-        /// Tạo Catalog mặc định chứa toàn bộ 6 thực thể nền tảng đang có trong Defense 3D.
+        /// Tạo Catalog mặc định chứa toàn bộ các thực thể nền tảng của Defense 3D (4 Anh Hùng, 1 Pháp Bảo, 3 Lính Làng, 1 Trụ).
         /// </summary>
         public static Defense3DCatalog CreateDefault()
         {
             var catalog = new Defense3DCatalog();
             catalog.Register(new LoadoutCatalogEntry(HERO_THU_SINH, LoadoutItemType.Hero, "Thư Sinh"));
+            catalog.Register(new LoadoutCatalogEntry(HERO_DAO_SI, LoadoutItemType.Hero, "Đạo Sĩ"));
+            catalog.Register(new LoadoutCatalogEntry(HERO_THANH_DONG, LoadoutItemType.Hero, "Thanh Đồng"));
+            catalog.Register(new LoadoutCatalogEntry(HERO_AN_SI, LoadoutItemType.Hero, "Ẩn Sĩ"));
             catalog.Register(new LoadoutCatalogEntry(RELIC_DEP_TO_ONG, LoadoutItemType.Relic, "Dép Tổ Ong"));
             catalog.Register(new LoadoutCatalogEntry(MINION_DAN_BINH, LoadoutItemType.Minion, "Dân Binh"));
             catalog.Register(new LoadoutCatalogEntry(MINION_PHU_TAP_DICH, LoadoutItemType.Minion, "Phu Tạp Dịch"));

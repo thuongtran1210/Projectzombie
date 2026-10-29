@@ -120,6 +120,29 @@ namespace ProjectZombie.Tests.Editor
         }
 
         [Test]
+        public void Presenter_SelectDifferentHeroes_UpdatesSelectionAndRemainsValid()
+        {
+            var catalog = Defense3DCatalog.CreateDefault();
+            var ownership = DefenseMetaOwnershipAdapter.CreateDefault();
+            var repo = new FakeRepository(DefenseLoadoutRepository.CreateDefaultDto());
+
+            using (var presenter = new DefensePreparationPresenter(catalog, ownership, repo))
+            {
+                Assert.IsTrue(presenter.SelectHero(Defense3DCatalog.HERO_DAO_SI));
+                Assert.AreEqual(Defense3DCatalog.HERO_DAO_SI, presenter.Selection.HeroId);
+                Assert.IsTrue(presenter.CanStartBattle);
+
+                Assert.IsTrue(presenter.SelectHero(Defense3DCatalog.HERO_THANH_DONG));
+                Assert.AreEqual(Defense3DCatalog.HERO_THANH_DONG, presenter.Selection.HeroId);
+                Assert.IsTrue(presenter.CanStartBattle);
+
+                Assert.IsTrue(presenter.SelectHero(Defense3DCatalog.HERO_AN_SI));
+                Assert.AreEqual(Defense3DCatalog.HERO_AN_SI, presenter.Selection.HeroId);
+                Assert.IsTrue(presenter.CanStartBattle);
+            }
+        }
+
+        [Test]
         public void Presenter_Dispose_UnsubscribesCleanly()
         {
             var catalog = Defense3DCatalog.CreateDefault();

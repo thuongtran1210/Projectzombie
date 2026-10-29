@@ -76,6 +76,12 @@ namespace ProjectZombie.Features.Defense3D
             _definition = definition;
             _windup = new DefenseConeTelegraphRuntime(Gameplay, definition.Duration, definition.Radius, _coneAngle);
         }
+        /// <summary>Cấu hình sát thương và tầm đánh cơ bản từ dữ liệu Tướng.</summary>
+        public void SetBaseCombatStats(float newDamage, float newRange)
+        {
+            if (newDamage > 0f) damage = newDamage;
+            if (newRange > 0f) attackRange = newRange;
+        }
         public bool CanPrepare => isActiveAndEnabled && CanAdvanceGameplay && _health != null && _health.isActiveAndEnabled && !_health.IsDown && !HasPendingAttack &&
             _motor != null && !_motor.IsDashing && _motor.CanAim(this) && (_signature == null || !_signature.IsCasting);
         public bool QueueAttack(DefenseResolvedAim aim)

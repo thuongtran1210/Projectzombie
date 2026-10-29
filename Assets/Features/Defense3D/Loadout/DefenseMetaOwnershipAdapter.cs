@@ -42,6 +42,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         private void GrantBaseline()
         {
             _explicitOwnedIds.Add(Defense3DCatalog.HERO_THU_SINH);
+            _explicitOwnedIds.Add(Defense3DCatalog.HERO_DAO_SI);
+            _explicitOwnedIds.Add(Defense3DCatalog.HERO_THANH_DONG);
+            _explicitOwnedIds.Add(Defense3DCatalog.HERO_AN_SI);
             _explicitOwnedIds.Add(Defense3DCatalog.RELIC_DEP_TO_ONG);
             _explicitOwnedIds.Add(Defense3DCatalog.MINION_DAN_BINH);
             _explicitOwnedIds.Add(Defense3DCatalog.MINION_PHU_TAP_DICH);
@@ -58,8 +61,11 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             // 1. Kiểm tra danh sách được cấp quyền rõ ràng
             if (_explicitOwnedIds.Contains(id)) return true;
 
-            // 2. Các thực thể khởi đầu miễn phí của Defense 3D luôn được sở hữu
+            // 2. Các thực thể khởi đầu miễn phí của Defense 3D luôn được sở hữu (4 Tướng, 1 Bảo, 3 Lính, 1 Trụ)
             if (string.Equals(id, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.HERO_THANH_DONG, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.HERO_AN_SI, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.RELIC_DEP_TO_ONG, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_DAN_BINH, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_PHU_TAP_DICH, StringComparison.OrdinalIgnoreCase)) return true;

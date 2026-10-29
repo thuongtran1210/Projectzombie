@@ -18,7 +18,44 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             "thusinh",
             "ThuSinh",
             "Hero_ThuSinh",
+            "HERO_THUSHINH",
             Defense3DCatalog.HERO_THU_SINH
+        };
+
+        // Danh sách bí danh ID cũ của Đạo Sĩ
+        private static readonly HashSet<string> DaoSiAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "C002_DaoSi",
+            "C002",
+            "daosi",
+            "DaoSi",
+            "Hero_DaoSi",
+            "HERO_DAOSI",
+            Defense3DCatalog.HERO_DAO_SI
+        };
+
+        // Danh sách bí danh ID cũ của Thanh Đồng
+        private static readonly HashSet<string> ThanhDongAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "C003_ThanhDong",
+            "C003",
+            "thanhdong",
+            "ThanhDong",
+            "Hero_ThanhDong",
+            "HERO_THANHDONG",
+            Defense3DCatalog.HERO_THANH_DONG
+        };
+
+        // Danh sách bí danh ID cũ của Ẩn Sĩ
+        private static readonly HashSet<string> AnSiAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "C004_AnSi",
+            "C004",
+            "ansi",
+            "AnSi",
+            "Hero_AnSi",
+            "HERO_ANSI",
+            Defense3DCatalog.HERO_AN_SI
         };
 
         // Danh sách bí danh ID cũ của Dép Tổ Ong
@@ -56,13 +93,18 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 
         /// <summary>
         /// Ánh xạ ID tướng cũ sang ID chuẩn của Defense 3D.
+        /// Hỗ trợ cả 4 Anh Hùng: Thư Sinh, Đạo Sĩ, Thanh Đồng, Ẩn Sĩ.
         /// Nếu ID rỗng hoặc chưa được hỗ trợ trong Defense 3D, tự động fallback về tướng mặc định (Thư Sinh).
         /// </summary>
         public static string MapHeroId(string legacyHeroId)
         {
-            if (!string.IsNullOrWhiteSpace(legacyHeroId) && ThuSinhAliases.Contains(legacyHeroId.Trim()))
+            if (!string.IsNullOrWhiteSpace(legacyHeroId))
             {
-                return Defense3DCatalog.HERO_THU_SINH;
+                string clean = legacyHeroId.Trim();
+                if (ThuSinhAliases.Contains(clean)) return Defense3DCatalog.HERO_THU_SINH;
+                if (DaoSiAliases.Contains(clean)) return Defense3DCatalog.HERO_DAO_SI;
+                if (ThanhDongAliases.Contains(clean)) return Defense3DCatalog.HERO_THANH_DONG;
+                if (AnSiAliases.Contains(clean)) return Defense3DCatalog.HERO_AN_SI;
             }
 
             // Fallback an toàn về Tướng mặc định

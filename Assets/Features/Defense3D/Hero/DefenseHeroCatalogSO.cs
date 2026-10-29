@@ -51,14 +51,68 @@ namespace ProjectZombie.Features.Defense3D
                 }
             }
 
-            // 3. Fallback cho Thư Sinh (C001)
+            // 3. Fallback cho Thư Sinh (C001 / HERO_THUSHINH / hero_thusinh)
             if (cleanId.StartsWith("C001", StringComparison.OrdinalIgnoreCase) ||
                 cleanId.IndexOf("ThuSinh", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                cleanId.IndexOf("Scholar", StringComparison.OrdinalIgnoreCase) >= 0)
+                cleanId.IndexOf("Scholar", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("THUSHINH", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 for (int i = 0; i < _heroes.Count; i++)
                 {
-                    if (_heroes[i] != null && (_heroes[i].HeroId.Contains("THUSHINH") || _heroes[i].HeroId.Contains("C001")))
+                    if (_heroes[i] != null && (_heroes[i].HeroId.IndexOf("THUSHINH", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("thusinh", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("C001", StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        return _heroes[i];
+                    }
+                }
+            }
+
+            // 4. Fallback cho Đạo Sĩ (C002 / HERO_DAOSI / hero_daosi)
+            if (cleanId.StartsWith("C002", StringComparison.OrdinalIgnoreCase) ||
+                cleanId.IndexOf("DaoSi", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("Taoist", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("DAOSI", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                for (int i = 0; i < _heroes.Count; i++)
+                {
+                    if (_heroes[i] != null && (_heroes[i].HeroId.IndexOf("DAOSI", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("daosi", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("C002", StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        return _heroes[i];
+                    }
+                }
+            }
+
+            // 5. Fallback cho Thanh Đồng (C003 / HERO_THANHDONG / hero_thanhdong)
+            if (cleanId.StartsWith("C003", StringComparison.OrdinalIgnoreCase) ||
+                cleanId.IndexOf("ThanhDong", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("Medium", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("THANHDONG", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                for (int i = 0; i < _heroes.Count; i++)
+                {
+                    if (_heroes[i] != null && (_heroes[i].HeroId.IndexOf("THANHDONG", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("thanhdong", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("C003", StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        return _heroes[i];
+                    }
+                }
+            }
+
+            // 6. Fallback cho Ẩn Sĩ (C004 / HERO_ANSI / hero_ansi)
+            if (cleanId.StartsWith("C004", StringComparison.OrdinalIgnoreCase) ||
+                cleanId.IndexOf("AnSi", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("Hermit", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                cleanId.IndexOf("ANSI", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                for (int i = 0; i < _heroes.Count; i++)
+                {
+                    if (_heroes[i] != null && (_heroes[i].HeroId.IndexOf("ANSI", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("ansi", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                               _heroes[i].HeroId.IndexOf("C004", StringComparison.OrdinalIgnoreCase) >= 0))
                     {
                         return _heroes[i];
                     }

@@ -16,6 +16,9 @@ namespace ProjectZombie.Tests.Editor
             var catalog = Defense3DCatalog.CreateDefault();
 
             Assert.IsTrue(catalog.Contains(Defense3DCatalog.HERO_THU_SINH));
+            Assert.IsTrue(catalog.Contains(Defense3DCatalog.HERO_DAO_SI));
+            Assert.IsTrue(catalog.Contains(Defense3DCatalog.HERO_THANH_DONG));
+            Assert.IsTrue(catalog.Contains(Defense3DCatalog.HERO_AN_SI));
             Assert.IsTrue(catalog.Contains(Defense3DCatalog.RELIC_DEP_TO_ONG));
             Assert.IsTrue(catalog.Contains(Defense3DCatalog.MINION_DAN_BINH));
             Assert.IsTrue(catalog.Contains(Defense3DCatalog.MINION_PHU_TAP_DICH));
@@ -33,10 +36,33 @@ namespace ProjectZombie.Tests.Editor
             var minions = catalog.GetEntriesByType(LoadoutItemType.Minion);
             var towers = catalog.GetEntriesByType(LoadoutItemType.Tower);
 
-            Assert.AreEqual(1, heroes.Count);
+            Assert.AreEqual(4, heroes.Count);
             Assert.AreEqual(1, relics.Count);
             Assert.AreEqual(3, minions.Count);
             Assert.AreEqual(1, towers.Count);
+        }
+
+        [Test]
+        public void Ownership_CreateDefault_OwnsAllFourBaselineHeroes()
+        {
+            var ownership = DefenseMetaOwnershipAdapter.CreateDefault();
+
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.HERO_THU_SINH));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.HERO_DAO_SI));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.HERO_THANH_DONG));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.HERO_AN_SI));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.RELIC_DEP_TO_ONG));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.MINION_DAN_BINH));
+            Assert.IsTrue(ownership.IsOwned(Defense3DCatalog.TOWER_CUNG_TIEN));
+        }
+
+        [Test]
+        public void IdMapper_MapsAllFourHeroesCorrectly()
+        {
+            Assert.AreEqual(Defense3DCatalog.HERO_THU_SINH, DefenseLoadoutIdMapper.MapHeroId("C001_ThuSinh"));
+            Assert.AreEqual(Defense3DCatalog.HERO_DAO_SI, DefenseLoadoutIdMapper.MapHeroId("C002_DaoSi"));
+            Assert.AreEqual(Defense3DCatalog.HERO_THANH_DONG, DefenseLoadoutIdMapper.MapHeroId("C003_ThanhDong"));
+            Assert.AreEqual(Defense3DCatalog.HERO_AN_SI, DefenseLoadoutIdMapper.MapHeroId("C004_AnSi"));
         }
 
         [Test]
