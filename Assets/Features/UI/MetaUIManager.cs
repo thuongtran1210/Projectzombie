@@ -249,6 +249,19 @@ namespace ProjectZombie.Features.UI
         }
 
         /// <summary>
+        /// Kiểm tra xem màn hình có sẵn để mở hay không (đã được cấu hình trong Registry hoặc trong Scene).
+        /// </summary>
+        public bool HasScreen(MetaScreenType screenType)
+        {
+            if (_screenFactory == null)
+            {
+                _screenFactory = new UIScreenFactory(_uiRegistry, transform, ProjectZombie.Core.Audio.AudioService.Current);
+            }
+
+            return _screenFactory != null && _screenFactory.HasScreen(screenType);
+        }
+
+        /// <summary>
         /// Mở màn hình theo ScreenType thông qua UIScreenFactory (Hỗ trợ Lazy Loading mượt mà).
         /// </summary>
         public void OpenScreen(MetaScreenType screenType)

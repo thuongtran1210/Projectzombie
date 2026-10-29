@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
-using ProjectZombie.Features.Player;
-using ProjectZombie.Features.Spawners;
+using ProjectZombie.Features.Defense3D;
+using ProjectZombie.Features.Defense3D.Loadout;
 
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Bộ điều phối chuyển cảnh mượt mà Hướng A (All-in-One) giữa Sảnh Menu (Meta Hub) và Gameplay.
-    /// Tích hợp trực tiếp với GameStateManager gốc trong Shared.
+    /// Bộ điều phối chuyển cảnh giữa Sảnh Menu (Meta Hub) và Chiến trường Defense 3D.
+    /// Đã được tinh giản trong G6: Loại bỏ hoàn toàn các hook và tham chiếu tới gameplay 2D cũ.
     /// </summary>
     public class MetaSceneTransitionController : MonoBehaviour
     {
@@ -20,12 +20,14 @@ namespace ProjectZombie.Features.UI
 
         [Header("UI Subsystems")]
         [SerializeField] private MetaUIManager _metaUIManager;
-        [SerializeField] private GameplayUIManager _gameplayUIManager;
 
         [Header("Systems")]
         [SerializeField] private MainHubPresenter _mainHubPresenter;
-        [SerializeField] private SpawnManager _spawnManager;
-        [SerializeField] private GameplayBootstrapper _gameplayBootstrapper;
+
+        private Maps.StageDefinitionSO _selectedStage;
+        public Maps.StageDefinitionSO SelectedStage => _selectedStage;
+        public bool IsLoadoutReviewPending { get; private set; }
+        public void CancelLoadoutReview() => IsLoadoutReviewPending = false;
 
         private void Awake()
         {
@@ -59,10 +61,7 @@ namespace ProjectZombie.Features.UI
         private void EnsureReferences()
         {
             if (_metaUIManager == null) _metaUIManager = MetaUIManager.Instance;
-            if (_gameplayUIManager == null) _gameplayUIManager = GameplayUIManager.Instance;
             if (_mainHubPresenter == null) _mainHubPresenter = MainHubPresenter.Instance;
-            if (_spawnManager == null) _spawnManager = SpawnManager.Instance;
-            if (_gameplayBootstrapper == null) _gameplayBootstrapper = GameplayBootstrapper.Instance;
 
             // Đăng ký lắng nghe sự kiện Chọn Ải từ StageSelectUIPresenter để bắt đầu trận đấu
             StageSelect.StageSelectUIPresenter.OnStageSelectedForBattle -= HandleStageSelectedForBattle;
@@ -76,18 +75,14 @@ namespace ProjectZombie.Features.UI
 
         private void HandleStageSelectedForBattle(Maps.StageDefinitionSO stage)
         {
-            TransitionToCombat(stage);
+            _selectedStage = stage;
+            IsLoadoutReviewPending = true;
+            var manager = _metaUIManager != null ? _metaUIManager : MetaUIManager.Instance;
+            if (manager != null && manager.HasScreen(MetaScreenType.DefensePreparation))
+                manager.OpenScreen(MetaScreenType.DefensePreparation);
+            else
+                TransitionToCombat(stage);
         }
-
-        private Maps.StageDefinitionSO _selectedStage;
-        public Maps.StageDefinitionSO SelectedStage => _selectedStage;
-        private GameObject _currentInstantiatedMap;
-
-        private void DestroyCurrentMapInstance()
-        {
-            MatchFlow.MatchFlowOrchestrator.DestroyCurrentMapInstance();
-        }
-
 
         public void TransitionToCombat(Maps.StageDefinitionSO stage = null)
         {
@@ -117,33 +112,28 @@ namespace ProjectZombie.Features.UI
         {
             Time.timeScale = 1f;
 
-            // Nếu có cấu hình ải được chọn, gán Timeline cho SpawnManager
-            if (_selectedStage != null && _selectedStage.timelineConfig != null)
-            {
-                if (Spawners.SpawnManager.Instance != null)
-                {
-                    Spawners.SpawnManager.Instance.SetTimelineConfig(_selectedStage.timelineConfig);
-                }
-            }
-
             if (LoadingScreenPresenter.Instance != null)
             {
                 bool loadingFinished = false;
 
                 LoadingScreenPresenter.Instance.ShowTaskLoading(async (reportProgress) =>
                 {
-                    // Ủy quyền toàn bộ luồng nạp Map, Preload Quái, Khởi tạo Player và Chuyển State cho MatchFlowOrchestrator
-                    await MatchFlow.MatchFlowOrchestrator.ExecuteCombatPreparationAsync(_selectedStage, _gameplayBootstrapper, reportProgress);
+                    // Nạp cấu hình Loadout hiện tại từ Repository
+                    var repo = new DefenseLoadoutRepository();
+                    var dto = repo.Load();
+                    var snapshot = new DefenseLoadoutSnapshot(
+                        dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+
+                    // Điều hướng sang Scene Defense 3D ("MapSongQue3D_Prototype")
+                    await DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot, reportProgress);
                 }, () =>
                 {
                     ApplyStateVisuals(false);
                     loadingFinished = true;
-                    CheckAndPromptInitialMythicCore();
-                }, "Đang khai mở cửa Hoàng Tuyền...");
+                }, "Đang khai mở chiến trường Sông Quê 3D...");
 
                 while (!loadingFinished) yield return null;
             }
-
             else
             {
                 // 1. Fade Out tối dần
@@ -152,48 +142,15 @@ namespace ProjectZombie.Features.UI
                 // 2. Chuyển UI
                 ApplyStateVisuals(false);
 
-                // 3. Bắt đầu trận đấu
-                if (_gameplayBootstrapper != null)
-                {
-                    _gameplayBootstrapper.StartMatchFlow();
-                }
-                if (Spawners.SpawnManager.Instance != null)
-                {
-                    _ = Spawners.SpawnManager.Instance.StartMatchAsync();
-                }
-                if (GameStateManager.Instance != null)
-                {
-                    GameStateManager.Instance.ChangeState(GameState.Playing);
-                }
+                // 3. Bắt đầu trận đấu Defense 3D
+                var repo = new DefenseLoadoutRepository();
+                var dto = repo.Load();
+                var snapshot = new DefenseLoadoutSnapshot(
+                    dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+                _ = DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot);
 
                 // 4. Fade In sáng lại
                 yield return StartCoroutine(FadeRoutine(1f, 0f, 0.25f));
-
-                // 5. Mở bảng chọn Lõi Thần Thoại sau khi màn hình sáng lại
-                CheckAndPromptInitialMythicCore();
-            }
-        }
-
-        private void CheckAndPromptInitialMythicCore()
-        {
-            var player = PlayerProvider.HasPlayer ? PlayerProvider.PlayerGameObject : null;
-            PlayerMythicManager mythicMgr = null;
-            bool hasMythicMgr = player != null && player.TryGetComponent(out mythicMgr);
-            var archetype = mythicMgr != null ? mythicMgr.CurrentArchetype : Upgrades.MythicArchetype.None;
-
-            Debug.Log($"<color=#FFD700>[DIAG_TRANSITION]</color> CheckAndPromptInitialMythicCore: player = {(player != null ? player.name : "NULL")}, hasMythicMgr = {hasMythicMgr}, archetype = {archetype}");
-
-            if (player != null && hasMythicMgr && archetype == Upgrades.MythicArchetype.None)
-            {
-                if (GameStateManager.Instance != null)
-                {
-                    Debug.Log("<color=#FFD700>[MetaSceneTransitionController]</color> Khởi đầu trận đấu: Mở bảng chọn 3 Đại Lõi Thần Thoại (Nhập Đạo Arena)!");
-                    GameStateManager.Instance.ChangeState(GameState.LevelUpSelection);
-                }
-                else
-                {
-                    Debug.LogError("<color=#FFD700>[DIAG_TRANSITION]</color> GameStateManager.Instance is NULL!");
-                }
             }
         }
 
@@ -204,26 +161,10 @@ namespace ProjectZombie.Features.UI
             // 1. Fade Out tối dần
             yield return StartCoroutine(FadeRoutine(0f, 1f, 0.25f));
 
-            // 2. Dọn sạch quái, projectiles, VFX và reset Player đứng tại Sảnh
-            if (_spawnManager != null)
-            {
-                _spawnManager.StopMatchAndClearAllEnemies();
-            }
-
-            // Dọn sạch toàn bộ đạn / pháp bảo đang bay
-            ProjectZombie.Features.Projectiles.Core.ProjectileSystem.Instance?.DespawnAllProjectiles();
-
-            // Dọn sạch các hiệu ứng VFX / Particle đang phát
-            ProjectZombie.Features.Shared.VFX.GlobalVFXPoolManager.Instance?.ClearAllActiveEffects();
-            ProjectZombie.Core.Pooling.VFXPoolManager.ClearPools();
-
-            // Dọn sạch các vùng Trận Đồ / Zone Decals còn sót lại
-            ProjectZombie.Features.Skills.Zones.BatQuaiTranZone.ClearAllZones();
-
-            // Nếu đang trong phòng Multiplayer Co-op, dọn dẹp toàn bộ nhân vật mạng của lượt chơi vừa kết thúc
+            // 2. Nếu đang trong phòng Multiplayer Co-op, dọn dẹp nhân vật mạng
             if (ProjectZombie.Core.Architecture.ServiceContext.TryGet<Multiplayer.Core.INetworkSessionService>(out var netSession) && netSession.IsInRoom)
             {
-                if (netSession is Multiplayer.Core.PhotonFusionSessionService fusionService)
+                if (netSession is Multiplayer.Core.PhotonFusionSessionService)
                 {
                     var spawner = FindObjectOfType<Multiplayer.Core.NetworkPlayerSpawner>();
                     if (spawner != null)
@@ -231,11 +172,6 @@ namespace ProjectZombie.Features.UI
                         spawner.StopMatch();
                     }
                 }
-            }
-
-            if (_gameplayBootstrapper != null)
-            {
-                _gameplayBootstrapper.ResetPlayerToHub();
             }
 
             // 3. Chuyển UI về Meta Hub
@@ -291,19 +227,7 @@ namespace ProjectZombie.Features.UI
                 MetaUIManager.Instance.SetMetaCanvasActive(isMeta);
             }
 
-            if (_gameplayUIManager != null)
-            {
-                _gameplayUIManager.SetGameplayCanvasActive(!isMeta);
-            }
-            else if (GameplayUIManager.Instance != null)
-            {
-                GameplayUIManager.Instance.SetGameplayCanvasActive(!isMeta);
-            }
 
-            if (_spawnManager != null)
-            {
-                _spawnManager.gameObject.SetActive(!isMeta);
-            }
 
             // Quản lý sân khấu xem trước nhân vật: Ẩn và dọn dẹp khi vào trận, bật lại khi về Hub
             if (CharacterPreviewStage.Instance != null)

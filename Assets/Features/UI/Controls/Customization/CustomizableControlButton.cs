@@ -271,23 +271,6 @@ namespace ProjectZombie.Features.UI.Controls.Customization
                 btn.interactable = !enable;
             }
 
-            var sigViews = GetComponentsInChildren<SignatureSkillButtonView>(true);
-            foreach (var sig in sigViews)
-            {
-                sig.SetInteractable(!enable);
-            }
-
-            var relicViews = GetComponentsInChildren<RelicSkillButtonView>(true);
-            foreach (var relic in relicViews)
-            {
-                relic.SetInteractable(!enable);
-            }
-
-            var dashViews = GetComponentsInChildren<DashButtonView>(true);
-            foreach (var dash in dashViews)
-            {
-                dash.SetInteractable(!enable);
-            }
 
             var virtualJoysticks = GetComponentsInChildren<DynamicVirtualJoystick>(true);
             foreach (var vj in virtualJoysticks)

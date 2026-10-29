@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,14 +10,15 @@ namespace ProjectZombie.Features.UI
     {
         RelicFusion, // Thần Binh & Pháp Bảo (Gộp thẻ mở khóa & tăng sao)
         HeroCards,   // Thẻ Tướng & Anh Hùng (Gộp thẻ mở khóa & tăng sao)
-        Passives     // Thần Thẻ Bị Động
+        Minions,
+        Towers
     }
 
     /// <summary>
     /// Passive View quản lý hiển thị Bách Bảo Các (Thần Thẻ & Lò Luyện Khí Gộp Thẻ UI).
     /// Chuẩn MVP: Không chứa logic nghiệp vụ gộp thẻ.
     /// </summary>
-    public class CardCodexView : BaseMetaScreenView
+    public partial class CardCodexView : BaseMetaScreenView
     {
         public override MetaScreenType ScreenType => MetaScreenType.Codex;
 
@@ -59,13 +60,14 @@ namespace ProjectZombie.Features.UI
         protected override void Awake()
         {
             base.Awake();
+            EnsureLoadoutControls();
 
             if (_backButton != null) _backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
-            if (_dimBackgroundButton != null) _dimBackgroundButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+
 
             if (_tabFusionButton != null) _tabFusionButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.RelicFusion));
             if (_tabComboButton != null) _tabComboButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.HeroCards));
-            if (_tabPassivesButton != null) _tabPassivesButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.Passives));
+            if (_tabPassivesButton != null) _tabPassivesButton.onClick.AddListener(() => OnTabChanged?.Invoke(CodexTabType.Minions));
 
             if (_alchemyFusionButton != null) _alchemyFusionButton.onClick.AddListener(() => OnAlchemyFusionClicked?.Invoke());
         }
@@ -100,8 +102,12 @@ namespace ProjectZombie.Features.UI
 
         public void UpdateTabVisuals(CodexTabType activeTab, Sprite activeSprite, Sprite inactiveSprite)
         {
+            UpdateTowerTab(activeTab, activeSprite, inactiveSprite);
             Color activeCol = new Color(0.98f, 0.88f, 0.50f, 1f);
             Color inactiveCol = new Color(0.85f, 0.78f, 0.65f, 1f);
+            if (_tabFusionBg != null) _tabFusionBg.color = activeTab == CodexTabType.RelicFusion ? new Color(1,.84f,.56f) : new Color(.67f,.67f,.67f);
+            if (_tabComboBg != null) _tabComboBg.color = activeTab == CodexTabType.HeroCards ? new Color(1,.84f,.56f) : new Color(.67f,.67f,.67f);
+            if (_tabPassivesBg != null) _tabPassivesBg.color = activeTab == CodexTabType.Minions ? new Color(1,.84f,.56f) : new Color(.67f,.67f,.67f);
 
             if (_tabFusionBg != null)
             {
@@ -110,7 +116,7 @@ namespace ProjectZombie.Features.UI
             }
             if (_tabPassivesBg != null)
             {
-                var targetSprite = activeTab == CodexTabType.Passives ? activeSprite : inactiveSprite;
+                var targetSprite = activeTab == CodexTabType.Minions ? activeSprite : inactiveSprite;
                 if (targetSprite != null) _tabPassivesBg.sprite = targetSprite;
             }
             if (_tabComboBg != null)
@@ -120,7 +126,7 @@ namespace ProjectZombie.Features.UI
             }
 
             if (_tabFusionTxt != null) _tabFusionTxt.color = activeTab == CodexTabType.RelicFusion ? activeCol : inactiveCol;
-            if (_tabPassivesTxt != null) _tabPassivesTxt.color = activeTab == CodexTabType.Passives ? activeCol : inactiveCol;
+            if (_tabPassivesTxt != null) _tabPassivesTxt.color = activeTab == CodexTabType.Minions ? activeCol : inactiveCol;
             if (_tabComboTxt != null) _tabComboTxt.color = activeTab == CodexTabType.HeroCards ? activeCol : inactiveCol;
         }
 
@@ -230,7 +236,7 @@ namespace ProjectZombie.Features.UI
             int existing = _cardsGridContainer.childCount;
             for (int i = existing; i < count; i++)
             {
-                var slot = CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+                var slot = AllocateCardSlot();
                 slot.gameObject.SetActive(false);
             }
         }
@@ -268,7 +274,7 @@ namespace ProjectZombie.Features.UI
                 }
             }
 
-            slotView = CodexSlotItemView.CreateDynamicSlot(_cardsGridContainer);
+            slotView = AllocateCardSlot();
             slotView.gameObject.SetActive(true);
             _activeSlotIndex++;
             return slotView;

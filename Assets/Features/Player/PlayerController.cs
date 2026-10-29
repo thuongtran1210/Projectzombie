@@ -5,7 +5,6 @@ using ProjectZombie.Features.Player.Input;
 namespace ProjectZombie.Features.Player
 {
     [RequireComponent(typeof(PlayerStats))]
-    [RequireComponent(typeof(PlayerMagnetTrigger))]
     public class PlayerController : MonoBehaviour
     {
         [Header("Input Configuration")]
@@ -25,8 +24,6 @@ namespace ProjectZombie.Features.Player
         private PlayerStats _playerStats;
         private IPlayerInputProvider _inputProvider;
         private PlayerAnimator _playerAnimator;
-        private Skills.SignatureSkillManager _signatureSkillManager;
-        private Weapons.WeaponManager _weaponManager;
         private Shared.HealthSystem _healthSystem;
 
         private Vector2 _movementInput;
@@ -91,8 +88,6 @@ namespace ProjectZombie.Features.Player
             _rb3D = GetComponent<Rigidbody>();
             _playerStats = GetComponent<PlayerStats>();
             _playerAnimator = GetComponent<PlayerAnimator>();
-            _signatureSkillManager = GetComponent<Skills.SignatureSkillManager>();
-            _weaponManager = GetComponent<Weapons.WeaponManager>();
             _healthSystem = GetComponent<Shared.HealthSystem>();
 
             // Khởi tạo InputProvider tập trung (Mặc định là PlayerInputReader cho Local Player)
@@ -107,10 +102,7 @@ namespace ProjectZombie.Features.Player
 
             SetInputProvider(reader);
 
-            if (GetComponent<Visuals.PlayerStatusVisuals>() == null)
-            {
-                gameObject.AddComponent<Visuals.PlayerStatusVisuals>();
-            }
+
             
             if (_rb != null) _rb.freezeRotation = true;
             if (_rb3D != null)
@@ -167,24 +159,11 @@ namespace ProjectZombie.Features.Player
                 _inputProvider.OnRelicSkillTriggered += HandleRelicSkillTriggered;
             }
 
-            if (_signatureSkillManager != null)
-            {
-                _signatureSkillManager.OnSkillExecuted += OnSkillExecuted;
-            }
-        }
-
-        private void OnDisable()
-        {
             if (_inputProvider != null)
             {
                 _inputProvider.OnDashTriggered -= HandleDashTriggered;
                 _inputProvider.OnSignatureSkillTriggered -= HandleSignatureSkillTriggered;
                 _inputProvider.OnRelicSkillTriggered -= HandleRelicSkillTriggered;
-            }
-
-            if (_signatureSkillManager != null)
-            {
-                _signatureSkillManager.OnSkillExecuted -= OnSkillExecuted;
             }
 
             if (_slowCoroutine != null)
@@ -203,19 +182,10 @@ namespace ProjectZombie.Features.Player
 
         private void HandleSignatureSkillTriggered()
         {
-#if UNITY_EDITOR
-            if (_ignoreCooldownsForTesting) _signatureSkillManager?.ResetCooldown();
-#endif
-            _signatureSkillManager?.TryExecuteSkill();
         }
 
         private void HandleRelicSkillTriggered()
         {
-#if UNITY_EDITOR
-            if (_ignoreCooldownsForTesting && _weaponManager != null && _weaponManager.HasActiveRelic(out var relic))
-                relic.ResetRelicCooldownForTesting();
-#endif
-            _weaponManager?.TriggerEquippedRelicSkill();
         }
 
         private void OnSkillExecuted()

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a8307fe498d46fba81b09fe17dc89c9, type: 3}
+  m_Name: FXSet_ScholarSignature
+  m_EditorClassIdentifier:
+  _cast: {fileID: 11400000, guid: 7f57855b14854ad59e86082a92038a34, type: 2}
+  _release: {fileID: 11400000, guid: 04d0fc3a023a49eda29f5731fcdef40f, type: 2}
+  _hit: {fileID: 11400000, guid: 199f961f8b2a4f078c9f6f8871c681e8, type: 2}
+  _hitRadius: 0.4
+  _lift: 0.04
+  _maxHitEffects: 16

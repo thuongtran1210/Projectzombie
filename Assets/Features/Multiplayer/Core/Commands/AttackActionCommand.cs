@@ -1,7 +1,4 @@
 using UnityEngine;
-using ProjectZombie.Features.Combat;
-using ProjectZombie.Features.Weapons;
-using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.Multiplayer.Core.Commands
 {
@@ -12,21 +9,7 @@ namespace ProjectZombie.Features.Multiplayer.Core.Commands
     {
         public void Execute(GameObject playerRoot, Vector2 aimDirection)
         {
-            if (playerRoot.TryGetComponent<CharacterCombat>(out var combat))
-            {
-                if (aimDirection.sqrMagnitude > 0.001f)
-                {
-                    combat.TriggerAttack(aimDirection);
-                }
-                else
-                {
-                    combat.TriggerAttack();
-                }
-            }
-            else if (playerRoot.TryGetComponent<WeaponManager>(out var wm))
-            {
-                wm.TriggerPrimaryAttack();
-            }
+            // Trong chế độ Defense3D: Đồng bộ hóa chiến đấu qua hệ thống Defense3D
         }
     }
 }

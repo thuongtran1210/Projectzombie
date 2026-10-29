@@ -141,14 +141,7 @@ namespace ProjectZombie.Features.UI
                 gameObject.SetActive(false);
             }
 
-            // Nếu đang trong trận: Khôi phục lại cụm điều khiển Mobile Controls nếu GameState là Playing
-            if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.Playing)
-            {
-                if (GameplayUIManager.Instance != null)
-                {
-                    GameplayUIManager.Instance.SetMobileControlsActive(true);
-                }
-            }
+
         }
 
         private void LoadAndApplyInitialSettings()
@@ -253,32 +246,14 @@ namespace ProjectZombie.Features.UI
                 // 1. Tạm ẩn Settings Modal
                 Close();
 
-                // 2. Tạm ẩn Bảng Thông Số Nhân Vật (Panel_PlayerStatsMenu) nếu đang mở
-                var statsPresenter = ProjectZombie.Features.UI.StatsAndSkills.PlayerInfoUIPresenter.Instance;
-                bool wasStatsActive = statsPresenter != null && statsPresenter.IsMenuOpen;
-                if (wasStatsActive)
-                {
-                    statsPresenter.StatsMenuView?.gameObject.SetActive(false);
-                }
-
-                // 3. Đảm bảo Panel điều khiển (Panel_MobileControls) được kích hoạt để người chơi thấy các nút và kéo chỉnh
-                if (GameplayUIManager.Instance != null)
-                {
-                    GameplayUIManager.Instance.SetMobileControlsActive(true);
-                }
-                else if (_cachedMobileControlsPanel != null)
+                // 2. Đảm bảo Panel điều khiển (Panel_MobileControls) được kích hoạt
+                if (_cachedMobileControlsPanel != null)
                 {
                     _cachedMobileControlsPanel.SetActive(true);
                 }
 
-                // 4. Mở Customizer Overlay
+                // 3. Mở Customizer Overlay
                 customizer.OpenCustomizer(() => {
-                    // Khi đóng Customizer, khôi phục lại Bảng Thông Số & Modal Settings
-                    if (wasStatsActive && statsPresenter != null && statsPresenter.StatsMenuView != null)
-                    {
-                        statsPresenter.StatsMenuView.gameObject.SetActive(true);
-                        statsPresenter.StatsMenuView.Show();
-                    }
                     Open();
                 });
             }

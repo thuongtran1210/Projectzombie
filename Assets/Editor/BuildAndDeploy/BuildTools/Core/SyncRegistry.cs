@@ -44,7 +44,6 @@ namespace ProjectZombie.EditorTools.BuildSync
             SyncRule.ForUIPrefab("CharacterSelectionUI", () => ProjectZombie.Editor.UI.CharacterSelectionUIGenerator.GenerateCharacterSelectionPrefab(), isAddressableManaged: true),
             SyncRule.ForUIPrefab("SanctuaryTreeUI", () => ProjectZombie.Editor.UI.SanctuaryTreeUIGenerator.GenerateSanctuaryTreePrefab()),
             SyncRule.ForUIPrefab("SettingsModalUI", () => ProjectZombie.Editor.UI.SettingsUIGenerator.GenerateSettingsModal()),
-            SyncRule.ForUIPrefab("PlayerStatsMenuUI", () => ProjectZombie.Editor.UI.PlayerStatsMenuUIGenerator.RebuildPlayerStatsMenuUI()),
             SyncRule.ForUIPrefab("MobileControlsCustomizerUI", () => ProjectZombie.Editor.UI.MobileControlsCustomizerUIGenerator.GenerateCustomizerUI()),
             SyncRule.ForUIPrefab("WeaponLoadoutUI", () => ProjectZombie.Editor.UI.WeaponLoadoutUIGenerator.GenerateWeaponLoadoutPrefab()),
             SyncRule.ForUIPrefab("CardCodexUI", () => ProjectZombie.Editor.UI.CardCodexUIGenerator.GenerateCardCodexPrefab()),

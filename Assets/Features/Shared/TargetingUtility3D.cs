@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Shared
 {
@@ -100,8 +99,7 @@ namespace ProjectZombie.Features.Shared
                         break;
 
                     case TargetPriority.ElementalAdvantage:
-                        var enemy = health.GetComponent<Enemy>();
-                        var defenderElement = enemy != null ? enemy.CurrentElement : ElementType.None;
+                        var defenderElement = health.CurrentElement;
                         float multiplier = DamageUtility.GetElementMultiplier(attackerElement, defenderElement);
                         if (multiplier > 1.0f)
                         {

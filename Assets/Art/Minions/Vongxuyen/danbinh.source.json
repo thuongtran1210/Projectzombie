@@ -1,0 +1,38 @@
+{
+  "source": "thuongtran1210/Vongxuyen",
+  "id": "danbinh",
+  "threeVersion": "160",
+  "sourceHashes": {
+    "src/entities/EnemyFactory.js": "72e6b13910a74da913726c5f4f2aebcc856dd90106425929ac4e765ad2687050",
+    "src/entities/YakshaBossMesh.js": "4c59c09f64bf115df9dfa3b0bf098b6b5acebcb267ccc27a7a690112b3c403ec",
+    "src/entities/MinionFactory.js": "be5e0216a328caf09186a935938a6a304e06fc9e292ff82e04dbfac4c18c2628",
+    "src/core/MaterialManager.js": "571c65fb1c66c72edbf6ee97e74f97aec4933afd3271d74a6fa1d7f3e9f72541"
+  },
+  "meshes": 16,
+  "triangles": 844,
+  "materials": 7,
+  "bounds": {
+    "min": [
+      -0.5479397978410354,
+      -0.016000000238418577,
+      -0.5479397978410354
+    ],
+    "max": [
+      0.5479397978410354,
+      1.1941586899757386,
+      1.3371831188510968
+    ]
+  },
+  "bodyPivot": [
+    0,
+    0,
+    0
+  ],
+  "leftWing": null,
+  "rightWing": null,
+  "notes": [
+    "Original geometry, rigid hierarchy, colors and baked outline extrusion.",
+    "Health bars, transparent web auras and lights excluded; Unity retains gameplay ownership.",
+    "Locomotion poses are driven by the imported EnemyBody and wings in Unity, not animation clips."
+  ]
+}

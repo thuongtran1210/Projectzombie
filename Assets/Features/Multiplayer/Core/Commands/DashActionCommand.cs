@@ -10,10 +10,7 @@ namespace ProjectZombie.Features.Multiplayer.Core.Commands
     {
         public void Execute(GameObject playerRoot, Vector2 aimDirection)
         {
-            if (playerRoot.TryGetComponent<PlayerController>(out var controller))
-            {
-                controller.PerformDash();
-            }
+            // Dự phòng cho mạng: Tương thích với hệ thống di chuyển 3D hoặc bộ điều khiển tương lai
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Maps
@@ -39,7 +39,7 @@ namespace ProjectZombie.Features.Maps
         public float estimatedDlcSizeMb = 8.5f;
 
         [Header("Timeline Sóng Quái & Cấu Hình Gameplay")]
-        public Spawners.LevelTimelineConfig timelineConfig;
+        public ScriptableObject timelineConfig;
         public float stageDurationSeconds = 600f; // 10 phút / màn
 
         [Header("Phần Thưởng Vượt Ải (Clear Rewards)")]

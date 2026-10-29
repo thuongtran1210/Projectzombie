@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +38,9 @@ namespace ProjectZombie.Features.UI.StageSelect
         [SerializeField] private Button _nextStageButton;
         [SerializeField] private Button _backButton;
 
+        private bool _previousAvailable;
+        private bool _nextAvailable;
+
         public event Action OnStartBattleClicked;
         public event Action OnDownloadDlcClicked;
         public event Action OnPrevStageClicked;
@@ -56,24 +59,32 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         public override void OnBackPressed()
         {
-            base.OnBackPressed(); // Gọi MetaUIManager.PopScreen() chuẩn từ BaseMetaScreenView
+            OnBackClicked?.Invoke();
         }
 
         public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable, float actualDownloadSizeMb = 0f)
         {
             if (stage == null) return;
+            _previousAvailable = isPreviousAvailable;
+            _nextAvailable = isNextAvailable;
 
             if (_stageTitleText != null) _stageTitleText.text = stage.stageName;
             if (_stageDescText != null) _stageDescText.text = stage.description;
-            if (_recommendedLevelText != null) _recommendedLevelText.text = $"<color=#FFD700>Cấp Đề Cử:</color> Lv.{stage.recommendedLevel}";
+            if (_recommendedLevelText != null) _recommendedLevelText.text = $"<color=#FFD700>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}";
             
-            if (_stageThumbnailImage != null && stage.stageThumbnail != null)
+            if (_stageThumbnailImage != null)
             {
                 _stageThumbnailImage.sprite = stage.stageThumbnail;
+                _stageThumbnailImage.enabled = stage.stageThumbnail != null;
+            }
+            if (_downloadStatusText != null)
+            {
+                _downloadStatusText.text = string.Empty;
+                _downloadStatusText.gameObject.SetActive(false);
             }
 
-            if (_coinsRewardText != null) _coinsRewardText.text = $"<color=#FFD700>Cổ Tiền:</color> {stage.baseRewardCoins:N0}";
-            if (_expRewardText != null) _expRewardText.text = $"<color=#00E5FF>Kinh Nghiệm:</color> {stage.baseRewardExp:N0}";
+            if (_coinsRewardText != null) _coinsRewardText.text = $"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0}";
+            if (_expRewardText != null) _expRewardText.text = $"<size=80%><color=#94CDD0>KINH NGHIỆM</color></size>\n{stage.baseRewardExp:N0}";
 
             // Hiển thị trạng thái Đã Vượt Ải từ Save Data
             bool isCompleted = ProjectZombie.Core.Save.GameManager.Instance != null &&
@@ -124,19 +135,27 @@ namespace ProjectZombie.Features.UI.StageSelect
 
         public void UpdateDownloadProgress(float percent, string statusText)
         {
+            if (_prevStageButton != null) _prevStageButton.interactable = false;
+            if (_nextStageButton != null) _nextStageButton.interactable = false;
             if (_downloadProgressBar != null)
             {
                 _downloadProgressBar.interactable = false;
                 _downloadProgressBar.gameObject.SetActive(true);
-                _downloadProgressBar.value = percent;
+                _downloadProgressBar.value = Mathf.Clamp01(percent);
             }
             if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(false);
             if (_downloadDlcButton != null) _downloadDlcButton.gameObject.SetActive(false);
-            if (_downloadStatusText != null) _downloadStatusText.text = statusText;
+            if (_downloadStatusText != null)
+            {
+                _downloadStatusText.gameObject.SetActive(true);
+                _downloadStatusText.text = statusText;
+            }
         }
 
         public void ShowDownloadError(string errorMessage, Action onRetryClicked)
         {
+            if (_prevStageButton != null) _prevStageButton.interactable = _previousAvailable;
+            if (_nextStageButton != null) _nextStageButton.interactable = _nextAvailable;
             if (_downloadProgressBar != null) _downloadProgressBar.gameObject.SetActive(false);
             if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(false);
             if (_downloadDlcButton != null)
@@ -145,12 +164,13 @@ namespace ProjectZombie.Features.UI.StageSelect
                 _downloadDlcButton.interactable = true;
                 if (_dlcSizeText != null)
                 {
-                    _dlcSizeText.text = $"<color=#FF5555>Lỗi Tải: {errorMessage}</color>\n<size=80%><b>[Chạm Để Thử Lại]</b></size>";
+                    _dlcSizeText.text = "THỬ TẢI LẠI";
                 }
             }
             if (_downloadStatusText != null)
             {
-                _downloadStatusText.text = $"<color=#FF5555>{errorMessage}</color>";
+                _downloadStatusText.gameObject.SetActive(true);
+                _downloadStatusText.text = $"<color=#FF7777>{errorMessage}</color>";
             }
         }
     }

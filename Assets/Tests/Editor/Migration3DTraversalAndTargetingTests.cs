@@ -58,9 +58,16 @@ namespace ProjectZombie.Tests.Editor
         {
             Vector3 center = new Vector3(9000f, 0f, 20f);
             var dead = MakeEnemy(center + Vector3.right, 3);
-            dead.GetComponent<HealthSystem>().SetCurrentHealth(0f);
+            var deadHealth = dead.GetComponent<HealthSystem>();
+            // Keep hitboxes queryable so this exercises the live-target filter.
+            deadHealth.DisableGameObjectOnDeath = false;
+            deadHealth.SetCurrentHealth(0f);
+            Assert.That(deadHealth.IsAlive, Is.False);
+            Assert.That(dead.activeInHierarchy, Is.True);
             var live = MakeEnemy(center + Vector3.right * 4f, 1);
             Physics.SyncTransforms();
+            Assert.That(Physics.OverlapSphere(center, 8f, 1 << _enemyLayer).Length,
+                Is.EqualTo(4), "dead and live enemy hitboxes must both be queryable");
 
             var matches = new List<Transform>(8);
             Assert.That(TargetingUtility3D.FindTargetsNonAlloc(center, 8f, matches), Is.EqualTo(1));
@@ -133,7 +140,11 @@ namespace ProjectZombie.Tests.Editor
         private GameObject MakeEnemy(Vector3 pos, int numberOfHitboxes)
         {
             var root = MakeBox("EnemyRoot", pos, Vector3.one * 0.1f, _enemyLayer, false);
-            root.AddComponent<HealthSystem>();
+            var health = root.AddComponent<HealthSystem>();
+            TestContext.WriteLine($"Enemy fixture HP before initialization: {health.CurrentHealth}");
+            // EditMode fixtures must not depend on runtime OnEnable initialization.
+            health.SetMaxHealth(100f, true);
+            Assert.That(health.IsAlive, Is.True, "Test enemy must start alive");
             for (int i = 0; i < numberOfHitboxes; i++)
             {
                 var child = new GameObject("Hitbox_" + i);

@@ -501,7 +501,7 @@ namespace ProjectZombie.Features.Player
         /// Áp dụng toàn bộ gói chỉ số từ PlayerStatModifier (dùng cho Lõi Đột Biến, Micro-Cards, Synergy Traits, v.v.).
         /// Hỗ trợ cả chỉ số cộng (buff) và chỉ số trừ (debuff / trade-off).
         /// </summary>
-        public void ApplyStatModifier(ProjectZombie.Features.Upgrades.PlayerStatModifier mod)
+        public void ApplyStatModifier(PlayerStatModifier mod)
         {
             if (mod.maxHealthBonus != 0f) AddMaxHealth(mod.maxHealthBonus);
             if (mod.moveSpeedBonus != 0f) AddMoveSpeed(mod.moveSpeedBonus);

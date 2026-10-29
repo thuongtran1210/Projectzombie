@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 namespace ProjectZombie.Features.MetaProgression
@@ -39,7 +39,7 @@ namespace ProjectZombie.Features.MetaProgression
         public int[] costPerLevel = { 10, 20, 40, 80, 150 };
 
         [Tooltip("Chỉ số Player được cộng mỗi cấp.")]
-        public ProjectZombie.Features.Upgrades.PlayerStatModifier statBonusPerLevel;
+        public ProjectZombie.Features.Player.PlayerStatModifier statBonusPerLevel;
 
         /// <summary>Lấy chi phí cho cấp tiếp theo. -1 nếu đã đạt max.</summary>
         public int GetCostForLevel(int currentLevel)

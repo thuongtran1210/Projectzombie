@@ -1,9 +1,26 @@
-﻿using System;
+using System;
 using UnityEngine;
-using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Shared
 {
+    /// <summary>
+    /// Enum định nghĩa các loại hiệu ứng bất lợi (Debuff/Status Effect) lên thực thể.
+    /// </summary>
+    public enum StatusEffectType
+    {
+        Slow,
+        Freeze,
+        Stun,
+        Burn,
+        Root,
+        Humiliated,
+        Sleeping,
+        Stoned,
+        Dancing,
+        RagdollFlight,
+        ChickenPolymorph
+    }
+
     /// <summary>
     /// Giao diện chuẩn cho mọi thực thể có thể chịu các hiệu ứng trạng thái bất lợi (Slow, Stun, Freeze, Burn, Knockback).
     /// Tuân thủ nguyên tắc Dependency Inversion (DIP) và Interface Segregation (ISP) - Mục 3.2 & 3.4 AGENTS.md.

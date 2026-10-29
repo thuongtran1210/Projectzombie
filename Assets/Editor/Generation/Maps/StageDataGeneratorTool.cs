@@ -4,7 +4,6 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.Maps;
-using ProjectZombie.Features.Spawners;
 
 namespace ProjectZombie.Editor.Maps
 {
@@ -26,7 +25,7 @@ namespace ProjectZombie.Editor.Maps
             }
 
             // Tìm timeline Level 1 có sẵn
-            var level1Timeline = AssetDatabase.LoadAssetAtPath<LevelTimelineConfig>("Assets/_Data/Levels/Level1_Timeline.asset");
+            var level1Timeline = AssetDatabase.LoadAssetAtPath<ScriptableObject>("Assets/_Data/Levels/Level1_Timeline.asset");
 
             var createdStages = new List<StageDefinitionSO>();
 
@@ -110,7 +109,7 @@ namespace ProjectZombie.Editor.Maps
             string mapAddress,
             string bgmAddress,
             float estimatedMb,
-            LevelTimelineConfig timeline,
+            ScriptableObject timeline,
             float duration,
             int coins,
             int exp)

@@ -230,18 +230,7 @@ namespace ProjectZombie.Editor.VFX
         {
             string weaponPath = $"{WEAPONS_PREFAB_FOLDER}/Weapon_W002_ButPhanQuan.prefab";
             GameObject weaponPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(weaponPath);
-            if (weaponPrefab == null) return;
-
-            var dualSlash = weaponPrefab.GetComponent<Weapon_DualSlash>();
-            if (dualSlash != null)
-            {
-                var so = new SerializedObject(dualSlash);
-                if (slashAsset != null) so.FindProperty("directionalSlashPrefab").objectReferenceValue = slashAsset.GetComponent<ParticleSystem>();
-                if (decalAsset != null) so.FindProperty("groundDecalPrefab").objectReferenceValue = decalAsset.GetComponent<ParticleSystem>();
-                if (sparkAsset != null) so.FindProperty("hitSparkPrefab").objectReferenceValue = sparkAsset;
-                so.ApplyModifiedProperties();
-                EditorUtility.SetDirty(weaponPrefab);
-            }
+            // Weapon_DualSlash đã được tinh giản trong G6
         }
 
         private static void WireW008ProjectilePrefab(GameObject flameVfxAsset)
@@ -323,46 +312,9 @@ namespace ProjectZombie.Editor.VFX
                     GameObject.DestroyImmediate(existingVFX.gameObject);
                 }
 
-                Weapon_Shotgun shotgunComp = root.GetComponent<Weapon_Shotgun>();
-                if (shotgunComp != null)
-                {
-                    SerializedObject so = new SerializedObject(shotgunComp);
-                    var shockwaveProp = so.FindProperty("shockwavePrefab");
-                    if (shockwaveProp != null)
-                    {
-                        shockwaveProp.objectReferenceValue = shockwaveAsset;
-                    }
-                    if (weaponIcon != null)
-                    {
-                        var iconProp = so.FindProperty("icon");
-                        if (iconProp != null)
-                        {
-                            iconProp.objectReferenceValue = weaponIcon;
-                        }
-                    }
-                    so.ApplyModifiedProperties();
-                }
             }
 
-            // Gán SpawnVFXPrefab vào ProjectileData của Trống Đồng
-            string projDataPath = "Assets/_Data/Projectiles/Data/Proj_W005_Trống.asset";
-            var projData = AssetDatabase.LoadAssetAtPath<Features.Projectiles.Data.ProjectileData>(projDataPath);
-            if (projData != null)
-            {
-                SerializedObject pSo = new SerializedObject(projData);
-                var vfxConfigProp = pSo.FindProperty("VFXConfig");
-                if (vfxConfigProp != null)
-                {
-                    var spawnVfxProp = vfxConfigProp.FindPropertyRelative("SpawnVFXPrefab");
-                    if (spawnVfxProp != null)
-                    {
-                        spawnVfxProp.objectReferenceValue = shockwaveAsset;
-                    }
-                }
-                pSo.ApplyModifiedProperties();
-            }
-
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Shockwave VFX & Icon vào Weapon_W005_TrongDongDongSon và Proj_W005_Trống.asset!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Shockwave VFX!");
         }
 
         private static void WireW006ProjectilePrefab(GameObject cinnabarExpAsset)
@@ -439,24 +391,7 @@ namespace ProjectZombie.Editor.VFX
             }
 
             // Gán HitImpactVFXPrefab & DespawnVFXPrefab vào Proj_W006_Lựu.asset
-            string projDataPath = "Assets/_Data/Projectiles/Data/Proj_W006_Lựu.asset";
-            var projData = AssetDatabase.LoadAssetAtPath<Features.Projectiles.Data.ProjectileData>(projDataPath);
-            if (projData != null && cinnabarExpAsset != null)
-            {
-                SerializedObject pSo = new SerializedObject(projData);
-                var vfxConfigProp = pSo.FindProperty("VFXConfig");
-                if (vfxConfigProp != null)
-                {
-                    var hitVfxProp = vfxConfigProp.FindPropertyRelative("HitImpactVFXPrefab");
-                    if (hitVfxProp != null) hitVfxProp.objectReferenceValue = cinnabarExpAsset;
-
-                    var despawnVfxProp = vfxConfigProp.FindPropertyRelative("DespawnVFXPrefab");
-                    if (despawnVfxProp != null) despawnVfxProp.objectReferenceValue = cinnabarExpAsset;
-                }
-                pSo.ApplyModifiedProperties();
-            }
-
-            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Cinnabar Explosion VFX vào Proj_W006_Lựu.asset và Proj_W006_LuuDanThanSa.prefab!");
+            Debug.Log("<color=#00FF00>[Weapon VFX Builder]</color> Đã wire Cinnabar Explosion VFX!");
         }
 
         private static void WireW011ProjectilePrefab(GameObject holyAoEAsset)

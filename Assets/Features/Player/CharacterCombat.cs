@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 using ProjectZombie.Core.Juice;
-using ProjectZombie.Features.Projectiles;
 using ProjectZombie.Features.Player.Input;
 
 namespace ProjectZombie.Features.Player
@@ -35,7 +34,6 @@ namespace ProjectZombie.Features.Player
         /// <summary>GDD reward: owner-only cooldown reduction and a refreshable, non-stacking basic-attack buff.</summary>
         public void ApplyElementSynergyReward()
         {
-            GetComponent<Skills.SignatureSkillManager>()?.ReduceRemainingCooldownFraction(ElementSynergyRules.REMAINING_COOLDOWN_REDUCTION);
             GetComponent<PlayerController>()?.ReduceRemainingDashCooldown(ElementSynergyRules.REMAINING_COOLDOWN_REDUCTION);
             _resonanceUntil = Time.time + ElementSynergyRules.ATTACK_SPEED_BUFF_SECONDS;
             aimIndicator?.PulseResonance(ElementSynergyRules.ATTACK_SPEED_BUFF_SECONDS);
@@ -409,11 +407,7 @@ namespace ProjectZombie.Features.Player
 
                 if (hit.TryGetComponent<HealthSystem>(out var health) && health.CurrentHealth > 0)
                 {
-                    ElementType defenderElement = ElementType.None;
-                    if (hit.TryGetComponent<Enemies.Enemy>(out var enemy))
-                    {
-                        defenderElement = enemy.CurrentElement;
-                    }
+                    ElementType defenderElement = health.CurrentElement;
 
                     DamageData hitDamage = DamageUtility.CalculateHitDamage(
                         damageData.Amount,
@@ -432,7 +426,7 @@ namespace ProjectZombie.Features.Player
                     OnHitEnemy?.Invoke(hitDamage, hit);
 
                     // Kiểm tra Ngưỡng Kết Liễu Quái Thường (Execute Threshold)
-                    if (_playerStats != null && _playerStats.ExecuteThreshold > 0f && enemy != null && !enemy.IsHeavyArmor && !enemy.IsBoss)
+                    if (_playerStats != null && _playerStats.ExecuteThreshold > 0f)
                     {
                         if (health.CurrentHealth > 0 && (health.CurrentHealth / health.MaxHealth) <= _playerStats.ExecuteThreshold)
                         {
@@ -444,12 +438,12 @@ namespace ProjectZombie.Features.Player
                     // Spawn Tia lửa va chạm (HitSparks) tại điểm trúng
                     SpawnHitImpactSparks(hit.transform.position);
 
-                    if (enemy != null && !enemy.IsHeavyArmor)
+                    if (hit.TryGetComponent<IStatusReceiver>(out var statusReceiver))
                     {
                         Vector2 pushDir = ((Vector2)(hit.transform.position - transform.position)).normalized;
                         float knockbackForce = attackConfig.knockbackForce;
                         if (comboStep == 3) knockbackForce = (knockbackForce * 1.6f) + _bonusFinisherKnockback;
-                        enemy.ApplyKnockback(pushDir, knockbackForce, comboStep == 3 ? 0.22f : 0.15f);
+                        statusReceiver.ApplyKnockback(pushDir, knockbackForce, comboStep == 3 ? 0.22f : 0.15f);
                     }
                 }
             }
@@ -589,17 +583,10 @@ namespace ProjectZombie.Features.Player
                 Vector2 boltDir = Quaternion.Euler(0, 0, offsetAngle) * direction;
 
                 Quaternion rot = Quaternion.Euler(0, 0, Mathf.Atan2(boltDir.y, boltDir.x) * Mathf.Rad2Deg);
-                SimpleProjectile.Spawn(
-                    attackConfig.projectilePrefab,
-                    spawnPos,
-                    rot,
-                    damageData,
-                    gameObject,
-                    attackConfig.knockbackForce,
-                    attackConfig.projectileSpeed,
-                    boltDir,
-                    attackConfig.projectileLifetime
-                );
+                if (attackConfig.projectilePrefab != null)
+                {
+                    Instantiate(attackConfig.projectilePrefab, spawnPos, rot);
+                }
             }
             damageData.AttackRecord.Release();
         }

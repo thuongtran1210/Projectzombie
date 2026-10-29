@@ -15,7 +15,8 @@ namespace ProjectZombie.Features.UI
         GachaShop,
         StageSelect,
         ResourceDownload,
-        Lobby
+        Lobby,
+        DefensePreparation
     }
 
     /// <summary>

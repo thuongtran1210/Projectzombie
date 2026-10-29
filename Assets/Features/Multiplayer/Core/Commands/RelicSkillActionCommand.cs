@@ -1,5 +1,4 @@
 using UnityEngine;
-using ProjectZombie.Features.Weapons;
 
 namespace ProjectZombie.Features.Multiplayer.Core.Commands
 {
@@ -10,17 +9,7 @@ namespace ProjectZombie.Features.Multiplayer.Core.Commands
     {
         public void Execute(GameObject playerRoot, Vector2 aimDirection)
         {
-            if (playerRoot.TryGetComponent<WeaponManager>(out var wm))
-            {
-                if (aimDirection.sqrMagnitude > 0.001f)
-                {
-                    wm.TriggerEquippedRelicSkill(aimDirection);
-                }
-                else
-                {
-                    wm.TriggerEquippedRelicSkill();
-                }
-            }
+            // Trong chế độ Defense3D: Đồng bộ hóa kỹ năng qua hệ thống Defense3D
         }
     }
 }

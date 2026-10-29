@@ -1,205 +1,117 @@
-﻿using System;
-using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ProjectZombie.Features.UI.Controls
 {
-    /// <summary>
-    /// Component xử lý cảm ứng Kéo Thả Định Hướng Kép (Smart Quick-Tap & Drag-Aim) cho mọi nút Skill UI.
-    /// Chuẩn hóa theo phong cách điều khiển MOBA Liên Quân Mobile / Wild Rift.
-    /// </summary>
-    public class SmartSkillDragHandler : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    /// <summary>Legacy 2D event adapter over the shared engine-free pointer policy.</summary>
+    public class SmartSkillDragHandler : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler,
+        IInitializePotentialDragHandler
     {
-        [Header("Drag Sensitivity")]
-        [Tooltip("Bán kính tối thiểu (pixel) để chuyển từ Quick Tap sang Drag Aim")]
         [SerializeField] private float _dragThreshold = 25f;
-        [Tooltip("Khoảng cách kéo tối đa (pixel) đạt 100% tầm chiêu")]
         [SerializeField] private float _maxDragDistance = 140f;
-        [Tooltip("Nếu true: Chỉ hiện chỉ dấu khi ĐÈ (Hold > 0.12s) hoặc KÉO (Drag). Nhấp nhanh (Tap) sẽ đánh ngay mà không chớp chỉ dấu.")]
         [SerializeField] private bool _requireHoldOrDrag = true;
         [SerializeField] private float _holdDurationThreshold = 0.12f;
-
-        private Vector2 _pointerDownPos;
-        private Vector2 _currentPointerPos;
-        private bool _isDragging;
-        private bool _isAimActive;
+        private SkillPointerGesture _gesture;
         private bool _isInteractable = true;
-        private Coroutine _holdCoroutine;
-        private int _activePointerId = -999;
-        private bool _isPointerDown = false;
 
-        public bool IsDragging => _isDragging;
+        public bool IsDragging => _gesture != null && _gesture.IsDragging;
         public bool RequireHoldOrDrag
         {
             get => _requireHoldOrDrag;
-            set => _requireHoldOrDrag = value;
+            set
+            {
+                if (_requireHoldOrDrag == value) return;
+                CancelAim();
+                _requireHoldOrDrag = value;
+                _gesture = null;
+            }
         }
 
         public event Action OnAimStarted;
-        public event Action<Vector2, float, bool> OnAimUpdated; // (direction, pullPercent, isCancelHovered)
-        public event Action<Vector2, bool> OnAimReleased;      // (direction, isQuickTap)
-        public event Action<Vector2, float, bool> OnAimDetailedReleased; // (direction, pullPercent, isQuickTap)
+        public event Action<Vector2, float, bool> OnAimUpdated;
+        public event Action<Vector2, bool> OnAimReleased;
+        public event Action<Vector2, float, bool> OnAimDetailedReleased;
         public event Action OnAimCancelled;
+
+        private bool CanInteract => isActiveAndEnabled && _isInteractable &&
+            !Customization.CustomizableControlButton.IsAnyInEditMode;
+        private SkillPointerGesture Gesture => _gesture ?? (_gesture = new SkillPointerGesture(
+            _dragThreshold, _maxDragDistance, _holdDurationThreshold, _requireHoldOrDrag));
 
         public void SetInteractable(bool interactable)
         {
             _isInteractable = interactable;
-            if (!interactable && (_isAimActive || _isPointerDown))
-            {
-                CancelAim();
-            }
+            if (!interactable) CancelAim();
         }
+
+        public void OnInitializePotentialDrag(PointerEventData eventData) => eventData.useDragThreshold = false;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
-
-            // Đa điểm chạm: Nếu nút đang được đè/kéo bởi 1 ngón tay, bỏ qua ngón tay khác
-            if (_isPointerDown) return;
-
-            _activePointerId = eventData.pointerId;
-            _isPointerDown = true;
-
-            _pointerDownPos = eventData.position;
-            _currentPointerPos = eventData.position;
-            _isDragging = false;
-            _isAimActive = false;
-
-            if (_holdCoroutine != null) StopCoroutine(_holdCoroutine);
-
-            if (_requireHoldOrDrag)
-            {
-                _holdCoroutine = StartCoroutine(RoutineCheckHold());
-            }
-            else
-            {
-                TriggerAimStarted();
-            }
-        }
-
-        private IEnumerator RoutineCheckHold()
-        {
-            yield return new WaitForSecondsRealtime(_holdDurationThreshold);
-            if (!_isAimActive && _isPointerDown)
-            {
-                TriggerAimStarted();
-            }
-            _holdCoroutine = null;
-        }
-
-        private void TriggerAimStarted()
-        {
-            _isAimActive = true;
-            OnAimStarted?.Invoke();
-            UICancelSkillZone.Instance?.SetVisible(true);
+            if (!CanInteract || eventData.button != PointerEventData.InputButton.Left) return;
+            Dispatch(Gesture.Press(eventData.pointerId, eventData.position.x, eventData.position.y, Time.unscaledTimeAsDouble));
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
-            if (!_isPointerDown || eventData.pointerId != _activePointerId) return;
-
-            _currentPointerPos = eventData.position;
-            Vector2 delta = _currentPointerPos - _pointerDownPos;
-            float dist = delta.magnitude;
-
-            if (dist >= _dragThreshold)
-            {
-                _isDragging = true;
-                if (!_isAimActive)
-                {
-                    if (_holdCoroutine != null)
-                    {
-                        StopCoroutine(_holdCoroutine);
-                        _holdCoroutine = null;
-                    }
-                    TriggerAimStarted();
-                }
-            }
-
-            if (_isAimActive)
-            {
-                Vector2 aimDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
-                float pullPercent = Mathf.Clamp01(dist / _maxDragDistance);
-
-                // Kiểm tra ngón tay kéo vào Vùng Hủy Chiêu
-                bool isCancel = UICancelSkillZone.Instance != null && 
-                                UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
-
-                UICancelSkillZone.Instance?.SetHovered(isCancel);
-                OnAimUpdated?.Invoke(aimDirection, pullPercent, isCancel);
-            }
+            if (!CanInteract) { CancelAim(); return; }
+            Dispatch(Gesture.Move(eventData.pointerId, eventData.position.x, eventData.position.y,
+                Time.unscaledTimeAsDouble, IsCancel(eventData)));
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (!enabled || !_isInteractable || Customization.CustomizableControlButton.IsAnyInEditMode) return;
-            if (eventData.pointerId != _activePointerId) return;
+            if (!CanInteract) { CancelAim(); return; }
+            if (_gesture == null) return;
+            Dispatch(_gesture.Release(eventData.pointerId, eventData.position.x, eventData.position.y,
+                Time.unscaledTimeAsDouble, IsCancel(eventData)));
+        }
 
-            if (_holdCoroutine != null)
+        private void Update()
+        {
+            if (_gesture == null || !_gesture.IsPressed) return;
+            if (!CanInteract) { CancelAim(); return; }
+            Dispatch(_gesture.Tick(Time.unscaledTimeAsDouble));
+        }
+
+        private static bool IsCancel(PointerEventData eventData) => UICancelSkillZone.Instance != null &&
+            UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
+
+        private void Dispatch(SkillPointerSample sample)
+        {
+            if (sample.Signal == SkillPointerSignal.None || sample.Signal == SkillPointerSignal.Pressed) return;
+            if (sample.AimStarted)
             {
-                StopCoroutine(_holdCoroutine);
-                _holdCoroutine = null;
+                UICancelSkillZone.Instance?.SetVisible(true);
+                OnAimStarted?.Invoke();
+                if (_gesture == null || !_gesture.IsPressed) return;
             }
-
-            _currentPointerPos = eventData.position;
-            Vector2 delta = _currentPointerPos - _pointerDownPos;
-            float dist = delta.magnitude;
-
-            bool isCancel = _isAimActive && UICancelSkillZone.Instance != null && 
-                            UICancelSkillZone.Instance.IsPointerInsideCancelZone(eventData.position, eventData.pressEventCamera);
-
-            if (_isAimActive)
+            if (sample.Signal == SkillPointerSignal.Aiming)
             {
-                UICancelSkillZone.Instance?.SetVisible(false);
+                UICancelSkillZone.Instance?.SetHovered(sample.CancelHovered);
+                OnAimUpdated?.Invoke(new Vector2(sample.DirectionX, sample.DirectionY), sample.Pull, sample.CancelHovered);
+                return;
             }
-
-            if (isCancel)
+            UICancelSkillZone.Instance?.SetVisible(false);
+            if (sample.Signal == SkillPointerSignal.Cancelled)
             {
                 OnAimCancelled?.Invoke();
+                return;
             }
-            else
-            {
-                bool isQuickTap = dist < _dragThreshold && !_isAimActive;
-                Vector2 finalDirection = dist > 0.01f ? delta.normalized : Vector2.zero;
-                float pullPercent = Mathf.Clamp01(dist / _maxDragDistance);
-                OnAimReleased?.Invoke(finalDirection, isQuickTap);
-                OnAimDetailedReleased?.Invoke(finalDirection, pullPercent, isQuickTap);
-            }
-
-            _activePointerId = -999;
-            _isPointerDown = false;
-            _isDragging = false;
-            _isAimActive = false;
-        }
-
-        private void OnDisable()
-        {
-            CancelAim();
-        }
-
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            if (!hasFocus)
-            {
-                CancelAim();
-            }
+            bool quickTap = sample.Signal == SkillPointerSignal.TapReleased;
+            var direction = new Vector2(sample.DirectionX, sample.DirectionY);
+            OnAimReleased?.Invoke(direction, quickTap);
+            OnAimDetailedReleased?.Invoke(direction, sample.Pull, quickTap);
         }
 
         public void CancelAim()
         {
-            if (_holdCoroutine != null)
-            {
-                StopCoroutine(_holdCoroutine);
-                _holdCoroutine = null;
-            }
-            _activePointerId = -999;
-            _isPointerDown = false;
-            _isDragging = false;
-            _isAimActive = false;
-            UICancelSkillZone.Instance?.SetVisible(false);
-            OnAimCancelled?.Invoke();
+            if (_gesture != null) Dispatch(_gesture.Cancel());
         }
+
+        private void OnDisable() => CancelAim();
+        private void OnApplicationFocus(bool focused) { if (!focused) CancelAim(); }
+        private void OnApplicationPause(bool paused) { if (paused) CancelAim(); }
     }
 }

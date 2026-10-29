@@ -1,0 +1,30 @@
+{
+  "scanned_at_utc": "2026-10-28T05:40:49.870093+00:00",
+  "assets": 2888,
+  "source_bytes": 167727082,
+  "decisions": {
+    "UNCLASSIFIED_REVIEW": 2028,
+    "ADAPT_REVIEW": 173,
+    "LEGACY_REVIEW": 211,
+    "KEEP_REVIEW": 263,
+    "VENDOR_REVIEW": 213
+  },
+  "guid_edges": 4658,
+  "unresolved_review_edges": 1114,
+  "dynamic_sites": 305,
+  "legacy_symbol_sites": 1076,
+  "addressable_entries": 278,
+  "scene_components": 696,
+  "roots": 285,
+  "duplicate_guids": {},
+  "binary_or_encoding_review": 1,
+  "limitations": [
+    "Text GUID references only; package/builtin GUID unresolved is not proof of missing asset",
+    "Conservative roots include mixed SampleScene; unreachable is not unused",
+    "C# symbol sites include comments/declarations, not semantic dependencies",
+    "Folder Addressables entries are listed, not expanded into effective bundle contents",
+    "Scene components exclude inherited prefab contents and runtime-created objects",
+    "Dynamic strings, binary serialization, shader stripping and runtime require further validation",
+    "No asset deletion approved; no Unity executed"
+  ]
+}

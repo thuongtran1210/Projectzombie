@@ -178,13 +178,89 @@ namespace ProjectZombie.Editor.UI
             }
             soPresenter.ApplyModifiedProperties();
 
+            ApplyStageCardLayout(root);
+            soView.Update();
+            soView.FindProperty("_modalContainer").objectReferenceValue = panelRect;
+            soView.ApplyModifiedProperties();
+
             // Save Prefab
             System.IO.Directory.CreateDirectory("Assets/_Prefabs/UI");
             PrefabUtility.SaveAsPrefabAsset(root, PREFAB_PATH);
+            System.IO.Directory.CreateDirectory("Assets/Resources/UI");
+            PrefabUtility.SaveAsPrefabAsset(root, "Assets/Resources/UI/StageSelect_Screen.prefab");
             Object.DestroyImmediate(root);
             AssetDatabase.Refresh();
 
             Debug.Log($"<color=#00FF88>[StageSelectUIGenerator]</color> Đã tạo thành công Prefab UI Chọn Ải tại: {PREFAB_PATH}");
+        }
+
+        private static void ApplyStageCardLayout(GameObject root)
+        {
+            var panel = root.transform.Find("Panel_StageCard").GetComponent<RectTransform>();
+            var viewport = CreateUIObject("StageCard_Viewport", root.transform).GetComponent<RectTransform>();
+            viewport.anchorMin = new Vector2(.08f,.08f);
+            viewport.anchorMax = new Vector2(.92f,.92f);
+            viewport.offsetMin = viewport.offsetMax = Vector2.zero;
+            panel.SetParent(viewport, false);
+            panel.sizeDelta = new Vector2(1360,760);
+            var aspect = panel.gameObject.AddComponent<AspectRatioFitter>();
+            aspect.aspectRatio = 1360f / 760f;
+            aspect.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            var frame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Modal_TangBaoCac_9Slice.png");
+            var wood = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png");
+            var primary = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Upgrade_Wood_Sub_9Slice.png");
+            var image = panel.GetComponent<Image>();image.sprite=frame;image.type=Image.Type.Sliced;image.color=Color.white;image.raycastTarget=true;
+            var header = CreateUIObject("StageCard_Header", panel);
+            var headerImage=header.AddComponent<Image>();headerImage.sprite=wood;headerImage.type=Image.Type.Sliced;headerImage.raycastTarget=false;
+            Place(header.transform,28,28,1304,92);header.transform.SetAsFirstSibling();
+            var details=CreateUIObject("StageCard_Details",panel);
+            var detailsImage=details.AddComponent<Image>();detailsImage.color=new Color(.12f,.085f,.065f);detailsImage.raycastTarget=false;
+            Place(details.transform,816,144,504,572);details.transform.SetSiblingIndex(1);
+            var close=root.transform.Find("Btn_Back");close.SetParent(panel,false);Place(close,1208,44,104,56);
+            var status=panel.Find("Slider_DownloadProgress/Text_DownloadStatus");status.SetParent(panel,false);Place(status,844,532,448,56);status.gameObject.SetActive(false);
+            Place(panel.Find("Text_StageTitle"), 52f, 40f, 1128f, 64f);
+            Place(panel.Find("Img_StageThumbnail"), 48f, 152f, 740f, 416f);
+            Place(panel.Find("Text_RecLevel"), 844f, 164f, 448f, 48f);
+            Place(panel.Find("Text_Description"), 844f, 232f, 448f, 176f);
+            Place(panel.Find("Text_RewardCoin"), 844f, 438f, 216f, 82f);
+            Place(panel.Find("Text_RewardExp"), 1080f, 438f, 212f, 82f);
+            Place(panel.Find("Btn_PrevStage"), 48f, 608f, 76f, 72f);
+            Place(panel.Find("Btn_NextStage"), 712f, 608f, 76f, 72f);
+            Place(panel.Find("Btn_StartBattle"), 844f, 604f, 448f, 80f);
+            Place(panel.Find("Btn_DownloadDLC"), 844f, 604f, 448f, 80f);
+            Place(panel.Find("Slider_DownloadProgress"), 844f, 620f, 448f, 48f);
+            foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true))
+            {
+                text.fontSize=28;text.color=new Color(.91f,.87f,.77f);text.raycastTarget=false;
+            }
+            var title=panel.Find("Text_StageTitle").GetComponent<TextMeshProUGUI>();title.fontSize=40;title.color=new Color(.96f,.82f,.48f);title.alignment=TextAlignmentOptions.MidlineLeft;title.enableAutoSizing=true;title.fontSizeMin=30;title.fontSizeMax=40;
+            var description=panel.Find("Text_Description").GetComponent<TextMeshProUGUI>();description.alignment=TextAlignmentOptions.TopLeft;description.enableAutoSizing=true;description.fontSizeMin=23;description.fontSizeMax=28;
+            var thumbnail=panel.Find("Img_StageThumbnail").GetComponent<Image>();thumbnail.preserveAspect=true;thumbnail.color=Color.white;
+            var database=AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
+            if(database!=null && database.Stages.Count>0 && database.Stages[0]!=null)thumbnail.sprite=database.Stages[0].stageThumbnail;
+            foreach(var graphic in root.GetComponentsInChildren<Image>(true))graphic.raycastTarget=graphic.GetComponent<Button>()!=null || graphic.transform==panel || graphic.name=="Dark_Backdrop";
+            foreach(string name in new[]{"Btn_Back","Btn_PrevStage","Btn_NextStage","Btn_StartBattle","Btn_DownloadDLC"})
+            {
+                var button=panel.Find(name);var background=button.GetComponent<Image>();bool action=name=="Btn_StartBattle" || name=="Btn_DownloadDLC";
+                background.sprite=action?primary:wood;background.type=Image.Type.Sliced;background.color=Color.white;
+                if(action)button.GetComponentInChildren<TextMeshProUGUI>().color=new Color(.22f,.13f,.055f);
+            }
+            if(database!=null && database.Stages.Count>0 && database.Stages[0]!=null)
+            {
+                var stage=database.Stages[0];title.text=stage.stageName;description.text=stage.description;
+                panel.Find("Text_RecLevel").GetComponent<TextMeshProUGUI>().text=$"<color=#EACB83>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}";
+                panel.Find("Text_RewardCoin").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0}";
+                panel.Find("Text_RewardExp").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#94CDD0>KINH NGHIỆM</color></size>\n{stage.baseRewardExp:N0}";
+            }
+            panel.Find("Btn_DownloadDLC").gameObject.SetActive(false);
+        }
+
+        private static void Place(Transform target,float x,float y,float width,float height)
+        {
+            var rect=(RectTransform)target;
+            rect.anchorMin=new Vector2(x/1360f,1-(y+height)/760f);
+            rect.anchorMax=new Vector2((x+width)/1360f,1-y/760f);
+            rect.anchoredPosition=Vector2.zero;rect.sizeDelta=Vector2.zero;
         }
 
         private static GameObject CreateUIObject(string name, Transform parent)

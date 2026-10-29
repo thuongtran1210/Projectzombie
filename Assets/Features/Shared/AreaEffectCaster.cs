@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using UnityEngine;
-using ProjectZombie.Features.Enemies;
 
 namespace ProjectZombie.Features.Shared
 {

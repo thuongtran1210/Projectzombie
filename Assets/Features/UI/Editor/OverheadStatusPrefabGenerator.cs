@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -77,50 +77,6 @@ namespace ProjectZombie.Features.UI.Editor
             Debug.Log($"<color=green>[Overhead UI]</color> Đã gắn thành công Overhead Status Bar vào: {selected.name}");
         }
 
-        [MenuItem("ProjectZombie/UI/Clean Old Screen HUD (Hide Old HP & EXP)", priority = 22)]
-        public static void CleanOldHUD()
-        {
-            var hudView = Object.FindObjectOfType<HUD.RunHUDView>(true);
-            if (hudView == null)
-            {
-                EditorUtility.DisplayDialog("Thông báo", "Không tìm thấy RunHUDView trong scene hiện tại.", "OK");
-                return;
-            }
-
-            SerializedObject so = new SerializedObject(hudView);
-            var hpSliderProp = so.FindProperty("_hpSlider");
-            var expSliderProp = so.FindProperty("_expSlider");
-            var levelTextProp = so.FindProperty("_levelText");
-
-            int disabledCount = 0;
-            if (hpSliderProp != null && hpSliderProp.objectReferenceValue != null)
-            {
-                var hpObj = ((Slider)hpSliderProp.objectReferenceValue).gameObject;
-                Undo.RecordObject(hpObj, "Disable Old HP Bar");
-                hpObj.SetActive(false);
-                disabledCount++;
-            }
-
-            if (expSliderProp != null && expSliderProp.objectReferenceValue != null)
-            {
-                var expObj = ((Slider)expSliderProp.objectReferenceValue).gameObject;
-                Undo.RecordObject(expObj, "Disable Old EXP Bar");
-                expObj.SetActive(false);
-                disabledCount++;
-            }
-
-            if (levelTextProp != null && levelTextProp.objectReferenceValue != null)
-            {
-                var lvlObj = ((TMP_Text)levelTextProp.objectReferenceValue).gameObject;
-                Undo.RecordObject(lvlObj, "Disable Old Level Text");
-                lvlObj.SetActive(false);
-                disabledCount++;
-            }
-
-            EditorUtility.SetDirty(hudView.gameObject);
-            Debug.Log($"<color=green>[HUD Cleanup]</color> Đã tự động ẩn {disabledCount} phần tử HUD HP/EXP/Level cũ trong RunHUDView để chuyển trọn vẹn sang Overhead UI!");
-            EditorUtility.DisplayDialog("Thành công", $"Đã tự động ẩn các thanh HP/EXP/Level cũ trên màn hình HUD ({disabledCount} objects).", "OK");
-        }
 
         private static GameObject CreateOverheadHierarchy()
         {

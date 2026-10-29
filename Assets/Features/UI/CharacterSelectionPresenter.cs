@@ -288,6 +288,22 @@ namespace ProjectZombie.Features.UI
                         ProjectZombie.Core.Save.GameManager.Instance.SaveGame();
                     }
 
+                    // Đồng bộ sang DefenseLoadoutRepository cho Defense 3D
+                    try
+                    {
+                        var defenseRepo = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository();
+                        var defenseDto = defenseRepo.Load();
+                        if (defenseDto != null)
+                        {
+                            defenseDto.HeroId = entry.characterId;
+                            defenseRepo.Save(defenseDto);
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[CharacterSelectionPresenter] Đồng bộ DefenseLoadout thất bại: {ex.Message}");
+                    }
+
                     OnCharacterSelected?.Invoke(chosenPrefab);
                 }
             }

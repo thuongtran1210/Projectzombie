@@ -1,0 +1,36 @@
+{
+  "source": "thuongtran1210/Vongxuyen",
+  "id": "magiap_boss",
+  "threeVersion": "160",
+  "sourceHashes": {
+    "src/entities/EnemyFactory.js": "72e6b13910a74da913726c5f4f2aebcc856dd90106425929ac4e765ad2687050",
+    "src/core/MaterialManager.js": "571c65fb1c66c72edbf6ee97e74f97aec4933afd3271d74a6fa1d7f3e9f72541"
+  },
+  "meshes": 18,
+  "triangles": 1424,
+  "materials": 7,
+  "bounds": {
+    "min": [
+      -1.1068507113446597,
+      0.2869999703764916,
+      -0.8061962985561777
+    ],
+    "max": [
+      1.1068507113446597,
+      2.9649684357889647,
+      2.843749989569187
+    ]
+  },
+  "bodyPivot": [
+    0,
+    0,
+    0
+  ],
+  "leftWing": null,
+  "rightWing": null,
+  "notes": [
+    "Original geometry, rigid hierarchy, colors and baked outline extrusion.",
+    "Health bars, transparent web auras and lights excluded; Unity retains gameplay ownership.",
+    "Locomotion poses are driven by the imported EnemyBody and wings in Unity, not animation clips."
+  ]
+}

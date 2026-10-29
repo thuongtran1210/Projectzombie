@@ -31,8 +31,6 @@ namespace ProjectZombie.Features.Player
         private HealthSystem _healthSystem;
         private PlayerAnimator _playerAnimator;
         private PlayerController _playerController;
-        private CharacterCombat _characterCombat;
-        private WeaponManager _weaponManager;
         private Collider2D _collider;
 
         private bool _isDying = false;
@@ -47,8 +45,6 @@ namespace ProjectZombie.Features.Player
             _healthSystem = GetComponent<HealthSystem>();
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _playerController = GetComponent<PlayerController>();
-            _characterCombat = GetComponent<CharacterCombat>();
-            _weaponManager = GetComponent<WeaponManager>();
             _collider = GetComponent<Collider2D>();
 
             if (_healthSystem != null)
@@ -77,8 +73,6 @@ namespace ProjectZombie.Features.Player
             StopAllCoroutines();
 
             if (_playerController != null) _playerController.enabled = true;
-            if (_characterCombat != null) _characterCombat.enabled = true;
-            if (_weaponManager != null) _weaponManager.enabled = true;
             if (_collider != null) _collider.enabled = true;
             if (_playerAnimator != null) _playerAnimator.ChangeAnimationState(PlayerAnimationState.Idle);
             if (_healthSystem != null) _healthSystem.ResetHealth();
@@ -106,16 +100,7 @@ namespace ProjectZombie.Features.Player
             }
 
             // 2. Vô hiệu hóa hệ thống tấn công thường
-            if (_characterCombat != null)
-            {
-                _characterCombat.enabled = false;
-            }
 
-            // 3. Tắt hệ thống vũ khí để ngừng bắn tự động
-            if (_weaponManager != null)
-            {
-                _weaponManager.enabled = false;
-            }
 
             // 4. Tắt Collider để kẻ địch không tiếp tục va chạm/đẩy xác
             if (_collider != null)
@@ -139,14 +124,7 @@ namespace ProjectZombie.Features.Player
                 AudioSource.PlayClipAtPoint(deathGongClip, transform.position);
             }
 
-            // 7. Yêu cầu toàn bộ kẻ địch đang hoạt động cập nhật lại mục tiêu (ngay lập tức dừng tấn công xác nhân vật)
-            foreach (var enemy in Enemies.Enemy.ActiveEnemies)
-            {
-                if (enemy != null)
-                {
-                    enemy.UpdateTarget(force: true);
-                }
-            }
+
 
             // 8. Khởi chạy Coroutine điều phối Slow-motion và Camera Zoom cận cảnh
             StartCoroutine(DeathSequenceCoroutine());

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ff56eb0c75b374eb0a440c2e3bf9a3, type: 3}
+  m_Name: magiap_boss
+  m_EditorClassIdentifier: 
+  enemyId: magiap_boss
+  displayName: "Ma Gi\xE1p Th\u1ED1ng L\u0129nh"
+  locomotionType: 0
+  isBossOrMiniboss: 1
+  prefab: {fileID: 7560621799203833079, guid: 17c918c9a2964e31b7e6261f681a115a, type: 3}
+  maxHP: 700
+  moveSpeed: 1.18
+  attackDamage: 24
+  attackInterval: 2
+  attackRange: 1.2
+  woodDrop: 80
+  expDrop: 50
+

@@ -291,12 +291,6 @@ namespace ProjectZombie.Features.UI
             _audioService?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
-            {
-                var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
-                if (wm != null) wm.ReloadEquippedWeapons();
-            }
-
             UpdateSelectionDetailsOnly();
         }
 
@@ -317,12 +311,6 @@ namespace ProjectZombie.Features.UI
             _audioService?.PlayWeaponEquip();
 
             RunLoadoutState.SetLoadout(_currentHero, _selectedPrimary, _selectedRelics);
-            if (PlayerProvider.HasPlayer && PlayerProvider.PlayerGameObject != null)
-            {
-                var wm = PlayerProvider.PlayerGameObject.GetComponent<WeaponManager>();
-                if (wm != null) wm.ReloadEquippedWeapons();
-            }
-
             UpdateSelectionDetailsOnly();
         }
 

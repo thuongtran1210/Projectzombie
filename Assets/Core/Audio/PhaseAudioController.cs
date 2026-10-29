@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using ProjectZombie.Features.Spawners;
+using UnityEngine;
 
 namespace Core.Audio
 {
@@ -43,6 +42,15 @@ namespace Core.Audio
             }
         }
 
+        private float GetMatchTime()
+        {
+            if (ProjectZombie.Features.Shared.RunStatsTracker.Instance != null)
+            {
+                return ProjectZombie.Features.Shared.RunStatsTracker.Instance.ElapsedTime;
+            }
+            return 0f;
+        }
+
         private void Start()
         {
             if (ProjectZombie.Features.Shared.GameStateManager.Instance != null && 
@@ -51,9 +59,9 @@ namespace Core.Audio
                 return; // Đang ở Sảnh Main Menu ngoài game, không phát BGM trận đấu
             }
 
-            if (SpawnManager.Instance != null && _phaseAudioList != null && _phaseAudioList.Length > 0)
+            if (_phaseAudioList != null && _phaseAudioList.Length > 0)
             {
-                CheckPhaseTransition(SpawnManager.Instance.MatchTime);
+                CheckPhaseTransition(GetMatchTime());
             }
         }
 
@@ -68,13 +76,13 @@ namespace Core.Audio
                 return;
             }
 
-            if (SpawnManager.Instance == null || _phaseAudioList == null || _phaseAudioList.Length == 0) return;
+            if (_phaseAudioList == null || _phaseAudioList.Length == 0) return;
 
             _checkTimer += Time.deltaTime;
             if (_checkTimer >= CHECK_INTERVAL)
             {
                 _checkTimer = 0f;
-                float currentMatchTime = SpawnManager.Instance.MatchTime;
+                float currentMatchTime = GetMatchTime();
                 CheckPhaseTransition(currentMatchTime);
             }
         }

@@ -1,494 +1,210 @@
 #if UNITY_EDITOR
+using System;
+using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.IO;
 using ProjectZombie.Features.UI;
+using ProjectZombie.Features.Defense3D.Loadout;
+using Object = UnityEngine.Object;
 
 namespace ProjectZombie.Editor.UI
 {
-    /// <summary>
-    /// Generator tự động tạo Prefab giao diện Bách Bảo Các (Thần Thẻ, Luyện Khí & Công Thức Codex UI) chuẩn Cổ Phong Đông Sơn.
-    /// Menu: Tools -> ProjectZombie -> UI -> Sảnh Chính (Meta Menu) -> 5. Tạo Thư Viện Thần Thẻ (Card Codex UI)
-    /// </summary>
     public static class CardCodexUIGenerator
     {
-        private static readonly Color ColorBgOverlay = new Color(0.04f, 0.03f, 0.06f, 0.90f);
-        private static readonly Color ColorBambooFrame = new Color(0.42f, 0.28f, 0.16f, 1f);
+        private static TMP_FontAsset Font;
+        private static readonly Color Gold = new Color(.94f,.80f,.47f);
+        private static readonly Color Ink = new Color(.085f,.065f,.05f,.98f);
+        private const string Art = "Assets/Art/UI/VongXuyen/";
+        private static Sprite SpriteAt(string name)
+        {
+            if (name.StartsWith("Btn_Tab_Wood")) name = "Btn_Nav_Wood_Stitched";
+            return AssetDatabase.LoadAssetAtPath<Sprite>(Art + name + ".png");
+        }
 
         [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/10. Tạo Thư Viện Thần Thẻ (Card Codex UI)", priority = 112)]
         public static GameObject GenerateCardCodexPrefab()
         {
-            string prefabFolder = "Assets/_Prefabs/UI";
-            if (!Directory.Exists(prefabFolder)) Directory.CreateDirectory(prefabFolder);
+            Directory.CreateDirectory("Assets/_Prefabs/UI");
+            Directory.CreateDirectory("Assets/Resources/UI");
+            Font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset")
+                ?? AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset") ?? TMP_Settings.defaultFontAsset;
+            var card = BuildCardPrefab();
+            var unitIcons = BuildUnitIcons();
+            var root = Node("Panel_CardCodex", null);
+            var authoringScene = EditorSceneManager.NewPreviewScene();
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root.gameObject, authoringScene);
+            Stretch(root);
+            root.gameObject.AddComponent<CanvasGroup>();
+            var view = root.gameObject.AddComponent<CardCodexView>();
+            var presenter = root.gameObject.AddComponent<CardCodexPresenter>();
+            var layout = root.gameObject.AddComponent<CodexResponsiveLayout>();
+            var dim = Panel("Dim_Background", root, null, new Color(.02f,.025f,.025f,.94f)); Stretch(dim);
+            var dimButton = dim.gameObject.AddComponent<Button>();
+            var safe = Node("SafeArea", root); Stretch(safe);
+            var modal = Panel("Modal_Container", safe, SpriteAt("Frame_Modal_TangBaoCac_9Slice"), Color.white);
+            Stretch(modal, 24, 24, 24, 24);
+            var header = Panel("Header_Top", modal, SpriteAt("Header_Wood_Bar_VongXuyen"), Color.white);
+            Top(header, 18, 18, 80, 18);
+            var title = Text("Txt_Title", header, "BÁCH BẢO CÁC", 32, Gold, TextAlignmentOptions.MidlineLeft);
+            Stretch(title.rectTransform, 28, 330, 0, 0); title.fontStyle = FontStyles.Bold;
+            var close = Button("Btn_Close", header, SpriteAt("Btn_Nav_Close_X_Wood"), "", 22);
+            Anchor(close.GetComponent<RectTransform>(), new Vector2(1,.5f), new Vector2(1,.5f), new Vector2(-16,0), new Vector2(60,60), new Vector2(1,.5f));
+            var coin = Panel("Pill_CoTien", header, SpriteAt("Pill_Currency_Wood"), Color.white);
+            Anchor(coin, new Vector2(1,.5f),new Vector2(1,.5f),new Vector2(-96,0),new Vector2(160,48),new Vector2(1,.5f));
+            var coinText = Text("Txt_Amount",coin,"0",24,Gold); Stretch(coinText.rectTransform);
 
-            TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/BeVietnamPro-Regular SDF.asset");
-            if (font == null) font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/GameFont_Vietnamese_SD.asset");
-            if (font == null) font = TMP_Settings.defaultFontAsset;
+            var loadout = Panel("Loadout_Bar", modal, null, new Color(.13f,.105f,.075f));
+            Top(loadout, 38, 112, 196, 38);
+            var teamTitle = Text("Txt_LoadoutTitle",loadout,"ĐỘI HÌNH XUẤT TRẬN",20,Gold,TextAlignmentOptions.MidlineLeft);
+            Top(teamTitle.rectTransform,16,0,30,600);
+            var summary = Text("Txt_LoadoutCount",loadout,"Lính 3/4  •  Trụ 1/4",20,new Color(.70f,.72f,.65f),TextAlignmentOptions.MidlineRight);
+            Top(summary.rectTransform,600,0,30,16);
+            var hero = SlotGroup(loadout,"Group_Hero","TƯỚNG",0,.12f,1);
+            var relic = SlotGroup(loadout,"Group_Relic","PHÁP BẢO",.13f,.25f,1);
+            var minions = SlotGroup(loadout,"Group_Minions","LÍNH",.28f,.62f,LoadoutRules.Default.MaxMinionCount);
+            var towers = SlotGroup(loadout,"Group_Towers","TRỤ",.65f,.99f,LoadoutRules.Default.MaxTowerCount);
 
-            Sprite modalFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Modal_TangBaoCac_9Slice.png");
-            Sprite headerBar = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Header_Wood_Bar_VongXuyen.png");
-            Sprite btnCloseX = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Close_X_Wood.png");
-            Sprite tabWoodActive = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Active.png");
-            Sprite tabWoodInactive = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Tab_Wood_Inactive.png");
-            Sprite cardTotem = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Upgrade_Wood_Totem_9Slice.png");
-            Sprite cardDetailParchment = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Card_Parchment_Detail_9Slice.png");
-            Sprite btnAmber = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Battle_Hex_Amber_Glow.png");
-            Sprite slotWoodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Wood_9Slice.png");
-            Sprite slotSelectedSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Slot_Inventory_Selected_Glow.png");
-            Sprite currencyPill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Pill_Currency_Wood.png");
-            Sprite coTienIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Icon_CoTien_VongXuyen.png");
-
-            Sprite borderCommon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Wood_9Slice.png");
-            Sprite borderRare = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Jade_9Slice.png");
-            Sprite borderEpic = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Synergy_9Slice.png");
-            Sprite borderLegendary = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Frame_Card_Evolution_Gold_9Slice.png");
-
-            // 1. Root GameObject
-            GameObject root = new GameObject("Panel_CardCodex", typeof(RectTransform), typeof(CanvasGroup), typeof(CardCodexView), typeof(CardCodexPresenter));
-            RectTransform rootRT = root.GetComponent<RectTransform>();
-            SetStretchAnchor(rootRT);
-
-            var view = root.GetComponent<CardCodexView>();
-            var presenter = root.GetComponent<CardCodexPresenter>();
-
-            // 2. Dim Background
-            GameObject dimObj = CreateUIElement("Dim_Background", root.transform);
-            SetStretchAnchor(dimObj.GetComponent<RectTransform>());
-            var dimImg = dimObj.AddComponent<Image>();
-            dimImg.color = ColorBgOverlay;
-            var dimBtn = dimObj.AddComponent<Button>();
-
-            // 3. Modal Container (1760 x 960) Chuẩn Mobile Landscape
-            GameObject modalObj = CreateUIElement("Modal_Container", root.transform);
-            RectTransform modalRT = modalObj.GetComponent<RectTransform>();
-            modalRT.anchorMin = new Vector2(0.5f, 0.5f);
-            modalRT.anchorMax = new Vector2(0.5f, 0.5f);
-            modalRT.pivot = new Vector2(0.5f, 0.5f);
-            modalRT.sizeDelta = new Vector2(1760, 960);
-            var mImg = modalObj.AddComponent<Image>();
-            mImg.type = Image.Type.Sliced;
-            if (modalFrame != null) mImg.sprite = modalFrame;
-
-            // 4. Header (Top 90px)
-            GameObject headerObj = CreateUIElement("Header_Top", modalObj.transform);
-            RectTransform hRT = headerObj.GetComponent<RectTransform>();
-            hRT.anchorMin = new Vector2(0, 1);
-            hRT.anchorMax = new Vector2(1, 1);
-            hRT.pivot = new Vector2(0.5f, 1);
-            hRT.anchoredPosition = new Vector2(0, -18);
-            hRT.sizeDelta = new Vector2(-48, 80);
-            var hImg = headerObj.AddComponent<Image>();
-            hImg.type = Image.Type.Sliced;
-            if (headerBar != null) hImg.sprite = headerBar;
-
-            // Header Title
-            GameObject titleObj = CreateUIElement("Txt_Title", headerObj.transform);
-            RectTransform tRT = titleObj.GetComponent<RectTransform>();
-            tRT.anchorMin = new Vector2(0, 0);
-            tRT.anchorMax = new Vector2(1, 1);
-            tRT.offsetMin = new Vector2(32, 0);
-            tRT.offsetMax = new Vector2(-320, 0);
-            var titleTMP = titleObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) titleTMP.font = font;
-            titleTMP.text = "THẦN THẺ • LÒ LUYỆN KHÍ & BÁCH BẢO CÁC";
-            titleTMP.fontSize = 24;
-            titleTMP.fontStyle = FontStyles.Bold;
-            titleTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);
-            titleTMP.alignment = TextAlignmentOptions.MidlineLeft;
-
-            // Nút Đóng (X)
-            GameObject closeObj = CreateUIElement("Btn_Close", headerObj.transform);
-            RectTransform cRT = closeObj.GetComponent<RectTransform>();
-            cRT.anchorMin = new Vector2(1, 0.5f);
-            cRT.anchorMax = new Vector2(1, 0.5f);
-            cRT.pivot = new Vector2(1, 0.5f);
-            cRT.anchoredPosition = new Vector2(-12, 0);
-            cRT.sizeDelta = new Vector2(54, 54);
-            var cImg = closeObj.AddComponent<Image>();
-            if (btnCloseX != null) cImg.sprite = btnCloseX;
-            var closeBtn = closeObj.AddComponent<Button>();
-
-            // Pill Tiền Tệ
-            GameObject coinPill = CreateUIElement("Pill_CoTien", headerObj.transform);
-            RectTransform cpRT = coinPill.GetComponent<RectTransform>();
-            cpRT.anchorMin = new Vector2(1, 0.5f);
-            cpRT.anchorMax = new Vector2(1, 0.5f);
-            cpRT.pivot = new Vector2(1, 0.5f);
-            cpRT.anchoredPosition = new Vector2(-80, 0);
-            cpRT.sizeDelta = new Vector2(150, 42);
-            var cpImg = coinPill.AddComponent<Image>();
-            cpImg.type = Image.Type.Sliced;
-            if (currencyPill != null) cpImg.sprite = currencyPill;
-
-            GameObject coinTxtObj = CreateUIElement("Txt_Amount", coinPill.transform);
-            SetStretchAnchor(coinTxtObj.GetComponent<RectTransform>());
-            coinTxtObj.GetComponent<RectTransform>().offsetMin = new Vector2(40, 0);
-            var coinTMP = coinTxtObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) coinTMP.font = font;
-            coinTMP.text = "<color=#FFD700>0</color>";
-            coinTMP.fontSize = 18;
-            coinTMP.fontStyle = FontStyles.Bold;
-            coinTMP.alignment = TextAlignmentOptions.MidlineLeft;
-
-            // 5. Body Area (2 Cột Đối Xứng)
-            GameObject bodyObj = CreateUIElement("Body_Area", modalObj.transform);
-            RectTransform bRT = bodyObj.GetComponent<RectTransform>();
-            bRT.anchorMin = Vector2.zero;
-            bRT.anchorMax = Vector2.one;
-            bRT.offsetMin = new Vector2(36, 32);
-            bRT.offsetMax = new Vector2(-36, -112);
-
-            // --- CỘT TRÁI (DANH SÁCH THẺ + TAB) (Width 60%) ---
-            GameObject leftCol = CreateUIElement("Col_Left_Grid", bodyObj.transform);
-            RectTransform lRT = leftCol.GetComponent<RectTransform>();
-            lRT.anchorMin = new Vector2(0, 0);
-            lRT.anchorMax = new Vector2(0.60f, 1);
-            lRT.offsetMin = Vector2.zero;
-            lRT.offsetMax = new Vector2(-12, 0);
-
-            // Tab Bar
-            GameObject tabBar = CreateUIElement("TabBar", leftCol.transform);
-            RectTransform tbRT = tabBar.GetComponent<RectTransform>();
-            tbRT.anchorMin = new Vector2(0, 1);
-            tbRT.anchorMax = new Vector2(1, 1);
-            tbRT.pivot = new Vector2(0.5f, 1);
-            tbRT.anchoredPosition = Vector2.zero;
-            tbRT.sizeDelta = new Vector2(0, 52);
-
-            var tbHlg = tabBar.AddComponent<HorizontalLayoutGroup>();
-            tbHlg.spacing = 10;
-            tbHlg.childControlWidth = true;
-            tbHlg.childControlHeight = true;
-
-            // Tab 1: Luyện Hóa Thần Binh
-            GameObject t1 = CreateTabBtn("Tab_Fusion", "THẦN BINH & PHÁP BẢO", tabBar.transform, font, tabWoodActive, out Button tab1Btn, out Image tab1Bg, out TextMeshProUGUI tab1Txt);
-            // Tab 2: Thần Tướng Anh Hùng
-            GameObject t3 = CreateTabBtn("Tab_Combo", "THẦN TƯỚNG ANH HÙNG", tabBar.transform, font, tabWoodInactive, out Button tab3Btn, out Image tab3Bg, out TextMeshProUGUI tab3Txt);
-            // Tab 3: Thần Thẻ Bị Động
-            GameObject t2 = CreateTabBtn("Tab_Passives", "THẦN THẺ BỊ ĐỘNG", tabBar.transform, font, tabWoodInactive, out Button tab2Btn, out Image tab2Bg, out TextMeshProUGUI tab2Txt);
-
-            // ScrollView Thẻ Bài
-            GameObject scrollObj = CreateUIElement("ScrollView_Cards", leftCol.transform);
-            RectTransform scRT = scrollObj.GetComponent<RectTransform>();
-            scRT.anchorMin = Vector2.zero;
-            scRT.anchorMax = Vector2.one;
-            scRT.offsetMin = Vector2.zero;
-            scRT.offsetMax = new Vector2(0, -62);
-
-            var scrollRect = scrollObj.AddComponent<ScrollRect>();
-            scrollRect.horizontal = false;
-            scrollRect.vertical = true;
-
-            GameObject viewPort = CreateUIElement("Viewport", scrollObj.transform);
-            SetStretchAnchor(viewPort.GetComponent<RectTransform>());
-            viewPort.AddComponent<RectMask2D>();
-            scrollRect.viewport = viewPort.GetComponent<RectTransform>();
-
-            GameObject content = CreateUIElement("Content", viewPort.transform);
-            RectTransform cntRT = content.GetComponent<RectTransform>();
-            cntRT.anchorMin = new Vector2(0, 1);
-            cntRT.anchorMax = new Vector2(1, 1);
-            cntRT.pivot = new Vector2(0.5f, 1);
-            cntRT.sizeDelta = new Vector2(0, 800);
-
-            var grid = content.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(120, 140);
-            grid.spacing = new Vector2(14, 14);
-            grid.padding = new RectOffset(14, 14, 14, 14);
-            grid.childAlignment = TextAnchor.UpperLeft;
-
-            var csf = content.AddComponent<ContentSizeFitter>();
-            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            scrollRect.content = cntRT;
-
-            // --- CỘT PHẢI (CHI TIẾT & LÒ LUYỆN KHÍ) (Width 40%) ---
-            GameObject rightCol = CreateUIElement("Col_Right_Detail", bodyObj.transform);
-            RectTransform rRT = rightCol.GetComponent<RectTransform>();
-            rRT.anchorMin = new Vector2(0.60f, 0);
-            rRT.anchorMax = new Vector2(1, 1);
-            rRT.offsetMin = new Vector2(12, 0);
-            rRT.offsetMax = Vector2.zero;
-
-            var rcImg = rightCol.AddComponent<Image>();
-            rcImg.type = Image.Type.Sliced;
-            if (cardDetailParchment != null) rcImg.sprite = cardDetailParchment;
-
-            // Icon + Tên
-            GameObject detailHeader = CreateUIElement("Detail_Header", rightCol.transform);
-            RectTransform dhRT = detailHeader.GetComponent<RectTransform>();
-            dhRT.anchorMin = new Vector2(0, 1);
-            dhRT.anchorMax = new Vector2(1, 1);
-            dhRT.pivot = new Vector2(0.5f, 1);
-            dhRT.anchoredPosition = new Vector2(0, -18);
-            dhRT.sizeDelta = new Vector2(-36, 120);
-
-            GameObject dIconObj = CreateUIElement("Icon_Card", detailHeader.transform);
-            RectTransform diRT = dIconObj.GetComponent<RectTransform>();
-            diRT.anchorMin = new Vector2(0, 0.5f);
-            diRT.anchorMax = new Vector2(0, 0.5f);
-            diRT.pivot = new Vector2(0, 0.5f);
-            diRT.anchoredPosition = new Vector2(10, 0);
-            diRT.sizeDelta = new Vector2(90, 90);
-            var diImg = dIconObj.AddComponent<Image>();
-            diImg.preserveAspect = true;
-
-            GameObject dInfoObj = CreateUIElement("Info_Text", detailHeader.transform);
-            RectTransform dfRT = dInfoObj.GetComponent<RectTransform>();
-            dfRT.anchorMin = new Vector2(0, 0);
-            dfRT.anchorMax = new Vector2(1, 1);
-            dfRT.offsetMin = new Vector2(115, 0);
-            dfRT.offsetMax = Vector2.zero;
-
-            var infoLayout = dInfoObj.AddComponent<VerticalLayoutGroup>();
-            infoLayout.childControlWidth = true;
-            infoLayout.childControlHeight = false;
-            infoLayout.childForceExpandWidth = true;
-            infoLayout.childForceExpandHeight = false;
-            infoLayout.spacing = 3;
-
-            var dNameTMP = CreateTextMeshPro(CreateUIElement("Txt_Name", dInfoObj.transform), font);
-            dNameTMP.text = "Vạn Dép Bát Quái Thần Hỏa";
-            dNameTMP.fontSize = 20;
-            dNameTMP.fontStyle = FontStyles.Bold;
-            dNameTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);
-            dNameTMP.rectTransform.sizeDelta = new Vector2(0, 26);
-
-            var dTypeTMP = CreateTextMeshPro(CreateUIElement("Txt_Type", dInfoObj.transform), font);
-            dTypeTMP.text = "<color=#FFD700>[THẦN BINH & PHÁP BẢO]</color>";
-            dTypeTMP.fontSize = 13;
-            dTypeTMP.color = new Color(0.85f, 0.78f, 0.65f, 1f);
-            dTypeTMP.rectTransform.sizeDelta = new Vector2(0, 20);
-
-            var dStarTMP = CreateTextMeshPro(CreateUIElement("Txt_StarBadge", dInfoObj.transform), font);
-            dStarTMP.text = "<color=#FFD700>Cấp Độ: 3 Sao</color>";
-            dStarTMP.fontSize = 14;
-            dStarTMP.fontStyle = FontStyles.Bold;
-            dStarTMP.rectTransform.sizeDelta = new Vector2(0, 22);
-
-            var dShardTMP = CreateTextMeshPro(CreateUIElement("Txt_ShardProgress", dInfoObj.transform), font);
-            dShardTMP.text = "Tiến Độ Thẻ: <color=#00FF88>15/20 Thẻ</color>";
-            dShardTMP.fontSize = 13;
-            dShardTMP.color = new Color(0.9f, 0.85f, 0.75f, 1f);
-            dShardTMP.rectTransform.sizeDelta = new Vector2(0, 20);
-
-            // Mô Tả
-            GameObject descObj = CreateUIElement("Txt_Description", rightCol.transform);
-            RectTransform ddRT = descObj.GetComponent<RectTransform>();
-            ddRT.anchorMin = new Vector2(0, 0);
-            ddRT.anchorMax = new Vector2(1, 1);
-            ddRT.offsetMin = new Vector2(24, 110);
-            ddRT.offsetMax = new Vector2(-24, -130);
-            var dDescTMP = descObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) dDescTMP.font = font;
-            dDescTMP.text = "Mô tả chi tiết công thức luyện hóa thần binh và hiệu ứng uy lực.";
-            dDescTMP.fontSize = 15;
-            dDescTMP.color = new Color(0.90f, 0.85f, 0.75f, 1f);
-            dDescTMP.enableWordWrapping = true;
-
-            // Nút Luyện Khí
-            GameObject alchemyBtnObj = CreateUIElement("Btn_AlchemyFusion", rightCol.transform);
-            RectTransform abRT = alchemyBtnObj.GetComponent<RectTransform>();
-            abRT.anchorMin = new Vector2(0, 0);
-            abRT.anchorMax = new Vector2(1, 0);
-            abRT.pivot = new Vector2(0.5f, 0);
-            abRT.anchoredPosition = new Vector2(0, 20);
-            abRT.sizeDelta = new Vector2(-48, 68);
-            var abImg = alchemyBtnObj.AddComponent<Image>();
-            abImg.type = Image.Type.Sliced;
-            if (btnAmber != null) abImg.sprite = btnAmber;
-            var alchemyBtn = alchemyBtnObj.AddComponent<Button>();
-            var alchemyCG = alchemyBtnObj.AddComponent<CanvasGroup>();
-
-            var abTxt = CreateTextMeshPro(CreateUIElement("Text", alchemyBtnObj.transform), font);
-            SetStretchAnchor(abTxt.GetComponent<RectTransform>());
-            abTxt.text = "LUYỆN HÓA THẦN BINH";
-            abTxt.fontSize = 20;
-            abTxt.fontStyle = FontStyles.Bold;
-            abTxt.alignment = TextAlignmentOptions.Center;
-            abTxt.color = new Color(1f, 0.95f, 0.80f, 1f);
-
-            // 6. Wire Serialized Properties to View
-            SerializedObject soView = new SerializedObject(view);
-            soView.FindProperty("_modalContainer").objectReferenceValue = modalRT;
-            soView.FindProperty("_backButton").objectReferenceValue = closeBtn;
-            soView.FindProperty("_dimBackgroundButton").objectReferenceValue = dimBtn;
-            soView.FindProperty("_coTienText").objectReferenceValue = coinTMP;
-
-            soView.FindProperty("_tabFusionButton").objectReferenceValue = tab1Btn;
-            soView.FindProperty("_tabPassivesButton").objectReferenceValue = tab2Btn;
-            soView.FindProperty("_tabComboButton").objectReferenceValue = tab3Btn;
-
-            soView.FindProperty("_tabFusionBg").objectReferenceValue = tab1Bg;
-            soView.FindProperty("_tabPassivesBg").objectReferenceValue = tab2Bg;
-            soView.FindProperty("_tabComboBg").objectReferenceValue = tab3Bg;
-
-            soView.FindProperty("_tabFusionTxt").objectReferenceValue = tab1Txt;
-            soView.FindProperty("_tabPassivesTxt").objectReferenceValue = tab2Txt;
-            soView.FindProperty("_tabComboTxt").objectReferenceValue = tab3Txt;
-
-            soView.FindProperty("_cardsGridContainer").objectReferenceValue = content.transform;
-            soView.FindProperty("_detailIcon").objectReferenceValue = diImg;
-            soView.FindProperty("_detailName").objectReferenceValue = dNameTMP;
-            soView.FindProperty("_detailType").objectReferenceValue = dTypeTMP;
-            soView.FindProperty("_detailDesc").objectReferenceValue = dDescTMP;
-            soView.FindProperty("_detailStarBadge").objectReferenceValue = dStarTMP;
-            soView.FindProperty("_detailShardProgress").objectReferenceValue = dShardTMP;
-            soView.FindProperty("_alchemyFusionButton").objectReferenceValue = alchemyBtn;
-            soView.FindProperty("_fusionButtonText").objectReferenceValue = abTxt;
-            soView.ApplyModifiedProperties();
-
-            // 7. Wire Presenter
-            SerializedObject soPresenter = new SerializedObject(presenter);
-            soPresenter.FindProperty("_view").objectReferenceValue = view;
-            soPresenter.FindProperty("_tabActiveSprite").objectReferenceValue = tabWoodActive;
-            soPresenter.FindProperty("_tabInactiveSprite").objectReferenceValue = tabWoodInactive;
-            soPresenter.FindProperty("_cardSlotWoodSprite").objectReferenceValue = slotWoodSprite;
-            soPresenter.FindProperty("_cardSlotSelectedSprite").objectReferenceValue = slotSelectedSprite;
-            soPresenter.FindProperty("_badgeElementKim").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Kim.png");
-            soPresenter.FindProperty("_badgeElementMoc").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Moc.png");
-            soPresenter.FindProperty("_badgeElementThuy").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Thuy.png");
-            soPresenter.FindProperty("_badgeElementHoa").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Hoa.png");
-            soPresenter.FindProperty("_badgeElementTho").objectReferenceValue = 
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Badges/Badge_Element_Tho.png");
-            soPresenter.ApplyModifiedProperties();
-
-            // 8. Lưu Prefab
-            string prefabPath = $"{prefabFolder}/CardCodexUI.prefab";
-            GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
-
-            // Đồng bộ sang Resources/UI để tiện load dynamic nếu cần
-            string resFolder = "Assets/Resources/UI";
-            if (!Directory.Exists(resFolder)) Directory.CreateDirectory(resFolder);
-            string resPrefabPath = $"{resFolder}/CardCodexUI.prefab";
-            PrefabUtility.SaveAsPrefabAsset(root, resPrefabPath);
-
-            // 9. Auto-wire vào Scene và MetaUIManager nếu đang mở Scene Menu
-            var canvas = Object.FindAnyObjectByType<Canvas>();
-            if (canvas != null)
+            var body = Node("Body_Area",modal); Stretch(body,38,38,34,330);
+            var left = Node("Col_Left_Grid",body); left.anchorMin=Vector2.zero; left.anchorMax=new Vector2(.65f,1); left.offsetMin=Vector2.zero;left.offsetMax=new Vector2(-20,0);
+            var tabs = Node("TabBar",left); Top(tabs,0,0,62,0);
+            var buttons = new Button[4];
+            string[] labels={"TƯỚNG","PHÁP BẢO","LÍNH","TRỤ"};
+            string[] names={"Tab_Combo","Tab_Fusion","Tab_Minions","Tab_Towers"};
+            for(int i=0;i<4;i++)
             {
-                var oldUI = GameObject.Find("Panel_CardCodex");
-                if (oldUI != null && oldUI != root) Object.DestroyImmediate(oldUI);
+                buttons[i]=Button(names[i],tabs,SpriteAt("Btn_Tab_Wood_Inactive"),labels[i],24);
+                var rt=buttons[i].GetComponent<RectTransform>();rt.anchorMin=new Vector2(i*.25f,0);rt.anchorMax=new Vector2((i+1)*.25f,1);rt.offsetMin=new Vector2(i==0?0:5,0);rt.offsetMax=new Vector2(i==3?0:-5,0);
+            }
+            var scroll = Node("ScrollView_Cards",left);Stretch(scroll,0,0,0,78);
+            var gridScroll=scroll.gameObject.AddComponent<ScrollRect>();gridScroll.horizontal=false;gridScroll.movementType=ScrollRect.MovementType.Clamped;
+            var viewport=Panel("Viewport",scroll,null,new Color(.065f,.06f,.05f,.65f));Stretch(viewport);viewport.GetComponent<Image>().raycastTarget=true;viewport.gameObject.AddComponent<RectMask2D>();
+            var content=Node("Content",viewport);content.anchorMin=new Vector2(0,1);content.anchorMax=Vector2.one;content.pivot=new Vector2(.5f,1);content.sizeDelta=new Vector2(0,600);
+            var grid=content.gameObject.AddComponent<GridLayoutGroup>();grid.constraint=GridLayoutGroup.Constraint.FixedColumnCount;grid.constraintCount=5;grid.cellSize=new Vector2(190,224);grid.spacing=new Vector2(16,20);grid.padding=new RectOffset(8,8,8,16);
+            var fit=content.gameObject.AddComponent<ContentSizeFitter>();fit.verticalFit=ContentSizeFitter.FitMode.PreferredSize;
+            gridScroll.viewport=viewport;gridScroll.content=content;gridScroll.scrollSensitivity=32;
 
-                var metaCanvas = GameObject.Find("Canvas_MetaMenu");
-                Transform targetParent = metaCanvas != null ? metaCanvas.transform : canvas.transform;
+            var right=Panel("Col_Right_Detail",body,SpriteAt("Slot_Inventory_Wood_9Slice"),new Color(.75f,.75f,.75f));
+            right.anchorMin=new Vector2(.65f,0);right.anchorMax=Vector2.one;right.offsetMin=new Vector2(4,0);right.offsetMax=Vector2.zero;
+            var detailHeader=Node("Detail_Header",right);Top(detailHeader,24,20,142,24);
+            var icon=Panel("Icon_Card",detailHeader,SpriteAt("Slot_Inventory_Wood_9Slice"),Color.white);
+            Anchor(icon,new Vector2(0,1),new Vector2(0,1),Vector2.zero,new Vector2(110,110),new Vector2(0,1));
+            var detailIcon=Panel("Artwork",icon,null,Color.white).GetComponent<Image>();Stretch(detailIcon.rectTransform,10,10,10,10);detailIcon.preserveAspect=true;
+            var name=Text("Txt_Name",detailHeader,"Chọn thẻ để xem",28,Gold,TextAlignmentOptions.TopLeft);Top(name.rectTransform,130,0,66,0);name.fontStyle=FontStyles.Bold;
+            var type=Text("Txt_Type",detailHeader,"",19,new Color(.75f,.73f,.66f),TextAlignmentOptions.TopLeft);Top(type.rectTransform,130,70,32,0);
+            var star=Text("Txt_StarBadge",detailHeader,"",20,Gold,TextAlignmentOptions.TopLeft);Top(star.rectTransform,130,104,28,0);
+            var rule=Panel("Divider",right,null,new Color(.42f,.34f,.20f));Top(rule,26,176,1,26);
+            var descScroll=Node("ScrollView_Description",right);Stretch(descScroll,26,26,224,192);
+            var descViewport=Panel("Viewport",descScroll,null,Color.clear);Stretch(descViewport);descViewport.GetComponent<Image>().raycastTarget=true;descViewport.gameObject.AddComponent<RectMask2D>();
+            var desc=Text("Txt_Description",descViewport,"Chọn một thẻ bên trái để xem kỹ năng và trang bị.",23,new Color(.89f,.86f,.78f),TextAlignmentOptions.TopLeft);
+            var dr=desc.rectTransform;dr.anchorMin=new Vector2(0,1);dr.anchorMax=Vector2.one;dr.pivot=new Vector2(.5f,1);dr.sizeDelta=Vector2.zero;
+            desc.lineSpacing=10;desc.richText=true;var df=desc.gameObject.AddComponent<ContentSizeFitter>();df.verticalFit=ContentSizeFitter.FitMode.PreferredSize;
+            var ds=descScroll.gameObject.AddComponent<ScrollRect>();ds.horizontal=false;ds.viewport=descViewport;ds.content=dr;ds.movementType=ScrollRect.MovementType.Clamped;
+            var shards=Text("Txt_ShardProgress",right,"",21,new Color(.75f,.79f,.69f),TextAlignmentOptions.MidlineLeft);Bottom(shards.rectTransform,26,26,184,32);
+            var fusion=Button("Btn_AlchemyFusion",right,SpriteAt("Btn_Tab_Wood_Inactive"),"TĂNG SAO",21);Bottom(fusion.GetComponent<RectTransform>(),24,24,114,56);fusion.gameObject.AddComponent<CanvasGroup>();
+            var equip=Button("Btn_EquipLoadout",right,SpriteAt("Btn_Upgrade_Wood_Sub_9Slice"),"TRANG BỊ",26);Bottom(equip.GetComponent<RectTransform>(),24,24,28,72);
+            var status=Text("Txt_EquipStatus",right,"",20,new Color(.70f,.70f,.65f));Bottom(status.rectTransform,24,24,28,72);status.gameObject.SetActive(false);
 
-                root.transform.SetParent(targetParent, false);
-                SetStretchAnchor(rootRT);
+            var so=new SerializedObject(view);
+            Set(so,"_modalContainer",modal);Set(so,"_backButton",close);Set(so,"_dimBackgroundButton",dimButton);Set(so,"_coTienText",coinText);
+            Set(so,"_tabComboButton",buttons[0]);Set(so,"_tabFusionButton",buttons[1]);Set(so,"_tabPassivesButton",buttons[2]);Set(so,"_towerTabButton",buttons[3]);
+            Set(so,"_tabComboBg",buttons[0].GetComponent<Image>());Set(so,"_tabFusionBg",buttons[1].GetComponent<Image>());Set(so,"_tabPassivesBg",buttons[2].GetComponent<Image>());
+            Set(so,"_tabComboTxt",buttons[0].GetComponentInChildren<TextMeshProUGUI>());Set(so,"_tabFusionTxt",buttons[1].GetComponentInChildren<TextMeshProUGUI>());Set(so,"_tabPassivesTxt",buttons[2].GetComponentInChildren<TextMeshProUGUI>());
+            Set(so,"_cardsGridContainer",content);Set(so,"_cardSlotPrefab",card);Set(so,"_detailIcon",detailIcon);Set(so,"_detailName",name);Set(so,"_detailType",type);Set(so,"_detailStarBadge",star);Set(so,"_detailDesc",desc);Set(so,"_detailShardProgress",shards);
+            Set(so,"_alchemyFusionButton",fusion);Set(so,"_fusionButtonText",fusion.GetComponentInChildren<TextMeshProUGUI>());Set(so,"_equipButton",equip);Set(so,"_equipLabel",equip.GetComponentInChildren<TextMeshProUGUI>());equip.GetComponentInChildren<TextMeshProUGUI>().color = new Color(.23f,.14f,.06f);Set(so,"_equipStatus",status);Set(so,"_loadoutSummary",summary);
+            Array(so,"_heroSlots",hero);Array(so,"_relicSlots",relic);Array(so,"_minionSlots",minions);Array(so,"_towerSlots",towers);
+            string[] ids={Defense3DCatalog.HERO_THU_SINH,Defense3DCatalog.RELIC_DEP_TO_ONG,Defense3DCatalog.MINION_DAN_BINH,Defense3DCatalog.MINION_PHU_TAP_DICH,Defense3DCatalog.MINION_THAY_LANG,Defense3DCatalog.TOWER_CUNG_TIEN};
+            string[] paths={"Assets/Art/UI/HeroAvatars/Avatar_Head_ThuSinh.png","Assets/Art/Weapons/Icon_W_SLIPPER.png","Assets/Art/UI/UpgradeIcons/Icon_P001_Damage.png","Assets/Art/UI/UpgradeIcons/Icon_P006_Speed.png","Assets/Art/UI/UpgradeIcons/Icon_P003_Health.png","Assets/Art/UI/UpgradeIcons/Icon_W001_NoThan.png"};
+            var icons=so.FindProperty("_catalogIcons");icons.arraySize=ids.Length;
+            for(int i=0;i<ids.Length;i++){var item=icons.GetArrayElementAtIndex(i);item.FindPropertyRelative("Id").stringValue=ids[i];item.FindPropertyRelative("Icon").objectReferenceValue=i >= 2 ? unitIcons[i-2] : AssetDatabase.LoadAssetAtPath<Sprite>(paths[i]);}
+            so.ApplyModifiedPropertiesWithoutUndo();
+            so=new SerializedObject(layout);Set(so,"_safeArea",safe);Set(so,"_grid",grid);so.ApplyModifiedPropertiesWithoutUndo();
+            so=new SerializedObject(presenter);Set(so,"_view",view);Set(so,"_tabActiveSprite",SpriteAt("Btn_Tab_Wood_Active"));Set(so,"_tabInactiveSprite",SpriteAt("Btn_Tab_Wood_Inactive"));Set(so,"_cardSlotWoodSprite",SpriteAt("Slot_Inventory_Wood_9Slice"));Set(so,"_cardSlotSelectedSprite",SpriteAt("Slot_Inventory_Selected_Glow"));so.ApplyModifiedPropertiesWithoutUndo();
+            foreach (var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)) text.ForceMeshUpdate(true);
+            PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/_Prefabs/UI/CardCodexUI.prefab");
+            var saved=PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/Resources/UI/CardCodexUI.prefab");
+            Object.DestroyImmediate(root.gameObject);EditorSceneManager.ClosePreviewScene(authoringScene);AssetDatabase.SaveAssets();return saved;
+        }
 
-                var metaMgr = Object.FindAnyObjectByType<MetaUIManager>();
-                if (metaMgr != null)
+        // Bake portraits from the actual game prefabs; runtime only reads these sprite assets.
+        private static Sprite[] BuildUnitIcons()
+        {
+            string[] prefabs={"Assets/Art/Minions/Vongxuyen/Prefabs/danbinhVisual.prefab","Assets/Art/Minions/Vongxuyen/Prefabs/phutapdichVisual.prefab","Assets/Art/Minions/Vongxuyen/Prefabs/thaylangVisual.prefab","Assets/Resources/Defense3D/DefenseTower3D.prefab"};
+            string[] names={"DanBinh","PhuTapDich","ThayLang","ThapCungTien"};
+            Directory.CreateDirectory("Assets/Art/UI/Codex");
+            var result=new Sprite[4];
+            for(int i=0;i<4;i++)
+            {
+                string path="Assets/Art/UI/Codex/"+names[i]+".png";
+                if(!File.Exists(path))
                 {
-                    SerializedObject soMeta = new SerializedObject(metaMgr);
-                    var prop = soMeta.FindProperty("_codexScreen");
-                    if (prop != null)
-                    {
-                        prop.objectReferenceValue = view;
-                        soMeta.ApplyModifiedProperties();
-                        EditorUtility.SetDirty(metaMgr);
-                    }
+                    var scene=EditorSceneManager.NewPreviewScene();
+                    var model=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(prefabs[i]),scene);
+                    foreach(var behaviour in model.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled=false;
+                    var renderers=model.GetComponentsInChildren<Renderer>();
+                    var bounds=renderers[0].bounds;foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
+                    var cameraObject=new GameObject("PortraitCamera",typeof(Camera));UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(cameraObject,scene);
+                    var camera=cameraObject.GetComponent<Camera>();camera.scene=scene;camera.overrideSceneCullingMask=EditorSceneManager.GetSceneCullingMask(scene);camera.cameraType=CameraType.Preview;camera.orthographic=true;camera.orthographicSize=Mathf.Max(bounds.extents.y,bounds.extents.x)*1.18f;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.clear;camera.nearClipPlane=.01f;camera.farClipPlane=100;
+                    camera.transform.position=bounds.center+new Vector3(.35f,.2f,-1).normalized*Mathf.Max(5,bounds.size.magnitude*2);camera.transform.LookAt(bounds.center);
+                    var lightObject=new GameObject("PortraitLight",typeof(Light));UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(lightObject,scene);var light=lightObject.GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.4f;lightObject.transform.rotation=Quaternion.Euler(40,-30,0);
+                    var texture=new RenderTexture(256,256,24,RenderTextureFormat.ARGB32);texture.Create();camera.targetTexture=texture;camera.Render();var previous=RenderTexture.active;RenderTexture.active=texture;var output=new Texture2D(256,256,TextureFormat.RGBA32,false);output.ReadPixels(new Rect(0,0,256,256),0,0);output.Apply();RenderTexture.active=previous;camera.targetTexture=null;File.WriteAllBytes(path,output.EncodeToPNG());Object.DestroyImmediate(output);texture.Release();Object.DestroyImmediate(texture);EditorSceneManager.ClosePreviewScene(scene);
+                    AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
+                    var importer=(TextureImporter)AssetImporter.GetAtPath(path);importer.textureType=TextureImporterType.Sprite;importer.spriteImportMode=SpriteImportMode.Single;importer.alphaIsTransparency=true;importer.mipmapEnabled=false;importer.maxTextureSize=256;importer.SaveAndReimport();
                 }
-
-                Debug.Log($"<color=#00FF88>[CardCodexUIGenerator]</color> Đã tạo Prefab Thư Viện Thần Thẻ & Luyện Khí (Codex) và kết nối MetaUIManager thành công 100%!");
+                result[i]=AssetDatabase.LoadAssetAtPath<Sprite>(path);
             }
-            else
+            return result;
+        }
+
+        private static CodexSlotItemView BuildCardPrefab()
+        {
+            var card=CodexSlotItemView.CreateDynamicSlot(null);
+            card.name="CodexCard";
+            var root=(RectTransform)card.transform;root.sizeDelta=new Vector2(190,224);
+            var box=(RectTransform)root.Find("Box");Stretch(box,0,0,70,0);
+            var label=root.Find("Txt_Label").GetComponent<TextMeshProUGUI>();Bottom(label.rectTransform,4,4,0,64);label.fontSize=22;label.enableWordWrapping=true;label.overflowMode=TextOverflowModes.Ellipsis;
+            var inner=box.Find("InnerBg").GetComponent<Image>();inner.color=new Color(.09f,.085f,.07f);
+            var star=box.Find("Badge_Star").GetComponent<TextMeshProUGUI>();star.fontSize=19;star.rectTransform.sizeDelta=new Vector2(70,28);
+            box.Find("Txt_Shards").gameObject.SetActive(false);
+            var equipped=Text("Badge_Equipped",box,"ĐANG DÙNG",16,new Color(.63f,.94f,.72f));Bottom(equipped.rectTransform,4,4,4,26);equipped.gameObject.SetActive(false);
+            var locked=Text("Badge_Locked",box,"KHÓA",16,new Color(.85f,.79f,.67f));Bottom(locked.rectTransform,4,4,4,26);locked.gameObject.SetActive(false);
+            foreach(var text in card.GetComponentsInChildren<TextMeshProUGUI>(true))text.font=Font;
+            var oldButton=box.GetComponent<Button>();Object.DestroyImmediate(oldButton);
+            var hit=card.gameObject.AddComponent<Image>();hit.color=Color.clear;hit.raycastTarget=true;
+            var cardButton=card.gameObject.AddComponent<Button>();cardButton.targetGraphic=box.GetComponent<Image>();
+            var so=new SerializedObject(card);Set(so,"_clickButton",cardButton);Set(so,"_equippedBadgeText",equipped);Set(so,"_lockedBadgeText",locked);so.ApplyModifiedPropertiesWithoutUndo();
+            var saved=PrefabUtility.SaveAsPrefabAsset(card.gameObject,"Assets/_Prefabs/UI/CodexCard.prefab");Object.DestroyImmediate(card.gameObject);return saved.GetComponent<CodexSlotItemView>();
+        }
+        private static CodexLoadoutSlotView[] SlotGroup(RectTransform parent,string name,string title,float min,float max,int count)
+        {
+            var group=Node(name,parent);group.anchorMin=new Vector2(min,0);group.anchorMax=new Vector2(max,1);group.offsetMin=new Vector2(12,12);group.offsetMax=new Vector2(-12,-32);
+            var caption=Text("Caption",group,title,19,new Color(.75f,.73f,.66f),TextAlignmentOptions.MidlineLeft);Top(caption.rectTransform,0,0,28,0);
+            var slots=new CodexLoadoutSlotView[count];
+            for(int i=0;i<count;i++)
             {
-                Object.DestroyImmediate(root);
+                var button=Button("Slot_"+i,group,SpriteAt("Slot_Inventory_Wood_9Slice"),"",18);var rt=button.GetComponent<RectTransform>();rt.anchorMin=new Vector2((float)i/count,0);rt.anchorMax=new Vector2((float)(i+1)/count,1);rt.offsetMin=new Vector2(4,0);rt.offsetMax=new Vector2(-4,-32);
+                Object.DestroyImmediate(button.GetComponentInChildren<TextMeshProUGUI>().gameObject);
+                var image=Panel("Icon",rt,null,Color.white).GetComponent<Image>();Stretch(image.rectTransform,20,20,38,12);image.preserveAspect=true;
+                var empty=Text("Empty",rt,"+",42,new Color(.50f,.45f,.32f));Stretch(empty.rectTransform,4,4,38,8);
+                var label=Text("Name",rt,"Thêm",18,new Color(.90f,.86f,.74f));Bottom(label.rectTransform,6,6,6,32);label.enableAutoSizing=true;label.fontSizeMin=14;label.fontSizeMax=18;label.overflowMode=TextOverflowModes.Ellipsis;
+                var slot=button.gameObject.AddComponent<CodexLoadoutSlotView>();var so=new SerializedObject(slot);Set(so,"_button",button);Set(so,"_icon",image);Set(so,"_name",label);Set(so,"_empty",empty);so.ApplyModifiedPropertiesWithoutUndo();slots[i]=slot;
             }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            return savedPrefab;
+            return slots;
         }
-
-        private static GameObject CreateTabBtn(string name, string label, Transform parent, TMP_FontAsset font, Sprite bgSprite, out Button btn, out Image bgImg, out TextMeshProUGUI txt)
-        {
-            GameObject go = CreateUIElement(name, parent);
-            bgImg = go.AddComponent<Image>();
-            bgImg.type = Image.Type.Sliced;
-            if (bgSprite != null) bgImg.sprite = bgSprite;
-            btn = go.AddComponent<Button>();
-
-            GameObject tObj = CreateUIElement("Text", go.transform);
-            SetStretchAnchor(tObj.GetComponent<RectTransform>());
-            txt = tObj.AddComponent<TextMeshProUGUI>();
-            if (font != null) txt.font = font;
-            txt.text = label;
-            txt.fontSize = 13;
-            txt.fontStyle = FontStyles.Bold;
-            txt.alignment = TextAlignmentOptions.Center;
-            txt.color = new Color(0.98f, 0.88f, 0.50f, 1f);
-            return go;
-        }
-
-        private static GameObject CreateUIElement(string name, Transform parent)
-        {
-            GameObject go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            return go;
-        }
-
-        private static void SetStretchAnchor(RectTransform rt)
-        {
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-        }
-
-        private static TextMeshProUGUI CreateTextMeshPro(GameObject go, TMP_FontAsset font)
-        {
-            var tmp = go.AddComponent<TextMeshProUGUI>();
-            if (font != null) tmp.font = font;
-            return tmp;
-        }
-
-        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/10.1 Cập Nhật Panel_CardCodex Từ Scene Sang Prefab Gốc", priority = 113)]
-        public static void SaveSceneCardCodexToPrefab()
-        {
-            GameObject sceneObj = GameObject.Find("Panel_CardCodex");
-            if (sceneObj == null)
-            {
-                var allPanels = Resources.FindObjectsOfTypeAll<CardCodexView>();
-                foreach (var p in allPanels)
-                {
-                    if (p.gameObject.scene.isLoaded)
-                    {
-                        sceneObj = p.gameObject;
-                        break;
-                    }
-                }
-            }
-
-            if (sceneObj == null)
-            {
-                EditorUtility.DisplayDialog("Thông báo", "Không tìm thấy GameObject 'Panel_CardCodex' đang mở trong Scene hiện tại!", "OK");
-                return;
-            }
-
-            string prefabsDir = "Assets/_Prefabs/UI";
-            string resourcesDir = "Assets/Resources/UI";
-            if (!Directory.Exists(prefabsDir)) Directory.CreateDirectory(prefabsDir);
-            if (!Directory.Exists(resourcesDir)) Directory.CreateDirectory(resourcesDir);
-
-            string path1 = $"{prefabsDir}/CardCodexUI.prefab";
-            string path2 = $"{resourcesDir}/CardCodexUI.prefab";
-
-            PrefabUtility.SaveAsPrefabAssetAndConnect(sceneObj, path1, InteractionMode.UserAction);
-            PrefabUtility.SaveAsPrefabAsset(sceneObj, path2);
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            Debug.Log($"<color=#00FF88>[CardCodexUIGenerator]</color> ĐÃ CẬP NHẬT THÀNH CÔNG Panel_CardCodex từ Scene vào cả 2 Prefab:\n- {path1}\n- {path2}");
-            EditorUtility.DisplayDialog("Hoàn tất", "Đã cập nhật toàn bộ thiết lập Panel_CardCodex từ Scene vào Prefab gốc thành công!", "Tuyệt vời");
-        }
+        private static RectTransform Node(string name,Transform parent){var go=new GameObject(name,typeof(RectTransform));go.transform.SetParent(parent,false);return (RectTransform)go.transform;}
+        private static RectTransform Panel(string name,Transform parent,Sprite sprite,Color color){var rt=Node(name,parent);var img=rt.gameObject.AddComponent<Image>();img.sprite=sprite;img.type=Image.Type.Sliced;img.color=color;img.raycastTarget=false;return rt;}
+        private static TextMeshProUGUI Text(string name,Transform parent,string value,float size,Color color,TextAlignmentOptions align=TextAlignmentOptions.Center){var rt=Node(name,parent);var text=rt.gameObject.AddComponent<TextMeshProUGUI>();text.font=Font;text.text=value;text.fontSize=size;text.color=color;text.alignment=align;text.raycastTarget=false;return text;}
+        private static Button Button(string name,Transform parent,Sprite sprite,string label,float size){var rt=Panel(name,parent,sprite,Color.white);var image=rt.GetComponent<Image>();image.raycastTarget=true;var button=rt.gameObject.AddComponent<Button>();button.targetGraphic=image;var text=Text("Text",rt,label,size,Gold);Stretch(text.rectTransform,10,10,4,4);return button;}
+        private static void Stretch(RectTransform rt,float left=0,float right=0,float bottom=0,float top=0){rt.anchorMin=Vector2.zero;rt.anchorMax=Vector2.one;rt.offsetMin=new Vector2(left,bottom);rt.offsetMax=new Vector2(-right,-top);}
+        private static void Top(RectTransform rt,float left,float top,float height,float right){rt.anchorMin=new Vector2(0,1);rt.anchorMax=Vector2.one;rt.pivot=new Vector2(.5f,1);rt.offsetMin=new Vector2(left,-top-height);rt.offsetMax=new Vector2(-right,-top);}
+        private static void Bottom(RectTransform rt,float left,float right,float bottom,float height){rt.anchorMin=Vector2.zero;rt.anchorMax=new Vector2(1,0);rt.pivot=new Vector2(.5f,0);rt.offsetMin=new Vector2(left,bottom);rt.offsetMax=new Vector2(-right,bottom+height);}
+        private static void Anchor(RectTransform rt,Vector2 min,Vector2 max,Vector2 pos,Vector2 size,Vector2 pivot){rt.anchorMin=min;rt.anchorMax=max;rt.pivot=pivot;rt.anchoredPosition=pos;rt.sizeDelta=size;}
+        private static void Set(SerializedObject so,string name,Object value){so.FindProperty(name).objectReferenceValue=value;}
+        private static void Array(SerializedObject so,string name,CodexLoadoutSlotView[] values){var p=so.FindProperty(name);p.arraySize=values.Length;for(int i=0;i<values.Length;i++)p.GetArrayElementAtIndex(i).objectReferenceValue=values[i];}
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/10.1 Cập Nhật Panel_CardCodex Từ Scene Sang Prefab Gốc",priority=113)]
+        public static void SaveSceneCardCodexToPrefab(){var view=Object.FindAnyObjectByType<CardCodexView>();if(view==null)return;PrefabUtility.SaveAsPrefabAsset(view.gameObject,"Assets/_Prefabs/UI/CardCodexUI.prefab");PrefabUtility.SaveAsPrefabAsset(view.gameObject,"Assets/Resources/UI/CardCodexUI.prefab");AssetDatabase.SaveAssets();}
     }
 }
 #endif

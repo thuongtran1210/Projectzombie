@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 using ProjectZombie.Features.UI.Common;
-using ProjectZombie.Features.UI.HUD;
 
 namespace ProjectZombie.EditorTools
 {
@@ -40,11 +39,7 @@ namespace ProjectZombie.EditorTools
             // Tìm root Top HUD
             GameObject hudRoot = GameObject.Find("UI_RunHUDRoot");
             if (hudRoot == null) hudRoot = GameObject.Find("RunHUD_Root");
-            if (hudRoot == null)
-            {
-                var view = Object.FindAnyObjectByType<RunHUDView>();
-                if (view != null) hudRoot = view.gameObject;
-            }
+            if (hudRoot == null) hudRoot = GameObject.Find("TopHUD");
 
             if (hudRoot == null)
             {

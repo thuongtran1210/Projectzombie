@@ -825,15 +825,10 @@ namespace ProjectZombie.Editor.VFX
                 using (var scope = new PrefabUtility.EditPrefabContentsScope(weaponPrefabPath))
                 {
                     GameObject wRoot = scope.prefabContentsRoot;
-                    var relicComp = wRoot.GetComponent<Relic_SleepingMat>();
+                    var relicComp = wRoot.GetComponent<WeaponBase>();
                     if (relicComp != null)
                     {
-                        SerializedObject so = new SerializedObject(relicComp);
-                        var pMat = so.FindProperty("matVfxPrefab");
-                        if (pMat != null) pMat.objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                        var pSlide = so.FindProperty("slideHitVfxPrefab");
-                        if (pSlide != null) pSlide.objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(slideHitPrefabPath);
-                        so.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(wRoot);
                     }
                 }
                 Debug.Log($"<color=#00FF88>[SlapstickRelicVFXBuilder]</color> 🔗 Đã tự động kết nối VFX vào: {weaponPrefabPath}");
@@ -1091,8 +1086,6 @@ namespace ProjectZombie.Editor.VFX
             var anim = minionRoot.AddComponent<Animator>();
             RuntimeAnimatorController rac = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath);
             if (rac != null) anim.runtimeAnimatorController = rac;
-
-            minionRoot.AddComponent<ChickenMinionCompanion>();
 
             PrefabUtility.SaveAsPrefabAsset(minionRoot, minionPrefabPath);
             Object.DestroyImmediate(minionRoot);
