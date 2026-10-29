@@ -31,6 +31,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public int ProcessedEvents => _scheduler.ProcessedEvents;
         public int TotalEvents => _plan.Events.Count;
+        public int EnemiesDefeatedCount => _planner != null ? _planner.EnemiesDefeatedCount : 0;
 
         public DefenseSpawnRuntime(DefenseStageSpawnPlan plan, DefenseSpawnPlacement3D placement,
             IDefenseGameplayContext gameplay, DefenseBasePrototype3D defenseBase,

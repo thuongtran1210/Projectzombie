@@ -80,9 +80,12 @@ namespace ProjectZombie.Features.Defense3D
             return true;
         }
 
+        public int EnemiesDefeatedCount { get; private set; }
+
         public void NotifyEnemyDefeatedOrRemoved()
         {
             CurrentActiveCount = Math.Max(0, CurrentActiveCount - 1);
+            EnemiesDefeatedCount++;
         }
 
         /// <summary>Expiry is independent of active capacity and queue rotation order.</summary>
@@ -175,6 +178,7 @@ namespace ProjectZombie.Features.Defense3D
             CurrentActiveCount = 0;
             _resetVersion++;
             SpawnedJobCount=ExpiredJobCount=OverflowJobCount=LastPredicateBlocked=LastFactoryFailed=0;
+            EnemiesDefeatedCount = 0;
         }
     }
 }

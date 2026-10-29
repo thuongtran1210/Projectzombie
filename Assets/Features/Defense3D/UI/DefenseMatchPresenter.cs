@@ -384,11 +384,12 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_resultModalView == null || _run == null) return;
 
             int wood = _woodWallet != null ? _woodWallet.CurrentWood : 0;
+            int defeated = _run != null ? _run.EnemiesDefeatedCount : 0;
             var resultData = new DefenseMatchResultData(
                 isWon: isWon,
                 elapsedSeconds: _run.ElapsedTime,
                 woodCollected: wood,
-                enemiesDefeated: 0,
+                enemiesDefeated: defeated,
                 stageId: "STAGE_DEFENSE_3D");
 
             var processed = _resultService.ProcessMatchResult(resultData);

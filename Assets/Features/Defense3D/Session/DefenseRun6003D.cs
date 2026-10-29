@@ -55,6 +55,7 @@ namespace ProjectZombie.Features.Defense3D
         public bool IsOvertime => _session != null && _session.IsOvertime;
         public int ProcessedEventsCount => _spawns != null ? _spawns.ProcessedEvents : 0;
         public int TotalEventsCount => _spawns != null ? _spawns.TotalEvents : 0;
+        public int EnemiesDefeatedCount => _spawns != null ? _spawns.EnemiesDefeatedCount : 0;
         public bool BossSpawned => _encounter != null && _encounter.HasSpawned;
         public bool AssaultStarted => _encounter != null && _encounter.AssaultStarted;
         public DefenseEnemyBridgeWalker3D Yaksha => _encounter != null ? _encounter.Boss : null;
