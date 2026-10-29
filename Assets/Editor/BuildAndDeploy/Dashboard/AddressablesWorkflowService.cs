@@ -217,10 +217,20 @@ namespace ProjectZombie.Editor.BuildAndDeploy.Dashboard
             string exportPath = EditorUtility.SaveFilePanel("Chọn Nơi Lưu File APK", "Builds/Android", $"ProjectZombie_{DateTime.Now:yyyyMMdd_HHmm}.apk", "apk");
             if (string.IsNullOrEmpty(exportPath)) return;
 
-            string buildDir = Path.GetDirectoryName(exportPath);
-            if (!Directory.Exists(buildDir)) Directory.CreateDirectory(buildDir);
-
-            string[] scenes = new string[] { "Assets/Scenes/SampleScene.unity" };
+            var activeScenes = new List<string>();
+            foreach (var scene in EditorBuildSettings.scenes)
+            {
+                if (scene.enabled && !string.IsNullOrEmpty(scene.path))
+                {
+                    activeScenes.Add(scene.path);
+                }
+            }
+            if (activeScenes.Count == 0)
+            {
+                activeScenes.Add("Assets/Scenes/MainMenu.unity");
+                activeScenes.Add("Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity");
+            }
+            string[] scenes = activeScenes.ToArray();
             BuildPlayerOptions buildOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
