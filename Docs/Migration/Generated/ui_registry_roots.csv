@@ -9,3 +9,4 @@
 7,Screen_StageSelect,22310e45ce0f84f40b72db2396a5ccc7,Assets/_Prefabs/UI/StageSelect_Screen.prefab,,RETAIN_AND_ADAPT_REVIEW
 8,Modal_ResourceDownload,3d8a88263f4262844aa43ee634789516,Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab,,RETAIN_AND_ADAPT_REVIEW
 9,Modal_Lobby,1f00869d2dea30a4e83cd608ac1ba2a2,Assets/Resources/UI/LobbyModalUI.prefab,,RETAIN_AND_ADAPT_REVIEW
+10,Modal_DefensePreparation,ee5a99f4a4d74d7429a6c73319bc14e6,Assets/Resources/UI/DefensePreparationUI.prefab,,RETAIN_AND_ADAPT_REVIEW

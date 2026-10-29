@@ -1,99 +1,628 @@
- M Assets/Features/Defense3D/AI/DefenseEnemyAttack3D.cs
- M Assets/Features/Defense3D/AI/DefenseEnemyBridgeWalker3D.cs
- M Assets/Features/Defense3D/AI/DefenseEnemyDrop3D.cs
- M Assets/Features/Defense3D/AI/DefenseEnemyFactory3D.cs
- M Assets/Features/Defense3D/AI/DefenseEnemyPoolManager.cs
- M Assets/Features/Defense3D/AI/DefenseEnemyPrefab3D.cs
- M Assets/Features/Defense3D/AI/DefenseEnemySessionFactory3D.cs
- M Assets/Features/Defense3D/Combat/DefenseConeAttack3D.cs
- M Assets/Features/Defense3D/Combat/DefenseRelicSkillEffect3D.cs
- M Assets/Features/Defense3D/Combat/DefenseScholarSignatureEffect3D.cs
- M Assets/Features/Defense3D/Hero/DefenseHeroAttackEffect3D.cs
- M Assets/Features/Defense3D/Hero/DefenseHeroAutoAttack3D.cs
- M Assets/Features/Defense3D/Hero/DefenseHeroMotor3D.cs
- M Assets/Features/Defense3D/Session/DefenseGameplayBehaviour.cs
- M Assets/Features/Defense3D/Session/DefenseRun6003D.cs
- M Assets/Features/Defense3D/Session/DefenseRuntimeRoots3D.cs
- M Assets/Features/Defense3D/Session/DefenseSceneCompositionRoot.cs
- M Assets/Features/Defense3D/Session/DefenseWoodDrop3D.cs
- M Assets/Features/Defense3D/Session/DefenseWoodDropPool.cs
- M Assets/Features/Defense3D/Village/DefenseVillageShop3D.cs
- M Assets/Features/UI/DamageText/DamageTextItem.cs
- M Assets/Features/UI/DamageText/DamageTextManager.cs
- M Assets/Features/UI/DamageText/DamageTextStyleConfig.cs
- M Assets/Resources/Defense3D/DefenseEnemy_Magiap.prefab
+ D Assets/Art/BatPet.meta
+ D Assets/Art/BatPet/Bat.controller
+ D Assets/Art/BatPet/Bat.controller.meta
+ D Assets/Art/BatPet/Idle.meta
+ D Assets/Art/BatPet/Idle/Idle.anim
+ D Assets/Art/BatPet/Idle/Idle.anim.meta
+ D Assets/Art/BatPet/Idle/SPRT_00.png
+ D Assets/Art/BatPet/Idle/SPRT_00.png.meta
+ D Assets/Art/BatPet/Idle/SPRT_01.png
+ D Assets/Art/BatPet/Idle/SPRT_01.png.meta
+ D Assets/Art/BatPet/Idle/SPRT_02.png
+ D Assets/Art/BatPet/Idle/SPRT_02.png.meta
+ D Assets/Art/BatPet/Idle/SPRT_03.png
+ D Assets/Art/BatPet/Idle/SPRT_03.png.meta
+ D "Assets/Art/Character List.meta"
+ D "Assets/Art/Character List/Character List 1.png"
+ D "Assets/Art/Character List/Character List 1.png.meta"
+ D "Assets/Art/Character List/Character List 3.png"
+ D "Assets/Art/Character List/Character List 3.png.meta"
+ D "Assets/Art/Character List/Character List.jpg"
+ D "Assets/Art/Character List/Character List.jpg.meta"
+ D "Assets/Art/Character List/Character list 2.png"
+ D "Assets/Art/Character List/Character list 2.png.meta"
+ D Assets/Art/Character_Extracted.meta
+ D Assets/Art/GaChoi.meta
+ D Assets/Art/GaChoi/Attack.anim
+ D Assets/Art/GaChoi/Attack.anim.meta
+ D Assets/Art/GaChoi/GaChoi-All.png
+ D Assets/Art/GaChoi/GaChoi-All.png.meta
+ D Assets/Art/GaChoi/GaChoi-Attack.png
+ D Assets/Art/GaChoi/GaChoi-Attack.png.meta
+ D Assets/Art/GaChoi/GaChoi-Idle.png
+ D Assets/Art/GaChoi/GaChoi-Idle.png.meta
+ D Assets/Art/GaChoi/GaChoi-Run.png
+ D Assets/Art/GaChoi/GaChoi-Run.png.meta
+ D Assets/Art/GaChoi/GaChoi.controller
+ D Assets/Art/GaChoi/GaChoi.controller.meta
+ D Assets/Art/GaChoi/Idle.anim
+ D Assets/Art/GaChoi/Idle.anim.meta
+ D Assets/Art/GaChoi/Run.anim
+ D Assets/Art/GaChoi/Run.anim.meta
+ D Assets/Art/HoaHoly.meta
+ D Assets/Art/HoaHoly/Attack.anim
+ D Assets/Art/HoaHoly/Attack.anim.meta
+ D Assets/Art/HoaHoly/Dead.anim
+ D Assets/Art/HoaHoly/Dead.anim.meta
+ D Assets/Art/HoaHoly/HoaLyTinh-Attack.png
+ D Assets/Art/HoaHoly/HoaLyTinh-Attack.png.meta
+ D Assets/Art/HoaHoly/HoaLyTinh-Dead.png
+ D Assets/Art/HoaHoly/HoaLyTinh-Dead.png.meta
+ D Assets/Art/HoaHoly/HoaLyTinh-Idle.png
+ D Assets/Art/HoaHoly/HoaLyTinh-Idle.png.meta
+ D Assets/Art/HoaHoly/HoaLyTinh-Run.png
+ D Assets/Art/HoaHoly/HoaLyTinh-Run.png.meta
+ D Assets/Art/HoaHoly/HoaLyTinh.controller
+ D Assets/Art/HoaHoly/HoaLyTinh.controller.meta
+ D Assets/Art/HoaHoly/Hoaholy-run.png
+ D Assets/Art/HoaHoly/Hoaholy-run.png.meta
+ D Assets/Art/HoaHoly/Idle.anim
+ D Assets/Art/HoaHoly/Idle.anim.meta
+ D Assets/Art/HoaHoly/IndividualFrames.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_0.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_0.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_1.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_1.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_2.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_2.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_3.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_3.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_4.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_4.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_5.png
+ D Assets/Art/HoaHoly/IndividualFrames/Attack_5.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_0.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_0.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_1.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_1.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_2.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_2.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_3.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_3.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_4.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_4.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_5.png
+ D Assets/Art/HoaHoly/IndividualFrames/Dead_5.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_0.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_0.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_1.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_1.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_2.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_2.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_3.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_3.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_4.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_4.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_5.png
+ D Assets/Art/HoaHoly/IndividualFrames/Idle_5.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_0.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_0.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_1.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_1.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_2.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_2.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_3.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_3.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_4.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_4.png.meta
+ D Assets/Art/HoaHoly/IndividualFrames/Run_5.png
+ D Assets/Art/HoaHoly/IndividualFrames/Run_5.png.meta
+ D Assets/Art/HoaHoly/Run.anim
+ D Assets/Art/HoaHoly/Run.anim.meta
+ D Assets/Art/HoaHoly/raw_attack.png
+ D Assets/Art/HoaHoly/raw_attack.png.meta
+ D Assets/Art/HoaHoly/raw_dead.png
+ D Assets/Art/HoaHoly/raw_dead.png.meta
+ D Assets/Art/HoaHoly/raw_idle.png
+ D Assets/Art/HoaHoly/raw_idle.png.meta
+ D Assets/Art/HoaHoly/raw_run.png
+ D Assets/Art/HoaHoly/raw_run.png.meta
+ D Assets/Art/MaTroi.meta
+ D Assets/Art/MaTroi/Attack.anim
+ D Assets/Art/MaTroi/Attack.anim.meta
+ D Assets/Art/MaTroi/Dead.anim
+ D Assets/Art/MaTroi/Dead.anim.meta
+ D Assets/Art/MaTroi/Idle.anim
+ D Assets/Art/MaTroi/Idle.anim.meta
+ D Assets/Art/MaTroi/IndividualFrames.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_0.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_0.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_1.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_1.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_2.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_2.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_3.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_3.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_4.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_4.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Attack_5.png
+ D Assets/Art/MaTroi/IndividualFrames/Attack_5.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_0.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_0.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_1.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_1.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_2.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_2.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_3.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_3.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_4.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_4.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Dead_5.png
+ D Assets/Art/MaTroi/IndividualFrames/Dead_5.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_0.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_0.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_1.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_1.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_2.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_2.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_3.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_3.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_4.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_4.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Idle_5.png
+ D Assets/Art/MaTroi/IndividualFrames/Idle_5.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_0.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_0.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_1.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_1.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_2.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_2.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_3.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_3.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_4.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_4.png.meta
+ D Assets/Art/MaTroi/IndividualFrames/Run_5.png
+ D Assets/Art/MaTroi/IndividualFrames/Run_5.png.meta
+ D Assets/Art/MaTroi/MaTroi-Attack.png
+ D Assets/Art/MaTroi/MaTroi-Attack.png.meta
+ D Assets/Art/MaTroi/MaTroi-Dead.png
+ D Assets/Art/MaTroi/MaTroi-Dead.png.meta
+ D Assets/Art/MaTroi/MaTroi.controller
+ D Assets/Art/MaTroi/MaTroi.controller.meta
+ D Assets/Art/MaTroi/Matroi-Idle.png
+ D Assets/Art/MaTroi/Matroi-Idle.png.meta
+ D Assets/Art/MaTroi/Matroi-Run.png
+ D Assets/Art/MaTroi/Matroi-Run.png.meta
+ D Assets/Art/MaTroi/Run.anim
+ D Assets/Art/MaTroi/Run.anim.meta
+ D Assets/Art/MaTroi/raw_attack.png
+ D Assets/Art/MaTroi/raw_attack.png.meta
+ D Assets/Art/MaTroi/raw_dead.png
+ D Assets/Art/MaTroi/raw_dead.png.meta
+ D Assets/Art/MaTroi/raw_idle.png
+ D Assets/Art/MaTroi/raw_idle.png.meta
+ D Assets/Art/MaTroi/raw_run.png
+ D Assets/Art/MaTroi/raw_run.png.meta
+ D Assets/Art/Mada.meta
+ D Assets/Art/Mada/Attack.anim
+ D Assets/Art/Mada/Attack.anim.meta
+ D Assets/Art/Mada/Dead.anim
+ D Assets/Art/Mada/Dead.anim.meta
+ D Assets/Art/Mada/Idle.anim
+ D Assets/Art/Mada/Idle.anim.meta
+ D Assets/Art/Mada/Mada-Attack.png
+ D Assets/Art/Mada/Mada-Attack.png.meta
+ D Assets/Art/Mada/Mada-Dead.png
+ D Assets/Art/Mada/Mada-Dead.png.meta
+ D Assets/Art/Mada/Mada-Idle.png
+ D Assets/Art/Mada/Mada-Idle.png.meta
+ D Assets/Art/Mada/Mada-run.png
+ D Assets/Art/Mada/Mada-run.png.meta
+ D Assets/Art/Mada/Mada.controller
+ D Assets/Art/Mada/Mada.controller.meta
+ D Assets/Art/Mada/Run.anim
+ D Assets/Art/Mada/Run.anim.meta
+ D Assets/Art/Madoino.meta
+ D Assets/Art/Madoino/Attack.anim
+ D Assets/Art/Madoino/Attack.anim.meta
+ D Assets/Art/Madoino/Dead.anim
+ D Assets/Art/Madoino/Dead.anim.meta
+ D Assets/Art/Madoino/Idle.anim
+ D Assets/Art/Madoino/Idle.anim.meta
+ D Assets/Art/Madoino/Madoino-All.png
+ D Assets/Art/Madoino/Madoino-All.png.meta
+ D Assets/Art/Madoino/Madoino-Attack.png
+ D Assets/Art/Madoino/Madoino-Attack.png.meta
+ D Assets/Art/Madoino/Madoino-Dead.png
+ D Assets/Art/Madoino/Madoino-Dead.png.meta
+ D Assets/Art/Madoino/Madoino-Idle.png
+ D Assets/Art/Madoino/Madoino-Idle.png.meta
+ D Assets/Art/Madoino/Madoino-Run.png
+ D Assets/Art/Madoino/Madoino-Run.png.meta
+ D Assets/Art/Madoino/Madoino.controller
+ D Assets/Art/Madoino/Madoino.controller.meta
+ D Assets/Art/Madoino/Run.anim
+ D Assets/Art/Madoino/Run.anim.meta
+ D Assets/Art/Magiap.meta
+ D Assets/Art/Magiap/Attack.anim
+ D Assets/Art/Magiap/Attack.anim.meta
+ D Assets/Art/Magiap/Dead.anim
+ D Assets/Art/Magiap/Dead.anim.meta
+ D Assets/Art/Magiap/Idle.anim
+ D Assets/Art/Magiap/Idle.anim.meta
+ D Assets/Art/Magiap/Magiap-Attack.png
+ D Assets/Art/Magiap/Magiap-Attack.png.meta
+ D Assets/Art/Magiap/Magiap-Dead.png
+ D Assets/Art/Magiap/Magiap-Dead.png.meta
+ D Assets/Art/Magiap/Magiap-Idle.png
+ D Assets/Art/Magiap/Magiap-Idle.png.meta
+ D Assets/Art/Magiap/Magiap-Run.png
+ D Assets/Art/Magiap/Magiap-Run.png.meta
+ D Assets/Art/Magiap/Magiap.controller
+ D Assets/Art/Magiap/Magiap.controller.meta
+ D Assets/Art/Magiap/Run.anim
+ D Assets/Art/Magiap/Run.anim.meta
+ D Assets/Art/Magiap/attack.png
+ D Assets/Art/Magiap/attack.png.meta
+ D Assets/Art/Magiap/debug_f0_isnet.png
+ D Assets/Art/Magiap/debug_f0_isnet.png.meta
+ D Assets/Art/Magiap/debug_f0_raw.png
+ D Assets/Art/Magiap/debug_f0_raw.png.meta
+ D Assets/Art/Magiap/idle.png
+ D Assets/Art/Magiap/idle.png.meta
+ D Assets/Art/Magiap/run.png
+ D Assets/Art/Magiap/run.png.meta
+ D Assets/Art/Magiap/test_perfect_edge.png
+ D Assets/Art/Magiap/test_perfect_edge.png.meta
+ D Assets/Art/Magiap/test_rembg.png
+ D Assets/Art/Magiap/test_rembg.png.meta
+ D Assets/Art/Magiap/test_solid_filled.png
+ D Assets/Art/Magiap/test_solid_filled.png.meta
+ D Assets/Art/Magiap/test_thresh_100.png
+ D Assets/Art/Magiap/test_thresh_100.png.meta
+ D Assets/Art/Magiap/test_thresh_150.png
+ D Assets/Art/Magiap/test_thresh_150.png.meta
+ D Assets/Art/Magiap/test_thresh_180.png
+ D Assets/Art/Magiap/test_thresh_180.png.meta
+ D Assets/Art/Magiap/test_thresh_200.png
+ D Assets/Art/Magiap/test_thresh_200.png.meta
+ D Assets/Art/NguuDauMaDien.meta
+ D Assets/Art/NguuDauMaDien/Attack.anim
+ D Assets/Art/NguuDauMaDien/Attack.anim.meta
+ D Assets/Art/NguuDauMaDien/Attack.png
+ D Assets/Art/NguuDauMaDien/Attack.png.meta
+ D Assets/Art/NguuDauMaDien/Dash.anim
+ D Assets/Art/NguuDauMaDien/Dash.anim.meta
+ D Assets/Art/NguuDauMaDien/Dash.png
+ D Assets/Art/NguuDauMaDien/Dash.png.meta
+ D Assets/Art/NguuDauMaDien/GroundSlam.anim
+ D Assets/Art/NguuDauMaDien/GroundSlam.anim.meta
+ D Assets/Art/NguuDauMaDien/Idle.anim
+ D Assets/Art/NguuDauMaDien/Idle.anim.meta
+ D Assets/Art/NguuDauMaDien/Idle.png
+ D Assets/Art/NguuDauMaDien/Idle.png.meta
+ D Assets/Art/NguuDauMaDien/NguuDauMaDien.controller
+ D Assets/Art/NguuDauMaDien/NguuDauMaDien.controller.meta
+ D Assets/Art/NguuDauMaDien/Run.anim
+ D Assets/Art/NguuDauMaDien/Run.anim.meta
+ D Assets/Art/NguuDauMaDien/Run.png
+ D Assets/Art/NguuDauMaDien/Run.png.meta
+ D Assets/Art/NguuDauMaDien/Skill.png
+ D Assets/Art/NguuDauMaDien/Skill.png.meta
+ D Assets/Art/Projectiles.meta
+ D Assets/Art/Projectiles/Arrow_NoThan.png
+ D Assets/Art/Projectiles/Arrow_NoThan.png.meta
+ D Assets/Art/Projectiles/Arrow_ThachSanh.png
+ D Assets/Art/Projectiles/Arrow_ThachSanh.png.meta
+ D Assets/Art/Projectiles/Cinnabar_Grenade.png
+ D Assets/Art/Projectiles/Cinnabar_Grenade.png.meta
+ D Assets/Art/Projectiles/DongSon_Wave_Bullet.png
+ D Assets/Art/Projectiles/DongSon_Wave_Bullet.png.meta
+ D Assets/Art/Projectiles/Mada_Water_Orb.png
+ D Assets/Art/Projectiles/Mada_Water_Orb.png.meta
+ D Assets/Art/Projectiles/PhiTieu_BatQuai.png
+ D Assets/Art/Projectiles/PhiTieu_BatQuai.png.meta
+ D Assets/Art/Projectiles/Talisman_MaDa.png
+ D Assets/Art/Projectiles/Talisman_MaDa.png.meta
+ D Assets/Art/Projectiles/buatruyeu.png
+ D Assets/Art/Projectiles/buatruyeu.png.meta
+ D Assets/Art/Projectiles/edited_canvas.png
+ D Assets/Art/Projectiles/edited_canvas.png.meta
+ D Assets/Art/QuyNhapTrang.meta
+ D Assets/Art/QuyNhapTrang/Attack.anim
+ D Assets/Art/QuyNhapTrang/Attack.anim.meta
+ D Assets/Art/QuyNhapTrang/Dead.anim
+ D Assets/Art/QuyNhapTrang/Dead.anim.meta
+ D Assets/Art/QuyNhapTrang/Idle.anim
+ D Assets/Art/QuyNhapTrang/Idle.anim.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_0.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_0.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_1.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_1.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_2.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_2.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_3.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_3.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_4.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_4.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_5.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Attack_5.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_0.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_0.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_1.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_1.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_2.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_2.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_3.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_3.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_4.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_4.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_5.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Dead_5.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_0.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_0.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_1.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_1.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_2.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_2.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_3.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_3.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_4.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_4.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_5.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Idle_5.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_0.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_0.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_1.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_1.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_2.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_2.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_3.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_3.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_4.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_4.png.meta
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_5.png
+ D Assets/Art/QuyNhapTrang/IndividualFrames/Run_5.png.meta
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Attack.png
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Attack.png.meta
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Dead.png
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Dead.png.meta
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Idle.png
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Idle.png.meta
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Run.png
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang-Run.png.meta
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang.controller
+ D Assets/Art/QuyNhapTrang/QuyNhapTrang.controller.meta
+ D Assets/Art/QuyNhapTrang/Run.anim
+ D Assets/Art/QuyNhapTrang/Run.anim.meta
+ D Assets/Features/Player/Camera3DFollower.cs
+ D Assets/Features/Player/Camera3DFollower.cs.meta
+ D Assets/Resources/Tiles.meta
+ D Assets/Resources/Tiles/Tile_0_0.asset
+ D Assets/Resources/Tiles/Tile_0_0.asset.meta
+ D Assets/Resources/Tiles/Tile_0_1.asset
+ D Assets/Resources/Tiles/Tile_0_1.asset.meta
+ D Assets/Resources/Tiles/Tile_0_2.asset
+ D Assets/Resources/Tiles/Tile_0_2.asset.meta
+ D Assets/Resources/Tiles/Tile_0_3.asset
+ D Assets/Resources/Tiles/Tile_0_3.asset.meta
+ D Assets/Resources/Tiles/Tile_0_4.asset
+ D Assets/Resources/Tiles/Tile_0_4.asset.meta
+ D Assets/Resources/Tiles/Tile_0_5.asset
+ D Assets/Resources/Tiles/Tile_0_5.asset.meta
+ D Assets/Resources/Tiles/Tile_0_6.asset
+ D Assets/Resources/Tiles/Tile_0_6.asset.meta
+ D Assets/Resources/Tiles/Tile_0_7.asset
+ D Assets/Resources/Tiles/Tile_0_7.asset.meta
+ D Assets/Resources/Tiles/Tile_1_0.asset
+ D Assets/Resources/Tiles/Tile_1_0.asset.meta
+ D Assets/Resources/Tiles/Tile_1_1.asset
+ D Assets/Resources/Tiles/Tile_1_1.asset.meta
+ D Assets/Resources/Tiles/Tile_1_2.asset
+ D Assets/Resources/Tiles/Tile_1_2.asset.meta
+ D Assets/Resources/Tiles/Tile_1_3.asset
+ D Assets/Resources/Tiles/Tile_1_3.asset.meta
+ D Assets/Resources/Tiles/Tile_1_4.asset
+ D Assets/Resources/Tiles/Tile_1_4.asset.meta
+ D Assets/Resources/Tiles/Tile_1_5.asset
+ D Assets/Resources/Tiles/Tile_1_5.asset.meta
+ D Assets/Resources/Tiles/Tile_1_6.asset
+ D Assets/Resources/Tiles/Tile_1_6.asset.meta
+ D Assets/Resources/Tiles/Tile_1_7.asset
+ D Assets/Resources/Tiles/Tile_1_7.asset.meta
+ D Assets/Resources/Tiles/Tile_2_0.asset
+ D Assets/Resources/Tiles/Tile_2_0.asset.meta
+ D Assets/Resources/Tiles/Tile_2_1.asset
+ D Assets/Resources/Tiles/Tile_2_1.asset.meta
+ D Assets/Resources/Tiles/Tile_2_2.asset
+ D Assets/Resources/Tiles/Tile_2_2.asset.meta
+ D Assets/Resources/Tiles/Tile_2_3.asset
+ D Assets/Resources/Tiles/Tile_2_3.asset.meta
+ D Assets/Resources/Tiles/Tile_2_4.asset
+ D Assets/Resources/Tiles/Tile_2_4.asset.meta
+ D Assets/Resources/Tiles/Tile_2_5.asset
+ D Assets/Resources/Tiles/Tile_2_5.asset.meta
+ D Assets/Resources/Tiles/Tile_2_6.asset
+ D Assets/Resources/Tiles/Tile_2_6.asset.meta
+ D Assets/Resources/Tiles/Tile_2_7.asset
+ D Assets/Resources/Tiles/Tile_2_7.asset.meta
+ D Assets/Resources/Tiles/Tile_3_0.asset
+ D Assets/Resources/Tiles/Tile_3_0.asset.meta
+ D Assets/Resources/Tiles/Tile_3_1.asset
+ D Assets/Resources/Tiles/Tile_3_1.asset.meta
+ D Assets/Resources/Tiles/Tile_3_2.asset
+ D Assets/Resources/Tiles/Tile_3_2.asset.meta
+ D Assets/Resources/Tiles/Tile_3_3.asset
+ D Assets/Resources/Tiles/Tile_3_3.asset.meta
+ D Assets/Resources/Tiles/Tile_3_4.asset
+ D Assets/Resources/Tiles/Tile_3_4.asset.meta
+ D Assets/Resources/Tiles/Tile_3_5.asset
+ D Assets/Resources/Tiles/Tile_3_5.asset.meta
+ D Assets/Resources/Tiles/Tile_3_6.asset
+ D Assets/Resources/Tiles/Tile_3_6.asset.meta
+ D Assets/Resources/Tiles/Tile_3_7.asset
+ D Assets/Resources/Tiles/Tile_3_7.asset.meta
+ D Assets/Resources/Tiles/Tile_4_0.asset
+ D Assets/Resources/Tiles/Tile_4_0.asset.meta
+ D Assets/Resources/Tiles/Tile_4_1.asset
+ D Assets/Resources/Tiles/Tile_4_1.asset.meta
+ D Assets/Resources/Tiles/Tile_4_2.asset
+ D Assets/Resources/Tiles/Tile_4_2.asset.meta
+ D Assets/Resources/Tiles/Tile_4_3.asset
+ D Assets/Resources/Tiles/Tile_4_3.asset.meta
+ D Assets/Resources/Tiles/Tile_4_4.asset
+ D Assets/Resources/Tiles/Tile_4_4.asset.meta
+ D Assets/Resources/Tiles/Tile_4_5.asset
+ D Assets/Resources/Tiles/Tile_4_5.asset.meta
+ D Assets/Resources/Tiles/Tile_4_6.asset
+ D Assets/Resources/Tiles/Tile_4_6.asset.meta
+ D Assets/Resources/Tiles/Tile_4_7.asset
+ D Assets/Resources/Tiles/Tile_4_7.asset.meta
+ D Assets/Resources/Tiles/Tile_5_0.asset
+ D Assets/Resources/Tiles/Tile_5_0.asset.meta
+ D Assets/Resources/Tiles/Tile_5_1.asset
+ D Assets/Resources/Tiles/Tile_5_1.asset.meta
+ D Assets/Resources/Tiles/Tile_5_2.asset
+ D Assets/Resources/Tiles/Tile_5_2.asset.meta
+ D Assets/Resources/Tiles/Tile_5_3.asset
+ D Assets/Resources/Tiles/Tile_5_3.asset.meta
+ D Assets/Resources/Tiles/Tile_5_4.asset
+ D Assets/Resources/Tiles/Tile_5_4.asset.meta
+ D Assets/Resources/Tiles/Tile_5_5.asset
+ D Assets/Resources/Tiles/Tile_5_5.asset.meta
+ D Assets/Resources/Tiles/Tile_5_6.asset
+ D Assets/Resources/Tiles/Tile_5_6.asset.meta
+ D Assets/Resources/Tiles/Tile_5_7.asset
+ D Assets/Resources/Tiles/Tile_5_7.asset.meta
+ D Assets/Resources/Tiles/Tile_6_0.asset
+ D Assets/Resources/Tiles/Tile_6_0.asset.meta
+ D Assets/Resources/Tiles/Tile_6_1.asset
+ D Assets/Resources/Tiles/Tile_6_1.asset.meta
+ D Assets/Resources/Tiles/Tile_6_2.asset
+ D Assets/Resources/Tiles/Tile_6_2.asset.meta
+ D Assets/Resources/Tiles/Tile_6_3.asset
+ D Assets/Resources/Tiles/Tile_6_3.asset.meta
+ D Assets/Resources/Tiles/Tile_6_4.asset
+ D Assets/Resources/Tiles/Tile_6_4.asset.meta
+ D Assets/Resources/Tiles/Tile_6_5.asset
+ D Assets/Resources/Tiles/Tile_6_5.asset.meta
+ D Assets/Resources/Tiles/Tile_6_6.asset
+ D Assets/Resources/Tiles/Tile_6_6.asset.meta
+ D Assets/Resources/Tiles/Tile_6_7.asset
+ D Assets/Resources/Tiles/Tile_6_7.asset.meta
+ D Assets/Resources/Tiles/Tile_7_0.asset
+ D Assets/Resources/Tiles/Tile_7_0.asset.meta
+ D Assets/Resources/Tiles/Tile_7_1.asset
+ D Assets/Resources/Tiles/Tile_7_1.asset.meta
+ D Assets/Resources/Tiles/Tile_7_2.asset
+ D Assets/Resources/Tiles/Tile_7_2.asset.meta
+ D Assets/Resources/Tiles/Tile_7_3.asset
+ D Assets/Resources/Tiles/Tile_7_3.asset.meta
+ D Assets/Resources/Tiles/Tile_7_4.asset
+ D Assets/Resources/Tiles/Tile_7_4.asset.meta
+ D Assets/Resources/Tiles/Tile_7_5.asset
+ D Assets/Resources/Tiles/Tile_7_5.asset.meta
+ D Assets/Resources/Tiles/Tile_7_6.asset
+ D Assets/Resources/Tiles/Tile_7_6.asset.meta
+ D Assets/Resources/Tiles/Tile_7_7.asset
+ D Assets/Resources/Tiles/Tile_7_7.asset.meta
+ M Assets/Resources/UI/MainHubUI.prefab
  M Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity
- M Assets/Shaders/VFX/DefenseCombatLine.shader
- M README.md
-?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackEvents.cs
-?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackEvents.cs.meta
-?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackPoints.cs
-?? Assets/Features/Defense3D/Combat/DefenseAttackFeedbackPoints.cs.meta
-?? Assets/Features/Defense3D/Combat/DefenseDashFeedbackEvents.cs
-?? Assets/Features/Defense3D/Combat/DefenseDashFeedbackEvents.cs.meta
-?? Assets/Features/Defense3D/Combat/DefensePresentationSignal.cs
-?? Assets/Features/Defense3D/Combat/DefensePresentationSignal.cs.meta
-?? Assets/Features/Defense3D/Combat/DefenseSignatureFeedbackEvents.cs
-?? Assets/Features/Defense3D/Combat/DefenseSignatureFeedbackEvents.cs.meta
-?? Assets/Features/Defense3D/Effects.meta
-?? Assets/Features/Defense3D/Effects/
-?? Assets/Features/Defense3D/Pooling.meta
-?? Assets/Features/Defense3D/Pooling/
-?? Assets/Features/Defense3D/UI/DefenseCombatTextAdapter.cs
-?? Assets/Features/Defense3D/UI/DefenseCombatTextAdapter.cs.meta
-?? Assets/Features/UI/DamageText/CombatTextLeases.cs
-?? Assets/Features/UI/DamageText/CombatTextLeases.cs.meta
-?? Assets/Features/UI/DamageText/CombatTextRequest.cs
-?? Assets/Features/UI/DamageText/CombatTextRequest.cs.meta
-?? Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs
-?? Assets/Features/UI/DamageText/LegacyDamageTextAdapter.cs.meta
-?? Assets/Resources/Defense3D/Players.meta
-?? Assets/Resources/UI/CombatText.meta
-?? Assets/Resources/UI/CombatText/
-?? Assets/Shaders/VFX/DefenseHitSpark.shader
-?? Assets/Shaders/VFX/DefenseHitSpark.shader.meta
-?? Assets/Shaders/VFX/DefenseScholarSeal.shader
-?? Assets/Shaders/VFX/DefenseScholarSeal.shader.meta
-?? Assets/Tests/Editor/CombatTextTests.cs
-?? Assets/Tests/Editor/CombatTextTests.cs.meta
-?? Assets/Tests/Editor/DefenseAttackFeedbackTests.cs
-?? Assets/Tests/Editor/DefenseAttackFeedbackTests.cs.meta
-?? Assets/Tests/Editor/DefenseBasicAttackAuthoringTests.cs
-?? Assets/Tests/Editor/DefenseBasicAttackAuthoringTests.cs.meta
-?? Assets/Tests/Editor/DefenseBasicAttackGameplayTests.cs
-?? Assets/Tests/Editor/DefenseBasicAttackGameplayTests.cs.meta
-?? Assets/Tests/Editor/DefenseDashAuthoringTests.cs
-?? Assets/Tests/Editor/DefenseDashAuthoringTests.cs.meta
-?? Assets/Tests/Editor/DefenseDashFeedbackTests.cs
-?? Assets/Tests/Editor/DefenseDashFeedbackTests.cs.meta
-?? Assets/Tests/Editor/DefenseDashMotorTests.cs
-?? Assets/Tests/Editor/DefenseDashMotorTests.cs.meta
-?? Assets/Tests/Editor/DefenseEffectAuthoringTests.cs
-?? Assets/Tests/Editor/DefenseEffectAuthoringTests.cs.meta
-?? Assets/Tests/Editor/DefensePoolLifecycleTests.cs
-?? Assets/Tests/Editor/DefensePoolLifecycleTests.cs.meta
-?? Assets/Tests/Editor/DefenseRelicPresentationTests.cs
-?? Assets/Tests/Editor/DefenseRelicPresentationTests.cs.meta
-?? Assets/Tests/Editor/DefenseScholarSignatureGameplayTests.cs
-?? Assets/Tests/Editor/DefenseScholarSignatureGameplayTests.cs.meta
-?? Assets/Tests/Editor/DefenseSignatureAuthoringTests.cs
-?? Assets/Tests/Editor/DefenseSignatureAuthoringTests.cs.meta
-?? Assets/Tests/Editor/DefenseSignatureFeedbackTests.cs
-?? Assets/Tests/Editor/DefenseSignatureFeedbackTests.cs.meta
-?? Assets/Tests/Editor/DefenseSignatureInterruptionTests.cs
-?? Assets/Tests/Editor/DefenseSignatureInterruptionTests.cs.meta
-?? Assets/Tests/Editor/DefenseTestAbilitySource.cs
-?? Assets/Tests/Editor/DefenseTestAbilitySource.cs.meta
-?? Assets/Tests/Editor/OwnedPoolTests.cs
-?? Assets/Tests/Editor/OwnedPoolTests.cs.meta
-?? Assets/Tests/Editor/VongXuyenCombatTextAssetTests.cs
-?? Assets/Tests/Editor/VongXuyenCombatTextAssetTests.cs.meta
-?? Docs/COMBAT_TEXT_INTEGRATION.md
-?? Docs/DEFENSE3D_BASIC_ATTACK_EFFECTS.md
-?? Docs/DEFENSE3D_DASH_EFFECTS.md
-?? Docs/DEFENSE3D_GAMEPLAY_MIGRATION_PLAN.md
-?? Docs/DEFENSE3D_POOL_AND_EFFECTS.md
-?? Docs/DEFENSE3D_SCHOLAR_SIGNATURE_EFFECTS.md
-?? Docs/Migration/
-?? MIGRATION_STATUS.md
-?? Tools/Audits/
+ D Assets/_Data/Arena.meta
+ D Assets/_Data/Arena/AdaptiveCameraView.cs
+ D Assets/_Data/Arena/AdaptiveCameraView.cs.meta
+ D Assets/_Data/Arena/CameraFollow.cs
+ D Assets/_Data/Arena/CameraFollow.cs.meta
+ D Assets/_Data/Character.meta
+ D Assets/_Data/Character/StreamerBaseStats.asset
+ D Assets/_Data/Character/StreamerBaseStats.asset.meta
+ D Assets/_Data/Projectiles.meta
+ D Assets/_Data/Projectiles/Behavior.meta
+ D Assets/_Data/Projectiles/Behavior/HomingBehaviorData.asset
+ D Assets/_Data/Projectiles/Behavior/HomingBehaviorData.asset.meta
+ D Assets/_Data/Projectiles/Behavior/PierceBehaviorData.asset
+ D Assets/_Data/Projectiles/Behavior/PierceBehaviorData.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W001_Pierce.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W001_Pierce.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W001_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W001_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W002_SlashHit.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W002_SlashHit.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W003_Orbit.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W003_Orbit.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W003_Pierce.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W003_Pierce.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W004_Homing.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W004_Homing.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W004_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W004_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W005_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W005_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W006_Explosion.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W006_Explosion.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W006_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W006_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W007_Pierce.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W007_Pierce.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W007_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W007_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W008_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W008_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W008_StreamHit.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W008_StreamHit.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W009_Bounce.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W009_Bounce.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W009_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W009_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W010_PoisonHit.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W010_PoisonHit.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W011_WellHit.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W011_WellHit.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_CurvedBoomerang.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_CurvedBoomerang.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_Pierce.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_Pierce.asset.meta
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_Straight.asset
+ D Assets/_Data/Projectiles/Behavior/Proj_W012_Straight.asset.meta
+ D Assets/_Data/Projectiles/Behavior/SplitBehaviorData.asset
+ D Assets/_Data/Projectiles/Behavior/SplitBehaviorData.asset.meta
+ D Assets/_Data/Projectiles/Behavior/VampiricBehaviorData.asset
+ D Assets/_Data/Projectiles/Behavior/VampiricBehaviorData.asset.meta
+ D Assets/_Data/Projectiles/Data.meta
+ D Assets/_Data/Projectiles/Data/Proj_E_MADA_NuocDoc.asset
+ D Assets/_Data/Projectiles/Data/Proj_E_MADA_NuocDoc.asset.meta
+ D "Assets/_Data/Projectiles/Data/Proj_W001_N\341\273\217.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W001_N\341\273\217.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W002_B\303\272t.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W002_B\303\272t.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W003_B\303\271a.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W003_B\303\271a.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W004_C\341\273\255u.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W004_C\341\273\255u.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W005_Tr\341\273\221ng.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W005_Tr\341\273\221ng.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W006_L\341\273\261u.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W006_L\341\273\261u.asset.meta"
+ D Assets/_Data/Projectiles/Data/Proj_W007_Cung.asset
+ D Assets/_Data/Projectiles/Data/Proj_W007_Cung.asset.meta
+ D "Assets/_Data/Projectiles/Data/Proj_W008_\304\220ao.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W008_\304\220ao.asset.meta"
+ D "Assets/_Data/Projectiles/Data/Proj_W009_Tr\306\260\341\273\243ng.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W009_Tr\306\260\341\273\243ng.asset.meta"
+ D Assets/_Data/Projectiles/Data/Proj_W010_Linh.asset
+ D Assets/_Data/Projectiles/Data/Proj_W010_Linh.asset.meta
+ D "Assets/_Data/Projectiles/Data/Proj_W011_N\306\260\341\273\233c.asset"
+ D "Assets/_Data/Projectiles/Data/Proj_W011_N\306\260\341\273\233c.asset.meta"
+ D Assets/_Data/Projectiles/Data/Proj_W012_Phi.asset
+ D Assets/_Data/Projectiles/Data/Proj_W012_Phi.asset.meta
+ D "Assets/_Data/Text Style.meta"
+ D "Assets/_Data/Text Style/DamageTextStyleConfig.asset"
+ D "Assets/_Data/Text Style/DamageTextStyleConfig.asset.meta"
+ D Assets/_Prefabs/Skills.meta
+ D Assets/_Prefabs/Skills/BatQuaiTranZone.prefab
+ D Assets/_Prefabs/Skills/BatQuaiTranZone.prefab.meta
+ M Docs/Migration/Generated/addressables.csv
+ M Docs/Migration/Generated/assets.csv
+ M Docs/Migration/Generated/dynamic_load_sites.csv
+ M Docs/Migration/Generated/guid_edges.csv
+ M Docs/Migration/Generated/legacy_symbol_sites.csv
+ M Docs/Migration/Generated/roots.csv
+ M Docs/Migration/Generated/scene_components.csv
+ M Docs/Migration/Generated/summary.json
+ M Docs/Migration/Generated/ui_registry_roots.csv
+ M Docs/Migration/Generated/working_tree_at_scan.txt
+ M Docs/Migration/README.md
+?? Assets/Core/Camera/
+?? Assets/_Data/CharacterS/StreamerBaseStats.asset
+?? Assets/_Data/CharacterS/StreamerBaseStats.asset.meta
