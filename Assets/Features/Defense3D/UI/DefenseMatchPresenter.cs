@@ -18,6 +18,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         [Header("Scene References")]
         [SerializeField] private DefenseRun6003D _run;
         [SerializeField] private DefenseWoodWallet3D _woodWallet;
+        [SerializeField] private DefenseTowerBuildPrototype3D _towerBuilder;
 
         private DefenseExperienceCore _experienceCore;
         private DefenseUpgradeDeck _upgradeDeck;
@@ -270,6 +271,40 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _lastBossMaxHp = -1;
                 _lastBossPhase = null;
                 _hudView.SetBossHealth(false, 0, 1, string.Empty);
+            }
+
+            // 8. Tương tác Xây Tháp & Nâng Cấp tại 10 Socket (Mobile Touch & PC)
+            if (_towerBuilder == null && _run != null)
+            {
+                _towerBuilder = _run.GetComponentInChildren<DefenseTowerBuildPrototype3D>() ?? FindObjectOfType<DefenseTowerBuildPrototype3D>();
+            }
+
+            if (_towerBuilder != null)
+            {
+                int socket = _towerBuilder.NearestSocket;
+                if (socket >= 0)
+                {
+                    var tower = _towerBuilder.NearestTower;
+                    bool isBuilt = tower != null && tower.gameObject.activeSelf;
+                    if (!isBuilt)
+                    {
+                        int cost = tower != null && tower.BuildCost > 0 ? tower.BuildCost : _towerBuilder.BuildCost;
+                        _hudView.SetBuildPrompt(true, $"XÂY THÁP ({cost} GỖ)", () => _towerBuilder.TryBuildNearest());
+                    }
+                    else if (tower.Level < 3)
+                    {
+                        int cost = tower.UpgradeCost;
+                        _hudView.SetBuildPrompt(true, $"NÂNG CẤP LV.{tower.Level + 1} ({cost} GỖ)", () => _towerBuilder.TryUpgradeNearest());
+                    }
+                    else
+                    {
+                        _hudView.SetBuildPrompt(true, "THÁP TỐI ĐA (LV.3)", null);
+                    }
+                }
+                else
+                {
+                    _hudView.SetBuildPrompt(false);
+                }
             }
         }
 

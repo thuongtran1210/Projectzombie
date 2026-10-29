@@ -8,6 +8,9 @@ namespace ProjectZombie.Features.Defense3D
         public readonly float X, Y, Z;
         public DefensePoint3(float x, float y, float z) { X = x; Y = y; Z = z; }
         public bool IsFinite => DefenseDamageRules.IsFinite(X) && DefenseDamageRules.IsFinite(Y) && DefenseDamageRules.IsFinite(Z);
+
+        public static implicit operator DefensePoint3(UnityEngine.Vector3 v) => new DefensePoint3(v.x, v.y, v.z);
+        public static implicit operator UnityEngine.Vector3(DefensePoint3 p) => new UnityEngine.Vector3(p.X, p.Y, p.Z);
     }
 
     /// <summary>Damage payload; scoped production requests reject old runs and foreign sessions.</summary>

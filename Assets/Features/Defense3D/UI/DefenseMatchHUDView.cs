@@ -77,17 +77,43 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_expLevelText != null) _expLevelText.text = formattedExp;
         }
 
-        public void SetBossHealth(bool visible, float current, float max, string formattedText)
-        {
-            if (_bossHealthRoot != null) _bossHealthRoot.SetActive(visible);
-            if (!visible) return;
+        [Header("Tương Tác Xây Tháp (Mobile & PC)")]
+        [Tooltip("Root GameObject chứa cụm nút bấm tương tác Xây / Nâng cấp tháp")]
+        [SerializeField] private GameObject _buildPromptRoot;
+        [Tooltip("Nút bấm cảm ứng để Xây hoặc Nâng cấp tháp trên di động")]
+        [SerializeField] private Button _buildButton;
+        [Tooltip("Nhãn chữ hiển thị chi phí và hành vi: 'Xây Tháp (50 Gỗ)' hoặc 'Nâng Cấp (40 Gỗ)'")]
+        [SerializeField] private TextMeshProUGUI _buildActionText;
 
-            if (_bossHealthSlider != null)
+        private System.Action _currentBuildAction;
+
+        private void Awake()
+        {
+            if (_buildButton != null)
             {
-                _bossHealthSlider.maxValue = Mathf.Max(1f, max);
-                _bossHealthSlider.value = Mathf.Clamp(current, 0f, max);
+                _buildButton.onClick.AddListener(() => _currentBuildAction?.Invoke());
             }
-            if (_bossHealthText != null) _bossHealthText.text = formattedText;
+            if (_buildPromptRoot != null)
+            {
+                _buildPromptRoot.SetActive(false);
+            }
+        }
+
+        public void SetBuildPrompt(bool visible, string actionText = null, System.Action onAction = null)
+        {
+            _currentBuildAction = onAction;
+            if (_buildPromptRoot != null)
+            {
+                _buildPromptRoot.SetActive(visible);
+            }
+            if (_buildActionText != null && !string.IsNullOrEmpty(actionText))
+            {
+                _buildActionText.text = actionText;
+            }
+            if (_buildButton != null)
+            {
+                _buildButton.interactable = onAction != null;
+            }
         }
     }
 }

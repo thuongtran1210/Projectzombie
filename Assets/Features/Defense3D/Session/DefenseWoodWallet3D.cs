@@ -12,7 +12,7 @@ namespace ProjectZombie.Features.Defense3D
     {
         [Header("=== THÔNG SỐ KHO TÀI NGUYÊN GỖ ===")]
         [Tooltip("Số Gỗ khởi điểm người chơi nhận được ngay khi trận đấu bắt đầu (Mặc định: 100 Gỗ để xây tháp đầu tiên)")]
-        [SerializeField, Min(0)] private int startingWood = 0;
+        [SerializeField, Min(0)] private int startingWood = 100;
 
         [Header("── EVENT CHANNELS (Kênh Sự Kiện Decoupling) ──")]
         [Tooltip("Kênh sự kiện phát ra số lượng Gỗ hiện tại để HUD hiển thị")]
