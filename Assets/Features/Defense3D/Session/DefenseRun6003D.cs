@@ -10,6 +10,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
         [SerializeField] private DefenseBasePrototype3D defenseBase;
         [SerializeField] private StageSpawnConfig stageSpawnConfig;
+        [SerializeField] private DefenseStageBlueprintSO stageBlueprint;
         [SerializeField] private UI.DefenseMatchPresenter matchUI;
         [SerializeField] private DefenseTowerBuildPrototype3D towerBuilder;
         [SerializeField] private bool showDebugOverlay;
@@ -46,8 +47,8 @@ namespace ProjectZombie.Features.Defense3D
             try
             {
                 if (session == null || wallet == null || sceneInfo == null || sceneInfo.HeroSpawn == null ||
-                    sceneInfo.EastEnemySpawn == null || defenseBase == null || matchUI == null || stageSpawnConfig == null)
-                    throw new InvalidOperationException("Assign Session, Wallet, SceneInfo, Hero, Base, Match UI and Stage Spawn Config.");
+                    sceneInfo.EastEnemySpawn == null || defenseBase == null || matchUI == null || (stageSpawnConfig == null && stageBlueprint == null))
+                    throw new InvalidOperationException("Assign Session, Wallet, SceneInfo, Hero, Base, Match UI and Stage Spawn Config or Stage Blueprint.");
                 _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
                 if (_heroHealth == null) throw new InvalidOperationException("Hero requires DefenseHeroHealth3D.");
                 if (_runtimeRoots == null || _runtimeRoots.gameObject.scene != gameObject.scene)
@@ -55,7 +56,7 @@ namespace ProjectZombie.Features.Defense3D
                 _runtimeRoots.ValidateBindings();
                 if (effects != null && (_enemyAttackStyle == null || !_enemyAttackStyle.IsValid))
                     throw new InvalidOperationException("Assign valid enemy basic-attack VFX profiles.");
-                var plan = stageSpawnConfig.Compile();
+                var plan = stageBlueprint != null ? stageBlueprint.Compile() : stageSpawnConfig.Compile();
                 _spawnWarnings?.Configure(plan, sceneInfo.EastEnemySpawn);
                 _encounter = new DefenseYakshaEncounter3D(session, defenseBase, _heroHealth, plan.ArenaDuration, plan.BossHealth);
                 var placement = new DefenseSpawnPlacement3D(plan, sceneInfo.EastEnemySpawn, sceneInfo.HeroSpawn,defenseBase.transform,_runtimeRoots.WaterNavigation,_runtimeRoots.AirNavigation);
