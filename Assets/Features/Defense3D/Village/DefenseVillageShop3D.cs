@@ -45,6 +45,26 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseMinionOrder Order(int role) => _orders[role];
 
         private System.Collections.Generic.HashSet<int> _allowedRoles;
+        private readonly float[] _roleHpMultipliers = { 1f, 1f, 1f };
+        private readonly float[] _roleSpeedMultipliers = { 1f, 1f, 1f };
+
+        public void SetRoleStatMultipliers(int role, float hpMultiplier, float speedMultiplier)
+        {
+            if (role < 0 || role >= 3) return;
+            _roleHpMultipliers[role] = Mathf.Max(0.1f, hpMultiplier);
+            _roleSpeedMultipliers[role] = Mathf.Max(0.1f, speedMultiplier);
+            if (_slots != null)
+            {
+                for (int i = 0; i < _slots.Length; i++)
+                {
+                    var unit = _slots[i];
+                    if (unit != null && unit.Definition != null && (int)unit.Definition.Role == role)
+                    {
+                        unit.ApplyMetaMultipliers(_roleHpMultipliers[role], _roleSpeedMultipliers[role]);
+                    }
+                }
+            }
+        }
 
         /// <summary>Cấu hình danh sách vai trò lính được phép tuyển mộ theo đội hình Loadout đã chọn.</summary>
         public void SetAllowedRoles(System.Collections.Generic.IEnumerable<int> allowedRoles)

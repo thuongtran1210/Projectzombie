@@ -98,6 +98,49 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         /// Hỗ trợ cả 4 Anh Hùng: Thư Sinh, Đạo Sĩ, Thanh Đồng, Ẩn Sĩ.
         /// Nếu ID rỗng hoặc chưa được hỗ trợ trong Defense 3D, tự động fallback về tướng mặc định (Thư Sinh).
         /// </summary>
+        public static bool TryMapHeroId(string rawId, out string defenseHeroId)
+        {
+            defenseHeroId = null;
+            if (string.IsNullOrWhiteSpace(rawId)) return false;
+            string clean = rawId.Trim();
+            if (ThuSinhAliases.Contains(clean)) { defenseHeroId = Defense3DCatalog.HERO_THU_SINH; return true; }
+            if (DaoSiAliases.Contains(clean)) { defenseHeroId = Defense3DCatalog.HERO_DAO_SI; return true; }
+            if (ThanhDongAliases.Contains(clean)) { defenseHeroId = Defense3DCatalog.HERO_THANH_DONG; return true; }
+            if (AnSiAliases.Contains(clean)) { defenseHeroId = Defense3DCatalog.HERO_AN_SI; return true; }
+            return false;
+        }
+
+        public static bool TryMapRelicId(string rawId, out string defenseRelicId)
+        {
+            defenseRelicId = null;
+            if (string.IsNullOrWhiteSpace(rawId)) return false;
+            if (DepToOngAliases.Contains(rawId.Trim()))
+            {
+                defenseRelicId = Defense3DCatalog.RELIC_DEP_TO_ONG;
+                return true;
+            }
+            return false;
+        }
+
+        public static string GetMetaCharacterId(string heroId)
+        {
+            if (!TryMapHeroId(heroId, out string mapped)) return null;
+            if (string.Equals(mapped, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase)) return "C001_ThuSinh";
+            if (string.Equals(mapped, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase)) return "C002_DaoSi";
+            if (string.Equals(mapped, Defense3DCatalog.HERO_THANH_DONG, StringComparison.OrdinalIgnoreCase)) return "C003_ThanhDong";
+            if (string.Equals(mapped, Defense3DCatalog.HERO_AN_SI, StringComparison.OrdinalIgnoreCase)) return "C004_AnSi";
+            return null;
+        }
+
+        public static string[] GetMetaRelicAliases(string relicId)
+        {
+            if (TryMapRelicId(relicId, out _))
+            {
+                return new[] { "R001_Deptoong", "R001", "wp_kiem_truc", Defense3DCatalog.RELIC_DEP_TO_ONG };
+            }
+            return new[] { relicId };
+        }
+
         public static string MapHeroId(string legacyHeroId)
         {
             if (!string.IsNullOrWhiteSpace(legacyHeroId))

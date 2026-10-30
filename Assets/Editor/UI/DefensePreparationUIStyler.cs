@@ -85,9 +85,9 @@ namespace ProjectZombie.Editor.UI
             for(int i=0;i<4;i++)frame.Find(cards[i]+"/"+pills[i]).GetComponentInChildren<TextMeshProUGUI>().color=DarkText;
             var title=frame.Find("Banner_Header/Txt_Title").GetComponent<TextMeshProUGUI>();title.text="ĐỘI HÌNH XUẤT TRẬN";title.fontSize=36;title.color=new Color(.96f,.82f,.48f);
             frame.Find("Txt_Subtitle").GetComponent<TextMeshProUGUI>().text="Kiểm tra và tùy chỉnh đội hình trước khi bắt đầu.";
-            frame.Find("Card_Hero/Txt_HeroName").GetComponent<TextMeshProUGUI>().text="Thư Sinh <color=#FFD700>[1★]</color>";
+            frame.Find("Card_Hero/Txt_HeroName").GetComponent<TextMeshProUGUI>().text="Thư Sinh <color=#FFD700>[1 Sao]</color>";
             frame.Find("Card_Hero/Txt_HeroRole").GetComponent<TextMeshProUGUI>().text="<color=#00FF88>Máu:</color> <b>200</b>  <color=#FFD700>Công:</color> <b>30</b>  <color=#00E5FF>Tốc:</color> <b>5.5</b>";
-            frame.Find("Card_Relic/Txt_RelicName").GetComponent<TextMeshProUGUI>().text="Dép Tổ Ong <color=#FFD700>[1★]</color>";
+            frame.Find("Card_Relic/Txt_RelicName").GetComponent<TextMeshProUGUI>().text="Dép Tổ Ong <color=#FFD700>[1 Sao]</color>";
             frame.Find("Card_Relic/Txt_RelicDesc").GetComponent<TextMeshProUGUI>().text="Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.";
             frame.Find("Txt_ValidationMessage").GetComponent<TextMeshProUGUI>().text="Đội hình sẵn sàng xuất trận.";
             frame.Find("Txt_ValidationMessage").GetComponent<TextMeshProUGUI>().color=new Color(.63f,.80f,.66f);

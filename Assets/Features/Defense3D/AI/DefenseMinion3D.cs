@@ -19,6 +19,14 @@ namespace ProjectZombie.Features.Defense3D
         private Vector3 _bodyOrigin;
         private Quaternion[] _legRotations;
         private float _nextThink, _nextAction, _walkTime;
+        private float _metaHpMultiplier = 1f;
+        private float _metaSpeedMultiplier = 1f;
+
+        public void ApplyMetaMultipliers(float hpMultiplier, float speedMultiplier)
+        {
+            _metaHpMultiplier = Mathf.Max(0.1f, hpMultiplier);
+            _metaSpeedMultiplier = Mathf.Max(0.1f, speedMultiplier);
+        }
         private int _cargo, _combo;
         private bool _bound;
         public DefenseMinionDefinitionSO Definition => _definition;
@@ -63,10 +71,11 @@ namespace ProjectZombie.Features.Defense3D
             _walkTime = 0f;
             FormationOffset = new Vector3(-(index / 3 % 3) * .45f, 0f, (index % 3 - 1) * .8f);
             transform.position = point;
+            if (_definition != null && _definition.MaxHp > 0f) _health.ConfigureCapacity(_definition.MaxHp * _metaHpMultiplier);
             _health.ResetForRecruit();
             gameObject.SetActive(true);
             _agent.enabled = true;
-            _agent.speed = _definition.Speed;
+            _agent.speed = _definition.Speed * _metaSpeedMultiplier;
             if (!_agent.Warp(point)) { Retire(); return false; }
             _agent.isStopped = false;
             return true;

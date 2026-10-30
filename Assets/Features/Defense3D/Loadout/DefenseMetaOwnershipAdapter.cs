@@ -19,11 +19,11 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         }
 
         /// <summary>
-        /// Tạo Ownership Adapter mặc định sở hữu toàn bộ 6 thực thể nền tảng của Defense 3D.
+        /// Tạo adapter giữ các quyền cấp sẵn và đọc tiến trình từ save được truyền vào.
         /// </summary>
-        public static DefenseMetaOwnershipAdapter CreateDefault()
+        public static DefenseMetaOwnershipAdapter CreateDefault(MetaProgressionSaveData saveData = null)
         {
-            var adapter = new DefenseMetaOwnershipAdapter(null);
+            var adapter = new DefenseMetaOwnershipAdapter(saveData);
             adapter.GrantBaseline();
             return adapter;
         }
@@ -35,7 +35,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         {
             if (!string.IsNullOrWhiteSpace(id))
             {
-                _explicitOwnedIds.Add(id.Trim());
+                _explicitOwnedIds.Add(NormalizeId(id));
             }
         }
 
@@ -56,7 +56,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         {
             if (string.IsNullOrWhiteSpace(id)) return false;
 
-            id = id.Trim();
+            id = NormalizeId(id);
 
             // 1. Kiểm tra danh sách được cấp quyền rõ ràng
             if (_explicitOwnedIds.Contains(id)) return true;
@@ -72,7 +72,11 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             if (string.Equals(id, Defense3DCatalog.MINION_THAY_LANG, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.TOWER_CUNG_TIEN, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.TOWER_BANG_HA, StringComparison.OrdinalIgnoreCase)) return true;
-            if (_saveData?.unlockedTowerIds != null && _saveData.unlockedTowerIds.Contains(id)) return true;
+            if (_saveData?.unlockedTowerIds != null)
+            {
+                foreach (string towerId in _saveData.unlockedTowerIds)
+                    if (string.Equals(NormalizeId(towerId), id, StringComparison.OrdinalIgnoreCase)) return true;
+            }
 
             // 3. Nếu có MetaProgressionSaveData, kiểm tra danh sách unlock cũ
             if (_saveData != null)
@@ -83,20 +87,28 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                     foreach (var charId in _saveData.unlockedCharacters)
                     {
                         if (string.IsNullOrWhiteSpace(charId)) continue;
-                        if (string.Equals(DefenseLoadoutIdMapper.MapHeroId(charId), id, StringComparison.OrdinalIgnoreCase))
+                        if (DefenseLoadoutIdMapper.TryMapHeroId(charId, out var heroId)
+                            && string.Equals(heroId, id, StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
                     }
                 }
 
-                // Kiểm tra Pháp Bảo
+                if (_saveData.characterProgressList != null)
+                {
+                    foreach (var entry in _saveData.characterProgressList)
+                        if (entry.starLevel >= 1 && string.Equals(NormalizeId(entry.characterId), id, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                }
+
+                // Mảnh chưa gộp ở 0 sao không cấp quyền trang bị.
                 if (_saveData.relicProgressList != null)
                 {
                     foreach (var relicEntry in _saveData.relicProgressList)
                     {
-                        if (string.IsNullOrWhiteSpace(relicEntry.relicId)) continue;
-                        if (string.Equals(DefenseLoadoutIdMapper.MapRelicId(relicEntry.relicId), id, StringComparison.OrdinalIgnoreCase))
+                        if (relicEntry.starLevel < 1 || string.IsNullOrWhiteSpace(relicEntry.relicId)) continue;
+                        if (string.Equals(NormalizeId(relicEntry.relicId), id, StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
@@ -105,6 +117,14 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             }
 
             return false;
+        }
+
+        private static string NormalizeId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return string.Empty;
+            if (DefenseLoadoutIdMapper.TryMapHeroId(id, out var hero)) return hero;
+            if (DefenseLoadoutIdMapper.TryMapRelicId(id, out var relic)) return relic;
+            return id.Trim();
         }
     }
 }

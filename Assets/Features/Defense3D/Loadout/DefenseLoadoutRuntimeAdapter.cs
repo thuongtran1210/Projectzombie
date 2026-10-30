@@ -6,33 +6,85 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 {
     /// <summary>
     /// Adapter Runtime kết nối giữa dữ liệu Loadout thuần C# đã phân giải (DefenseResolvedLoadout),
-    /// hệ thống tiến trình Meta (Cấp Sao Tướng, Cấp Sao Pháp Bảo, Cây Thiên Phú Miếu Cổ)
+    /// hệ thống tiến trình Meta (Cấp Sao Tướng, Cấp Sao Pháp Bảo / Lính / Trụ, Cây Thiên Phú Miếu Cổ)
     /// và các MonoBehaviour / ScriptableObject trong Scene Defense 3D.
+    /// Mọi chỉ số thăng sao đều đọc trực tiếp từ ScriptableObject (CharacterStarProgressionSO / RelicStarProgressionSO).
     /// </summary>
     public static class DefenseLoadoutRuntimeAdapter
     {
-        /// <summary>
-        /// Áp dụng danh sách vai trò lính được phép tuyển mộ vào DefenseVillageShop3D.
-        /// </summary>
+        private static CharacterStarProgressionSO _cachedCharacterConfig;
+        private static RelicStarProgressionSO _cachedRelicConfig;
+
+        private static CharacterStarProgressionSO ResolveCharacterProgressionConfig(CharacterStarProgressionSO config = null)
+        {
+            if (config != null) return config;
+            try
+            {
+                if (CharacterProgressionManager.Instance?.ProgressionConfig != null)
+                {
+                    return CharacterProgressionManager.Instance.ProgressionConfig;
+                }
+            }
+            catch { }
+
+            if (_cachedCharacterConfig == null)
+            {
+                _cachedCharacterConfig = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
+#if UNITY_EDITOR
+                if (_cachedCharacterConfig == null)
+                {
+                    _cachedCharacterConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
+                }
+#endif
+                if (_cachedCharacterConfig == null)
+                {
+                    _cachedCharacterConfig = ScriptableObject.CreateInstance<CharacterStarProgressionSO>();
+                }
+            }
+            return _cachedCharacterConfig;
+        }
+
+        private static RelicStarProgressionSO ResolveRelicProgressionConfig(RelicStarProgressionSO config = null)
+        {
+            if (config != null) return config;
+            try
+            {
+                if (RelicInventoryManager.Instance?.ProgressionConfig != null)
+                {
+                    return RelicInventoryManager.Instance.ProgressionConfig;
+                }
+            }
+            catch { }
+
+            if (_cachedRelicConfig == null)
+            {
+                _cachedRelicConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig");
+#if UNITY_EDITOR
+                if (_cachedRelicConfig == null)
+                {
+                    _cachedRelicConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset");
+                }
+#endif
+                if (_cachedRelicConfig == null)
+                {
+                    _cachedRelicConfig = ScriptableObject.CreateInstance<RelicStarProgressionSO>();
+                }
+            }
+            return _cachedRelicConfig;
+        }
+
         public static void ApplyToShop(DefenseResolvedLoadout resolved, DefenseVillageShop3D shop)
         {
             if (resolved == null || shop == null) return;
             shop.SetAllowedRoles(resolved.AllowedMinionRoles);
         }
 
-        /// <summary>
-        /// Áp dụng danh sách loại trụ phòng thủ được phép xây vào DefenseTowerBuildPrototype3D.
-        /// </summary>
         public static void ApplyTowers(DefenseResolvedLoadout resolved, DefenseTowerBuildPrototype3D towerBuilder)
         {
             if (resolved == null || towerBuilder == null) return;
             towerBuilder.SetAllowedTowers(resolved.TowerIds);
         }
 
-        /// <summary>
-        /// Áp dụng Pháp Bảo (Relic) được chọn từ Loadout vào Hero Kit của Tướng.
-        /// Tự động nạp SkillDefinition tương ứng từ Resources nếu chưa được truyền vào.
-        /// </summary>
         public static void ApplyToHeroKit(
             DefenseResolvedLoadout resolved,
             DefenseHeroKitSO heroKit,
@@ -54,25 +106,22 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             }
         }
 
-        /// <summary>
-        /// Lấy cấp sao hiệu lực (1..5★) của Tướng, đồng bộ xuyên suốt giữa ID Defense 3D và ID Meta cũ.
-        /// </summary>
         public static int GetEffectiveHeroStarLevel(string heroId, MetaProgressionSaveData saveData = null)
         {
             if (string.IsNullOrWhiteSpace(heroId)) return 1;
 
             int star = 0;
             string clean = heroId.Trim();
-            string legacyAlias = GetLegacyHeroAlias(clean);
+            string metaId = DefenseLoadoutIdMapper.GetMetaCharacterId(clean);
 
             try
             {
                 if (saveData != null)
                 {
                     star = Mathf.Max(star, saveData.GetCharacterStarLevel(clean));
-                    if (!string.IsNullOrEmpty(legacyAlias))
+                    if (!string.IsNullOrEmpty(metaId))
                     {
-                        star = Mathf.Max(star, saveData.GetCharacterStarLevel(legacyAlias));
+                        star = Mathf.Max(star, saveData.GetCharacterStarLevel(metaId));
                     }
                 }
                 else
@@ -81,9 +130,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                     if (progManager != null)
                     {
                         star = Mathf.Max(star, progManager.GetCharacterStarLevel(clean));
-                        if (!string.IsNullOrEmpty(legacyAlias))
+                        if (!string.IsNullOrEmpty(metaId))
                         {
-                            star = Mathf.Max(star, progManager.GetCharacterStarLevel(legacyAlias));
+                            star = Mathf.Max(star, progManager.GetCharacterStarLevel(metaId));
                         }
                     }
 
@@ -91,23 +140,20 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                     if (gmSave != null)
                     {
                         star = Mathf.Max(star, gmSave.GetCharacterStarLevel(clean));
-                        if (!string.IsNullOrEmpty(legacyAlias))
+                        if (!string.IsNullOrEmpty(metaId))
                         {
-                            star = Mathf.Max(star, gmSave.GetCharacterStarLevel(legacyAlias));
+                            star = Mathf.Max(star, gmSave.GetCharacterStarLevel(metaId));
                         }
                     }
                 }
             }
-            catch
-            {
-                // An toàn khi chạy trong môi trường unit test độc lập
-            }
+            catch { }
 
             return Mathf.Clamp(star <= 0 ? 1 : star, 1, 5);
         }
 
         /// <summary>
-        /// Tính toán hệ số cộng thêm từ Cấp Sao Tướng (Máu & Tốc chạy).
+        /// Tính toán hệ số cộng thêm từ Cấp Sao Tướng bằng cách đọc trực tiếp từ CharacterStarProgressionSO.
         /// </summary>
         public static void EvaluateHeroStarBonuses(
             int starLevel,
@@ -119,39 +165,45 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             moveSpeedMultiplierBonus = 0f;
             if (starLevel <= 1) return;
 
-            if (config == null)
-            {
-                try { config = CharacterProgressionManager.Instance?.ProgressionConfig; } catch { }
-            }
+            var effectiveConfig = ResolveCharacterProgressionConfig(config);
+            if (effectiveConfig == null) return;
 
-            if (config != null)
+            for (int s = 2; s <= starLevel; s++)
             {
-                var step = config.GetStepConfig(starLevel);
+                var step = effectiveConfig.GetStepConfig(s);
                 if (step != null)
                 {
-                    hpMultiplierBonus = Mathf.Max(0f, step.healthMultiplierBonus);
-                    moveSpeedMultiplierBonus = Mathf.Max(0f, step.moveSpeedMultiplierBonus);
-                    return;
+                    hpMultiplierBonus += Mathf.Max(0f, step.healthMultiplierBonus);
+                    moveSpeedMultiplierBonus += Mathf.Max(0f, step.moveSpeedMultiplierBonus);
                 }
             }
-
-            // Fallback chuẩn theo bảng cấu hình 5 cấp sao nếu chưa gán SO
-            if (starLevel == 2) hpMultiplierBonus = 0.15f;
-            else if (starLevel == 3) { hpMultiplierBonus = 0.15f; moveSpeedMultiplierBonus = 0.10f; }
-            else if (starLevel == 4) { hpMultiplierBonus = 0.40f; moveSpeedMultiplierBonus = 0.10f; }
-            else if (starLevel >= 5) { hpMultiplierBonus = 0.70f; moveSpeedMultiplierBonus = 0.20f; }
         }
 
-        /// <summary>
-        /// Lấy cấp sao hiệu lực (1..5★) của Pháp Bảo, đồng bộ giữa ID Defense 3D và ID Meta.
-        /// </summary>
+        /// <summary>Returns cumulative hero attack damage and signature cooldown bonuses.</summary>
+        public static void EvaluateHeroCombatStarBonuses(int starLevel, CharacterStarProgressionSO config,
+            out float damageBonus, out float signatureCooldownReduction)
+        {
+            damageBonus = 0f;
+            signatureCooldownReduction = 0f;
+            var effectiveConfig = ResolveCharacterProgressionConfig(config);
+            if (effectiveConfig == null) return;
+            for (int star = 2; star <= Mathf.Clamp(starLevel, 1, 5); star++)
+            {
+                var step = effectiveConfig.GetStepConfig(star);
+                if (step == null) continue;
+                damageBonus += Mathf.Max(0f, step.damageMultiplierBonus);
+                signatureCooldownReduction += Mathf.Max(0f, step.cooldownReductionBonus);
+            }
+            signatureCooldownReduction = Mathf.Clamp(signatureCooldownReduction, 0f, 0.8f);
+        }
+
         public static int GetEffectiveRelicStarLevel(string relicId, MetaProgressionSaveData saveData = null)
         {
             if (string.IsNullOrWhiteSpace(relicId)) return 1;
 
             int star = 0;
             string clean = relicId.Trim();
-            string[] aliases = GetLegacyRelicAliases(clean);
+            string[] aliases = DefenseLoadoutIdMapper.GetMetaRelicAliases(clean);
 
             try
             {
@@ -186,16 +238,13 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                     }
                 }
             }
-            catch
-            {
-                // An toàn khi chạy trong môi trường unit test độc lập
-            }
+            catch { }
 
             return Mathf.Clamp(star <= 0 ? 1 : star, 1, 5);
         }
 
         /// <summary>
-        /// Tính toán cộng dồn chỉ số Pháp Bảo từ bậc 2★ đến cấp sao hiện tại.
+        /// Tính toán cộng dồn chỉ số Pháp Bảo từ bậc 2★ đến cấp sao hiện tại từ RelicStarProgressionSO.
         /// </summary>
         public static void EvaluateRelicStarBonuses(
             int starLevel,
@@ -209,38 +258,111 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             areaMultiplierBonus = 0f;
             if (starLevel <= 1) return;
 
-            if (config == null)
-            {
-                try { config = RelicInventoryManager.Instance?.ProgressionConfig; } catch { }
-            }
+            var effectiveConfig = ResolveRelicProgressionConfig(config);
+            if (effectiveConfig == null) return;
 
-            if (config != null)
+            for (int s = 2; s <= starLevel; s++)
             {
-                for (int s = 2; s <= starLevel; s++)
+                var step = effectiveConfig.GetStepConfig(s);
+                if (step != null)
                 {
-                    var step = config.GetStepConfig(s);
-                    if (step != null)
-                    {
-                        damageMultiplierBonus += Mathf.Max(0f, step.damageMultiplierBonus);
-                        cooldownReductionPercent += Mathf.Max(0f, step.cooldownReductionPercent);
-                        areaMultiplierBonus += Mathf.Max(0f, step.areaMultiplierBonus);
-                    }
+                    damageMultiplierBonus += Mathf.Max(0f, step.damageMultiplierBonus);
+                    cooldownReductionPercent += Mathf.Max(0f, step.cooldownReductionPercent);
+                    areaMultiplierBonus += Mathf.Max(0f, step.areaMultiplierBonus);
                 }
-                cooldownReductionPercent = Mathf.Clamp(cooldownReductionPercent, 0f, 0.8f);
-                return;
             }
-
-            // Fallback chuẩn theo cấu hình mặc định của RelicStarProgressionSO
-            if (starLevel >= 2) damageMultiplierBonus += 0.15f;
-            if (starLevel >= 3) cooldownReductionPercent += 0.15f;
-            if (starLevel >= 4) areaMultiplierBonus += 0.30f;
-            if (starLevel >= 5) damageMultiplierBonus += 0.30f;
+            cooldownReductionPercent = Mathf.Clamp(cooldownReductionPercent, 0f, 0.8f);
         }
 
         /// <summary>
-        /// Áp dụng dữ liệu Anh Hùng được chọn từ Loadout (HeroId) vào trận đấu 3D:
-        /// Đồng bộ chỉ số cơ bản, kit kỹ năng, visual controller và cộng dồn bonus từ Meta Progression (cấp sao).
+        /// Tính toán hệ số cộng thêm từ Cấp Sao Lính Làng đọc trực tiếp từ RelicStarProgressionSO.
         /// </summary>
+        public static void EvaluateMinionStarBonuses(
+            int starLevel,
+            out float hpMultiplierBonus,
+            out float speedMultiplierBonus,
+            RelicStarProgressionSO config = null)
+        {
+            hpMultiplierBonus = 0f;
+            speedMultiplierBonus = 0f;
+            if (starLevel <= 1) return;
+
+            var effectiveConfig = ResolveRelicProgressionConfig(config);
+            var step = effectiveConfig != null ? effectiveConfig.GetStepConfig(Mathf.Clamp(starLevel, 1, 5)) : null;
+            if (step != null)
+            {
+                hpMultiplierBonus = Mathf.Max(0f, step.minionHpMultiplierBonus);
+                speedMultiplierBonus = Mathf.Max(0f, step.minionSpeedMultiplierBonus);
+            }
+        }
+
+        /// <summary>
+        /// Tính toán hệ số cộng thêm từ Cấp Sao Trụ Phòng Thủ đọc trực tiếp từ RelicStarProgressionSO.
+        /// </summary>
+        public static void EvaluateTowerStarBonuses(
+            int starLevel,
+            out float damageMultiplierBonus,
+            out float rangeMultiplierBonus,
+            RelicStarProgressionSO config = null)
+        {
+            damageMultiplierBonus = 0f;
+            rangeMultiplierBonus = 0f;
+            if (starLevel <= 1) return;
+
+            var effectiveConfig = ResolveRelicProgressionConfig(config);
+            var step = effectiveConfig != null ? effectiveConfig.GetStepConfig(Mathf.Clamp(starLevel, 1, 5)) : null;
+            if (step != null)
+            {
+                damageMultiplierBonus = Mathf.Max(0f, step.towerDamageMultiplierBonus);
+                rangeMultiplierBonus = Mathf.Max(0f, step.towerRangeMultiplierBonus);
+            }
+        }
+
+        public static void ApplyTowerAndMinionStarBonuses(
+            DefenseResolvedLoadout resolved,
+            DefenseRunStats sessionStats,
+            DefenseVillageShop3D shop = null,
+            MetaProgressionSaveData saveData = null)
+        {
+            if (resolved == null) return;
+
+            if (shop != null)
+            {
+                string[] roleIds =
+                {
+                    Defense3DCatalog.MINION_DAN_BINH,
+                    Defense3DCatalog.MINION_PHU_TAP_DICH,
+                    Defense3DCatalog.MINION_THAY_LANG
+                };
+                for (int role = 0; role < roleIds.Length; role++)
+                {
+                    int minionStar = GetEffectiveRelicStarLevel(roleIds[role], saveData);
+                    EvaluateMinionStarBonuses(minionStar, out float hpBonus, out float spdBonus);
+                    shop.SetRoleStatMultipliers(role, 1f + hpBonus, 1f + spdBonus);
+                }
+            }
+
+            if (sessionStats != null && resolved.TowerIds != null && resolved.TowerIds.Count > 0)
+            {
+                int bestTowerStar = 1;
+                for (int i = 0; i < resolved.TowerIds.Count; i++)
+                {
+                    int st = GetEffectiveRelicStarLevel(resolved.TowerIds[i], saveData);
+                    if (st > bestTowerStar) bestTowerStar = st;
+                }
+
+                EvaluateTowerStarBonuses(bestTowerStar, out float towerDmgBonus, out float towerRngBonus);
+                if (towerDmgBonus > 0f)
+                {
+                    sessionStats.TryApplyCard(new DefenseUpgradeCard("meta_tower_star_dmg", "Tinh Luyện Tháp: Hỏa Lực", string.Empty, DefenseUpgradeType.TowerDamage, towerDmgBonus));
+                }
+                if (towerRngBonus > 0f)
+                {
+                    sessionStats.TryApplyCard(new DefenseUpgradeCard("meta_tower_star_rng", "Tinh Luyện Tháp: Tầm Xa", string.Empty, DefenseUpgradeType.TowerAttackRange, towerRngBonus));
+                }
+            }
+        }
+
         public static void ApplyHero(
             DefenseResolvedLoadout resolved,
             DefenseHeroCatalogSO catalog,
@@ -280,6 +402,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 if (attack != null)
                 {
                     attack.SetBaseCombatStats(heroDef.BaseDamage, heroDef.BaseAttackRange);
+                    EvaluateHeroCombatStarBonuses(star, progressionConfig, out float damageBonus, out _);
+                    attack.SetMetaDamageBonus(damageBonus);
                 }
 
                 if (visual != null && heroDef.HeroKit != null)
@@ -289,10 +413,6 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             }
         }
 
-        /// <summary>
-        /// Áp dụng toàn bộ nâng cấp từ Cây Thiên Phú Miếu Cổ (PermanentUpgradeTreeData) vào phiên chơi Defense 3D.
-        /// Trả về số lượt Đổi Thẻ (Reroll) cộng thêm đầu trận.
-        /// </summary>
         public static int ApplySanctuaryUpgrades(
             DefenseRunStats sessionStats,
             DefenseHeroHealth3D health,
@@ -338,22 +458,20 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 
                     if (string.Equals(node.nodeId, "atk_power", StringComparison.OrdinalIgnoreCase))
                     {
-                        totalDamageMult += 0.05f * lvl;
+                        float perLevel = node.statBonusPerLevel.baseDamageBonus > 0f ? node.statBonusPerLevel.baseDamageBonus * 0.1f : 0.05f;
+                        totalDamageMult += perLevel * lvl;
                     }
                     else if (string.Equals(node.nodeId, "atk_speed", StringComparison.OrdinalIgnoreCase))
                     {
-                        float perLevel = node.statBonusPerLevel.attackSpeedBonus > 0f ? node.statBonusPerLevel.attackSpeedBonus : 0.04f;
-                        totalAttackSpeedMult += perLevel * lvl;
+                        totalAttackSpeedMult += node.statBonusPerLevel.attackSpeedBonus * lvl;
                     }
                     else if (string.Equals(node.nodeId, "def_hp", StringComparison.OrdinalIgnoreCase))
                     {
-                        float perLevel = node.statBonusPerLevel.maxHealthBonus > 0f ? node.statBonusPerLevel.maxHealthBonus : 15f;
-                        totalMaxHpFlat += perLevel * lvl;
+                        totalMaxHpFlat += node.statBonusPerLevel.maxHealthBonus * lvl;
                     }
                     else if (string.Equals(node.nodeId, "def_speed", StringComparison.OrdinalIgnoreCase))
                     {
-                        float perLevel = node.statBonusPerLevel.moveSpeedBonus > 0f ? node.statBonusPerLevel.moveSpeedBonus : 0.3f;
-                        totalMoveSpeedFlat += perLevel * lvl;
+                        totalMoveSpeedFlat += node.statBonusPerLevel.moveSpeedBonus * lvl;
                     }
                     else if (string.Equals(node.nodeId, "util_reroll", StringComparison.OrdinalIgnoreCase))
                     {
@@ -374,7 +492,6 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 }
                 if (totalMaxHpFlat > 0f)
                 {
-                    // Tăng máu Nhà Chính tương ứng 2x lượng máu cộng thêm của Tướng
                     sessionStats.TryApplyCard(new DefenseUpgradeCard("meta_base_hp", "Miếu Cổ: Kim Cang", string.Empty, DefenseUpgradeType.BaseMaxHp, totalMaxHpFlat * 2f));
                 }
             }
@@ -390,26 +507,6 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             }
 
             return bonusRerolls;
-        }
-
-        private static string GetLegacyHeroAlias(string heroId)
-        {
-            string mapped = DefenseLoadoutIdMapper.MapHeroId(heroId);
-            if (string.Equals(mapped, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase)) return "C001_ThuSinh";
-            if (string.Equals(mapped, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase)) return "C002_DaoSi";
-            if (string.Equals(mapped, Defense3DCatalog.HERO_THANH_DONG, StringComparison.OrdinalIgnoreCase)) return "C003_ThanhDong";
-            if (string.Equals(mapped, Defense3DCatalog.HERO_AN_SI, StringComparison.OrdinalIgnoreCase)) return "C004_AnSi";
-            return null;
-        }
-
-        private static string[] GetLegacyRelicAliases(string relicId)
-        {
-            string mapped = DefenseLoadoutIdMapper.MapRelicId(relicId);
-            if (string.Equals(mapped, Defense3DCatalog.RELIC_DEP_TO_ONG, StringComparison.OrdinalIgnoreCase))
-            {
-                return new[] { "R001_Deptoong", "R001", "wp_kiem_truc", Defense3DCatalog.RELIC_DEP_TO_ONG };
-            }
-            return new[] { relicId };
         }
     }
 }

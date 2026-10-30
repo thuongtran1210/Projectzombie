@@ -41,6 +41,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         public ILoadoutOwnership Ownership => _ownership;
         public bool CanStartBattle => _canStartBattle;
         public bool HasStageSelected => _stage != null && _stage.CanLaunchDefense;
+        public DefenseStageReviewPresentation StageReview => DefenseStageReviewPresentation.FromStage(_stage);
         public string LastValidationMessage => _lastValidationMessage;
 
         public DefensePreparationPresenter(
@@ -52,7 +53,8 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             _stage = stage;
             _catalog = catalog ?? Defense3DCatalog.CreateDefault();
-            _ownership = ownership ?? DefenseMetaOwnershipAdapter.CreateDefault();
+            _ownership = ownership ?? DefenseMetaOwnershipAdapter.CreateDefault(
+                ProjectZombie.Core.Save.GameManager.HasInstance ? ProjectZombie.Core.Save.GameManager.Instance.SaveData : null);
             _repository = repository ?? new DefenseLoadoutRepository();
             _rules = rules ?? LoadoutRules.Default;
 

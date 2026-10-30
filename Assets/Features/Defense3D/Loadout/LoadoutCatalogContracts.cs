@@ -13,8 +13,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         public LoadoutItemType Type { get; }
         public string DisplayName { get; }
         public bool IsAvailable { get; }
+        public string Description { get; }
 
-        public LoadoutCatalogEntry(string id, LoadoutItemType type, string displayName, bool isAvailable = true)
+        public LoadoutCatalogEntry(string id, LoadoutItemType type, string displayName, bool isAvailable = true, string description = "")
         {
             if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentException("Id không được để trống.", nameof(id));
@@ -23,6 +24,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             Type = type;
             DisplayName = displayName ?? id;
             IsAvailable = isAvailable;
+            Description = description ?? string.Empty;
         }
     }
 

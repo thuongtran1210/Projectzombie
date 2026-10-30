@@ -29,7 +29,14 @@ namespace ProjectZombie.Features.Defense3D
         public bool HasPendingAttack => _windup != null && _windup.IsPending;
         public float ConeAngle => _coneAngle;
         public float BaseDamage => _definition != null ? _definition.Damage : damage;
-        public float EffectiveDamage => Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.HeroAttackDamage, _definition != null ? _definition.Damage : damage) : damage;
+        private float _metaDamageBonus;
+        public float EffectiveDamage => (Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.HeroAttackDamage, BaseDamage) : BaseDamage) * (1f + _metaDamageBonus);
+
+        /// <summary>Sets the persistent card bonus without modifying the authored attack definition.</summary>
+        public void SetMetaDamageBonus(float bonus)
+        {
+            _metaDamageBonus = DefenseDamageRules.IsFinite(bonus) ? Mathf.Max(0f, bonus) : 0f;
+        }
         public float EffectiveAttackInterval => Gameplay != null ? Gameplay.Stats.EvaluateHeroAttackInterval(_definition != null ? _definition.Cooldown : attackCooldown) : attackCooldown;
         private float Range => _definition != null ? _definition.Radius : attackRange;
         public float AttackRange => Range;

@@ -75,6 +75,22 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             return true;
         }
 
+        /// <summary>Replaces one occupied minion position without changing order or count.</summary>
+        public bool ReplaceMinion(string previousId, string nextId) => Replace(_minionIds, previousId, nextId);
+
+        /// <summary>Replaces one occupied tower position without changing order or count.</summary>
+        public bool ReplaceTower(string previousId, string nextId) => Replace(_towerIds, previousId, nextId);
+
+        private bool Replace(List<string> ids, string previousId, string nextId)
+        {
+            if (string.IsNullOrWhiteSpace(nextId) || ids.Contains(nextId, StringComparer.OrdinalIgnoreCase)) return false;
+            int index = ids.FindIndex(id => string.Equals(id, previousId, StringComparison.OrdinalIgnoreCase));
+            if (index < 0) return false;
+            ids[index] = nextId;
+            OnChanged?.Invoke();
+            return true;
+        }
+
         public bool SetMinions(IEnumerable<string> minionIds)
         {
             var newList = minionIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()

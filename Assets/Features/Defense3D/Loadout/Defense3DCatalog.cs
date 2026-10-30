@@ -79,10 +79,10 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             catalog.Register(new LoadoutCatalogEntry(HERO_DAO_SI, LoadoutItemType.Hero, "Đạo Sĩ"));
             catalog.Register(new LoadoutCatalogEntry(HERO_THANH_DONG, LoadoutItemType.Hero, "Thanh Đồng"));
             catalog.Register(new LoadoutCatalogEntry(HERO_AN_SI, LoadoutItemType.Hero, "Ẩn Sĩ"));
-            catalog.Register(new LoadoutCatalogEntry(RELIC_DEP_TO_ONG, LoadoutItemType.Relic, "Dép Tổ Ong"));
-            catalog.Register(new LoadoutCatalogEntry(MINION_DAN_BINH, LoadoutItemType.Minion, "Dân Binh"));
-            catalog.Register(new LoadoutCatalogEntry(MINION_PHU_TAP_DICH, LoadoutItemType.Minion, "Phu Tạp Dịch"));
-            catalog.Register(new LoadoutCatalogEntry(MINION_THAY_LANG, LoadoutItemType.Minion, "Thầy Lang"));
+            catalog.Register(new LoadoutCatalogEntry(RELIC_DEP_TO_ONG, LoadoutItemType.Relic, "Dép Tổ Ong", true, "<b>Tuyệt Kỹ Pháp Bảo:</b> Phóng Dép Tổ Ong thần thông càn quét yêu ma trên đường bay, gây sát thương diện rộng và đẩy lùi kẻ địch."));
+            catalog.Register(new LoadoutCatalogEntry(MINION_DAN_BINH, LoadoutItemType.Minion, "Dân Binh", true, "<b>Dân Binh Giáp Tre:</b> Quân lính cận chiến dũng cảm giữ cửa làng, có khả năng làm chậm và tung đòn trọng kích làm choáng yêu ma."));
+            catalog.Register(new LoadoutCatalogEntry(MINION_PHU_TAP_DICH, LoadoutItemType.Minion, "Phu Tạp Dịch", true, "<b>Phu Tạp Dịch:</b> Hậu cần chăm chỉ thu gom Cổ Mộc rơi trên chiến trường về kho và tự động cầm búa tu bổ Căn Cứ / Tháp Canh bị hư hại."));
+            catalog.Register(new LoadoutCatalogEntry(MINION_THAY_LANG, LoadoutItemType.Minion, "Thầy Lang", true, "<b>Thầy Lang Cứu Thương:</b> Y sĩ thảo dược đi theo hỗ trợ, liên tục niệm chú hồi phục sinh lực cho Chủ Tướng và đồng đội."));
             var towers = ProjectZombie.Core.Architecture.ServiceContext.Get<DefenseTowerLoadoutCatalogSO>();
             if (towers != null)
             {
@@ -94,8 +94,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             }
             else
             {
-                catalog.Register(new LoadoutCatalogEntry(TOWER_CUNG_TIEN, LoadoutItemType.Tower, "Nỏ Thần"));
-                catalog.Register(new LoadoutCatalogEntry(TOWER_BANG_HA, LoadoutItemType.Tower, "Băng Hà"));
+                catalog.Register(new LoadoutCatalogEntry(TOWER_CUNG_TIEN, LoadoutItemType.Tower, "Nỏ Thần", true, "<b>Tháp Nỏ Thần Liên Châu:</b> Chòi cung tiễn tầm xa bắn tên tốc độ cao, chuyên trị các đợt yêu ma tiến công đơn lẻ và mục tiêu trên không."));
+                catalog.Register(new LoadoutCatalogEntry(TOWER_BANG_HA, LoadoutItemType.Tower, "Băng Hà", true, "<b>Tháp Băng Hà Hàn Khí:</b> Chòi pháp thuật phóng đạn băng giá gây sát thương kèm hiệu ứng làm chậm tốc độ di chuyển của đàn quái."));
             }
             return catalog;
         }

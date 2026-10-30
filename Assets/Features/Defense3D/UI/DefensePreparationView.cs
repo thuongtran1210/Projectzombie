@@ -12,6 +12,7 @@ namespace ProjectZombie.Features.Defense3D.UI
     public class DefensePreparationView : BaseMetaScreenView
     {
         public override MetaScreenType ScreenType => MetaScreenType.DefensePreparation;
+        protected virtual bool IsLoadoutManagement => false;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _subtitleText;
         [SerializeField] private TextMeshProUGUI _validationMessageText;
@@ -41,6 +42,20 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private TextMeshProUGUI _loadingStatusText;
         [Serializable] public struct ReviewIcon { public string Id; public Sprite Icon; }
         [SerializeField] private ReviewIcon[] _catalogIcons;
+        [Header("Courtyard presentation")]
+        [SerializeField] private RawImage _courtyardHeroPreview;
+        [SerializeField] private Image _courtyardHeroFallback;
+        [Serializable] public struct CourtyardModel { public string Id; public GameObject Prefab; }
+        [SerializeField] private CourtyardModel[] _courtyardHeroModels;
+        [SerializeField] private TextMeshProUGUI _reviewStageSummary;
+        [Header("Clean battle confirmation")]
+        [SerializeField] private TextMeshProUGUI _reviewStageCode;
+        [SerializeField] private TextMeshProUGUI _reviewStageName;
+        [SerializeField] private TextMeshProUGUI _reviewStageDescription;
+        [SerializeField] private TextMeshProUGUI _reviewStageDuration;
+        [SerializeField] private TextMeshProUGUI _reviewStageRewards;
+        [SerializeField] private Image _reviewStageArtwork;
+        private GameObject _previewedHeroPrefab;
 
         private DefensePreparationPresenter _presenter;
         private DefenseHeroCatalogSO _heroCatalog;
@@ -55,15 +70,15 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             if (_heroSlotButton != null)
             {
-                _heroSlotButton.gameObject.SetActive(true);
-                _heroSlotButton.interactable = true;
+                _heroSlotButton.gameObject.SetActive(IsLoadoutManagement);
+                _heroSlotButton.interactable = IsLoadoutManagement;
                 _heroSlotButton.onClick.AddListener(OnHeroSlotClicked);
             }
 
             if (_relicSlotButton != null)
             {
-                _relicSlotButton.gameObject.SetActive(true);
-                _relicSlotButton.interactable = true;
+                _relicSlotButton.gameObject.SetActive(IsLoadoutManagement);
+                _relicSlotButton.interactable = IsLoadoutManagement;
                 _relicSlotButton.onClick.AddListener(OnRelicSlotClicked);
             }
 
@@ -74,7 +89,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                     int index = i;
                     if (_minionSlotButtons[i] != null)
                     {
-                        _minionSlotButtons[i].interactable = true;
+                        _minionSlotButtons[i].interactable = IsLoadoutManagement;
                         _minionSlotButtons[i].onClick.AddListener(() => OnMinionSlotClicked(index));
                     }
                 }
@@ -87,17 +102,17 @@ namespace ProjectZombie.Features.Defense3D.UI
                     int index = i;
                     if (_towerSlotButtons[i] != null)
                     {
-                        _towerSlotButtons[i].interactable = true;
+                        _towerSlotButtons[i].interactable = IsLoadoutManagement;
                         _towerSlotButtons[i].onClick.AddListener(() => OnTowerSlotClicked(index));
                     }
                 }
             }
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             ReleasePresenter();
-            _presenter = new DefensePreparationPresenter(stage: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.SelectedStage);
+            _presenter = new DefensePreparationPresenter(stage: IsLoadoutManagement ? null : ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.SelectedStage);
             _presenter.OnValidationStateChanged += UpdateValidationDisplay;
             _presenter.OnSelectionChanged += HandleSelectionChanged;
             _isStarting = false;
@@ -105,7 +120,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             RefreshAllDisplays();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (_startBattleButton != null) _startBattleButton.onClick.RemoveListener(OnStartBattleClicked);
             if (_editLoadoutButton != null) _editLoadoutButton.onClick.RemoveListener(OnEditLoadoutClicked);
@@ -130,85 +145,31 @@ namespace ProjectZombie.Features.Defense3D.UI
             MainHubPresenter.Instance?.RefreshHubState();
         }
 
-        private void OnHeroSlotClicked()
+        private void OpenLoadoutSlot(CodexTabType tab, string id)
         {
-            if (_isStarting || _presenter == null) return;
-            var heroes = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Hero);
-            if (heroes == null || heroes.Count == 0) return;
-
-            int currentIndex = -1;
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                if (string.Equals(heroes[i].Id, _presenter.Selection.HeroId, StringComparison.OrdinalIgnoreCase))
-                {
-                    currentIndex = i;
-                    break;
-                }
-            }
-
-            for (int step = 1; step <= heroes.Count; step++)
-            {
-                int nextIndex = (currentIndex + step) % heroes.Count;
-                var candidate = heroes[nextIndex];
-                if (_presenter.Ownership.IsOwned(candidate.Id))
-                {
-                    _presenter.SelectHero(candidate.Id);
-                    break;
-                }
-            }
+            if (!IsLoadoutManagement || _isStarting || _presenter == null) return;
+            CardCodexPresenter.RequestLoadoutSlot(tab, id);
+            (GetComponentInParent<MetaUIManager>(true) ?? MetaUIManager.Instance)?.OpenChildScreen(MetaScreenType.Codex);
         }
 
-        private void OnRelicSlotClicked()
-        {
-            if (_isStarting || _presenter == null) return;
-            var relics = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Relic);
-            if (relics == null || relics.Count == 0) return;
-
-            int currentIndex = -1;
-            for (int i = 0; i < relics.Count; i++)
-            {
-                if (string.Equals(relics[i].Id, _presenter.Selection.RelicId, StringComparison.OrdinalIgnoreCase))
-                {
-                    currentIndex = i;
-                    break;
-                }
-            }
-
-            for (int step = 1; step <= relics.Count; step++)
-            {
-                int nextIndex = (currentIndex + step) % relics.Count;
-                var candidate = relics[nextIndex];
-                if (_presenter.Ownership.IsOwned(candidate.Id))
-                {
-                    _presenter.SelectRelic(candidate.Id);
-                    break;
-                }
-            }
-        }
-
+        private void OnHeroSlotClicked() => OpenLoadoutSlot(CodexTabType.HeroCards, _presenter?.Selection.HeroId);
+        private void OnRelicSlotClicked() => OpenLoadoutSlot(CodexTabType.RelicFusion, _presenter?.Selection.RelicId);
         private void OnMinionSlotClicked(int index)
         {
-            if (_isStarting || _presenter == null) return;
-            var minions = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Minion);
-            if (minions != null && index < minions.Count)
-            {
-                _presenter.ToggleMinion(minions[index].Id);
-            }
+            if (_presenter == null || index < 0) return;
+            var ids = _presenter.Selection.MinionIds;
+            OpenLoadoutSlot(CodexTabType.Minions, index < ids.Count ? ids[index] : null);
         }
-
         private void OnTowerSlotClicked(int index)
         {
-            if (_isStarting || _presenter == null) return;
-            var towers = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Tower);
-            if (towers != null && index < towers.Count)
-            {
-                _presenter.ToggleTower(towers[index].Id);
-            }
+            if (_presenter == null || index < 0) return;
+            var ids = _presenter.Selection.TowerIds;
+            OpenLoadoutSlot(CodexTabType.Towers, index < ids.Count ? ids[index] : null);
         }
-
         private void OnEditLoadoutClicked()
         {
-            if (!_isStarting) MetaUIManager.Instance?.OpenScreen(MetaScreenType.Codex);
+            if (_isStarting || IsLoadoutManagement) return;
+            (GetComponentInParent<MetaUIManager>(true) ?? MetaUIManager.Instance)?.OpenChildScreen(MetaScreenType.LoadoutManagement);
         }
 
         public override void OnBackPressed() => OnCloseClicked();
@@ -216,13 +177,15 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void OnCloseClicked()
         {
             if (_isStarting) return;
-            MetaSceneTransitionController.Instance?.CancelLoadoutReview();
-            if (MetaUIManager.Instance != null) MetaUIManager.Instance.PopScreen();
+            if (!IsLoadoutManagement) MetaSceneTransitionController.Instance?.CancelLoadoutReview();
+            var manager = GetComponentInParent<MetaUIManager>(true) ?? MetaUIManager.Instance;
+            if (manager != null) manager.PopScreen();
             else gameObject.SetActive(false);
         }
 
         private async void OnStartBattleClicked()
         {
+            if (IsLoadoutManagement) { OnCloseClicked(); return; }
             if (_isStarting || _presenter == null || !_presenter.CanStartBattle) return;
             if (!_presenter.HasStageSelected)
             {
@@ -271,9 +234,17 @@ namespace ProjectZombie.Features.Defense3D.UI
             var catalog = _presenter.Catalog;
             var rules = LoadoutRules.Default;
             var stage = MetaSceneTransitionController.Instance?.SelectedStage;
+            if (!IsLoadoutManagement) SetStageReview(_presenter.StageReview);
 
-            if (_titleText != null) _titleText.text = "ĐỘI HÌNH XUẤT TRẬN";
-            if (_subtitleText != null) _subtitleText.text = stage != null ? stage.stageName : "Kiểm tra và tùy chỉnh đội hình trước khi bắt đầu.";
+            if (_titleText != null) _titleText.text = IsLoadoutManagement ? "ĐỘI HÌNH • SÂN ĐÌNH" : "XÁC NHẬN XUẤT TRẬN";
+            if (_subtitleText != null) _subtitleText.text = IsLoadoutManagement
+                ? "Chọn Anh hùng, Thần khí, Lính và Trụ mang vào trận."
+                : "Thông tin ải và lực lượng đã chọn";
+            if (!IsLoadoutManagement && _reviewStageSummary != null)
+                _reviewStageSummary.text = "ẢI ĐÃ CHỌN\n<color=#F1D08A>" + (stage != null ? stage.stageName : "Chưa chọn ải")
+                    + "</color>\n\nKIỂM TRA LỰC LƯỢNG\n"
+                    + $"Lính {selection.MinionIds.Count}/{rules.MaxMinionCount} • Trụ {selection.TowerIds.Count}/{rules.MaxTowerCount}"
+                    + "\n\nChọn Chỉnh đội hình nếu cần thay đổi.\nXác nhận khi đã sẵn sàng.";
 
             if (_heroCatalog == null)
             {
@@ -282,7 +253,8 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             int heroStar = DefenseLoadoutRuntimeAdapter.GetEffectiveHeroStarLevel(selection.HeroId);
             DefenseLoadoutRuntimeAdapter.EvaluateHeroStarBonuses(heroStar, null, out float heroHpBonus, out float heroSpdBonus);
-            string heroName = catalog.TryGetEntry(selection.HeroId, out var hero) ? $"{hero.DisplayName} <color=#FFD700>[{heroStar}★]</color>" : "Chưa chọn tướng";
+            DefenseLoadoutRuntimeAdapter.EvaluateHeroCombatStarBonuses(heroStar, null, out float heroDamageBonus, out float signatureCooldown);
+            string heroName = catalog.TryGetEntry(selection.HeroId, out var hero) ? $"{hero.DisplayName} <color=#FFD700>[{heroStar} Sao]</color>" : "Chưa chọn tướng";
             string heroStatsDesc = "Tướng điều khiển trong trận";
             Sprite heroAvatar = GetIcon(selection.HeroId);
 
@@ -293,11 +265,12 @@ namespace ProjectZombie.Features.Defense3D.UI
                 {
                     float effectiveHp = heroDef.BaseMaxHp * (1f + heroHpBonus);
                     float effectiveSpd = heroDef.BaseMoveSpeed * (1f + heroSpdBonus);
-                    heroStatsDesc = $"<color=#00FF88>Máu:</color> <b>{effectiveHp:0}</b>  <color=#FFD700>Công:</color> <b>{heroDef.BaseDamage:0}</b>  <color=#00E5FF>Tốc:</color> <b>{effectiveSpd:0.0}</b>";
+                    heroStatsDesc = $"<color=#00FF88>Máu:</color> <b>{effectiveHp:0}</b>  <color=#FFD700>Công nền:</color> <b>{heroDef.BaseDamage:0}</b>  <color=#00E5FF>Tốc:</color> <b>{effectiveSpd:0.0}</b>\nSát thương đánh thường / bản mệnh +{heroDamageBonus * 100f:0}% • Giảm hồi chiêu bản mệnh {signatureCooldown * 100f:0}%";
                     if (heroAvatar == null && heroDef.Avatar != null)
                     {
                         heroAvatar = heroDef.Avatar;
                     }
+                    ShowCourtyardHero(heroDef.HeroPrefab != null ? heroDef.HeroPrefab : GetAuthoredHeroPreview(selection.HeroId));
                 }
             }
 
@@ -305,9 +278,9 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(selection.RelicId);
             DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(relicStar, null, out float relicDmgBonus, out float relicCdBonus, out float relicAreaBonus);
-            string relicName = catalog.TryGetEntry(selection.RelicId, out var relic) ? $"{relic.DisplayName} <color=#FFD700>[{relicStar}★]</color>" : "Chưa chọn pháp bảo";
+            string relicName = catalog.TryGetEntry(selection.RelicId, out var relic) ? $"{relic.DisplayName} <color=#FFD700>[{relicStar} Sao]</color>" : "Chưa chọn pháp bảo";
             string relicDesc = relicStar > 1
-                ? $"Cấp {relicStar}★: +{(int)(relicDmgBonus * 100)}% Công, -{(int)(relicCdBonus * 100)}% Hồi chiêu, +{(int)(relicAreaBonus * 100)}% Phạm vi."
+                ? $"Cấp {relicStar} Sao: +{(int)(relicDmgBonus * 100)}% Công, -{(int)(relicCdBonus * 100)}% Hồi chiêu, +{(int)(relicAreaBonus * 100)}% Phạm vi."
                 : "Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.";
             SetRelicInfo(relicName, relicDesc, GetIcon(selection.RelicId));
 
@@ -322,30 +295,74 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void BindMinionRows(IReadOnlyList<string> selectedIds, int capacity)
         {
-            var allMinions = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Minion);
             if (_minionSlotButtons == null) return;
             for (int i = 0; i < _minionSlotButtons.Length; i++)
             {
-                if (_minionSlotButtons[i] != null) _minionSlotButtons[i].gameObject.SetActive(i < capacity);
-                if (i >= capacity || i >= allMinions.Count) continue;
-                var minion = allMinions[i];
-                bool isSelected = ContainsId(selectedIds, minion.Id);
-                SetRow(i, isSelected, minion.DisplayName, _minionSlotCheckmarks, _minionSlotNameTexts);
+                if (_minionSlotButtons[i] != null) _minionSlotButtons[i].gameObject.SetActive(i < capacity && (IsLoadoutManagement || i < selectedIds.Count));
+                if (i >= capacity) continue;
+                BindSelectedRow(i, selectedIds, _minionSlotCheckmarks, _minionSlotNameTexts);
             }
         }
 
         private void BindTowerRows(IReadOnlyList<string> selectedIds, int capacity)
         {
-            var allTowers = _presenter.Catalog.GetEntriesByType(LoadoutItemType.Tower);
             if (_towerSlotButtons == null) return;
             for (int i = 0; i < _towerSlotButtons.Length; i++)
             {
-                if (_towerSlotButtons[i] != null) _towerSlotButtons[i].gameObject.SetActive(i < capacity);
-                if (i >= capacity || i >= allTowers.Count) continue;
-                var tower = allTowers[i];
-                bool isSelected = ContainsId(selectedIds, tower.Id);
-                SetRow(i, isSelected, tower.DisplayName, _towerSlotCheckmarks, _towerSlotNameTexts);
+                if (_towerSlotButtons[i] != null) _towerSlotButtons[i].gameObject.SetActive(i < capacity && (IsLoadoutManagement || i < selectedIds.Count));
+                if (i >= capacity) continue;
+                BindSelectedRow(i, selectedIds, _towerSlotCheckmarks, _towerSlotNameTexts);
             }
+        }
+
+        private void BindSelectedRow(int index, IReadOnlyList<string> ids, Image[] icons, TextMeshProUGUI[] labels)
+        {
+            string id = index < ids.Count ? ids[index] : null;
+            bool occupied = id != null;
+            string name = occupied && _presenter.Catalog.TryGetEntry(id, out var entry) ? entry.DisplayName : "+ Thêm";
+            SetRow(index, occupied, name, icons, labels);
+            if (icons != null && index < icons.Length && icons[index] != null)
+            {
+                icons[index].sprite = occupied ? GetIcon(id) : null;
+                icons[index].enabled = icons[index].sprite != null;
+            }
+        }
+
+        private void ShowCourtyardHero(GameObject prefab)
+        {
+            if (_courtyardHeroPreview == null || !Application.isPlaying) return;
+            if (!IsLoadoutManagement) { _courtyardHeroPreview.enabled = false; return; }
+            if (prefab == null)
+            {
+                _courtyardHeroPreview.enabled = false;
+                _previewedHeroPrefab = null;
+                return;
+            }
+            var stage = CharacterPreviewStage.Instance;
+            if (stage == null)
+            {
+                var node = new GameObject("CharacterPreviewStage");
+                node.transform.position = new Vector3(2000f, 2000f, 0f);
+                stage = node.AddComponent<CharacterPreviewStage>();
+            }
+            if (_previewedHeroPrefab != prefab || _courtyardHeroPreview.texture == null)
+            {
+                stage.DisplayCharacter(prefab, "Idle");
+                stage.FrameCurrentCharacter();
+                _previewedHeroPrefab = prefab;
+            }
+            _courtyardHeroPreview.texture = stage.PreviewTexture;
+            _courtyardHeroPreview.enabled = stage.PreviewTexture != null;
+            if (_courtyardHeroFallback != null) _courtyardHeroFallback.enabled = !_courtyardHeroPreview.enabled;
+        }
+
+        /// <summary>Returns an explicitly authored visual when the gameplay definition has no preview prefab.</summary>
+        public GameObject GetAuthoredHeroPreview(string heroId)
+        {
+            if (_courtyardHeroModels != null)
+                foreach (var item in _courtyardHeroModels)
+                    if (string.Equals(item.Id, heroId, StringComparison.OrdinalIgnoreCase)) return item.Prefab;
+            return null;
         }
 
         private static bool ContainsId(IReadOnlyList<string> list, string targetId)
@@ -363,6 +380,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_heroNameText != null) _heroNameText.text = heroName;
             if (_heroRoleText != null) _heroRoleText.text = roleDesc;
             if (_heroAvatarImage != null) { _heroAvatarImage.sprite = avatar; _heroAvatarImage.enabled = avatar != null; }
+            if (_courtyardHeroFallback != null)
+            {
+                _courtyardHeroFallback.sprite = avatar;
+                _courtyardHeroFallback.enabled = (_courtyardHeroPreview == null || !_courtyardHeroPreview.enabled) && avatar != null;
+            }
         }
 
         public void SetRelicInfo(string relicName, string relicDesc, Sprite icon = null)
@@ -372,8 +394,34 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_relicIconImage != null) { _relicIconImage.sprite = icon; _relicIconImage.enabled = icon != null; }
         }
 
-        public void SetMinionSlotState(int index, bool selected, string name) => SetRow(index, selected, name, _minionSlotCheckmarks, _minionSlotNameTexts);
-        public void SetTowerSlotState(int index, bool selected, string name) => SetRow(index, selected, name, _towerSlotCheckmarks, _towerSlotNameTexts);
+        public void SetMinionSlotState(int index, bool selected, string name)
+        {
+            SetRow(index, selected, name, _minionSlotCheckmarks, _minionSlotNameTexts);
+            if (!IsLoadoutManagement && _minionSlotButtons != null && index < _minionSlotButtons.Length && _minionSlotButtons[index] != null)
+                _minionSlotButtons[index].gameObject.SetActive(selected);
+        }
+        public void SetTowerSlotState(int index, bool selected, string name)
+        {
+            SetRow(index, selected, name, _towerSlotCheckmarks, _towerSlotNameTexts);
+            if (!IsLoadoutManagement && _towerSlotButtons != null && index < _towerSlotButtons.Length && _towerSlotButtons[index] != null)
+                _towerSlotButtons[index].gameObject.SetActive(selected);
+        }
+
+        /// <summary>Displays formatted stage details supplied by the presenter.</summary>
+        public void SetStageReview(DefenseStageReviewPresentation presentation)
+        {
+            if (presentation == null || IsLoadoutManagement) return;
+            if (_reviewStageCode != null) _reviewStageCode.text = presentation.Code;
+            if (_reviewStageName != null) _reviewStageName.text = presentation.Name;
+            if (_reviewStageDescription != null) _reviewStageDescription.text = presentation.Description;
+            if (_reviewStageDuration != null) _reviewStageDuration.text = presentation.Duration;
+            if (_reviewStageRewards != null) _reviewStageRewards.text = presentation.Rewards;
+            if (_reviewStageArtwork != null)
+            {
+                _reviewStageArtwork.sprite = presentation.Artwork;
+                _reviewStageArtwork.enabled = presentation.Artwork != null;
+            }
+        }
 
         private static void SetRow(int index, bool selected, string name, Image[] icons, TextMeshProUGUI[] labels)
         {
@@ -392,13 +440,18 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_validationMessageText != null)
             {
                 _validationMessageText.text = string.IsNullOrEmpty(message)
-                    ? (canStart ? "Đội hình sẵn sàng xuất trận." : "Hãy hoàn thiện đội hình tại Bách Bảo Các.") : message;
+                    ? (IsLoadoutManagement ? "Chạm từng vị trí để thay trang bị." : canStart ? "Đội hình sẵn sàng xuất trận." : "Hãy hoàn thiện đội hình trước khi xuất trận.") : message;
                 _validationMessageText.color = canStart ? new Color(.63f,.80f,.66f) : new Color(.94f,.65f,.56f);
             }
-            if (_startBattleButton != null) _startBattleButton.interactable = canStart && !_isStarting;
-            if (_editLoadoutButton != null) _editLoadoutButton.interactable = !_isStarting;
+            if (_startBattleButton != null) _startBattleButton.interactable = IsLoadoutManagement || (canStart && !_isStarting);
+            if (_editLoadoutButton != null)
+            {
+                _editLoadoutButton.gameObject.SetActive(!IsLoadoutManagement);
+                _editLoadoutButton.interactable = !_isStarting;
+            }
             if (_closeButton != null) _closeButton.interactable = !_isStarting;
-            if (_startBattleButtonText != null) _startBattleButtonText.text = _isStarting ? "ĐANG TẢI..." : (_presenter != null && !_presenter.HasStageSelected ? "CHỌN ẢI XUẤT TRẬN" : "XUẤT TRẬN");
+            if (_startBattleButtonText != null) _startBattleButtonText.text = IsLoadoutManagement ? "XONG"
+                : _isStarting ? "ĐANG TẢI..." : (_presenter != null && !_presenter.HasStageSelected ? "CHỌN ẢI XUẤT TRẬN" : "XUẤT TRẬN");
         }
         public void ShowLoadingOverlay(bool show, string initialStatus)
         {

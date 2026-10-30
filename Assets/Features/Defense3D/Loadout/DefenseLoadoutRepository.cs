@@ -155,11 +155,31 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 var dto = JsonUtility.FromJson<LoadoutSaveDto>(json);
                 if (dto == null) return null;
 
-                // Chuẩn hóa và validate các trường
-                dto.HeroId = DefenseLoadoutIdMapper.MapHeroId(dto.HeroId);
-                dto.RelicId = DefenseLoadoutIdMapper.MapRelicId(dto.RelicId);
-                dto.MinionIds = DefenseLoadoutIdMapper.MapMinionIds(dto.MinionIds);
-                dto.TowerIds = DefenseLoadoutIdMapper.MapTowerIds(dto.TowerIds);
+                // Nếu file trên đĩa thuộc phiên bản tương lai, giữ nguyên không sửa đổi
+                if (dto.Version > CURRENT_VERSION)
+                {
+                    return dto;
+                }
+
+                string mappedHero = DefenseLoadoutIdMapper.MapHeroId(dto.HeroId);
+                string mappedRelic = DefenseLoadoutIdMapper.MapRelicId(dto.RelicId);
+                var mappedMinions = DefenseLoadoutIdMapper.MapMinionIds(dto.MinionIds);
+                var mappedTowers = DefenseLoadoutIdMapper.MapTowerIds(dto.TowerIds);
+
+                bool needsRewrite = !string.Equals(dto.HeroId, mappedHero, StringComparison.Ordinal)
+                    || !string.Equals(dto.RelicId, mappedRelic, StringComparison.Ordinal)
+                    || dto.MinionIds == null || dto.MinionIds.Count != mappedMinions.Count
+                    || dto.TowerIds == null || dto.TowerIds.Count != mappedTowers.Count;
+
+                dto.HeroId = mappedHero;
+                dto.RelicId = mappedRelic;
+                dto.MinionIds = mappedMinions;
+                dto.TowerIds = mappedTowers;
+
+                if (needsRewrite)
+                {
+                    Save(dto);
+                }
 
                 return dto;
             }
@@ -195,7 +215,6 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 }
             }
 
-            // Nếu không có dữ liệu PlayerPrefs, trả về null để dùng mặc định
             if (string.IsNullOrEmpty(legacyHero) && string.IsNullOrEmpty(legacyRelic))
             {
                 return null;

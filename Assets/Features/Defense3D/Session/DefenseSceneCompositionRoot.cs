@@ -198,6 +198,7 @@ namespace ProjectZombie.Features.Defense3D
                 if (participant is DefenseVillageShop3D shop)
                 {
                     DefenseLoadoutRuntimeAdapter.ApplyToShop(resolved, shop);
+                    DefenseLoadoutRuntimeAdapter.ApplyTowerAndMinionStarBonuses(resolved, null, shop);
                 }
                 else if (participant is DefenseHeroMotor3D m) motor = m;
                 else if (participant is DefenseHeroAutoAttack3D a) attack = a;
@@ -213,6 +214,7 @@ namespace ProjectZombie.Features.Defense3D
             if (towerBuilder != null)
             {
                 DefenseLoadoutRuntimeAdapter.ApplyTowers(resolved, towerBuilder);
+                DefenseLoadoutRuntimeAdapter.ApplyTowerAndMinionStarBonuses(resolved, _session?.Modifiers, null);
             }
 
             if (_heroKit != null)
@@ -221,6 +223,8 @@ namespace ProjectZombie.Features.Defense3D
                 int bonusRerolls = DefenseLoadoutRuntimeAdapter.ApplySanctuaryUpgrades(_session?.Modifiers, _heroHealth, motor);
                 if (_matchUI != null && bonusRerolls > 0) _matchUI.SetBonusRerolls(bonusRerolls);
                 int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(resolved.RelicId);
+                int heroStar = DefenseLoadoutRuntimeAdapter.GetEffectiveHeroStarLevel(resolved.HeroId);
+                DefenseLoadoutRuntimeAdapter.EvaluateHeroCombatStarBonuses(heroStar, null, out _, out float signatureCdReduction);
                 DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(relicStar, null, out float relicDmgBonus, out float relicCdReduction, out float relicAreaBonus);
                 if (_skillPresenters != null)
                 {
@@ -229,6 +233,11 @@ namespace ProjectZombie.Features.Defense3D
                         if (presenter != null && presenter.Kind == DefenseSkillKind.DepToOng)
                         {
                             presenter.SetMetaSkillBonuses(relicDmgBonus, relicCdReduction, relicAreaBonus);
+                        }
+                        else if (presenter != null && presenter.Kind == DefenseSkillKind.ScholarSignature)
+                        {
+                            // Signature damage already scales through its shared attack owner.
+                            presenter.SetMetaSkillBonuses(0f, signatureCdReduction, 0f);
                         }
                     }
                 }

@@ -18,7 +18,7 @@ MonoBehaviour:
   rarity: 1
   elementHexColor: '#FFD700'
   avatar: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
-  playerPrefab: {fileID: 4603747337966706880, guid: 176ac12ec7c47dd40a1313ca69e113a7, type: 3}
+  playerPrefab: {fileID: 0}
   description: "\u0110\u01B0\u1EE3c anh linh li\u1EC7t t\u1ED5 & \u0110\u1EE9c Th\xE1nh
     Tr\u1EA7n \u0111i\u1EC3m h\xF3a. Tay c\u1EA7m b\xFAt l\u1EC7nh kh\xED thi\xEAng
     s\xF4ng n\xFAi ph\xE1n \u0111\u1ECBnh t\xE0 ma."
@@ -61,8 +61,7 @@ MonoBehaviour:
     t\u0103ng 15% T\u1ED1c \u0111\u1ED9 di chuy\u1EC3n v\xE0 h\u1ED3i 5% HP t\u1ED1i
     \u0111a."
   passiveTraitIcon: {fileID: 21300000, guid: 5472764acc5a4fc797796be01edc1f47, type: 3}
-  defaultRelic: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
-  defaultPrimaryWeapon: {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
-  defaultRelics:
-  - {fileID: 11400000, guid: 3d14e1e6da63a1c4aa2250f6f6c05d00, type: 2}
+  defaultRelic: {fileID: 0}
+  defaultPrimaryWeapon: {fileID: 0}
+  defaultRelics: []
   isUnlockedByDefault: 1
