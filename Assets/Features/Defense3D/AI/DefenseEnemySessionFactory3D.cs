@@ -15,6 +15,7 @@ namespace ProjectZombie.Features.Defense3D
             public bool Notified;
             public IDisposable CombatText;
             public IDisposable AttackFeedback;
+            public UI.DefenseEnemyHealthPresenter3D HealthBar;
             public PoolLease<GameObject> PoolLease;
         }
         private readonly IDefenseGameplayContext _gameplay;
@@ -30,6 +31,7 @@ namespace ProjectZombie.Features.Defense3D
         private readonly DefenseBasicAttackEffectSetSO _enemyAttackStyle;
         private long _nextLease;
         private bool _cleaning, _disposed;
+        private readonly Camera _presentationCamera;
         public event Action<DefenseEnemy3D,DefenseActorLifetime> ActorReleased;
         public int OwnedCount => _entries.Count;
         public bool BelongsTo(IDefenseGameplayContext gameplay) => ReferenceEquals(_gameplay,gameplay);
@@ -46,6 +48,7 @@ namespace ProjectZombie.Features.Defense3D
             _release = Release;
             _combatText = combatText;
             _pool = pool; _woodDrops = woodDrops; _effects = effects; _enemyAttackStyle = enemyAttackStyle;
+            _presentationCamera = Camera.main;
         }
 
         public DefenseEnemy3D Spawn(DefenseEnemySpawnDefinition definition, Vector3 position, int lane,
@@ -86,6 +89,12 @@ namespace ProjectZombie.Features.Defense3D
                 entry.AttackFeedback = new DefenseBasicAttackFeedbackAdapter(attack.Feedback, _gameplay, _effects, _enemyAttackStyle, actor,
                     () => actor != null && actor.isActiveAndEnabled && ReferenceEquals(actor.Lifetime, lifetime) && lifetime.IsCurrent(_gameplay));
             actor.TryGetComponent<DefenseActorAnchors3D>(out var anchors);
+            if (actor.TryGetComponent<UI.DefenseEnemyHealthPresenter3D>(out var healthBar))
+            {
+                entry.HealthBar = healthBar;
+                actor.TryGetComponent<Collider>(out var body);
+                healthBar.Bind(actor, _gameplay, lifetime, anchors != null ? anchors.Head : null, _presentationCamera, body);
+            }
             if (_combatText != null) entry.CombatText = new UI.DefenseCombatTextAdapter(actor, _gameplay, _combatText,
                 () => anchors != null && anchors.Head != null ? anchors.Head.position : actor.transform.position + Vector3.up, ProjectZombie.Features.UI.DamageText.CombatTextTarget.Enemy);
         }
@@ -101,6 +110,7 @@ namespace ProjectZombie.Features.Defense3D
                 _effects?.StopOwner(actor);
                 entry.CombatText?.Dispose();
                 entry.AttackFeedback?.Dispose();
+                if (entry.HealthBar != null) entry.HealthBar.Unbind();
                 actor.Removed -= entry.Removed;
                 if (actor != null && reason != DefenseActorReleaseReason.ExternalRemoved)
                 {

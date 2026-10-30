@@ -59,7 +59,7 @@ namespace ProjectZombie.Features.Defense3D
     [CreateAssetMenu(fileName = "StageSpawnConfig", menuName = "TREBRAVE/Defense3D/Stage Spawn Config")]
     public sealed class StageSpawnConfig : ScriptableObject
     {
-        public const string DefaultResource = "Defense3D/Stages/Stage01_Production";
+
 
         [Header("── 1. ĐỊNH DANH CẤU HÌNH (Profile Identity) ──")]
         [Tooltip("Mã phiên bản cấu hình màn chơi (Ví dụ: stage01-v1, stage02-v1)")]

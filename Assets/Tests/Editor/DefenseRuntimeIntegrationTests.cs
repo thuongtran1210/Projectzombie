@@ -107,7 +107,7 @@ namespace ProjectZombie.Tests.Editor
 
         private IEnumerator StageConfig_QueuesSpawnsAndReleasesCapacityAfterDeathAndRestart()
         {
-            var config = Object.Instantiate(Resources.Load<StageSpawnConfig>(StageSpawnConfig.DefaultResource));
+            var config = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>("Assets/_Data/Levels/Rules/Stage01_Production.asset"));
             var serialized = new SerializedObject(config);
             var events = serialized.FindProperty("events");
             events.arraySize = 2;

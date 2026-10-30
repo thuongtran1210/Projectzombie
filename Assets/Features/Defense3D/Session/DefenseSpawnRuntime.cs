@@ -28,6 +28,8 @@ namespace ProjectZombie.Features.Defense3D
         private readonly Dictionary<string, Vector3> _landings = new Dictionary<string, Vector3>();
         private bool _cleaning;
         private bool _disposed;
+        private readonly DefenseSpawnWarningTimeline _warnings = new DefenseSpawnWarningTimeline();
+        public IDefenseSpawnWarningSource Warnings => _warnings;
 
         public int ProcessedEvents => _scheduler.ProcessedEvents;
         public int TotalEvents => _plan.Events.Count;
@@ -50,10 +52,21 @@ namespace ProjectZombie.Features.Defense3D
             _battery = battery;
             _planner = plan.CreatePlanner();
             _scheduler = new DefenseStageSpawnScheduler(plan.Events);
+            foreach (var entry in plan.Events)
+            {
+                for (int slot = 0; slot < entry.Count; slot++)
+                {
+                    string type = slot == 0 && !string.IsNullOrEmpty(entry.LeadEnemyId) ? entry.LeadEnemyId : entry.EnemyId;
+                    var job = new DefenseSpawnJob(entry.EventId, slot, entry.EnemyId, type, entry.ZoneId, entry.TriggerTime, entry.Kind);
+                    Vector3 point = placement.WarningPosition(job);
+                    _warnings.Add(job, new DefensePoint3(point.x, point.y, point.z));
+                }
+            }
             _enqueue = job => _planner.EnqueueJob(job, _gameplay.ElapsedSeconds);
             _canSpawn = CanSpawn;
             _trySpawn = TrySpawn;
             _planner.JobExpired += OnExpired;
+            _planner.JobSpawned += OnSpawned;
             _planner.JobOverflowed += OnOverflowed;
             _factory.ActorReleased += OnActorReleased;
             Debug.Log("[TREBRAVE Defense3D] Spawn profile=" + _plan.ProfileVersion + " activeLimit=" +
@@ -80,7 +93,26 @@ namespace ProjectZombie.Features.Defense3D
             _landings.Add(id, position);
             var job = new DefenseSpawnJob(id, 0, _battery.LandingEnemy.EnemyId, _battery.LandingEnemy.EnemyId,
                 "cannon-west-landing", _gameplay.ElapsedSeconds, DefenseSpawnKind.Landing);
+            _warnings.Add(job, new DefensePoint3(position.x, position.y, position.z), _gameplay.ElapsedSeconds, true);
             return _planner.EnqueueJob(job, _gameplay.ElapsedSeconds);
+        }
+
+        /// <summary>Announces a flight without enqueueing an enemy before it has landed.</summary>
+        public void AnnounceLanding(string cannonId, int shot, Vector3 position, float flightSeconds, int generation)
+        {
+            if (_disposed || _cleaning || !_gameplay.AdvancesGameplay || generation != _gameplay.RunGeneration ||
+                _battery == null || _battery.LandingEnemy == null || string.IsNullOrWhiteSpace(cannonId) || shot <= 0 ||
+                !DefenseDamageRules.IsFinite(flightSeconds) || flightSeconds <= 0f) return;
+            var job = new DefenseSpawnJob("landing:" + cannonId + ":" + shot, 0, _battery.LandingEnemy.EnemyId,
+                _battery.LandingEnemy.EnemyId, "cannon-west-landing", _gameplay.ElapsedSeconds + flightSeconds, DefenseSpawnKind.Landing);
+            _warnings.Add(job, new DefensePoint3(position.x, position.y, position.z), _gameplay.ElapsedSeconds, true);
+        }
+
+        public void CancelLandingWarning(string cannonId, int shot, int generation)
+        {
+            if (_disposed || generation != _gameplay.RunGeneration) return;
+            var job = new DefenseSpawnJob { EventId = "landing:" + cannonId + ":" + shot, SlotIndex = 0 };
+            _warnings.Complete(job, _gameplay.ElapsedSeconds, false);
         }
 
         private bool CanSpawn(DefenseSpawnJob job)
@@ -172,6 +204,7 @@ namespace ProjectZombie.Features.Defense3D
                 _acceptedLandings.Clear();
                 _planner.Reset();
                 _scheduler.Reset();
+                _warnings.Reset();
                 _reportedFailures.Clear();
                 _retryAt.Clear();
                 _cleaning = false;
@@ -190,6 +223,7 @@ namespace ProjectZombie.Features.Defense3D
                     _disposed = true;
                     _factory.ActorReleased -= OnActorReleased;
                     _planner.JobExpired -= OnExpired;
+                    _planner.JobSpawned -= OnSpawned;
                     _planner.JobOverflowed -= OnOverflowed;
                 }
             }
@@ -197,11 +231,13 @@ namespace ProjectZombie.Features.Defense3D
 
         private void OnExpired(DefenseSpawnJob job)
         {
+            _warnings.Complete(job, _gameplay.ElapsedSeconds, false);
             _landings.Remove(job.EventId);
             Debug.LogWarning("[TREBRAVE Defense3D] Spawn expired: " + job.EventId + "/" + job.SlotIndex + " zone=" + job.Zone);
         }
         private void OnOverflowed(DefenseSpawnJob job)
         {
+            _warnings.Complete(job, _gameplay.ElapsedSeconds, false);
             _landings.Remove(job.EventId);
             Debug.LogWarning("[TREBRAVE Defense3D] Spawn queue overflow: " +
             job.EventId + "/" + job.SlotIndex + " profile=" + _plan.ProfileVersion + " t=" + _gameplay.ElapsedSeconds.ToString("F1") +
@@ -209,6 +245,12 @@ namespace ProjectZombie.Features.Defense3D
             " pending=" + _planner.PendingCount + "/" + _planner.PendingLimit + " predicateBlockedLastBatch=" + _planner.LastPredicateBlocked +
             " factoryFailedLastBatch=" + _planner.LastFactoryFailed + " expired=" + _planner.ExpiredJobCount +
             " overflowTotal=" + _planner.OverflowJobCount);
+        }
+
+        private void OnSpawned(DefenseSpawnJob job)
+        {
+            var point = _approvedLocation.Position;
+            _warnings.Complete(job, _gameplay.ElapsedSeconds, true, new DefensePoint3(point.x, point.y, point.z));
         }
     }
 }

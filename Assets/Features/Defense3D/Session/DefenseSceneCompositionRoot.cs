@@ -72,6 +72,9 @@ namespace ProjectZombie.Features.Defense3D
         private bool _hasFocus = true;
         private bool _applicationPaused;
         private DefenseLoadoutSnapshot _loadoutSnapshot;
+        [SerializeField] private ProjectZombie.Features.Maps.StageDefinitionSO _directPlayStage;
+        public bool IsReady { get; private set; }
+        public MatchLaunchRequest MatchRequest { get; private set; }
 
         public IDefenseGameplayContext Gameplay => _session;
 
@@ -81,34 +84,70 @@ namespace ProjectZombie.Features.Defense3D
             _loadoutSnapshot = snapshot;
         }
 
-        private void Start()
+        private async void Start()
         {
+            if (IsReady) return;
+            var app = ProjectZombie.Core.Architecture.AppCompositionRoot.Instance;
+            if (app != null && app.Flow.IsNavigating) return;
+#if UNITY_EDITOR
+            if (_directPlayStage != null)
+            {
+                if (app == null) throw new InvalidOperationException("Editor Bootstrap missing.");
+                var request = new MatchLaunchRequest(_directPlayStage, DefenseSessionContext.ConsumeSnapshot());
+                request = request.ResolveRules(await app.Flow.LoadEditorRulesAsync(_directPlayStage));
+                app.Flow.AdoptEditorMatch(request);
+                if (this != null) await InitializeMatchAsync(request);
+                return;
+            }
+#endif
+            Debug.LogError("[Defense3D] Launch this map through AppFlow, or assign a direct-play stage for Editor testing.", this);
+            enabled = false;
+        }
+
+        /// <summary>Called by the navigation owner after activation; starts gameplay only after bindings are complete.</summary>
+        public async System.Threading.Tasks.Task InitializeMatchAsync(MatchLaunchRequest request)
+        {
+            if (_session != null || IsReady) throw new InvalidOperationException("Map is already initialized.");
+            MatchRequest = request ?? throw new ArgumentNullException(nameof(request));
+            _loadoutSnapshot = request.Loadout;
+            _run.ConfigureStage(request);
             try
             {
                 ValidateBindings();
                 _hasFocus = Application.isFocused;
-                _session = new DefenseSession();
+                _session = new DefenseSession(request.Stage.DefenseDuration);
+                _session.RuntimeAdapter.Run.State.Changed += ProjectCompatibilityState;
+                _session.RunReset += BeginNewAttempt;
                 _heroCommands = new DefenseHeroCommands(_session);
                 _session.Own(_heroCommands);
                 foreach (var participant in _sceneParticipants) participant.BindGameplay(_session);
                 foreach (var participant in _sceneParticipants)
                 {
                     if (participant is DefenseHeroMotor3D motor) motor.BindCommands(_heroCommands);
-                    if (participant is DefenseTowerBuildPrototype3D builder) builder.BindCommands(_heroCommands);
+                    if (participant is DefenseTowerBuildPrototype3D builder)
+                    {
+                        builder.BindCommands(_heroCommands);
+                        _matchUI.BindTowerBuilder(builder);
+                    }
                     if (participant is DefenseHeroHealth3D health) _heroHealth = health;
                 }
                 _heroHealth.Defeated += ClearHeroCommands;
                 _matchUI.BindSession(_session, _session.Modifiers);
+                _matchUI.InitializePresentation();
                 BindCombatText();
                 BindEffects();
+                ApplyLoadout();
+                foreach (var participant in _sceneParticipants)
+                    if (participant is DefenseTowerBuildPrototype3D builder)
+                        await builder.PrepareAsync(_runtimeRoots.FriendlyTargets);
                 if (!_run.InitializeSession(_session, _wallet, _combatText, _effectService))
                     throw new InvalidOperationException("Run configuration could not be initialized.");
                 foreach (var participant in _sceneParticipants)
                     if (participant is DefenseVillageShop3D shop) shop.BindWoodDrops(_run.WoodDrops);
                 foreach (var presenter in _skillPresenters) presenter.Bind(_session);
                 _session.RuntimeAdapter.RegisterOwner(_matchUI.CancelRunPresentation, ResetPresentationAndWallet);
-                ApplyLoadout();
                 _session.Start();
+                IsReady = true;
             }
             catch (Exception exception)
             {
@@ -117,6 +156,21 @@ namespace ProjectZombie.Features.Defense3D
                 Debug.LogError("[TREBRAVE Defense3D] Scene composition failed: " + exception.Message, this);
                 enabled = false;
             }
+        }
+
+        private void ProjectCompatibilityState(DefenseGamePhase previous, DefenseGamePhase current)
+        {
+            var state = current == DefenseGamePhase.Paused ? ProjectZombie.Features.Shared.GameState.Paused
+                : current == DefenseGamePhase.LevelUp ? ProjectZombie.Features.Shared.GameState.LevelUpSelection
+                : current == DefenseGamePhase.Win || current == DefenseGamePhase.Loss ? ProjectZombie.Features.Shared.GameState.GameOver
+                : ProjectZombie.Features.Shared.GameState.Playing;
+            ProjectZombie.Features.Shared.GameStateManager.Instance?.ProjectDefenseState(state);
+        }
+
+        private void BeginNewAttempt()
+        {
+            var app = ProjectZombie.Core.Architecture.AppCompositionRoot.Instance;
+            if (app != null) MatchRequest = app.Flow.BeginNewAttempt();
         }
 
         private void ApplyLoadout()
@@ -299,6 +353,9 @@ namespace ProjectZombie.Features.Defense3D
 
         private void DisposeSession()
         {
+            IsReady = false;
+            if (_session != null) _session.RuntimeAdapter.Run.State.Changed -= ProjectCompatibilityState;
+            if (_session != null) _session.RunReset -= BeginNewAttempt;
             if (_basicAttackPresenter != null) _basicAttackPresenter.Unbind();
             if (_dashPresenter != null) _dashPresenter.Unbind();
             if (_signaturePresenter != null) _signaturePresenter.Unbind();

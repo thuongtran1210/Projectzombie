@@ -103,7 +103,7 @@ Khi bạn mở Scene `MapSongQue3D_Prototype.unity`, các GameObject quan trọn
 * Tinh chỉnh: `Attack Range` (Tầm bắn), `Base Damage` (Sát thương), `Fire Interval` (Tốc độ bắn), `Projectile Speed` (Tốc độ đạn).
 
 ### 🌊 Muốn thêm bớt quái hoặc đổi thời gian xuất hiện:
-* Mở `Assets/Resources/Defense3D/Stages/Stage01_Production.asset`.
+* Mở `Assets/_Data/Levels/Rules/Stage01_Production.asset`.
 * Mở mục **Events** ➔ Bạn có thể thêm Wave mới, đổi `TriggerTime` (giây), đổi loại quái `Enemy`, đổi số lượng `Count`, hoặc gán quái đầu đàn `LeadEnemy`.
 
 ---

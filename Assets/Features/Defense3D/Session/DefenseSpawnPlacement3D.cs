@@ -35,6 +35,9 @@ namespace ProjectZombie.Features.Defense3D
             return true;
         }
 
+        /// <summary>Authored warning point only; does not approve placement or query navigation.</summary>
+        public Vector3 WarningPosition(DefenseSpawnJob job) => _plan.Resolve(job, _eastMarker.position).Position;
+
         /// <summary>The returned position is used directly by the same synchronous spawn attempt.</summary>
         public bool TryResolve(DefenseSpawnJob job, out DefenseSpawnLocation location)
         {

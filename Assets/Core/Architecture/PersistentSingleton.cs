@@ -55,7 +55,7 @@ namespace ProjectZombie.Core.Architecture
             }
 
             _instance = this as T;
-            if (transform.parent == null)
+            if (transform.parent == null && gameObject.scene.name != AppCompositionRoot.BOOTSTRAP_SCENE)
             {
                 DontDestroyOnLoad(gameObject);
             }

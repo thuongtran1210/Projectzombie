@@ -5,14 +5,9 @@ using ProjectZombie.Features.MetaProgression.Gacha;
 
 namespace ProjectZombie.Core.Architecture
 {
-    /// <summary>
-    /// Bootstrapper tự động khởi tạo toàn bộ Core Services của trò chơi trước khi Scene đầu tiên tải.
-    /// Gom tất cả Manager vào một GameObject duy nhất mang tên '--- APP CORE SERVICES ---'.
-    /// Đảm bảo tính nhất quán tuyệt đối về thứ tự khởi tạo theo chuẩn kiến trúc Mục 3.3.
-    /// </summary>
+    /// <summary>Creates application domain services exactly once under the Bootstrap owner.</summary>
     public static class CoreBootstrapper
     {
-        private const string CORE_ROOT_NAME = "--- APP CORE SERVICES ---";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStaticDomainState()
@@ -23,8 +18,7 @@ namespace ProjectZombie.Core.Architecture
 
         private static bool _isCoreServicesInitialized = false;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void InitializeCoreServices()
+        public static void InitializeCoreServices(GameObject coreRoot)
         {
             // Ghim cứng 60 FPS và giữ màn hình luôn sáng, chống tự động khóa máy khi chơi game
             QualitySettings.vSyncCount = 0;
@@ -50,8 +44,7 @@ namespace ProjectZombie.Core.Architecture
             _isCoreServicesInitialized = true;
 
             // 1. Tạo GameObject Container tập trung
-            var coreRoot = new GameObject(CORE_ROOT_NAME);
-            Object.DontDestroyOnLoad(coreRoot);
+            if (coreRoot == null) throw new System.ArgumentNullException(nameof(coreRoot));
 
             // 2. Khởi tạo các Manager theo đúng thứ tự phụ thuộc dữ liệu
             // Bước 2.1: GameManager (nạp file player_save.json)
@@ -79,7 +72,7 @@ namespace ProjectZombie.Core.Architecture
             ServiceContext.Register<IMetaCurrencyService>(currencyMgr);
 
             // Bước 2.6: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
-            coreRoot.AddComponent<ProjectZombie.Features.Startup.GameStartupFlowController>();
+            // Loading and navigation are owned by AppFlow; no second startup flow is scheduled.
 
             // 4. Đăng ký GameDataService và IAssetProvider vào ServiceContext
             ServiceContext.Register<ProjectZombie.Core.Services.Data.IGameDataService>(ProjectZombie.Core.Services.Data.GameDataService.Instance);

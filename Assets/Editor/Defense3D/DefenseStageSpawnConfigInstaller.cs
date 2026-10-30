@@ -24,7 +24,8 @@ namespace ProjectZombie.EditorTools.Defense3D
 
         private static void Create(string name, string version, float timeScale, float bossTime, float arenaDuration)
         {
-            string path = "Assets/Resources/Defense3D/Stages/" + name + ".asset";
+            string path = name == "Stage01_Production" ? "Assets/_Data/Levels/Rules/Stage01_Production.asset" : "Assets/Resources/Defense3D/Stages/" + name + ".asset";
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             if (File.Exists(path)) return; // Never overwrite authored profiles.
             var config = ScriptableObject.CreateInstance<StageSpawnConfig>();
             try

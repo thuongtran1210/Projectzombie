@@ -31,6 +31,14 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroHealth3D _hero;
         [SerializeField] private DefenseSupportTarget3D[] _supports;
         public IDefenseAggroCandidate[] Candidates { get; private set; }
+        public void AppendRuntimeSupports(System.Collections.Generic.IReadOnlyList<DefenseSupportTarget3D> supports)
+        {
+            int count = _supports != null ? _supports.Length : 0;
+            var merged = new DefenseSupportTarget3D[count + supports.Count];
+            if (count > 0) System.Array.Copy(_supports, merged, count);
+            for (int i = 0; i < supports.Count; i++) merged[count + i] = supports[i];
+            _supports = merged;
+        }
         public void ValidateBindings()
         {
             if (_hero == null || _hero.gameObject.scene != gameObject.scene)

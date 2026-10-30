@@ -16,11 +16,11 @@ namespace ProjectZombie.Tests.Editor
         }
 
         [Test]
-        public void Navigation_TargetScene_IsExplicitStringNameNotIndex()
+        public void Navigation_WithoutAppFlowRejectsImplicitMapLaunch()
         {
-            // Yêu cầu G4: Tuyệt đối không điều hướng bằng build index
-            Assert.AreEqual("MapSongQue3D_Prototype", DefenseMatchNavigation.TARGET_SCENE_NAME);
-            Assert.IsFalse(int.TryParse(DefenseMatchNavigation.TARGET_SCENE_NAME, out _));
+            Assert.IsFalse(DefenseMatchNavigation.IsNavigating);
+            Assert.IsNull(ProjectZombie.Core.Architecture.AppCompositionRoot.Instance);
+            Assert.IsFalse(DefenseMatchNavigation.LaunchDefenseMatchAsync(DefenseLoadoutSnapshot.CreateDefault()).GetAwaiter().GetResult());
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace ProjectZombie.Tests.Editor
                 };
 
                 // Bỏ relic (bắt buộc theo default rules)
-                presenter.SelectRelic("");
+                presenter.SelectRelic("relic_unknown");
 
                 Assert.Greater(eventCount, 0);
                 Assert.IsFalse(lastState);

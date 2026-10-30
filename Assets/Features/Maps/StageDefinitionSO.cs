@@ -21,6 +21,27 @@ namespace ProjectZombie.Features.Maps
     [CreateAssetMenu(fileName = "Stage_New", menuName = "ProjectZombie/Maps/Stage Definition")]
     public class StageDefinitionSO : ScriptableObject
     {
+        [Header("Defense Scene & Rules")]
+        [SerializeField] private MapDefinitionSO _map;
+        [SerializeField] private Defense3D.DefenseStageBlueprintSO _defenseBlueprint;
+        [SerializeField] private UnityEngine.AddressableAssets.AssetReferenceT<Defense3D.StageSpawnConfig> _spawnRules;
+        [SerializeField] private string[] _requiredCompletedStages = System.Array.Empty<string>();
+        public MapDefinitionSO Map => _map;
+        public Defense3D.DefenseStageBlueprintSO DefenseBlueprint => _defenseBlueprint;
+        public UnityEngine.AddressableAssets.AssetReferenceT<Defense3D.StageSpawnConfig> SpawnRules => _spawnRules;
+        public float DefenseDuration => _defenseBlueprint != null ? _defenseBlueprint.stageDurationSeconds : stageDurationSeconds;
+        public bool CanLaunchDefense => !string.IsNullOrWhiteSpace(stageId) && _map != null && _map.IsValid
+            && (_defenseBlueprint != null || (_spawnRules != null && _spawnRules.RuntimeKeyIsValid())) && DefenseDuration > 0f
+            && !float.IsNaN(DefenseDuration) && !float.IsInfinity(DefenseDuration);
+
+        public bool IsUnlocked(ProjectZombie.Features.MetaProgression.MetaProgressionSaveData save)
+        {
+            if (_requiredCompletedStages == null) return true;
+            foreach (var required in _requiredCompletedStages)
+                if (!string.IsNullOrWhiteSpace(required) && (save == null || !save.IsStageCompleted(required))) return false;
+            return true;
+        }
+
         [Header("Thông Tin Ải (Stage Profile)")]
         public string stageId = "STAGE_01";
         public string stageName = "Rừng Trúc Âm Ty";

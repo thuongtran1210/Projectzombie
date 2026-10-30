@@ -6,10 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: 7def1f2fee8e4cef921175701513c2f2
-  - enabled: 1
-    path: Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity
-    guid: a120a823c226e2a46af86be9e5e71c0b
+    path: Assets/Scenes/Bootstrap.unity
+    guid: 4bb50c5fb9b8af645aa078d59c043d64
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 650b7101711a84f4b8a228452ab9ee9b, type: 2}

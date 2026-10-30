@@ -9,7 +9,7 @@ namespace ProjectZombie.Tests.Editor
 {
     public sealed class StageSpawnConfigTests
     {
-        private static StageSpawnConfig Production => Resources.Load<StageSpawnConfig>(StageSpawnConfig.DefaultResource);
+        private static StageSpawnConfig Production => UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>("Assets/_Data/Levels/Rules/Stage01_Production.asset");
 
         [Test]
         public void ProductionProfile_Preserves34Events214SlotsAndIndependentBossAt510()

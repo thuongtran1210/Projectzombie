@@ -30,6 +30,11 @@ namespace ProjectZombie.Features.Defense3D
             DefenseDamageRules.CanApply(context, Gameplay, IsDead) && _health.ApplyDamage(context);
         private void ResetHealth() { _generation = Gameplay.RunGeneration; _health.Reset(_maxHp); _live = true; }
         public void ResetForRecruit() { if (Gameplay != null && CanAdvanceGameplay) ResetHealth(); }
+        public void ConfigureCapacity(float capacity)
+        {
+            _maxHp = Mathf.Max(1f, capacity);
+            if (Gameplay != null) ResetHealth();
+        }
         public bool Heal(float amount) => isActiveAndEnabled && CanAdvanceGameplay && !IsDead && _generation == Gameplay.RunGeneration && _health.Heal(amount);
         public void IncreaseCapacity(float amount) { if (_health != null && !IsDead && CanAdvanceGameplay && amount > 0f) _health.SetCapacity(_health.MaxHp + amount, true); }
         protected override void OnGameplayReset() => ResetHealth();

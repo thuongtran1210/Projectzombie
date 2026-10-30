@@ -23,11 +23,11 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         public static DefenseVillageInteraction Resolve(bool available, bool nearHut, bool nearSocket, int towerLevel,
-            int wood, int buildCost, int upgradeCost)
+            int wood, int buildCost, int upgradeCost, int maxTowerLevel = 3)
         {
             if (!available || (!nearHut && !nearSocket)) return new DefenseVillageInteraction(DefenseVillageAction.None, false);
             if (nearHut) return new DefenseVillageInteraction(DefenseVillageAction.Recruit, true);
-            if (towerLevel >= 3) return new DefenseVillageInteraction(DefenseVillageAction.Maximum, false);
+            if (towerLevel >= maxTowerLevel) return new DefenseVillageInteraction(DefenseVillageAction.Maximum, false);
             int cost = towerLevel > 0 ? upgradeCost : buildCost;
             int shortage = cost > wood ? cost - wood : 0;
             return new DefenseVillageInteraction(towerLevel > 0 ? DefenseVillageAction.Upgrade : DefenseVillageAction.Build,

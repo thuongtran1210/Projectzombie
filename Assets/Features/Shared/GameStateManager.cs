@@ -46,18 +46,32 @@ namespace ProjectZombie.Features.Shared
 
                 // Cách ly: Nếu GameObject này có con (chứa các hệ thống gameplay cục bộ của Scene như 2D Spawner/Pools),
                 // tách các con ra để chúng thuộc Scene hiện tại và tự động được hủy khi chuyển sang Scene Defense 3D
-                if (transform.childCount > 0)
+                if (transform.childCount > 0 && gameObject.scene.name != AppCompositionRoot.BOOTSTRAP_SCENE)
                 {
                     transform.DetachChildren();
                 }
 
                 // Giữ lại manager xuyên suốt các scene
-                DontDestroyOnLoad(gameObject);
+                if (gameObject.scene.name != AppCompositionRoot.BOOTSTRAP_SCENE)
+                    DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        /// <summary>Compatibility projection from DefenseSession; does not change the authoritative clock.</summary>
+        public void ProjectDefenseState(GameState state)
+        {
+            if (CurrentState == state) return;
+            CurrentState = state;
+            OnStateChanged?.Invoke(state);
         }
 
         /// <summary>

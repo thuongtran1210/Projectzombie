@@ -2,7 +2,7 @@ using System;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    public enum DefenseSpawnWarningSymbol { Demon, Fish, Bat, Elite, Boss, Parachute, Cannon }
+    public enum DefenseSpawnWarningSymbol { Demon, Fish, Bat, Elite, Boss, Parachute, Cannon, Armored, Commander }
 
     public readonly struct DefenseIndicatorProjection
     {

@@ -30,7 +30,7 @@ namespace ProjectZombie.Features.Defense3D
         private void Start()
         {
             if (heroSpawn == null || baseMarker == null || eastEnemySpawn == null ||
-                BridgeCount != 3 || TowerSocketCount != 10)
+                BridgeCount == 0 || TowerSocketCount == 0)
                 Debug.LogError("[TREBRAVE Defense3D] Incomplete Map Sông Quê prototype scene markers.");
         }
     }

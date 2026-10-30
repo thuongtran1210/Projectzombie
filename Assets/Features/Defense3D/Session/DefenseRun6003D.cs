@@ -82,7 +82,6 @@ namespace ProjectZombie.Features.Defense3D
                 if (effects != null && (_enemyAttackStyle == null || !_enemyAttackStyle.IsValid))
                     throw new InvalidOperationException("Assign valid enemy basic-attack VFX profiles.");
                 var plan = stageBlueprint != null ? stageBlueprint.Compile() : stageSpawnConfig.Compile();
-                _spawnWarnings?.Configure(plan, sceneInfo.EastEnemySpawn);
                 _encounter = new DefenseYakshaEncounter3D(session, defenseBase, _heroHealth, plan.ArenaDuration, plan.BossHealth);
                 var placement = new DefenseSpawnPlacement3D(plan, sceneInfo.EastEnemySpawn, sceneInfo.HeroSpawn,defenseBase.transform,_runtimeRoots.WaterNavigation,_runtimeRoots.AirNavigation);
                 _runtimeRoots.FriendlyTargets.Bind(session);
@@ -98,6 +97,7 @@ namespace ProjectZombie.Features.Defense3D
                 // Shop có thể được đặt ngoài Runtime; composition root cũng truyền dependency cho scene participant.
                 var factory = new DefenseEnemySessionFactory3D(session,_runtimeRoots,wallet,session.TargetRegistry,combatText,_enemyPoolManager,_woodDropPool,effects,_enemyAttackStyle);
                 _spawns = new DefenseSpawnRuntime(plan, placement, session, defenseBase, wallet, _encounter, session.TargetRegistry,factory,_runtimeRoots.CannonBattery);
+                _spawnWarnings?.Configure(_spawns.Warnings);
                 _runtimeRoots.CannonBattery.Bind(session,_spawns);
 
                 _runtime = new DefenseMatchRuntime(session, defenseBase, _heroHealth, towerBuilder, _spawns, _encounter);
@@ -124,6 +124,16 @@ namespace ProjectZombie.Features.Defense3D
                 enabled = false;
                 return false;
             }
+        }
+
+        /// <summary>Applies selected stage rules before the run acquires any resources.</summary>
+        public void ConfigureStage(MatchLaunchRequest request)
+        {
+            if (_session != null) throw new InvalidOperationException("Cannot change rules during a run.");
+            var stage = request?.Stage;
+            if (stage == null || !stage.CanLaunchDefense) throw new ArgumentException("Invalid stage.", nameof(stage));
+            stageBlueprint = stage.DefenseBlueprint;
+            stageSpawnConfig = request.ResolvedRules;
         }
 
         public void RestartRun() => _session?.Restart();

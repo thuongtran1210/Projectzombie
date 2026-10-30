@@ -91,11 +91,12 @@ namespace Core.Audio
 
             _instance = this;
             ProjectZombie.Core.Architecture.ServiceContext.Register<ProjectZombie.Core.Audio.IAudioService>(this);
-            if (transform.parent != null)
+            bool bootstrapOwned = gameObject.scene.name == ProjectZombie.Core.Architecture.AppCompositionRoot.BOOTSTRAP_SCENE;
+            if (transform.parent != null && !bootstrapOwned)
             {
                 transform.SetParent(null);
             }
-            DontDestroyOnLoad(gameObject);
+            if (!bootstrapOwned) DontDestroyOnLoad(gameObject);
 
             InitializeAudioSystem();
             LoadAndApplyVolumeSettings();

@@ -13,6 +13,8 @@ namespace ProjectZombie.Features.MetaProgression
         [Header("Cloud & Metadata")]
         [Tooltip("Phiên bản cấu trúc dữ liệu lưu (dùng để migrate dữ liệu khi update game).")]
         public int saveVersion = 1;
+        public System.Collections.Generic.List<string> rewardedRunIds = new System.Collections.Generic.List<string>();
+        public System.Collections.Generic.List<string> unlockedTowerIds = new System.Collections.Generic.List<string>();
 
         [Tooltip("Unix Timestamp thời điểm lưu lần cuối (dùng để resolve xung đột Cloud / Local).")]
         public long lastSavedTimestamp = 0;

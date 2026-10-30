@@ -15,14 +15,18 @@ namespace ProjectZombie.Features.Defense3D
         public int WoodCollected;
         public int EnemiesDefeated;
         public string StageId;
+        public string RunId;
+        public int VictoryReward;
 
-        public DefenseMatchResultData(bool isWon, float elapsedSeconds, int woodCollected, int enemiesDefeated = 0, string stageId = "STAGE_01")
+        public DefenseMatchResultData(bool isWon, float elapsedSeconds, int woodCollected, int enemiesDefeated = 0, string stageId = "STAGE_01", string runId = null, int victoryReward = 500)
         {
             IsWon = isWon;
             ElapsedSeconds = Mathf.Max(0f, elapsedSeconds);
             WoodCollected = Mathf.Max(0, woodCollected);
             EnemiesDefeated = Mathf.Max(0, enemiesDefeated);
             StageId = string.IsNullOrWhiteSpace(stageId) ? "STAGE_01" : stageId.Trim();
+            RunId = runId;
+            VictoryReward = Mathf.Max(0, victoryReward);
         }
     }
 
@@ -124,7 +128,7 @@ namespace ProjectZombie.Features.Defense3D
 
             // 1. Tính toán phần thưởng
             int woodReward = Mathf.RoundToInt(resultData.WoodCollected * REWARD_WOOD_TO_CURRENCY_RATIO);
-            int victoryBonus = resultData.IsWon ? REWARD_VICTORY_CURRENCY : 0;
+            int victoryBonus = resultData.IsWon ? resultData.VictoryReward : 0;
             int totalEarnedCurrency = woodReward + victoryBonus;
 
             // 2. Định dạng thông điệp hiển thị
@@ -133,8 +137,8 @@ namespace ProjectZombie.Features.Defense3D
                 : "<color=#FF4444>CĂN CỨ THẤT THỦ</color>";
 
             string message = resultData.IsWon
-                ? "Đã tiêu diệt Đại Boss Dạ Xoa và bảo vệ vững chắc Sông Quê!"
-                : "Căn cứ Nhà Chính Bờ Tây đã bị quỷ sứ tàn phá hoàn toàn.";
+                ? "Đã hoàn thành nhiệm vụ phòng thủ và đánh bại thủ lĩnh!"
+                : "Căn cứ đã thất thủ. Hãy chuẩn bị đội hình và thử lại.";
 
             int minutes = Mathf.FloorToInt(resultData.ElapsedSeconds / 60f);
             int seconds = Mathf.FloorToInt(resultData.ElapsedSeconds % 60f);
@@ -158,6 +162,13 @@ namespace ProjectZombie.Features.Defense3D
                 var saveData = customSaveData ?? SaveSystem.Load();
                 if (saveData != null)
                 {
+                    if (saveData.rewardedRunIds == null) saveData.rewardedRunIds = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrEmpty(resultData.RunId))
+                    {
+                        if (saveData.rewardedRunIds.Contains(resultData.RunId)) return _lastProcessedResult;
+                        saveData.rewardedRunIds.Add(resultData.RunId);
+                        if (saveData.rewardedRunIds.Count > 128) saveData.rewardedRunIds.RemoveAt(0);
+                    }
                     // Cộng tiền thưởng
                     saveData.totalCurrency += totalEarnedCurrency;
 

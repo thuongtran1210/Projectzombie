@@ -11,14 +11,14 @@ namespace ProjectZombie.Tests.Editor
     /// </summary>
     public sealed class DefenseSessionBalancingTests
     {
-        private const string STAGE_PATH = "Defense3D/Stages/Stage01_Production";
+        private const string STAGE_PATH = "Assets/_Data/Levels/Rules/Stage01_Production.asset";
         private const string TOWER_NOTHAN_PATH = "Defense3D/Towers/SO_Tower_NoThan_Archer";
         private const string TOWER_BANGHA_PATH = "Defense3D/Towers/SO_Tower_BangHa_Ice";
 
         [Test]
         public void Stage01_Production_IsConfiguredWith34ChronologicalWaves()
         {
-            var stage = Resources.Load<StageSpawnConfig>(STAGE_PATH);
+            var stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>(STAGE_PATH);
             Assert.That(stage, Is.Not.Null, "Không tìm thấy Stage01_Production.asset trong Resources/" + STAGE_PATH);
             Assert.That(stage.Events, Is.Not.Null);
             Assert.That(stage.Events.Count, Is.EqualTo(34), "Stage01_Production phải có đúng 34 waves chuẩn hóa.");
@@ -41,7 +41,7 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void Stage01_BossYaksha_IsConfiguredAtMinute830()
         {
-            var stage = Resources.Load<StageSpawnConfig>(STAGE_PATH);
+            var stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>(STAGE_PATH);
             Assert.That(stage, Is.Not.Null);
             Assert.That(stage.BossSpawnTime, Is.EqualTo(510f), "Boss Dạ Xoa phải xuất hiện đúng mốc 510s (8 phút 30 giây).");
             Assert.That(stage.ArenaBoss, Is.Not.Null, "Boss Dạ Xoa (ArenaBoss) không được để trống.");
@@ -52,7 +52,7 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void AllEnemyArchetypes_HaveValidCombatAndEconomyStats()
         {
-            var stage = Resources.Load<StageSpawnConfig>(STAGE_PATH);
+            var stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>(STAGE_PATH);
             Assert.That(stage, Is.Not.Null);
 
             var archetypes = new HashSet<DefenseEnemyDataSO>();
@@ -78,7 +78,7 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void StageWoodEconomy_ProvidesSufficientResourcesForDefense()
         {
-            var stage = Resources.Load<StageSpawnConfig>(STAGE_PATH);
+            var stage = UnityEditor.AssetDatabase.LoadAssetAtPath<StageSpawnConfig>(STAGE_PATH);
             Assert.That(stage, Is.Not.Null);
 
             int totalWoodInMatch = 0;
