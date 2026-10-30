@@ -39,7 +39,13 @@ public sealed class DefenseSignatureInterruptionTests
                 Assert.AreEqual(0, effects.ActiveCount); Assert.AreEqual(0, effects.StopOwnerCalls);
                 presenter.Unbind(); presenter.Unbind();
             }
-            finally { UnityEngine.Object.DestroyImmediate(actor); }
+            finally
+            {
+                // EditMode does not guarantee OnDestroy for manually bound, never-awakened actors.
+                // Close the session while its gameplay subscribers are still alive.
+                try { session.Dispose(); }
+                finally { UnityEngine.Object.DestroyImmediate(actor); }
+            }
         }
     }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

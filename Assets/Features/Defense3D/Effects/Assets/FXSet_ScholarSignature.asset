@@ -18,3 +18,5 @@ MonoBehaviour:
   _hitRadius: 0.4
   _lift: 0.04
   _maxHitEffects: 16
+  _cameraImpulseAmplitude: 0.075
+  _cameraImpulseDuration: 0.16

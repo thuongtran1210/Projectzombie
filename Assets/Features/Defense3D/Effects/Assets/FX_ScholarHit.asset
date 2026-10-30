@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5148fd3561a94231966e15f6a63375e5, type: 3}
   m_Name: FX_ScholarHit
   m_EditorClassIdentifier:
-  _prefab: {fileID: 1002, guid: b29bb6f285c543998c9e37131484d091, type: 3}
-  _duration: 0.18
+  _prefab: {fileID: 1002, guid: 526051907afa4ff58f298b29d8a6b16d, type: 3}
+  _duration: 0.2
   _sustained: 0
   _color: {r: 1, g: 0.89, b: 0.62, a: 1}
   _scale: 1

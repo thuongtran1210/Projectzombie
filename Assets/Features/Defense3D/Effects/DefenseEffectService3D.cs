@@ -96,7 +96,7 @@ namespace ProjectZombie.Features.Defense3D
                 instance.transform.SetParent(anchor != null ? _roots.AttachedEffects : _roots.WorldEffects, false);
                 instance.transform.SetPositionAndRotation(position, rotation);
                 _active.Add(new Entry { Handle = handle, Pool = pool, Lease = lease,
-                    Lifetime = new DefenseEffectLifetime(_gameplay.ElapsedSeconds, profile.Duration, profile.Sustained),
+                    Lifetime = new DefenseEffectLifetime(_gameplay.ElapsedSeconds, profile.Duration, profile.Sustained, profile.AnimateSustained),
                     Priority = profile.Priority, Owner = owner, Anchor = anchor, HasOwner = owner != null,
                     HasAnchor = anchor != null, Offset = anchor != null ? position - anchor.position : Vector3.zero });
                 instance.Begin();

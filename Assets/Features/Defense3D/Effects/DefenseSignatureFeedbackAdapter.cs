@@ -48,7 +48,8 @@ namespace ProjectZombie.Features.Defense3D
             long revision = ClearHandles();
             if (_revision != revision || !Current(cue.SessionIdentity, cue.RunGeneration)) return;
             _castId = cue.CastId; _identity = cue.SessionIdentity; _generation = cue.RunGeneration; _phase = Phase.Casting;
-            var handle = _effects.Play(new DefenseEffectRequest(_style.Cast, _anchor.position + Vector3.up * _style.Lift, cue.Radius, _owner, _anchor));
+            var handle = _effects.Play(new DefenseEffectRequest(_style.Cast, _anchor.position + Vector3.up * _style.Lift, cue.Radius, _owner, _anchor,
+                rotation: Quaternion.Euler(0f, _owner.transform.eulerAngles.y, 0f)));
             if (!Commit(cue.CastId, cue.SessionIdentity, cue.RunGeneration, revision, Phase.Casting)) Stop(handle);
             else _cast = handle;
         }
@@ -63,7 +64,8 @@ namespace ProjectZombie.Features.Defense3D
             if (!Commit(cue.CastId, cue.SessionIdentity, cue.RunGeneration, revision, Phase.Released)) return;
             var point = new Vector3(cue.Position.X, cue.Position.Y, cue.Position.Z);
             if (_placeArea != null) point = _placeArea(point, cue.Radius);
-            var handle = _effects.Play(new DefenseEffectRequest(_style.Release, point + Vector3.up * _style.Lift, cue.Radius, _owner));
+            var handle = _effects.Play(new DefenseEffectRequest(_style.Release, point + Vector3.up * _style.Lift, cue.Radius, _owner,
+                rotation: Quaternion.Euler(0f, _owner.transform.eulerAngles.y, 0f)));
             KeepTransient(handle, cue.CastId, cue.SessionIdentity, cue.RunGeneration, revision);
         }
         private void OnHit(DefenseSignatureHitFeedback cue)

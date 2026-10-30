@@ -9,12 +9,14 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseEffectInstance3D _prefab;
         [SerializeField, Min(.01f)] private float _duration = .45f;
         [SerializeField] private bool _sustained;
+        [SerializeField] private bool _animateSustained;
         [SerializeField] private Color _color = new Color(1f, .82f, .42f, .9f);
         [SerializeField, Min(.01f)] private float _scale = 1f;
         [SerializeField, Range(0, 10)] private int _priority;
         public DefenseEffectInstance3D Prefab => _prefab;
         public float Duration => _duration;
         public bool Sustained => _sustained;
+        public bool AnimateSustained => _animateSustained;
         public Color Color => _color;
         public float Scale => _scale;
         public int Priority => _priority;
@@ -45,13 +47,14 @@ namespace ProjectZombie.Features.Defense3D
     {
         private readonly float _start, _duration;
         private readonly bool _sustained;
-        public DefenseEffectLifetime(float start, float duration, bool sustained)
+        private readonly bool _animateSustained;
+        public DefenseEffectLifetime(float start, float duration, bool sustained, bool animateSustained = false)
         {
             if (!DefenseDamageRules.IsFinite(start) || !DefenseDamageRules.IsFinite(duration) || duration <= 0f)
                 throw new System.ArgumentOutOfRangeException(nameof(duration));
-            _start = start; _duration = duration; _sustained = sustained;
+            _start = start; _duration = duration; _sustained = sustained; _animateSustained = animateSustained;
         }
         public bool IsExpired(float gameplayTime) => !_sustained && gameplayTime - _start >= _duration;
-        public float Progress(float gameplayTime) => _sustained ? 0f : Mathf.Clamp01((gameplayTime - _start) / _duration);
+        public float Progress(float gameplayTime) => _sustained && !_animateSustained ? 0f : Mathf.Clamp01((gameplayTime - _start) / _duration);
     }
 }
