@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a810f43b67e248b6bb0183e20019280a, type: 3}
+  m_Name: P_Proj_IceShard_BangHa
+  m_EditorClassIdentifier: 
+  _projectileId: tower_bangha-projectile
+  _displayName: "M\u0169i T\xEAn Tre"
+  _visualPrefab: {fileID: 5703743784151780575, guid: e4abf3697c2c8354185b4d0f57d49d6a, type: 3}
+  _impactVfxPrefab: {fileID: 0}
+  _trajectoryType: 0
+  _speed: 18
+  _arcHeight: 0.6
+  _maxLifetime: 5
+  _payloadType: 0
+  _aoeRadius: 2.5
+  _launchSfx: {fileID: 0}
+  _impactSfx: {fileID: 0}

@@ -39,7 +39,7 @@ namespace ProjectZombie.Tests.Editor
             Assert.AreEqual(4, heroes.Count);
             Assert.AreEqual(1, relics.Count);
             Assert.AreEqual(3, minions.Count);
-            Assert.AreEqual(1, towers.Count);
+            Assert.AreEqual(2, towers.Count);
         }
 
         [Test]
@@ -224,9 +224,13 @@ namespace ProjectZombie.Tests.Editor
         [Test]
         public void UIScreenFactory_HasScreen_ReturnsFalseWhenNotConfigured()
         {
-            var factory = new ProjectZombie.Features.UI.UIScreenFactory(null, null);
-            // DefensePreparation chưa đăng ký prefab trong registry rỗng -> false an toàn
-            Assert.IsFalse(factory.HasScreen(ProjectZombie.Features.UI.MetaScreenType.DefensePreparation));
+            var registry = ScriptableObject.CreateInstance<ProjectZombie.Features.UI.UIRegistrySO>();
+            try
+            {
+                var factory = new ProjectZombie.Features.UI.UIScreenFactory(registry, null);
+                Assert.IsFalse(factory.HasScreen(ProjectZombie.Features.UI.MetaScreenType.DefensePreparation));
+            }
+            finally { Object.DestroyImmediate(registry); }
         }
 
         [Test]

@@ -53,6 +53,39 @@ namespace ProjectZombie.Features.Defense3D
         private IDefenseProjectileLauncher _launcher;
         private DefenseAttackTargetSelector3D _targetSelector;
         private float nextShot;
+        private float _nextSpecialShot;
+        private GameObject[] _levelVisuals;
+        private Renderer[] _originalRenderers;
+        private bool[] _originalEnabled;
+        public event System.Action<DefenseTowerPrototype3D> Released;
+        public void Configure(SO_TowerData data, IDefenseProjectileService launcher)
+        {
+            towerData = data;
+            _customLauncher = launcher as MonoBehaviour;
+            _launcher = launcher;
+        }
+        public async System.Threading.Tasks.Task PrepareVisualsAsync()
+        {
+            _originalRenderers = GetComponentsInChildren<Renderer>(true);
+            _originalEnabled = new bool[_originalRenderers.Length];
+            for (int i = 0; i < _originalRenderers.Length; i++) _originalEnabled[i] = _originalRenderers[i].enabled;
+            _levelVisuals = new GameObject[MaxLevel];
+            for (int i = 0; i < MaxLevel; i++)
+            {
+                var prefab = towerData.GetLevelStats(i + 1).visualModelPrefab;
+                if (prefab == null) continue;
+                _levelVisuals[i] = Instantiate(prefab, transform);
+                _levelVisuals[i].SetActive(false);
+                await System.Threading.Tasks.Task.Yield();
+            }
+        }
+        private void ApplyLevelVisual()
+        {
+            if (_levelVisuals == null) return;
+            bool custom = _levelVisuals[Level - 1] != null;
+            for (int i = 0; i < _originalRenderers.Length; i++) _originalRenderers[i].enabled = !custom && _originalEnabled[i];
+            for (int i = 0; i < _levelVisuals.Length; i++) if (_levelVisuals[i] != null) _levelVisuals[i].SetActive(custom && i == Level - 1);
+        }
         private float nextTargetScanTime;
         private IDefenseEnemyTarget3D _currentTarget;
         private DefenseSupportTarget3D _health;
@@ -129,11 +162,6 @@ namespace ProjectZombie.Features.Defense3D
             var profile = (towerData != null && towerData.TargetingStrategy != null) ? towerData.TargetingStrategy : _targeting;
             _targetSelector = new DefenseAttackTargetSelector3D(transform, profile);
 
-            if (_customLauncher == null)
-            {
-                _customLauncher = FindObjectOfType<DefenseProjectilePool3D>();
-            }
-
             _launcher = _customLauncher as IDefenseProjectileLauncher ?? _projectileVfx;
             if (_health != null) _health.Defeated -= OnDefeated;
             _health = GetComponent<DefenseSupportTarget3D>();
@@ -146,7 +174,9 @@ namespace ProjectZombie.Features.Defense3D
             nextShot = 0f;
             nextTargetScanTime = 0f;
             _currentTarget = null;
-            _health?.ResetForRecruit();
+            _nextSpecialShot = GameplayTime + (towerData != null && towerData.SpecialAttack != null ? towerData.SpecialAttack.Cooldown : 0f);
+            _health?.ConfigureCapacity(towerData != null && towerData.GetLevelStats(1).maxHealth > 0f ? towerData.GetLevelStats(1).maxHealth : 150f);
+            ApplyLevelVisual();
         }
 
         public bool TryUpgrade(DefenseWoodWallet3D wallet)
@@ -158,11 +188,17 @@ namespace ProjectZombie.Features.Defense3D
                 return false;
 
             Level++;
-            _health?.IncreaseCapacity(100f);
+            _health?.ConfigureCapacity(towerData != null && towerData.GetLevelStats(Level).maxHealth > 0f ? towerData.GetLevelStats(Level).maxHealth : 150f + (Level - 1) * 100f);
+            ApplyLevelVisual();
             return true;
         }
 
         private void OnDefeated() => gameObject.SetActive(false);
+        private void OnDisable()
+        {
+            _currentTarget = null;
+            Released?.Invoke(this);
+        }
 
         protected override void OnGameplayReset()
         {
@@ -192,9 +228,16 @@ namespace ProjectZombie.Features.Defense3D
                     return;
                 }
 
-                Attack(_currentTarget);
-                nextShot = GameplayTime + BaseFireInterval;
+                if (TryFire(_currentTarget, towerData != null ? towerData.Attack : null)) nextShot = GameplayTime + BaseFireInterval;
             }
+        }
+
+        private void LateUpdate()
+        {
+            if (!CanAdvanceGameplay || towerData == null || towerData.SpecialAttack == null || _currentTarget == null) return;
+            var special = towerData.SpecialAttack;
+            if (Level < special.UnlockLevel || GameplayTime < _nextSpecialShot) return;
+            if (TryFire(_currentTarget, special)) _nextSpecialShot = GameplayTime + Mathf.Max(.1f, special.Cooldown);
         }
 
         private void UpdateTarget()
@@ -202,76 +245,21 @@ namespace ProjectZombie.Features.Defense3D
             _currentTarget = _targetSelector?.Find(Gameplay?.Targets, EffectiveRange);
         }
 
-        private void Attack(IDefenseEnemyTarget3D target)
+        /// <summary>Snapshot one attack. A rejected launch consumes no cooldown and causes no fallback damage.</summary>
+        public bool TryFire(IDefenseEnemyTarget3D target, DefenseTowerAttackProfileSO profile)
         {
-            if (target == null) return;
-
-            float speed = towerData != null ? towerData.ProjectileSpeed : 25f;
-            float arcHeight = towerData != null ? towerData.ProjectileArcHeight : 0.5f;
-
-            var request = new DefenseProjectileLaunchRequest(
-                source: this,
-                origin: FireOrigin,
-                target: target,
-                damage: EffectiveDamage,
-                runGeneration: Gameplay?.RunGeneration ?? -1,
-                sessionIdentity: Gameplay?.SessionIdentity,
-                speed: speed,
-                arcHeight: arcHeight);
-
-            bool launched = false;
-            if (_customLauncher is DefenseProjectilePool3D poolLauncher && towerData != null && towerData.ProjectilePrefab != null)
-            {
-                launched = poolLauncher.LaunchProjectile(towerData.ProjectilePrefab, request, towerData.AttackEffects);
-            }
-            else if (_launcher != null)
-            {
-                launched = _launcher.TryLaunch(request);
-            }
-
-            if (!launched)
-            {
-                target.TakeDamage(new DefenseDamageContext(EffectiveDamage, this, target.TargetTransform.position,
-                    runGeneration: Gameplay?.RunGeneration ?? -1, sessionIdentity: Gameplay?.SessionIdentity));
-
-                // Kích hoạt các hiệu ứng đòn đánh bổ trợ tức thì khi không dùng đạn bay
-                ApplyEffects(target.TargetTransform);
-            }
-
-#if UNITY_EDITOR && DEFENSE_TOWER_DEBUG
-            Debug.Log($"[TREBRAVE Defense3D] Tower shot fired at {target.TargetTransform.name} for {EffectiveDamage}");
-#endif
-        }
-
-        private void ApplyEffects(Transform targetTransform)
-        {
-            if (targetTransform == null) return;
-
-            // 1. Áp dụng hiệu ứng từ SO_TowerData
-            if (towerData != null && towerData.AttackEffects != null)
-            {
-                for (int i = 0; i < towerData.AttackEffects.Count; i++)
-                {
-                    var effect = towerData.AttackEffects[i];
-                    if (effect != null)
-                    {
-                        effect.ApplyEffect(targetTransform, EffectiveDamage, Gameplay);
-                    }
-                }
-            }
-
-            // 2. Áp dụng hiệu ứng cục bộ (nếu có gán thêm)
-            if (_attackEffects != null)
-            {
-                for (int i = 0; i < _attackEffects.Count; i++)
-                {
-                    var effect = _attackEffects[i];
-                    if (effect != null)
-                    {
-                        effect.ApplyEffect(targetTransform, EffectiveDamage, Gameplay);
-                    }
-                }
-            }
+            if (!CanAdvanceGameplay || !isActiveAndEnabled || target == null || !target.IsTargetable ||
+                profile == null || Level < profile.UnlockLevel || !(_launcher is IDefenseProjectileService pool)) return false;
+            if (target.TargetTransform == null || (target.TargetTransform.position - transform.position).sqrMagnitude > EffectiveRange * EffectiveRange) return false;
+            var definition = profile.Projectile;
+            var prefab = definition != null && definition.VisualPrefab != null ? definition.VisualPrefab : towerData.ProjectilePrefab;
+            if (!pool.CanLaunch(prefab, profile.Shots)) return false;
+            var request = new DefenseProjectileLaunchRequest(this, FireOrigin, target,
+                EffectiveDamage * profile.DamageMultiplier, Gameplay.RunGeneration, Gameplay.SessionIdentity,
+                towerData.ProjectileSpeed, towerData.ProjectileArcHeight);
+            for (int i = 0; i < profile.Shots; i++)
+                if (!pool.LaunchProjectile(prefab, request, profile.Effects, definition)) return false;
+            return true;
         }
 
         private void OnDrawGizmosSelected()

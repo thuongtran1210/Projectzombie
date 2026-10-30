@@ -71,4 +71,12 @@ namespace ProjectZombie.Features.Defense3D
     {
         bool TryLaunch(DefenseProjectileLaunchRequest request);
     }
+
+    /// <summary>Capability used by tower attacks; callers do not depend on a specific pool implementation.</summary>
+    public interface IDefenseProjectileService : IDefenseProjectileLauncher
+    {
+        bool CanLaunch(GameObject prefab, int count);
+        bool LaunchProjectile(GameObject prefab, DefenseProjectileLaunchRequest request,
+            System.Collections.Generic.IReadOnlyList<SO_AttackEffect> effects, DefenseProjectileDefinitionSO definition = null);
+    }
 }

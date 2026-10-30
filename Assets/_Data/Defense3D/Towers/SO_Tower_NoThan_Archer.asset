@@ -12,26 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a6b7c8d9e0f1a2b3c4d5e6f7a8b9cb, type: 3}
   m_Name: SO_Tower_NoThan_Archer
   m_EditorClassIdentifier: 
-  _id: tower_nothan
-  _towerName: "N\u1ECF Th\u1EA7n B\u1EAFn T\u1EC9a"
+  _id: tower_cungtien
+  _towerName: "N\u1ECF Th\u1EA7n"
+  _description: "T\xEAn b\xE1m m\u1EE5c ti\xEAu, s\xE1t th\u01B0\u01A1ng \u0111\u01A1n."
   _icon: {fileID: 0}
   _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
   _attackEffects: []
   _projectilePrefab: {fileID: 1729867154203885746, guid: d5084dbe3e04b7c4b88c22e712bf92b5, type: 3}
+  _attack: {fileID: 11400000, guid: ebd0089db3847a04ab60a22e4ca0735a, type: 2}
+  _specialAttack: {fileID: 0}
   _projectileSpeed: 26
   _projectileArcHeight: 0.4
   _levels:
-  - buildCost: 25
+  - maxHealth: 150
+    buildCost: 25
     damage: 22
     attackRange: 8
     attackRate: 1.1
     visualModelPrefab: {fileID: 0}
-  - buildCost: 40
+  - maxHealth: 250
+    buildCost: 40
     damage: 35
     attackRange: 9.5
     attackRate: 1.4
     visualModelPrefab: {fileID: 0}
-  - buildCost: 60
+  - maxHealth: 350
+    buildCost: 60
     damage: 55
     attackRange: 11
     attackRate: 1.8

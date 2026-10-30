@@ -82,6 +82,7 @@ namespace ProjectZombie.Features.Defense3D
                 new DefensePoint3(target.x, target.y, target.z), _profile.BallisticSeconds, _profile.ParachuteSeconds,
                 _profile.ArcHeight, _profile.OpenHeight);
             _shot++;
+            _spawns.AnnounceLanding(_cannonId, _shot, target, _profile.BallisticSeconds + _profile.ParachuteSeconds, _generation);
             _projectile.position = origin;
             _canopy.SetActive(false);
             _projectile.gameObject.SetActive(true);
@@ -108,6 +109,7 @@ namespace ProjectZombie.Features.Defense3D
         }
         private void CancelFlight()
         {
+            if (_flight != null) _spawns?.CancelLandingWarning(_cannonId, _shot, _generation);
             _flight?.Cancel(); _flight = null;
             if (_projectile != null) _projectile.gameObject.SetActive(false);
             if (_canopy != null) _canopy.SetActive(false);

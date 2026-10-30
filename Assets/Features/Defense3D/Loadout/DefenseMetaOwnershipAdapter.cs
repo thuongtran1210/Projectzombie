@@ -71,6 +71,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             if (string.Equals(id, Defense3DCatalog.MINION_PHU_TAP_DICH, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_THAY_LANG, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.TOWER_CUNG_TIEN, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.TOWER_BANG_HA, StringComparison.OrdinalIgnoreCase)) return true;
+            if (_saveData?.unlockedTowerIds != null && _saveData.unlockedTowerIds.Contains(id)) return true;
 
             // 3. Nếu có MetaProgressionSaveData, kiểm tra danh sách unlock cũ
             if (_saveData != null)

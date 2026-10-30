@@ -4,187 +4,130 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// Sổ tay Kiến trúc 3D: Thành phần điều phối Đạn Đạo cốt lõi (Projectile Core).
-    /// Quản lý vận tốc, quỹ đạo bay (Parabolic / Homing), va chạm và thực thi Attack Effects trên mục tiêu.
-    /// Tương thích hoàn toàn với Object Pooling, đảm bảo 0 GC Allocations trong vòng lặp chiến đấu.
-    /// </summary>
+    /// <summary>Pooled projectile with session clock, target lease validation and immutable shot parameters.</summary>
     [DisallowMultipleComponent]
-    public class ProjectileCore3D : MonoBehaviour
+    public sealed class ProjectileCore3D : MonoBehaviour
     {
-        [Header("References")]
         [SerializeField] private ProjectileVisual3D _visual;
-
+        private DefenseProjectileDefinitionSO _definition;
         private Component _source;
         private IDefenseEnemyTarget3D _target;
-        private Vector3 _startPosition;
-        private Vector3 _targetPosition;
-        private float _damage;
-        private float _speed = 20f;
-        private float _arcHeight = 0.8f;
-        private float _flightDuration;
-        private float _elapsedTime;
-        private int _runGeneration = -1;
-        private object _sessionIdentity;
+        private DefenseEnemy3D _enemy;
+        private DefenseActorLifetime _targetLifetime;
+        private Vector3 _start, _end;
+        private float _damage, _duration, _elapsed, _arc;
+        private int _generation;
+        private object _session;
         private IDefenseGameplayContext _gameplay;
         private IReadOnlyList<SO_AttackEffect> _effects;
-        private Action<ProjectileCore3D> _returnToPoolAction;
-        private bool _isActive;
-
+        private Action<ProjectileCore3D> _return;
+        private bool _active;
+        private IProjectileTrajectory _trajectory;
+        private readonly IDefenseTargetPosition[] _areaTargets = new IDefenseTargetPosition[128];
+        private readonly DefenseActorLifetime[] _areaLeases = new DefenseActorLifetime[128];
+        public bool IsInFlight => _active;
+        public float Progress => _duration > 0f ? _elapsed / _duration : 0f;
         private void Awake()
         {
-            if (_visual == null)
-            {
-                _visual = GetComponent<ProjectileVisual3D>();
-                if (_visual == null) _visual = GetComponentInChildren<ProjectileVisual3D>();
-            }
+            if (_visual == null) _visual = GetComponentInChildren<ProjectileVisual3D>(true);
         }
-
-        /// <summary>
-        /// Khởi tạo đường đạn khi lấy ra từ Pool.
-        /// </summary>
-        public void Launch(
-            Component source,
-            Vector3 origin,
-            IDefenseEnemyTarget3D target,
-            float damage,
-            float speed,
-            float arcHeight,
-            IReadOnlyList<SO_AttackEffect> effects,
-            int runGeneration,
-            object sessionIdentity,
-            IDefenseGameplayContext gameplay,
-            Action<ProjectileCore3D> returnToPool)
+        public void SetDefinition(DefenseProjectileDefinitionSO definition) => _definition = definition;
+        public void Launch(Component source, Vector3 origin, IDefenseEnemyTarget3D target, float damage, float speed,
+            float arcHeight, IReadOnlyList<SO_AttackEffect> effects, int runGeneration, object sessionIdentity,
+            IDefenseGameplayContext gameplay, Action<ProjectileCore3D> returnToPool, Vector3? targetPoint = null)
         {
-            _source = source;
-            _target = target;
-            _damage = damage;
-            _speed = Mathf.Max(1f, speed);
-            _arcHeight = arcHeight;
-            _effects = effects;
-            _runGeneration = runGeneration;
-            _sessionIdentity = sessionIdentity;
-            _gameplay = gameplay;
-            _returnToPoolAction = returnToPool;
-
-            _startPosition = origin;
+            _source = source; _target = target; _damage = damage; _effects = effects;
+            _generation = runGeneration; _session = sessionIdentity; _gameplay = gameplay; _return = returnToPool;
+            _enemy = target as DefenseEnemy3D;
+            _targetLifetime = _enemy != null ? _enemy.Lifetime : null;
+            _start = origin;
+            _end = target != null && target.TargetTransform != null ? target.TargetTransform.position + Vector3.up * .65f
+                : targetPoint ?? origin + Vector3.forward * 5f;
+            _trajectory = _definition != null ? _definition.GetTrajectory() : ParabolicHomingTrajectory.Instance;
+            _arc = _definition != null ? _definition.ArcHeight : arcHeight;
+            float actualSpeed = _definition != null ? _definition.Speed : speed;
+            float lifetime = _definition != null ? _definition.MaxLifetime : 5f;
+            _duration = Mathf.Clamp(Vector3.Distance(_start, _end) / Mathf.Max(1f, actualSpeed), .05f, lifetime);
+            _elapsed = 0f;
+            _active = true;
             transform.position = origin;
-            _elapsedTime = 0f;
-
-            if (_target != null && _target.TargetTransform != null)
-            {
-                _targetPosition = _target.TargetTransform.position + Vector3.up * 0.65f;
-            }
-            else
-            {
-                _targetPosition = origin + Vector3.forward * 5f;
-            }
-
-            float distance = Vector3.Distance(_startPosition, _targetPosition);
-            _flightDuration = Mathf.Clamp(distance / _speed, 0.05f, 5f);
-
-            _isActive = true;
             gameObject.SetActive(true);
-
-            if (_visual != null)
-            {
-                _visual.OnSpawn();
-                Vector3 initialDir = (_targetPosition - _startPosition).normalized;
-                _visual.UpdateDirection(initialDir);
-            }
+            _visual?.OnSpawn();
         }
-
-        private void Update()
+        private bool CurrentLease => _enemy == null || (ReferenceEquals(_enemy.Lifetime, _targetLifetime) &&
+            (_targetLifetime == null || _targetLifetime.IsCurrent(_gameplay)));
+        private bool CurrentTarget => _target != null && !(_target is UnityEngine.Object targetObject && targetObject == null)
+            && _target.TargetTransform != null && _target.IsTargetable && CurrentLease;
+        private void Update() => Tick(Time.deltaTime);
+        public void Tick(float delta)
         {
-            if (!_isActive) return;
-
-            // Kiểm tra tính hợp lệ của Run Generation và Session
+            if (!_active) return;
             if (_gameplay != null)
             {
-                if (_runGeneration != _gameplay.RunGeneration || !ReferenceEquals(_sessionIdentity, _gameplay.SessionIdentity))
+                if (_generation != _gameplay.RunGeneration || !ReferenceEquals(_session, _gameplay.SessionIdentity)) { Despawn(); return; }
+                if (!_gameplay.AdvancesGameplay) return;
+            }
+            if (_trajectory.Type == DefenseTrajectoryType.ParabolicHoming)
+            {
+                if (!CurrentTarget) { Despawn(); return; }
+                _end = _target.TargetTransform.position + Vector3.up * .65f;
+            }
+            _elapsed += Mathf.Max(0f, delta);
+            float progress = Mathf.Clamp01(_elapsed / _duration);
+            transform.position = _trajectory.EvaluatePosition(_start, _end, progress, _arc);
+            _visual?.UpdateDirection(_trajectory.EvaluateDirection(_start, _end, progress, _arc));
+            if (progress < 1f) return;
+            try
+            {
+                if (_definition != null && _definition.PayloadType == DefensePayloadType.AoEExplosion)
                 {
-                    Despawn();
-                    return;
+                    ResolveAreaHit();
+                }
+                else if (CurrentTarget)
+                {
+                    bool accepted = _target.TakeDamage(new DefenseDamageContext(_damage, _source, transform.position,
+                        runGeneration: _generation, sessionIdentity: _session));
+                    if (accepted && _effects != null)
+                        for (int i = 0; i < _effects.Count; i++) _effects[i]?.ApplyEffect(_target.TargetTransform, _damage, _gameplay);
                 }
             }
-
-            // Bám theo mục tiêu nếu mục tiêu còn sống và di chuyển
-            if (_target != null && _target.TargetTransform != null && _target.IsTargetable)
-            {
-                _targetPosition = _target.TargetTransform.position + Vector3.up * 0.65f;
-            }
-
-            _elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(_elapsedTime / _flightDuration);
-
-            // Quỹ đạo Parabol bay mượt mà
-            Vector3 currentPos = Vector3.Lerp(_startPosition, _targetPosition, progress) 
-                               + Vector3.up * (4f * _arcHeight * progress * (1f - progress));
-
-            Vector3 tangent = (_targetPosition - _startPosition) 
-                            + Vector3.up * (4f * _arcHeight * (1f - 2f * progress));
-
-            transform.position = currentPos;
-
-            if (_visual != null)
-            {
-                _visual.UpdateDirection(tangent.normalized);
-            }
-
-            // Khi đạn đến đích
-            if (progress >= 1f)
-            {
-                OnHit();
-            }
+            finally { Despawn(); }
         }
-
-        private void OnHit()
+        private void ResolveAreaHit()
         {
-            if (!_isActive) return;
-
-            // Gây sát thương lên mục tiêu
-            if (_target != null && _target.TargetTransform != null && _target.IsTargetable)
+            if (!(_gameplay?.Targets is IDefenseAreaTargetQuery query) ||
+                !query.TryCopyWithin(transform.position, _definition.AoERadius, DefenseTargetMask.All, _areaTargets, out int count)) return;
+            for (int i = 0; i < count; i++) _areaLeases[i] = (_areaTargets[i].Identity as DefenseEnemy3D)?.Lifetime;
+            try
             {
-                var hitPoint = new DefensePoint3(transform.position.x, transform.position.y, transform.position.z);
-                var damageContext = new DefenseDamageContext(
-                    amount: _damage,
-                    source: _source,
-                    hitPoint: hitPoint,
-                    isCritical: false,
-                    runGeneration: _runGeneration,
-                    sessionIdentity: _sessionIdentity);
-
-                _target.TakeDamage(damageContext);
-
-                // Áp dụng các hiệu ứng chiến đấu (Slow, Stun...)
-                if (_effects != null && _effects.Count > 0)
+                for (int i = 0; i < count; i++)
                 {
-                    for (int i = 0; i < _effects.Count; i++)
-                    {
-                        var effect = _effects[i];
-                        if (effect != null && UnityEngine.Random.value <= effect.TriggerChance)
-                        {
-                            effect.ApplyEffect(_target.TargetTransform, _damage, _gameplay);
-                        }
-                    }
+                    var candidate = _areaTargets[i];
+                    if (!candidate.IsAvailable || !(candidate.Identity is IDefenseEnemyTarget3D target)) continue;
+                    if (target is DefenseEnemy3D enemy && (!ReferenceEquals(enemy.Lifetime, _areaLeases[i]) ||
+                        (_areaLeases[i] != null && !_areaLeases[i].IsCurrent(_gameplay)))) continue;
+                    bool accepted = target.TakeDamage(new DefenseDamageContext(_damage, _source, transform.position,
+                        runGeneration: _generation, sessionIdentity: _session));
+                    if (accepted && _effects != null)
+                        for (int j = 0; j < _effects.Count; j++) _effects[j]?.ApplyEffect(target.TargetTransform, _damage, _gameplay);
                 }
             }
-
-            Despawn();
+            finally
+            {
+                Array.Clear(_areaTargets, 0, count);
+                Array.Clear(_areaLeases, 0, count);
+            }
         }
-
         public void Despawn()
         {
-            if (!_isActive) return;
-            _isActive = false;
-
-            if (_visual != null)
-            {
-                _visual.OnDespawn();
-            }
-
+            if (!_active) return;
+            _active = false;
+            _visual?.OnDespawn();
+            var callback = _return;
+            _return = null; _source = null; _target = null; _enemy = null; _targetLifetime = null;
+            _effects = null; _gameplay = null; _session = null; _definition = null;
             gameObject.SetActive(false);
-            _returnToPoolAction?.Invoke(this);
+            callback?.Invoke(this);
         }
     }
 }

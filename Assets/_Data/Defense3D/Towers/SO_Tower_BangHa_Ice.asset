@@ -13,26 +13,32 @@ MonoBehaviour:
   m_Name: SO_Tower_BangHa_Ice
   m_EditorClassIdentifier: 
   _id: tower_bangha
-  _towerName: "H\xE0n B\u0103ng Th\xE1p"
+  _towerName: "B\u0103ng H\xE0"
+  _description: "\u0110\u1EA1n b\u0103ng l\xE0m ch\u1EADm k\u1EBB \u0111\u1ECBch."
   _icon: {fileID: 0}
   _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
   _attackEffects:
   - {fileID: 11400000, guid: 1cabf5d441d0d9e45a10919a2f7229dd, type: 2}
   _projectilePrefab: {fileID: 5703743784151780575, guid: e4abf3697c2c8354185b4d0f57d49d6a, type: 3}
+  _attack: {fileID: 11400000, guid: 383a8f72cfa80d349b84c4d97219ccee, type: 2}
+  _specialAttack: {fileID: 0}
   _projectileSpeed: 18
   _projectileArcHeight: 0.6
   _levels:
-  - buildCost: 30
+  - maxHealth: 150
+    buildCost: 30
     damage: 15
     attackRange: 7.5
     attackRate: 0.9
     visualModelPrefab: {fileID: 0}
-  - buildCost: 50
+  - maxHealth: 250
+    buildCost: 50
     damage: 25
     attackRange: 8.5
     attackRate: 1.1
     visualModelPrefab: {fileID: 0}
-  - buildCost: 75
+  - maxHealth: 350
+    buildCost: 75
     damage: 40
     attackRange: 10
     attackRate: 1.3

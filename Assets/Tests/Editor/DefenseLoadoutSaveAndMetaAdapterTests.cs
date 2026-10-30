@@ -10,10 +10,18 @@ namespace ProjectZombie.Tests.Editor
     public class DefenseLoadoutSaveAndMetaAdapterTests
     {
         private string _testDir;
+        private readonly System.Collections.Generic.Dictionary<string, string> _previousPrefs = new System.Collections.Generic.Dictionary<string, string>();
+        private static readonly string[] PREF_KEYS = { "VONGXUYEN_SAVED_HERO_ID", "VONGXUYEN_SAVED_RELICS_CSV", DefenseLoadoutRepository.LEGACY_PREF_HERO_ID, DefenseLoadoutRepository.LEGACY_PREF_RELICS_CSV };
 
         [SetUp]
         public void SetUp()
         {
+            _previousPrefs.Clear();
+            foreach (string key in PREF_KEYS)
+            {
+                if (PlayerPrefs.HasKey(key)) _previousPrefs[key] = PlayerPrefs.GetString(key);
+                PlayerPrefs.DeleteKey(key);
+            }
             _testDir = Path.Combine(Application.temporaryCachePath, "DefenseLoadoutTest_" + System.Guid.NewGuid().ToString("N"));
             if (!Directory.Exists(_testDir))
             {
@@ -24,6 +32,11 @@ namespace ProjectZombie.Tests.Editor
         [TearDown]
         public void TearDown()
         {
+            foreach (string key in PREF_KEYS)
+            {
+                if (_previousPrefs.TryGetValue(key, out var value)) PlayerPrefs.SetString(key, value);
+                else PlayerPrefs.DeleteKey(key);
+            }
             if (Directory.Exists(_testDir))
             {
                 try { Directory.Delete(_testDir, true); } catch { }

@@ -1,170 +1,113 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// Sổ tay Kiến trúc 3D: Bộ quản lý Object Pool đạn đạo tập trung (Centralized Projectile Pool).
-    /// Tuân thủ quy tắc 60 FPS Mobile:
-    /// - Sử dụng UnityEngine.Pool.ObjectPool để tái sử dụng toàn bộ ProjectileCore3D.
-    /// - 0 Instantiate / 0 Destroy trong quá trình giao tranh.
-    /// - Tự động thu hồi và dọn dẹp khi Reset / Cleanup phiên chơi (triệt tiêu lỗi Phantom Damage).
-    /// </summary>
-    public class DefenseProjectilePool3D : DefenseGameplayBehaviour, IDefenseProjectileLauncher
+    /// <summary>Bounded prefab projectile inventory. Exhaustion rejects the shot; it never converts to instant damage.</summary>
+    public sealed class DefenseProjectilePool3D : DefenseGameplayBehaviour, IDefenseProjectileService
     {
-        [Header("Default Projectile Settings")]
         [SerializeField] private GameObject _defaultProjectilePrefab;
-        [SerializeField, Min(16)] private int _defaultPoolCapacity = 32;
-        [SerializeField, Min(32)] private int _maxPoolSize = 128;
-
-        private readonly Dictionary<GameObject, ObjectPool<ProjectileCore3D>> _poolsByPrefab = new Dictionary<GameObject, ObjectPool<ProjectileCore3D>>();
-        private readonly List<ProjectileCore3D> _activeProjectiles = new List<ProjectileCore3D>(64);
-        private Transform _poolRoot;
-
+        [SerializeField, Min(1)] private int _defaultPoolCapacity = 32;
+        [SerializeField, Min(1)] private int _maxPoolSize = 128;
+        private sealed class Record
+        {
+            public ObjectPool<ProjectileCore3D> Pool;
+            public Action<ProjectileCore3D> Return;
+        }
+        private readonly Dictionary<GameObject, Record> _records = new Dictionary<GameObject, Record>();
+        private readonly List<ProjectileCore3D> _active = new List<ProjectileCore3D>(64);
+        private Transform _root;
+        public int CapacityPerType => _defaultPoolCapacity;
+        public int ActiveCount => _active.Count;
         private void Awake()
         {
-            var rootObj = new GameObject("[PROJECTILE_POOL_CONTAINER]");
-            rootObj.transform.SetParent(transform);
-            _poolRoot = rootObj.transform;
-
-            if (_defaultProjectilePrefab != null)
-            {
-                GetOrCreatePool(_defaultProjectilePrefab);
-            }
+            var root = new GameObject("Projectile Inventory");
+            root.transform.SetParent(transform, false);
+            _root = root.transform;
         }
-
-        /// <summary>
-        /// Lấy hoặc khởi tạo ObjectPool tương ứng với một Prefab Đạn.
-        /// </summary>
         public ObjectPool<ProjectileCore3D> GetOrCreatePool(GameObject prefab)
         {
-            if (prefab == null) return null;
-
-            if (!_poolsByPrefab.TryGetValue(prefab, out var pool))
-            {
-                pool = new ObjectPool<ProjectileCore3D>(
-                    createFunc: () =>
-                    {
-                        var instance = Instantiate(prefab, _poolRoot);
-                        if (!instance.TryGetComponent(out ProjectileCore3D core))
-                        {
-                            core = instance.AddComponent<ProjectileCore3D>();
-                        }
-                        instance.SetActive(false);
-                        return core;
-                    },
-                    actionOnGet: (core) =>
-                    {
-                        _activeProjectiles.Add(core);
-                    },
-                    actionOnRelease: (core) =>
-                    {
-                        _activeProjectiles.Remove(core);
-                        if (core != null)
-                        {
-                            core.gameObject.SetActive(false);
-                        }
-                    },
-                    actionOnDestroy: (core) =>
-                    {
-                        if (core != null)
-                        {
-                            Destroy(core.gameObject);
-                        }
-                    },
-                    collectionCheck: false,
-                    defaultCapacity: _defaultPoolCapacity,
-                    maxSize: _maxPoolSize
-                );
-
-                _poolsByPrefab[prefab] = pool;
-            }
-
-            return pool;
-        }
-
-        /// <summary>
-        /// Phóng một viên đạn với đầy đủ cấu hình từ Prefab và danh sách Attack Effects.
-        /// </summary>
-        public bool LaunchProjectile(
-            GameObject prefab,
-            DefenseProjectileLaunchRequest request,
-            IReadOnlyList<SO_AttackEffect> effects)
-        {
-            if (!CanAdvanceGameplay || !isActiveAndEnabled) return false;
-
-            var targetPrefab = prefab != null ? prefab : _defaultProjectilePrefab;
-            if (targetPrefab == null) return false;
-
-            var pool = GetOrCreatePool(targetPrefab);
-            if (pool == null) return false;
-
-            var projectile = pool.Get();
-            if (projectile == null) return false;
-
-            projectile.Launch(
-                source: request.Source,
-                origin: request.Origin,
-                target: request.Target,
-                damage: request.Damage,
-                speed: request.Speed,
-                arcHeight: request.ArcHeight,
-                effects: effects,
-                runGeneration: request.RunGeneration,
-                sessionIdentity: request.SessionIdentity,
-                gameplay: Gameplay,
-                returnToPool: (core) => pool.Release(core)
-            );
-
-            return true;
-        }
-
-        /// <summary>
-        /// Thực thi giao diện IDefenseProjectileLauncher chuẩn.
-        /// </summary>
-        public bool TryLaunch(DefenseProjectileLaunchRequest request)
-        {
-            return LaunchProjectile(_defaultProjectilePrefab, request, null);
-        }
-
-        /// <summary>
-        /// Nạp trước (Pre-warm) một số lượng đạn vào Pool để tránh giật khung hình frame đầu.
-        /// </summary>
-        public void Prewarm(GameObject prefab, int count)
-        {
-            if (prefab == null || count <= 0) return;
-
-            var pool = GetOrCreatePool(prefab);
-            var temp = new ProjectileCore3D[count];
-
-            for (int i = 0; i < count; i++)
-            {
-                temp[i] = pool.Get();
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                pool.Release(temp[i]);
-            }
-        }
-
-        private void RecallAllActive()
-        {
-            for (int i = _activeProjectiles.Count - 1; i >= 0; i--)
-            {
-                var proj = _activeProjectiles[i];
-                if (proj != null)
+            if (prefab == null || !prefab.TryGetComponent<ProjectileCore3D>(out _)) return null;
+            if (_records.TryGetValue(prefab, out var found)) return found.Pool;
+            if (CanAdvanceGameplay) throw new InvalidOperationException("Register projectile pools before gameplay.");
+            var record = new Record();
+            record.Pool = new ObjectPool<ProjectileCore3D>(
+                () =>
                 {
-                    proj.Despawn();
+                    var instance = Instantiate(prefab, _root);
+                    instance.SetActive(false);
+                    return instance.GetComponent<ProjectileCore3D>();
+                },
+                core => _active.Add(core),
+                core =>
+                {
+                    int index = _active.IndexOf(core);
+                    if (index >= 0) { _active[index] = _active[_active.Count - 1]; _active.RemoveAt(_active.Count - 1); }
+                    if (core != null) core.gameObject.SetActive(false);
+                },
+                core => { if (core != null) Destroy(core.gameObject); },
+                true, _defaultPoolCapacity, _maxPoolSize);
+            record.Return = record.Pool.Release;
+            _records.Add(prefab, record);
+            _active.Capacity = Mathf.Max(_active.Capacity, _records.Count * _maxPoolSize);
+            return record.Pool;
+        }
+        public async Task PrewarmAsync(GameObject prefab, int count)
+        {
+            count = Mathf.Clamp(count, 1, _maxPoolSize);
+            var pool = GetOrCreatePool(prefab);
+            if (pool == null) throw new InvalidOperationException("Projectile prefab requires ProjectileCore3D.");
+            if (pool.CountAll >= count) return;
+            var buffer = new ProjectileCore3D[count];
+            int acquired = 0;
+            try
+            {
+                for (; acquired < count; acquired++)
+                {
+                    if (this == null || (Gameplay is DefenseSession session && session.IsDisposed)) throw new OperationCanceledException();
+                    buffer[acquired] = pool.Get();
+                    await Task.Yield();
                 }
             }
-            _activeProjectiles.Clear();
+            finally
+            {
+                for (int i = 0; i < acquired; i++) if (buffer[i] != null) pool.Release(buffer[i]);
+            }
         }
-
-        protected override void OnGameplayCleanup() => RecallAllActive();
-        protected override void OnGameplayReset() => RecallAllActive();
-        private void OnDisable() => RecallAllActive();
+        public void Prewarm(GameObject prefab, int count)
+        {
+            var pool = GetOrCreatePool(prefab);
+            if (pool == null || count <= 0) return;
+            count = Mathf.Min(count, _maxPoolSize);
+            var buffer = new ProjectileCore3D[count];
+            for (int i = 0; i < count; i++) buffer[i] = pool.Get();
+            for (int i = 0; i < count; i++) pool.Release(buffer[i]);
+        }
+        public bool LaunchProjectile(GameObject prefab, DefenseProjectileLaunchRequest request,
+            IReadOnlyList<SO_AttackEffect> effects, DefenseProjectileDefinitionSO definition = null)
+        {
+            var key = prefab != null ? prefab : _defaultProjectilePrefab;
+            if (!CanAdvanceGameplay || !isActiveAndEnabled || key == null ||
+                request.RunGeneration != Gameplay.RunGeneration || !ReferenceEquals(request.SessionIdentity, Gameplay.SessionIdentity) ||
+                !_records.TryGetValue(key, out var record) || record.Pool.CountInactive == 0) return false;
+            var projectile = record.Pool.Get();
+            projectile.SetDefinition(definition);
+            projectile.Launch(request.Source, request.Origin, request.Target, request.Damage, request.Speed, request.ArcHeight,
+                effects, request.RunGeneration, request.SessionIdentity, Gameplay, record.Return, request.TargetPosition);
+            return true;
+        }
+        public bool TryLaunch(DefenseProjectileLaunchRequest request) => LaunchProjectile(_defaultProjectilePrefab, request, null);
+        public bool CanLaunch(GameObject prefab, int count) => prefab != null && count > 0 &&
+            _records.TryGetValue(prefab, out var record) && record.Pool.CountInactive >= count;
+        private void RecallAll()
+        {
+            for (int i = _active.Count - 1; i >= 0; i--) if (_active[i] != null) _active[i].Despawn();
+        }
+        protected override void OnGameplayCleanup() => RecallAll();
+        protected override void OnGameplayReset() => RecallAll();
+        private void OnDisable() => RecallAll();
     }
 }

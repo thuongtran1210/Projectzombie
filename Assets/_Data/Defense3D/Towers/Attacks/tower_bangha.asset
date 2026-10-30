@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8dd23038b9d6634985c7b8801f13d95, type: 3}
+  m_Name: tower_bangha
+  m_EditorClassIdentifier: 
+  _projectile: {fileID: 11400000, guid: 48a29144c7858c34b8109e4a73af9bee, type: 2}
+  _effects:
+  - {fileID: 11400000, guid: 1cabf5d441d0d9e45a10919a2f7229dd, type: 2}
+  _shots: 1
+  _damageMultiplier: 1
+  _cooldown: 0
+  _unlockLevel: 1

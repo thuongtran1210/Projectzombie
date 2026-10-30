@@ -1,192 +1,183 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
-    /// <summary>
-    /// [BỘ QUẢN LÝ XÂY DỰNG THÁP CANH TẠI CÁC SOCKET]
-    /// Quản lý tương tác xây tháp trên 10 vị trí Socket:
-    /// - Khi Tướng di chuyển lại gần Socket (trong bán kính `buildRadius`), hệ thống cho phép bấm phím tương tác / chạm nút xây tháp.
-    /// - Kiểm tra số Gỗ trong `DefenseWoodWallet3D`, trừ tiền và kích hoạt Prefab tháp tại vị trí Socket tương ứng.
-    /// </summary>
+    /// <summary>Socket build commands and proximity checks. Prefab inventory and attack behavior are separate.</summary>
     public sealed class DefenseTowerBuildPrototype3D : DefenseGameplayBehaviour
     {
-        [Header("=== 1. THAM CHIẾU SCENE & VÍ TIỀN ===")]
-        [Tooltip("Tham chiếu chứa danh sách Transform 10 vị trí Socket trên bản đồ")]
         [SerializeField] private DefenseSceneInfo3D sceneInfo;
-        [Tooltip("Ví Gỗ để trừ chi phí khi xây dựng hoặc nâng cấp tháp")]
         [SerializeField] private DefenseWoodWallet3D wallet;
-
-        [Header("=== 2. THÔNG SỐ XÂY DỰNG ===")]
-        [Tooltip("Số Gỗ tiêu hao khi xây một tháp mới (Mặc định: 50 Gỗ)")]
-        [SerializeField, Min(1)] private int towerWoodCost = 50;
-        [Tooltip("Bán kính tối đa Tướng đứng gần Socket để có thể kích hoạt menu Xây tháp (mét)")]
-        [SerializeField, Min(0.5f)] private float buildRadius = 1.7f;
-        [Tooltip("Danh sách các đối tượng tháp canh tương ứng với từng Socket")]
-        [SerializeField] private DefenseTowerPrototype3D[] socketTowers;
-        [Tooltip("Bật hiển thị vòng tròn bán kính xây dựng và thông tin debug")]
-        [SerializeField] private bool showDebugOverlay;
-        private bool[] occupied;
+        [SerializeField, Min(.5f)] private float buildRadius = 1.7f;
+        [SerializeField] private DefenseTowerCatalogSO _catalog;
+        [SerializeField] private DefenseTowerSocket3D[] _sockets = Array.Empty<DefenseTowerSocket3D>();
+        [SerializeField] private DefenseProjectilePool3D _projectiles;
+        private DefenseTowerInventory3D _inventory;
         private DefenseHeroHealth3D _heroHealth;
         private IDefenseHeroCommands _commands;
-        private readonly System.Collections.Generic.List<string> _allowedTowerIds = new System.Collections.Generic.List<string>();
-        public System.Collections.Generic.IReadOnlyList<string> AllowedTowerIds => _allowedTowerIds;
-
-        /// <summary>
-        /// Cấu hình danh sách loại trụ được phép xây theo Loadout đã chọn trước trận.
-        /// </summary>
-        public void SetAllowedTowers(System.Collections.Generic.IEnumerable<string> towerIds)
-        {
-            _allowedTowerIds.Clear();
-            if (towerIds != null)
-            {
-                _allowedTowerIds.AddRange(towerIds);
-            }
-        }
-
-        public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
-        public int BuildCost => towerWoodCost;
+        private bool _ready;
+        private bool _building;
+        private readonly List<string> _allowedTowerIds = new List<string>();
+        public IReadOnlyList<string> AllowedTowerIds => _allowedTowerIds;
+        public DefenseTowerCatalogSO Catalog => _catalog;
+        public int SocketCount => _sockets.Length;
+        public bool IsReady => _ready;
+        public event Action InteractRequested;
+        public event Action<int> BuildMenuRequested;
+        public event Action Changed;
         public int NearestSocket => FindNearestSocket();
-        public Transform GetSocket(int index) => sceneInfo != null ? sceneInfo.GetTowerSocket(index) : null;
-        public event System.Action InteractRequested;
-        public DefenseTowerPrototype3D NearestTower => FindNearestSocket() is int index && index >= 0 ? socketTowers[index] : null;
-        
-
-        private void Awake() => EnsureInitialized();
-
-        private void EnsureInitialized()
+        public DefenseTowerPrototype3D NearestTower => GetTower(NearestSocket);
+        public DefenseTowerPrototype3D GetTower(int index) => index >= 0 && index < _sockets.Length ? _sockets[index].Tower : null;
+        public DefenseTowerSocket3D GetSocketState(int index) => index >= 0 && index < _sockets.Length ? _sockets[index] : null;
+        public Transform GetSocket(int index) => GetSocketState(index)?.transform;
+        public int BuildCost
         {
-            if (sceneInfo == null) sceneInfo = FindObjectOfType<DefenseSceneInfo3D>();
-            if (sceneInfo != null && sceneInfo.HeroSpawn != null)
+            get
             {
-                if (_heroHealth == null) _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
-                if (wallet == null) wallet = sceneInfo.HeroSpawn.GetComponent<DefenseWoodWallet3D>();
-            }
-            if (occupied == null || (socketTowers != null && occupied.Length != socketTowers.Length))
-            {
-                int count = socketTowers != null ? socketTowers.Length : (sceneInfo != null ? sceneInfo.TowerSocketCount : 0);
-                occupied = new bool[count];
-                if (socketTowers != null)
+                int cheapest = int.MaxValue;
+                if (_catalog != null) for (int i = 0; i < _catalog.Count; i++)
                 {
-                    for (int i = 0; i < socketTowers.Length && i < occupied.Length; i++)
-                        occupied[i] = socketTowers[i] != null && socketTowers[i].gameObject.activeSelf;
+                    var data = _catalog.Get(i).Data;
+                    if (IsAllowed(data.Id)) cheapest = Mathf.Min(cheapest, data.GetLevelStats(1).buildCost);
                 }
+                return cheapest == int.MaxValue ? 0 : cheapest;
             }
         }
-
-        private void Start()
+        public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
+        public void SetAllowedTowers(IEnumerable<string> ids)
         {
-            EnsureInitialized();
-            if (sceneInfo == null || sceneInfo.HeroSpawn == null || sceneInfo.TowerSocketCount == 0)
-            {
-                Debug.LogError("[TREBRAVE Defense3D] Tower builder requires active SceneInfo, Hero and tower sockets.");
-                enabled = false;
-                return;
-            }
-            if (socketTowers == null || socketTowers.Length != occupied.Length)
-            {
-                Debug.LogError("[TREBRAVE Defense3D] Assign one authored Tower per socket in the Inspector.", this);
-                enabled = false;
-                return;
-            }
-            for (int i = 0; i < socketTowers.Length; i++)
-            {
-                if (socketTowers[i] == null)
-                {
-                    Debug.LogError("[TREBRAVE Defense3D] Missing authored Tower at socket " + i, this);
-                    enabled = false;
-                    return;
-                }
-                occupied[i] = socketTowers[i].gameObject.activeSelf;
-            }
-            if (wallet == null)
-            {
-                Debug.LogError("[TREBRAVE Defense3D] Tower builder needs DefenseWoodWallet3D on Hero. Install WoodDrop Economy in scene.");
-                enabled = false;
-                return;
-            }
-            Debug.Log("[TREBRAVE Defense3D] Tower builder ready. Wood: " + wallet.Wood + ". Press B near socket.");
+            if (_ready && ids != null) foreach (string id in ids)
+                if (!_inventory.Supports(id)) throw new InvalidOperationException("Changing to an unprepared tower requires a new match.");
+            _allowedTowerIds.Clear();
+            if (ids != null) foreach (string id in ids)
+                if (!_allowedTowerIds.Contains(id)) _allowedTowerIds.Add(id);
+            Changed?.Invoke();
         }
-
+        public bool IsAllowed(string id)
+        {
+            foreach (string allowed in _allowedTowerIds)
+                if (string.Equals(allowed, id, StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
+        public async Task PrepareAsync(DefenseFriendlyTargets3D friendlyTargets)
+        {
+            if (_ready) return;
+            if (Gameplay == null || _catalog == null || _projectiles == null || sceneInfo == null || wallet == null)
+                throw new InvalidOperationException("Assign tower catalog, projectile pool, scene info and wallet.");
+            _heroHealth = sceneInfo.HeroSpawn.GetComponent<DefenseHeroHealth3D>();
+            for (int i = 0; i < _sockets.Length; i++)
+            {
+                if (_sockets[i] == null || string.IsNullOrWhiteSpace(_sockets[i].SocketId)) throw new InvalidOperationException("Missing socket identity.");
+                for (int j = 0; j < i; j++) if (_sockets[j].SocketId == _sockets[i].SocketId) throw new InvalidOperationException("Duplicate socket id.");
+            }
+            _inventory = new DefenseTowerInventory3D(_catalog);
+            if (_allowedTowerIds.Count == 0) throw new InvalidOperationException("Select at least one tower before preparing the map.");
+            foreach (string id in _allowedTowerIds) if (_catalog.Find(id) == null) throw new InvalidOperationException("Map has no definition for selected tower: " + id);
+            await _inventory.PrepareAsync(transform, _sockets.Length, Gameplay, _projectiles, ReleaseTower, _allowedTowerIds);
+            friendlyTargets.AppendRuntimeSupports(_inventory.SupportTargets);
+            for (int i = 0; i < _catalog.Count; i++)
+            {
+                var data = _catalog.Get(i).Data;
+                if (!IsAllowed(data.Id)) continue;
+                if (data.Attack.Shots > _projectiles.CapacityPerType ||
+                    (data.SpecialAttack != null && data.SpecialAttack.Shots > _projectiles.CapacityPerType))
+                    throw new InvalidOperationException("Projectile budget is smaller than the configured burst: " + data.Id);
+                var normal = data.Attack?.Projectile?.VisualPrefab;
+                await _projectiles.PrewarmAsync(normal != null ? normal : data.ProjectilePrefab, _projectiles.CapacityPerType);
+                var special = data.SpecialAttack?.Projectile?.VisualPrefab;
+                if (special != null && special != normal) await _projectiles.PrewarmAsync(special, _projectiles.CapacityPerType);
+            }
+            _ready = true;
+        }
         private void Update()
         {
-            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return;
-            if (_commands != null && _commands.ConsumeBuild())
-            {
-                if (InteractRequested != null) InteractRequested.Invoke();
-                else TryBuildNearest();
-            }
+            if (!CanBuildNow || _commands == null || !_commands.ConsumeBuild()) return;
+            if (InteractRequested != null) InteractRequested.Invoke();
+            else RequestBuildNearest();
         }
-
-        public void ResetTowers()
+        private bool CanBuildNow => _ready && CanAdvanceGameplay && _heroHealth != null && !_heroHealth.IsDown;
+        public bool CanInteract => CanBuildNow;
+        public void RequestBuildNearest()
         {
-            if (socketTowers == null) return;
-            for (int i = 0; i < socketTowers.Length; i++)
-            {
-                if (socketTowers[i] != null) socketTowers[i].gameObject.SetActive(false);
-                if (occupied != null && i < occupied.Length) occupied[i] = false;
-            }
+            int index = NearestSocket;
+            if (CanBuildNow && index >= 0 && !_sockets[index].IsOccupied) BuildMenuRequested?.Invoke(index);
         }
-
         public bool TryBuildNearest()
         {
-            EnsureInitialized();
-            if (!CanAdvanceGameplay || (_heroHealth != null && _heroHealth.IsDown)) return false;
-            int candidate = FindNearestSocket();
-            if (candidate < 0 || socketTowers == null || candidate >= socketTowers.Length || socketTowers[candidate] == null)
-            {
-                Debug.Log("[TREBRAVE Defense3D] Stand within " + buildRadius + "m of an empty TowerSocket and press B.");
-                return false;
-            }
-            int cost = socketTowers[candidate].BuildCost > 0 ? socketTowers[candidate].BuildCost : towerWoodCost;
-            if (wallet == null || wallet.Wood < cost)
-            {
-                Debug.Log("[TREBRAVE Defense3D] Not enough wood to build tower. Required: " + cost);
-                return false;
-            }
-            if (socketTowers[candidate].gameObject.activeSelf || !wallet.TrySpend(cost)) return false;
-            socketTowers[candidate].PrepareForBuild();
-            socketTowers[candidate].gameObject.SetActive(true);
-            if (occupied == null || occupied.Length != socketTowers.Length)
-                occupied = new bool[socketTowers.Length];
-            if (candidate < occupied.Length)
-                occupied[candidate] = true;
-            Debug.Log("[TREBRAVE Defense3D] Tower built at socket " + (candidate + 1) + ". Wood: " + wallet.Wood);
-            return true;
+            if (_allowedTowerIds.Count == 0) return false;
+            return TryBuild(NearestSocket, _allowedTowerIds[0]);
         }
-
+        public bool TryBuild(string socketId, string towerId)
+        {
+            for (int i = 0; i < _sockets.Length; i++) if (_sockets[i].SocketId == socketId) return TryBuild(i, towerId);
+            return false;
+        }
+        public bool TryBuild(int index, string towerId)
+        {
+            if (_building || !CanBuildNow || index < 0 || index != NearestSocket || !IsAllowed(towerId)) return false;
+            var socket = _sockets[index];
+            var entry = _catalog.Find(towerId);
+            if (socket.IsOccupied || !socket.Allows(towerId) || entry == null) return false;
+            var tower = _inventory.FindIdle(towerId);
+            int cost = entry.Data.GetLevelStats(1).buildCost;
+            if (tower == null || cost < 0 || wallet.Wood < cost) return false;
+            _building = true;
+            try
+            {
+                // Prepare the inactive instance before spending; occupancy is reserved before wallet callbacks.
+                tower.transform.SetPositionAndRotation(socket.transform.position, socket.transform.rotation);
+                tower.PrepareForBuild();
+                socket.SetTower(tower);
+                if (!wallet.TrySpend(cost)) { socket.SetTower(null); return false; }
+                tower.gameObject.SetActive(true);
+                Changed?.Invoke();
+                return true;
+            }
+            finally { _building = false; }
+        }
         public bool TryUpgradeNearest()
         {
-            EnsureInitialized();
             var tower = NearestTower;
-            return CanAdvanceGameplay && _heroHealth != null && !_heroHealth.IsDown && tower != null && tower.TryUpgrade(wallet);
+            if (_building || !CanBuildNow || tower == null) return false;
+            _building = true;
+            try
+            {
+                bool result = tower.TryUpgrade(wallet);
+                if (result) Changed?.Invoke();
+                return result;
+            }
+            finally { _building = false; }
         }
-
+        private void ReleaseTower(DefenseTowerPrototype3D tower)
+        {
+            foreach (var socket in _sockets) if (socket != null && socket.Tower == tower) socket.SetTower(null);
+            Changed?.Invoke();
+        }
+        public void ResetTowers()
+        {
+            _inventory?.Reset();
+            foreach (var socket in _sockets) if (socket != null) socket.SetTower(null);
+            Changed?.Invoke();
+        }
+        protected override void OnGameplayCleanup() => ResetTowers();
+        protected override void OnGameplayReset() => ResetTowers();
         private int FindNearestSocket()
         {
-            EnsureInitialized();
-            if (sceneInfo == null || sceneInfo.HeroSpawn == null || socketTowers == null) return -1;
-            int candidate = -1;
+            if (sceneInfo == null || sceneInfo.HeroSpawn == null) return -1;
+            int bestIndex = -1;
             float best = buildRadius * buildRadius;
-            for (int i = 0; i < socketTowers.Length; i++)
+            for (int i = 0; i < _sockets.Length; i++)
             {
-                var socket = sceneInfo.GetTowerSocket(i);
-                if (socket == null || socketTowers[i] == null) continue;
-                Vector3 hero = sceneInfo.HeroSpawn.position, center = socket.position;
-                if (!DefenseVillageInteractionRules.InZone(new DefensePoint3(hero.x, hero.y, hero.z),
-                    new DefensePoint3(center.x, center.y, center.z), buildRadius, false)) continue;
-                Vector3 delta = socket.position - sceneInfo.HeroSpawn.position; delta.y = 0f;
-                if (delta.sqrMagnitude >= best) continue;
-                best = delta.sqrMagnitude; candidate = i;
+                if (_sockets[i] == null || !_sockets[i].isActiveAndEnabled) continue;
+                Vector3 delta = _sockets[i].transform.position - sceneInfo.HeroSpawn.position;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > best) continue;
+                best = delta.sqrMagnitude;
+                bestIndex = i;
             }
-            return candidate;
-        }
-
-        private void OnGUI()
-        {
-            if (!showDebugOverlay) return;
-            GUI.Box(new Rect(16, 116, 320, 72), "Tower Building (Prototype)");
-            GUI.Label(new Rect(28, 143, 290, 22), "Wood: " + (wallet != null ? wallet.Wood : 0) + " | Tower Cost: " + towerWoodCost);
-            GUI.Label(new Rect(28, 164, 290, 20), "Press B near an empty tower socket.");
+            return bestIndex;
         }
     }
 }

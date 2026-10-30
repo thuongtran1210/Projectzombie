@@ -19,6 +19,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         public const string MINION_PHU_TAP_DICH = "minion_phutapdich";
         public const string MINION_THAY_LANG = "minion_thaylang";
         public const string TOWER_CUNG_TIEN = "tower_cungtien";
+        public const string TOWER_BANG_HA = "tower_bangha";
 
         private readonly Dictionary<string, LoadoutCatalogEntry> _entries =
             new Dictionary<string, LoadoutCatalogEntry>(StringComparer.OrdinalIgnoreCase);
@@ -82,7 +83,20 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             catalog.Register(new LoadoutCatalogEntry(MINION_DAN_BINH, LoadoutItemType.Minion, "Dân Binh"));
             catalog.Register(new LoadoutCatalogEntry(MINION_PHU_TAP_DICH, LoadoutItemType.Minion, "Phu Tạp Dịch"));
             catalog.Register(new LoadoutCatalogEntry(MINION_THAY_LANG, LoadoutItemType.Minion, "Thầy Lang"));
-            catalog.Register(new LoadoutCatalogEntry(TOWER_CUNG_TIEN, LoadoutItemType.Tower, "Tháp Cung Tiễn"));
+            var towers = ProjectZombie.Core.Architecture.ServiceContext.Get<DefenseTowerLoadoutCatalogSO>();
+            if (towers != null)
+            {
+                for (int i = 0; i < towers.Count; i++)
+                {
+                    var entry = towers.Get(i);
+                    catalog.Register(new LoadoutCatalogEntry(entry.Id, LoadoutItemType.Tower, entry.Name));
+                }
+            }
+            else
+            {
+                catalog.Register(new LoadoutCatalogEntry(TOWER_CUNG_TIEN, LoadoutItemType.Tower, "Nỏ Thần"));
+                catalog.Register(new LoadoutCatalogEntry(TOWER_BANG_HA, LoadoutItemType.Tower, "Băng Hà"));
+            }
             return catalog;
         }
     }

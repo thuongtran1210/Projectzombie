@@ -88,6 +88,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         {
             { "cungtien", Defense3DCatalog.TOWER_CUNG_TIEN },
             { "Archer", Defense3DCatalog.TOWER_CUNG_TIEN },
+            { "tower_nothan", Defense3DCatalog.TOWER_CUNG_TIEN },
+            { "tower_bangha", Defense3DCatalog.TOWER_BANG_HA },
             { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_CUNG_TIEN }
         };
 
@@ -179,6 +181,10 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                         {
                             result.Add(mappedId);
                         }
+                    }
+                    else if (Defense3DCatalog.CreateDefault().TryGetEntry(id.Trim(), out var entry) && entry.Type == LoadoutItemType.Tower && seen.Add(entry.Id))
+                    {
+                        result.Add(entry.Id);
                     }
                 }
             }

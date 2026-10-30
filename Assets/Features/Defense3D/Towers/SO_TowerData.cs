@@ -17,6 +17,8 @@ namespace ProjectZombie.Features.Defense3D
 
         [Tooltip("Tên hiển thị trong game")]
         [SerializeField] private string _towerName = "Tháp Cung Thủ";
+        [SerializeField, TextArea] private string _description;
+        public string Description => _description;
 
         [Tooltip("Icon đại diện hiển thị trên UI Build / Shop")]
         [SerializeField] private Sprite _icon;
@@ -31,6 +33,10 @@ namespace ProjectZombie.Features.Defense3D
         [Header("── 3. CẤU HÌNH ĐẠN ĐẠO (Projectile Configuration) ──")]
         [Tooltip("Prefab đạn của tháp (P_Proj_Arrow_Archer, P_Proj_IceShard_BangHa...)")]
         [SerializeField] private GameObject _projectilePrefab;
+        [SerializeField] private DefenseTowerAttackProfileSO _attack;
+        [SerializeField] private DefenseTowerAttackProfileSO _specialAttack;
+        public DefenseTowerAttackProfileSO Attack => _attack;
+        public DefenseTowerAttackProfileSO SpecialAttack => _specialAttack;
 
         [Tooltip("Vận tốc bay của đạn (mét/giây)")]
         [SerializeField, Min(1f)] private float _projectileSpeed = 22f;
@@ -81,6 +87,7 @@ namespace ProjectZombie.Features.Defense3D
     [Serializable]
     public struct TowerLevelStats
     {
+        [Min(1f)] public float maxHealth;
         [Tooltip("Chi phí Cổ Mộc (Gỗ) để xây dựng hoặc nâng cấp lên cấp độ này")]
         public int buildCost;
 
