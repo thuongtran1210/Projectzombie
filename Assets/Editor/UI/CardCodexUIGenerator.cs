@@ -48,7 +48,7 @@ namespace ProjectZombie.Editor.UI
             Stretch(modal, 24, 24, 24, 24);
             var header = Panel("Header_Top", modal, SpriteAt("Header_Wood_Bar_VongXuyen"), Color.white);
             Top(header, 18, 18, 80, 18);
-            var title = Text("Txt_Title", header, "BÁCH BẢO CÁC", 32, Gold, TextAlignmentOptions.MidlineLeft);
+            var title = Text("Txt_Title", header, "THẺ BÀI", 32, Gold, TextAlignmentOptions.MidlineLeft);
             Stretch(title.rectTransform, 28, 330, 0, 0); title.fontStyle = FontStyles.Bold;
             var close = Button("Btn_Close", header, SpriteAt("Btn_Nav_Close_X_Wood"), "", 22);
             Anchor(close.GetComponent<RectTransform>(), new Vector2(1,.5f), new Vector2(1,.5f), new Vector2(-16,0), new Vector2(60,60), new Vector2(1,.5f));
@@ -57,6 +57,7 @@ namespace ProjectZombie.Editor.UI
             var coinText = Text("Txt_Amount",coin,"0",24,Gold); Stretch(coinText.rectTransform);
 
             var loadout = Panel("Loadout_Bar", modal, null, new Color(.13f,.105f,.075f));
+            loadout.gameObject.SetActive(false);
             Top(loadout, 38, 112, 196, 38);
             var teamTitle = Text("Txt_LoadoutTitle",loadout,"ĐỘI HÌNH XUẤT TRẬN",20,Gold,TextAlignmentOptions.MidlineLeft);
             Top(teamTitle.rectTransform,16,0,30,600);
@@ -67,11 +68,11 @@ namespace ProjectZombie.Editor.UI
             var minions = SlotGroup(loadout,"Group_Minions","LÍNH",.28f,.62f,LoadoutRules.Default.MaxMinionCount);
             var towers = SlotGroup(loadout,"Group_Towers","TRỤ",.65f,.99f,LoadoutRules.Default.MaxTowerCount);
 
-            var body = Node("Body_Area",modal); Stretch(body,38,38,34,330);
+            var body = Node("Body_Area",modal); Stretch(body,38,38,34,126);
             var left = Node("Col_Left_Grid",body); left.anchorMin=Vector2.zero; left.anchorMax=new Vector2(.65f,1); left.offsetMin=Vector2.zero;left.offsetMax=new Vector2(-20,0);
             var tabs = Node("TabBar",left); Top(tabs,0,0,62,0);
             var buttons = new Button[4];
-            string[] labels={"TƯỚNG","PHÁP BẢO","LÍNH","TRỤ"};
+            string[] labels={"ANH HÙNG","THẦN KHÍ","LÍNH","TRỤ"};
             string[] names={"Tab_Combo","Tab_Fusion","Tab_Minions","Tab_Towers"};
             for(int i=0;i<4;i++)
             {
@@ -96,15 +97,16 @@ namespace ProjectZombie.Editor.UI
             var type=Text("Txt_Type",detailHeader,"",19,new Color(.75f,.73f,.66f),TextAlignmentOptions.TopLeft);Top(type.rectTransform,130,70,32,0);
             var star=Text("Txt_StarBadge",detailHeader,"",20,Gold,TextAlignmentOptions.TopLeft);Top(star.rectTransform,130,104,28,0);
             var rule=Panel("Divider",right,null,new Color(.42f,.34f,.20f));Top(rule,26,176,1,26);
-            var descScroll=Node("ScrollView_Description",right);Stretch(descScroll,26,26,224,192);
+            var descScroll=Node("ScrollView_Description",right);Stretch(descScroll,26,26,232,192);
             var descViewport=Panel("Viewport",descScroll,null,Color.clear);Stretch(descViewport);descViewport.GetComponent<Image>().raycastTarget=true;descViewport.gameObject.AddComponent<RectMask2D>();
             var desc=Text("Txt_Description",descViewport,"Chọn một thẻ bên trái để xem kỹ năng và trang bị.",23,new Color(.89f,.86f,.78f),TextAlignmentOptions.TopLeft);
             var dr=desc.rectTransform;dr.anchorMin=new Vector2(0,1);dr.anchorMax=Vector2.one;dr.pivot=new Vector2(.5f,1);dr.sizeDelta=Vector2.zero;
             desc.lineSpacing=10;desc.richText=true;var df=desc.gameObject.AddComponent<ContentSizeFitter>();df.verticalFit=ContentSizeFitter.FitMode.PreferredSize;
             var ds=descScroll.gameObject.AddComponent<ScrollRect>();ds.horizontal=false;ds.viewport=descViewport;ds.content=dr;ds.movementType=ScrollRect.MovementType.Clamped;
-            var shards=Text("Txt_ShardProgress",right,"",21,new Color(.75f,.79f,.69f),TextAlignmentOptions.MidlineLeft);Bottom(shards.rectTransform,26,26,184,32);
-            var fusion=Button("Btn_AlchemyFusion",right,SpriteAt("Btn_Tab_Wood_Inactive"),"TĂNG SAO",21);Bottom(fusion.GetComponent<RectTransform>(),24,24,114,56);fusion.gameObject.AddComponent<CanvasGroup>();
+            var shards=Text("Txt_ShardProgress",right,"",19,new Color(.75f,.79f,.69f),TextAlignmentOptions.MidlineLeft);Bottom(shards.rectTransform,26,26,104,116);
+            var fusion=Button("Btn_AlchemyFusion",right,SpriteAt("Btn_Tab_Wood_Inactive"),"TĂNG SAO",21);Bottom(fusion.GetComponent<RectTransform>(),24,24,28,56);fusion.gameObject.AddComponent<CanvasGroup>();
             var equip=Button("Btn_EquipLoadout",right,SpriteAt("Btn_Upgrade_Wood_Sub_9Slice"),"TRANG BỊ",26);Bottom(equip.GetComponent<RectTransform>(),24,24,28,72);
+            equip.gameObject.SetActive(false);
             var status=Text("Txt_EquipStatus",right,"",20,new Color(.70f,.70f,.65f));Bottom(status.rectTransform,24,24,28,72);status.gameObject.SetActive(false);
 
             var so=new SerializedObject(view);

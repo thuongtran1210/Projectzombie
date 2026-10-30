@@ -110,7 +110,18 @@ namespace ProjectZombie.Editor.UI
             foreach(var g in prefab.GetComponentsInChildren<Graphic>(true))if(!g.raycastTarget)decorative++;
             Debug.Log("CardCodex prefab references verified; non-raycast graphics: "+decorative);
         }
-        private static void Render(GameObject prefab,int width,int height)
+        /// <summary>Renders existing assets in a temporary scene without rebuilding the UI or saving the open scene.</summary>
+        public static string PreviewUpgradeFeedback()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/UI/CardCodexUI.prefab");
+            if (prefab == null) throw new InvalidOperationException("CardCodex prefab is missing.");
+            Render(prefab, 1920, 1080, true);
+            Render(prefab, 1440, 1080, true);
+            return Path.GetFullPath("Logs/CardCodexQA/cardcodex-1920x1080.png") + "\n"
+                + Path.GetFullPath("Logs/CardCodexQA/cardcodex-1440x1080.png");
+        }
+
+        private static void Render(GameObject prefab,int width,int height, bool upgradeFeedback = false)
         {
             var originalScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             var previewScene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
@@ -145,7 +156,28 @@ namespace ProjectZombie.Editor.UI
             }
             if(weapons.Length>0){var w=weapons[0];view.DisplayRelicDetail(w.weaponName,"PHÁP BẢO HỘ THÂN",w.description+"\n\n<color=#EACB83>Hiệu quả chiến đấu</color>\nXem kỹ năng và trang bị pháp bảo phù hợp với đội hình của bạn.",w.icon,2,12,20,100,true,"TĂNG SAO • 20 MẢNH + 100 CỔ TIỀN");}
             view.ShowEquipAction("TRANG BỊ",true);
-            view.UpdateTabVisuals(CodexTabType.RelicFusion,AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png"),AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png"));
+            if (upgradeFeedback)
+            {
+                view.SetCollectionMode(true, "ANH HÙNG");
+                view.ClearGrid();
+                var heroes = AssetDatabase.FindAssets("t:CharacterDataSO")
+                    .Select(g => AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Player.CharacterDataSO>(AssetDatabase.GUIDToAssetPath(g)))
+                    .Where(h => h != null && h.avatar != null).ToArray();
+                foreach (var hero in heroes)
+                {
+                    view.CreateSlotItem().BindHero(new HeroSlotViewModel { CharacterId = hero.characterId, CharacterName = hero.characterName,
+                        Avatar = hero.avatar, StarLevel = 2, ShardCount = 12, ReqShards = 20, IsUnlocked = true,
+                        IsSelected = hero == heroes[0], NameColor = new Color(.98f,.90f,.72f), Rarity = hero.rarity }, normal, selected, null);
+                }
+                var selectedHero = heroes.FirstOrDefault();
+                view.DisplayRelicDetail(selectedHero != null ? selectedHero.characterName : "Anh hùng", "ANH HÙNG",
+                    selectedHero != null ? "<b>Kỹ năng:</b> " + selectedHero.signatureSkillName + "\n" + selectedHero.signatureSkillDesc
+                        + "\n\n<b>Nội tại:</b> " + selectedHero.passiveTraitName + "\n" + selectedHero.passiveTraitDesc : "Chọn thẻ để xem chỉ số và nâng cấp.",
+                    selectedHero != null ? selectedHero.avatar : null, 2, 12, 20, 1500, false, "TĂNG SAO • 20 MẢNH + 1.500 CỔ TIỀN");
+                view.SetUpgradeStatus("Mảnh: 12/20 • Cổ Tiền: 1.000/1.500\n<color=#FFAA00>Thiếu 8 mảnh và 500 Cổ Tiền.</color>");
+                view.SetCoTienBalance("1.000");
+            }
+            view.UpdateTabVisuals(upgradeFeedback ? CodexTabType.HeroCards : CodexTabType.RelicFusion,AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png"),AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/VongXuyen/Btn_Nav_Wood_Stitched.png"));
             Canvas.ForceUpdateCanvases();instance.GetComponent<CodexResponsiveLayout>().Refresh();Canvas.ForceUpdateCanvases();
             foreach(var text in instance.GetComponentsInChildren<TextMeshProUGUI>(true))if(text.gameObject.activeInHierarchy)text.ForceMeshUpdate();
             Canvas.ForceUpdateCanvases();

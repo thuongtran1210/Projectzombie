@@ -11,7 +11,7 @@ using ProjectZombie.Features.Player;
 namespace ProjectZombie.Features.UI
 {
     /// <summary>
-    /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí / Tướng (Mô hình Clean MVP).
+    /// Presenter điều phối toàn bộ dữ liệu Thư Viện Thần Thẻ & Luyện Khí Gộp Thẻ Vũ Khí / Tướng / Lính / Trụ (Mô hình Clean MVP).
     /// </summary>
     public partial class CardCodexPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
@@ -41,9 +41,42 @@ namespace ProjectZombie.Features.UI
         private readonly Dictionary<WeaponData, CodexSlotItemView> _relicSlotViewMap = new Dictionary<WeaponData, CodexSlotItemView>();
         private readonly Dictionary<CharacterDataSO, CodexSlotItemView> _heroSlotViewMap = new Dictionary<CharacterDataSO, CodexSlotItemView>();
 
-        private CodexTabType _currentTab = CodexTabType.RelicFusion;
+        private static CodexTabType? _pendingInitialTab;
+        private CodexTabType _currentTab = CodexTabType.HeroCards;
         private WeaponData _selectedRelic;
         private CharacterDataSO _selectedHero;
+
+        /// <summary>
+        /// Chỉ định Tab khởi đầu khi mở Bách Bảo Các từ Sảnh Chính hoặc màn hình Chuẩn Bị Xuất Trận.
+        /// </summary>
+        public static void RequestInitialTab(CodexTabType tab)
+        {
+            _pendingEquipmentMode = false;
+            _hasPendingLoadoutSlot = false;
+            _pendingInitialTab = tab;
+        }
+
+        private static bool _hasPendingLoadoutSlot;
+        private static bool? _pendingEquipmentMode;
+        private bool _equipmentMode;
+        private static string _pendingLoadoutSlotId;
+
+        /// <summary>Opens the collection to choose a card for an explicit loadout position.</summary>
+        public static void RequestLoadoutSlot(CodexTabType tab, string currentId)
+        {
+            _pendingEquipmentMode = true;
+            _pendingInitialTab = tab;
+            _pendingLoadoutSlotId = currentId;
+            _hasPendingLoadoutSlot = true;
+        }
+
+        private void ApplyPendingLoadoutSlot()
+        {
+            if (!_hasPendingLoadoutSlot) return;
+            _hasPendingLoadoutSlot = false;
+            HandleLoadoutSlotClicked(_currentTab, _pendingLoadoutSlotId);
+            _pendingLoadoutSlotId = null;
+        }
 
         private void Awake()
         {
@@ -67,8 +100,19 @@ namespace ProjectZombie.Features.UI
             }
 
             SubscribeManagers();
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady -= HandleCoreReady;
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady += HandleCoreReady;
             sw.Stop();
             Debug.Log($"<color=#00FF88>[CardCodexPresenter] Awake hoàn tất trong: {sw.ElapsedMilliseconds} ms (Prewarm 20 slots & Sprites)</color>");
+        }
+
+        private void HandleCoreReady()
+        {
+            if (this == null || !isActiveAndEnabled) return;
+            SubscribeManagers();
+            InitializeLoadout();
+            RefreshCurrency();
+            PopulateGridForTab(_currentTab);
         }
 
         private void EnsureVisualSprites()
@@ -84,11 +128,11 @@ namespace ProjectZombie.Features.UI
         private void Start()
         {
             SubscribeManagers();
-            // Start() không cần gọi RefreshUI() nữa vì OnEnable() đã render dữ liệu đầy đủ rồi
         }
 
         private void OnDestroy()
         {
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady -= HandleCoreReady;
             if (_view != null)
             {
                 _view.OnLoadoutSlotClicked -= HandleLoadoutSlotClicked;
@@ -104,16 +148,34 @@ namespace ProjectZombie.Features.UI
 
         private void HandleViewShown()
         {
-            // OnEnable đã vẽ UI và cập nhật tab, không cần populate lại grid lần 2 tránh khựng
+            if (_pendingEquipmentMode.HasValue)
+            {
+                _equipmentMode = _pendingEquipmentMode.Value;
+                _pendingEquipmentMode = null;
+            }
+            if (_pendingInitialTab.HasValue)
+            {
+                _currentTab = _pendingInitialTab.Value;
+                _pendingInitialTab = null;
+                SetTab(_currentTab);
+            }
+            ApplyPendingLoadoutSlot();
+            UpdateScreenPurpose();
         }
 
         private void OnEnable()
         {
+            if (_pendingEquipmentMode.HasValue) _equipmentMode = _pendingEquipmentMode.Value;
             var sw = System.Diagnostics.Stopwatch.StartNew();
             SubscribeManagers();
             LoadAllData();
             InitializeLoadout();
             RefreshCurrency();
+            if (_pendingInitialTab.HasValue)
+            {
+                _currentTab = _pendingInitialTab.Value;
+                _pendingInitialTab = null;
+            }
             SetTab(_currentTab);
             sw.Stop();
             Debug.Log($"<color=#00FF88>[CardCodexPresenter] OnEnable hoàn tất trong: {sw.ElapsedMilliseconds} ms (Tab: {_currentTab})</color>");
@@ -126,44 +188,49 @@ namespace ProjectZombie.Features.UI
 
         private void SubscribeManagers()
         {
-            if (RelicInventoryManager.Instance != null)
+            if (RelicInventoryManager.HasInstance)
             {
-                RelicInventoryManager.Instance.OnRelicShardsChanged -= HandleRelicDataChanged;
-                RelicInventoryManager.Instance.OnRelicShardsChanged += HandleRelicDataChanged;
-                RelicInventoryManager.Instance.OnRelicStarUpgraded -= HandleRelicDataChanged;
-                RelicInventoryManager.Instance.OnRelicStarUpgraded += HandleRelicDataChanged;
+                var relicMgr = RelicInventoryManager.Instance;
+                relicMgr.OnRelicShardsChanged -= HandleRelicDataChanged;
+                relicMgr.OnRelicShardsChanged += HandleRelicDataChanged;
+                relicMgr.OnRelicStarUpgraded -= HandleRelicDataChanged;
+                relicMgr.OnRelicStarUpgraded += HandleRelicDataChanged;
             }
 
-            if (CharacterProgressionManager.Instance != null)
+            if (CharacterProgressionManager.HasInstance)
             {
-                CharacterProgressionManager.Instance.OnCharacterShardsChanged -= HandleHeroDataChanged;
-                CharacterProgressionManager.Instance.OnCharacterShardsChanged += HandleHeroDataChanged;
-                CharacterProgressionManager.Instance.OnCharacterStarUpgraded -= HandleHeroDataChanged;
-                CharacterProgressionManager.Instance.OnCharacterStarUpgraded += HandleHeroDataChanged;
+                var heroMgr = CharacterProgressionManager.Instance;
+                heroMgr.OnCharacterShardsChanged -= HandleHeroDataChanged;
+                heroMgr.OnCharacterShardsChanged += HandleHeroDataChanged;
+                heroMgr.OnCharacterStarUpgraded -= HandleHeroDataChanged;
+                heroMgr.OnCharacterStarUpgraded += HandleHeroDataChanged;
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            if (MetaCurrencyManager.HasInstance)
             {
-                MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
-                MetaCurrencyManager.Instance.OnCurrencyChanged += HandleCurrencyChanged;
+                var curMgr = MetaCurrencyManager.Instance;
+                curMgr.OnCurrencyChanged -= HandleCurrencyChanged;
+                curMgr.OnCurrencyChanged += HandleCurrencyChanged;
             }
         }
 
         private void UnsubscribeManagers()
         {
-            if (RelicInventoryManager.Instance != null)
+            if (RelicInventoryManager.HasInstance)
             {
-                RelicInventoryManager.Instance.OnRelicShardsChanged -= HandleRelicDataChanged;
-                RelicInventoryManager.Instance.OnRelicStarUpgraded -= HandleRelicDataChanged;
+                var relicMgr = RelicInventoryManager.Instance;
+                relicMgr.OnRelicShardsChanged -= HandleRelicDataChanged;
+                relicMgr.OnRelicStarUpgraded -= HandleRelicDataChanged;
             }
 
-            if (CharacterProgressionManager.Instance != null)
+            if (CharacterProgressionManager.HasInstance)
             {
-                CharacterProgressionManager.Instance.OnCharacterShardsChanged -= HandleHeroDataChanged;
-                CharacterProgressionManager.Instance.OnCharacterStarUpgraded -= HandleHeroDataChanged;
+                var heroMgr = CharacterProgressionManager.Instance;
+                heroMgr.OnCharacterShardsChanged -= HandleHeroDataChanged;
+                heroMgr.OnCharacterStarUpgraded -= HandleHeroDataChanged;
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            if (MetaCurrencyManager.HasInstance)
             {
                 MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
             }
@@ -171,16 +238,25 @@ namespace ProjectZombie.Features.UI
 
         private void HandleRelicDataChanged(string relicId, int val)
         {
-            if (_currentTab == CodexTabType.RelicFusion) RefreshUI();
+            if (_upgradeInProgress) return;
+            if (_currentTab == CodexTabType.RelicFusion || _currentTab == CodexTabType.Minions || _currentTab == CodexTabType.Towers)
+            {
+                RefreshUI();
+            }
         }
 
         private void HandleHeroDataChanged(string heroId, int val)
         {
-            if (_currentTab == CodexTabType.HeroCards) RefreshUI();
+            if (_upgradeInProgress) return;
+            if (_currentTab == CodexTabType.HeroCards)
+            {
+                RefreshUI();
+            }
         }
 
         private void HandleCurrencyChanged(int newBalance)
         {
+            if (_upgradeInProgress) return;
             RefreshCurrency();
             if (_selectedRelic != null && _currentTab == CodexTabType.RelicFusion)
             {
@@ -189,6 +265,10 @@ namespace ProjectZombie.Features.UI
             else if (_selectedHero != null && _currentTab == CodexTabType.HeroCards)
             {
                 SelectHero(_selectedHero);
+            }
+            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _defenseCatalog != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out var entry))
+            {
+                InspectDefenseEntry(entry);
             }
         }
 
@@ -205,21 +285,23 @@ namespace ProjectZombie.Features.UI
             {
                 SelectHero(_selectedHero);
             }
+            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _defenseCatalog != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out var entry))
+            {
+                InspectDefenseEntry(entry);
+            }
         }
 
         public void LoadAllData()
         {
-            if (_isDataLoaded && _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0)
+            if (_isDataLoaded && _cachedHeroes.Count > 0)
             {
-                return; // Dữ liệu đã được nạp sẵn trong static cache, không đọc lại đĩa tránh khựng khung hình
+                return;
             }
 
 #if UNITY_EDITOR
-            // Trong Editor: Nạp fallback qua AssetDatabase nếu chưa có data trong cache
             LoadDataFromEditorFallback();
 #endif
 
-            // Nạp bất đồng bộ 100% qua Addressables / GameDataService theo Addressables SPEC
             if (_loadingDataTask == null || _loadingDataTask.IsCompleted)
             {
                 _loadingDataTask = LoadAllDataAsync();
@@ -243,7 +325,7 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var w = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponData>(path);
-                    if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
+                    if (!path.Contains("Archive_Legacy_2D") && w != null && !string.IsNullOrEmpty(w.weaponId) && ResolveSupportedId(w.weaponId, false) != null && seenWeaponIds.Add(w.weaponId))
                     {
                         _cachedWeapons.Add(w);
                     }
@@ -256,11 +338,11 @@ namespace ProjectZombie.Features.UI
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     var h = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterDataSO>(path);
-                    if (h != null && !_cachedHeroes.Contains(h)) _cachedHeroes.Add(h);
+                    if (!path.Contains("Archive_Legacy_2D") && h != null && ResolveSupportedId(h.characterId, true) != null && !_cachedHeroes.Contains(h)) _cachedHeroes.Add(h);
                 }
             }
 
-            if (_cachedWeapons.Count > 0 && _cachedHeroes.Count > 0)
+            if (_cachedHeroes.Count > 0)
             {
                 _isDataLoaded = true;
             }
@@ -272,7 +354,6 @@ namespace ProjectZombie.Features.UI
             var sw = System.Diagnostics.Stopwatch.StartNew();
             bool hasNewData = false;
 
-
             var seenWeaponIds = new HashSet<string>();
             foreach (var w in _cachedWeapons)
             {
@@ -281,41 +362,17 @@ namespace ProjectZombie.Features.UI
 
             if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                // 1. Nạp Weapons từ GameDataService
-                if (_cachedWeapons.Count == 0)
-                {
-                    try
-                    {
-                        var weapons = await ProjectZombie.Core.Services.Data.GameDataService.Instance.LoadAllAsync<WeaponData>("WeaponData");
-                        if (weapons != null)
-                        {
-                            foreach (var w in weapons)
-                            {
-                                if (w != null && !string.IsNullOrEmpty(w.weaponId) && seenWeaponIds.Add(w.weaponId))
-                                {
-                                    _cachedWeapons.Add(w);
-                                    hasNewData = true;
-                                }
-                            }
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load WeaponData warning: {ex.Message}");
-                    }
-                }
-
-                // 2. Nạp Heroes từ GameDataService
                 if (_cachedHeroes.Count == 0)
                 {
                     try
                     {
-                        var db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
+                        var db = Resources.Load<CharacterDatabaseSO>("CharacterDatabase")
+                            ?? await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterDatabaseSO>("CharacterDatabase");
                         if (db != null && db.Characters != null)
                         {
                             foreach (var h in db.Characters)
                             {
-                                if (h != null && !_cachedHeroes.Contains(h))
+                                if (h != null && ResolveSupportedId(h.characterId, true) != null && !_cachedHeroes.Contains(h))
                                 {
                                     _cachedHeroes.Add(h);
                                     hasNewData = true;
@@ -325,12 +382,12 @@ namespace ProjectZombie.Features.UI
                     }
                     catch (System.Exception ex)
                     {
-                        Debug.LogWarning($"[CardCodexPresenter] GameDataService Load CharacterDatabase warning: {ex.Message}");
+                        Debug.LogWarning($"[CardCodexPresenter] Load CharacterDatabase warning: {ex.Message}");
                     }
                 }
             }
 
-            _isDataLoaded = _cachedWeapons.Count > 0 && _cachedHeroes.Count > 0;
+            _isDataLoaded = _cachedHeroes.Count > 0;
             sw.Stop();
             Debug.Log($"<color=#00FF88>[CardCodexPresenter] LoadAllDataAsync hoàn tất: ({_cachedWeapons.Count} Vũ khí, {_cachedHeroes.Count} Tướng) trong {sw.ElapsedMilliseconds} ms.</color>");
 
@@ -342,14 +399,17 @@ namespace ProjectZombie.Features.UI
 
         private void RefreshCurrency()
         {
-            var curMgr = MetaCurrencyManager.Instance;
+            var curMgr = MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance : null;
             int coins = curMgr != null ? curMgr.TotalCurrency : 0;
             if (_view != null) _view.SetCoTienBalance($"<color=#FFD700>{coins:N0}</color>");
         }
 
         public void SetTab(CodexTabType tab)
         {
+            _choosingLoadoutSlot = false;
+            _replacementId = null;
             _currentTab = tab;
+            UpdateScreenPurpose();
             _inspectedDefenseId = null;
             RefreshLoadoutSummary();
             if (_view != null) _view.UpdateTabVisuals(tab, _tabActiveSprite, _tabInactiveSprite);
@@ -367,11 +427,16 @@ namespace ProjectZombie.Features.UI
             _relicSlotViewMap.Clear();
             _heroSlotViewMap.Clear();
 
-            if (tab == CodexTabType.RelicFusion)
+            if (tab == CodexTabType.RelicFusion && _cachedWeapons.Count == 0)
+            {
+                PopulateDefenseGrid(tab);
+            }
+            else if (tab == CodexTabType.RelicFusion)
             {
                 if (_cachedWeapons.Count > 0)
                 {
-                    var relicMgr = RelicInventoryManager.Instance;
+                    var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
+                    if (relicMgr != null) relicMgr.EnsureInitialized();
 
                     for (int i = 0; i < _cachedWeapons.Count; i++)
                     {
@@ -381,6 +446,7 @@ namespace ProjectZombie.Features.UI
                         var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 5;
                         bool isUnlocked = star > 0 || (_defenseOwnership.IsOwned(ResolveSupportedId(weapon.weaponId, false) ?? ""));
+                        if (star <= 0 && isUnlocked) star = 1;
                         bool isSelected = _selectedRelic == weapon;
 
                         var slotItem = _view.CreateSlotItem();
@@ -408,11 +474,10 @@ namespace ProjectZombie.Features.UI
                         _relicSlotViewMap[weapon] = slotItem;
                     }
 
-                    if (_selectedRelic == null || !_cachedWeapons.Contains(_selectedRelic))
+                    if (_selectedRelic != null && _cachedWeapons.Contains(_selectedRelic))
                     {
-                        _selectedRelic = _cachedWeapons[0];
+                        SelectRelic(_selectedRelic);
                     }
-                    SelectRelic(_selectedRelic);
                 }
                 else
                 {
@@ -423,7 +488,8 @@ namespace ProjectZombie.Features.UI
             {
                 if (_cachedHeroes.Count > 0)
                 {
-                    var heroMgr = CharacterProgressionManager.Instance;
+                    var heroMgr = CharacterProgressionManager.HasInstance ? CharacterProgressionManager.Instance : null;
+                    if (heroMgr != null) heroMgr.EnsureInitialized();
 
                     for (int i = 0; i < _cachedHeroes.Count; i++)
                     {
@@ -433,6 +499,7 @@ namespace ProjectZombie.Features.UI
                         var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 10;
                         bool isUnlocked = star > 0 || _defenseOwnership.IsOwned(ResolveSupportedId(hero.characterId, true) ?? "");
+                        if (star <= 0 && isUnlocked) star = 1;
                         bool isSelected = _selectedHero == hero;
 
                         var slotItem = _view.CreateSlotItem();
@@ -500,14 +567,14 @@ namespace ProjectZombie.Features.UI
             if (_currentTab == CodexTabType.RelicFusion && _selectedRelic != null
                 && _relicSlotViewMap.TryGetValue(_selectedRelic, out var relicSlot))
             {
-                bool owned = (RelicInventoryManager.Instance != null && RelicInventoryManager.Instance.GetRelicStarLevel(_selectedRelic.weaponId) > 0)
+                bool owned = (RelicInventoryManager.HasInstance && RelicInventoryManager.Instance.GetRelicStarLevel(_selectedRelic.weaponId) > 0)
                     || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedRelic.weaponId, false) ?? "");
                 HighlightCard(relicSlot, owned, _selectedRelic.weaponName);
             }
             else if (_currentTab == CodexTabType.HeroCards && _selectedHero != null
                 && _heroSlotViewMap.TryGetValue(_selectedHero, out var heroSlot))
             {
-                bool owned = (CharacterProgressionManager.Instance != null && CharacterProgressionManager.Instance.GetCharacterStarLevel(_selectedHero.characterId) > 0)
+                bool owned = (CharacterProgressionManager.HasInstance && CharacterProgressionManager.Instance.GetCharacterStarLevel(_selectedHero.characterId) > 0)
                     || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedHero.characterId, true) ?? "");
                 HighlightCard(heroSlot, owned, _selectedHero.characterName);
             }
@@ -522,7 +589,8 @@ namespace ProjectZombie.Features.UI
 
             UpdateSelectionVisuals();
 
-            var relicMgr = RelicInventoryManager.Instance;
+            var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
+            if (relicMgr != null) relicMgr.EnsureInitialized();
             int star = relicMgr != null ? relicMgr.GetRelicStarLevel(weapon.weaponId) : 0;
             int shards = relicMgr != null ? relicMgr.GetRelicShardCount(weapon.weaponId) : 0;
             var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
@@ -539,7 +607,7 @@ namespace ProjectZombie.Features.UI
             }
             else if (star < 5)
             {
-                btnLabel = cost > 0 ? $"TĂNG SAO ({reqShards} Thẻ + {cost} Cổ Tiền)" : $"TĂNG SAO ({reqShards} Thẻ)";
+                btnLabel = cost > 0 ? $"TĂNG SAO ({reqShards} Thẻ + {cost:N0} Cổ Tiền)" : $"TĂNG SAO ({reqShards} Thẻ)";
             }
             else
             {
@@ -557,6 +625,8 @@ namespace ProjectZombie.Features.UI
             }
 
             _view.DisplayRelicDetail(weapon.weaponName, category, desc, weapon.icon, star, shards, reqShards, cost, canFuse, btnLabel);
+            ShowUpgradeAvailability(star, shards, reqShards, cost, canFuse,
+                relicMgr == null ? "Dữ liệu đang được khởi tạo." : nextStep == null ? "Không tìm thấy cấu hình nâng cấp." : string.Empty);
         }
 
         private void SelectHero(CharacterDataSO hero)
@@ -568,8 +638,10 @@ namespace ProjectZombie.Features.UI
 
             UpdateSelectionVisuals();
 
-            var heroMgr = CharacterProgressionManager.Instance;
+            var heroMgr = CharacterProgressionManager.HasInstance ? CharacterProgressionManager.Instance : null;
+            if (heroMgr != null) heroMgr.EnsureInitialized();
             int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
+            if (star <= 0 && _inspectedDefenseId != null && _defenseOwnership != null && _defenseOwnership.IsOwned(_inspectedDefenseId)) star = 1;
             int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
             var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
 
@@ -595,61 +667,30 @@ namespace ProjectZombie.Features.UI
             string rarityTag = $"<color={hero.rarity.GetHexColor()}>[{hero.rarity.GetDisplayName()}]</color>";
             string elementTag = $"<color={hero.elementHexColor}>[{hero.element}]</color>";
             string category = $"{rarityTag} {elementTag} [ANH HÙNG]";
-            string desc = $"<b>Kỹ Năng:</b> {hero.signatureSkillName} - {hero.signatureSkillDesc}\n" +
+            ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRuntimeAdapter.EvaluateHeroStarBonuses(star, null, out float hpBonus, out float spdBonus);
+            ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRuntimeAdapter.EvaluateHeroCombatStarBonuses(star, null, out float dmgBonus, out float signatureCd);
+            string desc = $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sinh Lực <b>+{hpBonus * 100f:0}%</b>  •  Tốc Chạy <b>+{spdBonus * 100f:0}%</b>\n\n" +
+                          $"Sát Thương Đánh Thường / Bản Mệnh <b>+{dmgBonus * 100f:0}%</b>  •  Hồi Chiêu Bản Mệnh <b>-{signatureCd * 100f:0}%</b>\n\n" +
+                          $"<b>Kỹ Năng:</b> {hero.signatureSkillName} - {hero.signatureSkillDesc}\n" +
                           $"<b>Nội Tại:</b> {hero.passiveTraitName} - {hero.passiveTraitDesc}\n\n" +
                           $"<color=#D1D5DB>{hero.description}</color>\n\n";
 
             if (nextStep != null)
             {
-                desc += $"<color=#00FF88>Cảnh Giới Kế Tiếp ({nextStep.targetStar} Sao):</color> {nextStep.perkDescription}";
+                var adapterStar = nextStep.targetStar;
+                ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRuntimeAdapter.EvaluateHeroStarBonuses(adapterStar, null, out float nextHp, out float nextSpeed);
+                ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRuntimeAdapter.EvaluateHeroCombatStarBonuses(adapterStar, null, out float nextDamage, out float nextCooldown);
+                desc += $"<color=#00FF88>Cấp {adapterStar} Sao:</color> Máu +{nextHp * 100f:0}% • Tốc chạy +{nextSpeed * 100f:0}% • Sát thương +{nextDamage * 100f:0}% • Giảm hồi chiêu bản mệnh {nextCooldown * 100f:0}%";
             }
 
             _view.DisplayRelicDetail(hero.characterName, category, desc, hero.avatar, star, shards, reqShards, cost, canUpgrade, btnLabel);
+            ShowUpgradeAvailability(star, shards, reqShards, cost, canUpgrade,
+                heroMgr == null ? "Dữ liệu đang được khởi tạo." : nextStep == null ? "Không tìm thấy cấu hình nâng cấp." : string.Empty);
         }
-
-
 
         private void HandleFusionClicked()
         {
-            if (_currentTab == CodexTabType.RelicFusion)
-            {
-                if (_selectedRelic == null) return;
-
-                var relicMgr = RelicInventoryManager.Instance;
-                if (relicMgr == null) return;
-
-                if (relicMgr.TryFuseRelic(_selectedRelic.weaponId))
-                {
-                    _audioService?.PlayUIConfirm();
-                    RefreshCurrency();
-                    PopulateGridForTab(_currentTab);
-                    SelectRelic(_selectedRelic);
-                }
-                else
-                {
-                    _audioService?.PlayUIError();
-                }
-            }
-            else if (_currentTab == CodexTabType.HeroCards)
-            {
-                if (_selectedHero == null) return;
-
-                var heroMgr = CharacterProgressionManager.Instance;
-                if (heroMgr == null) return;
-
-                var result = heroMgr.TryUpgradeCharacterStar(_selectedHero.characterId);
-                if (result == UpgradeCharacterResult.Success)
-                {
-                    _audioService?.PlayUIConfirm();
-                    RefreshCurrency();
-                    PopulateGridForTab(_currentTab);
-                    SelectHero(_selectedHero);
-                }
-                else
-                {
-                    _audioService?.PlayUIError();
-                }
-            }
+            PerformSelectedUpgrade();
         }
 
         private void HandleBack()
@@ -659,11 +700,6 @@ namespace ProjectZombie.Features.UI
             if (MainHubPresenter.Instance != null) MainHubPresenter.Instance.RefreshHubState();
             if (metaManager != null)
             {
-                if (MetaSceneTransitionController.Instance != null && MetaSceneTransitionController.Instance.IsLoadoutReviewPending)
-                {
-                    metaManager.OpenScreen(MetaScreenType.DefensePreparation);
-                    return;
-                }
                 metaManager.PopScreen();
             }
         }

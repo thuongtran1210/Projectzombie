@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using ProjectZombie.Core.Save;
 using ProjectZombie.Core.Architecture;
+using ProjectZombie.Features.Defense3D.Loadout;
 using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.MetaProgression
@@ -12,12 +13,13 @@ namespace ProjectZombie.Features.MetaProgression
         NotEnoughShards,
         NotEnoughCurrency,
         MaxStarReached,
-        InvalidCharacter
+        InvalidCharacter,
+        SaveFailed
     }
 
     /// <summary>
     /// Domain Service trung tâm quản lý logic Sở Hữu, Thu Thập Thẻ Mảnh và Gộp Thẻ Nâng Sao Tướng / Anh Hùng.
-    /// Thiết kế chuẩn SOLID, Data-Driven, phát sinh sự kiện để UI Presenter cập nhật phản hồi.
+    /// Thiết kế chuẩn SOLID, Data-Driven, đọc toàn bộ chi phí & chỉ số từ CharacterStarProgressionSO (Single Source of Truth).
     /// Kế thừa PersistentSingleton<CharacterProgressionManager> chuẩn kiến trúc.
     /// </summary>
     public class CharacterProgressionManager : PersistentSingleton<CharacterProgressionManager>, ISaveableModule
@@ -43,7 +45,6 @@ namespace ProjectZombie.Features.MetaProgression
         public void PopulateSaveData(MetaProgressionSaveData data)
         {
             // CharacterProgressionManager cập nhật trực tiếp vào characterProgressList khi nâng sao
-            // Không cần đồng bộ thêm ở đây
         }
 
         protected override void Awake()
@@ -59,6 +60,8 @@ namespace ProjectZombie.Features.MetaProgression
 
         public void EnsureInitialized()
         {
+            EnsureProgressionConfigLoaded();
+
             if (_saveData == null)
             {
                 var gm = GameManager.Instance;
@@ -71,46 +74,63 @@ namespace ProjectZombie.Features.MetaProgression
                     Initialize(SaveSystem.Load());
                 }
             }
-
-            if (_progressionConfig == null)
-            {
-                LoadProgressionConfigAsync();
-            }
         }
 
-        private async void LoadProgressionConfigAsync()
+        private void EnsureProgressionConfigLoaded()
         {
-            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
-            {
-                _progressionConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-            }
-            if (_progressionConfig == null)
-            {
-                _progressionConfig = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
-            }
+            if (_progressionConfig != null) return;
+
+            _progressionConfig = Resources.Load<CharacterStarProgressionSO>("CharacterStarProgressionConfig");
 #if UNITY_EDITOR
             if (_progressionConfig == null)
             {
                 _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterStarProgressionSO>("Assets/_Data/CharacterStarProgressionConfig.asset");
             }
 #endif
+            if (_progressionConfig == null)
+            {
+                _progressionConfig = ScriptableObject.CreateInstance<CharacterStarProgressionSO>();
+            }
         }
 
         public void Initialize(MetaProgressionSaveData saveData)
         {
             _saveData = saveData ?? new MetaProgressionSaveData();
+            EnsureProgressionConfigLoaded();
 
-            // Đảm bảo tướng khởi đầu (C001_ThuSinh hoặc default) luôn đạt tối thiểu 1 sao nếu chưa có bản ghi
-            EnsureStarterCharacterUnlocked("C001_ThuSinh");
+            // 1. Mở khóa các tướng khởi đầu dựa trên Single Source of Truth (CharacterDatabaseSO & Defense3DCatalog)
+            var charDb = Resources.Load<CharacterDatabaseSO>("CharacterDatabase");
+            if (charDb != null && charDb.Characters != null)
+            {
+                for (int i = 0; i < charDb.Characters.Count; i++)
+                {
+                    var hero = charDb.Characters[i];
+                    if (hero != null && hero.isUnlockedByDefault && !string.IsNullOrEmpty(hero.characterId))
+                    {
+                        EnsureStarterCharacterUnlocked(hero.characterId);
+                    }
+                }
+            }
 
-            // Migration từ unlockedCharacters cũ nếu có
+            var catalog = Defense3DCatalog.CreateDefault();
+            foreach (var entry in catalog.GetEntriesByType(LoadoutItemType.Hero))
+            {
+                string metaId = DefenseLoadoutIdMapper.GetMetaCharacterId(entry.Id);
+                EnsureStarterCharacterUnlocked(metaId);
+            }
+
+            // 2. Migration từ unlockedCharacters cũ nếu có (chỉ migrate các tướng hợp lệ của Defense 3D)
             if (_saveData.unlockedCharacters != null)
             {
                 foreach (var heroId in _saveData.unlockedCharacters)
                 {
-                    if (!string.IsNullOrEmpty(heroId) && _saveData.GetCharacterStarLevel(heroId) < 1)
+                    if (!string.IsNullOrEmpty(heroId) && DefenseLoadoutIdMapper.TryMapHeroId(heroId, out string mappedHero))
                     {
-                        _saveData.SetCharacterProgress(heroId, _saveData.GetCharacterShards(heroId), 1);
+                        string canonicalMetaId = DefenseLoadoutIdMapper.GetMetaCharacterId(mappedHero) ?? heroId;
+                        if (_saveData.GetCharacterStarLevel(canonicalMetaId) < 1)
+                        {
+                            _saveData.SetCharacterProgress(canonicalMetaId, _saveData.GetCharacterShards(canonicalMetaId), 1);
+                        }
                     }
                 }
             }
@@ -123,12 +143,22 @@ namespace ProjectZombie.Features.MetaProgression
             _progressionConfig = config;
         }
 
-        public CharacterStarProgressionSO ProgressionConfig => _progressionConfig;
+        public CharacterStarProgressionSO ProgressionConfig
+        {
+            get
+            {
+                EnsureProgressionConfigLoaded();
+                return _progressionConfig;
+            }
+        }
 
         public int GetCharacterStarLevel(string characterId)
         {
             if (string.IsNullOrEmpty(characterId)) return 0;
-            if (_saveData == null) return characterId == "C001_ThuSinh" || characterId == "default" ? 1 : 0;
+            if (_saveData == null)
+            {
+                return DefenseLoadoutIdMapper.TryMapHeroId(characterId, out _) ? 1 : 0;
+            }
             return _saveData.GetCharacterStarLevel(characterId);
         }
 
@@ -146,18 +176,11 @@ namespace ProjectZombie.Features.MetaProgression
         public CharacterStarStepConfig GetNextStepConfig(string characterId)
         {
             int currentStar = GetCharacterStarLevel(characterId);
-            if (currentStar >= 5) return null; // Đã đạt max
+            if (currentStar >= 5) return null;
 
             int nextStar = currentStar + 1;
-            if (_progressionConfig != null)
-            {
-                return _progressionConfig.GetStepConfig(nextStar);
-            }
-
-            // Fallback nếu chưa gán config SO
-            int reqShards = nextStar == 1 ? 10 : (nextStar == 2 ? 20 : (nextStar == 3 ? 40 : (nextStar == 4 ? 80 : 150)));
-            int cost = nextStar == 1 ? 0 : (nextStar == 2 ? 800 : (nextStar == 3 ? 2500 : (nextStar == 4 ? 6000 : 15000)));
-            return new CharacterStarStepConfig { targetStar = nextStar, requiredShards = reqShards, coTienCost = cost };
+            EnsureProgressionConfigLoaded();
+            return _progressionConfig.GetStepConfig(nextStar);
         }
 
         /// <summary>
@@ -200,7 +223,8 @@ namespace ProjectZombie.Features.MetaProgression
             }
 
             var nextConfig = GetNextStepConfig(characterId);
-            if (nextConfig == null)
+            if (nextConfig == null || nextConfig.requiredShards < 0 || nextConfig.coTienCost < 0
+                || nextConfig.targetStar != currentStar + 1)
             {
                 reason = "Không tìm thấy cấu hình cấp sao kế tiếp";
                 return false;
@@ -214,7 +238,7 @@ namespace ProjectZombie.Features.MetaProgression
             }
 
             int curMoney = _saveData != null ? _saveData.totalCurrency : 0;
-            if (MetaCurrencyManager.Instance != null)
+            if (MetaCurrencyManager.HasInstance)
             {
                 curMoney = MetaCurrencyManager.Instance.TotalCurrency;
             }
@@ -240,40 +264,32 @@ namespace ProjectZombie.Features.MetaProgression
             if (currentStar >= 5) return UpgradeCharacterResult.MaxStarReached;
 
             var nextConfig = GetNextStepConfig(characterId);
-            if (nextConfig == null) return UpgradeCharacterResult.InvalidCharacter;
+            if (nextConfig == null || nextConfig.requiredShards < 0 || nextConfig.coTienCost < 0
+                || nextConfig.targetStar != currentStar + 1) return UpgradeCharacterResult.InvalidCharacter;
 
             int shards = GetCharacterShardCount(characterId);
             if (shards < nextConfig.requiredShards) return UpgradeCharacterResult.NotEnoughShards;
 
             int curMoney = _saveData != null ? _saveData.totalCurrency : 0;
-            if (MetaCurrencyManager.Instance != null)
+            if (MetaCurrencyManager.HasInstance)
             {
                 curMoney = MetaCurrencyManager.Instance.TotalCurrency;
             }
 
             if (curMoney < nextConfig.coTienCost) return UpgradeCharacterResult.NotEnoughCurrency;
 
-            // 1. Trừ Cổ Tiền
-            if (nextConfig.coTienCost > 0)
-            {
-                if (MetaCurrencyManager.Instance != null)
-                {
-                    MetaCurrencyManager.Instance.SpendCurrency(nextConfig.coTienCost);
-                }
-                else if (_saveData != null)
-                {
-                    _saveData.totalCurrency -= nextConfig.coTienCost;
-                }
-            }
+            var currency = MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance : null;
+            if (currency != null && !ReferenceEquals(currency.GetSaveData(), _saveData))
+                return UpgradeCharacterResult.SaveFailed;
 
-            // 2. Trừ mảnh thẻ & Tăng sao
             int newShards = shards - nextConfig.requiredShards;
             int newStar = currentStar + 1;
-            _saveData.SetCharacterProgress(characterId, newShards, newStar);
-
-            SaveCurrentData();
+            if (!CardStarUpgradeTransaction.TryCommit(_saveData, characterId, true,
+                nextConfig.requiredShards, nextConfig.coTienCost, SaveSystem.Save))
+                return UpgradeCharacterResult.SaveFailed;
 
             // 3. Phát sinh sự kiện
+            currency?.RefreshCommittedBalance();
             OnCharacterShardsChanged?.Invoke(characterId, newShards);
             OnCharacterStarUpgraded?.Invoke(characterId, newStar);
 
@@ -288,7 +304,7 @@ namespace ProjectZombie.Features.MetaProgression
 
         private void EnsureStarterCharacterUnlocked(string starterId)
         {
-            if (_saveData == null) return;
+            if (_saveData == null || string.IsNullOrEmpty(starterId)) return;
             if (_saveData.GetCharacterStarLevel(starterId) < 1)
             {
                 _saveData.SetCharacterProgress(starterId, _saveData.GetCharacterShards(starterId), 1);

@@ -56,6 +56,71 @@ namespace ProjectZombie.Features.UI
         public event Action<CodexTabType> OnTabChanged;
         public event Action OnAlchemyFusionClicked;
         public event Action OnShown;
+        private string _upgradeStatus = string.Empty;
+        private bool _collectionMode = true;
+
+        /// <summary>Separates collection management from equipment selection using existing authored regions.</summary>
+        public void SetCollectionMode(bool collection, string formattedTitle)
+        {
+            _collectionMode = collection;
+            if (_tabComboTxt != null) _tabComboTxt.text = "ANH HÙNG";
+            if (_tabFusionTxt != null) _tabFusionTxt.text = "THẦN KHÍ";
+            var modal = transform.Find("SafeArea/Modal_Container");
+            if (modal != null)
+            {
+                var loadout = modal.Find("Loadout_Bar");
+                if (loadout != null) loadout.gameObject.SetActive(!collection);
+                var body = modal.Find("Body_Area") as RectTransform;
+                if (body != null) body.offsetMax = new Vector2(body.offsetMax.x, collection ? -126f : -330f);
+                var title = modal.Find("Header_Top/Txt_Title")?.GetComponent<TextMeshProUGUI>();
+                if (title != null) title.text = formattedTitle;
+            }
+            if (_alchemyFusionButton != null)
+            {
+                _alchemyFusionButton.gameObject.SetActive(collection);
+                var buttonRect = _alchemyFusionButton.transform as RectTransform;
+                if (buttonRect != null) buttonRect.anchoredPosition = new Vector2(buttonRect.anchoredPosition.x, 28f);
+            }
+            if (_fusionRecipeSection != null) _fusionRecipeSection.SetActive(collection);
+            if (_equipButton != null) _equipButton.gameObject.SetActive(!collection);
+            if (_equipStatus != null) _equipStatus.gameObject.SetActive(false);
+            if (_detailShardProgress != null)
+            {
+                var statusRect = _detailShardProgress.rectTransform;
+                statusRect.anchoredPosition = new Vector2(statusRect.anchoredPosition.x, 104f);
+                var scroll = statusRect.parent.Find("ScrollView_Description") as RectTransform;
+                if (scroll != null) scroll.offsetMin = new Vector2(scroll.offsetMin.x, 232f);
+            }
+        }
+
+        /// <summary>Displays presenter-formatted requirements and availability.</summary>
+        public void SetUpgradeStatus(string formattedText)
+        {
+            _upgradeStatus = formattedText ?? string.Empty;
+            if (_detailShardProgress != null) _detailShardProgress.text = _upgradeStatus;
+        }
+
+        /// <summary>Displays an operation result alongside the current requirements.</summary>
+        public void ShowUpgradeOutcome(string formattedText)
+        {
+            if (_detailShardProgress != null) _detailShardProgress.text = formattedText + "\n" + _upgradeStatus;
+        }
+
+        /// <summary>Captures the collection position before refreshing its pooled cards.</summary>
+        public Vector2 CaptureListPosition()
+        {
+            var scroll = _cardsGridContainer != null ? _cardsGridContainer.GetComponentInParent<ScrollRect>() : null;
+            return scroll != null ? scroll.normalizedPosition : Vector2.up;
+        }
+
+        /// <summary>Restores the collection position after a card operation.</summary>
+        public void RestoreListPosition(Vector2 position)
+        {
+            var scroll = _cardsGridContainer != null ? _cardsGridContainer.GetComponentInParent<ScrollRect>() : null;
+            if (scroll == null) return;
+            if (scroll.content != null) LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
+            scroll.normalizedPosition = position;
+        }
 
         protected override void Awake()
         {
@@ -168,12 +233,12 @@ namespace ProjectZombie.Features.UI
 
             if (_fusionRecipeSection != null)
             {
-                _fusionRecipeSection.SetActive(true);
+                _fusionRecipeSection.SetActive(_collectionMode);
             }
 
             if (_alchemyFusionButton != null)
             {
-                _alchemyFusionButton.gameObject.SetActive(true);
+                _alchemyFusionButton.gameObject.SetActive(_collectionMode);
                 _alchemyFusionButton.interactable = canFuse;
 
                 // Tự động làm mờ trực quan (Visual Feedback) qua CanvasGroup và màu nền khi không đủ điều kiện gộp thẻ

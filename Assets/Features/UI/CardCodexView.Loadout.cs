@@ -82,12 +82,12 @@ namespace ProjectZombie.Features.UI
         {
             if (_equipButton == null) return;
             bool unsupported = label == "CHƯA HỖ TRỢ TRONG DEFENSE";
-            _equipButton.gameObject.SetActive(!unsupported);
+            _equipButton.gameObject.SetActive(!unsupported && !_collectionMode);
             _equipButton.interactable = enabled;
             if (_equipLabel != null) _equipLabel.text = label;
             if (_equipStatus != null)
             {
-                _equipStatus.gameObject.SetActive(unsupported);
+                _equipStatus.gameObject.SetActive(unsupported && !_collectionMode);
                 _equipStatus.text = "Thẻ sưu tập • Chưa thể mang vào trận";
             }
         }

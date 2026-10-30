@@ -19,6 +19,10 @@ MonoBehaviour:
     damageMultiplierBonus: 0
     cooldownReductionPercent: 0
     areaMultiplierBonus: 0
+    minionHpMultiplierBonus: 0
+    minionSpeedMultiplierBonus: 0
+    towerDamageMultiplierBonus: 0
+    towerRangeMultiplierBonus: 0
     perkDescription: "M\u1EDF kh\xF3a s\u1EDF h\u1EEFu v\u0169 kh\xED xu\u1EA5t tr\u1EADn."
   - targetStar: 2
     requiredShards: 10
@@ -26,6 +30,10 @@ MonoBehaviour:
     damageMultiplierBonus: 0.15
     cooldownReductionPercent: 0
     areaMultiplierBonus: 0
+    minionHpMultiplierBonus: 0.15
+    minionSpeedMultiplierBonus: 0.05
+    towerDamageMultiplierBonus: 0.15
+    towerRangeMultiplierBonus: 0.1
     perkDescription: "T\u0103ng +15% S\xE1t th\u01B0\u01A1ng k\u1EF9 n\u0103ng."
   - targetStar: 3
     requiredShards: 20
@@ -33,6 +41,10 @@ MonoBehaviour:
     damageMultiplierBonus: 0
     cooldownReductionPercent: 0.15
     areaMultiplierBonus: 0
+    minionHpMultiplierBonus: 0.3
+    minionSpeedMultiplierBonus: 0.1
+    towerDamageMultiplierBonus: 0.3
+    towerRangeMultiplierBonus: 0.15
     perkDescription: "Gi\u1EA3m 15% Th\u1EDDi gian h\u1ED3i chi\xEAu."
   - targetStar: 4
     requiredShards: 40
@@ -40,6 +52,10 @@ MonoBehaviour:
     damageMultiplierBonus: 0
     cooldownReductionPercent: 0
     areaMultiplierBonus: 0.3
+    minionHpMultiplierBonus: 0.5
+    minionSpeedMultiplierBonus: 0.15
+    towerDamageMultiplierBonus: 0.5
+    towerRangeMultiplierBonus: 0.25
     perkDescription: "T\u0103ng +30% Ph\u1EA1m vi t\xE1c \u0111\u1ED9ng k\u1EF9 n\u0103ng."
   - targetStar: 5
     requiredShards: 80
@@ -47,4 +63,8 @@ MonoBehaviour:
     damageMultiplierBonus: 0.3
     cooldownReductionPercent: 0
     areaMultiplierBonus: 0
+    minionHpMultiplierBonus: 0.75
+    minionSpeedMultiplierBonus: 0.2
+    towerDamageMultiplierBonus: 0.75
+    towerRangeMultiplierBonus: 0.35
     perkDescription: "Th\u1EE9c T\u1EC9nh Th\u1EA7n Binh: T\u1ECFa h\xE0o quang v\xE0 t\u0103ng s\xE1t th\u01B0\u01A1ng t\u1ED1i th\u01B0\u1EE3ng."

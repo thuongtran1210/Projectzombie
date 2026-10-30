@@ -2,12 +2,13 @@ using System;
 using UnityEngine;
 using ProjectZombie.Core.Save;
 using ProjectZombie.Core.Architecture;
+using ProjectZombie.Features.Defense3D.Loadout;
 
 namespace ProjectZombie.Features.MetaProgression
 {
     /// <summary>
-    /// Domain Service trung tâm quản lý logic Sở Hữu, Thu Thập Thẻ Mảnh và Gộp Thẻ Nâng Sao Vũ Khí / Pháp Bảo.
-    /// Thiết kế chuẩn SOLID, Data-Driven, phát sinh sự kiện để UI Presenter cập nhật phản hồi.
+    /// Domain Service trung tâm quản lý logic Sở Hữu, Thu Thập Thẻ Mảnh và Gộp Thẻ Nâng Sao Vũ Khí / Pháp Bảo / Lính / Trụ.
+    /// Thiết kế chuẩn SOLID, Data-Driven, đọc toàn bộ chi phí & chỉ số từ RelicStarProgressionSO (Single Source of Truth).
     /// Kế thừa PersistentSingleton<RelicInventoryManager> chuẩn kiến trúc.
     /// </summary>
     public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>, ISaveableModule
@@ -33,7 +34,6 @@ namespace ProjectZombie.Features.MetaProgression
         public void PopulateSaveData(MetaProgressionSaveData data)
         {
             // RelicInventory cập nhật trực tiếp vào relicProgressList trong quá trình nâng sao / nhặt shard
-            // Không cần đồng bộ gì thêm ở đây
         }
 
         protected override void Awake()
@@ -49,10 +49,7 @@ namespace ProjectZombie.Features.MetaProgression
 
         public void EnsureInitialized()
         {
-            if (_progressionConfig == null)
-            {
-                LoadProgressionConfigAsync();
-            }
+            EnsureProgressionConfigLoaded();
 
             if (_saveData == null)
             {
@@ -66,17 +63,22 @@ namespace ProjectZombie.Features.MetaProgression
                     _saveData = SaveSystem.Load() ?? new MetaProgressionSaveData();
                 }
 
-                EnsureStarterRelicUnlocked("wp_kiem_truc");
+                EnsureDefaultDefenseUnitsUnlocked();
                 Debug.Log($"[RelicInventoryManager] Khởi tạo thành công với {_saveData.relicProgressList?.Count ?? 0} bản ghi pháp bảo.");
             }
         }
 
-        private async void LoadProgressionConfigAsync()
+        private void EnsureProgressionConfigLoaded()
         {
-            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
+            if (_progressionConfig != null) return;
+
+            _progressionConfig = Resources.Load<RelicStarProgressionSO>("RelicStarProgressionConfig");
+#if UNITY_EDITOR
+            if (_progressionConfig == null)
             {
-                _progressionConfig = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<RelicStarProgressionSO>("RelicStarProgressionConfig");
+                _progressionConfig = UnityEditor.AssetDatabase.LoadAssetAtPath<RelicStarProgressionSO>("Assets/_Data/RelicStarProgressionConfig.asset");
             }
+#endif
             if (_progressionConfig == null)
             {
                 _progressionConfig = ScriptableObject.CreateInstance<RelicStarProgressionSO>();
@@ -86,14 +88,10 @@ namespace ProjectZombie.Features.MetaProgression
         public void Initialize(MetaProgressionSaveData saveData)
         {
             _saveData = saveData ?? new MetaProgressionSaveData();
+            EnsureProgressionConfigLoaded();
 
-            if (_progressionConfig == null)
-            {
-                LoadProgressionConfigAsync();
-            }
-
-            // Đảm bảo vũ khí khởi đầu luôn đạt tối thiểu 1 sao nếu chưa từng tạo save
-            EnsureStarterRelicUnlocked("wp_kiem_truc");
+            // Đảm bảo các thực thể khởi đầu từ Defense3DCatalog luôn đạt tối thiểu 1 sao
+            EnsureDefaultDefenseUnitsUnlocked();
 
             Debug.Log($"[RelicInventoryManager] Khởi tạo thành công với {_saveData.relicProgressList?.Count ?? 0} bản ghi pháp bảo.");
         }
@@ -103,7 +101,14 @@ namespace ProjectZombie.Features.MetaProgression
             _progressionConfig = config;
         }
 
-        public RelicStarProgressionSO ProgressionConfig => _progressionConfig;
+        public RelicStarProgressionSO ProgressionConfig
+        {
+            get
+            {
+                EnsureProgressionConfigLoaded();
+                return _progressionConfig;
+            }
+        }
 
         public int GetRelicStarLevel(string relicId)
         {
@@ -126,18 +131,11 @@ namespace ProjectZombie.Features.MetaProgression
         public RelicStarStepConfig GetNextStepConfig(string relicId)
         {
             int currentStar = GetRelicStarLevel(relicId);
-            if (currentStar >= 5) return null; // Đã đạt max
+            if (currentStar >= 5) return null;
 
             int nextStar = currentStar + 1;
-            if (_progressionConfig != null)
-            {
-                return _progressionConfig.GetStepConfig(nextStar);
-            }
-
-            // Fallback nếu chưa gán config SO
-            int reqShards = nextStar == 1 ? 5 : (nextStar == 2 ? 10 : (nextStar == 3 ? 20 : (nextStar == 4 ? 40 : 80)));
-            int cost = nextStar == 1 ? 0 : (nextStar == 2 ? 500 : (nextStar == 3 ? 1500 : (nextStar == 4 ? 3500 : 8000)));
-            return new RelicStarStepConfig { targetStar = nextStar, requiredShards = reqShards, coTienCost = cost };
+            EnsureProgressionConfigLoaded();
+            return _progressionConfig.GetStepConfig(nextStar);
         }
 
         public bool CanFuse(string relicId, out string reason)
@@ -157,7 +155,8 @@ namespace ProjectZombie.Features.MetaProgression
             }
 
             var nextConfig = GetNextStepConfig(relicId);
-            if (nextConfig == null)
+            if (nextConfig == null || nextConfig.requiredShards < 0 || nextConfig.coTienCost < 0
+                || nextConfig.targetStar != currentStar + 1)
             {
                 reason = "Không tìm thấy cấu hình tăng sao.";
                 return false;
@@ -170,7 +169,7 @@ namespace ProjectZombie.Features.MetaProgression
                 return false;
             }
 
-            int currentMoney = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0;
+            int currentMoney = MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance.TotalCurrency : (_saveData?.totalCurrency ?? 0);
             if (currentMoney < nextConfig.coTienCost)
             {
                 reason = $"Không đủ Cổ Tiền ({currentMoney}/{nextConfig.coTienCost}).";
@@ -195,28 +194,16 @@ namespace ProjectZombie.Features.MetaProgression
             int currentStar = GetRelicStarLevel(relicId);
             int currentShards = GetRelicShardCount(relicId);
 
-            // Trừ tiền nếu có chi phí
-            if (nextConfig.coTienCost > 0)
-            {
-                if (MetaCurrencyManager.Instance != null)
-                {
-                    if (!MetaCurrencyManager.Instance.SpendCurrency(nextConfig.coTienCost))
-                        return false;
-                }
-            }
-
+            var currency = MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance : null;
+            if (currency != null && !ReferenceEquals(currency.GetSaveData(), _saveData)) return false;
             int newShards = currentShards - nextConfig.requiredShards;
             int newStar = currentStar + 1;
-
-            if (_saveData != null)
-            {
-                _saveData.SetRelicProgress(relicId, newShards, newStar);
-            }
-
-            SaveDataToDisk();
+            if (!CardStarUpgradeTransaction.TryCommit(_saveData, relicId, false,
+                nextConfig.requiredShards, nextConfig.coTienCost, SaveSystem.Save)) return false;
 
             Debug.Log($"[RelicInventoryManager] Gộp thẻ thành công '{relicId}': Cấp sao mới = {newStar}★, Thẻ còn lại = {newShards}");
 
+            currency?.RefreshCommittedBalance();
             OnRelicShardsChanged?.Invoke(relicId, newShards);
             OnRelicStarUpgraded?.Invoke(relicId, newStar);
 
@@ -291,14 +278,30 @@ namespace ProjectZombie.Features.MetaProgression
             OnRelicShardsChanged?.Invoke(relicId, newShards);
         }
 
+        private void EnsureDefaultDefenseUnitsUnlocked()
+        {
+            EnsureStarterRelicUnlocked("wp_kiem_truc");
+
+            var catalog = Defense3DCatalog.CreateDefault();
+            LoadoutItemType[] unitTypes = { LoadoutItemType.Relic, LoadoutItemType.Minion, LoadoutItemType.Tower };
+            for (int t = 0; t < unitTypes.Length; t++)
+            {
+                var entries = catalog.GetEntriesByType(unitTypes[t]);
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    EnsureStarterRelicUnlocked(entries[i].Id);
+                }
+            }
+        }
+
         private void EnsureStarterRelicUnlocked(string starterId)
         {
-            if (_saveData != null)
+            if (_saveData != null && !string.IsNullOrEmpty(starterId))
             {
                 int star = _saveData.GetRelicStarLevel(starterId);
                 if (star == 0)
                 {
-                    _saveData.SetRelicProgress(starterId, 0, 1);
+                    _saveData.SetRelicProgress(starterId, _saveData.GetRelicShards(starterId), 1);
                     SaveDataToDisk();
                 }
             }

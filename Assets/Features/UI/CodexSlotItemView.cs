@@ -72,12 +72,12 @@ namespace ProjectZombie.Features.UI
         }
         private void HandleClick() => _onClickedCallback?.Invoke();
         public void BindRelic(RelicSlotViewModel vm, Sprite normal, Sprite selected, Action click)
-            => Bind(vm.WeaponName, vm.Icon, vm.ElementBadge, vm.StarLevel, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
+            => Bind(vm.WeaponName, vm.Icon, vm.ElementBadge, vm.StarLevel, vm.ShardCount, vm.ReqShards, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
         public void BindHero(HeroSlotViewModel vm, Sprite normal, Sprite selected, Action click)
-            => Bind(vm.CharacterName, vm.Avatar, vm.ElementBadge, vm.StarLevel, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
+            => Bind(vm.CharacterName, vm.Avatar, vm.ElementBadge, vm.StarLevel, vm.ShardCount, vm.ReqShards, vm.IsUnlocked, vm.IsSelected, normal, selected, click);
         public void BindUpgrade(UpgradeSlotViewModel vm, Sprite normal, Sprite selected, Action click)
-            => Bind(vm.UpgradeName, vm.Icon, null, 0, true, vm.IsSelected, normal, selected, click);
-        private void Bind(string name, Sprite icon, Sprite element, int stars, bool owned, bool inspected,
+            => Bind(vm.UpgradeName, vm.Icon, null, 1, 0, 0, true, vm.IsSelected, normal, selected, click);
+        private void Bind(string name, Sprite icon, Sprite element, int stars, int shards, int reqShards, bool owned, bool inspected,
             Sprite normal, Sprite selected, Action click)
         {
             _onClickedCallback = click; _normalSlotSprite = normal; _selectedSlotSprite = selected;
@@ -85,7 +85,12 @@ namespace ProjectZombie.Features.UI
             if (_iconImage != null) { _iconImage.sprite = icon; _iconImage.enabled = icon != null; _iconImage.color = owned ? Color.white : new Color(.65f,.65f,.65f,.8f); }
             if (_elementBadgeImage != null) { _elementBadgeImage.sprite = element; _elementBadgeImage.gameObject.SetActive(element != null); }
             if (_starText != null) { _starText.text = stars + " Sao"; _starText.gameObject.SetActive(stars > 0); }
-            if (_shardProgressText != null) _shardProgressText.gameObject.SetActive(false);
+            if (_shardProgressText != null)
+            {
+                bool showShards = reqShards > 0;
+                _shardProgressText.gameObject.SetActive(showShards);
+                if (showShards) _shardProgressText.text = stars >= 5 ? "<color=#FFD700>TỐI ĐA</color>" : $"{shards}/{reqShards}";
+            }
             SetEquipped(false);
             SetSelected(inspected, owned, null, name);
         }
