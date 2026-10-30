@@ -97,7 +97,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void OnEnable()
         {
             ReleasePresenter();
-            _presenter = new DefensePreparationPresenter();
+            _presenter = new DefensePreparationPresenter(stage: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.SelectedStage);
             _presenter.OnValidationStateChanged += UpdateValidationDisplay;
             _presenter.OnSelectionChanged += HandleSelectionChanged;
             _isStarting = false;

@@ -62,6 +62,16 @@ namespace ProjectZombie.Features.UI.StageSelect
             OnBackClicked?.Invoke();
         }
 
+        public void SetStartAvailability(bool available, string reason)
+        {
+            if (_startBattleButton != null) _startBattleButton.interactable = available;
+            if (_downloadStatusText != null && !string.IsNullOrEmpty(reason))
+            {
+                _downloadStatusText.gameObject.SetActive(true);
+                _downloadStatusText.text = reason;
+            }
+        }
+
         public void RenderStageInfo(StageDefinitionSO stage, bool isDlcDownloaded, bool isPreviousAvailable, bool isNextAvailable, float actualDownloadSizeMb = 0f)
         {
             if (stage == null) return;

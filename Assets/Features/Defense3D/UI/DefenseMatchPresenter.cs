@@ -62,8 +62,16 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (modifiers != null) _upgradeDeck.BindModifiers(modifiers);
         }
 
+        private int _lastBuildSocket = -2, _lastBuildLevel = -2, _lastBuildCost = -2, _lastBuildMax = -2;
+        private System.Action _requestBuild, _requestUpgrade;
+        public void BindTowerBuilder(DefenseTowerBuildPrototype3D builder) => _towerBuilder = builder;
+        private void RequestTowerMenu() => _towerBuilder?.RequestBuildNearest();
+        private void UpgradeTower() => _towerBuilder?.TryUpgradeNearest();
+
         private void Awake()
         {
+            _requestBuild = RequestTowerMenu;
+            _requestUpgrade = UpgradeTower;
             if (_hudView == null) _hudView = GetComponentInChildren<DefenseMatchHUDView>(true);
             if (_upgradeModalView == null) _upgradeModalView = GetComponentInChildren<DefenseUpgradeModalView>(true);
             if (_resultModalView == null) _resultModalView = GetComponentInChildren<DefenseMatchResultModalView>(true);
@@ -75,8 +83,17 @@ namespace ProjectZombie.Features.Defense3D.UI
             _upgradeDeck = new DefenseUpgradeDeck();
         }
 
+        private bool _presentationInitialized;
+
         private void Start()
         {
+            if (_sessionCommands != null) InitializePresentation();
+        }
+
+        /// <summary>Explicit readiness step; independent of asynchronous scene activation timing.</summary>
+        public void InitializePresentation()
+        {
+            if (_presentationInitialized) return;
             if (_run == null) _run = FindObjectOfType<DefenseRun6003D>();
             if (_woodWallet == null) _woodWallet = FindObjectOfType<DefenseWoodWallet3D>();
             if (_hudView == null) _hudView = GetComponentInChildren<DefenseMatchHUDView>(true);
@@ -98,6 +115,8 @@ namespace ProjectZombie.Features.Defense3D.UI
                 return;
             }
 
+            _presentationInitialized = true;
+            enabled = true;
             if (_upgradeModalView != null)
             {
                 _upgradeModalView.OnCardSelected += OnUpgradeCardSelected;
@@ -273,37 +292,20 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _hudView.SetBossHealth(false, 0, 1, string.Empty);
             }
 
-            // 8. Tương tác Xây Tháp & Nâng Cấp tại 10 Socket (Mobile Touch & PC)
-            if (_towerBuilder == null && _run != null)
-            {
-                _towerBuilder = _run.GetComponentInChildren<DefenseTowerBuildPrototype3D>() ?? FindObjectOfType<DefenseTowerBuildPrototype3D>();
-            }
-
             if (_towerBuilder != null)
             {
                 int socket = _towerBuilder.NearestSocket;
-                if (socket >= 0)
+                var tower = _towerBuilder.GetTower(socket);
+                int level = tower != null && tower.gameObject.activeSelf ? tower.Level : 0;
+                int cost = level > 0 ? tower.UpgradeCost : 0;
+                int maximum = tower != null ? tower.MaxLevel : 0;
+                if (socket != _lastBuildSocket || level != _lastBuildLevel || cost != _lastBuildCost || maximum != _lastBuildMax)
                 {
-                    var tower = _towerBuilder.NearestTower;
-                    bool isBuilt = tower != null && tower.gameObject.activeSelf;
-                    if (!isBuilt)
-                    {
-                        int cost = tower != null && tower.BuildCost > 0 ? tower.BuildCost : _towerBuilder.BuildCost;
-                        _hudView.SetBuildPrompt(true, $"XÂY THÁP ({cost} GỖ)", () => _towerBuilder.TryBuildNearest());
-                    }
-                    else if (tower.Level < 3)
-                    {
-                        int cost = tower.UpgradeCost;
-                        _hudView.SetBuildPrompt(true, $"NÂNG CẤP LV.{tower.Level + 1} ({cost} GỖ)", () => _towerBuilder.TryUpgradeNearest());
-                    }
-                    else
-                    {
-                        _hudView.SetBuildPrompt(true, "THÁP TỐI ĐA (LV.3)", null);
-                    }
-                }
-                else
-                {
-                    _hudView.SetBuildPrompt(false);
+                    _lastBuildSocket = socket; _lastBuildLevel = level; _lastBuildCost = cost; _lastBuildMax = maximum;
+                    if (socket < 0) _hudView.SetBuildPrompt(false);
+                    else if (level == 0) _hudView.SetBuildPrompt(true, "CHỌN TRỤ", _requestBuild);
+                    else if (level < maximum) _hudView.SetBuildPrompt(true, "NÂNG CẤP LV." + (level + 1) + " (" + cost + " GỖ)", _requestUpgrade);
+                    else _hudView.SetBuildPrompt(true, "TRỤ ĐÃ ĐẠT CẤP TỐI ĐA", null);
                 }
             }
         }
@@ -390,7 +392,9 @@ namespace ProjectZombie.Features.Defense3D.UI
                 elapsedSeconds: _run.ElapsedTime,
                 woodCollected: wood,
                 enemiesDefeated: defeated,
-                stageId: "STAGE_DEFENSE_3D");
+                stageId: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.stageId,
+                runId: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.RunId,
+                victoryReward: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.baseRewardCoins ?? DefenseMatchResultService.REWARD_VICTORY_CURRENCY);
 
             var processed = _resultService.ProcessMatchResult(resultData);
             _resultModalView.ShowResult(processed.Title, processed.Message, processed.Summary);
@@ -405,6 +409,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         /// <summary>Invalidates old selections before session entities are cleaned up.</summary>
         public void CancelRunPresentation()
         {
+            _lastBuildSocket = -2;
             if (_upgradeModalView != null) _upgradeModalView.Hide();
             if (_resultModalView != null) _resultModalView.Hide();
             _currentDrawnCards = null;

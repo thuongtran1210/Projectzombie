@@ -230,7 +230,7 @@ namespace ProjectZombie.EditorTools
                 metaObj.transform.SetParent(mainCanvas.transform, false);
                 metaRoot = metaObj.transform;
             }
-            
+
             // 2.0. Tạo Persistent_MetaBackdrop (Che 100% Tilemap và Player bên dưới khi ở trong Menu)
             Transform backdropTrans = metaRoot.Find("Persistent_MetaBackdrop");
             if (backdropTrans == null)
@@ -253,7 +253,7 @@ namespace ProjectZombie.EditorTools
             {
                 backdropImg.color = new Color(0.08f, 0.08f, 0.12f, 1.0f);
             }
-            
+
             // Dọn dẹp các instance MainHub cũ nếu có để tránh nhân bản
             Transform oldHub1 = metaRoot.transform.Find("Panel_MainHub");
             if (oldHub1 != null) Object.DestroyImmediate(oldHub1.gameObject);
@@ -403,9 +403,9 @@ namespace ProjectZombie.EditorTools
             }
 
             var soTC = new SerializedObject(transitionController);
-            soTC.FindProperty("_fadeOverlayCanvasGroup").objectReferenceValue = fadeGroup;
+
             soTC.FindProperty("_metaUIManager").objectReferenceValue = metaManager;
-            soTC.FindProperty("_mainHubPresenter").objectReferenceValue = hubTrans.GetComponent<MainHubPresenter>();
+
             soTC.ApplyModifiedProperties();
 
             EditorUtility.SetDirty(mainCanvas);

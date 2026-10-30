@@ -4,6 +4,7 @@ using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.Player;
 using ProjectZombie.Features.Weapons;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.UI
 {
@@ -24,7 +25,7 @@ namespace ProjectZombie.Features.UI
         [SerializeField] private MainHubView _view;
 
         [Header("Manager Reference")]
-        [SerializeField] private MetaCurrencyManager _currencyManager;
+        private IMetaCurrencyService _currencyService;
         [SerializeField] private MetaUIManager _metaUIManager;
 
         public static MainHubPresenter Instance { get; private set; }
@@ -65,23 +66,38 @@ namespace ProjectZombie.Features.UI
                 _view.OnResourceDownloadClicked += HandleResourceDownloadClicked;
             }
 
-            SubscribeCurrencyManager();
-            RefreshHubState();
+            if (AppBootGate.IsCoreReady && _currencyService == null) HandleCoreReady();
         }
 
         private void OnEnable()
         {
+            AppBootGate.OnCoreReady -= HandleCoreReady;
+            AppBootGate.OnCoreReady += HandleCoreReady;
+            if (AppBootGate.IsCoreReady) HandleCoreReady();
+            else if (_view != null)
+            {
+                _view.SetCoTienBalance("…");
+                _view.SetLinhHonBalance("…");
+            }
+        }
+
+        private void HandleCoreReady()
+        {
+            if (!isActiveAndEnabled || !AppBootGate.IsCoreReady) return;
             SubscribeCurrencyManager();
             RefreshHubState();
         }
 
         private void OnDisable()
         {
+            AppBootGate.OnCoreReady -= HandleCoreReady;
             UnsubscribeCurrencyManager();
         }
 
         private void OnDestroy()
         {
+            AppBootGate.OnCoreReady -= HandleCoreReady;
+            if (Instance == this) Instance = null;
             if (_view != null)
             {
                 _view.OnStartRunClicked -= HandleStartRunClicked;
@@ -100,23 +116,22 @@ namespace ProjectZombie.Features.UI
 
         private void SubscribeCurrencyManager()
         {
-            if (MetaCurrencyManager.Instance != null)
-            {
-                MetaCurrencyManager.Instance.OnCurrencyChanged -= UpdateCurrencyDisplay;
-                MetaCurrencyManager.Instance.OnCurrencyChanged += UpdateCurrencyDisplay;
-            }
+            var service = ServiceContext.Get<IMetaCurrencyService>();
+            if (ReferenceEquals(_currencyService, service)) return;
+            UnsubscribeCurrencyManager();
+            _currencyService = service;
+            if (_currencyService != null) _currencyService.OnCurrencyChanged += UpdateCurrencyDisplay;
         }
 
         private void UnsubscribeCurrencyManager()
         {
-            if (MetaCurrencyManager.HasInstance)
-            {
-                MetaCurrencyManager.Instance.OnCurrencyChanged -= UpdateCurrencyDisplay;
-            }
+            if (_currencyService != null) _currencyService.OnCurrencyChanged -= UpdateCurrencyDisplay;
+            _currencyService = null;
         }
 
         public void RefreshHubState()
         {
+            if (!AppBootGate.IsCoreReady) return;
             UpdateCurrencyDisplay();
             _audioService?.PlayHubBGM();
             UpdateSelectedHeroDisplay();
@@ -125,9 +140,9 @@ namespace ProjectZombie.Features.UI
 
         public void UpdateCurrencyDisplay(int amount = -1)
         {
-            if (_view != null)
+            if (_view != null && AppBootGate.IsCoreReady && _currencyService != null)
             {
-                int balance = amount >= 0 ? amount : (MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0);
+                int balance = amount >= 0 ? amount : _currencyService.TotalCurrency;
                 _view.SetCoTienBalance($"<color=#FFD700>{balance:N0}</color>");
                 _view.SetLinhHonBalance("<color=#B388FF>0</color>");
             }
@@ -263,22 +278,11 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
-                // Mở trực tiếp màn hình Chuẩn Bị Xuất Trận Defense 3D ("Thủ Thành Sông Quê") nếu đã có sẵn trong Registry
-                if (metaManager.HasScreen(MetaScreenType.DefensePreparation))
-                {
-                    metaManager.OpenScreen(MetaScreenType.DefensePreparation);
-                    return;
-                }
-
                 metaManager.OpenScreen(MetaScreenType.StageSelect);
             }
             else
             {
-                // Fallback nếu không có MetaUIManager
-                if (MetaSceneTransitionController.Instance != null)
-                {
-                    MetaSceneTransitionController.Instance.StartRun();
-                }
+                Debug.LogError("Main Hub requires a bound MetaUIManager to open stage selection.", this);
             }
         }
 

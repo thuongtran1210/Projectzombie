@@ -28,6 +28,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             _view.OrderRequested += Order;
             _view.ContextRequested += ContextInteract;
             _shop.TowerBuilder.InteractRequested += KeyboardInteract;
+            _shop.TowerBuilder.Changed += MarkDirty;
             _dirty = true;
         }
         private void MarkDirty() => _dirty = true;
@@ -43,7 +44,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             var tower = builder.NearestTower;
             level = tower != null && tower.gameObject.activeSelf ? tower.Level : 0;
             return DefenseVillageInteractionRules.Resolve(_shop.CanTrade, _shop.IsNearRecruitment, socket >= 0,
-                level, _shop.Wallet.Wood, builder.BuildCost, level > 0 ? tower.UpgradeCost : -1);
+                level, _shop.Wallet.Wood, 0, level > 0 ? tower.UpgradeCost : -1, tower != null ? tower.MaxLevel : 3);
         }
 
         private void Interact(bool fromButton)
@@ -52,11 +53,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             // Reject a stale pointer click after leaving a zone or after building changed the action.
             if (fromButton && (action.Action != _lastAction ||
                 (action.Action != DefenseVillageAction.Recruit && socket != _lastSocket))) { MarkDirty(); return; }
-            if (!action.Enabled) return;
+            if (!action.Enabled && action.Action != DefenseVillageAction.Build) return;
             switch (action.Action)
             {
                 case DefenseVillageAction.Recruit: _view.ToggleRecruitment(); break;
-                case DefenseVillageAction.Build: _shop.TowerBuilder.TryBuildNearest(); break;
+                case DefenseVillageAction.Build: _shop.TowerBuilder.RequestBuildNearest(); break;
                 case DefenseVillageAction.Upgrade: _shop.TowerBuilder.TryUpgradeNearest(); break;
             }
             MarkDirty();
@@ -79,7 +80,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 visible = screen.z > 0f && screen.x >= 0f && screen.x <= Screen.width && screen.y >= 0f && screen.y <= Screen.height;
                 if (visible) _view.PositionContext(screen);
             }
-            _view.SetContext(visible, null, action.Enabled);
+            _view.SetContext(visible, null, action.Enabled || action.Action == DefenseVillageAction.Build);
             if (!_dirty && socket == _lastSocket && level == _lastLevel && available == _lastCanTrade && nearHut == _lastNearHut) return;
             _dirty = false; _lastSocket = socket; _lastLevel = level;
             _lastCanTrade = available; _lastNearHut = nearHut; _lastAction = action.Action;
@@ -99,12 +100,12 @@ namespace ProjectZombie.Features.Defense3D.UI
             switch (action.Action)
             {
                 case DefenseVillageAction.Recruit: label = "Chiêu mộ\nQuán Trà [B]"; break;
-                case DefenseVillageAction.Build: label = "Xây tháp\n" + (action.Shortage > 0 ? "Thiếu " + action.Shortage : action.Cost.ToString()) + " gỗ [B]"; break;
+                case DefenseVillageAction.Build: label = "Chọn trụ [B]"; break;
                 case DefenseVillageAction.Upgrade: label = "Nâng cấp " + (level + 1) + "\n" + (action.Shortage > 0 ? "Thiếu " + action.Shortage : action.Cost.ToString()) + " gỗ [B]"; break;
-                case DefenseVillageAction.Maximum: label = "Tháp tối đa\nCấp 3"; break;
+                case DefenseVillageAction.Maximum: label = "Trụ đã đạt\ncấp tối đa"; break;
                 default: label = string.Empty; break;
             }
-            _view.SetContext(visible, label, action.Enabled);
+            _view.SetContext(visible, label, action.Enabled || action.Action == DefenseVillageAction.Build);
         }
         protected override void OnGameplayGateChanged(bool active)
         {
@@ -114,7 +115,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         protected override void OnGameplayCleanup() { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); _view.SetCommandsVisible(false); }
         private void Unsubscribe()
         {
-            if (_shop != null) { _shop.Changed -= MarkDirty; _shop.TowerBuilder.InteractRequested -= KeyboardInteract; }
+            if (_shop != null) { _shop.Changed -= MarkDirty; _shop.TowerBuilder.InteractRequested -= KeyboardInteract; _shop.TowerBuilder.Changed -= MarkDirty; }
             if (_view == null) return;
             _view.RecruitRequested -= Recruit; _view.OrderRequested -= Order; _view.ContextRequested -= ContextInteract;
         }

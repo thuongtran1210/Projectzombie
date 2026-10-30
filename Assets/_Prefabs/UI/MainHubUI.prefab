@@ -1919,7 +1919,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 8744177420571266499}
-  _currencyManager: {fileID: 0}
   _metaUIManager: {fileID: 0}
 --- !u!1 &5770127514714898678
 GameObject:

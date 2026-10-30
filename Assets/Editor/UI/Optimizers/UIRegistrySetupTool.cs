@@ -20,7 +20,8 @@ namespace ProjectZombie.Editor.UITools
         {
             EditorApplication.delayCall += () =>
             {
-                CreateOrUpdateUIRegistry();
+                if (!EditorApplication.isPlayingOrWillChangePlaymode && !File.Exists(REGISTRY_PATH))
+                    CreateOrUpdateUIRegistry();
             };
         }
 

@@ -233,7 +233,7 @@ namespace ProjectZombie.Features.UI.Lobby
             _view.SetHostControls(_sessionService != null && _sessionService.IsHost, canStartGame: allClientsReady);
         }
 
-        private async void HandleMatchStarted()
+        private void HandleMatchStarted()
         {
             if (_view != null)
             {
@@ -244,21 +244,12 @@ namespace ProjectZombie.Features.UI.Lobby
 
             OnMatchStartedTransition?.Invoke();
 
-            string stageId = _sessionService?.CurrentRoom?.SelectedStageId ?? "STAGE_01";
-            ProjectZombie.Features.Maps.StageDefinitionSO matchedStage = null;
-
-            try
+            string stageId = _sessionService?.CurrentRoom?.SelectedStageId;
+            var matchedStage = ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Stages.GetStageById(stageId);
+            if (matchedStage == null || !matchedStage.CanLaunchDefense)
             {
-                var dbHandle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<ProjectZombie.Features.Maps.WorldStageDatabaseSO>("WorldStageDatabase");
-                await dbHandle.Task;
-                if (dbHandle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded && dbHandle.Result != null)
-                {
-                    matchedStage = dbHandle.Result.GetStageById(stageId) ?? (dbHandle.Result.Stages != null && dbHandle.Result.Stages.Count > 0 ? dbHandle.Result.Stages[0] : null);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[LobbyPresenter] Load WorldStageDatabase from Addressables warning: {ex.Message}");
+                Debug.LogError("[LobbyPresenter] Room has no valid Defense stage: " + stageId);
+                return;
             }
 
             // 1. Nếu có MetaSceneTransitionController, chuyển cảnh mượt mà
@@ -282,7 +273,7 @@ namespace ProjectZombie.Features.UI.Lobby
                 var repo = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository();
                 var dto = repo.Load();
                 var snapshot = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutSnapshot(dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
-                _ = ProjectZombie.Features.Defense3D.DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot);
+                _ = ProjectZombie.Features.Defense3D.DefenseMatchNavigation.LaunchDefenseMatchAsync(matchedStage, snapshot);
             }
         }
 

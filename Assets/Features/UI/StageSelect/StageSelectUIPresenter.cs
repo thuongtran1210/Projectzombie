@@ -1,246 +1,123 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using ProjectZombie.Features.Maps;
-using ProjectZombie.Core.Services.Addressables;
+using ProjectZombie.Core.Architecture;
 
 namespace ProjectZombie.Features.UI.StageSelect
 {
-    /// <summary>
-    /// Presenter điều phối dữ liệu Chọn Ải & Tải DLC (MVP Pattern).
-    /// </summary>
-    public class StageSelectUIPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
+    /// <summary>Stage selection reads the app catalog; availability queries use the actual scene key.</summary>
+    public sealed class StageSelectUIPresenter : MonoBehaviour, ProjectZombie.Core.Audio.IAudioServiceConsumer
     {
-        private ProjectZombie.Core.Audio.IAudioService _audioService;
-        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
-        [Header("View Reference")]
         [SerializeField] private StageSelectUIView _view;
-
-        [Header("Stage Database")]
-        [SerializeField] private List<StageDefinitionSO> _stageList = new List<StageDefinitionSO>();
-
-        private int _currentStageIndex = 0;
-        private AddressablePatchManager _patchManager => AddressablePatchManager.Instance;
-
+        private IReadOnlyList<StageDefinitionSO> _stages;
+        private ProjectZombie.Core.Audio.IAudioService _audio;
+        private int _index;
+        private int _revision;
+        private bool _destroyed;
+        private bool _downloaded;
+        private bool _downloading;
         public static event Action<StageDefinitionSO> OnStageSelectedForBattle;
+        public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audio = audioService;
 
         private void Awake()
         {
             if (_view == null) _view = GetComponent<StageSelectUIView>();
-            EnsureStageDatabaseLoaded();
         }
-
-        private void OnEnable()
-        {
-            EnsureStageDatabaseLoaded();
-            RefreshView();
-        }
-
-        private async void EnsureStageDatabaseLoaded()
-        {
-            WorldStageDatabaseSO db = null;
-            if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
-            {
-                db = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<WorldStageDatabaseSO>("WorldStageDatabase");
-            }
-
-            if (db == null)
-            {
-                db = Resources.Load<WorldStageDatabaseSO>("WorldStageDatabase")
-                  ?? Resources.Load<WorldStageDatabaseSO>("Levels/WorldStageDatabase");
-            }
-
-            if (db != null && db.Stages != null && db.Stages.Count > 0)
-            {
-                _stageList = new List<StageDefinitionSO>(db.Stages);
-                RefreshView();
-            }
-        }
-
         private void Start()
         {
-            if (_view != null)
-            {
-                _view.OnStartBattleClicked += HandleStartBattle;
-                _view.OnDownloadDlcClicked += HandleDownloadDlc;
-                _view.OnPrevStageClicked += HandlePrevStage;
-                _view.OnNextStageClicked += HandleNextStage;
-                _view.OnBackClicked += HandleBack;
-            }
-
-            _patchManager.OnPatchProgressChanged += HandlePatchProgress;
-            _patchManager.OnPatchCompleted += HandlePatchCompleted;
-            _patchManager.OnPatchFailed += HandlePatchFailed;
-
-            RefreshView();
+            _view.OnStartBattleClicked += HandleStart;
+            _view.OnDownloadDlcClicked += HandleDownload;
+            _view.OnPrevStageClicked += Previous;
+            _view.OnNextStageClicked += Next;
+            _view.OnBackClicked += Back;
+            Refresh();
         }
-
+        private void OnEnable() => Refresh();
+        private void OnDisable() => _revision++;
         private void OnDestroy()
         {
-            if (_view != null)
+            _destroyed = true;
+            _revision++;
+            if (_view == null) return;
+            _view.OnStartBattleClicked -= HandleStart;
+            _view.OnDownloadDlcClicked -= HandleDownload;
+            _view.OnPrevStageClicked -= Previous;
+            _view.OnNextStageClicked -= Next;
+            _view.OnBackClicked -= Back;
+        }
+        private async void Refresh()
+        {
+            var database = AppCompositionRoot.Instance?.Stages;
+            if (database == null || database.Stages.Count == 0 || _view == null) return;
+            _stages = database.Stages;
+            _index = Mathf.Clamp(_index, 0, _stages.Count - 1);
+            var stage = _stages[_index];
+            int revision = ++_revision;
+            _downloaded = false;
+            _view.RenderStageInfo(stage, false, _index > 0, _index < _stages.Count - 1);
+            if (!stage.CanLaunchDefense) return;
+            var handle = Addressables.GetDownloadSizeAsync(DownloadKeys(stage));
+            try
             {
-                _view.OnStartBattleClicked -= HandleStartBattle;
-                _view.OnDownloadDlcClicked -= HandleDownloadDlc;
-                _view.OnPrevStageClicked -= HandlePrevStage;
-                _view.OnNextStageClicked -= HandleNextStage;
-                _view.OnBackClicked -= HandleBack;
+                long bytes = await handle.Task;
+                if (_destroyed || revision != _revision || !isActiveAndEnabled) return;
+                if (handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    throw new InvalidOperationException("Không thể kiểm tra dữ liệu ải.");
+                _downloaded = bytes == 0;
+                _view.RenderStageInfo(stage, _downloaded, _index > 0, _index < _stages.Count - 1, bytes / 1048576f);
+                bool unlocked = stage.IsUnlocked(ProjectZombie.Core.Save.GameManager.Instance?.SaveData);
+                _view.SetStartAvailability(_downloaded && unlocked, unlocked ? null : "Hoàn thành các ải yêu cầu để mở khóa.");
             }
-
-            if (_patchManager != null)
+            catch (Exception exception)
             {
-                _patchManager.OnPatchProgressChanged -= HandlePatchProgress;
-                _patchManager.OnPatchCompleted -= HandlePatchCompleted;
-                _patchManager.OnPatchFailed -= HandlePatchFailed;
+                if (!_destroyed && revision == _revision) _view.ShowDownloadError(exception.Message, Refresh);
+            }
+            finally
+            {
+                if (handle.IsValid()) Addressables.Release(handle);
+            }
+        }
+        private void Previous() { if (!_downloading && _index > 0) { _index--; Refresh(); } }
+        private void Next() { if (!_downloading && _stages != null && _index + 1 < _stages.Count) { _index++; Refresh(); } }
+        private void Back() { if (!_downloading) MetaUIManager.Instance?.PopScreen(); }
+        private void HandleStart()
+        {
+            if (!_downloaded || _downloading || _stages == null) return;
+            if (!_stages[_index].IsUnlocked(ProjectZombie.Core.Save.GameManager.Instance?.SaveData)) return;
+            _audio?.PlayUIConfirm();
+            OnStageSelectedForBattle?.Invoke(_stages[_index]);
+        }
+        private async void HandleDownload()
+        {
+            if (_downloading || _stages == null || !_stages[_index].CanLaunchDefense) return;
+            _downloading = true;
+            _view.UpdateDownloadProgress(0f, "Đang tải dữ liệu ải...");
+            var handle = Addressables.DownloadDependenciesAsync(DownloadKeys(_stages[_index]), Addressables.MergeMode.Union, false);
+            try
+            {
+                await handle.Task;
+                if (!_destroyed && handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    _view.ShowDownloadError("Tải dữ liệu thất bại. Vui lòng thử lại.", HandleDownload);
+            }
+            catch (Exception exception)
+            {
+                if (!_destroyed) _view.ShowDownloadError(exception.Message, HandleDownload);
+            }
+            finally
+            {
+                if (handle.IsValid()) Addressables.Release(handle);
+                _downloading = false;
+                if (!_destroyed && isActiveAndEnabled) Refresh();
             }
         }
 
-        private async void RefreshView()
+        private static IEnumerable<object> DownloadKeys(StageDefinitionSO stage)
         {
-            if (_stageList == null || _stageList.Count == 0 || _view == null) return;
-
-            int requestedIndex = _currentStageIndex;
-            var currentStage = _stageList[requestedIndex];
-
-            // Kiểm tra xem trong Cache đã có bản đồ mới nhất chưa bằng GetDownloadSizeAsync
-            bool isDlcDownloaded = false;
-            float actualDownloadSizeMb = 0f;
-            if (!string.IsNullOrEmpty(currentStage.mapPrefabAddress))
-            {
-                // Kiểm tra ưu tiên 1: Bản đồ có sẵn trong APK (Resources nội bộ) -> Chơi được ngay Offline!
-                var localMap = Resources.Load<GameObject>($"Maps/{currentStage.mapPrefabAddress}");
-                if (localMap != null)
-                {
-                    isDlcDownloaded = true;
-                }
-                else
-                {
-                    var status = await _patchManager.CheckAssetStatusAsync(currentStage.mapPrefabAddress);
-                    
-                    // Nếu không cần tải hoặc dung lượng cần tải == 0 byte (đã nằm trong cache máy) -> ĐÃ TẢI!
-                    if (!status.NeedsDownload || status.DownloadSizeBytes == 0)
-                    {
-                        isDlcDownloaded = true;
-                    }
-                    else
-                    {
-                        isDlcDownloaded = false;
-                        actualDownloadSizeMb = status.DownloadSizeBytes / 1048576f;
-                    }
-                }
-            }
-
-            // Đảm bảo không bị race condition khi người chơi bấm Next/Prev nhanh
-            if (requestedIndex != _currentStageIndex) return;
-
-            bool isPrevAvailable = _currentStageIndex > 0;
-            bool isNextAvailable = _currentStageIndex < _stageList.Count - 1;
-
-            _view.RenderStageInfo(currentStage, isDlcDownloaded, isPrevAvailable, isNextAvailable, actualDownloadSizeMb);
-
-            // Nếu ải này đang trong quá trình tải ngầm (người chơi chuyển tab hoặc thoát rồi quay lại), khôi phục ngay thanh %
-            if (_patchManager != null && _patchManager.IsDownloading)
-            {
-                var downloadingKey = _patchManager.CurrentDownloadingKey?.ToString();
-                if (downloadingKey == currentStage.mapPrefabAddress || downloadingKey == "ALL_PATCH")
-                {
-                    var p = _patchManager.CurrentProgress;
-                    _view.UpdateDownloadProgress(p.Percent, string.IsNullOrEmpty(p.StatusMessage) ? "Đang tiếp tục tải tài nguyên..." : p.StatusMessage);
-                }
-            }
-        }
-
-        private void HandlePrevStage()
-        {
-            if (_currentStageIndex > 0)
-            {
-                _currentStageIndex--;
-                _audioService?.PlayUIClick();
-                RefreshView();
-            }
-        }
-
-        private void HandleNextStage()
-        {
-            if (_currentStageIndex < _stageList.Count - 1)
-            {
-                _currentStageIndex++;
-                _audioService?.PlayUIClick();
-                RefreshView();
-            }
-        }
-
-        private async void HandleDownloadDlc()
-        {
-            if (_currentStageIndex >= _stageList.Count) return;
-            var stage = _stageList[_currentStageIndex];
-
-            _audioService?.PlayUIConfirm();
-            _view.UpdateDownloadProgress(0f, "Đang kết nối máy chủ CDN...");
-
-            // Tải AssetBundle chứa Map và Timeline của Ải này
-            await _patchManager.DownloadPatchAsync(new object[] { stage.mapPrefabAddress });
-        }
-
-        private void HandlePatchProgress(PatchProgress progress)
-        {
-            if (_view != null && progress.State == PatchState.Downloading)
-            {
-                if (_currentStageIndex >= 0 && _currentStageIndex < _stageList.Count)
-                {
-                    var currentStage = _stageList[_currentStageIndex];
-                    var downloadingKey = _patchManager.CurrentDownloadingKey?.ToString();
-                    if (downloadingKey == currentStage.mapPrefabAddress || downloadingKey == "ALL_PATCH")
-                    {
-                        _view.UpdateDownloadProgress(progress.Percent, progress.FormattedProgress);
-                    }
-                }
-            }
-        }
-
-        private void HandlePatchCompleted()
-        {
-            _audioService?.PlayUIConfirm(1.2f);
-            RefreshView();
-        }
-
-        private void HandlePatchFailed(string error)
-        {
-            Debug.LogWarning($"[StageSelectUIPresenter] Tải DLC thất bại: {error}");
-
-            string friendlyMsg = "Lỗi kết nối máy chủ CDN";
-            if (error.Contains("404")) friendlyMsg = "Tài nguyên chưa có trên máy chủ (404)";
-            else if (error.Contains("400")) friendlyMsg = "Yêu cầu sai cấu hình URL (400)";
-            else if (error.Contains("Timeout")) friendlyMsg = "Mạng yếu / Hết thời gian chờ";
-
-            if (_view != null)
-            {
-                _view.ShowDownloadError(friendlyMsg, () => HandleDownloadDlc());
-            }
-            else
-            {
-                RefreshView();
-            }
-        }
-
-        private void HandleStartBattle()
-        {
-            if (_currentStageIndex >= _stageList.Count) return;
-            var stage = _stageList[_currentStageIndex];
-
-            _audioService?.PlayUIConfirm();
-            OnStageSelectedForBattle?.Invoke(stage);
-        }
-
-        private void HandleBack()
-        {
-            if (MetaUIManager.Instance != null)
-            {
-                MetaUIManager.Instance.PopScreen();
-            }
-            else
-            {
-                gameObject.SetActive(false);
-            }
+            return stage.SpawnRules != null && stage.SpawnRules.RuntimeKeyIsValid()
+                ? new[] { stage.Map.Scene.RuntimeKey, stage.SpawnRules.RuntimeKey }
+                : new[] { stage.Map.Scene.RuntimeKey };
         }
     }
 }

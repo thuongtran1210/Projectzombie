@@ -20,6 +20,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         private readonly ILoadoutOwnership _ownership;
         private readonly ILoadoutRepository _repository;
         private readonly LoadoutRules _rules;
+        private readonly ProjectZombie.Features.Maps.StageDefinitionSO _stage;
 
         private LoadoutSelection _selection;
         private bool _canStartBattle;
@@ -45,8 +46,10 @@ namespace ProjectZombie.Features.Defense3D.UI
             ILoadoutCatalog catalog = null,
             ILoadoutOwnership ownership = null,
             ILoadoutRepository repository = null,
-            LoadoutRules rules = null)
+            LoadoutRules rules = null,
+            ProjectZombie.Features.Maps.StageDefinitionSO stage = null)
         {
+            _stage = stage;
             _catalog = catalog ?? Defense3DCatalog.CreateDefault();
             _ownership = ownership ?? DefenseMetaOwnershipAdapter.CreateDefault();
             _repository = repository ?? new DefenseLoadoutRepository();
@@ -139,6 +142,11 @@ namespace ProjectZombie.Features.Defense3D.UI
         /// </summary>
         public async Task<bool> StartBattleAsync(Action<float, string> reportProgress = null)
         {
+            if (_stage == null || !_stage.CanLaunchDefense)
+            {
+                OnValidationStateChanged?.Invoke(false, "Hãy chọn một ải hợp lệ trước khi xuất trận.");
+                return false;
+            }
             if (!ValidateCurrentSelection())
             {
                 Debug.LogWarning($"[DefensePreparationPresenter] Không thể xuất trận: {_lastValidationMessage}");
@@ -156,7 +164,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             // Nạp trận đấu Defense 3D
             var snapshot = _selection.ToSnapshot();
-            return await DefenseMatchNavigation.LaunchDefenseMatchAsync(snapshot, reportProgress);
+            return await DefenseMatchNavigation.LaunchDefenseMatchAsync(_stage, snapshot, reportProgress);
         }
 
         public void Dispose()
