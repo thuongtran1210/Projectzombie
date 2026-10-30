@@ -47,14 +47,16 @@ namespace ProjectZombie.Editor.UI
             }
             foreach(string boxName in new[]{"Card_Hero/Box_Avatar","Card_Relic/Box_RelicIcon"})
             {
-                var box=frame.Find(boxName);Place(box,60,86,144,144,264,480);
+                var box=frame.Find(boxName);Place(box,60,82,144,144,264,480);
                 Place(box.GetChild(0),10,10,124,124,144,144);
             }
-            Place(frame.Find("Card_Hero/Txt_HeroName"),16,254,232,68,264,480);
-            Place(frame.Find("Card_Hero/Txt_HeroRole"),16,332,232,80,264,480);
-            Place(frame.Find("Card_Relic/Txt_RelicName"),16,254,232,68,264,480);
-            Place(frame.Find("Card_Relic/Txt_RelicDesc"),16,332,232,112,264,480);
-            foreach(string name in new[]{"Card_Hero/Btn_HeroSlot","Card_Relic/Btn_RelicSlot","Card_Minions/Txt_MinionHint","Card_Towers/Txt_TowerHint","Card_Towers/Txt_TowerDesc"})frame.Find(name).gameObject.SetActive(false);
+            Place(frame.Find("Card_Hero/Txt_HeroName"),16,238,232,56,264,480);
+            Place(frame.Find("Card_Hero/Txt_HeroRole"),16,300,232,96,264,480);
+            Place(frame.Find("Card_Hero/Btn_HeroSlot"),24,412,216,48,264,480);
+            Place(frame.Find("Card_Relic/Txt_RelicName"),16,238,232,56,264,480);
+            Place(frame.Find("Card_Relic/Txt_RelicDesc"),16,300,232,96,264,480);
+            Place(frame.Find("Card_Relic/Btn_RelicSlot"),24,412,216,48,264,480);
+            foreach(string name in new[]{"Card_Minions/Txt_MinionHint","Card_Towers/Txt_TowerHint","Card_Towers/Txt_TowerDesc"})frame.Find(name).gameObject.SetActive(false);
             var minionCount=frame.Find("Card_Minions/Txt_MinionSub").GetComponent<TextMeshProUGUI>();
             var towerCount=frame.Find("Card_Towers/Txt_TowerSub").GetComponent<TextMeshProUGUI>();
             Place(minionCount.transform,16,62,312,26,344,480);Place(towerCount.transform,16,62,312,26,344,480);
@@ -71,24 +73,39 @@ namespace ProjectZombie.Editor.UI
             foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true)){text.fontSize=24;text.color=TextColor;text.raycastTarget=false;}
             foreach(var text in root.GetComponentsInChildren<TextMeshProUGUI>(true))
                 if(text.text=="Chưa chọn")text.color=new Color(.56f,.54f,.48f);
-            foreach(string name in new[]{"Card_Hero/Txt_HeroName","Card_Relic/Txt_RelicName","Card_Relic/Txt_RelicDesc","Txt_ValidationMessage"})
+            foreach(string name in new[]{"Card_Hero/Txt_HeroName","Card_Hero/Txt_HeroRole","Card_Relic/Txt_RelicName","Card_Relic/Txt_RelicDesc","Txt_ValidationMessage"})
             {
-                var text=frame.Find(name).GetComponent<TextMeshProUGUI>();text.enableAutoSizing=true;text.fontSizeMin=20;text.fontSizeMax=28;
+                var text=frame.Find(name).GetComponent<TextMeshProUGUI>();text.enableAutoSizing=true;text.fontSizeMin=18;text.fontSizeMax=26;
+            }
+            foreach(string name in new[]{"Card_Hero/Btn_HeroSlot/Txt_Label","Card_Relic/Btn_RelicSlot/Txt_Label"})
+            {
+                var text=frame.Find(name).GetComponent<TextMeshProUGUI>();text.fontSize=20;text.fontStyle=FontStyles.Bold;
             }
             foreach(var image in root.GetComponentsInChildren<Image>(true))image.raycastTarget=image.transform==frame || image.name=="Overlay_Dark" || image.name=="Loading_Overlay" || image.GetComponent<Button>()!=null && image.GetComponent<Button>().interactable;
             for(int i=0;i<4;i++)frame.Find(cards[i]+"/"+pills[i]).GetComponentInChildren<TextMeshProUGUI>().color=DarkText;
             var title=frame.Find("Banner_Header/Txt_Title").GetComponent<TextMeshProUGUI>();title.text="ĐỘI HÌNH XUẤT TRẬN";title.fontSize=36;title.color=new Color(.96f,.82f,.48f);
-            frame.Find("Txt_Subtitle").GetComponent<TextMeshProUGUI>().text="Kiểm tra đội hình trước khi bắt đầu.";
-            frame.Find("Card_Hero/Txt_HeroName").GetComponent<TextMeshProUGUI>().text="Thư Sinh";
-            frame.Find("Card_Hero/Txt_HeroRole").GetComponent<TextMeshProUGUI>().text="Tướng điều khiển trong trận";
-            frame.Find("Card_Relic/Txt_RelicName").GetComponent<TextMeshProUGUI>().text="Dép Tổ Ong";
-            frame.Find("Card_Relic/Txt_RelicDesc").GetComponent<TextMeshProUGUI>().text="Pháp bảo đã trang bị cho tướng khi xuất trận.";
+            frame.Find("Txt_Subtitle").GetComponent<TextMeshProUGUI>().text="Kiểm tra và tùy chỉnh đội hình trước khi bắt đầu.";
+            frame.Find("Card_Hero/Txt_HeroName").GetComponent<TextMeshProUGUI>().text="Thư Sinh <color=#FFD700>[1★]</color>";
+            frame.Find("Card_Hero/Txt_HeroRole").GetComponent<TextMeshProUGUI>().text="<color=#00FF88>Máu:</color> <b>200</b>  <color=#FFD700>Công:</color> <b>30</b>  <color=#00E5FF>Tốc:</color> <b>5.5</b>";
+            frame.Find("Card_Relic/Txt_RelicName").GetComponent<TextMeshProUGUI>().text="Dép Tổ Ong <color=#FFD700>[1★]</color>";
+            frame.Find("Card_Relic/Txt_RelicDesc").GetComponent<TextMeshProUGUI>().text="Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.";
             frame.Find("Txt_ValidationMessage").GetComponent<TextMeshProUGUI>().text="Đội hình sẵn sàng xuất trận.";
             frame.Find("Txt_ValidationMessage").GetComponent<TextMeshProUGUI>().color=new Color(.63f,.80f,.66f);
             var startLabel=start.GetComponentInChildren<TextMeshProUGUI>();startLabel.text="XUẤT TRẬN";startLabel.fontSize=28;startLabel.color=DarkText;
             var editLabel=edit.GetComponentInChildren<TextMeshProUGUI>();editLabel.text="CHỈNH ĐỘI HÌNH";editLabel.fontSize=26;
-            string[] ids={"hero_thusinh","relic_deptoong","minion_danbinh","minion_phutapdich","minion_thaylang","tower_cungtien"};
-            string[] paths={"Assets/Art/UI/HeroAvatars/Avatar_Head_ThuSinh.png","Assets/Art/Weapons/Icon_W_SLIPPER.png","Assets/Art/UI/Codex/DanBinh.png","Assets/Art/UI/Codex/PhuTapDich.png","Assets/Art/UI/Codex/ThayLang.png","Assets/Art/UI/Codex/ThapCungTien.png"};
+            string[] ids={"hero_thusinh","relic_deptoong","minion_danbinh","minion_phutapdich","minion_thaylang","tower_cungtien","hero_daosi","hero_thanhdong","hero_ansi","tower_bangha"};
+            string[] paths={
+                "Assets/Art/UI/HeroAvatars/Avatar_Head_ThuSinh.png",
+                "Assets/Art/Weapons/Icon_W_SLIPPER.png",
+                "Assets/Art/UI/Codex/DanBinh.png",
+                "Assets/Art/UI/Codex/PhuTapDich.png",
+                "Assets/Art/UI/Codex/ThayLang.png",
+                "Assets/Art/UI/Codex/ThapCungTien.png",
+                "Assets/Art/UI/HeroAvatars/Avatar_Head_DaoSi.png",
+                "Assets/Art/UI/HeroAvatars/Avatar_Head_ThanhDong.png",
+                "Assets/Art/UI/HeroAvatars/Avatar_Head_AnSi.png",
+                "Assets/Art/UI/Codex/ThapCungTien.png"
+            };
             var icons=serialized.FindProperty("_catalogIcons");icons.arraySize=ids.Length;
             for(int i=0;i<ids.Length;i++)
             {
@@ -116,7 +133,7 @@ namespace ProjectZombie.Editor.UI
             {
                 var button=rows[i];
                 button.name=(prefix=="_minion"?"Slot_Minion_":"Slot_Tower_")+i;
-                button.transition=Selectable.Transition.None;button.interactable=false;
+                button.transition=Selectable.Transition.ColorTint;button.interactable=true;
                 Place(button.transform,16,100+i*step,312,step-8,344,480);
                 var box=button.transform.Find("Box_Check");var icon=box.Find("Img_Checkmark").GetComponent<Image>();
                 icon.transform.SetParent(button.transform,false);box.gameObject.SetActive(false);

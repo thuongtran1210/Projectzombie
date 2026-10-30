@@ -135,6 +135,11 @@ namespace ProjectZombie.Features.UI
                 var btn = FindChildRecursive(transform, "Btn_Codex") ?? FindChildRecursive(transform, "Btn_DeckCards");
                 if (btn != null) _codexButton = btn.GetComponent<Button>();
             }
+            if (_primaryWeaponNameText == null)
+            {
+                var sub = FindChildRecursive(transform, "Txt_SubTitle");
+                if (sub != null) _primaryWeaponNameText = sub.GetComponent<TextMeshProUGUI>();
+            }
         }
 
         private static Transform FindChildRecursive(Transform parent, string childName)

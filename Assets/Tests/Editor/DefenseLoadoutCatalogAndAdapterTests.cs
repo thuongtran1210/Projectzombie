@@ -237,6 +237,7 @@ namespace ProjectZombie.Tests.Editor
         public void DefensePreparationUIGenerator_GeneratesValidPrefabAndRegistersInRegistry()
         {
             ProjectZombie.Editor.UI.DefensePreparationUIGenerator.GenerateDefensePreparationUI();
+            ProjectZombie.Editor.UI.StageSelectUIGenerator.GenerateStageSelectUI();
 
             var prefab = Resources.Load<GameObject>("UI/DefensePreparationUI");
             Assert.IsNotNull(prefab, "Prefab UI/DefensePreparationUI phải tồn tại trong Assets/Resources/UI/");

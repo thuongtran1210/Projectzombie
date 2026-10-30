@@ -170,8 +170,17 @@ namespace ProjectZombie.Editor.UI
             if (db != null)
             {
                 var stageListProp = soPresenter.FindProperty("_stageList");
+                if (stageListProp != null)
+                {
+                    stageListProp.arraySize = db.Stages.Count;
+                    for (int i = 0; stageListProp != null && i < db.Stages.Count; i++)
+                    {
+                        stageListProp.GetArrayElementAtIndex(i).objectReferenceValue = db.Stages[i];
+                    }
+                }
+                if (false)
                 stageListProp.arraySize = db.Stages.Count;
-                for (int i = 0; i < db.Stages.Count; i++)
+                for (int i = 0; stageListProp != null && i < db.Stages.Count; i++)
                 {
                     stageListProp.GetArrayElementAtIndex(i).objectReferenceValue = db.Stages[i];
                 }
@@ -235,6 +244,10 @@ namespace ProjectZombie.Editor.UI
             }
             var title=panel.Find("Text_StageTitle").GetComponent<TextMeshProUGUI>();title.fontSize=40;title.color=new Color(.96f,.82f,.48f);title.alignment=TextAlignmentOptions.MidlineLeft;title.enableAutoSizing=true;title.fontSizeMin=30;title.fontSizeMax=40;
             var description=panel.Find("Text_Description").GetComponent<TextMeshProUGUI>();description.alignment=TextAlignmentOptions.TopLeft;description.enableAutoSizing=true;description.fontSizeMin=23;description.fontSizeMax=28;
+            foreach(string name in new[]{"Text_RecLevel","Text_RewardCoin","Text_RewardExp"})
+            {
+                var t=panel.Find(name).GetComponent<TextMeshProUGUI>();t.enableAutoSizing=true;t.fontSizeMin=16;t.fontSizeMax=26;
+            }
             var thumbnail=panel.Find("Img_StageThumbnail").GetComponent<Image>();thumbnail.preserveAspect=true;thumbnail.color=Color.white;
             var database=AssetDatabase.LoadAssetAtPath<WorldStageDatabaseSO>("Assets/_Data/Levels/WorldStageDatabase.asset");
             if(database!=null && database.Stages.Count>0 && database.Stages[0]!=null)thumbnail.sprite=database.Stages[0].stageThumbnail;
@@ -249,8 +262,8 @@ namespace ProjectZombie.Editor.UI
             {
                 var stage=database.Stages[0];title.text=stage.stageName;description.text=stage.description;
                 panel.Find("Text_RecLevel").GetComponent<TextMeshProUGUI>().text=$"<color=#EACB83>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}";
-                panel.Find("Text_RewardCoin").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0}";
-                panel.Find("Text_RewardExp").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#94CDD0>KINH NGHIỆM</color></size>\n{stage.baseRewardExp:N0}";
+                panel.Find("Text_RewardCoin").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0} <color=#00FF88>(+{stage.firstClearBonusCoins:N0} Lần Đầu)</color>";
+                panel.Find("Text_RewardExp").GetComponent<TextMeshProUGUI>().text=$"<size=80%><color=#94CDD0>THƯỞNG LẦN ĐẦU</color></size>\n<color=#FFD700>+{stage.firstClearRelicShards} Mảnh Tín Vật</color>";
             }
             panel.Find("Btn_DownloadDLC").gameObject.SetActive(false);
         }

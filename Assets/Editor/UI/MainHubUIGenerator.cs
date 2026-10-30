@@ -563,7 +563,7 @@ namespace ProjectZombie.Editor.UI
             subTMP.color = new Color(0.85f, 0.78f, 0.65f, 1f);
             subTMP.alignment = TextAlignmentOptions.Left;
 
-            priName = null;
+            priName = subTMP;
             priIcon = null;
             relicIcons = new Image[0];
 

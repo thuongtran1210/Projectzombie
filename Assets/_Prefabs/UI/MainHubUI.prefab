@@ -1903,7 +1903,7 @@ MonoBehaviour:
   _currentHeroPreviewRawImage: {fileID: 7211706336817036682}
   _deckCardsButton: {fileID: 6086981302704928102}
   _loadoutCardButton: {fileID: 6086981302704928102}
-  _primaryWeaponNameText: {fileID: 0}
+  _primaryWeaponNameText: {fileID: 1107743454654064303}
   _primaryWeaponIcon: {fileID: 0}
   _relicIcons: []
 --- !u!114 &8923097385682997269

@@ -35,4 +35,7 @@ MonoBehaviour:
   stageDurationSeconds: 600
   baseRewardCoins: 1000
   baseRewardExp: 500
+  firstClearBonusCoins: 500
+  firstClearRelicId: R001_Deptoong
+  firstClearRelicShards: 10
   dropUnlockWeaponIds: []
