@@ -102,6 +102,7 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void Awake()
         {
+            ApplyLegendaryTheme();
             if (_buildButton != null)
             {
                 _buildButton.onClick.AddListener(() => _currentBuildAction?.Invoke());
@@ -110,6 +111,23 @@ namespace ProjectZombie.Features.Defense3D.UI
             {
                 _buildPromptRoot.SetActive(false);
             }
+        }
+
+        private void ApplyLegendaryTheme()
+        {
+            LegendaryFantasyTheme.Label(_timerText, true);
+            LegendaryFantasyTheme.Label(_eventStatusText);
+            LegendaryFantasyTheme.Label(_baseHealthText);
+            LegendaryFantasyTheme.Label(_heroHealthText);
+            LegendaryFantasyTheme.Label(_woodCountText, true);
+            LegendaryFantasyTheme.Label(_expLevelText);
+            LegendaryFantasyTheme.Label(_bossHealthText, true);
+            LegendaryFantasyTheme.Label(_buildActionText);
+            LegendaryFantasyTheme.Health(_baseHealthSlider);
+            LegendaryFantasyTheme.Health(_heroHealthSlider);
+            LegendaryFantasyTheme.Health(_bossHealthSlider);
+            LegendaryFantasyTheme.Experience(_expSlider);
+            LegendaryFantasyTheme.Primary(_buildButton);
         }
 
         public void SetBuildPrompt(bool visible, string actionText = null, System.Action onAction = null)
