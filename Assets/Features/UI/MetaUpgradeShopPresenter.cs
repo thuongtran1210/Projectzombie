@@ -69,7 +69,7 @@ namespace ProjectZombie.Features.UI
             if (_currencyService == null)
             {
                 _currencyService = Core.Architecture.ServiceContext.Get<IMetaCurrencyService>() 
-                                ?? MetaCurrencyManager.Instance;
+                                ?? (MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance : null);
             }
             return _currencyService;
         }

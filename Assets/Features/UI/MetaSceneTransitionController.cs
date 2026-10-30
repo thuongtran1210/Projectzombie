@@ -35,7 +35,7 @@ namespace ProjectZombie.Features.UI
             if (flow == null || stage == null || !stage.CanLaunchDefense) return;
             flow.SelectStage(stage);
             IsLoadoutReviewPending = true;
-            _metaUIManager.OpenScreen(MetaScreenType.DefensePreparation);
+            _metaUIManager.OpenChildScreen(MetaScreenType.DefensePreparation);
         }
 
         public async void TransitionToCombat(StageDefinitionSO stage = null)

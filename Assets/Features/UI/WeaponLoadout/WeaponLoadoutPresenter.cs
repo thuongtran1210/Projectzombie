@@ -229,12 +229,12 @@ namespace ProjectZombie.Features.UI
             if (relic == null) return false;
             if (relic.weaponId == "wp_kiem_truc") return true;
 
-            if (RelicInventoryManager.Instance != null)
+            if (RelicInventoryManager.HasInstance)
             {
                 return RelicInventoryManager.Instance.IsRelicUnlocked(relic.weaponId);
             }
 
-            if (GameManager.Instance != null && GameManager.Instance.SaveData != null)
+            if (GameManager.HasInstance && GameManager.Instance.SaveData != null)
             {
                 return GameManager.Instance.SaveData.GetRelicStarLevel(relic.weaponId) >= 1;
             }
@@ -402,7 +402,7 @@ namespace ProjectZombie.Features.UI
 
         private void UpdateGridItemStates()
         {
-            var relicMgr = RelicInventoryManager.Instance;
+            var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
 
             foreach (var kvp in _slotViewMap)
             {
@@ -465,7 +465,7 @@ namespace ProjectZombie.Features.UI
 
             if (targetList.Count == 0) targetList.AddRange(_allWeapons);
 
-            var relicMgr = RelicInventoryManager.Instance;
+            var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
 
             for (int i = 0; i < targetList.Count; i++)
             {

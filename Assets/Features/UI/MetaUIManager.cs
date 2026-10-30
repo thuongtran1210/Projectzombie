@@ -264,6 +264,14 @@ namespace ProjectZombie.Features.UI
         /// <summary>
         /// Mở màn hình theo ScreenType thông qua UIScreenFactory (Hỗ trợ Lazy Loading mượt mà).
         /// </summary>
+        /// <summary>Opens a child screen while retaining the current screen as its Back destination.</summary>
+        public void OpenChildScreen(MetaScreenType screenType)
+        {
+            if (!HasScreen(screenType)) return;
+            var screen = _screenFactory.GetOrCreateScreen(screenType);
+            if (screen != null) PushScreen(screen);
+        }
+
         public void OpenScreen(MetaScreenType screenType)
         {
             var totalSw = System.Diagnostics.Stopwatch.StartNew();

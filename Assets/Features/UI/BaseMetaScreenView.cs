@@ -16,7 +16,8 @@ namespace ProjectZombie.Features.UI
         StageSelect,
         ResourceDownload,
         Lobby,
-        DefensePreparation
+        DefensePreparation,
+        LoadoutManagement
     }
 
     /// <summary>

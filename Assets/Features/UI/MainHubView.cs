@@ -61,6 +61,7 @@ namespace ProjectZombie.Features.UI
         public event Action OnGachaClicked;
         public event Action OnSanctuaryTreeClicked;
         public event Action OnCodexClicked;
+        public event Action OnLoadoutClicked;
         public event Action OnSettingsClicked;
         public event Action OnResourceDownloadClicked;
 
@@ -80,8 +81,8 @@ namespace ProjectZombie.Features.UI
             if (_heroSelectButton != null) _heroSelectButton.onClick.AddListener(() => OnHeroSelectClicked?.Invoke());
             if (_armoryButton != null) _armoryButton.onClick.AddListener(() => OnArmoryClicked?.Invoke());
             if (_gachaButton != null) _gachaButton.onClick.AddListener(() => OnGachaClicked?.Invoke());
-            if (_deckCardsButton != null) _deckCardsButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
-            if (_loadoutCardButton != null && _loadoutCardButton != _deckCardsButton) _loadoutCardButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
+            if (_loadoutCardButton != null) _loadoutCardButton.onClick.AddListener(() => OnLoadoutClicked?.Invoke());
+            if (_deckCardsButton != null && _deckCardsButton != _loadoutCardButton) _deckCardsButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_sanctuaryTreeButton != null) _sanctuaryTreeButton.onClick.AddListener(() => OnSanctuaryTreeClicked?.Invoke());
             if (_codexButton != null && _codexButton != _deckCardsButton && _codexButton != _loadoutCardButton) _codexButton.onClick.AddListener(() => OnCodexClicked?.Invoke());
             if (_settingsButton != null) _settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());

@@ -351,11 +351,11 @@ namespace ProjectZombie.Features.UI
                 ? MetaSceneTransitionController.Instance.SelectedStage.stageId
                 : "STAGE_01";
 
-            if (ProjectZombie.Core.Save.GameManager.Instance != null)
+            if (ProjectZombie.Core.Save.GameManager.HasInstance)
             {
                 ProjectZombie.Core.Save.GameManager.Instance.OnRunCompleted(tracker.ElapsedTime, tracker.KillCount, _currencyEarned, currentStageId, isVictory);
             }
-            else if (MetaCurrencyManager.Instance != null)
+            else if (MetaCurrencyManager.HasInstance)
             {
                 MetaCurrencyManager.Instance.AddCurrency(_currencyEarned);
             }

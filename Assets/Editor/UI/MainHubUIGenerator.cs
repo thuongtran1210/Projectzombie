@@ -548,7 +548,7 @@ namespace ProjectZombie.Editor.UI
             // Tiêu Đề Chính: "THẦN THẺ" (Vàng Kim)
             GameObject titleObj = CreateUIElement("Txt_MainTitle", textGroup.transform);
             var titleTMP = CreateTextMeshPro(titleObj, font);
-            titleTMP.text = "THẦN THẺ";
+            titleTMP.text = "ĐỘI HÌNH";
             titleTMP.fontSize = 15;
             titleTMP.fontStyle = FontStyles.Bold;
             titleTMP.color = new Color(0.98f, 0.88f, 0.50f, 1f);

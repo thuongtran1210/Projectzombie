@@ -62,6 +62,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnGachaClicked += HandleGachaClicked;
                 _view.OnSanctuaryTreeClicked += HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked += HandleCodexClicked;
+                _view.OnLoadoutClicked += HandleLoadoutClicked;
                 _view.OnSettingsClicked += HandleSettingsClicked;
                 _view.OnResourceDownloadClicked += HandleResourceDownloadClicked;
             }
@@ -107,6 +108,7 @@ namespace ProjectZombie.Features.UI
                 _view.OnGachaClicked -= HandleGachaClicked;
                 _view.OnSanctuaryTreeClicked -= HandleSanctuaryTreeClicked;
                 _view.OnCodexClicked -= HandleCodexClicked;
+                _view.OnLoadoutClicked -= HandleLoadoutClicked;
                 _view.OnSettingsClicked -= HandleSettingsClicked;
                 _view.OnResourceDownloadClicked -= HandleResourceDownloadClicked;
             }
@@ -208,7 +210,7 @@ namespace ProjectZombie.Features.UI
             }
 
             RenderTexture previewTex = null;
-            if (hero != null && hero.playerPrefab != null)
+            if (hero != null && hero.playerPrefab != null && (hero.playerPrefab.GetComponentInChildren<MeshRenderer>(true) != null || hero.playerPrefab.GetComponentInChildren<SkinnedMeshRenderer>(true) != null))
             {
                 if (CharacterPreviewStage.Instance == null)
                 {
@@ -247,8 +249,8 @@ namespace ProjectZombie.Features.UI
                 string currentMapped = ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutIdMapper.MapHeroId(hero.characterId);
                 if (!string.Equals(currentMapped, targetDefenseHeroId, System.StringComparison.OrdinalIgnoreCase)) hero = null;
             }
-            WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
-            List<WeaponData> relics = RunLoadoutState.SelectedRelics;
+            WeaponData primary = null;
+            List<WeaponData> relics = null;
 
             string priName = "Đòn Đánh";
             Sprite priSprite = null;
@@ -317,7 +319,8 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
-                metaManager.OpenScreen(MetaScreenType.CharacterSelect);
+                CardCodexPresenter.RequestInitialTab(CodexTabType.HeroCards);
+                metaManager.OpenScreen(MetaScreenType.Codex);
             }
         }
 
@@ -327,7 +330,8 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
-                metaManager.OpenScreen(MetaScreenType.DefensePreparation);
+                CardCodexPresenter.RequestInitialTab(CodexTabType.RelicFusion);
+                metaManager.OpenScreen(MetaScreenType.Codex);
             }
         }
 
@@ -357,8 +361,17 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
+                CardCodexPresenter.RequestInitialTab(CodexTabType.HeroCards);
                 metaManager.OpenScreen(MetaScreenType.Codex);
             }
+        }
+
+        private void HandleLoadoutClicked()
+        {
+            _audioService?.PlayUIClick();
+            var metaManager = GetMetaUIManager();
+            if (metaManager == null) return;
+            metaManager.OpenScreen(MetaScreenType.LoadoutManagement);
         }
 
         private void HandleSettingsClicked()

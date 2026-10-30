@@ -27,11 +27,11 @@ namespace ProjectZombie.Features.Player.Stats
             var saveData = customSaveData;
             if (saveData == null)
             {
-                if (MetaCurrencyManager.Instance != null && MetaCurrencyManager.Instance.GetSaveData() != null)
+                if (MetaCurrencyManager.HasInstance && MetaCurrencyManager.Instance.GetSaveData() != null)
                 {
                     saveData = MetaCurrencyManager.Instance.GetSaveData();
                 }
-                else if (GameManager.Instance != null && GameManager.Instance.SaveData != null)
+                else if (GameManager.HasInstance && GameManager.Instance.SaveData != null)
                 {
                     saveData = GameManager.Instance.SaveData;
                 }

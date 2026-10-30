@@ -125,6 +125,19 @@ namespace ProjectZombie.Features.UI
 
         private float _currentAttackDuration = 0.5f;
 
+        /// <summary>Fits the current authored model to a front-facing square portrait camera.</summary>
+        public void FrameCurrentCharacter()
+        {
+            if (_currentModelInstance == null || _previewCamera == null) return;
+            var renderers = _currentModelInstance.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0) return;
+            var bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+            _previewCamera.transform.position = bounds.center + new Vector3(0f, .12f, 8f);
+            _previewCamera.transform.LookAt(bounds.center);
+            _previewCamera.orthographicSize = Mathf.Max(.2f, Mathf.Max(bounds.extents.y, bounds.extents.x) * 1.16f);
+        }
+
         public void DisplayCharacter(GameObject characterPrefab, string targetAnimation = null)
         {
             SetupCameraAndTexture();
@@ -378,7 +391,8 @@ namespace ProjectZombie.Features.UI
             if (_renderTexture != null)
             {
                 _renderTexture.Release();
-                Destroy(_renderTexture);
+                if (Application.isPlaying) Destroy(_renderTexture);
+                else DestroyImmediate(_renderTexture);
             }
         }
     }

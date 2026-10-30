@@ -138,8 +138,7 @@ namespace ProjectZombie.Features.UI.StageSelect
             if (isCompleted && _stageTitleText != null)
             {
                 int stars = Mathf.Clamp(stageRecord.starRating > 0 ? stageRecord.starRating : 3, 1, 3);
-                string starStr = new string('★', stars) + new string('☆', 3 - stars);
-                _stageTitleText.text = $"{stage.stageName} <color=#FFD700>[{starStr}]</color>";
+                _stageTitleText.text = $"{stage.stageName} <color=#FFD700>[{stars}/3 Sao]</color>";
             }
             if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(isDlcDownloaded);
             if (_downloadDlcButton != null)

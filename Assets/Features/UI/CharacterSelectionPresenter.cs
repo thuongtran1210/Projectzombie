@@ -163,7 +163,7 @@ namespace ProjectZombie.Features.UI
                 }
 
                 // Tự động tìm và focus đúng tướng đã chọn trong SaveData của GameManager
-                string savedHeroId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
+                string savedHeroId = ProjectZombie.Core.Save.GameManager.HasInstance ? ProjectZombie.Core.Save.GameManager.Instance.SaveData?.selectedHeroId : null;
                 if (!string.IsNullOrEmpty(savedHeroId))
                 {
                     for (int i = 0; i < _characters.Length; i++)
@@ -190,12 +190,12 @@ namespace ProjectZombie.Features.UI
             if (string.IsNullOrEmpty(heroId)) return true;
             if (heroId == "default" || heroId == "C001_ThuSinh") return true;
 
-            if (CharacterProgressionManager.Instance != null)
+            if (CharacterProgressionManager.HasInstance)
             {
                 return CharacterProgressionManager.Instance.IsCharacterUnlocked(heroId);
             }
 
-            if (MetaCurrencyManager.Instance != null)
+            if (MetaCurrencyManager.HasInstance)
             {
                 return MetaCurrencyManager.Instance.IsCharacterUnlocked(heroId);
             }
@@ -282,7 +282,7 @@ namespace ProjectZombie.Features.UI
                     }
 
                     // Lưu trạng thái Anh Hùng đã chọn vào SaveData của GameManager
-                    if (ProjectZombie.Core.Save.GameManager.Instance != null && ProjectZombie.Core.Save.GameManager.Instance.SaveData != null)
+                    if (ProjectZombie.Core.Save.GameManager.HasInstance && ProjectZombie.Core.Save.GameManager.Instance.SaveData != null)
                     {
                         ProjectZombie.Core.Save.GameManager.Instance.SaveData.selectedHeroId = entry.characterId;
                         ProjectZombie.Core.Save.GameManager.Instance.SaveGame();

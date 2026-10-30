@@ -216,6 +216,14 @@ namespace ProjectZombie.Features.MetaProgression
         /// </summary>
         public MetaProgressionSaveData GetSaveData() => _saveData;
 
+        /// <summary>Refreshes listeners after a transaction has persisted the shared save.</summary>
+        public void RefreshCommittedBalance()
+        {
+            if (_saveData == null) return;
+            TotalCurrency = _saveData.totalCurrency;
+            OnCurrencyChanged?.Invoke(TotalCurrency);
+        }
+
         // ====================================================================
         // PRIVATE HELPERS
         // ====================================================================

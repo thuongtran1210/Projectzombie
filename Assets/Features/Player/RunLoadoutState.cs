@@ -76,13 +76,13 @@ namespace ProjectZombie.Features.Player
 
         public static void EnsureInitialized()
         {
-            if (_isInitialized && _selectedCharacter != null && _selectedPrimaryWeapon != null) return;
+            if (_isInitialized && _selectedCharacter != null) return;
             LoadFromSaveOrDefaults();
         }
 
         public static async Task EnsureInitializedAsync()
         {
-            if (_isInitialized && _selectedCharacter != null && _selectedPrimaryWeapon != null) return;
+            if (_isInitialized && _selectedCharacter != null) return;
             await LoadFromSaveOrDefaultsAsync();
         }
 
@@ -119,7 +119,7 @@ namespace ProjectZombie.Features.Player
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
 
             // 2. Nạp Database Vũ Khí
-            var allWeapons = await LoadAllWeaponsDatabaseAsync();
+            var allWeapons = new List<WeaponData>();
 
             // 3. Phục hồi cấu hình từ PlayerPrefs
             ApplySavedLoadout(characterDatabase, allWeapons);
@@ -145,7 +145,7 @@ namespace ProjectZombie.Features.Player
             if (characterDatabase == null) characterDatabase = Resources.Load<CharacterDatabaseSO>("Database/CharacterDatabase");
 
             // 2. Nạp Database Vũ Khí
-            var allWeapons = LoadAllWeaponsDatabase();
+            var allWeapons = new List<WeaponData>();
 
             // 3. Phục hồi cấu hình từ PlayerPrefs
             ApplySavedLoadout(characterDatabase, allWeapons);
@@ -359,7 +359,7 @@ namespace ProjectZombie.Features.Player
             }
 
             #if UNITY_EDITOR
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:WeaponData", new[] { "Assets/Archive_Legacy_2D/Data/Weapons" });
+            string[] guids = System.Array.Empty<string>();
             foreach (var guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
