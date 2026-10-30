@@ -218,6 +218,20 @@ namespace ProjectZombie.Features.Defense3D
             if (_heroKit != null)
             {
                 DefenseLoadoutRuntimeAdapter.ApplyToHeroKit(resolved, _heroKit);
+                int bonusRerolls = DefenseLoadoutRuntimeAdapter.ApplySanctuaryUpgrades(_session?.Modifiers, _heroHealth, motor);
+                if (_matchUI != null && bonusRerolls > 0) _matchUI.SetBonusRerolls(bonusRerolls);
+                int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(resolved.RelicId);
+                DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(relicStar, null, out float relicDmgBonus, out float relicCdReduction, out float relicAreaBonus);
+                if (_skillPresenters != null)
+                {
+                    foreach (var presenter in _skillPresenters)
+                    {
+                        if (presenter != null && presenter.Kind == DefenseSkillKind.DepToOng)
+                        {
+                            presenter.SetMetaSkillBonuses(relicDmgBonus, relicCdReduction, relicAreaBonus);
+                        }
+                    }
+                }
             }
         }
 

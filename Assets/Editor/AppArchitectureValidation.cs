@@ -20,6 +20,8 @@ public static class AppArchitectureValidation
         var filter = new OrFilter();
         foreach (string name in new[] { "ProjectZombie.Tests.Editor.AppFlowTests", "ProjectZombie.Tests.Editor.DefenseMatchNavigationAndPreparationTests",
             "ProjectZombie.Tests.Editor.MainHubReadinessTests",
+            "ProjectZombie.Tests.Editor.DefenseLoadoutCatalogAndAdapterTests",
+            "ProjectZombie.Tests.Editor.DefenseLoadoutSaveAndMetaAdapterTests",
             "ProjectZombie.Tests.Editor.DefenseMatchResultAndLifecycleTests", "DefenseG6BossAndResultTests",
             "ProjectZombie.Tests.Editor.StageSpawnConfigTests", "ProjectZombie.Tests.Editor.DefenseSessionBalancingTests",
             "DefenseEnemyHealthTests", "DefenseSpawnWarningTests", "DefenseEffectAuthoringTests", "OwnedPoolTests" })

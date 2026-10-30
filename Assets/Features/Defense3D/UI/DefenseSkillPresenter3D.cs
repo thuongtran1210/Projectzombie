@@ -18,6 +18,16 @@ namespace ProjectZombie.Features.Defense3D.UI
         private int _displaySeconds = -1;
         private string _cooldownLabel = string.Empty;
         private DefenseHeroMotor3D _facing;
+        private float _metaDamageBonus;
+        private float _metaCooldownReduction;
+        private float _metaAreaBonus;
+
+        public void SetMetaSkillBonuses(float damageBonus, float cooldownReduction, float areaBonus)
+        {
+            _metaDamageBonus = damageBonus;
+            _metaCooldownReduction = cooldownReduction;
+            _metaAreaBonus = areaBonus;
+        }
 
         public DefenseAbilityRuntime Ability => _runtime?.Ability;
         public DefenseSkillDefinitionSO DefinitionSource => _definition;
@@ -37,6 +47,10 @@ namespace ProjectZombie.Features.Defense3D.UI
             Unbind();
             ValidateBindings();
             var definition = _definition.Capture();
+            if (_metaDamageBonus > 0f || _metaCooldownReduction > 0f || _metaAreaBonus > 0f)
+            {
+                definition = definition.WithBonuses(_metaDamageBonus, _metaCooldownReduction, _metaAreaBonus);
+            }
             _effect.Configure(definition);
             var shared = _effect as IDefenseSharedAbilityEffect;
             if (shared != null && shared.SharedAbility == null) throw new InvalidOperationException("Bind attack owner before its presenter.");

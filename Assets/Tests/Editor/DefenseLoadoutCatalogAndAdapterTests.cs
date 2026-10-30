@@ -251,5 +251,56 @@ namespace ProjectZombie.Tests.Editor
             Assert.IsTrue(found, "DefensePreparation phải được đăng ký trong UIRegistry");
             Assert.IsNotNull(screenItem.screenPrefab, "DefensePreparation screenPrefab không được null trong UIRegistry");
         }
+
+        [Test]
+        public void MetaProgression_RelicStarAndSanctuaryTree_ApplyToRuntimeStats()
+        {
+            DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(5, null, out float dmgBonus, out float cdRed, out float areaBonus);
+            Assert.AreEqual(0.45f, dmgBonus, 0.001f);
+            Assert.AreEqual(0.15f, cdRed, 0.001f);
+            Assert.AreEqual(0.30f, areaBonus, 0.001f);
+
+            var baseSkill = new DefenseSkillDefinition(DefenseSkillKind.DepToOng, 10f, 3f, 100f, 10f, 0.5f, false, DefenseTargetMask.All);
+            var boostedSkill = baseSkill.WithBonuses(dmgBonus, cdRed, areaBonus);
+            Assert.AreEqual(145f, boostedSkill.Damage, 0.01f);
+            Assert.AreEqual(8.5f, boostedSkill.Cooldown, 0.01f);
+            Assert.AreEqual(3.9f, boostedSkill.Radius, 0.01f);
+
+            var saveData = new ProjectZombie.Features.MetaProgression.MetaProgressionSaveData();
+            saveData.SetCharacterProgress("C001_ThuSinh", 0, 3);
+            Assert.AreEqual(3, DefenseLoadoutRuntimeAdapter.GetEffectiveHeroStarLevel(Defense3DCatalog.HERO_THU_SINH, saveData));
+
+            var tree = ScriptableObject.CreateInstance<ProjectZombie.Features.MetaProgression.PermanentUpgradeTreeData>();
+            tree.nodes = new[]
+            {
+                new ProjectZombie.Features.MetaProgression.PermanentUpgradeNode { nodeId = "atk_power", maxLevel = 10 },
+                new ProjectZombie.Features.MetaProgression.PermanentUpgradeNode { nodeId = "atk_speed", maxLevel = 5, statBonusPerLevel = new ProjectZombie.Features.Player.PlayerStatModifier { attackSpeedBonus = 0.04f } },
+                new ProjectZombie.Features.MetaProgression.PermanentUpgradeNode { nodeId = "def_hp", maxLevel = 10, statBonusPerLevel = new ProjectZombie.Features.Player.PlayerStatModifier { maxHealthBonus = 15f } },
+                new ProjectZombie.Features.MetaProgression.PermanentUpgradeNode { nodeId = "util_reroll", maxLevel = 3 }
+            };
+            saveData.SetUpgradeLevel(0, 4); // +20% damage
+            saveData.SetUpgradeLevel(1, 2); // +8% attack speed
+            saveData.SetUpgradeLevel(2, 3); // +45 Hero HP, +90 Base HP
+            saveData.SetUpgradeLevel(3, 2); // +2 Rerolls
+
+            var stats = new DefenseRunStats();
+            var heroGo = new GameObject("TestHero");
+            var health = heroGo.AddComponent<DefenseHeroHealth3D>();
+            try
+            {
+                health.SetMaxHealth(200f);
+                int rerolls = DefenseLoadoutRuntimeAdapter.ApplySanctuaryUpgrades(stats, health, null, tree, saveData);
+                Assert.AreEqual(2, rerolls);
+                Assert.AreEqual(245f, health.MaxHP, 0.01f);
+                Assert.AreEqual(0.20f, stats.GetModifier(DefenseUpgradeType.HeroAttackDamage), 0.001f);
+                Assert.AreEqual(0.08f, stats.GetModifier(DefenseUpgradeType.HeroAttackSpeed), 0.001f);
+                Assert.AreEqual(90f, stats.GetModifier(DefenseUpgradeType.BaseMaxHp), 0.01f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(heroGo);
+                Object.DestroyImmediate(tree);
+            }
+        }
     }
 }

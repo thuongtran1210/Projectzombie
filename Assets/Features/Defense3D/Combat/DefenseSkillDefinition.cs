@@ -60,6 +60,15 @@ namespace ProjectZombie.Features.Defense3D
             TargetMask = targetMask;
         }
 
+        public DefenseSkillDefinition WithBonuses(float damageMultiplierBonus, float cooldownReductionPercent, float areaMultiplierBonus)
+        {
+            float dmgMult = 1f + System.Math.Max(0f, damageMultiplierBonus);
+            float cdMult = 1f - System.Math.Min(0.8f, System.Math.Max(0f, cooldownReductionPercent));
+            float areaMult = 1f + System.Math.Max(0f, areaMultiplierBonus);
+            float newCooldown = System.Math.Max(0.1f, Cooldown * cdMult);
+            return new DefenseSkillDefinition(Kind, Range, Radius * areaMult, Damage * dmgMult, newCooldown, Duration, AutoTargetOnTap, TargetMask);
+        }
+
         private static bool NonNegative(float value) => DefenseDamageRules.IsFinite(value) && value >= 0f;
         private static bool Positive(float value) => DefenseDamageRules.IsFinite(value) && value > 0f;
     }

@@ -317,6 +317,13 @@ namespace ProjectZombie.Features.Defense3D.UI
         }
 
         private int _availableRerolls = 2;
+        private int _bonusRerolls = 0;
+
+        public void SetBonusRerolls(int bonusRerolls)
+        {
+            _bonusRerolls = Mathf.Max(0, bonusRerolls);
+            _availableRerolls = 2 + _bonusRerolls;
+        }
 
         private void OpenNextLevelUpChoice()
         {
@@ -414,7 +421,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_resultModalView != null) _resultModalView.Hide();
             _currentDrawnCards = null;
             _isLevelUpModalOpen = false;
-            _availableRerolls = 2;
+            _availableRerolls = 2 + _bonusRerolls;
         }
 
         /// <summary>Transitional model reset owner until progression leaves the Presenter in RF3D-025.</summary>
