@@ -11,17 +11,20 @@ namespace ProjectZombie.Features.Defense3D.UI
         private float _fraction, _angle, _pulse;
         private bool _offscreen;
         private DefenseSpawnWarningSymbol _symbol;
+        private bool _pending, _arrived;
         private const int SEGMENTS = 64;
 
-        public void Render(float fraction, float angle, bool offscreen, DefenseSpawnWarningSymbol symbol, float pulse)
+        public void Render(float fraction, float angle, bool offscreen, DefenseSpawnWarningSymbol symbol, float pulse,
+            bool pending = false, bool arrived = false)
         {
             bool dirty = Mathf.Abs(_fraction - fraction) > .002f || Mathf.Abs(_angle - angle) > .25f ||
-                _offscreen != offscreen || _symbol != symbol || Mathf.Abs(_pulse - pulse) > .02f;
+                _offscreen != offscreen || _symbol != symbol || Mathf.Abs(_pulse - pulse) > .02f || _pending != pending || _arrived != arrived;
             _fraction = Mathf.Clamp01(fraction);
             _angle = angle;
             _offscreen = offscreen;
             _symbol = symbol;
             _pulse = Mathf.Clamp01(pulse);
+            _pending = pending; _arrived = arrived;
             if (dirty) SetVerticesDirty();
         }
 
@@ -31,8 +34,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             Disc(vh, Vector2.zero, 18f, new Color(.05f, .09f, .095f, .94f));
             Ring(vh, 19f, 21.5f + _pulse * .5f, 1f, new Color(_gold.r, _gold.g, _gold.b, .07f + .07f * _pulse));
             Ring(vh, 17f, 19f, 1f, new Color(_danger.r, _danger.g, _danger.b, .28f));
-            Ring(vh, 17f, 19f, _fraction, _gold);
+            Color status = _arrived ? new Color(.35f, .9f, .7f, 1f) : _pending ? _danger : _gold;
+            Ring(vh, 17f, 19f, _pending || _arrived ? 1f : _fraction, status);
             DrawSymbol(vh);
+            if (_pending)
+                for (int i = 0; i < 3; i++) Disc(vh, new Vector2(-5f + i * 5f, -12f), 1.3f + _pulse * .4f, _gold);
             if (_offscreen)
             {
                 float a = _angle * Mathf.Deg2Rad;
@@ -45,6 +51,28 @@ namespace ProjectZombie.Features.Defense3D.UI
         private void DrawSymbol(VertexHelper vh)
         {
             Color pink = new Color(.78f, .23f, .62f, 1f);
+            if (_symbol == DefenseSpawnWarningSymbol.Armored || _symbol == DefenseSpawnWarningSymbol.Commander)
+            {
+                Triangle(vh, new Vector2(-10,7), new Vector2(10,7), new Vector2(0,-12), new Color(.4f,.7f,.75f,1));
+                Triangle(vh, new Vector2(-7,5), new Vector2(7,5), new Vector2(0,-7), new Color(.1f,.18f,.2f,1));
+                Disc(vh, new Vector2(-3,1), 1.8f, Color.white);
+                Disc(vh, new Vector2(3,1), 1.8f, Color.white);
+                if (_symbol == DefenseSpawnWarningSymbol.Commander)
+                {
+                    Triangle(vh, new Vector2(-10,7), new Vector2(-9,14), new Vector2(0,8), _gold);
+                    Triangle(vh, new Vector2(-6,7), new Vector2(0,15), new Vector2(6,7), _gold);
+                    Triangle(vh, new Vector2(0,8), new Vector2(9,14), new Vector2(10,7), _gold);
+                }
+                return;
+            }
+            if (_symbol == DefenseSpawnWarningSymbol.Cannon)
+            {
+                Disc(vh, new Vector2(-5,-7), 4f, _gold);
+                Disc(vh, new Vector2(6,-7), 4f, _gold);
+                Triangle(vh, new Vector2(-10,-3), new Vector2(9,-3), new Vector2(4,8), _danger);
+                Triangle(vh, new Vector2(0,5), new Vector2(11,10), new Vector2(13,4), _gold);
+                return;
+            }
             if (_symbol == DefenseSpawnWarningSymbol.Boss)
             {
                 Triangle(vh, new Vector2(-10f, -5f), new Vector2(-11f, 8f), new Vector2(0f, -1f), _gold);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D.UI
 {
-    /// <summary>Read-only stage warnings. Never enqueues, delays, consumes or resolves spawn jobs.</summary>
+    /// <summary>Read-only runtime warnings, including scheduled waves and live cannon landing flights.</summary>
     public sealed class DefenseSpawnWarningPresenter3D : DefenseGameplayBehaviour
     {
         [SerializeField] private Camera _camera;
@@ -14,39 +14,16 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField, Min(.1f)] private float _leadSeconds = 5f;
         [SerializeField, Min(32f)] private float _screenMargin = 38f;
         [SerializeField, Min(40f)] private float _spacing = 46f;
-        private Warning[] _warnings;
+        private IDefenseSpawnWarningSource _warnings;
+        [SerializeField, Min(0f)] private float _arrivalSeconds = .8f;
         private DefensePoint3[] _occupied;
 
-        private readonly struct Warning
-        {
-            public readonly Vector3 Position;
-            public readonly float Trigger;
-            public readonly DefenseSpawnWarningSymbol Symbol;
-            public Warning(Vector3 position, float trigger, DefenseSpawnWarningSymbol symbol)
-            {
-                Position = position;
-                Trigger = trigger;
-                Symbol = symbol;
-            }
-        }
-
-        public void Configure(DefenseStageSpawnPlan plan, Transform eastMarker)
+        public void Configure(IDefenseSpawnWarningSource source)
         {
             ValidateBindings();
-            if (Gameplay == null || plan == null || eastMarker == null)
-                throw new InvalidOperationException("Bind warning session and compiled stage before configuring.");
-            var warnings = new List<Warning>();
-            foreach (var evt in plan.Events)
-            {
-                for (int slot = 0; slot < evt.Count; slot++)
-                {
-                    string type = slot == 0 && !string.IsNullOrEmpty(evt.LeadEnemyId) ? evt.LeadEnemyId : evt.EnemyId;
-                    var job = new DefenseSpawnJob(evt.EventId, slot, evt.EnemyId, type, evt.ZoneId, evt.TriggerTime, evt.Kind);
-                    Vector3 point = plan.Resolve(job, eastMarker.position).Position + Vector3.up * .6f;
-                    warnings.Add(new Warning(point, evt.TriggerTime, SymbolFor(type, evt.Kind)));
-                }
-            }
-            _warnings = warnings.ToArray();
+            if (Gameplay == null || source == null)
+                throw new InvalidOperationException("Bind warning session and runtime source before configuring.");
+            _warnings = source;
             _occupied = new DefensePoint3[_views.Length];
             HideAll();
         }
@@ -55,6 +32,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             if (_camera == null || _canvas == null || _layer == null || _canvas.renderMode != RenderMode.ScreenSpaceOverlay ||
                 _views == null || _views.Length == 0 || !DefenseDamageRules.IsFinite(_leadSeconds) || _leadSeconds <= 0f ||
+                !DefenseDamageRules.IsFinite(_arrivalSeconds) || _arrivalSeconds < 0f ||
                 !DefenseDamageRules.IsFinite(_screenMargin) || _screenMargin < 32f || !DefenseDamageRules.IsFinite(_spacing) || _spacing < 40f)
                 throw new InvalidOperationException("Assign camera, overlay canvas, layer and authored warning slots.");
             var unique = new HashSet<DefenseSpawnWarningGraphic>();
@@ -80,12 +58,17 @@ namespace ProjectZombie.Features.Defense3D.UI
                 return;
             }
             int shown = 0;
-            for (int i = 0; i < _warnings.Length && shown < _views.Length; i++)
+            // Bosses, elite and live landings get available slots before ordinary wave units.
+            for (int priority = 3; priority >= 1; priority--)
+            for (int i = 0; i < _warnings.Count && shown < _views.Length; i++)
             {
-                var warning = _warnings[i];
-                float fraction = DefenseIndicatorProjection.WarningFraction(GameplayTime, warning.Trigger, _leadSeconds);
-                if (fraction <= 0f) continue;
-                Vector3 viewport = _camera.WorldToViewportPoint(warning.Position);
+                var warning = _warnings.GetNotice(i);
+                var symbol = SymbolFor(warning.Job.ActualSpawnType, warning.Job.Kind);
+                int rank = symbol == DefenseSpawnWarningSymbol.Boss || symbol == DefenseSpawnWarningSymbol.Commander ? 3 :
+                    symbol == DefenseSpawnWarningSymbol.Elite || warning.Job.Kind == DefenseSpawnKind.Landing ? 2 : 1;
+                if (rank != priority || !warning.TryDisplay(GameplayTime, _leadSeconds, _arrivalSeconds, out float fraction, out bool pending)) continue;
+                Vector3 point = new Vector3(warning.Position.X, warning.Position.Y + .6f, warning.Position.Z);
+                Vector3 viewport = _camera.WorldToViewportPoint(point);
                 // Rebase viewport coordinates onto the intersection of camera pixels and device safe area.
                 viewport.x = (pixels.xMin + viewport.x * pixels.width - left) / width;
                 viewport.y = (pixels.yMin + viewport.y * pixels.height - bottom) / height;
@@ -98,19 +81,22 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _occupied[shown++] = placed;
                 view.rectTransform.localPosition = new Vector3(local.x, local.y, 0f);
                 view.rectTransform.localScale = Vector3.one / Mathf.Max(.001f, _canvas.scaleFactor);
-                view.Render(fraction, projected.Angle, projected.IsOffscreen, warning.Symbol, .5f + .5f * Mathf.Sin(GameplayTime * 6.981317f));
+                view.Render(fraction, projected.Angle, projected.IsOffscreen, symbol, .5f + .5f * Mathf.Sin(GameplayTime * 6.981317f),
+                    pending, warning.State == DefenseSpawnNoticeState.Spawned);
                 if (!view.gameObject.activeSelf) view.gameObject.SetActive(true);
             }
             for (int i = shown; i < _views.Length; i++)
                 if (_views[i] != null && _views[i].gameObject.activeSelf) _views[i].gameObject.SetActive(false);
         }
 
-        private static DefenseSpawnWarningSymbol SymbolFor(string type, DefenseSpawnKind kind)
+        public static DefenseSpawnWarningSymbol SymbolFor(string type, DefenseSpawnKind kind)
         {
+            if (kind == DefenseSpawnKind.Landing) return DefenseSpawnWarningSymbol.Parachute;
             if (kind == DefenseSpawnKind.ArenaBoss) return DefenseSpawnWarningSymbol.Boss;
             switch (type)
             {
-                case "magiap_boss":
+                case "magiap": return DefenseSpawnWarningSymbol.Armored;
+                case "magiap_boss": return DefenseSpawnWarningSymbol.Commander;
                 case "yaksha_boss": return DefenseSpawnWarningSymbol.Boss;
                 case "thuyquai": return DefenseSpawnWarningSymbol.Fish;
                 case "huyetdoi": return DefenseSpawnWarningSymbol.Bat;
