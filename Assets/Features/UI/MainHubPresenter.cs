@@ -152,10 +152,17 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
+            var savedDefenseLoadout = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository().Load();
+            string targetDefenseHeroId = savedDefenseLoadout != null ? savedDefenseLoadout.HeroId : null;
             CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+            if (hero != null && !string.IsNullOrEmpty(targetDefenseHeroId))
+            {
+                string currentMapped = ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutIdMapper.MapHeroId(hero.characterId);
+                if (!string.Equals(currentMapped, targetDefenseHeroId, System.StringComparison.OrdinalIgnoreCase)) hero = null;
+            }
             if (hero == null)
             {
-                string savedId = ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
+                string savedId = !string.IsNullOrEmpty(targetDefenseHeroId) ? targetDefenseHeroId : ProjectZombie.Core.Save.GameManager.Instance?.SaveData?.selectedHeroId;
                 CharacterDatabaseSO characterDatabase = null;
                 try
                 {
@@ -183,7 +190,7 @@ namespace ProjectZombie.Features.UI
                         for (int c = 0; c < characterDatabase.Characters.Count; c++)
                         {
                             var charItem = characterDatabase.Characters[c];
-                            if (charItem != null && charItem.characterId == savedId)
+                            if (charItem != null && (charItem.characterId == savedId || string.Equals(ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutIdMapper.MapHeroId(charItem.characterId), ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutIdMapper.MapHeroId(savedId), System.StringComparison.OrdinalIgnoreCase)))
                             {
                                 targetSo = charItem;
                                 break;
@@ -232,7 +239,14 @@ namespace ProjectZombie.Features.UI
         {
             if (_view == null) return;
 
+            var savedDefenseLoadout = new ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutRepository().Load();
+            string targetDefenseHeroId = savedDefenseLoadout != null ? savedDefenseLoadout.HeroId : null;
             CharacterEntry hero = RunLoadoutState.SelectedCharacter;
+            if (hero != null && !string.IsNullOrEmpty(targetDefenseHeroId))
+            {
+                string currentMapped = ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutIdMapper.MapHeroId(hero.characterId);
+                if (!string.Equals(currentMapped, targetDefenseHeroId, System.StringComparison.OrdinalIgnoreCase)) hero = null;
+            }
             WeaponData primary = RunLoadoutState.SelectedPrimaryWeapon;
             List<WeaponData> relics = RunLoadoutState.SelectedRelics;
 
@@ -313,7 +327,7 @@ namespace ProjectZombie.Features.UI
             var metaManager = GetMetaUIManager();
             if (metaManager != null)
             {
-                metaManager.OpenScreen(MetaScreenType.WeaponLoadout);
+                metaManager.OpenScreen(MetaScreenType.DefensePreparation);
             }
         }
 

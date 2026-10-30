@@ -40,6 +40,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         public ILoadoutCatalog Catalog => _catalog;
         public ILoadoutOwnership Ownership => _ownership;
         public bool CanStartBattle => _canStartBattle;
+        public bool HasStageSelected => _stage != null && _stage.CanLaunchDefense;
         public string LastValidationMessage => _lastValidationMessage;
 
         public DefensePreparationPresenter(
@@ -73,12 +74,12 @@ namespace ProjectZombie.Features.Defense3D.UI
                 savedDto.TowerIds);
 
             _selection.OnChanged += HandleSelectionChanged;
-            ValidateCurrentSelection();
+            if (ValidateCurrentSelection()) SaveSelection();
         }
 
         private void HandleSelectionChanged()
         {
-            ValidateCurrentSelection();
+            if (ValidateCurrentSelection()) SaveSelection();
             OnSelectionChanged?.Invoke(_selection);
         }
 
@@ -93,6 +94,13 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             OnValidationStateChanged?.Invoke(_canStartBattle, _lastValidationMessage);
             return _canStartBattle;
+        }
+
+        public void SaveSelection()
+        {
+            if (_selection == null || _repository == null) return;
+            var dto = new LoadoutSaveDto(_selection.HeroId, _selection.RelicId, _selection.MinionIds, _selection.TowerIds, DefenseLoadoutRepository.CURRENT_VERSION);
+            _repository.Save(dto);
         }
 
         public bool SelectHero(string heroId)

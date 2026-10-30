@@ -82,6 +82,7 @@ namespace ProjectZombie.Features.UI
             }
             _loadoutRepository.Save(new LoadoutSaveDto(_loadout.HeroId, _loadout.RelicId, _loadout.MinionIds, _loadout.TowerIds, DefenseLoadoutRepository.CURRENT_VERSION));
             _audioService?.PlayWeaponEquip();
+            MainHubPresenter.Instance?.RefreshHubState();
             RefreshLoadoutSummary();
             RefreshEquippedBadges();
             foreach (var pair in _defenseSlotViewMap) pair.Value.SetEquipped(IsEquipped(pair.Key));

@@ -124,7 +124,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             _presenter = null;
         }
 
-        private void HandleSelectionChanged(LoadoutSelection selection) => RefreshAllDisplays();
+        private void HandleSelectionChanged(LoadoutSelection selection)
+        {
+            RefreshAllDisplays();
+            MainHubPresenter.Instance?.RefreshHubState();
+        }
 
         private void OnHeroSlotClicked()
         {
@@ -220,6 +224,12 @@ namespace ProjectZombie.Features.Defense3D.UI
         private async void OnStartBattleClicked()
         {
             if (_isStarting || _presenter == null || !_presenter.CanStartBattle) return;
+            if (!_presenter.HasStageSelected)
+            {
+                _presenter.SaveSelection();
+                MetaUIManager.Instance?.OpenScreen(MetaScreenType.StageSelect);
+                return;
+            }
             _isStarting = true;
             UpdateValidationDisplay(true, string.Empty);
             ShowLoadingOverlay(true, "Đang khởi tạo trận địa...");
@@ -270,7 +280,9 @@ namespace ProjectZombie.Features.Defense3D.UI
                 _heroCatalog = Resources.Load<DefenseHeroCatalogSO>("Defense3D/DefenseHeroCatalog");
             }
 
-            string heroName = catalog.TryGetEntry(selection.HeroId, out var hero) ? hero.DisplayName : "Chưa chọn tướng";
+            int heroStar = DefenseLoadoutRuntimeAdapter.GetEffectiveHeroStarLevel(selection.HeroId);
+            DefenseLoadoutRuntimeAdapter.EvaluateHeroStarBonuses(heroStar, null, out float heroHpBonus, out float heroSpdBonus);
+            string heroName = catalog.TryGetEntry(selection.HeroId, out var hero) ? $"{hero.DisplayName} <color=#FFD700>[{heroStar}★]</color>" : "Chưa chọn tướng";
             string heroStatsDesc = "Tướng điều khiển trong trận";
             Sprite heroAvatar = GetIcon(selection.HeroId);
 
@@ -279,7 +291,9 @@ namespace ProjectZombie.Features.Defense3D.UI
                 var heroDef = _heroCatalog.GetHeroById(selection.HeroId);
                 if (heroDef != null)
                 {
-                    heroStatsDesc = $"<color=#00FF88>Máu:</color> <b>{heroDef.BaseMaxHp:0}</b>  <color=#FFD700>Công:</color> <b>{heroDef.BaseDamage:0}</b>  <color=#00E5FF>Tốc:</color> <b>{heroDef.BaseMoveSpeed:0.0}</b>";
+                    float effectiveHp = heroDef.BaseMaxHp * (1f + heroHpBonus);
+                    float effectiveSpd = heroDef.BaseMoveSpeed * (1f + heroSpdBonus);
+                    heroStatsDesc = $"<color=#00FF88>Máu:</color> <b>{effectiveHp:0}</b>  <color=#FFD700>Công:</color> <b>{heroDef.BaseDamage:0}</b>  <color=#00E5FF>Tốc:</color> <b>{effectiveSpd:0.0}</b>";
                     if (heroAvatar == null && heroDef.Avatar != null)
                     {
                         heroAvatar = heroDef.Avatar;
@@ -289,8 +303,14 @@ namespace ProjectZombie.Features.Defense3D.UI
 
             SetHeroInfo(heroName, heroStatsDesc, heroAvatar);
 
-            string relicName = catalog.TryGetEntry(selection.RelicId, out var relic) ? relic.DisplayName : "Chưa chọn pháp bảo";
-            SetRelicInfo(relicName, "Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.", GetIcon(selection.RelicId));
+            int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(selection.RelicId);
+            DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(relicStar, null, out float relicDmgBonus, out float relicCdBonus, out float relicAreaBonus);
+            string relicName = catalog.TryGetEntry(selection.RelicId, out var relic) ? $"{relic.DisplayName} <color=#FFD700>[{relicStar}★]</color>" : "Chưa chọn pháp bảo";
+            string relicDesc = relicStar > 1
+                ? $"Cấp {relicStar}★: +{(int)(relicDmgBonus * 100)}% Công, -{(int)(relicCdBonus * 100)}% Hồi chiêu, +{(int)(relicAreaBonus * 100)}% Phạm vi."
+                : "Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.";
+            SetRelicInfo(relicName, relicDesc, GetIcon(selection.RelicId));
+
 
             if (_minionCountText != null) _minionCountText.text = $"{selection.MinionIds.Count}/{rules.MaxMinionCount} loại đã chọn";
             if (_towerCountText != null) _towerCountText.text = $"{selection.TowerIds.Count}/{rules.MaxTowerCount} loại đã chọn";
@@ -378,7 +398,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_startBattleButton != null) _startBattleButton.interactable = canStart && !_isStarting;
             if (_editLoadoutButton != null) _editLoadoutButton.interactable = !_isStarting;
             if (_closeButton != null) _closeButton.interactable = !_isStarting;
-            if (_startBattleButtonText != null) _startBattleButtonText.text = _isStarting ? "ĐANG TẢI..." : "XUẤT TRẬN";
+            if (_startBattleButtonText != null) _startBattleButtonText.text = _isStarting ? "ĐANG TẢI..." : (_presenter != null && !_presenter.HasStageSelected ? "CHỌN ẢI XUẤT TRẬN" : "XUẤT TRẬN");
         }
         public void ShowLoadingOverlay(bool show, string initialStatus)
         {
