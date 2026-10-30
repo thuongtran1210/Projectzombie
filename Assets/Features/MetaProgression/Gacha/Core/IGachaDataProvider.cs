@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ProjectZombie.Features.MetaProgression.Gacha.Data;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha.Core
@@ -13,3 +13,4 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Core
         void RefreshBannerData(Action onCompleted);
     }
 }
+

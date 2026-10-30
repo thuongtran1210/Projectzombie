@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectZombie.Features.Shared;
 
@@ -42,6 +42,19 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Data
         [Tooltip("Bảo hiểm Cực Phẩm: Số lượt tối đa chắc chắn ra phẩm Cực Phẩm (Epic) trở lên")]
         public int epicGuaranteedEvery = 10;
 
+        [Header("Quy Đổi Mảnh Dư Khi Đạt 5★ (Cổ Tiền / Mảnh)")]
+        [Tooltip("Số Cổ Tiền nhận lại trên mỗi mảnh Common dư")]
+        public int commonShardConvertRate = 20;
+
+        [Tooltip("Số Cổ Tiền nhận lại trên mỗi mảnh Rare dư")]
+        public int rareShardConvertRate = 40;
+
+        [Tooltip("Số Cổ Tiền nhận lại trên mỗi mảnh Epic dư")]
+        public int epicShardConvertRate = 80;
+
+        [Tooltip("Số Cổ Tiền nhận lại trên mỗi mảnh Legendary dư")]
+        public int legendaryShardConvertRate = 200;
+
         [Header("Danh Sách Pool Vật Phẩm")]
         [SerializeField] private List<GachaDropItem> _dropPool = new List<GachaDropItem>();
 
@@ -50,6 +63,18 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Data
         public void SetDropPool(List<GachaDropItem> pool)
         {
             _dropPool = pool;
+        }
+
+        public int GetDuplicateShardConversionRate(ItemRarity rarity)
+        {
+            return rarity switch
+            {
+                ItemRarity.Common => commonShardConvertRate,
+                ItemRarity.Rare => rareShardConvertRate,
+                ItemRarity.Epic => epicShardConvertRate,
+                ItemRarity.Legendary => legendaryShardConvertRate,
+                _ => commonShardConvertRate
+            };
         }
     }
 }

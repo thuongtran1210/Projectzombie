@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha.Core
@@ -12,19 +12,19 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Core
 
         public bool HasEnough(int amount)
         {
-            if (MetaCurrencyManager.Instance == null) return false;
+            if (!MetaCurrencyManager.HasInstance) return false;
             return MetaCurrencyManager.Instance.TotalCurrency >= amount;
         }
 
         public bool TrySpend(int amount)
         {
-            if (MetaCurrencyManager.Instance == null) return false;
+            if (!MetaCurrencyManager.HasInstance) return false;
             return MetaCurrencyManager.Instance.SpendCurrency(amount);
         }
 
         public int GetBalance()
         {
-            if (MetaCurrencyManager.Instance == null) return 0;
+            if (!MetaCurrencyManager.HasInstance) return 0;
             return MetaCurrencyManager.Instance.TotalCurrency;
         }
     }

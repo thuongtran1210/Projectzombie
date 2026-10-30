@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 174c24198c2b83b468fc6ca7984ce1a4, type: 3}
+  m_Name: banner_standard
+  m_EditorClassIdentifier: 
+  bannerId: banner_standard
+  bannerName: "B\u1EA3o R\u01B0\u01A1ng V\u1EA1n C\u1ED5"
+  bannerDescription: "M\u1EDF r\u01B0\u01A1ng thu th\u1EADp M\u1EA3nh Anh H\xF9ng, Ph\xE1p B\u1EA3o, Qu\xE2n L\xEDnh & Tr\u1EE5 Ph\xF2ng Th\u1EE7 V\u1ECDng Xuy\xEAn."
+  singleRollCost: 100
+  multiRollCost: 900
+  hardPityLegendary: 50
+  softPityStart: 40
+  softPityRatePerRoll: 0.05
+  epicGuaranteedEvery: 10
+  _dropPool:
+  - dropType: 0
+    relicId: minion_danbinh
+    relicName: "D\xE2n Binh"
+    rarity: 0
+    element: 5
+    shardAmount: 8
+    weight: 75
+    icon: {fileID: 21300000, guid: d9dcde402e02a5d48acdebd375720771, type: 3}
+  - dropType: 0
+    relicId: minion_phutapdich
+    relicName: "Phu T\u1EA1p D\u1ECBch"
+    rarity: 1
+    element: 1
+    shardAmount: 6
+    weight: 50
+    icon: {fileID: 21300000, guid: 2bf979aab69d76a48974ee0a8511470e, type: 3}
+  - dropType: 0
+    relicId: minion_thaylang
+    relicName: "Th\u1EA7y Lang"
+    rarity: 2
+    element: 2
+    shardAmount: 5
+    weight: 30
+    icon: {fileID: 21300000, guid: c820efe6fe1a35147bf2806e30d8a463, type: 3}
+  - dropType: 0
+    relicId: tower_cungtien
+    relicName: "Tr\u1EE5 N\u1ECF Th\u1EA7n"
+    rarity: 1
+    element: 2
+    shardAmount: 6
+    weight: 50
+    icon: {fileID: 21300000, guid: c35dd7dccea926947835468f44dee0d9, type: 3}
+  - dropType: 0
+    relicId: tower_bangha
+    relicName: "Tr\u1EE5 B\u0103ng H\xE0"
+    rarity: 2
+    element: 3
+    shardAmount: 5
+    weight: 30
+    icon: {fileID: 21300000, guid: c35dd7dccea926947835468f44dee0d9, type: 3}
+  - dropType: 0
+    relicId: relic_deptoong
+    relicName: "D\xE9p T\u1ED5 Ong Huy\u1EC1n Tho\u1EA1i"
+    rarity: 2
+    element: 5
+    shardAmount: 5
+    weight: 30
+    icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}
+  - dropType: 1
+    relicId: C001_ThuSinh
+    relicName: "Th\u01B0 Sinh"
+    rarity: 2
+    element: 1
+    shardAmount: 5
+    weight: 25
+    icon: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
+  - dropType: 1
+    relicId: C002_DaoSi
+    relicName: "\u0110\u1EA1o S\u0129"
+    rarity: 2
+    element: 3
+    shardAmount: 5
+    weight: 25
+    icon: {fileID: 21300000, guid: 3910c0563e5e48b6b2e0a3f6b02f7ef0, type: 3}
+  - dropType: 1
+    relicId: C003_ThanhDong
+    relicName: "Thanh \u0110\u1ED3ng"
+    rarity: 2
+    element: 2
+    shardAmount: 5
+    weight: 25
+    icon: {fileID: 21300000, guid: 55c7e077af724f5298e8b752f108dfe5, type: 3}
+  - dropType: 1
+    relicId: C004_AnSi
+    relicName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
+    rarity: 3
+    element: 5
+    shardAmount: 5
+    weight: 10
+    icon: {fileID: 21300000, guid: 94e5e37ddc804314b0ce5ebb3df9597c, type: 3}
+

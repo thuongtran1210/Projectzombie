@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bannerId: banner_hero
   bannerName: "B\u1EA3o R\u01B0\u01A1ng Anh H\xF9ng"
-  bannerDescription: "T\u0103ng t\u1EF7 l\u1EC7 xu\u1EA5t hi\u1EC7n Ph\xE1p B\u1EA3o Th\u1EA7n Binh v\xE0 M\u1EA3nh T\u01B0\u1EDBng gi\xE1 tr\u1ECB cao."
+  bannerDescription: "T\u0103ng t\u1EF7 l\u1EC7 xu\u1EA5t hi\u1EC7n M\u1EA3nh Anh H\xF9ng & Ph\xE1p B\u1EA3o V\u1ECDng Xuy\xEAn."
   singleRollCost: 150
   multiRollCost: 1350
   hardPityLegendary: 40
@@ -22,43 +22,43 @@ MonoBehaviour:
   softPityRatePerRoll: 0.08
   epicGuaranteedEvery: 10
   _dropPool:
-  - dropType: 0
-    relicId: W005
-    relicName: "Tr\u1ED1ng \u0110\u1ED3ng \u0110\xF4ng S\u01A1n"
+  - dropType: 1
+    relicId: C001_ThuSinh
+    relicName: "Th\u01B0 Sinh"
     rarity: 2
     element: 1
     shardAmount: 10
-    weight: 150
-    icon: {fileID: 21300000, guid: 2f74ae4b830d473489814467362a933f, type: 3}
-  - dropType: 0
-    relicId: W007
-    relicName: "Cung Th\u1EA1ch Sanh"
+    weight: 40
+    icon: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
+  - dropType: 1
+    relicId: C002_DaoSi
+    relicName: "\u0110\u1EA1o S\u0129"
     rarity: 2
     element: 3
     shardAmount: 10
-    weight: 150
-    icon: {fileID: 21300000, guid: a0e7845318184f4785ee7f311eb495dc, type: 3}
-  - dropType: 0
-    relicId: W009
-    relicName: "Tr\u01B0\u1EE3ng Long V\u01B0\u01A1ng"
+    weight: 40
+    icon: {fileID: 21300000, guid: 3910c0563e5e48b6b2e0a3f6b02f7ef0, type: 3}
+  - dropType: 1
+    relicId: C003_ThanhDong
+    relicName: "Thanh \u0110\u1ED3ng"
     rarity: 2
     element: 2
     shardAmount: 10
-    weight: 150
-    icon: {fileID: 21300000, guid: 6e9874a7cb454c6198f1f7259160ee65, type: 3}
+    weight: 40
+    icon: {fileID: 21300000, guid: 55c7e077af724f5298e8b752f108dfe5, type: 3}
+  - dropType: 1
+    relicId: C004_AnSi
+    relicName: "\u1EA8n S\u0129 S\u01A1n L\xE2m"
+    rarity: 3
+    element: 5
+    shardAmount: 15
+    weight: 18
+    icon: {fileID: 21300000, guid: 94e5e37ddc804314b0ce5ebb3df9597c, type: 3}
   - dropType: 0
-    relicId: W001
-    relicName: "N\u1ECF Th\u1EA7n"
-    rarity: 0
-    element: 1
-    shardAmount: 5
-    weight: 100
-    icon: {fileID: 1383195376, guid: ffb6ecf7493305e4481587fbd3fe8db3, type: 3}
-  - dropType: 0
-    relicId: W003
-    relicName: "B\xF9a Tr\u1EA5n Y\xEAu"
-    rarity: 0
-    element: 2
-    shardAmount: 5
-    weight: 100
-    icon: {fileID: 21300000, guid: c85055b2904a48e18e2ee58568e61ab0, type: 3}
+    relicId: relic_deptoong
+    relicName: "D\xE9p T\u1ED5 Ong Huy\u1EC1n Tho\u1EA1i"
+    rarity: 2
+    element: 5
+    shardAmount: 8
+    weight: 25
+    icon: {fileID: 21300000, guid: 0efd548e32264c8fb67aa8e812cb6e8e, type: 3}

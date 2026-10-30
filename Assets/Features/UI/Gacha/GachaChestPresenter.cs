@@ -3,7 +3,6 @@ using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.MetaProgression.Gacha;
 using ProjectZombie.Features.MetaProgression.Gacha.Data;
-using ProjectZombie.Features.Player;
 
 namespace ProjectZombie.Features.UI.Gacha
 {
@@ -34,30 +33,47 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void OnEnable()
         {
-            // Subscribe Model Events
-            if (MetaCurrencyManager.Instance != null)
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady -= HandleCoreReady;
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady += HandleCoreReady;
+            SubscribeManagers();
+            RefreshAllUI();
+        }
+
+        private void HandleCoreReady()
+        {
+            if (this == null || !isActiveAndEnabled) return;
+            SubscribeManagers();
+            RefreshAllUI();
+        }
+
+        private void SubscribeManagers()
+        {
+            if (MetaCurrencyManager.HasInstance)
             {
+                MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
                 MetaCurrencyManager.Instance.OnCurrencyChanged += HandleCurrencyChanged;
             }
 
-            if (RelicGachaManager.Instance != null)
+            if (RelicGachaManager.HasInstance)
             {
+                RelicGachaManager.Instance.OnGachaSuccess -= HandleGachaSuccess;
                 RelicGachaManager.Instance.OnGachaSuccess += HandleGachaSuccess;
+                RelicGachaManager.Instance.OnGachaFailed -= HandleGachaFailed;
                 RelicGachaManager.Instance.OnGachaFailed += HandleGachaFailed;
+                RelicGachaManager.Instance.OnPityCountersChanged -= HandlePityChanged;
                 RelicGachaManager.Instance.OnPityCountersChanged += HandlePityChanged;
             }
-
-            RefreshAllUI();
         }
 
         private void OnDisable()
         {
-            if (MetaCurrencyManager.Instance != null)
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady -= HandleCoreReady;
+            if (MetaCurrencyManager.HasInstance)
             {
                 MetaCurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
             }
 
-            if (RelicGachaManager.Instance != null)
+            if (RelicGachaManager.HasInstance)
             {
                 RelicGachaManager.Instance.OnGachaSuccess -= HandleGachaSuccess;
                 RelicGachaManager.Instance.OnGachaFailed -= HandleGachaFailed;
@@ -67,6 +83,7 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void OnDestroy()
         {
+            ProjectZombie.Core.Architecture.AppBootGate.OnCoreReady -= HandleCoreReady;
             if (_view != null)
             {
                 _view.OnSingleRollClicked -= HandleSingleRoll;
@@ -80,19 +97,16 @@ namespace ProjectZombie.Features.UI.Gacha
         {
             if (_view == null) return;
 
-            // 1. Cổ Tiền
-            int totalCoins = MetaCurrencyManager.Instance != null ? MetaCurrencyManager.Instance.TotalCurrency : 0;
+            int totalCoins = MetaCurrencyManager.HasInstance ? MetaCurrencyManager.Instance.TotalCurrency : 0;
             _view.SetCurrencyBalance($"Cổ Tiền: <color=#FFD700><b>{totalCoins:N0}</b></color>");
 
-            // 2. Banner Info & Costs
-            var banner = RelicGachaManager.Instance != null ? RelicGachaManager.Instance.ActiveBanner : null;
+            var banner = RelicGachaManager.HasInstance ? RelicGachaManager.Instance.ActiveBanner : null;
             if (banner != null)
             {
                 _view.SetBannerInfo($"<color=#FFD700>[ {banner.bannerName} ]</color>", banner.bannerDescription);
                 _view.SetCosts($"Quay 1x\n<color=#FFD700>{banner.singleRollCost:N0} Cổ Tiền</color>", $"Quay 10x\n<color=#00FF88>{banner.multiRollCost:N0} Cổ Tiền</color>");
                 _view.SetSelectedChestVisuals(banner.bannerId);
 
-                // 3. Pity counters
                 int curLegendary = RelicGachaManager.Instance.PityLegendary;
                 int curEpic = RelicGachaManager.Instance.PityEpic;
                 UpdatePityDisplay(banner, curLegendary, curEpic);
@@ -105,131 +119,24 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private async void HandleChestSelected(string bannerId)
         {
-            if (RelicGachaManager.Instance != null)
+            if (!RelicGachaManager.HasInstance) return;
+
+            // 1. Nạp từ Data Provider (Single Source of Truth: Resources / _Data/Gacha/*.asset)
+            GachaBannerConfigSO targetBanner = RelicGachaManager.Instance.GetBannerById(bannerId);
+
+            // 2. Fallback nạp qua GameDataService (Addressables) nếu chưa có trong Provider
+            if (targetBanner == null && ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
             {
-                GachaBannerConfigSO targetBanner = null;
-
-                // 1. Nạp từ Addressables nếu có trong Catalog
-                if (ProjectZombie.Core.Services.Data.GameDataService.Instance != null)
-                {
-                    targetBanner = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>(bannerId) ??
-                                   await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>($"Gacha/{bannerId}");
-                }
-
-                // 3. Runtime Fallback Generators
-                if (targetBanner == null)
-                {
-                    if (bannerId == "banner_hero")
-                    {
-                        targetBanner = CreateRuntimeHeroBannerFallback();
-                    }
-                    else if (bannerId == "banner_standard")
-                    {
-                        targetBanner = CreateRuntimeStandardBannerFallback();
-                    }
-                }
-
-                if (targetBanner != null)
-                {
-                    RelicGachaManager.Instance.SetActiveBanner(targetBanner);
-                    RefreshAllUI();
-                    _audioService?.PlayUIClick();
-                }
+                targetBanner = await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>($"Gacha/{bannerId}") ??
+                               await ProjectZombie.Core.Services.Data.GameDataService.Instance.GetAsync<GachaBannerConfigSO>(bannerId);
             }
-        }
 
-        private GachaBannerConfigSO CreateRuntimeStandardBannerFallback()
-        {
-            var banner = ScriptableObject.CreateInstance<GachaBannerConfigSO>();
-            banner.bannerId = "banner_standard";
-            banner.bannerName = "Bảo Rương Vạn Cổ";
-            banner.bannerDescription = "Mở rương thu thập Mảnh Pháp Bảo Thần Binh viễn cổ, gia tăng uy lực vĩnh viễn.";
-            banner.singleRollCost = 100;
-            banner.multiRollCost = 900;
-            banner.hardPityLegendary = 50;
-            banner.softPityStart = 40;
-            banner.softPityRatePerRoll = 0.05f;
-            banner.epicGuaranteedEvery = 10;
-
-            var dropList = new List<GachaDropItem>();
-            var allWeapons = RunLoadoutState.LoadAllWeaponsDatabase();
-            if (allWeapons != null && allWeapons.Count > 0)
+            if (targetBanner != null)
             {
-                foreach (var weapon in allWeapons)
-                {
-                    if (weapon == null || string.IsNullOrEmpty(weapon.weaponId)) continue;
-                    float weight = weapon.rarity switch
-                    {
-                        ProjectZombie.Features.Shared.ItemRarity.Common => 120f,
-                        ProjectZombie.Features.Shared.ItemRarity.Rare => 40f,
-                        ProjectZombie.Features.Shared.ItemRarity.Epic => 15f,
-                        ProjectZombie.Features.Shared.ItemRarity.Legendary => 3f,
-                        _ => 40f
-                    };
-                    int shardAmt = weapon.rarity == ProjectZombie.Features.Shared.ItemRarity.Legendary ? 20 : (weapon.rarity == ProjectZombie.Features.Shared.ItemRarity.Epic ? 12 : 5);
-
-                    dropList.Add(new GachaDropItem
-                    {
-                        dropType = GachaDropType.RelicShard,
-                        relicId = weapon.weaponId,
-                        relicName = weapon.weaponName,
-                        rarity = weapon.rarity,
-                        element = weapon.elementType,
-                        shardAmount = shardAmt,
-                        weight = weight,
-                        icon = weapon.icon
-                    });
-                }
+                RelicGachaManager.Instance.SetActiveBanner(targetBanner);
+                RefreshAllUI();
+                _audioService?.PlayUIClick();
             }
-            banner.SetDropPool(dropList);
-            return banner;
-        }
-
-        private GachaBannerConfigSO CreateRuntimeHeroBannerFallback()
-        {
-            var banner = ScriptableObject.CreateInstance<GachaBannerConfigSO>();
-            banner.bannerId = "banner_hero";
-            banner.bannerName = "Gương Chiêu Mộ Anh Hùng";
-            banner.bannerDescription = "Mở gương thần chiêu mộ Mảnh Thần Tướng Vạn Cổ, quy tụ anh kiệt cứu nhân độ thế.";
-            banner.singleRollCost = 200;
-            banner.multiRollCost = 1800;
-            banner.hardPityLegendary = 50;
-            banner.softPityStart = 40;
-            banner.softPityRatePerRoll = 0.05f;
-            banner.epicGuaranteedEvery = 10;
-
-            var dropList = new List<GachaDropItem>();
-            var charDb = Resources.Load<ProjectZombie.Features.Player.CharacterDatabaseSO>("CharacterDatabase");
-            if (charDb != null && charDb.Characters != null)
-            {
-                foreach (var hero in charDb.Characters)
-                {
-                    if (hero == null || string.IsNullOrEmpty(hero.characterId)) continue;
-                    float weight = hero.rarity switch
-                    {
-                        ProjectZombie.Features.Shared.ItemRarity.Common => 120f,
-                        ProjectZombie.Features.Shared.ItemRarity.Rare => 50f,
-                        ProjectZombie.Features.Shared.ItemRarity.Epic => 20f,
-                        ProjectZombie.Features.Shared.ItemRarity.Legendary => 5f,
-                        _ => 50f
-                    };
-                    int shardAmt = hero.rarity == ProjectZombie.Features.Shared.ItemRarity.Legendary ? 15 : 5;
-
-                    dropList.Add(new GachaDropItem
-                    {
-                        dropType = GachaDropType.CharacterShard,
-                        relicId = hero.characterId,
-                        relicName = hero.characterName,
-                        rarity = hero.rarity,
-                        element = hero.element,
-                        shardAmount = shardAmt,
-                        weight = weight,
-                        icon = hero.avatar
-                    });
-                }
-            }
-            banner.SetDropPool(dropList);
-            return banner;
         }
 
         private void UpdatePityDisplay(GachaBannerConfigSO banner, int pityLeg, int pityEpic)
@@ -258,7 +165,7 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void HandlePityChanged(int pityLeg, int pityEpic)
         {
-            var banner = RelicGachaManager.Instance != null ? RelicGachaManager.Instance.ActiveBanner : null;
+            var banner = RelicGachaManager.HasInstance ? RelicGachaManager.Instance.ActiveBanner : null;
             if (banner != null && _view != null)
             {
                 UpdatePityDisplay(banner, pityLeg, pityEpic);
@@ -267,7 +174,7 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void HandleSingleRoll()
         {
-            if (RelicGachaManager.Instance != null)
+            if (RelicGachaManager.HasInstance)
             {
                 RelicGachaManager.Instance.Roll(1);
             }
@@ -275,7 +182,7 @@ namespace ProjectZombie.Features.UI.Gacha
 
         private void HandleMultiRoll()
         {
-            if (RelicGachaManager.Instance != null)
+            if (RelicGachaManager.HasInstance)
             {
                 RelicGachaManager.Instance.Roll(10);
             }

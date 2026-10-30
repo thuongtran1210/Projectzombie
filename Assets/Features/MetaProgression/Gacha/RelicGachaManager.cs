@@ -12,10 +12,12 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
     /// <summary>
     /// Domain Service trung tâm điều phối toàn bộ nghiệp vụ Gacha Mở Rương Pháp Bảo (Meta Shop).
     /// Áp dụng SOLID, Clean Architecture, Pity Pipeline (Hard/Soft Pity), và tích hợp mượt mà với RelicInventoryManager.
-    /// Kế thừa PersistentSingleton<RelicGachaManager> chuẩn kiến trúc.
+    /// Toàn bộ thông số tỉ lệ, danh sách vật phẩm và quy đổi mảnh dư được đọc trực tiếp từ GachaBannerConfigSO (Single Source of Truth).
     /// </summary>
     public class RelicGachaManager : PersistentSingleton<RelicGachaManager>, ISaveableModule
     {
+        public const string DEFAULT_BANNER_ID = "banner_standard";
+
         [Header("Banner Cấu Hình Hiện Tại")]
         [SerializeField] private GachaBannerConfigSO _activeBanner;
 
@@ -49,13 +51,18 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         {
             get
             {
-                if (_activeBanner == null)
+                if (_activeBanner == null || !LocalSOGachaDataProvider.IsValidDefenseBanner(_activeBanner))
                 {
-                    _activeBanner = Resources.Load<GachaBannerConfigSO>("Gacha/banner_standard");
+                    if (_dataProvider == null)
+                    {
+                        _dataProvider = new LocalSOGachaDataProvider();
+                    }
+                    _activeBanner = _dataProvider.GetBanner(DEFAULT_BANNER_ID);
                 }
                 return _activeBanner;
             }
         }
+
         public int PityLegendary => _saveData != null ? _saveData.gachaPityLegendary : 0;
         public int PityEpic => _saveData != null ? _saveData.gachaPityEpic : 0;
 
@@ -66,9 +73,9 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             if (_currencyProcessor == null) _currencyProcessor = new CoTienCurrencyProcessor();
             if (_dataProvider == null) _dataProvider = new LocalSOGachaDataProvider();
 
-            if (_activeBanner == null)
+            if (_activeBanner == null || !LocalSOGachaDataProvider.IsValidDefenseBanner(_activeBanner))
             {
-                _activeBanner = Resources.Load<GachaBannerConfigSO>("Gacha/banner_standard");
+                _activeBanner = _dataProvider.GetBanner(DEFAULT_BANNER_ID);
             }
 
             EnsureInitialized();
@@ -83,6 +90,11 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         {
             if (_currencyProcessor == null) _currencyProcessor = new CoTienCurrencyProcessor();
             if (_dataProvider == null) _dataProvider = new LocalSOGachaDataProvider();
+
+            if (_activeBanner == null || !LocalSOGachaDataProvider.IsValidDefenseBanner(_activeBanner))
+            {
+                _activeBanner = _dataProvider.GetBanner(DEFAULT_BANNER_ID);
+            }
 
             if (_saveData == null)
             {
@@ -124,6 +136,19 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         public void SetActiveBanner(GachaBannerConfigSO banner)
         {
             _activeBanner = banner;
+            if (banner != null && _dataProvider is LocalSOGachaDataProvider localProvider)
+            {
+                localProvider.RegisterBanner(banner);
+            }
+        }
+
+        public GachaBannerConfigSO GetBannerById(string bannerId)
+        {
+            if (_dataProvider == null)
+            {
+                _dataProvider = new LocalSOGachaDataProvider();
+            }
+            return _dataProvider.GetBanner(bannerId);
         }
 
         /// <summary>
@@ -131,7 +156,8 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
         /// </summary>
         public void Roll(int count)
         {
-            if (_activeBanner == null || _activeBanner.DropPool == null || _activeBanner.DropPool.Count == 0)
+            var banner = ActiveBanner;
+            if (banner == null || banner.DropPool == null || banner.DropPool.Count == 0)
             {
                 OnGachaFailed?.Invoke("Không tìm thấy dữ liệu Bảo Rương.");
                 return;
@@ -142,7 +168,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
                 _currencyProcessor = new CoTienCurrencyProcessor();
             }
 
-            int cost = count == 1 ? _activeBanner.singleRollCost : _activeBanner.multiRollCost;
+            int cost = count == 1 ? banner.singleRollCost : banner.multiRollCost;
 
             if (!_currencyProcessor.HasEnough(cost))
             {
@@ -160,7 +186,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
 
             for (int i = 0; i < count; i++)
             {
-                var drop = CalculateSingleDrop(_activeBanner);
+                var drop = CalculateSingleDrop(banner);
                 bool isHero = drop.dropType == GachaDropType.CharacterShard;
                 int currentStar = 0;
                 bool isMaxStar = false;
@@ -179,26 +205,18 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
                     isMaxStar = currentStar >= 5;
                     isNew = RelicInventoryManager.Instance != null && !RelicInventoryManager.Instance.IsRelicUnlocked(drop.relicId);
                 }
-                
+
                 bool isConverted = false;
                 int convertedCoins = 0;
 
                 if (isMaxStar)
                 {
-                    // Đã đạt tối đa 5 sao -> Tự động quy đổi mảnh thành Cổ Tiền
-                    int ratePerShard = drop.rarity switch
-                    {
-                        ItemRarity.Common => 20,
-                        ItemRarity.Rare => 40,
-                        ItemRarity.Epic => 80,
-                        ItemRarity.Legendary => 200,
-                        _ => 20
-                    };
-
+                    // Đã đạt tối đa 5 sao -> Tự động quy đổi mảnh thành Cổ Tiền theo cấu hình GachaBannerConfigSO
+                    int ratePerShard = banner.GetDuplicateShardConversionRate(drop.rarity);
                     convertedCoins = drop.shardAmount * ratePerShard;
                     isConverted = true;
 
-                    if (MetaCurrencyManager.Instance != null)
+                    if (MetaCurrencyManager.HasInstance)
                     {
                         MetaCurrencyManager.Instance.AddCurrency(convertedCoins);
                     }
@@ -277,7 +295,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             if (!forceLegendary && _saveData.gachaPityLegendary >= banner.softPityStart)
             {
                 int steps = _saveData.gachaPityLegendary - banner.softPityStart + 1;
-                extraLegendaryChance = steps * banner.softPityRatePerRoll; // VD: 5% * số bước
+                extraLegendaryChance = steps * banner.softPityRatePerRoll;
             }
 
             // 3. Kiểm tra Guaranteed Epic
@@ -300,7 +318,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha
             if ((forceLegendary || UnityEngine.Random.value < extraLegendaryChance) && legendaryPool.Count > 0)
             {
                 _saveData.gachaPityLegendary = 0;
-                _saveData.gachaPityEpic = 0; // Ra Thần Binh cũng reset Pity Epic
+                _saveData.gachaPityEpic = 0;
                 return PickWeightedRandom(legendaryPool);
             }
 

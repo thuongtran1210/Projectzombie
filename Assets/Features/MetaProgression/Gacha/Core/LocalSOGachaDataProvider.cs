@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectZombie.Features.Defense3D.Loadout;
 using ProjectZombie.Features.MetaProgression.Gacha.Data;
 
 namespace ProjectZombie.Features.MetaProgression.Gacha.Core
 {
     /// <summary>
-    /// Nguồn cấp dữ liệu Banner Gacha mặc định từ ScriptableObject trong Resources / SerializeField.
+    /// Nguồn cấp dữ liệu Banner Gacha mặc định từ ScriptableObject (Single Source of Truth).
     /// </summary>
     public class LocalSOGachaDataProvider : IGachaDataProvider
     {
-        private readonly Dictionary<string, GachaBannerConfigSO> _bannerMap = new Dictionary<string, GachaBannerConfigSO>();
+        private readonly Dictionary<string, GachaBannerConfigSO> _bannerMap = new Dictionary<string, GachaBannerConfigSO>(StringComparer.OrdinalIgnoreCase);
 
         public LocalSOGachaDataProvider(IEnumerable<GachaBannerConfigSO> initialBanners = null)
         {
@@ -18,7 +19,7 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Core
             {
                 foreach (var b in initialBanners)
                 {
-                    if (b != null && !string.IsNullOrEmpty(b.bannerId))
+                    if (b != null && !string.IsNullOrEmpty(b.bannerId) && IsValidDefenseBanner(b))
                     {
                         _bannerMap[b.bannerId] = b;
                     }
@@ -29,13 +30,20 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Core
         public GachaBannerConfigSO GetBanner(string bannerId)
         {
             if (string.IsNullOrEmpty(bannerId)) return null;
-            if (_bannerMap.TryGetValue(bannerId, out var banner))
+            if (_bannerMap.TryGetValue(bannerId, out var banner) && banner != null && IsValidDefenseBanner(banner))
             {
                 return banner;
             }
 
-            // Fallback: Tìm trong Resources
-            var loaded = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}");
+            // 1. Nạp từ Resources (Single Source of Truth cho cả Editor & Android APK)
+            var loaded = Resources.Load<GachaBannerConfigSO>($"Gacha/{bannerId}") ?? Resources.Load<GachaBannerConfigSO>(bannerId);
+#if UNITY_EDITOR
+            // 2. Fallback trực tiếp sang Assets/_Data/Gacha/ trong Editor
+            if (loaded == null || !IsValidDefenseBanner(loaded))
+            {
+                loaded = UnityEditor.AssetDatabase.LoadAssetAtPath<GachaBannerConfigSO>($"Assets/_Data/Gacha/{bannerId}.asset");
+            }
+#endif
             if (loaded != null)
             {
                 _bannerMap[bannerId] = loaded;
@@ -55,8 +63,42 @@ namespace ProjectZombie.Features.MetaProgression.Gacha.Core
 
         public void RefreshBannerData(Action onCompleted)
         {
-            // Local SO sẵn sàng ngay lập tức
             onCompleted?.Invoke();
+        }
+
+        public static bool IsValidDefenseBanner(GachaBannerConfigSO banner)
+        {
+            if (banner == null || banner.DropPool == null || banner.DropPool.Count == 0)
+            {
+                return false;
+            }
+
+            var catalog = Defense3DCatalog.CreateDefault();
+            for (int i = 0; i < banner.DropPool.Count; i++)
+            {
+                var item = banner.DropPool[i];
+                if (item == null || string.IsNullOrEmpty(item.relicId))
+                {
+                    return false;
+                }
+
+                if (item.dropType == GachaDropType.CharacterShard)
+                {
+                    if (!DefenseLoadoutIdMapper.TryMapHeroId(item.relicId, out _))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (!catalog.Contains(item.relicId) && !DefenseLoadoutIdMapper.TryMapRelicId(item.relicId, out _))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
