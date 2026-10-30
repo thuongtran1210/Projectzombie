@@ -120,6 +120,22 @@ public static class ProjectEditorBridge
                 return string.Join("\n", rows);
             case "capture-camera":
                 return CaptureCamera();
+            case "validate-card-progression":
+                return CardProgressionValidation.Validate();
+            case "preview-card-feedback":
+                return ProjectZombie.Editor.UI.CardCodexVisualChecks.PreviewUpgradeFeedback();
+            case "apply-courtyard":
+                return ProjectZombie.Editor.UI.CourtyardDeploymentStyler.Apply();
+            case "preview-courtyard":
+                return ProjectZombie.Editor.UI.CourtyardDeploymentPreview.RenderAll();
+            case "validate-courtyard":
+                return ProjectZombie.Editor.UI.CourtyardDeploymentStyler.Validate();
+            case "install-loadout-screen":
+                return ProjectZombie.Editor.UI.LoadoutManagementScreenInstaller.Install();
+            case "apply-clean-review":
+                return ProjectZombie.Editor.UI.CleanBattleReviewStyler.Apply();
+            case "validate-clean-review":
+                return ProjectZombie.Editor.UI.CleanBattleReviewStyler.Validate();
             case "validate-enemy-health":
                 if (EditorApplication.isPlaying) throw new InvalidOperationException("Validation requires Edit Mode.");
                 DefenseEnemyHealthValidation.Validate();

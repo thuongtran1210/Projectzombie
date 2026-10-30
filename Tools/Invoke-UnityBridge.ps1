@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('status', 'hierarchy', 'capture-camera', 'validate-enemy-health', 'install-app-architecture', 'validate-app-architecture', 'smoke-app-architecture', 'smoke-bootstrap', 'smoke-direct-map', 'install-towers', 'validate-towers', 'smoke-towers', 'refresh')]
+    [ValidateSet('status', 'hierarchy', 'capture-camera', 'validate-card-progression', 'preview-card-feedback', 'apply-courtyard', 'preview-courtyard', 'validate-courtyard', 'install-loadout-screen', 'apply-clean-review', 'validate-clean-review', 'validate-enemy-health', 'install-app-architecture', 'validate-app-architecture', 'smoke-app-architecture', 'smoke-bootstrap', 'smoke-direct-map', 'install-towers', 'validate-towers', 'smoke-towers', 'refresh')]
     [string]$Command = 'status',
     [int]$TimeoutSeconds = 30
 )

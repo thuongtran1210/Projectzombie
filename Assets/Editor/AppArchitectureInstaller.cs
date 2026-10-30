@@ -179,6 +179,7 @@ public static class AppArchitectureInstaller
         {
             foreach (var system in root.GetComponentsInChildren<EventSystem>(true)) UnityEngine.Object.DestroyImmediate(system.gameObject);
             if (root == null) continue;
+            if (root.name.EndsWith("(Clone)")) { UnityEngine.Object.DestroyImmediate(root); continue; }
             foreach (var transition in root.GetComponentsInChildren<MetaSceneTransitionController>(true))
             {
                 var ui = roots.Where(r => r != null).SelectMany(r => r.GetComponentsInChildren<MetaUIManager>(true)).FirstOrDefault();

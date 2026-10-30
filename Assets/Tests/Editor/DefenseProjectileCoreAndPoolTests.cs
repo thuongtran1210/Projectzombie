@@ -83,6 +83,7 @@ namespace ProjectZombie.Tests.Editor
             objectPool.Release(proj1);
             Assert.IsFalse(proj1.gameObject.activeSelf, "Instance sau khi Release phải inactive");
 
+            objectPool.Clear();
             Object.DestroyImmediate(samplePrefab);
             Object.DestroyImmediate(poolObj);
         }

@@ -22,12 +22,23 @@ namespace ProjectZombie.Features.Defense3D
         private Transform _root;
         public int CapacityPerType => _defaultPoolCapacity;
         public int ActiveCount => _active.Count;
+
         private void Awake()
         {
-            var root = new GameObject("Projectile Inventory");
-            root.transform.SetParent(transform, false);
-            _root = root.transform;
+            EnsureRoot();
         }
+
+        private Transform EnsureRoot()
+        {
+            if (_root == null)
+            {
+                var root = new GameObject("Projectile Inventory");
+                root.transform.SetParent(transform, false);
+                _root = root.transform;
+            }
+            return _root;
+        }
+
         public ObjectPool<ProjectileCore3D> GetOrCreatePool(GameObject prefab)
         {
             if (prefab == null || !prefab.TryGetComponent<ProjectileCore3D>(out _)) return null;
@@ -37,7 +48,7 @@ namespace ProjectZombie.Features.Defense3D
             record.Pool = new ObjectPool<ProjectileCore3D>(
                 () =>
                 {
-                    var instance = Instantiate(prefab, _root);
+                    var instance = Instantiate(prefab, EnsureRoot());
                     instance.SetActive(false);
                     return instance.GetComponent<ProjectileCore3D>();
                 },
@@ -48,13 +59,21 @@ namespace ProjectZombie.Features.Defense3D
                     if (index >= 0) { _active[index] = _active[_active.Count - 1]; _active.RemoveAt(_active.Count - 1); }
                     if (core != null) core.gameObject.SetActive(false);
                 },
-                core => { if (core != null) Destroy(core.gameObject); },
+                core =>
+                {
+                    if (core != null)
+                    {
+                        if (Application.isPlaying) Destroy(core.gameObject);
+                        else DestroyImmediate(core.gameObject);
+                    }
+                },
                 true, _defaultPoolCapacity, _maxPoolSize);
             record.Return = record.Pool.Release;
             _records.Add(prefab, record);
             _active.Capacity = Mathf.Max(_active.Capacity, _records.Count * _maxPoolSize);
             return record.Pool;
         }
+
         public async Task PrewarmAsync(GameObject prefab, int count)
         {
             count = Mathf.Clamp(count, 1, _maxPoolSize);
@@ -77,6 +96,7 @@ namespace ProjectZombie.Features.Defense3D
                 for (int i = 0; i < acquired; i++) if (buffer[i] != null) pool.Release(buffer[i]);
             }
         }
+
         public void Prewarm(GameObject prefab, int count)
         {
             var pool = GetOrCreatePool(prefab);
@@ -86,6 +106,7 @@ namespace ProjectZombie.Features.Defense3D
             for (int i = 0; i < count; i++) buffer[i] = pool.Get();
             for (int i = 0; i < count; i++) pool.Release(buffer[i]);
         }
+
         public bool LaunchProjectile(GameObject prefab, DefenseProjectileLaunchRequest request,
             IReadOnlyList<SO_AttackEffect> effects, DefenseProjectileDefinitionSO definition = null)
         {
@@ -99,15 +120,36 @@ namespace ProjectZombie.Features.Defense3D
                 effects, request.RunGeneration, request.SessionIdentity, Gameplay, record.Return, request.TargetPosition);
             return true;
         }
+
         public bool TryLaunch(DefenseProjectileLaunchRequest request) => LaunchProjectile(_defaultProjectilePrefab, request, null);
         public bool CanLaunch(GameObject prefab, int count) => prefab != null && count > 0 &&
             _records.TryGetValue(prefab, out var record) && record.Pool.CountInactive >= count;
+
         private void RecallAll()
         {
             for (int i = _active.Count - 1; i >= 0; i--) if (_active[i] != null) _active[i].Despawn();
         }
+
         protected override void OnGameplayCleanup() => RecallAll();
         protected override void OnGameplayReset() => RecallAll();
         private void OnDisable() => RecallAll();
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (_records != null)
+            {
+                foreach (var record in _records.Values)
+                {
+                    record.Pool?.Clear();
+                }
+                _records.Clear();
+            }
+            if (_root != null)
+            {
+                if (Application.isPlaying) Destroy(_root.gameObject);
+                else DestroyImmediate(_root.gameObject);
+            }
+        }
     }
 }
