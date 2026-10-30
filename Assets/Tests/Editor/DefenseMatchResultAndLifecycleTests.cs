@@ -172,5 +172,65 @@ namespace ProjectZombie.Tests.Editor
 
             Assert.IsFalse(nav.IsNavigating);
         }
+
+        [Test]
+        public void ProcessMatchResult_FirstClearAndStarRating_AwardsBonusOnlyOnceAndUpgradesBestStars()
+        {
+            var service = new DefenseMatchResultService();
+            var saveData = new MetaProgressionSaveData { totalCurrency = 100 };
+
+            // Lần vượt ải đầu tiên với 50% máu Căn Cứ -> Đạt 2★ + Nhận thưởng Lần Đầu (+500 Cổ Tiền, +10 Mảnh Tín Vật)
+            var firstWin = new DefenseMatchResultData(
+                isWon: true,
+                elapsedSeconds: 600f,
+                woodCollected: 50,
+                enemiesDefeated: 100,
+                stageId: "STAGE_DEFENSE_3D",
+                runId: "run_01",
+                victoryReward: 1000,
+                baseRemainingHpRatio: 0.5f,
+                firstClearBonusCurrency: 500,
+                firstClearRelicId: "R001_Deptoong",
+                firstClearRelicShards: 10);
+
+            var res1 = service.ProcessMatchResult(firstWin, saveData, _ => { });
+            Assert.IsTrue(res1.IsFirstClear);
+            Assert.AreEqual(2, res1.EarnedStars);
+            // 50 gỗ * 2 + 1000 thắng + 500 lần đầu = 1600
+            Assert.AreEqual(1600, res1.EarnedCurrency);
+            Assert.AreEqual(1700, saveData.totalCurrency);
+            Assert.AreEqual(10, saveData.GetRelicShards("R001_Deptoong"));
+            Assert.AreEqual(2, saveData.GetStageRecord("STAGE_DEFENSE_3D").starRating);
+
+            // Lần vượt ải thứ hai với 90% máu Căn Cứ -> Đạt 3★ (cập nhật kỷ lục sao), KHÔNG nhận lại thưởng Lần Đầu
+            service.Reset();
+            var secondWin = new DefenseMatchResultData(
+                isWon: true,
+                elapsedSeconds: 580f,
+                woodCollected: 50,
+                enemiesDefeated: 110,
+                stageId: "STAGE_DEFENSE_3D",
+                runId: "run_02",
+                victoryReward: 1000,
+                baseRemainingHpRatio: 0.9f,
+                firstClearBonusCurrency: 500,
+                firstClearRelicId: "R001_Deptoong",
+                firstClearRelicShards: 10);
+
+            var res2 = service.ProcessMatchResult(secondWin, saveData, _ => { });
+            Assert.IsFalse(res2.IsFirstClear);
+            Assert.AreEqual(3, res2.EarnedStars);
+            // 50 gỗ * 2 + 1000 thắng + 0 lần đầu = 1100
+            Assert.AreEqual(1100, res2.EarnedCurrency);
+            Assert.AreEqual(2800, saveData.totalCurrency);
+            // Mảnh tín vật không cộng trùng lần đầu
+            Assert.AreEqual(10, saveData.GetRelicShards("R001_Deptoong"));
+            // Kỷ lục sao được nâng từ 2★ lên 3★
+            Assert.AreEqual(3, saveData.GetStageRecord("STAGE_DEFENSE_3D").starRating);
+        }
+
+        private void UnusedPlaceholder()
+        {
+        }
     }
 }

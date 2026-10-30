@@ -401,7 +401,11 @@ namespace ProjectZombie.Features.Defense3D.UI
                 enemiesDefeated: defeated,
                 stageId: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.stageId,
                 runId: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.RunId,
-                victoryReward: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.baseRewardCoins ?? DefenseMatchResultService.REWARD_VICTORY_CURRENCY);
+                victoryReward: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.baseRewardCoins ?? DefenseMatchResultService.REWARD_VICTORY_CURRENCY,
+                baseRemainingHpRatio: _run.Base != null && _run.Base.MaxHP > 0f ? Mathf.Clamp01(_run.Base.CurrentHP / _run.Base.MaxHP) : (isWon ? 1f : 0f),
+                firstClearBonusCurrency: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.firstClearBonusCoins ?? 0,
+                firstClearRelicId: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.firstClearRelicId,
+                firstClearRelicShards: ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.ActiveMatch?.Stage.firstClearRelicShards ?? 0);
 
             var processed = _resultService.ProcessMatchResult(resultData);
             _resultModalView.ShowResult(processed.Title, processed.Message, processed.Summary);

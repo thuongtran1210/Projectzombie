@@ -68,7 +68,7 @@ namespace ProjectZombie.Features.UI.StageSelect
                 _downloaded = bytes == 0;
                 _view.RenderStageInfo(stage, _downloaded, _index > 0, _index < _stages.Count - 1, bytes / 1048576f);
                 bool unlocked = stage.IsUnlocked(ProjectZombie.Core.Save.GameManager.Instance?.SaveData);
-                _view.SetStartAvailability(_downloaded && unlocked, unlocked ? null : "Hoàn thành các ải yêu cầu để mở khóa.");
+                _view.SetStartAvailability(_downloaded && unlocked, unlocked ? null : stage.GetUnlockRequirementText(_stages, ProjectZombie.Core.Save.GameManager.Instance?.SaveData));
             }
             catch (Exception exception)
             {

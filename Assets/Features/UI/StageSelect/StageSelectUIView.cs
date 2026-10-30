@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.UI.StageSelect
 {
     /// <summary>
     /// Giao diện Chọn Ải / Màn chơi (Stage Selection View) - Chuẩn MVP Pattern.
-    /// Hiển thị danh sách ải, ảnh minh họa, thông tin phần thưởng và trạng thái DLC.
+    /// Hiển thị danh sách ải, ảnh minh họa, kỷ lục sao vượt ải, thông tin phần thưởng và trạng thái DLC.
     /// </summary>
     public class StageSelectUIView : BaseMetaScreenView
     {
@@ -78,9 +78,27 @@ namespace ProjectZombie.Features.UI.StageSelect
             _previousAvailable = isPreviousAvailable;
             _nextAvailable = isNextAvailable;
 
+            var saveData = ProjectZombie.Core.Save.GameManager.Instance != null
+                ? ProjectZombie.Core.Save.GameManager.Instance.SaveData
+                : null;
+            bool isCompleted = saveData != null && saveData.IsStageCompleted(stage.stageId);
+            var stageRecord = isCompleted ? saveData.GetStageRecord(stage.stageId) : default;
+
             if (_stageTitleText != null) _stageTitleText.text = stage.stageName;
             if (_stageDescText != null) _stageDescText.text = stage.description;
-            if (_recommendedLevelText != null) _recommendedLevelText.text = $"<color=#FFD700>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}";
+            if (_recommendedLevelText != null)
+            {
+                if (isCompleted && stageRecord.bestClearTime > 0f)
+                {
+                    int bm = Mathf.FloorToInt(stageRecord.bestClearTime / 60f);
+                    int bs = Mathf.FloorToInt(stageRecord.bestClearTime % 60f);
+                    _recommendedLevelText.text = $"<color=#FFD700>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}   <color=#00FF88>KỶ LỤC:</color> {bm:00}:{bs:00}";
+                }
+                else
+                {
+                    _recommendedLevelText.text = $"<color=#FFD700>CẤP ĐỀ CỬ:</color> {stage.recommendedLevel}";
+                }
+            }
             
             if (_stageThumbnailImage != null)
             {
@@ -93,17 +111,35 @@ namespace ProjectZombie.Features.UI.StageSelect
                 _downloadStatusText.gameObject.SetActive(false);
             }
 
-            if (_coinsRewardText != null) _coinsRewardText.text = $"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0}";
-            if (_expRewardText != null) _expRewardText.text = $"<size=80%><color=#94CDD0>KINH NGHIỆM</color></size>\n{stage.baseRewardExp:N0}";
+            if (_coinsRewardText != null)
+            {
+                if (!isCompleted && stage.firstClearBonusCoins > 0)
+                {
+                    _coinsRewardText.text = $"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0} <color=#00FF88>(+{stage.firstClearBonusCoins:N0} Lần Đầu)</color>";
+                }
+                else
+                {
+                    _coinsRewardText.text = $"<size=80%><color=#EACB83>CỔ TIỀN</color></size>\n{stage.baseRewardCoins:N0}";
+                }
+            }
 
-            // Hiển thị trạng thái Đã Vượt Ải từ Save Data
-            bool isCompleted = ProjectZombie.Core.Save.GameManager.Instance != null &&
-                               ProjectZombie.Core.Save.GameManager.Instance.SaveData != null &&
-                               ProjectZombie.Core.Save.GameManager.Instance.SaveData.IsStageCompleted(stage.stageId);
+            if (_expRewardText != null)
+            {
+                if (!isCompleted && stage.firstClearRelicShards > 0)
+                {
+                    _expRewardText.text = $"<size=80%><color=#94CDD0>THƯỞNG LẦN ĐẦU</color></size>\n<color=#FFD700>+{stage.firstClearRelicShards} Mảnh Tín Vật</color>";
+                }
+                else
+                {
+                    _expRewardText.text = $"<size=80%><color=#94CDD0>KINH NGHIỆM</color></size>\n{stage.baseRewardExp:N0}";
+                }
+            }
 
             if (isCompleted && _stageTitleText != null)
             {
-                _stageTitleText.text = $"{stage.stageName} <color=#FFD700>[ĐÃ VƯỢT ẢI]</color>";
+                int stars = Mathf.Clamp(stageRecord.starRating > 0 ? stageRecord.starRating : 3, 1, 3);
+                string starStr = new string('★', stars) + new string('☆', 3 - stars);
+                _stageTitleText.text = $"{stage.stageName} <color=#FFD700>[{starStr}]</color>";
             }
             if (_startBattleButton != null) _startBattleButton.gameObject.SetActive(isDlcDownloaded);
             if (_downloadDlcButton != null)

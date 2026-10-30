@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Maps
         public MapDefinitionSO Map => _map;
         public Defense3D.DefenseStageBlueprintSO DefenseBlueprint => _defenseBlueprint;
         public UnityEngine.AddressableAssets.AssetReferenceT<Defense3D.StageSpawnConfig> SpawnRules => _spawnRules;
+        public IReadOnlyList<string> RequiredCompletedStages => _requiredCompletedStages ?? System.Array.Empty<string>();
         public float DefenseDuration => _defenseBlueprint != null ? _defenseBlueprint.stageDurationSeconds : stageDurationSeconds;
         public bool CanLaunchDefense => !string.IsNullOrWhiteSpace(stageId) && _map != null && _map.IsValid
             && (_defenseBlueprint != null || (_spawnRules != null && _spawnRules.RuntimeKeyIsValid())) && DefenseDuration > 0f
@@ -40,6 +41,46 @@ namespace ProjectZombie.Features.Maps
             foreach (var required in _requiredCompletedStages)
                 if (!string.IsNullOrWhiteSpace(required) && (save == null || !save.IsStageCompleted(required))) return false;
             return true;
+        }
+
+        public string GetUnlockRequirementText(
+            IReadOnlyList<StageDefinitionSO> allStages,
+            ProjectZombie.Features.MetaProgression.MetaProgressionSaveData save)
+        {
+            if (IsUnlocked(save)) return string.Empty;
+            if (_requiredCompletedStages == null || _requiredCompletedStages.Length == 0)
+            {
+                return "Hoàn thành các ải yêu cầu để mở khóa.";
+            }
+
+            var missingNames = new List<string>();
+            for (int i = 0; i < _requiredCompletedStages.Length; i++)
+            {
+                string reqId = _requiredCompletedStages[i];
+                if (string.IsNullOrWhiteSpace(reqId)) continue;
+                if (save != null && save.IsStageCompleted(reqId)) continue;
+
+                string displayName = reqId;
+                if (allStages != null)
+                {
+                    for (int j = 0; j < allStages.Count; j++)
+                    {
+                        if (allStages[j] != null && string.Equals(allStages[j].stageId, reqId, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            displayName = allStages[j].stageName;
+                            break;
+                        }
+                    }
+                }
+                missingNames.Add(displayName);
+            }
+
+            if (missingNames.Count == 0)
+            {
+                return "Hoàn thành các ải yêu cầu để mở khóa.";
+            }
+
+            return $"Cần vượt ải: {string.Join(", ", missingNames)}";
         }
 
         [Header("Thông Tin Ải (Stage Profile)")]
@@ -66,6 +107,12 @@ namespace ProjectZombie.Features.Maps
         [Header("Phần Thưởng Vượt Ải (Clear Rewards)")]
         public int baseRewardCoins = 500;
         public int baseRewardExp = 250;
+        [Tooltip("Thưởng Cổ Tiền cộng thêm khi vượt ải lần đầu tiên.")]
+        public int firstClearBonusCoins = 500;
+        [Tooltip("ID Pháp Bảo / Tín Vật nhận mảnh thưởng khi vượt ải lần đầu.")]
+        public string firstClearRelicId = "R001_Deptoong";
+        [Tooltip("Số lượng mảnh Pháp Bảo / Tín Vật thưởng khi vượt ải lần đầu.")]
+        public int firstClearRelicShards = 10;
         public List<string> dropUnlockWeaponIds = new List<string>();
     }
 }
