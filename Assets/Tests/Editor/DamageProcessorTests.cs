@@ -295,7 +295,7 @@ namespace ProjectZombie.Tests.Editor
             var combat = _ownerA.AddComponent<ProjectZombie.Features.Player.CharacterCombat>();
             typeof(ProjectZombie.Features.Player.CharacterCombat).GetField("_playerStats", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(combat, stats);
-            combat.SetAttackConfig(new ProjectZombie.Features.Player.CharacterAttackConfig { element = ElementType.None });
+            combat.SetAttackConfig(new ProjectZombie.Features.Player.CharacterAttackConfig());
             stats.SetBaseElement(ElementType.Kim);
             Assert.That(combat.AttackElement, Is.EqualTo(ElementType.Kim));
             stats.SetElementOverride(ElementType.Hoa);
