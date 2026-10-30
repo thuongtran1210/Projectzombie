@@ -103,6 +103,23 @@ namespace ProjectZombie.Features.Defense3D.UI
             _isStarting = false;
             ShowLoadingOverlay(false, string.Empty);
             RefreshAllDisplays();
+            ApplyLegendaryTheme();
+        }
+
+        private void ApplyLegendaryTheme()
+        {
+            LegendaryFantasyTheme.Label(_titleText, true);
+            LegendaryFantasyTheme.Label(_subtitleText);
+            LegendaryFantasyTheme.Label(_heroNameText, true);
+            LegendaryFantasyTheme.Label(_relicNameText, true);
+            LegendaryFantasyTheme.Label(_heroRoleText);
+            LegendaryFantasyTheme.Label(_relicDescText);
+            LegendaryFantasyTheme.Accent(_minionCountText);
+            LegendaryFantasyTheme.Accent(_towerCountText);
+            LegendaryFantasyTheme.Primary(_startBattleButton, _startBattleButtonText);
+            LegendaryFantasyTheme.Secondary(_editLoadoutButton);
+            LegendaryFantasyTheme.Secondary(_closeButton);
+            LegendaryFantasyTheme.Experience(_loadingProgressBar);
         }
 
         private void OnDestroy()
