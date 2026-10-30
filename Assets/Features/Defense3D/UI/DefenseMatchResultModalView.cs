@@ -28,6 +28,11 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void Awake()
         {
+            LegendaryFantasyTheme.Label(_titleText, true);
+            LegendaryFantasyTheme.Label(_messageText);
+            LegendaryFantasyTheme.Accent(_statsSummaryText);
+            LegendaryFantasyTheme.Primary(_restartButton);
+            LegendaryFantasyTheme.Secondary(_mainMenuButton);
             var animator = GetComponent<Animator>();
             if (animator != null)
                 animator.updateMode = AnimatorUpdateMode.UnscaledTime;
