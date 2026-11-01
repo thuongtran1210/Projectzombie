@@ -77,6 +77,23 @@ public static class ProjectEditorBridge
     {
         switch (command)
         {
+            case "clear-validation-layout":
+                return DefenseValidationSceneCleanup.ClearDrivenLayoutOnly();
+            case "smoke-roster":
+                DefenseMinionRosterPlayCheck.Start();
+                return "Roster match check scheduled: scratch/MinionRosterMatchCheck.txt";
+            case "migrate-roster":
+                DefenseMinionRosterMigration.Migrate();
+                return File.ReadAllText("scratch/MinionRosterMigration.txt");
+            case "smoke-pipe":
+                DefensePipeSmokePlayCheck.Start();
+                return "Pipe match check scheduled: scratch/PipeSmokeMatchCheck.txt";
+            case "build-pipe":
+                DefensePipeSmokeBuilder.Build();
+                return File.ReadAllText("scratch/PipeSmokeBuild.txt");
+            case "preview-pipe":
+                DefensePipeSmokePreview.Render();
+                return Path.GetFullPath("scratch/PipeSmokePreview.png");
             case "status":
                 return "Unity " + Application.unityVersion + "\nPlaying: " + EditorApplication.isPlaying
                     + "\nPaused: " + EditorApplication.isPaused + "\nScene: " + SceneManager.GetActiveScene().path
@@ -96,6 +113,9 @@ public static class ProjectEditorBridge
             case "refresh":
                 AssetDatabase.Refresh();
                 return "Refresh requested.";
+            case "clean-tmp-submeshes":
+                ProjectZombie.EditorTools.TMPVietnameseFontSetupTool.MigratePrefabsAndCleanSubMeshes();
+                return "Migrated prefabs to Vietnamese font and cleaned TMP SubMeshes.";
             case "validate-app-architecture":
                 AppArchitectureValidation.Validate();
                 return File.ReadAllText("scratch/AppArchitectureValidation.txt");
