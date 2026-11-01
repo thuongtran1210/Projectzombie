@@ -66,6 +66,31 @@ namespace ProjectZombie.Features.UI
 
             if (!registry.TryGetScreenEntry(screenType, out var entry))
             {
+                // Fallback dự phòng: Thử tìm trực tiếp trong Resources/UI trước khi báo lỗi
+                string[] directFallbackNames = new[]
+                {
+                    $"UI/Defense{screenType}UI",
+                    $"UI/{screenType}UI",
+                    $"UI/{screenType}ModalUI",
+                    $"UI/{screenType}Panel",
+                    $"UI/{screenType}_Screen",
+                    $"UI/{screenType}"
+                };
+
+                foreach (var resName in directFallbackNames)
+                {
+                    var prefabGo = Resources.Load<GameObject>(resName);
+                    if (prefabGo != null)
+                    {
+                        var go = UnityEngine.Object.Instantiate(prefabGo, _container);
+                        if (go != null)
+                        {
+                            var fallbackScreen = go.GetComponent<BaseMetaScreenView>() ?? go.GetComponentInChildren<BaseMetaScreenView>(true);
+                            if (fallbackScreen != null) return fallbackScreen;
+                        }
+                    }
+                }
+
                 Debug.LogError($"[UIScreenFactory] Không tìm thấy cấu hình cho '{screenType}' trong UIRegistrySO!");
                 return null;
             }

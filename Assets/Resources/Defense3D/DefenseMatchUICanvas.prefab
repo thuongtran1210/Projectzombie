@@ -103,8 +103,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "K\u1EBET QU\u1EA2"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -874,6 +874,7 @@ MonoBehaviour:
   _resultModalView: {fileID: 599112818879416388}
   _run: {fileID: 0}
   _woodWallet: {fileID: 0}
+  _towerBuilder: {fileID: 0}
 --- !u!1 &2008715303586043564
 GameObject:
   m_ObjectHideFlags: 0
@@ -941,8 +942,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "M\xF4 t\u1EA3 hi\u1EC7u \u1EE9ng buff..."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1075,8 +1076,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "T\xEAn Th\u1EBB"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1320,8 +1321,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "G\u1ED7: 0"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1604,8 +1605,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "C\u1EA5p 1 (0/30)"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1827,8 +1828,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "T\u01B0\u1EDBng: 100/100"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2086,8 +2087,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "M\xF4 t\u1EA3 hi\u1EC7u \u1EE9ng buff..."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2309,8 +2310,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "T\xEAn Th\u1EBB"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2564,8 +2565,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "CH\u1ECCN TH\u1EBA N\xC2NG C\u1EA4P"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2762,12 +2763,18 @@ MonoBehaviour:
   - CardButton: {fileID: 8186055287854145323}
     TitleText: {fileID: 517099628766539357}
     DescriptionText: {fileID: 2007364652254357371}
+    TagText: {fileID: 0}
   - CardButton: {fileID: 3809178150650815751}
     TitleText: {fileID: 1581903564867624965}
     DescriptionText: {fileID: 5244354695101463483}
+    TagText: {fileID: 0}
   - CardButton: {fileID: 6158802590823414188}
     TitleText: {fileID: 4249645908962093165}
     DescriptionText: {fileID: 6787532223455787010}
+    TagText: {fileID: 0}
+  _rerollButton: {fileID: 0}
+  _rerollCountText: {fileID: 0}
+  _skipButton: {fileID: 0}
 --- !u!1 &5842450362451039316
 GameObject:
   m_ObjectHideFlags: 0
@@ -2835,8 +2842,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 00:00
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2969,8 +2976,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Ch\u01A1i L\u1EA1i"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3103,8 +3110,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "M\xF4 t\u1EA3 k\u1EBFt th\xFAc tr\u1EADn..."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3401,8 +3408,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Menu Ch\xEDnh"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3535,8 +3542,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "C\u0103n C\u1EE9: 200/200"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3819,8 +3826,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u0110\u1EE3t: 0/34"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3952,6 +3959,9 @@ MonoBehaviour:
   _bossHealthRoot: {fileID: 1390939534434526288}
   _bossHealthSlider: {fileID: 4287828890885288485}
   _bossHealthText: {fileID: 6573163814764432377}
+  _buildPromptRoot: {fileID: 0}
+  _buildButton: {fileID: 0}
+  _buildActionText: {fileID: 0}
 --- !u!1 &7563505744939531127
 GameObject:
   m_ObjectHideFlags: 0
@@ -4019,8 +4029,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Th\u1EDDi gian: 00:00 | G\u1ED7: 0"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4153,8 +4163,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "D\u1EA1 Xoa: 3200/3200"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4381,8 +4391,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "T\xEAn Th\u1EBB"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4637,8 +4647,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "M\xF4 t\u1EA3 hi\u1EC7u \u1EE9ng buff..."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1222981c96a86234eb8083290f47325c, type: 2}
+  m_sharedMaterial: {fileID: -7168338676751150774, guid: 1222981c96a86234eb8083290f47325c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5013,4 +5023,3 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
-

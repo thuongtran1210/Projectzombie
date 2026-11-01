@@ -23,7 +23,7 @@ namespace ProjectZombie.Features.UI
         private void InitializeLoadout()
         {
             _loadoutRepository = _loadoutRepository ?? new DefenseLoadoutRepository();
-            _defenseCatalog = Defense3DCatalog.CreateDefault();
+            _defenseCatalog = Defense3DCatalog.CreateExpanded();
             var saveData = ProjectZombie.Core.Save.GameManager.HasInstance ? ProjectZombie.Core.Save.GameManager.Instance.SaveData : null;
             var ownership = DefenseMetaOwnershipAdapter.CreateDefault(saveData);
             if (saveData != null && saveData.unlockedTowerIds != null)
@@ -194,9 +194,12 @@ namespace ProjectZombie.Features.UI
 
         private Sprite CatalogIcon(string id)
         {
+            if (string.IsNullOrEmpty(id)) return null;
             foreach (var hero in _cachedHeroes) if (hero != null && ResolveSupportedId(hero.characterId, true) == id && hero.avatar != null) return hero.avatar;
             foreach (var relic in _cachedWeapons) if (relic != null && ResolveSupportedId(relic.weaponId, false) == id && relic.icon != null) return relic.icon;
-            return _view != null ? _view.GetCatalogIcon(id) : null;
+            var viewIcon = _view != null ? _view.GetCatalogIcon(id) : null;
+            if (viewIcon != null) return viewIcon;
+            return DefenseLoadoutRuntimeAdapter.ResolveItemIcon(id);
         }
 
         private void RefreshEquippedBadges()

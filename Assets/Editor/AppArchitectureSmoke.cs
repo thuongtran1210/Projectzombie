@@ -110,7 +110,10 @@ public static class AppArchitectureSmoke
             for (int attempt = 0; attempt < 2; attempt++)
             {
                 app.Flow.SelectStage(stage);
-                var request = new MatchLaunchRequest(stage, DefenseLoadoutSnapshot.CreateDefault());
+                var snapshot = attempt == 0
+                    ? DefenseLoadoutSnapshot.CreateDefault()
+                    : new DefenseLoadoutSnapshot("hero_daosi", "relic_dieucay", new[] { "minion_danbinh" }, new[] { "tower_cungtien" });
+                var request = new MatchLaunchRequest(stage, snapshot);
                 Check(await app.Flow.EnterMatchAsync(request), "enter map " + attempt + ": " + app.Flow.LastError);
                 var composition = UnityEngine.Object.FindObjectOfType<DefenseSceneCompositionRoot>();
                 Check(composition != null && composition.IsReady, "session ready");

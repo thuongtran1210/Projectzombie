@@ -52,7 +52,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             ProjectZombie.Features.Maps.StageDefinitionSO stage = null)
         {
             _stage = stage;
-            _catalog = catalog ?? Defense3DCatalog.CreateDefault();
+            _catalog = catalog ?? Defense3DCatalog.CreateExpanded();
             _ownership = ownership ?? DefenseMetaOwnershipAdapter.CreateDefault(
                 ProjectZombie.Core.Save.GameManager.HasInstance ? ProjectZombie.Core.Save.GameManager.Instance.SaveData : null);
             _repository = repository ?? new DefenseLoadoutRepository();

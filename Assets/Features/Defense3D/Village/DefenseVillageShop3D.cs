@@ -5,10 +5,11 @@ using UnityEngine.AI;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>Session-bound recruitment and squad commands using the same wood wallet as tower construction.</summary>
-    public sealed class DefenseVillageShop3D : DefenseGameplayBehaviour
+    public sealed class DefenseVillageShop3D : DefenseGameplayBehaviour, IMinionRecruitContext, IMinionSquadCommands, IMinionRecruitmentCommands
     {
-        [SerializeField] private DefenseMinionDefinitionSO[] _catalog;
-        [SerializeField] private DefenseMinion3D[] _slots;
+        [SerializeField] private DefenseMinionDefinitionSO[] _catalog = Array.Empty<DefenseMinionDefinitionSO>();
+        [SerializeField] private DefenseMinionCatalogSO _minionCatalog;
+        [SerializeField] private DefenseMinion3D[] _slots = Array.Empty<DefenseMinion3D>();
         [SerializeField] private DefenseHeroHealth3D _hero;
         [SerializeField] private DefenseBasePrototype3D _base;
         [SerializeField] private DefenseWoodWallet3D _wallet;
@@ -20,9 +21,13 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(.1f)] private float _recruitmentRadius = 1.6f;
         private IDefenseWoodDrops _woodDrops;
         public void BindWoodDrops(IDefenseWoodDrops woodDrops) => _woodDrops = woodDrops;
-        private bool _busy;
         private Collider _baseCollider;
-        private readonly DefenseMinionOrder[] _orders = new DefenseMinionOrder[3];
+        private readonly MinionRosterRuntime _roster = new MinionRosterRuntime();
+        private DefenseMinionSlotPool _pool;
+        private MinionRecruitmentService _recruitment;
+        public IMinionRosterReader Roster => _roster;
+        public object SessionIdentity => Gameplay?.SessionIdentity;
+        public int RunGeneration => Gameplay != null ? Gameplay.RunGeneration : -1;
         public event Action Changed;
         public bool CanTrade => isActiveAndEnabled && CanAdvanceGameplay && _hero != null && _hero.isActiveAndEnabled && !_hero.IsDown && !_base.IsDestroyed;
         public DefenseHeroHealth3D Hero => _hero;
@@ -41,110 +46,91 @@ namespace ProjectZombie.Features.Defense3D
             }
         }
         public bool CanRecruit => CanTrade && IsNearRecruitment;
-        public DefenseMinionDefinitionSO Definition(int role) => role >= 0 && role < _catalog.Length ? _catalog[role] : null;
-        public DefenseMinionOrder Order(int role) => _orders[role];
-
-        private System.Collections.Generic.HashSet<int> _allowedRoles;
-        private readonly float[] _roleHpMultipliers = { 1f, 1f, 1f };
-        private readonly float[] _roleSpeedMultipliers = { 1f, 1f, 1f };
-
-        public void SetRoleStatMultipliers(int role, float hpMultiplier, float speedMultiplier)
+        /// <summary>Composition selects exact equipped IDs; no role-based replacement or implicit support units.</summary>
+        public void ConfigureRoster(System.Collections.Generic.IEnumerable<string> minionIds)
         {
-            if (role < 0 || role >= 3) return;
-            _roleHpMultipliers[role] = Mathf.Max(0.1f, hpMultiplier);
-            _roleSpeedMultipliers[role] = Mathf.Max(0.1f, speedMultiplier);
-            if (_slots != null)
-            {
-                for (int i = 0; i < _slots.Length; i++)
-                {
-                    var unit = _slots[i];
-                    if (unit != null && unit.Definition != null && (int)unit.Definition.Role == role)
-                    {
-                        unit.ApplyMetaMultipliers(_roleHpMultipliers[role], _roleSpeedMultipliers[role]);
-                    }
-                }
-            }
-        }
-
-        /// <summary>Cấu hình danh sách vai trò lính được phép tuyển mộ theo đội hình Loadout đã chọn.</summary>
-        public void SetAllowedRoles(System.Collections.Generic.IEnumerable<int> allowedRoles)
-        {
-            if (allowedRoles == null)
-            {
-                _allowedRoles = null;
-            }
-            else
-            {
-                _allowedRoles = new System.Collections.Generic.HashSet<int>(allowedRoles);
-            }
+            if (CanAdvanceGameplay) throw new InvalidOperationException("Configure the roster before the session starts.");
+            _roster.Select(minionIds, _minionCatalog != null ? _minionCatalog.Definitions : _catalog ?? Array.Empty<DefenseMinionDefinitionSO>());
             NotifyChanged();
         }
 
-        /// <summary>Kiểm tra vai trò lính có nằm trong danh sách xuất trận hay không.</summary>
-        public bool IsRoleAllowed(int role) => _allowedRoles == null || _allowedRoles.Contains(role);
+        public DefenseMinionOrder Order(string id) => _roster.TryGetSquad(id, out var squad) ? squad.Order : DefenseMinionOrder.Defend;
+        public int Count(string id) => _pool != null ? _pool.Count(id) : 0;
+        public int Capacity(string id) => _roster.TryGetSquad(id, out var squad) && _pool != null
+            ? Math.Min(squad.Definition.Capacity, _pool.Capacity(id)) : 0;
+
+        /// <summary>Applies upgrades to this type only, even if another type shares its behavior.</summary>
+        public void SetSquadStatMultipliers(string id, float hpMultiplier, float speedMultiplier)
+        {
+            if (!_roster.TryGetSquad(id, out var squad)) return;
+            squad.HpMultiplier = Mathf.Max(.1f, hpMultiplier);
+            squad.SpeedMultiplier = Mathf.Max(.1f, speedMultiplier);
+            foreach (var unit in _slots)
+                if (unit != null && unit.Definition != null && string.Equals(unit.Definition.Id, id, StringComparison.OrdinalIgnoreCase))
+                    unit.ApplyMetaMultipliers(squad.HpMultiplier, squad.SpeedMultiplier);
+        }
 
         protected override void OnGameplayBound()
         {
             _base.TryGetComponent(out _baseCollider);
+            _pool?.Dispose();
+            _pool = new DefenseMinionSlotPool(_slots ?? Array.Empty<DefenseMinion3D>(), _base.transform);
+            _recruitment = new MinionRecruitmentService(_roster, this, _wallet, _pool);
             foreach (var unit in _slots) unit.Bind(this, Gameplay);
             _wallet.Changed -= NotifyChanged;
             _wallet.Changed += NotifyChanged;
         }
 
-        public int Count(int role)
+        /// <summary>Warms selected actors before the run starts, yielding between instances to avoid a large synchronous spike.</summary>
+        public async System.Threading.Tasks.Task PrepareRosterAsync(Camera camera)
         {
-            int count = 0;
-            foreach (var unit in _slots) if ((int)unit.Definition.Role == role && unit.IsAvailable) count++;
-            return count;
-        }
-
-        public int Capacity(int role)
-        {
-            if (!IsRoleAllowed(role)) return 0;
-            int count = 0;
-            foreach (var unit in _slots) if ((int)unit.Definition.Role == role) count++;
-            return count;
-        }
-
-        public bool TryRecruit(int role)
-        {
-            if (!IsRoleAllowed(role)) return false;
-            var definition = Definition(role);
-            if (_busy || !CanRecruit || definition == null || definition.WoodCost <= 0 || _wallet.Wood < definition.WoodCost) return false;
-            DefenseMinion3D slot = null;
-            int index = 0;
-            for (int i = 0; i < _slots.Length; i++)
+            var slots = new System.Collections.Generic.List<DefenseMinion3D>(_slots ?? Array.Empty<DefenseMinion3D>());
+            var supports = new System.Collections.Generic.List<DefenseSupportTarget3D>();
+            foreach (var squad in _roster.Squads)
             {
-                if (_slots[i].Definition == definition && !_slots[i].gameObject.activeSelf) { slot = _slots[i]; index = i; break; }
+                if (squad.Definition.Prefab == null) throw new InvalidOperationException("Missing minion prefab: " + squad.Id);
+                int existing = 0;
+                foreach (var unit in slots) if (unit != null && unit.Definition.Id == squad.Id) existing++;
+                while (existing++ < squad.Definition.Capacity)
+                {
+                    var actor = DefenseEnemyPrefab3D.Instantiate(squad.Definition.Prefab.gameObject, _roots.Allies);
+                    actor.SetActive(false);
+                    var unit = actor.GetComponent<DefenseMinion3D>();
+                    if (unit.Definition != squad.Definition) throw new InvalidOperationException("Prefab definition mismatch: " + squad.Id);
+                    unit.Bind(this, Gameplay);
+                    unit.ApplyMetaMultipliers(squad.HpMultiplier, squad.SpeedMultiplier);
+                    foreach (var view in actor.GetComponentsInChildren<UI.DefenseMinionHealthView3D>(true)) view.BindCamera(camera);
+                    slots.Add(unit); supports.Add(unit.Health);
+                    await System.Threading.Tasks.Task.Yield();
+                    if (this == null || Gameplay == null || (Gameplay is DefenseSession session && session.IsDisposed)) return;
+                }
             }
-            if (slot == null) return false;
-            Vector3 spawn = _base.transform.position + new Vector3(2.6f + index % 3 * 0.35f, 0f, (index % 5 - 2) * 0.45f);
-            if (!NavMesh.SamplePosition(spawn, out var hit, 3f, NavMesh.AllAreas)) return false;
-            _busy = true;
-            try
-            {
-                // Deployment may fail if NavMesh data was removed; charge only after a successful warp.
-                if (!slot.Deploy(hit.position, index)) return false;
-                if (!CanRecruit || !_wallet.TrySpend(definition.WoodCost)) { slot.Retire(); return false; }
-                NotifyChanged();
-                return true;
-            }
-            finally { _busy = false; }
-        }
-
-        public bool CycleOrder(int role)
-        {
-            if (!CanTrade || Definition(role) == null) return false;
-            _orders[role] = (DefenseMinionOrder)(((int)_orders[role] + 1) % 3);
+            _slots = slots.ToArray();
+            _friends.AppendRuntimeSupports(supports);
+            _pool?.Dispose();
+            _pool = new DefenseMinionSlotPool(_slots, _base.transform);
+            _recruitment = new MinionRecruitmentService(_roster, this, _wallet, _pool);
             NotifyChanged();
-            return true;
+        }
+
+        public MinionRecruitResult TryRecruit(string id)
+        {
+            var result = _recruitment != null ? _recruitment.TryRecruit(id) : MinionRecruitResult.Unavailable;
+            if (result == MinionRecruitResult.Success) NotifyChanged();
+            return result;
+        }
+
+        public bool CycleOrder(string id)
+        {
+            if (!CanTrade || !_roster.CycleOrder(id)) return false;
+            NotifyChanged(); return true;
         }
 
         public Vector3 Anchor(DefenseMinion3D unit)
         {
-            if (Order((int)unit.Definition.Role) == DefenseMinionOrder.Follow && !_hero.IsDown)
+            if (Order(unit.Definition.Id) == DefenseMinionOrder.Follow && !_hero.IsDown)
                 return _hero.transform.position - _hero.transform.forward * (unit.Definition.Role == DefenseMinionRole.Healer ? 1.8f : 2.4f) + unit.FormationOffset;
-            if (Order((int)unit.Definition.Role) == DefenseMinionOrder.Advance)
+            if (Order(unit.Definition.Id) == DefenseMinionOrder.Advance)
             {
                 if (unit.Definition.Role == DefenseMinionRole.Healer)
                 {
@@ -161,7 +147,7 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool WithinOrders(DefenseMinion3D unit, Vector3 point)
         {
-            var order = Order((int)unit.Definition.Role);
+            var order = Order(unit.Definition.Id);
             if (order == DefenseMinionOrder.Advance) return true;
             if (order == DefenseMinionOrder.Defend && point.x > 4.2f) return false;
             Vector3 delta = point - Anchor(unit); delta.y = 0f;
@@ -207,7 +193,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             if ((patient is Behaviour actor && !actor.isActiveAndEnabled) || patient.IsDead || patient.CurrentHP >= patient.MaxHP || !WithinOrders(unit, position) || !unit.CanReach(position)) return;
             float candidate = patient.CurrentHP / patient.MaxHP;
-            if (ReferenceEquals(patient, _hero) && Order((int)unit.Definition.Role) == DefenseMinionOrder.Follow) candidate -= 1f;
+            if (ReferenceEquals(patient, _hero) && Order(unit.Definition.Id) == DefenseMinionOrder.Follow) candidate -= 1f;
             if (candidate >= score) return;
             score = candidate; best = patient; point = position;
         }
@@ -234,8 +220,8 @@ namespace ProjectZombie.Features.Defense3D
 
         public void NotifyChanged() => Changed?.Invoke();
         protected override void OnGameplayCleanup() { foreach (var unit in _slots) unit.Retire(); NotifyChanged(); }
-        protected override void OnGameplayReset() { Array.Clear(_orders, 0, _orders.Length); foreach (var unit in _slots) unit.Retire(); NotifyChanged(); }
+        protected override void OnGameplayReset() { _roster.ResetOrders(); foreach (var unit in _slots) unit.Retire(); NotifyChanged(); }
         protected override void OnGameplayGateChanged(bool active) => NotifyChanged();
-        protected override void OnDestroy() { if (_wallet != null) _wallet.Changed -= NotifyChanged; base.OnDestroy(); }
+        protected override void OnDestroy() { if (_wallet != null) _wallet.Changed -= NotifyChanged; _pool?.Dispose(); base.OnDestroy(); }
     }
 }

@@ -72,6 +72,7 @@ namespace ProjectZombie.Editor.UI
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(registry);
             AssetDatabase.SaveAssetIfDirty(registry);
+            AssetDatabase.SaveAssets();
             typeof(UIRegistrySO).GetMethod("BuildLookup", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(registry, null);
             return "Standalone LoadoutManagement registered separately from DefensePreparation review. Both prefab variants updated; open scene not saved.";
         }

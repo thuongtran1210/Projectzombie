@@ -215,15 +215,42 @@ namespace ProjectZombie.Features.Defense3D.UI
             }
         }
 
+        public override void Show()
+        {
+            base.Show();
+            if (_presenter == null)
+            {
+                _presenter = new DefensePreparationPresenter(stage: IsLoadoutManagement ? null : ProjectZombie.Core.Architecture.AppCompositionRoot.Instance?.Flow.SelectedStage);
+                _presenter.OnValidationStateChanged += UpdateValidationDisplay;
+                _presenter.OnSelectionChanged += HandleSelectionChanged;
+            }
+            RefreshAllDisplays();
+        }
+
         private Sprite GetIcon(string id)
         {
+            if (string.IsNullOrEmpty(id)) return null;
+
             if (_catalogIcons != null)
             {
                 foreach (var entry in _catalogIcons)
                 {
-                    if (string.Equals(entry.Id, id, StringComparison.OrdinalIgnoreCase)) return entry.Icon;
+                    if (string.Equals(entry.Id, id, StringComparison.OrdinalIgnoreCase) && entry.Icon != null) return entry.Icon;
                 }
             }
+
+            // Fallback 1: Tra cứu từ Hero Catalog (Tướng)
+            if (_heroCatalog == null) _heroCatalog = Resources.Load<DefenseHeroCatalogSO>("Defense3D/DefenseHeroCatalog");
+            if (_heroCatalog != null)
+            {
+                var hero = _heroCatalog.GetHeroById(id);
+                if (hero != null && hero.Avatar != null) return hero.Avatar;
+            }
+
+            // Fallback 2: Adapter icon resolver dùng chung
+            var resolvedIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(id);
+            if (resolvedIcon != null) return resolvedIcon;
+
             return null;
         }
 
@@ -279,9 +306,12 @@ namespace ProjectZombie.Features.Defense3D.UI
             int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(selection.RelicId);
             DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(relicStar, null, out float relicDmgBonus, out float relicCdBonus, out float relicAreaBonus);
             string relicName = catalog.TryGetEntry(selection.RelicId, out var relic) ? $"{relic.DisplayName} <color=#FFD700>[{relicStar} Sao]</color>" : "Chưa chọn pháp bảo";
-            string relicDesc = relicStar > 1
-                ? $"Cấp {relicStar} Sao: +{(int)(relicDmgBonus * 100)}% Công, -{(int)(relicCdBonus * 100)}% Hồi chiêu, +{(int)(relicAreaBonus * 100)}% Phạm vi."
+            string baseDesc = (relic != null && !string.IsNullOrEmpty(relic.Description))
+                ? relic.Description
                 : "Pháp bảo hộ thân kích hoạt kỹ năng đặc trưng khi xuất trận.";
+            string relicDesc = relicStar > 1
+                ? $"{baseDesc}\n<color=#FFD700>• Cấp {relicStar} Sao:</color> +{(int)(relicDmgBonus * 100)}% Công, -{(int)(relicCdBonus * 100)}% Hồi chiêu, +{(int)(relicAreaBonus * 100)}% Phạm vi."
+                : baseDesc;
             SetRelicInfo(relicName, relicDesc, GetIcon(selection.RelicId));
 
 

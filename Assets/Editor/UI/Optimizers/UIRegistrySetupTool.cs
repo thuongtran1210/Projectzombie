@@ -55,7 +55,8 @@ namespace ProjectZombie.Editor.UITools
                 (MetaScreenType.StageSelect, "Screen_StageSelect", new[] { "Assets/_Prefabs/UI/StageSelect_Screen.prefab", "Assets/Prefabs/UI/StageSelect_Screen.prefab", "Assets/Resources/UI/StageSelect_Screen.prefab" }),
                 (MetaScreenType.ResourceDownload, "Modal_ResourceDownload", new[] { "Assets/_Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Prefabs/UI/ResourceDownloadModalUI.prefab", "Assets/Resources/UI/ResourceDownloadModalUI.prefab" }),
                 (MetaScreenType.Lobby, "Modal_Lobby", new[] { "Assets/Prefabs/UI/LobbyModalUI.prefab", "Assets/Resources/UI/LobbyModalUI.prefab", "Assets/_Prefabs/UI/LobbyModalUI.prefab" }),
-                (MetaScreenType.DefensePreparation, "Modal_DefensePreparation", new[] { "Assets/Prefabs/UI/DefensePreparationUI.prefab", "Assets/Resources/UI/DefensePreparationUI.prefab", "Assets/_Prefabs/UI/DefensePreparationUI.prefab" })
+                (MetaScreenType.DefensePreparation, "Modal_DefensePreparation", new[] { "Assets/Prefabs/UI/DefensePreparationUI.prefab", "Assets/Resources/UI/DefensePreparationUI.prefab", "Assets/_Prefabs/UI/DefensePreparationUI.prefab" }),
+                (MetaScreenType.LoadoutManagement, "Screen_LoadoutManagement", new[] { "Assets/Prefabs/UI/DefenseLoadoutManagementUI.prefab", "Assets/Resources/UI/DefenseLoadoutManagementUI.prefab", "Assets/_Prefabs/UI/DefenseLoadoutManagementUI.prefab" })
             };
 
             var serializedObj = new SerializedObject(registry);

@@ -97,5 +97,80 @@ namespace ProjectZombie.EditorTools
 
             Debug.Log("<color=#4DEEEA><b>[TMPVietnameseFontSetupTool] Cấu hình hoàn tất!</b></color> Đã kích hoạt Font tĩnh Bake sẵn Full tiếng Việt.");
         }
+
+        [MenuItem("ProjectZombie/2. 📱 Mobile UI/4. Tối Ưu UI/6. Migrate UI Prefabs to Vietnamese Font & Clean SubMeshes", priority = 167)]
+        public static void MigratePrefabsAndCleanSubMeshes()
+        {
+            TMP_FontAsset vietnameseFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(BAKED_FONT_PATH_1);
+            if (vietnameseFont == null)
+            {
+                vietnameseFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(BAKED_FONT_PATH_2);
+            }
+
+            if (vietnameseFont == null)
+            {
+                Debug.LogError("[TMPVietnameseFontSetupTool] Không tìm thấy font tĩnh tiếng Việt!");
+                return;
+            }
+
+            string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Resources", "Assets/_Prefabs", "Assets/Features" });
+            int modifiedCount = 0;
+            int cleanedSubMeshes = 0;
+
+            foreach (string guid in prefabGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                GameObject root = PrefabUtility.LoadPrefabContents(path);
+                if (root == null) continue;
+
+                bool modified = false;
+
+                // 1. Dọn sạch các GameObject con TMP SubMeshUI mồ côi
+                var allTransforms = root.GetComponentsInChildren<Transform>(true);
+                for (int i = allTransforms.Length - 1; i >= 0; i--)
+                {
+                    var t = allTransforms[i];
+                    if (t == null) continue;
+
+                    if (t.name.StartsWith("TMP SubMeshUI") || t.GetComponent<TMP_SubMeshUI>() != null)
+                    {
+                        Object.DestroyImmediate(t.gameObject);
+                        cleanedSubMeshes++;
+                        modified = true;
+                    }
+                }
+
+                // 2. Chuyển đổi toàn bộ Text sang font tiếng Việt trực tiếp
+                var texts = root.GetComponentsInChildren<TMP_Text>(true);
+                foreach (var text in texts)
+                {
+                    if (text == null) continue;
+                    if (text.font == null || text.font.name.Contains("LiberationSans"))
+                    {
+                        text.font = vietnameseFont;
+                        if (vietnameseFont.material != null)
+                        {
+                            text.fontSharedMaterial = vietnameseFont.material;
+                        }
+                        text.SetAllDirty();
+                        EditorUtility.SetDirty(text);
+                        modified = true;
+                    }
+                }
+
+                if (modified)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(root, path);
+                    modifiedCount++;
+                }
+
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"<color=#4DEEEA><b>[TMPVietnameseFontSetupTool] Hoàn tất dọn dẹp!</b></color> Đã cập nhật {modifiedCount} Prefabs và xóa {cleanedSubMeshes} TMP SubMeshUI mồ côi.");
+        }
     }
 }

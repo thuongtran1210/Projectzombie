@@ -9,6 +9,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private Camera _camera;
         [SerializeField] private float _width = .65f;
         [SerializeField] private float _height = .055f;
+        public void BindCamera(Camera camera) { _camera = camera; }
         public void SetRatio(float ratio)
         {
             ratio = Mathf.Clamp01(ratio);

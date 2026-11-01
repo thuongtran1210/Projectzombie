@@ -13,6 +13,8 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private MeshRenderer _sector;
         [SerializeField] private LineRenderer _sectorBorder;
         [SerializeField] private DefenseIndicatorSurface3D _surface;
+        [SerializeField] private MeshRenderer _areaFill;
+        [SerializeField] private MeshRenderer _areaCenter;
         public bool CanShowCone => IsConfigured && _sector != null && _sectorBorder != null;
         [SerializeField, Min(0.1f)] private float _arrowWidth = 1f;
         [SerializeField, Min(0f)] private float _surfaceOffset = 0.05f;
@@ -25,6 +27,31 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             _tint = new MaterialPropertyBlock();
             Hide();
+        }
+
+        /// <summary>Exact target footprint for placed smoke; warm targeting palette remains distinct from cast range.</summary>
+        public void ShowArea(DefenseResolvedAim aim, float radius, float range, bool cancelled)
+        {
+            ShowAim(aim, radius, range, cancelled);
+            if (_targetRing == null || !_targetRing.enabled) return;
+            Color accent = cancelled ? _cancelColor : new Color(1f, .75f, .28f, .95f);
+            _targetRing.startColor = _targetRing.endColor = accent;
+            if (_arrow != null) SetTint(_arrow, accent);
+            Vector3 center = _targetRing.transform.position;
+            if (_areaFill != null)
+            {
+                _areaFill.transform.SetPositionAndRotation(center, Quaternion.Euler(90f, 0f, 0f));
+                _areaFill.transform.localScale = Vector3.one * radius * 2f;
+                _areaFill.enabled = true;
+                SetTint(_areaFill, new Color(accent.r, accent.g, accent.b, cancelled ? .12f : .16f));
+            }
+            if (_areaCenter != null)
+            {
+                _areaCenter.transform.SetPositionAndRotation(center + Vector3.up * .012f, Quaternion.Euler(90f, 0f, 0f));
+                _areaCenter.transform.localScale = Vector3.one * Mathf.Min(.65f, radius * .25f);
+                _areaCenter.enabled = true;
+                SetTint(_areaCenter, accent);
+            }
         }
 
         public void ShowCone(DefenseResolvedAim aim, float radius, float angle, bool cancelled)
@@ -144,6 +171,8 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void Show(DefenseResolvedAim aim, float radius, bool cancelled)
         {
+            if (_areaFill != null) _areaFill.enabled = false;
+            if (_areaCenter != null) _areaCenter.enabled = false;
             if (_sector != null) _sector.enabled = false;
             if (_sectorBorder != null) _sectorBorder.enabled = false;
             if (_rangeRing != null) _rangeRing.enabled = false;
@@ -169,6 +198,8 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public void Hide()
         {
+            if (_areaFill != null) _areaFill.enabled = false;
+            if (_areaCenter != null) _areaCenter.enabled = false;
             if (_targetRing != null) _targetRing.enabled = false;
             if (_directionLine != null) _directionLine.enabled = false;
             if (_sector != null) _sector.enabled = false;

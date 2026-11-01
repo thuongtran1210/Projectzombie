@@ -10,23 +10,8 @@ namespace ProjectZombie.Editor.UI
     /// Tool an toàn: Cập nhật các Sprite mới vừa được cắt từ UI_Footer_NewSheet.png vào Prefab & Scene
     /// Tuyệt đối KHÔNG thay đổi vị trí, kích thước hay cấu trúc Hierarchy hiện tại của Designer.
     /// </summary>
-    [InitializeOnLoad]
     public static class ApplyNewUISpritesTool
     {
-        private static bool _hasExecuted = false;
-
-        static ApplyNewUISpritesTool()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                if (!_hasExecuted && !Application.isPlaying)
-                {
-                    _hasExecuted = true;
-                    ApplyNewUISprites();
-                }
-            };
-        }
-
         [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/✨ Áp Dụng Bộ Sprite Giao Diện Mới (1-Click Safe)", priority = 99)]
         public static void ApplyNewUISprites()
         {

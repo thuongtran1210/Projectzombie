@@ -21,6 +21,8 @@ namespace ProjectZombie.Features.Defense3D.UI
         private float _metaDamageBonus;
         private float _metaCooldownReduction;
         private float _metaAreaBonus;
+        private int _smokeTenths = -1;
+        private string _smokeLabel = string.Empty;
 
         public void SetMetaSkillBonuses(float damageBonus, float cooldownReduction, float areaBonus)
         {
@@ -33,6 +35,20 @@ namespace ProjectZombie.Features.Defense3D.UI
         public DefenseSkillDefinitionSO DefinitionSource => _definition;
         public DefenseSkillEffect3D Effect => _effect;
         public DefenseSkillKind Kind => _definition.Capture().Kind;
+
+        /// <summary>
+        /// Hoán đổi định nghĩa kỹ năng, component hiệu ứng, tên hiển thị và icon động khi xuất trận (Clean/SOLID).
+        /// </summary>
+        public void Rebind(DefenseSkillDefinitionSO definition, DefenseSkillEffect3D effect, Sprite icon = null, string displayName = null)
+        {
+            if (definition != null) _definition = definition;
+            if (effect != null) _effect = effect;
+            if (_view != null)
+            {
+                string name = !string.IsNullOrEmpty(displayName) ? displayName : (definition != null ? definition.name.Replace("Skill_", "") : null);
+                _view.SetSkillIdentity(name, icon);
+            }
+        }
 
         public void ValidateBindings()
         {
@@ -52,6 +68,9 @@ namespace ProjectZombie.Features.Defense3D.UI
                 definition = definition.WithBonuses(_metaDamageBonus, _metaCooldownReduction, _metaAreaBonus);
             }
             _effect.Configure(definition);
+            bool pipe = _effect is DefensePipeRelicEffect3D;
+            _view.SetAccent(pipe ? new Color(1f, .77f, .32f, 1f) : new Color(.2f, .9f, 1f, .95f));
+            _view.RenderStatus(pipe ? "THỔI KHÓI" : string.Empty, 0f);
             var shared = _effect as IDefenseSharedAbilityEffect;
             if (shared != null && shared.SharedAbility == null) throw new InvalidOperationException("Bind attack owner before its presenter.");
             _runtime = new DefenseSkillCastRuntime(session, definition, shared?.SharedAbility);
@@ -65,7 +84,8 @@ namespace ProjectZombie.Features.Defense3D.UI
             _button.RecastRequested += BasicPressed;
             if (_view != null) _button.AimFeedbackChanged += _view.SetAimFeedback;
             _button.SetBasicPressMode(definition.Kind == DefenseSkillKind.BasicAttack);
-            _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, definition.Kind == DefenseSkillKind.ScholarSignature);
+            bool isSelfTarget = definition.Kind == DefenseSkillKind.ScholarSignature && (DefinitionSource == null || !DefinitionSource.name.Contains("DaoSi"));
+            _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, isSelfTarget);
             Refresh();
         }
 
@@ -84,6 +104,8 @@ namespace ProjectZombie.Features.Defense3D.UI
             _facing?.SetAimFacing(this, aim.Direction);
             if (_effect is DefenseHeroAttackEffect3D attack)
                 _indicator.ShowCone(canCast ? prepared : aim, _runtime.Definition.Radius, attack.ConeAngle, cancelled || !canCast);
+            else if (_effect is DefensePipeRelicEffect3D)
+                _indicator.ShowArea(canCast ? prepared : aim, _runtime.Definition.Radius, _runtime.Definition.Range, cancelled || !canCast);
             else
                 _indicator.ShowAim(canCast ? prepared : aim, _runtime.Definition.Radius, _runtime.Definition.Range, cancelled || !canCast, Kind != DefenseSkillKind.ScholarSignature);
         }
@@ -132,6 +154,17 @@ namespace ProjectZombie.Features.Defense3D.UI
         {
             if (_runtime == null || _gameplay == null) return;
             float remaining = _runtime.Ability.RemainingCooldown;
+            if (_effect is DefensePipeRelicEffect3D pipe)
+            {
+                int tenths = Mathf.CeilToInt(pipe.RemainingSmokeSeconds * 10f);
+                if (_smokeTenths != tenths)
+                {
+                    _smokeTenths = tenths;
+                    _smokeLabel = tenths > 0 ? "KHÓI " + (tenths / 10f).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + "s" : string.Empty;
+                }
+                _view.RenderStatus(tenths > 0 ? _smokeLabel : remaining > 0f ? "ĐANG HỒI" : "THỔI KHÓI",
+                    pipe.SmokeDuration > 0f ? pipe.RemainingSmokeSeconds / pipe.SmokeDuration : 0f);
+            }
             var relic = _effect as DefenseRelicSkillEffect3D;
             bool recast = relic != null && relic.CanRecast;
             bool relicBusy = relic != null && relic.Phase != DefenseRelicPhase.Ready;
@@ -156,7 +189,7 @@ namespace ProjectZombie.Features.Defense3D.UI
                 label, !interactable && remaining <= 0f);
         }
 
-        private void OnDisable() { _button?.SetInteractable(false); HidePreview(); }
+        private void OnDisable() { _button?.SetInteractable(false); _view?.SetAimFeedback(false, false); HidePreview(); }
         private void OnDestroy() => Unbind();
 
         public void Unbind()
@@ -176,6 +209,9 @@ namespace ProjectZombie.Features.Defense3D.UI
             _runtime = null;
             _gameplay = null;
             _displaySeconds = -1;
+            _smokeTenths = -1;
+            _view?.RenderStatus(string.Empty, 0f);
+            _view?.SetAimFeedback(false, false);
             HidePreview();
         }
     }

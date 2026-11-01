@@ -11,23 +11,8 @@ namespace ProjectZombie.Editor.UI
     /// Tool an toàn (Non-destructive): Chỉ chèn thêm GameObject Btn_Multiplayer ngay trên Btn_StartRun
     /// Tuyệt đối KHÔNG thay đổi, ghi đè hoặc tái tạo bất kỳ thành phần/tọa độ nào khác của Designer.
     /// </summary>
-    [InitializeOnLoad]
     public static class AddMultiplayerButtonTool
     {
-        private static bool _hasExecuted = false;
-
-        static AddMultiplayerButtonTool()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                if (!_hasExecuted)
-                {
-                    _hasExecuted = true;
-                    AddMultiplayerButtonOnly();
-                }
-            };
-        }
-
         [MenuItem("ProjectZombie/2. 📱 Mobile UI/1. Sảnh Chính (Meta Menu)/⚡ Thêm Nút Multiplayer (Bảo Tồn Toàn Bộ Tùy Chỉnh)", priority = 100)]
         public static void AddMultiplayerButtonOnly()
         {

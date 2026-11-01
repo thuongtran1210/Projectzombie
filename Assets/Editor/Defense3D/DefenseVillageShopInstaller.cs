@@ -150,6 +150,7 @@ namespace ProjectZombie.EditorTools.Defense3D
             participants.Add(shop); participants.Add(presenter);
             WriteArray(compositionData, "_sceneParticipants", participants); compositionData.ApplyModifiedPropertiesWithoutUndo();
             DefenseVillageContextInstaller.Configure(shop, builder, view);
+            DefenseMinionRosterMigration.UpgradeShop(shop);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();

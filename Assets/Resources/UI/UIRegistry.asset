@@ -101,3 +101,11 @@ MonoBehaviour:
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     screenHierarchyName: Modal_DefensePreparation
+  - screenType: 11
+    screenPrefab: {fileID: 6940102473875910527, guid: 01b36fbe935e84e4bb4399997c984587, type: 3}
+    screenPrefabRef:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    screenHierarchyName: Screen_LoadoutManagement

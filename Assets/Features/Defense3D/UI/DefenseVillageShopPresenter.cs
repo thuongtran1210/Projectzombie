@@ -8,12 +8,10 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private DefenseVillageShop3D _shop;
         [SerializeField] private DefenseVillageShopView _view;
         [SerializeField] private Camera _camera;
-        private static readonly string[,] ORDER_LABELS =
-        {
-            { "Thủ nhà", "Hộ vệ", "Tiến công" },
-            { "Gom gần nhà", "Theo nhặt gỗ", "Gom toàn map" },
-            { "Trạm y tế", "Hộ vệ chủ tướng", "Tiếp tế tiền tuyến" }
-        };
+        private IMinionRosterReader _roster;
+        private IMinionSquadCommands _commands;
+        private IMinionRecruitmentCommands _recruitment;
+        private int _rosterRevision = -1;
         private bool _dirty = true, _lastCanTrade, _lastNearHut;
         private int _lastSocket = -2, _lastLevel = -1;
         private DefenseVillageAction _lastAction;
@@ -24,6 +22,12 @@ namespace ProjectZombie.Features.Defense3D.UI
             Unsubscribe();
             if (_camera == null) _camera = Camera.main;
             _shop.Changed += MarkDirty;
+            _roster = _shop.Roster;
+            _rosterRevision = -1;
+            _roster.Changed += RosterChanged;
+            _commands = _shop;
+            _recruitment = _shop;
+            RefreshRoster();
             _view.RecruitRequested += Recruit;
             _view.OrderRequested += Order;
             _view.ContextRequested += ContextInteract;
@@ -32,8 +36,18 @@ namespace ProjectZombie.Features.Defense3D.UI
             _dirty = true;
         }
         private void MarkDirty() => _dirty = true;
-        private void Recruit(int role) { _message = _shop.TryRecruit(role) ? "Đã chiêu mộ." : "Cần ở trong vùng Quán Trà, đủ gỗ và còn chỗ."; MarkDirty(); }
-        private void Order(int role) { _shop.CycleOrder(role); MarkDirty(); }
+        private void RosterChanged() { RefreshRoster(); MarkDirty(); }
+        private void RefreshRoster()
+        {
+            if (_roster == null || _rosterRevision == _roster.Revision) return;
+            _rosterRevision = _roster.Revision;
+            var ids = new string[_roster.Squads.Count];
+            for (int i = 0; i < ids.Length; i++) ids[i] = _roster.Squads[i].Id;
+            _view.BindSquads(ids);
+            _dirty = true;
+        }
+        private void Recruit(string id) { _message = _recruitment.TryRecruit(id) == MinionRecruitResult.Success ? "Đã chiêu mộ." : "Cần ở trong vùng Quán Trà, đủ gỗ và còn chỗ."; MarkDirty(); }
+        private void Order(string id) { if (_shop.CanTrade) _commands.CycleOrder(id); MarkDirty(); }
         private void ContextInteract() => Interact(true);
         private void KeyboardInteract() => Interact(false);
 
@@ -86,15 +100,15 @@ namespace ProjectZombie.Features.Defense3D.UI
             _lastCanTrade = available; _lastNearHut = nearHut; _lastAction = action.Action;
             int wood = _shop.Wallet.Wood;
             _view.SetHeader("Gỗ: " + wood, _message);
-            for (int role = 0; role < 3; role++)
+            if (_roster != null) foreach (var squad in _roster.Squads)
             {
-                var definition = _shop.Definition(role);
-                bool allowed = definition != null && _shop.IsRoleAllowed(role);
-                _view.SetRoleVisible(role, allowed);
-                if (!allowed) continue;
-                int count = _shop.Count(role), capacity = _shop.Capacity(role);
-                _view.SetRow(role, definition.DisplayName + "\n<color=#EACB83>" + definition.WoodCost + " gỗ</color>  (" + count + "/" + capacity + ")",
-                    ORDER_LABELS[role, (int)_shop.Order(role)], available && nearHut && wood >= definition.WoodCost && count < capacity, available && count > 0, count, (int)_shop.Order(role));
+                var definition = squad.Definition;
+                int count = _shop.Count(squad.Id), capacity = _shop.Capacity(squad.Id);
+                _view.RenderSquad(squad.Id,
+                    definition.DisplayName + "\n<color=#EACB83>" + definition.WoodCost + " gỗ</color>  (" + count + "/" + capacity + ")",
+                    definition.OrderLabel(squad.Order), count.ToString(), definition.ShortName, definition.Icon,
+                    available && nearHut && wood >= definition.WoodCost && count < capacity,
+                    available && count > 0, (int)squad.Order);
             }
             string label;
             switch (action.Action)
@@ -115,6 +129,7 @@ namespace ProjectZombie.Features.Defense3D.UI
         protected override void OnGameplayCleanup() { _view.SetContext(false, null, false); _view.SetRecruitmentAccess(false); _view.SetCommandsVisible(false); }
         private void Unsubscribe()
         {
+            if (_roster != null) _roster.Changed -= RosterChanged;
             if (_shop != null) { _shop.Changed -= MarkDirty; _shop.TowerBuilder.InteractRequested -= KeyboardInteract; _shop.TowerBuilder.Changed -= MarkDirty; }
             if (_view == null) return;
             _view.RecruitRequested -= Recruit; _view.OrderRequested -= Order; _view.ContextRequested -= ContextInteract;
