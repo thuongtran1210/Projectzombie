@@ -84,6 +84,30 @@ namespace ProjectZombie.Features.Defense3D
             if (signatureEffect is MonoBehaviour mb) _signatureEffectComponent = mb;
         }
 
+        /// <summary>
+        /// Nạp động mô hình 3D Prefab của Tướng xuất trận (Clean/SOLID).
+        /// </summary>
+        public void MountHeroPrefab(GameObject heroPrefab)
+        {
+            if (heroPrefab == null) return;
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var child = transform.GetChild(i);
+                if (child != null && child.GetComponentInChildren<Animator>(true) != null)
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }
+            var newVisual = Instantiate(heroPrefab, transform);
+            newVisual.transform.localPosition = Vector3.zero;
+            newVisual.transform.localRotation = Quaternion.identity;
+            var anim = newVisual.GetComponentInChildren<Animator>(true);
+            if (anim != null)
+            {
+                _animator = anim;
+            }
+        }
+
         protected virtual void Awake()
         {
             if (_body == null) _body = GetComponent<Rigidbody>();
