@@ -19,13 +19,14 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  _requiredCompletedStages: []
   stageId: STAGE_DEFENSE_3D
   stageName: "Th\u1EE7 Th\xE0nh S\xF4ng Qu\xEA (3D)"
   description: "Chi\u1EBFn tr\u01B0\u1EDDng 3D Th\u1EE7 Th\xE0nh S\xF4ng Qu\xEA.
     Ph\xF2ng th\u1EE7 C\u0103n c\u1EE9 B\u1EDD T\xE2y tr\u01B0\u1EDBc 34 \u0111\u1EE3t
     y\xEAu ma tr\xE0n qua 3 c\u1EA7u, x\xE2y th\xE1p v\xE0 quy\u1EBFt chi\u1EBFn
     \u0110\u1EA1i Boss D\u1EA1 Xoa!"
-  stageThumbnail: {fileID: 21300000, guid: f81f6ca76dd64ed594e68fe9644f6e22, type: 3}
+  stageThumbnail: {fileID: 21300000, guid: 41c527bbb00efce419467ee48b5edc82, type: 3}
   environmentType: 1
   recommendedLevel: 1
   mapPrefabAddress: MapSongQue3D_Prototype
