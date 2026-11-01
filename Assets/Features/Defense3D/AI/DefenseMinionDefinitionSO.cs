@@ -17,6 +17,21 @@ namespace ProjectZombie.Features.Defense3D
         [Tooltip("Tên hiển thị thuần Việt Cổ Phong (Ví dụ: Dân Binh Giáp Tre, Phu Tạp Dịch, Thầy Lang Cứu Thương)")]
         [SerializeField] private string _displayName;
         public string DisplayName => _displayName;
+        [SerializeField] private string _shortName;
+        public string ShortName => string.IsNullOrEmpty(_shortName) ? _displayName : _shortName;
+        [SerializeField] private Sprite _icon;
+        [SerializeField] private DefenseMinion3D _prefab;
+        [SerializeField, Min(1)] private int _capacity = 12;
+        [SerializeField] private DefenseMinionBehaviorSO _behavior;
+        [SerializeField] private string _defendLabel = "Thủ nhà";
+        [SerializeField] private string _followLabel = "Hộ vệ";
+        [SerializeField] private string _advanceLabel = "Tiến công";
+        public Sprite Icon => _icon;
+        public DefenseMinion3D Prefab => _prefab;
+        public int Capacity => _capacity;
+        public IMinionRoleBehavior Behavior => _behavior != null ? _behavior : MinionBehaviorFactory.GetBehavior(_role);
+        public string OrderLabel(DefenseMinionOrder order) => order == DefenseMinionOrder.Defend ? _defendLabel
+            : order == DefenseMinionOrder.Follow ? _followLabel : _advanceLabel;
 
         [Tooltip("Vai trò quân chủng:\n• Militia: Dân Binh cận chiến / phòng thủ\n• Gatherer: Phu Tạp Dịch khai thác gỗ & sửa chữa\n• Healer: Thầy Lang hồi phục sinh lực")]
         [SerializeField] private DefenseMinionRole _role;

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>One pre-authored reusable friendly actor: fight, carry physical wood, or heal living allies.</summary>
-    public sealed class DefenseMinion3D : DefenseGameplayBehaviour
+    public sealed class DefenseMinion3D : DefenseGameplayBehaviour, IMinionRecruitLease
     {
         [SerializeField] private DefenseMinionDefinitionSO _definition;
         [SerializeField] private DefenseSupportTarget3D _health;
@@ -29,7 +29,11 @@ namespace ProjectZombie.Features.Defense3D
         }
         private int _cargo, _combo;
         private bool _bound;
+        private bool _retiring, _released = true;
+        public event Action<DefenseMinion3D> Retired;
         public DefenseMinionDefinitionSO Definition => _definition;
+        public void SetDefinition(DefenseMinionDefinitionSO def) { if (def != null) { _definition = def; _behavior = null; } }
+        public void ReleaseRecruit() => Retire();
         public DefenseSupportTarget3D Health => _health;
         public bool IsAvailable => isActiveAndEnabled && !_health.IsDead;
         public Vector3 FormationOffset { get; private set; }
@@ -66,6 +70,7 @@ namespace ProjectZombie.Features.Defense3D
             if (gameObject.activeSelf || !CanAdvanceGameplay || (transform.parent != null && !transform.parent.gameObject.activeInHierarchy)) return false;
             EnsureAgent();
             if (_agent == null) return false;
+            _released = false;
             _cargo = _combo = 0;
             _nextThink = _nextAction = GameplayTime;
             _walkTime = 0f;
@@ -83,6 +88,10 @@ namespace ProjectZombie.Features.Defense3D
 
         public void Retire()
         {
+            if (_retiring) return;
+            _retiring = true;
+            bool notify = !_released;
+            _released = true;
             _cargo = 0;
             Stop();
             if (_agent != null) _agent.enabled = false;
@@ -91,6 +100,8 @@ namespace ProjectZombie.Features.Defense3D
                 for (int i = 0; i < _legs.Length; i++)
                     if (_legs[i] != null) _legs[i].localRotation = _legRotations[i];
             if (this != null && gameObject != null) gameObject.SetActive(false);
+            _retiring = false;
+            if (notify) Retired?.Invoke(this);
         }
 
         private void OnDefeated()
@@ -143,7 +154,7 @@ namespace ProjectZombie.Features.Defense3D
             {
                 _nextThink = GameplayTime + _definition.ThinkInterval;
                 if (_behavior == null && _definition != null)
-                    _behavior = MinionBehaviorFactory.GetBehavior(_definition.Role);
+                    _behavior = _definition.Behavior;
                 _behavior?.Tick(this, _shop, Gameplay);
             }
             if (_agent != null && _agent.enabled && _agent.isOnNavMesh && _agent.velocity.sqrMagnitude > .04f)
@@ -182,7 +193,7 @@ namespace ProjectZombie.Features.Defense3D
         protected override void OnGameplayGateChanged(bool active) { if (!active) Stop(); }
         protected override void OnGameplayCleanup() => Retire();
         protected override void OnGameplayReset() => Retire();
-        private void OnDisable() => Stop();
+        private void OnDisable() => Retire();
         private void RefreshHealth(float current, float maximum) { if (_healthView != null) _healthView.SetRatio(maximum > 0f ? current / maximum : 0f); }
         protected override void OnDestroy()
         {

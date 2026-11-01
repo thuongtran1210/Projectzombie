@@ -12,27 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbacac5700c38f4d8b2da82a9bf25d9, type: 3}
   m_Name: phutapdich
   m_EditorClassIdentifier: 
-  _id: phutapdich
+  _id: minion_phutapdich
   _displayName: "Phu T\u1EA1p D\u1ECBch"
+  _shortName: "Phu T\u1EA1p D\u1ECBch"
+  _icon: {fileID: 21300000, guid: 2bf979aab69d76a48974ee0a8511470e, type: 3}
+  _prefab: {fileID: 4387926727883775503, guid: 8b47915472e22d84fb1fb697c92f2a84, type: 3}
+  _capacity: 12
+  _behavior: {fileID: 0}
+  _defendLabel: "Gom g\u1EA7n nh\xE0"
+  _followLabel: "Theo nh\u1EB7t g\u1ED7"
+  _advanceLabel: "Gom to\xE0n map"
   _role: 1
   _woodCost: 30
   _maxHp: 115
   _speed: 2.95
+  _thinkInterval: 0.2
+  _searchRange: 8
   _damage: 6
   _attackRange: 1.1
   _attackInterval: 1
-  _thinkInterval: 0.2
-  _searchRange: 8
+  _heavyDamage: 14
+  _heavyStunDuration: 1.25
+  _knockStrength: 0.325
+  _knockDuration: 0.2
+  _slowStrength: 0.5
+  _slowDuration: 2.2
   _healAmount: 45
   _heroHealAmount: 28
   _healInterval: 2.6
   _carryCapacity: 60
-  _slowStrength: 0.5
-  _slowDuration: 2.2
-  _heavyStunDuration: 1.25
-  _heavyDamage: 14
-  _knockStrength: 0.325
-  _knockDuration: 0.2
   _repairAmount: 25
   _baseRepairAmount: 15
   _repairInterval: 0.95

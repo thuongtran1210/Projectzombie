@@ -12,27 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbacac5700c38f4d8b2da82a9bf25d9, type: 3}
   m_Name: thaylang
   m_EditorClassIdentifier: 
-  _id: thaylang
+  _id: minion_thaylang
   _displayName: "Th\u1EA7y Lang Nam D\u01B0\u1EE3c"
+  _shortName: "Th\u1EA7y Lang"
+  _icon: {fileID: 21300000, guid: c820efe6fe1a35147bf2806e30d8a463, type: 3}
+  _prefab: {fileID: 7961153891258940216, guid: fa2f14a04b8c5ae45b1c739609f1fa3b, type: 3}
+  _capacity: 12
+  _behavior: {fileID: 0}
+  _defendLabel: "Tr\u1EA1m y t\u1EBF"
+  _followLabel: "H\u1ED9 v\u1EC7 ch\u1EE7 t\u01B0\u1EDBng"
+  _advanceLabel: "Ti\u1EBFp t\u1EBF ti\u1EC1n tuy\u1EBFn"
   _role: 2
   _woodCost: 35
   _maxHp: 135
   _speed: 2.25
+  _thinkInterval: 0.2
+  _searchRange: 8
   _damage: 4
   _attackRange: 4.2
   _attackInterval: 1
-  _thinkInterval: 0.2
-  _searchRange: 8
+  _heavyDamage: 14
+  _heavyStunDuration: 1.25
+  _knockStrength: 0.325
+  _knockDuration: 0.2
+  _slowStrength: 0.5
+  _slowDuration: 2.2
   _healAmount: 45
   _heroHealAmount: 28
   _healInterval: 2.6
   _carryCapacity: 60
-  _slowStrength: 0.5
-  _slowDuration: 2.2
-  _heavyStunDuration: 1.25
-  _heavyDamage: 14
-  _knockStrength: 0.325
-  _knockDuration: 0.2
   _repairAmount: 25
   _baseRepairAmount: 15
   _repairInterval: 0.95

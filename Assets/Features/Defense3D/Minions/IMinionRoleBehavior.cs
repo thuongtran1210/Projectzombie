@@ -60,7 +60,9 @@ namespace ProjectZombie.Features.Defense3D
             }
 
             Vector3 goal = target.TargetTransform.position;
-            if (!minion.Move(goal, definition.AttackRange * 0.75f)) return;
+            bool isRanged = definition.AttackRange >= 3.0f;
+            float stoppingDistance = isRanged ? definition.AttackRange * 0.7f : definition.AttackRange * 0.75f;
+            if (!minion.Move(goal, stoppingDistance)) return;
 
             Vector3 delta = goal - p;
             delta.y = 0f;
@@ -75,9 +77,31 @@ namespace ProjectZombie.Features.Defense3D
             int combo = minion.AdvanceCombo();
             bool heavy = (combo % 4) == 0;
             int generation = gameplay.RunGeneration;
+            float damageAmount = heavy ? definition.HeavyDamage : definition.Damage;
 
-            if (!target.TakeDamage(new DefenseDamageContext(heavy ? definition.HeavyDamage : definition.Damage, minion, goal,
-                runGeneration: generation, sessionIdentity: gameplay.SessionIdentity))) return;
+            bool launched = false;
+            if (isRanged)
+            {
+                var launcher = minion.GetComponentInParent<IDefenseProjectileLauncher>() ?? minion.GetComponent<IDefenseProjectileLauncher>();
+                if (launcher != null)
+                {
+                    launched = launcher.TryLaunch(new DefenseProjectileLaunchRequest(
+                        minion,
+                        p + Vector3.up * 1.0f,
+                        target,
+                        damageAmount,
+                        generation,
+                        gameplay.SessionIdentity,
+                        speed: 22f,
+                        arcHeight: 0.2f));
+                }
+            }
+
+            if (!launched)
+            {
+                if (!target.TakeDamage(new DefenseDamageContext(damageAmount, minion, goal,
+                    runGeneration: generation, sessionIdentity: gameplay.SessionIdentity))) return;
+            }
 
             if (target is IDefenseStatusReceiver receiver && minion.IsGameplayAdvancing && gameplay.RunGeneration == generation && minion.IsAvailable)
             {

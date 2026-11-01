@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e53f96a31690b6647809f2e2945592f6, type: 3}
+  m_Name: MinionCatalog
+  m_EditorClassIdentifier: 
+  _definitions:
+  - {fileID: 11400000, guid: 086c68c651b670c4bb559c3001d131c7, type: 2}
+  - {fileID: 11400000, guid: c42d443791c59144a9ecc8758ad09271, type: 2}
+  - {fileID: 11400000, guid: f354b827c9e50fe40bf2c908e6d0fad2, type: 2}
+  - {fileID: 11400000, guid: 03f96482299813543acfcbe427fa308d, type: 2}

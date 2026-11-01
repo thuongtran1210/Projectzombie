@@ -12,27 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbacac5700c38f4d8b2da82a9bf25d9, type: 3}
   m_Name: danbinh
   m_EditorClassIdentifier: 
-  _id: danbinh
+  _id: minion_danbinh
   _displayName: "D\xE2n Binh Gi\xE1o Tre"
+  _shortName: "D\xE2n Binh"
+  _icon: {fileID: 21300000, guid: d9dcde402e02a5d48acdebd375720771, type: 3}
+  _prefab: {fileID: 938350136599990744, guid: 099b936e626f21548bf82793c696ba79, type: 3}
+  _capacity: 12
+  _behavior: {fileID: 0}
+  _defendLabel: "Th\u1EE7 nh\xE0"
+  _followLabel: "H\u1ED9 v\u1EC7"
+  _advanceLabel: "Ti\u1EBFn c\xF4ng"
   _role: 0
   _woodCost: 40
   _maxHp: 260
   _speed: 1.85
+  _thinkInterval: 0.2
+  _searchRange: 8
   _damage: 9
   _attackRange: 1.45
   _attackInterval: 1
-  _thinkInterval: 0.2
-  _searchRange: 8
+  _heavyDamage: 14
+  _heavyStunDuration: 1.25
+  _knockStrength: 0.325
+  _knockDuration: 0.2
+  _slowStrength: 0.5
+  _slowDuration: 2.2
   _healAmount: 45
   _heroHealAmount: 28
   _healInterval: 2.6
   _carryCapacity: 60
-  _slowStrength: 0.5
-  _slowDuration: 2.2
-  _heavyStunDuration: 1.25
-  _heavyDamage: 14
-  _knockStrength: 0.325
-  _knockDuration: 0.2
   _repairAmount: 25
   _baseRepairAmount: 15
   _repairInterval: 0.95
