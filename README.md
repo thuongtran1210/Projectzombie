@@ -1,45 +1,44 @@
-# 🌊 VONG XUYÊN — Survival Roguelite Mobile Game
-
-> **Tiến độ chuyển gameplay sang Defense3D:** bắt đầu đọc [MIGRATION_STATUS.md](MIGRATION_STATUS.md). Phần mô tả gameplay cũ bên dưới đang được rà để thay thế; không coi đó là đặc tả của hướng Defense3D hiện tại.
+# 🌊 VONG XUYÊN — 3D Top-Down Survival & Tower Defense (Defense3D)
 
 [![Unity Version](https://img.shields.io/badge/Unity-2022.3%20LTS-blue.svg)](https://unity.com/)
 [![Platform](https://img.shields.io/badge/Platform-Android%20Mobile-green.svg)](https://play.google.com/)
-[![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-URP%202D-orange.svg)](https://unity.com/srp/universal-render-pipeline)
-[![Architecture](https://img.shields.io/badge/Architecture-SOLID%20%7C%20MVP%20%7C%20Event--Driven-purple.svg)](#-kiến-trúc--kỹ-thuật)
-[![CDN & DLC](https://img.shields.io/badge/CDN%20%26%20DLC-Addressables%20%7C%20Firebase%20Storage-yellow.svg)](#-kiến-trúc-tài-nguyên-addressables--firebase-cdn)
-[![Audio](https://img.shields.io/badge/Audio-Audio%20Master%20DNA%20(0ms%20Latency)-teal.svg)](#-hệ-thống-âm-thanh-chuẩn-cổ-phong)
-[![Performance](https://img.shields.io/badge/Performance-60%20FPS%20%7C%200%20GC%20Alloc-brightgreen.svg)](#-tối-ưu-hiệu-năng-di-động-mobile-performance--optimization)
+[![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-URP%203D-orange.svg)](https://unity.com/srp/universal-render-pipeline)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture%20%7C%20MVP%20%7C%20Event--Driven-purple.svg)](#-kiến-trúc-hệ-thống)
+[![Asset Management](https://img.shields.io/badge/Asset%20Management-Addressables-yellow.svg)](#-kiến-trúc-tài-nguyên-addressables)
+[![Performance](https://img.shields.io/badge/Performance-60%20FPS%20%7C%20Zero%20GC%20Alloc-brightgreen.svg)](#-tối-ưu-hiệu-năng-di-động-mobile-60-fps)
 
-> **Vong Xuyên** là dự án game hành động sinh tồn di động (**Top-down Survival Roguelite / Survivor-like**) lấy cảm hứng từ bối cảnh thần thoại, văn hóa dân gian Việt Nam và triết lý Đông Phương (**Ngũ Hành Tương Sinh Tương Khắc & Cán Cân Âm Dương**). Game được thiết kế chuyên biệt cho hệ máy Android với hiệu năng tối ưu cao (60 FPS mượt mà, Zero GC Allocation trong combat loop, Offline-First kết hợp Live-Ops DLC từ Firebase CDN).
+> **Vong Xuyên** là trò chơi di động kết hợp giữa **Hành Động Nhập Vai (Action RPG)** và **Thủ Thành Chiến Thuật (Tower Defense)** góc nhìn Top-down 3D, lấy cảm hứng sâu sắc từ văn hóa dân gian và thần thoại Việt Nam.  
+> Người chơi điều khiển Tướng xuất trận, thu thập Cổ Mộc (Gỗ), bố trí các cụm Tháp Phòng Thủ tại các điểm thổ địa, chiêu mộ Lính Làng và thi triển Tuyệt Kỹ cùng Pháp Bảo nhằm bảo vệ Căn Cứ Bờ Tây trước các đợt Yêu Ma tràn qua Bến Đò Vong Xuyên.
 
 ---
 
 ## 📌 Mục Lục
-1. [🌟 Điểm Nổi Bật (Unique Selling Points)](#-điểm-nổi-bật-unique-selling-points)
+1. [🌟 Điểm Nổi Bật (Key Features)](#-điểm-nổi-bật-key-features)
 2. [🎮 Vòng Lặp Trò Chơi (Core Gameplay Loop)](#-vòng-lặp-trò-chơi-core-gameplay-loop)
-3. [☯️ Hệ Thống Cơ Chế Cốt Lõi (Core Mechanics)](#️-hệ-thống-cơ-chế-cốt-lõi-core-mechanics)
-4. [🌐 Kiến Trúc Tài Nguyên: Addressables & Firebase CDN](#-kiến-trúc-tài-nguyên-addressables--firebase-cdn)
-5. [🔊 Hệ Thống Âm Thanh Chuẩn Cổ Phong (Audio Master DNA)](#-hệ-thống-âm-thanh-chuẩn-cổ-phong-audio-master-dna)
-6. [🛡️ Kiến Trúc Đóng Băng & Kiểm Soát Trận Đấu (Pause Guard Architecture)](#️-kiến-trúc-đóng-băng--kiểm-soát-trận-đấu-pause-guard-architecture)
-7. [📐 Kiến Trúc Kỹ Thuật (Architecture & Engineering)](#-kiến-trúc-kỹ-thuật-architecture--engineering)
-8. [📁 Cấu Trúc Thư Mục Dự Án (Folder Structure)](#-cấu-trúc-thư-mục-dự-án-folder-structure)
-9. [⚡ Tối Ưu Hiệu Năng Di Động (Mobile Performance & Optimization)](#-tối-ưu-hiệu-năng-di-động-mobile-performance--optimization)
-10. [🛠️ Yêu Cầu Môi Trường & Thiết Lập (Getting Started)](#️-yêu-cầu-môi-trường--thiết-lập-getting-started)
-11. [📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation Hub)](#-tài-liệu-tham-chiếu-chi-tiết-documentation-hub)
+3. [🏛️ Hệ Thống Đội Hình Xuất Trận (Defense3D Loadout System)](#️-hệ-thống-đội-hình-xuất-trận-defense3d-loadout-system)
+4. [⚔️ Cơ Chế Chiến Đấu & Kinh Tế Trận Đấu](#️-cơ-chế-chiến-đấu--kinh-tế-trận-đấu)
+5. [📈 Tiến Trình Meta & Cây Kỹ Năng Miếu Cổ](#-tiến-trình-meta--cây-kỹ-năng-miếu-cổ)
+6. [📐 Kiến Trúc Hệ Thống (Architecture & Engineering)](#-kiến-trúc-hệ-thống-architecture--engineering)
+7. [📁 Cấu Trúc Thư Mục Dự Án (Folder Structure)](#-cấu-trúc-thư-mục-dự-án-folder-structure)
+8. [⚡ Tối Ưu Hiệu Năng Di Động (Mobile 60 FPS)](#-tối-ưu-hiệu-năng-di-động-mobile-60-fps)
+9. [🛠️ Hướng Dẫn Chạy & Kiểm Thử (Getting Started & Tests)](#️-hướng-dẫn-chạy--kiểm-thử-getting-started--tests)
+10. [📚 Trung Tâm Tài Liệu (Documentation Hub)](#-trung-tâm-tài-liệu-documentation-hub)
 
 ---
 
-## 🌟 Điểm Nổi Bật (Unique Selling Points)
+## 🌟 Điểm Nổi Bật (Key Features)
 
-- 📜 **Chủ Đề & Cốt Truyện Dân Gian Việt Nam:** Hành trình vượt qua cửa ải Bến Đò Vong Xuyên cõi Âm Ty để tìm đường về nhân gian, thức tỉnh thần lực của **Tứ Tướng Thần Thoại** (Thư Sinh, Thanh Đồng, Đạo Sĩ, Võ Tăng) nhằm diệt trừ Ma Vương.
-- ☯️ **Cơ Chế Ngũ Hành Tương Sinh - Tương Khắc:** 
-  - **Tương Khắc:** Tăng **+30% Sát thương** khi dùng vũ khí khắc hệ kẻ địch (`Kim khắc Mộc`, `Mộc khắc Thổ`, `Thổ khắc Thủy`, `Thủy khắc Hỏa`, `Hỏa khắc Kim`).
-  - **Tương Sinh:** Giảm **-20% Cooldown còn lại** cho Tuyệt Kỹ & Lướt, tăng **+25% Tốc đánh thường** (3s) khi đòn đánh thường của Tướng kết hợp đòn Pháp bảo kích hoạt chuỗi hệ sinh nhau (`Kim sinh Thủy`, `Thủy sinh Mộc`, `Mộc sinh Hỏa`, `Hỏa sinh Thổ`, `Thổ sinh Kim`).
-- ⚖️ **Cán Cân Âm Dương (Yin-Yang Balance - Độc Quyền Nhân Vật Thanh Đồng):** Trục nội tại riêng biệt luân chuyển thế đánh (Âm Thịnh / Dương Thịnh / Thái Cực), quyết định kho thẻ Gacha Nâng cấp đặc thù và mở khóa nhánh Tiến Hóa (Evolution) tối thượng.
-- 🗡️ **Kho Pháp Bảo & Yêu Ma Đậm Chất Thần Thoại:** Nỏ Thần, Bút Phán Quan, Bùa Trấn Yêu, Trống Đồng, Điếu Cày Cửu U, Dép Tổ Ong, Đao Cửu Vĩ đối đầu Ma Giáp, Quỷ Nhập Tràng, Ma Da, Ma Trơi, Ngưu Đầu Mã Diện.
-- ☁️ **Kiến Trúc Live-Ops DLC qua Firebase Storage CDN:** Cho phép cập nhật nóng bản đồ ải mới, quái vật, cân bằng thẻ nâng cấp và banner Gacha mà không cần phát hành lại file APK lên Google Play.
-- ⚡ **Zero Garbage Collection (0 GC) & Object Pooling:** Triệt tiêu hoàn toàn hiện tượng sụt FPS/giật lag trên Android khi spawn hàng trăm quái vật và đạn cùng lúc.
-- 🎵 **Hệ Thống Âm Thanh Cổ Phong Thuần Khiết (0ms Latency):** Thiết kế tỉ mỉ từng tiếng gõ Mõ Gỗ, Khánh Ngọc, tiếng vung kiếm, nổ bộc phá và khúc Đàn Tranh Sáo Trúc ngoài Sảnh.
+- 📜 **Bối Cảnh Thần Thoại & Dân Gian Cổ Phong:** Bến Đò Vong Xuyên cõi Âm Ty, Căn Cứ Bờ Tây, bãi bồi ven sông, cầu gỗ và Miếu Cổ linh thiêng.
+- 🛡️ **Chiến Thuật Kết Hợp Action & Tower Defense:** Tự do điều khiển Tướng đánh chủ động, lướt né chiêu, kết hợp xây dựng hệ thống Tháp Canh tự động và tuyển mộ Lính Làng yểm trợ.
+- 🗡️ **Kho Vũ Khí, Tháp & Pháp Bảo Độc Bản:**
+  - **Tướng:** Thư Sinh (Bút Nho), Đạo Sĩ (Lôi Pháp Bát Quái), Thanh Đồng, Ẩn Sĩ.
+  - **Pháp Bảo:** Dép Tổ Ong Thần Sa (Cước Song Phi nổ chấn động), Điếu Cày Khói Lửa (Bão khói thiêu đốt & làm chậm).
+  - **Tháp Canh:** Tháp Nỏ Thần (Bắn tỉa tầm xa), Tháp Băng Hà (Làm chậm diện rộng), Tháp Hỏa Long (Pháo bộc phá thiêu đốt).
+  - **Lính Làng:** Dân Binh (Cận chiến cảm tử), Xạ Thủ Nỏ Thần (Xạ kích tầm xa), Phu Tạp Dịch (Gom gỗ nhanh), Thầy Lang (Trị thương Căn Cứ & Tướng).
+- 👹 **Đợt Quái Đa Tầng & Boss Dạ Xoa:**
+  - Quân đoàn Yêu Ma chia 3 lộ: Quái Bộ (Ma Giáp, Quái Dữ), Quái Thủy (Thủy Quái lội qua lòng kênh), Quái Bay (Huyết Dơi, Quỷ Phi Cương bay tắt qua vách núi).
+  - Trận chạm trán Boss Dạ Xoa tại phút thứ 8:30 (510s) với cơ chế Vòng Đấu Trường Arena và càn quét Căn Cứ.
+- ⚡ **Chuẩn Mực Hiệu Năng Mobile 60 FPS:** Triệt tiêu hoàn toàn rác bộ nhớ (Zero GC Allocation) trong vòng lặp combat, Object Pooling toàn diện cho đạn, quái và VFX.
 
 ---
 
@@ -47,108 +46,103 @@
 
 ```mermaid
 graph TD
-    A[Sảnh Hoàng Tuyền: Chọn Tướng & Trang Bị Pháp Bảo] --> B[Xuất Trận: Di Chuyển, Đánh Thường & Tự Động Kích Hoạt Pháp Bảo]
-    B --> C[Tiêu Diệt Yêu Ma & Thu Thập Hạt Kinh Nghiệm / Cổ Tiền]
-    C --> D[Lên Cấp: Gacha 3 Thẻ Nâng Cấp Ngũ Hành / Âm Dương]
-    D --> E{Đạt Level 5 + Thẻ Phù Hợp?}
-    E -- Có --> F[🔥 Tiến Hóa Pháp Bảo Tối Thượng - Evolution]
-    E -- Chưa --> B
-    F --> B
-    B --> G[Sống Sót & Đánh Bại Boss Ngưu Đầu Mã Diện]
-    G --> H[Chiến Thắng / Thất Bại: Nhận Cổ Tiền & Mở Khóa Meta]
-    H --> I[Nâng Cấp Cây Kỹ Năng Miếu Cổ & Mở Khóa Tướng]
-    I --> A
+    A[Sảnh Chính: Chọn Ải & Trang Bị Đội Hình Loadout] --> B[Xuất Trận: Nạp Map Sông Quê 3D qua AppFlow]
+    B --> C[Điều Khiển Tướng Chiến Đấu: Đánh Thường, Lướt, Tuyệt Kỹ & Pháp Bảo]
+    C --> D[Tiêu Diệt Quái: Nhặt Cổ Mộc rơi rớt vào Ví Gỗ]
+    D --> E[Chiến Thuật: Xây/Nâng Cấp Tháp tại 10 Socket & Tuyển Mộ Lính Làng]
+    E --> F{Thời Gian Trận Đấu 600s}
+    F -- Phút 8:30 --> G[Đại Chiến Boss Dạ Xoa & Đợt Tổng Lực]
+    F -- Hết 600s & Căn Cứ Còn Sống --> H[Thắng Trận: Nhận Thưởng Cổ Tiền]
+    F -- Căn Cứ Bị Phá Hủy --> I[Thất Thủ: Nhận Cổ Tiền Tích Lũy]
+    H --> J[Nâng Cấp Cây Kỹ Năng Miếu Cổ & Thăng Sao Thẻ]
+    I --> J
+    J --> A
 ```
 
 ---
 
-## ☯️ Hệ Thống Cơ Chế Cốt Lõi (Core Mechanics)
+## 🏛️ Hệ Thống Đội Hình Xuất Trận (Defense3D Loadout System)
 
-### 1. Vòng Tròn Ngũ Hành (Five Elements)
+Trước khi bước vào trận chiến, người chơi cấu hình đội hình thông qua giao diện **Tàng Bảo Các (Card Codex)** và **Chuẩn Bị Xuất Trận (Defense Preparation)**:
 
-| Hệ | Màu Sắc / Ký Hiệu | Hệ Khắc (+30% DMG) | Hệ Sinh (-20% CDR) | Pháp Bảo Tiêu Biểu |
-|:---:|:---:|:---:|:---:|:---|
-| 🔷 **Kim** | Vàng Kim (`#E8C468`) | 🌿 Mộc | 🌊 Thủy | Nỏ Thần Cơ, Dép Tổ Ong Thần Sa |
-| 🌿 **Mộc** | Lục Bảo (`#4C7A3D`) | 🪨 Thổ | 🔥 Hỏa | Trượng Mây, Chiếu Trải Hoàng Tuyền |
-| 🌊 **Thủy** | Lam Ngọc (`#2E6E9E`) | 🔥 Hỏa | 🌿 Mộc | Nước Thánh Hồ Gươm, Chuông Chiêu Hồn |
-| 🔥 **Hỏa** | Hỏa Long (`#B8442C`) | 🔷 Kim | 🪨 Thổ | Đao Cửu Vĩ, Điếu Cày Cửu U |
-| 🪨 **Thổ** | Nâu Đất (`#9C7A48`) | 🌊 Thủy | 🔷 Kim | Trống Đồng Đông Sơn, Bùa Trấn Yêu |
-
-### 2. Cán Cân Âm Dương (Độc Quyền Nhân Vật Thanh Đồng)
-- Điểm Âm Dương dao động từ **0 (Cực Âm) đến 100 (Cực Dương)**, khởi đầu ở mức cân bằng **50 (Thái Cực)**.
-- Đòn đánh từ các pháp bảo Âm (hút máu, làm chậm, debuff) làm lệch về phía Âm; pháp bảo Dương (sát thương diện rộng, bộc phá, ánh sáng) kéo về phía Dương.
-- Trạng thái Cán cân (Âm Thịnh / Dương Thịnh / Thái Cực) lọc trực tiếp danh sách thẻ Gacha trong `UpgradeManager` thông qua `IUpgradeFilter` và mở khóa dạng Tiến Hóa riêng biệt.
+| Loại Thẻ | Số Lượng Mang | Danh Sách Hiện Hữu | Vai Trò & Điểm Đặc Trưng |
+| :--- | :---: | :--- | :--- |
+| **Tướng (Hero)** | 1 | **Thư Sinh, Đạo Sĩ, Thanh Đồng, Ẩn Sĩ** | Định hình phong cách chiến đấu, chỉ số máu/tốc độ/sát thương cơ bản và bộ Tuyệt Kỹ đặc trưng. |
+| **Pháp Bảo (Relic)** | 1 | **Dép Tổ Ong Thần Sa, Điếu Cày Khói Lửa** | Kỹ năng chủ động kích hoạt qua nút bấm riêng: Ném dép lốc xoáy hoặc xả bão khói bộc phá. |
+| **Lính Làng (Minion)** | 3 | **Dân Binh, Xạ Thủ Nỏ Thần, Phu Tạp Dịch, Thầy Lang** | Được tuyển mộ tại Lều Dân Làng bằng Gỗ: Cận chiến cản bước, xạ thủ bắn tỉa, gom gỗ hoặc hồi máu. |
+| **Tháp (Tower)** | 3 | **Tháp Nỏ Thần, Tháp Băng Hà, Tháp Hỏa Long** | Xây dựng trên 10 Socket Thổ Địa: Sát thương đơn mục tiêu, khống chế băng giá hoặc pháo hỏa lực nổ lan. |
 
 ---
 
-## 🌐 Kiến Trúc Tài Nguyên: Addressables & Firebase CDN
+## ⚔️ Cơ Chế Chiến Đấu & Kinh Tế Trận Đấu
 
-Dự án áp dụng mô hình nạp tài nguyên **Hybrid (Offline-First kết hợp Remote DLC CDN)**:
+### 1. Điều Khiển & Bộ Chiêu Thức Tướng
+- **Đánh Thường (Basic Attack):** Nhấn hoặc giữ nút để vung đòn theo hình quạt (Cone 210°), tự động khóa hướng theo mục tiêu gần nhất.
+- **Lướt (Dash):** Lướt nhanh né đòn và ngắt trạng thái đòn đánh đang chờ.
+- **Tuyệt Kỹ Tướng (Signature):**
+  - *Thư Sinh:* Bút Mực Chu Sa (Quét mực diện rộng 6m, giảm 20% thời gian hồi chiêu Pháp bảo).
+  - *Đạo Sĩ:* Lôi Pháp Bát Quái (Gọi thiên lôi giáng sấm sét chấn động diện rộng).
+- **Pháp Bảo Hộ Thân (Relic):**
+  - *Dép Tổ Ong:* Ném dép tầm xa gom quái, kích hoạt cú đá Song Phi phản lực.
+  - *Điếu Cày Khói Lửa:* Rít hơi bão khói, thiêu đốt liên tục và làm chậm quái vật đi qua.
+
+### 2. Kinh Tế Cổ Mộc (Wood Economy)
+- **Thu Thập Gỗ:** Quái vật bị tiêu diệt rơi ra các khối Cổ Mộc vật lý (`DefenseWoodDrop3D`). Tướng di chuyển lại gần để hút và tích lũy vào Ví Gỗ (`DefenseWoodWallet3D`). Khởi điểm: `100 Gỗ`.
+- **Xây Dựng & Nâng Cấp Tháp:** Tiếp cận 10 vị trí cọc cắm tháp (`1.7m`) để mở Menu Xây Dựng 3 cấp độ (Level 1 ➔ 2 ➔ 3).
+- **Chiêu Mộ Lính Làng:** Tiếp cận Lều Dân Làng (`DefenseVillageShop3D`) ở khu vực hậu phương để mua lính yểm trợ.
+
+---
+
+## 📈 Tiến Trình Meta & Cây Kỹ Năng Miếu Cổ
+
+Hệ thống tiến trình dài hạn (Long-term Meta Progression) gồm 2 trục chính:
+
+1. **Cấp Sao Thẻ (Star Progression - 1★ đến 5★):**
+   - Đọc trực tiếp từ cấu hình ScriptableObject ([`CharacterStarProgressionSO`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/_Data/CharacterStarProgressionConfig.asset) & [`RelicStarProgressionSO`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/_Data/RelicStarProgressionConfig.asset)).
+   - Nâng sao Tướng: Tăng máu tối đa, tốc độ chạy, sát thương đòn đánh và giảm hồi chiêu Tuyệt Kỹ.
+   - Nâng sao Pháp Bảo: Tăng sát thương kỹ năng, giảm hồi chiêu, mở rộng bán kính ảnh hưởng.
+   - Nâng sao Tháp & Lính: Tăng lượng máu lính, tốc độ di chuyển, tầm bắn và uy lực đạn tháp.
+
+2. **Cây Thiên Phú Miếu Cổ (Sanctuary Permanent Upgrades):**
+   - Tiêu tốn Cổ Tiền vĩnh viễn thu được sau mỗi trận để nâng cấp các nhánh: Tăng máu căn cứ, lượng gỗ khởi điểm, tăng tốc hồi phục và ban thêm lượt đổi thẻ (Rerolls).
+
+---
+
+## 📐 Kiến Trúc Hệ Thống (Architecture & Engineering)
+
+Dự án tuân thủ nghiêm ngặt chuẩn kiến trúc **Clean Architecture / MVP / Event-Driven**:
 
 ```mermaid
-flowchart TD
-    subgraph LOCAL_APK [1. NẰM TRONG BẢN CÀI APK (OFFLINE-FIRST)]
-        G1[Group_Core_Preload: UI Sảnh, Font chữ, Database cơ bản]
-        G2[Group_Enemies_Stage1: Quái vật Chương 1]
-        G3[Group_Weapons_Tier1: 12 Pháp Bảo & Đạn khởi đầu]
+graph TD
+    subgraph Core_Architecture ["Tầng Lõi Ứng Dụng (Application Core)"]
+        Boot["Bootstrap.unity"] --> AppComp["AppCompositionRoot"]
+        AppComp --> Flow["AppFlowController"]
+        AppComp --> Save["GameManager / SaveSystem"]
     end
 
-    subgraph REMOTE_CDN [2. REMOTE DLC (TẢI TỪ FIREBASE STORAGE CDN)]
-        G4[Group_DLC_Stages_Remote: Tilemap Màn 2, 3, 4]
-        G5[Group_DLC_Enemies_Remote: Quái & Boss nâng cao]
-        G6[Group_DLC_Audio_Remote: Nhạc nền BGM từng ải]
-        G7[Group_DLC_Upgrades_Remote: Thẻ Nâng Cấp Upgrades]
-        G8[Group_DLC_MetaConfigs_Remote: Cây Miếu Cổ, Banner Gacha]
+    subgraph Meta_Hub ["Sảnh Chính & Quản Lý Đội Hình"]
+        Flow --> MainMenu["MainMenu.unity"]
+        MainMenu --> Codex["CardCodexPresenter (MVP)"]
+        MainMenu --> Prep["DefensePreparationPresenter"]
+        Prep --> LoadoutRepo["DefenseLoadoutRepository (defense_loadout.json)"]
+    end
+
+    subgraph Defense_Session ["Phiên Chơi Thủ Thành 3D (Match Session)"]
+        Flow -- "MatchLaunchRequest" --> SongQue["MapSongQue3D_Prototype.unity"]
+        SongQue --> CompRoot["DefenseSceneCompositionRoot"]
+        CompRoot --> Session["DefenseSession"]
+        CompRoot --> Run["DefenseRun6003D (Timeline 600s)"]
+        CompRoot --> RuntimeAdapter["DefenseLoadoutRuntimeAdapter"]
+        CompRoot --> Pool["DefenseProjectilePool3D"]
     end
 ```
 
-### 3 Cơ Chế Nạp Tài Nguyên Trong Game:
-1. **`Resources.Load<T>()`**: Dùng riêng cho các UI View hệ thống cốt lõi nạp ngay frame đầu (`LoadingScreen`, `SettingsModalUI`) và làm fallback an toàn.
-2. **Addressables (Local trong APK)**: Nạp bất đồng bộ không block main thread cho Màn 1, Tướng khởi đầu và 12 Pháp Bảo để người chơi vừa cài game là chơi được ngay không cần kết nối mạng.
-3. **Addressables (Remote CDN)**: Tải động các bản đồ Màn 2+, Thẻ nâng cấp cân bằng meta và cấu hình Gacha từ máy chủ Firebase Storage qua URL chuẩn hóa `Addressables.InternalIdTransformFunc`.
-
----
-
-## 🔊 Hệ Thống Âm Thanh Chuẩn Cổ Phong (Audio Master DNA)
-
-Hệ thống âm thanh được xây dựng theo chuẩn **44.1kHz 16-bit PCM Mono, 0ms Delay**, tối ưu hóa qua `AudioSourcePool` và tự động điều khiển âm lượng độc lập qua `PlayerPrefs`:
-
-| Phân Hệ | Tên File Audio | Đặc Tính Âm Học & Trải Nghiệm |
-| :--- | :--- | :--- |
-| **Giao Diện UI** | `SFX_UI_Click_Crisp.wav`<br>`SFX_UI_Confirm.wav`<br>`SFX_UI_Weapon_Equip.wav`<br>`SFX_UI_Error.wav`<br>`SFX_Coin_Tick.wav` | Tiếng gõ Mõ Gỗ Mun giòn tan, Khánh Ngọc xác nhận thanh thoát, tiếng tra kiếm vào vỏ êm dịu khi chọn vũ khí, tiếng mộc đục khi thao tác lỗi và tiếng cổ tiền leng keng. |
-| **Chiến Đấu & Đánh Thường** | `SFX_Sword_Slash_Light.wav`<br>`SFX_Sword_Slash_Crit.wav`<br>`SFX_Player_Dash.wav`<br>`SFX_Player_Hurt.wav`<br>`SFX_Enemy_Dissolve_Death.wav` | Tiếng vung kiếm chém xé gió sắc bén, trảm kích bạo liệt rung chấn màn hình, thân pháp Phi Vân lướt gió, trúng đòn va chạm giáp mộc và quái vật tan biến thành tro bụi. |
-| **Pháp Bảo & Đạn Đạo** | `SFX_Projectile_Shoot.wav`<br>`SFX_Projectile_Explode.wav`<br>`SFX_Magic_Orbit_Loop.wav` | Tiếng vút phóng Đạo Phù / Nỏ Cổ, nổ bộc phá đầm chắc của Hỏa Lô / Bình Rượu và tiếng xoay vòng ma mị của Hồ Lô / Bát Quái hộ thân. |
-| **Tuyệt Kỹ & Ngũ Hành** | `SFX_Skill_Ultimate_Cast.wav`<br>`SFX_Elemental_Reaction.wav`<br>`SFX_Status_Freeze.wav`<br>`SFX_Status_Burn.wav` | Âm thanh kích hoạt Tuyệt Kỹ bùng nổ uy nghiêm, tiếng khánh ngọc ngân vang khi kích hoạt Vòng Tương Sinh, tiếng tinh thể băng vỡ giòn tan và ngọn lửa thiêu đốt yêu ma. |
-| **Boss & Nhạc Nền (BGM)** | `SFX_Boss_Roar_Warning.wav`<br>`SFX_Boss_Smash.wav`<br>`BGM_MainHub_VongXuyen.wav` | Tiếng tù và chiến trận / Boss gầm báo hiệu xuất hiện, đòn dậm đất chấn động địa chấn của Boss Ngưu Đầu và khúc Đàn Tranh Sáo Trúc thanh tịnh tại Sảnh Chờ. |
-
----
-
-## 🛡️ Kiến Trúc Đóng Băng & Kiểm Soát Trận Đấu (Pause Guard Architecture)
-
-Nhằm giải quyết triệt để lỗi quái vật/boss vẫn tấn công khi `Time.timeScale = 0` và lỗi xung đột giao diện:
-
-1. **Single Source of Truth Toàn Cục:**
-   - [`GameStateManager.cs`](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Shared/GameStateManager.cs): Cung cấp thuộc tính `public static bool IsPlaying => (Instance != null && Instance.CurrentState == GameState.Playing) && Time.timeScale > 0f;`.
-2. **Root Guard Tại Mọi Cửa Ngõ Điều Phối:**
-   - Đặt `if (!GameStateManager.IsPlaying) return;` tại đầu `Update()` và `FixedUpdate()` của các Base Class: `Enemy`, `BossStateMachine`, `PlayerController`, `CharacterCombat`, `WeaponManager`, `EnemyStatusController`, `EnemyKinematicPhysics`.
-   - Đảm bảo 100% quái vật, boss, debuff và vũ khí lập tức bất động hoàn toàn khi tạm dừng game.
-3. **Blocking Modal Guard Cho Bảng Chọn Nâng Cấp:**
-   - Khi thăng cấp (`GameState.LevelUpSelection`), nút Pause trên HUD tự động khóa tương tác (`interactable = false`) và chặn phím tắt Tab / Esc, ngăn chặn triệt để lỗi bấm nhầm làm mất bảng chọn thẻ hoặc mất lượt nâng cấp của người chơi.
-
----
-
-## 📐 Kiến Trúc Kỹ Thuật (Architecture & Engineering)
-
-Dự án áp dụng các nguyên tắc kỹ thuật chuẩn mực cho game Unity quy mô lớn:
-
-- **SOLID & Clean Architecture:** Tách biệt module độc lập, giao tiếp thông qua Interfaces (`IDamageable`, `IDamageDealer`, `IUpgradeFilter`, `ICharacterStats`, `ISignatureSkill`).
-- **Mô Hình MVP (Model-View-Presenter) Cho UI:**
-  - **Model:** Quản lý dữ liệu logic, phát Event (`PlayerStats`, `RunStatsTracker`, `PlayerExperience`).
-  - **View:** Thụ động (`Passive View`), chỉ nhận render dữ liệu string đã định dạng, không can thiệp logic.
-  - **Presenter:** Lắng nghe Model, định dạng dữ liệu và cập nhật View.
-- **Event-Driven Decoupling:** Giao tiếp lỏng lẻo thông qua `GameEventBus` và C# Actions, triệt tiêu hoàn toàn phụ thuộc vòng.
-- **Data-Driven Design:** Lưu trữ toàn bộ chỉ số nhân vật, quái vật, vũ khí, đạn đạo và thẻ nâng cấp trong `ScriptableObject` (`WeaponData`, `EnemyConfig`, `ProjectileData`, `UpgradeData`).
-- **Enemy AI State Machine & Strategy Pattern:** Kết hợp FSM (Idle, Chase, Attack, Dead) với Strategy Pattern (`MeleeAttackStrategy`, `RangedAttackStrategy`, `CombatMovementStrategy`).
+### 5 Trụ Cột Trong Scene `MapSongQue3D_Prototype`:
+1. **`DefenseSceneCompositionRoot`:** Điểm neo duy nhất khởi tạo trận, phân giải Loadout và tiêm phụ thuộc (Dependency Injection) cho toàn scene.
+2. **`DefenseRun6003D` & `DefenseSpawnRuntime`:** Quản lý đồng hồ 600s, kiểm soát dòng đời trận đấu và điều phối các đợt quái (`StageSpawnConfig`).
+3. **Thực Thể Sân Chơi:** Tướng (`DefenseHeroMotor3D`, `DefenseHeroHealth3D`), Căn Cứ (`DefenseBasePrototype3D` - 1000 HP), Ví Gỗ (`DefenseWoodWallet3D`), 10 Sockets Tháp (`DefenseTowerBuildPrototype3D`).
+4. **Hệ Thống Lính & Kinh Tế:** Lều Dân Làng (`DefenseVillageShop3D`), Quản lý rơi gỗ (`DefenseWoodDrop3D`).
+5. **Giao Diện & Kỹ Năng (MVP):** Thanh HUD trận đấu (`DefenseMatchHUDView`), 4 Presenter nút kỹ năng (`DefenseSkillPresenter3D`), Modal kết quả (`DefenseMatchResultModalView`).
 
 ---
 
@@ -156,142 +150,85 @@ Dự án áp dụng các nguyên tắc kỹ thuật chuẩn mực cho game Unity
 
 ```text
 Assets/
-├── Core/                      # Hạ tầng & Logic nền tảng chạy xuyên suốt
-│   ├── Audio/                 # AudioManager, AudioConfigSO, AudioSourcePool, Sound Emitters
-│   ├── Camera/                # Cinemachine Virtual Cameras & Screen Shake Controller
-│   ├── Juice/                 # Game Feel, Hit Flash, Damage Text Manager
-│   ├── Pooling/               # Generic Object Pooling (Zero GC Allocation)
-│   ├── Save/                  # SaveSystem (Offline-first Local JSON Persistence)
-│   └── Services/              # AddressablePatchManager, Bootstrapper, Service Locators
+├── Core/                       # Infrastructure chạy xuyên suốt toàn bộ ứng dụng
+│   ├── Architecture/           # AppFlowController, AppCompositionRoot, SceneLoader
+│   ├── Audio/                  # Hệ thống âm thanh Cổ Phong (SFX, BGM)
+│   ├── Pooling/                # Framework Object Pool dùng chung
+│   ├── Save/                   # Lưu trữ JSON cục bộ mã hóa, GameManager
+│   └── Services/               # Service Registry & Data Services
 │
-├── Features/                  # Triển khai tính năng (Feature-based Modular)
-│   ├── Boss/                  # Boss State Machine, Skills (Ground Slam, Bull Dash) & Elements
-│   ├── Collectibles/          # Hạt EXP (ExpGem Homing), Nam Châm (Magnet), Rương Kho Báu, Cổ Tiền
-│   ├── Enemies/               # Quái vật AI FSM, Status Controller, Movement & Attack Strategies
-│   ├── Maps/                  # MapTilemapController, StageDefinitionSO, Safe Bounds
-│   ├── MetaProgression/       # Cây kỹ năng vĩnh viễn Miếu Cổ, Talent Tree, Gacha Relics
-│   ├── Player/                # Player Movement, Character Combat, Health, Signature Skills
-│   ├── Projectiles/           # Đạn bay Data-Driven, Pool Spawner, Collision & Behaviors
-│   ├── Spawners/              # Master-Worker Wave Spawner, Swarm Events
-│   ├── UI/                    # MVP UI Panels (HUD, LevelUp, Pause, ResourceDownload, Gacha)
-│   ├── Upgrades/              # Hệ thống thẻ Gacha, Filter Âm Dương & Tiến Hóa Pháp Bảo
-│   ├── Weapons/               # 15+ Pháp bảo, Melee/Ranged Base Classes & Relics
-│   └── YinYang/               # Quản lý Cán cân Âm Dương & Vòng Tương Sinh (ElementCycleManager)
+├── Features/                   # Các tính năng nghiệp vụ theo module
+│   ├── Defense3D/              # LÕI GAMEPLAY THỦ THÀNH 3D
+│   │   ├── AI/                 # Hành vi quái vật (Bộ, Thủy, Bay, Dạ Xoa Boss FSM)
+│   │   ├── Combat/             # Logic sát thương, projectile, hiệu ứng đòn đánh
+│   │   ├── Effects/            # Hệ thống VFX hình ảnh, Decal, vệt kiếm, khói bão
+│   │   ├── Hero/               # Điều khiển Tướng, Animation, Visual Controller
+│   │   ├── Loadout/            # Pure C# Resolver, Catalog, Validator, Repository
+│   │   ├── Session/            # Vòng đời trận đấu, Composition Root, Navigation
+│   │   ├── Towers/             # Tháp canh, Socket cắm tháp, Inventory, Catalog
+│   │   ├── UI/                 # HUD trận đấu, Presenter chiêu thức, Menu xây tháp
+│   │   └── Village/            # Lều dân làng, chiêu mộ lính, logic di chuyển lính
+│   ├── MetaProgression/        # Cây kỹ năng Miếu Cổ, Thăng sao thẻ, Kinh tế Cổ Tiền
+│   └── UI/                     # UI Sảnh chính, Tàng Bảo Các (Card Codex), Dialogs
 │
-├── _Data/                     # ScriptableObjects cấu hình Game (Weapons, Enemies, Upgrades, Stages)
-├── _Prefabs/                  # Prefabs nhân vật, quái vật, UI, VFX, Maps
-├── Art/ & _ART/               # Sprites 2D Pixel Art Cổ Phong, Animation Clips, Controllers
-├── Editor/                    # Bộ công cụ Editor Automation (Addressables, Build Sync, Tilemap)
-├── Shader/ & VFX/             # Shader Graph URP, Particle Systems, Slash & Trail VFX
-└── Scenes/                    # MainMenu, GamePlay_BendoVongXuyen, Bootstrapper
+├── _Data/                      # ScriptableObjects cấu hình dữ liệu (Tướng, Tháp, Ải)
+├── Resources/Defense3D/        # Danh mục asset nạp động (Hero Kits, Skills, Prefabs)
+├── Scenes/                     # Các Scene chính của game
+│   ├── Bootstrap.unity         # Scene khởi động, nạp Core Services
+│   ├── MainMenu.unity          # Scene Sảnh chính, Tàng Bảo Các, Chọn Ải
+│   └── Defense3D/              # Map Sông Quê 3D (MapSongQue3D_Prototype.unity)
+├── Tests/Editor/               # Bộ Unit Test NUnit tự động hóa
+└── Tools/                      # Công cụ tự động hóa & Unity Bridge PowerShell scripts
 ```
 
 ---
 
-## ⚡ Tối Ưu Hiệu Năng Di Động (Mobile Performance & Optimization)
+## ⚡ Tối Ưu Hiệu Năng Di Động (Mobile 60 FPS)
 
-Nhằm đảm bảo trải nghiệm **60 FPS ổn định** trên thiết bị Android từ tầm trung:
-1. **Generic Object Pooling:** Áp dụng cho toàn bộ đạn bay, quái vật, hạt EXP, VFX và Floating Damage Text. Không gọi `Instantiate()`/`Destroy()` trong combat loop.
-2. **Zero GC Physics Hot-Path:**
-   - Thay thế `OverlapCircleAll` / `OverlapBoxAll` bằng `NonAlloc` cùng buffer tĩnh `Collider2D[]`.
-   - Lọc va chạm thông qua Bitwise `LayerMask` ở tầng C++ Physics.
-3. **TryGetComponent & Caching:** Loại bỏ triệt để `GetComponent` trong `Update()` và chu kỳ va chạm vật lý.
-4. **Sprite Batching & Sorting Layers:** Chuẩn hóa 10 Sorting Layers và Y-Sorting (`Transparency Sort Axis (0, 1, 0)`) cho góc nhìn Frontal Top-Down 2.5D.
-5. **UI EventSystem CPU Offloading:** Tắt `raycastTarget = false` trên toàn bộ Image/Text trang trí, tách riêng Canvas tĩnh và Canvas động (HUD).
-6. **TextMeshProUGUI:** Bắt buộc sử dụng TMPro tương thích bộ font thuần Việt (`NotoSerif`, `BeVietnamPro`) để tối ưu Draw Call và độ sắc nét.
+Mọi dòng code viết ra trong gameplay loop đều bắt buộc tuân thủ **8 quy tắc vàng**:
+1. **0 GC Allocation trong Gameplay:** Không cấp phát bộ nhớ (`new`) trong Update/FixedUpdate. Mọi viên đạn, quái vật, vệt đòn đánh đều lấy từ Pool và trả về Pool (`DefenseProjectilePool3D`).
+2. **Physics2D / 3D NonAlloc:** Tuyệt đối không dùng `OverlapSphereAll` hoặc `RaycastAll`. Phải sử dụng `NonAlloc` kết hợp buffer mảng tĩnh được cấp phát sẵn.
+3. **TryGetComponent:** Sử dụng `TryGetComponent(out T)` thay thế hoàn toàn `GetComponent<T>()` để triệt tiêu overhead boxing/null check ở tầng C++.
+4. **Tách Canvas Tĩnh & Canvas Động:** Tách riêng Canvas chứa HUD cố định và Canvas chứa giá trị biến thiên (thời gian, thanh máu, số gỗ) nhằm ngăn chặn việc Re-batching Mesh toàn màn hình.
+5. **Tối Ưu Raycast Target:** Toàn bộ `Image`, `TextMeshProUGUI`, Khung viền và Icon trang trí đều đặt `raycastTarget = false`. Chỉ bật cờ này trên Button và Virtual Joystick thực sự nhận chạm.
+6. **Font Asset Thống Nhất:** Sử dụng Font Cổ Phong duy nhất (`GameFont_Vietnamese_SD`) làm mặc định trong `TMP Settings.asset`, ngăn ngừa việc Unity tự động sinh hàng loạt `TMP_SubMeshUI` rác gây sụt khung hình.
+7. **Animation By Script & Hashes:** Điều khiển hoạt ảnh nhân vật qua `animator.Play(hash)` bằng C#, không sử dụng hệ thống Transition mũi tên phức tạp gây kẹt trạng thái.
 
 ---
 
-## 🛠️ Yêu Cầu Môi Trường & Hướng Dẫn Cài Đặt (Getting Started)
+## 🛠️ Hướng Dẫn Chạy & Kiểm Thử (Getting Started & Tests)
 
-### 1. Yêu Cầu Kỹ Thuật & Môi Trường
-- **Unity Editor:** `2022.3.62f3` (hoặc `Unity 2022.3 LTS`).
-- **Unity Modules (Khuyên dùng):** `Android Build Support` (kèm OpenJDK và Android SDK & NDK) để hỗ trợ build di động.
-- **Git & Git LFS:** **Bắt buộc cài đặt Git LFS** trước khi clone (dự án quản lý toàn bộ Textures `.png`, Audio `.wav`/`.mp3`, và mô hình qua Git LFS).
-- **Render Pipeline:** Universal Render Pipeline (URP 2D).
-- **Input System:** New Input System (`com.unity.inputsystem`).
-- **Target OS:** Android 8.0 (API 26) trở lên, Target SDK API 33+ (Android 13/14).
-- **Scripting Backend:** IL2CPP (ARM64-v8a).
+### 1. Mở & Chạy Game Trong Unity Editor
+1. Khởi động **Unity 2022.3 LTS**.
+2. Mở Scene khởi đầu: `Assets/Scenes/Bootstrap.unity`.
+3. Bấm **Play Mode**. Hệ thống sẽ tự động khởi tạo dịch vụ, nạp Sảnh chính (`MainMenu.unity`), cho phép bạn vào **Tàng Bảo Các** trang bị Tướng, Pháp Bảo, Lính, Tháp rồi bấm **Xuất Trận** để chuyển cảnh mượt mà vào `MapSongQue3D_Prototype.unity`.
 
-### 2. Quy Trình Clone & Mở Dự Án Cho Đồng Đội
+### 2. Chạy Bộ Kiểm Thử Tự Động Hóa (Automated Test Suites)
+Dự án tích hợp bộ kiểm thử NUnit toàn diện thông qua script điều phối PowerShell `Tools/Invoke-UnityBridge.ps1`:
 
-#### Bước 2.1: Cài đặt Git LFS và Clone Repository
-Mở terminal (PowerShell, Command Prompt hoặc Git Bash) và chạy các lệnh:
-```bash
-# 1. Kích hoạt Git LFS trên hệ thống (chỉ cần chạy 1 lần duy nhất)
-git lfs install
+```powershell
+# Chạy kiểm thử kiến trúc toàn ứng dụng (115 tests PASS)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-app-architecture -TimeoutSeconds 30
 
-# 2. Clone repository về máy
-git clone https://github.com/thuongtran1210/Projectzombie.git
+# Chạy kiểm thử hệ thống Tháp Phòng Thủ (51 tests PASS)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-towers -TimeoutSeconds 30
 
-# 3. Chuyển vào thư mục dự án
-cd Projectzombie
+# Chạy kiểm thử tiến trình Thẻ & Meta (103 tests PASS)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-card-progression -TimeoutSeconds 30
 
-# 4. Kéo toàn bộ file binary/hình ảnh/âm thanh thực tế về (tránh lỗi file pointer rỗng)
-git lfs pull
+# Tự động đồng bộ Menu Tháp trong Scene nếu thêm Tháp mới
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command install-towers -TimeoutSeconds 30
 ```
 
-> [!WARNING]
-> Nếu bỏ qua bước `git lfs install` và `git lfs pull`, các file hình ảnh/âm thanh trong Unity sẽ bị lỗi missing/trắng xóa vì chỉ tải về file text con trỏ (130 bytes).
-
-#### Bước 2.2: Mở Dự Án Bằng Unity Hub
-1. Mở **Unity Hub** ➜ Bấm **Add** (hoặc *Add project from disk*).
-2. Chọn thư mục `Projectzombie` vừa clone.
-3. Đảm bảo chọn đúng phiên bản Editor: **`2022.3.62f3`** (Unity 2022.3 LTS).
-4. Nhấp mở dự án. Unity sẽ tự động import package và build thư mục `Library` lần đầu (mất khoảng 3 – 10 phút tùy cấu hình máy).
-
-#### Bước 2.3: Thiết Lập Addressables Play Mode (Quan Trọng)
-Để chạy mượt mà trên Editor mà không cần kết nối tới Server CDN Firebase hay build bundle:
-1. Trên thanh Menu Unity, mở: `Window` ➜ `Asset Management` ➜ `Addressables` ➜ `Groups`.
-2. Tại dropdown **Play Mode Script** (ở góc trên cửa sổ Addressables Groups), chọn:
-   👉 **`Use Asset Database (fastest)`**.
-
-#### Bước 2.4: Mở Scene & Trải Nghiệm
-1. Trong cửa sổ **Project**, mở scene: `Assets/Scenes/SampleScene.unity`.
-2. Nhấn nút **Play** (hoặc `Ctrl + P`). Hệ thống `CoreBootstrapper` sẽ tự động khởi tạo toàn bộ Core Services, GameManager và Save System trước khi scene tải.
-3. **Điều khiển:** Sử dụng phím **`W - A - S - D`** hoặc các phím mũi tên để di chuyển (New Input System).
-
-### 3. Xử Lý Sự Cố Thường Gặp (Troubleshooting)
-
-| Hiện tượng | Nguyên nhân | Cách khắc phục |
-|---|---|---|
-| **Sprite bị trắng xóa / Không có âm thanh SFX** | Clone khi chưa cài Git LFS hoặc thiếu bước `git lfs pull`. | Chạy lệnh `git lfs pull` trong terminal thư mục dự án, sau đó trong Unity chọn `Assets > Reimport All`. |
-| **Lỗi Addressables không tải được Asset trong Editor** | Play Mode Script đang để chế độ CDN / Existing Build. | Vào `Window > Asset Management > Addressables > Groups`, chuyển **Play Mode Script** thành **Use Asset Database (fastest)**. |
-| **Xung đột Scene khi làm việc nhóm** | Nhiều thành viên cùng chỉnh sửa file `SampleScene.unity`. | Tạo nhánh riêng (`git checkout -b feature/<ten_tinh_nang>`), hạn chế sửa trực tiếp vào scene chung; ưu tiên thao tác trên Prefab độc lập. |
-
 ---
 
-## 📚 Tài Liệu Tham Chiếu Chi Tiết (Documentation Hub)
+## 📚 Trung Tâm Tài Liệu (Documentation Hub)
 
-Hệ thống tài liệu dự án được cấu trúc bài bản và phân loại chi tiết tại [📜 GameDesignDoc/README.md](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/README.md):
-
-### 👑 Thiết Kế & Gameplay Cốt Lõi
-- 📖 [Master Game Design Document (GDD v5.1)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ProjectZombie_GDD.md) — Single Source of Truth toàn diện (4 Tướng Cổ Phong, Ngũ Hành, Gacha & Tiến hóa Pháp bảo).
-- ⚔️ [Hệ Thống Chiến Đấu & Pháp Bảo (Hybrid Relic System v6.5)](file:///c:/Users/thuon/Unity/Projectzombie/Assets/Features/Weapons/WEAPON_SYSTEM_DOC.md) — Kiến trúc C# vũ khí, quỹ đạo đạn, hitbox.
-- 👹 [Cơ Chế Chiến Đấu & Yêu Ma Slapstick](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/FUN_COMBAT_AND_ENEMY_MECHANICS_DOC.md) — Cơ chế chiến đấu vui nhộn, biến hình, văng gãy của quái vật.
-- 🗺️ [Kịch Bản Màn Chơi & Diễn Biến Wave 20 Phút](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/LEVEL_SCENARIO_GUIDE.md) — Tiến trình Wave, Boss Ngưu Đầu Mã Diện.
-- 🧲 [Quy Chuẩn Physics 2D & Ma Trận Va Chạm](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PHYSICS_LAYER_DESIGN_SPEC.md) — Phân tầng Layer và tối ưu hóa 0 GC va chạm.
-
-### 🎨 Mỹ Thuật, Đồ Họa & Giao Diện
-- 🎨 [Hướng Dẫn Mỹ Thuật & VFX (Art & VFX Style Guide)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ART_VFX_STYLE_GUIDE.md) — Định hướng 2D Cổ Phong Đông Sơn, 2-Tone Cell Shading, Thick Outline.
-- 📐 [Quy Chuẩn Kích Thước Hình Học Nhân Vật & VFX](file:///c:/Users/thuon/Unity/Projectzombie/CHARACTER_VFX_SIZE_GUIDELINES.md) — Metric 1m = 32 PPU, tỷ lệ Chibi 1:1.2, Hitbox Capsule.
-- 🧩 [Quy Chuẩn Thiết Kế Tilemap 2.5D](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/TILEMAP_DESIGN_SPEC.md) — PPU = 64, Auto-tiling Rule Tiles, Multi-layer Grid.
-- 🖼️ [Kim Chỉ Nam Thiết Kế UI/UX Di Động](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/GAME_UI_STYLE_GUIDE.md) — 7 Trụ cột UI, HUD In-game, Joystick ảo, Bảng nâng cấp.
-- 🤖 [Sổ Tay Prompt AI Sinh Asset UI](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/UI_PROMPT_AND_ART_GUIDE.md) — Prompt chuẩn 9-Slice, Panel hoa văn Đông Sơn.
-
-### 🔊 Âm Thanh, Dịch Vụ Kỹ Thuật & CDN
-- 🔊 [Đặc Tả Hệ Thống Âm Thanh Cổ Phong](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/AUDIO_SYSTEM_DESIGN_SPEC.md) — Mõ gỗ, Khánh ngọc, AudioSource Pooling 0 GC.
-- 🌐 [Hướng Dẫn Addressables & Firebase CDN DLC](file:///c:/Users/thuon/Unity/Projectzombie/Docs/DOCS_ADDRESSABLES_CDN_FIREBASE.md) — Cơ chế 8 nhóm, URL Transform, Hot-update Live-Ops.
-- 💰 [Đặc Tả Kiếm Tiền & Quảng Cáo AdMob](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/ADMOB_MONETIZATION_SPEC.md) — Rewarded Video, Interstitial, Collapsible Banner.
-- ☁️ [Đặc Tả Lưu Trữ Đám Mây (Cloud Save)](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/CLOUD_SAVE_SYSTEM_SPEC.md) — Offline-first, Google Play Games Services, Conflict Resolution.
-- ⚡ [Báo Cáo Tối Ưu Hiệu Năng & Zero Freeze Spikes](file:///c:/Users/thuon/Unity/Projectzombie/GameDesignDoc/PERFORMANCE_OPTIMIZATION_REPORT.md) — Triệt tiêu giật lag, 60 FPS Mobile.
-- 📱 [Sổ Tay Xử Lý Lỗi Build Android](file:///c:/Users/thuon/Unity/Projectzombie/Assets/DOCS_ANDROID_BUILD_TROUBLESHOOTING.md) — Gradle, Keystore, ProGuard, Target SDK 33+.
-
-### 📐 Kiến Trúc & Quản Lý
-- 📐 [Sơ Đồ Kiến Trúc Hệ Thống (SYSTEM_ARCHITECTURE.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_ARCHITECTURE.md) — Kiến trúc 6 tầng và Data Flow.
-- 📊 [Sơ Đồ Luồng Hoạt Động Trực Quan (SYSTEM_FLOWCHART.md)](file:///c:/Users/thuon/Unity/Projectzombie/.agents/references/SYSTEM_FLOWCHART.md) — Sơ đồ khối (Combat, Spawner, Upgrade, MVP).
-- 📋 [Lộ Trình Phát Triển (ROADMAP.md)](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/ROADMAP.md) & [Bảng Nhiệm Vụ (TASKS.md)](file:///c:/Users/thuon/Unity/Projectzombie/ProjectManagement/TASKS.md) — Sprint & Task Tracker.
-
----
-
-*© 2026 Dự án Vong Xuyên (Project Zombie) — Phát triển cho nền tảng Android Mobile.*
+| Tài Liệu | Mô Tả Chi Tiết |
+| :--- | :--- |
+| 📖 [**TESTING_GUIDE.md**](TESTING_GUIDE.md) | **Hướng dẫn kiểm thử chi tiết:** Từng bước test Tướng, Pháp bảo, Tháp, Lính trong Editor và trên máy thật. |
+| 📋 [**TASK.md**](TASK.md) | **Lộ trình công việc & Task Tracker:** Tiến độ các hạng mục Defense3D, tối ưu hóa và xuất bản APK/AAB. |
+| 📊 [**MIGRATION_STATUS.md**](MIGRATION_STATUS.md) | **Nhật ký chuyển đổi:** Chi tiết các chặng G0 ➔ G5 đã hoàn thành sạch sẽ 100%. |
+| 📐 [**DEFENSE_3D_ARCHITECTURE_GUIDE_VI.md**](Docs/DEFENSE_3D_ARCHITECTURE_GUIDE_VI.md) | **Sổ tay kiến trúc Scene 3D:** Hướng dẫn chi tiết về 5 trụ cột và các script trong Map Sông Quê 3D. |
+| ⚖️ [**DEFENSE_3D_GAME_BALANCING_REPORT_VI.md**](Docs/DEFENSE_3D_GAME_BALANCING_REPORT_VI.md) | **Báo cáo cân bằng chỉ số:** Bảng thống kê máu quái, sát thương tháp, lượng gỗ rơi và thời gian sóng quái. |
+| 🤖 [**AGENTS.md**](.agents/AGENTS.md) | **Quy chuẩn lập trình & quy tắc vàng:** Coding standards, MVP pattern, TextMeshPro, 60 FPS Mobile. |

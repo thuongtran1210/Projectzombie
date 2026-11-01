@@ -20,7 +20,8 @@ graph TD
         Base["<b>Căn Cứ Bờ Tây (Base)</b><br/>DefenseBasePrototype3D (HP: 1000)"]
         Wallet["<b>Kho Gỗ (Wallet)</b><br/>DefenseWoodWallet3D"]
         Sockets["<b>10 Điểm Cắm Tháp</b><br/>DefenseTowerBuildPrototype3D"]
-        Towers["<b>Tháp Canh (Towers)</b><br/>DefenseTowerPrototype3D<br/>(Nỏ Thần, Băng Hà)"]
+        Towers["<b>Tháp Canh (Towers)</b><br/>DefenseTowerPrototype3D<br/>(Nỏ Thần, Băng Hà, Hỏa Long)"]
+        Minions["<b>Lính Làng (Minions)</b><br/>DefenseVillageShop3D<br/>(Dân Binh, Xạ Thủ, Phu, Thầy Lang)"]
     end
     
     subgraph Sinh_Quái ["Đợt Quái & Kẻ Địch"]
@@ -35,7 +36,7 @@ graph TD
     
     subgraph Giao_Diện ["UI & Trình Diễn"]
         HUD["<b>DefenseMatchHUDView</b><br/>(Thời gian, Máu Base, Số Gỗ)"]
-        Skills["<b>Cụm Chiêu Thức</b><br/>Đánh thường, Lướt, Tuyệt kỹ"]
+        Skills["<b>Cụm Chiêu Thức</b><br/>Đánh thường, Lướt, Tuyệt kỹ, Pháp bảo"]
         ResultModal["<b>DefenseMatchResultModalView</b><br/>(Thắng / Thua)"]
     end
     
@@ -78,7 +79,10 @@ Khi bạn mở Scene `MapSongQue3D_Prototype.unity`, các GameObject quan trọn
 * **`DefenseTowerPrototype3D` (Tháp Canh):**
   - Tự động quét tìm quái vật gần nhất mỗi `0.2s` (tối ưu CPU mobile).
   - Lấy đạn từ `DefenseProjectilePool3D` bắn theo quỹ đạo cong parabol.
-  - Gây sát thương và kích hoạt hiệu ứng (`SO_AttackEffect`): Làm Chậm (Tháp Băng) hoặc Sát thương cao (Tháp Nỏ Thần).
+  - Gây sát thương và kích hoạt hiệu ứng (`SO_AttackEffect`): Làm Chậm (Tháp Băng Hà), Sát thương cao (Tháp Nỏ Thần), hoặc Nổ lan thiêu đốt (Tháp Hỏa Long).
+* **`DefenseVillageShop3D` (Lều Dân Làng & Tuyển Mộ Lính):**
+  - Quản lý chiêu mộ các đơn vị lính làng yểm trợ bằng Gỗ: Dân Binh (Militia), Xạ Thủ (Archer), Phu Tạp Dịch (Gatherer), Thầy Lang (Healer).
+  - Tự động đồng bộ vai trò và chỉ số nhân thêm theo Cấp Sao Meta qua `SetRoleStatMultipliers`.
 
 ### 👹 Nhóm 3: Triệu Hồi Quái Vật (Wave Spawning)
 * **`Stage01_Production.asset`:**

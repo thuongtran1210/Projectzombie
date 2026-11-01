@@ -1,78 +1,74 @@
-# 📋 KẾ HOẠCH NÂNG CẤP TOÀN DIỆN HỆ THỐNG PHÁP BẢO & CHỈ DẤU (TASK.md)
+# 📋 LỘ TRÌNH THỰC THI & QUẢN LÝ NHIỆM VỤ (TASK.md)
 
-Tài liệu này đóng vai trò là **Lộ trình thực thi (Action Roadmap)** phân tách rõ ràng từng hạng mục nhiệm vụ, độ ưu tiên, sự phụ thuộc (dependencies) và giải pháp kỹ thuật nhằm nâng cấp toàn bộ 17 Pháp Bảo Cổ Phong từ đơn điệu sang hệ thống chiến thuật hành động đỉnh cao.
-
----
-
-## 🎯 PHÂN TÍCH HIỆN TRẠNG & MỤC TIÊU CỐT LÕI
-
-| Hạng mục | Hiện Trạng (Cũ) | Mục Tiêu Sau Nâng Cấp (Mới) |
-| :--- | :--- | :--- |
-| **Hệ Thống Chỉ Dấu (Aiming)** | Chỉ có Line/Cone/Circle đơn giản. | Bổ sung **VectorWall** (Tường trận), **CurvedTrajectory** (Cong Parabol), **RhythmPulse** (Sóng nhịp điệu). *(Đã triển khai core)* |
-| **Cơ Chế Kích Hoạt (Casting)** | Bấm 1 lần xả chiêu $\rightarrow$ Vào Cooldown. | Hỗ trợ **Recast 2 Giai Đoạn**, **Phản Đòn (Parry Timing)**, **Đặt Cọc/Triệu Hồi (Turret Placement)**. |
-| **Tương Tác Tướng & Pháp Bảo** | Tướng đánh riêng, Pháp bảo nổ riêng. | Tương tác môi trường: Tướng Dash/Chém vào pháp bảo kích hoạt phản ứng dây chuyền (Synergy Combo). |
-| **Trải Nghiệm Thị Giác (VFX/SFX)** | Hiệu ứng tĩnh, thiếu độ nảy giật (Impact). | Đạt chuẩn **Art Master DNA Cổ Phong**: Decal nở trận, Shockwave phản lực, camera shake nhẹ. |
+Tài liệu này là **Single Source of Truth** theo dõi tiến độ các hạng mục công việc của dự án **Vong Xuyên — 3D Top-Down Survival & Tower Defense (Defense3D)**.
 
 ---
 
-## 🏗️ DANH SÁCH NHIỆM VỤ CHI TIẾT (TASK LIST)
+## 🚦 TỔNG QUAN TIẾN ĐỘ (ROADMAP STATUS)
 
-### 📌 Giai Đoạn 1: Hoàn Thiện & Tinh Chỉnh 4 Pháp Bảo Đột Phá Tiêu Biểu (Priority: HIGH)
-
-- [x] **Task 1.1: Core Indicator & Recast Engine**
-  - Đã tích hợp `VectorWall`, `CurvedTrajectory`, `RhythmPulse` vào `SkillAimIndicatorController.cs`.
-  - Đã nâng cấp `WeaponBase.cs` hỗ trợ `RelicCastPhase` (Ready $\rightarrow$ RecastReady $\rightarrow$ Cooldown).
-- [x] **Task 1.2: Dép Tổ Ong Thần Sa (`W_SLIPPER`)**
-  - *Phase 1:* Ném Boomerang bay vòng cung gom quái (`CurvedTrajectory`).
-  - *Phase 2 (Recast):* Tướng lướt vụt tới tung cước Song Phi dẫm nổ Shockwave (`DashLine`).
-- [x] **Task 1.3: Nước Thánh Chùa Hương (`W011`)**
-  - Chỉ dấu `VectorWall` dựng Bức Tường Nước Thánh 4 giếng thiêng phong tỏa quái và hồi máu.
-- [x] **Task 1.4: Nồi Cơm Thạch Sanh (`W_POT`)**
-  - Chỉ dấu `CircleReticle` thả cắm Nồi Cơm từ xa, tạo lốc hút quái diện rộng và đẻ Cơm Nắm.
-- [x] **Task 1.5: HUD Button Recast Feedback**
-  - Đã tích hợp `SetRecastGlow()` và kết nối sự kiện `OnRelicPhaseChanged` trong `RelicSkillPresenter.cs` & `RelicSkillButtonView.cs`: Nút `Btn_RelicSkill` tự động phát xung viền sáng vàng kim khi bước vào Phase 2.
+| Giai Đoạn (Milestone) | Nội Dung Trọng Tâm | Trạng Thái |
+| :--- | :--- | :---: |
+| **G0 — Kiểm Kê & Rà Soát** | Phân tích Scene, cô lập DontDestroyOnLoad, kiểm kê hệ thống | **HOÀN THÀNH (100%)** |
+| **G1 — Lõi Loadout Thuần C#** | Rules, Selection, Validator, Snapshot, Repository | **HOÀN THÀNH (100%)** |
+| **G2 — Catalog & Runtime Adapter** | Defense3DCatalog, Resolver, Shop/HeroKit Adapters | **HOÀN THÀNH (100%)** |
+| **G3 — Save Migration & Meta Adapter** | Mapping ID cũ/mới, Cấp quyền Meta, Atomic JSON Save | **HOÀN THÀNH (100%)** |
+| **G4 — Luồng Sảnh & Chuẩn Bị Trận** | UI Chuẩn bị trận, Navigation nạp Scene qua AppFlow | **HOÀN THÀNH (100%)** |
+| **G5 — Hoàn Thiện Vòng Đời & Kết Quả** | Dịch vụ kết quả, cộng Cổ Tiền, trở về Sảnh an toàn | **HOÀN THÀNH (100%)** |
+| **G6 — Mở Rộng Nội Dung & Nạp Động** | Đạo Sĩ, Điếu Cày, Xạ Thủ, Hỏa Long, Dynamic Binding | **ĐANG TRIỂN KHAI** |
+| **G7 — Đánh Bóng & Đóng Gói Android** | Tối ưu 60 FPS, Audio Cổ Phong, Build APK/AAB | **KẾ HOẠCH** |
 
 ---
 
-### 📌 Giai Đoạn 2: Nâng Cấp 5 Pháp Bảo Chủ Động Còn Lại (Active Relics) (Priority: MEDIUM)
+## 📌 CHI TIẾT CÁC HẠNG MỤC CÔNG VIỆC
 
-- [x] **Task 2.1: Nỏ Thần (`W001` - Kim)**
-  - *Cơ chế mới:* **Linh Tiễn Thần Uy Xuyên Thấu Vô Tận (Infinite Pierce & Knockback Barrage)**.
-  - *Chỉ dấu:* `LineArrow` siêu dài 14m. Khai hỏa 3 đợt bão tên thần uy xuyên thấu 100% mục tiêu và đẩy lùi bầy quái 8m.
-- [x] **Task 2.2: Lựu Đạn Thần Sa (`W006` - Hỏa)**
-  - *Cơ chế mới:* **Cụm Bom Rải Thảm & Nổ Kích Hoạt Dây Chuyền**.
-  - *Chỉ dấu:* `CircleReticle` hiển thị vùng nổ. Quăng chùm 3 hạt Thần Sa nổ tung liên hoàn bão lửa diện rộng.
-- [x] **Task 2.3: Đao Cửu Vĩ (`W008` - Hỏa)**
-  - *Cơ chế mới:* **Hỏa Long Bộc Phát (8-Direction Dragon Slash Stance)**.
-  - *Chỉ dấu:* `ConeSector` góc rộng 120 độ. Tăng 35% tốc đánh, trảm quét Hỏa Long 8 hướng liên tục trong 5s.
-- [x] **Task 2.4: Điếu Cày Cửu U (`W_PIPE` - Hỏa)**
-  - *Cơ chế mới:* **Bão Khói Tương Tác Địa Hình (VectorWall Terrain Cloud)**.
-  - Khói thuốc rồng cuộn diện rộng 6m làm chậm 60% quái và thiêu đốt DoT liên tục.
+### ✅ Giai Đoạn Đã Hoàn Thành (Done)
 
----
-
-### 📌 Giai Đoạn 3: Nâng Cấp Chiều Sâu 9 Pháp Bảo Bị Động (Passive Relics) (Priority: MEDIUM)
-
-- [x] **Task 3.1: Bút Phán Quan (`W002` - Kim)**
-  - *Cơ chế mới:* Kế thừa `Weapon_OnHitRelicBase`: Khi Hero chém trúng quái, tự động vung nhát bút mực Chu Sa phán quyết gây sát thương xuyên giáp.
-- [x] **Task 3.2: Bùa Trấn Yêu (`W003` - Mộc)**
-  - *Cơ chế mới:* Kế thừa `Weapon_Orbit`: Vòng lá bùa thần bảo hộ xoay quanh cản phá quái áp sát và đẩy lùi.
-- [x] **Task 3.3: Cửu Vĩ Hồ Trảo (`W004` - Hỏa)**
-  - *Cơ chế mới:* **Cửu Vĩ Cuồng Nộ (Low HP Berserk)**. Khi máu Tướng dưới 35%, tự động nhân đôi đàn dơi hồ ly và x2.5 hiệu suất Hút Máu (Lifesteal) cứu nguy.
-- [x] **Task 3.4: Trượng Long Vương (`W009` - Thủy)**
-  - *Cơ chế mới:* **Sét Thủy Long Lan Truyền (Chain Lightning)**. Bắn cầu sét tự động nảy chuỗi qua 6 mục tiêu.
-- [x] **Task 3.5: Chiếu Trải Hoàng Tuyền (`R007` - Mộc)**
-  - *Cơ chế mới:* Thả chiếu khiến quái ngủ say (x2 Crit). Khi Tướng bước lên chiếu sẽ trượt lướt ván lướt nhanh hất văng quái như chơi bowling và gây sát thương va chạm!
-- [x] **Task 3.6: Chổi Lông Gà Gia Truyền (`R008` - Kim)**
-  - *Cơ chế mới:* **Đòn Phạt Tuổi Thơ (Combo 3 Giant Smash)**. Tự động giáng Chổi Lông Gà khổng lồ khi kết thúc Combo 3, Knockback 12m/s và gây Choáng 0.8s.
+- [x] **[G0-01] Cô Lập DontDestroyOnLoad:**
+  - Giải phóng 15 GameObject con của `--- GAME MANAGER ---` trong `GameStateManager.cs` để Unity dọn sạch bộ nhớ khi chuyển cảnh.
+- [x] **[G1-01] Lõi Loadout Thuần C#:**
+  - Xây dựng `LoadoutRules`, `LoadoutSelection`, `LoadoutValidator`, `DefenseLoadoutSnapshot`.
+  - Bộ kiểm thử 13 NUnit tests toàn diện trong `Assets/Tests/Editor/DefenseLoadoutCoreTests.cs`.
+- [x] **[G2-01] Danh Mục Catalog & Adapter Runtime:**
+  - Xây dựng `Defense3DCatalog` và bộ phân giải `DefenseLoadoutResolver`.
+  - Kết nối `DefenseLoadoutRuntimeAdapter` áp dụng dữ liệu đội hình vào `DefenseVillageShop3D` và `DefenseHeroKitSO`.
+  - Tách Relic khỏi ràng buộc cứng trong `DefenseHeroKitSO`.
+- [x] **[G3-01] Hệ Thống Lưu Trữ & Bộ Chuyển Đổi Meta:**
+  - Xây dựng `DefenseLoadoutRepository` lưu file `defense_loadout.json` với cơ chế ghi nguyên tử (Atomic Write `.tmp` -> `.bak`).
+  - Xây dựng `DefenseMetaOwnershipAdapter` và `DefenseLoadoutIdMapper` đồng bộ với tiến trình Cấp Sao Tướng/Pháp bảo.
+- [x] **[G4-01] Luồng Sảnh & Giao Diện Chuẩn Bị Xuất Trận:**
+  - Triển khai `DefensePreparationPresenter` kiểm tra đội hình realtime và điều khiển nút Xuất Trận.
+  - Tích hợp `DefenseMatchNavigation` nạp Scene `MapSongQue3D_Prototype` thông qua `AppFlowController`.
+- [x] **[G5-01] Kết Quả Trận Đấu & Trở Về Sảnh:**
+  - Triển khai `DefenseMatchResultService` tính toán thưởng Cổ Tiền theo số Gỗ thu thập và kỷ lục hoàn thành.
+  - Tích hợp `DefenseNavigationService` dọn dẹp bộ nhớ (Clean Pools, Dispose Session) và chuyển cảnh về Sảnh `MainMenu`.
+- [x] **[G5-02] Thống Nhất Font Asset TextMesh Pro:**
+  - Cấu hình font mặc định `GameFont_Vietnamese_SD` trong `TMP Settings.asset`, khắc phục hoàn toàn lỗi rác bộ nhớ `TMP_SubMeshUI.UpdateMaterial` NullReferenceException.
+- [x] **[G5-03] Mở Rộng Menu Xây Tháp 3 Hàng:**
+  - Cập nhật `DefenseTowerBuildPresenter` và giao diện Menu Xây Tháp trong `MapSongQue3D_Prototype.unity` lên 3 hàng UI, sửa triệt để lỗi crash `Build menu has fewer rows than tower catalog entries`.
 
 ---
 
-### 📌 Giai Đoạn 4: Đánh Bóng Visual VFX, SFX & Cân Bằng Gameplay (Priority: LOW)
+### 🟡 Giai Đoạn Đang Triển Khai (In Progress - G6)
 
-- [x] **Task 4.1: VFX Decal & Impact Shaders**
-  - Tích hợp Decal vòng quay Cổ Phong cho Bát Quái Trận và Bão Khói Thuốc Lào.
-- [x] **Task 4.2: FMOD / Audio Trọng Lực**
-  - Gắn tiếng nện đá Song Phi, tiếng chuông Trống Đồng và tiếng vung Chổi Lông Gà đanh thép.
-- [x] **Task 4.3: Tinh Chỉnh Stats & Cân Bằng Cooldown**
-  - Đồng bộ bảng chỉ số trong các ScriptableObject `Assets/_Data/Weapons/...`.
+- [x] **[G6-01] Mở Rộng Danh Mục Nội Dung Mới:**
+  - Thêm Tướng Đạo Sĩ (`hero_daosi`), Pháp Bảo Điếu Cày Khói Lửa (`relic_dieucay`), Lính Xạ Thủ Nỏ Thần (`minion_xathu`), Tháp Hỏa Long (`tower_hoalong`) vào `Defense3DCatalog.CreateExpanded()`.
+  - Cấp quyền sở hữu cơ bản trong `DefenseMetaOwnershipAdapter`.
+  - Ánh xạ ID đầy đủ trong `DefenseLoadoutIdMapper`.
+- [/] **[G6-02] Nạp Động Trong Scene Trận Đấu (Dynamic Scene Binding):**
+  - [x] **Hoán đổi Pháp bảo:** Bổ sung phương thức cấu hình động trong `DefenseSkillPresenter3D` để nạp `Skill_DieuCay` và gắn component `DefensePipeRelicEffect3D` với cơ chế Vùng Khói Thiêu Đốt DoT & Slow.
+  - [x] **Hoán đổi Tuyệt Kỹ Tướng:** Nối slot Signature với `Skill_DaoSi_Signature` và component `DefenseLightningSignatureEffect3D` khi chọn Đạo Sĩ (hoàn thiện sát thương scale, Stun 1.5s, Slow 40% và Feedback events).
+  - [x] **Hoán đổi Lính chiêu mộ:** Cho phép `DefenseVillageShop3D` hoán đổi Definition ô tuyển mộ lính khi người chơi mang Xạ Thủ Nỏ Thần (`Minion_XaThu.asset`, cự ly 8.5m, 40 gỗ, đòn nặng 30 damage kèm Stun và cơ chế phóng tên).
+- [ ] **[G6-03] Hoán Đổi Mô Hình 3D Nhân Vật (Hero Visual Model Swapping):**
+  - Cập nhật `DefenseHeroVisualController3D` cho phép nạp và hiển thị Model 3D tương ứng của Tướng đã chọn thay vì cố định Thư Sinh.
+
+---
+
+### 🔴 Giai Đoạn Kế Hoạch (Backlog - G7: Polish & Android Release)
+
+- [ ] **[G7-01] Tối Ưu Hóa Draw Call & Sprite Atlas:**
+  - Đóng gói toàn bộ icon thẻ và UI Cổ Phong vào Sprite Atlas, kiểm soát Draw Call < 40 trên thiết bị di động.
+- [ ] **[G7-02] Tinh Chỉnh & Cân Bằng Gameplay Trận Đấu:**
+  - Cân đối máu quái, lượng gỗ rơi từ bầy quái Ma Giáp / Thủy Quái và chi phí nâng cấp Tháp theo thời gian 600s.
+- [ ] **[G7-03] Kiểm Thử Stress Test & Đóng Gói Android Release:**
+  - Stress test 150+ kẻ địch và 80+ viên đạn trên Android để đảm bảo 60 FPS ổn định, không sụt khung hình.
+  - Đóng gói file `.aab` (Android App Bundle) với cấu hình IL2CPP ARM64-v8a đạt chuẩn Google Play Store Release.

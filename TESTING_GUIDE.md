@@ -1,97 +1,110 @@
-# 🎮 HƯỚNG DẪN TEST & REVIEW CHI TIẾT HỆ THỐNG PHÁP BẢO MỚI (TESTING_GUIDE.md)
+# 🎮 HƯỚNG DẪN TEST & KIỂM THỬ THỦ THÀNH 3D (TESTING_GUIDE.md)
 
-Tài liệu này được biên soạn để bạn có thể **trải nghiệm, kiểm thử và đánh giá từng Pháp Bảo** một cách dễ dàng và trực quan nhất trên Unity Editor.
-
----
-
-## 🎯 CÁC BƯỚC CHUẨN BỊ TRƯỚC KHI TEST
-1. **Mở Unity Editor** và mở Scene Gameplay (hoặc Scene Main Menu).
-2. **Vào Tàng Bảo Các / Loadout**: Chọn Pháp Bảo bạn muốn kiểm thử vào **Ô Pháp Bảo Hộ Thân (Slot 2)**.
-3. Nhấn nút **Play**.
+Tài liệu này hướng dẫn chi tiết cách thức **trải nghiệm, kiểm thử chức năng và đánh giá hiệu năng** của chế độ chơi **Thủ Thành 3D (Defense3D — Map Sông Quê)** trên Unity Editor và thiết bị Android thật.
 
 ---
 
-## ⚔️ PHẦN 1: TEST NHÓM PHÁP BẢO CHỦ ĐỘNG (ACTIVE RELICS)
+## 🎯 CÁC BƯỚC KHỞI ĐỘNG TRẬN ĐẤU (GETTING STARTED)
 
-### 1. Dép Tổ Ong Thần Sa (`W_SLIPPER` - Hệ Kim) — *Cơ Chế Recast 2 Giai Đoạn*
-* **Thao tác ngắm bắn (Phase 1):**
-  - **Đè & Kéo nút Pháp Bảo (Phím `E` / Touch Drag):** Quan sát **Chỉ Dấu Đường Cong Parabol (`CurvedTrajectory`)** uốn lượn theo hướng kéo ngắm, đánh dấu điểm xa nhất chiếc Dép sẽ bay tới.
-  - **Nhả tay (Kích hoạt Phase 1):** Chiếc Dép Tổ Ong bay vòng cung xé gió gom quái và kích hoạt Lốc Dép Vạn Năng.
-* **Thao tác Tái Kích Hoạt (Phase 2 - Recast):**
-  - **Quan sát HUD:** Nút `Btn_RelicSkill` lập tức **bật viền sáng Vàng Kim nhấp nháy (Glow Pulse)** và mở ra cửa sổ đếm ngược 3 giây.
-  - **Bấm lần 2 (Phím `E` / Chạm nút):** Tướng lập tức **lướt vụt tới vị trí chiếc Dép đang xoay**, tung cú đá **Song Phi** dẫm nổ Shockwave diện rộng (Đẩy lùi cực mạnh 16m/s và x3.5 sát thương).
+### Cách 1: Khởi Động Chuẩn Theo Luồng Ứng Dụng (Khuyên Dùng)
+1. Trong Unity Editor, mở Scene: `Assets/Scenes/Bootstrap.unity`.
+2. Nhấn nút **Play** (`Ctrl + P`).
+3. Hệ thống sẽ tự động khởi tạo các dịch vụ nền và chuyển tới **Sảnh Chính (`MainMenu.unity`)**.
+4. Chọn **Tàng Bảo Các (Card Codex)** để xem danh mục thẻ và trang bị Đội Hình (Tướng, Pháp Bảo, Lính, Tháp).
+5. Quay lại Sảnh chính, chọn Ải (Stage) và nhấn **Xuất Trận**. Hệ thống chuyển cảnh mượt mà vào `MapSongQue3D_Prototype.unity`.
 
----
-
-### 2. Nước Thánh Chùa Hương (`W011` - Hệ Thủy) — *Chỉ Dấu Dựng Tường Trận Địa*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Quan sát **Chỉ Dấu Thanh Chắn Ngang (`VectorWall`)** hiển thị vuông góc với hướng ngắm.
-  - **Nhả tay:** Dựng ngay một **Bức Tường Nước Thánh gồm 4 giếng thiêng** dàn hàng ngang phía trước:
-    - Quái vật đi qua bị **làm chậm 50%**.
-    - Tướng được **hồi ngay 10% Max HP**.
+### Cách 2: Chạy Thử Trực Tiếp Scene Trận Đấu (Quick Dev Testing)
+1. Mở trực tiếp Scene: `Assets/Scenes/Defense3D/MapSongQue3D_Prototype.unity`.
+2. Nhấn nút **Play**.
+3. `DefenseSceneCompositionRoot` sẽ tự động phát hiện chế độ Direct Play và nạp cấu hình mặc định để bạn test ngay lập tức các cơ chế di chuyển, tháp và đợt quái.
 
 ---
 
-### 3. Nồi Cơm Thạch Sanh (`W_POT` - Hệ Thổ) — *Cắm Nồi Gom Quái Từ Xa*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Quan sát **Chỉ Dấu Tâm Tròn (`CircleReticle`)** di chuyển linh hoạt từ xa (phạm vi 7 mét).
-  - **Nhả tay:** Cắm ngay Nồi Cơm Thạch Sanh tại vị trí chỉ định. Nồi mở nắp hút toàn bộ quái trong bán kính 6m vào tâm trong 2s, sau đó phát nổ hất văng quái 18m/s và rơi ra 3 viên **Cơm Nắm hồi máu (5% HP/viên)**.
+## ⚔️ PHẦN 1: KIỂM THỬ ĐIỀU KHIỂN & KỸ NĂNG TƯỚNG (HERO COMBAT)
+
+### 1. Di Chuyển & Đánh Thường (Movement & Basic Attack)
+- **Bàn phím:** Sử dụng các phím `W`, `A`, `S`, `D` để di chuyển Tướng. Nhấn hoặc giữ phím `J` (hoặc click nút Đánh thường trên HUD) để vung đòn.
+- **Chỉ dấu dưới chân (`HeroFootIndicator`):** Quan sát vòng tròn và mũi tên chỉ hướng luôn bám sát mặt đất theo chân Tướng.
+- **Vùng đòn đánh (`AttackSector`):** Khi giữ nút đánh thường, hình quạt 210° (bán kính 2.05m) xuất hiện, tự động xoay hướng bắt mục tiêu quái gần nhất (Auto-Aim). Khi nhả tay, Tướng tung nhát vung quét trúng toàn bộ quái trong quạt.
+
+### 2. Kỹ Năng Lướt (Dash)
+- **Thao tác:** Nhấn phím `Space` hoặc nút Lướt trên màn hình.
+- **Hiện tượng cần kiểm tra:**
+  - Tướng lướt nhanh về phía trước một khoảng 4.5m trong 0.25s.
+  - Vệt bóng mờ (Ghost Trail) xuất hiện phía sau.
+  - Thao tác lướt có khả năng ngắt ngay lập tức các hành động đánh thường hoặc tuyệt kỹ đang chờ xuất chiêu.
+
+### 3. Tuyệt Kỹ Tướng (Signature Skill)
+- **Thư Sinh (`Skill_ScholarSignature`):**
+  - Nhấn phím `K` hoặc nút Tuyệt Kỹ: Xuất hiện vòng chỉ dấu Bút Mực Chu Sa bán kính 6m dưới chân.
+  - Phát nổ sát thương diện rộng sau 0.38s, đồng thời giảm ngay **20% thời gian hồi chiêu còn lại** của Pháp Bảo.
+- **Đạo Sĩ (`Skill_DaoSi_Signature`):**
+  - Nhấn nút Tuyệt Kỹ: Gọi thiên lôi giáng tia sét sấm sét bộc phá diện rộng 4.5m, gây sát thương cực lớn lên bầy quái.
+
+### 4. Kỹ Năng Pháp Bảo (Relic Active Skill)
+- **Dép Tổ Ong Thần Sa (`Skill_DepToOng`):**
+  - Nhấn phím `Q` hoặc nút Pháp Bảo: Ném chiếc Dép Tổ Ong bay thẳng gom quái và phát nổ lốc xoáy.
+  - Nút chiêu tự động phát xung viền sáng kích hoạt Cước Song Phi lướt theo dẫm nổ Shockwave đẩy lùi bầy quái.
+- **Điếu Cày Khói Lửa (`Skill_DieuCay`):**
+  - Nhấn nút Pháp Bảo: Rít hơi thuốc lào phun ra bức tường bão khói rồng cuộn rộng 4m.
+  - Quái bước vào vùng khói chịu sát thương thiêu đốt liên tục (DoT) và bị giảm tốc chạy rõ rệt.
 
 ---
 
-### 4. Trống Đồng Đông Sơn (`W005` - Hệ Thổ) — *Sóng Âm Nhịp Điệu*
-* **Thao tác ngắm bắn:**
-  - **Đè nút Pháp Bảo:** Quan sát **Chỉ Dấu Vòng Tròn Nhịp Điệu (`RhythmPulse`)** co giãn nhịp nhàng dưới chân.
-  - **Nhả tay:** Dậm 3 đợt sóng âm thần uy 360 độ làm **choáng cứng quái 1.5s** và đẩy lùi toàn bộ quái vật đang vây quanh.
+## 🛡️ PHẦN 2: KIỂM THỬ KINH TẾ GỖ & THÁP PHÒNG THỦ (TOWERS & WOOD)
+
+### 1. Thu Thập Cổ Mộc (Wood Drops)
+1. Tiêu diệt quái vật Ma Giáp hoặc Thủy Quái.
+2. Quan sát các khối Gỗ Cổ Mộc 3D rơi ra tại vị trí quái chết.
+3. Điều khiển Tướng lại gần trong phạm vi hút gỗ: Khối gỗ tự động bay về phía Tướng, số lượng gỗ trên thanh HUD tăng lên tương ứng.
+
+### 2. Xây Dựng & Nâng Cấp Tháp Tại 10 Điểm Cắm (Sockets)
+1. Điều khiển Tướng di chuyển tới 1 trong 10 cọc thổ địa cắm tháp trên bản đồ.
+2. Khi bước vào bán kính tương tác (`1.7m`), nút **Xây Tháp (Build Button)** trên giao diện sẽ sáng lên.
+3. Bấm nút để mở Menu Xây Dựng:
+   - **Tháp Nỏ Thần:** Tiêu tốn 25 Gỗ. Bắn tỉa mũi tên tầm xa 8m, tốc bắn nhanh.
+   - **Tháp Băng Hà:** Tiêu tốn 30 Gỗ. Phóng tinh thể băng làm chậm 40% quái vật diện rộng.
+   - **Tháp Hỏa Long:** Tiêu tốn 35 Gỗ. Khai hỏa đạn pháo lửa nổ lan diện rộng và thiêu đốt.
+4. Khi đã xây xong, tiếp tục đứng gần tháp để nâng cấp lên Cấp 2 và Cấp 3 nhằm gia tăng tầm bắn và uy lực.
 
 ---
 
-### 5. Nỏ Thần (`W001` - Hệ Kim) — *Bão Tiễn Thần Uy Xuyên Thấu Vô Tận*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Quan sát **Chỉ Dấu Mũi Tên Dài (`LineArrow`)** vươn xa 14 mét.
-  - **Nhả tay:** Khai hỏa liên tiếp **3 đợt bão Linh Tiễn Thần Uy**, xuyên thấu 100% mục tiêu trên đường bay (Infinite Pierce) và đẩy lùi bầy quái 8 mét dọn sạch một đường thẳng.
+## 👨‍🌾 PHẦN 3: KIỂM THỬ LỀU DÂN LÀNG & CHIÊU MỘ LÍNH (MINIONS)
+
+1. Di chuyển Tướng về khu vực Lều Dân Làng ở hậu phương Bờ Tây.
+2. Bước vào vòng tương tác của lều (`1.6m`): Menu tuyển mộ lính kích hoạt.
+3. Kiểm tra chiêu mộ các vai trò lính theo đội hình đã trang bị:
+   - **Dân Binh:** Lính cận chiến cầm giáo cảm tử, xông ra chặn đầu các đợt quái qua cầu.
+   - **Xạ Thủ Nỏ Thần:** Lính tầm xa đứng sau xả linh tiễn yểm trợ.
+   - **Phu Tạp Dịch:** Tự động tỏa ra các cây cầu gom nhặt các khối gỗ rơi rớt mang về kho.
+   - **Thầy Lang:** Đứng gần Căn Cứ và Tướng để truyền máu hồi phục sinh lực.
 
 ---
 
-### 6. Lựu Đạn Thần Sa (`W006` - Hệ Hỏa) — *Cụm Bom Rải Thảm*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Chỉ dấu `CircleReticle` vùng nổ rộng 8.5 mét.
-  - **Nhả tay:** Quăng chùm 3 quả Lựu Đạn Thần Sa nổ liên hoàn tạo bão lửa thiêu rụi toàn bộ quái vật trong khu vực chỉ định.
+## 👹 PHẦN 4: KIỂM THỬ ĐỢT QUÁI & BOSS DẠ XOA
+
+1. **Đợt Quái Bộ (Cầu Bắc, Cầu Giữa, Cầu Nam):** Ma Giáp và Quái Dữ tiến quân theo các nhánh đường dẫn tới 3 cây cầu.
+2. **Đợt Quái Thủy:** Thủy Quái bơi xuyên qua lòng kênh sông, vượt chướng ngại vật đánh tạt sườn.
+3. **Đợt Quái Bay:** Huyết Dơi và Quỷ Phi Cương bay thẳng qua vách đá. Quỷ Phi Cương hiển thị hình quạt báo đòn đỏ cam (Telegraph 0.65s) trước khi tung trảo cào.
+4. **Boss Dạ Xoa (Phút 8:30 — 510s):**
+   - Boss xuất hiện tại khu vực Bến Đò.
+   - Tướng bước vào phạm vi sẽ kích hoạt Vòng Đấu Trường Arena (45s).
+   - Boss tung đòn dậm đất nổ vòng lửa (Bán kính 5m). Sau giai đoạn Arena, Boss sẽ chuyển sang lộ trình tiến công càn quét Căn Cứ Bờ Tây.
 
 ---
 
-### 7. Đao Cửu Vĩ (`W008` - Hệ Hỏa) — *Hỏa Long Bộc Phát*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Chỉ dấu hình quạt góc rộng 120 độ (`ConeSector`).
-  - **Nhả tay:** Kích hoạt trạng thái thần uy trong 5s: Tăng 35% tốc độ chém, liên tục phóng ra các vệt trảm **Hỏa Long 8 hướng** thiêu rụi quái vật xung quanh.
+## 🧪 PHẦN 5: CHẠY BỘ KIỂM THỬ TỰ ĐỘNG HÓA (AUTOMATED SUITES)
 
----
+Trước khi đóng gói hoặc commit tính năng mới, hãy chạy bộ test tự động qua PowerShell:
 
-### 8. Điếu Cày Cửu U (`W_PIPE` - Hệ Hỏa) — *Bão Khói Tương Tác Địa Hình*
-* **Thao tác ngắm bắn:**
-  - **Đè & Kéo nút Pháp Bảo:** Chỉ dấu `VectorWall` dựng tường khói dài 6 mét.
-  - **Nhả tay:** Rít hơi dài nhả bức tường bão khói thuốc lào rồng cuộn. Quái bước vào khói bị đi giật lùi, say thuốc và liên tục chịu sát thương thiêu đốt.
+```powershell
+# 1. Kiểm tra kiến trúc tổng thể ứng dụng (115 tests NUnit)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-app-architecture -TimeoutSeconds 30
 
----
+# 2. Kiểm tra danh mục và logic vận hành Tháp (51 tests NUnit)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-towers -TimeoutSeconds 30
 
-## 🛡️ PHẦN 2: TEST NHÓM PHÁP BẢO BỊ ĐỘNG (PASSIVE RELICS)
-
-*(Khi trang bị nhóm này: Nút Kỹ Năng trên HUD tự động ẩn để giữ màn hình gọn gàng)*
-
-| Pháp Bảo | Cách Kiểm Thử | Hiện Tượng Cần Quan Sát |
-| :--- | :--- | :--- |
-| **Chiếu Trải Hoàng Tuyền (`R007`)** | Đứng yên hoặc di chuyển, đợi 8s | Chiếu tự trải dưới đất. Quái bước vào mép chiếu lăn ra ngủ say 3s (x2 Crit). Khi bạn điều khiển Tướng bước/Dash lên chiếu $\rightarrow$ **Kích hoạt trượt ván siêu tốc**, ủi bay quái như chơi bowling! |
-| **Chổi Lông Gà Gia Truyền (`R008`)** | Dùng nút Đánh thường chém Combo 1 ➔ 2 ➔ 3 | Ngay khi kết thúc Nhát chém số 3, một cây **Chổi Lông Gà khổng lồ** từ trên trời giáng xuống dập tắt quái, đẩy lùi 12m/s và gây Choáng 0.8s. |
-| **Cửu Vĩ Hồ Trảo (`W004`)** | Cho quái đánh tụt máu xuống **dưới 35% HP** | Đàn dơi hồ ly tự động **tăng gấp đôi số lượng** và tăng **gấp 2.5 lần hiệu suất Hút Máu (Lifesteal)** giúp Tướng lội ngược dòng sinh tử! |
-| **Trượng Long Vương (`W009`)** | Đứng trước một đám đông quái vật | Cầu sét nước tự động bắn ra và **nảy chuỗi liên hoàn qua 6 mục tiêu**, giật điện gây choáng 0.5s. |
-| **Bút Phán Quan (`W002`)** | Chém trúng quái vật | Tự động xuất hiện vệt mực Chu Sa phán quyết bồi thêm sát thương xuyên giáp. |
-
----
-
-## 🧹 PHẦN 3: TEST CLEANUP KHI THOÁT TRẬN (ZERO-LEAK)
-1. Trong lúc trận đấu đang diễn ra ác liệt (ném Dép, dậm Trống, bắn Nỏ, rải bão khói).
-2. Nhấn nút **Pause ➔ Thoát Trận (Quit to Menu)** để trở về **Sảnh Chờ (Meta Hub)**.
-3. **Tiêu chí đạt chuẩn:**
-   - Mọi thực thể đạn bay, quả cầu xoay, đốm lửa và hiệu ứng hạt VFX **biến mất 100% tức thì**.
-   - Không còn bất kỳ vòng Decal hay icon kỹ năng nào bị đè lên giao diện Sảnh Chờ.
-   - Nhấn **Vào Trận Mới**: Trận đấu mới bắt đầu sạch sẽ, mượt mà ở 60 FPS.
+# 3. Kiểm tra logic Thẻ Loadout & Cấp Sao Meta (103 tests NUnit)
+powershell -ExecutionPolicy Bypass -File Tools/Invoke-UnityBridge.ps1 -Command validate-card-progression -TimeoutSeconds 30
+```
+> **Tiêu chuẩn đạt:** Tất cả các lệnh trên phải trả về `Result: PASS` và không có bất kỳ compile error nào.
