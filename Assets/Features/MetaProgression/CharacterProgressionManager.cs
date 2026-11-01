@@ -22,7 +22,7 @@ namespace ProjectZombie.Features.MetaProgression
     /// Thiết kế chuẩn SOLID, Data-Driven, đọc toàn bộ chi phí & chỉ số từ CharacterStarProgressionSO (Single Source of Truth).
     /// Kế thừa PersistentSingleton<CharacterProgressionManager> chuẩn kiến trúc.
     /// </summary>
-    public class CharacterProgressionManager : PersistentSingleton<CharacterProgressionManager>, ISaveableModule
+    public class CharacterProgressionManager : PersistentSingleton<CharacterProgressionManager>, ISaveableModule, ICharacterProgressionService
     {
         [Header("Cấu Hình Progression")]
         [SerializeField] private CharacterStarProgressionSO _progressionConfig;
@@ -167,6 +167,8 @@ namespace ProjectZombie.Features.MetaProgression
             if (string.IsNullOrEmpty(characterId) || _saveData == null) return 0;
             return _saveData.GetCharacterShards(characterId);
         }
+
+        public int GetCharacterShards(string characterId) => GetCharacterShardCount(characterId);
 
         public bool IsCharacterUnlocked(string characterId)
         {

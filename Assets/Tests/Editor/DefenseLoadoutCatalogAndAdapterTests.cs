@@ -144,32 +144,28 @@ namespace ProjectZombie.Tests.Editor
         }
 
         [Test]
-        public void VillageShop_AllowedRoles_FiltersRecruitmentCorrectly()
+        public void VillageShop_RosterContainsOnlySelectedIds()
         {
-            var shopGameObject = new GameObject("TestVillageShop");
-            var shop = shopGameObject.AddComponent<DefenseVillageShop3D>();
-
+            var actor = new GameObject("TestVillageShop");
             try
             {
-                // Khi chưa cấu hình allowed roles: mặc định cho phép mọi role
-                Assert.IsTrue(shop.IsRoleAllowed(0));
-                Assert.IsTrue(shop.IsRoleAllowed(1));
-                Assert.IsTrue(shop.IsRoleAllowed(2));
-
-                // Cấu hình chỉ cho phép role 0 và 1
-                shop.SetAllowedRoles(new[] { 0, 1 });
-                Assert.IsTrue(shop.IsRoleAllowed(0));
-                Assert.IsTrue(shop.IsRoleAllowed(1));
-                Assert.IsFalse(shop.IsRoleAllowed(2));
-
-                // Khôi phục null -> mọi role lại được phép
-                shop.SetAllowedRoles(null);
-                Assert.IsTrue(shop.IsRoleAllowed(2));
+                var shop = actor.AddComponent<DefenseVillageShop3D>();
+                SetMinionCatalog(shop);
+                shop.ConfigureRoster(new[] { Defense3DCatalog.MINION_DAN_BINH, Defense3DCatalog.MINION_PHU_TAP_DICH });
+                Assert.AreEqual(2, shop.Roster.Squads.Count);
+                Assert.IsTrue(shop.Roster.TryGetSquad(Defense3DCatalog.MINION_DAN_BINH, out _));
+                Assert.IsFalse(shop.Roster.TryGetSquad(Defense3DCatalog.MINION_THAY_LANG, out _));
+                shop.ConfigureRoster(new[] { Defense3DCatalog.MINION_THAY_LANG });
+                Assert.AreEqual(1, shop.Roster.Squads.Count);
             }
-            finally
-            {
-                Object.DestroyImmediate(shopGameObject);
-            }
+            finally { Object.DestroyImmediate(actor); }
+        }
+
+        private static void SetMinionCatalog(DefenseVillageShop3D shop)
+        {
+            var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<DefenseMinionCatalogSO>(DefenseMinionRosterMigration.CATALOG);
+            Assert.NotNull(catalog);
+            typeof(DefenseVillageShop3D).GetField("_minionCatalog", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(shop, catalog);
         }
 
         [Test]
@@ -302,6 +298,57 @@ namespace ProjectZombie.Tests.Editor
                 Object.DestroyImmediate(heroGo);
                 Object.DestroyImmediate(tree);
             }
+        }
+
+        [Test]
+        public void ApplyToShop_DoesNotInjectUnequippedTypes()
+        {
+            var shopGameObject = new GameObject("TestVillageShop");
+            var shop = shopGameObject.AddComponent<DefenseVillageShop3D>();
+
+            try
+            {
+                // Giả lập snapshot chỉ mang 1 lính duy nhất là Xạ Thủ
+                var snapshot = new DefenseLoadoutSnapshot(
+                    heroId: Defense3DCatalog.HERO_THU_SINH,
+                    relicId: Defense3DCatalog.RELIC_DEP_TO_ONG,
+                    minionIds: new[] { Defense3DCatalog.MINION_XA_THU },
+                    towerIds: new[] { Defense3DCatalog.TOWER_CUNG_TIEN }
+                );
+
+                var resolved = DefenseLoadoutResolver.Resolve(snapshot);
+                // Resolver gốc chỉ map những gì snapshot có
+                Assert.AreEqual(1, resolved.AllowedMinionRoles.Count);
+                Assert.AreEqual(DefenseLoadoutResolver.ROLE_MILITIA, resolved.AllowedMinionRoles[0]);
+
+                SetMinionCatalog(shop);
+                DefenseLoadoutRuntimeAdapter.ApplyToShop(resolved, shop);
+                Assert.AreEqual(1, shop.Roster.Squads.Count);
+                Assert.AreEqual(Defense3DCatalog.MINION_XA_THU, shop.Roster.Squads[0].Id);
+            }
+            finally
+            {
+                Object.DestroyImmediate(shopGameObject);
+            }
+        }
+
+        [Test]
+        public void ResolveItemIcon_ReturnsValidSpriteForCoreEntities()
+        {
+            var xaThuIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(Defense3DCatalog.MINION_XA_THU);
+            Assert.IsNotNull(xaThuIcon, "Icon Xạ Thủ Nỏ Thần phải nạp thành công");
+
+            var danBinhIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(Defense3DCatalog.MINION_DAN_BINH);
+            Assert.IsNotNull(danBinhIcon, "Icon Dân Binh phải nạp thành công");
+
+            var phuTapDichIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(Defense3DCatalog.MINION_PHU_TAP_DICH);
+            Assert.IsNotNull(phuTapDichIcon, "Icon Phu Tạp Dịch phải nạp thành công");
+
+            var thayLangIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(Defense3DCatalog.MINION_THAY_LANG);
+            Assert.IsNotNull(thayLangIcon, "Icon Thầy Lang phải nạp thành công");
+
+            var dieuCayIcon = DefenseLoadoutRuntimeAdapter.ResolveItemIcon(Defense3DCatalog.RELIC_DIEU_CAY);
+            Assert.IsNotNull(dieuCayIcon, "Icon Pháp Bảo Điếu Cày phải nạp thành công");
         }
     }
 }

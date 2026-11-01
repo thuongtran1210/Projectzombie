@@ -13,6 +13,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         public LoadoutCatalogEntry HeroEntry { get; }
         public LoadoutCatalogEntry RelicEntry { get; }
         public IReadOnlyList<LoadoutCatalogEntry> MinionEntries { get; }
+        /// <summary>Behavior capabilities only; never use these role indices as squad identities or UI slots.</summary>
         public IReadOnlyList<int> AllowedMinionRoles { get; }
         public IReadOnlyList<LoadoutCatalogEntry> TowerEntries { get; }
 
@@ -65,6 +66,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
             {
                 { Defense3DCatalog.MINION_DAN_BINH, ROLE_MILITIA },
+                { Defense3DCatalog.MINION_XA_THU, ROLE_MILITIA },
                 { Defense3DCatalog.MINION_PHU_TAP_DICH, ROLE_GATHERER },
                 { Defense3DCatalog.MINION_THAY_LANG, ROLE_HEALER }
             };
@@ -91,7 +93,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             ILoadoutCatalog catalog = null,
             ILoadoutOwnership ownership = null)
         {
-            catalog = catalog ?? Defense3DCatalog.CreateDefault();
+            catalog = catalog ?? Defense3DCatalog.CreateExpanded();
+            ownership = ownership ?? DefenseMetaOwnershipAdapter.CreateDefault();
 
             // Nếu snapshot không được cung cấp, sử dụng snapshot mặc định
             DefenseLoadoutSnapshot targetSnapshot = snapshot ?? DefenseLoadoutSnapshot.CreateDefault();

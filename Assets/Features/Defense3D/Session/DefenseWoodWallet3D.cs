@@ -8,7 +8,7 @@ namespace ProjectZombie.Features.Defense3D
     /// - Quái bị hạ gục rơi ra khối Gỗ vật lý -> Tướng nhặt thì được cộng vào ví qua `CollectWood()`.
     /// - Khi xây mới hoặc nâng cấp tháp canh tại các Socket -> Trừ tiền qua `TrySpend()`.
     /// </summary>
-    public sealed class DefenseWoodWallet3D : MonoBehaviour
+    public sealed class DefenseWoodWallet3D : MonoBehaviour, IMinionRecruitWallet
     {
         [Header("=== THÔNG SỐ KHO TÀI NGUYÊN GỖ ===")]
         [Tooltip("Số Gỗ khởi điểm người chơi nhận được ngay khi trận đấu bắt đầu (Mặc định: 100 Gỗ để xây tháp đầu tiên)")]

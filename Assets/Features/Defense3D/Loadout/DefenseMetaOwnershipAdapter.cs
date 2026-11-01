@@ -46,10 +46,14 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             _explicitOwnedIds.Add(Defense3DCatalog.HERO_THANH_DONG);
             _explicitOwnedIds.Add(Defense3DCatalog.HERO_AN_SI);
             _explicitOwnedIds.Add(Defense3DCatalog.RELIC_DEP_TO_ONG);
+            _explicitOwnedIds.Add(Defense3DCatalog.RELIC_DIEU_CAY);
             _explicitOwnedIds.Add(Defense3DCatalog.MINION_DAN_BINH);
             _explicitOwnedIds.Add(Defense3DCatalog.MINION_PHU_TAP_DICH);
             _explicitOwnedIds.Add(Defense3DCatalog.MINION_THAY_LANG);
+            _explicitOwnedIds.Add(Defense3DCatalog.MINION_XA_THU);
             _explicitOwnedIds.Add(Defense3DCatalog.TOWER_CUNG_TIEN);
+            _explicitOwnedIds.Add(Defense3DCatalog.TOWER_BANG_HA);
+            _explicitOwnedIds.Add(Defense3DCatalog.TOWER_HOA_LONG);
         }
 
         public bool IsOwned(string id)
@@ -61,17 +65,20 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             // 1. Kiểm tra danh sách được cấp quyền rõ ràng
             if (_explicitOwnedIds.Contains(id)) return true;
 
-            // 2. Các thực thể khởi đầu miễn phí của Defense 3D luôn được sở hữu (4 Tướng, 1 Bảo, 3 Lính, 1 Trụ)
+            // 2. Các thực thể khởi đầu miễn phí của Defense 3D luôn được sở hữu (4 Tướng, 2 Bảo, 4 Lính, 3 Trụ)
             if (string.Equals(id, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.HERO_THANH_DONG, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.HERO_AN_SI, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.RELIC_DEP_TO_ONG, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_DAN_BINH, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_PHU_TAP_DICH, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.MINION_THAY_LANG, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.MINION_XA_THU, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.TOWER_CUNG_TIEN, StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, Defense3DCatalog.TOWER_BANG_HA, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, Defense3DCatalog.TOWER_HOA_LONG, StringComparison.OrdinalIgnoreCase)) return true;
             if (_saveData?.unlockedTowerIds != null)
             {
                 foreach (string towerId in _saveData.unlockedTowerIds)

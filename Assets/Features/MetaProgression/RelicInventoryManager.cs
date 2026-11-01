@@ -11,7 +11,7 @@ namespace ProjectZombie.Features.MetaProgression
     /// Thiết kế chuẩn SOLID, Data-Driven, đọc toàn bộ chi phí & chỉ số từ RelicStarProgressionSO (Single Source of Truth).
     /// Kế thừa PersistentSingleton<RelicInventoryManager> chuẩn kiến trúc.
     /// </summary>
-    public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>, ISaveableModule
+    public class RelicInventoryManager : PersistentSingleton<RelicInventoryManager>, ISaveableModule, IRelicInventoryService
     {
         [Header("Cấu Hình Progression")]
         [SerializeField] private RelicStarProgressionSO _progressionConfig;

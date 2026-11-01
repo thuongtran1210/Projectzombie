@@ -69,6 +69,18 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             Defense3DCatalog.RELIC_DEP_TO_ONG
         };
 
+        // Danh sách bí danh ID của Điếu Cày Khói Lửa
+        private static readonly HashSet<string> DieuCayAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "R002_DieuCay",
+            "R002",
+            "dieucay",
+            "DieuCay",
+            "wp_dieu_cay",
+            "Skill_DieuCay",
+            Defense3DCatalog.RELIC_DIEU_CAY
+        };
+
         // Danh sách bí danh ID của Lính Làng
         private static readonly Dictionary<string, string> MinionAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -80,7 +92,10 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             { Defense3DCatalog.MINION_PHU_TAP_DICH, Defense3DCatalog.MINION_PHU_TAP_DICH },
             { "thaylang", Defense3DCatalog.MINION_THAY_LANG },
             { "Healer", Defense3DCatalog.MINION_THAY_LANG },
-            { Defense3DCatalog.MINION_THAY_LANG, Defense3DCatalog.MINION_THAY_LANG }
+            { Defense3DCatalog.MINION_THAY_LANG, Defense3DCatalog.MINION_THAY_LANG },
+            { "xathu", Defense3DCatalog.MINION_XA_THU },
+            { "Ranger", Defense3DCatalog.MINION_XA_THU },
+            { Defense3DCatalog.MINION_XA_THU, Defense3DCatalog.MINION_XA_THU }
         };
 
         // Danh sách bí danh ID của Trụ
@@ -90,7 +105,10 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             { "Archer", Defense3DCatalog.TOWER_CUNG_TIEN },
             { "tower_nothan", Defense3DCatalog.TOWER_CUNG_TIEN },
             { "tower_bangha", Defense3DCatalog.TOWER_BANG_HA },
-            { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_CUNG_TIEN }
+            { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_CUNG_TIEN },
+            { "hoalong", Defense3DCatalog.TOWER_HOA_LONG },
+            { "Cannon", Defense3DCatalog.TOWER_HOA_LONG },
+            { Defense3DCatalog.TOWER_HOA_LONG, Defense3DCatalog.TOWER_HOA_LONG }
         };
 
         /// <summary>
@@ -114,9 +132,15 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         {
             defenseRelicId = null;
             if (string.IsNullOrWhiteSpace(rawId)) return false;
-            if (DepToOngAliases.Contains(rawId.Trim()))
+            string clean = rawId.Trim();
+            if (DepToOngAliases.Contains(clean))
             {
                 defenseRelicId = Defense3DCatalog.RELIC_DEP_TO_ONG;
+                return true;
+            }
+            if (DieuCayAliases.Contains(clean))
+            {
+                defenseRelicId = Defense3DCatalog.RELIC_DIEU_CAY;
                 return true;
             }
             return false;
@@ -162,9 +186,9 @@ namespace ProjectZombie.Features.Defense3D.Loadout
         /// </summary>
         public static string MapRelicId(string legacyRelicId)
         {
-            if (!string.IsNullOrWhiteSpace(legacyRelicId) && DepToOngAliases.Contains(legacyRelicId.Trim()))
+            if (TryMapRelicId(legacyRelicId, out var mapped))
             {
-                return Defense3DCatalog.RELIC_DEP_TO_ONG;
+                return mapped;
             }
 
             // Fallback an toàn về Pháp Bảo mặc định
@@ -225,7 +249,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                             result.Add(mappedId);
                         }
                     }
-                    else if (Defense3DCatalog.CreateDefault().TryGetEntry(id.Trim(), out var entry) && entry.Type == LoadoutItemType.Tower && seen.Add(entry.Id))
+                    else if (Defense3DCatalog.CreateExpanded().TryGetEntry(id.Trim(), out var entry) && entry.Type == LoadoutItemType.Tower && seen.Add(entry.Id))
                     {
                         result.Add(entry.Id);
                     }

@@ -22,6 +22,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroKitSO _heroKit;
         [Tooltip("Danh mục toàn bộ Tướng 3D để tra cứu prefab và chỉ số")]
         [SerializeField] private DefenseHeroCatalogSO _heroCatalog;
+        private DefenseHeroKitSO _runtimeHeroKit;
 
         [Header("=== 2. QUẢN LÝ VÒNG LẶP TRẬN ĐẤU & GIAO DIỆN ===")]
         [Tooltip("Bộ đếm thời gian trận 600 giây (10 phút) và điều phối Wave quái")]
@@ -138,6 +139,9 @@ namespace ProjectZombie.Features.Defense3D
                 BindEffects();
                 ApplyLoadout();
                 foreach (var participant in _sceneParticipants)
+                    if (participant is DefenseVillageShop3D minionShop)
+                        await minionShop.PrepareRosterAsync(_combatTextCamera != null ? _combatTextCamera : Camera.main);
+                foreach (var participant in _sceneParticipants)
                     if (participant is DefenseTowerBuildPrototype3D builder)
                         await builder.PrepareAsync(_runtimeRoots.FriendlyTargets);
                 if (!_run.InitializeSession(_session, _wallet, _combatText, _effectService))
@@ -217,9 +221,16 @@ namespace ProjectZombie.Features.Defense3D
                 DefenseLoadoutRuntimeAdapter.ApplyTowerAndMinionStarBonuses(resolved, _session?.Modifiers, null);
             }
 
-            if (_heroKit != null)
+            var heroDef = _heroCatalog?.GetHeroById(resolved?.HeroId);
+            var baseKit = heroDef?.HeroKit ?? _heroKit;
+            if (baseKit != null)
             {
-                DefenseLoadoutRuntimeAdapter.ApplyToHeroKit(resolved, _heroKit);
+                if (_runtimeHeroKit == null)
+                {
+                    _runtimeHeroKit = ScriptableObject.Instantiate(baseKit);
+                    _runtimeHeroKit.name = baseKit.name + "_Runtime";
+                }
+                DefenseLoadoutRuntimeAdapter.ApplyToHeroKit(resolved, _runtimeHeroKit);
                 int bonusRerolls = DefenseLoadoutRuntimeAdapter.ApplySanctuaryUpgrades(_session?.Modifiers, _heroHealth, motor);
                 if (_matchUI != null && bonusRerolls > 0) _matchUI.SetBonusRerolls(bonusRerolls);
                 int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(resolved.RelicId);
@@ -230,11 +241,11 @@ namespace ProjectZombie.Features.Defense3D
                 {
                     foreach (var presenter in _skillPresenters)
                     {
-                        if (presenter != null && presenter.Kind == DefenseSkillKind.DepToOng)
+                        if (presenter != null && (presenter.Kind == DefenseSkillKind.Relic || presenter.Kind == DefenseSkillKind.DepToOng))
                         {
                             presenter.SetMetaSkillBonuses(relicDmgBonus, relicCdReduction, relicAreaBonus);
                         }
-                        else if (presenter != null && presenter.Kind == DefenseSkillKind.ScholarSignature)
+                        else if (presenter != null && (presenter.Kind == DefenseSkillKind.Signature || presenter.Kind == DefenseSkillKind.ScholarSignature))
                         {
                             // Signature damage already scales through its shared attack owner.
                             presenter.SetMetaSkillBonuses(0f, signatureCdReduction, 0f);
@@ -242,6 +253,11 @@ namespace ProjectZombie.Features.Defense3D
                     }
                 }
             }
+
+            DefenseLoadoutRuntimeAdapter.ApplyDynamicSkillBindings(resolved, _skillPresenters, _heroHealth, attack, motor, visual, _session);
+            foreach (var presenter in _skillPresenters)
+                if (presenter != null && presenter.Effect is DefensePipeRelicEffect3D pipe)
+                    pipe.BindPresentation(_effectService, presenter.DefinitionSource.PresentationProfile);
         }
 
         private void ValidateBindings()
@@ -275,8 +291,9 @@ namespace ProjectZombie.Features.Defense3D
             }
             if (!hasHeroMotor || !hasHeroAttack || !hasTowerBuilder || !hasBaseHealth || !hasHeroHealth)
                 throw new InvalidOperationException("Participants must include Hero Motor/Attack/Health, Base Health and Tower Builder.");
-            if (_heroKit == null) throw new InvalidOperationException("Assign authored Hero Kit.");
-            _heroKit.Validate();
+            var currentKit = _runtimeHeroKit ?? _heroKit;
+            if (currentKit == null) throw new InvalidOperationException("Assign authored Hero Kit.");
+            currentKit.Validate();
             if (_skillPresenters == null || _skillPresenters.Length != 4)
                 throw new InvalidOperationException("Assign Attack, Dash, Signature and Relic presenters.");
             var kinds = new HashSet<DefenseSkillKind>();
@@ -285,7 +302,12 @@ namespace ProjectZombie.Features.Defense3D
                 if (presenter == null || presenter.gameObject.scene != gameObject.scene || !presenter.isActiveAndEnabled)
                     throw new InvalidOperationException("Skill presenters must be active instances in this scene.");
                 presenter.ValidateBindings();
-                if (_heroKit.DefinitionFor(presenter.Kind) != presenter.DefinitionSource || !kinds.Add(presenter.Kind) || !unique.Contains(presenter.Effect))
+                var kitDef = currentKit.DefinitionFor(presenter.Kind);
+                bool defMatches = kitDef == presenter.DefinitionSource ||
+                    (kitDef != null && presenter.DefinitionSource != null && kitDef.Capture().Kind == presenter.DefinitionSource.Capture().Kind);
+                bool isEffectParticipant = presenter.Effect != null &&
+                    (unique.Contains(presenter.Effect) || presenter.Effect.gameObject.scene == gameObject.scene);
+                if (!defMatches || !kinds.Add(presenter.Kind) || !isEffectParticipant)
                     throw new InvalidOperationException("Skill kinds must be unique and effects must be bound scene participants.");
             }
         }
@@ -377,6 +399,11 @@ namespace ProjectZombie.Features.Defense3D
         private void DisposeSession()
         {
             IsReady = false;
+            if (_runtimeHeroKit != null)
+            {
+                Destroy(_runtimeHeroKit);
+                _runtimeHeroKit = null;
+            }
             if (_session != null) _session.RuntimeAdapter.Run.State.Changed -= ProjectCompatibilityState;
             if (_session != null) _session.RunReset -= BeginNewAttempt;
             if (_basicAttackPresenter != null) _basicAttackPresenter.Unbind();

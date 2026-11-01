@@ -1,3 +1,4 @@
+using ProjectZombie.Features.Defense3D.UI;
 using System;
 using UnityEngine;
 using ProjectZombie.Features.MetaProgression;
@@ -20,7 +21,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             if (config != null) return config;
             try
             {
-                if (CharacterProgressionManager.Instance?.ProgressionConfig != null)
+                if (CharacterProgressionManager.HasInstance && CharacterProgressionManager.Instance.ProgressionConfig != null)
                 {
                     return CharacterProgressionManager.Instance.ProgressionConfig;
                 }
@@ -49,7 +50,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             if (config != null) return config;
             try
             {
-                if (RelicInventoryManager.Instance?.ProgressionConfig != null)
+                if (RelicInventoryManager.HasInstance && RelicInventoryManager.Instance.ProgressionConfig != null)
                 {
                     return RelicInventoryManager.Instance.ProgressionConfig;
                 }
@@ -73,10 +74,121 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             return _cachedRelicConfig;
         }
 
+        private static readonly System.Collections.Generic.Dictionary<string, Sprite> _cachedIcons =
+            new System.Collections.Generic.Dictionary<string, Sprite>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Tra cứu và nạp icon đại diện cho các thực thể Loadout (Tướng, Pháp Bảo, Lính, Trụ).
+        /// Tự động cache kết quả để đảm bảo 0 GC allocations trong gameplay loop.
+        /// Hỗ trợ cả môi trường Editor lẫn Android APK runtime.
+        /// </summary>
+        public static Sprite ResolveItemIcon(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return null;
+            string key = id.Trim();
+            if (_cachedIcons.TryGetValue(key, out var cached) && cached != null)
+            {
+                return cached;
+            }
+
+            Sprite loaded = null;
+            string path = null;
+
+            if (string.Equals(key, Defense3DCatalog.MINION_XA_THU, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(key, "minion_xathu", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(key, "xathu", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/Weapons/Icon_W001_NoThan.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.MINION_DAN_BINH, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "minion_danbinh", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "danbinh", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/UI/Codex/DanBinh.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.MINION_PHU_TAP_DICH, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "minion_phutapdich", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "phutapdich", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/UI/Codex/PhuTapDich.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.MINION_THAY_LANG, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "minion_thaylang", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "thaylang", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/UI/Codex/ThayLang.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "relic_dieucay", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "dieucay", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/Weapons/Icon_W_PIPE.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.RELIC_DEP_TO_ONG, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "relic_deptoong", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "deptoong", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/Weapons/Icon_W_SLIPPER.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.TOWER_CUNG_TIEN, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "tower_cungtien", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/UI/Codex/ThapCungTien.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.TOWER_BANG_HA, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "tower_bangha", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/Weapons/Icon_W011_NuocThanh.png";
+            }
+            else if (string.Equals(key, Defense3DCatalog.TOWER_HOA_LONG, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(key, "tower_hoalong", StringComparison.OrdinalIgnoreCase))
+            {
+                path = "Assets/Art/Weapons/Icon_W006_LuuDan.png";
+            }
+
+            if (path != null)
+            {
+#if UNITY_EDITOR
+                loaded = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(path);
+#endif
+            }
+
+            if (loaded != null)
+            {
+                _cachedIcons[key] = loaded;
+            }
+            return loaded;
+        }
+
+        /// <summary>
+        /// Tra cứu icon đặc thù cho vai trò lính trong Village Shop và Command Dock.
+        /// </summary>
+        public static Sprite ResolveMinionIcon(string minionId, int role)
+        {
+            if (!string.IsNullOrEmpty(minionId))
+            {
+                var icon = ResolveItemIcon(minionId);
+                if (icon != null) return icon;
+            }
+
+            switch (role)
+            {
+                case DefenseLoadoutResolver.ROLE_MILITIA:
+                    return ResolveItemIcon(Defense3DCatalog.MINION_DAN_BINH);
+                case DefenseLoadoutResolver.ROLE_GATHERER:
+                    return ResolveItemIcon(Defense3DCatalog.MINION_PHU_TAP_DICH);
+                case DefenseLoadoutResolver.ROLE_HEALER:
+                    return ResolveItemIcon(Defense3DCatalog.MINION_THAY_LANG);
+                default:
+                    return null;
+            }
+        }
+
         public static void ApplyToShop(DefenseResolvedLoadout resolved, DefenseVillageShop3D shop)
         {
             if (resolved == null || shop == null) return;
-            shop.SetAllowedRoles(resolved.AllowedMinionRoles);
+
+            shop.ConfigureRoster(resolved.MinionIds);
         }
 
         public static void ApplyTowers(DefenseResolvedLoadout resolved, DefenseTowerBuildPrototype3D towerBuilder)
@@ -98,11 +210,31 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 {
                     relicDefinition = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DepToOng");
                 }
+                else if (string.Equals(resolved.RelicId, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase))
+                {
+                    relicDefinition = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DieuCay");
+                }
             }
 
             if (relicDefinition != null)
             {
                 heroKit.SetRelic(relicDefinition);
+            }
+
+            if (!string.IsNullOrEmpty(resolved.HeroId))
+            {
+                if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(resolved.HeroId, "dao-si", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DaoSi_Signature");
+                    if (sigDef != null) heroKit.SetSignature(sigDef);
+                }
+                else if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(resolved.HeroId, "thu-sinh", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_ScholarSignature");
+                    if (sigDef != null) heroKit.SetSignature(sigDef);
+                }
             }
         }
 
@@ -126,23 +258,29 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 }
                 else
                 {
-                    var progManager = CharacterProgressionManager.Instance;
-                    if (progManager != null)
+                    if (CharacterProgressionManager.HasInstance)
                     {
-                        star = Mathf.Max(star, progManager.GetCharacterStarLevel(clean));
-                        if (!string.IsNullOrEmpty(metaId))
+                        var progManager = CharacterProgressionManager.Instance;
+                        if (progManager != null)
                         {
-                            star = Mathf.Max(star, progManager.GetCharacterStarLevel(metaId));
+                            star = Mathf.Max(star, progManager.GetCharacterStarLevel(clean));
+                            if (!string.IsNullOrEmpty(metaId))
+                            {
+                                star = Mathf.Max(star, progManager.GetCharacterStarLevel(metaId));
+                            }
                         }
                     }
 
-                    var gmSave = ProjectZombie.Core.Save.GameManager.Instance?.SaveData;
-                    if (gmSave != null)
+                    if (ProjectZombie.Core.Save.GameManager.HasInstance)
                     {
-                        star = Mathf.Max(star, gmSave.GetCharacterStarLevel(clean));
-                        if (!string.IsNullOrEmpty(metaId))
+                        var gmSave = ProjectZombie.Core.Save.GameManager.Instance?.SaveData;
+                        if (gmSave != null)
                         {
-                            star = Mathf.Max(star, gmSave.GetCharacterStarLevel(metaId));
+                            star = Mathf.Max(star, gmSave.GetCharacterStarLevel(clean));
+                            if (!string.IsNullOrEmpty(metaId))
+                            {
+                                star = Mathf.Max(star, gmSave.GetCharacterStarLevel(metaId));
+                            }
                         }
                     }
                 }
@@ -217,23 +355,29 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 }
                 else
                 {
-                    var relicMgr = RelicInventoryManager.Instance;
-                    if (relicMgr != null)
+                    if (RelicInventoryManager.HasInstance)
                     {
-                        star = Mathf.Max(star, relicMgr.GetRelicStarLevel(clean));
-                        for (int i = 0; i < aliases.Length; i++)
+                        var relicMgr = RelicInventoryManager.Instance;
+                        if (relicMgr != null)
                         {
-                            star = Mathf.Max(star, relicMgr.GetRelicStarLevel(aliases[i]));
+                            star = Mathf.Max(star, relicMgr.GetRelicStarLevel(clean));
+                            for (int i = 0; i < aliases.Length; i++)
+                            {
+                                star = Mathf.Max(star, relicMgr.GetRelicStarLevel(aliases[i]));
+                            }
                         }
                     }
 
-                    var gmSave = ProjectZombie.Core.Save.GameManager.Instance?.SaveData;
-                    if (gmSave != null)
+                    if (ProjectZombie.Core.Save.GameManager.HasInstance)
                     {
-                        star = Mathf.Max(star, gmSave.GetRelicStarLevel(clean));
-                        for (int i = 0; i < aliases.Length; i++)
+                        var gmSave = ProjectZombie.Core.Save.GameManager.Instance?.SaveData;
+                        if (gmSave != null)
                         {
-                            star = Mathf.Max(star, gmSave.GetRelicStarLevel(aliases[i]));
+                            star = Mathf.Max(star, gmSave.GetRelicStarLevel(clean));
+                            for (int i = 0; i < aliases.Length; i++)
+                            {
+                                star = Mathf.Max(star, gmSave.GetRelicStarLevel(aliases[i]));
+                            }
                         }
                     }
                 }
@@ -328,17 +472,11 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 
             if (shop != null)
             {
-                string[] roleIds =
+                foreach (var squad in shop.Roster.Squads)
                 {
-                    Defense3DCatalog.MINION_DAN_BINH,
-                    Defense3DCatalog.MINION_PHU_TAP_DICH,
-                    Defense3DCatalog.MINION_THAY_LANG
-                };
-                for (int role = 0; role < roleIds.Length; role++)
-                {
-                    int minionStar = GetEffectiveRelicStarLevel(roleIds[role], saveData);
+                    int minionStar = GetEffectiveRelicStarLevel(squad.Id, saveData);
                     EvaluateMinionStarBonuses(minionStar, out float hpBonus, out float spdBonus);
-                    shop.SetRoleStatMultipliers(role, 1f + hpBonus, 1f + spdBonus);
+                    shop.SetSquadStatMultipliers(squad.Id, 1f + hpBonus, 1f + spdBonus);
                 }
             }
 
@@ -410,6 +548,94 @@ namespace ProjectZombie.Features.Defense3D.Loadout
                 {
                     visual.SetKit(heroDef.HeroKit);
                 }
+
+                if (visual != null && heroDef.HeroPrefab != null)
+                {
+                    visual.MountHeroPrefab(heroDef.HeroPrefab);
+                }
+            }
+        }
+        /// <summary>
+        /// Nạp động kỹ năng Tuyệt Kỹ và Pháp Bảo vào Presenter UI và Component hiệu ứng (Clean/SOLID).
+        /// </summary>
+        public static void ApplyDynamicSkillBindings(
+            DefenseResolvedLoadout resolved,
+            DefenseSkillPresenter3D[] skillPresenters,
+            DefenseHeroHealth3D heroHealth,
+            DefenseHeroAutoAttack3D attack,
+            DefenseHeroMotor3D motor,
+            DefenseHeroVisualController3D visual,
+            DefenseSession session)
+        {
+            if (resolved == null || skillPresenters == null) return;
+
+            DefenseSkillPresenter3D signaturePresenter = null;
+            DefenseSkillPresenter3D relicPresenter = null;
+
+            foreach (var presenter in skillPresenters)
+            {
+                if (presenter == null) continue;
+                if (presenter.Kind == DefenseSkillKind.Signature || presenter.Kind == DefenseSkillKind.ScholarSignature)
+                {
+                    signaturePresenter = presenter;
+                }
+                else if (presenter.Kind == DefenseSkillKind.Relic || presenter.Kind == DefenseSkillKind.DepToOng)
+                {
+                    relicPresenter = relicPresenter ?? presenter;
+                }
+            }
+
+            // 1. Pháp Bảo Điếu Cày Khói Lửa
+            if (string.Equals(resolved.RelicId, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase))
+            {
+                var dieuCayDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DieuCay");
+                if (dieuCayDef != null && relicPresenter != null && heroHealth != null)
+                {
+                    var pipeEffect = heroHealth.GetComponent<DefensePipeRelicEffect3D>();
+                    if (pipeEffect == null)
+                    {
+                        pipeEffect = heroHealth.gameObject.AddComponent<DefensePipeRelicEffect3D>();
+                    }
+                    if (session != null) pipeEffect.BindGameplay(session);
+
+                    Sprite pipeIcon = dieuCayDef.Icon;
+#if UNITY_EDITOR
+                    if (pipeIcon == null)
+                    {
+                        pipeIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_PIPE.png");
+                    }
+#endif
+                    relicPresenter.Rebind(dieuCayDef, pipeEffect, pipeIcon, "ĐIẾU CÀY");
+                }
+            }
+
+            // 2. Tuyệt Kỹ Tướng Đạo Sĩ
+            if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase))
+            {
+                var daoSiSigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DaoSi_Signature");
+                if (daoSiSigDef != null && signaturePresenter != null && heroHealth != null)
+                {
+                    var lightningEffect = heroHealth.GetComponent<DefenseLightningSignatureEffect3D>();
+                    if (lightningEffect == null)
+                    {
+                        lightningEffect = heroHealth.gameObject.AddComponent<DefenseLightningSignatureEffect3D>();
+                    }
+                    lightningEffect.ConfigureComponents(heroHealth, attack, motor);
+                    if (session != null) lightningEffect.BindGameplay(session);
+
+                    Sprite sigIcon = Resources.Load<Sprite>("Art/UI/HeroSkills/Icon_Skill_DaoSi_Signature");
+#if UNITY_EDITOR
+                    if (sigIcon == null)
+                    {
+                        sigIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_DaoSi_Signature.png");
+                    }
+#endif
+                    signaturePresenter.Rebind(daoSiSigDef, lightningEffect, sigIcon, "THIÊN LÔI");
+                    if (visual != null)
+                    {
+                        visual.SetSignatureEffect(lightningEffect);
+                    }
+                }
             }
         }
 
@@ -420,7 +646,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             PermanentUpgradeTreeData tree = null,
             MetaProgressionSaveData saveData = null)
         {
-            if (saveData == null)
+            if (saveData == null && ProjectZombie.Core.Save.GameManager.HasInstance)
             {
                 try { saveData = ProjectZombie.Core.Save.GameManager.Instance?.SaveData; } catch { }
             }

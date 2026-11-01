@@ -28,6 +28,7 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseAirNavigation3D AirNavigation => _airNavigation;
         public DefenseWaterNavigation3D WaterNavigation => _waterNavigation;
         public Transform Actors => _actors;
+        public Transform Allies => _allies;
         public Transform Staging => _staging;
         public Transform Pickups => _pickups;
         public Transform Pools => _pools;
