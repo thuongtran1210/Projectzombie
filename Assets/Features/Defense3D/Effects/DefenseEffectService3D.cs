@@ -68,25 +68,7 @@ namespace ProjectZombie.Features.Defense3D
                 if (victim < 0) return default;
                 StopAt(victim);
             }
-            if (!_pools.TryGetValue(profile.Prefab, out var pool))
-            {
-                var prefab = profile.Prefab;
-                var storage = new GameObject(prefab.name);
-                storage.transform.SetParent(_roots.EffectPools, false);
-                _storageGroups.Add(storage);
-                pool = new OwnedPool<DefenseEffectInstance3D>(() =>
-                {
-                    var instance = DefenseEnemyPrefab3D.Instantiate(prefab.gameObject, storage.transform);
-                    instance.SetActive(false);
-                    return instance.GetComponent<DefenseEffectInstance3D>();
-                }, item =>
-                {
-                    item.ResetPresentation();
-                    _pendingReturns.Enqueue((pool, item, storage.transform));
-                    if (_parking == null && isActiveAndEnabled) _parking = StartCoroutine(ParkReturns());
-                }, item => DefensePoolObjects.Destroy(item.gameObject), Mathf.Max(0, _maxIdlePerPrefab), item => item != null);
-                _pools.Add(prefab, pool);
-            }
+            var pool = GetPool(profile.Prefab);
             var lease = pool.Acquire();
             var handle = new DefenseEffectHandle(this, checked(++_nextHandle));
             try
@@ -110,6 +92,36 @@ namespace ProjectZombie.Features.Defense3D
                 pool.TryReturn(lease); throw;
             }
         }
+        /// <summary>Warms a small authored effect pool during scene composition, before gameplay starts.</summary>
+        public void Prewarm(DefenseEffectProfileSO profile, int count)
+        {
+            if (_gameplay == null || _roots == null || profile == null || !profile.IsValid) return;
+            GetPool(profile.Prefab).Prewarm(Mathf.Clamp(count, 0, 2));
+        }
+
+        private OwnedPool<DefenseEffectInstance3D> GetPool(DefenseEffectInstance3D prefab)
+        {
+            if (!_pools.TryGetValue(prefab, out var pool))
+            {
+                var storage = new GameObject(prefab.name);
+                storage.transform.SetParent(_roots.EffectPools, false);
+                _storageGroups.Add(storage);
+                pool = new OwnedPool<DefenseEffectInstance3D>(() =>
+                {
+                    var instance = DefenseEnemyPrefab3D.Instantiate(prefab.gameObject, storage.transform);
+                    instance.SetActive(false);
+                    return instance.GetComponent<DefenseEffectInstance3D>();
+                }, item =>
+                {
+                    item.ResetPresentation();
+                    _pendingReturns.Enqueue((pool, item, storage.transform));
+                    if (_parking == null && isActiveAndEnabled) _parking = StartCoroutine(ParkReturns());
+                }, item => DefensePoolObjects.Destroy(item.gameObject), Mathf.Max(0, _maxIdlePerPrefab), item => item != null);
+                _pools.Add(prefab, pool);
+            }
+            return pool;
+        }
+
         private IEnumerator ParkReturns()
         {
             // Đợi frame tiếp theo để không reparent trong callback disable của ancestor.
