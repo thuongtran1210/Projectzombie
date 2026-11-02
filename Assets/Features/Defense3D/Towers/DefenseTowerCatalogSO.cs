@@ -48,6 +48,14 @@ namespace ProjectZombie.Features.Defense3D
         }
         private static void ValidateAttack(DefenseTowerAttackProfileSO attack)
         {
+            if (attack.Mode == DefenseTowerAttackMode.Laser)
+            {
+                if (attack.BeamEffect == null || !attack.BeamEffect.IsValid || attack.BeamEffect.Sustained ||
+                    !DefenseDamageRules.IsFinite(attack.DamageMultiplier) || attack.DamageMultiplier <= 0f ||
+                    !DefenseDamageRules.IsFinite(attack.Cooldown) || attack.Cooldown < 0f)
+                    throw new InvalidOperationException("Laser attack requires a valid timed beam and finite damage/cooldown.");
+                return;
+            }
             var definition = attack.Projectile;
             if (definition != null && (!DefenseDamageRules.IsFinite(definition.Speed) || definition.Speed <= 0f ||
                 !DefenseDamageRules.IsFinite(definition.MaxLifetime) || definition.MaxLifetime <= 0f ||

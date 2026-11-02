@@ -10,6 +10,89 @@ namespace ProjectZombie.Tests.Editor
 {
     public sealed class DefenseModularTowerTests
     {
+        private sealed class RecordingProjectileService : IDefenseProjectileService
+        {
+            public int Launches;
+            public bool TryLaunch(DefenseProjectileLaunchRequest request) => true;
+            public bool CanLaunch(GameObject prefab, int count) => true;
+            public bool LaunchProjectile(GameObject prefab, DefenseProjectileLaunchRequest request,
+                IReadOnlyList<SO_AttackEffect> effects, DefenseProjectileDefinitionSO definition = null)
+            { Launches++; return true; }
+        }
+
+        [Test]
+        public void GameplayBindingPreservesInjectedProjectileService()
+        {
+            var root = new GameObject("Service regression");
+            var session = new DefenseSession();
+            try
+            {
+                var catalog = AssetDatabase.LoadAssetAtPath<DefenseTowerCatalogSO>(DefenseTowerArchitectureInstaller.CATALOG);
+                var data = catalog.Find(Defense3DCatalog.TOWER_CUNG_TIEN).Data;
+                var service = new RecordingProjectileService();
+                var tower = root.AddComponent<DefenseTowerPrototype3D>();
+                tower.Configure(data, service); tower.BindGameplay(session);
+                tower.BindGameplay(session);
+                var target = root.AddComponent<TowerSmokeTarget>();
+                session.Start();
+                Assert.IsTrue(tower.TryFire(target, data.Attack));
+                Assert.AreEqual(data.Attack.Shots, service.Launches);
+            }
+            finally { session.Dispose(); UnityEngine.Object.DestroyImmediate(root); }
+        }
+
+        [TestCase(0)]
+        [TestCase(25)]
+        public void UpgradeUsesAuthoredCostAndRejectsWalletCallbackReentry(int cost)
+        {
+            var root = new GameObject("Upgrade regression");
+            var session = new DefenseSession();
+            var catalog = AssetDatabase.LoadAssetAtPath<DefenseTowerCatalogSO>(DefenseTowerArchitectureInstaller.CATALOG);
+            var data = UnityEngine.Object.Instantiate(catalog.Find(Defense3DCatalog.TOWER_CUNG_TIEN).Data);
+            try
+            {
+                var tier = data.Levels[1]; tier.buildCost = cost; data.Levels[1] = tier;
+                var tower = root.AddComponent<DefenseTowerPrototype3D>();
+                tower.Configure(data, null); tower.BindGameplay(session);
+                var wallet = root.AddComponent<DefenseWoodWallet3D>(); wallet.ResetWallet();
+                int before = wallet.Wood;
+                int callbacks = 0;
+                bool nestedUpgrade = false;
+                wallet.Changed += () => { if (++callbacks == 1) nestedUpgrade = tower.TryUpgrade(wallet); };
+                session.Start();
+                Assert.AreEqual(cost, tower.UpgradeCost);
+                Assert.IsTrue(tower.TryUpgrade(wallet));
+                Assert.IsFalse(nestedUpgrade);
+                Assert.AreEqual(2, tower.Level);
+                Assert.AreEqual(before - cost, wallet.Wood);
+                Assert.AreEqual(1, callbacks);
+            }
+            finally { session.Dispose(); UnityEngine.Object.DestroyImmediate(root); UnityEngine.Object.DestroyImmediate(data); }
+        }
+
+        [Test]
+        public void DestroyedTargetIsRejectedWithoutConsumingProjectile()
+        {
+            var root = new GameObject("Target regression");
+            var targetObject = new GameObject("Destroyed target");
+            var session = new DefenseSession();
+            try
+            {
+                var catalog = AssetDatabase.LoadAssetAtPath<DefenseTowerCatalogSO>(DefenseTowerArchitectureInstaller.CATALOG);
+                var data = catalog.Find(Defense3DCatalog.TOWER_CUNG_TIEN).Data;
+                var pool = root.AddComponent<DefenseProjectilePool3D>(); pool.BindGameplay(session);
+                pool.Prewarm(data.Attack.Projectile.VisualPrefab, 1);
+                var tower = root.AddComponent<DefenseTowerPrototype3D>();
+                tower.Configure(data, pool); tower.BindGameplay(session);
+                var target = targetObject.AddComponent<TowerSmokeTarget>();
+                UnityEngine.Object.DestroyImmediate(targetObject);
+                session.Start();
+                Assert.IsFalse(tower.TryFire(target, data.Attack));
+                Assert.AreEqual(0, pool.ActiveCount);
+            }
+            finally { session.Dispose(); UnityEngine.Object.DestroyImmediate(root); if (targetObject != null) UnityEngine.Object.DestroyImmediate(targetObject); }
+        }
+
         [Test]
         public void NewCatalogMetadataSurvivesLoadoutIdMappingWithoutCodeConstants()
         {
@@ -67,6 +150,15 @@ namespace ProjectZombie.Tests.Editor
                 var tick = typeof(DefenseTowerPrototype3D).GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 tick.Invoke(towers[0], null); tick.Invoke(towers[1], null);
                 Assert.AreEqual(2, pool.ActiveCount);
+                tick.Invoke(towers[0], null); tick.Invoke(towers[1], null);
+                Assert.AreEqual(2, pool.ActiveCount);
+                session.Restart();
+                foreach (var tower in towers)
+                    typeof(DefenseTowerPrototype3D).GetField("_currentTarget", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(tower, target);
+                session.Tick(4f, 1000, false);
+                tick.Invoke(towers[0], null); tick.Invoke(towers[1], null);
+                Assert.AreEqual(0, pool.ActiveCount);
+                session.Tick(4f, 1000, false);
                 tick.Invoke(towers[0], null); tick.Invoke(towers[1], null);
                 Assert.AreEqual(2, pool.ActiveCount);
             }

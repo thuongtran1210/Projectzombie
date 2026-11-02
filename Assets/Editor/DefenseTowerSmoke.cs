@@ -51,7 +51,7 @@ public static class DefenseTowerSmoke
             var app = AppCompositionRoot.Instance;
             var defaults = DefenseLoadoutSnapshot.CreateDefault();
             var loadout = new DefenseLoadoutSnapshot(defaults.HeroId, defaults.RelicId, defaults.MinionIds,
-                new[] { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_BANG_HA });
+                new[] { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_BANG_HA, "tower_hoalong" });
             var stage = app.Stages.Stages.First(x => x.CanLaunchDefense);
             Check(await app.Flow.EnterMatchAsync(new MatchLaunchRequest(stage, loadout)), "enter map with both tower types");
             DefenseSceneCompositionRoot composition;
@@ -97,27 +97,96 @@ public static class DefenseTowerSmoke
             var ice = builder.GetTower(socket);
             var targetObject = new GameObject("Tower smoke target");
             targetObject.transform.position = ice.transform.position + Vector3.right * 2;
+            var laserTargetVisual = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Defense3D/DefenseEnemy_Magiap.prefab"), targetObject.transform);
+            laserTargetVisual.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false; laserTargetVisual.transform.localPosition = Vector3.zero; laserTargetVisual.SetActive(true);
             var target = targetObject.AddComponent<TowerSmokeTarget>();
-            Check(ice.TryFire(target, ice.TowerData.Attack), "ice launches configured projectile");
-            var projectile = UnityEngine.Object.FindObjectsOfType<ProjectileCore3D>().First(x => x.IsInFlight);
+            int beforeIceProjectiles = pool.ActiveCount;
             session.Pause();
-            float progress = projectile.Progress;
-            projectile.Tick(100);
-            Check(projectile.Progress == progress && target.Damage == 0, "projectile pauses with session");
+            Check(!ice.TryFire(target, ice.TowerData.Attack) && target.Damage == 0, "laser cannot deal damage while paused");
             session.Resume();
-            projectile.Tick(100);
-            Check(target.Damage > 0 && target.Slows == 1, "ice hit applies damage and slow once");
-            for (int i = 0; i < pool.CapacityPerType; i++) Check(ice.TryFire(target, ice.TowerData.Attack), "fill projectile budget");
-            float damage = target.Damage;
-            Check(!ice.TryFire(target, ice.TowerData.Attack) && target.Damage == damage, "exhausted pool does not become instant damage");
+            var laserCamera = (Camera)new SerializedObject(composition).FindProperty("_combatTextCamera").objectReferenceValue;
+            for (int level = 1; level <= 3; level++)
+            {
+                if (level > 1) Check(builder.TryUpgradeNearest(), "upgrade ice laser tier");
+                float previousDamage = target.Damage; int previousSlows = target.Slows;
+                Check(ice.TryFire(target, ice.TowerData.Attack), "ice fires real laser pulse");
+                Check(Mathf.Abs(target.Damage - previousDamage - ice.EffectiveDamage * level) < .001f && target.Slows == previousSlows + 1, "laser applies per-beam damage and one slow per target");
+                var activeBeams = UnityEngine.Object.FindObjectsOfType<DefenseTowerLaserVisual3D>();
+                Check(activeBeams.Length == level, "level matches actual visible laser count");
+                session.Pause();
+                foreach (var beam in activeBeams) Check(beam.GetComponentInParent<DefenseEffectInstance3D>().gameObject.activeInHierarchy, "pause retains frozen beam pulse");
+                session.Resume();
+                CaptureStructures(laserCamera, ice.transform.position + Vector3.right, "scratch/IceLaserLevel" + level + ".png", 3.5f);
+            }
+            Check(pool.ActiveCount == beforeIceProjectiles, "ice laser never acquires projectile instances");
             Check(UnityEngine.Object.FindObjectsOfType<ProjectileCore3D>(true).Length == projectileCount, "combat does not create projectiles");
             Check(UnityEngine.Object.FindObjectsOfType<DefenseTowerPrototype3D>(true).Length == towerCount, "combat does not create towers");
+            builder.SetAllowedTowers(new[] { Defense3DCatalog.TOWER_CUNG_TIEN, Defense3DCatalog.TOWER_BANG_HA, "tower_hoalong" });
+            int fireSocket = socket - 1;
+            info.HeroSpawn.position = builder.GetSocket(fireSocket).position;
+            Check(builder.TryBuild(fireSocket, "tower_hoalong"), "build fire tower from catalog");
+            var fire = builder.GetTower(fireSocket);
+            var fireTargetObject = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Defense3D/DefenseEnemy_Magiap.prefab"));
+            fireTargetObject.name = "Tower smoke burn target";
+            fireTargetObject.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+            fireTargetObject.transform.position = fire.transform.position + Vector3.right * 1.5f;
+            var fireTarget = fireTargetObject.GetComponent<DefenseEnemy3D>();
+            fireTarget.BindGameplay(session);
+            fireTarget.Initialize(new DefenseEnemyStats("test", "test", DefenseEnemyLocomotionType.GroundNavMesh, 1000, 1, 1, 0, 0));
+            fireTarget.BindTargets(session.TargetRegistry);
+            fireTargetObject.SetActive(true);
+            Check(fire.TryFire(fireTarget, fire.TowerData.Attack), "fire launches separate shell");
+            var fireProjectile = UnityEngine.Object.FindObjectsOfType<ProjectileCore3D>().First(x => x.IsInFlight && x.name.StartsWith("P_Proj_Fireball_HoaLong"));
+            session.Pause(); fireProjectile.Tick(100);
+            Check(fireTarget.CurrentHP == 1000, "fire explosion pauses with session");
+            session.Resume(); fireProjectile.Tick(100);
+            Check(fireTarget.CurrentHP < 1000 && fireTarget.Status.IsBurning, "fire explosion applies burn to real actor");
+            float beforeBurn = fireTarget.CurrentHP;
+            session.Tick(.5f, 1000, false);
+            typeof(DefenseEnemyStatus3D).GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(fireTarget.Status, null);
+            Check(fireTarget.CurrentHP < beforeBurn, "real actor receives timed burn damage");
+            int archerSocket = socket - 2;
+            info.HeroSpawn.position = builder.GetSocket(archerSocket).position;
+            Check(builder.TryBuild(archerSocket, Defense3DCatalog.TOWER_CUNG_TIEN), "rebuild archer for structure presentation");
+            Check(builder.TryUpgradeNearest() && builder.TryUpgradeNearest(), "activate prewarmed tier-three model");
+            var masterArcher = builder.GetTower(archerSocket);
+            targetObject.transform.position = masterArcher.transform.position + Vector3.right * 2;
+            for (int i = 0; i < pool.CapacityPerType; i++) Check(masterArcher.TryFire(target, masterArcher.TowerData.Attack), "fill arrow projectile budget");
+            float damage = target.Damage;
+            Check(!masterArcher.TryFire(target, masterArcher.TowerData.Attack) && target.Damage == damage, "exhausted arrow pool does not become instant damage");
+            foreach (var built in new[] { masterArcher, ice, fire })
+            {
+                var hp = built.GetComponent<DefenseSupportTarget3D>();
+                Check(hp.TakeDamage(new DefenseDamageContext(hp.MaxHP * .3f)), "structure accepts real damage");
+                var bar = built.transform.Find("StructureHealthBar").GetComponent<MeshRenderer>();
+                var properties = new MaterialPropertyBlock(); bar.GetPropertyBlock(properties);
+                Check(Mathf.Abs(properties.GetFloat("_Ratio") - .7f) < .001f, "structure bar follows real HP after build/upgrade");
+            }
+            var cannons = UnityEngine.Object.FindObjectsOfType<DefenseGhostCannon3D>();
+            Check(cannons.Length == 3, "three authored enemy launchers remain wired");
+            var hostile = cannons[0];
+            Check(hostile.TakeDamage(new DefenseDamageContext(hostile.MaxHP * .45f)), "enemy launcher receives damage");
+            var hostileData = new SerializedObject(hostile);
+            var hostileModel = (GameObject)hostileData.FindProperty("_modelRoot").objectReferenceValue;
+            var sceneCamera = (Camera)new SerializedObject(composition).FindProperty("_combatTextCamera").objectReferenceValue;
+            CaptureStructures(sceneCamera, (ice.transform.position + fire.transform.position + masterArcher.transform.position) / 3f, "scratch/StructureCombat.png", 9f);
+            CaptureStructures(sceneCamera, hostile.transform.position + Vector3.up * .2f, "scratch/EnemyLauncherCombat.png", 3.5f);
+            Check(hostile.TakeDamage(new DefenseDamageContext(99999)), "enemy launcher can be destroyed");
+            Check(!hostileModel.activeSelf && !hostile.IsTargetable, "destroyed launcher hides all model meshes and leaves targeting");
+            Check(!hostile.transform.Find("StructureHealthBar").GetComponent<MeshRenderer>().enabled, "destroyed launcher hides health bar");
+            ScreenCapture.CaptureScreenshot(Path.GetFullPath("scratch/TowerFireCombat.png"));
+            for (int frame = 0; frame < 3; frame++) await Task.Yield();
             session.Restart();
             for (int i = 0; i < builder.SocketCount; i++) Check(builder.GetTower(i) == null, "restart clears socket " + i);
             Check(pool.ActiveCount == 0 && !menu.IsOpen, "restart recalls projectiles and closes menu");
+            Check(!fireTarget.Status.IsBurning, "restart clears burn");
+            var effectService = UnityEngine.Object.FindObjectOfType<DefenseEffectService3D>();
+            Check(effectService.ActiveCount == 0, "restart clears tower effects including attached burn");
+            Check(hostileModel.activeSelf && hostile.CurrentHP == hostile.MaxHP && hostile.IsTargetable, "restart restores enemy launcher model, health and target registry");
+            UnityEngine.Object.Destroy(fireTargetObject);
             UnityEngine.Object.Destroy(targetObject);
             Check(await AppCompositionRoot.Instance.Flow.ReturnToHubAsync(), "return to hub");
-            File.WriteAllText("scratch/TowerSmoke.txt", "Passed: loadout/wood/occupancy guards; UI builds archer; upgrade; destruction; same socket builds ice; pause; one slow per hit; bounded pools; restart cleanup; return to hub.");
+            File.WriteAllText("scratch/TowerSmoke.txt", "Passed: loadout/wood/occupancy guards; UI builds archer; upgrade; destruction/rebuild; ice laser 1/2/3 actual beam counts, per-beam damage, one slow per target, pause retention and no projectile acquisition; bounded arrow pool; fire explosion/burn; tier-three model; real tower health bars; enemy launcher damage/destruction/model hiding; restart restores launcher and clears towers/projectiles/status/VFX; return to hub. Captures: scratch/IceLaserLevel1.png, scratch/IceLaserLevel2.png, scratch/IceLaserLevel3.png, scratch/StructureCombat.png, scratch/EnemyLauncherCombat.png");
         }
         catch (Exception exception)
         {
@@ -128,6 +197,28 @@ public static class DefenseTowerSmoke
         {
             SessionState.SetBool(KEY, false);
             EditorApplication.isPlaying = false;
+        }
+    }
+    private static void CaptureStructures(Camera camera, Vector3 focus, string path, float size)
+    {
+        var position = camera.transform.position; var rotation = camera.transform.rotation;
+            bool oldOrthographic = camera.orthographic;
+        float oldSize = camera.orthographicSize; var oldTarget = camera.targetTexture; var oldActive = RenderTexture.active;
+        var target = new RenderTexture(1280, 800, 24); var texture = new Texture2D(1280, 800, TextureFormat.RGB24, false);
+        try
+        {
+            camera.transform.position = focus + new Vector3(5,8,-10); camera.transform.LookAt(focus + Vector3.up);
+            camera.orthographic = true; camera.orthographicSize = size; camera.targetTexture = target;
+            foreach (var presenter in UnityEngine.Object.FindObjectsOfType<DefenseStructureHealthPresenter3D>())
+                typeof(DefenseStructureHealthPresenter3D).GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(presenter, null);
+            camera.Render(); RenderTexture.active = target;
+            texture.ReadPixels(new Rect(0,0,1280,800),0,0); texture.Apply(); File.WriteAllBytes(path, texture.EncodeToPNG());
+        }
+        finally
+        {
+            camera.transform.SetPositionAndRotation(position, rotation); camera.orthographicSize = oldSize; camera.targetTexture = oldTarget;
+            camera.orthographic = oldOrthographic;
+            RenderTexture.active = oldActive; target.Release(); UnityEngine.Object.DestroyImmediate(target); UnityEngine.Object.DestroyImmediate(texture);
         }
     }
     private static void Check(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }

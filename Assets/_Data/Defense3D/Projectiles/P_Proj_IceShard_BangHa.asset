@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: P_Proj_IceShard_BangHa
   m_EditorClassIdentifier: 
   _projectileId: tower_bangha-projectile
-  _displayName: "M\u0169i T\xEAn Tre"
+  _displayName: "Tinh th\u1EC3 B\u0103ng H\xE0"
   _visualPrefab: {fileID: 5703743784151780575, guid: e4abf3697c2c8354185b4d0f57d49d6a, type: 3}
   _impactVfxPrefab: {fileID: 0}
+  _launchEffect: {fileID: 11400000, guid: 88bfa949aab75e941a3922df261d668d, type: 2}
+  _impactEffect: {fileID: 11400000, guid: db6718dc579a2df43aae963adaafaa26, type: 2}
+  _statusEffect: {fileID: 0}
   _trajectoryType: 0
   _speed: 18
   _arcHeight: 0.6

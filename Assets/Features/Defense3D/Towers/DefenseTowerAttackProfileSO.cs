@@ -3,10 +3,15 @@ using UnityEngine;
 
 namespace ProjectZombie.Features.Defense3D
 {
+    public enum DefenseTowerAttackMode { Projectile, Laser }
     /// <summary>Immutable normal/special attack configuration. Cooldowns and counters belong to each tower.</summary>
     [CreateAssetMenu(menuName = "ProjectZombie/Defense3D/Tower Attack")]
     public sealed class DefenseTowerAttackProfileSO : ScriptableObject
     {
+        [SerializeField] private DefenseTowerAttackMode _mode;
+        [SerializeField] private DefenseEffectProfileSO _beamEffect;
+        public DefenseTowerAttackMode Mode => _mode;
+        public DefenseEffectProfileSO BeamEffect => _beamEffect;
         [SerializeField] private DefenseProjectileDefinitionSO _projectile;
         [SerializeField] private SO_AttackEffect[] _effects = Array.Empty<SO_AttackEffect>();
         [SerializeField, Min(1)] private int _shots = 1;

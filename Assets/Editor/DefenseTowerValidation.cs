@@ -18,7 +18,10 @@ public static class DefenseTowerValidation
         var runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
         runner.Load(typeof(ProjectZombie.Tests.Editor.DefenseModularTowerTests).Assembly, new Dictionary<string, object>());
         var filter = new OrFilter();
-        foreach (string name in new[] { "ProjectZombie.Tests.Editor.DefenseModularTowerTests", "ProjectZombie.Tests.Editor.DefenseProjectileCoreAndPoolTests",
+        // Scholar gameplay tests use LogAssert and run under the native Unity runner via validate-thunder.
+        foreach(string name in new[]{"DefenseHeavenlyLightningPresentationTests","DefenseLightningSignatureGameplayTests","DefenseSignatureFeedbackTests","DefenseSignatureInterruptionTests"})
+            filter.Add(new FullNameFilter(name));
+        foreach (string name in new[] { "ProjectZombie.Tests.Editor.AppLoadingViewTests", "ProjectZombie.Tests.Editor.AppFlowTests", "ProjectZombie.Tests.Editor.DefenseIceLaserTests", "ProjectZombie.Tests.Editor.DefenseStructurePresentationTests", "ProjectZombie.Tests.Editor.DefenseTowerOrdnanceTests", "ProjectZombie.Tests.Editor.DefenseModularTowerTests", "ProjectZombie.Tests.Editor.DefenseProjectileCoreAndPoolTests",
             "ProjectZombie.Tests.Editor.DefenseLoadoutCoreTests", "ProjectZombie.Tests.Editor.DefenseLoadoutCatalogAndAdapterTests",
             "ProjectZombie.Tests.Editor.DefenseLoadoutSaveAndMetaAdapterTests", "DefenseG4DefenseAndHeroTests" })
             filter.Add(new FullNameFilter(name));

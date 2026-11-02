@@ -13,6 +13,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private Transform _projectile;
         [SerializeField] private GameObject _canopy;
         [SerializeField] private Renderer _body;
+        [SerializeField] private GameObject _modelRoot;
         [SerializeField] private Collider _hitbox;
         [SerializeField] private float _shotOffset;
         private DefenseHealthCore _health;
@@ -31,6 +32,10 @@ namespace ProjectZombie.Features.Defense3D
         public event Action<float, float> HealthChanged;
         public event Action<DefenseDamageContext> Damaged;
         public event Action Defeated;
+        public void BindHealthPresentation(Camera camera)
+        {
+            if (TryGetComponent<UI.DefenseStructureHealthPresenter3D>(out var presenter)) presenter.Bind(this, Gameplay, camera);
+        }
 
         public void ValidateBindings()
         {
@@ -91,6 +96,7 @@ namespace ProjectZombie.Features.Defense3D
         {
             DefenseEnemyTargets3D.Unregister(_index, this);
             _body.enabled = false;
+            if (_modelRoot != null) _modelRoot.SetActive(false);
             _hitbox.enabled = false;
             Defeated?.Invoke();
         }
@@ -102,6 +108,12 @@ namespace ProjectZombie.Features.Defense3D
             _schedule.Reset();
             _health.Reset(_profile.Health);
             _body.enabled = true;
+            if (_modelRoot != null) _modelRoot.SetActive(true);
+            if (_modelRoot != null && _landingAnchor != null)
+            {
+                Vector3 direction = _landingAnchor.position - transform.position; direction.y = 0f;
+                if (direction.sqrMagnitude > .001f) _modelRoot.transform.rotation = Quaternion.LookRotation(direction);
+            }
             _hitbox.enabled = true;
             _live = true;
             DefenseEnemyTargets3D.Unregister(_index, this);

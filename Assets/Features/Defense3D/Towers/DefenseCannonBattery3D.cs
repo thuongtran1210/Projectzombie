@@ -51,6 +51,10 @@ namespace ProjectZombie.Features.Defense3D
         {
             foreach (var cannon in _cannons) cannon.Tick();
         }
+        public void BindHealthPresentation(Camera camera)
+        {
+            foreach (var cannon in _cannons) cannon.BindHealthPresentation(camera);
+        }
         public bool TryResolveLanding(Vector3 requested, Vector3 target, out Vector3 position)
         {
             position = default;

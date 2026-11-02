@@ -54,7 +54,20 @@ namespace ProjectZombie.Features.Defense3D
         private DefenseAttackTargetSelector3D _targetSelector;
         private float nextShot;
         private float _nextSpecialShot;
+        private bool _upgrading;
+        private IDefenseEffectService _presentation;
+        private bool _firingLaser;
+        private readonly IDefenseEnemyTarget3D[] _beamTargets = new IDefenseEnemyTarget3D[3];
+        private readonly DefenseActorLifetime[] _beamLeases = new DefenseActorLifetime[3];
+        private readonly DefenseEffectHandle[] _beamHandles = new DefenseEffectHandle[3];
+        public void BindAttackPresentation(IDefenseEffectService effects) { ClearBeams(); _presentation = effects; }
+        private void ClearBeams()
+        {
+            for (int i = 0; i < _beamHandles.Length; i++)
+            { if (_beamHandles[i].IsAssigned) _presentation?.Stop(_beamHandles[i]); _beamHandles[i] = default; }
+        }
         private GameObject[] _levelVisuals;
+        private Transform[] _levelTurrets, _levelMuzzles;
         private Renderer[] _originalRenderers;
         private bool[] _originalEnabled;
         public event System.Action<DefenseTowerPrototype3D> Released;
@@ -70,11 +83,14 @@ namespace ProjectZombie.Features.Defense3D
             _originalEnabled = new bool[_originalRenderers.Length];
             for (int i = 0; i < _originalRenderers.Length; i++) _originalEnabled[i] = _originalRenderers[i].enabled;
             _levelVisuals = new GameObject[MaxLevel];
+            _levelTurrets = new Transform[MaxLevel]; _levelMuzzles = new Transform[MaxLevel];
             for (int i = 0; i < MaxLevel; i++)
             {
                 var prefab = towerData.GetLevelStats(i + 1).visualModelPrefab;
                 if (prefab == null) continue;
                 _levelVisuals[i] = Instantiate(prefab, transform);
+                _levelTurrets[i] = _levelVisuals[i].transform.Find("Turret");
+                _levelMuzzles[i] = _levelTurrets[i] != null ? _levelTurrets[i].Find("Muzzle") : null;
                 _levelVisuals[i].SetActive(false);
                 await System.Threading.Tasks.Task.Yield();
             }
@@ -83,7 +99,9 @@ namespace ProjectZombie.Features.Defense3D
         {
             if (_levelVisuals == null) return;
             bool custom = _levelVisuals[Level - 1] != null;
-            for (int i = 0; i < _originalRenderers.Length; i++) _originalRenderers[i].enabled = !custom && _originalEnabled[i];
+            for (int i = 0; i < _originalRenderers.Length; i++)
+                if (_originalRenderers[i].GetComponentInParent<UI.DefenseEnemyHealthView3D>() == null)
+                    _originalRenderers[i].enabled = !custom && _originalEnabled[i];
             for (int i = 0; i < _levelVisuals.Length; i++) if (_levelVisuals[i] != null) _levelVisuals[i].SetActive(custom && i == Level - 1);
         }
         private float nextTargetScanTime;
@@ -107,7 +125,7 @@ namespace ProjectZombie.Features.Defense3D
                 if (towerData != null)
                 {
                     var nextTier = towerData.GetLevelStats(Level + 1);
-                    return nextTier.buildCost > 0 ? nextTier.buildCost : (Level * 40);
+                    return nextTier.buildCost;
                 }
                 return Level * 40;
             }
@@ -155,14 +173,20 @@ namespace ProjectZombie.Features.Defense3D
         public float EffectiveDamage => Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.TowerDamage, BaseDamage) : BaseDamage;
         public float EffectiveRange => Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.TowerAttackRange, BaseRange) : BaseRange;
 
-        public Vector3 FireOrigin => firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.65f;
+        public Vector3 FireOrigin => _levelMuzzles != null && Level > 0 && Level <= _levelMuzzles.Length && _levelMuzzles[Level - 1] != null
+            ? _levelMuzzles[Level - 1].position : firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.65f;
+        public void BindHealthPresentation(Camera camera)
+        {
+            if (TryGetComponent<UI.DefenseStructureHealthPresenter3D>(out var presenter))
+                presenter.Bind(GetComponent<DefenseSupportTarget3D>(), Gameplay, camera);
+        }
 
         protected override void OnGameplayBound()
         {
             var profile = (towerData != null && towerData.TargetingStrategy != null) ? towerData.TargetingStrategy : _targeting;
             _targetSelector = new DefenseAttackTargetSelector3D(transform, profile);
 
-            _launcher = _customLauncher as IDefenseProjectileLauncher ?? _projectileVfx;
+            _launcher = _customLauncher as IDefenseProjectileLauncher ?? _launcher ?? _projectileVfx;
             if (_health != null) _health.Defeated -= OnDefeated;
             _health = GetComponent<DefenseSupportTarget3D>();
             if (_health != null) _health.Defeated += OnDefeated;
@@ -181,29 +205,35 @@ namespace ProjectZombie.Features.Defense3D
 
         public bool TryUpgrade(DefenseWoodWallet3D wallet)
         {
-            if (!CanAdvanceGameplay || !isActiveAndEnabled || (_health != null && _health.IsDead) || UpgradeCost < 0 || wallet == null)
+            if (_upgrading || !CanAdvanceGameplay || !isActiveAndEnabled || (_health != null && _health.IsDead) || UpgradeCost < 0 || wallet == null)
                 return false;
 
-            if (!wallet.TrySpend(UpgradeCost))
-                return false;
-
-            Level++;
-            _health?.ConfigureCapacity(towerData != null && towerData.GetLevelStats(Level).maxHealth > 0f ? towerData.GetLevelStats(Level).maxHealth : 150f + (Level - 1) * 100f);
-            ApplyLevelVisual();
-            return true;
+            _upgrading = true;
+            try
+            {
+                if (!wallet.TrySpend(UpgradeCost)) return false;
+                Level++;
+                _health?.ConfigureCapacity(towerData != null && towerData.GetLevelStats(Level).maxHealth > 0f ? towerData.GetLevelStats(Level).maxHealth : 150f + (Level - 1) * 100f);
+                ApplyLevelVisual();
+                return true;
+            }
+            finally { _upgrading = false; }
         }
 
         private void OnDefeated() => gameObject.SetActive(false);
         private void OnDisable()
         {
+            ClearBeams();
             _currentTarget = null;
             Released?.Invoke(this);
         }
 
         protected override void OnGameplayReset()
         {
+            ClearBeams();
             nextShot = 0f;
             nextTargetScanTime = 0f;
+            _nextSpecialShot = GameplayTime + (towerData != null && towerData.SpecialAttack != null ? towerData.SpecialAttack.Cooldown : 0f);
             Level = 1;
             _currentTarget = null;
         }
@@ -222,7 +252,7 @@ namespace ProjectZombie.Features.Defense3D
             if (_currentTarget != null && GameplayTime >= nextShot)
             {
                 // Kiểm tra mục tiêu còn hợp lệ và trong tầm bắn không
-                if (!_currentTarget.IsTargetable || Vector3.Distance(transform.position, _currentTarget.TargetTransform.position) > EffectiveRange)
+                if (!IsValidTarget(_currentTarget))
                 {
                     _currentTarget = null;
                     return;
@@ -245,15 +275,30 @@ namespace ProjectZombie.Features.Defense3D
             _currentTarget = _targetSelector?.Find(Gameplay?.Targets, EffectiveRange);
         }
 
+        private bool IsValidTarget(IDefenseEnemyTarget3D target)
+        {
+            // Interface references do not use Unity's destroyed-object null comparison.
+            if (target == null || (target is Object actor && actor == null)) return false;
+            return target.IsTargetable && !target.IsDead && target.TargetTransform != null &&
+                (target.TargetTransform.position - transform.position).sqrMagnitude <= EffectiveRange * EffectiveRange;
+        }
+
         /// <summary>Snapshot one attack. A rejected launch consumes no cooldown and causes no fallback damage.</summary>
         public bool TryFire(IDefenseEnemyTarget3D target, DefenseTowerAttackProfileSO profile)
         {
-            if (!CanAdvanceGameplay || !isActiveAndEnabled || target == null || !target.IsTargetable ||
-                profile == null || Level < profile.UnlockLevel || !(_launcher is IDefenseProjectileService pool)) return false;
-            if (target.TargetTransform == null || (target.TargetTransform.position - transform.position).sqrMagnitude > EffectiveRange * EffectiveRange) return false;
+            if (!CanAdvanceGameplay || !isActiveAndEnabled || (_health != null && _health.IsDead) || !IsValidTarget(target) ||
+                towerData == null || profile == null || Level < profile.UnlockLevel) return false;
+            if (profile.Mode == DefenseTowerAttackMode.Laser) return TryFireLaser(target, profile);
+            if (!(_launcher is IDefenseProjectileService pool)) return false;
             var definition = profile.Projectile;
             var prefab = definition != null && definition.VisualPrefab != null ? definition.VisualPrefab : towerData.ProjectilePrefab;
             if (!pool.CanLaunch(prefab, profile.Shots)) return false;
+            if (_levelTurrets != null && Level <= _levelTurrets.Length && _levelTurrets[Level - 1] != null)
+            {
+                var turret = _levelTurrets[Level - 1];
+                Vector3 direction = target.TargetTransform.position - turret.position; direction.y = 0f;
+                if (direction.sqrMagnitude > .001f) turret.rotation = Quaternion.LookRotation(direction);
+            }
             var request = new DefenseProjectileLaunchRequest(this, FireOrigin, target,
                 EffectiveDamage * profile.DamageMultiplier, Gameplay.RunGeneration, Gameplay.SessionIdentity,
                 towerData.ProjectileSpeed, towerData.ProjectileArcHeight);
@@ -261,6 +306,79 @@ namespace ProjectZombie.Features.Defense3D
                 if (!pool.LaunchProjectile(prefab, request, profile.Effects, definition)) return false;
             return true;
         }
+        private bool TryFireLaser(IDefenseEnemyTarget3D primary, DefenseTowerAttackProfileSO profile)
+        {
+            if (_firingLaser) return false;
+            _firingLaser = true;
+            try { return FireLaser(primary, profile); }
+            finally { _firingLaser = false; }
+        }
+        private bool FireLaser(IDefenseEnemyTarget3D primary, DefenseTowerAttackProfileSO profile)
+        {
+            ClearBeams();
+            int count = Mathf.Clamp(Level, 1, 3), generation = Gameplay.RunGeneration;
+            float damagePerBeam = EffectiveDamage * profile.DamageMultiplier;
+            Vector3 origin = FireOrigin;
+            _beamTargets[0] = primary;
+            for (int i = 1; i < count; i++)
+            {
+                var secondary = _targetSelector?.FindExcluding(Gameplay.Targets, EffectiveRange, _beamTargets, i);
+                _beamTargets[i] = IsValidTarget(secondary) ? secondary : primary;
+            }
+            for (int i = 0; i < count; i++) _beamLeases[i] = (_beamTargets[i] as DefenseEnemy3D)?.Lifetime;
+            bool hit = false;
+            try
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    var candidate = _beamTargets[i]; bool duplicate = false;
+                    for (int j = 0; j < i; j++) if (ReferenceEquals(candidate, _beamTargets[j])) duplicate = true;
+                    if (duplicate || !CanAdvanceGameplay || generation != Gameplay.RunGeneration ||
+                        (_health != null && _health.IsDead) || !IsValidTarget(candidate)) continue;
+                    if (candidate is DefenseEnemy3D enemy && (!ReferenceEquals(enemy.Lifetime, _beamLeases[i]) ||
+                        (_beamLeases[i] != null && !_beamLeases[i].IsCurrent(Gameplay)))) continue;
+                    int beams = 0;
+                    for (int j = 0; j < count; j++) if (ReferenceEquals(candidate, _beamTargets[j])) beams++;
+                    Vector3 endpoint = candidate.TargetTransform.position + Vector3.up * .65f;
+                    bool accepted = candidate.TakeDamage(new DefenseDamageContext(damagePerBeam * beams, this, endpoint,
+                        runGeneration: generation, sessionIdentity: Gameplay.SessionIdentity));
+                    if (!accepted) continue;
+                    hit = true;
+                    if (this == null || !isActiveAndEnabled || !CanAdvanceGameplay || generation != Gameplay.RunGeneration ||
+                        (_health != null && _health.IsDead)) continue;
+                    for (int j = 0; j < count; j++) if (ReferenceEquals(candidate, _beamTargets[j]))
+                    {
+                        Vector3 direction = endpoint - origin;
+                        Vector3 side = Vector3.Cross(direction, Vector3.up).normalized;
+                        float offset = beams > 1 ? (j - (count - 1) * .5f) * .28f : 0f;
+                        Vector3 start = origin + side * offset;
+                        Vector3 end = endpoint + side * (offset * .5f);
+                        _beamHandles[j] = PresentBeam(profile.BeamEffect, start, end);
+                    }
+                    PresentLaserHit(profile.Projectile?.ImpactEffect, endpoint);
+                    if (!IsValidTarget(candidate) || (candidate is DefenseEnemy3D current && !ReferenceEquals(current.Lifetime, _beamLeases[i]))) continue;
+                    foreach (var effect in profile.Effects) effect?.ApplyEffect(candidate.TargetTransform, damagePerBeam, Gameplay);
+                }
+            }
+            finally { System.Array.Clear(_beamTargets, 0, _beamTargets.Length); System.Array.Clear(_beamLeases, 0, _beamLeases.Length); }
+            return hit;
+        }
+        private DefenseEffectHandle PresentBeam(DefenseEffectProfileSO profile, Vector3 start, Vector3 end)
+        {
+            if (_presentation == null || profile == null) return default;
+            Vector3 direction = end - start;
+            if (direction.sqrMagnitude < .001f) return default;
+            try { return _presentation.Play(new DefenseEffectRequest(profile, start, direction.magnitude * .5f, this,
+                rotation: Quaternion.LookRotation(direction))); }
+            catch (System.Exception exception) { Debug.LogException(exception); return default; }
+        }
+        private void PresentLaserHit(DefenseEffectProfileSO profile, Vector3 position)
+        {
+            if (_presentation == null || profile == null) return;
+            try { _presentation.Play(profile, position, .6f); }
+            catch (System.Exception exception) { Debug.LogException(exception); }
+        }
+        protected override void OnGameplayCleanup() => ClearBeams();
 
         private void OnDrawGizmosSelected()
         {
@@ -270,6 +388,7 @@ namespace ProjectZombie.Features.Defense3D
 
         protected override void OnDestroy()
         {
+            ClearBeams();
             if (_health != null) _health.Defeated -= OnDefeated;
             base.OnDestroy();
         }

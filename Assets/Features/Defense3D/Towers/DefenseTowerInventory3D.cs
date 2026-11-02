@@ -14,13 +14,14 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseTowerInventory3D(DefenseTowerCatalogSO catalog) => _catalog = catalog;
 
         public async Task PrepareAsync(Transform owner, int slots, IDefenseGameplayContext gameplay,
-            DefenseProjectilePool3D launcher, Action<DefenseTowerPrototype3D> released, IReadOnlyList<string> allowed)
+            DefenseProjectilePool3D launcher, Action<DefenseTowerPrototype3D> released, IReadOnlyList<string> allowed, Action<float> progress = null)
         {
             _catalog.Validate();
             _instances = new DefenseTowerPrototype3D[_catalog.Count][];
             var staging = new GameObject("Tower Inventory");
             staging.transform.SetParent(owner, false);
             staging.SetActive(false);
+            int total = allowed.Count * slots, prepared = 0;
             for (int type = 0; type < _catalog.Count; type++)
             {
                 var entry = _catalog.Get(type);
@@ -39,6 +40,7 @@ namespace ProjectZombie.Features.Defense3D
                     tower.BindGameplay(gameplay);
                     tower.Released += released;
                     _instances[type][i] = tower;
+                    progress?.Invoke(total > 0 ? ++prepared / (float)total : 1f);
                     await Task.Yield();
                 }
             }
@@ -69,6 +71,18 @@ namespace ProjectZombie.Features.Defense3D
             if (_instances == null) return;
             foreach (var row in _instances)
                 if (row != null) foreach (var tower in row) if (tower != null) tower.gameObject.SetActive(false);
+        }
+        public void BindHealthPresentation(Camera camera)
+        {
+            if (_instances == null) return;
+            foreach (var row in _instances)
+                if (row != null) foreach (var tower in row) if (tower != null) tower.BindHealthPresentation(camera);
+        }
+        public void BindAttackPresentation(IDefenseEffectService effects)
+        {
+            if (_instances == null) return;
+            foreach (var row in _instances)
+                if (row != null) foreach (var tower in row) if (tower != null) tower.BindAttackPresentation(effects);
         }
     }
 }

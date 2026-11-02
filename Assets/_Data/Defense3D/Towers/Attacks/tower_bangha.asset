@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8dd23038b9d6634985c7b8801f13d95, type: 3}
   m_Name: tower_bangha
   m_EditorClassIdentifier: 
+  _mode: 1
+  _beamEffect: {fileID: 11400000, guid: 12e75af7caf4bbf458e1658262d4d331, type: 2}
   _projectile: {fileID: 11400000, guid: 48a29144c7858c34b8109e4a73af9bee, type: 2}
   _effects:
   - {fileID: 11400000, guid: 1cabf5d441d0d9e45a10919a2f7229dd, type: 2}

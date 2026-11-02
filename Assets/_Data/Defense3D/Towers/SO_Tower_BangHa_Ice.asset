@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: tower_bangha
   _towerName: "B\u0103ng H\xE0"
-  _description: "\u0110\u1EA1n b\u0103ng l\xE0m ch\u1EADm k\u1EBB \u0111\u1ECBch."
+  _description: "Laser b\u0103ng l\xE0m ch\u1EADm. C\u1EA5p 1/2/3 b\u1EAFn 1/2/3
+    tia, \u01B0u ti\xEAn m\u1EE5c ti\xEAu kh\xE1c nhau."
   _icon: {fileID: 0}
   _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
   _attackEffects:
@@ -30,16 +31,16 @@ MonoBehaviour:
     damage: 15
     attackRange: 7.5
     attackRate: 0.9
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 1721074504102515421, guid: d808751032bccf7479fd986eaefa85dc, type: 3}
   - maxHealth: 250
     buildCost: 50
     damage: 25
     attackRange: 8.5
     attackRate: 1.1
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 5815403622889629564, guid: 8b2777ac28a41f649ae3d3e558599fd6, type: 3}
   - maxHealth: 350
     buildCost: 75
     damage: 40
     attackRange: 10
     attackRate: 1.3
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 7498749838393546503, guid: 7a8331ec1f33c5a40bcca2c6368f6c3d, type: 3}

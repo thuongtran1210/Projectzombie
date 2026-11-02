@@ -24,6 +24,29 @@ namespace ProjectZombie.Features.Defense3D
         public DefenseTowerCatalogSO Catalog => _catalog;
         public int SocketCount => _sockets.Length;
         public bool IsReady => _ready;
+        public void BindHealthPresentation(Camera camera) => _inventory?.BindHealthPresentation(camera);
+        public void BindPresentation(DefenseEffectService3D effects)
+        {
+            _inventory?.BindAttackPresentation(effects);
+            _projectiles?.BindPresentation(effects);
+            if (effects == null || _catalog == null) return;
+            for (int i = 0; i < _catalog.Count; i++)
+            {
+                var data = _catalog.Get(i).Data;
+                if (!IsAllowed(data.Id)) continue;
+                effects.Prewarm(data.Attack?.BeamEffect, 2);
+                effects.Prewarm(data.SpecialAttack?.BeamEffect, 2);
+                PrewarmPresentation(effects, data.Attack?.Projectile);
+                PrewarmPresentation(effects, data.SpecialAttack?.Projectile);
+            }
+        }
+        private static void PrewarmPresentation(DefenseEffectService3D effects, DefenseProjectileDefinitionSO definition)
+        {
+            if (definition == null) return;
+            effects.Prewarm(definition.LaunchEffect, 2);
+            effects.Prewarm(definition.ImpactEffect, 2);
+            effects.Prewarm(definition.StatusEffect, 2);
+        }
         public event Action InteractRequested;
         public event Action<int> BuildMenuRequested;
         public event Action Changed;
@@ -61,7 +84,7 @@ namespace ProjectZombie.Features.Defense3D
                 if (string.Equals(allowed, id, StringComparison.OrdinalIgnoreCase)) return true;
             return false;
         }
-        public async Task PrepareAsync(DefenseFriendlyTargets3D friendlyTargets)
+        public async Task PrepareAsync(DefenseFriendlyTargets3D friendlyTargets, Action<float> progress = null)
         {
             if (_ready) return;
             if (Gameplay == null || _catalog == null || _projectiles == null || sceneInfo == null || wallet == null)
@@ -75,12 +98,14 @@ namespace ProjectZombie.Features.Defense3D
             _inventory = new DefenseTowerInventory3D(_catalog);
             if (_allowedTowerIds.Count == 0) throw new InvalidOperationException("Select at least one tower before preparing the map.");
             foreach (string id in _allowedTowerIds) if (_catalog.Find(id) == null) throw new InvalidOperationException("Map has no definition for selected tower: " + id);
-            await _inventory.PrepareAsync(transform, _sockets.Length, Gameplay, _projectiles, ReleaseTower, _allowedTowerIds);
+            await _inventory.PrepareAsync(transform, _sockets.Length, Gameplay, _projectiles, ReleaseTower, _allowedTowerIds, value => progress?.Invoke(value * .8f));
             friendlyTargets.AppendRuntimeSupports(_inventory.SupportTargets);
             for (int i = 0; i < _catalog.Count; i++)
             {
                 var data = _catalog.Get(i).Data;
                 if (!IsAllowed(data.Id)) continue;
+                if (data.Attack.Mode == DefenseTowerAttackMode.Laser &&
+                    (data.SpecialAttack == null || data.SpecialAttack.Mode == DefenseTowerAttackMode.Laser)) continue;
                 if (data.Attack.Shots > _projectiles.CapacityPerType ||
                     (data.SpecialAttack != null && data.SpecialAttack.Shots > _projectiles.CapacityPerType))
                     throw new InvalidOperationException("Projectile budget is smaller than the configured burst: " + data.Id);
@@ -88,8 +113,10 @@ namespace ProjectZombie.Features.Defense3D
                 await _projectiles.PrewarmAsync(normal != null ? normal : data.ProjectilePrefab, _projectiles.CapacityPerType);
                 var special = data.SpecialAttack?.Projectile?.VisualPrefab;
                 if (special != null && special != normal) await _projectiles.PrewarmAsync(special, _projectiles.CapacityPerType);
+                progress?.Invoke(.8f + .2f * (i + 1) / _catalog.Count);
             }
             _ready = true;
+            progress?.Invoke(1f);
         }
         private void Update()
         {

@@ -2,7 +2,7 @@
 
 ## Player flow
 
-Select tower types in the Codex/loadout before entering a match. Existing saves retain `tower_cungtien` as their archer ID. Nỏ Thần and Băng Hà are available baseline choices; the existing default loadout remains archer-only. Add Băng Hà to the loadout to see it in the build menu.
+Select tower types in the Codex/loadout before entering a match. Existing saves retain `tower_cungtien` as their archer ID. Nỏ Thần, Băng Hà and Hỏa Long are available baseline choices. The build menu follows the selected loadout.
 
 Approach an empty socket and use the context button or B. The menu shows only types allowed by both the loadout and socket, with level-one price and stats. Choosing a tower rechecks proximity, occupancy, gameplay state, hero life and wallet balance. Leaving the socket or pausing closes the menu. The village hut interaction retains priority in its recruitment zone.
 
@@ -45,26 +45,52 @@ Tower catalog prefab references remain map-owned asset dependencies. Preparing f
 - Single-target and area-impact paths are available. Area hits use the session enemy index with a bounded snapshot, avoiding friendly colliders and repeated hits from multiple colliders. Saturation rejects the area query.
 - Piercing requires a real swept collision/visited-target implementation. Catalog validation rejects the old placeholder piercing payload rather than presenting it as complete.
 
-Special attacks execute automatically when a target is valid, the configured unlock level is reached and their own cooldown expires. Normal and special cooldowns belong to each tower instance. Initial Nỏ Thần uses a normal arrow; Băng Hà uses a separate ice projectile with slow. No additional special skill is enabled by default.
+Special attacks execute automatically when a target is valid, the configured unlock level is reached and their own cooldown expires. Normal and special cooldowns belong to each tower instance. Nỏ Thần uses arrows; Băng Hà now uses instant laser pulses with slow. No additional special skill is enabled by default.
 
-The shipped tower prefab variants previously contained no renderers. The installer supplies minimal wood/ice blockout geometry only when a prefab has no renderer. These are visible placeholders, not finished art. Replace `Model_3D`, configure FirePoint and optional tier models without changing combat code. Tier models are instantiated during preparation and only activated/deactivated during upgrades.
+## Tower ordnance — 2026-11-02
+
+| Tower | Projectile | Gameplay effect | Presentation |
+| --- | --- | --- | --- |
+| Nỏ Thần | Homing arrow | Single target, original tier damage/rate | Gold arrow, short trail, launch flash and hit sparks |
+| Băng Hà | Instant ice laser | Level 1/2/3 fires 1/2/3 beams; distinct targets preferred, spare beams focus primary; 30% slow for 2 seconds once per target | White-hot core, cyan halo, travelling energy bands and camera-facing emitter/impact flares |
+| Hỏa Long | Ballistic fireball | Captured aim point; 2m planar explosion; existing 1.25 attack multiplier; burn at 20% of impact damage per second for 3 seconds | Flame tail, blast flames/ring, attached flames while burning |
+
+Burn uses one slot per enemy, strongest live DPS with duration refreshed rather than additive stacks. Damage is sampled every 0.5 session seconds, settling partial time on refresh and the final partial interval on expiry. Pause freezes its clock; a delayed update cannot deal more than the remaining duration's damage. Initialization, disable, death and restart clear burn and attached presentation. A damage callback that reinitializes an actor cannot attach a pending burn refresh to the new actor state. Ground shells do not track targets after launch; moving away can avoid the explosion.
+
+Projectile definitions reference optional launch, impact and status `DefenseEffectProfileSO` assets. Composition binds the existing session effect service after the tower loadout/inventory is prepared. Single-target feedback requires an accepted hit; area feedback occurs once at detonation. Cosmetic rejection does not reject projectile damage. Burn presentation is sustained and stopped by the status owner, not by a separate timer/coroutine. Runtime geometry and materials are baked by the Editor builder, with property blocks for instance color.
+
+Run **Tools > ProjectZombie > Towers > Build Tower Ordnance** (bridge `build-tower-ordnance`) to update only these assets and render `scratch/TowerOrdnancePreview.png`. It does not save an open gameplay scene. The preview columns are arrow, ice and fire; rows are projectile closeups, early impact and aftermath beside the actual enemy prefab. `scratch/TowerFireCombat.png` is the Play Mode integration capture.
+
+The tower/projectile inventory remains bounded. Presentation uses the existing effect service: up to 32 active effects by default, two prewarmed instances per profile, with priority rejection/replacement and lazy pool expansion. This is not a claim of allocation-free VFX or mobile GPU performance. Audio clips are not added by this builder; legacy projectile SFX fields are not executed by the production core.
+
+The current towers have nine authored low-poly tier models, baked by **Build Structure Models and Health**. Hỏa Long owns a separate actor prefab. Tier models are instantiated during preparation and only activated/deactivated during upgrades; the active turret aims at its target and provides its own muzzle position. Friendly towers and Ghost Cannons use explicitly bound billboard health views. See `Docs/StructurePresentation.md` for ownership, rebuild commands and validation. The older architecture installer only supplies fallback blockouts when a prefab has no renderer.
 
 ## Adding a tower
 
 1. Create SO_TowerData with a unique stable ID and valid tier stats. Set its normal attack and optional special attack.
 2. Create the attack profile and projectile definition. The definition's VisualPrefab is a full pooled projectile prefab containing ProjectileCore3D/ProjectileVisual3D. Its trajectory/speed/arc/lifetime configure movement; effects are separate assets.
 3. Create an actor prefab with DefenseTowerPrototype3D, DefenseSupportTarget3D, collider, visual and FirePoint. Add data/prefab to TowerCatalog.
-4. Run **Tools > ProjectZombie > Towers > Sync Loadout Metadata**. This generates a lightweight string-only projection used by the sảnh; new IDs do not require editing code constants. New content can be owned via `MetaProgressionSaveData.unlockedTowerIds`; the two baseline types remain available.
+4. Run **Tools > ProjectZombie > Towers > Sync Loadout Metadata**. This generates a lightweight string-only projection used by the sảnh; new IDs do not require editing code constants. New content can be owned via `MetaProgressionSaveData.unlockedTowerIds`; baseline types remain available.
 5. If the number of choices changed, run **Install Modular Towers** to resize the generated map menu and update scene wiring. It preserves additional catalog entries. Review the generated UI if using a custom layout.
 6. Select the new type in the loadout and validate its build, upgrade, projectile and reset behavior. Socket restrictions can narrow allowed IDs without choosing a fixed prefab.
 
-Adding another existing trajectory/effect combination is data work. New behavior such as chain lightning, swept piercing, beams or persistent hazards needs a new tested execution strategy; it is not supplied merely by adding an enum value.
+Adding another existing trajectory/effect combination is data work. Laser pulses have a separate tested attack strategy. New behavior such as chain lightning, swept piercing or persistent hazards needs a new execution strategy; it is not supplied merely by adding an enum value.
 
 ## Validation
 
+### Runtime hardening — 2026-11-02
+
+The current production path supports Nỏ Thần and Băng Hà through map-owned data, bounded inventories and socket commands. The legacy socket core is not the production authority. Existing normal/special profiles already provide extension points; adding a new combat mechanic still requires an execution strategy.
+
+The controller now preserves an injected projectile service across gameplay binding, including services that are not MonoBehaviours. Upgrade prices use the authored value exactly, including zero; negative prices reject the action. A per-instance guard prevents wallet change callbacks from recursively buying additional levels during the same upgrade. Normal and special launches share checks for living towers and living, in-range targets, and safely reject destroyed Unity actors retained through an interface. Restart resets the special cooldown with the new run's clock.
+
+Regression coverage includes zero/paid upgrade prices, callback reentry, destroyed targets, injected services across rebinding, and special cooldown recovery after restart. The Play Mode smoke additionally exercises the authored build UI, both tower types, destruction/rebuild, projectile pause/slow, pool exhaustion, restart and return to hub.
+
+Remaining content/release work: replace the documented blockout models, author any desired additional tower/special profiles, and measure representative Android builds. These are not established by the Editor regression suite.
+
 - **Install Modular Towers** snapshots the loaded map under `scratch/TowerArchitectureBackup`, preserving current scene edits before migration.
 - **Validate Modular Towers** writes `scratch/TowerValidation.txt/.xml`. Tests cover data/ID mapping, shared-profile independent cooldowns, pause, enemy lease reuse, probability, bounded pools and loadout compatibility. A legacy test that regenerates production preparation UI is excluded from this suite; preference tests save/restore the user's migration keys.
-- **Run Tower Smoke** starts a temporary Play session with both tower types, exercises the actual build menu, build/upgrade/destruction/rebuild, slow hit, pause, exhaustion, restart and return to hub. It restores the previous Editor Play start-scene setting. Reports: `scratch/TowerSmoke.txt`; real Game View capture: `scratch/TowerBuildMenu.png`.
+- **Run Tower Smoke** starts a temporary Play session with all three tower types, exercises the actual build menu, build/upgrade/destruction/rebuild, slow hit, fire explosion/burn on an actual enemy, pause, projectile exhaustion, restart/status/VFX cleanup and return to hub. It restores the previous Editor Play start-scene setting. Reports: `scratch/TowerSmoke.txt`; Game View captures: `scratch/TowerBuildMenu.png`, `scratch/TowerFireCombat.png`.
 - Bridge equivalents: `install-towers`, `validate-towers`, `smoke-towers` through `Tools/Invoke-UnityBridge.ps1`.
 
 These checks establish Editor behavior and bounded object counts, not an Android performance guarantee. Validate the player Addressables build and profile representative tower/projectile loads before release.

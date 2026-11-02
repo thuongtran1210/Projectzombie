@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: tower_hoalong
   _towerName: "H\u1ECFa Long"
-  _description: "\u0110\u1EA1n l\u1EEDa n\u1ED5 lan, s\xE1t th\u01B0\u01A1ng di\u1EC7n r\u1ED9ng v\xE0 thi\xEAu \u0111\u1ED1t."
+  _description: "\u0110\u1EA1n l\u1EEDa n\u1ED5 lan, s\xE1t th\u01B0\u01A1ng di\u1EC7n
+    r\u1ED9ng v\xE0 thi\xEAu \u0111\u1ED1t."
   _icon: {fileID: 21300000, guid: 6bfd62ad5dea7024b97269aaded1399a, type: 3}
   _targetingStrategy: {fileID: 11400000, guid: 0c6ba5b4c1bf53959be81c12342611b6, type: 2}
   _attackEffects: []
-  _projectilePrefab: {fileID: 5703743784151780575, guid: e4abf3697c2c8354185b4d0f57d49d6a, type: 3}
+  _projectilePrefab: {fileID: 4857421686518254404, guid: 9c01c84bc1f88254fac1f7af451fa820, type: 3}
   _attack: {fileID: 11400000, guid: c76fc11fd7157b44f836cc7d86f68773, type: 2}
   _specialAttack: {fileID: 0}
   _projectileSpeed: 20
@@ -29,17 +30,16 @@ MonoBehaviour:
     damage: 30
     attackRange: 7
     attackRate: 0.75
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 8880928829317246040, guid: b2956b81049e13c4eb9e6ffdfc0a7690, type: 3}
   - maxHealth: 260
     buildCost: 55
     damage: 50
     attackRange: 8
     attackRate: 0.95
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 2340548332488029125, guid: d456ef9c7dd551241aeac8d3a503e5e1, type: 3}
   - maxHealth: 380
     buildCost: 80
     damage: 80
     attackRange: 9.5
     attackRate: 1.2
-    visualModelPrefab: {fileID: 0}
-
+    visualModelPrefab: {fileID: 6608010419706632448, guid: ff9a620685237604e89b31dd9900f05b, type: 3}

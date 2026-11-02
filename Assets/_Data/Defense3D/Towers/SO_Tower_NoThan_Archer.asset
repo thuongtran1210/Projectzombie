@@ -29,16 +29,16 @@ MonoBehaviour:
     damage: 22
     attackRange: 8
     attackRate: 1.1
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 3618238151957744762, guid: 18de94e6c5c2d484bbf6df87f5adbc3f, type: 3}
   - maxHealth: 250
     buildCost: 40
     damage: 35
     attackRange: 9.5
     attackRate: 1.4
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 1840512672424150283, guid: 04ece867c6d9e5b49aa83f7c71b4c011, type: 3}
   - maxHealth: 350
     buildCost: 60
     damage: 55
     attackRange: 11
     attackRate: 1.8
-    visualModelPrefab: {fileID: 0}
+    visualModelPrefab: {fileID: 8119178487652028169, guid: d0bf965e04eab55469c0e1800d3b8033, type: 3}

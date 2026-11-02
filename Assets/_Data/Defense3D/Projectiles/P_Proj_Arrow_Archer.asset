@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: P_Proj_Arrow_Archer
   m_EditorClassIdentifier: 
   _projectileId: tower_cungtien-projectile
-  _displayName: "M\u0169i T\xEAn Tre"
+  _displayName: "M\u0169i t\xEAn N\u1ECF Th\u1EA7n"
   _visualPrefab: {fileID: 1729867154203885746, guid: d5084dbe3e04b7c4b88c22e712bf92b5, type: 3}
   _impactVfxPrefab: {fileID: 0}
+  _launchEffect: {fileID: 11400000, guid: 9432faacf74476e498e9f4a1e627ec27, type: 2}
+  _impactEffect: {fileID: 11400000, guid: bbcd3db9be2eb954c9d0ce1c34462990, type: 2}
+  _statusEffect: {fileID: 0}
   _trajectoryType: 0
   _speed: 26
   _arcHeight: 0.4

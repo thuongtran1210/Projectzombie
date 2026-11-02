@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8dd23038b9d6634985c7b8801f13d95, type: 3}
   m_Name: tower_hoalong
   m_EditorClassIdentifier: 
-  _projectile: {fileID: 11400000, guid: 48a29144c7858c34b8109e4a73af9bee, type: 2}
-  _effects: []
+  _projectile: {fileID: 11400000, guid: b1f21f51a949a464e876bc12cfa0e7af, type: 2}
+  _effects:
+  - {fileID: 11400000, guid: a78e71ded0ce14f408116567de452a6d, type: 2}
   _shots: 1
   _damageMultiplier: 1.25
   _cooldown: 0
   _unlockLevel: 1
-
