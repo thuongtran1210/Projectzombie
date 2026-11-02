@@ -6,15 +6,17 @@ namespace ProjectZombie.Features.Defense3D
     /// <summary>Sở hữu đòn đánh thường; damage và thời gian ra đòn độc lập với observer trình diễn.</summary>
     public sealed class DefenseHeroAutoAttack3D : DefenseGameplayBehaviour, IDefenseAttackFeedbackSource
     {
-        [SerializeField, Min(0.5f)] private float attackRange = 5f;
-        [SerializeField, Min(1f)] private float damage = 35f;
-        [SerializeField, Min(0.1f)] private float attackCooldown = DefenseBasicAttackRules.RepeatInterval;
+        private float attackRange = 5f;
+        private float damage = 35f;
+        private float attackCooldown = DefenseBasicAttackRules.RepeatInterval;
         [SerializeField] private bool drawAttackRange = true;
-        [SerializeField] private DefenseAttackTargetingProfileSO _targeting;
+        private DefenseAttackTargetingProfileSO _targeting;
         [SerializeField] private bool _autoAttackEnabled;
-        [SerializeField] private float _coneAngle = DefenseBasicAttackRules.ConeAngle;
-        [SerializeField, Range(0f, 1f)] private float _knockbackStrength = .275f;
-        [SerializeField, Min(.01f)] private float _knockbackDuration = .2f;
+        private float _coneAngle = DefenseBasicAttackRules.ConeAngle;
+        private float _knockbackStrength = .275f;
+        private float _knockbackDuration = .2f;
+        public void ConfigureTuning(float angle,float strength,float duration,DefenseAttackTargetingProfileSO targeting)
+        {_coneAngle=angle;_knockbackStrength=strength;_knockbackDuration=duration;_targeting=targeting;_selector=new DefenseAttackTargetSelector3D(transform,_targeting);}
         private float _recoveryUntil;
         public bool IsRecovering => CanAdvanceGameplay && GameplayTime < _recoveryUntil;
         private DefenseAttackTargetSelector3D _selector;

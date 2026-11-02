@@ -108,9 +108,8 @@ public sealed class DefenseDashMotorTests
             var anchor = new GameObject("DashUnitGround"); anchor.transform.SetParent(f.Actor.transform, false);
             var presenter = f.Actor.AddComponent<DefenseHeroDashPresenter3D>();
             Set(presenter, "_motor", f.Motor); Set(presenter, "_health", health); Set(presenter, "_groundAnchor", anchor.transform);
-            Set(presenter, "_style", AssetDatabase.LoadAssetAtPath<DefenseDashEffectSetSO>("Assets/Features/Defense3D/Effects/Assets/FXSet_HeroDash.asset"));
             var sink = new DefenseDashFeedbackTests.Sink();
-            presenter.Bind(f.Session, sink);
+            presenter.Bind(f.Session, sink, AssetDatabase.LoadAssetAtPath<DefenseDashEffectSetSO>("Assets/Features/Defense3D/Effects/Assets/FXSet_HeroDash.asset"));
             f.Begin(); Assert.AreEqual(2, sink.ActiveCount);
             health.TakeDamage(new DefenseDamageContext(99999f, sessionIdentity: f.Session, runGeneration: f.Session.RunGeneration));
             Assert.IsTrue(health.IsDown); Assert.IsFalse(f.Motor.IsDashing);

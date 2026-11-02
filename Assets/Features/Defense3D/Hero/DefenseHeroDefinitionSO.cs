@@ -41,10 +41,10 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField, Min(1f)] private float _turnRate = 14f;
 
         [Tooltip("Sát thương đánh thường cơ bản")]
-        [SerializeField, Min(1f)] private float _baseDamage = 10f;
+        [SerializeField, HideInInspector] private float _baseDamage = 10f; // Legacy fallback for unconfigured authoring/tests.
 
         [Tooltip("Tầm đánh thường cơ bản (m)")]
-        [SerializeField, Min(0.5f)] private float _baseAttackRange = 6.0f;
+        [SerializeField, HideInInspector] private float _baseAttackRange = 6.0f;
 
         // Public Accessors
         public string HeroId => _heroId;
@@ -55,8 +55,8 @@ namespace ProjectZombie.Features.Defense3D
         public float BaseMaxHp => _baseMaxHp;
         public float BaseMoveSpeed => _baseMoveSpeed;
         public float TurnRate => _turnRate;
-        public float BaseDamage => _baseDamage;
-        public float BaseAttackRange => _baseAttackRange;
+        public float BaseDamage => _heroKit!=null&&_heroKit.Attack!=null?_heroKit.Attack.Capture().Damage:_baseDamage;
+        public float BaseAttackRange => _heroKit!=null&&_heroKit.Attack!=null?_heroKit.Attack.Capture().Radius:_baseAttackRange;
 
         /// <summary>
         /// Áp dụng các chỉ số cơ bản của Tướng vào các component runtime trong trận.

@@ -29,6 +29,7 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         private Rigidbody _body;
+        private DefenseHeroGroundSafety3D _groundSafety;
         private DefenseHeroAutoAttack3D _basicAttack;
         public void FaceBasicAttack(object owner, DefensePoint3 direction)
         {
@@ -96,7 +97,12 @@ namespace ProjectZombie.Features.Defense3D
             DashFeedback.PublishStarted(new DefenseDashFeedback(_activeDashId, Point(_dashStart), _dashDirection, _dashIdentity, _dashGeneration));
         }
 
-        public void CancelDash() => FinishDash(false, _body != null ? _body.position : transform.position);
+        public void CancelDash()
+        {
+            if (!IsDashing) return;
+            Vector3 pos = _body != null ? _body.position : (this != null ? transform.position : Vector3.zero);
+            FinishDash(false, pos);
+        }
 
         private void FinishDash(bool completed, Vector3 position)
         {
@@ -107,24 +113,42 @@ namespace ProjectZombie.Features.Defense3D
             _dashIdentity = null; _dashGeneration = -1; _dashDirection = default;
             DashFeedback.PublishEnded(feedback);
         }
-        protected override void OnGameplayBound() => CancelDash();
-        protected override void OnGameplayCleanup() => CancelDash();
+        protected override void OnGameplayBound()
+        {
+            CancelDash();
+            _groundSafety?.Reset();
+        }
+        protected override void OnGameplayCleanup()
+        {
+            if (this == null) return;
+            CancelDash();
+        }
         private static DefensePoint3 Point(Vector3 point) => new DefensePoint3(point.x, point.y, point.z);
         public void BindCommands(IDefenseHeroCommands commands) => _commands = commands;
         public float EffectiveSpeed => Gameplay != null ? Gameplay.Stats.Evaluate(DefenseUpgradeType.HeroMoveSpeed, speed) : speed;
 
         protected override void OnGameplayGateChanged(bool active)
         {
+            if (this == null) return;
             if (!active) { _aimFacingOwner = null; CancelDash(); StopHorizontalMovement(); }
         }
 
-        protected override void OnGameplayReset() { _aimFacingOwner = null; CancelDash(); StopHorizontalMovement(); }
+        protected override void OnGameplayReset()
+        {
+            if (this == null) return;
+            _aimFacingOwner = null; CancelDash(); StopHorizontalMovement();
+            _groundSafety?.Reset();
+        }
 
-        private void OnDisable() { _aimFacingOwner = null; CancelDash(); StopHorizontalMovement(); }
+        private void OnDisable()
+        {
+            if (this == null) return;
+            _aimFacingOwner = null; CancelDash(); StopHorizontalMovement();
+        }
 
         private void StopHorizontalMovement()
         {
-            if (_body == null) return;
+            if (this == null || _body == null) return;
             _body.velocity = new Vector3(0f, _body.velocity.y, 0f);
             _body.angularVelocity = Vector3.zero;
         }
@@ -135,6 +159,10 @@ namespace ProjectZombie.Features.Defense3D
             _basicAttack = GetComponent<DefenseHeroAutoAttack3D>();
             _body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             _body.interpolation = RigidbodyInterpolation.Interpolate;
+            _body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            var capsule = GetComponent<CapsuleCollider>();
+            int ground = LayerMask.GetMask("Ground");
+            if (capsule != null && ground != 0) _groundSafety = new DefenseHeroGroundSafety3D(capsule, ground);
         }
 
         private void FixedUpdate()
@@ -145,6 +173,8 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
             DefensePoint3 command = _commands != null ? _commands.Movement : default;
+            if (_groundSafety != null && _groundSafety.TryRecover(_body, Time.fixedDeltaTime))
+            { CancelDash(); return; }
             if (_aimFacingOwner != null) _body.MoveRotation(Quaternion.LookRotation(_aimFacing));
             if (IsDashing)
             {
@@ -169,7 +199,9 @@ namespace ProjectZombie.Features.Defense3D
             Vector2 input = new Vector2(command.X, command.Z);
             Vector3 move = new Vector3(input.x, 0f, input.y) * EffectiveSpeed *
                 (_basicAttack != null && _basicAttack.IsRecovering ? DefenseBasicAttackRules.MoveMultiplier : 1f);
-            _body.velocity = new Vector3(move.x, _body.velocity.y, move.z);
+            Vector3 velocity = new Vector3(move.x, _body.velocity.y, move.z);
+            _body.velocity = _groundSafety != null
+                ? _groundSafety.ConstrainVelocity(_body.position, velocity, Time.fixedDeltaTime) : velocity;
             if (_aimFacingOwner == null && input.sqrMagnitude > 0.001f)
             {
                 Quaternion face = Quaternion.LookRotation(new Vector3(input.x, 0f, input.y));
