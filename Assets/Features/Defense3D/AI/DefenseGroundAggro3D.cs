@@ -57,7 +57,9 @@ namespace ProjectZombie.Features.Defense3D
             _base = target; _lane = lane; _focus = null;
             if (_base == null) throw new ArgumentNullException(nameof(target));
             _base.TryGetComponent(out _baseCollider);
-            _configured = true; _nextThink = 0f; _provokedUntil = 0f; _provoker = null;
+            _configured = true;
+            _nextThink = GameplayTime + UnityEngine.Random.Range(0f, Mathf.Max(0.05f, _aggroRules.ThinkSeconds));
+            _provokedUntil = 0f; _provoker = null;
             if (!MarchToBase(false)) throw new InvalidOperationException("Ground handoff requires a complete bank-to-Base route.");
         }
         private bool MarchToBase(bool allowExistingBridge)
@@ -116,7 +118,10 @@ namespace ProjectZombie.Features.Defense3D
             for (int i = 0; i < _candidates.Length; i++)
                 if (_candidates[i] is DefenseFriendlyTarget3D target && target.MatchesSource(context.Source))
                 {
-                    _provoker = target.Identity; _provokedUntil = GameplayTime + _aggroRules.ProvokedSeconds; return;
+                    _provoker = target.Identity;
+                    _provokedUntil = GameplayTime + _aggroRules.ProvokedSeconds;
+                    _nextThink = 0f;
+                    return;
                 }
         }
         public void Stop()

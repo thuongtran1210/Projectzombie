@@ -25,6 +25,9 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private TMP_Text _upgradeLabel;
         [Header("Independent squad command dock")]
         [SerializeField] private GameObject _commandDock;
+        [SerializeField] private TMP_Text _commandDetail;
+        private string _selectedSquad;
+        private float _detailUntil;
         [SerializeField] private GameObject[] _commandGroups;
         [SerializeField] private Image[] _orderIcons;
         [SerializeField] private Image[] _recruitIcons;
@@ -80,6 +83,8 @@ namespace ProjectZombie.Features.Defense3D.UI
         /// <summary>Reuses views at roster bind/rebind; no row construction occurs in Update.</summary>
         public void BindSquads(IReadOnlyList<string> ids)
         {
+            _selectedSquad=null;
+            if(_commandDetail!=null)_commandDetail.gameObject.SetActive(false);
             if (_recruitPool == null) _recruitPool = Pool(_recruitTemplate, _recruitContent);
             if (_commandPool == null) _commandPool = Pool(_commandTemplate, _commandContent);
             foreach (var row in _recruitRows.Values) _recruitPool.Release(row);
@@ -94,7 +99,11 @@ namespace ProjectZombie.Features.Defense3D.UI
             }
         }
         private void ForwardRecruit(string id) => RecruitRequested?.Invoke(id);
-        private void ForwardOrder(string id) => OrderRequested?.Invoke(id);
+        private void ForwardOrder(string id)
+        {
+            _selectedSquad=id;_detailUntil=Time.unscaledTime+2f;
+            OrderRequested?.Invoke(id);
+        }
 
         public void RenderSquad(string id, string recruitLabel, string orderLabel, string countLabel, string name,
             Sprite icon, bool canRecruit, bool canOrder, int state)
@@ -103,6 +112,10 @@ namespace ProjectZombie.Features.Defense3D.UI
             recruit.Render(recruitLabel, name, countLabel, icon, canRecruit, Color.white);
             Color tint = state == 0 ? new Color(1f, .85f, .55f) : state == 1 ? new Color(.60f, .92f, .91f) : new Color(1f, .66f, .55f);
             command.Render(orderLabel, name, countLabel, icon, canOrder, tint);
+            if(_commandDetail!=null&&id==_selectedSquad&&Time.unscaledTime<_detailUntil)
+            {
+                _commandDetail.SetText(name+" · "+orderLabel);_commandDetail.gameObject.SetActive(true);
+            }
         }
 
         public void SetCommandsVisible(bool visible)
@@ -133,6 +146,8 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         private void LateUpdate()
         {
+            if(_commandDetail!=null&&_commandDetail.gameObject.activeSelf&&Time.unscaledTime>=_detailUntil)
+                _commandDetail.gameObject.SetActive(false);
             if (_safeArea == null || Screen.width <= 0 || Screen.height <= 0) return;
             var area = Screen.safeArea;
             var screen = new Vector2Int(Screen.width, Screen.height);

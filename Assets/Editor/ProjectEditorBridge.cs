@@ -98,6 +98,38 @@ public static class ProjectEditorBridge
                 return "Unity " + Application.unityVersion + "\nPlaying: " + EditorApplication.isPlaying
                     + "\nPaused: " + EditorApplication.isPaused + "\nScene: " + SceneManager.GetActiveScene().path
                     + "\nDirty: " + SceneManager.GetActiveScene().isDirty;
+            case "migrate-skill-data":
+                DefenseSkillDataMigration.Migrate();
+                return File.ReadAllText("scratch/SkillDataMigration.txt");
+            case "validate-skill-data":
+                DefenseSkillDataMigration.Validate();
+                return File.ReadAllText("scratch/SkillDataValidation.txt");
+            case "test-skill-data":
+                DefenseSkillDataTestRunner.Run();
+                return File.ReadAllText("scratch/SkillDataTests.txt");
+            case "build-soul-pickup":
+                DefenseSoulPickupBuilder.Build();
+                return File.ReadAllText("scratch/SoulPickupBuild.txt");
+            case "validate-soul-pickup":
+                DefenseSoulPickupValidation.Validate();
+                return File.ReadAllText("scratch/SoulPickupValidation.txt");
+            case "smoke-soul-pickup":
+                DefenseSoulPickupSmoke.Start();
+                return "Soul pickup Play Mode check scheduled: scratch/SoulPickupSmoke.txt";
+            case "build-combat-hud":
+                DefenseCombatHudBuilder.Build();
+                return File.ReadAllText("scratch/CombatHudBuild.txt");
+            case "smoke-combat-hud":
+                DefenseCombatHudSmoke.Start();
+                return "HUD Play Mode check scheduled: scratch/CombatHudSmoke.txt";
+            case "audit-map-art":
+                return DefenseMapArtUpgrade.Audit();
+            case "build-map-art":
+                DefenseMapArtUpgrade.Build();
+                return File.ReadAllText("scratch/MapArtBuild.txt");
+            case "preview-map-art":
+                DefenseMapArtUpgrade.Preview();
+                return "Map art previews refreshed; gameplay camera uses Forward renderer.";
             case "install-app-architecture":
                 AppArchitectureInstaller.Install();
                 return File.ReadAllText("scratch/AppArchitectureInstall.txt");
@@ -107,15 +139,51 @@ public static class ProjectEditorBridge
             case "validate-towers":
                 DefenseTowerValidation.Validate();
                 return File.ReadAllText("scratch/TowerValidation.txt");
+            case "build-tower-ordnance":
+                DefenseTowerOrdnanceBuilder.Build();
+                return File.ReadAllText("scratch/TowerOrdnanceBuild.txt");
+            case "build-structure-art":
+                DefenseStructureArtBuilder.Build();
+                return File.ReadAllText("scratch/StructureArtBuild.txt");
+            case "build-ice-laser":
+                DefenseIceLaserBuilder.Build();
+                return File.ReadAllText("scratch/IceLaserBuild.txt");
+            case "build-loading-ui":
+                AppLoadingPresentationBuilder.Build();
+                return File.ReadAllText("scratch/LoadingBuild.txt");
+            case "build-thunder":
+                DefenseHeavenlyLightningBuilder.Build();
+                return File.ReadAllText("scratch/ThunderBuild.txt");
+            case "validate-map-collision":
+                DefenseMapCollisionValidation.Validate();
+                return File.ReadAllText("scratch/MapCollisionValidation.txt");
+            case "smoke-map-collision":
+                DefenseMapCollisionSmoke.Start();
+                return "Map collision smoke scheduled: scratch/MapCollisionSmoke.txt";
+            case "validate-thunder":
+                DefenseThunderValidation.Validate();
+                return File.ReadAllText("scratch/ThunderValidation.txt");
+            case "smoke-thunder":
+                DefenseThunderSmoke.Start();
+                return "Thunder Play Mode validation scheduled: scratch/ThunderSmoke.txt";
+            case "smoke-loading-ui":
+                AppLoadingSmoke.Start();
+                return "Loading Play Mode validation scheduled: scratch/LoadingSmoke.txt";
             case "smoke-towers":
                 DefenseTowerSmoke.Start();
                 return "Tower Play Mode smoke scheduled; report: scratch/TowerSmoke.txt";
             case "refresh":
                 AssetDatabase.Refresh();
                 return "Refresh requested.";
+            case "save-scenes":
+                UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+                return "Saved open scenes.";
             case "clean-tmp-submeshes":
                 ProjectZombie.EditorTools.TMPVietnameseFontSetupTool.MigratePrefabsAndCleanSubMeshes();
                 return "Migrated prefabs to Vietnamese font and cleaned TMP SubMeshes.";
+            case "optimize-ui-raycasts":
+                int optimizedCount = ProjectZombie.Editor.UI.UIRaycastOptimizer.OptimizeAllPrefabs(true);
+                return "Optimized raycast targets on " + optimizedCount + " UI elements across all prefabs.";
             case "validate-app-architecture":
                 AppArchitectureValidation.Validate();
                 return File.ReadAllText("scratch/AppArchitectureValidation.txt");

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using ProjectZombie.Features.Defense3D;
 
@@ -9,3 +10,5 @@ public sealed class DefenseTestAbilitySource : MonoBehaviour, IDefenseAbilitySou
     { Ability?.Dispose(); Ability = new DefenseAbilityRuntime(gameplay); }
     private void OnDestroy() { Ability?.Dispose(); }
 }
+
+#endif

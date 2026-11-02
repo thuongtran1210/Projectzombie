@@ -6,7 +6,8 @@ namespace ProjectZombie.Features.Defense3D.UI
     /// <summary>Connects one authored control, definition, preview and effect to one session-owned cast runtime.</summary>
     public sealed class DefenseSkillPresenter3D : MonoBehaviour, IDefenseAbilitySource
     {
-        [SerializeField] private DefenseSkillDefinitionSO _definition;
+        [SerializeField] private DefenseSkillKind _slot;
+        [SerializeField,HideInInspector] private DefenseSkillDefinitionSO _definition; // Cleared from assets by migration; runtime injection only.
         [SerializeField] private DefenseSkillAimButton3D _button;
         [SerializeField] private DefenseSkillButtonView _view;
         [SerializeField] private DefenseAimIndicator3D _indicator;
@@ -33,28 +34,24 @@ namespace ProjectZombie.Features.Defense3D.UI
 
         public DefenseAbilityRuntime Ability => _runtime?.Ability;
         public DefenseSkillDefinitionSO DefinitionSource => _definition;
+        public DefenseSkillDefinition ResolvedDefinition => _runtime?.Definition;
         public DefenseSkillEffect3D Effect => _effect;
-        public DefenseSkillKind Kind => _definition.Capture().Kind;
+        public DefenseSkillKind Kind => _slot;
 
         /// <summary>
         /// Hoán đổi định nghĩa kỹ năng, component hiệu ứng, tên hiển thị và icon động khi xuất trận (Clean/SOLID).
         /// </summary>
-        public void Rebind(DefenseSkillDefinitionSO definition, DefenseSkillEffect3D effect, Sprite icon = null, string displayName = null)
+        public void Rebind(DefenseSkillDefinitionSO definition, DefenseSkillEffect3D effect)
         {
             if (definition != null) _definition = definition;
             if (effect != null) _effect = effect;
-            if (_view != null)
-            {
-                string name = !string.IsNullOrEmpty(displayName) ? displayName : (definition != null ? definition.name.Replace("Skill_", "") : null);
-                _view.SetSkillIdentity(name, icon);
-            }
         }
 
         public void ValidateBindings()
         {
             if (_definition == null || _button == null || !_button.IsConfigured || _view == null || !_view.IsConfigured ||
                 _indicator == null || !_indicator.IsConfigured || _health == null || _origin == null || _effect == null || !_effect.IsConfigured ||
-                _definition.Capture().Kind != _effect.Kind || (_effect is DefenseHeroAttackEffect3D && !_indicator.CanShowCone))
+                _definition.Capture().Kind != _slot || _slot != _effect.Kind || (_effect is DefenseHeroAttackEffect3D && !_indicator.CanShowCone))
                 throw new InvalidOperationException("Skill Presenter requires authored definition/button/view/indicator/Hero/effect references.");
         }
 
@@ -68,8 +65,12 @@ namespace ProjectZombie.Features.Defense3D.UI
                 definition = definition.WithBonuses(_metaDamageBonus, _metaCooldownReduction, _metaAreaBonus);
             }
             _effect.Configure(definition);
+            if(_definition.Presentation!=null)
+            {
+                _view.SetSkillIdentity(_definition.Presentation.DisplayName,_definition.Presentation.Icon);
+                _view.SetAccent(_definition.Presentation.Accent);
+            }
             bool pipe = _effect is DefensePipeRelicEffect3D;
-            _view.SetAccent(pipe ? new Color(1f, .77f, .32f, 1f) : new Color(.2f, .9f, 1f, .95f));
             _view.RenderStatus(pipe ? "THỔI KHÓI" : string.Empty, 0f);
             var shared = _effect as IDefenseSharedAbilityEffect;
             if (shared != null && shared.SharedAbility == null) throw new InvalidOperationException("Bind attack owner before its presenter.");
@@ -84,7 +85,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             _button.RecastRequested += BasicPressed;
             if (_view != null) _button.AimFeedbackChanged += _view.SetAimFeedback;
             _button.SetBasicPressMode(definition.Kind == DefenseSkillKind.BasicAttack);
-            bool isSelfTarget = definition.Kind == DefenseSkillKind.ScholarSignature && (DefinitionSource == null || !DefinitionSource.name.Contains("DaoSi"));
+            bool isSelfTarget = _definition.Behavior == DefenseSkillBehavior.ScholarSignature;
             _button.Bind(session, _runtime.Ability, definition.Range, definition.AutoTargetOnTap, definition.TargetMask, isSelfTarget);
             Refresh();
         }

@@ -106,7 +106,7 @@ namespace ProjectZombie.Features.Defense3D
         }
 
         /// <summary>Called by the navigation owner after activation; starts gameplay only after bindings are complete.</summary>
-        public async System.Threading.Tasks.Task InitializeMatchAsync(MatchLaunchRequest request)
+        public async System.Threading.Tasks.Task InitializeMatchAsync(MatchLaunchRequest request, Action<float, string> progress = null)
         {
             if (_session != null || IsReady) throw new InvalidOperationException("Map is already initialized.");
             MatchRequest = request ?? throw new ArgumentNullException(nameof(request));
@@ -115,6 +115,7 @@ namespace ProjectZombie.Features.Defense3D
             try
             {
                 ValidateBindings();
+                progress?.Invoke(.05f, "Đang chuẩn bị phòng tuyến...");
                 _hasFocus = Application.isFocused;
                 _session = new DefenseSession(request.Stage.DefenseDuration);
                 _session.RuntimeAdapter.Run.State.Changed += ProjectCompatibilityState;
@@ -138,20 +139,31 @@ namespace ProjectZombie.Features.Defense3D
                 BindCombatText();
                 BindEffects();
                 ApplyLoadout();
+                foreach(var presenter in _skillPresenters)presenter.ValidateBindings();
+                progress?.Invoke(.15f, "Đang tập hợp đội hình...");
                 foreach (var participant in _sceneParticipants)
                     if (participant is DefenseVillageShop3D minionShop)
                         await minionShop.PrepareRosterAsync(_combatTextCamera != null ? _combatTextCamera : Camera.main);
+                progress?.Invoke(.3f, "Đang dựng trụ phòng thủ...");
                 foreach (var participant in _sceneParticipants)
                     if (participant is DefenseTowerBuildPrototype3D builder)
-                        await builder.PrepareAsync(_runtimeRoots.FriendlyTargets);
+                    {
+                        await builder.PrepareAsync(_runtimeRoots.FriendlyTargets, value => progress?.Invoke(Mathf.Lerp(.3f, .9f, value), "Đang dựng trụ phòng thủ..."));
+                        builder.BindPresentation(_effectService);
+                    }
                 if (!_run.InitializeSession(_session, _wallet, _combatText, _effectService))
                     throw new InvalidOperationException("Run configuration could not be initialized.");
+                progress?.Invoke(.95f, "Đang hoàn tất phòng tuyến...");
+                foreach (var participant in _sceneParticipants)
+                    if (participant is DefenseTowerBuildPrototype3D towers) towers.BindHealthPresentation(_combatTextCamera);
+                _runtimeRoots.CannonBattery.BindHealthPresentation(_combatTextCamera);
                 foreach (var participant in _sceneParticipants)
                     if (participant is DefenseVillageShop3D shop) shop.BindWoodDrops(_run.WoodDrops);
                 foreach (var presenter in _skillPresenters) presenter.Bind(_session);
                 _session.RuntimeAdapter.RegisterOwner(_matchUI.CancelRunPresentation, ResetPresentationAndWallet);
                 _session.Start();
                 IsReady = true;
+                progress?.Invoke(1f, "Phòng tuyến đã sẵn sàng");
             }
             catch (Exception exception)
             {
@@ -254,10 +266,9 @@ namespace ProjectZombie.Features.Defense3D
                 }
             }
 
-            DefenseLoadoutRuntimeAdapter.ApplyDynamicSkillBindings(resolved, _skillPresenters, _heroHealth, attack, motor, visual, _session);
-            foreach (var presenter in _skillPresenters)
-                if (presenter != null && presenter.Effect is DefensePipeRelicEffect3D pipe)
-                    pipe.BindPresentation(_effectService, presenter.DefinitionSource.PresentationProfile);
+            DefenseLoadoutRuntimeAdapter.ApplyDynamicSkillBindings(resolved, _skillPresenters, _heroHealth, attack, motor, visual, _session, _runtimeHeroKit);
+            BindSkillFeedback();
+
         }
 
         private void ValidateBindings()
@@ -301,14 +312,7 @@ namespace ProjectZombie.Features.Defense3D
             {
                 if (presenter == null || presenter.gameObject.scene != gameObject.scene || !presenter.isActiveAndEnabled)
                     throw new InvalidOperationException("Skill presenters must be active instances in this scene.");
-                presenter.ValidateBindings();
-                var kitDef = currentKit.DefinitionFor(presenter.Kind);
-                bool defMatches = kitDef == presenter.DefinitionSource ||
-                    (kitDef != null && presenter.DefinitionSource != null && kitDef.Capture().Kind == presenter.DefinitionSource.Capture().Kind);
-                bool isEffectParticipant = presenter.Effect != null &&
-                    (unique.Contains(presenter.Effect) || presenter.Effect.gameObject.scene == gameObject.scene);
-                if (!defMatches || !kinds.Add(presenter.Kind) || !isEffectParticipant)
-                    throw new InvalidOperationException("Skill kinds must be unique and effects must be bound scene participants.");
+                if(!kinds.Add(presenter.Kind))throw new InvalidOperationException("Skill slots must be unique.");
             }
         }
 
@@ -317,13 +321,36 @@ namespace ProjectZombie.Features.Defense3D
             if (_effectService == null) return;
             if (_runtimeRoots == null) throw new InvalidOperationException("Assign VFX Runtime Roots.");
             _effectService.Bind(_session, _runtimeRoots);
-            if (_basicAttackPresenter != null) _basicAttackPresenter.Bind(_session, _effectService);
-            if (_dashPresenter != null) _dashPresenter.Bind(_session, _effectService);
-            if (_signaturePresenter != null) _signaturePresenter.Bind(_session, _effectService);
-            if (_effectPresenters != null) foreach (var presenter in _effectPresenters)
+
+        }
+
+        private void BindSkillFeedback()
+        {
+            if (_effectService == null) return;
+            foreach(var presenter in _skillPresenters)
             {
-                if (presenter == null) throw new InvalidOperationException("Missing effect presenter.");
-                presenter.Bind(_session, _effectService);
+                if(presenter==null)continue;
+                var presentation=presenter.DefinitionSource.Presentation;
+                if(presentation is DefenseAttackPresentationSO basic && _basicAttackPresenter!=null)
+                    _basicAttackPresenter.Bind(_session,_effectService,basic.Effects);
+                else if(presentation is DefenseDashPresentationSO dash && _dashPresenter!=null)
+                    _dashPresenter.Bind(_session,_effectService,dash.Effects);
+                else if(presenter.Effect is DefenseScholarSignatureEffect3D && _signaturePresenter!=null)
+                    _signaturePresenter.Bind(_session,_effectService,(presentation as DefenseSignaturePresentationSO)?.Effects);
+                else if(presenter.Effect is DefenseLightningSignatureEffect3D lightning)
+                {
+                    _signaturePresenter?.Unbind();
+                    var feedback=lightning.GetComponent<DefenseLightningSignaturePresenter3D>()??lightning.gameObject.AddComponent<DefenseLightningSignaturePresenter3D>();
+                    feedback.Bind(lightning,_session,_effectService,(presentation as DefenseSignaturePresentationSO)?.Effects,_combatTextCamera,
+                        GetComponentInChildren<DefenseIndicatorSurface3D>(true));
+                }
+                else if(presenter.Effect is DefensePipeRelicEffect3D pipe)
+                {
+                    if(_effectPresenters!=null)foreach(var old in _effectPresenters)old?.Unbind();
+                    pipe.BindPresentation(_effectService,(presentation as DefenseRelicPresentationSO)?.Profile);
+                }
+                else if(presenter.Effect is DefenseRelicSkillEffect3D && _effectPresenters!=null)
+                    foreach(var feedback in _effectPresenters)feedback.Bind(_session,_effectService,presentation as DefenseRelicPresentationSO);
             }
         }
 

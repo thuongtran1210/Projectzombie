@@ -175,7 +175,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             else
             {
                 catalog.Register(new LoadoutCatalogEntry(TOWER_CUNG_TIEN, LoadoutItemType.Tower, "Nỏ Thần", true, "<b>Tháp Nỏ Thần Liên Châu:</b> Chòi cung tiễn tầm xa bắn tên tốc độ cao, chuyên trị các đợt yêu ma tiến công đơn lẻ và mục tiêu trên không."));
-                catalog.Register(new LoadoutCatalogEntry(TOWER_BANG_HA, LoadoutItemType.Tower, "Băng Hà", true, "<b>Tháp Băng Hà Hàn Khí:</b> Chòi pháp thuật phóng đạn băng giá gây sát thương kèm hiệu ứng làm chậm tốc độ di chuyển của đàn quái."));
+                catalog.Register(new LoadoutCatalogEntry(TOWER_BANG_HA, LoadoutItemType.Tower, "Băng Hà", true, "<b>Tháp Băng Hà Hàn Quang:</b> Bắn laser băng làm chậm quái. Cấp 1/2/3 bắn 1/2/3 tia, ưu tiên mục tiêu khác nhau; các tia còn lại tập trung vào mục tiêu chính."));
             }
             return catalog;
         }

@@ -26,9 +26,8 @@ public sealed class DefenseSignatureInterruptionTests
                 var presenter = actor.AddComponent<DefenseScholarSignaturePresenter3D>();
                 Set(presenter, "_source", source); Set(presenter, "_motor", motor); Set(presenter, "_health", health);
                 Set(presenter, "_groundAnchor", anchor.transform);
-                Set(presenter, "_style", AssetDatabase.LoadAssetAtPath<DefenseSignatureEffectSetSO>("Assets/Features/Defense3D/Effects/Assets/FXSet_ScholarSignature.asset"));
                 var effects = new DefenseDashFeedbackTests.Sink();
-                presenter.Bind(session, effects); session.Start();
+                presenter.Bind(session, effects, AssetDatabase.LoadAssetAtPath<DefenseSignatureEffectSetSO>("Assets/Features/Defense3D/Effects/Assets/FXSet_ScholarSignature.asset")); session.Start();
                 var cue = new DefenseSignatureFeedback(1, default, 6f, session, session.RunGeneration);
                 source.Feedback.PublishStarted(cue); source.Feedback.PublishReleased(cue);
                 source.Feedback.PublishHit(new DefenseSignatureHitFeedback(1, new DefenseHitFeedback(default, default, 52.5f, session, session.RunGeneration)));

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd714c4575e15c4cb34920b99f50a57, type: 3}
+  m_Name: CombatHudTheme
+  m_EditorClassIdentifier: 
+  _slots:
+  - Slot: 2
+    Plate: {fileID: 21300000, guid: 9af1a4935f4e9be49afbc3dc831182ec, type: 3}
+    Diameter: 144
+    HitSize: 144
+    Position: {x: -104, y: 110}
+  - Slot: 0
+    Plate: {fileID: 21300000, guid: c5138d55c13a0c84983eefb92075496d, type: 3}
+    Diameter: 92
+    HitSize: 100
+    Position: {x: -264, y: 106}
+  - Slot: 1
+    Plate: {fileID: 21300000, guid: b8d20d5a2f1ae7f4585a40108e166461, type: 3}
+    Diameter: 100
+    HitSize: 104
+    Position: {x: -110, y: 280}
+  - Slot: 3
+    Plate: {fileID: 21300000, guid: 2f2e01a27c47e664da622bf8abc4df18, type: 3}
+    Diameter: 108
+    HitSize: 112
+    Position: {x: -267, y: 255}
+  _labelFontSize: 16
+  _statusFontSize: 11

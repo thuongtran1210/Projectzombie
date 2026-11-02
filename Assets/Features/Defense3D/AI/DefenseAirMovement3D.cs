@@ -63,7 +63,8 @@ namespace ProjectZombie.Features.Defense3D
             _target = target;
             _target.TryGetComponent(out _baseCollider);
             _attack.BindAreaTargets(_friendlyRoster, target);
-            _focus = null; _policy.Reset(); _provoker = null; _provokedUntil = 0f; _nextThink = 0f;
+            _focus = null; _policy.Reset(); _provoker = null; _provokedUntil = 0f;
+            _nextThink = GameplayTime + UnityEngine.Random.Range(0f, Mathf.Max(0.05f, _aggroRules.ThinkSeconds));
             _attack.Begin(target, _baseCollider);
             _flying = true;
             _blockedSince = GameplayTime;
@@ -164,7 +165,12 @@ namespace ProjectZombie.Features.Defense3D
             if (!_flying || _candidates == null) return;
             for (int i = 0; i < _candidates.Length; i++)
                 if (_candidates[i] is DefenseFriendlyTarget3D target && target.MatchesSource(context.Source))
-                { _provoker = target.Identity; _provokedUntil = GameplayTime + _aggroRules.ProvokedSeconds; return; }
+                {
+                    _provoker = target.Identity;
+                    _provokedUntil = GameplayTime + _aggroRules.ProvokedSeconds;
+                    _nextThink = 0f;
+                    return;
+                }
         }
         private static DefensePoint3 Point(Vector3 p) => new DefensePoint3(p.x, p.y, p.z);
         protected override void OnGameplayCleanup() { _flying = false; _focus = null; _policy?.Reset(); }

@@ -87,9 +87,15 @@ namespace ProjectZombie.Editor.UI
                 "Tuyệt vời");
         }
 
-        public static void OptimizeAllPrefabs()
+        public static int OptimizeAllPrefabs(bool silent = false)
         {
-            string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Prefabs/UI", "Assets/Art/UI" });
+            string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] {
+                "Assets/_Prefabs/UI",
+                "Assets/Art/UI",
+                "Assets/Resources/UI",
+                "Assets/Resources/Defense3D",
+                "Assets/Features/Defense3D"
+            });
             int totalDisabled = 0;
             int prefabCount = 0;
 
@@ -134,10 +140,14 @@ namespace ProjectZombie.Editor.UI
             AssetDatabase.Refresh();
 
             Debug.Log($"<color=#00FF00><b>[UI Prefabs Optimizer]</b></color> Đã tối ưu {totalDisabled} elements trên {prefabCount} UI Prefabs!");
-            EditorUtility.DisplayDialog(
-                "Tối Ưu UI Prefabs Hoàn Tất",
-                $"Đã cập nhật: {prefabCount} Prefabs\nĐã tắt Raycast Target trên: {totalDisabled} UI tĩnh!",
-                "OK");
+            if (!silent && !Application.isBatchMode)
+            {
+                EditorUtility.DisplayDialog(
+                    "Tối Ưu UI Prefabs Hoàn Tất",
+                    $"Đã cập nhật: {prefabCount} Prefabs\nĐã tắt Raycast Target trên: {totalDisabled} UI tĩnh!",
+                    "OK");
+            }
+            return totalDisabled;
         }
 
         /// <summary>

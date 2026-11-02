@@ -205,37 +205,8 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             if (resolved == null || heroKit == null) return;
 
             if (relicDefinition == null && !string.IsNullOrEmpty(resolved.RelicId))
-            {
-                if (string.Equals(resolved.RelicId, Defense3DCatalog.RELIC_DEP_TO_ONG, StringComparison.OrdinalIgnoreCase))
-                {
-                    relicDefinition = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DepToOng");
-                }
-                else if (string.Equals(resolved.RelicId, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase))
-                {
-                    relicDefinition = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DieuCay");
-                }
-            }
-
-            if (relicDefinition != null)
-            {
-                heroKit.SetRelic(relicDefinition);
-            }
-
-            if (!string.IsNullOrEmpty(resolved.HeroId))
-            {
-                if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(resolved.HeroId, "dao-si", StringComparison.OrdinalIgnoreCase))
-                {
-                    var sigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DaoSi_Signature");
-                    if (sigDef != null) heroKit.SetSignature(sigDef);
-                }
-                else if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_THU_SINH, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(resolved.HeroId, "thu-sinh", StringComparison.OrdinalIgnoreCase))
-                {
-                    var sigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_ScholarSignature");
-                    if (sigDef != null) heroKit.SetSignature(sigDef);
-                }
-            }
+                relicDefinition = DefenseSkillCatalogSO.Load().FindRelic(resolved.RelicId);
+            if (relicDefinition != null) heroKit.SetRelic(relicDefinition);
         }
 
         public static int GetEffectiveHeroStarLevel(string heroId, MetaProgressionSaveData saveData = null)
@@ -539,7 +510,6 @@ namespace ProjectZombie.Features.Defense3D.Loadout
 
                 if (attack != null)
                 {
-                    attack.SetBaseCombatStats(heroDef.BaseDamage, heroDef.BaseAttackRange);
                     EvaluateHeroCombatStarBonuses(star, progressionConfig, out float damageBonus, out _);
                     attack.SetMetaDamageBonus(damageBonus);
                 }
@@ -565,77 +535,18 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             DefenseHeroAutoAttack3D attack,
             DefenseHeroMotor3D motor,
             DefenseHeroVisualController3D visual,
-            DefenseSession session)
+            DefenseSession session,
+            DefenseHeroKitSO resolvedKit)
         {
-            if (resolved == null || skillPresenters == null) return;
-
-            DefenseSkillPresenter3D signaturePresenter = null;
-            DefenseSkillPresenter3D relicPresenter = null;
-
-            foreach (var presenter in skillPresenters)
+            if (resolved == null || skillPresenters == null || heroHealth == null || resolvedKit == null) return;
+            foreach(var presenter in skillPresenters)
             {
-                if (presenter == null) continue;
-                if (presenter.Kind == DefenseSkillKind.Signature || presenter.Kind == DefenseSkillKind.ScholarSignature)
-                {
-                    signaturePresenter = presenter;
-                }
-                else if (presenter.Kind == DefenseSkillKind.Relic || presenter.Kind == DefenseSkillKind.DepToOng)
-                {
-                    relicPresenter = relicPresenter ?? presenter;
-                }
-            }
-
-            // 1. Pháp Bảo Điếu Cày Khói Lửa
-            if (string.Equals(resolved.RelicId, Defense3DCatalog.RELIC_DIEU_CAY, StringComparison.OrdinalIgnoreCase))
-            {
-                var dieuCayDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DieuCay");
-                if (dieuCayDef != null && relicPresenter != null && heroHealth != null)
-                {
-                    var pipeEffect = heroHealth.GetComponent<DefensePipeRelicEffect3D>();
-                    if (pipeEffect == null)
-                    {
-                        pipeEffect = heroHealth.gameObject.AddComponent<DefensePipeRelicEffect3D>();
-                    }
-                    if (session != null) pipeEffect.BindGameplay(session);
-
-                    Sprite pipeIcon = dieuCayDef.Icon;
-#if UNITY_EDITOR
-                    if (pipeIcon == null)
-                    {
-                        pipeIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_PIPE.png");
-                    }
-#endif
-                    relicPresenter.Rebind(dieuCayDef, pipeEffect, pipeIcon, "ĐIẾU CÀY");
-                }
-            }
-
-            // 2. Tuyệt Kỹ Tướng Đạo Sĩ
-            if (string.Equals(resolved.HeroId, Defense3DCatalog.HERO_DAO_SI, StringComparison.OrdinalIgnoreCase))
-            {
-                var daoSiSigDef = Resources.Load<DefenseSkillDefinitionSO>("Defense3D/Skill_DaoSi_Signature");
-                if (daoSiSigDef != null && signaturePresenter != null && heroHealth != null)
-                {
-                    var lightningEffect = heroHealth.GetComponent<DefenseLightningSignatureEffect3D>();
-                    if (lightningEffect == null)
-                    {
-                        lightningEffect = heroHealth.gameObject.AddComponent<DefenseLightningSignatureEffect3D>();
-                    }
-                    lightningEffect.ConfigureComponents(heroHealth, attack, motor);
-                    if (session != null) lightningEffect.BindGameplay(session);
-
-                    Sprite sigIcon = Resources.Load<Sprite>("Art/UI/HeroSkills/Icon_Skill_DaoSi_Signature");
-#if UNITY_EDITOR
-                    if (sigIcon == null)
-                    {
-                        sigIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/HeroSkills/Icon_Skill_DaoSi_Signature.png");
-                    }
-#endif
-                    signaturePresenter.Rebind(daoSiSigDef, lightningEffect, sigIcon, "THIÊN LÔI");
-                    if (visual != null)
-                    {
-                        visual.SetSignatureEffect(lightningEffect);
-                    }
-                }
+                if(presenter==null)continue;
+                var definition=resolvedKit.DefinitionFor(presenter.Kind);
+                if(definition==null)throw new System.InvalidOperationException("Missing skill for slot "+presenter.Kind);
+                var effect=DefenseSkillRuntimeFactory.Bind(definition,heroHealth,attack,motor,session);
+                presenter.Rebind(definition,effect);
+                if(definition.Capture().Kind==DefenseSkillKind.Signature && visual!=null)visual.SetSignatureEffect(effect as IDefenseSignatureEffect);
             }
         }
 
