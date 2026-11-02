@@ -14,7 +14,7 @@ Tài liệu này là **Single Source of Truth** theo dõi tiến độ các hạ
 | **G3 — Save Migration & Meta Adapter** | Mapping ID cũ/mới, Cấp quyền Meta, Atomic JSON Save | **HOÀN THÀNH (100%)** |
 | **G4 — Luồng Sảnh & Chuẩn Bị Trận** | UI Chuẩn bị trận, Navigation nạp Scene qua AppFlow | **HOÀN THÀNH (100%)** |
 | **G5 — Hoàn Thiện Vòng Đời & Kết Quả** | Dịch vụ kết quả, cộng Cổ Tiền, trở về Sảnh an toàn | **HOÀN THÀNH (100%)** |
-| **G6 — Mở Rộng Nội Dung & Nạp Động** | Đạo Sĩ, Điếu Cày, Xạ Thủ, Hỏa Long, Dynamic Binding | **ĐANG TRIỂN KHAI** |
+| **G6 — Mở Rộng Nội Dung & Nạp Động** | Đạo Sĩ, Điếu Cày, Xạ Thủ, Hỏa Long, Dynamic Binding | **HOÀN THÀNH** |
 | **G7 — Đánh Bóng & Đóng Gói Android** | Tối ưu 60 FPS, Audio Cổ Phong, Build APK/AAB | **KẾ HOẠCH** |
 
 ---
@@ -58,7 +58,7 @@ Tài liệu này là **Single Source of Truth** theo dõi tiến độ các hạ
   - [x] **Hoán đổi Pháp bảo:** Bổ sung phương thức cấu hình động trong `DefenseSkillPresenter3D` để nạp `Skill_DieuCay` và gắn component `DefensePipeRelicEffect3D` với cơ chế Vùng Khói Thiêu Đốt DoT & Slow.
   - [x] **Hoán đổi Tuyệt Kỹ Tướng:** Nối slot Signature với `Skill_DaoSi_Signature` và component `DefenseLightningSignatureEffect3D` khi chọn Đạo Sĩ (hoàn thiện sát thương scale, Stun 1.5s, Slow 40% và Feedback events).
   - [x] **Hoán đổi Lính chiêu mộ:** Cho phép `DefenseVillageShop3D` hoán đổi Definition ô tuyển mộ lính khi người chơi mang Xạ Thủ Nỏ Thần (`Minion_XaThu.asset`, cự ly 8.5m, 40 gỗ, đòn nặng 30 damage kèm Stun và cơ chế phóng tên).
-- [ ] **[G6-03] Hoán Đổi Mô Hình 3D Nhân Vật (Hero Visual Model Swapping):**
+- [x] **[G6-03] Hoán Đổi Mô Hình 3D Nhân Vật (Hero Visual Model Swapping):**
   - Cập nhật `DefenseHeroVisualController3D` cho phép nạp và hiển thị Model 3D tương ứng của Tướng đã chọn thay vì cố định Thư Sinh.
 
 ---
