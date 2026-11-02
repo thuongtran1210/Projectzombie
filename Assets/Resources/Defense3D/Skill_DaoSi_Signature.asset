@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e72a55866d8bf04380db25df84f8040, type: 3}
   m_Name: Skill_DaoSi_Signature
   m_EditorClassIdentifier: 
+  _skillId: skill.lightning_signature
+  _behavior: 3
+  _presentation: {fileID: 11400000, guid: 5b60ca4459b475c4e84d3f8eaa7a843f, type: 2}
+  _tuning: {fileID: 11400000, guid: d215ff1bc110dff488ae774393358986, type: 2}
   _kind: 3
   _range: 10
   _radius: 4.5
@@ -20,4 +24,6 @@ MonoBehaviour:
   _duration: 0.25
   _autoTargetOnTap: 1
   _targetMask: -1
-
+  _presentationProfile: {fileID: 0}
+  _signaturePresentation: {fileID: 0}
+  _icon: {fileID: 0}
