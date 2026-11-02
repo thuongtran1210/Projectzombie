@@ -8,7 +8,7 @@ namespace ProjectZombie.Features.Defense3D
     /// <summary>
     /// Danh mục Catalog toàn bộ Anh Hùng 3D (ScriptableObject Database).
     /// Đóng vai trò Single Source of Truth cho việc tra cứu, nạp dữ liệu và xuất trận trong Defense 3D.
-    /// Sử dụng DefenseLoadoutIdMapper thống nhất thay vì tự tạo mapping cục bộ.
+    /// Sử dụng DefenseHeroIds và DefenseLoadoutIdMapper thống nhất thay vì tự tạo mapping cục bộ.
     /// </summary>
     [CreateAssetMenu(fileName = "DefenseHeroCatalog", menuName = "Defense3D/Hero Catalog")]
     public sealed class DefenseHeroCatalogSO : ScriptableObject
@@ -34,14 +34,13 @@ namespace ProjectZombie.Features.Defense3D
 
             string cleanId = heroId.Trim();
 
-            // 1. Tìm chính xác theo HeroId hoặc DisplayName
+            // 1. Tìm chính xác theo HeroId
             for (int i = 0; i < _heroes.Count; i++)
             {
                 var hero = _heroes[i];
                 if (hero == null) continue;
 
-                if (string.Equals(hero.HeroId, cleanId, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(hero.DisplayName, cleanId, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(hero.HeroId, cleanId, StringComparison.OrdinalIgnoreCase))
                 {
                     return hero;
                 }
@@ -64,6 +63,7 @@ namespace ProjectZombie.Features.Defense3D
                 }
             }
 
+            Debug.LogWarning($"[DefenseHeroCatalog] Khong tim thay heroId '{cleanId}', dung fallback '{DefaultHero?.HeroId}'.");
             return DefaultHero;
         }
 

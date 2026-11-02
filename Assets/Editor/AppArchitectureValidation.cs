@@ -24,8 +24,9 @@ public static class AppArchitectureValidation
             "ProjectZombie.Tests.Editor.DefenseLoadoutSaveAndMetaAdapterTests",
             "ProjectZombie.Tests.Editor.DefenseMatchResultAndLifecycleTests", "DefenseG6BossAndResultTests",
             "ProjectZombie.Tests.Editor.StageSpawnConfigTests", "ProjectZombie.Tests.Editor.DefenseSessionBalancingTests",
-            "DefenseEnemyHealthTests", "DefenseSpawnWarningTests", "DefenseEffectAuthoringTests", "OwnedPoolTests" })
+            "DefenseEnemyHealthTests", "DefenseSpawnWarningTests", "DefenseEffectAuthoringTests", "OwnedPoolTests", "DefenseHeroCatalogTests" })
             filter.Add(new FullNameFilter(name));
+        filter.Add(new FullNameFilter("ProjectZombie.Tests.Editor.DefenseHeroCatalogTests"));
         var work = WorkItem.CreateWorkItem(runner.LoadedTest, filter);
         work.InitializeContext(new TestExecutionContext { Dispatcher = new MainThreadDispatcher(), IsSingleThreaded = true });
         work.Execute();
