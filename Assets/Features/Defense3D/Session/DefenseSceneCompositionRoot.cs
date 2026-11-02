@@ -22,7 +22,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroKitSO _heroKit;
         [Tooltip("Danh mục toàn bộ Tướng 3D để tra cứu prefab và chỉ số")]
         [SerializeField] private DefenseHeroCatalogSO _heroCatalog;
-        private DefenseHeroKitSO _runtimeHeroKit;
+        private DefenseHeroRuntimeKit _runtimeHeroKit;
 
         [Header("=== 2. QUẢN LÝ VÒNG LẶP TRẬN ĐẤU & GIAO DIỆN ===")]
         [Tooltip("Bộ đếm thời gian trận 600 giây (10 phút) và điều phối Wave quái")]
@@ -237,12 +237,7 @@ namespace ProjectZombie.Features.Defense3D
             var baseKit = heroDef?.HeroKit ?? _heroKit;
             if (baseKit != null)
             {
-                if (_runtimeHeroKit == null)
-                {
-                    _runtimeHeroKit = ScriptableObject.Instantiate(baseKit);
-                    _runtimeHeroKit.name = baseKit.name + "_Runtime";
-                }
-                DefenseLoadoutRuntimeAdapter.ApplyToHeroKit(resolved, _runtimeHeroKit);
+                _runtimeHeroKit = DefenseLoadoutRuntimeAdapter.CreateRuntimeKit(resolved, baseKit);
                 int bonusRerolls = DefenseLoadoutRuntimeAdapter.ApplySanctuaryUpgrades(_session?.Modifiers, _heroHealth, motor);
                 if (_matchUI != null && bonusRerolls > 0) _matchUI.SetBonusRerolls(bonusRerolls);
                 int relicStar = DefenseLoadoutRuntimeAdapter.GetEffectiveRelicStarLevel(resolved.RelicId);
@@ -302,7 +297,7 @@ namespace ProjectZombie.Features.Defense3D
             }
             if (!hasHeroMotor || !hasHeroAttack || !hasTowerBuilder || !hasBaseHealth || !hasHeroHealth)
                 throw new InvalidOperationException("Participants must include Hero Motor/Attack/Health, Base Health and Tower Builder.");
-            var currentKit = _runtimeHeroKit ?? _heroKit;
+            IDefenseHeroKit currentKit = (IDefenseHeroKit)_runtimeHeroKit ?? _heroKit;
             if (currentKit == null) throw new InvalidOperationException("Assign authored Hero Kit.");
             currentKit.Validate();
             if (_skillPresenters == null || _skillPresenters.Length != 4)
@@ -428,7 +423,6 @@ namespace ProjectZombie.Features.Defense3D
             IsReady = false;
             if (_runtimeHeroKit != null)
             {
-                Destroy(_runtimeHeroKit);
                 _runtimeHeroKit = null;
             }
             if (_session != null) _session.RuntimeAdapter.Run.State.Changed -= ProjectCompatibilityState;

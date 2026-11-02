@@ -107,6 +107,43 @@ public sealed class DefenseHeroCatalogTests
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(def);
         }
+
+        [Test]
+        public void DefenseHeroRuntimeKit_DelegatesAuthoredSkillsAndOverridesRelic()
+        {
+            var authoredKit = ScriptableObject.CreateInstance<DefenseHeroKitSO>();
+            var attackDef = ScriptableObject.CreateInstance<DefenseSkillDefinitionSO>();
+            var dashDef = ScriptableObject.CreateInstance<DefenseSkillDefinitionSO>();
+            var relicDef = ScriptableObject.CreateInstance<DefenseSkillDefinitionSO>();
+
+            SetKitField(authoredKit, "_heroId", DefenseHeroIds.THU_SINH);
+            SetKitField(authoredKit, "_displayName", "Thư Sinh");
+            SetKitField(authoredKit, "_attack", attackDef);
+            SetKitField(authoredKit, "_dash", dashDef);
+
+            var runtimeKit = new DefenseHeroRuntimeKit(authoredKit, relicDef);
+
+            Assert.AreEqual(DefenseHeroIds.THU_SINH, runtimeKit.HeroId);
+            Assert.AreEqual("Thư Sinh", runtimeKit.DisplayName);
+            Assert.AreSame(attackDef, runtimeKit.Attack);
+            Assert.AreSame(dashDef, runtimeKit.Dash);
+            Assert.AreSame(relicDef, runtimeKit.Relic);
+
+            Assert.AreSame(attackDef, runtimeKit.DefinitionFor(DefenseSkillKind.BasicAttack));
+            Assert.AreSame(dashDef, runtimeKit.DefinitionFor(DefenseSkillKind.Dash));
+            Assert.AreSame(relicDef, runtimeKit.DefinitionFor(DefenseSkillKind.Relic));
+
+            Object.DestroyImmediate(authoredKit);
+            Object.DestroyImmediate(attackDef);
+            Object.DestroyImmediate(dashDef);
+            Object.DestroyImmediate(relicDef);
+        }
+
+        private static void SetKitField(DefenseHeroKitSO kit, string fieldName, object value)
+        {
+            var field = typeof(DefenseHeroKitSO).GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            field?.SetValue(kit, value);
+        }
     }
 }
 

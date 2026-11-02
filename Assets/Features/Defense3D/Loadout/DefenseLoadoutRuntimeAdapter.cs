@@ -197,6 +197,19 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             towerBuilder.SetAllowedTowers(resolved.TowerIds);
         }
 
+        public static DefenseHeroRuntimeKit CreateRuntimeKit(
+            DefenseResolvedLoadout resolved,
+            DefenseHeroKitSO authoredKit,
+            DefenseSkillDefinitionSO relicDefinition = null)
+        {
+            if (authoredKit == null) return null;
+
+            if (relicDefinition == null && resolved != null && !string.IsNullOrEmpty(resolved.RelicId))
+                relicDefinition = DefenseSkillCatalogSO.Load().FindRelic(resolved.RelicId);
+
+            return new DefenseHeroRuntimeKit(authoredKit, relicDefinition);
+        }
+
         public static void ApplyToHeroKit(
             DefenseResolvedLoadout resolved,
             DefenseHeroKitSO heroKit,
@@ -536,7 +549,7 @@ namespace ProjectZombie.Features.Defense3D.Loadout
             DefenseHeroMotor3D motor,
             DefenseHeroVisualController3D visual,
             DefenseSession session,
-            DefenseHeroKitSO resolvedKit)
+            IDefenseHeroKit resolvedKit)
         {
             if (resolved == null || skillPresenters == null || heroHealth == null || resolvedKit == null) return;
             foreach(var presenter in skillPresenters)

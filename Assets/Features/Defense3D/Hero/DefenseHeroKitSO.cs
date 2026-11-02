@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectZombie.Features.Defense3D
 {
     [CreateAssetMenu(menuName = "Defense3D/Hero Kit")]
-    public sealed class DefenseHeroKitSO : ScriptableObject
+    public sealed class DefenseHeroKitSO : ScriptableObject, IDefenseHeroKit
     {
         [SerializeField] private string _heroId;
         [SerializeField] private string _displayName;
@@ -16,7 +16,10 @@ namespace ProjectZombie.Features.Defense3D
         public string DisplayName => _displayName;
         public DefenseSkillDefinitionSO Relic => _relic;
 
-        /// <summary>Gán hoặc thay đổi trang bị Pháp Bảo (Relic) được chọn từ Loadout ngoài Sảnh.</summary>
+        /// <summary>
+        /// Gán hoặc thay đổi trang bị Pháp Bảo (Relic).
+        /// Khuyên dùng DefenseHeroRuntimeKit trong runtime thay vì mutate trực tiếp authored SO.
+        /// </summary>
         public void SetRelic(DefenseSkillDefinitionSO relic)
         {
             _relic = relic;
