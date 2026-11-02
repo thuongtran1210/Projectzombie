@@ -163,6 +163,19 @@ public sealed class DefenseHeroCatalogTests
             Assert.DoesNotThrow(() => kitThanhDong.Validate());
         }
 
+        [Test]
+        public void HeroDefinitions_AllFourHeroes_HaveAssignedVisualPrefabs()
+        {
+            var catalog = Resources.Load<DefenseHeroCatalogSO>("Defense3D/DefenseHeroCatalog");
+            Assert.IsNotNull(catalog, "DefenseHeroCatalog must exist in Resources/Defense3D");
+
+            foreach (var hero in catalog.Heroes)
+            {
+                Assert.IsNotNull(hero, "Hero definition in catalog should not be null");
+                Assert.IsNotNull(hero.HeroPrefab, $"Hero '{hero.HeroId}' must have a 3D HeroPrefab assigned");
+            }
+        }
+
         private static void SetKitField(DefenseHeroKitSO kit, string fieldName, object value)
         {
             var field = typeof(DefenseHeroKitSO).GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

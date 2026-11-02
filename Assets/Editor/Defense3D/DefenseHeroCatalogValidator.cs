@@ -67,6 +67,12 @@ namespace ProjectZombie.Editor.Defense3D
                     Debug.LogWarning($"[DefenseHeroCatalogValidator] Hero '{hero.HeroId}' chưa được gán Avatar.");
                 }
 
+                if (hero.HeroPrefab == null)
+                {
+                    Debug.LogError($"[DefenseHeroCatalogValidator] Hero '{hero.HeroId}' thiếu HeroPrefab 3D!");
+                    isValid = false;
+                }
+
                 if (hero.HeroKit == null)
                 {
                     Debug.LogError($"[DefenseHeroCatalogValidator] Hero '{hero.HeroId}' thiếu HeroKitSO!");
