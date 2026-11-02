@@ -53,7 +53,7 @@ public sealed class DefenseEnemyHealthTests
             var enemy = root.AddComponent<DefenseEnemy3D>();
             var body = root.AddComponent<BoxCollider>();
             session.Start(); enemy.BindGameplay(session);
-            var stats = new DefenseEnemyStats("unit","unit",DefenseEnemyLocomotionType.GroundNavMesh,100,1,1,0,0);
+            var stats = new DefenseEnemyStats("unit","unit",DefenseEnemyLocomotionType.GroundNavMesh,100,1,1,0,0, isBoss: true);
             enemy.Initialize(stats);
             var lease = new DefenseActorLifetime(session.SessionIdentity,session.RunGeneration,1);
             enemy.BindLifetime(lease, (actor, lifetime, reason) => { });
