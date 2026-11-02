@@ -15,7 +15,7 @@ namespace ProjectZombie.Features.Defense3D
     /// 3. Inject dữ liệu chuẩn bị xuất trận (Loadout Snapshot) vào game.
     /// </summary>
     [DefaultExecutionOrder(-1000), DisallowMultipleComponent]
-    public sealed class DefenseSceneCompositionRoot : MonoBehaviour
+    public sealed class DefenseSceneCompositionRoot : MonoBehaviour, ProjectZombie.Core.Architecture.IMatchCompositionRoot
     {
         [Header("=== 1. CẤU HÌNH TƯỚNG & DANH MỤC ===")]
         [Tooltip("Bộ kỹ năng và chỉ số mặc định của Tướng trong trận")]

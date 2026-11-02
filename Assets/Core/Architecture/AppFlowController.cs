@@ -145,16 +145,16 @@ namespace ProjectZombie.Core.Architecture
 
         private static async Task InitializeMatch(Scene scene, MatchLaunchRequest request, Action<float, string> progress)
         {
-            DefenseSceneCompositionRoot result = null;
+            IMatchCompositionRoot result = null;
             foreach (var root in scene.GetRootGameObjects())
             {
-                foreach (var candidate in root.GetComponentsInChildren<DefenseSceneCompositionRoot>(true))
+                foreach (var candidate in root.GetComponentsInChildren<IMatchCompositionRoot>(true))
                 {
                     if (result != null) throw new InvalidOperationException("Multiple composition roots in map.");
                     result = candidate;
                 }
             }
-            if (result == null) throw new InvalidOperationException("Map requires one DefenseSceneCompositionRoot.");
+            if (result == null) throw new InvalidOperationException("Map requires one IMatchCompositionRoot.");
             await result.InitializeMatchAsync(request, progress);
             if (!result.IsReady) throw new InvalidOperationException("Map initialization failed.");
         }
