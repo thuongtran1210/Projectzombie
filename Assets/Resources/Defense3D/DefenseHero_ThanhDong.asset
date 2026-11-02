@@ -16,7 +16,7 @@ MonoBehaviour:
   _displayName: "Thanh \u0110\u1ED3ng"
   _avatar: {fileID: 21300000, guid: 55c7e077af724f5298e8b752f108dfe5, type: 3}
   _heroPrefab: {fileID: 0}
-  _heroKit: {fileID: 11400000, guid: 31d2bd2bab09517eb8bdf87e37fc2d5f, type: 2}
+  _heroKit: {fileID: 11400000, guid: a6b6aeefe9bc4ccd8b29faf6c511c91b, type: 2}
   _baseMaxHp: 190
   _baseMoveSpeed: 5.6
   _turnRate: 15

@@ -139,6 +139,30 @@ public sealed class DefenseHeroCatalogTests
             Object.DestroyImmediate(relicDef);
         }
 
+        [Test]
+        public void HeroKits_AllFourHeroes_HaveDistinctValidKits()
+        {
+            var kitThuSinh = Resources.Load<DefenseHeroKitSO>("Defense3D/HeroKit_ThuSinh");
+            var kitDaoSi = Resources.Load<DefenseHeroKitSO>("Defense3D/HeroKit_DaoSi");
+            var kitAnSi = Resources.Load<DefenseHeroKitSO>("Defense3D/HeroKit_AnSi");
+            var kitThanhDong = Resources.Load<DefenseHeroKitSO>("Defense3D/HeroKit_ThanhDong");
+
+            Assert.IsNotNull(kitThuSinh, "HeroKit_ThuSinh must exist in Resources/Defense3D");
+            Assert.IsNotNull(kitDaoSi, "HeroKit_DaoSi must exist in Resources/Defense3D");
+            Assert.IsNotNull(kitAnSi, "HeroKit_AnSi must exist in Resources/Defense3D");
+            Assert.IsNotNull(kitThanhDong, "HeroKit_ThanhDong must exist in Resources/Defense3D");
+
+            Assert.AreNotSame(kitThuSinh, kitDaoSi);
+            Assert.AreNotSame(kitThuSinh, kitAnSi);
+            Assert.AreNotSame(kitThuSinh, kitThanhDong);
+            Assert.AreNotSame(kitAnSi, kitThanhDong);
+
+            Assert.DoesNotThrow(() => kitThuSinh.Validate());
+            Assert.DoesNotThrow(() => kitDaoSi.Validate());
+            Assert.DoesNotThrow(() => kitAnSi.Validate());
+            Assert.DoesNotThrow(() => kitThanhDong.Validate());
+        }
+
         private static void SetKitField(DefenseHeroKitSO kit, string fieldName, object value)
         {
             var field = typeof(DefenseHeroKitSO).GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
