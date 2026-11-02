@@ -13,6 +13,7 @@ namespace ProjectZombie.EditorTools.Defense3D
     public static class DefenseStageBlueprintInstaller
     {
         private const string BLUEPRINT_PATH = "Assets/Resources/Defense3D/Stages/Stage01_SongQue_Blueprint.asset";
+        private const string CURVE_PATH = "Assets/Resources/Defense3D/Stages/Stage01_SongQue_Curve.asset";
 
         [MenuItem("ProjectZombie/3. 🗺️ Stage & Level/Dựng Stage01 Blueprint (Data-Driven Master)", priority = 20)]
         public static void CreateOrUpdateStage01Blueprint()
@@ -42,6 +43,14 @@ namespace ProjectZombie.EditorTools.Defense3D
             blueprint.bgmAddress = "BGM_SongQue";
             blueprint.baseRewardCoins = 500;
             blueprint.baseRewardExp = 250;
+
+            var curve = AssetDatabase.LoadAssetAtPath<StageDifficultyCurveProfileSO>(CURVE_PATH);
+            if (curve == null)
+            {
+                curve = ScriptableObject.CreateInstance<StageDifficultyCurveProfileSO>();
+                AssetDatabase.CreateAsset(curve, CURVE_PATH);
+            }
+            blueprint.difficultyProfile = curve;
 
             // 2. Cấu hình 5 Vùng xuất hiện chuẩn hóa qua Enum
             blueprint.spawnZones = new[]

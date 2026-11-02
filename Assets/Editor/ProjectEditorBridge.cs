@@ -133,6 +133,13 @@ public static class ProjectEditorBridge
             case "install-app-architecture":
                 AppArchitectureInstaller.Install();
                 return File.ReadAllText("scratch/AppArchitectureInstall.txt");
+            case "install-stage01-blueprint":
+                ProjectZombie.EditorTools.Defense3D.DefenseStageBlueprintInstaller.CreateOrUpdateStage01Blueprint();
+                return "Stage 01 Blueprint & Difficulty Curve installed successfully.";
+            case "validate-stage-blueprint":
+                var bp = AssetDatabase.LoadAssetAtPath<ProjectZombie.Features.Defense3D.DefenseStageBlueprintSO>("Assets/Resources/Defense3D/Stages/Stage01_SongQue_Blueprint.asset");
+                var report = ProjectZombie.Features.Defense3D.DefenseStageValidator.Validate(bp);
+                return report.ToFormattedSummary();
             case "install-towers":
                 DefenseTowerArchitectureInstaller.Install();
                 return File.ReadAllText("scratch/TowerArchitectureInstall.txt");

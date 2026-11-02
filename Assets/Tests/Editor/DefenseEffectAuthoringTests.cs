@@ -56,7 +56,9 @@ public sealed class DefenseEffectAuthoringTests
             StringAssert.IsMatch(field + @": \{fileID: [1-9][0-9]*\}", scene);
         StringAssert.Contains("_effectService: {fileID: 8002200032}", scene);
         StringAssert.Contains("_source: {fileID: 8000500004}", scene);
-        StringAssert.Contains(AssetDatabase.AssetPathToGUID(Folder + "FX_DepToOng_Impact.asset"), scene);
+        var presentation = AssetDatabase.LoadAssetAtPath<DefenseRelicPresentationSO>("Assets/Features/Defense3D/Skills/Presentation/Skill_DepToOng_Presentation.asset");
+        Assert.IsNotNull(presentation);
+        Assert.AreEqual(AssetDatabase.AssetPathToGUID(Folder + "FX_DepToOng_Impact.asset"), AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(presentation.Profile)));
         StringAssert.Contains("m_Father: {fileID: 8002200061}", scene);
     }
 }

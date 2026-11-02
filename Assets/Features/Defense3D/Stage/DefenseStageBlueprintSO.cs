@@ -90,15 +90,19 @@ namespace ProjectZombie.Features.Defense3D
         [Tooltip("Điểm kinh nghiệm cơ bản nhận được khi vượt ải thành công")]
         [Min(0)] public int baseRewardExp = 250;
 
-        [Header("── 3. CÁC VÙNG XUẤT HIỆN TRÊN BẢN ĐỒ (Spawn Zones) ──")]
+        [Header("── 3. HỒ SƠ ĐỘ KHÓ & NHỊP ĐỘ (Difficulty Curves) ──")]
+        [Tooltip("Hồ sơ đường cong độ khó & các mốc biến cố (Pacing Curve, HP Scaling, Economy)")]
+        public StageDifficultyCurveProfileSO difficultyProfile;
+
+        [Header("── 4. CÁC VÙNG XUẤT HIỆN TRÊN BẢN ĐỒ (Spawn Zones) ──")]
         [Tooltip("Danh sách cấu hình tọa độ cho từng vùng trên bản đồ")]
         public DefenseSpawnZoneBlueprint[] spawnZones = Array.Empty<DefenseSpawnZoneBlueprint>();
 
-        [Header("── 4. DÒNG THỜI GIAN ĐỢT QUÁI (Timeline Waves) ──")]
+        [Header("── 5. DÒNG THỜI GIAN ĐỢT QUÁI (Timeline Waves) ──")]
         [Tooltip("Danh sách toàn bộ các đợt xuất hiện quái vật từ phút 00:00 đến khi Boss xuất hiện")]
         public List<DefenseStageWaveEntry> timelineWaves = new List<DefenseStageWaveEntry>();
 
-        [Header("── 5. ĐẠI BOSS CUỐI TRẬN (Arena Climax Boss) ──")]
+        [Header("── 6. ĐẠI BOSS CUỐI TRẬN (Arena Climax Boss) ──")]
         [Tooltip("Dữ liệu của Đại Boss xuất hiện ở giai đoạn quyết chiến Đấu Trường cuối trận")]
         public DefenseEnemyDataSO arenaBoss;
 

@@ -144,6 +144,62 @@ namespace ProjectZombie.EditorTools.Defense3D
             Handles.Label(center + forward * radius, $"💥 Quét Nón Dạ Xoa ({angle}° | {radius:F1}m)", labelStyle);
         }
 
+        // ── 6. GIZMO CHO BẢN ĐỒ CHIẾN TRƯỜNG & VÙNG SPAWN (SCENE MARKERS & SPAWN ZONES) ──
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Active)]
+        public static void DrawSceneInfoGizmos(DefenseSceneInfo3D sceneInfo, GizmoType gizmoType)
+        {
+            if (sceneInfo == null) return;
+
+            // 1. Cổng Xuất Hiện Quái Bờ Đông
+            if (sceneInfo.EastEnemySpawn != null)
+            {
+                Vector3 east = sceneInfo.EastEnemySpawn.position;
+                Handles.color = new Color(0.95f, 0.8f, 0.25f, 0.9f);
+                Handles.DrawWireDisc(east, Vector3.up, 3.1f); // Bán kính an toàn
+                Handles.color = new Color(0.95f, 0.8f, 0.25f, 0.12f);
+                Handles.DrawSolidDisc(east, Vector3.up, 3.1f);
+                Handles.Label(east + Vector3.up * 2f, "🚪 CỔNG BỜ ĐÔNG (EAST SPAWN)\n<size=9>Bán kính an toàn 3.1m</size>", GetLabelStyle(new Color(0.95f, 0.8f, 0.25f)));
+            }
+
+            // 2. Căn Cứ Làng (Defense Base)
+            if (sceneInfo.BaseMarker != null)
+            {
+                Vector3 b = sceneInfo.BaseMarker.position;
+                Handles.color = new Color(0.2f, 1f, 0.4f, 0.9f);
+                Handles.DrawWireDisc(b, Vector3.up, 4.0f);
+                Handles.color = new Color(0.2f, 1f, 0.4f, 0.10f);
+                Handles.DrawSolidDisc(b, Vector3.up, 4.0f);
+                Handles.Label(b + Vector3.up * 2.2f, "🏰 CĂN CỨ LÀNG (DEFENSE BASE)", GetLabelStyle(new Color(0.2f, 1f, 0.4f)));
+            }
+
+            // 3. Vị Trí Xuất Hiện Của Anh Hùng (Hero Spawn)
+            if (sceneInfo.HeroSpawn != null)
+            {
+                Vector3 h = sceneInfo.HeroSpawn.position;
+                Handles.color = new Color(0.3f, 0.8f, 1f, 0.8f);
+                Handles.DrawWireDisc(h, Vector3.up, 1.5f);
+                Handles.Label(h + Vector3.up * 1.8f, "⭐ VỊ TRÍ ANH HÙNG (HERO)", GetLabelStyle(new Color(0.3f, 0.8f, 1f)));
+            }
+
+            // 4. Các Bệ Đặt Tháp (Tower Sockets)
+            for (int i = 0; i < sceneInfo.TowerSocketCount; i++)
+            {
+                var socket = sceneInfo.GetTowerSocket(i);
+                if (socket == null) continue;
+                Vector3 pos = socket.position;
+                Handles.color = new Color(0.2f, 0.85f, 1f, 0.8f);
+                Handles.DrawWireDisc(pos, Vector3.up, 1.2f);
+                Handles.Label(pos + Vector3.up * 1.5f, $"🏯 Bệ Tháp #{i + 1}", GetLabelStyle(new Color(0.2f, 0.85f, 1f)));
+            }
+
+            // 5. Đường Nối Hành Quân (Lane Flow Line)
+            if (sceneInfo.EastEnemySpawn != null && sceneInfo.BaseMarker != null)
+            {
+                Handles.color = new Color(1f, 0.4f, 0.2f, 0.6f);
+                Handles.DrawDottedLine(sceneInfo.EastEnemySpawn.position, sceneInfo.BaseMarker.position, 4f);
+            }
+        }
+
         // ── TIỆN ÍCH TẠO PHONG CÁCH NHÃN CHỮ SCENE VIEW ──
         private static GUIStyle GetLabelStyle(Color textColor)
         {

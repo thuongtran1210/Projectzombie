@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7cc96e4896c40a40b594ee8126440b5, type: 3}
+  m_Name: Stage01_SongQue_Curve
+  m_EditorClassIdentifier: 
+  spawnRateCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 12
+      inSlope: 0
+      outSlope: 0.05
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 180
+      value: 28
+      inSlope: 0.1
+      outSlope: 0.1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 360
+      value: 48
+      inSlope: 0.15
+      outSlope: 0.15
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 510
+      value: 75
+      inSlope: 0.2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hpScalingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0.002
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 300
+      value: 1.8
+      inSlope: 0.003
+      outSlope: 0.003
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 510
+      value: 3.2
+      inSlope: 0.005
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  woodIncomeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 30
+      inSlope: 0
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 180
+      value: 400
+      inSlope: 3
+      outSlope: 3
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 360
+      value: 1100
+      inSlope: 4
+      outSlope: 4
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 510
+      value: 2200
+      inSlope: 5
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  pacingMilestones:
+  - milestoneId: horde-01
+    displayName: "\u0110\u1EE3t Th\u1EE7y Qu\xE1i Tr\xE0n K\xEAnh"
+    triggerTime: 120
+    duration: 25
+    pacingType: 1
+    intensityMultiplier: 1.6
+    designNote: "Th\u1EED th\xE1ch ph\u1EA3n x\u1EA1 \u0111\u1EA7u ti\xEAn: Th\u1EE7y
+      Qu\xE1i tr\xE0n qua K\xEAnh gi\u1EEFa bu\u1ED9c ng\u01B0\u1EDDi ch\u01A1i d\u1EF1ng
+      Th\xE1p N\u1ECF."
+  - milestoneId: breather-01
+    displayName: "Kho\u1EA3ng L\u1EB7ng Sau \u0110\u1EE3t S\xF3ng"
+    triggerTime: 150
+    duration: 20
+    pacingType: 3
+    intensityMultiplier: 0.5
+    designNote: "Gi\u1EA3m nh\u1ECBp \u0111\u1EC3 ng\u01B0\u1EDDi ch\u01A1i v\xE0
+      Phu T\u1EA1p D\u1ECBch thu nh\u1EB7t C\u1ED5 M\u1ED9c tu s\u1EEDa c\u0103n
+      c\u1EE9."
+  - milestoneId: elite-01
+    displayName: "Ma Gi\xE1p Phi C\u01B0\u01A1ng \u0110\u1ED9t K\xEDch"
+    triggerTime: 270
+    duration: 35
+    pacingType: 2
+    intensityMultiplier: 1.4
+    designNote: "Qu\xE1i Phi C\u01B0\u01A1ng d\u1EABn \u0111\u1EA7u \u0111\xE0n ti\u1EBFn
+      c\xF4ng b\u1ECDc s\u01B0\u1EDDn t\u1EEB B\u1EDD Nam."
+  - milestoneId: horde-02
+    displayName: "T\u1ED5ng L\u1EF1c Th\u1EE7y L\u1EE5c Ti\u1EBFn C\xF4ng"
+    triggerTime: 420
+    duration: 45
+    pacingType: 1
+    intensityMultiplier: 1.8
+    designNote: "\xC1p l\u1EF1c c\u1EF1c \u0111\u1EA1i tr\xEAn c\u1EA3 3 l\xE0n tr\u01B0\u1EDBc
+      khi b\u01B0\u1EDBc v\xE0o giai \u0111o\u1EA1n quy\u1EBFt chi\u1EBFn \u0110\u1EA1i
+      Boss."

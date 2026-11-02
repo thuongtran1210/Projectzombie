@@ -1,0 +1,281 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ecf4bfeadf8976419b97227c89a03b3, type: 3}
+  m_Name: Stage01_SongQue_Blueprint
+  m_EditorClassIdentifier: 
+  stageId: STAGE_01
+  stageName: "S\xF4ng Qu\xEA \xC2m Ty"
+  description: "B\u1EDD s\xF4ng ho\xE0ng h\xF4n ph\u1EE7 s\u01B0\u01A1ng tr\u1EAFng,
+    ma gi\xE1p v\xE0 th\u1EE7y qu\xE1i tr\u1ED7i d\u1EADy t\u1EEB l\xF2ng k\xEAnh.
+    Anh h\xF9ng tr\u1EA5n th\u1EE7 c\xE2y c\u1EA7u sinh t\u1EED b\u1EA3o v\u1EC7
+    l\xE0ng qu\xEA."
+  stageThumbnail: {fileID: 0}
+  stageDurationSeconds: 600
+  mapAddress: MapSongQue3D_Prototype
+  bgmAddress: BGM_SongQue
+  baseRewardCoins: 500
+  baseRewardExp: 250
+  difficultyProfile: {fileID: 11400000, guid: addb0d865c1b7514da7de3a9da2e0fc7, type: 2}
+  spawnZones:
+  - zoneType: 0
+    relativeToEastMarker: 1
+    origin: {x: 0, y: 1, z: 0}
+    points:
+    - Offset: {x: 0, y: 0, z: -10.5}
+      Lane: 0
+    - Offset: {x: 0, y: 0, z: -0.5}
+      Lane: 1
+    - Offset: {x: 0, y: 0, z: 10.5}
+      Lane: 2
+  - zoneType: 1
+    relativeToEastMarker: 1
+    origin: {x: 0, y: 1, z: 14}
+    points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 2
+  - zoneType: 2
+    relativeToEastMarker: 1
+    origin: {x: 0, y: 1, z: -14}
+    points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 0
+  - zoneType: 3
+    relativeToEastMarker: 0
+    origin: {x: 6.25, y: 1.1, z: 0}
+    points:
+    - Offset: {x: 0, y: 0, z: -10.5}
+      Lane: 0
+    - Offset: {x: 0, y: 0, z: -0.5}
+      Lane: 1
+    - Offset: {x: 0, y: 0, z: 10.5}
+      Lane: 2
+  - zoneType: 4
+    relativeToEastMarker: 1
+    origin: {x: 0, y: 1, z: 0}
+    points:
+    - Offset: {x: 0, y: 0, z: 0}
+      Lane: 1
+  timelineWaves:
+  - eventId: benque-01
+    triggerTime: 0
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 4
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-02
+    triggerTime: 18
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 5
+    leadEnemy: {fileID: 0}
+  - eventId: benque-03
+    triggerTime: 36
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 4
+    leadEnemy: {fileID: 0}
+  - eventId: benque-04
+    triggerTime: 54
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 5
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-05
+    triggerTime: 72
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 4
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-06
+    triggerTime: 90
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 5
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-07
+    triggerTime: 108
+    enemy: {fileID: 11400000, guid: d73b8a43267d9a346a51a9caf4b808ca, type: 2}
+    zone: 0
+    count: 1
+    leadEnemy: {fileID: 0}
+  - eventId: benque-08
+    triggerTime: 126
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 6
+    leadEnemy: {fileID: 0}
+  - eventId: benque-09
+    triggerTime: 144
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 5
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-10
+    triggerTime: 162
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 6
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-11
+    triggerTime: 180
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 5
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-12
+    triggerTime: 198
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 6
+    leadEnemy: {fileID: 0}
+  - eventId: benque-13
+    triggerTime: 216
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 5
+    leadEnemy: {fileID: 0}
+  - eventId: benque-14
+    triggerTime: 234
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 6
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-15
+    triggerTime: 252
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 6
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-16
+    triggerTime: 270
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 7
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-17
+    triggerTime: 288
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 6
+    leadEnemy: {fileID: 0}
+  - eventId: benque-18
+    triggerTime: 306
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 7
+    leadEnemy: {fileID: 0}
+  - eventId: benque-19
+    triggerTime: 324
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 6
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-20
+    triggerTime: 342
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 7
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-21
+    triggerTime: 360
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 7
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-22
+    triggerTime: 378
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 8
+    leadEnemy: {fileID: 0}
+  - eventId: benque-23
+    triggerTime: 396
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 7
+    leadEnemy: {fileID: 0}
+  - eventId: benque-24
+    triggerTime: 414
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-25
+    triggerTime: 432
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 7
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-26
+    triggerTime: 450
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-27
+    triggerTime: 468
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 7
+    leadEnemy: {fileID: 0}
+  - eventId: benque-28
+    triggerTime: 486
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 8
+    leadEnemy: {fileID: 0}
+  - eventId: benque-29
+    triggerTime: 504
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-30
+    triggerTime: 522
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 2
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-31
+    triggerTime: 540
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  - eventId: benque-32
+    triggerTime: 558
+    enemy: {fileID: 11400000, guid: a7a97c64d1437ad449295fc5d0283e05, type: 2}
+    zone: 1
+    count: 8
+    leadEnemy: {fileID: 0}
+  - eventId: benque-33
+    triggerTime: 576
+    enemy: {fileID: 11400000, guid: 88fa306428bf1d14690e3693b24f0c5a, type: 2}
+    zone: 3
+    count: 8
+    leadEnemy: {fileID: 0}
+  - eventId: benque-34
+    triggerTime: 594
+    enemy: {fileID: 11400000, guid: 7cae55737c8e68f40978563b00411816, type: 2}
+    zone: 0
+    count: 8
+    leadEnemy: {fileID: 11400000, guid: d3b453dcb1027e14493441ba1c999567, type: 2}
+  arenaBoss: {fileID: 11400000, guid: d3e6042e586122e48b1e3489a8d066f4, type: 2}
+  bossZone: 4
+  bossSpawnTime: 510
+  arenaDuration: 45
+  bossHealthOverride: 1200
+  maxActiveEnemies: 32
+  maxPendingSpawns: 40
+  spawnBudgetPerFrame: 4
+  jobLifetime: 25
+  safeHeroDistance: 3.1
