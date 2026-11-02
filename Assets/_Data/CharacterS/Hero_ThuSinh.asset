@@ -39,7 +39,7 @@ MonoBehaviour:
     baseAttackSpeed: 1.8
     meleeAreaSize: {x: 3.5, y: 2.6}
     meleeOffset: 1.3
-    slashVfxPrefab: {fileID: 2690327226307785550, guid: f368769dc33a7c042b6b1ccdd7d7388c, type: 3}
+    slashVfxPrefab: {fileID: 0}
     projectilePrefab: {fileID: 0}
     projectileSpeed: 12
     projectileLifetime: 1.5

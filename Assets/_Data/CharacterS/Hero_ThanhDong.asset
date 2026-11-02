@@ -40,7 +40,7 @@ MonoBehaviour:
     meleeAreaSize: {x: 2.5, y: 2}
     meleeOffset: 1.2
     slashVfxPrefab: {fileID: 0}
-    projectilePrefab: {fileID: 8946744622826746836, guid: a8d70e8cb54c4c747b2ac8570e3db3d0, type: 3}
+    projectilePrefab: {fileID: 0}
     projectileSpeed: 9
     projectileLifetime: 1.5
     projectileCount: 1
