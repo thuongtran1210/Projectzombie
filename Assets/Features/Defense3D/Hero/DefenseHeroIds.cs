@@ -1,3 +1,5 @@
+using ProjectZombie.Features.Defense3D.Loadout;
+
 namespace ProjectZombie.Features.Defense3D
 {
     /// <summary>
@@ -24,4 +26,3 @@ namespace ProjectZombie.Features.Defense3D
         }
     }
 }
-

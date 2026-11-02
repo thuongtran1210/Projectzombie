@@ -169,5 +169,3 @@ public sealed class DefenseHeroCatalogTests
             field?.SetValue(kit, value);
         }
     }
-}
-
