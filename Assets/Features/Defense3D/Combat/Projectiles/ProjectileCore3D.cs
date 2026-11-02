@@ -29,6 +29,11 @@ namespace ProjectZombie.Features.Defense3D
         private readonly DefenseActorLifetime[] _areaLeases = new DefenseActorLifetime[128];
         public bool IsInFlight => _active;
         public float Progress => _duration > 0f ? _elapsed / _duration : 0f;
+
+        /// <summary>
+        /// Vị trí index trong danh sách _active của DefenseProjectilePool3D để thu hồi O(1) (Swap-and-Pop).
+        /// </summary>
+        internal int ActivePoolIndex { get; set; } = -1;
         private void Awake()
         {
             if (_visual == null) _visual = GetComponentInChildren<ProjectileVisual3D>(true);

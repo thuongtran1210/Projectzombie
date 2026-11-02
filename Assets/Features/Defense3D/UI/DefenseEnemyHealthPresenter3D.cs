@@ -32,15 +32,26 @@ namespace ProjectZombie.Features.Defense3D.UI
         private bool Current => _enemy != null && _gameplay != null && _lifetime != null &&
             ReferenceEquals(_enemy.Lifetime, _lifetime) && _lifetime.IsCurrent(_gameplay) && !_enemy.IsDead;
 
+        /// <summary>
+        /// Smart Culling: Quái thường khi đầy 100% máu sẽ ẩn thanh máu để tiết kiệm CPU và giảm Draw Calls.
+        /// Chỉ hiển thị khi quái bị mất máu hoặc đối tượng là Boss.
+        /// </summary>
+        private bool ShouldDisplayBar => _enemy != null && (_enemy.Stats.IsBoss || _enemy.CurrentHP < _enemy.MaxHP);
+
         private void OnHealthChanged(float current, float maximum)
         {
             if (!Current || maximum <= 0f) { Hide(); return; }
+            if (current >= maximum && !_enemy.Stats.IsBoss)
+            {
+                Hide();
+                return;
+            }
             _view.SetHealth(current / maximum, _enemy.Stats.IsBoss);
         }
 
         private void LateUpdate()
         {
-            if (!Current || !_gameplay.AdvancesGameplay || (_head == null && _body == null) || _camera == null || !_camera.isActiveAndEnabled)
+            if (!Current || !ShouldDisplayBar || !_gameplay.AdvancesGameplay || (_head == null && _body == null) || _camera == null || !_camera.isActiveAndEnabled)
             { Hide(); return; }
             Vector3 position = _head != null ? _head.position : new Vector3(_body.bounds.center.x, _body.bounds.max.y, _body.bounds.center.z);
             position += Vector3.up * _headOffset;

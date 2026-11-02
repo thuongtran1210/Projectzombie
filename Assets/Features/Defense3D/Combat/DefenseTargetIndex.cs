@@ -36,6 +36,7 @@ namespace ProjectZombie.Features.Defense3D
     {
         private readonly List<IDefenseTargetPosition> _targets = new List<IDefenseTargetPosition>();
         private readonly Dictionary<object, IDefenseTargetPosition> _byIdentity = new Dictionary<object, IDefenseTargetPosition>();
+        private readonly Dictionary<object, int> _indexByIdentity = new Dictionary<object, int>();
         private bool _disposed;
         public int Count => _targets.Count;
 
@@ -71,15 +72,38 @@ namespace ProjectZombie.Features.Defense3D
             if (target == null || target.Identity == null) throw new ArgumentNullException(nameof(target));
             if (_byIdentity.ContainsKey(target.Identity)) return false;
             _byIdentity.Add(target.Identity, target);
+            _indexByIdentity.Add(target.Identity, _targets.Count);
             _targets.Add(target);
             return true;
         }
 
+        /// <summary>
+        /// Loại bỏ mục tiêu bằng kỹ thuật Swap-and-Pop đạt độ phức tạp O(1), triệt tiêu dời mảng khi quái chết.
+        /// </summary>
         public void Unregister(object identity)
         {
             if (identity == null || !_byIdentity.TryGetValue(identity, out var target)) return;
             _byIdentity.Remove(identity);
-            _targets.Remove(target);
+
+            if (_indexByIdentity.TryGetValue(identity, out int index))
+            {
+                _indexByIdentity.Remove(identity);
+                int lastIndex = _targets.Count - 1;
+                if (index >= 0 && index <= lastIndex)
+                {
+                    if (index < lastIndex)
+                    {
+                        var lastTarget = _targets[lastIndex];
+                        _targets[index] = lastTarget;
+                        _indexByIdentity[lastTarget.Identity] = index;
+                    }
+                    _targets.RemoveAt(lastIndex);
+                }
+            }
+            else
+            {
+                _targets.Remove(target);
+            }
         }
 
         public IDefenseTargetPosition FindNearest(DefensePoint3 origin, float range, DefenseTargetMask mask = DefenseTargetMask.All)
@@ -124,7 +148,7 @@ namespace ProjectZombie.Features.Defense3D
             return nearest;
         }
 
-        public void Clear() { _targets.Clear(); _byIdentity.Clear(); }
+        public void Clear() { _targets.Clear(); _byIdentity.Clear(); _indexByIdentity.Clear(); }
         public void Dispose() { Clear(); _disposed = true; }
     }
 }

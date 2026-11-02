@@ -54,11 +54,23 @@ namespace ProjectZombie.Features.Defense3D
                     instance.SetActive(false);
                     return instance.GetComponent<ProjectileCore3D>();
                 },
-                core => _active.Add(core),
                 core =>
                 {
-                    int index = _active.IndexOf(core);
-                    if (index >= 0) { _active[index] = _active[_active.Count - 1]; _active.RemoveAt(_active.Count - 1); }
+                    core.ActivePoolIndex = _active.Count;
+                    _active.Add(core);
+                },
+                core =>
+                {
+                    int index = core.ActivePoolIndex;
+                    int lastIndex = _active.Count - 1;
+                    if (index >= 0 && index <= lastIndex)
+                    {
+                        var lastItem = _active[lastIndex];
+                        _active[index] = lastItem;
+                        lastItem.ActivePoolIndex = index;
+                        _active.RemoveAt(lastIndex);
+                    }
+                    core.ActivePoolIndex = -1;
                     if (core != null) core.gameObject.SetActive(false);
                 },
                 core =>

@@ -14,7 +14,11 @@ namespace ProjectZombie.Features.Defense3D.UI
         [SerializeField] private Color _bossColor = new Color(1f,.56f,.16f,1f);
         private MaterialPropertyBlock _properties;
         private Vector2 _size;
+        private Vector3 _cachedParentScale = Vector3.one;
+        private bool _hasCachedScale;
         public bool IsConfigured => _renderer != null && _renderer.sharedMaterial != null;
+
+        public void InvalidateScaleCache() => _hasCachedScale = false;
 
         public void SetHealth(float ratio, bool boss)
         {
@@ -30,9 +34,13 @@ namespace ProjectZombie.Features.Defense3D.UI
         public void SetPose(Vector3 position, Quaternion rotation)
         {
             transform.SetPositionAndRotation(position, rotation);
-            Vector3 parentScale = transform.parent != null ? transform.parent.lossyScale : Vector3.one;
-            transform.localScale = new Vector3(_size.x / Mathf.Max(.001f, Mathf.Abs(parentScale.x)),
-                _size.y / Mathf.Max(.001f, Mathf.Abs(parentScale.y)), 1f / Mathf.Max(.001f, Mathf.Abs(parentScale.z)));
+            if (!_hasCachedScale)
+            {
+                _cachedParentScale = transform.parent != null ? transform.parent.lossyScale : Vector3.one;
+                _hasCachedScale = true;
+            }
+            transform.localScale = new Vector3(_size.x / Mathf.Max(.001f, Mathf.Abs(_cachedParentScale.x)),
+                _size.y / Mathf.Max(.001f, Mathf.Abs(_cachedParentScale.y)), 1f / Mathf.Max(.001f, Mathf.Abs(_cachedParentScale.z)));
         }
 
         public void SetVisible(bool visible)
@@ -45,6 +53,7 @@ namespace ProjectZombie.Features.Defense3D.UI
             if (_renderer == null) return;
             _renderer.enabled = false;
             _renderer.SetPropertyBlock(null);
+            _hasCachedScale = false;
         }
     }
 }
