@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e72a55866d8bf04380db25df84f8040, type: 3}
   m_Name: Skill_DieuCay
   m_EditorClassIdentifier: 
+  _skillId: skill.pipe
+  _behavior: 5
+  _presentation: {fileID: 11400000, guid: 89a1daaaa53568c41b8cffd467752ff5, type: 2}
+  _tuning: {fileID: 11400000, guid: 46b1f165eb19a6e44a9124c1df3ebe66, type: 2}
   _kind: 1
   _range: 9
   _radius: 4
@@ -20,5 +24,6 @@ MonoBehaviour:
   _duration: 4.5
   _autoTargetOnTap: 1
   _targetMask: -1
-  _presentationProfile: {fileID: 11400000, guid: dde484d729a440945816e1cdc3e09cbc, type: 2}
-  _icon: {fileID: 21300000, guid: a6f17b42d2c54f8291a53c9ec9898772, type: 3}
+  _presentationProfile: {fileID: 0}
+  _signaturePresentation: {fileID: 0}
+  _icon: {fileID: 0}

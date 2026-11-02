@@ -20,6 +20,8 @@ namespace ProjectZombie.Features.Defense3D
         private readonly Dictionary<GameObject, Record> _records = new Dictionary<GameObject, Record>();
         private readonly List<ProjectileCore3D> _active = new List<ProjectileCore3D>(64);
         private Transform _root;
+        private IDefenseEffectService _effects;
+        public void BindPresentation(IDefenseEffectService effects) => _effects = effects;
         public int CapacityPerType => _defaultPoolCapacity;
         public int ActiveCount => _active.Count;
 
@@ -115,6 +117,7 @@ namespace ProjectZombie.Features.Defense3D
                 request.RunGeneration != Gameplay.RunGeneration || !ReferenceEquals(request.SessionIdentity, Gameplay.SessionIdentity) ||
                 !_records.TryGetValue(key, out var record) || record.Pool.CountInactive == 0) return false;
             var projectile = record.Pool.Get();
+            projectile.BindPresentation(_effects);
             projectile.SetDefinition(definition);
             projectile.Launch(request.Source, request.Origin, request.Target, request.Damage, request.Speed, request.ArcHeight,
                 effects, request.RunGeneration, request.SessionIdentity, Gameplay, record.Return, request.TargetPosition);

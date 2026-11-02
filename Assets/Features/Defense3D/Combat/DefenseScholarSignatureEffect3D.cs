@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroAutoAttack3D _attack;
         [SerializeField] private DefenseHeroMotor3D _motor;
         [SerializeField, Tooltip("Component cung cấp IDefenseAbilitySource cho ô pháp bảo.")] private MonoBehaviour _relic;
-        [SerializeField, Range(0f, 1f)] private float _relicCooldownReduction = .2f;
+        private float _relicCooldownReduction = .2f;
         private IDefenseAbilitySource _relicSource;
         private readonly IDefenseTargetPosition[] _targets = new IDefenseTargetPosition[256];
         private DefenseConeTelegraphRuntime _windup;
@@ -22,6 +22,8 @@ namespace ProjectZombie.Features.Defense3D
         private bool _resolving;
         public DefenseSignatureFeedbackEvents Feedback => _feedback ?? (_feedback = new DefenseSignatureFeedbackEvents(error => Debug.LogException(error, this)));
         public bool IsCasting => _windup != null && _windup.IsPending;
+        public void ConfigureTuning(float relicCooldownReduction) => _relicCooldownReduction=relicCooldownReduction;
+
         public override DefenseSkillKind Kind => DefenseSkillKind.ScholarSignature;
         public override bool IsConfigured => _health != null && _attack != null && _motor != null && _relic is IDefenseAbilitySource &&
             DefenseDamageRules.IsFinite(_relicCooldownReduction) && _relicCooldownReduction >= 0f && _relicCooldownReduction <= 1f;

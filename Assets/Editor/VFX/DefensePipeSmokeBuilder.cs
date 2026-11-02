@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -63,10 +64,10 @@ public static class DefensePipeSmokeBuilder
             data.FindProperty("_priority").intValue = 6;
             data.FindProperty("_scale").floatValue = 1f;
             data.ApplyModifiedPropertiesWithoutUndo();
-            var skillData = new SerializedObject(definition);
-            skillData.FindProperty("_presentationProfile").objectReferenceValue = profile;
-            skillData.FindProperty("_icon").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Weapons/Icon_W_PIPE.png");
-            skillData.ApplyModifiedPropertiesWithoutUndo();
+            if(definition.Presentation==null)throw new InvalidOperationException("Migrate skill data before rebuilding VFX.");
+            var presentationData=new SerializedObject(definition.Presentation);
+            if(presentationData.FindProperty("_profile").objectReferenceValue==null)presentationData.FindProperty("_profile").objectReferenceValue=profile;
+            presentationData.ApplyModifiedPropertiesWithoutUndo();
             BuildIndicator(quad);
             BuildHud();
             AssetDatabase.SaveAssets();
@@ -179,9 +180,12 @@ public static class DefensePipeSmokeBuilder
         var root = PrefabUtility.LoadPrefabContents(path);
         try
         {
-            Transform button = root.transform.Find("DepToOngButton");
+            Transform button = root.GetComponentsInChildren<DefenseSkillButtonView>(true).First(x=>x.name=="DepToOngButton").transform;
             var view = button.GetComponent<DefenseSkillButtonView>();
             var data = new SerializedObject(view);
+            // The compact skin already owns status, duration and aim visuals.
+            // Rebuilding pipe VFX must preserve its authored layout and transparent input surface.
+            if(data.FindProperty("_compactSkin").boolValue)return;
             var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/GameFont_Vietnamese_SD.asset");
             button.GetComponent<Image>().color = new Color(.07f, .14f, .12f, 1f);
             var identity = button.Find("Label").GetComponent<TMP_Text>();

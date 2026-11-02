@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e72a55866d8bf04380db25df84f8040, type: 3}
   m_Name: Skill_DepToOng
   m_EditorClassIdentifier: 
+  _skillId: skill.slipper
+  _behavior: 4
+  _presentation: {fileID: 11400000, guid: 1568d6d49c7e5844998cd07eb76cd8bb, type: 2}
+  _tuning: {fileID: 11400000, guid: cfff6a18fffb2534cac8f53c7d5beffd, type: 2}
   _kind: 1
   _range: 10
   _radius: 3.5
@@ -20,3 +24,6 @@ MonoBehaviour:
   _duration: 0.2
   _autoTargetOnTap: 1
   _targetMask: -1
+  _presentationProfile: {fileID: 0}
+  _signaturePresentation: {fileID: 0}
+  _icon: {fileID: 0}

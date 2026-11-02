@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1158139a68bb5244192b292a5686aa18, type: 3}
+  m_Name: Skill_Dash_Presentation
+  m_EditorClassIdentifier: 
+  _displayName: "L\u01B0\u1EDBt"
+  _icon: {fileID: 21300000, guid: 5c1143a19b030734fa07828788f40292, type: 3}
+  _accent: {r: 0.61, g: 0.68, b: 0.73, a: 1}
+  _effects: {fileID: 11400000, guid: 87edc68e541a4b54aba7c6927a09bc3e, type: 2}

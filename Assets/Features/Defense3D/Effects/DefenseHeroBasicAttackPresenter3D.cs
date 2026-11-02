@@ -7,14 +7,15 @@ namespace ProjectZombie.Features.Defense3D
     {
         [SerializeField] private DefenseHeroAutoAttack3D _source;
         [SerializeField] private DefenseHeroHealth3D _health;
-        [SerializeField] private DefenseBasicAttackEffectSetSO _style;
+        private DefenseBasicAttackEffectSetSO _style;
         [SerializeField] private DefenseIndicatorSurface3D _surface;
         private DefenseBasicAttackFeedbackAdapter _adapter;
         private IDefenseEffectService _effects;
         public bool IsConfigured => _source != null && _health != null && _style != null && _style.IsValid;
-        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects)
+        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects, DefenseBasicAttackEffectSetSO style)
         {
             Unbind();
+            _style = style;
             if (!IsConfigured) throw new System.InvalidOperationException("Assign hero basic-attack presentation bindings.");
             _effects = effects;
             _adapter = new DefenseBasicAttackFeedbackAdapter(_source.Feedback, gameplay, effects, _style, _source,

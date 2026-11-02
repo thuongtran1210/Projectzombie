@@ -23,6 +23,8 @@ namespace ProjectZombie.Features.Defense3D
         private Action<ProjectileCore3D> _return;
         private bool _active;
         private IProjectileTrajectory _trajectory;
+        private IDefenseEffectService _presentation;
+        public void BindPresentation(IDefenseEffectService presentation) => _presentation = presentation;
         private readonly IDefenseTargetPosition[] _areaTargets = new IDefenseTargetPosition[128];
         private readonly DefenseActorLifetime[] _areaLeases = new DefenseActorLifetime[128];
         public bool IsInFlight => _active;
@@ -44,6 +46,8 @@ namespace ProjectZombie.Features.Defense3D
             _end = target != null && target.TargetTransform != null ? target.TargetTransform.position + Vector3.up * .65f
                 : targetPoint ?? origin + Vector3.forward * 5f;
             _trajectory = _definition != null ? _definition.GetTrajectory() : ParabolicHomingTrajectory.Instance;
+            if (_trajectory.Type == DefenseTrajectoryType.BallisticGround)
+                _end = targetPoint ?? (target != null && target.TargetTransform != null ? target.TargetTransform.position : _end);
             _arc = _definition != null ? _definition.ArcHeight : arcHeight;
             float actualSpeed = _definition != null ? _definition.Speed : speed;
             float lifetime = _definition != null ? _definition.MaxLifetime : 5f;
@@ -53,6 +57,7 @@ namespace ProjectZombie.Features.Defense3D
             transform.position = origin;
             gameObject.SetActive(true);
             _visual?.OnSpawn();
+            Present(_definition != null ? _definition.LaunchEffect : null, origin, .2f);
         }
         private bool CurrentLease => _enemy == null || (ReferenceEquals(_enemy.Lifetime, _targetLifetime) &&
             (_targetLifetime == null || _targetLifetime.IsCurrent(_gameplay)));
@@ -82,16 +87,32 @@ namespace ProjectZombie.Features.Defense3D
                 if (_definition != null && _definition.PayloadType == DefensePayloadType.AoEExplosion)
                 {
                     ResolveAreaHit();
+                    Present(_definition.ImpactEffect, transform.position, _definition.AoERadius);
                 }
                 else if (CurrentTarget)
                 {
                     bool accepted = _target.TakeDamage(new DefenseDamageContext(_damage, _source, transform.position,
                         runGeneration: _generation, sessionIdentity: _session));
+                    if (accepted) Present(_definition != null ? _definition.ImpactEffect : null, transform.position, .6f);
                     if (accepted && _effects != null)
                         for (int i = 0; i < _effects.Count; i++) _effects[i]?.ApplyEffect(_target.TargetTransform, _damage, _gameplay);
+                    if (accepted) PresentStatus(_target);
                 }
             }
             finally { Despawn(); }
+        }
+        private void Present(DefenseEffectProfileSO profile, Vector3 position, float radius)
+        {
+            if (_presentation == null || profile == null) return;
+            // Cosmetic failure cannot reject a shot or prevent its damage/return to pool.
+            try { _presentation.Play(profile, position, Mathf.Max(.05f, radius)); }
+            catch (Exception exception) { Debug.LogException(exception); }
+        }
+        private void PresentStatus(IDefenseEnemyTarget3D target)
+        {
+            if (_definition == null || _definition.StatusEffect == null || _presentation == null || target.TargetTransform == null) return;
+            if (target.TargetTransform.TryGetComponent<DefenseEnemyStatus3D>(out var status))
+                status.ShowBurn(_presentation, _definition.StatusEffect);
         }
         private void ResolveAreaHit()
         {
@@ -110,6 +131,7 @@ namespace ProjectZombie.Features.Defense3D
                         runGeneration: _generation, sessionIdentity: _session));
                     if (accepted && _effects != null)
                         for (int j = 0; j < _effects.Count; j++) _effects[j]?.ApplyEffect(target.TargetTransform, _damage, _gameplay);
+                    if (accepted) PresentStatus(target);
                 }
             }
             finally
@@ -126,6 +148,7 @@ namespace ProjectZombie.Features.Defense3D
             var callback = _return;
             _return = null; _source = null; _target = null; _enemy = null; _targetLifetime = null;
             _effects = null; _gameplay = null; _session = null; _definition = null;
+            _presentation = null;
             gameObject.SetActive(false);
             callback?.Invoke(this);
         }

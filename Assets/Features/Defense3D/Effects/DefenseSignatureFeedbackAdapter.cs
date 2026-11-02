@@ -16,6 +16,7 @@ namespace ProjectZombie.Features.Defense3D
         private readonly Transform _anchor;
         private readonly Func<bool> _canPresent;
         private readonly Func<Vector3, float, Vector3> _placeArea;
+        private readonly bool _castAtTarget;
         private readonly List<DefenseEffectHandle> _transients = new List<DefenseEffectHandle>();
         private DefenseEffectHandle _cast;
         private Phase _phase;
@@ -25,13 +26,14 @@ namespace ProjectZombie.Features.Defense3D
         private bool _disposed;
         public DefenseSignatureFeedbackAdapter(DefenseSignatureFeedbackEvents source, IDefenseGameplayContext gameplay,
             IDefenseEffectService effects, DefenseSignatureEffectSetSO style, Component owner, Transform anchor,
-            Func<bool> canPresent = null, Func<Vector3, float, Vector3> placeArea = null)
+            Func<bool> canPresent = null, Func<Vector3, float, Vector3> placeArea = null, bool castAtTarget = false)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _gameplay = gameplay ?? throw new ArgumentNullException(nameof(gameplay));
             _effects = effects ?? throw new ArgumentNullException(nameof(effects));
             if (style == null || !style.IsValid || owner == null || anchor == null) throw new ArgumentException("Assign valid signature style/owner/anchor.");
             _style = style; _owner = owner; _anchor = anchor; _canPresent = canPresent; _placeArea = placeArea;
+            _castAtTarget = castAtTarget;
             _source.Started += OnStarted; _source.Released += OnReleased; _source.HitConfirmed += OnHit; _source.Ended += OnEnded;
             _gameplay.RunCleanup += Clear; _gameplay.GameplayGateChanged += OnGate;
         }
@@ -48,7 +50,9 @@ namespace ProjectZombie.Features.Defense3D
             long revision = ClearHandles();
             if (_revision != revision || !Current(cue.SessionIdentity, cue.RunGeneration)) return;
             _castId = cue.CastId; _identity = cue.SessionIdentity; _generation = cue.RunGeneration; _phase = Phase.Casting;
-            var handle = _effects.Play(new DefenseEffectRequest(_style.Cast, _anchor.position + Vector3.up * _style.Lift, cue.Radius, _owner, _anchor,
+            var point = _castAtTarget ? new Vector3(cue.Position.X, cue.Position.Y, cue.Position.Z) : _anchor.position;
+            if (_castAtTarget && _placeArea != null) point = _placeArea(point, cue.Radius);
+            var handle = _effects.Play(new DefenseEffectRequest(_style.Cast, point + Vector3.up * _style.Lift, cue.Radius, _owner, _castAtTarget ? null : _anchor,
                 rotation: Quaternion.Euler(0f, _owner.transform.eulerAngles.y, 0f)));
             if (!Commit(cue.CastId, cue.SessionIdentity, cue.RunGeneration, revision, Phase.Casting)) Stop(handle);
             else _cast = handle;

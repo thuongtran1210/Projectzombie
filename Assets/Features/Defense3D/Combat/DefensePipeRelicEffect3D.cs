@@ -17,20 +17,12 @@ namespace ProjectZombie.Features.Defense3D
         private const int TARGET_BUFFER_CAPACITY = 256;
 
         [Header("Khống Chế & Hiệu Ứng Bất Lợi")]
-        [SerializeField, Tooltip("Tỷ lệ làm chậm quái dính khói (0.6 = chậm 60%)")]
         private float _slowStrength = 0.6f;
-
-        [SerializeField, Tooltip("Thời gian làm choáng quái sặc ho đợt đầu (giây)")]
         private float _coughStunDuration = 0.6f;
 
         [Header("Cơ Chế Sát Thương & Vùng Khói")]
-        [SerializeField, Tooltip("Khoảng cách giữa các nhịp rút độc thiêu đốt DoT (giây)")]
         private float _tickInterval = 0.5f;
-
-        [SerializeField, Tooltip("Tỷ lệ sát thương bộc phát ban đầu so với Definition.Damage")]
         private float _initialBurstRatio = 0.5f;
-
-        [SerializeField, Tooltip("Tỷ lệ sát thương mỗi tick DoT so với Definition.Damage")]
         private float _tickDamageRatio = 0.15f;
 
         private IDefenseEffectService _effects;
@@ -55,6 +47,9 @@ namespace ProjectZombie.Features.Defense3D
 
         private readonly ActiveSmokeZone[] _zones = new ActiveSmokeZone[MAX_ACTIVE_ZONES];
         private readonly IDefenseTargetPosition[] _targets = new IDefenseTargetPosition[TARGET_BUFFER_CAPACITY];
+
+        public void ConfigureTuning(float slow,float stun,float tickInterval,float burstRatio,float tickRatio)
+        {_slowStrength=slow;_coughStunDuration=stun;_tickInterval=tickInterval;_initialBurstRatio=burstRatio;_tickDamageRatio=tickRatio;}
 
         public override DefenseSkillKind Kind => DefenseSkillKind.Relic;
 

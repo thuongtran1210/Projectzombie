@@ -16,16 +16,18 @@ namespace ProjectZombie.Features.Defense3D
     public sealed class DefenseRelicEffectPresenter3D : MonoBehaviour
     {
         [SerializeField] private DefenseRelicSkillEffect3D _source;
-        [SerializeField] private DefenseEffectProfileSO _impact;
+        private DefenseEffectProfileSO _impact;
         [SerializeField] private DefenseIndicatorSurface3D _surface;
-        [SerializeField] private Sprite _projectileSprite;
+        private Sprite _projectileSprite;
         private SpriteRenderer _projectile;
         private IDefenseGameplayContext _gameplay;
         private IDefenseEffectService _effects;
         public bool IsConfigured => _source != null && _impact != null && _impact.IsValid;
-        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects)
+        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects, DefenseRelicPresentationSO presentation)
         {
             Unbind();
+            _impact = presentation != null ? presentation.Profile : null;
+            _projectileSprite = presentation != null ? presentation.ProjectileSprite : null;
             if (!IsConfigured || gameplay == null || effects == null) throw new System.InvalidOperationException("Assign relic VFX source/profile/service.");
             _gameplay = gameplay; _effects = effects;
             _source.ImpactOccurred += OnImpact;

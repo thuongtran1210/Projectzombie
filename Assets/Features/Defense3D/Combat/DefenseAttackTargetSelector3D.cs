@@ -11,6 +11,14 @@ namespace ProjectZombie.Features.Defense3D
         private readonly Predicate<IDefenseTargetPosition> _accepts;
         private readonly RaycastHit[] _hits = new RaycastHit[16];
         private Vector3 _origin;
+        private IDefenseEnemyTarget3D[] _excluded;
+        private int _excludedCount;
+        public IDefenseEnemyTarget3D FindExcluding(IDefenseTargetQuery query, float range, IDefenseEnemyTarget3D[] excluded, int count)
+        {
+            _excluded = excluded; _excludedCount = count;
+            try { return Find(query, range); }
+            finally { _excluded = null; _excludedCount = 0; }
+        }
 
         public DefenseAttackTargetSelector3D(Transform source, DefenseAttackTargetingProfileSO profile)
         {
@@ -37,6 +45,7 @@ namespace ProjectZombie.Features.Defense3D
         private bool Accepts(IDefenseTargetPosition candidate)
         {
             if (!(candidate.Identity is IDefenseEnemyTarget3D target) || !target.IsTargetable || target.TargetTransform == null) return false;
+            for (int i = 0; i < _excludedCount; i++) if (ReferenceEquals(_excluded[i], target)) return false;
             Vector3 destination = target.TargetTransform.position;
             Vector3 delta = destination - _origin;
             float distance = delta.magnitude;

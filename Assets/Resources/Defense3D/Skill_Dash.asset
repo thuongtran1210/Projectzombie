@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e72a55866d8bf04380db25df84f8040, type: 3}
   m_Name: Skill_Dash
   m_EditorClassIdentifier: 
+  _skillId: skill.dash
+  _behavior: 1
+  _presentation: {fileID: 11400000, guid: 7aab53c649960b14ea56099a46436369, type: 2}
   _kind: 0
   _range: 4.5
   _radius: 0.5
@@ -20,3 +23,6 @@ MonoBehaviour:
   _duration: 0.25
   _autoTargetOnTap: 0
   _targetMask: -1
+  _presentationProfile: {fileID: 0}
+  _signaturePresentation: {fileID: 0}
+  _icon: {fileID: 0}

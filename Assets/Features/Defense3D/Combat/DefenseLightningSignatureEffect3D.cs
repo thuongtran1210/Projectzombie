@@ -10,7 +10,7 @@ namespace ProjectZombie.Features.Defense3D
     /// - Làm choáng (Stun) toàn bộ đàn yêu ma trong phạm vi bán kính (mặc định 1.5s).
     /// - Làm tê liệt giảm tốc (Slow) nhẹ sau khi chịu đòn sấm sét.
     /// - Phát đầy đủ các sự kiện Feedback (Started, Released, Hit, Ended) để đồng bộ Camera Shake và Combat Text.
-    /// - Đảm bảo an toàn vòng đời và 0 GC Allocations trong trận chiến.
+    /// - Trình diễn được thực hiện qua feedback và service VFX theo session.
     /// </summary>
     public sealed class DefenseLightningSignatureEffect3D : DefenseSkillEffect3D, IDefenseSignatureEffect
     {
@@ -22,25 +22,21 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroMotor3D _motor;
 
         [Header("Thông Số Khống Chế & Hiệu Ứng Sét")]
-        [SerializeField, Tooltip("Thời gian làm choáng quái vật khi trúng sét (giây)")]
         private float _stunDuration = 1.5f;
-
-        [SerializeField, Tooltip("Tỷ lệ làm tê liệt giảm tốc sau khi trúng sét (0.4 = chậm 40%)")]
         private float _paralysisSlowStrength = 0.4f;
-
-        [SerializeField, Tooltip("Thời gian tê liệt giảm tốc (giây)")]
         private float _paralysisSlowDuration = 1.0f;
 
         [Header("Hiệu Ứng Hình Ảnh (VFX)")]
-        [SerializeField] private GameObject _lightningVfxPrefab;
+        private GameObject _lightningVfxPrefab;
 
         private readonly IDefenseTargetPosition[] _targets = new IDefenseTargetPosition[TARGET_BUFFER_CAPACITY];
+        private readonly DefenseActorLifetime[] _targetLeases = new DefenseActorLifetime[TARGET_BUFFER_CAPACITY];
         private DefenseSignatureFeedbackEvents _feedback;
         private long _nextCastId, _activeCastId;
         private object _castIdentity;
         private int _castGeneration;
         private DefensePoint3 _castTargetPosition;
-        private float _resolveTimer;
+        private float _resolveAt;
         private bool _isCasting;
         private bool _resolving;
 
@@ -48,6 +44,9 @@ namespace ProjectZombie.Features.Defense3D
             _feedback ?? (_feedback = new DefenseSignatureFeedbackEvents(error => Debug.LogException(error, this)));
 
         public bool IsCasting => _isCasting;
+
+        public void ConfigureTuning(float stun,float slow,float slowDuration)
+        {_stunDuration=stun;_paralysisSlowStrength=slow;_paralysisSlowDuration=slowDuration;}
 
         public override DefenseSkillKind Kind => DefenseSkillKind.Signature;
 
@@ -97,6 +96,7 @@ namespace ProjectZombie.Features.Defense3D
         protected override void OnGameplayCleanup() => CancelCasting();
 
         protected override void OnGameplayReset() => CancelCasting();
+        protected override void OnGameplayGateChanged(bool active) { if (!active) CancelCasting(); }
 
         private void OnDisable() => CancelCasting();
 
@@ -120,7 +120,7 @@ namespace ProjectZombie.Features.Defense3D
             _castTargetPosition = prepared.Target;
 
             _isCasting = true;
-            _resolveTimer = Definition != null ? Mathf.Max(0.05f, Definition.Duration) : 0.25f;
+            _resolveAt = GameplayTime + (Definition != null ? Mathf.Max(0.05f, Definition.Duration) : 0.25f);
 
             if (_attack != null)
             {
@@ -161,8 +161,7 @@ namespace ProjectZombie.Features.Defense3D
                 return;
             }
 
-            _resolveTimer -= Time.deltaTime;
-            if (_resolveTimer <= 0f)
+            if (GameplayTime >= _resolveAt)
             {
                 Resolve();
             }
@@ -197,15 +196,13 @@ namespace ProjectZombie.Features.Defense3D
             int count = 0;
             try
             {
-                // 1. Sinh hiệu ứng hình ảnh sấm sét giáng xuống đất
-                SpawnLightningVfx();
-
-                // 2. Phát sự kiện xả chiêu (Released)
+                // Presentation observers own the pooled strike; damage does not depend on VFX availability.
                 Feedback.PublishReleased(Snapshot());
 
                 if (Gameplay.Targets is IDefenseAreaTargetQuery area &&
                     area.TryCopyWithin(_castTargetPosition, radius, targetMask, _targets, out count))
                 {
+                    for (int i = 0; i < count; i++) _targetLeases[i] = (_targets[i]?.Identity as DefenseEnemy3D)?.Lifetime;
                     var damageContext = new DefenseDamageContext(
                         damage,
                         _health,
@@ -222,6 +219,8 @@ namespace ProjectZombie.Features.Defense3D
 
                         var target = _targets[i];
                         if (target == null || !target.IsAvailable || !(target.Identity is IDefenseEnemyTarget3D enemy)) continue;
+                        if (enemy is DefenseEnemy3D actor && (!ReferenceEquals(actor.Lifetime, _targetLeases[i]) ||
+                            (_targetLeases[i] != null && !_targetLeases[i].IsCurrent(Gameplay)))) continue;
 
                         Vector3 enemyPos = enemy.TargetTransform.position;
                         var hitPosition = DefenseAttackFeedbackPoints.Capture(enemy.TargetTransform, enemyPos + Vector3.up * 0.7f);
@@ -239,7 +238,9 @@ namespace ProjectZombie.Features.Defense3D
                                 new DefenseHitFeedback(hitPosition, DefenseAttackFeedbackPoints.Point(direction), damage, identity, generation)));
 
                             // Áp dụng hiệu ứng khống chế sấm sét
-                            if (enemy is IDefenseStatusReceiver receiver)
+                            if (Current(castId, identity, generation) && enemy.IsTargetable &&
+                                (!(enemy is DefenseEnemy3D currentActor) || ReferenceEquals(currentActor.Lifetime, _targetLeases[i])) &&
+                                enemy is IDefenseStatusReceiver receiver)
                             {
                                 // Choáng sấm sét (Stun)
                                 if (_stunDuration > 0f)
@@ -287,33 +288,8 @@ namespace ProjectZombie.Features.Defense3D
             finally
             {
                 Array.Clear(_targets, 0, count);
+                Array.Clear(_targetLeases, 0, count);
                 _resolving = false;
-            }
-        }
-
-        private void SpawnLightningVfx()
-        {
-            GameObject prefab = _lightningVfxPrefab;
-            if (prefab == null)
-            {
-                prefab = Resources.Load<GameObject>("VFX/VFX_Augment_ChainLightning")
-                      ?? Resources.Load<GameObject>("VFX/PS_ImpactSparks");
-
-#if UNITY_EDITOR
-                if (prefab == null)
-                {
-                    prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/VFX/VFX_Augment_ChainLightning.prefab")
-                          ?? UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Archive_Legacy_2D/VFX/Augments/VFX_Augment_ChainLightning.prefab")
-                          ?? UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/VFX/PS_ImpactSparks.prefab");
-                }
-#endif
-            }
-
-            if (prefab != null)
-            {
-                Vector3 strikePos = new Vector3(_castTargetPosition.X, _castTargetPosition.Y + 0.1f, _castTargetPosition.Z);
-                var vfx = Instantiate(prefab, strikePos, Quaternion.identity);
-                Destroy(vfx, 2.0f);
             }
         }
 
@@ -329,17 +305,8 @@ namespace ProjectZombie.Features.Defense3D
 
         public void CancelCasting()
         {
-            if (_isCasting)
-            {
-                _isCasting = false;
-                CloseCast(false);
-            }
-            else
-            {
-                _activeCastId = 0;
-                _castIdentity = null;
-                _castGeneration = -1;
-            }
+            _isCasting = false;
+            CloseCast(false);
         }
     }
 }

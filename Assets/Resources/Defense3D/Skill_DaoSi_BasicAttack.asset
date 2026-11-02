@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e72a55866d8bf04380db25df84f8040, type: 3}
   m_Name: Skill_DaoSi_BasicAttack
   m_EditorClassIdentifier: 
+  _skillId: skill.daosi_attack
+  _behavior: 0
+  _presentation: {fileID: 11400000, guid: 895dcc732ec94934b9bd560beda1c2da, type: 2}
+  _tuning: {fileID: 11400000, guid: 8b1b0619e9d0e3d488b5805b1daae32c, type: 2}
   _kind: 2
   _range: 7
   _radius: 1.5
@@ -20,4 +24,6 @@ MonoBehaviour:
   _duration: 0.15
   _autoTargetOnTap: 1
   _targetMask: -1
-
+  _presentationProfile: {fileID: 0}
+  _signaturePresentation: {fileID: 0}
+  _icon: {fileID: 0}

@@ -16,6 +16,12 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private string _displayName = "Mũi Tên Tre";
         [SerializeField] private GameObject _visualPrefab;
         [SerializeField] private GameObject _impactVfxPrefab;
+        [SerializeField] private DefenseEffectProfileSO _launchEffect;
+        [SerializeField] private DefenseEffectProfileSO _impactEffect;
+        [SerializeField] private DefenseEffectProfileSO _statusEffect;
+        public DefenseEffectProfileSO LaunchEffect => _launchEffect;
+        public DefenseEffectProfileSO ImpactEffect => _impactEffect;
+        public DefenseEffectProfileSO StatusEffect => _statusEffect;
 
         [Header("2. Chiến Lược Quỹ Đạo Bay (Trajectory Strategy)")]
         [SerializeField] private DefenseTrajectoryType _trajectoryType = DefenseTrajectoryType.ParabolicHoming;

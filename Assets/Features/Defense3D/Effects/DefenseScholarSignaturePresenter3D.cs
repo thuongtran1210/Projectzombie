@@ -9,16 +9,17 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroHealth3D _health;
         [SerializeField] private DefenseHeroMotor3D _motor;
         [SerializeField] private Transform _groundAnchor;
-        [SerializeField] private DefenseSignatureEffectSetSO _style;
+        private DefenseSignatureEffectSetSO _style;
         [SerializeField] private DefenseIndicatorSurface3D _surface;
         [SerializeField] private ProjectZombie.Features.Player.Camera3DFollower _camera;
         private IDefenseGameplayContext _gameplay;
         private DefenseSignatureFeedbackAdapter _adapter;
         public bool IsConfigured => _source != null && _health != null && _motor != null && _groundAnchor != null &&
             _groundAnchor.IsChildOf(_source.transform) && _style != null && _style.IsValid;
-        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects)
+        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects, DefenseSignatureEffectSetSO style)
         {
             Unbind();
+            _style = style;
             if (!IsConfigured) throw new System.InvalidOperationException("Assign Scholar signature presentation bindings.");
             _gameplay = gameplay;
             if (_camera == null && Camera.main != null)

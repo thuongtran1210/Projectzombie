@@ -8,12 +8,12 @@ namespace ProjectZombie.Features.Defense3D
     {
         [SerializeField] private DefenseHeroHealth3D _health;
         [SerializeField, Min(1)] private int _targetCapacity = 256;
-        [SerializeField] private DefenseHitStatusProfileSO _hitStatuses;
+        private DefenseHitStatusProfileSO _hitStatuses;
         private IDefenseTargetPosition[] _targets;
         private int _count;
         private bool _executing;
-        [SerializeField, Min(.1f)] private float _recastWindow = 4f;
-        [SerializeField, Min(.05f)] private float _recastDashDuration = .3f;
+        private float _recastWindow = 4f;
+        private float _recastDashDuration = .3f;
         private readonly DefenseRelicCastState _cast = new DefenseRelicCastState();
         private DefenseHeroMotor3D _motor;
         private DefenseDashTraversal3D _traversal;
@@ -35,6 +35,9 @@ namespace ProjectZombie.Features.Defense3D
             _health != null && !_health.IsDown && _motor != null && _motor.isActiveAndEnabled && !_motor.IsDashing &&
             _traversal != null && _traversal.IsConfigured && (_signature == null || !_signature.IsCasting);
         public event Action<DefenseRelicImpact> ImpactOccurred;
+        public void ConfigureTuning(float window,float dashDuration,DefenseHitStatusProfileSO statuses)
+        {_recastWindow=window;_recastDashDuration=dashDuration;_hitStatuses=statuses;}
+
         public override DefenseSkillKind Kind => DefenseSkillKind.DepToOng;
         public override bool IsConfigured => _health != null && _targetCapacity > 0 && (_hitStatuses == null || _hitStatuses.IsValid) &&
             DefenseDamageRules.IsFinite(_recastWindow) && _recastWindow > 0f &&

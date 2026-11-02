@@ -8,14 +8,15 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseHeroMotor3D _motor;
         [SerializeField] private DefenseHeroHealth3D _health;
         [SerializeField] private Transform _groundAnchor;
-        [SerializeField] private DefenseDashEffectSetSO _style;
+        private DefenseDashEffectSetSO _style;
         [SerializeField] private DefenseIndicatorSurface3D _surface;
         private DefenseDashFeedbackAdapter _adapter;
         public bool IsConfigured => _motor != null && _health != null && _groundAnchor != null &&
             _groundAnchor.IsChildOf(_motor.transform) && _style != null && _style.IsValid;
-        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects)
+        public void Bind(IDefenseGameplayContext gameplay, IDefenseEffectService effects, DefenseDashEffectSetSO style)
         {
             Unbind();
+            _style = style;
             if (!IsConfigured) throw new System.InvalidOperationException("Assign dash motor/health/ground anchor/style.");
             _adapter = new DefenseDashFeedbackAdapter(_motor.DashFeedback, gameplay, effects, _style, _motor, _groundAnchor,
                 () => isActiveAndEnabled && _motor != null && _motor.isActiveAndEnabled && _health != null && !_health.IsDown,

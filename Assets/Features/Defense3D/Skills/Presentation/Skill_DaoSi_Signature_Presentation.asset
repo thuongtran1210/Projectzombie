@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c8bffcc719c4e4d89cc0b0eaf96454, type: 3}
+  m_Name: Skill_DaoSi_Signature_Presentation
+  m_EditorClassIdentifier: 
+  _displayName: "Thi\xEAn L\xF4i"
+  _icon: {fileID: 21300000, guid: 359292fc509cb974fa72b0fcc78d6bff, type: 3}
+  _accent: {r: 0.5, g: 0.79, b: 0.86, a: 1}
+  _effects: {fileID: 11400000, guid: 576db41c7a7649249ab834f6398c400b, type: 2}

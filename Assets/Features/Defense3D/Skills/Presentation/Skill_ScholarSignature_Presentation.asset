@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c8bffcc719c4e4d89cc0b0eaf96454, type: 3}
+  m_Name: Skill_ScholarSignature_Presentation
+  m_EditorClassIdentifier: 
+  _displayName: "Ph\xE1n Quy\u1EBFt"
+  _icon: {fileID: 21300000, guid: 7094f8d8cd910d6478345bdf2a5f31b0, type: 3}
+  _accent: {r: 0.5, g: 0.79, b: 0.86, a: 1}
+  _effects: {fileID: 11400000, guid: db808bba65914ea9996842248e397ebb, type: 2}

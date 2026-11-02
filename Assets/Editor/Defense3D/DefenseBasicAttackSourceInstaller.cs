@@ -99,33 +99,13 @@ namespace ProjectZombie.EditorTools.Defense3D
             foreach (var attack in roots.SelectMany(root => root.GetComponentsInChildren<DefenseHeroAutoAttack3D>(true)))
             {
                 var attackData = new SerializedObject(attack);
-                attackData.FindProperty("_coneAngle").floatValue = DefenseBasicAttackRules.ConeAngle;
                 attackData.FindProperty("_autoAttackEnabled").boolValue = false;
-                attackData.FindProperty("attackCooldown").floatValue = DefenseBasicAttackRules.RepeatInterval;
                 attackData.ApplyModifiedPropertiesWithoutUndo();
             }
-            foreach (var effect in roots.SelectMany(root => root.GetComponentsInChildren<DefenseHeroAttackEffect3D>(true)))
-            {
-                var effectData = new SerializedObject(effect);
-                var view = effectData.FindProperty("_impactView").objectReferenceValue as DefenseAimIndicator3D;
-                if (view == null) continue;
-                var viewData = new SerializedObject(view);
-                var renderer = viewData.FindProperty("_sector").objectReferenceValue as Renderer;
-                if (renderer == null) continue;
-                renderer.gameObject.name = "BasicAttackSlash";
-                renderer.transform.position = surface.Place(effect.transform.position, .75f);
-                renderer.enabled = false;
-                PrefabUtility.RecordPrefabInstancePropertyModifications(renderer.gameObject);
-                PrefabUtility.RecordPrefabInstancePropertyModifications(renderer.transform);
-                PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
-            }
-            var definition = AssetDatabase.LoadAssetAtPath<DefenseSkillDefinitionSO>("Assets/Resources/Defense3D/Skill_BasicAttack.asset");
-            var definitionData = new SerializedObject(definition);
-            definitionData.FindProperty("_cooldown").floatValue = DefenseBasicAttackRules.RepeatInterval;
-            definitionData.FindProperty("_duration").floatValue = DefenseBasicAttackRules.Windup;
-            definitionData.ApplyModifiedPropertiesWithoutUndo();
+            // Skill balance and VFX belong to catalog definitions/presentations. This installer only authors world wiring.
+            DefenseSkillDataMigration.Validate();
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
-            File.WriteAllText("Logs/basic-attack-source-install.txt", "APPLIED: source press/hold basic attack, .18s hit/.65s repeat/.85s pose, transient waist slash, no idle fan, " + surfaces + " visible ground meshes (" + triangles.Count / 3 + " triangles). Gameplay colliders unchanged; no Play Mode/GUI QA.\n");
+            File.WriteAllText("Logs/basic-attack-source-install.txt", "APPLIED: source press/hold basic attack world wiring; catalog balance/presentation preserved; " + surfaces + " visible ground meshes (" + triangles.Count / 3 + " triangles). Gameplay colliders unchanged; no Play Mode/GUI QA.\n");
         }
     }
 }
