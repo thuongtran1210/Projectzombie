@@ -15,7 +15,7 @@ MonoBehaviour:
   _heroId: hero_ansi
   _displayName: "\u1EA8n S\u0129"
   _avatar: {fileID: 21300000, guid: 94e5e37ddc804314b0ce5ebb3df9597c, type: 3}
-  _heroPrefab: {fileID: 5901276156309361886, guid: 5e70bf84e0e14ad8b23c66c97c39887f, type: 3}
+  _heroPrefab: {fileID: 2278153270535847029, guid: 5e70bf84e0e14ad8b23c66c97c39887f, type: 3}
   _heroKit: {fileID: 11400000, guid: 7571588a4e9e42e2aac91f68e6f22f53, type: 2}
   _baseMaxHp: 300
   _baseMoveSpeed: 4.2

@@ -15,7 +15,7 @@ MonoBehaviour:
   _heroId: hero_thusinh
   _displayName: Thư Sinh
   _avatar: {fileID: 21300000, guid: 824c86026748456ca906f7462d28a212, type: 3}
-  _heroPrefab: {fileID: 5901276156309361886, guid: a2ce0669cb13d7f4889efc5ae5c005ca, type: 3}
+  _heroPrefab: {fileID: 2278153270535847029, guid: a2ce0669cb13d7f4889efc5ae5c005ca, type: 3}
   _heroKit: {fileID: 11400000, guid: 31d2bd2bab09517eb8bdf87e37fc2d5f, type: 2}
   _baseMaxHp: 200
   _baseMoveSpeed: 5

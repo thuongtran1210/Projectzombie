@@ -169,7 +169,7 @@ namespace ProjectZombie.Features.Defense3D
             {
                 DisposeSession();
                 if (_run != null) _run.enabled = false;
-                Debug.LogError("[TREBRAVE Defense3D] Scene composition failed: " + exception.Message, this);
+                Debug.LogError($"[TREBRAVE Defense3D] Scene composition failed: {exception}", this);
                 enabled = false;
             }
         }
@@ -297,7 +297,7 @@ namespace ProjectZombie.Features.Defense3D
             }
             if (!hasHeroMotor || !hasHeroAttack || !hasTowerBuilder || !hasBaseHealth || !hasHeroHealth)
                 throw new InvalidOperationException("Participants must include Hero Motor/Attack/Health, Base Health and Tower Builder.");
-            IDefenseHeroKit currentKit = (IDefenseHeroKit)_runtimeHeroKit ?? _heroKit;
+            IDefenseHeroKit currentKit = _runtimeHeroKit != null ? (IDefenseHeroKit)_runtimeHeroKit : _heroKit;
             if (currentKit == null) throw new InvalidOperationException("Assign authored Hero Kit.");
             currentKit.Validate();
             if (_skillPresenters == null || _skillPresenters.Length != 4)
