@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e4c72536f051f4a33e7b206a0b14af, type: 3}
   m_Name: HeroKit_ThuSinh
   m_EditorClassIdentifier: 
-  _heroId: thu-sinh
+  _heroId: hero_thusinh
   _displayName: Thư Sinh
   _attack: {fileID: 11400000, guid: bc6643f6e0685461adaeb3090868dbdd, type: 2}
   _dash: {fileID: 11400000, guid: f56110a87ddf5b88bd7663bdfe41831f, type: 2}

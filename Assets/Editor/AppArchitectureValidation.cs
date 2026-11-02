@@ -30,6 +30,7 @@ public static class AppArchitectureValidation
         var work = WorkItem.CreateWorkItem(runner.LoadedTest, filter);
         work.InitializeContext(new TestExecutionContext { Dispatcher = new MainThreadDispatcher(), IsSingleThreaded = true });
         work.Execute();
+        ProjectZombie.Editor.Defense3D.DefenseHeroCatalogValidator.ValidateCatalog();
         Directory.CreateDirectory("scratch");
         File.WriteAllText("scratch/AppArchitectureValidation.xml", work.Result.ToXml(true).OuterXml);
         File.WriteAllText("scratch/AppArchitectureValidation.txt", work.Result.ResultState + "\nPassed: " + work.Result.PassCount + "\nFailed: " + work.Result.FailCount);
