@@ -26,6 +26,8 @@ namespace ProjectZombie.Features.Defense3D
         private float _currentFlySpeed;
         private System.Action<DefenseWoodDrop3D> _poolRelease;
         private int _generation;
+        private DefenseSoulPickupVisual3D _soulVisual;
+        public float PresentationTime => GameplayTime;
         public bool CanBeGathered(IDefenseGameplayContext gameplay) => ReferenceEquals(Gameplay, gameplay) &&
             isActiveAndEnabled && CanAdvanceGameplay && _generation == Gameplay.RunGeneration && !collected && GameplayTime >= pickupReadyTime;
         public bool TryGather(IDefenseGameplayContext gameplay, int capacity, out int amount)
@@ -54,6 +56,8 @@ namespace ProjectZombie.Features.Defense3D
             pickupReadyTime = GameplayTime + pickupDelay;
             _currentFlySpeed = 0f;
             collected = false;
+            if(_soulVisual==null)_soulVisual=GetComponent<DefenseSoulPickupVisual3D>();
+            _soulVisual?.Begin(GameplayTime,transform.position);
         }
 
         private void DespawnOrDestroy()
@@ -74,6 +78,8 @@ namespace ProjectZombie.Features.Defense3D
         /// <summary>Xóa dữ liệu lượt cũ và callback; pool giữ quyền thu hồi.</summary>
         public void ResetForPool()
         {
+            if(_soulVisual==null)_soulVisual=GetComponent<DefenseSoulPickupVisual3D>();
+            _soulVisual?.ResetPresentation();
             collected = true;
             _currentFlySpeed = 0f;
             _poolRelease = null;
