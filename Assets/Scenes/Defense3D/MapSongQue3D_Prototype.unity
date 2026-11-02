@@ -13256,7 +13256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _volume: {fileID: 8001300003}
-  _profile: {fileID: 11400000, guid: d54083596ed74089a100e008f16f7240, type: 2}
+  _profile: {fileID: 11400000, guid: aa55d54b2d7b5e239382d920d5435d09, type: 2}
 --- !u!65 &8001300003
 BoxCollider:
   m_ObjectHideFlags: 0

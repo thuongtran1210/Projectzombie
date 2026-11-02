@@ -10,8 +10,21 @@ namespace ProjectZombie.Features.Defense3D
         [SerializeField] private DefenseAirProfileSO _profile;
         public DefenseAirProfileSO Profile => _profile;
 
+        private void Awake()
+        {
+            if (_profile == null)
+            {
+                _profile = Resources.Load<DefenseAirProfileSO>("Defense3D/Air_SongQue");
+            }
+        }
+
         public void ValidateBindings()
         {
+            if (_profile == null)
+            {
+                _profile = Resources.Load<DefenseAirProfileSO>("Defense3D/Air_SongQue");
+            }
+
             if (_volume == null || _volume.gameObject.scene != gameObject.scene || !_volume.isTrigger || _profile == null)
                 throw new InvalidOperationException("Assign an authored flight trigger volume and Air profile.");
             _profile.Validate();
