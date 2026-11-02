@@ -17,6 +17,28 @@ namespace ProjectZombie.Tests.Editor
     public sealed class AppFlowTests
     {
         private readonly List<UnityEngine.Object> _assets = new List<UnityEngine.Object>();
+        private sealed class ProgressLoader : IProgressContentSceneLoader
+        {
+            public Scene Current => default;
+            public readonly TaskCompletionSource<Scene> Gate = new TaskCompletionSource<Scene>();
+            public Task UnloadAsync() => Task.CompletedTask;
+            public Task<Scene> LoadAsync(AssetReference reference) => LoadAsync(reference,null);
+            public async Task<Scene> LoadAsync(AssetReference reference,Action<float> progress)
+            { progress?.Invoke(.5f); return await Gate.Task; }
+        }
+        [Test]
+        public void RealSceneProgressDoesNotCompleteBeforeSceneAndMatchInitialization()
+        {
+            var loader=new ProgressLoader();
+            var view=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(AppArchitectureInstaller.PREFAB).GetComponentInChildren<AppLoadingView>(true));_assets.Add(view.gameObject);
+            bool initialized=false;
+            var flow=new AppFlowController(loader,new AssetReference("hub"),view,(scene,request)=>{Assert.Less(view.Progress,1);initialized=true;},rulesLoader:new FakeRules());
+            var stage=MakeStage("first","11111111111111111111111111111111");
+            var pending=flow.EnterMatchAsync(new MatchLaunchRequest(stage,DefenseLoadoutSnapshot.CreateDefault()));
+            Assert.IsFalse(initialized);Assert.IsTrue(view.IsVisible);Assert.AreEqual(.41f,view.Progress,.001f);
+            loader.Gate.SetResult(default);Assert.IsTrue(pending.GetAwaiter().GetResult());
+            Assert.IsTrue(initialized);Assert.AreEqual(1,view.Progress);Assert.IsFalse(view.IsVisible);
+        }
 
         [TearDown]
         public void Cleanup()

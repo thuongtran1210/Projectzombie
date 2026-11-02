@@ -14,9 +14,13 @@ namespace ProjectZombie.Core.Architecture
         Task<Scene> LoadAsync(AssetReference reference);
         Task UnloadAsync();
     }
+    public interface IProgressContentSceneLoader : IContentSceneLoader
+    {
+        Task<Scene> LoadAsync(AssetReference reference, Action<float> progress);
+    }
 
     /// <summary>Pairs every scene load with an unload and retains the exact operation handle.</summary>
-    public sealed class AddressableSceneLoader : IContentSceneLoader
+    public sealed class AddressableSceneLoader : IProgressContentSceneLoader
     {
         private AsyncOperationHandle<SceneInstance> _handle;
         private bool _ownsHandle;
@@ -27,19 +31,22 @@ namespace ProjectZombie.Core.Architecture
             Current = existingContent;
         }
 
-        public async Task<Scene> LoadAsync(AssetReference reference)
+        public Task<Scene> LoadAsync(AssetReference reference) => LoadAsync(reference, null);
+        public async Task<Scene> LoadAsync(AssetReference reference, Action<float> progress)
         {
             if (Current.IsValid() && Current.isLoaded) throw new InvalidOperationException("Unload content before loading another scene.");
             if (reference == null || !reference.RuntimeKeyIsValid()) throw new ArgumentException("Missing scene reference.");
             var handle = Addressables.LoadSceneAsync(reference, LoadSceneMode.Additive, true);
             try
             {
+                while (!handle.IsDone) { progress?.Invoke(handle.PercentComplete); await Task.Yield(); }
                 var instance = await handle.Task;
                 if (handle.Status != AsyncOperationStatus.Succeeded) throw new InvalidOperationException("Scene load failed.");
                 _handle = handle;
                 _ownsHandle = true;
                 Current = instance.Scene;
                 SceneManager.SetActiveScene(Current);
+                progress?.Invoke(1f);
                 return Current;
             }
             catch

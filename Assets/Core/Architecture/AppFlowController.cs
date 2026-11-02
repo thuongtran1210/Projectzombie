@@ -81,20 +81,27 @@ namespace ProjectZombie.Core.Architecture
             IsNavigating = true;
             Phase = request == null ? AppPhase.Returning : AppPhase.Loading;
             LastError = null;
-            _loading?.Show(request == null ? "Đang trở về sảnh..." : "Đang tải " + request.Stage.stageName + "...");
+            _loading?.Begin(request == null ? "TRỞ VỀ SẢNH" : request.Stage.stageName, request == null);
             try
             {
                 beforeUnload?.Invoke();
                 Time.timeScale = 1f;
                 await _loader.UnloadAsync();
+                _loading?.ReportProgress(.1f, "Đang chuẩn bị hành trình...");
                 _rules.Release();
                 if (request != null) request = request.ResolveRules(await _rules.LoadAsync(request.Stage));
+                _loading?.ReportProgress(.2f, "Đang mở bản đồ...");
                 ActiveMatch = request;
-                var scene = await _loader.LoadAsync(request == null ? _hub : request.Stage.Map.Scene);
+                var reference = request == null ? _hub : request.Stage.Map.Scene;
+                float sceneEnd = request == null ? .96f : .62f;
+                var scene = _loader is IProgressContentSceneLoader progressive
+                    ? await progressive.LoadAsync(reference, value => _loading?.ReportProgress(Mathf.Lerp(.2f, sceneEnd, value), "Đang mở bản đồ..."))
+                    : await _loader.LoadAsync(reference);
+                _loading?.ReportProgress(sceneEnd, request == null ? "Sảnh đã sẵn sàng" : "Đang chuẩn bị đội hình...");
                 if (request != null)
                 {
                     if (_initializeMatch != null) _initializeMatch(scene, request);
-                    else await InitializeMatch(scene, request);
+                    else await InitializeMatch(scene, request, (value, message) => _loading?.ReportProgress(Mathf.Lerp(.62f, .98f, value), message));
                     SelectedStage = request.Stage;
                     Phase = AppPhase.Match;
                 }
@@ -104,7 +111,7 @@ namespace ProjectZombie.Core.Architecture
                     Phase = AppPhase.Menu;
                     GameStateManager.Instance?.ChangeState(GameState.MainMenu);
                 }
-                _loading?.Hide();
+                if (_loading != null) await _loading.CompleteAsync();
                 return true;
             }
             catch (Exception exception)
@@ -125,7 +132,7 @@ namespace ProjectZombie.Core.Architecture
                 catch (Exception recovery)
                 {
                     Phase = AppPhase.Error;
-                    _loading?.Show("Không thể tải nội dung. Kiểm tra kết nối và khởi động lại.\n" + recovery.Message);
+                    _loading?.ShowError("Không thể tải nội dung. Kiểm tra kết nối và khởi động lại.\n" + recovery.Message, false);
                     _reportError(recovery);
                 }
                 return false;
@@ -136,7 +143,7 @@ namespace ProjectZombie.Core.Architecture
             }
         }
 
-        private static async Task InitializeMatch(Scene scene, MatchLaunchRequest request)
+        private static async Task InitializeMatch(Scene scene, MatchLaunchRequest request, Action<float, string> progress)
         {
             DefenseSceneCompositionRoot result = null;
             foreach (var root in scene.GetRootGameObjects())
@@ -148,7 +155,7 @@ namespace ProjectZombie.Core.Architecture
                 }
             }
             if (result == null) throw new InvalidOperationException("Map requires one DefenseSceneCompositionRoot.");
-            await result.InitializeMatchAsync(request);
+            await result.InitializeMatchAsync(request, progress);
             if (!result.IsReady) throw new InvalidOperationException("Map initialization failed.");
         }
     }
