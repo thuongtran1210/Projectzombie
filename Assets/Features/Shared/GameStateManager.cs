@@ -11,7 +11,7 @@ namespace ProjectZombie.Features.Shared
     /// Tuân thủ Dependency Inversion: Sử dụng IGamePausePolicy để quyết định hành vi tạm dừng/chạy tiếp (Mục 3.2 AGENTS.md).
     /// </summary>
     [DefaultExecutionOrder(-100)]
-    public class GameStateManager : MonoBehaviour
+    public class GameStateManager : MonoBehaviour, IGameStateManager
     {
         public static GameStateManager Instance { get; private set; }
 
@@ -43,6 +43,7 @@ namespace ProjectZombie.Features.Shared
             if (Instance == null)
             {
                 Instance = this;
+                ServiceContext.Register<IGameStateManager>(this);
 
                 // Cách ly: Nếu GameObject này có con (chứa các hệ thống gameplay cục bộ của Scene như 2D Spawner/Pools),
                 // tách các con ra để chúng thuộc Scene hiện tại và tự động được hủy khi chuyển sang Scene Defense 3D
@@ -63,7 +64,11 @@ namespace ProjectZombie.Features.Shared
 
         private void OnDestroy()
         {
-            if (Instance == this) Instance = null;
+            if (Instance == this)
+            {
+                ServiceContext.Unregister<IGameStateManager>();
+                Instance = null;
+            }
         }
 
         /// <summary>Compatibility projection from DefenseSession; does not change the authoritative clock.</summary>

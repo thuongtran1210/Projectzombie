@@ -94,7 +94,7 @@ namespace ProjectZombie.Features.UI
                 PopulateGridForTab(tab);
                 if (tab == CodexTabType.HeroCards && hero != null) SelectHero(hero);
                 else if (tab == CodexTabType.RelicFusion && relic != null) SelectRelic(relic);
-                else if (!string.IsNullOrEmpty(defenseId) && _defenseCatalog.TryGetEntry(defenseId, out var entry)) InspectDefenseEntry(entry);
+                else if (!string.IsNullOrEmpty(defenseId) && _loadoutService != null && _loadoutService.TryGetCatalogEntry(defenseId, out var entry)) InspectDefenseEntry(entry);
                 _view.RestoreListPosition(position);
                 if (success)
                 {

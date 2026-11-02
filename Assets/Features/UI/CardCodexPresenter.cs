@@ -17,6 +17,7 @@ namespace ProjectZombie.Features.UI
     {
         private ProjectZombie.Core.Audio.IAudioService _audioService;
         public void InjectAudioService(ProjectZombie.Core.Audio.IAudioService audioService) => _audioService = audioService;
+        public void InjectLoadoutService(ProjectZombie.Features.Shared.Loadout.ILoadoutService loadoutService) => _loadoutService = loadoutService;
         [Header("View")]
         [SerializeField] private CardCodexView _view;
 
@@ -266,7 +267,7 @@ namespace ProjectZombie.Features.UI
             {
                 SelectHero(_selectedHero);
             }
-            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _defenseCatalog != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out var entry))
+            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _loadoutService != null && _loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out var entry))
             {
                 InspectDefenseEntry(entry);
             }
@@ -285,7 +286,7 @@ namespace ProjectZombie.Features.UI
             {
                 SelectHero(_selectedHero);
             }
-            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _defenseCatalog != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out var entry))
+            else if (!string.IsNullOrEmpty(_inspectedDefenseId) && _loadoutService != null && _loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out var entry))
             {
                 InspectDefenseEntry(entry);
             }
@@ -445,7 +446,7 @@ namespace ProjectZombie.Features.UI
                         int shards = relicMgr != null ? relicMgr.GetRelicShardCount(weapon.weaponId) : 0;
                         var nextStep = relicMgr != null ? relicMgr.GetNextStepConfig(weapon.weaponId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 5;
-                        bool isUnlocked = star > 0 || (_defenseOwnership.IsOwned(ResolveSupportedId(weapon.weaponId, false) ?? ""));
+                        bool isUnlocked = star > 0 || (_loadoutService != null && _loadoutService.IsOwned(ResolveSupportedId(weapon.weaponId, false) ?? ""));
                         if (star <= 0 && isUnlocked) star = 1;
                         bool isSelected = _selectedRelic == weapon;
 
@@ -498,7 +499,7 @@ namespace ProjectZombie.Features.UI
                         int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
                         var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
                         int reqShards = nextStep != null ? nextStep.requiredShards : 10;
-                        bool isUnlocked = star > 0 || _defenseOwnership.IsOwned(ResolveSupportedId(hero.characterId, true) ?? "");
+                        bool isUnlocked = star > 0 || (_loadoutService != null && _loadoutService.IsOwned(ResolveSupportedId(hero.characterId, true) ?? ""));
                         if (star <= 0 && isUnlocked) star = 1;
                         bool isSelected = _selectedHero == hero;
 
@@ -568,14 +569,14 @@ namespace ProjectZombie.Features.UI
                 && _relicSlotViewMap.TryGetValue(_selectedRelic, out var relicSlot))
             {
                 bool owned = (RelicInventoryManager.HasInstance && RelicInventoryManager.Instance.GetRelicStarLevel(_selectedRelic.weaponId) > 0)
-                    || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedRelic.weaponId, false) ?? "");
+                    || (_loadoutService != null && _loadoutService.IsOwned(ResolveSupportedId(_selectedRelic.weaponId, false) ?? ""));
                 HighlightCard(relicSlot, owned, _selectedRelic.weaponName);
             }
             else if (_currentTab == CodexTabType.HeroCards && _selectedHero != null
                 && _heroSlotViewMap.TryGetValue(_selectedHero, out var heroSlot))
             {
                 bool owned = (CharacterProgressionManager.HasInstance && CharacterProgressionManager.Instance.GetCharacterStarLevel(_selectedHero.characterId) > 0)
-                    || _defenseOwnership.IsOwned(ResolveSupportedId(_selectedHero.characterId, true) ?? "");
+                    || (_loadoutService != null && _loadoutService.IsOwned(ResolveSupportedId(_selectedHero.characterId, true) ?? ""));
                 HighlightCard(heroSlot, owned, _selectedHero.characterName);
             }
         }
@@ -641,7 +642,7 @@ namespace ProjectZombie.Features.UI
             var heroMgr = CharacterProgressionManager.HasInstance ? CharacterProgressionManager.Instance : null;
             if (heroMgr != null) heroMgr.EnsureInitialized();
             int star = heroMgr != null ? heroMgr.GetCharacterStarLevel(hero.characterId) : 0;
-            if (star <= 0 && _inspectedDefenseId != null && _defenseOwnership != null && _defenseOwnership.IsOwned(_inspectedDefenseId)) star = 1;
+            if (star <= 0 && _inspectedDefenseId != null && _loadoutService != null && _loadoutService.IsOwned(_inspectedDefenseId)) star = 1;
             int shards = heroMgr != null ? heroMgr.GetCharacterShardCount(hero.characterId) : 0;
             var nextStep = heroMgr != null ? heroMgr.GetNextStepConfig(hero.characterId) : null;
 

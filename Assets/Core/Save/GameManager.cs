@@ -12,7 +12,7 @@ namespace ProjectZombie.Core.Save
     /// Kế thừa PersistentSingleton<GameManager> chuẩn kiến trúc.
     /// Tuân thủ Dependency Inversion Principle (DIP): Giao tiếp với các Domain Services thông qua ISaveableModule.
     /// </summary>
-    public class GameManager : PersistentSingleton<GameManager>
+    public class GameManager : PersistentSingleton<GameManager>, ISaveManager
     {
         public MetaProgressionSaveData SaveData { get; private set; }
 
@@ -47,6 +47,7 @@ namespace ProjectZombie.Core.Save
         protected override void Awake()
         {
             base.Awake();
+            ServiceContext.Register<ISaveManager>(this);
 
             // Nạp dữ liệu Save khi game khởi động (chỉ load raw data, không vội inject vào manager con lúc Awake)
             if (SaveData == null)
@@ -135,6 +136,12 @@ namespace ProjectZombie.Core.Save
             {
                 SaveGame();
             }
+        }
+
+        protected override void OnDestroy()
+        {
+            ServiceContext.Unregister<ISaveManager>();
+            base.OnDestroy();
         }
 
         protected override void OnApplicationQuit()

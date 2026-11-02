@@ -70,6 +70,9 @@ namespace ProjectZombie.Core.Architecture
 
             // Đăng ký IMetaCurrencyService vào ServiceContext
             ServiceContext.Register<IMetaCurrencyService>(currencyMgr);
+            ServiceContext.Register<ISaveManager>(gameMgr);
+            ServiceContext.Register<ProjectZombie.Features.Shared.Loadout.ILoadoutService>(
+                ProjectZombie.Features.Defense3D.Loadout.DefenseLoadoutService.CreateDefault());
 
             // Bước 2.6: GameStartupFlowController (quản lý luồng khởi động & kiểm tra bản vá CDN)
             // Loading and navigation are owned by AppFlow; no second startup flow is scheduled.

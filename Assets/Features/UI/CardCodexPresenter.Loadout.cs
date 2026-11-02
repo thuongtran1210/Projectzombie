@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using ProjectZombie.Core.Architecture;
 using ProjectZombie.Features.Defense3D.Loadout;
 using ProjectZombie.Features.MetaProgression;
 using ProjectZombie.Features.Shared;
+using ProjectZombie.Features.Shared.Loadout;
 
 namespace ProjectZombie.Features.UI
 {
     public partial class CardCodexPresenter
     {
-        private DefenseLoadoutRepository _loadoutRepository;
+        private ILoadoutService _loadoutService;
         private LoadoutSelection _loadout;
-        private ILoadoutCatalog _defenseCatalog;
-        private ILoadoutOwnership _defenseOwnership;
         private string _inspectedDefenseId;
         private string _replacementId;
         private bool _choosingLoadoutSlot;
@@ -22,39 +22,14 @@ namespace ProjectZombie.Features.UI
 
         private void InitializeLoadout()
         {
-            _loadoutRepository = _loadoutRepository ?? new DefenseLoadoutRepository();
-            _defenseCatalog = Defense3DCatalog.CreateExpanded();
-            var saveData = ProjectZombie.Core.Save.GameManager.HasInstance ? ProjectZombie.Core.Save.GameManager.Instance.SaveData : null;
-            var ownership = DefenseMetaOwnershipAdapter.CreateDefault(saveData);
-            if (saveData != null && saveData.unlockedTowerIds != null)
-            {
-                for (int i = 0; i < saveData.unlockedTowerIds.Count; i++)
-                {
-                    ownership.Grant(saveData.unlockedTowerIds[i]);
-                }
-            }
-            _defenseOwnership = ownership;
-            var dto = _loadoutRepository.Load();
-            _loadout = new LoadoutSelection(dto.HeroId, dto.RelicId, dto.MinionIds, dto.TowerIds);
+            _loadoutService = _loadoutService ?? ServiceContext.Get<ILoadoutService>() ?? DefenseLoadoutService.CreateDefault();
+            _loadout = _loadoutService.LoadCurrentLoadout();
             RefreshLoadoutSummary();
         }
 
         private string ResolveSupportedId(string id, bool hero)
         {
-            if (string.IsNullOrEmpty(id)) return null;
-            string clean = id.Trim();
-            var type = hero ? LoadoutItemType.Hero : LoadoutItemType.Relic;
-            if (_defenseCatalog != null && _defenseCatalog.TryGetEntry(clean, out var entry) && entry.Type == type)
-            {
-                return entry.Id;
-            }
-
-            if (hero)
-            {
-                return DefenseLoadoutIdMapper.TryMapHeroId(clean, out var mappedHero) ? mappedHero : null;
-            }
-
-            return DefenseLoadoutIdMapper.TryMapRelicId(clean, out var mappedRelic) ? mappedRelic : null;
+            return _loadoutService != null ? _loadoutService.ResolveSupportedId(id, hero) : null;
         }
 
         private bool IsEquipped(string id)
@@ -74,11 +49,11 @@ namespace ProjectZombie.Features.UI
                 _view.ShowEquipAction(string.Empty, false);
                 return;
             }
-            bool supported = _inspectedDefenseId != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out _);
-            bool owned = supported && _defenseOwnership.IsOwned(_inspectedDefenseId);
+            bool supported = _inspectedDefenseId != null && _loadoutService != null && _loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out _);
+            bool owned = supported && _loadoutService.IsOwned(_inspectedDefenseId);
             bool equipped = supported && IsEquipped(_inspectedDefenseId);
             bool multiple = _currentTab == CodexTabType.Minions || _currentTab == CodexTabType.Towers;
-            var rules = LoadoutRules.Default;
+            var rules = _loadoutService?.Rules ?? LoadoutRules.Default;
             int count = _currentTab == CodexTabType.Minions ? _loadout.MinionIds.Count : _loadout.TowerIds.Count;
             int max = _currentTab == CodexTabType.Minions ? rules.MaxMinionCount : rules.MaxTowerCount;
             int min = _currentTab == CodexTabType.Minions ? rules.MinMinionCount : rules.MinTowerCount;
@@ -115,9 +90,10 @@ namespace ProjectZombie.Features.UI
         private void HandleEquipClicked()
         {
             if (!_equipmentMode) return;
-            if (_inspectedDefenseId == null || !_defenseCatalog.TryGetEntry(_inspectedDefenseId, out var entry)
-                || !entry.IsAvailable || !_defenseOwnership.IsOwned(entry.Id)) return;
-            var rules = LoadoutRules.Default;
+            if (_inspectedDefenseId == null || _loadoutService == null
+                || !_loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out var entry)
+                || !entry.IsAvailable || !_loadoutService.IsOwned(entry.Id)) return;
+            var rules = _loadoutService.Rules;
             switch (entry.Type)
             {
                 case LoadoutItemType.Hero:
@@ -164,13 +140,13 @@ namespace ProjectZombie.Features.UI
                     }
                     break;
             }
-            _loadoutRepository.Save(new LoadoutSaveDto(_loadout.HeroId, _loadout.RelicId, _loadout.MinionIds, _loadout.TowerIds, DefenseLoadoutRepository.CURRENT_VERSION));
+            _loadoutService.SaveLoadout(_loadout);
             _audioService?.PlayWeaponEquip();
             MainHubPresenter.Instance?.RefreshHubState();
             RefreshLoadoutSummary();
             RefreshEquippedBadges();
             foreach (var pair in _defenseSlotViewMap) pair.Value.SetEquipped(IsEquipped(pair.Key));
-            if (_defenseCatalog.TryGetEntry(_inspectedDefenseId, out var inspected)
+            if (_loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out var inspected)
                 && (_currentTab == CodexTabType.Minions || _currentTab == CodexTabType.Towers || (_currentTab == CodexTabType.RelicFusion && _selectedRelic == null)))
             {
                 InspectDefenseEntry(inspected);
@@ -199,7 +175,7 @@ namespace ProjectZombie.Features.UI
             foreach (var relic in _cachedWeapons) if (relic != null && ResolveSupportedId(relic.weaponId, false) == id && relic.icon != null) return relic.icon;
             var viewIcon = _view != null ? _view.GetCatalogIcon(id) : null;
             if (viewIcon != null) return viewIcon;
-            return DefenseLoadoutRuntimeAdapter.ResolveItemIcon(id);
+            return _loadoutService != null ? _loadoutService.ResolveItemIcon(id) : null;
         }
 
         private void RefreshEquippedBadges()
@@ -209,7 +185,7 @@ namespace ProjectZombie.Features.UI
             foreach (var pair in _defenseSlotViewMap) pair.Value.SetEquipped(IsEquipped(pair.Key));
         }
 
-        private string DisplayName(string id) => _defenseCatalog.TryGetEntry(id, out var e) ? e.DisplayName : id;
+        private string DisplayName(string id) => _loadoutService != null ? _loadoutService.GetDisplayName(id) : id;
 
         private void HandleLoadoutSlotClicked(CodexTabType tab, string id)
         {
@@ -227,14 +203,14 @@ namespace ProjectZombie.Features.UI
                 var relic = _cachedWeapons.FirstOrDefault(w => w != null && ResolveSupportedId(w.weaponId, false) == id);
                 if (relic != null) { SelectRelic(relic); return; }
             }
-            if (id != null && _defenseCatalog.TryGetEntry(id, out var entry)) InspectDefenseEntry(entry);
+            if (id != null && _loadoutService != null && _loadoutService.TryGetCatalogEntry(id, out var entry)) InspectDefenseEntry(entry);
             RefreshEquipAction();
         }
 
         private void RefreshLoadoutSummary()
         {
             if (_view == null || _loadout == null) return;
-            var rules = LoadoutRules.Default;
+            var rules = _loadoutService?.Rules ?? LoadoutRules.Default;
             _view.ShowLoadoutSlots(_loadout.HeroId, _loadout.RelicId, _loadout.MinionIds, _loadout.TowerIds,
                 rules.MaxMinionCount, rules.MaxTowerCount, DisplayName, CatalogIcon);
             string context = _replacementId != null ? $" • Thay: {DisplayName(_replacementId)}"
@@ -249,7 +225,7 @@ namespace ProjectZombie.Features.UI
             _inspectedCard = null;
             var itemType = tab == CodexTabType.RelicFusion ? LoadoutItemType.Relic
                 : (tab == CodexTabType.Minions ? LoadoutItemType.Minion : LoadoutItemType.Tower);
-            var entries = _defenseCatalog.GetEntriesByType(itemType);
+            var entries = _loadoutService != null ? _loadoutService.GetCatalogEntriesByType(itemType) : Array.Empty<LoadoutCatalogEntry>();
             var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
             if (relicMgr != null) relicMgr.EnsureInitialized();
 
@@ -272,7 +248,7 @@ namespace ProjectZombie.Features.UI
                     StarLevel = star,
                     ShardCount = shards,
                     ReqShards = reqShards,
-                    IsUnlocked = _defenseOwnership.IsOwned(entry.Id),
+                    IsUnlocked = _loadoutService != null && _loadoutService.IsOwned(entry.Id),
                     IsSelected = entry.Id == _inspectedDefenseId
                 }, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
                 {
@@ -283,7 +259,7 @@ namespace ProjectZombie.Features.UI
                 _defenseSlotViewMap[entry.Id] = slot;
             }
             if (!entries.Any(e => e.Id == _inspectedDefenseId)) _inspectedDefenseId = entries.FirstOrDefault()?.Id;
-            if (_inspectedDefenseId != null && _defenseCatalog.TryGetEntry(_inspectedDefenseId, out var selected)) InspectDefenseEntry(selected);
+            if (_inspectedDefenseId != null && _loadoutService != null && _loadoutService.TryGetCatalogEntry(_inspectedDefenseId, out var selected)) InspectDefenseEntry(selected);
             else _view.DisplayCardDetail("Chưa có nội dung", "", "Catalog chưa có loại này.", null, false);
         }
 
@@ -294,7 +270,8 @@ namespace ProjectZombie.Features.UI
             var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
             if (relicMgr != null) relicMgr.EnsureInitialized();
 
-            foreach (var entry in _defenseCatalog.GetEntriesByType(hero ? LoadoutItemType.Hero : LoadoutItemType.Relic))
+            var entries = _loadoutService != null ? _loadoutService.GetCatalogEntriesByType(hero ? LoadoutItemType.Hero : LoadoutItemType.Relic) : Array.Empty<LoadoutCatalogEntry>();
+            foreach (var entry in entries)
             {
                 bool hasCard = hero ? _cachedHeroes.Any(h => h != null && ResolveSupportedId(h.characterId, true) == entry.Id)
                     : (_cachedWeapons.Any(w => w != null && ResolveSupportedId(w.weaponId, false) == entry.Id) || _defenseSlotViewMap.ContainsKey(entry.Id));
@@ -318,7 +295,7 @@ namespace ProjectZombie.Features.UI
                         StarLevel = star,
                         ShardCount = shards,
                         ReqShards = reqShards,
-                        IsUnlocked = _defenseOwnership.IsOwned(entry.Id),
+                        IsUnlocked = _loadoutService != null && _loadoutService.IsOwned(entry.Id),
                         IsSelected = entry.Id == _inspectedDefenseId
                     }, _cardSlotWoodSprite, _cardSlotSelectedSprite, () =>
                     {
@@ -342,7 +319,7 @@ namespace ProjectZombie.Features.UI
         {
             var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
             int star = relicMgr != null ? relicMgr.GetRelicStarLevel(unitId) : 0;
-            if (star <= 0 && _defenseOwnership != null && _defenseOwnership.IsOwned(unitId))
+            if (star <= 0 && _loadoutService != null && _loadoutService.IsOwned(unitId))
             {
                 star = 1;
             }
@@ -360,7 +337,7 @@ namespace ProjectZombie.Features.UI
 
             if (_defenseSlotViewMap.TryGetValue(entry.Id, out var card))
             {
-                HighlightCard(card, _defenseOwnership.IsOwned(entry.Id), entry.DisplayName);
+                HighlightCard(card, _loadoutService != null && _loadoutService.IsOwned(entry.Id), entry.DisplayName);
             }
 
             var relicMgr = RelicInventoryManager.HasInstance ? RelicInventoryManager.Instance : null;
@@ -404,13 +381,20 @@ namespace ProjectZombie.Features.UI
             if (entry.Type == LoadoutItemType.Minion)
             {
                 categoryTag = $"<color=#4CAF50>[QUÂN LÍNH LÀNG 3D]</color>  {equipState}";
-                DefenseLoadoutRuntimeAdapter.EvaluateMinionStarBonuses(star, out float hpBonus, out float spdBonus);
-                desc = $"{baseDesc}\n\n" +
-                       $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sinh Lực Lính <b>+{hpBonus * 100f:0}%</b>  •  Tốc Chạy <b>+{spdBonus * 100f:0}%</b>\n";
-                if (nextStep != null && star < 5)
+                if (_loadoutService != null)
                 {
-                    DefenseLoadoutRuntimeAdapter.EvaluateMinionStarBonuses(star + 1, out float nextHp, out float nextSpd);
-                    desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({star + 1} Sao):</color> Sinh Lực Lính <b>+{nextHp * 100f:0}%</b>  •  Tốc Chạy <b>+{nextSpd * 100f:0}%</b>";
+                    _loadoutService.EvaluateMinionStarBonuses(star, out float hpBonus, out float spdBonus);
+                    desc = $"{baseDesc}\n\n" +
+                           $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sinh Lực Lính <b>+{hpBonus * 100f:0}%</b>  •  Tốc Chạy <b>+{spdBonus * 100f:0}%</b>\n";
+                    if (nextStep != null && star < 5)
+                    {
+                        _loadoutService.EvaluateMinionStarBonuses(star + 1, out float nextHp, out float nextSpd);
+                        desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({star + 1} Sao):</color> Sinh Lực Lính <b>+{nextHp * 100f:0}%</b>  •  Tốc Chạy <b>+{nextSpd * 100f:0}%</b>";
+                    }
+                }
+                else
+                {
+                    desc = baseDesc;
                 }
                 return;
             }
@@ -418,25 +402,39 @@ namespace ProjectZombie.Features.UI
             if (entry.Type == LoadoutItemType.Tower)
             {
                 categoryTag = $"<color=#00E5FF>[TRỤ PHÒNG THỦ]</color>  {equipState}";
-                DefenseLoadoutRuntimeAdapter.EvaluateTowerStarBonuses(star, out float dmgBonus, out float rangeBonus);
-                desc = $"{baseDesc}\n\n" +
-                       "<color=#D1D5DB>Trong trận, toàn bộ trụ dùng bonus chung theo thẻ trụ có sao cao nhất trong đội hình. Nâng thẻ thấp hơn mốc này chưa làm tăng bonus chung.</color>\n\n" +
-                       $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sát Thương Trụ <b>+{dmgBonus * 100f:0}%</b>  •  Tầm Bắn <b>+{rangeBonus * 100f:0}%</b>\n";
-                if (nextStep != null && star < 5)
+                if (_loadoutService != null)
                 {
-                    DefenseLoadoutRuntimeAdapter.EvaluateTowerStarBonuses(star + 1, out float nextDmg, out float nextRng);
-                    desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({star + 1} Sao):</color> Sát Thương Trụ <b>+{nextDmg * 100f:0}%</b>  •  Tầm Bắn <b>+{nextRng * 100f:0}%</b>";
+                    _loadoutService.EvaluateTowerStarBonuses(star, out float dmgBonus, out float rangeBonus);
+                    desc = $"{baseDesc}\n\n" +
+                           "<color=#D1D5DB>Trong trận, toàn bộ trụ dùng bonus chung theo thẻ trụ có sao cao nhất trong đội hình. Nâng thẻ thấp hơn mốc này chưa làm tăng bonus chung.</color>\n\n" +
+                           $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sát Thương Trụ <b>+{dmgBonus * 100f:0}%</b>  •  Tầm Bắn <b>+{rangeBonus * 100f:0}%</b>\n";
+                    if (nextStep != null && star < 5)
+                    {
+                        _loadoutService.EvaluateTowerStarBonuses(star + 1, out float nextDmg, out float nextRng);
+                        desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({star + 1} Sao):</color> Sát Thương Trụ <b>+{nextDmg * 100f:0}%</b>  •  Tầm Bắn <b>+{nextRng * 100f:0}%</b>";
+                    }
+                }
+                else
+                {
+                    desc = baseDesc;
                 }
                 return;
             }
 
             categoryTag = $"<color=#FFD700>[PHÁP BẢO CHIẾN TRƯỜNG 3D]</color>  {equipState}";
-            DefenseLoadoutRuntimeAdapter.EvaluateRelicStarBonuses(star, null, out float relicDmg, out float relicCd, out float relicArea);
-            desc = $"{baseDesc}\n\n" +
-                   $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sát Thương <b>+{relicDmg * 100f:0}%</b>  •  Giảm Hồi Chiêu <b>-{relicCd * 100f:0}%</b>  •  Phạm Vi <b>+{relicArea * 100f:0}%</b>\n";
-            if (nextStep != null && star < 5)
+            if (_loadoutService != null)
             {
-                desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({nextStep.targetStar} Sao):</color> {nextStep.perkDescription}";
+                _loadoutService.EvaluateRelicStarBonuses(star, null, out float relicDmg, out float relicCd, out float relicArea);
+                desc = $"{baseDesc}\n\n" +
+                       $"<color=#FFD700>Chỉ Số Cấp {star} Sao:</color> Sát Thương <b>+{relicDmg * 100f:0}%</b>  •  Giảm Hồi Chiêu <b>-{relicCd * 100f:0}%</b>  •  Phạm Vi <b>+{relicArea * 100f:0}%</b>\n";
+                if (nextStep != null && star < 5)
+                {
+                    desc += $"<color=#00FF88>Đột Phá Kế Tiếp ({nextStep.targetStar} Sao):</color> {nextStep.perkDescription}";
+                }
+            }
+            else
+            {
+                desc = baseDesc;
             }
         }
     }
