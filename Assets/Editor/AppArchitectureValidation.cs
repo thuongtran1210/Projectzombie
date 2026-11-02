@@ -25,7 +25,7 @@ public static class AppArchitectureValidation
             "ProjectZombie.Tests.Editor.DefenseMatchResultAndLifecycleTests", "DefenseG6BossAndResultTests",
             "ProjectZombie.Tests.Editor.StageSpawnConfigTests", "ProjectZombie.Tests.Editor.DefenseSessionBalancingTests",
             "DefenseEnemyHealthTests", "DefenseSpawnWarningTests", "DefenseEffectAuthoringTests", "OwnedPoolTests", "DefenseHeroCatalogTests",
-            "ProjectZombie.Tests.Architecture.CleanArchitectureTests", "ProjectZombie.Tests.Editor.CombatTextOptimizationTests",
+            "ProjectZombie.Tests.Architecture.CleanArchitectureTests", "ProjectZombie.Tests.Editor.CombatTextOptimizationTests", "CombatTextOptimizationTests",
             "ProjectZombie.Tests.LevelDesign.LevelDesignerStudioTests" })
             filter.Add(new FullNameFilter(name));
         filter.Add(new FullNameFilter("ProjectZombie.Tests.Editor.DefenseHeroCatalogTests"));

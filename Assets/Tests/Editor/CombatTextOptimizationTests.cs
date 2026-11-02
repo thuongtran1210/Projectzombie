@@ -93,5 +93,14 @@ public sealed class CombatTextOptimizationTests
             Object.DestroyImmediate(go);
         }
     }
+
+    [Test]
+    public void DefenseRun_HasNoOnGUIMethod_GuaranteesZeroGC()
+    {
+        var method = typeof(ProjectZombie.Features.Defense3D.DefenseRun6003D).GetMethod(
+            "OnGUI",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+        Assert.IsNull(method, "DefenseRun6003D khong duoc chua phuong thuc OnGUI() de triet tieu 368 B GC rac cua Unity IMGUI moi frame.");
+    }
 }
 

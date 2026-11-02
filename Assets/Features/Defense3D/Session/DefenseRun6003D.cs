@@ -136,6 +136,23 @@ namespace ProjectZombie.Features.Defense3D
             stageSpawnConfig = request.ResolvedRules;
         }
 
+        private void Start()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            DefenseRunDebugOverlayBehaviour.Sync(this, showDebugOverlay);
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                DefenseRunDebugOverlayBehaviour.Sync(this, showDebugOverlay);
+            }
+        }
+#endif
+
         public void RestartRun() => _session?.Restart();
 
         private void Update()
@@ -152,16 +169,14 @@ namespace ProjectZombie.Features.Defense3D
 
         private void OnDestroy()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            DefenseRunDebugOverlayBehaviour.Sync(this, false);
+#endif
             if (_runtime != null) _runtime.MatchEnded -= ForwardResult;
             // Session là owner duy nhất quyết định thứ tự cleanup và dispose các service.
             _session?.Dispose();
         }
 
         private void ForwardResult(bool won) => MatchEnded?.Invoke(won);
-
-        private void OnGUI()
-        {
-            if (showDebugOverlay) DefenseRunDebugOverlay.Draw(this);
-        }
     }
 }

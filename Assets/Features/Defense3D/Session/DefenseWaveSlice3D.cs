@@ -69,6 +69,7 @@ namespace ProjectZombie.Features.Defense3D
             enemy.GetComponent<DefenseEnemyBridgeWalker3D>().Configure(lane, defenseBase);
         }
 
+#if UNITY_EDITOR && DEBUG_WAVE_SLICE
         private void OnGUI()
         {
             if (defenseBase == null) return;
@@ -79,5 +80,6 @@ namespace ProjectZombie.Features.Defense3D
                 defeated ? "THUA - Nha Chinh bi pha huy"
                 : "Wave: " + Mathf.Min(wave, waveCount) + "/" + waveCount);
         }
+#endif
     }
 }
