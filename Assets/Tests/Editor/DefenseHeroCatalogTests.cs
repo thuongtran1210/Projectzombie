@@ -102,7 +102,7 @@ public sealed class DefenseHeroCatalogTests
 
             def.ApplyStatsToHero(health, motor);
 
-            Assert.AreEqual(def.BaseMaxHp, health.MaxHp);
+            Assert.AreEqual(def.BaseMaxHp, health.MaxHP);
 
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(def);
